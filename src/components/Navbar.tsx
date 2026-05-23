@@ -80,7 +80,7 @@ export default function Navbar() {
             <div className="hidden md:block">
               <Magnetic>
                 <Link
-                  href="/#booking"
+                  href="https://homeo.healthcare/#booking"
                   data-cursor="book"
                   className="glass-panel border-mint/20 hover:border-mint/60 bg-mint/5 hover:bg-mint text-mint-dark hover:text-white px-5 py-2 rounded-full text-xs font-bold tracking-wide uppercase transition-all duration-500 flex items-center gap-1.5 cursor-pointer"
                 >
@@ -131,7 +131,7 @@ export default function Navbar() {
                 ))}
                 <hr className="border-slate-150" />
                 <Link
-                  href="/#booking"
+                  href="https://homeo.healthcare/#booking"
                   onClick={() => setMobileMenuOpen(false)}
                   className="w-full text-center bg-mint text-white py-3 rounded-full text-sm font-semibold flex items-center justify-center gap-2"
                 >
