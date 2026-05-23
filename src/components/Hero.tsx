@@ -2,7 +2,8 @@
 
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Sparkles, ShieldCheck, HeartPulse, Video, ArrowRight } from "lucide-react";
+import { Sparkles, ShieldCheck, HeartPulse, Video, ArrowRight, ArrowLeft } from "lucide-react";
+import Link from "next/link";
 import Magnetic from "./Magnetic";
 
 export default function Hero() {
@@ -84,6 +85,22 @@ export default function Hero() {
           style={{ y: yText }}
           className="lg:col-span-7 flex flex-col items-start text-left z-10"
         >
+          {/* Back to Homepage Button */}
+          <motion.div
+            variants={itemVariants}
+            className="mb-8"
+          >
+            <Magnetic>
+              <Link
+                href="https://homeo.healthcare"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-mint/20 hover:border-mint/60 bg-mint/5 hover:bg-mint/10 text-mint-dark hover:text-[#0c6b5e] text-xs font-bold uppercase tracking-wider transition-all duration-300 backdrop-blur-md cursor-pointer"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                Back to the Future
+              </Link>
+            </Magnetic>
+          </motion.div>
+
           {/* Pill Badge */}
           <motion.div
             variants={itemVariants}

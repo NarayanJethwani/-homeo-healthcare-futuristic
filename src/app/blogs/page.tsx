@@ -3,10 +3,11 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  BookOpen, Search, Clock, ArrowRight, X, Calendar, 
+  BookOpen, Search, Clock, ArrowRight, ArrowLeft, X, Calendar, 
   User, Sparkles
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Magnetic from "@/components/Magnetic";
 import Portal from "@/components/Portal";
 
@@ -479,6 +480,24 @@ export default function BlogsPage() {
     <div className="pt-32 pb-24 px-6 relative">
       <div className="max-w-7xl mx-auto z-10 relative">
         
+        {/* Back to Homepage Button */}
+        <motion.div
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8 }}
+          className="mb-8"
+        >
+          <Magnetic>
+            <Link
+              href="https://homeo.healthcare"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-mint/20 hover:border-mint/60 bg-mint/5 hover:bg-mint/10 text-mint-dark hover:text-[#0c6b5e] text-xs font-bold uppercase tracking-wider transition-all duration-300 backdrop-blur-md cursor-pointer"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              Back to the Future
+            </Link>
+          </Magnetic>
+        </motion.div>
+
         {/* Page Hero Header */}
         <div className="max-w-3xl mb-16">
           <motion.div
