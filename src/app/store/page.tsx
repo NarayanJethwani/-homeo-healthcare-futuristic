@@ -409,6 +409,120 @@ const careLevelsDetails = {
   }
 };
 
+const shippingCountries = [
+  "India",
+  "United States",
+  "United Kingdom",
+  "United Arab Emirates",
+  "Australia",
+  "Other"
+];
+
+const indianStates = [
+  "Andhra Pradesh",
+  "Arunachal Pradesh",
+  "Assam",
+  "Bihar",
+  "Chhattisgarh",
+  "Goa",
+  "Gujarat",
+  "Haryana",
+  "Himachal Pradesh",
+  "Jharkhand",
+  "Karnataka",
+  "Kerala",
+  "Madhya Pradesh",
+  "Maharashtra",
+  "Manipur",
+  "Meghalaya",
+  "Mizoram",
+  "Nagaland",
+  "Odisha",
+  "Punjab",
+  "Rajasthan",
+  "Sikkim",
+  "Tamil Nadu",
+  "Telangana",
+  "Tripura",
+  "Uttar Pradesh",
+  "Uttarakhand",
+  "West Bengal",
+  "Andaman and Nicobar Islands",
+  "Chandigarh",
+  "Dadra and Nagar Haveli and Daman and Diu",
+  "Delhi",
+  "Jammu and Kashmir",
+  "Ladakh",
+  "Lakshadweep",
+  "Puducherry"
+];
+
+const majorIndianCities = [
+  "Mumbai",
+  "Delhi",
+  "Bengaluru",
+  "Hyderabad",
+  "Ahmedabad",
+  "Chennai",
+  "Kolkata",
+  "Surat",
+  "Pune",
+  "Jaipur",
+  "Lucknow",
+  "Kanpur",
+  "Nagpur",
+  "Indore",
+  "Thane",
+  "Bhopal",
+  "Visakhapatnam",
+  "Pimpri-Chinchwad",
+  "Patna",
+  "Vadodara",
+  "Ghaziabad",
+  "Ludhiana",
+  "Agra",
+  "Nashik",
+  "Faridabad",
+  "Meerut",
+  "Rajkot",
+  "Kalyan-Dombivli",
+  "Vasai-Virar",
+  "Varanasi",
+  "Srinagar",
+  "Aurangabad",
+  "Dhanbad",
+  "Amritsar",
+  "Navi Mumbai",
+  "Allahabad",
+  "Ranchi",
+  "Howrah",
+  "Coimbatore",
+  "Jabalpur",
+  "Gwalior",
+  "Vijayawada",
+  "Jodhpur",
+  "Madurai",
+  "Raipur",
+  "Kota",
+  "Guwahati",
+  "Chandigarh",
+  "Solapur",
+  "Hubli-Dharwad",
+  "Mysore",
+  "Gurgaon",
+  "Aligarh",
+  "Jalandhar",
+  "Bhubaneswar",
+  "Salem",
+  "Warangal",
+  "Guntur",
+  "Amravati",
+  "Noida",
+  "Jamshedpur",
+  "Kochi",
+  "Dehradun"
+];
+
 export default function StorePage() {
   const [viewMode, setViewMode] = useState<"dashboard" | "catalog">("dashboard");
 
@@ -444,7 +558,10 @@ export default function StorePage() {
   const [patientEmail, setPatientEmail] = useState("");
   const [patientAge, setPatientAge] = useState("");
   const [patientGender, setPatientGender] = useState("Male");
+  const [patientCountry, setPatientCountry] = useState("India");
   const [patientCity, setPatientCity] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
+  const [customCity, setCustomCity] = useState("");
   const [patientState, setPatientState] = useState("");
   const [patientComplaint, setPatientComplaint] = useState("");
   
@@ -2176,32 +2293,114 @@ export default function StorePage() {
                         </div>
                       </div>
 
-                      {/* Shipping City / State */}
+                      {/* Country Selection */}
                       <div className="space-y-1">
-                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Shipping City *</label>
-                        <input
-                          type="text"
-                          value={patientCity}
-                          onChange={(e) => setPatientCity(e.target.value)}
-                          placeholder="City"
-                          className={`w-full p-3 rounded-xl border bg-white/50 text-sm focus:outline-none transition-all ${
-                            formErrors.patientCity ? "border-red-500 ring-2 ring-red-100" : "border-slate-200 focus:border-slate-800"
-                          }`}
-                        />
+                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Country *</label>
+                        <select
+                          value={patientCountry}
+                          onChange={(e) => {
+                            setPatientCountry(e.target.value);
+                            setPatientState("");
+                            setPatientCity("");
+                            setSelectedCity("");
+                            setCustomCity("");
+                          }}
+                          className="w-full p-3 rounded-xl border border-slate-200 bg-white/50 text-sm focus:outline-none focus:border-slate-800"
+                        >
+                          {shippingCountries.map((c) => (
+                            <option key={c} value={c}>{c}</option>
+                          ))}
+                        </select>
                       </div>
 
+                      {/* State / Province Selection */}
                       <div className="space-y-1">
-                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">State / Territory *</label>
-                        <input
-                          type="text"
-                          value={patientState}
-                          onChange={(e) => setPatientState(e.target.value)}
-                          placeholder="State / Union Territory"
-                          className={`w-full p-3 rounded-xl border bg-white/50 text-sm focus:outline-none transition-all ${
-                            formErrors.patientState ? "border-red-500 ring-2 ring-red-100" : "border-slate-200 focus:border-slate-800"
-                          }`}
-                        />
+                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">
+                          {patientCountry === "India" ? "State / Union Territory *" : "State / Province / Region *"}
+                        </label>
+                        {patientCountry === "India" ? (
+                          <select
+                            value={patientState}
+                            onChange={(e) => setPatientState(e.target.value)}
+                            className={`w-full p-3 rounded-xl border bg-white/50 text-sm focus:outline-none transition-all ${
+                              formErrors.patientState ? "border-red-500 ring-2 ring-red-100" : "border-slate-200 focus:border-slate-800"
+                            }`}
+                          >
+                            <option value="">-- Select State --</option>
+                            {indianStates.map((s) => (
+                              <option key={s} value={s}>{s}</option>
+                            ))}
+                          </select>
+                        ) : (
+                          <input
+                            type="text"
+                            value={patientState}
+                            onChange={(e) => setPatientState(e.target.value)}
+                            placeholder="State / Region"
+                            className={`w-full p-3 rounded-xl border bg-white/50 text-sm focus:outline-none transition-all ${
+                              formErrors.patientState ? "border-red-500 ring-2 ring-red-100" : "border-slate-200 focus:border-slate-800"
+                            }`}
+                          />
+                        )}
                       </div>
+
+                      {/* City Selection */}
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">City *</label>
+                        {patientCountry === "India" ? (
+                          <select
+                            value={selectedCity}
+                            onChange={(e) => {
+                              setSelectedCity(e.target.value);
+                              if (e.target.value !== "other") {
+                                setPatientCity(e.target.value);
+                              } else {
+                                setPatientCity(customCity);
+                              }
+                            }}
+                            className={`w-full p-3 rounded-xl border bg-white/50 text-sm focus:outline-none transition-all ${
+                              formErrors.patientCity ? "border-red-500 ring-2 ring-red-100" : "border-slate-200 focus:border-slate-800"
+                            }`}
+                          >
+                            <option value="">-- Select City --</option>
+                            {majorIndianCities.map((c) => (
+                              <option key={c} value={c}>{c}</option>
+                            ))}
+                            <option value="other">Other / Enter manually...</option>
+                          </select>
+                        ) : (
+                          <input
+                            type="text"
+                            value={patientCity}
+                            onChange={(e) => setPatientCity(e.target.value)}
+                            placeholder="City"
+                            className={`w-full p-3 rounded-xl border bg-white/50 text-sm focus:outline-none transition-all ${
+                              formErrors.patientCity ? "border-red-500 ring-2 ring-red-100" : "border-slate-200 focus:border-slate-800"
+                            }`}
+                          />
+                        )}
+                      </div>
+
+                      {/* Custom City Input */}
+                      {patientCountry === "India" && selectedCity === "other" ? (
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Specify City Name *</label>
+                          <input
+                            type="text"
+                            value={customCity}
+                            onChange={(e) => {
+                              setCustomCity(e.target.value);
+                              setPatientCity(e.target.value);
+                            }}
+                            placeholder="Enter City Name"
+                            className={`w-full p-3 rounded-xl border bg-white/50 text-sm focus:outline-none transition-all ${
+                              formErrors.patientCity ? "border-red-500 ring-2 ring-red-100" : "border-slate-200 focus:border-slate-800"
+                            }`}
+                          />
+                        </div>
+                      ) : (
+                        <div className="hidden md:block" />
+                      )}
 
                       {/* Clinical symptoms summary */}
                       <div className="col-span-1 md:col-span-2 space-y-1">
@@ -2294,7 +2493,7 @@ export default function StorePage() {
                       <div className="p-4 bg-white border border-slate-100 rounded-2xl space-y-2 text-xs">
                         <span className="text-[9px] text-slate-400 font-bold uppercase block tracking-wider">Patient Summary</span>
                         <p className="text-slate-800 font-bold">{patientName} ({patientAge} years, {patientGender})</p>
-                        <p className="text-slate-500 font-semibold leading-normal">{patientCity}, {patientState}</p>
+                        <p className="text-slate-500 font-semibold leading-normal">{patientCity}, {patientState}, {patientCountry}</p>
                       </div>
                     </div>
 
@@ -2441,7 +2640,7 @@ export default function StorePage() {
 - *Name:* ${patientName} (${patientAge} Years, ${patientGender})
 - *Contact:* ${patientPhone}
 - *Email:* ${patientEmail}
-- *Location:* ${patientCity}, ${patientState}
+- *Location:* ${patientCity}, ${patientState}, ${patientCountry}
 - *Chief Complaint:* ${cleanComplaint}
 
 *PROGRAM SELECTION:*
