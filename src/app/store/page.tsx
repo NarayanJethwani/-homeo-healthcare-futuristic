@@ -517,10 +517,82 @@ const majorIndianCities = [
   "Warangal",
   "Guntur",
   "Amravati",
-  "Noida",
-  "Jamshedpur",
-  "Kochi",
-  "Dehradun"
+];
+
+interface DiseaseConfig {
+  name: string;
+  careLevel: "mild" | "moderate" | "focused" | "organ" | "comprehensive";
+  conditionsCount: number;
+  rationale: string;
+}
+
+interface DiseaseCategory {
+  id: string;
+  label: string;
+  icon: string;
+  conditions: DiseaseConfig[];
+}
+
+const diseaseCategories: DiseaseCategory[] = [
+  {
+    id: "skin-hair",
+    label: "Skin & Hair",
+    icon: "🌱",
+    conditions: [
+      { name: "Chronic Eczema", careLevel: "moderate", conditionsCount: 1, rationale: "Requires specialized skin barrier rebalancing and localized chronic tracking." },
+      { name: "Severe Psoriasis", careLevel: "focused", conditionsCount: 1, rationale: "Requires deep systemic cellular-turnover rebalancing and high-potency dilution sets." },
+      { name: "Alopecia / Hair Fall", careLevel: "mild", conditionsCount: 1, rationale: "Managed with standard constitutional wellness, nutrient mapping, and bi-weekly checkins." },
+      { name: "Hormonal Acne with PCOS", careLevel: "focused", conditionsCount: 2, rationale: "Requires multi-condition coordination to rebalance skin and endocrine pathways." }
+    ]
+  },
+  {
+    id: "lungs-respiratory",
+    label: "Lungs & Respiratory",
+    icon: "🫁",
+    conditions: [
+      { name: "Bronchial Asthma", careLevel: "focused", conditionsCount: 1, rationale: "Requires target-system airway rebalancing and high-potency constitutional dilutions." },
+      { name: "Allergic Sinusitis", careLevel: "moderate", conditionsCount: 1, rationale: "Requires focused localized chronic sinus drainage and mucosal tracking." },
+      { name: "Recurrent Seasonal Colds", careLevel: "mild", conditionsCount: 1, rationale: "Managed with basic immune rebalancing and seasonal acute care guidelines." }
+    ]
+  },
+  {
+    id: "digestion-metabolism",
+    label: "Gut & Metabolism",
+    icon: "⚡",
+    conditions: [
+      { name: "Chronic IBS / Reflux", careLevel: "moderate", conditionsCount: 1, rationale: "Requires gut-brain axis constitutional tracking and dietary guide sheets." },
+      { name: "Elevated Liver / Fatty Liver", careLevel: "organ", conditionsCount: 1, rationale: "Requires advanced hepatocyte biomarker tracking and liver pathology care." },
+      { name: "Acid Reflux / GERD", careLevel: "mild", conditionsCount: 1, rationale: "Constitutional wellness support, metabolic rebalancing, and diet mapping." }
+    ]
+  },
+  {
+    id: "kidney-urinary",
+    label: "Kidney & Urinary",
+    icon: "💧",
+    conditions: [
+      { name: "Early Chronic Kidney Disease", careLevel: "organ", conditionsCount: 1, rationale: "Requires advanced nephron-level support, biomarker checks, and GP coordination." },
+      { name: "Recurrent UTIs / Cystitis", careLevel: "moderate", conditionsCount: 1, rationale: "Requires focused bladder lining rebalancing and chronic tracking." }
+    ]
+  },
+  {
+    id: "joints-neuro",
+    label: "Joints & Neuro",
+    icon: "🧠",
+    conditions: [
+      { name: "Osteoarthritis (Single Joint)", careLevel: "moderate", conditionsCount: 1, rationale: "Requires joint inflammation mapping, diet sheets, and bi-weekly tracking." },
+      { name: "Rheumatoid Arthritis", careLevel: "organ", conditionsCount: 2, rationale: "Requires multi-remedy support for systemic autoimmune joint pathology." },
+      { name: "Vascular Migraine", careLevel: "focused", conditionsCount: 1, rationale: "Requires deep neurological rebalancing and high-potency dilution titrations." }
+    ]
+  },
+  {
+    id: "multisystem",
+    label: "Multisystem Complex",
+    icon: "🔮",
+    conditions: [
+      { name: "Diabetes + Hypertension + Joints", careLevel: "comprehensive", conditionsCount: 3, rationale: "Requires intensive multi-organ pathogenetic mapping and direct physician supervision." },
+      { name: "Complex Autoimmune Pathologies", careLevel: "comprehensive", conditionsCount: 2, rationale: "Requires direct, high-frequency supervision by Dr. Jethwani and multi-remedy titration." }
+    ]
+  }
 ];
 
 export default function StorePage() {
@@ -584,8 +656,7 @@ export default function StorePage() {
     careLevel?: "mild" | "moderate" | "focused" | "organ" | "comprehensive";
     conditionsCount?: number;
     durationValue?: number;
-  } | null>(null);
-
+  } | null>(null);  const [activeDiagnosisTab, setActiveDiagnosisTab] = useState("skin-hair");
 
   const [filter, setFilter] = useState<"all" | "consultation" | "specialty">("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -1062,7 +1133,7 @@ export default function StorePage() {
               transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
               className="space-y-16 mb-16"
             >
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              <div id="planner-dashboard" className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                 
                 {/* Dashboard Left Form Controls (8 cols) */}
                 <div className="lg:col-span-8 space-y-8">
@@ -1585,7 +1656,101 @@ export default function StorePage() {
                       Book Evaluation <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
                   </div>
+                </div>
+              </div>
 
+              {/* Quick Select by Diagnosis / Organ System */}
+              <div className="border-t border-slate-900/5 pt-16 space-y-8">
+                <div className="max-w-3xl">
+                  <h2 className="text-2xl font-bold text-[#1A2421] mb-2 flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-mint animate-pulse" />
+                    Quick Select by Diagnosis
+                  </h2>
+                  <p className="text-xs text-slate-500 font-semibold">
+                    Select your clinical concern or organ system below to automatically pre-configure the Treatment Planner above with the recommended care level and conditions setup.
+                  </p>
+                </div>
+
+                {/* Category tabs */}
+                <div className="flex flex-wrap gap-2 pb-2 overflow-x-auto scrollbar-none">
+                  {diseaseCategories.map((cat) => (
+                    <button
+                      key={cat.id}
+                      onClick={() => setActiveDiagnosisTab(cat.id)}
+                      className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-2 cursor-pointer ${
+                        activeDiagnosisTab === cat.id
+                          ? "bg-[#1A2421] text-white shadow-sm border border-slate-800"
+                          : "border border-slate-200 bg-white/40 hover:border-slate-800 text-slate-500 hover:text-slate-900"
+                      }`}
+                    >
+                      <span>{cat.icon}</span>
+                      {cat.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Disease cards grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {diseaseCategories
+                    .find((cat) => cat.id === activeDiagnosisTab)
+                    ?.conditions.map((cond, idx) => {
+                      const details = careLevelsDetails[cond.careLevel];
+                      const badgeClass =
+                        cond.careLevel === "mild"
+                          ? "bg-teal-50 text-teal-700 border-teal-100"
+                          : cond.careLevel === "moderate"
+                          ? "bg-purple-50 text-purple-700 border-purple-100"
+                          : cond.careLevel === "focused"
+                          ? "bg-sky-50 text-sky-700 border-sky-100"
+                          : cond.careLevel === "organ"
+                          ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+                          : "bg-rose-50 text-rose-700 border-rose-100";
+
+                      return (
+                        <div
+                          key={idx}
+                          className="glass-panel border-white/60 bg-white/40 rounded-3xl p-5 flex flex-col justify-between hover:border-slate-800 transition-all duration-300 relative group/card"
+                        >
+                          <div className="space-y-4">
+                            <div>
+                              <h4 className="text-sm font-extrabold text-[#1A2421] leading-snug">{cond.name}</h4>
+                              <div className="flex flex-wrap gap-1.5 mt-2">
+                                <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-full border ${badgeClass}`}>
+                                  {details.title}
+                                </span>
+                                <span className="text-[8px] font-bold uppercase px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200/50">
+                                  {cond.conditionsCount === 1 ? "1 Condition" : cond.conditionsCount === 2 ? "2 Conditions" : "3+ Conditions"}
+                                </span>
+                              </div>
+                            </div>
+
+                            <p className="text-[10px] text-slate-500 font-semibold leading-relaxed">
+                              {cond.rationale}
+                            </p>
+                          </div>
+
+                          <div className="pt-4 mt-4 border-t border-slate-900/5">
+                            <button
+                              onClick={() => {
+                                setCareLevel(cond.careLevel);
+                                setConditionsCount(cond.conditionsCount);
+                                if (!patientComplaint || patientComplaint.startsWith("Constitutional care evaluation for")) {
+                                  setPatientComplaint(`Constitutional care evaluation for ${cond.name}.`);
+                                }
+                                const plannerElement = document.getElementById("planner-dashboard");
+                                if (plannerElement) {
+                                  plannerElement.scrollIntoView({ behavior: "smooth", block: "start" });
+                                }
+                              }}
+                              className="w-full py-2 bg-white/80 hover:bg-[#1A2421] text-slate-700 hover:text-white rounded-full text-[10px] font-extrabold uppercase tracking-wider border border-slate-200 hover:border-slate-800 transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
+                            >
+                              Apply to Planner
+                              <ArrowRight className="w-3 h-3 group-hover/card:translate-x-0.5 transition-transform" />
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
                 </div>
               </div>
 
