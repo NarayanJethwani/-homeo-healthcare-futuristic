@@ -39,11 +39,11 @@ interface Package {
 const packages: Package[] = [
   {
     id: "focused-care",
-    title: "Focused Care",
-    priceWeekly: "₹3,000",
-    priceMonthly: "₹10,000",
+    title: "Deep Systemic Care",
+    priceWeekly: "₹3,500",
+    priceMonthly: "₹12,500",
     category: "consultation",
-    desc: "Focused homeopathic treatment for a single acute or mild chronic condition.",
+    desc: "Deep homeopathic treatment for complex chronic or systemic health conditions (e.g. asthma, migraine, severe eczema).",
     features: [
       "Targeted single-condition evaluation",
       "Custom constitutional remedy preparation",
@@ -65,11 +65,11 @@ const packages: Package[] = [
   },
   {
     id: "recommended-system-care",
-    title: "Recommended System Care",
-    priceWeekly: "₹6,000",
-    priceMonthly: "₹20,000",
+    title: "Advanced Pathological Care",
+    priceWeekly: "₹5,000",
+    priceMonthly: "₹18,500",
     category: "consultation",
-    desc: "Targeted support for one primary organ system. Best for early or single-system problems.",
+    desc: "Targeted recovery protocols for deep-seated pathology, including organ system rebalancing and biomarker reviews.",
     features: [
       "Primary organ system constitutional analysis",
       "Systemic homeopathic rebalancing protocol",
@@ -92,11 +92,11 @@ const packages: Package[] = [
   },
   {
     id: "comprehensive-care",
-    title: "Comprehensive Care",
-    priceWeekly: "₹9,000",
-    priceMonthly: "₹30,000",
+    title: "Multisystem Integrative Care",
+    priceWeekly: "₹7,000",
+    priceMonthly: "₹25,000",
     category: "consultation",
-    desc: "For multi-system or long-standing chronic health conditions. Includes deeper case analysis and ongoing supervision.",
+    desc: "High-intensity multi-organ care program under direct physician supervision for advanced chronic diseases.",
     features: [
       "Deeper multi-system constitutional evaluation",
       "Deeper chronic pathology case reviews",
@@ -333,77 +333,77 @@ export interface SavedConfig {
 
 const careLevelsDetails = {
   mild: {
-    title: "Mild Care",
-    weeklyPrice: 1200,
-    monthlyPrice: 4000,
+    title: "Acute & Wellness Care",
+    weeklyPrice: 1000,
+    monthlyPrice: 3500,
     badge: "Acute & General Support",
     icon: "🌱",
-    description: "Ideal for mild chronic issues, minor acute flares, or general natural healthcare guidance.",
+    description: "Ideal for general immunity, hair fall, seasonal acute complaints, or general wellness guidance.",
     features: [
-      "General constitutional analysis",
+      "General constitutional wellness analysis",
       "Corrective micro-dosing remedy supply",
-      "Standard dietary guide sheet",
-      "WhatsApp team updates (bi-weekly)"
+      "Standard wellness dietary guide sheet",
+      "WhatsApp clinical team updates (bi-weekly)"
     ],
     glowColor: "rgba(20,184,166,0.15)"
   },
   moderate: {
-    title: "Moderate Care",
-    weeklyPrice: 2500,
-    monthlyPrice: 8500,
+    title: "Standard Chronic Care",
+    weeklyPrice: 2000,
+    monthlyPrice: 7500,
     badge: "Focused Chronic Management",
     icon: "⚡",
-    description: "Designed for a single chronic condition that requires active tracking and occasional dosage updates.",
+    description: "Designed for a single chronic condition (e.g. eczema, IBS, thyroid) requiring active tracking and bi-weekly checks.",
     features: [
       "Single chronic condition profile mapping",
-      "Constitutional remedy preparation",
-      "Diet & allergen avoidance sheet",
-      "Standard clinical response checkups (every 2 weeks)"
+      "Targeted constitutional remedy preparation",
+      "Anti-inflammatory diet & lifestyle sheets",
+      "Standard clinical response monitoring checkups"
     ],
     glowColor: "rgba(168,85,247,0.15)"
   },
   focused: {
-    title: "Focused Care",
-    weeklyPrice: 4500,
-    monthlyPrice: 15000,
-    badge: "Organ System Level Care",
+    title: "Deep Systemic Care",
+    weeklyPrice: 3500,
+    monthlyPrice: 12500,
+    badge: "Complex Chronic Therapy",
     icon: "🎯",
-    description: "Deep management of a primary target system (e.g., lungs, digestive tract, skin, or hair).",
+    description: "Deep management of complex chronic or systemic health conditions (e.g. asthma, migraine, severe eczema).",
     features: [
-      "Targeted single-organ analysis & history",
-      "High-potency customized constitutional remedies",
-      "Lab report reviews & medical integration",
-      "Priority clinical updates over WhatsApp"
+      "Deep-seated target system pathology analysis",
+      "High-potency customized constitutional dilutions",
+      "Custom anti-inflammatory & allergen guides",
+      "Priority clinical checkins over WhatsApp"
     ],
     glowColor: "rgba(14,165,233,0.15)"
   },
   organ: {
-    title: "Organ System Care",
-    weeklyPrice: 6500,
-    monthlyPrice: 22000,
-    badge: "Multi-Remedy System Support",
+    title: "Advanced Pathological Care",
+    weeklyPrice: 5000,
+    monthlyPrice: 18500,
+    badge: "Organ System Recovery",
     icon: "🫁",
-    description: "Advanced co-management of deep-rooted system pathology alongside conventional medical setups.",
+    description: "Advanced recovery protocols for deep-seated pathology, including organ system rebalancing and biomarker reviews.",
     features: [
-      "Advanced systemic constitutional rebalancing",
-      "Multi-remedy support for organ systems",
-      "Biomarker timeline mapping & monitoring",
-      "Dedicated dietitian support checkups"
+      "Multi-remedy support for organ pathology",
+      "Advanced systemic rebalancing protocols",
+      "Biomarker timeline mapping & reviews",
+      "Personalized organ-support lifestyle sheets"
     ],
     glowColor: "rgba(16,185,129,0.15)"
   },
   comprehensive: {
-    title: "Comprehensive Care",
-    weeklyPrice: 8500,
-    monthlyPrice: 28000,
-    badge: "Multi-Organ Chronic Care",
+    title: "Multisystem Integrative Care",
+    weeklyPrice: 7000,
+    monthlyPrice: 25000,
+    badge: "Multi-Organ Intensive Care",
     icon: "🔮",
-    description: "For long-standing chronic, multi-system diseases requiring intense clinical supervision by Dr. Jethwani.",
+    description: "For long-standing, multi-system chronic pathologies requiring intensive clinical supervision by Dr. Jethwani.",
     features: [
-      "Multi-organ pathogenetic mapping",
-      "Direct medical supervision by Dr. Jethwani",
-      "High-frequency dosage reviews & titrations",
-      "Immediate urgent care updates and guidelines"
+      "Multi-organ pathogenetic profile mapping",
+      "Direct clinical supervision by Dr. Jethwani",
+      "High-frequency dosage titrations & reviews",
+      "Direct priority clinical assistance channel"
     ],
     glowColor: "rgba(244,63,94,0.15)"
   }
@@ -935,7 +935,7 @@ export default function StorePage() {
       }
     } else if (recommendedLevel === "organ") {
       if (supervisionNeed === "high") {
-        detail = "Your case requires active review of biomarkers/lab tests and specialized multi-remedy support, putting it in the Organ System care level.";
+        detail = "Your case requires active review of biomarkers/lab tests and specialized multi-remedy support, putting it in the Advanced Pathological care level.";
       } else {
         detail = "You have multiple chronic organ-system issues (or a single very advanced pathology) that require multi-remedy constitutional support.";
       }
@@ -1147,30 +1147,30 @@ export default function StorePage() {
                                   </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-100 font-semibold text-slate-700 text-[11px]">
-                                  <tr>
-                                    <td className="py-3 pr-4 font-black text-slate-900">🌱 Mild Care</td>
-                                    <td className="py-3 px-4">Acute cold/cough, seasonal allergies, simple hair fall, localized dandruff, minor indigestion, mild acute flares.</td>
-                                    <td className="py-3 pl-4">Constitutional micro-dose remedies, basic nutritional/diet sheet, bi-weekly status checks.</td>
-                                  </tr>
-                                  <tr>
-                                    <td className="py-3 pr-4 font-black text-[#1A2421]">⚡ Moderate Care</td>
-                                    <td className="py-3 px-4">Established localized eczema, chronic dry skin/acne, mild thyroid imbalance, single joint pain, basic IBS/gas issues.</td>
-                                    <td className="py-3 pl-4">Deeper disease mapping, targeted remedy preparations, detailed dietary guides, fortnightly updates.</td>
-                                  </tr>
-                                  <tr>
-                                    <td className="py-3 pr-4 font-black text-mint-dark">🎯 Focused Care</td>
-                                    <td className="py-3 px-4">Bronchial asthma, chronic allergic bronchitis, severe psoriasis, alopecia areata, chronic hormonal acne with PCOS, vascular migraines.</td>
-                                    <td className="py-3 pl-4">Deep target system pathology rebalancing, high-potency constitutional dilution sets, biomarker and lab report evaluations.</td>
-                                  </tr>
-                                  <tr>
-                                    <td className="py-3 pr-4 font-black text-indigo-700">🫁 Organ System Care</td>
-                                    <td className="py-3 px-4">Early-stage Chronic Kidney Disease (CKD), elevated liver enzymes/fatty liver, multi-joint chronic arthritis, autoimmune rebalancing.</td>
-                                    <td className="py-3 pl-4">Multi-remedy inter-system support, routine blood report comparison timelines, detailed dietitian review integration.</td>
-                                  </tr>
-                                  <tr>
-                                    <td className="py-3 pr-4 font-black text-rose-600">🔮 Comprehensive Care</td>
-                                    <td className="py-3 px-4">Treating 3+ co-existing chronic conditions (e.g. Diabetes + CKD + Arthritis) or advanced multi-system chronic autoimmune pathology.</td>
-                                    <td className="py-3 pl-4">Direct medical supervision by Dr. Jethwani, high-frequency dosage adjustments, emergency acute flare-up protocols.</td>
+                                   <tr>
+                                     <td className="py-3 pr-4 font-black text-slate-900">🌱 Acute & Wellness Care</td>
+                                     <td className="py-3 px-4">Acute cold/cough, seasonal allergies, simple hair fall, localized dandruff, minor indigestion, mild acute flares.</td>
+                                     <td className="py-3 pl-4">Constitutional micro-dose remedies, basic nutritional/diet sheet, bi-weekly status checks.</td>
+                                   </tr>
+                                   <tr>
+                                     <td className="py-3 pr-4 font-black text-[#1A2421]">⚡ Standard Chronic Care</td>
+                                     <td className="py-3 px-4">Established localized eczema, chronic dry skin/acne, mild thyroid imbalance, single joint pain, basic IBS/gas issues.</td>
+                                     <td className="py-3 pl-4">Deeper disease mapping, targeted remedy preparations, detailed dietary guides, fortnightly updates.</td>
+                                   </tr>
+                                   <tr>
+                                     <td className="py-3 pr-4 font-black text-mint-dark">🎯 Deep Systemic Care</td>
+                                     <td className="py-3 px-4">Bronchial asthma, chronic allergic bronchitis, severe psoriasis, alopecia areata, chronic hormonal acne with PCOS, vascular migraines.</td>
+                                     <td className="py-3 pl-4">Deep target system pathology rebalancing, high-potency constitutional dilution sets, biomarker and lab report evaluations.</td>
+                                   </tr>
+                                   <tr>
+                                     <td className="py-3 pr-4 font-black text-indigo-700">🫁 Advanced Pathological Care</td>
+                                     <td className="py-3 px-4">Early-stage Chronic Kidney Disease (CKD), elevated liver enzymes/fatty liver, multi-joint chronic arthritis, autoimmune rebalancing.</td>
+                                     <td className="py-3 pl-4">Multi-remedy inter-system support, routine blood report comparison timelines, detailed dietitian review integration.</td>
+                                   </tr>
+                                   <tr>
+                                     <td className="py-3 pr-4 font-black text-rose-600">🔮 Multisystem Integrative Care</td>
+                                     <td className="py-3 px-4">Treating 3+ co-existing chronic conditions (e.g. Diabetes + CKD + Arthritis) or advanced multi-system chronic autoimmune pathology.</td>
+                                     <td className="py-3 pl-4">Direct medical supervision by Dr. Jethwani, high-frequency dosage adjustments, emergency acute flare-up protocols.</td>
                                   </tr>
                                 </tbody>
                               </table>
