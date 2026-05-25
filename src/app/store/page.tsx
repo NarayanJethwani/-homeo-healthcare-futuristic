@@ -327,7 +327,9 @@ export interface SavedConfig {
   durationValue: number;
   finalPrice: number;
   date: string;
+  conditionsCount: number;
 }
+
 
 const careLevelsDetails = {
   mild: {
@@ -414,6 +416,7 @@ export default function StorePage() {
   const [careLevel, setCareLevel] = useState<"mild" | "moderate" | "focused" | "organ" | "comprehensive">("focused");
   const [billingCycle, setBillingCycle] = useState<"weekly" | "monthly">("monthly");
   const [durationValue, setDurationValue] = useState<number>(1); // Default to 1 period (1 month or 4 weeks depending on cycle)
+  const [conditionsCount, setConditionsCount] = useState<number>(1); // 1, 2, or 3
 
   // Saved configs list
   const [savedConfigs, setSavedConfigs] = useState<SavedConfig[]>([]);
@@ -442,6 +445,7 @@ export default function StorePage() {
       const levelParam = params.get("level");
       const cycleParam = params.get("cycle");
       const durationParam = params.get("duration");
+      const conditionsParam = params.get("conditions");
       const modeParam = params.get("mode");
 
       if (modeParam === "catalog" || modeParam === "dashboard") {
@@ -462,19 +466,41 @@ export default function StorePage() {
           setDurationValue(val);
         }
       }
+
+      if (conditionsParam) {
+        const val = parseInt(conditionsParam);
+        if (val === 1 || val === 2 || val === 3) {
+          setConditionsCount(val);
+        }
+      }
     } catch (e) {
       console.error("Error parsing URL parameters:", e);
     }
   }, []);
 
+
   const calculatePricing = (
     level: keyof typeof careLevelsDetails,
     cycle: "weekly" | "monthly",
-    duration: number
+    duration: number,
+    conditions: number = 1
   ) => {
     const details = careLevelsDetails[level];
     const basePrice = cycle === "weekly" ? details.weeklyPrice : details.monthlyPrice;
-    const rawTotal = basePrice * duration;
+    
+    // Coordination surcharge for co-existing conditions:
+    // 1 Condition: base rate
+    // 2 Conditions: +500/week or +1500/month coordination fee
+    // 3+ Conditions: +1000/week or +3000/month coordination fee
+    let surcharge = 0;
+    if (conditions === 2) {
+      surcharge = cycle === "weekly" ? 500 : 1500;
+    } else if (conditions >= 3) {
+      surcharge = cycle === "weekly" ? 1000 : 3000;
+    }
+
+    const adjustedBasePrice = basePrice + surcharge;
+    const rawTotal = adjustedBasePrice * duration;
     
     // Equivalent weeks
     const equivalentWeeks = cycle === "weekly" ? duration : duration * 4;
@@ -497,6 +523,8 @@ export default function StorePage() {
     
     return {
       basePrice,
+      surcharge,
+      adjustedBasePrice,
       rawTotal,
       discountPercent,
       discountAmount,
@@ -510,18 +538,20 @@ export default function StorePage() {
   };
 
   const handleSaveConfig = () => {
-    const pricing = calculatePricing(careLevel, billingCycle, durationValue);
+    const pricing = calculatePricing(careLevel, billingCycle, durationValue, conditionsCount);
     const details = careLevelsDetails[careLevel];
     const durationText = billingCycle === "weekly"
       ? `${durationValue} ${durationValue === 1 ? "Week" : "Weeks"}`
       : `${durationValue} ${durationValue === 1 ? "Month" : "Months"}`;
+    const conditionsText = conditionsCount === 1 ? "1 Cond." : conditionsCount === 2 ? "2 Cond." : "3+ Cond.";
 
     const newConfig: SavedConfig = {
       id: Math.random().toString(36).substring(2, 9),
-      name: `${details.title} (${durationText} - ${billingCycle === "weekly" ? "Weekly" : "Monthly"})`,
+      name: `${details.title} (${conditionsText}, ${durationText} - ${billingCycle === "weekly" ? "Weekly" : "Monthly"})`,
       careLevel,
       billingCycle,
       durationValue,
+      conditionsCount,
       finalPrice: pricing.finalPrice,
       date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
     };
@@ -547,10 +577,15 @@ export default function StorePage() {
     }
   };
 
-  const handleCopyLink = (level = careLevel, cycle = billingCycle, duration = durationValue) => {
+  const handleCopyLink = (
+    level = careLevel,
+    cycle = billingCycle,
+    duration = durationValue,
+    conditions = conditionsCount
+  ) => {
     try {
       const baseUrl = window.location.origin + window.location.pathname;
-      const shareUrl = `${baseUrl}?level=${level}&cycle=${cycle}&duration=${duration}&mode=dashboard`;
+      const shareUrl = `${baseUrl}?level=${level}&cycle=${cycle}&duration=${duration}&conditions=${conditions}&mode=dashboard`;
       navigator.clipboard.writeText(shareUrl);
       setShareSuccess(shareUrl);
       setTimeout(() => setShareSuccess(null), 3000);
@@ -560,19 +595,29 @@ export default function StorePage() {
   };
 
   const handleSelectCalculatedPlan = () => {
-    const pricing = calculatePricing(careLevel, billingCycle, durationValue);
+    const pricing = calculatePricing(careLevel, billingCycle, durationValue, conditionsCount);
     const details = careLevelsDetails[careLevel];
     const durationText = billingCycle === "weekly"
       ? `${durationValue} ${durationValue === 1 ? "week" : "weeks"}`
       : `${durationValue} ${durationValue === 1 ? "month" : "months"}`;
+    const conditionsText = conditionsCount === 1 
+      ? "1 Condition (Standard)" 
+      : conditionsCount === 2 
+        ? "2 co-existing conditions" 
+        : "3+ co-existing conditions";
       
     const message = `Hello Dr. Jethwani, I have calculated my constitutional treatment plan using the interactive dashboard:
 - Care Level: ${details.title} (${details.badge})
+- Conditions: ${conditionsText}
 - Billing Cycle: ${billingCycle}
 - Duration: ${durationText}
-- Cost: ₹${pricing.finalPrice.toLocaleString("en-IN")} (after ${pricing.discountPercent}% discount)
+- Total Price: ₹${pricing.finalPrice.toLocaleString("en-IN")} (after ${pricing.discountPercent}% discount)
 
-Could you guide me on the next clinical steps to register and start this treatment?`;
+*Payment Info:*
+- GPay / PhonePe / Paytm Number: 8446056789
+(Please make the GPay transfer and share screenshot)
+
+Could you guide me on the next clinical steps to register, confirm my payment, and start this treatment?`;
 
     const encodedText = encodeURIComponent(message);
     window.open(`https://wa.me/918446056789?text=${encodedText}`, "_blank");
@@ -582,28 +627,48 @@ Could you guide me on the next clinical steps to register and start this treatme
     let message = "";
     if (pkg.category === "consultation") {
       const cyclePrice = catalogBillingCycle === "weekly" ? pkg.priceWeekly : pkg.priceMonthly;
-      message = `Hello Dr. Jethwani, I am interested in booking the "${pkg.title}" consultation plan on a ${catalogBillingCycle} basis (${cyclePrice}). Could you guide me on the registration process?`;
+      message = `Hello Dr. Jethwani, I am interested in booking the "${pkg.title}" consultation plan on a ${catalogBillingCycle} basis (${cyclePrice}).
+
+*Payment Info:*
+- GPay / PhonePe / Paytm Number: 8446056789
+
+Could you guide me on the registration process and payment steps?`;
     } else {
-      message = `Hello Dr. Jethwani, I am interested in booking the "${pkg.title}" (${pkg.duration}). Could you guide me on the registration process?`;
+      message = `Hello Dr. Jethwani, I am interested in booking the "${pkg.title}" (${pkg.duration}).
+
+*Payment Info:*
+- GPay / PhonePe / Paytm Number: 8446056789
+
+Could you guide me on the registration process and payment steps?`;
     }
     const encodedText = encodeURIComponent(message);
     window.open(`https://wa.me/918446056789?text=${encodedText}`, "_blank");
   };
 
   const handleSelectSavedPlan = (config: SavedConfig) => {
-    const pricing = calculatePricing(config.careLevel, config.billingCycle, config.durationValue);
+    const pricing = calculatePricing(config.careLevel, config.billingCycle, config.durationValue, config.conditionsCount || 1);
     const details = careLevelsDetails[config.careLevel];
     const durationText = config.billingCycle === "weekly"
       ? `${config.durationValue} ${config.durationValue === 1 ? "week" : "weeks"}`
       : `${config.durationValue} ${config.durationValue === 1 ? "month" : "months"}`;
+    const conditionsText = (config.conditionsCount || 1) === 1 
+      ? "1 Condition (Standard)" 
+      : (config.conditionsCount || 1) === 2 
+        ? "2 co-existing conditions" 
+        : "3+ co-existing conditions";
       
     const message = `Hello Dr. Jethwani, I have calculated my constitutional treatment plan and compared it using the dashboard:
 - Care Level: ${details.title} (${details.badge})
+- Conditions: ${conditionsText}
 - Billing Cycle: ${config.billingCycle}
 - Duration: ${durationText}
-- Cost: ₹${pricing.finalPrice.toLocaleString("en-IN")} (after ${pricing.discountPercent}% discount)
+- Total Price: ₹${pricing.finalPrice.toLocaleString("en-IN")} (after ${pricing.discountPercent}% discount)
 
-Could you guide me on the registration process?`;
+*Payment Info:*
+- GPay / PhonePe / Paytm Number: 8446056789
+(Please make the GPay transfer and share screenshot)
+
+Could you guide me on the registration process and payment steps?`;
 
     const encodedText = encodeURIComponent(message);
     window.open(`https://wa.me/918446056789?text=${encodedText}`, "_blank");
@@ -613,6 +678,7 @@ Could you guide me on the registration process?`;
     setCareLevel(config.careLevel);
     setBillingCycle(config.billingCycle);
     setDurationValue(config.durationValue);
+    setConditionsCount(config.conditionsCount || 1);
     setViewMode("dashboard");
   };
 
@@ -624,7 +690,8 @@ Could you guide me on the registration process?`;
     return matchesFilter && matchesSearch;
   });
 
-  const activePricing = calculatePricing(careLevel, billingCycle, durationValue);
+  const activePricing = calculatePricing(careLevel, billingCycle, durationValue, conditionsCount);
+
   const activeDetails = careLevelsDetails[careLevel];
 
   return (
@@ -785,6 +852,55 @@ Could you guide me on the registration process?`;
                     </div>
                   </div>
 
+                  {/* Step 1.5: Co-existing Conditions Selector */}
+                  <div className="glass-panel border-white/60 bg-white/40 rounded-3xl p-6 md:p-8 space-y-6">
+                    <div className="flex justify-between items-start gap-4">
+                      <div>
+                        <span className="text-[10px] font-bold text-mint uppercase tracking-widest block mb-1">Step 1.5</span>
+                        <h2 className="text-xl font-bold text-[#1A2421]">Co-existing Conditions</h2>
+                        <p className="text-xs text-slate-500 font-semibold mt-1">
+                          Do you have multiple co-existing mild/moderate conditions? Select to include dynamic coordination fee tracking.
+                        </p>
+                      </div>
+                      <div className="w-10 h-10 bg-mint/5 border border-mint/10 text-mint rounded-2xl flex items-center justify-center flex-shrink-0">
+                        <Layers className="w-5 h-5" />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      {[
+                        { count: 1, label: "1 Condition", surchargeText: "Standard plan coverage", surchargeInfo: "No coordination fee" },
+                        { count: 2, label: "2 Conditions", surchargeText: billingCycle === "weekly" ? "+₹500 / week" : "+₹1,500 / month", surchargeInfo: "Dual-condition coordination" },
+                        { count: 3, label: "3+ Conditions", surchargeText: billingCycle === "weekly" ? "+₹1,000 / week" : "+₹3,000 / month", surchargeInfo: "Complex multi-condition management" }
+                      ].map((item) => {
+                        const active = conditionsCount === item.count;
+                        return (
+                          <div
+                            key={item.count}
+                            onClick={() => setConditionsCount(item.count)}
+                            className={`glass-panel p-4 rounded-2xl cursor-pointer transition-all duration-300 flex flex-col justify-between relative group ${
+                              active
+                                ? "border-mint bg-mint/[0.04] ring-2 ring-mint/10"
+                                : "border-slate-200/60 hover:border-slate-800 bg-white/30"
+                            }`}
+                          >
+                            <div>
+                              <div className="flex justify-between items-center mb-2">
+                                <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">{item.label}</h4>
+                                {active && <div className="w-1.5 h-1.5 rounded-full bg-mint breathe" />}
+                              </div>
+                              <p className="text-[10px] text-slate-500 font-semibold mb-3">{item.surchargeInfo}</p>
+                            </div>
+                            <div className="pt-2 border-t border-slate-900/5">
+                              <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider block">Surcharge</span>
+                              <span className="text-xs font-black text-[#1A2421]">{item.surchargeText}</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
                   {/* Step 2: Duration & Billing Controls */}
                   <div className="glass-panel border-white/60 bg-white/40 rounded-3xl p-6 md:p-8 space-y-6">
                     <div className="flex justify-between items-start gap-4">
@@ -938,6 +1054,21 @@ Could you guide me on the registration process?`;
                           <span>Base rate</span>
                           <span>₹{activePricing.basePrice.toLocaleString("en-IN")} / {billingCycle === "weekly" ? "wk" : "mo"}</span>
                         </div>
+
+                        {conditionsCount > 1 && (
+                          <div className="flex justify-between text-xs text-slate-500 font-bold uppercase tracking-wider">
+                            <span>Coordination Fee ({conditionsCount === 2 ? "2 Conditions" : "3+ Conditions"})</span>
+                            <span>+₹{activePricing.surcharge.toLocaleString("en-IN")} / {billingCycle === "weekly" ? "wk" : "mo"}</span>
+                          </div>
+                        )}
+
+                        {conditionsCount > 1 && (
+                          <div className="flex justify-between text-xs text-slate-900 font-extrabold uppercase tracking-wider border-b border-slate-900/5 pb-2">
+                            <span>Adjusted Rate</span>
+                            <span>₹{activePricing.adjustedBasePrice.toLocaleString("en-IN")} / {billingCycle === "weekly" ? "wk" : "mo"}</span>
+                          </div>
+                        )}
+
                         <div className="flex justify-between text-xs text-slate-500 font-bold uppercase tracking-wider border-b border-slate-900/5 pb-2">
                           <span>Timeline ({durationValue} {billingCycle === "weekly" ? (durationValue === 1 ? "week" : "weeks") : (durationValue === 1 ? "month" : "months")})</span>
                           <span>₹{activePricing.rawTotal.toLocaleString("en-IN")}</span>
@@ -960,6 +1091,23 @@ Could you guide me on the registration process?`;
                           </div>
                         </div>
                       </div>
+
+                      {/* GPay Payment Visual Card */}
+                      <div className="p-4 bg-white/70 border border-mint/20 rounded-2xl flex gap-3.5 relative overflow-hidden shadow-[0_4px_16px_rgba(20,184,166,0.03)] group/gpay">
+                        <div className="absolute inset-0 pointer-events-none opacity-0 group-hover/gpay:opacity-100 transition-opacity duration-300 bg-gradient-to-r from-transparent via-mint/[0.02] to-transparent" />
+                        <div className="w-10 h-10 bg-mint/5 border border-mint/10 text-mint rounded-xl flex items-center justify-center flex-shrink-0 font-sans font-black text-xs">
+                          GPay
+                        </div>
+                        <div>
+                          <h4 className="text-[10px] font-extrabold uppercase text-mint tracking-wider">Direct Registration Payment</h4>
+                          <p className="text-xs font-bold text-[#1A2421] mt-0.5">GPay / PhonePe / Paytm:</p>
+                          <p className="text-sm font-black text-mint-dark tracking-wide">8446056789</p>
+                          <p className="text-[9px] text-slate-500 font-semibold leading-normal mt-1">
+                            Send correct total cost via UPI to register instantly. Share transfer screenshot over WhatsApp.
+                          </p>
+                        </div>
+                      </div>
+
 
                       {/* Action buttons */}
                       <div className="space-y-3 pt-2">
@@ -1078,7 +1226,7 @@ Could you guide me on the registration process?`;
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {savedConfigs.map((config) => {
                       const details = careLevelsDetails[config.careLevel];
-                      const pricing = calculatePricing(config.careLevel, config.billingCycle, config.durationValue);
+                      const pricing = calculatePricing(config.careLevel, config.billingCycle, config.durationValue, config.conditionsCount || 1);
                       const durationText = config.billingCycle === "weekly"
                         ? `${config.durationValue} ${config.durationValue === 1 ? "Week" : "Weeks"}`
                         : `${config.durationValue} ${config.durationValue === 1 ? "Month" : "Months"}`;
@@ -1100,6 +1248,10 @@ Could you guide me on the registration process?`;
 
                             <div className="space-y-2">
                               <div className="flex justify-between text-xs text-slate-700 font-semibold">
+                                <span>Conditions:</span>
+                                <span className="font-bold">{(config.conditionsCount || 1) === 1 ? "1 Condition" : (config.conditionsCount || 1) === 2 ? "2 Conditions" : "3+ Conditions"}</span>
+                              </div>
+                              <div className="flex justify-between text-xs text-slate-700 font-semibold">
                                 <span>Duration:</span>
                                 <span className="font-bold">{durationText}</span>
                               </div>
@@ -1116,6 +1268,7 @@ Could you guide me on the registration process?`;
                                 <span className="text-xl font-sans font-black text-slate-900">₹{config.finalPrice.toLocaleString("en-IN")}</span>
                               </div>
                             </div>
+
 
                             {/* comparative features list */}
                             <div className="pt-2">
