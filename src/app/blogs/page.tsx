@@ -24,7 +24,14 @@ interface Article {
     | "Homeopathy"
     | "Healthcare"
     | "Heart Care"
-    | "Cancer Care";
+    | "Cancer Care"
+    | "Skin & Digestive"
+    | "Respiratory & Lungs"
+    | "Hormones & Diabetes"
+    | "Heart & Lipids"
+    | "Kidney & Urology"
+    | "Immunity & Infections"
+    | "Lifestyle & Wellness";
   date: string;
   readTime: string;
   author: string;
@@ -470,6 +477,13 @@ export default function BlogsPage() {
     | "Healthcare"
     | "Heart Care"
     | "Cancer Care"
+    | "Skin & Digestive"
+    | "Respiratory & Lungs"
+    | "Hormones & Diabetes"
+    | "Heart & Lipids"
+    | "Kidney & Urology"
+    | "Immunity & Infections"
+    | "Lifestyle & Wellness"
   >("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
@@ -489,28 +503,51 @@ export default function BlogsPage() {
           // Extract category
           let category: Article["category"] = "Research";
           try {
+            const title = (post.title?.rendered || "").toLowerCase();
             const terms = post._embedded?.['wp:term']?.[0];
-            if (terms && terms.length > 0) {
-              const name = terms[0].name.toLowerCase();
-              const slug = terms[0].slug?.toLowerCase() || "";
-              
-              if (name.includes("skin") || name.includes("eczema") || name.includes("psoriasis")) {
-                category = "Skin";
-              } else if (name.includes("lung") || name.includes("respiratory") || name.includes("asthma")) {
-                category = "Lungs";
-              } else if (name.includes("child") || name.includes("pediatric") || name.includes("kids") || slug.includes("kids")) {
+            const catName = (terms && terms.length > 0) ? terms[0].name.toLowerCase() : "";
+            const slug = (terms && terms.length > 0) ? (terms[0].slug?.toLowerCase() || "") : "";
+
+            // Title keyword check first
+            if (['skin', 'eczema', 'psoriasis', 'liver', 'gall', 'digest', 'stomach', 'gut', 'acne', 'gerd', 'acidity', 'constipation', 'abdomen', 'gastric', 'bowel', 'ibs', 'crohn', 'ulcer', 'fistula', 'fissure', 'piles', 'hemorrhoid', 'pancreas', 'digestive'].some(w => title.includes(w))) {
+              category = "Skin & Digestive";
+            } else if (['asthma', 'bronchial', 'lung', 'throat', 'sinus', 'cough', 'rhinitis', 'respiratory', 'breathing', 'copd', 'cold', 'tonsil', 'adenoid', 'sneeze'].some(w => title.includes(w))) {
+              category = "Respiratory & Lungs";
+            } else if (['diabetes', 'thyroid', 'hormon', 'endocrine', 'gland', 'pcos', 'obesity', 'metabolic', 'weight', 'insulin', 'adrenal', 'goitre', 'pcod', 'hormonal'].some(w => title.includes(w))) {
+              category = "Hormones & Diabetes";
+            } else if (['heart', 'lipid', 'cholesterol', 'triglyceride', 'cardio', 'blood pressure', 'hypertension', 'angina', 'artery', 'vascular', 'circulat', 'cardiac'].some(w => title.includes(w))) {
+              category = "Heart & Lipids";
+            } else if (['joint', 'spondylosis', 'neck', 'spine', 'arthritis', 'rheumat', 'bone', 'neuro', 'back', 'sciatica', 'gout', 'muscul', 'paralysis', 'neuropathy', 'headache', 'migraine', 'disc', 'lumbar', 'nerve'].some(w => title.includes(w))) {
+              category = "Joints & Neuro";
+            } else if (['kidney', 'urolog', 'renal', 'urine', 'bladder', 'prostate', 'calculi', 'stone', 'uti', 'nephro'].some(w => title.includes(w))) {
+              category = "Kidney & Urology";
+            } else if (['infect', 'viral', 'fever', 'immun', 'flu', 'covid', 'chickenpox', 'measles', 'allergy', 'allergies', 'parasite', 'bacteri', 'autoimmune'].some(w => title.includes(w))) {
+              category = "Immunity & Infections";
+            } else if (['diet', 'nutrition', 'stress', 'summer', 'health care', 'lifestyle', 'prevent', 'detox', 'sleep', 'wellness', 'anxiety', 'depress', 'mental', 'mind', 'insomnia', 'fatigue', 'fitness', 'exercise'].some(w => title.includes(w))) {
+              category = "Lifestyle & Wellness";
+            } else if (['cancer', 'oncology', 'tumor', 'malignan', 'chemo', 'radiat'].some(w => title.includes(w))) {
+              category = "Cancer Care";
+            } else if (['kids', 'child', 'pediatric', 'infant', 'baby', 'toddler', 'autism', 'adhd'].some(w => title.includes(w))) {
+              category = "Children's Health";
+            } else {
+              // Fallback to category terms matching
+              if (catName.includes("skin") || catName.includes("eczema") || catName.includes("psoriasis")) {
+                category = "Skin & Digestive";
+              } else if (catName.includes("lung") || catName.includes("respiratory") || catName.includes("asthma")) {
+                category = "Respiratory & Lungs";
+              } else if (catName.includes("child") || catName.includes("pediatric") || catName.includes("kids") || slug.includes("kids")) {
                 category = "Children's Health";
-              } else if (name.includes("gut") || name.includes("digestive") || name.includes("hormone") || name.includes("endocrine")) {
-                category = "Gut & Hormones";
-              } else if (name.includes("joint") || name.includes("neuro") || name.includes("spine") || name.includes("headache")) {
+              } else if (catName.includes("gut") || catName.includes("digestive") || catName.includes("hormone") || catName.includes("endocrine")) {
+                category = "Skin & Digestive";
+              } else if (catName.includes("joint") || catName.includes("neuro") || catName.includes("spine") || catName.includes("headache")) {
                 category = "Joints & Neuro";
-              } else if (name.includes("heart") || slug.includes("heart")) {
-                category = "Heart Care";
-              } else if (name.includes("cancer") || slug.includes("cancer")) {
+              } else if (catName.includes("heart") || slug.includes("heart")) {
+                category = "Heart & Lipids";
+              } else if (catName.includes("cancer") || slug.includes("cancer")) {
                 category = "Cancer Care";
-              } else if (name.includes("healthcare") || slug.includes("healthcare")) {
+              } else if (catName.includes("healthcare") || slug.includes("healthcare")) {
                 category = "Healthcare";
-              } else if (name.includes("homeopathy") || slug === "uncategorized") {
+              } else if (catName.includes("homeopathy") || slug === "uncategorized") {
                 category = "Homeopathy";
               }
             }
@@ -527,7 +564,14 @@ export default function BlogsPage() {
             "Homeopathy": "rgba(20,184,166,0.15)",
             "Healthcare": "rgba(14,165,233,0.15)",
             "Heart Care": "rgba(244,63,94,0.15)",
-            "Cancer Care": "rgba(99,102,241,0.15)"
+            "Cancer Care": "rgba(99,102,241,0.15)",
+            "Skin & Digestive": "rgba(20,184,166,0.15)",
+            "Respiratory & Lungs": "rgba(6,182,212,0.15)",
+            "Hormones & Diabetes": "rgba(232,121,249,0.15)",
+            "Heart & Lipids": "rgba(244,63,94,0.15)",
+            "Kidney & Urology": "rgba(14,165,233,0.15)",
+            "Immunity & Infections": "rgba(16,185,129,0.15)",
+            "Lifestyle & Wellness": "rgba(99,102,241,0.15)"
           };
 
           // Get featured image
@@ -606,7 +650,23 @@ export default function BlogsPage() {
   });
 
   const categoriesList: (typeof filter)[] = [
-    "All", "Homeopathy", "Healthcare", "Heart Care", "Cancer Care", "Children's Health", "Skin", "Lungs", "Gut & Hormones", "Joints & Neuro", "Research"
+    "All", 
+    "Skin & Digestive", 
+    "Respiratory & Lungs", 
+    "Hormones & Diabetes", 
+    "Heart & Lipids", 
+    "Joints & Neuro", 
+    "Kidney & Urology", 
+    "Immunity & Infections", 
+    "Lifestyle & Wellness", 
+    "Cancer Care", 
+    "Children's Health", 
+    "Homeopathy", 
+    "Healthcare", 
+    "Skin", 
+    "Lungs", 
+    "Gut & Hormones", 
+    "Research"
   ];
   
   const activeTabs = loading 
