@@ -19,7 +19,7 @@ interface Article {
   readTime: string;
   author: string;
   excerpt: string;
-  content: string[];
+  content: string | string[];
   glowColor: string;
   image: string;
 }
@@ -451,6 +451,97 @@ export default function BlogsPage() {
   const [filter, setFilter] = useState<"All" | "Skin" | "Lungs" | "Children's Health" | "Gut & Hormones" | "Joints & Neuro" | "Research">("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
+  
+  const [liveArticles, setLiveArticles] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch live articles from Headless WordPress on mount
+  useEffect(() => {
+    async function fetchPosts() {
+      try {
+        const res = await fetch("https://admin.homeo.healthcare/wp-json/wp/v2/posts?_embed&per_page=20");
+        if (!res.ok) throw new Error("Failed to fetch posts");
+        const posts = await res.json();
+        
+        const mapped: Article[] = posts.map((post: any) => {
+          // Extract category
+          let category: Article["category"] = "Research";
+          try {
+            const terms = post._embedded?.['wp:term']?.[0];
+            if (terms && terms.length > 0) {
+              const name = terms[0].name.toLowerCase();
+              if (name.includes("skin") || name.includes("eczema") || name.includes("psoriasis")) category = "Skin";
+              else if (name.includes("lung") || name.includes("respiratory") || name.includes("asthma")) category = "Lungs";
+              else if (name.includes("child") || name.includes("pediatric")) category = "Children's Health";
+              else if (name.includes("gut") || name.includes("digestive") || name.includes("hormone") || name.includes("endocrine")) category = "Gut & Hormones";
+              else if (name.includes("joint") || name.includes("neuro") || name.includes("spine") || name.includes("headache")) category = "Joints & Neuro";
+            }
+          } catch (e) {}
+
+          // Determine glowColor
+          const glowColors: Record<Article["category"], string> = {
+            "Skin": "rgba(20,184,166,0.15)",
+            "Lungs": "rgba(6,182,212,0.15)",
+            "Children's Health": "rgba(245,158,11,0.15)",
+            "Gut & Hormones": "rgba(16,185,129,0.15)",
+            "Joints & Neuro": "rgba(168,85,247,0.15)",
+            "Research": "rgba(99,102,241,0.15)"
+          };
+
+          // Get featured image
+          let image = "/images/epigenetics_gene.png";
+          try {
+            const media = post._embedded?.['wp:featuredmedia']?.[0];
+            if (media?.source_url) {
+              image = media.source_url;
+            }
+          } catch (e) {}
+
+          // Get excerpt
+          const excerpt = post.excerpt?.rendered 
+            ? post.excerpt.rendered.replace(/<[^>]*>/g, '').replace(/\[&hellip;\]/, '...').trim()
+            : "";
+
+          // Calculate read time
+          const wordCount = post.content?.rendered 
+            ? post.content.rendered.replace(/<[^>]*>/g, '').split(/\s+/).length 
+            : 0;
+          const readTime = `${Math.max(3, Math.ceil(wordCount / 200))} min read`;
+
+          // Format Date
+          const date = new Date(post.date).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric"
+          });
+
+          return {
+            id: post.slug || post.id.toString(),
+            title: post.title?.rendered || "Untitled Post",
+            category,
+            date,
+            readTime,
+            author: post._embedded?.author?.[0]?.name || "Dr. Narayan Jethwani",
+            excerpt,
+            content: post.content?.rendered || "",
+            glowColor: glowColors[category],
+            image
+          };
+        });
+
+        // Merge with existing static articles to ensure no blank page if WP is empty, or prefer live ones
+        setLiveArticles(mapped.length > 0 ? mapped : articles);
+      } catch (err) {
+        console.error("Error fetching live posts:", err);
+        // Fallback to local static articles on failure
+        setLiveArticles(articles);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchPosts();
+  }, []);
 
   // Sync scroll lock with drawer open/close
   useEffect(() => {
@@ -464,7 +555,7 @@ export default function BlogsPage() {
     };
   }, [selectedArticle]);
 
-  const filteredArticles = articles.filter((art) => {
+  const filteredArticles = liveArticles.filter((art) => {
     const matchesFilter = filter === "All" || art.category === filter;
     const matchesSearch = art.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           art.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -703,10 +794,14 @@ export default function BlogsPage() {
                 <hr className="border-slate-100" />
 
                 {/* Article body content */}
-                <div className="space-y-6 text-sm text-slate-700 font-semibold leading-relaxed">
-                  {selectedArticle.content.map((paragraph, idx) => (
-                    <p key={idx}>{paragraph}</p>
-                  ))}
+                <div className="space-y-6 text-sm text-slate-700 font-semibold leading-relaxed wp-content">
+                  {typeof selectedArticle.content === "string" ? (
+                    <div dangerouslySetInnerHTML={{ __html: selectedArticle.content }} />
+                  ) : (
+                    selectedArticle.content.map((paragraph, idx) => (
+                      <p key={idx}>{paragraph}</p>
+                    ))
+                  )}
                 </div>
               </div>
 
