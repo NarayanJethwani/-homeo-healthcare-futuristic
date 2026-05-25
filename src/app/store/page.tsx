@@ -423,6 +423,17 @@ export default function StorePage() {
   const [shareSuccess, setShareSuccess] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState<boolean>(false);
 
+  // AI Helper and Guidelines states
+  const [isHelperOpen, setIsHelperOpen] = useState(false);
+  const [isGuidelinesOpen, setIsGuidelinesOpen] = useState(false);
+  const [triageStep, setTriageStep] = useState<number | "result">(1);
+  const [triageAnswers, setTriageAnswers] = useState({
+    symptomsComplexity: "moderate", // 'mild' | 'moderate' | 'focused' | 'organ'
+    conditionsNumber: 1, // 1 | 2 | 3
+    supervisionNeed: "standard" // 'standard' | 'high'
+  });
+
+
   const [filter, setFilter] = useState<"all" | "consultation" | "specialty">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [catalogBillingCycle, setCatalogBillingCycle] = useState<"weekly" | "monthly">("monthly");
@@ -682,6 +693,81 @@ Could you guide me on the registration process and payment steps?`;
     setViewMode("dashboard");
   };
 
+  const getTriageRecommendation = () => {
+    const { symptomsComplexity, conditionsNumber, supervisionNeed } = triageAnswers;
+    
+    let recommendedLevel: "mild" | "moderate" | "focused" | "organ" | "comprehensive" = "focused";
+    
+    if (supervisionNeed === "high") {
+      if (symptomsComplexity === "organ" || conditionsNumber >= 3) {
+        recommendedLevel = "comprehensive";
+      } else {
+        recommendedLevel = "organ";
+      }
+    } else {
+      if (symptomsComplexity === "mild") {
+        if (conditionsNumber === 1) recommendedLevel = "mild";
+        else if (conditionsNumber === 2) recommendedLevel = "moderate";
+        else recommendedLevel = "focused";
+      } else if (symptomsComplexity === "moderate") {
+        if (conditionsNumber === 1) recommendedLevel = "moderate";
+        else if (conditionsNumber === 2) recommendedLevel = "focused";
+        else recommendedLevel = "organ";
+      } else if (symptomsComplexity === "focused") {
+        if (conditionsNumber === 1) recommendedLevel = "focused";
+        else recommendedLevel = "organ";
+      } else {
+        if (conditionsNumber === 3) recommendedLevel = "comprehensive";
+        else recommendedLevel = "organ";
+      }
+    }
+    
+    return {
+      careLevel: recommendedLevel,
+      conditionsCount: conditionsNumber,
+      explanation: getTriageExplanation(recommendedLevel, conditionsNumber, symptomsComplexity, supervisionNeed)
+    };
+  };
+
+  const getTriageExplanation = (
+    recommendedLevel: string, 
+    conditionsNumber: number, 
+    symptomsComplexity: string, 
+    supervisionNeed: string
+  ) => {
+    let detail = "";
+    if (recommendedLevel === "mild") {
+      detail = "You have a single mild, seasonal, or acute condition that can be managed with standard constitutional support and guidelines.";
+    } else if (recommendedLevel === "moderate") {
+      detail = "Your condition is chronic but localized to a single primary issue (such as eczema or IBS), which fits constitutional tracking with bi-weekly coordination.";
+    } else if (recommendedLevel === "focused") {
+      if (symptomsComplexity === "mild" && conditionsNumber >= 3) {
+        detail = "Although your symptoms are mild individually, managing 3+ co-existing complaints requires a focused systemic plan to coordinate remedies without interactions.";
+      } else {
+        detail = "Your primary concern involves a deep-seated target system (like bronchial asthma or severe psoriasis), which requires targeted high-potency organ-level care.";
+      }
+    } else if (recommendedLevel === "organ") {
+      if (supervisionNeed === "high") {
+        detail = "Your case requires active review of biomarkers/lab tests and specialized multi-remedy support, putting it in the Organ System care level.";
+      } else {
+        detail = "You have multiple chronic organ-system issues (or a single very advanced pathology) that require multi-remedy constitutional support.";
+      }
+    } else {
+      detail = "Your case involves multiple complex chronic conditions (3+ co-existing pathologies) and/or requires direct, high-frequency medical supervision by Dr. Jethwani.";
+    }
+    
+    return detail;
+  };
+
+  const handleApplyTriage = (recCareLevel: any, recConditionsCount: number) => {
+    setCareLevel(recCareLevel);
+    setConditionsCount(recConditionsCount);
+    setIsHelperOpen(false);
+    setDurationValue(recCareLevel === "mild" ? 1 : 3);
+    setBillingCycle("monthly");
+    setTriageStep(1); // Reset step
+  };
+
   const filteredPackages = packages.filter((pkg) => {
     const matchesFilter = filter === "all" || pkg.category === filter;
     const matchesSearch = pkg.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -804,7 +890,106 @@ Could you guide me on the registration process and payment steps?`;
                       </div>
                     </div>
 
+                    {/* AI Helper and Guidelines Toggles */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-slate-900/5 rounded-2xl border border-slate-200/50">
+                      <div>
+                        <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider flex items-center gap-1">
+                          <Sparkles className="w-3.5 h-3.5 text-mint" />
+                          Unsure which care level you need?
+                        </h4>
+                        <p className="text-[10px] text-slate-500 font-semibold mt-0.5">Use our interactive helper or view mapping guidelines</p>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          onClick={() => {
+                            setTriageStep(1);
+                            setIsHelperOpen(true);
+                          }}
+                          className="px-4 py-2 rounded-full bg-[#1A2421] hover:bg-[#2b3a36] text-white text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 cursor-pointer shadow-sm"
+                        >
+                          🩺 Help Me Decide
+                        </button>
+                        <button
+                          onClick={() => setIsGuidelinesOpen(!isGuidelinesOpen)}
+                          className="px-4 py-2 rounded-full border border-slate-200 bg-white/60 hover:bg-white text-slate-700 hover:text-slate-900 text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 cursor-pointer"
+                        >
+                          📋 View Guidelines
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Collapsible Guidelines Drawer */}
+                    <AnimatePresence>
+                      {isGuidelinesOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="overflow-hidden border border-mint/20 bg-mint/[0.02] rounded-2xl p-5 space-y-4"
+                        >
+                          <div className="flex justify-between items-center border-b border-mint/10 pb-3">
+                            <h3 className="text-sm font-black text-mint-dark uppercase tracking-wider flex items-center gap-1.5">
+                              <Info className="w-4 h-4" />
+                              Clinical Care Triage Guidelines
+                            </h3>
+                            <button
+                              onClick={() => setIsGuidelinesOpen(false)}
+                              className="text-xs font-bold text-slate-500 hover:text-slate-900 cursor-pointer"
+                            >
+                              Hide
+                            </button>
+                          </div>
+                          
+                          <div className="space-y-3.5 text-xs">
+                            <p className="text-[11px] text-slate-600 font-semibold leading-relaxed">
+                              Find below how common chronic and acute conditions map to our clinical complexity packages. If you are treating multiple conditions, choose the care level for your most severe symptom, and select the total count in Step 1.5.
+                            </p>
+                            
+                            <div className="overflow-x-auto">
+                              <table className="w-full text-left border-collapse">
+                                <thead>
+                                  <tr className="border-b border-slate-200 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                    <th className="py-2 pr-4">Care Level</th>
+                                    <th className="py-2 px-4">Common Mapped Conditions</th>
+                                    <th className="py-2 pl-4">Included Clinical Protocol</th>
+                                  </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100 font-semibold text-slate-700 text-[11px]">
+                                  <tr>
+                                    <td className="py-3 pr-4 font-black text-slate-900">🌱 Mild Care</td>
+                                    <td className="py-3 px-4">Acute cold/cough, seasonal allergies, simple hair fall, localized dandruff, minor indigestion, mild acute flares.</td>
+                                    <td className="py-3 pl-4">Constitutional micro-dose remedies, basic nutritional/diet sheet, bi-weekly status checks.</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-3 pr-4 font-black text-[#1A2421]">⚡ Moderate Care</td>
+                                    <td className="py-3 px-4">Established localized eczema, chronic dry skin/acne, mild thyroid imbalance, single joint pain, basic IBS/gas issues.</td>
+                                    <td className="py-3 pl-4">Deeper disease mapping, targeted remedy preparations, detailed dietary guides, fortnightly updates.</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-3 pr-4 font-black text-mint-dark">🎯 Focused Care</td>
+                                    <td className="py-3 px-4">Bronchial asthma, chronic allergic bronchitis, severe psoriasis, alopecia areata, chronic hormonal acne with PCOS, vascular migraines.</td>
+                                    <td className="py-3 pl-4">Deep target system pathology rebalancing, high-potency constitutional dilution sets, biomarker and lab report evaluations.</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-3 pr-4 font-black text-indigo-700">🫁 Organ System Care</td>
+                                    <td className="py-3 px-4">Early-stage Chronic Kidney Disease (CKD), elevated liver enzymes/fatty liver, multi-joint chronic arthritis, autoimmune rebalancing.</td>
+                                    <td className="py-3 pl-4">Multi-remedy inter-system support, routine blood report comparison timelines, detailed dietitian review integration.</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-3 pr-4 font-black text-rose-600">🔮 Comprehensive Care</td>
+                                    <td className="py-3 px-4">Treating 3+ co-existing chronic conditions (e.g. Diabetes + CKD + Arthritis) or advanced multi-system chronic autoimmune pathology.</td>
+                                    <td className="py-3 pl-4">Direct medical supervision by Dr. Jethwani, high-frequency dosage adjustments, emergency acute flare-up protocols.</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
+
                       {(Object.keys(careLevelsDetails) as (keyof typeof careLevelsDetails)[]).map((level) => {
                         const active = careLevel === level;
                         const details = careLevelsDetails[level];
@@ -1554,6 +1739,234 @@ Could you guide me on the registration process and payment steps?`;
             </div>
           </div>
         </div>
+
+        {/* AI Helper Triage Modal */}
+        <AnimatePresence>
+          {isHelperOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                className="w-full max-w-2xl bg-white/90 border border-slate-200 shadow-2xl rounded-3xl p-6 md:p-8 relative overflow-hidden"
+              >
+                {/* Close Button */}
+                <button
+                  onClick={() => setIsHelperOpen(false)}
+                  className="absolute top-4 right-4 text-slate-400 hover:text-slate-900 transition-colors w-8 h-8 rounded-full flex items-center justify-center bg-slate-100/50 hover:bg-slate-100 cursor-pointer"
+                >
+                  ✕
+                </button>
+
+                {/* Progress bar */}
+                {triageStep !== "result" && (
+                  <div className="w-full bg-slate-100 h-1.5 rounded-full mb-6">
+                    <div
+                      className="bg-mint h-1.5 rounded-full transition-all duration-300"
+                      style={{ width: `${(Number(triageStep) / 3) * 100}%` }}
+                    />
+                  </div>
+                )}
+
+                {/* Step Content */}
+                {triageStep === 1 && (
+                  <div className="space-y-6">
+                    <div>
+                      <span className="text-[10px] font-bold text-mint uppercase tracking-widest block mb-1">Step 1 of 3</span>
+                      <h3 className="text-xl font-bold text-slate-900">Symptom Severity & Complexity</h3>
+                      <p className="text-xs text-slate-500 font-semibold mt-1">
+                        Select the statement that best describes your primary medical complaint.
+                      </p>
+                    </div>
+
+                    <div className="space-y-3">
+                      {[
+                        { key: "mild", label: "Acute or Mild Complaints", desc: "Short-term/mild issues like acute seasonal colds, mild acne, general hair fall, or minor indigestion." },
+                        { key: "moderate", label: "Single Chronic Condition", desc: "A persistent long-standing issue localized to one organ/system, e.g. chronic sinusitis, mild thyroid dysfunction, localized eczema." },
+                        { key: "focused", label: "Deep Constitutional / Organ System Pathology", desc: "Requires targeted management of a complex system, e.g. bronchial asthma, severe psoriasis, hormonal acne with PCOS, chronic vascular migraines." },
+                        { key: "organ", label: "Severe Systemic Pathology", desc: "Advanced or multi-organ chronic complaints, e.g. Chronic Kidney Disease (CKD), liver cirrhosis, advanced rheumatoid arthritis." }
+                      ].map((item) => (
+                        <div
+                          key={item.key}
+                          onClick={() => setTriageAnswers({ ...triageAnswers, symptomsComplexity: item.key })}
+                          className={`p-4 rounded-2xl border cursor-pointer transition-all duration-200 ${
+                            triageAnswers.symptomsComplexity === item.key
+                              ? "border-mint bg-mint/[0.04] ring-1 ring-mint/20"
+                              : "border-slate-200 hover:border-slate-800 bg-white/40"
+                          }`}
+                        >
+                          <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">{item.label}</h4>
+                          <p className="text-[10px] text-slate-500 font-semibold mt-1">{item.desc}</p>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="flex justify-end pt-4">
+                      <button
+                        onClick={() => setTriageStep(2)}
+                        className="px-6 py-2.5 bg-[#1A2421] text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-1.5 cursor-pointer"
+                      >
+                        Next Step
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {triageStep === 2 && (
+                  <div className="space-y-6">
+                    <div>
+                      <span className="text-[10px] font-bold text-mint uppercase tracking-widest block mb-1">Step 2 of 3</span>
+                      <h3 className="text-xl font-bold text-slate-900">Treating complaints simultaneously</h3>
+                      <p className="text-xs text-slate-500 font-semibold mt-1">
+                        How many conditions or active chronic concerns are you seeking support for?
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      {[
+                        { val: 1, label: "1 Condition", desc: "Focusing treatment on a single health complaint." },
+                        { val: 2, label: "2 Conditions", desc: "Treating two co-existing issues simultaneously (e.g. skin + gut)." },
+                        { val: 3, label: "3+ Conditions", desc: "Treating three or more overlapping complaints." }
+                      ].map((item) => (
+                        <div
+                          key={item.val}
+                          onClick={() => setTriageAnswers({ ...triageAnswers, conditionsNumber: item.val })}
+                          className={`p-4 rounded-2xl border cursor-pointer flex flex-col justify-between transition-all duration-200 ${
+                            triageAnswers.conditionsNumber === item.val
+                              ? "border-mint bg-mint/[0.04] ring-1 ring-mint/20"
+                              : "border-slate-200 hover:border-slate-800 bg-white/40"
+                          }`}
+                        >
+                          <div>
+                            <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">{item.label}</h4>
+                            <p className="text-[10px] text-slate-500 font-semibold mt-2">{item.desc}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="flex justify-between pt-4">
+                      <button
+                        onClick={() => setTriageStep(1)}
+                        className="px-6 py-2.5 border border-slate-200 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer text-slate-700 bg-white/50"
+                      >
+                        Back
+                      </button>
+                      <button
+                        onClick={() => setTriageStep(3)}
+                        className="px-6 py-2.5 bg-[#1A2421] text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-1.5 cursor-pointer"
+                      >
+                        Next Step
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {triageStep === 3 && (
+                  <div className="space-y-6">
+                    <div>
+                      <span className="text-[10px] font-bold text-mint uppercase tracking-widest block mb-1">Step 3 of 3</span>
+                      <h3 className="text-xl font-bold text-slate-900">Clinical Supervision Level</h3>
+                      <p className="text-xs text-slate-500 font-semibold mt-1">
+                        Do you need active biomarker monitoring, blood report reviews, or high-frequency supervision?
+                      </p>
+                    </div>
+
+                    <div className="space-y-3">
+                      {[
+                        { key: "standard", label: "Standard Clinical Management", desc: "Regular progress tracking checks every 2 to 4 weeks. No immediate need for laboratory analysis integrations." },
+                        { key: "high", label: "High Supervision & Medical Reviews", desc: "Requires regular blood/lab report review comparisons, multi-remedy coordination, or direct clinician oversight by Dr. Jethwani." }
+                      ].map((item) => (
+                        <div
+                          key={item.key}
+                          onClick={() => setTriageAnswers({ ...triageAnswers, supervisionNeed: item.key })}
+                          className={`p-4 rounded-2xl border cursor-pointer transition-all duration-200 ${
+                            triageAnswers.supervisionNeed === item.key
+                              ? "border-mint bg-mint/[0.04] ring-1 ring-mint/20"
+                              : "border-slate-200 hover:border-slate-800 bg-white/40"
+                          }`}
+                        >
+                          <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">{item.label}</h4>
+                          <p className="text-[10px] text-slate-500 font-semibold mt-1">{item.desc}</p>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="flex justify-between pt-4">
+                      <button
+                        onClick={() => setTriageStep(2)}
+                        className="px-6 py-2.5 border border-slate-200 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer text-slate-700 bg-white/50"
+                      >
+                        Back
+                      </button>
+                      <button
+                        onClick={() => setTriageStep("result")}
+                        className="px-6 py-2.5 bg-mint hover:bg-mint-dark text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-1.5 cursor-pointer shadow-md"
+                      >
+                        Calculate Recommendation
+                        <Sparkles className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {triageStep === "result" && (() => {
+                  const rec = getTriageRecommendation();
+                  const recDetails = careLevelsDetails[rec.careLevel];
+                  return (
+                    <div className="space-y-6">
+                      <div className="text-center">
+                        <span className="text-[10px] font-bold text-mint uppercase tracking-widest block mb-1">Diagnostic Result</span>
+                        <h3 className="text-2xl font-black text-slate-900">Recommended Care Setup</h3>
+                      </div>
+
+                      <div className="p-5 border border-mint/20 bg-mint/[0.03] rounded-2xl space-y-4">
+                        <div className="flex justify-between items-start border-b border-mint/10 pb-3">
+                          <div>
+                            <span className="text-[9px] font-extrabold uppercase bg-mint/10 text-mint-dark border border-mint/20 px-2 py-0.5 rounded-full inline-block mb-1.5">
+                              {recDetails.badge}
+                            </span>
+                            <h4 className="text-lg font-black text-[#1A2421]">{recDetails.title}</h4>
+                            <span className="text-[10px] text-slate-500 font-bold uppercase block mt-0.5">
+                              For {rec.conditionsCount === 1 ? "1 Condition" : rec.conditionsCount === 2 ? "2 Conditions" : "3+ Conditions"}
+                            </span>
+                          </div>
+                          <span className="text-3xl">{recDetails.icon}</span>
+                        </div>
+
+                        <div className="space-y-1">
+                          <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider block">Clinical Rationale</span>
+                          <p className="text-xs text-slate-700 font-semibold leading-relaxed">
+                            {rec.explanation}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex justify-between gap-3 pt-4 border-t border-slate-100">
+                        <button
+                          onClick={() => setTriageStep(3)}
+                          className="px-6 py-2.5 border border-slate-200 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer text-slate-700 bg-white/50"
+                        >
+                          Back
+                        </button>
+                        <button
+                          onClick={() => handleApplyTriage(rec.careLevel, rec.conditionsCount)}
+                          className="px-6 py-2.5 bg-mint hover:bg-mint-dark text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-1.5 cursor-pointer shadow-md"
+                        >
+                          Apply Settings to Dashboard
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
