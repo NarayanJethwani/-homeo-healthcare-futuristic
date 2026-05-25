@@ -14,7 +14,17 @@ import Portal from "@/components/Portal";
 interface Article {
   id: string;
   title: string;
-  category: "Skin" | "Lungs" | "Children's Health" | "Research" | "Gut & Hormones" | "Joints & Neuro";
+  category: 
+    | "Skin" 
+    | "Lungs" 
+    | "Children's Health" 
+    | "Research" 
+    | "Gut & Hormones" 
+    | "Joints & Neuro"
+    | "Homeopathy"
+    | "Healthcare"
+    | "Heart Care"
+    | "Cancer Care";
   date: string;
   readTime: string;
   author: string;
@@ -448,7 +458,19 @@ const articles: Article[] = [
 
 export default function BlogsPage() {
   const router = useRouter();
-  const [filter, setFilter] = useState<"All" | "Skin" | "Lungs" | "Children's Health" | "Gut & Hormones" | "Joints & Neuro" | "Research">("All");
+  const [filter, setFilter] = useState<
+    | "All" 
+    | "Skin" 
+    | "Lungs" 
+    | "Children's Health" 
+    | "Research" 
+    | "Gut & Hormones" 
+    | "Joints & Neuro"
+    | "Homeopathy"
+    | "Healthcare"
+    | "Heart Care"
+    | "Cancer Care"
+  >("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   
@@ -470,11 +492,27 @@ export default function BlogsPage() {
             const terms = post._embedded?.['wp:term']?.[0];
             if (terms && terms.length > 0) {
               const name = terms[0].name.toLowerCase();
-              if (name.includes("skin") || name.includes("eczema") || name.includes("psoriasis")) category = "Skin";
-              else if (name.includes("lung") || name.includes("respiratory") || name.includes("asthma")) category = "Lungs";
-              else if (name.includes("child") || name.includes("pediatric")) category = "Children's Health";
-              else if (name.includes("gut") || name.includes("digestive") || name.includes("hormone") || name.includes("endocrine")) category = "Gut & Hormones";
-              else if (name.includes("joint") || name.includes("neuro") || name.includes("spine") || name.includes("headache")) category = "Joints & Neuro";
+              const slug = terms[0].slug?.toLowerCase() || "";
+              
+              if (name.includes("skin") || name.includes("eczema") || name.includes("psoriasis")) {
+                category = "Skin";
+              } else if (name.includes("lung") || name.includes("respiratory") || name.includes("asthma")) {
+                category = "Lungs";
+              } else if (name.includes("child") || name.includes("pediatric") || name.includes("kids") || slug.includes("kids")) {
+                category = "Children's Health";
+              } else if (name.includes("gut") || name.includes("digestive") || name.includes("hormone") || name.includes("endocrine")) {
+                category = "Gut & Hormones";
+              } else if (name.includes("joint") || name.includes("neuro") || name.includes("spine") || name.includes("headache")) {
+                category = "Joints & Neuro";
+              } else if (name.includes("heart") || slug.includes("heart")) {
+                category = "Heart Care";
+              } else if (name.includes("cancer") || slug.includes("cancer")) {
+                category = "Cancer Care";
+              } else if (name.includes("healthcare") || slug.includes("healthcare")) {
+                category = "Healthcare";
+              } else if (name.includes("homeopathy") || slug === "uncategorized") {
+                category = "Homeopathy";
+              }
             }
           } catch (e) {}
 
@@ -485,7 +523,11 @@ export default function BlogsPage() {
             "Children's Health": "rgba(245,158,11,0.15)",
             "Gut & Hormones": "rgba(16,185,129,0.15)",
             "Joints & Neuro": "rgba(168,85,247,0.15)",
-            "Research": "rgba(99,102,241,0.15)"
+            "Research": "rgba(99,102,241,0.15)",
+            "Homeopathy": "rgba(20,184,166,0.15)",
+            "Healthcare": "rgba(14,165,233,0.15)",
+            "Heart Care": "rgba(244,63,94,0.15)",
+            "Cancer Care": "rgba(99,102,241,0.15)"
           };
 
           // Get featured image
@@ -563,6 +605,14 @@ export default function BlogsPage() {
     return matchesFilter && matchesSearch;
   });
 
+  const categoriesList: (typeof filter)[] = [
+    "All", "Homeopathy", "Healthcare", "Heart Care", "Cancer Care", "Children's Health", "Skin", "Lungs", "Gut & Hormones", "Joints & Neuro", "Research"
+  ];
+  
+  const activeTabs = loading 
+    ? categoriesList 
+    : categoriesList.filter(cat => cat === "All" || liveArticles.some(art => art.category === cat));
+
   const handleBookConsultation = () => {
     router.push("/#booking");
   };
@@ -622,10 +672,10 @@ export default function BlogsPage() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 pb-8 border-b border-slate-900/5">
           {/* Category Filters */}
           <div className="flex flex-wrap gap-2">
-            {["All", "Skin", "Lungs", "Children's Health", "Gut & Hormones", "Joints & Neuro", "Research"].map((cat) => (
+            {activeTabs.map((cat) => (
               <button
                 key={cat}
-                onClick={() => setFilter(cat as any)}
+                onClick={() => setFilter(cat)}
                 className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
                   filter === cat
                     ? "bg-mint text-white shadow-sm shadow-mint/10"
@@ -653,68 +703,107 @@ export default function BlogsPage() {
         {/* Articles Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-24">
           <AnimatePresence mode="popLayout">
-            {filteredArticles.map((art) => (
-              <motion.div
-                key={art.id}
-                layout
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                className="glass-panel border-white/60 hover:border-white/90 bg-white/40 rounded-3xl p-6 flex flex-col justify-between group relative overflow-hidden transition-all duration-300 shadow-[0_4px_24px_rgba(0,0,0,0.01)] cursor-pointer"
-                onClick={() => setSelectedArticle(art)}
-              >
-                {/* Spotlight glow on hover */}
+            {loading ? (
+              // Shimmer Skeleton Loader
+              Array.from({ length: 4 }).map((_, idx) => (
                 <div 
-                  className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700"
-                  style={{
-                    background: `radial-gradient(circle at 80% 20%, ${art.glowColor} 0%, transparent 60%)`
-                  }}
-                />
-
-                <div className="space-y-4">
-                  {/* Article Banner Image */}
-                  <div className="w-full aspect-[2/1] rounded-2xl overflow-hidden relative border border-slate-900/5 bg-slate-100">
-                    <img 
-                      src={art.image} 
-                      alt={art.title} 
-                      className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700 ease-out"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent pointer-events-none" />
+                  key={idx} 
+                  className="glass-panel border-white/60 bg-white/40 rounded-3xl p-6 flex flex-col justify-between relative overflow-hidden transition-all duration-300 shadow-[0_4px_24px_rgba(0,0,0,0.01)] animate-pulse"
+                >
+                  <div className="space-y-4 w-full">
+                    {/* Image Skeleton */}
+                    <div className="w-full aspect-[2/1] rounded-2xl bg-slate-200/50 border border-slate-900/5" />
+                    {/* Meta Skeleton */}
+                    <div className="flex items-center gap-3">
+                      <div className="h-3 w-16 bg-slate-200/50 rounded-full" />
+                      <div className="h-3 w-16 bg-slate-200/50 rounded-full" />
+                    </div>
+                    {/* Title Skeleton */}
+                    <div className="h-6 w-3/4 bg-slate-200/50 rounded-full" />
+                    {/* Excerpt Skeleton */}
+                    <div className="space-y-2">
+                      <div className="h-3 w-full bg-slate-200/50 rounded-full" />
+                      <div className="h-3 w-5/6 bg-slate-200/50 rounded-full" />
+                    </div>
                   </div>
-
-                  {/* Article Metadata */}
-                  <div className="flex items-center gap-3 text-[10px] text-slate-700 font-bold uppercase tracking-wider">
-                    <span className="text-mint">{art.category}</span>
-                    <span className="w-1 h-1 rounded-full bg-slate-400" />
-                    <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5 text-slate-500" /> {art.date}</span>
-                    <span className="w-1 h-1 rounded-full bg-slate-400" />
-                    <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5 text-slate-500" /> {art.readTime}</span>
-                  </div>
-
-                  <h3 className="text-lg md:text-xl font-bold text-[#1A2421] group-hover:text-mint transition-colors duration-300 leading-snug">
-                    {art.title}
-                  </h3>
-
-                  <p className="text-xs text-slate-700 font-semibold leading-relaxed line-clamp-3">
-                    {art.excerpt}
-                  </p>
-                </div>
-
-                {/* Read CTA */}
-                <div className="mt-8 pt-4 border-t border-slate-900/5 flex items-center justify-between text-xs font-bold text-slate-900">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-[10px]">NJ</div>
-                    <span>{art.author}</span>
-                  </div>
-                  <div className="flex items-center gap-1 text-mint group-hover:translate-x-1.5 transition-transform duration-300">
-                    Read Article <ArrowRight className="w-4 h-4" />
+                  {/* Footer Skeleton */}
+                  <div className="mt-8 pt-4 border-t border-slate-900/5 flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-full bg-slate-200/50" />
+                      <div className="h-3 w-20 bg-slate-200/50 rounded-full" />
+                    </div>
+                    <div className="h-3 w-24 bg-slate-200/50 rounded-full" />
                   </div>
                 </div>
+              ))
+            ) : filteredArticles.length > 0 ? (
+              filteredArticles.map((art) => (
+                <motion.div
+                  key={art.id}
+                  layout
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                  className="glass-panel border-white/60 hover:border-white/90 bg-white/40 rounded-3xl p-6 flex flex-col justify-between group relative overflow-hidden transition-all duration-300 shadow-[0_4px_24px_rgba(0,0,0,0.01)] cursor-pointer"
+                  onClick={() => setSelectedArticle(art)}
+                >
+                  {/* Spotlight glow on hover */}
+                  <div 
+                    className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700"
+                    style={{
+                      background: `radial-gradient(circle at 80% 20%, ${art.glowColor} 0%, transparent 60%)`
+                    }}
+                  />
 
-              </motion.div>
-            ))}
+                  <div className="space-y-4">
+                    {/* Article Banner Image */}
+                    <div className="w-full aspect-[2/1] rounded-2xl overflow-hidden relative border border-slate-900/5 bg-slate-100">
+                      <img 
+                        src={art.image} 
+                        alt={art.title} 
+                        className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700 ease-out"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent pointer-events-none" />
+                    </div>
+
+                    {/* Article Metadata */}
+                    <div className="flex items-center gap-3 text-[10px] text-slate-700 font-bold uppercase tracking-wider">
+                      <span className="text-mint">{art.category}</span>
+                      <span className="w-1 h-1 rounded-full bg-slate-400" />
+                      <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5 text-slate-500" /> {art.date}</span>
+                      <span className="w-1 h-1 rounded-full bg-slate-400" />
+                      <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5 text-slate-500" /> {art.readTime}</span>
+                    </div>
+
+                    <h3 className="text-lg md:text-xl font-bold text-[#1A2421] group-hover:text-mint transition-colors duration-300 leading-snug">
+                      {art.title}
+                    </h3>
+
+                    <p className="text-xs text-slate-700 font-semibold leading-relaxed line-clamp-3">
+                      {art.excerpt}
+                    </p>
+                  </div>
+
+                  {/* Read CTA */}
+                  <div className="mt-8 pt-4 border-t border-slate-900/5 flex items-center justify-between text-xs font-bold text-slate-900">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-[10px]">NJ</div>
+                      <span>{art.author}</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-mint group-hover:translate-x-1.5 transition-transform duration-300">
+                      Read Article <ArrowRight className="w-4 h-4" />
+                    </div>
+                  </div>
+
+                </motion.div>
+              ))
+            ) : (
+              <div className="col-span-full py-16 text-center text-slate-500 font-semibold">
+                No articles found matching your criteria.
+              </div>
+            )}
           </AnimatePresence>
         </div>
 
