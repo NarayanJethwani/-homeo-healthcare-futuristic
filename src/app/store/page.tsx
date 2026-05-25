@@ -1489,7 +1489,7 @@ Could you guide me on the registration process and payment steps?`;
                                 Load
                               </button>
                               <button
-                                onClick={() => handleCopyLink(config.careLevel, config.billingCycle, config.durationValue)}
+                                onClick={() => handleCopyLink(config.careLevel, config.billingCycle, config.durationValue, config.conditionsCount || 1)}
                                 className="py-2 px-1 rounded-full border border-slate-200 bg-white/40 hover:border-slate-800 text-slate-700 text-[9px] font-black uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-1"
                               >
                                 <Share2 className="w-3 h-3" />
