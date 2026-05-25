@@ -536,70 +536,116 @@ interface DiseaseCategory {
 const diseaseCategories: DiseaseCategory[] = [
   {
     id: "skin-hair",
-    label: "Skin & Hair",
-    icon: "🌱",
+    label: "Dermatology & Hair",
+    icon: "🧴",
     conditions: [
-      { name: "Alopecia / Hair Fall", careLevel: "mild", conditionsCount: 1, rationale: "Managed with standard constitutional wellness, nutrient mapping, and bi-weekly checkins." },
-      { name: "Chronic Eczema / Dermatitis", careLevel: "moderate", conditionsCount: 1, rationale: "Requires specialized skin barrier rebalancing and localized chronic tracking." },
-      { name: "Severe Psoriasis", careLevel: "focused", conditionsCount: 1, rationale: "Requires deep systemic cellular-turnover rebalancing and high-potency dilution sets." },
-      { name: "Hormonal Acne with PCOS", careLevel: "focused", conditionsCount: 2, rationale: "Requires multi-condition coordination to rebalance skin and endocrine pathways." },
-      { name: "Vitiligo / Leukoderma", careLevel: "focused", conditionsCount: 1, rationale: "Requires deep pigment rebalancing, immune moderation, and long-term supervision." },
-      { name: "Lichen Planus", careLevel: "focused", conditionsCount: 1, rationale: "Requires systemic immunological tolerance mapping for mucosal or dermal eruptions." },
-      { name: "Chronic Urticaria / Hives", careLevel: "moderate", conditionsCount: 1, rationale: "Requires histamine-pathway desensitization and chronic allergy profiling." },
-      { name: "Seborrheic Dermatitis", careLevel: "moderate", conditionsCount: 1, rationale: "Aims to normalize scalp microbiome and sebum secretions with moderate chronic tracking." }
+      { name: "Alopecia Areata / Hair Fall", careLevel: "mild", conditionsCount: 1, rationale: "Constitutional trichology care to arrest hair fall and stimulate follicle regrowth." },
+      { name: "Chronic Eczema / Dermatitis", careLevel: "moderate", conditionsCount: 1, rationale: "Restores skin barrier function, targets chronic flares, and includes detailed diet sheets." },
+      { name: "Severe Psoriasis Vulgaris", careLevel: "focused", conditionsCount: 1, rationale: "Systemic immunomodulatory treatment targeting rapid epidermal turnover." },
+      { name: "Vitiligo / Leukoderma", careLevel: "focused", conditionsCount: 1, rationale: "Deep pigment rebalancing, melanocyte activation, and long-term supervision." },
+      { name: "Lichen Planus (Dermal/Oral)", careLevel: "focused", conditionsCount: 1, rationale: "Targets chronic mucosal or cutaneous auto-aggressive inflammatory lesions." },
+      { name: "Chronic Urticaria / Hives", careLevel: "moderate", conditionsCount: 1, rationale: "Histamine pathway desensitization and chronic allergy mapping." },
+      { name: "Seborrheic Dermatitis", careLevel: "moderate", conditionsCount: 1, rationale: "Normalizes scalp sebum secretions and controls fungal colonization." },
+      { name: "Melasma & Hyperpigmentation", careLevel: "mild", conditionsCount: 1, rationale: "Hormonal & dermal pigment rebalancing with photoprotection guidance." }
     ]
   },
   {
     id: "lungs-respiratory",
-    label: "Lungs & Respiratory",
+    label: "Respiratory & Pulmonology",
     icon: "🫁",
     conditions: [
-      { name: "Recurrent Seasonal Colds", careLevel: "mild", conditionsCount: 1, rationale: "Managed with basic immune rebalancing and seasonal acute care guidelines." },
-      { name: "Allergic Sinusitis / Rhinitis", careLevel: "moderate", conditionsCount: 1, rationale: "Requires focused localized chronic sinus drainage and mucosal tracking." },
-      { name: "Bronchial Asthma", careLevel: "focused", conditionsCount: 1, rationale: "Requires target-system airway rebalancing and high-potency constitutional dilutions." },
-      { name: "Chronic COPD / Emphysema", careLevel: "organ", conditionsCount: 1, rationale: "Requires advanced pathological alveolar recovery and multi-remedy pulmonary support." },
-      { name: "Chronic Bronchitis / Cough", careLevel: "moderate", conditionsCount: 1, rationale: "Requires regular lung bronchial mapping, sputum tracking, and constitutional care." },
-      { name: "Post-Viral Lung Congestion", careLevel: "mild", conditionsCount: 1, rationale: "Aims to clear lingering congestion, build stamina, and restore optimal respiratory flow." }
+      { name: "Allergic Rhinitis / Sinusitis", careLevel: "moderate", conditionsCount: 1, rationale: "Targets mucosal hyper-reactivity, chronic congestion, and sinus drainage." },
+      { name: "Bronchial Asthma", careLevel: "focused", conditionsCount: 1, rationale: "Constitutional treatment to reduce airway bronchospasm and dependency on inhalers." },
+      { name: "COPD / Emphysema", careLevel: "organ", conditionsCount: 1, rationale: "Advanced pathological support to optimize remaining lung capacity and reduce dyspnea." },
+      { name: "Chronic Bronchitis", careLevel: "moderate", conditionsCount: 1, rationale: "Clears productive cough, resolves bronchial wall inflammation, and maps triggers." },
+      { name: "Adenoid Hypertrophy (Pediatric)", careLevel: "moderate", conditionsCount: 1, rationale: "Aims to shrink hypertrophied tonsillar/adenoid tissue and improve nasal breathing." },
+      { name: "Nasal Polyps", careLevel: "focused", conditionsCount: 1, rationale: "Targets recurrent mucosal growths and sinus congestion to avoid surgical interventions." }
     ]
   },
   {
-    id: "digestion-metabolism",
-    label: "Gut & Metabolism",
-    icon: "⚡",
+    id: "digestive-liver",
+    label: "Gastroenterology & Liver",
+    icon: "🥑",
     conditions: [
-      { name: "Acid Reflux / GERD", careLevel: "mild", conditionsCount: 1, rationale: "Constitutional wellness support, metabolic rebalancing, and diet mapping." },
-      { name: "Chronic IBS (Irritable Bowel)", careLevel: "moderate", conditionsCount: 1, rationale: "Requires gut-brain axis constitutional tracking and dietary guide sheets." },
-      { name: "Hypothyroidism / Hashimoto's", careLevel: "focused", conditionsCount: 1, rationale: "Requires endocrine auto-immune rebalancing, thyroid mapping, and regular reviews." },
-      { name: "Fatty Liver / Elevated Enzymes", careLevel: "organ", conditionsCount: 1, rationale: "Requires advanced hepatocyte biomarker tracking, lipid profile co-management, and liver pathology care." },
-      { name: "Ulcerative Colitis / Crohn's", careLevel: "organ", conditionsCount: 2, rationale: "Requires advanced mucosal pathogenetic recovery and close coordination for active flares." },
-      { name: "Insulin Resistance / Pre-Diabetes", careLevel: "moderate", conditionsCount: 1, rationale: "Focuses on endocrine pathway optimization, cellular glucose uptake, and diet tracking." },
-      { name: "Chronic Constipation & Piles", careLevel: "moderate", conditionsCount: 1, rationale: "Requires portal system venous mapping, dietary fiber tracking, and localized remedy sets." }
+      { name: "Acid Reflux / GERD / Gastritis", careLevel: "mild", conditionsCount: 1, rationale: "Constitutional gut restoration, lower esophageal sphincter toning, and diet guide." },
+      { name: "Chronic IBS (Irritable Bowel)", careLevel: "moderate", conditionsCount: 1, rationale: "Addresses visceral hypersensitivity and aligns the gut-brain axis." },
+      { name: "Fatty Liver / Elevated Enzymes", careLevel: "organ", conditionsCount: 1, rationale: "Reverses hepatocyte lipid accumulation and monitors liver biomarker recovery." },
+      { name: "Ulcerative Colitis / Crohn's", careLevel: "organ", conditionsCount: 2, rationale: "Mucosal healing, pathogenetic immune moderation, and flare co-management." },
+      { name: "Chronic Constipation & Piles", careLevel: "moderate", conditionsCount: 1, rationale: "Improves bowel motility and venous congestion in the rectal plexus." },
+      { name: "Fissure-in-Ano / Fistula support", careLevel: "focused", conditionsCount: 1, rationale: "Speeds up mucosal healing, controls painful spasms, and manages chronic drainage." },
+      { name: "Gallstones (Cholelithiasis) prevention", careLevel: "moderate", conditionsCount: 1, rationale: "Aims to improve bile solubility and prevent stone enlargement / new formations." }
     ]
   },
   {
     id: "kidney-urinary",
-    label: "Kidney & Urinary",
+    label: "Nephrology & Urology",
     icon: "💧",
     conditions: [
-      { name: "Recurrent UTIs / Cystitis", careLevel: "moderate", conditionsCount: 1, rationale: "Requires focused bladder lining rebalancing and chronic tracking." },
-      { name: "Early Chronic Kidney Disease (CKD)", careLevel: "organ", conditionsCount: 1, rationale: "Requires advanced nephron-level support, biomarker checks, and GP coordination." },
-      { name: "Kidney Stones (Nephrolithiasis)", careLevel: "moderate", conditionsCount: 1, rationale: "Focuses on stone dissolution pathways, calcium oxalate rebalancing, and urinary pH mapping." },
-      { name: "Chronic Prostatitis / BPH", careLevel: "focused", conditionsCount: 1, rationale: "Requires target-system prostate recovery, urinary flow rate tracking, and localized rebalancing." },
-      { name: "Diabetic Nephropathy", careLevel: "organ", conditionsCount: 2, rationale: "Requires multi-system kidney and endocrine care to prevent progressive glomerular damage." }
+      { name: "Recurrent UTIs / Cystitis", careLevel: "moderate", conditionsCount: 1, rationale: "Improves bladder mucosal immunity and resolves chronic low-grade bacterial colonization." },
+      { name: "Early Chronic Kidney Disease (CKD)", careLevel: "organ", conditionsCount: 1, rationale: "GFR preservation, nephron support, and coordination with regular nephrology tests." },
+      { name: "Kidney Stones (Nephrolithiasis)", careLevel: "moderate", conditionsCount: 1, rationale: "Facilitates stone expulsion, targets spasm pain, and prevents recurrence." },
+      { name: "Chronic Prostatitis", careLevel: "focused", conditionsCount: 1, rationale: "Targets deep pelvic congestion, perineal discomfort, and chronic prostatic inflammation." },
+      { name: "Benign Prostatic Hyperplasia (BPH)", careLevel: "focused", conditionsCount: 1, rationale: "Aims to improve urinary flow velocity, reduce nocturia, and relax bladder neck." }
     ]
   },
   {
-    id: "joints-neuro",
-    label: "Joints & Neuro",
+    id: "endocrine-metabolic",
+    label: "Endocrinology & Diabetes",
+    icon: "🧬",
+    conditions: [
+      { name: "Hypothyroidism (Hashimoto's)", careLevel: "focused", conditionsCount: 1, rationale: "Addresses auto-immune thyroiditis, metabolic slows, and optimizes hormone levels." },
+      { name: "Insulin Resistance / Pre-Diabetes", careLevel: "moderate", conditionsCount: 1, rationale: "Targets receptor sensitivity, manages postprandial spikes, and tracks metabolic health." },
+      { name: "Type 2 Diabetes Mellitus", careLevel: "focused", conditionsCount: 1, rationale: "Constitutional endocrine support to regulate glucose levels and prevent microvascular risks." },
+      { name: "Hyperuricemia / Gout", careLevel: "moderate", conditionsCount: 1, rationale: "Normalizes renal uric acid excretion and prevents recurrent painful joint deposits." },
+      { name: "Chronic Adrenal Burnout / Fatigue", careLevel: "mild", conditionsCount: 1, rationale: "Restores HPA-axis balance, sleep rhythms, and energy production." }
+    ]
+  },
+  {
+    id: "joints-bones",
+    label: "Rheumatology & Orthopedics",
+    icon: "🦴",
+    conditions: [
+      { name: "Cervical / Lumbar Spondylosis", careLevel: "moderate", conditionsCount: 1, rationale: "Manages disc degeneration, osteophytic changes, and localized nerve compression." },
+      { name: "Osteoarthritis (Single/Double Joint)", careLevel: "moderate", conditionsCount: 1, rationale: "Targets synovial fluid maintenance, cartilage protection, and mobility tracking." },
+      { name: "Rheumatoid Arthritis (RA)", careLevel: "organ", conditionsCount: 2, rationale: "Systemic autoimmune joint management with immunomodulating remedies." },
+      { name: "Ankylosing Spondylitis", careLevel: "organ", conditionsCount: 2, rationale: "Focuses on spine flexibility, morning stiffness reduction, and systemic inflammation." },
+      { name: "Osteoporosis / Bone Density loss", careLevel: "mild", conditionsCount: 1, rationale: "Mineral assimilation support, bone density tracking, and constitutional wellness." }
+    ]
+  },
+  {
+    id: "brain-neuro",
+    label: "Neurology & Brain",
     icon: "🧠",
     conditions: [
-      { name: "Cervical / Lumbar Spondylosis", careLevel: "moderate", conditionsCount: 1, rationale: "Focuses on spine disc compression, muscle spasm tracking, and postural support guides." },
-      { name: "Osteoarthritis (Single Joint)", careLevel: "moderate", conditionsCount: 1, rationale: "Requires joint inflammation mapping, diet sheets, and bi-weekly tracking." },
-      { name: "Rheumatoid Arthritis", careLevel: "organ", conditionsCount: 2, rationale: "Requires multi-remedy support for systemic autoimmune joint pathology." },
-      { name: "Vascular Migraine / Headache", careLevel: "focused", conditionsCount: 1, rationale: "Requires deep neurological rebalancing and high-potency dilution titrations." },
-      { name: "Fibromyalgia", careLevel: "focused", conditionsCount: 1, rationale: "Requires neuro-somatic pain pathways rebalancing, sleep mapping, and constitutional support." },
-      { name: "Sciatica / Radiculopathy", careLevel: "moderate", conditionsCount: 1, rationale: "Focuses on nerve compression relief, localized neural inflammation, and tracking." },
-      { name: "Trigeminal Neuralgia", careLevel: "focused", conditionsCount: 1, rationale: "Requires deep nerve-sheath pathology rebalancing, high-potency dilutions, and close supervision." }
+      { name: "Vascular Migraine / Headaches", careLevel: "focused", conditionsCount: 1, rationale: "Targets neurological vasodilation, reduces trigger sensitivity, and curtails attack frequency." },
+      { name: "Fibromyalgia & Chronic Pain", careLevel: "focused", conditionsCount: 1, rationale: "Balances central pain pathways, improves sleep architecture, and reduces fatigue." },
+      { name: "Sciatica / Lumbar Radiculopathy", careLevel: "moderate", conditionsCount: 1, rationale: "Relieves nerve root compression, reduces neural swelling, and restores motor power." },
+      { name: "Trigeminal Neuralgia", careLevel: "focused", conditionsCount: 1, rationale: "Deep nerve-sheath rebalancing to control sharp, paroxysmal facial pain." },
+      { name: "Anxiety & Mild Depression", careLevel: "moderate", conditionsCount: 1, rationale: "Constitutional neuro-emotional rebalancing, sleep monitoring, and stress resilience." },
+      { name: "Chronic Insomnia / Sleep Disorders", careLevel: "mild", conditionsCount: 1, rationale: "Regulates circadian rhythms and promotes natural GABA-mimetic relaxation." }
+    ]
+  },
+  {
+    id: "heart-blood",
+    label: "Cardiology & Circulation",
+    icon: "❤️",
+    conditions: [
+      { name: "Essential Hypertension", careLevel: "focused", conditionsCount: 1, rationale: "Targets arterial wall stiffness, reduces vascular resistance, and monitors blood pressure." },
+      { name: "Dyslipidemia / High Cholesterol", careLevel: "moderate", conditionsCount: 1, rationale: "Optimizes hepatic cholesterol synthesis, lipid transport, and diet parameters." },
+      { name: "Varicose Veins / Venous Insufficiency", careLevel: "moderate", conditionsCount: 1, rationale: "Strengthens venous wall elasticity, improves valvular competence, and prevents stasis." },
+      { name: "Iron Deficiency Anemia", careLevel: "mild", conditionsCount: 1, rationale: "Enhances intestinal iron absorption and targets constitutional red blood cell synthesis." }
+    ]
+  },
+  {
+    id: "hormonal-reproductive",
+    label: "Gynecology & Men's Health",
+    icon: "🌺",
+    conditions: [
+      { name: "PCOS / Ovulatory Dysfunction", careLevel: "focused", conditionsCount: 1, rationale: "Regulates LH/FSH ratio, controls ovarian hyper-androgenism, and restores cycles." },
+      { name: "Endometriosis", careLevel: "organ", conditionsCount: 2, rationale: "Targets pelvic endometrial implants, reduces severe dysmenorrhea, and manages adhesions." },
+      { name: "Menopausal Symptoms (Hot Flashes)", careLevel: "mild", conditionsCount: 1, rationale: "Soothes vasomotor instability, mood swings, and provides constitutional support." },
+      { name: "Severe Dysmenorrhea / PMS", careLevel: "moderate", conditionsCount: 1, rationale: "Normalizes uterine prostaglandins, relieves spasmodic pain, and reduces premenstrual bloating." },
+      { name: "Erectile Dysfunction / Performance", careLevel: "focused", conditionsCount: 1, rationale: "Constitutional stress-reduction, pelvic vascular flow optimization, and hormonal balance." }
     ]
   },
   {
@@ -609,9 +655,9 @@ const diseaseCategories: DiseaseCategory[] = [
     conditions: [
       { name: "Diabetes + Hypertension + Joints", careLevel: "comprehensive", conditionsCount: 3, rationale: "Requires intensive multi-organ pathogenetic mapping and direct physician supervision." },
       { name: "Complex Autoimmune Pathologies", careLevel: "comprehensive", conditionsCount: 2, rationale: "Requires direct, high-frequency supervision by Dr. Jethwani and multi-remedy titration." },
-      { name: "Metabolic Syndrome (PCOS+Fatty Liver)", careLevel: "comprehensive", conditionsCount: 3, rationale: "Requires intensive metabolic, endocrine, and visceral fat accumulation pathogenetic mapping." },
-      { name: "Post-Viral Chronic Fatigue (CFS)", careLevel: "comprehensive", conditionsCount: 2, rationale: "Requires full neuro-immune axis rebalancing, mitochondrial support, and regular clinical review." },
-      { name: "RA + Osteoporosis + Acid Reflux", careLevel: "comprehensive", conditionsCount: 3, rationale: "Requires complex clinical coordination to treat autoimmune joints while protecting gut mucosa." }
+      { name: "Metabolic Syndrome (PCOS+Fatty Liver)", careLevel: "comprehensive", conditionsCount: 3, rationale: "Visceral lipid management, insulin sensitizing remedies, and multi-system alignment." },
+      { name: "Post-Viral Chronic Fatigue (CFS)", careLevel: "comprehensive", conditionsCount: 2, rationale: "Rebalances neuro-immune axis, supports mitochondrial function, and restores vitality." },
+      { name: "RA + Osteoporosis + Acid Reflux", careLevel: "comprehensive", conditionsCount: 3, rationale: "Complex coordination to treat autoimmune joints while protecting the gastrointestinal lining." }
     ]
   }
 ];
