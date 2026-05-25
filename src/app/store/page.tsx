@@ -517,14 +517,18 @@ export default function StorePage() {
     const equivalentWeeks = cycle === "weekly" ? duration : duration * 4;
     
     let discountPercent = 0;
-    if (equivalentWeeks >= 12) {
-      discountPercent = 20;
+    if (equivalentWeeks >= 48) {
+      discountPercent = 30; // 12 Months (48 weeks) or more
+    } else if (equivalentWeeks >= 24) {
+      discountPercent = 25; // 6 Months (24 weeks)
+    } else if (equivalentWeeks >= 12) {
+      discountPercent = 20; // 3 Months (12 weeks)
     } else if (equivalentWeeks >= 8) {
-      discountPercent = 15;
+      discountPercent = 15; // 2 Months (8 weeks)
     } else if (equivalentWeeks >= 4) {
-      discountPercent = 10;
+      discountPercent = 10; // 1 Month (4 weeks)
     } else if (equivalentWeeks >= 2) {
-      discountPercent = 5;
+      discountPercent = 5; // 2 Weeks
     } else {
       discountPercent = 0;
     }
@@ -1173,7 +1177,9 @@ Could you guide me on the registration process and payment steps?`;
                             [
                               { value: 1, label: "1 Month", desc: "10% Discount" },
                               { value: 2, label: "2 Months", desc: "15% Discount" },
-                              { value: 3, label: "3 Months", desc: "20% Discount" }
+                              { value: 3, label: "3 Months", desc: "20% Discount" },
+                              { value: 6, label: "6 Months", desc: "25% Discount" },
+                              { value: 12, label: "12 Months", desc: "30% Discount" }
                             ].map((opt) => (
                               <button
                                 key={opt.value}
