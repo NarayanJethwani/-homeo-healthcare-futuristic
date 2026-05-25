@@ -499,15 +499,21 @@ export default function StorePage() {
     const details = careLevelsDetails[level];
     const basePrice = cycle === "weekly" ? details.weeklyPrice : details.monthlyPrice;
     
-    // Coordination surcharge for co-existing conditions:
-    // 1 Condition: base rate
-    // 2 Conditions: +500/week or +1500/month coordination fee
-    // 3+ Conditions: +1000/week or +3000/month coordination fee
+    // Dynamic coordination surcharges lookup based on care level and cycle
+    const surchargesLookup = {
+      mild: { weekly2: 300, weekly3: 600, monthly2: 1000, monthly3: 2000 },
+      moderate: { weekly2: 500, weekly3: 1000, monthly2: 1500, monthly3: 3000 },
+      focused: { weekly2: 800, weekly3: 1600, monthly2: 2500, monthly3: 5000 },
+      organ: { weekly2: 1200, weekly3: 2400, monthly2: 3500, monthly3: 7000 },
+      comprehensive: { weekly2: 1500, weekly3: 3000, monthly2: 4500, monthly3: 9000 },
+    };
+
     let surcharge = 0;
+    const tierSurcharges = surchargesLookup[level];
     if (conditions === 2) {
-      surcharge = cycle === "weekly" ? 500 : 1500;
+      surcharge = cycle === "weekly" ? tierSurcharges.weekly2 : tierSurcharges.monthly2;
     } else if (conditions >= 3) {
-      surcharge = cycle === "weekly" ? 1000 : 3000;
+      surcharge = cycle === "weekly" ? tierSurcharges.weekly3 : tierSurcharges.monthly3;
     }
 
     const adjustedBasePrice = basePrice + surcharge;
@@ -1057,36 +1063,48 @@ Could you guide me on the registration process and payment steps?`;
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                      {[
-                        { count: 1, label: "1 Condition", surchargeText: "Standard plan coverage", surchargeInfo: "No coordination fee" },
-                        { count: 2, label: "2 Conditions", surchargeText: billingCycle === "weekly" ? "+₹500 / week" : "+₹1,500 / month", surchargeInfo: "Dual-condition coordination" },
-                        { count: 3, label: "3+ Conditions", surchargeText: billingCycle === "weekly" ? "+₹1,000 / week" : "+₹3,000 / month", surchargeInfo: "Complex multi-condition management" }
-                      ].map((item) => {
-                        const active = conditionsCount === item.count;
-                        return (
-                          <div
-                            key={item.count}
-                            onClick={() => setConditionsCount(item.count)}
-                            className={`glass-panel p-4 rounded-2xl cursor-pointer transition-all duration-300 flex flex-col justify-between relative group ${
-                              active
-                                ? "border-mint bg-mint/[0.04] ring-2 ring-mint/10"
-                                : "border-slate-200/60 hover:border-slate-800 bg-white/30"
-                            }`}
-                          >
-                            <div>
-                              <div className="flex justify-between items-center mb-2">
-                                <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">{item.label}</h4>
-                                {active && <div className="w-1.5 h-1.5 rounded-full bg-mint breathe" />}
+                      {(() => {
+                        const surchargesLookup = {
+                          mild: { weekly2: 300, weekly3: 600, monthly2: 1000, monthly3: 2000 },
+                          moderate: { weekly2: 500, weekly3: 1000, monthly2: 1500, monthly3: 3000 },
+                          focused: { weekly2: 800, weekly3: 1600, monthly2: 2500, monthly3: 5000 },
+                          organ: { weekly2: 1200, weekly3: 2400, monthly2: 3500, monthly3: 7000 },
+                          comprehensive: { weekly2: 1500, weekly3: 3000, monthly2: 4500, monthly3: 9000 },
+                        };
+                        const activeTierSurcharges = surchargesLookup[careLevel];
+                        const items = [
+                          { count: 1, label: "1 Condition", surchargeText: "Standard plan coverage", surchargeInfo: "No coordination fee" },
+                          { count: 2, label: "2 Conditions", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.weekly2} / week` : `+₹${activeTierSurcharges.monthly2} / month`, surchargeInfo: "Dual-condition coordination" },
+                          { count: 3, label: "3+ Conditions", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.weekly3} / week` : `+₹${activeTierSurcharges.monthly3} / month`, surchargeInfo: "Complex multi-condition management" }
+                        ];
+
+                        return items.map((item) => {
+                          const active = conditionsCount === item.count;
+                          return (
+                            <div
+                              key={item.count}
+                              onClick={() => setConditionsCount(item.count)}
+                              className={`glass-panel p-4 rounded-2xl cursor-pointer transition-all duration-300 flex flex-col justify-between relative group ${
+                                active
+                                  ? "border-mint bg-mint/[0.04] ring-2 ring-mint/10"
+                                  : "border-slate-200/60 hover:border-slate-800 bg-white/30"
+                              }`}
+                            >
+                              <div>
+                                <div className="flex justify-between items-center mb-2">
+                                  <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">{item.label}</h4>
+                                  {active && <div className="w-1.5 h-1.5 rounded-full bg-mint breathe" />}
+                                </div>
+                                <p className="text-[10px] text-slate-500 font-semibold mb-3">{item.surchargeInfo}</p>
                               </div>
-                              <p className="text-[10px] text-slate-500 font-semibold mb-3">{item.surchargeInfo}</p>
+                              <div className="pt-2 border-t border-slate-900/5">
+                                <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider block">Surcharge</span>
+                                <span className="text-xs font-black text-[#1A2421]">{item.surchargeText}</span>
+                              </div>
                             </div>
-                            <div className="pt-2 border-t border-slate-900/5">
-                              <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider block">Surcharge</span>
-                              <span className="text-xs font-black text-[#1A2421]">{item.surchargeText}</span>
-                            </div>
-                          </div>
-                        );
-                      })}
+                          );
+                        });
+                      })()}
                     </div>
                   </div>
 
