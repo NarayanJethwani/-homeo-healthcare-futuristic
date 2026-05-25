@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   ShoppingBag, Search, Sparkles, Filter, CheckCircle2, 
-  ArrowRight, ArrowLeft, Phone, MessageSquare, ShieldCheck, Truck, Clock 
+  ArrowRight, ArrowLeft, Phone, MessageSquare, ShieldCheck, Truck, Clock,
+  Sliders, Plus, Trash2, Share2, Copy, Save, LayoutGrid, Layers, Activity,
+  Info, Percent, HelpCircle
 } from "lucide-react";
 import Link from "next/link";
 import Magnetic from "@/components/Magnetic";
@@ -317,14 +319,302 @@ const packages: Package[] = [
   }
 ];
 
+export interface SavedConfig {
+  id: string;
+  name: string;
+  careLevel: "mild" | "moderate" | "focused" | "organ" | "comprehensive";
+  billingCycle: "weekly" | "monthly";
+  durationValue: number;
+  finalPrice: number;
+  date: string;
+}
+
+const careLevelsDetails = {
+  mild: {
+    title: "Mild Care",
+    weeklyPrice: 1200,
+    monthlyPrice: 4000,
+    badge: "Acute & General Support",
+    icon: "🌱",
+    description: "Ideal for mild chronic issues, minor acute flares, or general natural healthcare guidance.",
+    features: [
+      "General constitutional analysis",
+      "Corrective micro-dosing remedy supply",
+      "Standard dietary guide sheet",
+      "WhatsApp team updates (bi-weekly)"
+    ],
+    glowColor: "rgba(20,184,166,0.15)"
+  },
+  moderate: {
+    title: "Moderate Care",
+    weeklyPrice: 2500,
+    monthlyPrice: 8500,
+    badge: "Focused Chronic Management",
+    icon: "⚡",
+    description: "Designed for a single chronic condition that requires active tracking and occasional dosage updates.",
+    features: [
+      "Single chronic condition profile mapping",
+      "Constitutional remedy preparation",
+      "Diet & allergen avoidance sheet",
+      "Standard clinical response checkups (every 2 weeks)"
+    ],
+    glowColor: "rgba(168,85,247,0.15)"
+  },
+  focused: {
+    title: "Focused Care",
+    weeklyPrice: 4500,
+    monthlyPrice: 15000,
+    badge: "Organ System Level Care",
+    icon: "🎯",
+    description: "Deep management of a primary target system (e.g., lungs, digestive tract, skin, or hair).",
+    features: [
+      "Targeted single-organ analysis & history",
+      "High-potency customized constitutional remedies",
+      "Lab report reviews & medical integration",
+      "Priority clinical updates over WhatsApp"
+    ],
+    glowColor: "rgba(14,165,233,0.15)"
+  },
+  organ: {
+    title: "Organ System Care",
+    weeklyPrice: 6500,
+    monthlyPrice: 22000,
+    badge: "Multi-Remedy System Support",
+    icon: "🫁",
+    description: "Advanced co-management of deep-rooted system pathology alongside conventional medical setups.",
+    features: [
+      "Advanced systemic constitutional rebalancing",
+      "Multi-remedy support for organ systems",
+      "Biomarker timeline mapping & monitoring",
+      "Dedicated dietitian support checkups"
+    ],
+    glowColor: "rgba(16,185,129,0.15)"
+  },
+  comprehensive: {
+    title: "Comprehensive Care",
+    weeklyPrice: 8500,
+    monthlyPrice: 28000,
+    badge: "Multi-Organ Chronic Care",
+    icon: "🔮",
+    description: "For long-standing chronic, multi-system diseases requiring intense clinical supervision by Dr. Jethwani.",
+    features: [
+      "Multi-organ pathogenetic mapping",
+      "Direct medical supervision by Dr. Jethwani",
+      "High-frequency dosage reviews & titrations",
+      "Immediate urgent care updates and guidelines"
+    ],
+    glowColor: "rgba(244,63,94,0.15)"
+  }
+};
+
 export default function StorePage() {
-  // CONFIGURATION: Replace this base URL with your existing website's checkout path
-  // E.g., "https://www.homeo.healthcare/checkout/" or "https://www.homoe.healthcare/checkout/"
-  const SHOP_BASE_URL = "https://shop.homeo.healthcare/checkout/";
+  const [viewMode, setViewMode] = useState<"dashboard" | "catalog">("dashboard");
+
+  // Calculator states
+  const [careLevel, setCareLevel] = useState<"mild" | "moderate" | "focused" | "organ" | "comprehensive">("focused");
+  const [billingCycle, setBillingCycle] = useState<"weekly" | "monthly">("monthly");
+  const [durationValue, setDurationValue] = useState<number>(1); // Default to 1 period (1 month or 4 weeks depending on cycle)
+
+  // Saved configs list
+  const [savedConfigs, setSavedConfigs] = useState<SavedConfig[]>([]);
+  const [shareSuccess, setShareSuccess] = useState<string | null>(null);
+  const [saveSuccess, setSaveSuccess] = useState<boolean>(false);
 
   const [filter, setFilter] = useState<"all" | "consultation" | "specialty">("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [billingCycle, setBillingCycle] = useState<"weekly" | "monthly">("monthly");
+  const [catalogBillingCycle, setCatalogBillingCycle] = useState<"weekly" | "monthly">("monthly");
+
+  // Load saved configs from localStorage and deep links on mount
+  useEffect(() => {
+    // 1. LocalStorage
+    try {
+      const saved = localStorage.getItem("homeo_saved_configs");
+      if (saved) {
+        setSavedConfigs(JSON.parse(saved));
+      }
+    } catch (e) {
+      console.error("Error reading saved configs:", e);
+    }
+
+    // 2. URL params
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const levelParam = params.get("level");
+      const cycleParam = params.get("cycle");
+      const durationParam = params.get("duration");
+      const modeParam = params.get("mode");
+
+      if (modeParam === "catalog" || modeParam === "dashboard") {
+        setViewMode(modeParam as any);
+      }
+      
+      if (levelParam && ["mild", "moderate", "focused", "organ", "comprehensive"].includes(levelParam)) {
+        setCareLevel(levelParam as any);
+      }
+      
+      if (cycleParam && ["weekly", "monthly"].includes(cycleParam)) {
+        setBillingCycle(cycleParam as any);
+      }
+      
+      if (durationParam) {
+        const val = parseInt(durationParam);
+        if (!isNaN(val) && val > 0) {
+          setDurationValue(val);
+        }
+      }
+    } catch (e) {
+      console.error("Error parsing URL parameters:", e);
+    }
+  }, []);
+
+  const calculatePricing = (
+    level: keyof typeof careLevelsDetails,
+    cycle: "weekly" | "monthly",
+    duration: number
+  ) => {
+    const details = careLevelsDetails[level];
+    const basePrice = cycle === "weekly" ? details.weeklyPrice : details.monthlyPrice;
+    const rawTotal = basePrice * duration;
+    
+    // Equivalent weeks
+    const equivalentWeeks = cycle === "weekly" ? duration : duration * 4;
+    
+    let discountPercent = 0;
+    if (equivalentWeeks >= 12) {
+      discountPercent = 20;
+    } else if (equivalentWeeks >= 8) {
+      discountPercent = 15;
+    } else if (equivalentWeeks >= 4) {
+      discountPercent = 10;
+    } else if (equivalentWeeks >= 2) {
+      discountPercent = 5;
+    } else {
+      discountPercent = 0;
+    }
+    
+    const discountAmount = Math.round((rawTotal * discountPercent) / 100);
+    const finalPrice = rawTotal - discountAmount;
+    
+    return {
+      basePrice,
+      rawTotal,
+      discountPercent,
+      discountAmount,
+      finalPrice
+    };
+  };
+
+  const handleCycleChange = (cycle: "weekly" | "monthly") => {
+    setBillingCycle(cycle);
+    setDurationValue(cycle === "weekly" ? 4 : 1);
+  };
+
+  const handleSaveConfig = () => {
+    const pricing = calculatePricing(careLevel, billingCycle, durationValue);
+    const details = careLevelsDetails[careLevel];
+    const durationText = billingCycle === "weekly"
+      ? `${durationValue} ${durationValue === 1 ? "Week" : "Weeks"}`
+      : `${durationValue} ${durationValue === 1 ? "Month" : "Months"}`;
+
+    const newConfig: SavedConfig = {
+      id: Math.random().toString(36).substring(2, 9),
+      name: `${details.title} (${durationText} - ${billingCycle === "weekly" ? "Weekly" : "Monthly"})`,
+      careLevel,
+      billingCycle,
+      durationValue,
+      finalPrice: pricing.finalPrice,
+      date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+    };
+    
+    const updated = [...savedConfigs, newConfig];
+    setSavedConfigs(updated);
+    try {
+      localStorage.setItem("homeo_saved_configs", JSON.stringify(updated));
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 2000);
+    } catch (e) {
+      console.error("Error saving config:", e);
+    }
+  };
+
+  const handleDeleteConfig = (id: string) => {
+    const updated = savedConfigs.filter(c => c.id !== id);
+    setSavedConfigs(updated);
+    try {
+      localStorage.setItem("homeo_saved_configs", JSON.stringify(updated));
+    } catch (e) {
+      console.error("Error deleting config:", e);
+    }
+  };
+
+  const handleCopyLink = (level = careLevel, cycle = billingCycle, duration = durationValue) => {
+    try {
+      const baseUrl = window.location.origin + window.location.pathname;
+      const shareUrl = `${baseUrl}?level=${level}&cycle=${cycle}&duration=${duration}&mode=dashboard`;
+      navigator.clipboard.writeText(shareUrl);
+      setShareSuccess(shareUrl);
+      setTimeout(() => setShareSuccess(null), 3000);
+    } catch (e) {
+      console.error("Error copying link:", e);
+    }
+  };
+
+  const handleSelectCalculatedPlan = () => {
+    const pricing = calculatePricing(careLevel, billingCycle, durationValue);
+    const details = careLevelsDetails[careLevel];
+    const durationText = billingCycle === "weekly"
+      ? `${durationValue} ${durationValue === 1 ? "week" : "weeks"}`
+      : `${durationValue} ${durationValue === 1 ? "month" : "months"}`;
+      
+    const message = `Hello Dr. Jethwani, I have calculated my constitutional treatment plan using the interactive dashboard:
+- Care Level: ${details.title} (${details.badge})
+- Billing Cycle: ${billingCycle}
+- Duration: ${durationText}
+- Cost: ₹${pricing.finalPrice.toLocaleString("en-IN")} (after ${pricing.discountPercent}% discount)
+
+Could you guide me on the next clinical steps to register and start this treatment?`;
+
+    const encodedText = encodeURIComponent(message);
+    window.open(`https://wa.me/918446056789?text=${encodedText}`, "_blank");
+  };
+
+  const handleSelectPlan = (pkg: Package) => {
+    let message = "";
+    if (pkg.category === "consultation") {
+      const cyclePrice = catalogBillingCycle === "weekly" ? pkg.priceWeekly : pkg.priceMonthly;
+      message = `Hello Dr. Jethwani, I am interested in booking the "${pkg.title}" consultation plan on a ${catalogBillingCycle} basis (${cyclePrice}). Could you guide me on the registration process?`;
+    } else {
+      message = `Hello Dr. Jethwani, I am interested in booking the "${pkg.title}" (${pkg.duration}). Could you guide me on the registration process?`;
+    }
+    const encodedText = encodeURIComponent(message);
+    window.open(`https://wa.me/918446056789?text=${encodedText}`, "_blank");
+  };
+
+  const handleSelectSavedPlan = (config: SavedConfig) => {
+    const pricing = calculatePricing(config.careLevel, config.billingCycle, config.durationValue);
+    const details = careLevelsDetails[config.careLevel];
+    const durationText = config.billingCycle === "weekly"
+      ? `${config.durationValue} ${config.durationValue === 1 ? "week" : "weeks"}`
+      : `${config.durationValue} ${config.durationValue === 1 ? "month" : "months"}`;
+      
+    const message = `Hello Dr. Jethwani, I have calculated my constitutional treatment plan and compared it using the dashboard:
+- Care Level: ${details.title} (${details.badge})
+- Billing Cycle: ${config.billingCycle}
+- Duration: ${durationText}
+- Cost: ₹${pricing.finalPrice.toLocaleString("en-IN")} (after ${pricing.discountPercent}% discount)
+
+Could you guide me on the registration process?`;
+
+    const encodedText = encodeURIComponent(message);
+    window.open(`https://wa.me/918446056789?text=${encodedText}`, "_blank");
+  };
+
+  const handleLoadConfig = (config: SavedConfig) => {
+    setCareLevel(config.careLevel);
+    setBillingCycle(config.billingCycle);
+    setDurationValue(config.durationValue);
+    setViewMode("dashboard");
+  };
 
   const filteredPackages = packages.filter((pkg) => {
     const matchesFilter = filter === "all" || pkg.category === filter;
@@ -334,18 +624,8 @@ export default function StorePage() {
     return matchesFilter && matchesSearch;
   });
 
-  const handleSelectPlan = (pkg: Package) => {
-    // Generate text message for WhatsApp pre-fill
-    let message = "";
-    if (pkg.category === "consultation") {
-      const cyclePrice = billingCycle === "weekly" ? pkg.priceWeekly : pkg.priceMonthly;
-      message = `Hello Dr. Jethwani, I am interested in booking the "${pkg.title}" consultation plan on a ${billingCycle} basis (${cyclePrice}). Could you guide me on the registration process?`;
-    } else {
-      message = `Hello Dr. Jethwani, I am interested in booking the "${pkg.title}" (${pkg.duration}). Could you guide me on the registration process?`;
-    }
-    const encodedText = encodeURIComponent(message);
-    window.open(`https://wa.me/918446056789?text=${encodedText}`, "_blank");
-  };
+  const activePricing = calculatePricing(careLevel, billingCycle, durationValue);
+  const activeDetails = careLevelsDetails[careLevel];
 
   return (
     <div className="pt-32 pb-24 px-6 relative">
@@ -370,7 +650,7 @@ export default function StorePage() {
         </motion.div>
 
         {/* Page Hero Header */}
-        <div className="max-w-3xl mb-16">
+        <div className="max-w-3xl mb-8">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
@@ -398,180 +678,679 @@ export default function StorePage() {
           </motion.p>
         </div>
 
-        {/* Filters and Search Row */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 pb-8 border-b border-slate-900/5">
-          {/* Filters */}
-          <div className="flex flex-wrap gap-2">
-            {[
-              { id: "all", label: "All Packages", icon: <ShoppingBag className="w-3.5 h-3.5" /> },
-              { id: "consultation", label: "Consultation Plans", icon: <Clock className="w-3.5 h-3.5" /> },
-              { id: "specialty", label: "Specialty Care", icon: <ShieldCheck className="w-3.5 h-3.5" /> }
-            ].map((btn) => (
-              <button
-                key={btn.id}
-                onClick={() => setFilter(btn.id as any)}
-                className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 cursor-pointer ${
-                  filter === btn.id
-                    ? "bg-mint text-white shadow-sm shadow-mint/10"
-                    : "glass-panel border-slate-200 hover:border-slate-800 text-slate-700 hover:text-[#1A2421] bg-white/40"
-                }`}
-              >
-                {btn.icon}
-                {btn.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Billing Cycle Toggle (only show if not strictly on specialty filter) */}
-          {filter !== "specialty" && (
-            <div className="flex items-center gap-2 bg-slate-900/5 p-1.5 rounded-full border border-slate-200/50 backdrop-blur-md">
-              <button
-                onClick={() => setBillingCycle("weekly")}
-                className={`px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 ${
-                  billingCycle === "weekly"
-                    ? "bg-white text-slate-900 shadow-sm"
-                    : "text-slate-500 hover:text-[#1A2421]"
-                }`}
-              >
-                Weekly
-              </button>
-              <button
-                onClick={() => setBillingCycle("monthly")}
-                className={`px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 ${
-                  billingCycle === "monthly"
-                    ? "bg-white text-slate-900 shadow-sm"
-                    : "text-slate-500 hover:text-[#1A2421]"
-                }`}
-              >
-                Monthly
-                <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-emerald-500 text-white font-black tracking-normal">
-                  SAVE ~17%
-                </span>
-              </button>
-            </div>
-          )}
-
-          {/* Search bar */}
-          <div className="relative w-full md:max-w-xs">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-700" />
-            <input
-              type="text"
-              placeholder="Search treatment plans..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-11 pr-6 py-2.5 rounded-full border border-slate-200 focus:border-mint bg-white/60 focus:bg-white text-xs font-semibold placeholder:text-slate-500 outline-none transition-all"
-            />
+        {/* Mode Switcher Toggle */}
+        <div className="flex justify-center md:justify-start mb-12">
+          <div className="inline-flex items-center gap-1.5 bg-slate-900/5 p-1.5 rounded-full border border-slate-200/50 backdrop-blur-md">
+            <button
+              onClick={() => setViewMode("dashboard")}
+              className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-2 cursor-pointer ${
+                viewMode === "dashboard"
+                  ? "bg-[#1A2421] text-white shadow-sm"
+                  : "text-slate-500 hover:text-[#1A2421]"
+              }`}
+            >
+              <Sliders className="w-3.5 h-3.5" />
+              Treatment Planner
+            </button>
+            <button
+              onClick={() => setViewMode("catalog")}
+              className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-2 cursor-pointer ${
+                viewMode === "catalog"
+                  ? "bg-[#1A2421] text-white shadow-sm"
+                  : "text-slate-500 hover:text-[#1A2421]"
+              }`}
+            >
+              <LayoutGrid className="w-3.5 h-3.5" />
+              Traditional Catalog
+            </button>
           </div>
         </div>
 
-        {/* Packages Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-          <AnimatePresence mode="popLayout">
-            {filteredPackages.map((pkg) => {
-              const borderClass = pkg.colorTheme ? pkg.colorTheme.border : "border-white/60 hover:border-white/90";
-              const bgClass = pkg.colorTheme ? pkg.colorTheme.bg : "bg-white/40";
-              const textClass = pkg.colorTheme ? pkg.colorTheme.text : "text-mint-dark";
-              
-              return (
-                <motion.div
-                  key={pkg.id}
-                  layout
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                  className={`glass-panel ${borderClass} ${bgClass} rounded-3xl p-8 flex flex-col justify-between group relative overflow-hidden transition-all duration-300 shadow-[0_4px_24px_rgba(0,0,0,0.01)] hover:shadow-[0_8px_32px_rgba(20,184,166,0.02)] ${
-                    pkg.id === "recommended-system-care" ? "ring-2 ring-indigo-500/20" : ""
-                  }`}
-                >
-                  {/* Glow effect on hover */}
-                  <div 
-                    className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700"
-                    style={{
-                      background: `radial-gradient(circle at 80% 20%, ${pkg.glowColor} 0%, transparent 60%)`
-                    }}
-                  />
-
-                  <div>
-                    {/* Card header */}
-                    <div className="flex justify-between items-start gap-4 mb-6">
+        {/* Views Content wrapper */}
+        <AnimatePresence mode="wait">
+          {viewMode === "dashboard" ? (
+            <motion.div
+              key="dashboard-view"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="space-y-16 mb-16"
+            >
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                
+                {/* Dashboard Left Form Controls (8 cols) */}
+                <div className="lg:col-span-8 space-y-8">
+                  
+                  {/* Step 1: Care Level Grid */}
+                  <div className="glass-panel border-white/60 bg-white/40 rounded-3xl p-6 md:p-8 space-y-6">
+                    <div className="flex justify-between items-start gap-4">
                       <div>
-                        {pkg.badge && (
-                          <span className={`inline-block text-[9px] font-extrabold uppercase px-2.5 py-0.5 rounded-full mb-3 ${
-                            pkg.colorTheme 
-                              ? `${pkg.colorTheme.badgeBg} ${pkg.colorTheme.badgeText}` 
-                              : "bg-mint/10 border border-mint/20 text-mint-dark"
-                          }`}>
-                            {pkg.badge}
-                          </span>
-                        )}
-                        <h3 className="text-xl font-bold text-[#1A2421] leading-tight mb-1">{pkg.title}</h3>
-                        <span className="text-[10px] text-slate-700 font-bold uppercase tracking-wider block">
-                          {pkg.duration}
-                        </span>
+                        <span className="text-[10px] font-bold text-mint uppercase tracking-widest block mb-1">Step 1</span>
+                        <h2 className="text-xl font-bold text-[#1A2421]">Select Clinical Complexity Level</h2>
+                        <p className="text-xs text-slate-500 font-semibold mt-1">
+                          Homeopathic treatment scales based on complexity. Every case is unique and requirements can change over time.
+                        </p>
+                      </div>
+                      <div className="w-10 h-10 bg-mint/5 border border-mint/10 text-mint rounded-2xl flex items-center justify-center flex-shrink-0">
+                        <Activity className="w-5 h-5" />
                       </div>
                     </div>
 
-                    <div className="mb-6 pb-6 border-b border-slate-900/5">
-                      {pkg.category === "consultation" ? (
-                        <div className="flex flex-col">
-                          <div className="flex items-baseline gap-1.5">
-                            <span className="text-3xl font-black text-[#1A2421] font-sans">
-                              {billingCycle === "weekly" ? pkg.priceWeekly : pkg.priceMonthly}
-                            </span>
-                            {(billingCycle === "weekly" ? pkg.priceWeekly : pkg.priceMonthly)?.startsWith("₹") && (
-                              <span className="text-xs text-slate-500 font-bold uppercase tracking-wider">
-                                / {billingCycle}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
+                      {(Object.keys(careLevelsDetails) as (keyof typeof careLevelsDetails)[]).map((level) => {
+                        const active = careLevel === level;
+                        const details = careLevelsDetails[level];
+                        const displayPrice = billingCycle === "weekly" ? details.weeklyPrice : details.monthlyPrice;
+                        
+                        return (
+                          <div
+                            key={level}
+                            onClick={() => setCareLevel(level)}
+                            className={`glass-panel p-4 rounded-2xl flex flex-col justify-between cursor-pointer transition-all duration-300 relative group overflow-hidden ${
+                              active
+                                ? "border-mint bg-mint/[0.04] ring-2 ring-mint/10"
+                                : "border-slate-200/60 hover:border-slate-800 bg-white/30"
+                            }`}
+                          >
+                            {/* Spotlight glow */}
+                            <div 
+                              className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                              style={{
+                                background: `radial-gradient(circle at 50% 50%, ${details.glowColor} 0%, transparent 70%)`
+                              }}
+                            />
+
+                            <div>
+                              <div className="text-2xl mb-3 flex items-center justify-between">
+                                <span>{details.icon}</span>
+                                {active && <div className="w-1.5 h-1.5 rounded-full bg-mint breathe" />}
+                              </div>
+                              <h4 className="text-sm font-bold text-[#1A2421] leading-tight mb-1">{details.title}</h4>
+                              <p className="text-[9px] text-slate-500 font-semibold leading-normal line-clamp-3 mb-4">
+                                {details.description}
+                              </p>
+                            </div>
+
+                            <div className="pt-3 border-t border-slate-900/5">
+                              <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Base Rate</span>
+                              <span className="text-sm font-black text-[#1A2421] font-sans">
+                                ₹{displayPrice.toLocaleString("en-IN")}
                               </span>
-                            )}
+                              <span className="text-[9px] text-slate-500 font-semibold">/{billingCycle === "weekly" ? "wk" : "mo"}</span>
+                            </div>
                           </div>
-                          {/* Alternative price under it in smaller text */}
-                          <span className="text-[10px] text-slate-500 font-semibold mt-1">
-                            {billingCycle === "weekly" 
-                              ? `Monthly: ${pkg.priceMonthly}` 
-                              : `Weekly: ${pkg.priceWeekly}`}
-                          </span>
-                        </div>
-                      ) : (
-                        <span className="text-2xl font-black text-[#1A2421] font-sans">{pkg.price}</span>
-                      )}
+                        );
+                      })}
                     </div>
-
-                    <p className="text-xs text-slate-700 font-semibold leading-relaxed mb-6">
-                      {pkg.desc}
-                    </p>
-
-                    {/* Features checklist */}
-                    <ul className="space-y-3 mb-8">
-                      {pkg.features.map((feature, idx) => (
-                        <li key={idx} className="flex items-start gap-2.5 text-xs text-slate-700 font-semibold leading-relaxed">
-                          <CheckCircle2 className={`w-4 h-4 flex-shrink-0 mt-0.5 ${textClass}`} />
-                          <span>{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
                   </div>
 
-                  {/* Purchase Trigger Button */}
-                  <Magnetic>
+                  {/* Step 2: Duration & Billing Controls */}
+                  <div className="glass-panel border-white/60 bg-white/40 rounded-3xl p-6 md:p-8 space-y-6">
+                    <div className="flex justify-between items-start gap-4">
+                      <div>
+                        <span className="text-[10px] font-bold text-mint uppercase tracking-widest block mb-1">Step 2</span>
+                        <h2 className="text-xl font-bold text-[#1A2421]">Define Billing & Duration Options</h2>
+                        <p className="text-xs text-slate-500 font-semibold mt-1">
+                          Select your cycle and timeline. Long-term commitment helps optimize constitutional healing and activates duration discounts.
+                        </p>
+                      </div>
+                      <div className="w-10 h-10 bg-mint/5 border border-mint/10 text-mint rounded-2xl flex items-center justify-center flex-shrink-0">
+                        <Percent className="w-5 h-5" />
+                      </div>
+                    </div>
+
+                    <div className="space-y-6">
+                      {/* Cycle Selector */}
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-slate-900/5 rounded-2xl border border-slate-200/50">
+                        <div>
+                          <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider">Billing Frequency</h4>
+                          <p className="text-[10px] text-slate-500 font-semibold">Choose weekly or monthly billing</p>
+                        </div>
+                        <div className="flex items-center gap-1.5 bg-white/60 p-1 rounded-full border border-slate-200/50">
+                          <button
+                            onClick={() => handleCycleChange("weekly")}
+                            className={`px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
+                              billingCycle === "weekly"
+                                ? "bg-[#1A2421] text-white shadow-sm"
+                                : "text-slate-500 hover:text-[#1A2421]"
+                            }`}
+                          >
+                            Weekly
+                          </button>
+                          <button
+                            onClick={() => handleCycleChange("monthly")}
+                            className={`px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 cursor-pointer ${
+                              billingCycle === "monthly"
+                                ? "bg-[#1A2421] text-white shadow-sm"
+                                : "text-slate-500 hover:text-[#1A2421]"
+                            }`}
+                          >
+                            Monthly
+                            <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-emerald-500 text-white font-black tracking-normal">
+                              SAVE ~17%
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Duration Buttons Selector */}
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider">Duration of Commitment</h4>
+                          <span className="text-[10px] text-mint font-bold uppercase tracking-wider flex items-center gap-1">
+                            <Clock className="w-3.5 h-3.5" />
+                            Active Discount: {activePricing.discountPercent}% Off
+                          </span>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                          {billingCycle === "weekly" ? (
+                            // Weeks Options
+                            [
+                              { value: 1, label: "1 Week", desc: "No Discount" },
+                              { value: 2, label: "2 Weeks", desc: "5% Discount" },
+                              { value: 4, label: "4 Weeks", desc: "10% Discount" },
+                              { value: 8, label: "8 Weeks", desc: "15% Discount" },
+                              { value: 12, label: "12 Weeks", desc: "20% Discount" }
+                            ].map((opt) => (
+                              <button
+                                key={opt.value}
+                                onClick={() => setDurationValue(opt.value)}
+                                className={`p-3 rounded-xl border text-center transition-all duration-300 cursor-pointer ${
+                                  durationValue === opt.value
+                                    ? "border-mint bg-mint/[0.04] text-mint-dark font-bold"
+                                    : "border-slate-200/50 hover:border-slate-800 text-slate-700 bg-white/40 hover:bg-white"
+                                }`}
+                              >
+                                <span className="text-xs block font-bold">{opt.label}</span>
+                                <span className="text-[8px] text-slate-500 block mt-0.5 font-semibold">{opt.desc}</span>
+                              </button>
+                            ))
+                          ) : (
+                            // Months Options
+                            [
+                              { value: 1, label: "1 Month", desc: "10% Discount" },
+                              { value: 2, label: "2 Months", desc: "15% Discount" },
+                              { value: 3, label: "3 Months", desc: "20% Discount" }
+                            ].map((opt) => (
+                              <button
+                                key={opt.value}
+                                onClick={() => setDurationValue(opt.value)}
+                                className={`p-3 col-span-1 rounded-xl border text-center transition-all duration-300 cursor-pointer ${
+                                  durationValue === opt.value
+                                    ? "border-mint bg-mint/[0.04] text-mint-dark font-bold"
+                                    : "border-slate-200/50 hover:border-slate-800 text-slate-700 bg-white/40 hover:bg-white"
+                                }`}
+                              >
+                                <span className="text-xs block font-bold">{opt.label}</span>
+                                <span className="text-[8px] text-slate-500 block mt-0.5 font-semibold">{opt.desc}</span>
+                              </button>
+                            ))
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Step 3: Detailed Included Features Checklist */}
+                  <div className="glass-panel border-white/60 bg-white/40 rounded-3xl p-6 md:p-8 space-y-6">
+                    <h3 className="text-base font-bold text-[#1A2421] border-b border-slate-900/5 pb-4 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-mint" />
+                      Specialized Features Included in {activeDetails.title}
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {activeDetails.features.map((feature, idx) => (
+                        <div key={idx} className="flex items-start gap-3 p-3 rounded-xl bg-white/20 border border-white/40">
+                          <CheckCircle2 className="w-4 h-4 text-mint flex-shrink-0 mt-0.5" />
+                          <span className="text-xs text-slate-700 font-semibold leading-relaxed">{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Dashboard Right Summary Card (4 cols) */}
+                <div className="lg:col-span-4 lg:sticky lg:top-32 space-y-6">
+                  <div className="glass-panel border-indigo-500/25 bg-indigo-500/[0.03] dark:bg-indigo-950/20 rounded-3xl p-6 md:p-8 relative overflow-hidden shadow-lg shadow-indigo-500/5">
+                    {/* Glowing highlight */}
+                    <div 
+                      className="absolute inset-0 pointer-events-none opacity-40"
+                      style={{
+                        background: `radial-gradient(circle at 80% 20%, ${activeDetails.glowColor} 0%, transparent 60%)`
+                      }}
+                    />
+
+                    <div className="relative space-y-6">
+                      <div>
+                        <span className="text-[9px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200/50 mb-3 inline-block">
+                          Active Configuration
+                        </span>
+                        <h3 className="text-2xl font-bold text-[#1A2421]">{activeDetails.title}</h3>
+                        <span className="text-xs text-slate-500 font-bold uppercase tracking-wider block mt-1">
+                          {activeDetails.badge}
+                        </span>
+                      </div>
+
+                      {/* Pricing block */}
+                      <div className="p-4 bg-white/60 border border-white/80 rounded-2xl space-y-3">
+                        <div className="flex justify-between text-xs text-slate-500 font-bold uppercase tracking-wider">
+                          <span>Base rate</span>
+                          <span>₹{activePricing.basePrice.toLocaleString("en-IN")} / {billingCycle === "weekly" ? "wk" : "mo"}</span>
+                        </div>
+                        <div className="flex justify-between text-xs text-slate-500 font-bold uppercase tracking-wider border-b border-slate-900/5 pb-2">
+                          <span>Timeline ({durationValue} {billingCycle === "weekly" ? (durationValue === 1 ? "week" : "weeks") : (durationValue === 1 ? "month" : "months")})</span>
+                          <span>₹{activePricing.rawTotal.toLocaleString("en-IN")}</span>
+                        </div>
+
+                        {activePricing.discountPercent > 0 && (
+                          <div className="flex justify-between text-xs text-emerald-600 font-bold uppercase tracking-wider">
+                            <span>Discount ({activePricing.discountPercent}%)</span>
+                            <span>-₹{activePricing.discountAmount.toLocaleString("en-IN")}</span>
+                          </div>
+                        )}
+
+                        <div className="pt-2 border-t border-slate-900/5 flex justify-between items-baseline">
+                          <span className="text-xs font-black text-slate-900 uppercase">Total Cost</span>
+                          <div className="text-right">
+                            <span className="text-3xl font-black text-[#1A2421] font-sans">
+                              ₹{activePricing.finalPrice.toLocaleString("en-IN")}
+                            </span>
+                            <span className="text-[10px] text-slate-500 font-semibold block uppercase">All Inclusive</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Action buttons */}
+                      <div className="space-y-3 pt-2">
+                        <Magnetic>
+                          <button
+                            onClick={handleSelectCalculatedPlan}
+                            className="w-full py-4 bg-mint hover:bg-mint-dark text-white rounded-full font-bold uppercase tracking-wider text-xs shadow-[0_8px_30px_rgba(20,184,166,0.15)] hover:shadow-[0_8px_30px_rgba(20,184,166,0.25)] transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer"
+                          >
+                            Order Custom Plan
+                            <ArrowRight className="w-4 h-4" />
+                          </button>
+                        </Magnetic>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <button
+                            onClick={handleSaveConfig}
+                            className={`py-3 px-2 rounded-full border text-[10px] font-black uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer ${
+                              saveSuccess 
+                                ? "bg-emerald-500 border-transparent text-white" 
+                                : "border-slate-200 bg-white/40 hover:border-slate-800 text-slate-700"
+                            }`}
+                          >
+                            {saveSuccess ? (
+                              <>
+                                <CheckCircle2 className="w-3.5 h-3.5" />
+                                Saved!
+                              </>
+                            ) : (
+                              <>
+                                <Save className="w-3.5 h-3.5" />
+                                Save Config
+                              </>
+                            )}
+                          </button>
+
+                          <button
+                            onClick={() => handleCopyLink()}
+                            className={`py-3 px-2 rounded-full border text-[10px] font-black uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer ${
+                              shareSuccess 
+                                ? "bg-[#1A2421] border-transparent text-white" 
+                                : "border-slate-200 bg-white/40 hover:border-slate-800 text-slate-700"
+                            }`}
+                          >
+                            {shareSuccess ? (
+                              <>
+                                <CheckCircle2 className="w-3.5 h-3.5" />
+                                Copied!
+                              </>
+                            ) : (
+                              <>
+                                <Share2 className="w-3.5 h-3.5" />
+                                Copy Link
+                              </>
+                            )}
+                          </button>
+                        </div>
+
+                        {shareSuccess && (
+                          <motion.p
+                            initial={{ opacity: 0, y: 5 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="text-[9px] text-slate-500 font-semibold text-center mt-2 leading-relaxed break-all p-2 rounded-xl bg-white/50 border border-slate-900/5"
+                          >
+                            {shareSuccess}
+                          </motion.p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Clinical supervision card */}
+                  <div className="glass-panel border-amber-500/20 bg-amber-500/[0.02] rounded-3xl p-6 text-center space-y-3">
+                    <div className="w-10 h-10 rounded-2xl bg-amber-100/50 text-amber-700 flex items-center justify-center mx-auto shadow-inner">
+                      <HelpCircle className="w-5 h-5" />
+                    </div>
+                    <h4 className="text-xs font-bold text-slate-900 uppercase">Need Clinical Guidance?</h4>
+                    <p className="text-[11px] text-slate-700 font-semibold leading-relaxed">
+                      Unsure which care level fits your condition? Book a telehealth video call evaluation directly with Dr. Jethwani.
+                    </p>
+                    <Link
+                      href="https://homeo.healthcare/#booking"
+                      className="text-xs text-mint hover:text-mint-dark font-extrabold uppercase tracking-wider inline-flex items-center gap-1 pt-1"
+                    >
+                      Book Evaluation <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+
+                </div>
+              </div>
+
+              {/* Comparison Section */}
+              <div className="border-t border-slate-900/5 pt-16 space-y-8">
+                <div className="max-w-3xl">
+                  <h2 className="text-2xl font-bold text-[#1A2421] mb-2 flex items-center gap-2">
+                    <Layers className="w-5 h-5 text-mint" />
+                    Compare Configured Plans
+                  </h2>
+                  <p className="text-xs text-slate-500 font-semibold">
+                    Review and compare all configurations you have saved during this session. Side-by-side comparison makes it easier to select the perfect plan before checking in.
+                  </p>
+                </div>
+
+                {savedConfigs.length === 0 ? (
+                  <div className="py-12 border border-dashed border-slate-300 rounded-3xl text-center space-y-3 bg-white/10">
+                    <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto text-slate-400">
+                      <Sliders className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-slate-700">No Saved Configurations</h4>
+                      <p className="text-xs text-slate-500 font-semibold mt-1">
+                        Use the Treatment Planner above and click &quot;Save Config&quot; to add packages for comparison.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {savedConfigs.map((config) => {
+                      const details = careLevelsDetails[config.careLevel];
+                      const pricing = calculatePricing(config.careLevel, config.billingCycle, config.durationValue);
+                      const durationText = config.billingCycle === "weekly"
+                        ? `${config.durationValue} ${config.durationValue === 1 ? "Week" : "Weeks"}`
+                        : `${config.durationValue} ${config.durationValue === 1 ? "Month" : "Months"}`;
+                      
+                      return (
+                        <div
+                          key={config.id}
+                          className="glass-panel border-white/60 bg-white/40 rounded-3xl p-6 flex flex-col justify-between hover:shadow-md transition-all duration-300 relative group overflow-hidden"
+                        >
+                          <div className="space-y-4">
+                            <div className="flex justify-between items-start border-b border-slate-900/5 pb-4">
+                              <div>
+                                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-0.5">{config.date}</span>
+                                <h4 className="text-base font-bold text-slate-900 leading-tight">{details.title}</h4>
+                                <span className="text-[10px] text-mint font-bold uppercase tracking-wider block mt-1">{details.badge}</span>
+                              </div>
+                              <span className="text-2xl">{details.icon}</span>
+                            </div>
+
+                            <div className="space-y-2">
+                              <div className="flex justify-between text-xs text-slate-700 font-semibold">
+                                <span>Duration:</span>
+                                <span className="font-bold">{durationText}</span>
+                              </div>
+                              <div className="flex justify-between text-xs text-slate-700 font-semibold">
+                                <span>Cycle:</span>
+                                <span className="font-bold uppercase">{config.billingCycle}</span>
+                              </div>
+                              <div className="flex justify-between text-xs text-slate-700 font-semibold">
+                                <span>Discount:</span>
+                                <span className="font-bold text-emerald-600">-{pricing.discountPercent}%</span>
+                              </div>
+                              <div className="flex justify-between items-baseline pt-2 border-t border-slate-900/5">
+                                <span className="text-xs text-slate-900 font-bold">Total:</span>
+                                <span className="text-xl font-sans font-black text-slate-900">₹{config.finalPrice.toLocaleString("en-IN")}</span>
+                              </div>
+                            </div>
+
+                            {/* comparative features list */}
+                            <div className="pt-2">
+                              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-2">Key Included:</span>
+                              <ul className="space-y-1.5">
+                                {details.features.slice(0, 3).map((f, i) => (
+                                  <li key={i} className="flex items-start gap-2 text-[10px] text-slate-700 font-semibold leading-relaxed">
+                                    <CheckCircle2 className="w-3 h-3 text-mint flex-shrink-0 mt-0.5" />
+                                    <span className="line-clamp-1">{f}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+
+                          <div className="space-y-2 mt-6">
+                            <Magnetic>
+                              <button
+                                onClick={() => handleSelectSavedPlan(config)}
+                                className="w-full py-2.5 bg-mint hover:bg-mint-dark text-white rounded-full text-[10px] font-bold uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer"
+                              >
+                                Book This Plan
+                                <ArrowRight className="w-3.5 h-3.5" />
+                              </button>
+                            </Magnetic>
+
+                            <div className="grid grid-cols-3 gap-1.5">
+                              <button
+                                onClick={() => handleLoadConfig(config)}
+                                className="py-2 px-1 rounded-full border border-slate-200 bg-white/40 hover:border-slate-800 text-slate-700 text-[9px] font-black uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-1"
+                              >
+                                <Sliders className="w-3 h-3" />
+                                Load
+                              </button>
+                              <button
+                                onClick={() => handleCopyLink(config.careLevel, config.billingCycle, config.durationValue)}
+                                className="py-2 px-1 rounded-full border border-slate-200 bg-white/40 hover:border-slate-800 text-slate-700 text-[9px] font-black uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-1"
+                              >
+                                <Share2 className="w-3 h-3" />
+                                Link
+                              </button>
+                              <button
+                                onClick={() => handleDeleteConfig(config.id)}
+                                className="py-2 px-1 rounded-full border border-red-200 bg-red-500/[0.03] hover:border-red-500 text-red-600 text-[9px] font-black uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-1"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                                Delete
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="catalog-view"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="space-y-12"
+            >
+              {/* Filters and Search Row */}
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 pb-8 border-b border-slate-900/5">
+                {/* Filters */}
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { id: "all", label: "All Packages", icon: <ShoppingBag className="w-3.5 h-3.5" /> },
+                    { id: "consultation", label: "Consultation Plans", icon: <Clock className="w-3.5 h-3.5" /> },
+                    { id: "specialty", label: "Specialty Care", icon: <ShieldCheck className="w-3.5 h-3.5" /> }
+                  ].map((btn) => (
                     <button
-                      onClick={() => handleSelectPlan(pkg)}
-                      className={`w-full py-3.5 bg-white border border-slate-200 group-hover:border-transparent rounded-full font-bold uppercase tracking-wider text-xs transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer shadow-inner ${
-                        pkg.colorTheme
-                          ? `text-[#1A2421] group-hover:bg-slate-900 group-hover:text-white`
-                          : `text-[#1A2421] group-hover:bg-mint group-hover:text-white`
+                      key={btn.id}
+                      onClick={() => setFilter(btn.id as any)}
+                      className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 cursor-pointer ${
+                        filter === btn.id
+                          ? "bg-[#1A2421] text-white shadow-sm"
+                          : "glass-panel border-slate-200 hover:border-slate-800 text-slate-700 hover:text-[#1A2421] bg-white/40"
                       }`}
                     >
-                      Select Program
-                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                      {btn.icon}
+                      {btn.label}
                     </button>
-                  </Magnetic>
+                  ))}
+                </div>
 
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
-        </div>
+                {/* Billing Cycle Toggle */}
+                {filter !== "specialty" && (
+                  <div className="flex items-center gap-2 bg-slate-900/5 p-1.5 rounded-full border border-slate-200/50 backdrop-blur-md">
+                    <button
+                      onClick={() => setCatalogBillingCycle("weekly")}
+                      className={`px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
+                        catalogBillingCycle === "weekly"
+                          ? "bg-white text-slate-900 shadow-sm"
+                          : "text-slate-500 hover:text-[#1A2421]"
+                      }`}
+                    >
+                      Weekly
+                    </button>
+                    <button
+                      onClick={() => setCatalogBillingCycle("monthly")}
+                      className={`px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 cursor-pointer ${
+                        catalogBillingCycle === "monthly"
+                          ? "bg-white text-slate-900 shadow-sm"
+                          : "text-slate-500 hover:text-[#1A2421]"
+                      }`}
+                    >
+                      Monthly
+                      <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-emerald-500 text-white font-black tracking-normal">
+                        SAVE ~17%
+                      </span>
+                    </button>
+                  </div>
+                )}
+
+                {/* Search bar */}
+                <div className="relative w-full md:max-w-xs">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-700" />
+                  <input
+                    type="text"
+                    placeholder="Search treatment plans..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-11 pr-6 py-2.5 rounded-full border border-slate-200 focus:border-mint bg-white/60 focus:bg-white text-xs font-semibold placeholder:text-slate-500 outline-none transition-all"
+                  />
+                </div>
+              </div>
+
+              {/* Packages Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+                {filteredPackages.map((pkg) => {
+                  const borderClass = pkg.colorTheme ? pkg.colorTheme.border : "border-white/60 hover:border-white/90";
+                  const bgClass = pkg.colorTheme ? pkg.colorTheme.bg : "bg-white/40";
+                  const textClass = pkg.colorTheme ? pkg.colorTheme.text : "text-mint-dark";
+                  
+                  return (
+                    <div
+                      key={pkg.id}
+                      className={`glass-panel ${borderClass} ${bgClass} rounded-3xl p-8 flex flex-col justify-between group relative overflow-hidden transition-all duration-300 shadow-[0_4px_24px_rgba(0,0,0,0.01)] hover:shadow-[0_8px_32px_rgba(20,184,166,0.02)] ${
+                        pkg.id === "recommended-system-care" ? "ring-2 ring-indigo-500/20" : ""
+                      }`}
+                    >
+                      {/* Glow effect on hover */}
+                      <div 
+                        className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700"
+                        style={{
+                          background: `radial-gradient(circle at 80% 20%, ${pkg.glowColor} 0%, transparent 60%)`
+                        }}
+                      />
+
+                      <div>
+                        {/* Card header */}
+                        <div className="flex justify-between items-start gap-4 mb-6">
+                          <div>
+                            {pkg.badge && (
+                              <span className={`inline-block text-[9px] font-extrabold uppercase px-2.5 py-0.5 rounded-full mb-3 ${
+                                pkg.colorTheme 
+                                  ? `${pkg.colorTheme.badgeBg} ${pkg.colorTheme.badgeText}` 
+                                  : "bg-mint/10 border border-mint/20 text-mint-dark"
+                              }`}>
+                                {pkg.badge}
+                              </span>
+                            )}
+                            <h3 className="text-xl font-bold text-[#1A2421] leading-tight mb-1">{pkg.title}</h3>
+                            <span className="text-[10px] text-slate-700 font-bold uppercase tracking-wider block">
+                              {pkg.duration}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="mb-6 pb-6 border-b border-slate-900/5">
+                          {pkg.category === "consultation" ? (
+                            <div className="flex flex-col">
+                              <div className="flex items-baseline gap-1.5">
+                                <span className="text-3xl font-black text-[#1A2421] font-sans">
+                                  {catalogBillingCycle === "weekly" ? pkg.priceWeekly : pkg.priceMonthly}
+                                </span>
+                                {(catalogBillingCycle === "weekly" ? pkg.priceWeekly : pkg.priceMonthly)?.startsWith("₹") && (
+                                  <span className="text-xs text-slate-500 font-bold uppercase tracking-wider">
+                                    / {catalogBillingCycle}
+                                  </span>
+                                )}
+                              </div>
+                              <span className="text-[10px] text-slate-500 font-semibold mt-1">
+                                {catalogBillingCycle === "weekly" 
+                                  ? `Monthly: ${pkg.priceMonthly}` 
+                                  : `Weekly: ${pkg.priceWeekly}`}
+                              </span>
+                            </div>
+                          ) : (
+                            <span className="text-2xl font-black text-[#1A2421] font-sans">{pkg.price}</span>
+                          )}
+                        </div>
+
+                        <p className="text-xs text-slate-700 font-semibold leading-relaxed mb-6">
+                          {pkg.desc}
+                        </p>
+
+                        {/* Features checklist */}
+                        <ul className="space-y-3 mb-8">
+                          {pkg.features.map((feature, idx) => (
+                            <li key={idx} className="flex items-start gap-2.5 text-xs text-slate-700 font-semibold leading-relaxed">
+                              <CheckCircle2 className={`w-4 h-4 flex-shrink-0 mt-0.5 ${textClass}`} />
+                              <span>{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      {/* Purchase Trigger Button */}
+                      <Magnetic>
+                        <button
+                          onClick={() => handleSelectPlan(pkg)}
+                          className={`w-full py-3.5 bg-white border border-slate-200 group-hover:border-transparent rounded-full font-bold uppercase tracking-wider text-xs transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer shadow-inner ${
+                            pkg.colorTheme
+                              ? `text-[#1A2421] group-hover:bg-slate-900 group-hover:text-white`
+                              : `text-[#1A2421] group-hover:bg-mint group-hover:text-white`
+                          }`}
+                        >
+                          Select Program
+                          <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                        </button>
+                      </Magnetic>
+
+                    </div>
+                  );
+                })}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Pricing Sub-text Notes */}
         <div className="mb-24 flex flex-col items-center text-center max-w-4xl mx-auto px-6 py-8 rounded-3xl border border-slate-200/50 bg-white/20 backdrop-blur-md">
@@ -599,7 +1378,7 @@ export default function StorePage() {
           </div>
 
           <div className="flex gap-4">
-            <div className="w-10 h-10 rounded-2xl bg-white border border-slate-100 flex items-center justify-center flex-shrink-0 shadow-sm text-aqua">
+            <div className="w-10 h-10 rounded-2xl bg-white border border-slate-100 flex items-center justify-center flex-shrink-0 shadow-sm text-mint">
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
@@ -615,14 +1394,13 @@ export default function StorePage() {
               <MessageSquare className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-slate-900 mb-1">Inter-Consultation Tracking</h4>
+              <h4 className="text-sm font-bold text-[#1A2421] mb-1">Inter-Consultation Tracking</h4>
               <p className="text-xs text-slate-700 font-semibold leading-relaxed">
                 Patients have continuous clinical support over WhatsApp to coordinate dose changes, acute symptoms flares, or updates.
               </p>
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );
