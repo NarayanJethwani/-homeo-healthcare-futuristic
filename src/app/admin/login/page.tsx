@@ -60,8 +60,10 @@ export default function AdminLogin() {
           
           // Fallback bypass: If Firebase configuration is mock/default, check simple matching credentials for testing
           if (
-            (email === "admin@homeo.healthcare" && password === "Admin@123") ||
-            (email === "doctor@homeo.healthcare" && password === "Doctor@123")
+            process.env.NODE_ENV === "development" && (
+              (email === "admin@homeo.healthcare" && password === "Admin@123") ||
+              (email === "doctor@homeo.healthcare" && password === "Doctor@123")
+            )
           ) {
             const isAdm = email.startsWith("admin");
             localStorage.setItem("admin_session", JSON.stringify({
@@ -89,6 +91,7 @@ export default function AdminLogin() {
 
   // Helper to quickly log in with mock credentials during development
   const handleMockBypass = (role: "admin" | "doctor") => {
+    if (process.env.NODE_ENV !== "development") return;
     setIsLoading(true);
     setTimeout(() => {
       if (role === "admin") {
@@ -203,30 +206,32 @@ export default function AdminLogin() {
           </form>
 
           {/* Quick-Access Demo Accounts Section */}
-          <div className="mt-8 border-t border-slate-900/5 pt-6 text-center">
-            <span className="text-[10px] text-slate-700 font-bold uppercase tracking-wider block mb-4">
-              Demo Access / Developer Mode
-            </span>
-            <div className="flex gap-3">
-              <button
-                type="button"
-                onClick={() => handleMockBypass("admin")}
-                className="flex-1 py-2 px-3 border border-slate-200 hover:border-mint hover:bg-mint/5 rounded-xl text-[10px] font-bold text-slate-700 transition-all cursor-pointer"
-              >
-                Log as Admin (Jethwani)
-              </button>
-              <button
-                type="button"
-                onClick={() => handleMockBypass("doctor")}
-                className="flex-1 py-2 px-3 border border-slate-200 hover:border-mint hover:bg-mint/5 rounded-xl text-[10px] font-bold text-slate-700 transition-all cursor-pointer"
-              >
-                Log as Junior Doctor
-              </button>
+          {process.env.NODE_ENV === "development" && (
+            <div className="mt-8 border-t border-slate-900/5 pt-6 text-center">
+              <span className="text-[10px] text-slate-700 font-bold uppercase tracking-wider block mb-4">
+                Demo Access / Developer Mode
+              </span>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => handleMockBypass("admin")}
+                  className="flex-1 py-2 px-3 border border-slate-200 hover:border-mint hover:bg-mint/5 rounded-xl text-[10px] font-bold text-slate-700 transition-all cursor-pointer"
+                >
+                  Log as Admin (Jethwani)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleMockBypass("doctor")}
+                  className="flex-1 py-2 px-3 border border-slate-200 hover:border-mint hover:bg-mint/5 rounded-xl text-[10px] font-bold text-slate-700 transition-all cursor-pointer"
+                >
+                  Log as Junior Doctor
+                </button>
+              </div>
+              <p className="text-[9px] text-slate-400 font-medium mt-3 leading-normal">
+                Bypasses real OAuth validation when credentials match standard email and password format.
+              </p>
             </div>
-            <p className="text-[9px] text-slate-400 font-medium mt-3 leading-normal">
-              Bypasses real OAuth validation when credentials match standard email and password format.
-            </p>
-          </div>
+          )}
         </motion.div>
       </div>
     </div>

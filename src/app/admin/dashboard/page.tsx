@@ -9,6 +9,8 @@ import {
   Settings, LogOut, ShieldAlert, Award, FileText, ChevronRight, UserPlus, Upload
 } from "lucide-react";
 import { REPERTORY_DATA, REPERTORY_CHAPTERS, REMEDIES_METADATA, Rubric } from "@/lib/repertoryData";
+import { db } from "@/lib/firebase";
+import { collection, onSnapshot, query, orderBy, doc, updateDoc, setDoc } from "firebase/firestore";
 
 interface UserSession {
   uid: string;
@@ -99,93 +101,111 @@ export default function AdminDashboard() {
     }
   }, [router]);
 
-  // Load Mock/Firebase Patients
+  // Load Patients from Firestore in real-time
   useEffect(() => {
-    // Generate initial high-quality mock data
-    const initialPatients: Patient[] = [
-      {
-        id: "P-100234",
-        name: "Aarav Mehta",
-        age: "42",
-        gender: "Male",
-        phone: "+91 98200 12345",
-        email: "aarav.mehta@gmail.com",
-        location: "Mumbai, Maharashtra, India",
-        complaint: "Chronic severe acidity, GERD, and abdominal bloating immediately after eating. Irritability, very chilly, worse cold drinks.",
-        careLevel: "Advanced Chronic Tier",
-        durationText: "6-Month Treatment Plan",
-        finalPrice: 8500,
-        folderUrl: "https://drive.google.com/drive/u/0/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb",
-        sheetUrl: "https://docs.google.com/spreadsheets/d/mock-sheet-aarav",
-        assignedDoctor: "doctor-bypass-id",
-        status: "active",
-        createdAt: "2026-05-20T10:00:00Z"
-      },
-      {
-        id: "P-200567",
-        name: "Priyanka Sen",
-        age: "29",
-        gender: "Female",
-        phone: "+91 91100 54321",
-        email: "priyanka.sen@outlook.com",
-        location: "Kolkata, West Bengal, India",
-        complaint: "Dry eczematous patches on elbows and neck. Intense itching at night, worse warmth of bed. Desires cold air.",
-        careLevel: "Standard Consultation",
-        durationText: "1-Month Consultation",
-        finalPrice: 2200,
-        folderUrl: "https://drive.google.com/drive/u/0/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb",
-        sheetUrl: "https://docs.google.com/spreadsheets/d/mock-sheet-priyanka",
-        assignedDoctor: "doctor-bypass-id",
-        status: "active",
-        createdAt: "2026-05-22T14:30:00Z"
-      },
-      {
-        id: "P-339281",
-        name: "Suresh Sharma",
-        age: "67",
-        gender: "Male",
-        phone: "+91 88799 11223",
-        email: "suresh67@yahoo.com",
-        location: "Delhi, NCR, India",
-        complaint: "Severe morning joint stiffness in knees and back. Pain worse beginning of motion, improves with continuous walking. Aggravated by cold damp weather.",
-        careLevel: "Advanced Chronic Tier",
-        durationText: "12-Month Support Plan",
-        finalPrice: 15000,
-        folderUrl: "https://drive.google.com/drive/u/0/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb",
-        sheetUrl: "https://docs.google.com/spreadsheets/d/mock-sheet-suresh",
-        assignedDoctor: "unassigned",
-        status: "awaiting-consult",
-        createdAt: "2026-05-25T09:15:00Z"
-      },
-      {
-        id: "P-882910",
-        name: "Rishi (Golden Retriever)",
-        age: "4",
-        gender: "Male",
-        phone: "+91 98800 99887",
-        email: "amit.verma@gmail.com",
-        location: "Pune, Maharashtra, India",
-        complaint: "Severe separation anxiety, whines and scratches door when owner leaves. Extremely fearful of thunder and firecrackers. Desires cool open air.",
-        careLevel: "Veterinary Consultation",
-        durationText: "3-Month Plan",
-        finalPrice: 4500,
-        folderUrl: "https://drive.google.com/drive/u/0/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb",
-        sheetUrl: "https://docs.google.com/spreadsheets/d/mock-sheet-rishi",
-        assignedDoctor: "unassigned",
-        status: "active",
-        createdAt: "2026-05-26T11:45:00Z"
-      }
-    ];
+    if (!session?.uid) return;
 
-    // Load any saved patients from localStorage or use initial patients
-    const localPatients = localStorage.getItem("patients_list");
-    if (localPatients) {
-      setPatients(JSON.parse(localPatients));
-    } else {
-      setPatients(initialPatients);
-      localStorage.setItem("patients_list", JSON.stringify(initialPatients));
-    }
-  }, []);
+    const q = query(collection(db, "patients"), orderBy("createdAt", "desc"));
+    
+    const unsubscribe = onSnapshot(q, async (snapshot) => {
+      if (snapshot.empty) {
+        // If Firestore patients collection is empty, seed it with high-quality mock data for testing
+        console.log("Firestore patients collection is empty. Seeding initial patients...");
+        try {
+          const initialPatients: Patient[] = [
+            {
+              id: "P-100234",
+              name: "Aarav Mehta",
+              age: "42",
+              gender: "Male",
+              phone: "+91 98200 12345",
+              email: "aarav.mehta@gmail.com",
+              location: "Mumbai, Maharashtra, India",
+              complaint: "Chronic severe acidity, GERD, and abdominal bloating immediately after eating. Irritability, very chilly, worse cold drinks.",
+              careLevel: "Advanced Chronic Tier",
+              durationText: "6-Month Treatment Plan",
+              finalPrice: 8500,
+              folderUrl: "https://drive.google.com/drive/u/0/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb",
+              sheetUrl: "https://docs.google.com/spreadsheets/d/mock-sheet-aarav",
+              assignedDoctor: "doctor-bypass-id",
+              status: "active",
+              createdAt: "2026-05-20T10:00:00Z"
+            },
+            {
+              id: "P-200567",
+              name: "Priyanka Sen",
+              age: "29",
+              gender: "Female",
+              phone: "+91 91100 54321",
+              email: "priyanka.sen@outlook.com",
+              location: "Kolkata, West Bengal, India",
+              complaint: "Dry eczematous patches on elbows and neck. Intense itching at night, worse warmth of bed. Desires cold air.",
+              careLevel: "Standard Consultation",
+              durationText: "1-Month Consultation",
+              finalPrice: 2200,
+              folderUrl: "https://drive.google.com/drive/u/0/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb",
+              sheetUrl: "https://docs.google.com/spreadsheets/d/mock-sheet-priyanka",
+              assignedDoctor: "doctor-bypass-id",
+              status: "active",
+              createdAt: "2026-05-22T14:30:00Z"
+            },
+            {
+              id: "P-339281",
+              name: "Suresh Sharma",
+              age: "67",
+              gender: "Male",
+              phone: "+91 88799 11223",
+              email: "suresh67@yahoo.com",
+              location: "Delhi, NCR, India",
+              complaint: "Severe morning joint stiffness in knees and back. Pain worse beginning of motion, improves with continuous walking. Aggravated by cold damp weather.",
+              careLevel: "Advanced Chronic Tier",
+              durationText: "12-Month Support Plan",
+              finalPrice: 15000,
+              folderUrl: "https://drive.google.com/drive/u/0/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb",
+              sheetUrl: "https://docs.google.com/spreadsheets/d/mock-sheet-suresh",
+              assignedDoctor: "unassigned",
+              status: "awaiting-consult",
+              createdAt: "2026-05-25T09:15:00Z"
+            },
+            {
+              id: "P-882910",
+              name: "Rishi (Golden Retriever)",
+              age: "4",
+              gender: "Male",
+              phone: "+91 98800 99887",
+              email: "amit.verma@gmail.com",
+              location: "Pune, Maharashtra, India",
+              complaint: "Severe separation anxiety, whines and scratches door when owner leaves. Extremely fearful of thunder and firecrackers. Desires cool open air.",
+              careLevel: "Veterinary Consultation",
+              durationText: "3-Month Plan",
+              finalPrice: 4500,
+              folderUrl: "https://drive.google.com/drive/u/0/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb",
+              sheetUrl: "https://docs.google.com/spreadsheets/d/mock-sheet-rishi",
+              assignedDoctor: "unassigned",
+              status: "active",
+              createdAt: "2026-05-26T11:45:00Z"
+            }
+          ];
+
+          for (const pat of initialPatients) {
+            await setDoc(doc(db, "patients", pat.id), pat);
+          }
+        } catch (err) {
+          console.error("Error seeding initial patients in Firestore:", err);
+        }
+      } else {
+        const list: Patient[] = [];
+        snapshot.forEach((doc) => {
+          list.push(doc.data() as Patient);
+        });
+        setPatients(list);
+      }
+    }, (error) => {
+      console.error("Error listening to patients collection:", error);
+    });
+
+    return () => unsubscribe();
+  }, [session]);
 
   // Filter patients based on search and roles
   const filteredPatients = patients.filter((p) => {
@@ -260,30 +280,6 @@ export default function AdminDashboard() {
         setCreatedSheetUrl(data.sheetUrl);
         setCaseCreationSuccess(true);
         
-        // Add to active patients list
-        const newPatient: Patient = {
-          id: data.patientId,
-          name: newCaseForm.name,
-          age: newCaseForm.age,
-          gender: newCaseForm.gender,
-          phone: newCaseForm.phone,
-          email: newCaseForm.email,
-          location: `${newCaseForm.city}, ${newCaseForm.state}, ${newCaseForm.country}`,
-          complaint: newCaseForm.complaint,
-          careLevel: newCaseForm.careLevel,
-          durationText: newCaseForm.durationText,
-          finalPrice: newCaseForm.finalPrice,
-          folderUrl: data.folderUrl,
-          sheetUrl: data.sheetUrl,
-          assignedDoctor: session?.uid || "unassigned",
-          status: "active",
-          createdAt: new Date().toISOString()
-        };
-
-        const updated = [newPatient, ...patients];
-        setPatients(updated);
-        localStorage.setItem("patients_list", JSON.stringify(updated));
-
         // Reset form
         setNewCaseForm({
           name: "",
@@ -313,7 +309,6 @@ export default function AdminDashboard() {
       
       setCreatedFolderUrl(folderUrl);
       setCreatedSheetUrl(sheetUrl);
-      setCaseCreationSuccess(true);
       
       const newPatient: Patient = {
         id: mockPatientId,
@@ -334,9 +329,15 @@ export default function AdminDashboard() {
         createdAt: new Date().toISOString()
       };
       
-      const updated = [newPatient, ...patients];
-      setPatients(updated);
-      localStorage.setItem("patients_list", JSON.stringify(updated));
+      try {
+        await setDoc(doc(db, "patients", mockPatientId), newPatient);
+        setCaseCreationSuccess(true);
+      } catch (dbErr) {
+        console.error("Failed to save mock patient to Firestore:", dbErr);
+        // Fallback local update if Firestore offline
+        setPatients(prev => [newPatient, ...prev]);
+        setCaseCreationSuccess(true);
+      }
     } finally {
       setIsCreatingCase(false);
     }
@@ -469,15 +470,21 @@ export default function AdminDashboard() {
   };
 
   // Assign doctor to a patient (Admin only)
-  const assignDoctor = (patientId: string, doctorUid: string) => {
-    const updated = patients.map((p) => {
-      if (p.id === patientId) {
-        return { ...p, assignedDoctor: doctorUid };
-      }
-      return p;
-    });
-    setPatients(updated);
-    localStorage.setItem("patients_list", JSON.stringify(updated));
+  const assignDoctor = async (patientId: string, doctorUid: string) => {
+    try {
+      const patientRef = doc(db, "patients", patientId);
+      await updateDoc(patientRef, { assignedDoctor: doctorUid });
+    } catch (err) {
+      console.error("Failed to update doctor assignment in Firestore:", err);
+      // Fallback local update
+      const updated = patients.map((p) => {
+        if (p.id === patientId) {
+          return { ...p, assignedDoctor: doctorUid };
+        }
+        return p;
+      });
+      setPatients(updated);
+    }
   };
 
   // Rubrics filtration
@@ -561,6 +568,13 @@ export default function AdminDashboard() {
 
     setCustomComplaint(pat.complaint);
     
+    // Load previously exported AI analysis report if it exists
+    if ((pat as any).aiReport) {
+      setAiReport((pat as any).aiReport);
+    } else {
+      setAiReport("");
+    }
+    
     // Clear and auto-populate some relevant rubrics based on keywords
     setSelectedRubrics([]);
     const matched: Array<{ rubric: Rubric; grade: number }> = [];
@@ -641,15 +655,20 @@ ${err.message || err}`);
   };
 
   // Save/Export Analysis to patient record
-  const handleExportAnalysis = () => {
+  const handleExportAnalysis = async () => {
     if (!selectedPatientId || !aiReport) return;
     setSaveStatus("exporting");
     
-    // Simulate updating patient record and Google spreadsheet API request
-    setTimeout(() => {
+    try {
+      const patientRef = doc(db, "patients", selectedPatientId);
+      await updateDoc(patientRef, { aiReport: aiReport });
       setSaveStatus("success");
+    } catch (err) {
+      console.error("Failed to export AI analysis to Firestore:", err);
+      setSaveStatus("error");
+    } finally {
       setTimeout(() => setSaveStatus(""), 3000);
-    }, 1500);
+    }
   };
 
   return (

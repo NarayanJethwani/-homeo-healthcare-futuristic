@@ -45,6 +45,11 @@ export const metadata: Metadata = {
     "Holistic Wellness"
   ],
   authors: [{ name: "Dr. Narayan Jethwani" }],
+  icons: {
+    icon: "/favicon.ico?v=2",
+    shortcut: "/favicon.ico?v=2",
+    apple: "/favicon.ico?v=2",
+  },
   openGraph: {
     title: "Homeo Healthcare | Advanced Homeopathic Care for Modern Life",
     description: "Experience next-generation personalized homeopathic healing driven by science and deep compassion.",

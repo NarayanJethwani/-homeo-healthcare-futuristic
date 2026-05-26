@@ -31,6 +31,11 @@
   --font-serif: "Playfair Display", Georgia, serif;
 }
 
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 90px;
+}
+
 body {
   background-color: var(--color-pearl);
   color: #1A2421;
@@ -46,6 +51,8 @@ body {
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 4px 16px 0 rgba(20, 184, 166, 0.02);
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
 }
 
 .glass-panel {
@@ -54,6 +61,8 @@ body {
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.4);
   box-shadow: 0 8px 32px 0 rgba(20, 184, 166, 0.04);
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
 }
 
 .glass-panel-lg {
@@ -62,6 +71,8 @@ body {
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid rgba(255, 255, 255, 0.5);
   box-shadow: 0 16px 48px 0 rgba(20, 184, 166, 0.06);
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
 }
 
 .glass-panel-hover {
