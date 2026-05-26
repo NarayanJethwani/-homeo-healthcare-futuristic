@@ -649,6 +649,41 @@ const diseaseCategories: DiseaseCategory[] = [
     ]
   },
   {
+    id: "psychiatry-mental",
+    label: "Psychiatry & Mental Health",
+    icon: "🧘",
+    conditions: [
+      { name: "Panic Attacks & Severe Anxiety", careLevel: "focused", conditionsCount: 1, rationale: "Deep neuro-chemical balance to calm hyper-sympathetic nervous reactions." },
+      { name: "Chronic Depressive Episodes", careLevel: "focused", conditionsCount: 1, rationale: "Constitutional care targeting neurotransmitter dynamics, sleep, and vital forces." },
+      { name: "ADHD / Focus / Pediatric Behavior", careLevel: "moderate", conditionsCount: 1, rationale: "Improves concentration thresholds, sensory integration, and hyperactive states." },
+      { name: "Obsessive-Compulsive Disorder", careLevel: "focused", conditionsCount: 1, rationale: "Systemic neuro-somatic support targeting rigid behavioral loops and intrusive thoughts." },
+      { name: "Bipolar Mood Stabilization support", careLevel: "organ", conditionsCount: 2, rationale: "Long-term pathogenetic co-management of extreme emotional oscillation phases." }
+    ]
+  },
+  {
+    id: "counseling-services",
+    label: "Counseling Services",
+    icon: "🗣️",
+    conditions: [
+      { name: "Burnout & Stress Management", careLevel: "mild", conditionsCount: 1, rationale: "Proactive life-stress mapping, counseling sessions, and energy restoration guides." },
+      { name: "Relationship / Family Therapy", careLevel: "moderate", conditionsCount: 1, rationale: "Guided dynamic sessions focused on conflict resolution, communication, and emotional coping." },
+      { name: "Trauma & Grief Processing", careLevel: "focused", conditionsCount: 1, rationale: "Deep emotional processing, resilience building, and specialized narrative therapy support." },
+      { name: "Career & Performance Anxiety", careLevel: "mild", conditionsCount: 1, rationale: "CBT-aligned counseling focused on imposter syndrome, stress reduction, and goal mapping." }
+    ]
+  },
+  {
+    id: "veterinary-medicine",
+    label: "Veterinary Homeopathy",
+    icon: "🐾",
+    conditions: [
+      { name: "Pet Atopic Dermatitis / Allergies", careLevel: "moderate", conditionsCount: 1, rationale: "Resolves feline/canine skin flaking, intense itching, and chronic coat shedding." },
+      { name: "Canine / Feline Arthritis", careLevel: "moderate", conditionsCount: 1, rationale: "Natural anti-inflammatory joint therapy to restore mobility and alleviate pain." },
+      { name: "Chronic Pet Renal Failure (CKD)", careLevel: "organ", conditionsCount: 1, rationale: "Supports nephron filtration, reduces uremic toxins, and optimizes hydration levels." },
+      { name: "Pet Separation Anxiety / Fear", careLevel: "mild", conditionsCount: 1, rationale: "Constitutional remedies for dogs/cats exhibiting destructive behaviors or extreme fear." },
+      { name: "Acute Gastric Distress in Animals", careLevel: "mild", conditionsCount: 1, rationale: "Gentle recovery guidelines for vomiting, diarrhea, and metabolic resets in pets." }
+    ]
+  },
+  {
     id: "multisystem",
     label: "Multisystem Complex",
     icon: "🔮",
