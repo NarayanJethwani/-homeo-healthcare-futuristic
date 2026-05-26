@@ -782,7 +782,9 @@ export default function StorePage() {
     careLevel?: "mild" | "moderate" | "focused" | "organ" | "comprehensive";
     conditionsCount?: number;
     durationValue?: number;
-  } | null>(null);  const [activeDiagnosisTab, setActiveDiagnosisTab] = useState("skin-hair");
+  } | null>(null);
+  const [activeDiagnosisTab, setActiveDiagnosisTab] = useState("skin-hair");
+  const finalPayable = checkoutPlan ? (checkoutPlan.finalPrice + (patientCountry === "India" ? 300 : 0)) : 0;
 
   const [filter, setFilter] = useState<"all" | "consultation" | "specialty">("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -1675,7 +1677,7 @@ export default function StorePage() {
                             <span className="text-3xl font-black text-[#1A2421] font-sans">
                               ₹{activePricing.finalPrice.toLocaleString("en-IN")}
                             </span>
-                            <span className="text-[10px] text-slate-500 font-semibold block uppercase">All Inclusive</span>
+                            <span className="text-[9px] text-slate-500 font-semibold block uppercase">Excludes shipping (India ₹300 | Intl at dispatch)</span>
                           </div>
                         </div>
                       </div>
@@ -2207,7 +2209,7 @@ export default function StorePage() {
             <div>
               <h4 className="text-sm font-bold text-slate-900 mb-1">Global Shipping</h4>
               <p className="text-xs text-slate-700 font-semibold leading-relaxed">
-                Remedies are safely packaged and shipped globally. Domestic delivery is covered within plan cost. International shipping calculated at dispatch.
+                Remedies are safely packaged and shipped globally. Domestic shipping across India is ₹300 standard. International shipping is calculated by provider or self-booked.
               </p>
             </div>
           </div>
@@ -2771,11 +2773,25 @@ export default function StorePage() {
                             <span>-₹{(((checkoutPlan.finalPrice / (1 - checkoutPlan.discountPercent / 100)) * (checkoutPlan.discountPercent / 100)) || 0).toLocaleString("en-IN")}</span>
                           </div>
                         )}
-                        <div className="pt-2 flex justify-between items-baseline">
-                          <span className="text-xs font-black text-slate-900 uppercase">Total Amount</span>
+                        <div className="flex justify-between text-xs text-slate-500 font-bold uppercase border-t border-slate-200/50 pt-2">
+                          <span>Shipping & Delivery</span>
+                          {patientCountry === "India" ? (
+                            <span className="text-[#1A2421] font-extrabold">₹300</span>
+                          ) : (
+                            <span className="text-[9px] text-slate-500 font-bold text-right max-w-[150px] leading-tight">
+                              Service provider rate / self-arranged pickup
+                            </span>
+                          )}
+                        </div>
+                        <div className="pt-2 border-t border-slate-200 flex justify-between items-baseline">
+                          <span className="text-xs font-black text-slate-900 uppercase">Total Payable</span>
                           <div className="text-right">
-                            <span className="text-2xl font-black text-[#1A2421] font-sans">₹{checkoutPlan.finalPrice.toLocaleString("en-IN")}</span>
-                            <span className="text-[9px] text-slate-500 font-semibold block uppercase">All taxes & dilutions included</span>
+                            <span className="text-2xl font-black text-[#1A2421] font-sans">₹{finalPayable.toLocaleString("en-IN")}</span>
+                            <span className="text-[9px] text-slate-500 font-semibold block uppercase">
+                              {patientCountry === "India" 
+                                ? "Includes standard ₹300 shipping" 
+                                : "Excludes international shipping"}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -2815,9 +2831,8 @@ export default function StorePage() {
                         </button>
                       </div>
 
-                      {/* UPI Payment panel */}
                       {paymentMethod === "upi" && (() => {
-                        const upiPayUrl = `upi://pay?pa=8446056789@okbizaxis&pn=Dr%20Narayan%20Jethwani&am=${checkoutPlan.finalPrice}&cu=INR&tn=${encodeURIComponent(`Plan - ${checkoutPlan.title}`)}`;
+                        const upiPayUrl = `upi://pay?pa=8446056789@okbizaxis&pn=Dr%20Narayan%20Jethwani&am=${finalPayable}&cu=INR&tn=${encodeURIComponent(`Plan - ${checkoutPlan.title}`)}`;
                         const qrCodeSrc = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(upiPayUrl)}`;
                         
                         return (
@@ -2830,12 +2845,12 @@ export default function StorePage() {
                                   width={140}
                                   height={140}
                                   className="w-32 h-32"
-                                />
+                                  />
                               </div>
                               <div className="space-y-2 text-center sm:text-left">
                                 <h5 className="text-xs font-black text-mint uppercase tracking-wider">Dynamic UPI QR Code</h5>
                                 <p className="text-[10px] text-slate-500 font-semibold leading-normal">
-                                  Scan using any UPI App (GPay, PhonePe, Paytm, BHIM) to pay exactly <span className="font-bold text-slate-800">₹{checkoutPlan.finalPrice.toLocaleString("en-IN")}</span> instantly.
+                                  Scan using any UPI App (GPay, PhonePe, Paytm, BHIM) to pay exactly <span className="font-bold text-slate-800">₹{finalPayable.toLocaleString("en-IN")}</span> instantly.
                                 </p>
                                 <div className="pt-2 flex flex-wrap gap-2 justify-center sm:justify-start">
                                   <button
@@ -2939,7 +2954,9 @@ export default function StorePage() {
 - *Conditions Setup:* ${checkoutPlan.conditionsText}
 - *Billing Cycle:* ${billingCycleText}
 - *Duration:* ${checkoutPlan.durationText}
-- *Total Cost:* ₹${checkoutPlan.finalPrice.toLocaleString("en-IN")} ${checkoutPlan.discountPercent > 0 ? `(with ${checkoutPlan.discountPercent}% Discount)` : ""}
+- *Program Cost:* ₹${checkoutPlan.finalPrice.toLocaleString("en-IN")} ${checkoutPlan.discountPercent > 0 ? `(with ${checkoutPlan.discountPercent}% Discount)` : ""}
+- *Shipping:* ${patientCountry === "India" ? "Domestic Standard (₹300)" : "International / Self-arranged Pickup (To be coordinated)"}
+- *Total Amount:* ₹${finalPayable.toLocaleString("en-IN")}
 
 *PAYMENT REGISTRATION:*
 - *Method:* ${paymentMethod === "upi" ? "GPay / Paytm / PhonePe UPI" : "Bank IMPS / NEFT"}
