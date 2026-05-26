@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Menu, X, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
@@ -8,6 +9,7 @@ import Image from "next/image";
 import Magnetic from "./Magnetic";
 
 export default function Navbar() {
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -27,6 +29,10 @@ export default function Navbar() {
     { name: "Blog", href: "/blogs" },
     { name: "Contact", href: "/contact-us" },
   ];
+
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
 
   return (
     <>

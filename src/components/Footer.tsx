@@ -1,11 +1,14 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { Sparkles, Mail, MapPin } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import Magnetic from "./Magnetic";
 
 export default function Footer() {
+  const pathname = usePathname();
+  if (pathname?.startsWith("/admin")) return null;
   const links = {
     clinical: [
       { name: "Conditions We Treat", href: "/services" },

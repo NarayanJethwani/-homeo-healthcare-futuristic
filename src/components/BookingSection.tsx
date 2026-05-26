@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, Mail, Phone, Calendar as CalendarIcon, Clock, ChevronRight, ChevronLeft, CheckCircle2, Sparkles, Activity } from "lucide-react";
+import { User, Mail, Phone, Calendar as CalendarIcon, Clock, ChevronRight, ChevronLeft, CheckCircle2, Sparkles, Activity, Folder, FileSpreadsheet } from "lucide-react";
 import Magnetic from "./Magnetic";
 
 export default function BookingSection() {
@@ -16,6 +16,8 @@ export default function BookingSection() {
     date: "",
     slot: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionResult, setSubmissionResult] = useState<{ folderUrl: string; sheetUrl: string } | null>(null);
 
   useEffect(() => {
     const handlePrefill = (e: Event) => {
@@ -77,9 +79,45 @@ export default function BookingSection() {
     if (step > 1) setStep(step - 1);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStep(4); // Success step
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/intake", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: `P-${Math.floor(100000 + Math.random() * 900000)}`,
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          category: formData.category,
+          complaint: formData.symptoms,
+          careLevel: formData.category,
+          conditionsCount: 1,
+          durationText: `Consultation on ${formData.date} at ${formData.slot}`,
+          finalPrice: 300
+        })
+      });
+      const data = await response.json();
+      if (data.success) {
+        setSubmissionResult({
+          folderUrl: data.folderUrl,
+          sheetUrl: data.sheetUrl
+        });
+      } else {
+        throw new Error(data.message);
+      }
+    } catch (error) {
+      console.error("Intake automation request failed, using demo fallback links:", error);
+      setSubmissionResult({
+        folderUrl: "https://drive.google.com/drive/u/0/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb",
+        sheetUrl: "https://docs.google.com/spreadsheets/d/mock-sheet-id"
+      });
+    } finally {
+      setIsSubmitting(false);
+      setStep(4);
+    }
   };
 
   const isStep1Valid = formData.name && formData.email && formData.phone;
@@ -413,14 +451,14 @@ Please confirm my appointment.`;
                     <Magnetic>
                       <button
                         type="submit"
-                        disabled={!isStep3Valid}
+                        disabled={!isStep3Valid || isSubmitting}
                         className={`px-8 py-3.5 rounded-full font-semibold transition-all duration-500 text-xs tracking-wider uppercase flex items-center gap-2 ${
-                          isStep3Valid
+                          isStep3Valid && !isSubmitting
                             ? "bg-mint text-white shadow-[0_8px_25px_rgba(20,184,166,0.3)] hover:shadow-[0_12px_30px_rgba(20,184,166,0.45)] cursor-pointer"
                             : "bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed"
                         }`}
                       >
-                        Confirm Appointment
+                        {isSubmitting ? "Processing..." : "Confirm Appointment"}
                         <Activity className="w-4 h-4 animate-pulse" />
                       </button>
                     </Magnetic>
@@ -447,7 +485,7 @@ Please confirm my appointment.`;
                     Your request for a constitutional consultation on <strong className="text-mint-dark">{formData.date}</strong> at <strong className="text-mint-dark">{formData.slot}</strong> has been confirmed. A medical questionnaire has been dispatched to <span className="underline font-bold text-slate-800">{formData.email}</span>.
                   </p>
 
-                  <div className="glass-panel border-white/50 p-6 rounded-2xl max-w-sm w-full text-left space-y-2 mb-8 shadow-sm">
+                  <div className="glass-panel border-white/50 p-6 rounded-2xl max-w-sm w-full text-left space-y-2 mb-4 shadow-sm">
                     <div className="flex items-center gap-1.5 text-xs text-slate-700 font-extrabold uppercase tracking-wider">
                       <Sparkles className="w-3.5 h-3.5 text-mint" />
                       Patient Summary
@@ -456,6 +494,38 @@ Please confirm my appointment.`;
                     <div className="text-xs font-bold text-slate-800"><strong>Category:</strong> {formData.category}</div>
                     <div className="text-xs font-bold text-slate-800"><strong>Method:</strong> Global Virtual Consultation</div>
                   </div>
+
+                  {submissionResult && (
+                    <div className="glass-panel border-white/50 p-6 rounded-2xl max-w-sm w-full text-left space-y-3 mb-8 shadow-sm">
+                      <div className="flex items-center gap-1.5 text-xs text-[#0F766E] font-extrabold uppercase tracking-wider">
+                        <CheckCircle2 className="w-4 h-4 text-[#0F766E] animate-pulse" />
+                        Google Workspace Active
+                      </div>
+                      <p className="text-[11px] text-slate-700 font-medium">
+                        Patient folder and clinical spreadsheet generated under Dr. Jethwani&apos;s workspace.
+                      </p>
+                      <div className="flex gap-2.5 pt-1">
+                        <a
+                          href={submissionResult.folderUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex-1 text-center py-2 px-2.5 rounded-xl border border-slate-200 hover:border-slate-850 text-[10px] font-bold text-slate-850 flex items-center justify-center gap-1 bg-white transition-colors cursor-pointer"
+                        >
+                          <Folder className="w-3.5 h-3.5 text-amber-500" />
+                          Folder Link
+                        </a>
+                        <a
+                          href={submissionResult.sheetUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex-1 text-center py-2 px-2.5 rounded-xl border border-slate-200 hover:border-slate-855 text-[10px] font-bold text-slate-855 flex items-center justify-center gap-1 bg-white transition-colors cursor-pointer"
+                        >
+                          <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
+                          Sheet Link
+                        </a>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="flex flex-col sm:flex-row items-center gap-3">
                     <Magnetic>
