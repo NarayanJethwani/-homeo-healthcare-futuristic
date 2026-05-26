@@ -684,6 +684,30 @@ const diseaseCategories: DiseaseCategory[] = [
     ]
   },
   {
+    id: "pediatric-care",
+    label: "Pediatric Care",
+    icon: "🧸",
+    conditions: [
+      { name: "Recurrent Tonsillitis / Adenoids", careLevel: "moderate", conditionsCount: 1, rationale: "Shrinks tonsillar tissue and builds lymphatic immunity in growing children." },
+      { name: "Pediatric Eczema / Cradle Cap", careLevel: "moderate", conditionsCount: 1, rationale: "Gentle skin barrier recovery mapping without toxic topical steroid application." },
+      { name: "Bedwetting (Nocturnal Enuresis)", careLevel: "mild", conditionsCount: 1, rationale: "Constitutional bladder tone strengthening and nervous system calming." },
+      { name: "Recurrent Pediatric Colds & Coughs", careLevel: "mild", conditionsCount: 1, rationale: "Builds natural immunological tolerance to environmental triggers." },
+      { name: "Dentition-Related Fevers & Diarrhea", careLevel: "mild", conditionsCount: 1, rationale: "Soothes nerve irritation during teething phases and resolves gastric distress." }
+    ]
+  },
+  {
+    id: "geriatric-care",
+    label: "Geriatric Care",
+    icon: "👴",
+    conditions: [
+      { name: "Parkinson's Disease / Tremors", careLevel: "organ", conditionsCount: 1, rationale: "Neurological support to slow down degenerative motor changes and tremors." },
+      { name: "Chronic Osteoarthritis & Frailty", careLevel: "focused", conditionsCount: 1, rationale: "Deep joint cartilage preservation, pain relief, and mineral assimilation support." },
+      { name: "Senile Dementia / Cognitive Decline", careLevel: "focused", conditionsCount: 1, rationale: "Enhances cerebral circulation, memory support, and mental clarity." },
+      { name: "BPH & Nocturia in Seniors", careLevel: "focused", conditionsCount: 1, rationale: "Relaxes bladder neck, improves urinary flow rate, and curtails nighttime urination." },
+      { name: "Chronic Sleep Disorders in Seniors", careLevel: "mild", conditionsCount: 1, rationale: "Gentle circadian cycle stabilization without habit-forming sedative dependency." }
+    ]
+  },
+  {
     id: "multisystem",
     label: "Multisystem Complex",
     icon: "🔮",
