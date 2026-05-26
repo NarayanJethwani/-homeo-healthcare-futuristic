@@ -26,7 +26,9 @@ export async function POST(request: Request) {
       careLevel: body.careLevel || "Standard Consultation",
       conditionsCount: Number(body.conditionsCount || 1),
       durationText: body.durationText || "One-Time consultation",
-      finalPrice: Number(body.finalPrice || 300)
+      finalPrice: Number(body.finalPrice || 300),
+      deliveryMode: body.deliveryMode || "shipping",
+      address: body.address || ""
     };
 
     console.log("Processing intake automation for patient:", patientData.name);
@@ -48,12 +50,15 @@ export async function POST(request: Request) {
       gender: patientData.gender,
       phone: patientData.phone,
       email: patientData.email,
-      location: `${patientData.city}, ${patientData.state}, ${patientData.country}`,
+      location: patientData.deliveryMode === "shipping"
+        ? `${patientData.address || "N/A"}, ${patientData.city}, ${patientData.state}, ${patientData.country}`
+        : `N/A (${patientData.deliveryMode})`,
       complaint: patientData.complaint,
       careLevel: patientData.careLevel,
       conditionsCount: patientData.conditionsCount,
       durationText: patientData.durationText,
       finalPrice: patientData.finalPrice,
+      deliveryMode: patientData.deliveryMode,
       folderId: folderResult.folderId,
       folderUrl: folderResult.folderUrl,
       sheetId: sheetResult.sheetId,

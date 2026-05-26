@@ -756,11 +756,13 @@ export default function StorePage() {
   const [patientEmail, setPatientEmail] = useState("");
   const [patientAge, setPatientAge] = useState("");
   const [patientGender, setPatientGender] = useState("Male");
+  const [deliveryMode, setDeliveryMode] = useState<"shipping" | "walkin" | "pickup">("shipping");
   const [patientCountry, setPatientCountry] = useState("India");
+  const [patientState, setPatientState] = useState("");
   const [patientCity, setPatientCity] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [customCity, setCustomCity] = useState("");
-  const [patientState, setPatientState] = useState("");
+  const [patientAddress, setPatientAddress] = useState("");
   const [patientComplaint, setPatientComplaint] = useState("");
   
   // Payment fields
@@ -784,7 +786,9 @@ export default function StorePage() {
     durationValue?: number;
   } | null>(null);
   const [activeDiagnosisTab, setActiveDiagnosisTab] = useState("skin-hair");
-  const finalPayable = checkoutPlan ? (checkoutPlan.finalPrice + (patientCountry === "India" ? 300 : 0)) : 0;
+  const finalPayable = checkoutPlan 
+    ? (checkoutPlan.finalPrice + (deliveryMode === "shipping" && patientCountry === "India" ? 300 : 0)) 
+    : 0;
 
   const [filter, setFilter] = useState<"all" | "consultation" | "specialty">("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -2586,113 +2590,200 @@ export default function StorePage() {
                         </div>
                       </div>
 
-                      {/* Country Selection */}
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Country *</label>
-                        <select
-                          value={patientCountry}
-                          onChange={(e) => {
-                            setPatientCountry(e.target.value);
-                            setPatientState("");
-                            setPatientCity("");
-                            setSelectedCity("");
-                            setCustomCity("");
-                          }}
-                          className="w-full p-3 rounded-xl border border-slate-200 bg-white/50 text-sm focus:outline-none focus:border-slate-800"
-                        >
-                          {shippingCountries.map((c) => (
-                            <option key={c} value={c}>{c}</option>
-                          ))}
-                        </select>
-                      </div>
-
-                      {/* State / Province Selection */}
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">
-                          {patientCountry === "India" ? "State / Union Territory *" : "State / Province / Region *"}
-                        </label>
-                        {patientCountry === "India" ? (
-                          <select
-                            value={patientState}
-                            onChange={(e) => setPatientState(e.target.value)}
-                            className={`w-full p-3 rounded-xl border bg-white/50 text-sm focus:outline-none transition-all ${
-                              formErrors.patientState ? "border-red-500 ring-2 ring-red-100" : "border-slate-200 focus:border-slate-800"
+                      {/* Delivery / Collection Option */}
+                      <div className="col-span-1 md:col-span-2 space-y-1">
+                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">Remedy Delivery / Collection *</label>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setDeliveryMode("shipping");
+                              // Reset address validation errors
+                              setFormErrors((prev) => {
+                                const newErr = { ...prev };
+                                delete newErr.patientCountry;
+                                delete newErr.patientState;
+                                delete newErr.patientCity;
+                                delete newErr.patientAddress;
+                                return newErr;
+                              });
+                            }}
+                            className={`p-3 text-left border rounded-2xl transition-all flex flex-col justify-between cursor-pointer ${
+                              deliveryMode === "shipping" 
+                                ? "border-mint bg-mint/[0.02] ring-2 ring-mint/10" 
+                                : "border-slate-200 hover:border-slate-400 bg-white/50"
                             }`}
                           >
-                            <option value="">-- Select State --</option>
-                            {indianStates.map((s) => (
-                              <option key={s} value={s}>{s}</option>
-                            ))}
-                          </select>
-                        ) : (
-                          <input
-                            type="text"
-                            value={patientState}
-                            onChange={(e) => setPatientState(e.target.value)}
-                            placeholder="State / Region"
-                            className={`w-full p-3 rounded-xl border bg-white/50 text-sm focus:outline-none transition-all ${
-                              formErrors.patientState ? "border-red-500 ring-2 ring-red-100" : "border-slate-200 focus:border-slate-800"
-                            }`}
-                          />
-                        )}
-                      </div>
+                            <span className="text-xs font-bold text-slate-900">📦 Courier Shipping</span>
+                            <span className="text-[9px] text-slate-500 font-semibold mt-1">Standard Courier (India ₹300 | Intl at dispatch)</span>
+                          </button>
 
-                      {/* City Selection */}
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">City *</label>
-                        {patientCountry === "India" ? (
-                          <select
-                            value={selectedCity}
-                            onChange={(e) => {
-                              setSelectedCity(e.target.value);
-                              if (e.target.value !== "other") {
-                                setPatientCity(e.target.value);
-                              } else {
-                                setPatientCity(customCity);
-                              }
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setDeliveryMode("walkin");
+                              setPatientCountry("India");
+                              setPatientState("Maharashtra");
+                              setPatientCity("Pune");
+                              setPatientAddress("Baner Clinic Pickup");
                             }}
-                            className={`w-full p-3 rounded-xl border bg-white/50 text-sm focus:outline-none transition-all ${
-                              formErrors.patientCity ? "border-red-500 ring-2 ring-red-100" : "border-slate-200 focus:border-slate-800"
+                            className={`p-3 text-left border rounded-2xl transition-all flex flex-col justify-between cursor-pointer ${
+                              deliveryMode === "walkin" 
+                                ? "border-mint bg-mint/[0.02] ring-2 ring-mint/10" 
+                                : "border-slate-200 hover:border-slate-400 bg-white/50"
                             }`}
                           >
-                            <option value="">-- Select City --</option>
-                            {majorIndianCities.map((c) => (
-                              <option key={c} value={c}>{c}</option>
-                            ))}
-                            <option value="other">Other / Enter manually...</option>
-                          </select>
-                        ) : (
-                          <input
-                            type="text"
-                            value={patientCity}
-                            onChange={(e) => setPatientCity(e.target.value)}
-                            placeholder="City"
-                            className={`w-full p-3 rounded-xl border bg-white/50 text-sm focus:outline-none transition-all ${
-                              formErrors.patientCity ? "border-red-500 ring-2 ring-red-100" : "border-slate-200 focus:border-slate-800"
-                            }`}
-                          />
-                        )}
-                      </div>
+                            <span className="text-xs font-bold text-slate-900">🚶 Walk-in Clinic</span>
+                            <span className="text-[9px] text-slate-500 font-semibold mt-1">Pick up directly from Baner Clinic, Pune (Free)</span>
+                          </button>
 
-                      {/* Custom City Input */}
-                      {patientCountry === "India" && selectedCity === "other" ? (
-                        <div className="space-y-1">
-                          <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Specify City Name *</label>
-                          <input
-                            type="text"
-                            value={customCity}
-                            onChange={(e) => {
-                              setCustomCity(e.target.value);
-                              setPatientCity(e.target.value);
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setDeliveryMode("pickup");
+                              setPatientCountry("India");
+                              setPatientState("Maharashtra");
+                              setPatientCity("Pune");
+                              setPatientAddress("Self-Arranged Pickup");
                             }}
-                            placeholder="Enter City Name"
-                            className={`w-full p-3 rounded-xl border bg-white/50 text-sm focus:outline-none transition-all ${
-                              formErrors.patientCity ? "border-red-500 ring-2 ring-red-100" : "border-slate-200 focus:border-slate-800"
+                            className={`p-3 text-left border rounded-2xl transition-all flex flex-col justify-between cursor-pointer ${
+                              deliveryMode === "pickup" 
+                                ? "border-mint bg-mint/[0.02] ring-2 ring-mint/10" 
+                                : "border-slate-200 hover:border-slate-400 bg-white/50"
                             }`}
-                          />
+                          >
+                            <span className="text-xs font-bold text-slate-900">🛵 Self-Arranged</span>
+                            <span className="text-[9px] text-slate-500 font-semibold mt-1">Book your own pickup (Dunzo/Porter/Courier) (Free)</span>
+                          </button>
                         </div>
-                      ) : (
-                        <div className="hidden md:block" />
+                      </div>
+
+                      {/* Shipping address fields - ONLY visible if Courier Shipping is chosen */}
+                      {deliveryMode === "shipping" && (
+                        <>
+                          {/* Country Selection */}
+                          <div className="space-y-1 animate-fadeIn">
+                            <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Country *</label>
+                            <select
+                              value={patientCountry}
+                              onChange={(e) => {
+                                setPatientCountry(e.target.value);
+                                setPatientState("");
+                                setPatientCity("");
+                                setSelectedCity("");
+                                setCustomCity("");
+                              }}
+                              className="w-full p-3 rounded-xl border border-slate-200 bg-white/50 text-sm focus:outline-none focus:border-slate-800"
+                            >
+                              {shippingCountries.map((c) => (
+                                <option key={c} value={c}>{c}</option>
+                              ))}
+                            </select>
+                          </div>
+
+                          {/* State / Province Selection */}
+                          <div className="space-y-1 animate-fadeIn">
+                            <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">
+                              {patientCountry === "India" ? "State / Union Territory *" : "State / Province / Region *"}
+                            </label>
+                            {patientCountry === "India" ? (
+                              <select
+                                value={patientState}
+                                onChange={(e) => setPatientState(e.target.value)}
+                                className={`w-full p-3 rounded-xl border bg-white/50 text-sm focus:outline-none transition-all ${
+                                  formErrors.patientState ? "border-red-500 ring-2 ring-red-100" : "border-slate-200 focus:border-slate-800"
+                                }`}
+                              >
+                                <option value="">-- Select State --</option>
+                                {indianStates.map((s) => (
+                                  <option key={s} value={s}>{s}</option>
+                                ))}
+                              </select>
+                            ) : (
+                              <input
+                                type="text"
+                                value={patientState}
+                                onChange={(e) => setPatientState(e.target.value)}
+                                placeholder="State / Region"
+                                className={`w-full p-3 rounded-xl border bg-white/50 text-sm focus:outline-none transition-all ${
+                                  formErrors.patientState ? "border-red-500 ring-2 ring-red-100" : "border-slate-200 focus:border-slate-800"
+                                }`}
+                              />
+                            )}
+                          </div>
+
+                          {/* City Selection */}
+                          <div className="space-y-1 animate-fadeIn">
+                            <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">City *</label>
+                            {patientCountry === "India" ? (
+                              <select
+                                value={selectedCity}
+                                onChange={(e) => {
+                                  setSelectedCity(e.target.value);
+                                  if (e.target.value !== "other") {
+                                    setPatientCity(e.target.value);
+                                  } else {
+                                    setPatientCity(customCity);
+                                  }
+                                }}
+                                className={`w-full p-3 rounded-xl border bg-white/50 text-sm focus:outline-none transition-all ${
+                                  formErrors.patientCity ? "border-red-500 ring-2 ring-red-100" : "border-slate-200 focus:border-slate-800"
+                                }`}
+                              >
+                                <option value="">-- Select City --</option>
+                                {majorIndianCities.map((c) => (
+                                  <option key={c} value={c}>{c}</option>
+                                ))}
+                                <option value="other">Other / Enter manually...</option>
+                              </select>
+                            ) : (
+                              <input
+                                type="text"
+                                value={patientCity}
+                                onChange={(e) => setPatientCity(e.target.value)}
+                                placeholder="City"
+                                className={`w-full p-3 rounded-xl border bg-white/50 text-sm focus:outline-none transition-all ${
+                                  formErrors.patientCity ? "border-red-500 ring-2 ring-red-100" : "border-slate-200 focus:border-slate-800"
+                                }`}
+                              />
+                            )}
+                          </div>
+
+                          {/* Custom City Input / Space Filler */}
+                          {patientCountry === "India" && selectedCity === "other" ? (
+                            <div className="space-y-1 animate-fadeIn">
+                              <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Specify City Name *</label>
+                              <input
+                                type="text"
+                                value={customCity}
+                                onChange={(e) => {
+                                  setCustomCity(e.target.value);
+                                  setPatientCity(e.target.value);
+                                }}
+                                placeholder="Enter City Name"
+                                className={`w-full p-3 rounded-xl border bg-white/50 text-sm focus:outline-none transition-all ${
+                                  formErrors.patientCity ? "border-red-500 ring-2 ring-red-100" : "border-slate-200 focus:border-slate-800"
+                                }`}
+                              />
+                            </div>
+                          ) : (
+                            <div className="hidden md:block" />
+                          )}
+
+                          {/* Detailed street/postal address */}
+                          <div className="col-span-1 md:col-span-2 space-y-1 animate-fadeIn">
+                            <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Detailed Shipping Address *</label>
+                            <textarea
+                              rows={2}
+                              value={patientAddress}
+                              onChange={(e) => setPatientAddress(e.target.value)}
+                              placeholder="Building/Apartment name, Flat number, Street, Locality, Pincode/Zipcode..."
+                              className={`w-full p-3 rounded-xl border bg-white/50 text-sm focus:outline-none transition-all resize-none ${
+                                formErrors.patientAddress ? "border-red-500 ring-2 ring-red-100" : "border-slate-200 focus:border-slate-800"
+                              }`}
+                            />
+                          </div>
+                        </>
                       )}
 
                       {/* Clinical symptoms summary */}
@@ -2724,8 +2815,14 @@ export default function StorePage() {
                           if (!patientPhone.trim()) errors.patientPhone = true;
                           if (!patientEmail.trim() || !patientEmail.includes("@")) errors.patientEmail = true;
                           if (!patientAge.trim()) errors.patientAge = true;
-                          if (!patientCity.trim()) errors.patientCity = true;
-                          if (!patientState.trim()) errors.patientState = true;
+                          
+                          if (deliveryMode === "shipping") {
+                            if (!patientCountry.trim()) errors.patientCountry = true;
+                            if (!patientState.trim()) errors.patientState = true;
+                            if (!patientCity.trim()) errors.patientCity = true;
+                            if (!patientAddress.trim()) errors.patientAddress = true;
+                          }
+                          
                           if (!patientComplaint.trim() || patientComplaint.length < 5) errors.patientComplaint = true;
 
                           if (Object.keys(errors).length > 0) {
@@ -2774,13 +2871,19 @@ export default function StorePage() {
                           </div>
                         )}
                         <div className="flex justify-between text-xs text-slate-500 font-bold uppercase border-t border-slate-200/50 pt-2">
-                          <span>Shipping & Delivery</span>
-                          {patientCountry === "India" ? (
-                            <span className="text-[#1A2421] font-extrabold">₹300</span>
+                          <span>Delivery / Shipping</span>
+                          {deliveryMode === "shipping" ? (
+                            patientCountry === "India" ? (
+                              <span className="text-[#1A2421] font-extrabold">₹300 (Courier)</span>
+                            ) : (
+                              <span className="text-[9px] text-slate-500 font-bold text-right max-w-[150px] leading-tight">
+                                International (calculated at dispatch)
+                              </span>
+                            )
+                          ) : deliveryMode === "walkin" ? (
+                            <span className="text-emerald-600 font-extrabold">Clinic Walk-in Pickup (Free)</span>
                           ) : (
-                            <span className="text-[9px] text-slate-500 font-bold text-right max-w-[150px] leading-tight">
-                              Service provider rate / self-arranged pickup
-                            </span>
+                            <span className="text-emerald-600 font-extrabold">Self-Arranged Pickup (Free)</span>
                           )}
                         </div>
                         <div className="pt-2 border-t border-slate-200 flex justify-between items-baseline">
@@ -2788,9 +2891,9 @@ export default function StorePage() {
                           <div className="text-right">
                             <span className="text-2xl font-black text-[#1A2421] font-sans">₹{finalPayable.toLocaleString("en-IN")}</span>
                             <span className="text-[9px] text-slate-500 font-semibold block uppercase">
-                              {patientCountry === "India" 
-                                ? "Includes standard ₹300 shipping" 
-                                : "Excludes international shipping"}
+                              {deliveryMode === "shipping" ? (
+                                patientCountry === "India" ? "Includes standard ₹300 shipping" : "Excludes international shipping"
+                              ) : "Remedy Shipping Fee Excluded (Pickup)"}
                             </span>
                           </div>
                         </div>
@@ -2800,7 +2903,22 @@ export default function StorePage() {
                       <div className="p-4 bg-white border border-slate-100 rounded-2xl space-y-2 text-xs">
                         <span className="text-[9px] text-slate-400 font-bold uppercase block tracking-wider">Patient Summary</span>
                         <p className="text-slate-800 font-bold">{patientName} ({patientAge} years, {patientGender})</p>
-                        <p className="text-slate-500 font-semibold leading-normal">{patientCity}, {patientState}, {patientCountry}</p>
+                        {deliveryMode === "shipping" ? (
+                          <p className="text-slate-500 font-semibold leading-normal">
+                            <span className="font-bold block text-slate-700">Shipping Address:</span>
+                            {patientAddress}, {patientCity}, {patientState}, {patientCountry}
+                          </p>
+                        ) : deliveryMode === "walkin" ? (
+                          <p className="text-slate-500 font-semibold leading-normal">
+                            <span className="font-bold block text-slate-700">Collection:</span>
+                            In-Person Clinic Walk-in (Baner, Pune)
+                          </p>
+                        ) : (
+                          <p className="text-slate-500 font-semibold leading-normal">
+                            <span className="font-bold block text-slate-700">Collection:</span>
+                            Self-Arranged Pickup (Dunzo/Porter Courier)
+                          </p>
+                        )}
                       </div>
                     </div>
 
@@ -2940,13 +3058,24 @@ export default function StorePage() {
                             const cleanComplaint = patientComplaint.trim();
                             const billingCycleText = checkoutPlan.billingCycle === "weekly" ? "Weekly Settle" : "Monthly Commit";
                             
+                            const locationText = deliveryMode === "shipping" 
+                              ? `${patientAddress}, ${patientCity}, ${patientState}, ${patientCountry}`
+                              : deliveryMode === "walkin"
+                                ? "In-Person Walk-in (Baner Clinic, Pune)"
+                                : "Self-Arranged Pickup (Dunzo/Porter/etc.)";
+
+                            const shippingCostText = deliveryMode === "shipping"
+                              ? (patientCountry === "India" ? "Domestic Standard Courier (₹300)" : "International Courier (Calculated at dispatch)")
+                              : "Free Clinic/Self Pickup (₹0)";
+
                             const message = `Hello Dr. Jethwani, I would like to register for a Clinical Treatment Program:
 
 *PATIENT DETAILS:*
 - *Name:* ${patientName} (${patientAge} Years, ${patientGender})
 - *Contact:* ${patientPhone}
 - *Email:* ${patientEmail}
-- *Location:* ${patientCity}, ${patientState}, ${patientCountry}
+- *Delivery Mode:* ${deliveryMode === "shipping" ? "Courier Shipping" : deliveryMode === "walkin" ? "Walk-in Clinic Pickup" : "Self-Arranged Pickup"}
+- *Collection/Shipping Address:* ${locationText}
 - *Chief Complaint:* ${cleanComplaint}
 
 *PROGRAM SELECTION:*
@@ -2955,7 +3084,7 @@ export default function StorePage() {
 - *Billing Cycle:* ${billingCycleText}
 - *Duration:* ${checkoutPlan.durationText}
 - *Program Cost:* ₹${checkoutPlan.finalPrice.toLocaleString("en-IN")} ${checkoutPlan.discountPercent > 0 ? `(with ${checkoutPlan.discountPercent}% Discount)` : ""}
-- *Shipping:* ${patientCountry === "India" ? "Domestic Standard (₹300)" : "International / Self-arranged Pickup (To be coordinated)"}
+- *Shipping Cost:* ${shippingCostText}
 - *Total Amount:* ₹${finalPayable.toLocaleString("en-IN")}
 
 *PAYMENT REGISTRATION:*
@@ -3017,6 +3146,7 @@ I have transferred the payment to your registered GPay (8446056789) or bank acco
                         setPatientAge("");
                         setPatientCity("");
                         setPatientState("");
+                        setPatientAddress("");
                         setPatientComplaint("");
                         setTransactionRef("");
                       }}

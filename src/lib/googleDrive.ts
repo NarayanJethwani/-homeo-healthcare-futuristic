@@ -42,6 +42,8 @@ export interface PatientIntakeData {
   conditionsCount: number;
   durationText: string;
   finalPrice: number;
+  deliveryMode?: string;
+  address?: string;
 }
 
 /**
@@ -124,9 +126,17 @@ export async function createPatientClinicalSheet(
 
     // 2. Populate the sheet headers / patient info on sheet load
     if (newSheetId) {
+      const locationVal = data.deliveryMode
+        ? (data.deliveryMode === "shipping" 
+            ? `${data.address || "N/A"}, ${data.city}, ${data.state}, ${data.country}` 
+            : data.deliveryMode === "walkin" 
+              ? "Walk-in Clinic Pickup (Baner, Pune)" 
+              : "Self-Arranged Pickup (Baner Clinic, Pune)")
+        : `${data.city}, ${data.state}, ${data.country}`;
+
       await sheets.spreadsheets.values.update({
         spreadsheetId: newSheetId,
-        range: "Sheet1!A1:B10",
+        range: "Sheet1!A1:B11",
         valueInputOption: "RAW",
         requestBody: {
           values: [
@@ -135,7 +145,8 @@ export async function createPatientClinicalSheet(
             ["Age / Gender", `${data.age} / ${data.gender}`],
             ["Contact Phone", data.phone],
             ["Email Address", data.email],
-            ["Location", `${data.city}, ${data.state}, ${data.country}`],
+            ["Delivery Option", data.deliveryMode || "Courier Shipping"],
+            ["Location / Address", locationVal],
             ["Chief Complaint", data.complaint],
             ["Recommended Tier", data.careLevel],
             ["Billing Plan Duration", data.durationText],
@@ -170,6 +181,10 @@ export async function appendPatientToMasterRecord(
 
   try {
     const today = new Date().toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" });
+    const locationVal = data.deliveryMode
+      ? (data.deliveryMode === "shipping" ? `${data.city}, ${data.state}` : `N/A (${data.deliveryMode})`)
+      : `${data.city}, ${data.state}`;
+
     const rowValues = [
       data.id,
       data.name,
@@ -177,7 +192,7 @@ export async function appendPatientToMasterRecord(
       data.gender,
       data.phone,
       data.email,
-      `${data.city}, ${data.state}`,
+      locationVal,
       data.complaint,
       data.careLevel,
       data.durationText,
