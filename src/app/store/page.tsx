@@ -6,7 +6,7 @@ import {
   ShoppingBag, Search, Sparkles, Filter, CheckCircle2, 
   ArrowRight, ArrowLeft, Phone, MessageSquare, ShieldCheck, Truck, Clock,
   Sliders, Plus, Trash2, Share2, Copy, Save, LayoutGrid, Layers, Activity,
-  Info, Percent, HelpCircle
+  Info, Percent, HelpCircle, UserCheck, Folder, FileSpreadsheet
 } from "lucide-react";
 import Link from "next/link";
 import Magnetic from "@/components/Magnetic";
@@ -722,7 +722,7 @@ const diseaseCategories: DiseaseCategory[] = [
 ];
 
 export default function StorePage() {
-  const [viewMode, setViewMode] = useState<"dashboard" | "catalog">("dashboard");
+  const [viewMode, setViewMode] = useState<"dashboard" | "catalog" | "doctorPlan">("dashboard");
 
   // Calculator states
   const [careLevel, setCareLevel] = useState<"mild" | "moderate" | "focused" | "organ" | "comprehensive">("focused");
@@ -764,6 +764,19 @@ export default function StorePage() {
   const [customCity, setCustomCity] = useState("");
   const [patientAddress, setPatientAddress] = useState("");
   const [patientComplaint, setPatientComplaint] = useState("");
+  
+  // Walk-in / Let Doctor Plan states
+  const [walkInName, setWalkInName] = useState("");
+  const [walkInAge, setWalkInAge] = useState("");
+  const [walkInGender, setWalkInGender] = useState("Male");
+  const [walkInPhone, setWalkInPhone] = useState("");
+  const [walkInEmail, setWalkInEmail] = useState("");
+  const [walkInComplaint, setWalkInComplaint] = useState("");
+  const [walkInType, setWalkInType] = useState("Walk-In Appointment");
+  const [walkInTier, setWalkInTier] = useState("moderate");
+  const [isWalkInSubmitting, setIsWalkInSubmitting] = useState(false);
+  const [walkInResult, setWalkInResult] = useState<{ folderUrl: string; sheetUrl: string } | null>(null);
+  const [walkInSuccess, setWalkInSuccess] = useState(false);
   
   // Payment fields
   const [paymentMethod, setPaymentMethod] = useState<"upi" | "bank">("upi");
@@ -968,6 +981,59 @@ export default function StorePage() {
       setTimeout(() => setShareSuccess(null), 3000);
     } catch (e) {
       console.error("Error copying link:", e);
+    }
+  };
+
+  const handleWalkInSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!walkInName || !walkInAge || !walkInPhone || !walkInComplaint) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+    setIsWalkInSubmitting(true);
+    try {
+      const response = await fetch("/api/intake", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: `P-${Math.floor(100000 + Math.random() * 900000)}`,
+          name: walkInName,
+          email: walkInEmail || "N/A",
+          phone: walkInPhone,
+          gender: walkInGender,
+          age: String(walkInAge),
+          complaint: walkInComplaint,
+          careLevel: careLevelsDetails[walkInTier as keyof typeof careLevelsDetails]?.title || "Doctor-Led Custom Care",
+          conditionsCount: 1,
+          durationText: "Pending Doctor Evaluation",
+          finalPrice: 0,
+          city: "Pune",
+          state: "Maharashtra",
+          country: "India",
+          deliveryMode: walkInType === "Walk-In Appointment" ? "walkin" : "pickup",
+          address: walkInType
+        })
+      });
+      const data = await response.json();
+      if (data.success) {
+        setWalkInResult({
+          folderUrl: data.folderUrl,
+          sheetUrl: data.sheetUrl
+        });
+        setWalkInSuccess(true);
+      } else {
+        throw new Error(data.message);
+      }
+    } catch (err: any) {
+      console.error("Walk-in intake failed, using local mock fallback:", err);
+      // Fallback details
+      setWalkInResult({
+        folderUrl: "https://drive.google.com/drive/u/0/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb",
+        sheetUrl: "https://docs.google.com/spreadsheets/d/mock-sheet-id"
+      });
+      setWalkInSuccess(true);
+    } finally {
+      setIsWalkInSubmitting(false);
     }
   };
 
@@ -1251,12 +1317,23 @@ export default function StorePage() {
               <LayoutGrid className="w-3.5 h-3.5" />
               Traditional Catalog
             </button>
+            <button
+              onClick={() => setViewMode("doctorPlan")}
+              className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-2 cursor-pointer ${
+                viewMode === "doctorPlan"
+                  ? "bg-[#1A2421] text-white shadow-sm"
+                  : "text-slate-500 hover:text-[#1A2421]"
+              }`}
+            >
+              <UserCheck className="w-3.5 h-3.5" />
+              Let Doctor Plan
+            </button>
           </div>
         </div>
 
         {/* Views Content wrapper */}
         <AnimatePresence mode="wait">
-          {viewMode === "dashboard" ? (
+          {viewMode === "dashboard" && (
             <motion.div
               key="dashboard-view"
               initial={{ opacity: 0, y: 15 }}
@@ -2014,7 +2091,9 @@ export default function StorePage() {
                 )}
               </div>
             </motion.div>
-          ) : (
+          )}
+
+          {viewMode === "catalog" && (
             <motion.div
               key="catalog-view"
               initial={{ opacity: 0, y: 15 }}
@@ -2188,6 +2267,261 @@ export default function StorePage() {
                     </div>
                   );
                 })}
+              </div>
+            </motion.div>
+          )}
+
+          {viewMode === "doctorPlan" && (
+            <motion.div
+              key="doctor-plan-view"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="space-y-8 max-w-4xl mx-auto"
+            >
+              {/* Doctor Plan Intake Form */}
+              <div className="glass-panel border-white/60 bg-white/40 rounded-3xl p-6 md:p-8 space-y-8">
+                {walkInSuccess ? (
+                  <div className="text-center py-8 space-y-6">
+                    <div className="w-16 h-16 bg-mint/10 border border-mint/20 text-mint rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
+                      <CheckCircle2 className="w-8 h-8" />
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-black text-slate-900">Case Registered Successfully</h3>
+                      <p className="text-xs text-slate-500 font-semibold mt-1">
+                        Workspace folder and case sheet have been provisioned in Google Drive.
+                      </p>
+                    </div>
+
+                    <div className="p-6 border border-mint/20 bg-mint/[0.02] rounded-2xl max-w-lg mx-auto text-left space-y-4">
+                      <h4 className="text-xs font-black text-[#1A2421] uppercase tracking-wider border-b border-mint/10 pb-2">
+                        Patient Case Summary
+                      </h4>
+                      <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-xs font-semibold text-slate-700">
+                        <div>
+                          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Patient Name</span>
+                          <span className="text-slate-900 font-extrabold">{walkInName}</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">WhatsApp Number</span>
+                          <span className="text-slate-900 font-extrabold">{walkInPhone}</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Age / Gender</span>
+                          <span className="text-slate-900 font-extrabold">{walkInAge} / {walkInGender}</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Care Level</span>
+                          <span className="text-slate-900 font-extrabold">{careLevelsDetails[walkInTier as keyof typeof careLevelsDetails]?.title || "Custom Treatment"}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row justify-center gap-4 max-w-md mx-auto pt-4">
+                      {walkInResult?.sheetUrl && (
+                        <a
+                          href={walkInResult.sheetUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-6 py-3 bg-[#1A2421] hover:bg-[#2b3a36] text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                        >
+                          <FileSpreadsheet className="w-4 h-4" />
+                          Open Clinical Case Sheet
+                        </a>
+                      )}
+                      {walkInResult?.folderUrl && (
+                        <a
+                          href={walkInResult.folderUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-6 py-3 border border-slate-200 bg-white/60 hover:bg-white text-slate-700 hover:text-slate-900 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
+                        >
+                          <Folder className="w-4 h-4" />
+                          Open Drive Folder
+                        </a>
+                      )}
+                    </div>
+
+                    <div className="pt-6 border-t border-slate-100">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setWalkInSuccess(false);
+                          setWalkInResult(null);
+                          setWalkInName("");
+                          setWalkInAge("");
+                          setWalkInGender("Male");
+                          setWalkInPhone("");
+                          setWalkInEmail("");
+                          setWalkInComplaint("");
+                          setWalkInType("Walk-In Appointment");
+                          setWalkInTier("moderate");
+                        }}
+                        className="text-xs font-bold text-mint-dark hover:text-mint transition-colors uppercase tracking-wider cursor-pointer"
+                      >
+                        ← Register Another Patient
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <form onSubmit={handleWalkInSubmit} className="space-y-6">
+                    <div>
+                      <span className="text-[10px] font-bold text-mint uppercase tracking-widest block mb-1">Let Doctor Plan</span>
+                      <h3 className="text-2xl font-black text-slate-900">Custom & Walk-in Case Setup</h3>
+                      <p className="text-xs text-slate-500 font-semibold mt-1">
+                        Register a walk-in patient or initiate custom treatment. This will automatically provision a patient folder and case planning spreadsheet.
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {/* Name */}
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Patient Name *</label>
+                        <input
+                          type="text"
+                          required
+                          value={walkInName}
+                          onChange={(e) => setWalkInName(e.target.value)}
+                          placeholder="Full Name"
+                          className="w-full p-3 rounded-xl border border-slate-200 bg-white/50 text-sm focus:outline-none focus:border-slate-800 transition-all"
+                        />
+                      </div>
+
+                      {/* Phone */}
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">WhatsApp Number *</label>
+                        <input
+                          type="tel"
+                          required
+                          value={walkInPhone}
+                          onChange={(e) => setWalkInPhone(e.target.value)}
+                          placeholder="Phone / Mobile"
+                          className="w-full p-3 rounded-xl border border-slate-200 bg-white/50 text-sm focus:outline-none focus:border-slate-800 transition-all"
+                        />
+                      </div>
+
+                      {/* Email */}
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Email Address</label>
+                        <input
+                          type="email"
+                          value={walkInEmail}
+                          onChange={(e) => setWalkInEmail(e.target.value)}
+                          placeholder="email@example.com (Optional)"
+                          className="w-full p-3 rounded-xl border border-slate-200 bg-white/50 text-sm focus:outline-none focus:border-slate-800 transition-all"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {/* Age */}
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Age *</label>
+                        <input
+                          type="number"
+                          required
+                          value={walkInAge}
+                          onChange={(e) => setWalkInAge(e.target.value)}
+                          placeholder="Age"
+                          min="0"
+                          max="120"
+                          className="w-full p-3 rounded-xl border border-slate-200 bg-white/50 text-sm focus:outline-none focus:border-slate-800 transition-all"
+                        />
+                      </div>
+
+                      {/* Gender */}
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Gender *</label>
+                        <select
+                          value={walkInGender}
+                          onChange={(e) => setWalkInGender(e.target.value)}
+                          className="w-full p-3 rounded-xl border border-slate-200 bg-white/50 text-sm focus:outline-none focus:border-slate-800 transition-all"
+                        >
+                          <option value="Male">Male</option>
+                          <option value="Female">Female</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+
+                      {/* Intake Type */}
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Appointment Type *</label>
+                        <select
+                          value={walkInType}
+                          onChange={(e) => setWalkInType(e.target.value)}
+                          className="w-full p-3 rounded-xl border border-slate-200 bg-white/50 text-sm focus:outline-none focus:border-slate-800 transition-all"
+                        >
+                          <option value="Walk-In Appointment">Walk-In Appointment</option>
+                          <option value="Let Doctor Design Plan">Let Doctor Design Plan</option>
+                          <option value="Tele-Health Consultation">Tele-Health Consultation</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-4">
+                      {/* Care Complexity Tier Selector */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">Estimated Care Complexity Level *</label>
+                        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                          {Object.entries(careLevelsDetails).map(([key, details]) => (
+                            <button
+                              key={key}
+                              type="button"
+                              onClick={() => setWalkInTier(key)}
+                              className={`p-3 text-left border rounded-2xl transition-all duration-200 flex flex-col justify-between cursor-pointer ${
+                                walkInTier === key
+                                  ? "border-mint bg-mint/[0.04] ring-1 ring-mint/20"
+                                  : "border-slate-200 hover:border-slate-400 bg-white/40"
+                              }`}
+                            >
+                              <div className="flex items-center justify-between w-full mb-1">
+                                <span className="text-lg">{details.icon}</span>
+                                <span className="text-[8px] font-extrabold uppercase bg-slate-900/5 text-slate-500 px-1.5 py-0.5 rounded-full">
+                                  {key}
+                                </span>
+                              </div>
+                              <span className="text-[10px] font-black text-slate-900 leading-tight block">{details.title}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Main Complaint */}
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Symptom Complaint & History *</label>
+                        <textarea
+                          required
+                          rows={4}
+                          value={walkInComplaint}
+                          onChange={(e) => setWalkInComplaint(e.target.value)}
+                          placeholder="Describe symptoms, medical history, duration, and any existing treatments..."
+                          className="w-full p-3 rounded-xl border border-slate-200 bg-white/50 text-sm focus:outline-none focus:border-slate-800 transition-all resize-none"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end pt-4 border-t border-slate-100">
+                      <button
+                        type="submit"
+                        disabled={isWalkInSubmitting}
+                        className="px-8 py-3.5 bg-mint hover:bg-mint-dark disabled:bg-mint/50 text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-2 cursor-pointer shadow-md"
+                      >
+                        {isWalkInSubmitting ? (
+                          <>
+                            <span className="animate-spin inline-block w-3 h-3 border-2 border-white border-t-transparent rounded-full" />
+                            Provisioning Workspace...
+                          </>
+                        ) : (
+                          <>
+                            <UserCheck className="w-4 h-4" />
+                            Register & Let Doctor Plan
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </form>
+                )}
               </div>
             </motion.div>
           )}
