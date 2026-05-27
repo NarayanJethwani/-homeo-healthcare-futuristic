@@ -42,8 +42,8 @@ export async function POST(request: Request) {
       return NextResponse.json({
         success: true,
         isMock: true,
-        folderUrl: `https://drive.google.com/drive/folders/mock-folder-${id}`,
-        sheetUrl: `https://docs.google.com/spreadsheets/d/mock-sheet-${id}`
+        folderUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link",
+        sheetUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link"
       });
     }
 

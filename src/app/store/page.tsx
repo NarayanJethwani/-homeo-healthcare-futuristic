@@ -1065,10 +1065,9 @@ export default function StorePage() {
       }
     } catch (err: any) {
       console.error("Walk-in intake failed, using local mock fallback:", err);
-      // Fallback details
       setWalkInResult({
-        folderUrl: "https://drive.google.com/drive/u/0/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb",
-        sheetUrl: "https://docs.google.com/spreadsheets/d/mock-sheet-id"
+        folderUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link",
+        sheetUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link"
       });
       setWalkInSuccess(true);
     } finally {

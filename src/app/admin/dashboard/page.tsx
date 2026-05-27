@@ -232,8 +232,8 @@ export default function AdminDashboard() {
               careLevel: "Advanced Chronic Tier",
               durationText: "6-Month Treatment Plan",
               finalPrice: 8500,
-              folderUrl: "https://drive.google.com/drive/u/0/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb",
-              sheetUrl: "https://docs.google.com/spreadsheets/d/mock-sheet-aarav",
+              folderUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link",
+              sheetUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link",
               assignedDoctor: "doctor-bypass-id",
               status: "active",
               createdAt: "2026-05-20T10:00:00Z"
@@ -250,8 +250,8 @@ export default function AdminDashboard() {
               careLevel: "Standard Consultation",
               durationText: "1-Month Consultation",
               finalPrice: 2200,
-              folderUrl: "https://drive.google.com/drive/u/0/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb",
-              sheetUrl: "https://docs.google.com/spreadsheets/d/mock-sheet-priyanka",
+              folderUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link",
+              sheetUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link",
               assignedDoctor: "doctor-bypass-id",
               status: "active",
               createdAt: "2026-05-22T14:30:00Z"
@@ -268,8 +268,8 @@ export default function AdminDashboard() {
               careLevel: "Advanced Chronic Tier",
               durationText: "12-Month Support Plan",
               finalPrice: 15000,
-              folderUrl: "https://drive.google.com/drive/u/0/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb",
-              sheetUrl: "https://docs.google.com/spreadsheets/d/mock-sheet-suresh",
+              folderUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link",
+              sheetUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link",
               assignedDoctor: "unassigned",
               status: "awaiting-consult",
               createdAt: "2026-05-25T09:15:00Z"
@@ -286,8 +286,8 @@ export default function AdminDashboard() {
               careLevel: "Veterinary Consultation",
               durationText: "3-Month Plan",
               finalPrice: 4500,
-              folderUrl: "https://drive.google.com/drive/u/0/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb",
-              sheetUrl: "https://docs.google.com/spreadsheets/d/mock-sheet-rishi",
+              folderUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link",
+              sheetUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link",
               assignedDoctor: "unassigned",
               status: "active",
               createdAt: "2026-05-26T11:45:00Z"
@@ -435,8 +435,8 @@ export default function AdminDashboard() {
       
       // Fallback for mock/offline testing
       const mockPatientId = `P-${Math.floor(100000 + Math.random() * 900000)}`;
-      const folderUrl = "https://drive.google.com/drive/u/0/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb";
-      const sheetUrl = "https://docs.google.com/spreadsheets/d/mock-sheet-id";
+      const folderUrl = "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link";
+      const sheetUrl = "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link";
       
       setCreatedFolderUrl(folderUrl);
       setCreatedSheetUrl(sheetUrl);
@@ -784,11 +784,10 @@ export default function AdminDashboard() {
         const targetUrl = type === "folder" ? data.folderUrl : data.sheetUrl;
         
         if (data.isMock) {
-          alert(`Operating in Mock Mode (No Google API credentials configured).\n\nSimulated URL: ${targetUrl}`);
-        } else {
-          // Open the real URL in a new tab
-          window.open(targetUrl, "_blank", "noopener,noreferrer");
+          alert(`Operating in Mock Mode (No Google API credentials configured).\n\nRedirecting to folder:\n${targetUrl}`);
         }
+        // Open the URL in a new tab (real URL or parent folder URL fallback)
+        window.open(targetUrl, "_blank", "noopener,noreferrer");
       } catch (err: any) {
         console.error(err);
         alert(`Failed to create Google Drive workspace: ${err.message || err}`);
@@ -802,7 +801,8 @@ export default function AdminDashboard() {
   const handleMockLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, url: string) => {
     if (!url || url.includes("mock-") || url.includes("/mock")) {
       e.preventDefault();
-      alert(`Operating in Mock Mode (No Google API credentials configured).\n\nThis is a simulated workspace URL:\n${url}`);
+      alert(`Operating in Mock Mode (No Google API credentials configured).\n\nRedirecting to folder:\nhttps://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link`);
+      window.open("https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link", "_blank", "noopener,noreferrer");
     }
   };
 

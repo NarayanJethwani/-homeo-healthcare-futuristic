@@ -111,8 +111,8 @@ export default function BookingSection() {
     } catch (error) {
       console.error("Intake automation request failed, using demo fallback links:", error);
       setSubmissionResult({
-        folderUrl: "https://drive.google.com/drive/u/0/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb",
-        sheetUrl: "https://docs.google.com/spreadsheets/d/mock-sheet-id"
+        folderUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link",
+        sheetUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link"
       });
     } finally {
       setIsSubmitting(false);

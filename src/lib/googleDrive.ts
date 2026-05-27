@@ -52,7 +52,7 @@ export interface PatientIntakeData {
 export async function createPatientFolder(data: PatientIntakeData): Promise<{ folderId: string; folderUrl: string }> {
   const auth = getGoogleAuth();
   if (!auth) {
-    return { folderId: "mock-folder-id", folderUrl: "https://drive.google.com/drive/folders/mock-folder" };
+    return { folderId: "mock-folder-id", folderUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link" };
   }
 
   const drive = google.drive({ version: "v3", auth });
@@ -69,9 +69,26 @@ export async function createPatientFolder(data: PatientIntakeData): Promise<{ fo
       fields: "id,webViewLink"
     });
     
+    const folderId = response.data.id || "";
+    const folderUrl = response.data.webViewLink || "";
+
+    if (folderId) {
+      try {
+        await drive.permissions.create({
+          fileId: folderId,
+          requestBody: {
+            role: "writer",
+            type: "anyone"
+          }
+        });
+      } catch (permError) {
+        console.error("Failed to share folder with anyone:", permError);
+      }
+    }
+    
     return {
-      folderId: response.data.id || "",
-      folderUrl: response.data.webViewLink || ""
+      folderId,
+      folderUrl
     };
   } catch (error) {
     console.error("Error creating Google Drive folder:", error);
@@ -88,7 +105,7 @@ export async function createPatientClinicalSheet(
 ): Promise<{ sheetId: string; sheetUrl: string }> {
   const auth = getGoogleAuth();
   if (!auth) {
-    return { sheetId: "mock-sheet-id", sheetUrl: "https://docs.google.com/spreadsheets/d/mock-sheet" };
+    return { sheetId: "mock-sheet-id", sheetUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link" };
   }
 
   const drive = google.drive({ version: "v3", auth });
@@ -122,6 +139,21 @@ export async function createPatientClinicalSheet(
       });
       newSheetId = response.data.id || "";
       newSheetUrl = response.data.webViewLink || "";
+    }
+
+    // Share the spreadsheet so anyone with link can edit (clinicians)
+    if (newSheetId) {
+      try {
+        await drive.permissions.create({
+          fileId: newSheetId,
+          requestBody: {
+            role: "writer",
+            type: "anyone"
+          }
+        });
+      } catch (permError) {
+        console.error("Failed to share sheet with anyone:", permError);
+      }
     }
 
     // 2. Populate the sheet headers / patient info on sheet load
