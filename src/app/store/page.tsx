@@ -2507,7 +2507,10 @@ export default function StorePage() {
                               </div>
                               <div className="space-y-0.5">
                                 <span className="text-[10px] font-black text-slate-900 leading-tight block">{details.title}</span>
-                                <span className="text-[9px] font-black text-mint-dark block">₹{details.monthlyPrice.toLocaleString("en-IN")}/mo</span>
+                                <span className="text-[9px] font-black text-mint-dark block">
+                                  ₹{(walkInBillingCycle === "weekly" ? details.weeklyPrice : details.monthlyPrice).toLocaleString("en-IN")}
+                                  /{walkInBillingCycle === "weekly" ? "wk" : "mo"}
+                                </span>
                               </div>
                             </button>
                           ))}
