@@ -13,10 +13,10 @@ import Magnetic from "@/components/Magnetic";
 export default function DoctorProfilePage() {
   const router = useRouter();
   const credentials = [
-    { title: "MD (Homeopathy)", desc: "Postgraduate clinical degree specializing in homoeopathic therapeutics." },
-    { title: "BHMS Degree", desc: "Bachelor of Homoeopathic Medicine and Surgery, Pune University." },
+    { title: "Nashik University MD (Hom.)", desc: "Doctor of Medicine (3 Years clinical postgraduate specialization)." },
+    { title: "Nashik University BHMS", desc: "Bachelor of Homoeopathic Medicine and Surgery (5 & half Years degree)." },
     { title: "Kent's Repertory Expert", desc: "Advanced expertise in classical case analysis and symptom repertorisation." },
-    { title: "20+ Years Practice", desc: "Directing clinical care at Ramkrishna Homeopathic Consultancy since 2005." },
+    { title: "20+ Years Practice", desc: "Directing clinical care at Ramkrishna Homeopathy Consultancy since April 2005." },
     { title: "10k+ Patients Treated", desc: "Clinical management of acute and complex multi-system chronic conditions." },
     { title: "Evidence-Based Pioneer", desc: "Integrating modern biomarker reporting with classical homeopathy." }
   ];

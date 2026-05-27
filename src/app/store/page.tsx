@@ -2474,7 +2474,10 @@ export default function StorePage() {
         {/* Upgrade/Checkout Modal Overlay */}
         <AnimatePresence>
           {isCheckoutOpen && checkoutPlan && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md overflow-y-auto">
+            <div 
+              data-lenis-prevent
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md overflow-y-auto"
+            >
               <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -3006,9 +3009,9 @@ export default function StorePage() {
 
                             <span className="text-slate-400 font-bold uppercase text-[9px]">Account Number</span>
                             <span className="col-span-2 text-[#1A2421] font-bold text-right flex items-center justify-end gap-1.5">
-                              50200062837194
+                              50200039742057
                               <button
-                                onClick={() => navigator.clipboard.writeText("50200062837194")}
+                                onClick={() => navigator.clipboard.writeText("50200039742057")}
                                 className="p-1 hover:bg-slate-100 rounded text-slate-500 hover:text-slate-900 animate-none"
                               >
                                 <Copy className="w-3 h-3" />
@@ -3017,9 +3020,9 @@ export default function StorePage() {
 
                             <span className="text-slate-400 font-bold uppercase text-[9px]">IFSC Code</span>
                             <span className="col-span-2 text-[#1A2421] font-bold text-right flex items-center justify-end gap-1.5">
-                              HDFC0000037
+                              HDFC0004793
                               <button
-                                onClick={() => navigator.clipboard.writeText("HDFC0000037")}
+                                onClick={() => navigator.clipboard.writeText("HDFC0004793")}
                                 className="p-1 hover:bg-slate-100 rounded text-slate-500 hover:text-slate-900"
                               >
                                 <Copy className="w-3 h-3" />
@@ -3027,7 +3030,7 @@ export default function StorePage() {
                             </span>
 
                             <span className="text-slate-400 font-bold uppercase text-[9px]">Branch / Type</span>
-                            <span className="col-span-2 text-[#1A2421] font-semibold text-right">Baner (Pune) / Savings</span>
+                            <span className="col-span-2 text-[#1A2421] font-semibold text-right">PAN Card Club Road Baner, Pune / Current Account</span>
                           </div>
                         </div>
                       )}

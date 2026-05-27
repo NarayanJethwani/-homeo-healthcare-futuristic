@@ -6,9 +6,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   Users, Activity, Sparkles, Folder, FileSpreadsheet, ExternalLink, 
   Search, Sliders, Brain, RefreshCw, Send, Plus, Trash2, CheckCircle, 
-  Settings, LogOut, ShieldAlert, Award, FileText, ChevronRight, UserPlus, Upload
+  Settings, LogOut, ShieldAlert, Award, FileText, ChevronRight, UserPlus, Upload,
+  BookOpen, Book, ChevronLeft, Maximize2, Minimize2
 } from "lucide-react";
 import { REPERTORY_DATA, REPERTORY_CHAPTERS, REMEDIES_METADATA, Rubric } from "@/lib/repertoryData";
+import { MATERIA_MEDICA_BOOKS, MateriaMedicaBook } from "@/lib/materiaMedicaData";
 import { db } from "@/lib/firebase";
 import { collection, onSnapshot, query, orderBy, doc, updateDoc, setDoc } from "firebase/firestore";
 
@@ -42,7 +44,7 @@ interface Patient {
 export default function AdminDashboard() {
   const router = useRouter();
   const [session, setSession] = useState<UserSession | null>(null);
-  const [activeTab, setActiveTab] = useState<"patients" | "repertory" | "team">("patients");
+  const [activeTab, setActiveTab] = useState<"patients" | "repertory" | "team" | "materia-medica">("patients");
   const [patients, setPatients] = useState<Patient[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   
@@ -59,6 +61,87 @@ export default function AdminDashboard() {
   const [aiReport, setAiReport] = useState("");
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [saveStatus, setSaveStatus] = useState("");
+
+  // Materia Medica State
+  const [selectedBook, setSelectedBook] = useState<MateriaMedicaBook | null>(null);
+  const [remedies, setRemedies] = useState<Array<{ name: string; path: string }>>([]);
+  const [remedySearchTerm, setRemedySearchTerm] = useState("");
+  const [isRemediesLoading, setIsRemediesLoading] = useState(false);
+  const [selectedRemedy, setSelectedRemedy] = useState<{ title: string; content: string; path: string } | null>(null);
+  const [isRemedyLoading, setIsRemedyLoading] = useState(false);
+  const [readerFontSize, setReaderFontSize] = useState<"sm" | "base" | "lg" | "xl" | "2xl">("base");
+  const [readerTheme, setReaderTheme] = useState<"light" | "sepia" | "dark">("sepia");
+  const [remediesFetchError, setRemediesFetchError] = useState("");
+  const [remedyFetchError, setRemedyFetchError] = useState("");
+  const [isReaderFullscreen, setIsReaderFullscreen] = useState(false);
+
+  // Sync scroll lock when fullscreen reader is open
+  useEffect(() => {
+    if (isReaderFullscreen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isReaderFullscreen]);
+
+  const handleSelectBook = async (book: MateriaMedicaBook) => {
+    setSelectedBook(book);
+    setSelectedRemedy(null);
+    setRemedySearchTerm("");
+    setRemedies([]);
+    setRemediesFetchError("");
+    setIsRemediesLoading(true);
+
+    try {
+      const res = await fetch(`/api/materia-medica?author=${book.id}`);
+      const data = await res.json();
+      if (data.success) {
+        setRemedies(data.remedies || []);
+      } else {
+        throw new Error(data.message || "Failed to load remedies index.");
+      }
+    } catch (err: any) {
+      console.error(err);
+      setRemediesFetchError(err.message || "Failed to fetch index from knowledge hub.");
+    } finally {
+      setIsRemediesLoading(false);
+    }
+  };
+
+  const handleSelectRemedy = async (path: string) => {
+    setSelectedRemedy(null);
+    setRemedyFetchError("");
+    setIsRemedyLoading(true);
+
+    try {
+      const res = await fetch(`/api/materia-medica?path=${encodeURIComponent(path)}`);
+      const data = await res.json();
+      if (data.success) {
+        setSelectedRemedy({
+          title: data.title,
+          content: data.content,
+          path: data.path
+        });
+      } else {
+        throw new Error(data.message || "Failed to load remedy details.");
+      }
+    } catch (err: any) {
+      console.error(err);
+      setRemedyFetchError(err.message || "Failed to fetch remedy content.");
+    } finally {
+      setIsRemedyLoading(false);
+    }
+  };
+
+  const handleJumpToLetter = (letter: string) => {
+    const element = document.getElementById(`remedy-letter-${letter.toLowerCase()}`);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  };
 
   // New Case Taking & Import States
   const [isNewCaseModalOpen, setIsNewCaseModalOpen] = useState(false);
@@ -86,6 +169,16 @@ export default function AdminDashboard() {
   const [importError, setImportError] = useState("");
   const [importSuccess, setImportSuccess] = useState("");
 
+  const [importMethod, setImportMethod] = useState<"file" | "google" | "ai">("file");
+  const [googleSheetUrl, setGoogleSheetUrl] = useState("");
+  const [isImportingFromGoogle, setIsImportingFromGoogle] = useState(false);
+  const [googlePatientsList, setGooglePatientsList] = useState<any[]>([]);
+  const [googleFolderFiles, setGoogleFolderFiles] = useState<any[]>([]);
+  const [serviceAccountEmail, setServiceAccountEmail] = useState("");
+  const [isAnalyzingFile, setIsAnalyzingFile] = useState(false);
+  const [isProvisioningWorkspace, setIsProvisioningWorkspace] = useState(false);
+  const [provisioningPatientName, setProvisioningPatientName] = useState("");
+
   // Check login session
   useEffect(() => {
     const savedSession = localStorage.getItem("admin_session");
@@ -100,6 +193,20 @@ export default function AdminDashboard() {
       }
     }
   }, [router]);
+
+  // Fetch Google Service Account Email for display
+  useEffect(() => {
+    if (isImportModalOpen && !serviceAccountEmail) {
+      fetch("/api/import-sheet")
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.serviceAccountEmail) {
+            setServiceAccountEmail(data.serviceAccountEmail);
+          }
+        })
+        .catch(err => console.error("Error fetching service account email:", err));
+    }
+  }, [isImportModalOpen, serviceAccountEmail]);
 
   // Load Patients from Firestore in real-time
   useEffect(() => {
@@ -280,6 +387,30 @@ export default function AdminDashboard() {
         setCreatedSheetUrl(data.sheetUrl);
         setCaseCreationSuccess(true);
         
+        // Append to local state if Firestore is in mock-project mode
+        const isMockProject = !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID === "mock-project-id";
+        if (isMockProject) {
+          const newPatient: Patient = {
+            id: data.patientId || `P-${Math.floor(100000 + Math.random() * 900000)}`,
+            name: newCaseForm.name,
+            age: newCaseForm.age,
+            gender: newCaseForm.gender,
+            phone: newCaseForm.phone,
+            email: newCaseForm.email,
+            location: `${newCaseForm.city || "N/A"}, ${newCaseForm.state || "N/A"}, ${newCaseForm.country}`,
+            complaint: newCaseForm.complaint,
+            careLevel: newCaseForm.careLevel,
+            durationText: newCaseForm.durationText,
+            finalPrice: newCaseForm.finalPrice,
+            folderUrl: data.folderUrl,
+            sheetUrl: data.sheetUrl,
+            assignedDoctor: session?.uid || "unassigned",
+            status: "active",
+            createdAt: new Date().toISOString()
+          };
+          setPatients(prev => [newPatient, ...prev]);
+        }
+
         // Reset form
         setNewCaseForm({
           name: "",
@@ -330,7 +461,13 @@ export default function AdminDashboard() {
       };
       
       try {
-        await setDoc(doc(db, "patients", mockPatientId), newPatient);
+        const isMockProject = !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID === "mock-project-id";
+        if (!isMockProject) {
+          await setDoc(doc(db, "patients", mockPatientId), newPatient);
+        } else {
+          console.log("Firebase operating in mock-project-id. Appending patient locally.");
+          setPatients(prev => [newPatient, ...prev]);
+        }
         setCaseCreationSuccess(true);
       } catch (dbErr) {
         console.error("Failed to save mock patient to Firestore:", dbErr);
@@ -467,6 +604,262 @@ export default function AdminDashboard() {
       }
     };
     reader.readAsText(file);
+  };
+
+  const handleGoogleSheetImport = async () => {
+    if (!googleSheetUrl) {
+      setImportError("Please enter a Google Sheet/Folder URL or ID.");
+      return;
+    }
+
+    setIsImportingFromGoogle(true);
+    setImportError("");
+    setImportSuccess("");
+    setGooglePatientsList([]);
+    setGoogleFolderFiles([]);
+
+    try {
+      const res = await fetch("/api/import-sheet", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ urlOrId: googleSheetUrl })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || "Failed to load Drive resource. Please check the URL/ID and permissions.");
+      }
+
+      if (data.isFolder) {
+        if (data.files && data.files.length > 0) {
+          setGoogleFolderFiles(data.files);
+          setImportSuccess(`Connected to Google Drive folder! Found ${data.files.length} patient files. Click any file below to import.`);
+        } else {
+          throw new Error("No files found in the specified Google Drive folder.");
+        }
+      } else {
+        if (data.patients && data.patients.length > 0) {
+          setGooglePatientsList(data.patients);
+          setImportSuccess(`Successfully retrieved ${data.patients.length} patient records from Google Sheet! Select a patient below to import.`);
+          
+          // If only 1 patient, auto-select
+          if (data.patients.length === 1) {
+            selectPatientForImport(data.patients[0]);
+          }
+        } else {
+          throw new Error("No patients found in the specified sheet.");
+        }
+      }
+    } catch (err: any) {
+      console.error(err);
+      setImportError(err.message || "Error importing from Google Sheets.");
+    } finally {
+      setIsImportingFromGoogle(false);
+    }
+  };
+
+  const loadGoogleSheetFile = async (fileId: string) => {
+    setIsImportingFromGoogle(true);
+    setImportError("");
+    setImportSuccess("");
+    setGooglePatientsList([]);
+
+    try {
+      const res = await fetch("/api/import-sheet", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ urlOrId: fileId })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || "Failed to load file. Ensure the file contains valid patient headers.");
+      }
+
+      if (data.patients && data.patients.length > 0) {
+        setGooglePatientsList(data.patients);
+        setImportSuccess(`Successfully retrieved ${data.patients.length} patient records from file! Select a patient below.`);
+        
+        // If only 1 patient, auto-select
+        if (data.patients.length === 1) {
+          selectPatientForImport(data.patients[0]);
+        }
+      } else {
+        throw new Error("No patients found in the selected sheet.");
+      }
+    } catch (err: any) {
+      console.error(err);
+      setImportError(err.message || "Error parsing selected file.");
+    } finally {
+      setIsImportingFromGoogle(false);
+    }
+  };
+
+  const handleMedicalFileImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsAnalyzingFile(true);
+    setImportError("");
+    setImportSuccess("");
+
+    try {
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        try {
+          const resultStr = event.target?.result as string;
+          const base64Data = resultStr.split(",")[1];
+          
+          const res = await fetch("/api/import-file", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              fileData: base64Data,
+              mimeType: file.type || "application/octet-stream",
+              fileName: file.name
+            })
+          });
+
+          const data = await res.json();
+          if (!res.ok || !data.success) {
+            throw new Error(data.message || "Failed to analyze file with AI.");
+          }
+
+          if (data.patient) {
+            setImportSuccess(`AI successfully extracted patient information for '${data.patient.name}'! Opening New Case Form...`);
+            selectPatientForImport(data.patient);
+          } else {
+            throw new Error("AI did not return any patient details.");
+          }
+        } catch (err: any) {
+          console.error(err);
+          setImportError(err.message || "Error analyzing file with AI.");
+        } finally {
+          setIsAnalyzingFile(false);
+        }
+      };
+      reader.readAsDataURL(file);
+    } catch (err: any) {
+      console.error(err);
+      setImportError("Failed to read the local file.");
+      setIsAnalyzingFile(false);
+    }
+  };
+
+  const handleWorkspaceLinkClick = async (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    patient: Patient,
+    type: "folder" | "sheet"
+  ) => {
+    const currentUrl = type === "folder" ? patient.folderUrl : patient.sheetUrl;
+    const isMockUrl = !currentUrl || currentUrl.includes("mock-") || currentUrl.includes("/mock");
+    
+    if (isMockUrl) {
+      e.preventDefault();
+      setIsProvisioningWorkspace(true);
+      setProvisioningPatientName(patient.name);
+      
+      try {
+        const res = await fetch("/api/provision-workspace", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: patient.id,
+            name: patient.name,
+            age: patient.age,
+            gender: patient.gender,
+            phone: patient.phone,
+            email: patient.email,
+            location: patient.location,
+            complaint: patient.complaint,
+            careLevel: patient.careLevel,
+            durationText: patient.durationText,
+            finalPrice: patient.finalPrice
+          })
+        });
+        
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          throw new Error(data.message || "Failed to provision workspace");
+        }
+        
+        const targetUrl = type === "folder" ? data.folderUrl : data.sheetUrl;
+        
+        if (data.isMock) {
+          alert(`Operating in Mock Mode (No Google API credentials configured).\n\nSimulated URL: ${targetUrl}`);
+        } else {
+          // Open the real URL in a new tab
+          window.open(targetUrl, "_blank", "noopener,noreferrer");
+        }
+      } catch (err: any) {
+        console.error(err);
+        alert(`Failed to create Google Drive workspace: ${err.message || err}`);
+      } finally {
+        setIsProvisioningWorkspace(false);
+        setProvisioningPatientName("");
+      }
+    }
+  };
+
+  const handleMockLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, url: string) => {
+    if (!url || url.includes("mock-") || url.includes("/mock")) {
+      e.preventDefault();
+      alert(`Operating in Mock Mode (No Google API credentials configured).\n\nThis is a simulated workspace URL:\n${url}`);
+    }
+  };
+
+  const selectPatientForImport = (patient: any) => {
+    // Prefill new case taking form
+    setNewCaseForm({
+      name: patient.name,
+      age: patient.age || "30",
+      gender: patient.gender || "Male",
+      phone: patient.phone || "",
+      email: patient.email || "",
+      city: patient.city || "",
+      state: patient.state || "",
+      country: "India",
+      complaint: patient.complaint,
+      careLevel: "⚡ Standard Chronic Care",
+      durationText: "1-Month Consultation",
+      finalPrice: 7500
+    });
+
+    // Parse rubrics if present (e.g. "GERD (3); bloating (2)")
+    if (patient.rubrics) {
+      const parsedRubricsList: Array<{ rubric: Rubric; grade: number }> = [];
+      const rubricEntries = patient.rubrics.split(";");
+
+      rubricEntries.forEach((entry: string) => {
+        const match = entry.match(/(.+)\((\d)\)/);
+        if (match) {
+          const rubricQuery = match[1].trim().toLowerCase();
+          const rubricGrade = Number(match[2].trim());
+
+          const foundRubric = REPERTORY_DATA.find(
+            r => r.name.toLowerCase().includes(rubricQuery) || rubricQuery.includes(r.name.toLowerCase())
+          );
+
+          if (foundRubric) {
+            parsedRubricsList.push({ rubric: foundRubric, grade: rubricGrade });
+          }
+        }
+      });
+
+      if (parsedRubricsList.length > 0) {
+        setSelectedRubrics(parsedRubricsList);
+        setImportSuccess(`Imported case for '${patient.name}' with ${parsedRubricsList.length} matched rubrics populated in Repertory grid!`);
+      } else {
+        setImportSuccess(`Imported patient details for '${patient.name}' (demographics prefilled, no rubrics matched).`);
+      }
+    } else {
+      setImportSuccess(`Imported patient demographics for '${patient.name}' successfully. You can now verify and save this case!`);
+    }
+
+    // Open new case and close import modals
+    setIsNewCaseModalOpen(true);
+    setIsImportModalOpen(false);
+    // Clear temp states
+    setGooglePatientsList([]);
+    setGoogleSheetUrl("");
   };
 
   // Assign doctor to a patient (Admin only)
@@ -660,11 +1053,19 @@ ${err.message || err}`);
     setSaveStatus("exporting");
     
     try {
-      const patientRef = doc(db, "patients", selectedPatientId);
-      await updateDoc(patientRef, { aiReport: aiReport });
-      setSaveStatus("success");
+      const response = await fetch("/api/export-analysis", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ patientId: selectedPatientId, aiReport })
+      });
+      const data = await response.json();
+      if (data.success) {
+        setSaveStatus("success");
+      } else {
+        throw new Error(data.message || "Failed to export");
+      }
     } catch (err) {
-      console.error("Failed to export AI analysis to Firestore:", err);
+      console.error("Failed to export AI analysis:", err);
       setSaveStatus("error");
     } finally {
       setTimeout(() => setSaveStatus(""), 3000);
@@ -737,6 +1138,22 @@ ${err.message || err}`);
             Repertory & AI Lab
           </button>
 
+          <button
+            onClick={() => {
+              setActiveTab("materia-medica");
+              setSelectedBook(null);
+              setSelectedRemedy(null);
+            }}
+            className={`px-5 py-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-all flex items-center gap-2 cursor-pointer ${
+              activeTab === "materia-medica"
+                ? "border-mint text-mint-dark"
+                : "border-transparent text-slate-400 hover:text-slate-700"
+            }`}
+          >
+            <BookOpen className="w-4 h-4" />
+            Materia Medica
+          </button>
+
           {session?.role === "admin" && (
             <button
               onClick={() => setActiveTab("team")}
@@ -794,7 +1211,7 @@ ${err.message || err}`);
                     className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4.5 py-2.5 rounded-full border border-slate-200 hover:border-slate-800 text-slate-800 text-xs font-bold uppercase tracking-wider transition-all bg-white shadow-sm cursor-pointer"
                   >
                     <Upload className="w-4 h-4 text-slate-500" />
-                    <span>Import Old Sheet</span>
+                    <span>Import Patients (XLSX / Google Sheet)</span>
                   </button>
 
                   <div className="text-[10px] text-slate-500 font-semibold bg-slate-900/5 px-4 py-2.5 rounded-xl border border-slate-900/5 whitespace-nowrap">
@@ -884,9 +1301,10 @@ ${err.message || err}`);
                         {/* Google Folder Link */}
                         <a
                           href={patient.folderUrl}
+                          onClick={(e) => handleWorkspaceLinkClick(e, patient, "folder")}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-3 rounded-full border border-slate-200 hover:border-slate-800 text-slate-800 text-xs font-bold uppercase tracking-wider transition-all bg-white shadow-sm"
+                          className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-3 rounded-full border border-slate-200 hover:border-slate-800 text-slate-800 text-xs font-bold uppercase tracking-wider transition-all bg-white shadow-sm cursor-pointer"
                         >
                           <Folder className="w-4 h-4 text-amber-500" />
                           <span>Patient Folder</span>
@@ -896,9 +1314,10 @@ ${err.message || err}`);
                         {/* Google Clinical Sheet Link */}
                         <a
                           href={patient.sheetUrl}
+                          onClick={(e) => handleWorkspaceLinkClick(e, patient, "sheet")}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-3 rounded-full border border-slate-200 hover:border-slate-800 text-slate-800 text-xs font-bold uppercase tracking-wider transition-all bg-white shadow-sm"
+                          className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-3 rounded-full border border-slate-200 hover:border-slate-800 text-slate-800 text-xs font-bold uppercase tracking-wider transition-all bg-white shadow-sm cursor-pointer"
                         >
                           <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
                           <span>Clinical Sheet</span>
@@ -950,7 +1369,7 @@ ${err.message || err}`);
                           setIsImportModalOpen(true);
                         }}
                         className="px-3 border border-slate-200 hover:border-slate-800 rounded-2xl bg-white hover:bg-slate-50 flex items-center justify-center cursor-pointer transition-colors"
-                        title="Import Old Sheet for Repertorization"
+                        title="Import Patients (XLSX / Google Sheet)"
                       >
                         <Upload className="w-4 h-4 text-slate-500" />
                       </button>
@@ -993,7 +1412,10 @@ ${err.message || err}`);
                   </div>
 
                   {/* Rubrics results list */}
-                  <div className="space-y-2 max-h-[220px] overflow-y-auto border border-slate-900/5 rounded-2xl p-2 bg-white/40">
+                  <div 
+                    data-lenis-prevent
+                    className="space-y-2 max-h-[220px] overflow-y-auto border border-slate-900/5 rounded-2xl p-2 bg-white/40"
+                  >
                     {filteredRubrics.length === 0 ? (
                       <p className="text-[10px] text-slate-400 text-center py-4">No matching rubrics in this chapter</p>
                     ) : (
@@ -1017,7 +1439,10 @@ ${err.message || err}`);
                     Selected Symptom Rubrics ({selectedRubrics.length})
                   </h3>
 
-                  <div className="space-y-3 flex-1 overflow-y-auto max-h-[300px]">
+                  <div 
+                    data-lenis-prevent
+                    className="space-y-3 flex-1 overflow-y-auto max-h-[300px]"
+                  >
                     {selectedRubrics.length === 0 ? (
                       <div className="h-full flex flex-col items-center justify-center text-center p-6 border border-dashed border-slate-200 rounded-2xl">
                         <Sliders className="w-8 h-8 text-slate-300 mb-2" />
@@ -1168,7 +1593,7 @@ ${err.message || err}`);
                   <div className="flex items-center justify-between border-b border-slate-900/5 pb-3">
                     <h3 className="text-sm font-bold text-[#1A2421] uppercase tracking-wider flex items-center gap-2">
                       <Brain className="w-4.5 h-4.5 text-mint" />
-                      AI Diagnostic Brain (Gemini 2.5 Clinical Synthesis)
+                      AI Diagnostic Brain (Gemini 3.5 Clinical Synthesis)
                     </h3>
 
                     {selectedPatientId && aiReport && (
@@ -1223,7 +1648,7 @@ ${err.message || err}`);
                   </div>
 
                   {/* Diagnostics Report Output */}
-                  <div className="flex-1 min-h-[250px] border border-slate-900/5 rounded-3xl p-6 bg-white/40 overflow-y-auto max-h-[400px]">
+                  <div data-lenis-prevent className="flex-1 min-h-[250px] border border-slate-900/5 rounded-3xl p-6 bg-white/40 overflow-y-auto max-h-[400px]">
                     {isAiLoading ? (
                       <div className="h-full flex flex-col items-center justify-center py-10 space-y-4">
                         <div className="w-10 h-10 rounded-full border-2 border-mint border-t-transparent animate-spin" />
@@ -1334,6 +1759,383 @@ ${err.message || err}`);
             </div>
           )}
 
+          {/* TAB 4: Materia Medica & Knowledge Hub */}
+          {activeTab === "materia-medica" && (
+            <div className="space-y-8 animate-fadeIn">
+              {!selectedBook ? (
+                // 1. Classical Books Library Grid View
+                <div className="space-y-6">
+                  <div className="space-y-1">
+                    <h2 className="font-serif text-2xl font-bold text-[#1A2421]">Materia Medica & Classical Knowledge Hub</h2>
+                    <p className="text-xs font-semibold text-slate-500 max-w-2xl leading-relaxed">
+                      Explore classical homeopathic textbooks from the pioneers of homeopathic science. Search, browse by letter, and study remedy characteristics directly from your clinic workspace.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {MATERIA_MEDICA_BOOKS.map((book) => (
+                      <div
+                        key={book.id}
+                        className="glass-panel rounded-[32px] border-white/60 overflow-hidden flex flex-col hover:shadow-lg transition-all duration-300 group"
+                      >
+                        {/* Vintage Book Cover Style Header */}
+                        <div className={`relative h-48 bg-gradient-to-br ${book.coverBg} p-6 flex flex-col justify-between border-b ${book.borderColor} overflow-hidden shadow-inner`}>
+                          {/* Book bind overlay edge */}
+                          <div className="absolute left-0 top-0 bottom-0 w-3 bg-black/15 border-r border-white/10" />
+                          <div className="absolute left-3.5 top-0 bottom-0 w-0.5 bg-white/5" />
+                          
+                          <div className="flex justify-between items-start pl-3">
+                            <span className={`px-2 py-0.5 text-[8.5px] font-extrabold uppercase rounded tracking-wider ${book.badgeBg} ${book.badgeText}`}>
+                              {book.year}
+                            </span>
+                            <Book className="w-4 h-4 text-white/40" />
+                          </div>
+
+                          <div className="pl-3 mt-4">
+                            <h3 className="font-serif text-sm md:text-base font-bold text-white leading-snug line-clamp-3 group-hover:text-mint transition-colors">
+                              {book.title}
+                            </h3>
+                            <span className="text-[10px] text-slate-300 font-extrabold uppercase tracking-wider block mt-1.5">
+                              {book.author}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Card Description */}
+                        <div className="p-6 flex flex-col flex-1 bg-white/30 backdrop-blur-md rounded-b-[32px] border border-t-0 border-white/60 shadow-sm">
+                          <p className="text-xs font-medium text-slate-600 leading-relaxed mb-6 flex-grow line-clamp-4">
+                            {book.description}
+                          </p>
+
+                          <div className="space-y-3">
+                            <button
+                              onClick={() => handleSelectBook(book)}
+                              className="w-full text-center py-2.5 rounded-full bg-mint hover:bg-mint-dark text-white text-xs font-bold uppercase tracking-wider transition-all cursor-pointer shadow-sm flex items-center justify-center gap-1.5"
+                            >
+                              <BookOpen className="w-3.5 h-3.5" />
+                              <span>Open Reference</span>
+                            </button>
+
+                            <a
+                              href={book.wikipediaUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center justify-center gap-1 text-[9px] text-slate-400 hover:text-slate-700 font-bold tracking-wider uppercase transition-colors"
+                            >
+                              <span>About Author (Wiki)</span>
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                // 2. Book Detail View (Remedy Index & Reading Pane)
+                <div className="space-y-6">
+                  {/* Top Book Header bar */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-900/5 pb-4">
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => setSelectedBook(null)}
+                        className="flex items-center justify-center gap-1 px-3.5 py-2 border border-slate-200 hover:border-slate-800 text-slate-800 text-xs font-bold uppercase tracking-wider transition-all bg-white rounded-full shadow-sm cursor-pointer"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                        <span>Library</span>
+                      </button>
+                      <div>
+                        <h2 className="font-serif text-lg md:text-xl font-bold text-[#1A2421] leading-none mb-1">
+                          {selectedBook.title}
+                        </h2>
+                        <span className="text-[10px] text-mint font-bold uppercase tracking-wider">
+                          By {selectedBook.author} · Published {selectedBook.year}
+                        </span>
+                      </div>
+                    </div>
+
+                    <a
+                      href={`https://www.materiamedica.info/en/materia-medica/${selectedBook.id}/index`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-1.5 px-3.5 py-2 border border-slate-250 hover:border-slate-850 rounded-full text-slate-500 hover:text-slate-800 text-[10px] font-bold tracking-wider uppercase transition-all bg-white shadow-sm"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
+                      <span>Original Link</span>
+                    </a>
+                  </div>
+
+                  {/* Main Grid: Remedies Index on Left, Reader on Right */}
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+                    
+                    {/* Index Panel (4 cols) */}
+                    <div className="lg:col-span-4 flex flex-col gap-5">
+                      <div className="glass-panel rounded-3xl border-white/60 p-5 space-y-4 flex flex-col max-h-[700px]">
+                        
+                        {/* Search Remedies */}
+                        <div className="relative">
+                          <input
+                            type="text"
+                            placeholder="Search remedies..."
+                            value={remedySearchTerm}
+                            onChange={(e) => setRemedySearchTerm(e.target.value)}
+                            className="w-full pl-9 pr-4 py-2.5 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-semibold text-[#1A2421]"
+                          />
+                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+                        </div>
+
+                        {/* Quick Letters Jump Box */}
+                        <div className="flex flex-wrap gap-1 p-2 rounded-xl bg-slate-900/5 border border-slate-950/5">
+                          {"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map((letter) => {
+                            // Verify if there are any remedies starting with this letter
+                            const hasRemedies = remedies.some((r) => r.name.trim().toLowerCase().startsWith(letter.toLowerCase()));
+                            return (
+                              <button
+                                key={letter}
+                                onClick={() => handleJumpToLetter(letter)}
+                                disabled={!hasRemedies}
+                                className={`w-5 h-5 flex items-center justify-center text-[9px] font-bold rounded transition-all cursor-pointer ${
+                                  hasRemedies
+                                    ? "text-[#1A2421] hover:bg-mint hover:text-white"
+                                    : "text-slate-350 cursor-not-allowed opacity-40"
+                                }`}
+                              >
+                                {letter}
+                              </button>
+                            );
+                          })}
+                        </div>
+
+                        {/* Remedies Scrollable Box */}
+                        <div 
+                          data-lenis-prevent
+                          className="flex-1 overflow-y-auto pr-1 space-y-1 bg-white/40 border border-slate-900/5 rounded-2xl p-2 min-h-[300px]"
+                        >
+                          {isRemediesLoading ? (
+                            <div className="h-full flex flex-col items-center justify-center py-12 space-y-2">
+                              <div className="w-6 h-6 border-2 border-mint border-t-transparent rounded-full animate-spin" />
+                              <span className="text-[10px] font-bold text-slate-500">Loading Index...</span>
+                            </div>
+                          ) : remediesFetchError ? (
+                            <div className="text-center py-8 px-4 text-rose-700 text-xs font-semibold">
+                              {remediesFetchError}
+                            </div>
+                          ) : (() => {
+                            const filtered = remedies.filter((r) =>
+                              r.name.toLowerCase().includes(remedySearchTerm.toLowerCase())
+                            );
+
+                            if (filtered.length === 0) {
+                              return (
+                                <p className="text-[10px] text-slate-400 text-center py-6">
+                                  No remedies found matching search term.
+                                </p>
+                              );
+                            }
+
+                            // Keep track of letters to insert division header labels
+                            let lastLetter = "";
+
+                            return filtered.map((rem, idx) => {
+                              const firstChar = rem.name.trim().charAt(0).toUpperCase();
+                              const isFirstOfLetter = firstChar !== lastLetter && /[A-Z]/.test(firstChar);
+                              if (isFirstOfLetter) {
+                                lastLetter = firstChar;
+                              }
+
+                              return (
+                                <div key={rem.path + idx} className="space-y-1">
+                                  {isFirstOfLetter && (
+                                    <div
+                                      id={`remedy-letter-${firstChar.toLowerCase()}`}
+                                      className="text-[9px] font-extrabold text-mint bg-mint/5 border-y border-mint/10 py-1 px-2.5 uppercase tracking-widest rounded-md select-none mt-2 first:mt-0"
+                                    >
+                                      {firstChar}
+                                    </div>
+                                  )}
+                                  <button
+                                    onClick={() => handleSelectRemedy(rem.path)}
+                                    className={`w-full text-left py-2 px-3 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+                                      selectedRemedy?.path === rem.path
+                                        ? "bg-mint text-white border-mint shadow-sm"
+                                        : "bg-white/70 border-transparent hover:bg-white text-slate-800"
+                                    }`}
+                                  >
+                                    {rem.name}
+                                  </button>
+                                </div>
+                              );
+                            });
+                          })()}
+                        </div>
+
+                      </div>
+                    </div>
+
+                    {/* Reading Panel (8 cols) */}
+                    <div className="lg:col-span-8 flex flex-col gap-5">
+                      <div className="glass-panel rounded-3xl border-white/60 p-6 flex-1 flex flex-col min-h-[450px]">
+                        
+                        {isRemedyLoading ? (
+                          // Remedy Loading State
+                          <div className="flex-1 flex flex-col items-center justify-center space-y-3">
+                            <div className="w-10 h-10 border-2 border-mint border-t-transparent rounded-full animate-spin" />
+                            <h4 className="text-xs font-bold text-slate-700">Fetching Remedy Provings...</h4>
+                            <p className="text-[10px] text-slate-400">Querying dynamic database & rendering classical text</p>
+                          </div>
+                        ) : remedyFetchError ? (
+                          // Remedy Fetch Error State
+                          <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
+                            <ShieldAlert className="w-8 h-8 text-rose-500 mb-2" />
+                            <h4 className="text-xs font-bold text-rose-800">Connection Failed</h4>
+                            <p className="text-[10px] text-slate-505 max-w-sm mt-1">
+                              {remedyFetchError}
+                            </p>
+                          </div>
+                        ) : selectedRemedy ? (
+                          // Active E-Reader Panel View
+                          <div className="flex-1 flex flex-col h-full space-y-4">
+                            
+                            {/* Reader Toolbar options */}
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-900/5 pb-3">
+                              <h3 className="font-serif text-base font-bold text-[#1A2421]">
+                                {selectedRemedy.title}
+                              </h3>
+
+                              {/* Tools: font scale & theme */}
+                              <div className="flex items-center gap-4 flex-wrap">
+                                
+                                {/* Theme picker */}
+                                <div className="flex items-center gap-1.5 p-1 rounded-xl bg-slate-900/5 border border-slate-900/5">
+                                  <button
+                                    onClick={() => setReaderTheme("light")}
+                                    className={`px-2.5 py-1 text-[9px] font-bold uppercase rounded-lg transition-colors cursor-pointer ${
+                                      readerTheme === "light"
+                                        ? "bg-white text-slate-800 shadow-sm"
+                                        : "text-slate-450 hover:text-slate-700"
+                                    }`}
+                                  >
+                                    Light
+                                  </button>
+                                  <button
+                                    onClick={() => setReaderTheme("sepia")}
+                                    className={`px-2.5 py-1 text-[9px] font-bold uppercase rounded-lg transition-colors cursor-pointer ${
+                                      readerTheme === "sepia"
+                                        ? "bg-[#FAF7F0] text-[#3E301F] shadow-sm border border-[#E5DFC9]"
+                                        : "text-slate-450 hover:text-[#3E301F]"
+                                    }`}
+                                  >
+                                    Sepia
+                                  </button>
+                                  <button
+                                    onClick={() => setReaderTheme("dark")}
+                                    className={`px-2.5 py-1 text-[9px] font-bold uppercase rounded-lg transition-colors cursor-pointer ${
+                                      readerTheme === "dark"
+                                        ? "bg-[#090D10] text-[#C5D0CD] shadow-sm"
+                                        : "text-slate-450 hover:text-slate-200"
+                                    }`}
+                                  >
+                                    Dark
+                                  </button>
+                                </div>
+
+                                {/* Font scale */}
+                                <div className="flex items-center gap-1 p-1 rounded-xl bg-slate-900/5 border border-slate-900/5">
+                                  <button
+                                    onClick={() => {
+                                      const scales: Array<"sm"|"base"|"lg"|"xl"|"2xl"> = ["sm", "base", "lg", "xl", "2xl"];
+                                      const idx = scales.indexOf(readerFontSize);
+                                      if (idx > 0) setReaderFontSize(scales[idx - 1]);
+                                    }}
+                                    className="w-6 h-6 flex items-center justify-center text-xs font-bold text-[#1A2421] hover:bg-white rounded-lg cursor-pointer"
+                                    title="Decrease Text Size"
+                                  >
+                                    A-
+                                  </button>
+                                  <span className="text-[10px] font-extrabold text-slate-400 uppercase w-8 text-center">
+                                    Size
+                                  </span>
+                                  <button
+                                    onClick={() => {
+                                      const scales: Array<"sm"|"base"|"lg"|"xl"|"2xl"> = ["sm", "base", "lg", "xl", "2xl"];
+                                      const idx = scales.indexOf(readerFontSize);
+                                      if (idx < scales.length - 1) setReaderFontSize(scales[idx + 1]);
+                                    }}
+                                    className="w-6 h-6 flex items-center justify-center text-xs font-bold text-[#1A2421] hover:bg-white rounded-lg cursor-pointer"
+                                    title="Increase Text Size"
+                                  >
+                                    A+
+                                  </button>
+                                </div>
+
+                                {/* Fullscreen Mode Toggle */}
+                                <button
+                                  onClick={() => setIsReaderFullscreen(true)}
+                                  className="p-1.5 flex items-center justify-center text-[#1A2421] hover:bg-[#1A2421]/5 rounded-xl border border-slate-900/5 transition-colors cursor-pointer bg-white"
+                                  title="Fullscreen Mode"
+                                >
+                                  <Maximize2 className="w-4 h-4" />
+                                </button>
+
+                              </div>
+                            </div>
+
+                            {/* Main Scrollable text area */}
+                            <div
+                              data-lenis-prevent
+                              className={`flex-1 p-6 sm:p-8 rounded-3xl border shadow-sm overflow-y-auto max-h-[500px] font-serif leading-relaxed space-y-4 select-text transition-colors duration-300 ${
+                                readerTheme === "sepia"
+                                  ? "bg-[#FAF7F0] text-[#3E301F] border-[#E5DFC9] raw-proving-text"
+                                  : readerTheme === "dark"
+                                  ? "bg-[#090D10] text-[#C5D0CD] border-slate-900 raw-proving-text"
+                                  : "bg-white text-slate-800 border-slate-200 raw-proving-text"
+                              }`}
+                              style={{
+                                fontSize:
+                                  readerFontSize === "sm" ? "13px" :
+                                  readerFontSize === "base" ? "15px" :
+                                  readerFontSize === "lg" ? "18px" :
+                                  readerFontSize === "xl" ? "21px" : "24px"
+                              }}
+                              dangerouslySetInnerHTML={{ __html: selectedRemedy.content }}
+                            />
+
+                            <div className="text-[10px] text-slate-400 font-semibold text-right italic">
+                              * Sourced from free library at materiamedica.info. Provided without warranty.
+                            </div>
+
+                          </div>
+                        ) : (
+                          // E-Reader Blank state
+                          <div className="flex-1 flex flex-col items-center justify-center text-center p-8 space-y-4 border border-dashed border-slate-200 rounded-3xl">
+                            <BookOpen className="w-12 h-12 text-slate-300 breathe" />
+                            <div>
+                              <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">No Active Proving Loaded</h4>
+                              <p className="text-[10.5px] text-slate-400 mt-1 max-w-sm leading-relaxed">
+                                Select a remedy from the list on the left to pull clinical pathogenesy, modalities, and posology notes in the reader pane.
+                              </p>
+                            </div>
+                            
+                            <div className="pt-2">
+                              <div className="w-32 h-44 bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-xl shadow-md p-4 flex flex-col justify-between text-left select-none relative overflow-hidden opacity-60">
+                                <div className="absolute left-0 top-0 bottom-0 w-2 bg-black/20 border-r border-white/5" />
+                                <span className="text-[7px] text-slate-500 font-extrabold uppercase tracking-widest">{selectedBook.year}</span>
+                                <h5 className="font-serif text-[10px] font-bold text-slate-100 leading-tight mt-2 line-clamp-3">{selectedBook.title}</h5>
+                                <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider block mt-auto">{selectedBook.author}</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
         {/* 1. New Case Taking Modal */}
         <AnimatePresence>
           {isNewCaseModalOpen && (
@@ -1355,6 +2157,7 @@ ${err.message || err}`);
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
                 transition={{ type: "spring", damping: 25, stiffness: 220 }}
+                data-lenis-prevent
                 className="fixed inset-0 m-auto max-w-2xl w-full p-6 md:p-8 bg-[#FAF9F6]/95 border border-white/60 z-[51] shadow-2xl rounded-[36px] flex flex-col pointer-events-auto max-h-[85vh] overflow-y-auto"
               >
                 {/* Modal Header */}
@@ -1398,6 +2201,7 @@ ${err.message || err}`);
                       <div className="flex gap-3 pt-1">
                         <a
                           href={createdFolderUrl}
+                          onClick={(e) => handleMockLinkClick(e, createdFolderUrl)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex-1 text-center py-2.5 px-3 rounded-xl border border-slate-200 hover:border-slate-850 text-xs font-bold text-slate-800 flex items-center justify-center gap-1.5 bg-white transition-colors cursor-pointer shadow-sm"
@@ -1407,6 +2211,7 @@ ${err.message || err}`);
                         </a>
                         <a
                           href={createdSheetUrl}
+                          onClick={(e) => handleMockLinkClick(e, createdSheetUrl)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex-1 text-center py-2.5 px-3 rounded-xl border border-slate-200 hover:border-slate-855 text-xs font-bold text-slate-800 flex items-center justify-center gap-1.5 bg-white transition-colors cursor-pointer shadow-sm"
@@ -1617,6 +2422,7 @@ ${err.message || err}`);
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
                 transition={{ type: "spring", damping: 25, stiffness: 220 }}
+                data-lenis-prevent
                 className="fixed inset-0 m-auto max-w-md w-full p-6 md:p-8 bg-[#FAF9F6]/95 border border-white/60 z-[51] shadow-2xl rounded-[36px] flex flex-col pointer-events-auto max-h-[80vh] overflow-y-auto"
               >
                 {/* Modal Header */}
@@ -1624,8 +2430,8 @@ ${err.message || err}`);
                   <div className="flex items-center gap-2">
                     <Upload className="w-5 h-5 text-mint" />
                     <div>
-                      <h3 className="text-base font-bold text-[#1A2421]">Import Case Sheet</h3>
-                      <span className="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">Parse CSV File Records</span>
+                      <h3 className="text-base font-bold text-[#1A2421]">Import Patients (XLSX / Google Sheet / Drive)</h3>
+                      <span className="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">Import Existing Patients List</span>
                     </div>
                   </div>
                   <button
@@ -1636,7 +2442,62 @@ ${err.message || err}`);
                   </button>
                 </div>
 
-                <div className="space-y-5">
+                <div className="space-y-4">
+                  {/* Import Method Toggle */}
+                  <div className="flex gap-1.5 p-1 bg-slate-900/5 rounded-2xl border border-slate-900/5 mb-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setImportMethod("file");
+                        setImportError("");
+                        setImportSuccess("");
+                        setGooglePatientsList([]);
+                        setGoogleFolderFiles([]);
+                      }}
+                      className={`flex-1 py-2 text-center text-[10px] font-extrabold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${
+                        importMethod === "file"
+                          ? "bg-white text-slate-800 shadow-sm"
+                          : "text-slate-500 hover:text-slate-800"
+                      }`}
+                    >
+                      Local Sheet
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setImportMethod("google");
+                        setImportError("");
+                        setImportSuccess("");
+                        setGooglePatientsList([]);
+                        setGoogleFolderFiles([]);
+                      }}
+                      className={`flex-1 py-2 text-center text-[10px] font-extrabold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${
+                        importMethod === "google"
+                          ? "bg-white text-slate-800 shadow-sm"
+                          : "text-slate-500 hover:text-slate-800"
+                      }`}
+                    >
+                      Google Drive
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setImportMethod("ai");
+                        setImportError("");
+                        setImportSuccess("");
+                        setGooglePatientsList([]);
+                        setGoogleFolderFiles([]);
+                      }}
+                      className={`flex-1 py-2 text-center text-[10px] font-extrabold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${
+                        importMethod === "ai"
+                          ? "bg-white text-slate-800 shadow-sm"
+                          : "text-slate-500 hover:text-slate-800"
+                      }`}
+                    >
+                      AI File Scan
+                    </button>
+                  </div>
+
                   {importError && (
                     <div className="p-4 bg-rose-50 border border-rose-100 rounded-2xl flex items-start gap-2.5 text-rose-800 text-xs font-semibold leading-relaxed">
                       <ShieldAlert className="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" />
@@ -1651,32 +2512,180 @@ ${err.message || err}`);
                     </div>
                   )}
 
-                  {/* CSV Template Guide */}
-                  <div className="p-4 rounded-2xl border border-slate-900/5 bg-white/40 space-y-2 text-xs font-semibold">
-                    <span className="text-[10px] text-slate-700 font-extrabold uppercase tracking-wider block">CSV Columns Mapping Schema</span>
-                    <p className="text-[10.5px] text-slate-700 leading-normal">
-                      The uploader will automatically map case variables from the first data row. Keep column headers matching these titles:
-                    </p>
-                    <code className="block p-2 bg-slate-900/5 border border-slate-900/5 rounded font-mono text-[9px] text-slate-700 overflow-x-auto whitespace-nowrap">
-                      name, age, gender, email, phone, city, state, complaint, rubrics
-                    </code>
-                    <p className="text-[9.5px] text-slate-400 italic font-medium">
-                      * Rubrics field format: semicolon-separated keywords with intensity weights like `GERD (3); Anxiety (2)`.
-                    </p>
-                  </div>
+                  {importMethod === "file" ? (
+                    <>
+                      {/* CSV Template Guide */}
+                      <div className="p-4 rounded-2xl border border-slate-900/5 bg-white/40 space-y-2 text-xs font-semibold">
+                        <span className="text-[10px] text-slate-700 font-extrabold uppercase tracking-wider block">CSV Columns Mapping Schema</span>
+                        <p className="text-[10.5px] text-slate-700 leading-normal">
+                          The uploader will automatically map case variables from the first data row. Keep column headers matching these titles:
+                        </p>
+                        <code className="block p-2 bg-slate-900/5 border border-slate-900/5 rounded font-mono text-[9px] text-slate-700 overflow-x-auto whitespace-nowrap">
+                          name, age, gender, email, phone, city, state, complaint, rubrics
+                        </code>
+                        <p className="text-[9.5px] text-slate-400 italic font-medium">
+                          * Rubrics field format: semicolon-separated keywords with intensity weights like `GERD (3); Anxiety (2)`.
+                        </p>
+                      </div>
 
-                  {/* File Upload Trigger */}
-                  <div className="relative border-2 border-dashed border-slate-200 hover:border-mint rounded-2xl p-6 text-center cursor-pointer transition-colors hover:bg-mint/5 group">
-                    <input
-                      type="file"
-                      accept=".csv"
-                      onChange={handleCSVImport}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    />
-                    <Upload className="w-8 h-8 text-slate-400 group-hover:text-mint mx-auto mb-2 transition-colors" />
-                    <span className="block text-xs font-bold text-slate-800">Choose Patient CSV Sheet</span>
-                    <span className="block text-[9.5px] text-slate-400 font-semibold mt-0.5">Drag & drop or browse your local file</span>
-                  </div>
+                      {/* File Upload Trigger */}
+                      <div className="relative border-2 border-dashed border-slate-200 hover:border-mint rounded-2xl p-6 text-center cursor-pointer transition-colors hover:bg-mint/5 group">
+                        <input
+                          type="file"
+                          accept=".csv"
+                          onChange={handleCSVImport}
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        />
+                        <Upload className="w-8 h-8 text-slate-400 group-hover:text-mint mx-auto mb-2 transition-colors" />
+                        <span className="block text-xs font-bold text-slate-800">Choose Exported Patient CSV File</span>
+                        <span className="block text-[9.5px] text-slate-400 font-semibold mt-0.5">Drag & drop or browse your local file</span>
+                      </div>
+                    </>
+                  ) : importMethod === "google" ? (
+                    <>
+                      {/* Google Sheets Guide */}
+                      <div className="p-4 rounded-2xl border border-slate-900/5 bg-white/40 space-y-2 text-xs font-semibold">
+                        <span className="text-[10px] text-slate-700 font-extrabold uppercase tracking-wider block">Google Drive & Sheets Sync Setup</span>
+                        <p className="text-[10.5px] text-slate-700 leading-normal">
+                          Share your Google Sheet or Google Drive folder with the clinic's Service Account email below (with <strong>Viewer</strong> access), or set access to <strong>"Anyone with the link can view"</strong>:
+                        </p>
+                        <div className="flex items-center gap-1.5 p-2 bg-slate-900/5 border border-slate-900/5 rounded">
+                          <code className="block font-mono text-[9px] text-slate-700 overflow-x-auto whitespace-nowrap select-all flex-1">
+                            {serviceAccountEmail || "homeo-healthcare-service-acc@clinic-portal.iam.gserviceaccount.com"}
+                          </code>
+                          <button
+                            type="button"
+                            onClick={() => navigator.clipboard.writeText(serviceAccountEmail || "homeo-healthcare-service-acc@clinic-portal.iam.gserviceaccount.com")}
+                            className="text-[9px] uppercase tracking-wider bg-white px-2 py-0.5 rounded border border-slate-200 text-slate-600 hover:text-slate-800 font-bold active:scale-95 transition-transform cursor-pointer"
+                            title="Copy email"
+                          >
+                            Copy
+                          </button>
+                        </div>
+                        <p className="text-[9.5px] text-slate-400 font-medium">
+                          Note: You can paste a <strong>Folder URL</strong> (lists all files inside) or a <strong>Sheet URL</strong>.
+                        </p>
+                      </div>
+
+                      {/* Google Sheet URL Input */}
+                      <div className="space-y-2">
+                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                          Google Drive Folder / Spreadsheet ID or URL
+                        </label>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={googleSheetUrl}
+                            onChange={(e) => setGoogleSheetUrl(e.target.value)}
+                            placeholder="https://drive.google.com/drive/folders/... or Sheet link"
+                            className="flex-1 bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-xs outline-none focus:border-mint"
+                          />
+                          <button
+                            type="button"
+                            onClick={handleGoogleSheetImport}
+                            disabled={isImportingFromGoogle || !googleSheetUrl}
+                            className="px-4 py-2.5 rounded-2xl bg-[#1A2421] hover:bg-slate-800 text-white text-xs font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                          >
+                            {isImportingFromGoogle ? "Syncing..." : "Sync Drive"}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Google Drive Folder File Selection */}
+                      {googleFolderFiles.length > 0 && (
+                        <div className="space-y-2 pt-2 border-t border-slate-900/5">
+                          <span className="block text-[10px] font-extrabold text-slate-700 uppercase tracking-wider">
+                            Files in Google Drive Folder ({googleFolderFiles.length} Found)
+                          </span>
+                          <div className="max-h-40 overflow-y-auto space-y-1.5 pr-1 select-none" data-lenis-prevent="true">
+                            {googleFolderFiles.map((file, idx) => (
+                              <div
+                                key={file.id || idx}
+                                onClick={() => loadGoogleSheetFile(file.id)}
+                                className="p-3 bg-white hover:bg-mint/5 border border-slate-200 hover:border-mint/30 rounded-2xl cursor-pointer transition-all flex justify-between items-center group"
+                              >
+                                <div className="flex flex-col gap-0.5 flex-1 min-w-0 pr-2">
+                                  <span className="text-xs font-bold text-slate-800 group-hover:text-mint transition-colors truncate">
+                                    {file.name}
+                                  </span>
+                                  <span className="text-[9px] text-slate-400 font-semibold truncate">
+                                    {file.mimeType.includes("spreadsheet") || file.mimeType.includes("sheet") ? "📊 Spreadsheet" : "📄 Document"}
+                                  </span>
+                                </div>
+                                <span className="text-[10px] text-slate-500 group-hover:underline shrink-0 font-semibold">
+                                  Load File
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Google Sheets Patient List Selection */}
+                      {googlePatientsList.length > 0 && (
+                        <div className="space-y-2 pt-2 border-t border-slate-900/5">
+                          <span className="block text-[10px] font-extrabold text-slate-700 uppercase tracking-wider">
+                            Select Patient to Import ({googlePatientsList.length} Found)
+                          </span>
+                          <div className="max-h-40 overflow-y-auto space-y-1.5 pr-1 select-none" data-lenis-prevent="true">
+                            {googlePatientsList.map((pat, idx) => (
+                              <div
+                                key={idx}
+                                onClick={() => selectPatientForImport(pat)}
+                                className="p-3 bg-white hover:bg-mint/5 border border-slate-200 hover:border-mint/30 rounded-2xl cursor-pointer transition-all flex flex-col gap-0.5 group"
+                              >
+                                <div className="flex justify-between items-center">
+                                  <span className="text-xs font-bold text-slate-800 group-hover:text-mint transition-colors">
+                                    {pat.name}
+                                  </span>
+                                  <span className="text-[9px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded font-bold">
+                                    {pat.gender} • {pat.age} yrs
+                                  </span>
+                                </div>
+                                <span className="text-[10px] text-slate-400 line-clamp-1">
+                                  {pat.complaint}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      {/* AI Document Scan Instructions */}
+                      <div className="p-4 rounded-2xl border border-slate-900/5 bg-white/40 space-y-2 text-xs font-semibold">
+                        <span className="text-[10px] text-slate-700 font-extrabold uppercase tracking-wider block">AI Medical Document Scan</span>
+                        <p className="text-[10.5px] text-slate-700 leading-normal">
+                          Upload any local clinical record, case history notes, PDF, Word document (DOCX), plain text, or even a photo/screenshot of a case file. The Medical AI will parse and prefill all demographics and symptom rubrics automatically!
+                        </p>
+                      </div>
+
+                      {/* File Upload Trigger */}
+                      <div className="relative border-2 border-dashed border-slate-200 hover:border-mint rounded-2xl p-6 text-center cursor-pointer transition-colors hover:bg-mint/5 group">
+                        <input
+                          type="file"
+                          accept=".txt,.pdf,.docx,.png,.jpg,.jpeg"
+                          onChange={handleMedicalFileImport}
+                          disabled={isAnalyzingFile}
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                        />
+                        {isAnalyzingFile ? (
+                          <div className="space-y-2 py-2">
+                            <div className="w-8 h-8 rounded-full border-2 border-slate-200 border-t-mint animate-spin mx-auto"></div>
+                            <span className="block text-xs font-bold text-slate-800">Analyzing Document with AI...</span>
+                            <span className="block text-[9.5px] text-slate-400 font-semibold mt-0.5">Extracting patient details and clinical history</span>
+                          </div>
+                        ) : (
+                          <>
+                            <Upload className="w-8 h-8 text-slate-400 group-hover:text-mint mx-auto mb-2 transition-colors" />
+                            <span className="block text-xs font-bold text-slate-800">Choose Case Document or Image</span>
+                            <span className="block text-[9.5px] text-slate-400 font-semibold mt-0.5">Supports PDF, DOCX, Text, and Photos</span>
+                          </>
+                        )}
+                      </div>
+                    </>
+                  )}
 
                   <div className="pt-3 border-t border-slate-900/5 flex justify-end">
                     <button
@@ -1691,6 +2700,182 @@ ${err.message || err}`);
             </>
           )}
         </AnimatePresence>
+
+        {/* Fullscreen Materia Medica E-Reader Modal */}
+        <AnimatePresence>
+          {isReaderFullscreen && selectedRemedy && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.3 }}
+              className={`fixed inset-0 z-[60] flex flex-col pointer-events-auto overflow-hidden ${
+                readerTheme === "sepia"
+                  ? "bg-[#FAF7F0] text-[#3E301F]"
+                  : readerTheme === "dark"
+                  ? "bg-[#090D10] text-[#C5D0CD]"
+                  : "bg-white text-slate-850"
+              }`}
+            >
+              {/* Fullscreen Header */}
+              <div 
+                className={`p-6 border-b flex flex-col md:flex-row md:items-center justify-between gap-4 transition-colors duration-300 ${
+                  readerTheme === "sepia"
+                    ? "border-[#E5DFC9] bg-[#F7F3E8]"
+                    : readerTheme === "dark"
+                    ? "border-slate-900 bg-[#0c1216]"
+                    : "border-slate-100 bg-slate-50"
+                }`}
+              >
+                <div>
+                  <span className="text-[10px] uppercase font-extrabold tracking-widest text-mint">
+                    {selectedBook?.title || "Materia Medica"}
+                  </span>
+                  <h2 className="font-serif text-lg font-bold leading-tight mt-0.5">
+                    {selectedRemedy.title}
+                  </h2>
+                </div>
+
+                {/* Toolbar */}
+                <div className="flex items-center gap-4 flex-wrap">
+                  {/* Theme Selector */}
+                  <div className={`flex items-center gap-1.5 p-1 rounded-xl transition-colors duration-300 ${
+                    readerTheme === "sepia"
+                      ? "bg-slate-900/5 border border-slate-900/5"
+                      : readerTheme === "dark"
+                      ? "bg-white/5 border border-white/5"
+                      : "bg-slate-900/5 border border-slate-900/5"
+                  }`}>
+                    <button
+                      onClick={() => setReaderTheme("light")}
+                      className={`px-3 py-1.5 text-[9px] font-extrabold uppercase rounded-lg transition-all cursor-pointer ${
+                        readerTheme === "light"
+                          ? "bg-white text-slate-850 shadow-sm border border-slate-200"
+                          : "text-slate-450 hover:text-slate-700"
+                      }`}
+                    >
+                      Light
+                    </button>
+                    <button
+                      onClick={() => setReaderTheme("sepia")}
+                      className={`px-3 py-1.5 text-[9px] font-extrabold uppercase rounded-lg transition-all cursor-pointer ${
+                        readerTheme === "sepia"
+                          ? "bg-[#FAF7F0] text-[#3E301F] shadow-sm border border-[#E5DFC9]"
+                          : "text-slate-450 hover:text-[#3E301F]"
+                      }`}
+                    >
+                      Sepia
+                    </button>
+                    <button
+                      onClick={() => setReaderTheme("dark")}
+                      className={`px-3 py-1.5 text-[9px] font-extrabold uppercase rounded-lg transition-all cursor-pointer ${
+                        readerTheme === "dark"
+                          ? "bg-[#090D10] text-[#C5D0CD] shadow-sm"
+                          : "text-slate-450 hover:text-slate-200"
+                      }`}
+                    >
+                      Dark
+                    </button>
+                  </div>
+
+                  {/* Font Scale Selector */}
+                  <div className={`flex items-center gap-1.5 p-1 rounded-xl transition-colors duration-300 ${
+                    readerTheme === "sepia"
+                      ? "bg-slate-900/5 border border-slate-900/5"
+                      : readerTheme === "dark"
+                      ? "bg-white/5 border border-white/5"
+                      : "bg-slate-900/5 border border-slate-900/5"
+                  }`}>
+                    <button
+                      onClick={() => {
+                        const scales: Array<"sm"|"base"|"lg"|"xl"|"2xl"> = ["sm", "base", "lg", "xl", "2xl"];
+                        const idx = scales.indexOf(readerFontSize);
+                        if (idx > 0) setReaderFontSize(scales[idx - 1]);
+                      }}
+                      className="w-7 h-7 flex items-center justify-center text-xs font-bold hover:bg-white/20 rounded-lg cursor-pointer transition-colors"
+                      title="Decrease Text Size"
+                    >
+                      A-
+                    </button>
+                    <span className="text-[10px] font-extrabold uppercase w-8 text-center opacity-60">
+                      Size
+                    </span>
+                    <button
+                      onClick={() => {
+                        const scales: Array<"sm"|"base"|"lg"|"xl"|"2xl"> = ["sm", "base", "lg", "xl", "2xl"];
+                        const idx = scales.indexOf(readerFontSize);
+                        if (idx < scales.length - 1) setReaderFontSize(scales[idx + 1]);
+                      }}
+                      className="w-7 h-7 flex items-center justify-center text-xs font-bold hover:bg-white/20 rounded-lg cursor-pointer transition-colors"
+                      title="Increase Text Size"
+                    >
+                      A+
+                    </button>
+                  </div>
+
+                  {/* Exit Fullscreen Button */}
+                  <button
+                    onClick={() => setIsReaderFullscreen(false)}
+                    className={`px-4 py-2 border rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer ${
+                      readerTheme === "sepia"
+                        ? "border-[#E5DFC9] hover:border-slate-800 hover:bg-slate-900/5 text-[#3E301F]"
+                        : readerTheme === "dark"
+                        ? "border-slate-800 hover:border-slate-200 hover:bg-white/5 text-[#C5D0CD]"
+                        : "border-slate-200 hover:border-slate-800 hover:bg-slate-900/5 text-slate-800"
+                    }`}
+                  >
+                    <Minimize2 className="w-3.5 h-3.5" />
+                    <span>Exit Fullscreen</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Fullscreen Reading Pane Content */}
+              <div 
+                data-lenis-prevent
+                className="flex-1 overflow-y-auto p-8 md:p-16 select-text flex justify-center"
+              >
+                <div 
+                  className="w-full max-w-3xl font-serif leading-relaxed space-y-6 text-justify pb-24 raw-proving-text"
+                  style={{
+                    fontSize:
+                      readerFontSize === "sm" ? "14px" :
+                      readerFontSize === "base" ? "17px" :
+                      readerFontSize === "lg" ? "20px" :
+                      readerFontSize === "xl" ? "23px" : "26px"
+                  }}
+                  dangerouslySetInnerHTML={{ __html: selectedRemedy.content }}
+                />
+              </div>
+
+              {/* Fullscreen Footer */}
+              <div 
+                className={`p-4 text-[10px] text-center italic transition-colors duration-300 opacity-60 border-t ${
+                  readerTheme === "sepia"
+                    ? "border-[#E5DFC9] bg-[#F7F3E8]"
+                    : readerTheme === "dark"
+                    ? "border-slate-900 bg-[#0c1216]"
+                    : "border-slate-100 bg-slate-50"
+                }`}
+              >
+                * Sourced from free library at materiamedica.info. Provided without warranty.
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Workspace Provisioning Loader Overlay */}
+        {isProvisioningWorkspace && (
+          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[100] flex items-center justify-center pointer-events-auto">
+            <div className="bg-white p-8 rounded-[36px] max-w-sm w-full text-center space-y-4 border border-white/60 shadow-2xl">
+              <div className="w-12 h-12 rounded-full border-4 border-slate-100 border-t-mint animate-spin mx-auto"></div>
+              <h3 className="text-base font-bold text-slate-800">Setting up Google Workspace</h3>
+              <p className="text-xs text-slate-400 leading-normal font-semibold">
+                Creating real Google Drive folder and clinical case sheet for <strong>{provisioningPatientName}</strong>. Please wait...
+              </p>
+            </div>
+          </div>
+        )}
 
       </div>
     </div>

@@ -380,7 +380,10 @@ export default function Conditions() {
               </div>
 
               {/* Drawer Scrollable Content */}
-              <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8 select-text">
+              <div 
+                data-lenis-prevent
+                className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8 select-text"
+              >
                 
                 {/* 1. Root Cause Mapping Graphic */}
                 <div className="space-y-4">

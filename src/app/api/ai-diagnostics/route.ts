@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     const { patientInfo, rubrics, repertorizationResults } = body;
 
     const ai = new GoogleGenerativeAI(apiKey);
-    const model = ai.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const model = ai.getGenerativeModel({ model: "gemini-3.5-flash" });
 
     const systemPrompt = `You are the AI Medical Brain, a master homeopathic clinical consultant modeled after world-class repertory engines like Radar Opus, combining Kent's Repertory classical methodologies with modern pathology.
 Your goal is to evaluate the repertorization results, patient intake symptoms, and rubrics to generate a professional, highly detailed, structured clinical report for Dr. Narayan Jethwani.

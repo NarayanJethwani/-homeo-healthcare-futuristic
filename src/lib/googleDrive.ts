@@ -217,3 +217,221 @@ export async function appendPatientToMasterRecord(
     throw error;
   }
 }
+
+/**
+ * Appends the AI diagnostics report to the patient's individual clinical sheet
+ */
+export async function appendAiReportToClinicalSheet(
+  sheetId: string,
+  aiReport: string
+): Promise<void> {
+  const auth = getGoogleAuth();
+  if (!auth) {
+    console.warn("Google API Auth missing. Skipping AI Report export to Google Sheets.");
+    return;
+  }
+
+  const sheets = google.sheets({ version: "v4", auth });
+
+  try {
+    await sheets.spreadsheets.values.update({
+      spreadsheetId: sheetId,
+      range: "Sheet1!A13:B17",
+      valueInputOption: "RAW",
+      requestBody: {
+        values: [
+          ["AI CLINICAL DIAGNOSTICS REPORT", ""],
+          ["Generated Engine", "Gemini 3.5 Clinical Synthesis"],
+          ["Analysis Timestamp", new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })],
+          ["", ""],
+          ["Clinical Findings & Repertorization Summary", aiReport]
+        ]
+      }
+    });
+  } catch (error) {
+    console.error("Error writing AI report to patient Google Sheet:", error);
+    throw error;
+  }
+}
+
+/**
+ * Parses and extracts Google Spreadsheet ID from a URL or raw ID
+ */
+export function extractSpreadsheetId(urlOrId: string): string {
+  if (!urlOrId) return "";
+  if (urlOrId.includes("docs.google.com/spreadsheets")) {
+    const match = urlOrId.match(/\/d\/([a-zA-Z0-9-_]+)/);
+    return match ? match[1] : urlOrId;
+  }
+  return urlOrId.trim();
+}
+
+/**
+ * Fetches patient rows from an existing Google Sheet on Drive
+ */
+export async function getPatientRowsFromSheet(spreadsheetId: string): Promise<any[][]> {
+  const auth = getGoogleAuth();
+  if (!auth || spreadsheetId.startsWith("mock-")) {
+    console.warn("Operating in mock mode or mock ID provided. Returning simulated sheet rows.");
+    const headers = ["Name", "Age", "Gender", "Email", "Phone", "City", "State", "Complaint", "Rubrics"];
+    
+    // Simulate specific patient file based on ID or name
+    if (spreadsheetId === "mock-file-1" || spreadsheetId.includes("aarav")) {
+      return [
+        headers,
+        ["Aarav Mehta", "45", "Male", "aarav.mehta@example.com", "+91 98765 43210", "Mumbai", "Maharashtra", "Chronic migraine with throbbing pain, worse in sun.", "Headache (3); Migraine (2)"]
+      ];
+    }
+    if (spreadsheetId === "mock-file-2" || spreadsheetId.includes("priya")) {
+      return [
+        headers,
+        ["Priya Sharma", "32", "Female", "priya.sharma@example.com", "+91 87654 32109", "Pune", "Maharashtra", "Acid reflux and bloating after fatty food.", "GERD (3); Bloating (2)"]
+      ];
+    }
+    if (spreadsheetId === "mock-file-3" || spreadsheetId.includes("rohan")) {
+      return [
+        headers,
+        ["Rohan Das", "29", "Male", "rohan.das@example.com", "+91 76543 21098", "Kolkata", "West Bengal", "Dry cough and shortness of breath in morning.", "Cough (3); Asthma (2)"]
+      ];
+    }
+    if (spreadsheetId === "mock-file-4" || spreadsheetId.includes("ananya")) {
+      return [
+        headers,
+        ["Ananya Pandey", "25", "Female", "ananya.pandey@gmail.com", "+91 98888 77777", "Mumbai", "Maharashtra", "Skin acne breakout and eczema with intense itching, worse at night.", "Eczema (3); Acne (2)"]
+      ];
+    }
+    if (spreadsheetId === "mock-file-5" || spreadsheetId.includes("siddharth")) {
+      return [
+        headers,
+        ["Siddharth Malhotra", "34", "Male", "sid.malhotra@gmail.com", "+91 98111 22222", "Delhi", "Delhi", "Chronic knee pain and joint stiffness, worse during wet cold weather.", "Joint stiffness (3); Rheumatism (2)"]
+      ];
+    }
+    if (spreadsheetId === "mock-file-6" || spreadsheetId.includes("kriti")) {
+      return [
+        headers,
+        ["Kriti Sanon", "31", "Female", "kriti.sanon@gmail.com", "+91 98333 44444", "Mumbai", "Maharashtra", "Insomnia, high anxiety, and heart palpitations under stress.", "Insomnia (3); Anxiety (3); Palpitations (2)"]
+      ];
+    }
+    if (spreadsheetId === "mock-file-7" || spreadsheetId.includes("varun")) {
+      return [
+        headers,
+        ["Varun Dhawan", "35", "Male", "varun.dhawan@gmail.com", "+91 98555 66666", "Mumbai", "Maharashtra", "Frequent throat irritation, hoarseness of voice, and dry cough.", "Hoarseness (3); Cough (2)"]
+      ];
+    }
+    if (spreadsheetId === "mock-file-8" || spreadsheetId.includes("deepika")) {
+      return [
+        headers,
+        ["Deepika Padukone", "38", "Female", "deepika.p@gmail.com", "+91 98777 88888", "Bangalore", "Karnataka", "Severe tension headaches, beginning at occiput, spreading forward.", "Headache (3); Tension (2)"]
+      ];
+    }
+    
+    // Default fallback list
+    return [
+      headers,
+      ["Aarav Mehta", "45", "Male", "aarav.mehta@example.com", "+91 98765 43210", "Mumbai", "Maharashtra", "Chronic migraine with throbbing pain, worse in sun.", "Headache (3); Migraine (2)"],
+      ["Priya Sharma", "32", "Female", "priya.sharma@example.com", "+91 87654 32109", "Pune", "Maharashtra", "Acid reflux and bloating after fatty food.", "GERD (3); Bloating (2)"],
+      ["Rohan Das", "29", "Male", "rohan.das@example.com", "+91 76543 21098", "Kolkata", "West Bengal", "Dry cough and shortness of breath in morning.", "Cough (3); Asthma (2)"]
+    ];
+  }
+
+  const sheets = google.sheets({ version: "v4", auth });
+
+  try {
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: "Sheet1!A1:Z200"
+    });
+
+    let rows = response.data.values;
+    if (!rows || rows.length === 0) {
+      // Fallback: try getting first sheet values without specifying sheet name
+      const spreadsheetInfo = await sheets.spreadsheets.get({ spreadsheetId });
+      const firstSheetName = spreadsheetInfo.data.sheets?.[0]?.properties?.title || "A1:Z200";
+      const fallbackResponse = await sheets.spreadsheets.values.get({
+        spreadsheetId,
+        range: `${firstSheetName}!A1:Z200`
+      });
+      rows = fallbackResponse.data.values;
+    }
+
+    if (!rows || rows.length === 0) {
+      throw new Error("No data found in spreadsheet.");
+    }
+    return rows;
+  } catch (error: any) {
+    console.error("Error fetching rows from Google Sheet:", error);
+    throw new Error(error.message || "Failed to fetch Google Sheet rows. Make sure the ID is correct and shared.");
+  }
+}
+
+/**
+ * Exposes the configured Google Service Account client email for sharing purposes
+ */
+export function getServiceAccountEmail(): string {
+  const serviceAccountKeyJson = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
+  if (!serviceAccountKeyJson) return "";
+  try {
+    const credentials = JSON.parse(serviceAccountKeyJson);
+    return credentials.client_email || "";
+  } catch {
+    return "";
+  }
+}
+
+/**
+ * Detects if a URL or ID is a Google Drive Folder
+ */
+export function isGoogleDriveFolder(urlOrId: string): boolean {
+  if (!urlOrId) return false;
+  return urlOrId.includes("drive.google.com/drive/folders") || urlOrId.includes("drive.google.com/drive/u/0/folders") || urlOrId.includes("drive.google.com/open?id=");
+}
+
+/**
+ * Extracts folder ID from a URL or raw ID
+ */
+export function extractFolderId(urlOrId: string): string {
+  if (!urlOrId) return "";
+  if (urlOrId.includes("drive.google.com/drive/folders") || urlOrId.includes("drive.google.com/drive/u/0/folders")) {
+    const match = urlOrId.match(/\/folders\/([a-zA-Z0-9-_]+)/);
+    return match ? match[1] : urlOrId;
+  }
+  return urlOrId.trim();
+}
+
+/**
+ * Lists all files in a Google Drive folder
+ */
+export async function listFilesInFolder(folderId: string): Promise<any[]> {
+  const auth = getGoogleAuth();
+  if (!auth) {
+    console.warn("Google API Auth missing. Returning mock folder files.");
+    // Return a rich mock file list representing a full folder with 8 patients
+    return [
+      { id: "mock-file-1", name: "Aarav Mehta - Clinical Record", mimeType: "application/vnd.google-apps.spreadsheet" },
+      { id: "mock-file-2", name: "Priya Sharma - Clinical Record", mimeType: "application/vnd.google-apps.spreadsheet" },
+      { id: "mock-file-3", name: "Rohan Das - Clinical Record", mimeType: "application/vnd.google-apps.spreadsheet" },
+      { id: "mock-file-4", name: "Ananya Pandey - Case Sheet", mimeType: "application/vnd.google-apps.spreadsheet" },
+      { id: "mock-file-5", name: "Siddharth Malhotra - Homeopathy File", mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" },
+      { id: "mock-file-6", name: "Kriti Sanon - Intake Details", mimeType: "text/plain" },
+      { id: "mock-file-7", name: "Varun Dhawan - Case File", mimeType: "application/pdf" },
+      { id: "mock-file-8", name: "Deepika Padukone - Consultation", mimeType: "application/vnd.google-apps.document" }
+    ];
+  }
+
+  const drive = google.drive({ version: "v3", auth });
+
+  try {
+    const response = await drive.files.list({
+      q: `'${folderId}' in parents and trashed = false`,
+      fields: "files(id, name, mimeType, webViewLink)",
+      pageSize: 100
+    });
+    return response.data.files || [];
+  } catch (error: any) {
+    console.error("Error listing files in Google Drive folder:", error);
+    throw new Error(error.message || "Failed to list folder files. Make sure the folder ID is correct and shared.");
+  }
+}
+
+
+
