@@ -781,6 +781,11 @@ export default function StorePage() {
   const [walkInConditionsCount, setWalkInConditionsCount] = useState<number>(1);
   const [walkInDurationValue, setWalkInDurationValue] = useState<number>(1);
   
+  // Concession states
+  const [walkInApplyConcession, setWalkInApplyConcession] = useState(false);
+  const [walkInConcessionType, setWalkInConcessionType] = useState<"senior" | "compassionate" | "override">("senior");
+  const [walkInOverridePrice, setWalkInOverridePrice] = useState("");
+  
   // Payment fields
   const [paymentMethod, setPaymentMethod] = useState<"upi" | "bank">("upi");
   const [transactionRef, setTransactionRef] = useState("");
@@ -803,8 +808,11 @@ export default function StorePage() {
     durationValue?: number;
   } | null>(null);
   const [activeDiagnosisTab, setActiveDiagnosisTab] = useState("skin-hair");
+
+  const isSenior = checkoutPlan ? parseInt(patientAge) >= 60 : false;
+  const publicSeniorDiscount = isSenior && checkoutPlan ? Math.round(checkoutPlan.finalPrice * 0.15) : 0;
   const finalPayable = checkoutPlan 
-    ? (checkoutPlan.finalPrice + (deliveryMode === "shipping" && patientCountry === "India" ? 300 : 0)) 
+    ? (checkoutPlan.finalPrice - publicSeniorDiscount + (deliveryMode === "shipping" && patientCountry === "India" ? 300 : 0)) 
     : 0;
 
   const [filter, setFilter] = useState<"all" | "consultation" | "specialty">("all");
@@ -861,6 +869,17 @@ export default function StorePage() {
       console.error("Error parsing URL parameters:", e);
     }
   }, []);
+
+  // Automatically trigger Senior Concession if walk-in age >= 60
+  useEffect(() => {
+    const ageVal = parseInt(walkInAge);
+    if (!isNaN(ageVal) && ageVal >= 60) {
+      setWalkInApplyConcession(true);
+      setWalkInConcessionType("senior");
+    } else if (walkInAge === "" || (!isNaN(ageVal) && ageVal < 60)) {
+      setWalkInApplyConcession(false);
+    }
+  }, [walkInAge]);
 
 
   const calculatePricing = (
@@ -924,6 +943,18 @@ export default function StorePage() {
       discountAmount,
       finalPrice
     };
+  };
+
+  const getWalkInFinalPrice = () => {
+    const basePricing = calculatePricing(walkInTier as keyof typeof careLevelsDetails, walkInBillingCycle, walkInDurationValue, walkInConditionsCount);
+    if (!walkInApplyConcession) return basePricing.finalPrice;
+    if (walkInConcessionType === "senior") return Math.round(basePricing.finalPrice * 0.85);
+    if (walkInConcessionType === "compassionate") return Math.round(basePricing.finalPrice * 0.70);
+    if (walkInConcessionType === "override") {
+      const overrideVal = parseInt(walkInOverridePrice);
+      return isNaN(overrideVal) ? basePricing.finalPrice : Math.max(0, overrideVal);
+    }
+    return basePricing.finalPrice;
   };
 
   const handleCycleChange = (cycle: "weekly" | "monthly") => {
@@ -1010,11 +1041,15 @@ export default function StorePage() {
           careLevel: careLevelsDetails[walkInTier as keyof typeof careLevelsDetails]?.title || "Doctor-Led Custom Care",
           conditionsCount: walkInConditionsCount,
           durationText: `${walkInDurationValue} ${walkInBillingCycle === "weekly" ? (walkInDurationValue === 1 ? "week" : "weeks") : (walkInDurationValue === 1 ? "month" : "months")} (${walkInBillingCycle === "weekly" ? "Weekly Settle" : "Monthly Commit"})`,
-          finalPrice: calculatePricing(walkInTier as keyof typeof careLevelsDetails, walkInBillingCycle, walkInDurationValue, walkInConditionsCount).finalPrice,
+          finalPrice: getWalkInFinalPrice(),
           city: "Pune",
           state: "Maharashtra",
           country: "India",
-          deliveryMode: walkInType === "Walk-In Appointment" ? "walkin" : "pickup",
+          deliveryMode: walkInType === "Walk-In Appointment" 
+            ? "walkin" 
+            : walkInType === "Shipping / Courier Delivery" 
+              ? "shipping" 
+              : "pickup",
           address: walkInType
         })
       });
@@ -2295,14 +2330,21 @@ export default function StorePage() {
           {viewMode === "doctorPlan" && (
             <motion.div
               key="doctor-plan-view"
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              className="space-y-8 max-w-4xl mx-auto"
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              className="space-y-8 max-w-4xl mx-auto relative"
             >
+              {/* Floating ambient glow orbs for high-end aesthetics */}
+              <div className="absolute inset-0 -z-20 overflow-hidden pointer-events-none rounded-[36px]">
+                <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-gradient-to-br from-mint/15 to-teal-400/5 blur-[80px] animate-pulse" style={{ animationDuration: '8s' }} />
+                <div className="absolute -bottom-40 -right-40 w-96 h-96 rounded-full bg-gradient-to-br from-purple-500/10 to-indigo-500/0 blur-[80px] animate-pulse" style={{ animationDuration: '10s' }} />
+                <div className="absolute top-1/2 left-1/3 w-72 h-72 rounded-full bg-emerald-500/5 blur-[90px] animate-pulse" style={{ animationDuration: '12s' }} />
+              </div>
+
               {/* Doctor Plan Intake Form */}
-              <div className="glass-panel border-white/60 bg-white/40 rounded-3xl p-6 md:p-8 space-y-8">
+              <div className="glass-panel border-white/70 bg-white/30 backdrop-blur-md rounded-[32px] p-6 md:p-8 space-y-8 shadow-xl shadow-slate-900/[0.02]">
                 {walkInSuccess ? (
                   <div className="text-center py-8 space-y-6">
                     <div className="w-16 h-16 bg-mint/10 border border-mint/20 text-mint rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
@@ -2381,6 +2423,9 @@ export default function StorePage() {
                           setWalkInBillingCycle("monthly");
                           setWalkInConditionsCount(1);
                           setWalkInDurationValue(1);
+                          setWalkInApplyConcession(false);
+                          setWalkInConcessionType("senior");
+                          setWalkInOverridePrice("");
                         }}
                         className="text-xs font-bold text-mint-dark hover:text-mint transition-colors uppercase tracking-wider cursor-pointer"
                       >
@@ -2408,7 +2453,7 @@ export default function StorePage() {
                           value={walkInName}
                           onChange={(e) => setWalkInName(e.target.value)}
                           placeholder="Full Name"
-                          className="w-full p-3 rounded-xl border border-slate-200 bg-white/50 text-sm focus:outline-none focus:border-slate-800 transition-all"
+                          className="w-full p-3 rounded-xl border border-slate-200/80 bg-white/40 backdrop-blur-sm text-sm focus:outline-none focus:border-[#1A2421] focus:ring-4 focus:ring-mint/[0.08] hover:border-slate-300 hover:bg-white/60 transition-all duration-300 shadow-inner shadow-slate-950/[0.01]"
                         />
                       </div>
 
@@ -2421,7 +2466,7 @@ export default function StorePage() {
                           value={walkInPhone}
                           onChange={(e) => setWalkInPhone(e.target.value)}
                           placeholder="Phone / Mobile"
-                          className="w-full p-3 rounded-xl border border-slate-200 bg-white/50 text-sm focus:outline-none focus:border-slate-800 transition-all"
+                          className="w-full p-3 rounded-xl border border-slate-200/80 bg-white/40 backdrop-blur-sm text-sm focus:outline-none focus:border-[#1A2421] focus:ring-4 focus:ring-mint/[0.08] hover:border-slate-300 hover:bg-white/60 transition-all duration-300 shadow-inner shadow-slate-950/[0.01]"
                         />
                       </div>
 
@@ -2433,7 +2478,7 @@ export default function StorePage() {
                           value={walkInEmail}
                           onChange={(e) => setWalkInEmail(e.target.value)}
                           placeholder="email@example.com (Optional)"
-                          className="w-full p-3 rounded-xl border border-slate-200 bg-white/50 text-sm focus:outline-none focus:border-slate-800 transition-all"
+                          className="w-full p-3 rounded-xl border border-slate-200/80 bg-white/40 backdrop-blur-sm text-sm focus:outline-none focus:border-[#1A2421] focus:ring-4 focus:ring-mint/[0.08] hover:border-slate-300 hover:bg-white/60 transition-all duration-300 shadow-inner shadow-slate-950/[0.01]"
                         />
                       </div>
                     </div>
@@ -2450,7 +2495,7 @@ export default function StorePage() {
                           placeholder="Age"
                           min="0"
                           max="120"
-                          className="w-full p-3 rounded-xl border border-slate-200 bg-white/50 text-sm focus:outline-none focus:border-slate-800 transition-all"
+                          className="w-full p-3 rounded-xl border border-slate-200/80 bg-white/40 backdrop-blur-sm text-sm focus:outline-none focus:border-[#1A2421] focus:ring-4 focus:ring-mint/[0.08] hover:border-slate-300 hover:bg-white/60 transition-all duration-300 shadow-inner shadow-slate-950/[0.01]"
                         />
                       </div>
 
@@ -2460,7 +2505,7 @@ export default function StorePage() {
                         <select
                           value={walkInGender}
                           onChange={(e) => setWalkInGender(e.target.value)}
-                          className="w-full p-3 rounded-xl border border-slate-200 bg-white/50 text-sm focus:outline-none focus:border-slate-800 transition-all"
+                          className="w-full p-3 rounded-xl border border-slate-200/80 bg-white/40 backdrop-blur-sm text-sm focus:outline-none focus:border-[#1A2421] focus:ring-4 focus:ring-mint/[0.08] hover:border-slate-300 hover:bg-white/60 transition-all duration-300 shadow-inner shadow-slate-950/[0.01] cursor-pointer"
                         >
                           <option value="Male">Male</option>
                           <option value="Female">Female</option>
@@ -2474,11 +2519,12 @@ export default function StorePage() {
                         <select
                           value={walkInType}
                           onChange={(e) => setWalkInType(e.target.value)}
-                          className="w-full p-3 rounded-xl border border-slate-200 bg-white/50 text-sm focus:outline-none focus:border-slate-800 transition-all"
+                          className="w-full p-3 rounded-xl border border-slate-200/80 bg-white/40 backdrop-blur-sm text-sm focus:outline-none focus:border-[#1A2421] focus:ring-4 focus:ring-mint/[0.08] hover:border-slate-300 hover:bg-white/60 transition-all duration-300 shadow-inner shadow-slate-950/[0.01] cursor-pointer"
                         >
                           <option value="Walk-In Appointment">Walk-In Appointment</option>
                           <option value="Let Doctor Design Plan">Let Doctor Design Plan</option>
                           <option value="Tele-Health Consultation">Tele-Health Consultation</option>
+                          <option value="Shipping / Courier Delivery">Shipping / Courier Delivery</option>
                         </select>
                       </div>
                     </div>
@@ -2488,32 +2534,74 @@ export default function StorePage() {
                       <div className="space-y-2">
                         <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">Estimated Care Complexity Level *</label>
                         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                          {Object.entries(careLevelsDetails).map(([key, details]) => (
-                            <button
-                              key={key}
-                              type="button"
-                              onClick={() => setWalkInTier(key)}
-                              className={`p-3 text-left border rounded-2xl transition-all duration-200 flex flex-col justify-between cursor-pointer ${
-                                walkInTier === key
-                                  ? "border-mint bg-mint/[0.04] ring-1 ring-mint/20"
-                                  : "border-slate-200 hover:border-slate-400 bg-white/40"
-                              }`}
-                            >
-                              <div className="flex items-center justify-between w-full mb-1">
-                                <span className="text-lg">{details.icon}</span>
-                                <span className="text-[8px] font-extrabold uppercase bg-slate-900/5 text-slate-500 px-1.5 py-0.5 rounded-full">
-                                  {key}
-                                </span>
-                              </div>
-                              <div className="space-y-0.5">
-                                <span className="text-[10px] font-black text-slate-900 leading-tight block">{details.title}</span>
-                                <span className="text-[9px] font-black text-mint-dark block">
-                                  ₹{(walkInBillingCycle === "weekly" ? details.weeklyPrice : details.monthlyPrice).toLocaleString("en-IN")}
-                                  /{walkInBillingCycle === "weekly" ? "wk" : "mo"}
-                                </span>
-                              </div>
-                            </button>
-                          ))}
+                          {Object.entries(careLevelsDetails).map(([key, details]) => {
+                            const tierTheme = {
+                              mild: {
+                                activeClass: "border-teal-400 bg-teal-500/[0.04] ring-1 ring-teal-300/30 text-teal-800 dark:text-teal-400 shadow-md",
+                                textClass: "text-teal-700 dark:text-teal-400",
+                                glow: "rgba(20,184,166,0.15)"
+                              },
+                              moderate: {
+                                activeClass: "border-purple-400 bg-purple-500/[0.04] ring-1 ring-purple-300/30 text-purple-800 dark:text-purple-400 shadow-md",
+                                textClass: "text-purple-700 dark:text-purple-400",
+                                glow: "rgba(168,85,247,0.15)"
+                              },
+                              focused: {
+                                activeClass: "border-sky-400 bg-sky-500/[0.04] ring-1 ring-sky-300/30 text-sky-800 dark:text-sky-400 shadow-md",
+                                textClass: "text-sky-700 dark:text-sky-400",
+                                glow: "rgba(14,165,233,0.15)"
+                              },
+                              organ: {
+                                activeClass: "border-emerald-400 bg-emerald-500/[0.04] ring-1 ring-emerald-300/30 text-emerald-800 dark:text-emerald-400 shadow-md",
+                                textClass: "text-emerald-700 dark:text-emerald-400",
+                                glow: "rgba(16,185,129,0.15)"
+                              },
+                              comprehensive: {
+                                activeClass: "border-rose-400 bg-rose-500/[0.04] ring-1 ring-rose-300/30 text-rose-800 dark:text-rose-400 shadow-md",
+                                textClass: "text-rose-700 dark:text-rose-400",
+                                glow: "rgba(244,63,94,0.15)"
+                              }
+                            }[key] || {
+                              activeClass: "border-mint bg-mint/[0.04] ring-1 ring-mint/20 text-slate-900 shadow-md",
+                              textClass: "text-slate-900",
+                              glow: "rgba(16,185,129,0.1)"
+                            };
+
+                            const isSelected = walkInTier === key;
+                            return (
+                              <button
+                                key={key}
+                                type="button"
+                                onClick={() => setWalkInTier(key)}
+                                style={{
+                                  boxShadow: isSelected ? `0 8px 24px -4px ${tierTheme.glow}, 0 4px 8px -4px ${tierTheme.glow}` : "none"
+                                }}
+                                className={`p-3 text-left border rounded-2xl transition-all duration-300 flex flex-col justify-between cursor-pointer hover:-translate-y-0.5 active:scale-[0.98] ${
+                                  isSelected
+                                    ? tierTheme.activeClass
+                                    : "border-slate-200/80 hover:border-slate-400 bg-white/40 hover:bg-white/60"
+                                }`}
+                              >
+                                <div className="flex items-center justify-between w-full mb-1">
+                                  <span className="text-lg">{details.icon}</span>
+                                  <span className={`text-[8px] font-extrabold uppercase px-1.5 py-0.5 rounded-full transition-colors ${
+                                    isSelected ? "bg-slate-900/10 text-slate-800" : "bg-slate-900/5 text-slate-500"
+                                  }`}>
+                                    {key}
+                                  </span>
+                                </div>
+                                <div className="space-y-0.5">
+                                  <span className="text-[10px] font-black text-slate-900 leading-tight block">{details.title}</span>
+                                  <span className={`text-[9px] font-black block transition-colors ${
+                                    isSelected ? tierTheme.textClass : "text-mint-dark"
+                                  }`}>
+                                    ₹{(walkInBillingCycle === "weekly" ? details.weeklyPrice : details.monthlyPrice).toLocaleString("en-IN")}
+                                    /{walkInBillingCycle === "weekly" ? "wk" : "mo"}
+                                  </span>
+                                </div>
+                              </button>
+                            );
+                          })}
                         </div>
                       </div>
 
@@ -2650,6 +2738,86 @@ export default function StorePage() {
                               </div>
                             );
                           })()}
+
+                          {/* Concession / Discount Override Panel */}
+                          <div className="p-4 bg-slate-900/5 rounded-2xl border border-slate-200/50 space-y-4">
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider flex items-center gap-1">
+                                  <Percent className="w-3.5 h-3.5 text-mint" />
+                                  Concession / Discount
+                                </h4>
+                                <p className="text-[10px] text-slate-500 font-semibold">Apply senior, compassionate, or custom discount</p>
+                              </div>
+                              <label className="relative inline-flex items-center cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  checked={walkInApplyConcession}
+                                  onChange={(e) => setWalkInApplyConcession(e.target.checked)}
+                                  className="sr-only peer"
+                                />
+                                <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-mint"></div>
+                              </label>
+                            </div>
+
+                            <AnimatePresence initial={false}>
+                              {walkInApplyConcession && (
+                                <motion.div
+                                  initial={{ opacity: 0, height: 0 }}
+                                  animate={{ opacity: 1, height: "auto" }}
+                                  exit={{ opacity: 0, height: 0 }}
+                                  transition={{ duration: 0.25, ease: "easeInOut" }}
+                                  className="space-y-3 pt-2 border-t border-slate-200 overflow-hidden"
+                                >
+                                  <div className="space-y-1">
+                                    <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Concession Type</label>
+                                    <div className="flex gap-2">
+                                      {[
+                                        { type: "senior", label: "Senior (15%)" },
+                                        { type: "compassionate", label: "Compassionate (30%)" },
+                                        { type: "override", label: "Custom Override" }
+                                      ].map((opt) => (
+                                        <button
+                                          key={opt.type}
+                                          type="button"
+                                          onClick={() => setWalkInConcessionType(opt.type as any)}
+                                          className={`flex-1 py-2 text-center rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all duration-300 border cursor-pointer ${
+                                            walkInConcessionType === opt.type
+                                              ? "bg-[#1A2421] text-white border-transparent"
+                                              : "bg-white/60 text-slate-500 border-slate-200 hover:border-slate-400"
+                                          }`}
+                                        >
+                                          {opt.label}
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </div>
+
+                                  <AnimatePresence initial={false}>
+                                    {walkInConcessionType === "override" && (
+                                      <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: "auto" }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        transition={{ duration: 0.2, ease: "easeInOut" }}
+                                        className="space-y-1 overflow-hidden"
+                                      >
+                                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Custom Final Price (₹) *</label>
+                                        <input
+                                          type="number"
+                                          min="0"
+                                          value={walkInOverridePrice}
+                                          onChange={(e) => setWalkInOverridePrice(e.target.value)}
+                                          placeholder="Enter custom price"
+                                          className="w-full p-2.5 rounded-xl border border-slate-200 bg-white/50 text-sm focus:outline-none focus:border-slate-800 transition-all"
+                                        />
+                                      </motion.div>
+                                    )}
+                                  </AnimatePresence>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </div>
                         </div>
 
                         {/* Calculations summary column (4 cols) */}
@@ -2661,6 +2829,8 @@ export default function StorePage() {
                               walkInDurationValue,
                               walkInConditionsCount
                             );
+                            const finalPrice = getWalkInFinalPrice();
+                            const appliedDiscount = pricing.finalPrice - finalPrice;
                             return (
                               <div className="p-5 border border-mint/20 bg-mint/[0.03] rounded-3xl space-y-4 shadow-sm animate-fadeIn">
                                 <div>
@@ -2689,9 +2859,23 @@ export default function StorePage() {
                                       <span>-₹{Math.round(pricing.adjustedBasePrice * walkInDurationValue * (pricing.discountPercent / 100)).toLocaleString("en-IN")}</span>
                                     </div>
                                   )}
+                                  {walkInApplyConcession && appliedDiscount > 0 && (
+                                    <div className="flex justify-between text-[#9333ea] font-bold">
+                                      <span>
+                                        Concession ({walkInConcessionType === "senior" ? "Senior 15%" : walkInConcessionType === "compassionate" ? "Compassionate 30%" : "Override"})
+                                      </span>
+                                      <span>-₹{appliedDiscount.toLocaleString("en-IN")}</span>
+                                    </div>
+                                  )}
+                                  {walkInApplyConcession && walkInConcessionType === "override" && appliedDiscount < 0 && (
+                                    <div className="flex justify-between text-amber-600 font-bold">
+                                      <span>Override Increase</span>
+                                      <span>+₹{Math.abs(appliedDiscount).toLocaleString("en-IN")}</span>
+                                    </div>
+                                  )}
                                   <div className="flex justify-between border-t-2 border-slate-900/10 pt-2 text-sm font-black text-slate-900">
                                     <span>Total Payable</span>
-                                    <span className="text-mint-dark">₹{pricing.finalPrice.toLocaleString("en-IN")}</span>
+                                    <span className="text-mint-dark">₹{finalPrice.toLocaleString("en-IN")}</span>
                                   </div>
                                 </div>
 
@@ -3428,6 +3612,12 @@ export default function StorePage() {
                             <span>-₹{(((checkoutPlan.finalPrice / (1 - checkoutPlan.discountPercent / 100)) * (checkoutPlan.discountPercent / 100)) || 0).toLocaleString("en-IN")}</span>
                           </div>
                         )}
+                        {isSenior && (
+                          <div className="flex justify-between text-xs text-[#9333ea] font-bold uppercase">
+                            <span>Senior Concession (15%)</span>
+                            <span>-₹{publicSeniorDiscount.toLocaleString("en-IN")}</span>
+                          </div>
+                        )}
                         <div className="flex justify-between text-xs text-slate-500 font-bold uppercase border-t border-slate-200/50 pt-2">
                           <span>Delivery / Shipping</span>
                           {deliveryMode === "shipping" ? (
@@ -3686,7 +3876,7 @@ ${deliveryMode === "shipping" ? `- *Email:* ${patientEmail}\n` : ""}- *Delivery 
 - *Conditions Setup:* ${checkoutPlan.conditionsText}
 - *Billing Cycle:* ${billingCycleText}
 - *Duration:* ${checkoutPlan.durationText}
-- *Program Cost:* ₹${checkoutPlan.finalPrice.toLocaleString("en-IN")} ${checkoutPlan.discountPercent > 0 ? `(with ${checkoutPlan.discountPercent}% Discount)` : ""}
+- *Program Cost:* ₹${checkoutPlan.finalPrice.toLocaleString("en-IN")} ${checkoutPlan.discountPercent > 0 ? `(with ${checkoutPlan.discountPercent}% Discount)` : ""}${isSenior ? `\n- *Senior Concession:* -₹${publicSeniorDiscount.toLocaleString("en-IN")} (15% Concession)` : ""}
 - *Shipping Cost:* ${shippingCostText}
 - *Total Amount:* ₹${finalPayable.toLocaleString("en-IN")}
 
