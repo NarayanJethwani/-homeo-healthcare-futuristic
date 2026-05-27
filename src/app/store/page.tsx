@@ -1799,6 +1799,17 @@ export default function StorePage() {
                           </button>
                         </Magnetic>
 
+                        <Magnetic>
+                          <button
+                            type="button"
+                            onClick={() => setViewMode("doctorPlan")}
+                            className="w-full py-3.5 border border-[#1A2421]/25 hover:border-[#1A2421] text-[#1A2421] rounded-full font-bold uppercase tracking-wider text-xs transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer bg-white/50 hover:bg-white/90"
+                          >
+                            <UserCheck className="w-3.5 h-3.5" />
+                            Let Doctor Plan For You
+                          </button>
+                        </Magnetic>
+
                         <div className="grid grid-cols-2 gap-2">
                           <button
                             onClick={handleSaveConfig}
