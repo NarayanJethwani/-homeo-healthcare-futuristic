@@ -777,6 +777,9 @@ export default function StorePage() {
   const [isWalkInSubmitting, setIsWalkInSubmitting] = useState(false);
   const [walkInResult, setWalkInResult] = useState<{ folderUrl: string; sheetUrl: string } | null>(null);
   const [walkInSuccess, setWalkInSuccess] = useState(false);
+  const [walkInBillingCycle, setWalkInBillingCycle] = useState<"weekly" | "monthly">("monthly");
+  const [walkInConditionsCount, setWalkInConditionsCount] = useState<number>(1);
+  const [walkInDurationValue, setWalkInDurationValue] = useState<number>(1);
   
   // Payment fields
   const [paymentMethod, setPaymentMethod] = useState<"upi" | "bank">("upi");
@@ -1005,9 +1008,9 @@ export default function StorePage() {
           age: String(walkInAge),
           complaint: walkInComplaint,
           careLevel: careLevelsDetails[walkInTier as keyof typeof careLevelsDetails]?.title || "Doctor-Led Custom Care",
-          conditionsCount: 1,
-          durationText: "Pending Doctor Evaluation",
-          finalPrice: 0,
+          conditionsCount: walkInConditionsCount,
+          durationText: `${walkInDurationValue} ${walkInBillingCycle === "weekly" ? (walkInDurationValue === 1 ? "week" : "weeks") : (walkInDurationValue === 1 ? "month" : "months")} (${walkInBillingCycle === "weekly" ? "Weekly Settle" : "Monthly Commit"})`,
+          finalPrice: calculatePricing(walkInTier as keyof typeof careLevelsDetails, walkInBillingCycle, walkInDurationValue, walkInConditionsCount).finalPrice,
           city: "Pune",
           state: "Maharashtra",
           country: "India",
@@ -2375,6 +2378,9 @@ export default function StorePage() {
                           setWalkInComplaint("");
                           setWalkInType("Walk-In Appointment");
                           setWalkInTier("moderate");
+                          setWalkInBillingCycle("monthly");
+                          setWalkInConditionsCount(1);
+                          setWalkInDurationValue(1);
                         }}
                         className="text-xs font-bold text-mint-dark hover:text-mint transition-colors uppercase tracking-wider cursor-pointer"
                       >
@@ -2508,35 +2514,192 @@ export default function StorePage() {
                         </div>
                       </div>
 
-                      {/* Selected Care Level Detail Box for clinician/doctor reference */}
-                      {walkInTier && careLevelsDetails[walkInTier as keyof typeof careLevelsDetails] && (() => {
-                        const selectedDetails = careLevelsDetails[walkInTier as keyof typeof careLevelsDetails];
-                        return (
-                          <div className="p-4 border border-mint/20 bg-mint/[0.02] rounded-2xl space-y-2.5 animate-fadeIn">
-                            <div className="flex items-center justify-between border-b border-mint/10 pb-2">
-                              <h4 className="text-xs font-black text-[#1A2421] uppercase tracking-wider flex items-center gap-1.5">
-                                <span>{selectedDetails.icon}</span>
-                                <span>{selectedDetails.title} Details</span>
-                              </h4>
-                              <div className="text-right">
-                                <span className="text-xs font-black text-[#1A2421]">₹{selectedDetails.monthlyPrice.toLocaleString("en-IN")} / Month</span>
-                                <span className="text-[9px] text-slate-400 font-bold uppercase block">or ₹{selectedDetails.weeklyPrice.toLocaleString("en-IN")} / Week</span>
+                      {/* Pricing grid & Details & Calculations Wrapper */}
+                      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                        {/* Selector Controls Column (8 cols) */}
+                        <div className="lg:col-span-8 space-y-6">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* Billing Frequency Selector */}
+                            <div className="p-4 bg-slate-900/5 rounded-2xl border border-slate-200/50 space-y-3">
+                              <div>
+                                <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider">Billing Frequency</h4>
+                                <p className="text-[10px] text-slate-500 font-semibold">Choose weekly or monthly billing</p>
+                              </div>
+                              <div className="flex items-center gap-1.5 bg-white/60 p-1 rounded-full border border-slate-200/50 w-fit">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setWalkInBillingCycle("weekly");
+                                    setWalkInDurationValue(1);
+                                  }}
+                                  className={`px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
+                                    walkInBillingCycle === "weekly"
+                                      ? "bg-[#1A2421] text-white shadow-sm"
+                                      : "text-slate-500 hover:text-[#1A2421]"
+                                  }`}
+                                >
+                                  Weekly
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setWalkInBillingCycle("monthly");
+                                    setWalkInDurationValue(1);
+                                  }}
+                                  className={`px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 cursor-pointer ${
+                                    walkInBillingCycle === "monthly"
+                                      ? "bg-[#1A2421] text-white shadow-sm"
+                                      : "text-slate-500 hover:text-[#1A2421]"
+                                  }`}
+                                >
+                                  Monthly
+                                  <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-emerald-500 text-white font-black tracking-normal">
+                                    SAVE ~17%
+                                  </span>
+                                </button>
                               </div>
                             </div>
-                            <p className="text-[10px] text-slate-500 font-semibold leading-relaxed">
-                              {selectedDetails.description}
-                            </p>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 pt-1.5 border-t border-slate-100">
-                              {selectedDetails.features.map((feat, idx) => (
-                                <div key={idx} className="flex items-start gap-1.5 text-[9px] font-extrabold uppercase tracking-tight text-slate-600">
-                                  <span className="text-mint">✓</span>
-                                  <span>{feat}</span>
-                                </div>
+
+                            {/* Conditions Selector */}
+                            <div className="p-4 bg-slate-900/5 rounded-2xl border border-slate-200/50 space-y-3">
+                              <div>
+                                <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider">Conditions Covered</h4>
+                                <p className="text-[10px] text-slate-500 font-semibold">Active medical concerns to treat</p>
+                              </div>
+                              <div className="flex items-center gap-1.5 bg-white/60 p-1 rounded-full border border-slate-200/50 w-fit">
+                                {[1, 2, 3].map((count) => (
+                                  <button
+                                    key={count}
+                                    type="button"
+                                    onClick={() => setWalkInConditionsCount(count)}
+                                    className={`px-3.5 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
+                                      walkInConditionsCount === count
+                                        ? "bg-[#1A2421] text-white shadow-sm"
+                                        : "text-slate-500 hover:text-[#1A2421]"
+                                    }`}
+                                  >
+                                    {count === 3 ? "3+" : count} {count === 1 ? "Cond." : "Conds."}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Commitment Duration Selector */}
+                          <div className="space-y-2">
+                            <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider">Commitment Duration</h4>
+                            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                              {(walkInBillingCycle === "weekly"
+                                ? [
+                                    { value: 1, label: "1 Week", desc: "No Discount" },
+                                    { value: 2, label: "2 Weeks", desc: "5% Discount" },
+                                    { value: 4, label: "4 Weeks", desc: "10% Discount" },
+                                    { value: 8, label: "8 Weeks", desc: "15% Discount" },
+                                    { value: 12, label: "12 Weeks", desc: "20% Discount" }
+                                  ]
+                                : [
+                                    { value: 1, label: "1 Month", desc: "10% Discount" },
+                                    { value: 2, label: "2 Months", desc: "15% Discount" },
+                                    { value: 3, label: "3 Months", desc: "20% Discount" },
+                                    { value: 6, label: "6 Months", desc: "25% Discount" },
+                                    { value: 12, label: "12 Months", desc: "30% Discount" }
+                                  ]
+                              ).map((opt) => (
+                                <button
+                                  key={opt.value}
+                                  type="button"
+                                  onClick={() => setWalkInDurationValue(opt.value)}
+                                  className={`p-2.5 rounded-xl border text-center transition-all duration-300 cursor-pointer ${
+                                    walkInDurationValue === opt.value
+                                      ? "border-mint bg-mint/[0.04] text-mint-dark font-bold ring-1 ring-mint/20"
+                                      : "border-slate-200/60 hover:border-slate-800 text-slate-700 bg-white/40 hover:bg-white"
+                                  }`}
+                                >
+                                  <span className="text-xs block font-bold">{opt.label}</span>
+                                  <span className="text-[8px] text-slate-500 block mt-0.5 font-semibold">{opt.desc}</span>
+                                </button>
                               ))}
                             </div>
                           </div>
-                        );
-                      })()}
+
+                          {/* Selected Care Level Detail Box */}
+                          {walkInTier && careLevelsDetails[walkInTier as keyof typeof careLevelsDetails] && (() => {
+                            const selectedDetails = careLevelsDetails[walkInTier as keyof typeof careLevelsDetails];
+                            return (
+                              <div className="p-4 border border-mint/20 bg-mint/[0.02] rounded-2xl space-y-2.5 animate-fadeIn">
+                                <div className="flex items-center justify-between border-b border-mint/10 pb-2">
+                                  <h4 className="text-xs font-black text-[#1A2421] uppercase tracking-wider flex items-center gap-1.5">
+                                    <span>{selectedDetails.icon}</span>
+                                    <span>{selectedDetails.title} Details</span>
+                                  </h4>
+                                </div>
+                                <p className="text-[10px] text-slate-500 font-semibold leading-relaxed">
+                                  {selectedDetails.description}
+                                </p>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 pt-1.5 border-t border-slate-100">
+                                  {selectedDetails.features.map((feat, idx) => (
+                                    <div key={idx} className="flex items-start gap-1.5 text-[9px] font-extrabold uppercase tracking-tight text-slate-600">
+                                      <span className="text-mint">✓</span>
+                                      <span>{feat}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            );
+                          })()}
+                        </div>
+
+                        {/* Calculations summary column (4 cols) */}
+                        <div className="lg:col-span-4">
+                          {walkInTier && careLevelsDetails[walkInTier as keyof typeof careLevelsDetails] && (() => {
+                            const pricing = calculatePricing(
+                              walkInTier as keyof typeof careLevelsDetails,
+                              walkInBillingCycle,
+                              walkInDurationValue,
+                              walkInConditionsCount
+                            );
+                            return (
+                              <div className="p-5 border border-mint/20 bg-mint/[0.03] rounded-3xl space-y-4 shadow-sm animate-fadeIn">
+                                <div>
+                                  <span className="text-[8px] font-black text-mint uppercase tracking-wider block">Live Estimate</span>
+                                  <h4 className="text-sm font-black text-slate-900 mt-0.5">Billing Calculation</h4>
+                                </div>
+
+                                <div className="space-y-2 text-xs font-semibold text-slate-700">
+                                  <div className="flex justify-between">
+                                    <span>Base Rate</span>
+                                    <span>₹{pricing.basePrice.toLocaleString("en-IN")} / {walkInBillingCycle === "weekly" ? "wk" : "mo"}</span>
+                                  </div>
+                                  {pricing.surcharge > 0 && (
+                                    <div className="flex justify-between text-amber-600">
+                                      <span>Surcharge</span>
+                                      <span>+₹{pricing.surcharge.toLocaleString("en-IN")} / {walkInBillingCycle === "weekly" ? "wk" : "mo"}</span>
+                                    </div>
+                                  )}
+                                  <div className="flex justify-between border-t border-slate-100 pt-1.5 font-bold text-slate-900">
+                                    <span>Adjusted Rate</span>
+                                    <span>₹{pricing.adjustedBasePrice.toLocaleString("en-IN")} / {walkInBillingCycle === "weekly" ? "wk" : "mo"}</span>
+                                  </div>
+                                  {pricing.discountPercent > 0 && (
+                                    <div className="flex justify-between text-emerald-600">
+                                      <span>Discount ({pricing.discountPercent}%)</span>
+                                      <span>-₹{Math.round(pricing.adjustedBasePrice * walkInDurationValue * (pricing.discountPercent / 100)).toLocaleString("en-IN")}</span>
+                                    </div>
+                                  )}
+                                  <div className="flex justify-between border-t-2 border-slate-900/10 pt-2 text-sm font-black text-slate-900">
+                                    <span>Total Payable</span>
+                                    <span className="text-mint-dark">₹{pricing.finalPrice.toLocaleString("en-IN")}</span>
+                                  </div>
+                                </div>
+
+                                <div className="pt-2 border-t border-slate-100 text-[9px] text-slate-400 font-semibold leading-relaxed">
+                                  Includes initial case mapping, shipping, constitutional remedy supply, and priority clinical assistance.
+                                </div>
+                              </div>
+                            );
+                          })()}
+                        </div>
+                      </div>
 
                       {/* Main Complaint */}
                       <div className="space-y-1">
