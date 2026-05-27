@@ -1040,7 +1040,7 @@ export default function StorePage() {
           complaint: walkInComplaint,
           careLevel: careLevelsDetails[walkInTier as keyof typeof careLevelsDetails]?.title || "Doctor-Led Custom Care",
           conditionsCount: walkInConditionsCount,
-          durationText: `${walkInDurationValue} ${walkInBillingCycle === "weekly" ? (walkInDurationValue === 1 ? "week" : "weeks") : (walkInDurationValue === 1 ? "month" : "months")} (${walkInBillingCycle === "weekly" ? "Weekly Settle" : "Monthly Commit"})`,
+          durationText: `${walkInDurationValue} ${walkInBillingCycle === "weekly" ? (walkInDurationValue === 1 ? "week" : "weeks") : (walkInDurationValue === 1 ? "month" : "months")} (${walkInBillingCycle === "weekly" ? "Weekly Settle" : "Monthly Commit"})${walkInApplyConcession ? ` [Concession: ${walkInConcessionType === "senior" ? "Senior 15%" : walkInConcessionType === "compassionate" ? "Socio-Economic 30%" : "Custom Override"}]` : ""}`,
           finalPrice: getWalkInFinalPrice(),
           city: "Pune",
           state: "Maharashtra",
@@ -2611,7 +2611,7 @@ export default function StorePage() {
                         <div className="lg:col-span-8 space-y-6">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {/* Billing Frequency Selector */}
-                            <div className="p-4 bg-slate-900/5 rounded-2xl border border-slate-200/50 space-y-3">
+                            <div className="p-4 bg-white/40 backdrop-blur-sm rounded-2xl border border-white/60 space-y-3 shadow-sm hover:border-slate-300 transition-all duration-300">
                               <div>
                                 <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider">Billing Frequency</h4>
                                 <p className="text-[10px] text-slate-500 font-semibold">Choose weekly or monthly billing</p>
@@ -2652,7 +2652,7 @@ export default function StorePage() {
                             </div>
 
                             {/* Conditions Selector */}
-                            <div className="p-4 bg-slate-900/5 rounded-2xl border border-slate-200/50 space-y-3">
+                            <div className="p-4 bg-white/40 backdrop-blur-sm rounded-2xl border border-white/60 space-y-3 shadow-sm hover:border-slate-300 transition-all duration-300">
                               <div>
                                 <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider">Conditions Covered</h4>
                                 <p className="text-[10px] text-slate-500 font-semibold">Active medical concerns to treat</p>
@@ -2713,41 +2713,15 @@ export default function StorePage() {
                             </div>
                           </div>
 
-                          {/* Selected Care Level Detail Box */}
-                          {walkInTier && careLevelsDetails[walkInTier as keyof typeof careLevelsDetails] && (() => {
-                            const selectedDetails = careLevelsDetails[walkInTier as keyof typeof careLevelsDetails];
-                            return (
-                              <div className="p-4 border border-mint/20 bg-mint/[0.02] rounded-2xl space-y-2.5 animate-fadeIn">
-                                <div className="flex items-center justify-between border-b border-mint/10 pb-2">
-                                  <h4 className="text-xs font-black text-[#1A2421] uppercase tracking-wider flex items-center gap-1.5">
-                                    <span>{selectedDetails.icon}</span>
-                                    <span>{selectedDetails.title} Details</span>
-                                  </h4>
-                                </div>
-                                <p className="text-[10px] text-slate-500 font-semibold leading-relaxed">
-                                  {selectedDetails.description}
-                                </p>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 pt-1.5 border-t border-slate-100">
-                                  {selectedDetails.features.map((feat, idx) => (
-                                    <div key={idx} className="flex items-start gap-1.5 text-[9px] font-extrabold uppercase tracking-tight text-slate-600">
-                                      <span className="text-mint">✓</span>
-                                      <span>{feat}</span>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            );
-                          })()}
-
                           {/* Concession / Discount Override Panel */}
-                          <div className="p-4 bg-slate-900/5 rounded-2xl border border-slate-200/50 space-y-4">
+                          <div className="p-4 bg-white/40 backdrop-blur-sm rounded-2xl border border-white/60 space-y-4 shadow-sm hover:border-slate-300 transition-all duration-300">
                             <div className="flex justify-between items-center">
                               <div>
                                 <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider flex items-center gap-1">
                                   <Percent className="w-3.5 h-3.5 text-mint" />
                                   Concession / Discount
                                 </h4>
-                                <p className="text-[10px] text-slate-500 font-semibold">Apply senior, compassionate, or custom discount</p>
+                                <p className="text-[10px] text-slate-500 font-semibold">Apply senior, socio-economic, or custom discount</p>
                               </div>
                               <label className="relative inline-flex items-center cursor-pointer">
                                 <input
@@ -2774,7 +2748,7 @@ export default function StorePage() {
                                     <div className="flex gap-2">
                                       {[
                                         { type: "senior", label: "Senior (15%)" },
-                                        { type: "compassionate", label: "Compassionate (30%)" },
+                                        { type: "compassionate", label: "Socio-Economic (30%)" },
                                         { type: "override", label: "Custom Override" }
                                       ].map((opt) => (
                                         <button
@@ -2818,6 +2792,32 @@ export default function StorePage() {
                               )}
                             </AnimatePresence>
                           </div>
+
+                          {/* Selected Care Level Detail Box */}
+                          {walkInTier && careLevelsDetails[walkInTier as keyof typeof careLevelsDetails] && (() => {
+                            const selectedDetails = careLevelsDetails[walkInTier as keyof typeof careLevelsDetails];
+                            return (
+                              <div className="p-4 border-l-4 border-l-mint border-y border-r border-slate-200/60 bg-white/40 backdrop-blur-sm rounded-2xl space-y-2.5 animate-fadeIn shadow-sm hover:border-slate-300 transition-all duration-300">
+                                <div className="flex items-center justify-between border-b border-mint/10 pb-2">
+                                  <h4 className="text-xs font-black text-[#1A2421] uppercase tracking-wider flex items-center gap-1.5">
+                                    <span>{selectedDetails.icon}</span>
+                                    <span>{selectedDetails.title} Details</span>
+                                  </h4>
+                                </div>
+                                <p className="text-[10px] text-slate-500 font-semibold leading-relaxed">
+                                  {selectedDetails.description}
+                                </p>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 pt-1.5 border-t border-slate-100">
+                                  {selectedDetails.features.map((feat, idx) => (
+                                    <div key={idx} className="flex items-start gap-1.5 text-[9px] font-extrabold uppercase tracking-tight text-slate-600">
+                                      <span className="text-mint">✓</span>
+                                      <span>{feat}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            );
+                          })()}
                         </div>
 
                         {/* Calculations summary column (4 cols) */}
@@ -2832,7 +2832,7 @@ export default function StorePage() {
                             const finalPrice = getWalkInFinalPrice();
                             const appliedDiscount = pricing.finalPrice - finalPrice;
                             return (
-                              <div className="p-5 border border-mint/20 bg-mint/[0.03] rounded-3xl space-y-4 shadow-sm animate-fadeIn">
+                              <div className="p-6 border border-white/60 bg-white/60 backdrop-blur-md rounded-3xl space-y-4 shadow-md sticky top-6 hover:shadow-lg transition-all duration-300">
                                 <div>
                                   <span className="text-[8px] font-black text-mint uppercase tracking-wider block">Live Estimate</span>
                                   <h4 className="text-sm font-black text-slate-900 mt-0.5">Billing Calculation</h4>
@@ -2862,7 +2862,7 @@ export default function StorePage() {
                                   {walkInApplyConcession && appliedDiscount > 0 && (
                                     <div className="flex justify-between text-[#9333ea] font-bold">
                                       <span>
-                                        Concession ({walkInConcessionType === "senior" ? "Senior 15%" : walkInConcessionType === "compassionate" ? "Compassionate 30%" : "Override"})
+                                        Concession ({walkInConcessionType === "senior" ? "Senior 15%" : walkInConcessionType === "compassionate" ? "Socio-Economic 30%" : "Override"})
                                       </span>
                                       <span>-₹{appliedDiscount.toLocaleString("en-IN")}</span>
                                     </div>
