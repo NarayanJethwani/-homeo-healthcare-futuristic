@@ -781,6 +781,7 @@ export default function StorePage() {
   // Payment fields
   const [paymentMethod, setPaymentMethod] = useState<"upi" | "bank">("upi");
   const [transactionRef, setTransactionRef] = useState("");
+  const [paymentScreenshot, setPaymentScreenshot] = useState<File | null>(null);
   
   // Validation errors
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
@@ -1070,6 +1071,8 @@ export default function StorePage() {
 
     setCheckoutStep("intake");
     setFormErrors({});
+    setTransactionRef("");
+    setPaymentScreenshot(null);
     setIsCheckoutOpen(true);
   };
 
@@ -1102,6 +1105,8 @@ export default function StorePage() {
 
     setCheckoutStep("intake");
     setFormErrors({});
+    setTransactionRef("");
+    setPaymentScreenshot(null);
     setIsCheckoutOpen(true);
   };
 
@@ -1138,6 +1143,8 @@ export default function StorePage() {
 
     setCheckoutStep("intake");
     setFormErrors({});
+    setTransactionRef("");
+    setPaymentScreenshot(null);
     setIsCheckoutOpen(true);
   };
 
@@ -2884,18 +2891,20 @@ export default function StorePage() {
                       </div>
 
                       {/* Email input */}
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Email Address *</label>
-                        <input
-                          type="email"
-                          value={patientEmail}
-                          onChange={(e) => setPatientEmail(e.target.value)}
-                          placeholder="email@example.com"
-                          className={`w-full p-3 rounded-xl border bg-white/50 text-sm focus:outline-none transition-all ${
-                            formErrors.patientEmail ? "border-red-500 ring-2 ring-red-100" : "border-slate-200 focus:border-slate-800"
-                          }`}
-                        />
-                      </div>
+                      {deliveryMode === "shipping" && (
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Email Address *</label>
+                          <input
+                            type="email"
+                            value={patientEmail}
+                            onChange={(e) => setPatientEmail(e.target.value)}
+                            placeholder="email@example.com"
+                            className={`w-full p-3 rounded-xl border bg-white/50 text-sm focus:outline-none transition-all ${
+                              formErrors.patientEmail ? "border-red-500 ring-2 ring-red-100" : "border-slate-200 focus:border-slate-800"
+                            }`}
+                          />
+                        </div>
+                      )}
 
                       {/* Age / Gender grid */}
                       <div className="grid grid-cols-2 gap-3">
@@ -3150,7 +3159,9 @@ export default function StorePage() {
                           const errors: Record<string, boolean> = {};
                           if (!patientName.trim()) errors.patientName = true;
                           if (!patientPhone.trim()) errors.patientPhone = true;
-                          if (!patientEmail.trim() || !patientEmail.includes("@")) errors.patientEmail = true;
+                          if (deliveryMode === "shipping") {
+                            if (!patientEmail.trim() || !patientEmail.includes("@")) errors.patientEmail = true;
+                          }
                           if (!patientAge.trim()) errors.patientAge = true;
                           
                           if (deliveryMode === "shipping") {
@@ -3369,18 +3380,60 @@ export default function StorePage() {
                         </div>
                       )}
 
-                      {/* Transaction reference ID input */}
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">Transaction Ref Number / UTR (Optional)</label>
-                        <input
-                          type="text"
-                          value={transactionRef}
-                          onChange={(e) => setTransactionRef(e.target.value)}
-                          placeholder="e.g. UPI Ref, IMPS UTR, or GPay Txn ID"
-                          className="w-full p-3 rounded-xl border border-slate-200 bg-white/50 text-sm focus:outline-none focus:border-slate-800"
-                        />
-                        <p className="text-[9px] text-slate-400 font-semibold">Enter payment reference number to expedite clinical registration verification.</p>
+                      {/* Transaction reference ID input and screenshot upload */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">Transaction Ref / UTR (Optional)</label>
+                          <input
+                            type="text"
+                            value={transactionRef}
+                            onChange={(e) => setTransactionRef(e.target.value)}
+                            placeholder="e.g. UPI Ref, IMPS UTR, or GPay Txn ID"
+                            className="w-full p-3 rounded-xl border border-slate-200 bg-white/50 text-sm focus:outline-none focus:border-slate-800"
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">Payment Screenshot (Optional)</label>
+                          {paymentScreenshot ? (
+                            <div className="flex items-center justify-between p-2 rounded-xl border border-mint/25 bg-mint/[0.02] text-xs font-semibold text-slate-700 h-[46px] relative overflow-hidden">
+                              <div className="flex items-center gap-1.5 min-w-0">
+                                <div className="w-8 h-8 rounded bg-white border border-slate-100 overflow-hidden flex-shrink-0 flex items-center justify-center">
+                                  <img
+                                    src={URL.createObjectURL(paymentScreenshot)}
+                                    alt="Payment Screenshot Preview"
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                                <span className="truncate max-w-[120px] font-extrabold text-slate-800">{paymentScreenshot.name}</span>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => setPaymentScreenshot(null)}
+                                className="px-2 py-1 rounded bg-red-50 hover:bg-red-100 text-red-600 font-extrabold text-[8px] uppercase tracking-wider cursor-pointer transition-colors"
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          ) : (
+                            <label className="flex items-center justify-center gap-1.5 h-[46px] border border-dashed border-slate-200 hover:border-slate-800 rounded-xl bg-white/50 cursor-pointer text-xs font-bold text-slate-500 hover:text-slate-800 transition-all">
+                              <Plus className="w-3.5 h-3.5 text-slate-400" />
+                              <span>Attach Screenshot</span>
+                              <input
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => {
+                                  if (e.target.files && e.target.files[0]) {
+                                    setPaymentScreenshot(e.target.files[0]);
+                                  }
+                                }}
+                                className="hidden"
+                              />
+                            </label>
+                          )}
+                        </div>
                       </div>
+                      <p className="text-[9px] text-slate-400 font-semibold">Provide reference UTR or attach screenshot to expedite clinical registration verification.</p>
 
                       {/* Action buttons */}
                       <div className="flex justify-between gap-3 pt-4 border-t border-slate-100">
@@ -3405,13 +3458,16 @@ export default function StorePage() {
                               ? (patientCountry === "India" ? "Domestic Standard Courier (₹300)" : "International Courier (Calculated at dispatch)")
                               : "Free Clinic/Self Pickup (₹0)";
 
+                            const screenshotText = paymentScreenshot 
+                              ? `Attached (${paymentScreenshot.name})`
+                              : "Not attached (will send in chat)";
+
                             const message = `Hello Dr. Jethwani, I would like to register for a Clinical Treatment Program:
 
 *PATIENT DETAILS:*
 - *Name:* ${patientName} (${patientAge} Years, ${patientGender})
 - *Contact:* ${patientPhone}
-- *Email:* ${patientEmail}
-- *Delivery Mode:* ${deliveryMode === "shipping" ? "Courier Shipping" : deliveryMode === "walkin" ? "Walk-in Clinic Pickup" : "Self-Arranged Pickup"}
+${deliveryMode === "shipping" ? `- *Email:* ${patientEmail}\n` : ""}- *Delivery Mode:* ${deliveryMode === "shipping" ? "Courier Shipping" : deliveryMode === "walkin" ? "Walk-in Clinic Pickup" : "Self-Arranged Pickup"}
 - *Collection/Shipping Address:* ${locationText}
 - *Chief Complaint:* ${cleanComplaint}
 
@@ -3426,7 +3482,8 @@ export default function StorePage() {
 
 *PAYMENT REGISTRATION:*
 - *Method:* ${paymentMethod === "upi" ? "GPay / Paytm / PhonePe UPI" : "Bank IMPS / NEFT"}
-- *Ref / UTR ID:* ${transactionRef.trim() || "Not provided / screenshot attached"}
+- *Ref / UTR ID:* ${transactionRef.trim() || "Not provided"}
+- *Screenshot:* ${screenshotText}
 
 I have transferred the payment to your registered GPay (8446056789) or bank account. Please review my profile and confirm next clinical consultation steps.`;
 
