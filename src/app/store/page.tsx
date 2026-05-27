@@ -2499,11 +2499,44 @@ export default function StorePage() {
                                   {key}
                                 </span>
                               </div>
-                              <span className="text-[10px] font-black text-slate-900 leading-tight block">{details.title}</span>
+                              <div className="space-y-0.5">
+                                <span className="text-[10px] font-black text-slate-900 leading-tight block">{details.title}</span>
+                                <span className="text-[9px] font-black text-mint-dark block">₹{details.monthlyPrice.toLocaleString("en-IN")}/mo</span>
+                              </div>
                             </button>
                           ))}
                         </div>
                       </div>
+
+                      {/* Selected Care Level Detail Box for clinician/doctor reference */}
+                      {walkInTier && careLevelsDetails[walkInTier as keyof typeof careLevelsDetails] && (() => {
+                        const selectedDetails = careLevelsDetails[walkInTier as keyof typeof careLevelsDetails];
+                        return (
+                          <div className="p-4 border border-mint/20 bg-mint/[0.02] rounded-2xl space-y-2.5 animate-fadeIn">
+                            <div className="flex items-center justify-between border-b border-mint/10 pb-2">
+                              <h4 className="text-xs font-black text-[#1A2421] uppercase tracking-wider flex items-center gap-1.5">
+                                <span>{selectedDetails.icon}</span>
+                                <span>{selectedDetails.title} Details</span>
+                              </h4>
+                              <div className="text-right">
+                                <span className="text-xs font-black text-[#1A2421]">₹{selectedDetails.monthlyPrice.toLocaleString("en-IN")} / Month</span>
+                                <span className="text-[9px] text-slate-400 font-bold uppercase block">or ₹{selectedDetails.weeklyPrice.toLocaleString("en-IN")} / Week</span>
+                              </div>
+                            </div>
+                            <p className="text-[10px] text-slate-500 font-semibold leading-relaxed">
+                              {selectedDetails.description}
+                            </p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 pt-1.5 border-t border-slate-100">
+                              {selectedDetails.features.map((feat, idx) => (
+                                <div key={idx} className="flex items-start gap-1.5 text-[9px] font-extrabold uppercase tracking-tight text-slate-600">
+                                  <span className="text-mint">✓</span>
+                                  <span>{feat}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })()}
 
                       {/* Main Complaint */}
                       <div className="space-y-1">
