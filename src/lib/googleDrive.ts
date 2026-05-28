@@ -211,51 +211,60 @@ export async function createPatientClinicalSheet(
         // Create the newly designed custom case-taking sheet programmatically
         const today = new Date().toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" });
         const values = [
-          ["RAMKRISHNA HOMEO HEALTHCARE - CLINICAL CASE SHEET", "", "", ""],
-          ["", "", "", ""],
-          ["1. PATIENT DEMOGRAPHICS", "", "", ""],
-          ["Patient ID", data.id, "Register Date", today],
-          ["Patient Name", data.name, "Age / Gender", `${data.age} / ${data.gender}`],
-          ["Contact Phone", data.phone, "Email Address", data.email || "N/A"],
-          ["Delivery Option", data.deliveryMode || "Courier Shipping", "Location / Address", locationVal],
-          ["Recommended Tier", data.careLevel, "Billing Duration", data.durationText],
-          ["Payment Status", "Paid (Verified)", "Payment Amount", `INR ${data.finalPrice.toLocaleString("en-IN")}`],
-          ["", "", "", ""],
-          ["2. CHIEF COMPLAINT & CASE ANALYSIS", "", "", ""],
-          ["Chief Complaint Details", data.complaint, "", ""],
-          ["", "", "", ""],
-          ["", "", "", ""],
-          ["", "", "", ""],
-          ["3. CLINICAL REPERTORIZATION & RUBRICS", "", "", ""],
-          ["Rubric Name", "Chapter / Location", "Remedy Grade (1/2/3)", "Clinical Notes & Key Modalities"],
-          ["", "", "", ""],
-          ["", "", "", ""],
-          ["", "", "", ""],
-          ["", "", "", ""],
-          ["", "", "", ""],
-          ["", "", "", ""],
-          ["4. PRESCRIPTION & TREATMENT PLAN", "", "", ""],
-          ["Remedy Prescribed", "Potency & Scale", "Dosage & Frequency", "Duration & Schedule"],
-          ["", "", "", ""],
-          ["", "", "", ""],
-          ["", "", "", ""],
-          ["", "", "", ""],
-          ["", "", "", ""],
-          ["", "", "", ""],
-          ["5. CLINICAL PROGRESS & FOLLOW-UPS", "", "", ""],
-          ["Date", "Symptom Status & Patient Report", "Prescription Adjustments", "Next Review Date"],
-          ["", "", "", ""],
-          ["", "", "", ""],
-          ["", "", "", ""],
-          ["", "", "", ""],
-          ["", "", "", ""],
-          ["", "", "", ""],
-          ["", "", "", ""]
+          ["RAMKRISHNA HOMEO HEALTHCARE - CLINICAL CASE SHEET", "", "", "", "", ""],
+          ["", "", "", "", "", ""],
+          ["1. PATIENT DEMOGRAPHICS", "", "", "", "", ""],
+          ["Patient ID", data.id, "Register Date", today, "", ""],
+          ["Patient Name", data.name, "Age / Gender", `${data.age} / ${data.gender}`, "", ""],
+          ["Contact Phone", data.phone, "Email Address", data.email || "N/A", "", ""],
+          ["Delivery Option", data.deliveryMode || "Courier Shipping", "Location / Address", locationVal, "", ""],
+          ["Recommended Tier", data.careLevel, "Billing Duration", data.durationText, "", ""],
+          ["Payment Status", "Paid (Verified)", "Payment Amount", `INR ${data.finalPrice.toLocaleString("en-IN")}`, "", ""],
+          ["", "", "", "", "", ""],
+          ["2. CHIEF COMPLAINT & CASE ANALYSIS", "", "", "", "", ""],
+          ["Chief Complaint Details", data.complaint, "", "", "", ""],
+          ["", "", "", "", "", ""],
+          ["", "", "", "", "", ""],
+          ["", "", "", "", "", ""],
+          ["3. CLINICAL REPERTORIZATION & RUBRICS", "", "", "", "", ""],
+          ["Rubric Name", "Chapter / Location", "Remedy Grade (1/2/3)", "Clinical Notes & Key Modalities", "", ""],
+          ["", "", "", "", "", ""],
+          ["", "", "", "", "", ""],
+          ["", "", "", "", "", ""],
+          ["", "", "", "", "", ""],
+          ["", "", "", "", "", ""],
+          ["", "", "", "", "", ""],
+          ["4. PRESCRIPTION & TREATMENT PLAN", "", "", "", "", ""],
+          ["Remedy Prescribed", "Potency & Scale", "Dosage & Frequency", "Duration & Schedule", "", ""],
+          ["", "", "", "", "", ""],
+          ["", "", "", "", "", ""],
+          ["", "", "", "", "", ""],
+          ["", "", "", "", "", ""],
+          ["", "", "", "", "", ""],
+          ["", "", "", "", "", ""],
+          ["5. CLINICAL PROGRESS & FOLLOW-UPS", "", "", "", "", ""],
+          ["Date", "Symptom Status & Patient Report", "Prescription Adjustments", "Next Review Date", "", ""],
+          ["", "", "", "", "", ""],
+          ["", "", "", "", "", ""],
+          ["", "", "", "", "", ""],
+          ["", "", "", "", "", ""],
+          ["", "", "", "", "", ""],
+          ["", "", "", "", "", ""],
+          ["", "", "", "", "", ""],
+          ["6. INVOICING & BILLING HISTORY", "", "", "", "", ""],
+          ["Invoice No", "Date Issued", "Items Description", "Amount Paid (₹)", "Payment Mode", "Status"],
+          ["", "", "", "", "", ""],
+          ["", "", "", "", "", ""],
+          ["", "", "", "", "", ""],
+          ["", "", "", "", "", ""],
+          ["", "", "", "", "", ""],
+          ["", "", "", "", "", ""],
+          ["", "", "", "", "", ""]
         ];
 
         await sheets.spreadsheets.values.update({
           spreadsheetId: newSheetId,
-          range: "Sheet1!A1:D40",
+          range: "Sheet1!A1:F49",
           valueInputOption: "RAW",
           requestBody: { values }
         });
@@ -265,88 +274,109 @@ export async function createPatientClinicalSheet(
           spreadsheetId: newSheetId,
           requestBody: {
             requests: [
-              // Column widths (A: 160px, B: 240px, C: 160px, D: 240px)
+              // Column widths (A: 130px, B: 130px, C: 260px, D: 130px, E: 130px, F: 130px)
               {
                 updateDimensionProperties: {
                   range: { sheetId: 0, dimension: "COLUMNS", startIndex: 0, endIndex: 1 },
-                  properties: { pixelSize: 160 },
+                  properties: { pixelSize: 130 },
                   fields: "pixelSize"
                 }
               },
               {
                 updateDimensionProperties: {
                   range: { sheetId: 0, dimension: "COLUMNS", startIndex: 1, endIndex: 2 },
-                  properties: { pixelSize: 240 },
+                  properties: { pixelSize: 130 },
                   fields: "pixelSize"
                 }
               },
               {
                 updateDimensionProperties: {
                   range: { sheetId: 0, dimension: "COLUMNS", startIndex: 2, endIndex: 3 },
-                  properties: { pixelSize: 160 },
+                  properties: { pixelSize: 260 },
                   fields: "pixelSize"
                 }
               },
               {
                 updateDimensionProperties: {
                   range: { sheetId: 0, dimension: "COLUMNS", startIndex: 3, endIndex: 4 },
-                  properties: { pixelSize: 240 },
+                  properties: { pixelSize: 130 },
                   fields: "pixelSize"
                 }
               },
-              // Merge cells for title header banner (A1:D1)
+              {
+                updateDimensionProperties: {
+                  range: { sheetId: 0, dimension: "COLUMNS", startIndex: 4, endIndex: 5 },
+                  properties: { pixelSize: 130 },
+                  fields: "pixelSize"
+                }
+              },
+              {
+                updateDimensionProperties: {
+                  range: { sheetId: 0, dimension: "COLUMNS", startIndex: 5, endIndex: 6 },
+                  properties: { pixelSize: 130 },
+                  fields: "pixelSize"
+                }
+              },
+              // Merge cells for title header banner (A1:F1)
               {
                 mergeCells: {
-                  range: { sheetId: 0, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 4 },
+                  range: { sheetId: 0, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 6 },
                   mergeType: "MERGE_ALL"
                 }
               },
-              // Merge cells for Section 1 Demographics Header (A3:D3)
+              // Merge cells for Section 1 Demographics Header (A3:F3)
               {
                 mergeCells: {
-                  range: { sheetId: 0, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 4 },
+                  range: { sheetId: 0, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 6 },
                   mergeType: "MERGE_ALL"
                 }
               },
-              // Merge cells for Section 2 Complaint Header (A11:D11)
+              // Merge cells for Section 2 Complaint Header (A11:F11)
               {
                 mergeCells: {
-                  range: { sheetId: 0, startRowIndex: 10, endRowIndex: 11, startColumnIndex: 0, endColumnIndex: 4 },
+                  range: { sheetId: 0, startRowIndex: 10, endRowIndex: 11, startColumnIndex: 0, endColumnIndex: 6 },
                   mergeType: "MERGE_ALL"
                 }
               },
-              // Merge B12:D15 for the Chief Complaint details text area
+              // Merge B12:F15 for the Chief Complaint details text area
               {
                 mergeCells: {
-                  range: { sheetId: 0, startRowIndex: 11, endRowIndex: 15, startColumnIndex: 1, endColumnIndex: 4 },
+                  range: { sheetId: 0, startRowIndex: 11, endRowIndex: 15, startColumnIndex: 1, endColumnIndex: 6 },
                   mergeType: "MERGE_ALL"
                 }
               },
-              // Merge cells for Section 3 Repertorization Header (A16:D16)
+              // Merge cells for Section 3 Repertorization Header (A16:F16)
               {
                 mergeCells: {
-                  range: { sheetId: 0, startRowIndex: 15, endRowIndex: 16, startColumnIndex: 0, endColumnIndex: 4 },
+                  range: { sheetId: 0, startRowIndex: 15, endRowIndex: 16, startColumnIndex: 0, endColumnIndex: 6 },
                   mergeType: "MERGE_ALL"
                 }
               },
-              // Merge cells for Section 4 Prescription Header (A24:D24)
+              // Merge cells for Section 4 Prescription Header (A24:F24)
               {
                 mergeCells: {
-                  range: { sheetId: 0, startRowIndex: 23, endRowIndex: 24, startColumnIndex: 0, endColumnIndex: 4 },
+                  range: { sheetId: 0, startRowIndex: 23, endRowIndex: 24, startColumnIndex: 0, endColumnIndex: 6 },
                   mergeType: "MERGE_ALL"
                 }
               },
-              // Merge cells for Section 5 Follow-ups Header (A32:D32)
+              // Merge cells for Section 5 Follow-ups Header (A32:F32)
               {
                 mergeCells: {
-                  range: { sheetId: 0, startRowIndex: 31, endRowIndex: 32, startColumnIndex: 0, endColumnIndex: 4 },
+                  range: { sheetId: 0, startRowIndex: 31, endRowIndex: 32, startColumnIndex: 0, endColumnIndex: 6 },
+                  mergeType: "MERGE_ALL"
+                }
+              },
+              // Merge cells for Section 6 Billing Header (A41:F41)
+              {
+                mergeCells: {
+                  range: { sheetId: 0, startRowIndex: 40, endRowIndex: 41, startColumnIndex: 0, endColumnIndex: 6 },
                   mergeType: "MERGE_ALL"
                 }
               },
               // Styling: Header Banner (Dark Teal background #0f766e, White text, center aligned, bold)
               {
                 repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 4 },
+                  range: { sheetId: 0, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 6 },
                   cell: {
                     userEnteredFormat: {
                       backgroundColor: { red: 15/255, green: 118/255, blue: 110/255 },
@@ -361,7 +391,7 @@ export async function createPatientClinicalSheet(
               // Styling: Section Banners (Light Mint background #ccfbf1, Dark Teal text #0f766e, bold)
               {
                 repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 4 },
+                  range: { sheetId: 0, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 6 },
                   cell: {
                     userEnteredFormat: {
                       backgroundColor: { red: 204/255, green: 251/255, blue: 241/255 },
@@ -374,7 +404,7 @@ export async function createPatientClinicalSheet(
               },
               {
                 repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 10, endRowIndex: 11, startColumnIndex: 0, endColumnIndex: 4 },
+                  range: { sheetId: 0, startRowIndex: 10, endRowIndex: 11, startColumnIndex: 0, endColumnIndex: 6 },
                   cell: {
                     userEnteredFormat: {
                       backgroundColor: { red: 204/255, green: 251/255, blue: 241/255 },
@@ -387,7 +417,7 @@ export async function createPatientClinicalSheet(
               },
               {
                 repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 15, endRowIndex: 16, startColumnIndex: 0, endColumnIndex: 4 },
+                  range: { sheetId: 0, startRowIndex: 15, endRowIndex: 16, startColumnIndex: 0, endColumnIndex: 6 },
                   cell: {
                     userEnteredFormat: {
                       backgroundColor: { red: 204/255, green: 251/255, blue: 241/255 },
@@ -400,7 +430,7 @@ export async function createPatientClinicalSheet(
               },
               {
                 repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 23, endRowIndex: 24, startColumnIndex: 0, endColumnIndex: 4 },
+                  range: { sheetId: 0, startRowIndex: 23, endRowIndex: 24, startColumnIndex: 0, endColumnIndex: 6 },
                   cell: {
                     userEnteredFormat: {
                       backgroundColor: { red: 204/255, green: 251/255, blue: 241/255 },
@@ -413,7 +443,7 @@ export async function createPatientClinicalSheet(
               },
               {
                 repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 31, endRowIndex: 32, startColumnIndex: 0, endColumnIndex: 4 },
+                  range: { sheetId: 0, startRowIndex: 31, endRowIndex: 32, startColumnIndex: 0, endColumnIndex: 6 },
                   cell: {
                     userEnteredFormat: {
                       backgroundColor: { red: 204/255, green: 251/255, blue: 241/255 },
@@ -424,10 +454,23 @@ export async function createPatientClinicalSheet(
                   fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
                 }
               },
-              // Table Header Styles (Row 17, Row 25, Row 33): Soft Grey background, bold
               {
                 repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 16, endRowIndex: 17, startColumnIndex: 0, endColumnIndex: 4 },
+                  range: { sheetId: 0, startRowIndex: 40, endRowIndex: 41, startColumnIndex: 0, endColumnIndex: 6 },
+                  cell: {
+                    userEnteredFormat: {
+                      backgroundColor: { red: 204/255, green: 251/255, blue: 241/255 },
+                      textFormat: { foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 }, fontSize: 10, bold: true, fontFamily: "Arial" },
+                      verticalAlignment: "MIDDLE"
+                    }
+                  },
+                  fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
+                }
+              },
+              // Table Header Styles (Row 17, Row 25, Row 33, Row 42): Soft Grey background, bold
+              {
+                repeatCell: {
+                  range: { sheetId: 0, startRowIndex: 16, endRowIndex: 17, startColumnIndex: 0, endColumnIndex: 6 },
                   cell: {
                     userEnteredFormat: {
                       backgroundColor: { red: 241/255, green: 245/255, blue: 249/255 },
@@ -439,7 +482,7 @@ export async function createPatientClinicalSheet(
               },
               {
                 repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 24, endRowIndex: 25, startColumnIndex: 0, endColumnIndex: 4 },
+                  range: { sheetId: 0, startRowIndex: 24, endRowIndex: 25, startColumnIndex: 0, endColumnIndex: 6 },
                   cell: {
                     userEnteredFormat: {
                       backgroundColor: { red: 241/255, green: 245/255, blue: 249/255 },
@@ -451,7 +494,7 @@ export async function createPatientClinicalSheet(
               },
               {
                 repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 32, endRowIndex: 33, startColumnIndex: 0, endColumnIndex: 4 },
+                  range: { sheetId: 0, startRowIndex: 32, endRowIndex: 33, startColumnIndex: 0, endColumnIndex: 6 },
                   cell: {
                     userEnteredFormat: {
                       backgroundColor: { red: 241/255, green: 245/255, blue: 249/255 },
@@ -461,10 +504,22 @@ export async function createPatientClinicalSheet(
                   fields: "userEnteredFormat(backgroundColor,textFormat)"
                 }
               },
-              // Wrap text & top alignment for chief complaint text box (B12:D15)
               {
                 repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 11, endRowIndex: 15, startColumnIndex: 1, endColumnIndex: 4 },
+                  range: { sheetId: 0, startRowIndex: 41, endRowIndex: 42, startColumnIndex: 0, endColumnIndex: 6 },
+                  cell: {
+                    userEnteredFormat: {
+                      backgroundColor: { red: 241/255, green: 245/255, blue: 249/255 },
+                      textFormat: { bold: true, fontSize: 9 }
+                    }
+                  },
+                  fields: "userEnteredFormat(backgroundColor,textFormat)"
+                }
+              },
+              // Wrap text & top alignment for chief complaint text box (B12:F15)
+              {
+                repeatCell: {
+                  range: { sheetId: 0, startRowIndex: 11, endRowIndex: 15, startColumnIndex: 1, endColumnIndex: 6 },
                   cell: {
                     userEnteredFormat: { wrapStrategy: "WRAP", verticalAlignment: "TOP" }
                   },
@@ -493,10 +548,10 @@ export async function createPatientClinicalSheet(
                   fields: "userEnteredFormat(textFormat(bold),verticalAlignment)"
                 }
               },
-              // Add borders around Demographics block (rows 4-9, cols A-D)
+              // Add borders around Demographics block (rows 4-9, cols A-F)
               {
                 repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 3, endRowIndex: 9, startColumnIndex: 0, endColumnIndex: 4 },
+                  range: { sheetId: 0, startRowIndex: 3, endRowIndex: 9, startColumnIndex: 0, endColumnIndex: 6 },
                   cell: {
                     userEnteredFormat: {
                       borders: {
@@ -510,10 +565,10 @@ export async function createPatientClinicalSheet(
                   fields: "userEnteredFormat(borders)"
                 }
               },
-              // Add borders around Complaint block (rows 12-15, cols A-D)
+              // Add borders around Complaint block (rows 12-15, cols A-F)
               {
                 repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 11, endRowIndex: 15, startColumnIndex: 0, endColumnIndex: 4 },
+                  range: { sheetId: 0, startRowIndex: 11, endRowIndex: 15, startColumnIndex: 0, endColumnIndex: 6 },
                   cell: {
                     userEnteredFormat: {
                       borders: {
@@ -530,7 +585,7 @@ export async function createPatientClinicalSheet(
               // Add borders for Rubrics table (rows 17-22)
               {
                 repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 16, endRowIndex: 22, startColumnIndex: 0, endColumnIndex: 4 },
+                  range: { sheetId: 0, startRowIndex: 16, endRowIndex: 22, startColumnIndex: 0, endColumnIndex: 6 },
                   cell: {
                     userEnteredFormat: {
                       borders: {
@@ -547,7 +602,7 @@ export async function createPatientClinicalSheet(
               // Add borders for Prescription table (rows 25-30)
               {
                 repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 24, endRowIndex: 30, startColumnIndex: 0, endColumnIndex: 4 },
+                  range: { sheetId: 0, startRowIndex: 24, endRowIndex: 30, startColumnIndex: 0, endColumnIndex: 6 },
                   cell: {
                     userEnteredFormat: {
                       borders: {
@@ -564,7 +619,24 @@ export async function createPatientClinicalSheet(
               // Add borders for Follow-up table (rows 33-40)
               {
                 repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 32, endRowIndex: 40, startColumnIndex: 0, endColumnIndex: 4 },
+                  range: { sheetId: 0, startRowIndex: 32, endRowIndex: 40, startColumnIndex: 0, endColumnIndex: 6 },
+                  cell: {
+                    userEnteredFormat: {
+                      borders: {
+                        top: { style: "SOLID", color: { red: 0.8, green: 0.8, blue: 0.8 } },
+                        bottom: { style: "SOLID", color: { red: 0.8, green: 0.8, blue: 0.8 } },
+                        left: { style: "SOLID", color: { red: 0.8, green: 0.8, blue: 0.8 } },
+                        right: { style: "SOLID", color: { red: 0.8, green: 0.8, blue: 0.8 } }
+                      }
+                    }
+                  },
+                  fields: "userEnteredFormat(borders)"
+                }
+              },
+              // Add borders for Billing table (rows 42-49)
+              {
+                repeatCell: {
+                  range: { sheetId: 0, startRowIndex: 41, endRowIndex: 49, startColumnIndex: 0, endColumnIndex: 6 },
                   cell: {
                     userEnteredFormat: {
                       borders: {
@@ -858,6 +930,446 @@ export async function listFilesInFolder(folderId: string): Promise<any[]> {
   } catch (error: any) {
     console.error("Error listing files in Google Drive folder:", error);
     throw new Error(error.message || "Failed to list folder files. Make sure the folder ID is correct and shared.");
+  }
+}
+
+export interface InvoiceItem {
+  description: string;
+  qty: number;
+  unitPrice: number;
+  amount: number;
+}
+
+export interface InvoiceData {
+  invoiceNo: string;
+  date: string;
+  dueDate: string;
+  patientId: string;
+  patientName: string;
+  patientPhone: string;
+  patientEmail: string;
+  patientAddress: string;
+  items: InvoiceItem[];
+  subtotal: number;
+  discount: number;
+  grandTotal: number;
+  paymentMode: string;
+  status: "Paid" | "Unpaid" | "Pending";
+}
+
+/**
+ * Creates a beautifully formatted invoice sheet inside the patient folder
+ */
+export async function createInvoiceSheet(
+  folderId: string,
+  data: InvoiceData
+): Promise<{ sheetId: string; sheetUrl: string }> {
+  const auth = getGoogleAuth();
+  if (!auth) {
+    // Mock URL for offline testing
+    const mockUrl = `/admin/invoice-preview?invoiceNo=${encodeURIComponent(data.invoiceNo)}&date=${encodeURIComponent(data.date)}&dueDate=${encodeURIComponent(data.dueDate)}&patientId=${encodeURIComponent(data.patientId)}&patientName=${encodeURIComponent(data.patientName)}&patientPhone=${encodeURIComponent(data.patientPhone || "")}&patientEmail=${encodeURIComponent(data.patientEmail || "")}&patientAddress=${encodeURIComponent(data.patientAddress || "")}&subtotal=${data.subtotal}&discount=${data.discount}&grandTotal=${data.grandTotal}&paymentMode=${encodeURIComponent(data.paymentMode)}&status=${encodeURIComponent(data.status)}&items=${encodeURIComponent(JSON.stringify(data.items))}`;
+    return { sheetId: "mock-invoice-id", sheetUrl: mockUrl };
+  }
+
+  const drive = google.drive({ version: "v3", auth });
+  const sheets = google.sheets({ version: "v4", auth });
+
+  try {
+    // 1. Create a brand new Google Sheet in the folder
+    const response = await drive.files.create({
+      requestBody: {
+        name: `Invoice - ${data.invoiceNo}`,
+        mimeType: "application/vnd.google-apps.spreadsheet",
+        parents: [folderId]
+      },
+      fields: "id,webViewLink"
+    });
+    const sheetId = response.data.id || "";
+    const sheetUrl = response.data.webViewLink || (sheetId ? `https://docs.google.com/spreadsheets/d/${sheetId}/edit` : "");
+
+    if (!sheetId) throw new Error("Failed to create spreadsheet for invoice");
+
+    // 2. Generate values
+    const itemValues = data.items.map((item, idx) => [
+      String(idx + 1),
+      item.description,
+      "", // placeholder for merged column C
+      String(item.qty),
+      `INR ${item.amount.toLocaleString("en-IN")}`
+    ]);
+
+    // Ensure we pad or limit item rows to 5 slots for clean styling
+    const maxItems = 5;
+    while (itemValues.length < maxItems) {
+      itemValues.push([String(itemValues.length + 1), "", "", "", ""]);
+    }
+
+    const values = [
+      ["RAMKRISHNA HOMEO HEALTHCARE - INVOICE", "", "", "", ""],
+      ["", "", "", "", ""],
+      ["INVOICE DETAILS", "", "", "PATIENT DETAILS", ""],
+      ["Invoice Number", data.invoiceNo, "", "Patient ID", data.patientId],
+      ["Invoice Date", data.date, "", "Patient Name", data.patientName],
+      ["Due Date", data.dueDate, "", "Contact Phone", data.patientPhone || "N/A"],
+      ["Payment Mode", data.paymentMode, "", "Email Address", data.patientEmail || "N/A"],
+      ["Payment Status", data.status, "", "Shipping Address", data.patientAddress || "N/A"],
+      ["", "", "", "", ""],
+      ["Sl No", "Item Description", "", "Qty", "Amount"],
+      ...itemValues,
+      ["", "", "", "", ""],
+      ["", "", "", "Subtotal", `INR ${data.subtotal.toLocaleString("en-IN")}`],
+      ["", "", "", "Discount", `INR ${data.discount.toLocaleString("en-IN")}`],
+      ["", "", "", "Grand Total", `INR ${data.grandTotal.toLocaleString("en-IN")}`],
+      ["", "", "", "", ""],
+      ["PAYMENT INSTRUCTIONS", "", "", "", ""],
+      ["Please transfer via NEFT/IMPS to Current Account or pay via UPI:", "", "", "", ""],
+      ["Bank Name", "HDFC Bank", "", "UPI ID", "ramkrishna@hdfc"],
+      ["Account Name", "Ramkrishna Homeo Healthcare", "", "", ""],
+      ["Account Number", "50200039742057", "", "", ""],
+      ["IFSC Code", "HDFC0004793", "", "", ""],
+      ["Branch Name", "Pan Card Club Road Baner, Pune", "", "", ""],
+      ["", "", "", "", ""],
+      ["Thank you for choosing Ramkrishna Homeo Healthcare for your healing journey.", "", "", "", ""]
+    ];
+
+    await sheets.spreadsheets.values.update({
+      spreadsheetId: sheetId,
+      range: "Sheet1!A1:E27",
+      valueInputOption: "RAW",
+      requestBody: { values }
+    });
+
+    // 3. Style the Invoice Spreadsheet beautifully
+    const stylingRequests: any[] = [
+      // Column Widths (A: 60px, B: 240px, C: 40px, D: 100px, E: 160px)
+      {
+        updateDimensionProperties: {
+          range: { sheetId: 0, dimension: "COLUMNS", startIndex: 0, endIndex: 1 },
+          properties: { pixelSize: 60 },
+          fields: "pixelSize"
+        }
+      },
+      {
+        updateDimensionProperties: {
+          range: { sheetId: 0, dimension: "COLUMNS", startIndex: 1, endIndex: 2 },
+          properties: { pixelSize: 240 },
+          fields: "pixelSize"
+        }
+      },
+      {
+        updateDimensionProperties: {
+          range: { sheetId: 0, dimension: "COLUMNS", startIndex: 2, endIndex: 3 },
+          properties: { pixelSize: 40 },
+          fields: "pixelSize"
+        }
+      },
+      {
+        updateDimensionProperties: {
+          range: { sheetId: 0, dimension: "COLUMNS", startIndex: 3, endIndex: 4 },
+          properties: { pixelSize: 100 },
+          fields: "pixelSize"
+        }
+      },
+      {
+        updateDimensionProperties: {
+          range: { sheetId: 0, dimension: "COLUMNS", startIndex: 4, endIndex: 5 },
+          properties: { pixelSize: 160 },
+          fields: "pixelSize"
+        }
+      },
+      // Merges
+      {
+        mergeCells: {
+          range: { sheetId: 0, startRowIndex: 0, endRowIndex: 2, startColumnIndex: 0, endColumnIndex: 5 },
+          mergeType: "MERGE_ALL"
+        }
+      },
+      {
+        mergeCells: {
+          range: { sheetId: 0, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 3 },
+          mergeType: "MERGE_ALL"
+        }
+      },
+      {
+        mergeCells: {
+          range: { sheetId: 0, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 3, endColumnIndex: 5 },
+          mergeType: "MERGE_ALL"
+        }
+      },
+      {
+        mergeCells: {
+          range: { sheetId: 0, startRowIndex: 9, endRowIndex: 10, startColumnIndex: 1, endColumnIndex: 3 },
+          mergeType: "MERGE_ALL"
+        }
+      },
+      {
+        mergeCells: {
+          range: { sheetId: 0, startRowIndex: 16, endRowIndex: 17, startColumnIndex: 0, endColumnIndex: 5 },
+          mergeType: "MERGE_ALL"
+        }
+      },
+      {
+        mergeCells: {
+          range: { sheetId: 0, startRowIndex: 17, endRowIndex: 18, startColumnIndex: 0, endColumnIndex: 5 },
+          mergeType: "MERGE_ALL"
+        }
+      },
+      {
+        mergeCells: {
+          range: { sheetId: 0, startRowIndex: 26, endRowIndex: 27, startColumnIndex: 0, endColumnIndex: 5 },
+          mergeType: "MERGE_ALL"
+        }
+      }
+    ];
+
+    // Merging columns B & C for items rows (rows 11-15, zero-indexed 10-14)
+    for (let i = 10; i < 15; i++) {
+      stylingRequests.push({
+        mergeCells: {
+          range: { sheetId: 0, startRowIndex: i, endRowIndex: i + 1, startColumnIndex: 1, endColumnIndex: 3 },
+          mergeType: "MERGE_ALL"
+        }
+      });
+    }
+
+    // Add styles and colors
+    stylingRequests.push(
+      // Banner row style
+      {
+        repeatCell: {
+          range: { sheetId: 0, startRowIndex: 0, endRowIndex: 2, startColumnIndex: 0, endColumnIndex: 5 },
+          cell: {
+            userEnteredFormat: {
+              backgroundColor: { red: 15/255, green: 118/255, blue: 110/255 },
+              textFormat: { foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 14, bold: true },
+              horizontalAlignment: "CENTER",
+              verticalAlignment: "MIDDLE"
+            }
+          },
+          fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+        }
+      },
+      // Headers styling (row 3, indexes 2-3)
+      {
+        repeatCell: {
+          range: { sheetId: 0, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 5 },
+          cell: {
+            userEnteredFormat: {
+              backgroundColor: { red: 204/255, green: 251/255, blue: 241/255 },
+              textFormat: { foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 }, bold: true, fontSize: 10 },
+              verticalAlignment: "MIDDLE"
+            }
+          },
+          fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
+        }
+      },
+      // Table Header row (row 10, index 9)
+      {
+        repeatCell: {
+          range: { sheetId: 0, startRowIndex: 9, endRowIndex: 10, startColumnIndex: 0, endColumnIndex: 5 },
+          cell: {
+            userEnteredFormat: {
+              backgroundColor: { red: 241/255, green: 245/255, blue: 249/255 },
+              textFormat: { bold: true, fontSize: 9 }
+            }
+          },
+          fields: "userEnteredFormat(backgroundColor,textFormat)"
+        }
+      },
+      // Totals section label styling
+      {
+        repeatCell: {
+          range: { sheetId: 0, startRowIndex: 12, endRowIndex: 15, startColumnIndex: 3, endColumnIndex: 5 },
+          cell: { userEnteredFormat: { textFormat: { bold: true } } },
+          fields: "userEnteredFormat(textFormat(bold))"
+        }
+      },
+      // Grand Total row formatting (index 14)
+      {
+        repeatCell: {
+          range: { sheetId: 0, startRowIndex: 14, endRowIndex: 15, startColumnIndex: 3, endColumnIndex: 5 },
+          cell: {
+            userEnteredFormat: {
+              backgroundColor: { red: 204/255, green: 251/255, blue: 241/255 },
+              textFormat: { foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 }, bold: true }
+            }
+          },
+          fields: "userEnteredFormat(backgroundColor,textFormat)"
+        }
+      },
+      // Payment instructions title (row 17, index 16)
+      {
+        repeatCell: {
+          range: { sheetId: 0, startRowIndex: 16, endRowIndex: 17, startColumnIndex: 0, endColumnIndex: 5 },
+          cell: {
+            userEnteredFormat: {
+              backgroundColor: { red: 241/255, green: 245/255, blue: 249/255 },
+              textFormat: { bold: true, fontSize: 9 }
+            }
+          },
+          fields: "userEnteredFormat(backgroundColor,textFormat)"
+        }
+      },
+      // Bold Labels for metadata fields
+      {
+        repeatCell: {
+          range: { sheetId: 0, startRowIndex: 3, endRowIndex: 8, startColumnIndex: 0, endColumnIndex: 1 },
+          cell: { userEnteredFormat: { textFormat: { bold: true } } },
+          fields: "userEnteredFormat(textFormat(bold))"
+        }
+      },
+      {
+        repeatCell: {
+          range: { sheetId: 0, startRowIndex: 3, endRowIndex: 8, startColumnIndex: 3, endColumnIndex: 4 },
+          cell: { userEnteredFormat: { textFormat: { bold: true } } },
+          fields: "userEnteredFormat(textFormat(bold))"
+        }
+      },
+      // Footer text center and italic
+      {
+        repeatCell: {
+          range: { sheetId: 0, startRowIndex: 26, endRowIndex: 27, startColumnIndex: 0, endColumnIndex: 5 },
+          cell: {
+            userEnteredFormat: {
+              textFormat: { italic: true, fontSize: 9, color: { red: 0.4, green: 0.4, blue: 0.4 } },
+              horizontalAlignment: "CENTER"
+            }
+          },
+          fields: "userEnteredFormat(textFormat(fontSize,italic,color),horizontalAlignment)"
+        }
+      },
+      // General borders for items table
+      {
+        repeatCell: {
+          range: { sheetId: 0, startRowIndex: 9, endRowIndex: 15, startColumnIndex: 0, endColumnIndex: 5 },
+          cell: {
+            userEnteredFormat: {
+              borders: {
+                top: { style: "SOLID", color: { red: 0.8, green: 0.8, blue: 0.8 } },
+                bottom: { style: "SOLID", color: { red: 0.8, green: 0.8, blue: 0.8 } },
+                left: { style: "SOLID", color: { red: 0.8, green: 0.8, blue: 0.8 } },
+                right: { style: "SOLID", color: { red: 0.8, green: 0.8, blue: 0.8 } }
+              }
+            }
+          },
+          fields: "userEnteredFormat(borders)"
+        }
+      }
+    );
+
+    await sheets.spreadsheets.batchUpdate({
+      spreadsheetId: sheetId,
+      requestBody: { requests: stylingRequests }
+    });
+
+    // Make the file readable by anyone with the link (so patients can open it directly)
+    try {
+      await drive.permissions.create({
+        fileId: sheetId,
+        requestBody: {
+          role: "reader",
+          type: "anyone"
+        }
+      });
+    } catch (shareErr) {
+      console.warn("Failed to share invoice with public read access:", shareErr);
+    }
+
+    return { sheetId, sheetUrl };
+  } catch (error) {
+    console.error("Error creating invoice sheet in drive:", error);
+    throw error;
+  }
+}
+
+/**
+ * Appends the invoice billing record directly inside the patient's Clinical case sheet
+ */
+export async function appendInvoiceToClinicalSheet(
+  sheetId: string,
+  data: InvoiceData
+): Promise<void> {
+  const auth = getGoogleAuth();
+  if (!auth) {
+    console.warn("Google API Auth missing. Skipping clinical sheet invoice sync.");
+    return;
+  }
+
+  const sheets = google.sheets({ version: "v4", auth });
+
+  try {
+    // 1. Fetch current values of Sheet1 to find where section 6 starts
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: sheetId,
+      range: "Sheet1!A1:F100"
+    });
+    
+    const rows = response.data.values || [];
+    let targetHeaderRowIndex = -1; // index in 0-indexed rows array
+    
+    for (let i = 0; i < rows.length; i++) {
+      const cellVal = String(rows[i][0] || "").trim();
+      if (cellVal.includes("6. INVOICING & BILLING HISTORY")) {
+        targetHeaderRowIndex = i;
+        break;
+      }
+    }
+
+    if (targetHeaderRowIndex === -1) {
+      // Fallback: If section 6 is not found, append to the bottom of the sheet
+      console.warn("Section 6 not found in sheet. Appending to bottom.");
+      await sheets.spreadsheets.values.append({
+        spreadsheetId: sheetId,
+        range: "Sheet1!A1",
+        valueInputOption: "RAW",
+        requestBody: {
+          values: [[
+            data.invoiceNo,
+            data.date,
+            data.items.map(it => it.description).join(", "),
+            `INR ${data.grandTotal.toLocaleString("en-IN")}`,
+            data.paymentMode,
+            data.status
+          ]]
+        }
+      });
+      return;
+    }
+
+    // Locate the first empty row below the headers (which start at targetHeaderRowIndex + 1)
+    let insertRowIndex = targetHeaderRowIndex + 2; // Row immediately following the labels row
+    
+    while (insertRowIndex < rows.length) {
+      const isRowEmpty = !rows[insertRowIndex] || (!rows[insertRowIndex][0] && !rows[insertRowIndex][1]);
+      if (isRowEmpty) {
+        break;
+      }
+      insertRowIndex++;
+    }
+
+    // Row numbers are 1-indexed, so insertRowIndex + 1 is the spreadsheet row index
+    const sheetRange = `Sheet1!A${insertRowIndex + 1}:F${insertRowIndex + 1}`;
+    const descSummary = data.items.map(it => it.description).join(", ");
+    
+    await sheets.spreadsheets.values.update({
+      spreadsheetId: sheetId,
+      range: sheetRange,
+      valueInputOption: "RAW",
+      requestBody: {
+        values: [[
+          data.invoiceNo,
+          data.date,
+          descSummary,
+          `INR ${data.grandTotal.toLocaleString("en-IN")}`,
+          data.paymentMode,
+          data.status
+        ]]
+      }
+    });
+
+    console.log(`Successfully synced invoice ${data.invoiceNo} into clinical sheet at range ${sheetRange}`);
+  } catch (error) {
+    console.error("Error appending invoice to clinical sheet:", error);
   }
 }
 

@@ -7,12 +7,12 @@ import {
   Users, Activity, Sparkles, Folder, FileSpreadsheet, ExternalLink, 
   Search, Sliders, Brain, RefreshCw, Send, Plus, Trash2, CheckCircle, 
   Settings, LogOut, ShieldAlert, Award, FileText, ChevronRight, UserPlus, Upload,
-  BookOpen, Book, ChevronLeft, Maximize2, Minimize2
+  BookOpen, Book, ChevronLeft, Maximize2, Minimize2, Receipt, Printer
 } from "lucide-react";
 import { REPERTORY_DATA, REPERTORY_CHAPTERS, REMEDIES_METADATA, Rubric } from "@/lib/repertoryData";
 import { MATERIA_MEDICA_BOOKS, MateriaMedicaBook } from "@/lib/materiaMedicaData";
 import { db } from "@/lib/firebase";
-import { collection, onSnapshot, query, orderBy, doc, updateDoc, setDoc } from "firebase/firestore";
+import { collection, onSnapshot, query, orderBy, doc, updateDoc, setDoc, where } from "firebase/firestore";
 
 interface UserSession {
   uid: string;
@@ -40,6 +40,16 @@ interface Patient {
   status: string;
   createdAt: string;
 }
+
+const INVOICE_TEMPLATES = [
+  { description: "General Constitutional Consultation & Case-Taking", qty: 1, unitPrice: 3500 },
+  { description: "Follow-up Consultation Fee", qty: 1, unitPrice: 1500 },
+  { description: "Homeopathic Remedy Supply & Compounding (1 Month)", qty: 1, unitPrice: 1200 },
+  { description: "Homeopathic Remedy Supply & Compounding (2 Months)", qty: 1, unitPrice: 2400 },
+  { description: "Homeopathic Remedy Supply & Compounding (3 Months)", qty: 1, unitPrice: 3500 },
+  { description: "Courier & Secure Medicine Shipping (India)", qty: 1, unitPrice: 300 },
+  { description: "International Medicine Shipping & Customs Handling", qty: 1, unitPrice: 2500 }
+];
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -178,6 +188,252 @@ export default function AdminDashboard() {
   const [isAnalyzingFile, setIsAnalyzingFile] = useState(false);
   const [isProvisioningWorkspace, setIsProvisioningWorkspace] = useState(false);
   const [provisioningPatientName, setProvisioningPatientName] = useState("");
+
+  // Invoicing & Billing States
+  const [selectedInvoicePatient, setSelectedInvoicePatient] = useState<Patient | null>(null);
+  const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
+  const [invoicesList, setInvoicesList] = useState<any[]>([]);
+  const [isFetchingInvoices, setIsFetchingInvoices] = useState(false);
+  const [isGeneratingInvoice, setIsGeneratingInvoice] = useState(false);
+  const [invoiceNo, setInvoiceNo] = useState("");
+  const [invoiceItems, setInvoiceItems] = useState<Array<{ description: string; qty: number; unitPrice: number; amount: number }>>([]);
+  const [invoiceDiscount, setInvoiceDiscount] = useState(0);
+  const [invoicePaymentMode, setInvoicePaymentMode] = useState("UPI");
+  const [invoiceStatus, setInvoiceStatus] = useState("Paid");
+  const [generatedInvoiceUrl, setGeneratedInvoiceUrl] = useState("");
+
+  const invoiceSubtotal = invoiceItems.reduce((sum, item) => sum + item.amount, 0);
+  const invoiceGrandTotal = Math.max(0, invoiceSubtotal - invoiceDiscount);
+
+  // Invoicing & Billing Helpers
+  const extractIdFromDriveUrl = (url: string): string => {
+    if (!url) return "";
+    const folderMatch = url.match(/\/folders\/([a-zA-Z0-9-_]+)/);
+    if (folderMatch) return folderMatch[1];
+    const sheetMatch = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+    if (sheetMatch) return sheetMatch[1];
+    return url;
+  };
+
+  const generateInvoiceNo = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const rand = Math.floor(1000 + Math.random() * 9000);
+    return `INV-${year}${month}${day}-${rand}`;
+  };
+
+  // Fetch / Sync invoices list reactively when selected patient changes
+  useEffect(() => {
+    if (!selectedInvoicePatient?.id) {
+      setInvoicesList([]);
+      return;
+    }
+
+    const isMockProject = !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID === "mock-project-id";
+    if (isMockProject) {
+      const local = localStorage.getItem(`mock_invoices_${selectedInvoicePatient.id}`);
+      if (local) {
+        setInvoicesList(JSON.parse(local));
+      } else {
+        setInvoicesList([]);
+      }
+      return;
+    }
+
+    setIsFetchingInvoices(true);
+    const q = query(
+      collection(db, "invoices"),
+      where("patientId", "==", selectedInvoicePatient.id),
+      orderBy("createdAt", "desc")
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const list: any[] = [];
+      snapshot.forEach((doc) => {
+        list.push(doc.data());
+      });
+      setInvoicesList(list);
+      setIsFetchingInvoices(false);
+    }, (error) => {
+      console.error("Error listening to invoices:", error);
+      setIsFetchingInvoices(false);
+    });
+
+    return () => unsubscribe();
+  }, [selectedInvoicePatient]);
+
+  const openInvoiceModal = (patient: Patient) => {
+    setSelectedInvoicePatient(patient);
+    setInvoiceNo(generateInvoiceNo());
+    
+    // Auto-populate item based on care level price
+    setInvoiceItems([
+      {
+        description: `General Consultation & Treatment Plan (${patient.durationText || "1-Month"})`,
+        qty: 1,
+        unitPrice: patient.finalPrice || 3500,
+        amount: patient.finalPrice || 3500
+      }
+    ]);
+    setInvoiceDiscount(0);
+    setInvoicePaymentMode("UPI");
+    setInvoiceStatus("Paid");
+    setGeneratedInvoiceUrl("");
+    setIsInvoiceModalOpen(true);
+  };
+
+  const addInvoiceItem = (description = "", qty = 1, unitPrice = 0) => {
+    setInvoiceItems(prev => [
+      ...prev,
+      { description, qty, unitPrice, amount: qty * unitPrice }
+    ]);
+  };
+
+  const removeInvoiceItem = (index: number) => {
+    setInvoiceItems(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const updateInvoiceItem = (index: number, field: string, value: any) => {
+    setInvoiceItems(prev => prev.map((item, i) => {
+      if (i === index) {
+        const updated = { ...item, [field]: value };
+        if (field === "qty" || field === "unitPrice") {
+          updated.amount = Number(updated.qty || 0) * Number(updated.unitPrice || 0);
+        }
+        return updated;
+      }
+      return item;
+    }));
+  };
+
+  const handleTemplateSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const val = e.target.value;
+    if (!val) return;
+    const template = INVOICE_TEMPLATES[Number(val)];
+    if (template) {
+      addInvoiceItem(template.description, template.qty, template.unitPrice);
+    }
+    e.target.value = ""; // Reset dropdown
+  };
+
+  const handleGenerateInvoice = async () => {
+    if (!selectedInvoicePatient) return;
+    
+    if (invoiceItems.length === 0 || invoiceItems.some(it => !it.description.trim())) {
+      alert("Please add at least one item with a description.");
+      return;
+    }
+
+    setIsGeneratingInvoice(true);
+    try {
+      const subtotal = invoiceItems.reduce((sum, item) => sum + item.amount, 0);
+      const grandTotal = Math.max(0, subtotal - invoiceDiscount);
+      
+      const payload = {
+        invoiceNo,
+        date: new Date().toLocaleDateString("en-IN"),
+        dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString("en-IN"),
+        patientId: selectedInvoicePatient.id,
+        patientName: selectedInvoicePatient.name,
+        patientPhone: selectedInvoicePatient.phone,
+        patientEmail: selectedInvoicePatient.email,
+        patientAddress: selectedInvoicePatient.location || "N/A",
+        items: invoiceItems,
+        subtotal,
+        discount: invoiceDiscount,
+        grandTotal,
+        paymentMode: invoicePaymentMode,
+        status: invoiceStatus,
+        folderId: selectedInvoicePatient.folderUrl ? extractIdFromDriveUrl(selectedInvoicePatient.folderUrl) : "mock-folder-id",
+        caseSheetId: selectedInvoicePatient.sheetUrl ? extractIdFromDriveUrl(selectedInvoicePatient.sheetUrl) : "mock-sheet-id"
+      };
+
+      const response = await fetch("/api/invoice", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setGeneratedInvoiceUrl(data.sheetUrl);
+        
+        // Save to mock storage locally if in mock mode
+        const isMockProject = !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID === "mock-project-id";
+        if (isMockProject || data.isMock) {
+          const newInvoiceDoc = {
+            id: invoiceNo,
+            patientId: selectedInvoicePatient.id,
+            patientName: selectedInvoicePatient.name,
+            patientPhone: selectedInvoicePatient.phone,
+            patientEmail: selectedInvoicePatient.email,
+            date: payload.date,
+            dueDate: payload.dueDate,
+            items: invoiceItems,
+            subtotal,
+            discount: invoiceDiscount,
+            grandTotal,
+            paymentMode: invoicePaymentMode,
+            status: invoiceStatus,
+            sheetId: "mock-invoice-id",
+            sheetUrl: data.sheetUrl,
+            createdAt: new Date().toISOString()
+          };
+          const key = `mock_invoices_${selectedInvoicePatient.id}`;
+          const currentMockInvoices = JSON.parse(localStorage.getItem(key) || "[]");
+          const updatedMockInvoices = [newInvoiceDoc, ...currentMockInvoices];
+          localStorage.setItem(key, JSON.stringify(updatedMockInvoices));
+          setInvoicesList(updatedMockInvoices);
+        }
+
+        alert("Invoice generated and synced successfully!");
+      } else {
+        throw new Error(data.message || "Failed to generate invoice");
+      }
+    } catch (err: any) {
+      console.error(err);
+      alert(`Error generating invoice: ${err.message || err}`);
+    } finally {
+      setIsGeneratingInvoice(false);
+    }
+  };
+
+  const handleWhatsAppShare = (inv: any) => {
+    const formattedUrl = inv.sheetUrl.startsWith("http") ? inv.sheetUrl : window.location.origin + inv.sheetUrl;
+    const message = `Dear ${inv.patientName},
+
+Hope you are doing well. Please find below the invoice summary from *Ramkrishna Homeo Healthcare*:
+
+*Invoice No:* ${inv.id}
+*Date:* ${inv.date}
+*Grand Total:* ₹${inv.grandTotal.toLocaleString("en-IN")}
+*Status:* ${inv.status}
+
+*Clinic Bank Details (HDFC Bank):*
+Account Name: Ramkrishna Homeo Healthcare
+Current Account No: 50200039742057
+IFSC Code: HDFC0004793
+Branch: Baner, Pune
+Instant UPI ID: ramkrishna@hdfc
+(Please include your Patient ID or Invoice No in the transfer remarks)
+
+*View Digital Invoice:*
+${formattedUrl}
+
+Wishing you good health.
+
+Warm regards,
+Dr. Narayan Jethwani, MD (Hom.)
+Ramkrishna Homeo Healthcare`;
+
+    const encodedText = encodeURIComponent(message);
+    const phone = inv.patientPhone ? inv.patientPhone.replace(/\D/g, "") : "";
+    const targetPhone = phone.length === 10 ? `91${phone}` : phone;
+    
+    window.open(`https://wa.me/${targetPhone}?text=${encodedText}`, "_blank");
+  };
 
   // Check login session
   useEffect(() => {
@@ -1329,6 +1585,15 @@ ${err.message || err}`);
                           <span>Clinical Sheet</span>
                           <ExternalLink className="w-3.5 h-3.5 opacity-60" />
                         </a>
+
+                        {/* Invoicing & Billing Action */}
+                        <button
+                          onClick={() => openInvoiceModal(patient)}
+                          className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-3 rounded-full border border-slate-200 hover:border-[#0f766e] text-[#0f766e] hover:bg-[#0f766e]/5 text-xs font-bold uppercase tracking-wider transition-all bg-white shadow-sm cursor-pointer"
+                        >
+                          <Receipt className="w-4 h-4" />
+                          <span>Billing</span>
+                        </button>
                       </div>
                     </motion.div>
                   ))
@@ -2867,6 +3132,348 @@ ${err.message || err}`);
                 * Sourced from free library at materiamedica.info. Provided without warranty.
               </div>
             </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* 3. Invoicing & Billing Modal */}
+        <AnimatePresence>
+          {isInvoiceModalOpen && selectedInvoicePatient && (
+            <>
+              {/* Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => {
+                  if (!isGeneratingInvoice) setIsInvoiceModalOpen(false);
+                }}
+                className="fixed inset-0 bg-slate-900/20 backdrop-blur-md z-50 pointer-events-auto"
+              />
+
+              {/* Modal Container */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                transition={{ type: "spring", damping: 25, stiffness: 220 }}
+                data-lenis-prevent
+                className="fixed inset-0 m-auto max-w-4xl w-full p-6 md:p-8 bg-[#FAF9F6]/95 border border-white/60 z-[51] shadow-2xl rounded-[36px] flex flex-col pointer-events-auto max-h-[90vh] overflow-y-auto"
+              >
+                {/* Modal Header */}
+                <div className="flex items-center justify-between border-b border-slate-900/5 pb-4 mb-6">
+                  <div className="flex items-center gap-2">
+                    <Receipt className="w-5 h-5 text-[#0f766e]" />
+                    <div>
+                      <h3 className="text-lg font-bold text-[#1A2421]">Patient Billing & Invoicing</h3>
+                      <span className="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">
+                        Patient: {selectedInvoicePatient.name} ({selectedInvoicePatient.id})
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setIsInvoiceModalOpen(false)}
+                    disabled={isGeneratingInvoice}
+                    className="w-8 h-8 rounded-full border border-slate-200 hover:border-slate-800 flex items-center justify-center transition-colors cursor-pointer disabled:opacity-50 text-xl font-bold"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 overflow-y-auto pr-1">
+                  
+                  {/* Left Side: Create Invoice (7 Cols) */}
+                  <div className="lg:col-span-7 space-y-6">
+                    <h4 className="text-xs font-extrabold text-[#0f766e] uppercase tracking-wider border-b border-slate-100 pb-2">
+                      Create New Invoice
+                    </h4>
+
+                    {/* Meta Fields */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-[9px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Invoice Number
+                        </label>
+                        <input
+                          type="text"
+                          value={invoiceNo}
+                          onChange={(e) => setInvoiceNo(e.target.value)}
+                          className="w-full p-2.5 border border-slate-200 focus:border-[#0f766e] outline-none rounded-xl bg-slate-50 text-xs font-semibold text-slate-800"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[9px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Quick Add Template
+                        </label>
+                        <select
+                          onChange={handleTemplateSelect}
+                          defaultValue=""
+                          className="w-full p-2.5 border border-slate-200 focus:border-[#0f766e] outline-none rounded-xl bg-white text-xs font-semibold text-slate-800"
+                        >
+                          <option value="" disabled>Select template item...</option>
+                          {INVOICE_TEMPLATES.map((t, idx) => (
+                            <option key={idx} value={idx}>
+                              {t.description.substring(0, 30)}... (₹{t.unitPrice})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Items Table */}
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <label className="block text-[9px] font-bold text-slate-700 uppercase tracking-wider">
+                          Line Items
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => addInvoiceItem("", 1, 0)}
+                          className="text-[10px] font-bold text-[#0f766e] hover:underline flex items-center gap-1 cursor-pointer"
+                        >
+                          + Add Custom Line
+                        </button>
+                      </div>
+
+                      <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1">
+                        {invoiceItems.map((item, idx) => (
+                          <div key={idx} className="flex gap-2 items-center bg-white/50 border border-slate-100 p-2.5 rounded-xl">
+                            <input
+                              type="text"
+                              placeholder="Description"
+                              value={item.description}
+                              onChange={(e) => updateInvoiceItem(idx, "description", e.target.value)}
+                              className="flex-1 p-2 border border-slate-200 focus:border-[#0f766e] outline-none rounded-lg text-xs font-medium bg-white"
+                              required
+                            />
+                            <input
+                              type="number"
+                              placeholder="Qty"
+                              value={item.qty || ""}
+                              min="1"
+                              onChange={(e) => updateInvoiceItem(idx, "qty", Number(e.target.value))}
+                              className="w-14 p-2 border border-slate-200 focus:border-[#0f766e] outline-none rounded-lg text-xs font-bold text-center bg-white"
+                              required
+                            />
+                            <input
+                              type="number"
+                              placeholder="Price"
+                              value={item.unitPrice || ""}
+                              min="0"
+                              onChange={(e) => updateInvoiceItem(idx, "unitPrice", Number(e.target.value))}
+                              className="w-20 p-2 border border-slate-200 focus:border-[#0f766e] outline-none rounded-lg text-xs font-bold text-right bg-white"
+                              required
+                            />
+                            <span className="w-20 text-right text-xs font-bold text-slate-900 px-1">
+                              ₹{(item.amount || 0).toLocaleString("en-IN")}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => removeInvoiceItem(idx)}
+                              className="p-1.5 text-slate-400 hover:text-rose-600 transition-colors"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ))}
+                        {invoiceItems.length === 0 && (
+                          <div className="text-center py-6 text-xs text-slate-400 font-semibold italic border border-dashed border-slate-200 rounded-xl">
+                            No items added. Click "+ Add Custom Line" or select a template above.
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Payment Mode, Status, and Discount */}
+                    <div className="grid grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-[9px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Payment Mode
+                        </label>
+                        <select
+                          value={invoicePaymentMode}
+                          onChange={(e) => setInvoicePaymentMode(e.target.value)}
+                          className="w-full p-2.5 border border-slate-200 focus:border-[#0f766e] outline-none rounded-xl bg-white text-xs font-semibold text-slate-800"
+                        >
+                          <option value="UPI">UPI</option>
+                          <option value="Bank Transfer">Bank Transfer</option>
+                          <option value="Cash">Cash</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-[9px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Payment Status
+                        </label>
+                        <select
+                          value={invoiceStatus}
+                          onChange={(e) => setInvoiceStatus(e.target.value)}
+                          className="w-full p-2.5 border border-slate-200 focus:border-[#0f766e] outline-none rounded-xl bg-white text-xs font-semibold text-slate-800"
+                        >
+                          <option value="Paid">Paid</option>
+                          <option value="Pending">Pending</option>
+                          <option value="Unpaid">Unpaid</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-[9px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Discount (₹)
+                        </label>
+                        <input
+                          type="number"
+                          value={invoiceDiscount || ""}
+                          min="0"
+                          onChange={(e) => setInvoiceDiscount(Number(e.target.value))}
+                          placeholder="0"
+                          className="w-full p-2.5 border border-slate-200 focus:border-[#0f766e] outline-none rounded-xl bg-white text-xs font-bold text-right"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Price Summary */}
+                    <div className="bg-[#0f766e]/[0.02] border border-[#0f766e]/10 rounded-2xl p-4 flex justify-between items-center text-xs">
+                      <div className="space-y-1">
+                        <span className="text-slate-400 font-semibold">Subtotal: ₹{invoiceSubtotal.toLocaleString("en-IN")}</span>
+                        {invoiceDiscount > 0 && (
+                          <div className="text-emerald-600 font-semibold">Discount: -₹{invoiceDiscount.toLocaleString("en-IN")}</div>
+                        )}
+                      </div>
+                      <div className="text-right">
+                        <span className="text-[10px] font-extrabold text-[#0f766e] uppercase tracking-wider block">Grand Total</span>
+                        <span className="text-lg font-black text-[#0f766e]">₹{invoiceGrandTotal.toLocaleString("en-IN")}</span>
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex gap-3">
+                      <button
+                        type="button"
+                        onClick={handleGenerateInvoice}
+                        disabled={isGeneratingInvoice}
+                        className="flex-1 flex items-center justify-center gap-2 py-3 rounded-full bg-[#0f766e] hover:bg-[#0d645d] text-white text-xs font-bold uppercase tracking-wider transition-colors shadow-md disabled:opacity-50 cursor-pointer"
+                      >
+                        {isGeneratingInvoice ? (
+                          <>
+                            <RefreshCw className="w-4 h-4 animate-spin" />
+                            <span>Generating Sheet...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Folder className="w-4 h-4" />
+                            <span>Generate Drive Invoice</span>
+                          </>
+                        )}
+                      </button>
+
+                      {generatedInvoiceUrl && (
+                        <a
+                          href={`/admin/invoice-preview?invoiceNo=${encodeURIComponent(invoiceNo)}&date=${encodeURIComponent(new Date().toLocaleDateString("en-IN"))}&dueDate=${encodeURIComponent(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString("en-IN"))}&patientId=${encodeURIComponent(selectedInvoicePatient.id)}&patientName=${encodeURIComponent(selectedInvoicePatient.name)}&patientPhone=${encodeURIComponent(selectedInvoicePatient.phone)}&patientEmail=${encodeURIComponent(selectedInvoicePatient.email)}&patientAddress=${encodeURIComponent(selectedInvoicePatient.location || "N/A")}&subtotal=${invoiceSubtotal}&discount=${invoiceDiscount}&grandTotal=${invoiceGrandTotal}&paymentMode=${encodeURIComponent(invoicePaymentMode)}&status=${encodeURIComponent(invoiceStatus)}&items=${encodeURIComponent(JSON.stringify(invoiceItems))}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1.5 px-5 py-3 rounded-full border border-[#0f766e] text-[#0f766e] hover:bg-[#0f766e]/5 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer bg-white"
+                        >
+                          <Printer className="w-4 h-4" />
+                          <span>Print Preview</span>
+                        </a>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Right Side: Invoice History & WhatsApp Share (5 Cols) */}
+                  <div className="lg:col-span-5 flex flex-col h-full space-y-6 border-t lg:border-t-0 lg:border-l border-slate-900/5 pt-6 lg:pt-0 lg:pl-6">
+                    <div>
+                      <h4 className="text-xs font-extrabold text-[#0f766e] uppercase tracking-wider border-b border-slate-100 pb-2">
+                        Billing & Invoices History
+                      </h4>
+                      <p className="text-[10px] text-slate-400 font-semibold mt-1">
+                        Select an invoice to preview or share via WhatsApp.
+                      </p>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto max-h-[420px] space-y-3 pr-1">
+                      {isFetchingInvoices ? (
+                        <div className="flex flex-col items-center justify-center py-12 text-slate-400 space-y-2">
+                          <RefreshCw className="w-6 h-6 animate-spin text-[#0f766e]" />
+                          <span className="text-xs font-semibold">Loading patient invoices...</span>
+                        </div>
+                      ) : invoicesList.length === 0 ? (
+                        <div className="text-center py-12 text-xs text-slate-400 font-semibold italic border border-dashed border-slate-200 rounded-2xl bg-white/40">
+                          No previous invoices generated for this patient.
+                        </div>
+                      ) : (
+                        invoicesList.map((inv) => (
+                          <div 
+                            key={inv.id} 
+                            className="bg-white border border-slate-100 rounded-2xl p-4 space-y-3 hover:border-slate-300 transition-all shadow-sm"
+                          >
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <strong className="text-xs text-slate-900 block font-bold">{inv.id}</strong>
+                                <span className="text-[10px] text-slate-400 font-semibold">{inv.date}</span>
+                              </div>
+                              <span className={`px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider border ${
+                                inv.status === "Paid" 
+                                  ? "bg-emerald-50 text-emerald-700 border-emerald-100" 
+                                  : inv.status === "Pending"
+                                    ? "bg-amber-50 text-amber-700 border-amber-100"
+                                    : "bg-rose-50 text-rose-700 border-rose-100"
+                              }`}>
+                                {inv.status}
+                              </span>
+                            </div>
+
+                            <div className="text-[10px] text-slate-600 font-medium line-clamp-1">
+                              <strong>Items:</strong> {inv.items?.map((it: any) => it.description).join(", ")}
+                            </div>
+
+                            <div className="flex justify-between items-center pt-2 border-t border-slate-50">
+                              <span className="text-xs font-black text-slate-900">
+                                ₹{(inv.grandTotal || 0).toLocaleString("en-IN")}
+                              </span>
+
+                              <div className="flex gap-2">
+                                {/* Print Preview */}
+                                <a
+                                  href={`/admin/invoice-preview?invoiceNo=${encodeURIComponent(inv.id)}&date=${encodeURIComponent(inv.date)}&dueDate=${encodeURIComponent(inv.dueDate)}&patientId=${encodeURIComponent(inv.patientId)}&patientName=${encodeURIComponent(inv.patientName)}&patientPhone=${encodeURIComponent(inv.patientPhone || "")}&patientEmail=${encodeURIComponent(inv.patientEmail || "")}&patientAddress=${encodeURIComponent(inv.patientAddress || "")}&subtotal=${inv.subtotal}&discount=${inv.discount}&grandTotal=${inv.grandTotal}&paymentMode=${encodeURIComponent(inv.paymentMode)}&status=${encodeURIComponent(inv.status)}&items=${encodeURIComponent(JSON.stringify(inv.items))}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="p-1.5 rounded-lg border border-slate-200 hover:border-slate-800 text-slate-700 hover:bg-slate-50 transition-all cursor-pointer"
+                                  title="Print / PDF Preview"
+                                >
+                                  <Printer className="w-3.5 h-3.5" />
+                                </a>
+
+                                {/* Drive Sheet Link */}
+                                {inv.sheetUrl && (
+                                  <a
+                                    href={inv.sheetUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="p-1.5 rounded-lg border border-slate-200 hover:border-emerald-600 text-emerald-600 hover:bg-emerald-50 transition-all cursor-pointer"
+                                    title="Open Google Spreadsheet"
+                                  >
+                                    <FileSpreadsheet className="w-3.5 h-3.5" />
+                                  </a>
+                                )}
+
+                                {/* WhatsApp Share */}
+                                <button
+                                  onClick={() => handleWhatsAppShare(inv)}
+                                  className="p-1.5 rounded-lg border border-slate-200 hover:border-emerald-600 text-emerald-600 hover:bg-emerald-50 transition-all cursor-pointer flex items-center gap-1 font-bold text-[9px] uppercase tracking-wider"
+                                  title="Share to WhatsApp"
+                                >
+                                  <Send className="w-3.5 h-3.5" />
+                                  <span>WhatsApp</span>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+
+                </div>
+              </motion.div>
+            </>
           )}
         </AnimatePresence>
 
