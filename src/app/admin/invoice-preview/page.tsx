@@ -58,7 +58,7 @@ function InvoiceContent() {
       {/* Control Bar (hidden during printing) */}
       <div className="max-w-4xl mx-auto mb-6 flex items-center justify-between gap-4 print:hidden">
         <button
-          onClick={() => router.back()}
+          onClick={() => router.push("/admin/dashboard")}
           className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors shadow-sm cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
