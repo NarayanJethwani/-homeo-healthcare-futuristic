@@ -6,7 +6,8 @@ import {
   ShoppingBag, Search, Sparkles, Filter, CheckCircle2, 
   ArrowRight, ArrowLeft, Phone, MessageSquare, ShieldCheck, Truck, Clock,
   Sliders, Plus, Trash2, Share2, Copy, Save, LayoutGrid, Layers, Activity,
-  Info, Percent, HelpCircle, UserCheck, Folder, FileSpreadsheet, AlertTriangle
+  Info, Percent, HelpCircle, UserCheck, Folder, FileSpreadsheet, AlertTriangle,
+  PlusCircle
 } from "lucide-react";
 import Link from "next/link";
 import Magnetic from "@/components/Magnetic";
@@ -787,6 +788,11 @@ export default function StorePage() {
   const [walkInConcessionType, setWalkInConcessionType] = useState<"senior" | "compassionate" | "override">("senior");
   const [walkInOverridePrice, setWalkInOverridePrice] = useState("");
   
+  // Medicine Add-on states
+  const [walkInApplyMedicineAddon, setWalkInApplyMedicineAddon] = useState(false);
+  const [walkInMedicineAddonAmount, setWalkInMedicineAddonAmount] = useState("");
+  const [walkInMedicineAddonReason, setWalkInMedicineAddonReason] = useState("");
+  
   // Payment fields
   const [paymentMethod, setPaymentMethod] = useState<"upi" | "bank">("upi");
   const [transactionRef, setTransactionRef] = useState("");
@@ -948,14 +954,27 @@ export default function StorePage() {
 
   const getWalkInFinalPrice = () => {
     const basePricing = calculatePricing(walkInTier as keyof typeof careLevelsDetails, walkInBillingCycle, walkInDurationValue, walkInConditionsCount);
-    if (!walkInApplyConcession) return basePricing.finalPrice;
-    if (walkInConcessionType === "senior") return Math.round(basePricing.finalPrice * 0.85);
-    if (walkInConcessionType === "compassionate") return Math.round(basePricing.finalPrice * 0.70);
-    if (walkInConcessionType === "override") {
-      const overrideVal = parseInt(walkInOverridePrice);
-      return isNaN(overrideVal) ? basePricing.finalPrice : Math.max(0, overrideVal);
+    let price = basePricing.finalPrice;
+    
+    if (walkInApplyConcession) {
+      if (walkInConcessionType === "senior") {
+        price = Math.round(basePricing.finalPrice * 0.85);
+      } else if (walkInConcessionType === "compassionate") {
+        price = Math.round(basePricing.finalPrice * 0.70);
+      } else if (walkInConcessionType === "override") {
+        const overrideVal = parseInt(walkInOverridePrice);
+        price = isNaN(overrideVal) ? basePricing.finalPrice : Math.max(0, overrideVal);
+      }
     }
-    return basePricing.finalPrice;
+    
+    if (walkInApplyMedicineAddon) {
+      const addonVal = parseInt(walkInMedicineAddonAmount);
+      if (!isNaN(addonVal) && addonVal > 0) {
+        price += addonVal;
+      }
+    }
+    
+    return price;
   };
 
   const handleCycleChange = (cycle: "weekly" | "monthly") => {
@@ -1044,7 +1063,7 @@ export default function StorePage() {
           complaint: walkInComplaint,
           careLevel: careLevelsDetails[walkInTier as keyof typeof careLevelsDetails]?.title || "Doctor-Led Custom Care",
           conditionsCount: walkInConditionsCount,
-          durationText: `${walkInDurationValue} ${walkInBillingCycle === "weekly" ? (walkInDurationValue === 1 ? "week" : "weeks") : (walkInDurationValue === 1 ? "month" : "months")} (${walkInBillingCycle === "weekly" ? "Weekly Settle" : "Monthly Commit"})${walkInApplyConcession ? ` [Concession: ${walkInConcessionType === "senior" ? "Senior 15%" : walkInConcessionType === "compassionate" ? "Socio-Economic 30%" : "Custom Override"}]` : ""}`,
+          durationText: `${walkInDurationValue} ${walkInBillingCycle === "weekly" ? (walkInDurationValue === 1 ? "week" : "weeks") : (walkInDurationValue === 1 ? "month" : "months")} (${walkInBillingCycle === "weekly" ? "Weekly Settle" : "Monthly Commit"})${walkInApplyConcession ? ` [Concession: ${walkInConcessionType === "senior" ? "Senior 15%" : walkInConcessionType === "compassionate" ? "Socio-Economic 30%" : "Custom Override"}]` : ""}${walkInApplyMedicineAddon ? ` [Medicine Add-on: +₹${walkInMedicineAddonAmount || "0"}${walkInMedicineAddonReason ? ` for ${walkInMedicineAddonReason}` : ""}]` : ""}`,
           finalPrice: getWalkInFinalPrice(),
           deliveryMode: walkInType === "Walk-In Appointment" 
             ? "walkin" 
@@ -1069,9 +1088,10 @@ export default function StorePage() {
       console.error("Walk-in intake failed:", err);
       if (process.env.NODE_ENV === "development") {
         // Use mock fallback in local dev
+        const durationTextVal = `${walkInDurationValue} ${walkInBillingCycle === "weekly" ? "weeks" : "months"} (${walkInBillingCycle === "weekly" ? "Weekly" : "Monthly"})${walkInApplyConcession ? ` [Concession: ${walkInConcessionType === "senior" ? "Senior 15%" : walkInConcessionType === "compassionate" ? "Socio-Economic 30%" : "Override"}]` : ""}${walkInApplyMedicineAddon ? ` [Medicine Add-on: +₹${walkInMedicineAddonAmount || "0"}${walkInMedicineAddonReason ? ` for ${walkInMedicineAddonReason}` : ""}]` : ""}`;
         setWalkInResult({
           folderUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link",
-          sheetUrl: `/admin/mock-sheet?name=${encodeURIComponent(walkInName)}&id=${generatedId}&age=${encodeURIComponent(walkInAge)}&gender=${encodeURIComponent(walkInGender)}&phone=${encodeURIComponent(walkInPhone)}&email=${encodeURIComponent(walkInEmail)}&complaint=${encodeURIComponent(walkInComplaint)}&careLevel=${encodeURIComponent(careLevelsDetails[walkInTier as keyof typeof careLevelsDetails]?.title || "Doctor-Led Custom Care")}&durationText=${encodeURIComponent(`${walkInDurationValue} weeks`)}&finalPrice=${encodeURIComponent(getWalkInFinalPrice())}`,
+          sheetUrl: `/admin/mock-sheet?name=${encodeURIComponent(walkInName)}&id=${generatedId}&age=${encodeURIComponent(walkInAge)}&gender=${encodeURIComponent(walkInGender)}&phone=${encodeURIComponent(walkInPhone)}&email=${encodeURIComponent(walkInEmail)}&complaint=${encodeURIComponent(walkInComplaint)}&careLevel=${encodeURIComponent(careLevelsDetails[walkInTier as keyof typeof careLevelsDetails]?.title || "Doctor-Led Custom Care")}&durationText=${encodeURIComponent(durationTextVal)}&finalPrice=${encodeURIComponent(getWalkInFinalPrice())}`,
           isMock: true
         });
         setWalkInSuccess(true);
@@ -2385,6 +2405,18 @@ export default function StorePage() {
                           <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Care Level</span>
                           <span className="text-slate-900 font-extrabold">{careLevelsDetails[walkInTier as keyof typeof careLevelsDetails]?.title || "Custom Treatment"}</span>
                         </div>
+                        <div>
+                          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Total Payable</span>
+                          <span className="text-slate-900 font-extrabold">₹{getWalkInFinalPrice().toLocaleString("en-IN")}</span>
+                        </div>
+                        {walkInApplyMedicineAddon && (
+                          <div className="col-span-2 border-t border-slate-100 pt-2 mt-1">
+                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Medicine Add-on</span>
+                            <span className="text-[#0f766e] font-extrabold">
+                              +₹{parseInt(walkInMedicineAddonAmount || "0").toLocaleString("en-IN")} {walkInMedicineAddonReason ? `(${walkInMedicineAddonReason})` : ""}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -2816,6 +2848,64 @@ export default function StorePage() {
                             </AnimatePresence>
                           </div>
 
+                          {/* Medicine Add-on Section */}
+                          <div className="p-4 bg-white/40 backdrop-blur-sm rounded-2xl border border-white/60 space-y-4 shadow-sm hover:border-slate-300 transition-all duration-300">
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider flex items-center gap-1">
+                                  <PlusCircle className="w-3.5 h-3.5 text-mint" />
+                                  Add-on for Medicines
+                                </h4>
+                                <p className="text-[10px] text-slate-500 font-semibold">Add extra amount for special remedies, tinctures, or oils</p>
+                              </div>
+                              <label className="relative inline-flex items-center cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  checked={walkInApplyMedicineAddon}
+                                  onChange={(e) => setWalkInApplyMedicineAddon(e.target.checked)}
+                                  className="sr-only peer"
+                                />
+                                <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-mint"></div>
+                              </label>
+                            </div>
+
+                            <AnimatePresence initial={false}>
+                              {walkInApplyMedicineAddon && (
+                                <motion.div
+                                  initial={{ opacity: 0, height: 0 }}
+                                  animate={{ opacity: 1, height: "auto" }}
+                                  exit={{ opacity: 0, height: 0 }}
+                                  transition={{ duration: 0.25, ease: "easeInOut" }}
+                                  className="space-y-3 pt-2 border-t border-slate-200 overflow-hidden"
+                                >
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div className="space-y-1">
+                                      <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Add-on Amount (₹) *</label>
+                                      <input
+                                        type="number"
+                                        min="0"
+                                        value={walkInMedicineAddonAmount}
+                                        onChange={(e) => setWalkInMedicineAddonAmount(e.target.value)}
+                                        placeholder="e.g. 500"
+                                        className="w-full p-2.5 rounded-xl border border-slate-200 bg-white/50 text-sm focus:outline-none focus:border-slate-800 transition-all font-semibold"
+                                      />
+                                    </div>
+                                    <div className="space-y-1">
+                                      <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Reason / Description</label>
+                                      <input
+                                        type="text"
+                                        value={walkInMedicineAddonReason}
+                                        onChange={(e) => setWalkInMedicineAddonReason(e.target.value)}
+                                        placeholder="e.g. Mother Tinctures"
+                                        className="w-full p-2.5 rounded-xl border border-slate-200 bg-white/50 text-sm focus:outline-none focus:border-slate-800 transition-all font-semibold"
+                                      />
+                                    </div>
+                                  </div>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </div>
+
                           {/* Selected Care Level Detail Box */}
                           {walkInTier && careLevelsDetails[walkInTier as keyof typeof careLevelsDetails] && (() => {
                             const selectedDetails = careLevelsDetails[walkInTier as keyof typeof careLevelsDetails];
@@ -2852,8 +2942,27 @@ export default function StorePage() {
                               walkInDurationValue,
                               walkInConditionsCount
                             );
-                            const finalPrice = getWalkInFinalPrice();
-                            const appliedDiscount = pricing.finalPrice - finalPrice;
+                            
+                            const baseConcessionPrice = (() => {
+                              if (!walkInApplyConcession) return pricing.finalPrice;
+                              if (walkInConcessionType === "senior") return Math.round(pricing.finalPrice * 0.85);
+                              if (walkInConcessionType === "compassionate") return Math.round(pricing.finalPrice * 0.70);
+                              if (walkInConcessionType === "override") {
+                                const overrideVal = parseInt(walkInOverridePrice);
+                                return isNaN(overrideVal) ? pricing.finalPrice : Math.max(0, overrideVal);
+                              }
+                              return pricing.finalPrice;
+                            })();
+                            const concessionDiscount = pricing.finalPrice - baseConcessionPrice;
+                            
+                            const addonAmount = (() => {
+                              if (!walkInApplyMedicineAddon) return 0;
+                              const parsed = parseInt(walkInMedicineAddonAmount);
+                              return isNaN(parsed) || parsed < 0 ? 0 : parsed;
+                            })();
+                            
+                            const finalPrice = baseConcessionPrice + addonAmount;
+
                             return (
                               <div className="p-6 border border-white/60 bg-white/60 backdrop-blur-md rounded-3xl space-y-4 shadow-md sticky top-6 hover:shadow-lg transition-all duration-300">
                                 <div>
@@ -2882,18 +2991,24 @@ export default function StorePage() {
                                       <span>-₹{Math.round(pricing.adjustedBasePrice * walkInDurationValue * (pricing.discountPercent / 100)).toLocaleString("en-IN")}</span>
                                     </div>
                                   )}
-                                  {walkInApplyConcession && appliedDiscount > 0 && (
+                                  {walkInApplyConcession && concessionDiscount > 0 && (
                                     <div className="flex justify-between text-[#9333ea] font-bold">
                                       <span>
                                         Concession ({walkInConcessionType === "senior" ? "Senior 15%" : walkInConcessionType === "compassionate" ? "Socio-Economic 30%" : "Override"})
                                       </span>
-                                      <span>-₹{appliedDiscount.toLocaleString("en-IN")}</span>
+                                      <span>-₹{concessionDiscount.toLocaleString("en-IN")}</span>
                                     </div>
                                   )}
-                                  {walkInApplyConcession && walkInConcessionType === "override" && appliedDiscount < 0 && (
+                                  {walkInApplyConcession && walkInConcessionType === "override" && concessionDiscount < 0 && (
                                     <div className="flex justify-between text-amber-600 font-bold">
                                       <span>Override Increase</span>
-                                      <span>+₹{Math.abs(appliedDiscount).toLocaleString("en-IN")}</span>
+                                      <span>+₹{Math.abs(concessionDiscount).toLocaleString("en-IN")}</span>
+                                    </div>
+                                  )}
+                                  {walkInApplyMedicineAddon && addonAmount > 0 && (
+                                    <div className="flex justify-between text-emerald-600 font-bold">
+                                      <span>Medicine Add-on {walkInMedicineAddonReason ? `(${walkInMedicineAddonReason})` : ""}</span>
+                                      <span>+₹{addonAmount.toLocaleString("en-IN")}</span>
                                     </div>
                                   )}
                                   <div className="flex justify-between border-t-2 border-slate-900/10 pt-2 text-sm font-black text-slate-900">
