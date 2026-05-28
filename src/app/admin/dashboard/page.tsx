@@ -1262,15 +1262,15 @@ Homeo Healthcare`;
     setSaveStatus("");
 
     try {
-      const patientInfo = selectedPatientId
-        ? patients.find((p) => p.id === selectedPatientId)
-        : {
-            name: "Constitutional Mapping Case",
-            age: "N/A",
-            gender: "N/A",
-            complaint: customComplaint || "Custom symptoms analyzed via Repertory Hub",
-            careLevel: "Single Consult Assessment"
-          };
+      const basePatient = selectedPatientId ? patients.find((p) => p.id === selectedPatientId) : null;
+      const patientInfo = {
+        name: basePatient?.name || "Constitutional Mapping Case",
+        age: basePatient?.age || "N/A",
+        gender: basePatient?.gender || "N/A",
+        complaint: customComplaint.trim() || basePatient?.complaint || "Custom symptoms analyzed via Repertory Hub",
+        careLevel: basePatient?.careLevel || "Single Consult Assessment"
+      };
+
 
       const rubricPayload = selectedRubrics.map((r) => ({
         chapter: r.rubric.chapter,
@@ -1900,9 +1900,9 @@ ${err.message || err}`);
                   <div className="flex justify-start">
                     <button
                       onClick={handleQueryAi}
-                      disabled={isAiLoading || selectedRubrics.length === 0}
+                      disabled={isAiLoading || (!customComplaint.trim() && selectedRubrics.length === 0)}
                       className={`px-6 py-3.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-500 inline-flex items-center gap-2 shadow-sm ${
-                        selectedRubrics.length > 0 && !isAiLoading
+                        (selectedRubrics.length > 0 || customComplaint.trim()) && !isAiLoading
                           ? "bg-mint text-white hover:bg-mint-dark hover:shadow-md cursor-pointer"
                           : "bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200"
                       }`}
