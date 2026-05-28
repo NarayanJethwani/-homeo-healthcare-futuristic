@@ -201,6 +201,7 @@ export default function AdminDashboard() {
   const [invoicePaymentMode, setInvoicePaymentMode] = useState("UPI");
   const [invoiceStatus, setInvoiceStatus] = useState("Paid");
   const [generatedInvoiceUrl, setGeneratedInvoiceUrl] = useState("");
+  const [manualWhatsAppPhone, setManualWhatsAppPhone] = useState("");
 
   const invoiceSubtotal = invoiceItems.reduce((sum, item) => sum + item.amount, 0);
   const invoiceGrandTotal = Math.max(0, invoiceSubtotal - invoiceDiscount);
@@ -281,6 +282,7 @@ export default function AdminDashboard() {
     setInvoicePaymentMode("UPI");
     setInvoiceStatus("Paid");
     setGeneratedInvoiceUrl("");
+    setManualWhatsAppPhone("");
     setIsInvoiceModalOpen(true);
   };
 
@@ -429,7 +431,8 @@ Dr. Narayan Jethwani, MD (Hom.)
 Homeo Healthcare`;
 
     const encodedText = encodeURIComponent(message);
-    const phone = inv.patientPhone ? inv.patientPhone.replace(/\D/g, "") : "";
+    const rawPhone = manualWhatsAppPhone.trim() || inv.patientPhone || "";
+    const phone = rawPhone.replace(/\D/g, "");
     const targetPhone = phone.length === 10 ? `91${phone}` : phone;
     
     window.open(`https://wa.me/${targetPhone}?text=${encodedText}`, "_blank");
@@ -3386,6 +3389,31 @@ ${err.message || err}`);
                       <p className="text-[10px] text-slate-400 font-semibold mt-1">
                         Select an invoice to preview or share via WhatsApp.
                       </p>
+                    </div>
+
+                    {/* Manual WhatsApp Override */}
+                    <div className="space-y-1.5 bg-white border border-slate-100 p-3 rounded-2xl shadow-sm">
+                      <label className="block text-[9px] font-bold text-slate-700 uppercase tracking-wider">
+                        Manual WhatsApp Phone (Optional override)
+                      </label>
+                      <div className="flex gap-2">
+                        <input
+                          type="tel"
+                          placeholder="e.g. 9876543210 (Defaults to patient number)"
+                          value={manualWhatsAppPhone}
+                          onChange={(e) => setManualWhatsAppPhone(e.target.value)}
+                          className="flex-1 px-3 py-1.5 border border-slate-200 focus:border-[#0f766e] outline-none rounded-xl text-xs font-semibold bg-white text-slate-800"
+                        />
+                        {manualWhatsAppPhone && (
+                          <button
+                            type="button"
+                            onClick={() => setManualWhatsAppPhone("")}
+                            className="text-[10px] font-bold text-rose-600 hover:underline px-1 cursor-pointer"
+                          >
+                            Clear
+                          </button>
+                        )}
+                      </div>
                     </div>
 
                     <div className="flex-1 overflow-y-auto max-h-[420px] space-y-3 pr-1">
