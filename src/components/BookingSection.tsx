@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, Mail, Phone, Calendar as CalendarIcon, Clock, ChevronRight, ChevronLeft, CheckCircle2, Sparkles, Activity, Folder, FileSpreadsheet } from "lucide-react";
+import { User, Mail, Phone, Calendar as CalendarIcon, Clock, ChevronRight, ChevronLeft, CheckCircle2, Sparkles, Activity, Folder, FileSpreadsheet, AlertTriangle } from "lucide-react";
 import Magnetic from "./Magnetic";
 
 export default function BookingSection() {
@@ -17,7 +17,7 @@ export default function BookingSection() {
     slot: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submissionResult, setSubmissionResult] = useState<{ folderUrl: string; sheetUrl: string } | null>(null);
+  const [submissionResult, setSubmissionResult] = useState<{ folderUrl: string; sheetUrl: string; isMock?: boolean } | null>(null);
 
   useEffect(() => {
     const handlePrefill = (e: Event) => {
@@ -103,7 +103,8 @@ export default function BookingSection() {
       if (data.success) {
         setSubmissionResult({
           folderUrl: data.folderUrl,
-          sheetUrl: data.sheetUrl
+          sheetUrl: data.sheetUrl,
+          isMock: data.isMock
         });
       } else {
         throw new Error(data.message);
@@ -112,7 +113,8 @@ export default function BookingSection() {
       console.error("Intake automation request failed, using demo fallback links:", error);
       setSubmissionResult({
         folderUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link",
-        sheetUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link"
+        sheetUrl: `/admin/mock-sheet?name=${encodeURIComponent(formData.name)}&id=P-mock&age=30&gender=Male&phone=${encodeURIComponent(formData.phone)}&email=${encodeURIComponent(formData.email)}&complaint=${encodeURIComponent(formData.symptoms)}&careLevel=${encodeURIComponent(formData.category)}&durationText=${encodeURIComponent(`Consultation on ${formData.date} at ${formData.slot}`)}&finalPrice=300`,
+        isMock: true
       });
     } finally {
       setIsSubmitting(false);
@@ -497,13 +499,27 @@ Please confirm my appointment.`;
 
                   {submissionResult && (
                     <div className="glass-panel border-white/50 p-6 rounded-2xl max-w-sm w-full text-left space-y-3 mb-8 shadow-sm">
-                      <div className="flex items-center gap-1.5 text-xs text-[#0F766E] font-extrabold uppercase tracking-wider">
-                        <CheckCircle2 className="w-4 h-4 text-[#0F766E] animate-pulse" />
-                        Google Workspace Active
-                      </div>
-                      <p className="text-[11px] text-slate-700 font-medium">
-                        Patient folder and clinical spreadsheet generated under Dr. Jethwani&apos;s workspace.
-                      </p>
+                      {submissionResult.isMock ? (
+                        <>
+                          <div className="flex items-center gap-1.5 text-xs text-amber-700 font-extrabold uppercase tracking-wider">
+                            <AlertTriangle className="w-4 h-4 text-amber-600 animate-bounce" />
+                            Google API Mock Mode
+                          </div>
+                          <p className="text-[11px] text-slate-700 font-medium">
+                            Operating without Google API credentials. Both links will open the parent folder where records are stored.
+                          </p>
+                        </>
+                      ) : (
+                        <>
+                          <div className="flex items-center gap-1.5 text-xs text-[#0F766E] font-extrabold uppercase tracking-wider">
+                            <CheckCircle2 className="w-4 h-4 text-[#0F766E] animate-pulse" />
+                            Google Workspace Active
+                          </div>
+                          <p className="text-[11px] text-slate-700 font-medium">
+                            Patient folder and clinical spreadsheet generated under Dr. Jethwani&apos;s workspace.
+                          </p>
+                        </>
+                      )}
                       <div className="flex gap-2.5 pt-1">
                         <a
                           href={submissionResult.folderUrl}

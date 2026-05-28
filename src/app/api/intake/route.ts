@@ -76,12 +76,14 @@ export async function POST(request: Request) {
       console.log("Firebase not configured or operating in mock-project-id. Skipping Firestore write.");
     }
 
+    const isMock = !process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
     return NextResponse.json({
       success: true,
       message: "Patient intake processed, Google Workspace files created and synced successfully.",
       patientId: patientDoc.id,
       folderUrl: folderResult.folderUrl,
-      sheetUrl: sheetResult.sheetUrl
+      sheetUrl: sheetResult.sheetUrl,
+      isMock
     });
 
   } catch (error: any) {

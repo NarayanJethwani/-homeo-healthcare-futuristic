@@ -6,7 +6,7 @@ import {
   ShoppingBag, Search, Sparkles, Filter, CheckCircle2, 
   ArrowRight, ArrowLeft, Phone, MessageSquare, ShieldCheck, Truck, Clock,
   Sliders, Plus, Trash2, Share2, Copy, Save, LayoutGrid, Layers, Activity,
-  Info, Percent, HelpCircle, UserCheck, Folder, FileSpreadsheet
+  Info, Percent, HelpCircle, UserCheck, Folder, FileSpreadsheet, AlertTriangle
 } from "lucide-react";
 import Link from "next/link";
 import Magnetic from "@/components/Magnetic";
@@ -775,8 +775,9 @@ export default function StorePage() {
   const [walkInType, setWalkInType] = useState("Walk-In Appointment");
   const [walkInTier, setWalkInTier] = useState("moderate");
   const [isWalkInSubmitting, setIsWalkInSubmitting] = useState(false);
-  const [walkInResult, setWalkInResult] = useState<{ folderUrl: string; sheetUrl: string } | null>(null);
+  const [walkInResult, setWalkInResult] = useState<{ folderUrl: string; sheetUrl: string; isMock?: boolean } | null>(null);
   const [walkInSuccess, setWalkInSuccess] = useState(false);
+  const [walkInError, setWalkInError] = useState<string | null>(null);
   const [walkInBillingCycle, setWalkInBillingCycle] = useState<"weekly" | "monthly">("monthly");
   const [walkInConditionsCount, setWalkInConditionsCount] = useState<number>(1);
   const [walkInDurationValue, setWalkInDurationValue] = useState<number>(1);
@@ -1022,16 +1023,19 @@ export default function StorePage() {
   const handleWalkInSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!walkInName || !walkInAge || !walkInPhone || !walkInComplaint) {
-      alert("Please fill in all required fields.");
       return;
     }
+    const generatedId = `P-${Math.floor(100000 + Math.random() * 900000)}`;
     setIsWalkInSubmitting(true);
+    setWalkInError(null);
     try {
       const response = await fetch("/api/intake", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify({
-          id: `P-${Math.floor(100000 + Math.random() * 900000)}`,
+          id: generatedId,
           name: walkInName,
           email: walkInEmail || "N/A",
           phone: walkInPhone,
@@ -1042,9 +1046,6 @@ export default function StorePage() {
           conditionsCount: walkInConditionsCount,
           durationText: `${walkInDurationValue} ${walkInBillingCycle === "weekly" ? (walkInDurationValue === 1 ? "week" : "weeks") : (walkInDurationValue === 1 ? "month" : "months")} (${walkInBillingCycle === "weekly" ? "Weekly Settle" : "Monthly Commit"})${walkInApplyConcession ? ` [Concession: ${walkInConcessionType === "senior" ? "Senior 15%" : walkInConcessionType === "compassionate" ? "Socio-Economic 30%" : "Custom Override"}]` : ""}`,
           finalPrice: getWalkInFinalPrice(),
-          city: "Pune",
-          state: "Maharashtra",
-          country: "India",
           deliveryMode: walkInType === "Walk-In Appointment" 
             ? "walkin" 
             : walkInType === "Shipping / Courier Delivery" 
@@ -1057,19 +1058,26 @@ export default function StorePage() {
       if (data.success) {
         setWalkInResult({
           folderUrl: data.folderUrl,
-          sheetUrl: data.sheetUrl
+          sheetUrl: data.sheetUrl,
+          isMock: data.isMock
         });
         setWalkInSuccess(true);
       } else {
         throw new Error(data.message);
       }
     } catch (err: any) {
-      console.error("Walk-in intake failed, using local mock fallback:", err);
-      setWalkInResult({
-        folderUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link",
-        sheetUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link"
-      });
-      setWalkInSuccess(true);
+      console.error("Walk-in intake failed:", err);
+      if (process.env.NODE_ENV === "development") {
+        // Use mock fallback in local dev
+        setWalkInResult({
+          folderUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link",
+          sheetUrl: `/admin/mock-sheet?name=${encodeURIComponent(walkInName)}&id=${generatedId}&age=${encodeURIComponent(walkInAge)}&gender=${encodeURIComponent(walkInGender)}&phone=${encodeURIComponent(walkInPhone)}&email=${encodeURIComponent(walkInEmail)}&complaint=${encodeURIComponent(walkInComplaint)}&careLevel=${encodeURIComponent(careLevelsDetails[walkInTier as keyof typeof careLevelsDetails]?.title || "Doctor-Led Custom Care")}&durationText=${encodeURIComponent(`${walkInDurationValue} weeks`)}&finalPrice=${encodeURIComponent(getWalkInFinalPrice())}`,
+          isMock: true
+        });
+        setWalkInSuccess(true);
+      } else {
+        setWalkInError(err.message || "Failed to complete Google services integration or database sync. Please verify that your credentials are set up.");
+      }
     } finally {
       setIsWalkInSubmitting(false);
     }
@@ -2405,12 +2413,28 @@ export default function StorePage() {
                       )}
                     </div>
 
+                    {walkInResult?.isMock && (
+                      <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-900 text-left max-w-md mx-auto space-y-1.5 shadow-sm">
+                        <div className="flex items-center gap-2 font-black text-[10px] uppercase tracking-wider text-amber-850">
+                          <AlertTriangle className="w-4 h-4 text-amber-600 animate-bounce" />
+                          Google Workspace Offline Mode
+                        </div>
+                        <p className="text-[11px] font-medium leading-relaxed text-slate-700">
+                          Real folder/sheet automation is offline because the server lacks Google API credentials.
+                        </p>
+                        <p className="text-[10px] text-slate-500 leading-normal border-t border-amber-500/10 pt-1.5 font-sans">
+                          To enable actual creation, set <code className="bg-amber-500/15 px-1 py-0.5 rounded font-bold font-mono">GOOGLE_SERVICE_ACCOUNT_KEY</code> in environment variables and share folder <code className="bg-amber-500/15 px-1 py-0.5 rounded font-bold font-mono">1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb</code>.
+                        </p>
+                      </div>
+                    )}
+
                     <div className="pt-6 border-t border-slate-100">
                       <button
                         type="button"
                         onClick={() => {
                           setWalkInSuccess(false);
                           setWalkInResult(null);
+                          setWalkInError(null);
                           setWalkInName("");
                           setWalkInAge("");
                           setWalkInGender("Male");
@@ -2900,6 +2924,13 @@ export default function StorePage() {
                         />
                       </div>
                     </div>
+
+                    {walkInError && (
+                      <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-800 text-xs font-bold flex items-center gap-2 max-w-lg mx-auto">
+                        <AlertTriangle className="w-4 h-4 text-rose-600 flex-shrink-0" />
+                        <span>{walkInError}</span>
+                      </div>
+                    )}
 
                     <div className="flex justify-end pt-4 border-t border-slate-100">
                       <button

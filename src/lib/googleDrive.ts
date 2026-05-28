@@ -70,7 +70,7 @@ export async function createPatientFolder(data: PatientIntakeData): Promise<{ fo
     });
     
     const folderId = response.data.id || "";
-    const folderUrl = response.data.webViewLink || "";
+    const folderUrl = response.data.webViewLink || (folderId ? `https://drive.google.com/drive/folders/${folderId}` : "");
 
     if (folderId) {
       try {
@@ -114,7 +114,8 @@ export async function createPatientClinicalSheet(
 ): Promise<{ sheetId: string; sheetUrl: string }> {
   const auth = getGoogleAuth();
   if (!auth) {
-    return { sheetId: "mock-sheet-id", sheetUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link" };
+    const mockUrl = `/admin/mock-sheet?name=${encodeURIComponent(data.name)}&id=${encodeURIComponent(data.id)}&age=${encodeURIComponent(data.age)}&gender=${encodeURIComponent(data.gender)}&phone=${encodeURIComponent(data.phone)}&email=${encodeURIComponent(data.email || "")}&complaint=${encodeURIComponent(data.complaint)}&careLevel=${encodeURIComponent(data.careLevel)}&durationText=${encodeURIComponent(data.durationText)}&finalPrice=${encodeURIComponent(data.finalPrice)}`;
+    return { sheetId: "mock-sheet-id", sheetUrl: mockUrl };
   }
 
   const drive = google.drive({ version: "v3", auth });
@@ -135,7 +136,7 @@ export async function createPatientClinicalSheet(
         fields: "id,webViewLink"
       });
       newSheetId = response.data.id || "";
-      newSheetUrl = response.data.webViewLink || "";
+      newSheetUrl = response.data.webViewLink || (newSheetId ? `https://docs.google.com/spreadsheets/d/${newSheetId}/edit` : "");
     } else {
       // Create a brand new empty Google Sheet inside the folder
       const response = await drive.files.create({
@@ -147,7 +148,7 @@ export async function createPatientClinicalSheet(
         fields: "id,webViewLink"
       });
       newSheetId = response.data.id || "";
-      newSheetUrl = response.data.webViewLink || "";
+      newSheetUrl = response.data.webViewLink || (newSheetId ? `https://docs.google.com/spreadsheets/d/${newSheetId}/edit` : "");
     }
 
     // Share the spreadsheet only with the doctor's accounts (password-equivalent protection)

@@ -233,7 +233,7 @@ export default function AdminDashboard() {
               durationText: "6-Month Treatment Plan",
               finalPrice: 8500,
               folderUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link",
-              sheetUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link",
+              sheetUrl: `/admin/mock-sheet?name=Aarav%20Mehta&id=P-100234&age=42&gender=Male&phone=%2B91%2098200%2012345&email=aarav.mehta%40gmail.com&complaint=Chronic%20severe%20acidity%2C%20GERD%2C%20and%20abdominal%20bloating%20immediately%20after%20eating.%20Irritability%2C%20very%20chilly%2C%20worse%20cold%20drinks.&careLevel=Advanced%20Chronic%20Tier&durationText=6-Month%20Treatment%20Plan&finalPrice=8500`,
               assignedDoctor: "doctor-bypass-id",
               status: "active",
               createdAt: "2026-05-20T10:00:00Z"
@@ -251,7 +251,7 @@ export default function AdminDashboard() {
               durationText: "1-Month Consultation",
               finalPrice: 2200,
               folderUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link",
-              sheetUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link",
+              sheetUrl: `/admin/mock-sheet?name=Priyanka%20Sen&id=P-200567&age=29&gender=Female&phone=%2B91%2091100%2054321&email=priyanka.sen%40outlook.com&complaint=Dry%20eczematous%20patches%20on%20elbows%20and%20neck.%20Intense%20itching%20at%20night%2C%20worse%20warmth%20of%20bed.%20Desires%20cold%20air.&careLevel=Standard%20Consultation&durationText=1-Month%20Consultation&finalPrice=2200`,
               assignedDoctor: "doctor-bypass-id",
               status: "active",
               createdAt: "2026-05-22T14:30:00Z"
@@ -269,7 +269,7 @@ export default function AdminDashboard() {
               durationText: "12-Month Support Plan",
               finalPrice: 15000,
               folderUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link",
-              sheetUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link",
+              sheetUrl: `/admin/mock-sheet?name=Suresh%20Sharma&id=P-339281&age=67&gender=Male&phone=%2B91%2088799%2011223&email=suresh67%40yahoo.com&complaint=Severe%20morning%20joint%20stiffness%20in%20knees%20and%20back.%20Pain%20worse%20beginning%20of%20motion%2C%20improves%20with%20continuous%20walking.%20Aggravated%20by%20cold%20damp%20weather.&careLevel=Advanced%20Chronic%20Tier&durationText=12-Month%20Support%20Plan&finalPrice=15000`,
               assignedDoctor: "unassigned",
               status: "awaiting-consult",
               createdAt: "2026-05-25T09:15:00Z"
@@ -287,7 +287,7 @@ export default function AdminDashboard() {
               durationText: "3-Month Plan",
               finalPrice: 4500,
               folderUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link",
-              sheetUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link",
+              sheetUrl: `/admin/mock-sheet?name=Rishi%20%28Golden%20Retriever%29&id=P-882910&age=4&gender=Male&phone=%2B91%2098800%2099887&email=amit.verma%40gmail.com&complaint=Severe%20separation%20anxiety%2C%20whines%20and%20scratches%20door%20when%20owner%20leaves.%20Extremely%20fearful%20of%20thunder%20and%20firecrackers.%20Desires%20cool%20open%20air.&careLevel=Veterinary%20Consultation&durationText=3-Month%20Plan&finalPrice=4500`,
               assignedDoctor: "unassigned",
               status: "active",
               createdAt: "2026-05-26T11:45:00Z"
@@ -436,7 +436,7 @@ export default function AdminDashboard() {
       // Fallback for mock/offline testing
       const mockPatientId = `P-${Math.floor(100000 + Math.random() * 900000)}`;
       const folderUrl = "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link";
-      const sheetUrl = "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link";
+      const sheetUrl = `/admin/mock-sheet?name=${encodeURIComponent(newCaseForm.name)}&id=${encodeURIComponent(mockPatientId)}&age=${encodeURIComponent(newCaseForm.age)}&gender=${encodeURIComponent(newCaseForm.gender)}&phone=${encodeURIComponent(newCaseForm.phone)}&email=${encodeURIComponent(newCaseForm.email)}&complaint=${encodeURIComponent(newCaseForm.complaint)}&careLevel=${encodeURIComponent(newCaseForm.careLevel)}&durationText=${encodeURIComponent(newCaseForm.durationText)}&finalPrice=${encodeURIComponent(newCaseForm.finalPrice)}`;
       
       setCreatedFolderUrl(folderUrl);
       setCreatedSheetUrl(sheetUrl);
@@ -750,7 +750,10 @@ export default function AdminDashboard() {
     type: "folder" | "sheet"
   ) => {
     const currentUrl = type === "folder" ? patient.folderUrl : patient.sheetUrl;
-    const isMockUrl = !currentUrl || currentUrl.includes("mock-") || currentUrl.includes("/mock");
+    const isMockUrl = !currentUrl || 
+                      (currentUrl.includes("mock-") && !currentUrl.startsWith("/admin/mock-sheet")) || 
+                      (currentUrl.includes("/mock") && !currentUrl.startsWith("/admin/mock-sheet")) ||
+                      (currentUrl.includes("1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb") && !patient.sheetUrl?.startsWith("/admin/mock-sheet"));
     
     if (isMockUrl) {
       e.preventDefault();
@@ -799,6 +802,9 @@ export default function AdminDashboard() {
   };
 
   const handleMockLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, url: string) => {
+    if (url && url.startsWith("/admin/mock-sheet")) {
+      return;
+    }
     if (!url || url.includes("mock-") || url.includes("/mock")) {
       e.preventDefault();
       alert(`Operating in Mock Mode (No Google API credentials configured).\n\nRedirecting to folder:\nhttps://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link`);
