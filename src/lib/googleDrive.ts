@@ -1005,7 +1005,7 @@ export async function createInvoiceSheet(
     }
 
     const values = [
-      ["RAMKRISHNA HOMEO HEALTHCARE - INVOICE", "", "", "", ""],
+      ["HOMEO HEALTHCARE - INVOICE", "", "", "", ""],
       ["", "", "", "", ""],
       ["INVOICE DETAILS", "", "", "PATIENT DETAILS", ""],
       ["Invoice Number", data.invoiceNo, "", "Patient ID", data.patientId],
@@ -1023,13 +1023,13 @@ export async function createInvoiceSheet(
       ["", "", "", "", ""],
       ["PAYMENT INSTRUCTIONS", "", "", "", ""],
       ["Please transfer via NEFT/IMPS to Current Account or pay via UPI:", "", "", "", ""],
-      ["Bank Name", "HDFC Bank", "", "UPI ID", "ramkrishna@hdfc"],
-      ["Account Name", "Ramkrishna Homeo Healthcare", "", "", ""],
+      ["Bank Name", "HDFC Bank Ltd", "", "UPI ID", "ramkrishna@hdfc"],
+      ["Account Name", "Dr. Narayan Jethwani", "", "", ""],
       ["Account Number", "50200039742057", "", "", ""],
       ["IFSC Code", "HDFC0004793", "", "", ""],
-      ["Branch Name", "Pan Card Club Road Baner, Pune", "", "", ""],
+      ["Branch Name", "PAN Card Club Road Baner, Pune", "", "", ""],
       ["", "", "", "", ""],
-      ["Thank you for choosing Ramkrishna Homeo Healthcare for your healing journey.", "", "", "", ""]
+      ["Thank you for choosing Homeo Healthcare for your healing journey.", "", "", "", ""]
     ];
 
     await sheets.spreadsheets.values.update({

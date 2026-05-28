@@ -81,11 +81,15 @@ function InvoiceContent() {
         <div className="flex flex-col md:flex-row md:justify-between items-start gap-6 border-b border-slate-100 pb-8">
           <div>
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-[#0f766e] flex items-center justify-center text-white text-base font-black">
-                R
+              <div className="w-9 h-9 rounded-full bg-white border border-slate-200/50 overflow-hidden shadow-sm flex items-center justify-center flex-shrink-0">
+                <img
+                  src="/images/logo.png"
+                  alt="Homeo Healthcare Logo"
+                  className="w-8 h-8 object-contain p-0.5"
+                />
               </div>
               <h1 className="text-xl font-black text-slate-900 tracking-tight">
-                Ramkrishna Homeo Healthcare
+                Homeo Healthcare
               </h1>
             </div>
             <p className="text-xs text-[#0f766e] font-bold mt-1.5 uppercase tracking-wide">
@@ -93,8 +97,8 @@ function InvoiceContent() {
             </p>
             <p className="text-[10px] font-semibold text-slate-500 max-w-sm mt-1 leading-relaxed">
               Consulting Homeopathic Physician & Clinical Specialist<br />
-              Plot 12, Baner-Aundh Road, Baner, Pune - 411045<br />
-              Phone: +91 98900 12345 | support@homeo.healthcare
+              Office 404, 4th Floor, Pyramid Axis, Baner Road, Behind Croma Showroom, Baner, Pune – 411045<br />
+              Phone: +91 84460 56789 | narayan.jethwani@gmail.com
             </p>
           </div>
           
@@ -222,7 +226,7 @@ function InvoiceContent() {
             <div className="space-y-1">
               <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider block">NEFT/IMPS Current Account</span>
               <div className="text-slate-900 font-extrabold flex items-center justify-between">
-                <span>HDFC Bank (Baner, Pune)</span>
+                <span>HDFC Bank (PAN Card Club Rd, Baner)</span>
               </div>
               <div className="flex items-center justify-between bg-white border border-slate-100 p-1.5 px-2.5 rounded-lg">
                 <span className="font-black text-slate-900 select-all">50200039742057</span>
@@ -264,7 +268,7 @@ function InvoiceContent() {
 
         {/* Footer closing line */}
         <div className="mt-12 pt-8 border-t border-slate-100 text-center text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-          Thank you for choosing Ramkrishna Homeo Healthcare. Wishing you constitutional health & happiness.
+          Thank you for choosing Homeo Healthcare. Wishing you constitutional health & happiness.
         </div>
       </div>
     </div>

@@ -404,7 +404,7 @@ export default function AdminDashboard() {
     const formattedUrl = inv.sheetUrl.startsWith("http") ? inv.sheetUrl : window.location.origin + inv.sheetUrl;
     const message = `Dear ${inv.patientName},
 
-Hope you are doing well. Please find below the invoice summary from *Ramkrishna Homeo Healthcare*:
+Hope you are doing well. Please find below the invoice summary from *Homeo Healthcare*:
 
 *Invoice No:* ${inv.id}
 *Date:* ${inv.date}
@@ -412,10 +412,10 @@ Hope you are doing well. Please find below the invoice summary from *Ramkrishna 
 *Status:* ${inv.status}
 
 *Clinic Bank Details (HDFC Bank):*
-Account Name: Ramkrishna Homeo Healthcare
+Account Name: Dr. Narayan Jethwani
 Current Account No: 50200039742057
 IFSC Code: HDFC0004793
-Branch: Baner, Pune
+Branch: PAN Card Club Road Baner, Pune
 Instant UPI ID: ramkrishna@hdfc
 (Please include your Patient ID or Invoice No in the transfer remarks)
 
@@ -426,7 +426,7 @@ Wishing you good health.
 
 Warm regards,
 Dr. Narayan Jethwani, MD (Hom.)
-Ramkrishna Homeo Healthcare`;
+Homeo Healthcare`;
 
     const encodedText = encodeURIComponent(message);
     const phone = inv.patientPhone ? inv.patientPhone.replace(/\D/g, "") : "";
