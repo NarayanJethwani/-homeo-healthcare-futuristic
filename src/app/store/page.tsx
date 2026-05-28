@@ -790,8 +790,9 @@ export default function StorePage() {
   
   // Medicine Add-on states
   const [walkInApplyMedicineAddon, setWalkInApplyMedicineAddon] = useState(false);
-  const [walkInMedicineAddonAmount, setWalkInMedicineAddonAmount] = useState("");
-  const [walkInMedicineAddonReason, setWalkInMedicineAddonReason] = useState("");
+  const [walkInMedicineAddons, setWalkInMedicineAddons] = useState<{ id: string; type: string; details: string; amount: string }[]>([
+    { id: "1", type: "Dilution", details: "", amount: "" }
+  ]);
   
   // Payment fields
   const [paymentMethod, setPaymentMethod] = useState<"upi" | "bank">("upi");
@@ -968,10 +969,11 @@ export default function StorePage() {
     }
     
     if (walkInApplyMedicineAddon) {
-      const addonVal = parseInt(walkInMedicineAddonAmount);
-      if (!isNaN(addonVal) && addonVal > 0) {
-        price += addonVal;
-      }
+      const addonsSum = walkInMedicineAddons.reduce((sum, item) => {
+        const amt = parseInt(item.amount);
+        return sum + (isNaN(amt) || amt < 0 ? 0 : amt);
+      }, 0);
+      price += addonsSum;
     }
     
     return price;
@@ -1063,7 +1065,18 @@ export default function StorePage() {
           complaint: walkInComplaint,
           careLevel: careLevelsDetails[walkInTier as keyof typeof careLevelsDetails]?.title || "Doctor-Led Custom Care",
           conditionsCount: walkInConditionsCount,
-          durationText: `${walkInDurationValue} ${walkInBillingCycle === "weekly" ? (walkInDurationValue === 1 ? "week" : "weeks") : (walkInDurationValue === 1 ? "month" : "months")} (${walkInBillingCycle === "weekly" ? "Weekly Settle" : "Monthly Commit"})${walkInApplyConcession ? ` [Concession: ${walkInConcessionType === "senior" ? "Senior 15%" : walkInConcessionType === "compassionate" ? "Socio-Economic 30%" : "Custom Override"}]` : ""}${walkInApplyMedicineAddon ? ` [Medicine Add-on: +₹${walkInMedicineAddonAmount || "0"}${walkInMedicineAddonReason ? ` for ${walkInMedicineAddonReason}` : ""}]` : ""}`,
+          durationText: `${walkInDurationValue} ${walkInBillingCycle === "weekly" ? (walkInDurationValue === 1 ? "week" : "weeks") : (walkInDurationValue === 1 ? "month" : "months")} (${walkInBillingCycle === "weekly" ? "Weekly Settle" : "Monthly Commit"})${walkInApplyConcession ? ` [Concession: ${walkInConcessionType === "senior" ? "Senior 15%" : walkInConcessionType === "compassionate" ? "Socio-Economic 30%" : "Custom Override"}]` : ""}${
+            walkInApplyMedicineAddon 
+              ? ` [Medicine Add-ons: ${walkInMedicineAddons
+                  .filter(item => {
+                    const amt = parseInt(item.amount);
+                    return !isNaN(amt) && amt > 0;
+                  })
+                  .map(item => `+₹${item.amount} for ${item.type}${item.details ? ` (${item.details})` : ""}`)
+                  .join(", ")
+                }]`
+              : ""
+          }`,
           finalPrice: getWalkInFinalPrice(),
           deliveryMode: walkInType === "Walk-In Appointment" 
             ? "walkin" 
@@ -1088,7 +1101,16 @@ export default function StorePage() {
       console.error("Walk-in intake failed:", err);
       if (process.env.NODE_ENV === "development") {
         // Use mock fallback in local dev
-        const durationTextVal = `${walkInDurationValue} ${walkInBillingCycle === "weekly" ? "weeks" : "months"} (${walkInBillingCycle === "weekly" ? "Weekly" : "Monthly"})${walkInApplyConcession ? ` [Concession: ${walkInConcessionType === "senior" ? "Senior 15%" : walkInConcessionType === "compassionate" ? "Socio-Economic 30%" : "Override"}]` : ""}${walkInApplyMedicineAddon ? ` [Medicine Add-on: +₹${walkInMedicineAddonAmount || "0"}${walkInMedicineAddonReason ? ` for ${walkInMedicineAddonReason}` : ""}]` : ""}`;
+        const addonsString = walkInApplyMedicineAddon
+          ? walkInMedicineAddons
+              .filter(item => {
+                const amt = parseInt(item.amount);
+                return !isNaN(amt) && amt > 0;
+              })
+              .map(item => `+₹${item.amount} for ${item.type}${item.details ? ` (${item.details})` : ""}`)
+              .join(", ")
+          : "";
+        const durationTextVal = `${walkInDurationValue} ${walkInBillingCycle === "weekly" ? "weeks" : "months"} (${walkInBillingCycle === "weekly" ? "Weekly" : "Monthly"})${walkInApplyConcession ? ` [Concession: ${walkInConcessionType === "senior" ? "Senior 15%" : walkInConcessionType === "compassionate" ? "Socio-Economic 30%" : "Override"}]` : ""}${addonsString ? ` [Medicine Add-ons: ${addonsString}]` : ""}`;
         setWalkInResult({
           folderUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link",
           sheetUrl: `/admin/mock-sheet?name=${encodeURIComponent(walkInName)}&id=${generatedId}&age=${encodeURIComponent(walkInAge)}&gender=${encodeURIComponent(walkInGender)}&phone=${encodeURIComponent(walkInPhone)}&email=${encodeURIComponent(walkInEmail)}&complaint=${encodeURIComponent(walkInComplaint)}&careLevel=${encodeURIComponent(careLevelsDetails[walkInTier as keyof typeof careLevelsDetails]?.title || "Doctor-Led Custom Care")}&durationText=${encodeURIComponent(durationTextVal)}&finalPrice=${encodeURIComponent(getWalkInFinalPrice())}`,
@@ -2410,11 +2432,19 @@ export default function StorePage() {
                           <span className="text-slate-900 font-extrabold">₹{getWalkInFinalPrice().toLocaleString("en-IN")}</span>
                         </div>
                         {walkInApplyMedicineAddon && (
-                          <div className="col-span-2 border-t border-slate-100 pt-2 mt-1">
-                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Medicine Add-on</span>
-                            <span className="text-[#0f766e] font-extrabold">
-                              +₹{parseInt(walkInMedicineAddonAmount || "0").toLocaleString("en-IN")} {walkInMedicineAddonReason ? `(${walkInMedicineAddonReason})` : ""}
-                            </span>
+                          <div className="col-span-2 border-t border-slate-100 pt-2 mt-1 space-y-1">
+                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Medicine Add-ons</span>
+                            {walkInMedicineAddons
+                              .filter(item => {
+                                const amt = parseInt(item.amount);
+                                return !isNaN(amt) && amt > 0;
+                              })
+                              .map(item => (
+                                <div key={item.id} className="flex justify-between text-xs font-semibold text-slate-700">
+                                  <span className="text-slate-900">{item.type}{item.details ? ` (${item.details})` : ""}</span>
+                                  <span className="text-[#0f766e] font-extrabold">+₹{Number(item.amount).toLocaleString("en-IN")}</span>
+                                </div>
+                              ))}
                           </div>
                         )}
                       </div>
@@ -2878,28 +2908,83 @@ export default function StorePage() {
                                   transition={{ duration: 0.25, ease: "easeInOut" }}
                                   className="space-y-3 pt-2 border-t border-slate-200 overflow-hidden"
                                 >
-                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    <div className="space-y-1">
-                                      <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Add-on Amount (₹) *</label>
-                                      <input
-                                        type="number"
-                                        min="0"
-                                        value={walkInMedicineAddonAmount}
-                                        onChange={(e) => setWalkInMedicineAddonAmount(e.target.value)}
-                                        placeholder="e.g. 500"
-                                        className="w-full p-2.5 rounded-xl border border-slate-200 bg-white/50 text-sm focus:outline-none focus:border-slate-800 transition-all font-semibold"
-                                      />
-                                    </div>
-                                    <div className="space-y-1">
-                                      <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Reason / Description</label>
-                                      <input
-                                        type="text"
-                                        value={walkInMedicineAddonReason}
-                                        onChange={(e) => setWalkInMedicineAddonReason(e.target.value)}
-                                        placeholder="e.g. Mother Tinctures"
-                                        className="w-full p-2.5 rounded-xl border border-slate-200 bg-white/50 text-sm focus:outline-none focus:border-slate-800 transition-all font-semibold"
-                                      />
-                                    </div>
+                                  <div className="space-y-3">
+                                    {walkInMedicineAddons.map((item, idx) => (
+                                      <div key={item.id} className="flex gap-2.5 items-end">
+                                        <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                          <div className="space-y-1">
+                                            <label className="text-[9px] font-black text-slate-700 uppercase tracking-wider block">Medicine Type</label>
+                                            <select
+                                              value={item.type}
+                                              onChange={(e) => {
+                                                const list = [...walkInMedicineAddons];
+                                                list[idx].type = e.target.value;
+                                                setWalkInMedicineAddons(list);
+                                              }}
+                                              className="w-full p-2 py-1.5 rounded-lg border border-slate-200 bg-white/50 text-xs focus:outline-none focus:border-slate-800 transition-all font-semibold"
+                                            >
+                                              <option value="Dilution">Dilution (30C / 200C / 1M)</option>
+                                              <option value="Mother Tincture">Mother Tincture (Q)</option>
+                                              <option value="Biochemic">Biochemic / Tissue Salts</option>
+                                              <option value="Trituration">Trituration / Tablets</option>
+                                              <option value="External Application">External Application (Oils/Creams)</option>
+                                              <option value="Specialty Remedy">Specialty Remedy / Nosode</option>
+                                              <option value="Custom/Other">Other Add-on / Custom</option>
+                                            </select>
+                                          </div>
+                                          <div className="space-y-1">
+                                            <label className="text-[9px] font-black text-slate-700 uppercase tracking-wider block">Specific Remedy / Details</label>
+                                            <input
+                                              type="text"
+                                              value={item.details}
+                                              onChange={(e) => {
+                                                const list = [...walkInMedicineAddons];
+                                                list[idx].details = e.target.value;
+                                                setWalkInMedicineAddons(list);
+                                              }}
+                                              placeholder="e.g. Thuja 200, Arnica Q"
+                                              className="w-full p-2 py-1.5 rounded-lg border border-slate-200 bg-white/50 text-xs focus:outline-none focus:border-slate-800 transition-all font-semibold"
+                                            />
+                                          </div>
+                                          <div className="space-y-1">
+                                            <label className="text-[9px] font-black text-slate-700 uppercase tracking-wider block">Add-on Amount (₹) *</label>
+                                            <input
+                                              type="number"
+                                              min="0"
+                                              value={item.amount}
+                                              onChange={(e) => {
+                                                const list = [...walkInMedicineAddons];
+                                                list[idx].amount = e.target.value;
+                                                setWalkInMedicineAddons(list);
+                                              }}
+                                              placeholder="e.g. 500"
+                                              className="w-full p-2 py-1.5 rounded-lg border border-slate-200 bg-white/50 text-xs focus:outline-none focus:border-slate-800 transition-all font-semibold"
+                                            />
+                                          </div>
+                                        </div>
+                                        {walkInMedicineAddons.length > 1 && (
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              setWalkInMedicineAddons(walkInMedicineAddons.filter((_, i) => i !== idx));
+                                            }}
+                                            className="p-2 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-600 cursor-pointer transition-colors border border-red-200/25 mb-[1px]"
+                                          >
+                                            <Trash2 className="w-3.5 h-3.5" />
+                                          </button>
+                                        )}
+                                      </div>
+                                    ))}
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setWalkInMedicineAddons([...walkInMedicineAddons, { id: Math.random().toString(), type: "Dilution", details: "", amount: "" }]);
+                                      }}
+                                      className="w-full py-1.5 text-center rounded-xl bg-slate-50 border border-slate-200 text-[10px] font-bold text-slate-700 flex items-center justify-center gap-1 cursor-pointer hover:bg-slate-100 hover:border-slate-350 transition-all"
+                                    >
+                                      <Plus className="w-3.5 h-3.5 animate-pulse" />
+                                      <span>Add Another Medicine Type</span>
+                                    </button>
                                   </div>
                                 </motion.div>
                               )}
@@ -2957,8 +3042,10 @@ export default function StorePage() {
                             
                             const addonAmount = (() => {
                               if (!walkInApplyMedicineAddon) return 0;
-                              const parsed = parseInt(walkInMedicineAddonAmount);
-                              return isNaN(parsed) || parsed < 0 ? 0 : parsed;
+                              return walkInMedicineAddons.reduce((sum, item) => {
+                                const amt = parseInt(item.amount);
+                                return sum + (isNaN(amt) || amt < 0 ? 0 : amt);
+                              }, 0);
                             })();
                             
                             const finalPrice = baseConcessionPrice + addonAmount;
@@ -3005,12 +3092,15 @@ export default function StorePage() {
                                       <span>+₹{Math.abs(concessionDiscount).toLocaleString("en-IN")}</span>
                                     </div>
                                   )}
-                                  {walkInApplyMedicineAddon && addonAmount > 0 && (
-                                    <div className="flex justify-between text-emerald-600 font-bold">
-                                      <span>Medicine Add-on {walkInMedicineAddonReason ? `(${walkInMedicineAddonReason})` : ""}</span>
-                                      <span>+₹{addonAmount.toLocaleString("en-IN")}</span>
+                                  {walkInApplyMedicineAddon && walkInMedicineAddons.filter(item => {
+                                    const amt = parseInt(item.amount);
+                                    return !isNaN(amt) && amt > 0;
+                                  }).map((item) => (
+                                    <div key={item.id} className="flex justify-between text-emerald-600 font-bold">
+                                      <span>Add-on: {item.type}{item.details ? ` (${item.details})` : ""}</span>
+                                      <span>+₹{Number(item.amount).toLocaleString("en-IN")}</span>
                                     </div>
-                                  )}
+                                  ))}
                                   <div className="flex justify-between border-t-2 border-slate-900/10 pt-2 text-sm font-black text-slate-900">
                                     <span>Total Payable</span>
                                     <span className="text-mint-dark">₹{finalPrice.toLocaleString("en-IN")}</span>
