@@ -5614,7 +5614,7 @@ ${err.message || err}`);
                           <option value="">-- Select matched condition ({filteredList.length} items) --</option>
                           {filteredList.slice(0, 150).map((cond) => (
                             <option key={cond.id} value={cond.id}>
-                              [{cond.icd10}] {cond.name}
+                              {cond.name} [{cond.icd10}]
                             </option>
                           ))}
                         </select>
