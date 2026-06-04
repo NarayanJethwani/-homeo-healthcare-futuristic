@@ -1,0 +1,19 @@
+{
+  "name": "Dr. Jethwani's Homeopathic Repertory & Clinical Lab",
+  "short_name": "Clinical Repertory",
+  "description": "AI-Powered Homeopathic Repertory and Clinical Decision Support System",
+  "start_url": "/admin/dashboard",
+  "display": "standalone",
+  "background_color": "#0B1512",
+  "theme_color": "#022B22",
+  "orientation": "any",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,1455 @@
+          {/* TAB 6: AI Materia Medica Learning Engine */}
+          {activeTab === "learning-engine" && (
+            <div className="space-y-8 animate-fadeIn text-white select-none">
+              {/* Premium Header */}
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-900 pb-6">
+                <div>
+                  <h2 className="font-serif text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">AI Materia Medica Learning Hub</h2>
+                  <p className="text-xs font-semibold text-slate-400 max-w-2xl leading-relaxed mt-1">
+                    Delve into complete remedy pictures, trace physiological organ affinities, challenge yourself with active recall quizzes, and consult the conversational AI Tutor.
+                  </p>
+                </div>
+                
+                <div className="grid grid-cols-3 gap-3 text-center bg-slate-950 border border-slate-900 px-4 py-2 rounded-xl">
+                  <div>
+                    <div className="text-xs font-bold text-emerald-400">{MASTER_REMEDY_DB.length}</div>
+                    <div className="text-[7.5px] uppercase tracking-widest text-slate-500 font-extrabold font-sans">Remedies</div>
+                  </div>
+                  <div className="border-x border-slate-900 px-3">
+                    <div className="text-xs font-bold text-teal-400">8</div>
+                    <div className="text-[7.5px] uppercase tracking-widest text-slate-500 font-extrabold font-sans">Modes</div>
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-violet-400">50+</div>
+                    <div className="text-[7.5px] uppercase tracking-widest text-slate-500 font-extrabold font-sans">Quizzes</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Premium Sub-Tab Navigation Bar */}
+              <div className="flex border-b border-slate-900 pb-3 gap-2 overflow-x-auto select-none">
+                {[
+                  { id: "cockpit", label: "Study Cockpit", icon: Gauge },
+                  { id: "search", label: "Multi-Facet Search", icon: Search },
+                  { id: "compare", label: "Advanced Comparison", icon: Workflow },
+                  { id: "tutor", label: "Conversational Tutor", icon: Brain },
+                  { id: "pipeline", label: "Content Ingestion", icon: Database }
+                ].map((subTab: any) => {
+                  const Icon = subTab.icon;
+                  const isSelected = learningSubTab === subTab.id;
+                  return (
+                    <button
+                      key={subTab.id}
+                      onClick={() => setLearningSubTab(subTab.id as any)}
+                      className={`flex items-center gap-2 py-2.5 px-4 rounded-xl text-[10px] uppercase font-bold tracking-widest transition-all cursor-pointer border ${
+                        isSelected
+                          ? "bg-emerald-600 border-emerald-500 text-white shadow-lg shadow-emerald-950/40"
+                          : "bg-slate-950/40 border-slate-900 text-slate-400 hover:text-slate-200 hover:border-slate-800"
+                      }`}
+                    >
+                      <Icon className="w-3.5 h-3.5" />
+                      {subTab.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Main Tab Content Area */}
+              {learningSubTab === "cockpit" && (
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  
+                  {/* LEFT COLUMN: Remedy Selector & SVG Body Map (4 cols) */}
+                  <div className="lg:col-span-4 space-y-6">
+                    {/* Remedy Select Card */}
+                    <div className="bg-slate-950/80 border border-slate-900 rounded-[32px] p-6 shadow-2xl relative overflow-hidden">
+                      <label className="block text-[8px] font-extrabold text-slate-500 uppercase tracking-widest mb-2.5">Active Study Remedy</label>
+                      <select
+                        value={learningRemedyId}
+                        onChange={(e) => {
+                          setLearningRemedyId(e.target.value);
+                          setQuizAnswers({});
+                          setIsQuizSubmitted(false);
+                          setQuizScore(0);
+                          setFlashcardIdx(0);
+                          setIsFlashcardFlipped(false);
+                          setExamActive(false);
+                        }}
+                        className="w-full p-3 bg-slate-900 border border-slate-800 text-xs font-semibold text-white rounded-xl outline-none"
+                      >
+                        {Object.keys(REMEDY_LEARNING_DB).map((key: any) => (
+                          <option key={key} value={key}>{REMEDY_LEARNING_DB[key].label}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* SVG Body Map Silhouette */}
+                    {(() => {
+                      const db = REMEDY_LEARNING_DB[learningRemedyId] || REMEDY_LEARNING_DB.rem_sulphur;
+                      
+                      const organCoords: Record<string, { x: number; y: number; color: string }> = {
+                        "Brain": { x: 50, y: 25, color: "fill-purple-500 stroke-purple-400" },
+                        "Throat": { x: 50, y: 55, color: "fill-blue-500 stroke-blue-400" },
+                        "Lungs": { x: 50, y: 80, color: "fill-sky-500 stroke-sky-400" },
+                        "Heart": { x: 44, y: 92, color: "fill-red-500 stroke-red-400" },
+                        "Liver": { x: 38, y: 115, color: "fill-emerald-500 stroke-emerald-400" },
+                        "Stomach": { x: 50, y: 122, color: "fill-amber-500 stroke-amber-400" },
+                        "Gastrointestinal": { x: 50, y: 145, color: "fill-orange-500 stroke-orange-400" },
+                        "Urinary": { x: 50, y: 170, color: "fill-indigo-500 stroke-indigo-400" },
+                        "Skin": { x: 22, y: 110, color: "fill-teal-500 stroke-teal-400" },
+                        "Musculoskeletal": { x: 68, y: 140, color: "fill-pink-500 stroke-pink-400" },
+                        "Venous System": { x: 50, y: 220, color: "fill-emerald-500 stroke-emerald-400" },
+                        "Lymphatic System": { x: 50, y: 64, color: "fill-indigo-500 stroke-indigo-400" },
+                        "Ovaries": { x: 40, y: 175, color: "fill-rose-500 stroke-rose-400" },
+                        "Serous Membranes": { x: 58, y: 105, color: "fill-pink-500 stroke-pink-400" }
+                      };
+
+                      return (
+                        <div className="bg-slate-950/80 border border-slate-900 rounded-[32px] p-6 shadow-2xl relative overflow-hidden flex flex-col items-center">
+                          <div className="w-full flex items-center justify-between border-b border-slate-900 pb-3 mb-4">
+                            <span className="text-[8px] font-extrabold text-slate-500 uppercase tracking-widest">Organ Affinity Map</span>
+                            <span className="text-[8.5px] font-bold text-emerald-400 bg-emerald-950/40 border border-emerald-900/40 px-2 py-0.5 rounded-md">Physiological Axis</span>
+                          </div>
+
+                          <div className="relative w-full h-[280px] flex items-center justify-center bg-slate-950 rounded-2xl border border-slate-900/60 p-4 overflow-hidden select-none">
+                            <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] opacity-15" />
+                            
+                            <svg className="h-full w-auto" viewBox="0 0 100 260">
+                              <path 
+                                d="M 50 10 C 53 10, 56 12, 56 16 C 56 20, 54 23, 50 24 C 46 23, 44 20, 44 16 C 44 12, 47 10, 50 10 Z 
+                                   M 48 24 L 52 24 L 53 32 L 65 37 L 70 70 C 70 85, 66 100, 66 115 L 67 145 C 68 152, 69 160, 69 168 L 65 240 C 65 246, 61 250, 57 250 L 53 250 L 51 185 L 49 185 L 47 250 L 43 250 C 39 250, 35 246, 35 240 L 31 168 C 31 160, 32 152, 33 145 L 34 115 C 34 100, 30 85, 30 70 L 35 37 L 47 32 Z" 
+                                className="fill-slate-900 stroke-slate-800 stroke-[1.5]"
+                              />
+                              
+                              {db.organAffinities.map((aff: any, idx: number) => {
+                                const coords = organCoords[aff.organ] || { x: 50, y: 130, color: "fill-emerald-500 stroke-emerald-400" };
+                                const pulseRadius = aff.rating * 1.4;
+
+                                return (
+                                  <g key={idx} className="group/organ">
+                                    <circle
+                                      cx={coords.x}
+                                      cy={coords.y}
+                                      r={pulseRadius}
+                                      className={`${coords.color.replace('fill-', 'fill-').split(' ')[0]}/10 animate-ping`}
+                                      style={{ animationDuration: '2.5s' }}
+                                    />
+                                    <circle
+                                      cx={coords.x}
+                                      cy={coords.y}
+                                      r={5}
+                                      className={`${coords.color} stroke-white stroke-[0.8] cursor-pointer hover:scale-125 transition-transform`}
+                                    />
+                                    <title>{`${aff.organ}: Rating ${aff.rating}/10 - ${aff.details}`}</title>
+                                  </g>
+                                );
+                              })}
+                            </svg>
+                          </div>
+
+                          <div className="w-full mt-4 space-y-2.5">
+                            {db.organAffinities.map((aff: any, idx: number) => {
+                              const percent = aff.rating * 10;
+                              return (
+                                <div key={idx} className="space-y-1">
+                                  <div className="flex justify-between items-center text-[9px] font-semibold">
+                                    <span className="text-slate-200">{aff.organ}</span>
+                                    <span className="text-emerald-400">{aff.rating}/10</span>
+                                  </div>
+                                  <div className="h-1.5 w-full bg-slate-900 border border-slate-800/80 rounded-full overflow-hidden">
+                                    <div 
+                                      className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-500" 
+                                      style={{ width: `${percent}%` }}
+                                    />
+                                  </div>
+                                  <p className="text-[8px] text-slate-500 font-medium leading-snug">{aff.details}</p>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+
+                  {/* RIGHT COLUMN: Active Mode Panel, Explorer, & Timeline (8 cols) */}
+                  <div className="lg:col-span-8 space-y-6">
+                    {/* Mode Selector Tabs */}
+                    <div className="bg-slate-950/80 border border-slate-900 p-2 rounded-2xl flex flex-wrap gap-1 shadow-md">
+                      {[
+                        { id: "clinical", label: "Clinical Mode", icon: Layers },
+                        { id: "study", label: "Study Mode", icon: Book },
+                        { id: "story", label: "Story Mode", icon: BookOpen },
+                        { id: "mnemonic", label: "Mnemonic", icon: Zap },
+                        { id: "flashcard", label: "Flashcards", icon: RefreshCw },
+                        { id: "quiz", label: "Quiz Mode", icon: Award },
+                        { id: "exam", label: "Exam Mode", icon: FileText }
+                      ].map((mode: any) => {
+                        const Icon = mode.icon;
+                        const isSelected = learningMode === mode.id;
+                        return (
+                          <button
+                            key={mode.id}
+                            onClick={() => {
+                              setLearningMode(mode.id);
+                              setIsFlashcardFlipped(false);
+                              setFlashcardIdx(0);
+                            }}
+                            className={`flex-1 min-w-[90px] text-center py-2 px-3 rounded-xl text-[10px] uppercase font-bold tracking-widest transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                              isSelected 
+                                ? "bg-emerald-600 text-white shadow" 
+                                : "text-slate-400 hover:text-slate-200 hover:bg-slate-900"
+                            }`}
+                          >
+                            <Icon className="w-3.5 h-3.5" />
+                            {mode.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Mode Content Card */}
+                    <div className="bg-slate-950/80 border border-slate-900 rounded-[32px] p-6 min-h-[350px] shadow-2xl relative overflow-hidden flex flex-col justify-between">
+                      <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
+                      
+                      {(() => {
+                        const db = REMEDY_LEARNING_DB[learningRemedyId] || REMEDY_LEARNING_DB.rem_sulphur;
+                        const rem = MASTER_REMEDY_DB.find((r: any) => r.id === learningRemedyId) || MASTER_REMEDY_DB[0];
+
+                        return (
+                          <div className="space-y-4 flex-1 flex flex-col justify-between">
+                            
+                            {/* 1. CLINICAL MODE */}
+                            {learningMode === "clinical" && (
+                              <div className="space-y-4">
+                                <div className="flex justify-between items-center border-b border-slate-900 pb-2">
+                                  <h3 className="text-sm font-serif font-bold text-slate-100">Clinical Drug Monograph: {rem.identity.name}</h3>
+                                  <span className="text-[8.5px] uppercase font-bold text-slate-400 tracking-wider">Level: Medical School</span>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-semibold leading-relaxed">
+                                  <div className="space-y-2 bg-slate-900/40 p-4 border border-slate-900 rounded-2xl">
+                                    <p><span className="text-slate-500 uppercase text-[9px] tracking-wider block">Taxonomy Structure</span> {rem.identity.kingdom} Kingdom &rarr; {rem.identity.family}</p>
+                                    <p><span className="text-slate-500 uppercase text-[9px] tracking-wider block">Source Substance</span> {rem.identity.sourceSubstance}</p>
+                                    <p><span className="text-slate-500 uppercase text-[9px] tracking-wider block">Core Miasm</span> {rem.miasmaticAnalysis.dominantMiasm} ({rem.miasmaticAnalysis.psora}% Ps / {rem.miasmaticAnalysis.sycosis}% Sy / {rem.miasmaticAnalysis.syphilis}% Syph)</p>
+                                    <p><span className="text-slate-500 uppercase text-[9px] tracking-wider block">Thermal Index</span> {rem.physicalGenerals.thermalState}</p>
+                                  </div>
+                                  <div className="space-y-2 bg-slate-900/40 p-4 border border-slate-900 rounded-2xl">
+                                    <p><span className="text-slate-500 uppercase text-[9px] tracking-wider block">Constitutional Essence</span> {rem.essence.coreTheme}</p>
+                                    <p><span className="text-slate-500 uppercase text-[9px] tracking-wider block">Central Conflict</span> {rem.essence.centralConflict}</p>
+                                  </div>
+                                </div>
+
+                                <div className="bg-slate-900/40 p-4 border border-slate-900 rounded-2xl">
+                                  <span className="text-slate-500 uppercase text-[9px] tracking-wider block mb-2 font-bold">Clinical Applications</span>
+                                  <div className="flex flex-wrap gap-1.5">
+                                    {rem.clinicalConditions.map((c: any, i: number) => (
+                                      <span key={i} className="text-[9.5px] font-bold text-teal-400 bg-teal-950/20 border border-teal-900/40 px-2 py-0.5 rounded-lg">
+                                        {c.condition} ({c.severityMatch} Match)
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* 2. STUDY MODE */}
+                            {learningMode === "study" && (
+                              <div className="space-y-4 text-xs font-semibold leading-relaxed">
+                                <div className="flex justify-between items-center border-b border-slate-900 pb-2">
+                                  <h3 className="text-sm font-serif font-bold text-slate-100">Classical Picture & Keynotes</h3>
+                                  <span className="text-[8.5px] uppercase font-bold text-slate-400 tracking-wider">Materia Medica Proving</span>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div className="space-y-3 bg-slate-900/40 p-4 border border-slate-900 rounded-2xl">
+                                    <h4 className="text-[10px] text-emerald-400 font-extrabold uppercase tracking-wider border-b border-slate-950 pb-1">Mental Picture</h4>
+                                    <p><span className="text-slate-500 block text-[9px]">Personality Archetype</span> {rem.mentalPicture.personality}</p>
+                                    <p><span className="text-slate-500 block text-[9px]">Fears & Anxiety Patterns</span> {rem.mentalPicture.fears.join(", ")}</p>
+                                    <p><span className="text-slate-500 block text-[9px]">Delusions & Cognition</span> {rem.mentalPicture.delusions.join(", ")}</p>
+                                  </div>
+
+                                  <div className="space-y-3 bg-slate-900/40 p-4 border border-slate-900 rounded-2xl">
+                                    <h4 className="text-[10px] text-teal-400 font-extrabold uppercase tracking-wider border-b border-slate-950 pb-1">Physical Generals</h4>
+                                    <p><span className="text-slate-500 block text-[9px]">Thermal Profile & Thirst</span> {rem.physicalGenerals.thermalState} | {rem.physicalGenerals.thirst}</p>
+                                    <p><span className="text-slate-500 block text-[9px]">Sleep & Dreaming Pattern</span> {rem.physicalGenerals.sleep} (Dreams: {rem.physicalGenerals.dreams.join(", ")})</p>
+                                    <p><span className="text-slate-500 block text-[9px]">Cravings & Aversions</span> Craves: {rem.physicalGenerals.foodDesires.join(", ")} | Averts: {rem.physicalGenerals.foodAversions.join(", ")}</p>
+                                  </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div className="bg-slate-900/40 p-4 border border-slate-900 rounded-2xl space-y-2">
+                                    <h4 className="text-[10px] text-amber-400 font-extrabold uppercase tracking-wider border-b border-slate-950 pb-1">Modalities</h4>
+                                    <p><span className="text-[#FBBF24] block text-[9px]">Aggravations (Worse From)</span> {rem.modalities.worseFrom.join(", ")}</p>
+                                    <p><span className="text-emerald-400 block text-[9px]">Ameliorations (Better From)</span> {rem.modalities.betterFrom.join(", ")}</p>
+                                  </div>
+
+                                  <div className="bg-slate-900/40 p-4 border border-slate-900 rounded-2xl space-y-2">
+                                    <h4 className="text-[10px] text-indigo-400 font-extrabold uppercase tracking-wider border-b border-slate-950 pb-1">Remedy Relationships</h4>
+                                    <p><span className="text-slate-400 block text-[9px]">Complementary</span> {rem.relationships.complementary.join(", ") || "None documented"}</p>
+                                    <p><span className="text-slate-400 block text-[9px]">Inimical (Incompatible)</span> {rem.relationships.inimical.join(", ") || "None documented"}</p>
+                                    <p><span className="text-slate-400 block text-[9px]">Followed Well By / Antidotes</span> Follows: {rem.relationships.follows.join(", ") || "None"} | Antidoted By: {rem.relationships.antidotes.join(", ") || "None"}</p>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* 3. STORY MODE */}
+                            {learningMode === "story" && (
+                              <div className="space-y-4">
+                                <div className="flex justify-between items-center border-b border-slate-900 pb-2">
+                                  <h3 className="text-sm font-serif font-bold text-slate-100">Constitutional Narrative</h3>
+                                  <span className="text-[8.5px] uppercase font-bold text-slate-400 tracking-wider">Active Recall Story</span>
+                                </div>
+                                <div className="bg-slate-900/40 p-6 border border-slate-900 rounded-[24px] space-y-3">
+                                  <h4 className="text-xs font-serif font-bold text-emerald-400">&ldquo;{db.stories.title}&rdquo;</h4>
+                                  <p className="text-xs font-medium text-slate-300 leading-relaxed font-serif indent-4 select-text font-serif">
+                                    {db.stories.narrative}
+                                  </p>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* 4. MNEMONIC MODE */}
+                            {learningMode === "mnemonic" && (
+                              <div className="space-y-4">
+                                <div className="flex justify-between items-center border-b border-slate-900 pb-2">
+                                  <h3 className="text-sm font-serif font-bold text-slate-100">Keynote Mnemonic Mapping</h3>
+                                  <span className="text-[8.5px] uppercase font-bold text-slate-400 tracking-wider">Acronym: {db.mnemonics.acronym}</span>
+                                </div>
+                                <div className="grid grid-cols-1 gap-2">
+                                  {db.mnemonics.lines.map((line: any, idx: number) => (
+                                    <div key={idx} className="flex items-start gap-4 p-3 bg-slate-900/40 border border-slate-900 rounded-xl hover:border-slate-800 transition-colors">
+                                      <div className="w-6 h-6 rounded-lg bg-emerald-950/40 border border-emerald-900 flex items-center justify-center font-extrabold text-[11px] text-emerald-400">
+                                        {line.letter}
+                                      </div>
+                                      <div className="text-xs font-semibold text-slate-300 leading-normal pt-0.5">
+                                        {line.description}
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* 5. FLASHCARDS */}
+                            {learningMode === "flashcard" && (
+                              <div className="space-y-4 flex-1 flex flex-col justify-between">
+                                <div className="flex justify-between items-center border-b border-slate-900 pb-2">
+                                  <h3 className="text-sm font-serif font-bold text-slate-100">Active Recall Flashcards</h3>
+                                  <span className="text-[8.5px] uppercase font-bold text-slate-400 tracking-wider">Card {flashcardIdx + 1} of {db.flashcards.length}</span>
+                                </div>
+
+                                <div className="flex-1 flex items-center justify-center py-4">
+                                  <div 
+                                    onClick={() => setIsFlashcardFlipped(!isFlashcardFlipped)}
+                                    className={`w-full max-w-md min-h-[140px] rounded-3xl border p-6 flex flex-col justify-center items-center text-center cursor-pointer transition-all duration-300 shadow-xl ${
+                                      isFlashcardFlipped 
+                                        ? "bg-emerald-950/20 border-emerald-500/50 shadow-emerald-950/20" 
+                                        : "bg-slate-900 border-slate-800 hover:border-slate-700 shadow-black/20"
+                                    }`}
+                                  >
+                                    <span className="text-[8px] uppercase tracking-widest font-extrabold text-slate-500 mb-3 block">
+                                      {isFlashcardFlipped ? "Answer (Click to Flip back)" : "Question (Click to reveal answer)"}
+                                    </span>
+                                    <p className={`font-semibold text-xs leading-relaxed ${isFlashcardFlipped ? "text-emerald-300" : "text-white"}`}>
+                                      {isFlashcardFlipped ? db.flashcards[flashcardIdx]?.answer : db.flashcards[flashcardIdx]?.question}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <div className="flex justify-between items-center gap-3">
+                                  <button
+                                    onClick={() => {
+                                      setFlashcardIdx(prev => Math.max(0, prev - 1));
+                                      setIsFlashcardFlipped(false);
+                                    }}
+                                    disabled={flashcardIdx === 0}
+                                    className="px-4 py-2 border border-slate-900 bg-slate-950/40 hover:bg-slate-900 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer disabled:opacity-30 disabled:pointer-events-none"
+                                  >
+                                    Previous
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      setFlashcardIdx(prev => Math.min(db.flashcards.length - 1, prev + 1));
+                                      setIsFlashcardFlipped(false);
+                                    }}
+                                    disabled={flashcardIdx === db.flashcards.length - 1}
+                                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer disabled:opacity-30 disabled:pointer-events-none"
+                                  >
+                                    Next
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* 6. QUIZ MODE */}
+                            {learningMode === "quiz" && (
+                              <div className="space-y-4">
+                                <div className="flex justify-between items-center border-b border-slate-900 pb-2">
+                                  <h3 className="text-sm font-serif font-bold text-slate-100">Interactive Quiz: {rem.identity.name}</h3>
+                                  <span className="text-[8.5px] uppercase font-bold text-slate-400 tracking-wider">
+                                    {isQuizSubmitted ? `Completed - Score: ${quizScore}/3` : "Practice Exam"}
+                                  </span>
+                                </div>
+
+                                <div className="space-y-4">
+                                  {db.quizzes.map((q: any, idx: number) => (
+                                    <div key={idx} className="bg-slate-900/40 p-4 border border-slate-900 rounded-2xl space-y-2.5">
+                                      <div className="text-xs font-bold text-slate-200">Q{idx + 1}: {q.question}</div>
+                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                        {q.options.map((opt: string, oidx: number) => {
+                                          const isSelected = quizAnswers[idx] === oidx;
+                                          let btnStyle = "bg-slate-950/45 border-slate-900 text-slate-400";
+                                          if (isSelected) {
+                                            btnStyle = "bg-emerald-950/20 border-emerald-800 text-emerald-300";
+                                          }
+                                          if (isQuizSubmitted) {
+                                            if (oidx === q.correctIdx) {
+                                              btnStyle = "bg-emerald-600/20 border-emerald-500 text-emerald-300 font-bold";
+                                            } else if (isSelected) {
+                                              btnStyle = "bg-rose-950/20 border-rose-800 text-rose-300 line-through";
+                                            }
+                                          }
+                                          return (
+                                            <button
+                                              key={oidx}
+                                              type="button"
+                                              disabled={isQuizSubmitted}
+                                              onClick={() => setQuizAnswers(prev => ({ ...prev, [idx]: oidx }))}
+                                              className={`text-left p-2.5 rounded-xl border text-[10px] font-semibold transition-all cursor-pointer ${btnStyle}`}
+                                            >
+                                              {opt}
+                                            </button>
+                                          );
+                                        })}
+                                      </div>
+                                      {isQuizSubmitted && (
+                                        <p className="text-[9px] text-slate-500 font-semibold leading-normal italic">{q.explanation}</p>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+
+                                {!isQuizSubmitted ? (
+                                  <button
+                                    onClick={() => {
+                                      let score = 0;
+                                      db.quizzes.forEach((q: any, idx: number) => {
+                                        if (quizAnswers[idx] === q.correctIdx) score++;
+                                      });
+                                      setQuizScore(score);
+                                      setIsQuizSubmitted(true);
+                                    }}
+                                    className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold uppercase tracking-widest cursor-pointer transition-colors mt-2"
+                                  >
+                                    Submit Answers
+                                  </button>
+                                ) : (
+                                  <button
+                                    onClick={() => {
+                                      setQuizAnswers({});
+                                      setIsQuizSubmitted(false);
+                                      setQuizScore(0);
+                                    }}
+                                    className="w-full py-2.5 border border-slate-900 bg-slate-950 hover:bg-slate-900 text-slate-300 rounded-xl text-xs font-bold uppercase tracking-widest cursor-pointer transition-colors mt-2"
+                                  >
+                                    Reset Quiz
+                                  </button>
+                                )}
+                              </div>
+                            )}
+
+                            {/* 7. EXAM MODE */}
+                            {learningMode === "exam" && (
+                              <div className="space-y-4">
+                                {/* 7a. Exam NOT Active */}
+                                {!examActive && (
+                                  <div className="text-center py-8 space-y-4">
+                                    <div className="w-12 h-12 bg-violet-950/20 border border-violet-900 rounded-full flex items-center justify-center mx-auto animate-pulse">
+                                      <Award className="w-6 h-6 text-violet-400" />
+                                    </div>
+                                    <div className="space-y-1.5 max-w-md mx-auto">
+                                      <h3 className="text-base font-serif font-bold text-slate-100">Clinical Board Certification Simulator</h3>
+                                      <p className="text-xs text-slate-400 font-semibold leading-relaxed">
+                                        This exam pulls 10 complex clinical board cases. You have exactly <strong>3 minutes (180 seconds)</strong>. Re-evaluating is disabled once started.
+                                      </p>
+                                    </div>
+                                    <button
+                                      onClick={() => {
+                                        const shuffled = [...CLINICAL_BOARD_QUESTIONS].sort(() => 0.5 - Math.random()).slice(0, 10);
+                                        setExamQuestions(shuffled);
+                                        setExamAnswers({});
+                                        setExamActive(true);
+                                        setExamTimer(180);
+                                        setIsExamSubmitted(false);
+                                        setExamIdx(0);
+                                        setExamScore(0);
+                                      }}
+                                      className="px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-colors shadow-lg cursor-pointer"
+                                    >
+                                      Start Clinical Exam
+                                    </button>
+                                  </div>
+                                )}
+
+                                {/* 7b. Exam Active & NOT Submitted */}
+                                {examActive && !isExamSubmitted && (
+                                  <div className="space-y-4 flex-1 flex flex-col justify-between">
+                                    <div className="flex justify-between items-center border-b border-slate-900 pb-2">
+                                      <span className="text-[10px] font-bold text-violet-400">Board Question {examIdx + 1} of 10</span>
+                                      <div className="text-[10px] font-bold text-rose-500 bg-rose-950/20 border border-rose-900/40 px-2.5 py-0.5 rounded-md animate-pulse">
+                                        Time: {Math.floor(examTimer / 60)}:{String(examTimer % 60).padStart(2, '0')}
+                                      </div>
+                                    </div>
+
+                                    {/* Question Card */}
+                                    {examQuestions[examIdx] && (
+                                      <div className="bg-slate-900/40 p-4 border border-slate-900 rounded-2xl space-y-3 flex-1">
+                                        <p className="text-[10.5px] text-slate-300 leading-relaxed font-sans font-semibold italic border-l-2 border-slate-800 pl-3">
+                                          &ldquo;{examQuestions[examIdx].caseBody}&rdquo;
+                                        </p>
+                                        <p className="text-xs font-bold text-slate-100">{examQuestions[examIdx].question}</p>
+                                        <div className="grid grid-cols-1 gap-2 pt-2">
+                                          {examQuestions[examIdx].options.map((opt: string, oidx: number) => {
+                                            const isSelected = examAnswers[examIdx] === oidx;
+                                            return (
+                                              <button
+                                                key={oidx}
+                                                type="button"
+                                                onClick={() => setExamAnswers(prev => ({ ...prev, [examIdx]: oidx }))}
+                                                className={`text-left p-3 rounded-xl border text-[10px] font-semibold transition-all cursor-pointer ${
+                                                  isSelected 
+                                                    ? "bg-violet-950/20 border-violet-800 text-violet-300" 
+                                                    : "bg-slate-950/45 border-slate-900 text-slate-400 hover:border-slate-800"
+                                                }`}
+                                              >
+                                                {opt}
+                                              </button>
+                                            );
+                                          })}
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {/* Exam Navigation */}
+                                    <div className="flex justify-between items-center gap-3 pt-2">
+                                      <div className="flex gap-2">
+                                        <button
+                                          onClick={() => setExamIdx(prev => Math.max(0, prev - 1))}
+                                          disabled={examIdx === 0}
+                                          className="px-3 py-2 border border-slate-900 bg-slate-950/40 hover:bg-slate-900 rounded-xl text-[9px] font-bold uppercase tracking-wider transition-colors disabled:opacity-30 cursor-pointer"
+                                        >
+                                          Prev
+                                        </button>
+                                        <button
+                                          onClick={() => setExamIdx(prev => Math.min(9, prev + 1))}
+                                          disabled={examIdx === 9}
+                                          className="px-3 py-2 border border-slate-900 bg-slate-950/40 hover:bg-slate-900 rounded-xl text-[9px] font-bold uppercase tracking-wider transition-colors disabled:opacity-30 cursor-pointer"
+                                        >
+                                          Next
+                                        </button>
+                                      </div>
+
+                                      <button
+                                        onClick={() => {
+                                          setIsExamSubmitted(true);
+                                          let score = 0;
+                                          examQuestions.forEach((q, idx) => {
+                                            if (examAnswers[idx] === q.correctIdx) score++;
+                                          });
+                                          setExamScore(score);
+                                        }}
+                                        className="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                                      >
+                                        Submit Exam
+                                      </button>
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* 7c. Exam SUBMITTED */}
+                                {examActive && isExamSubmitted && (
+                                  <div className="space-y-4">
+                                    <div className="bg-slate-900/60 border border-slate-900 p-6 rounded-[28px] text-center space-y-3">
+                                      <div className="w-14 h-14 bg-emerald-950/20 border border-emerald-900 rounded-full flex items-center justify-center mx-auto">
+                                        <CheckCircle className="w-8 h-8 text-emerald-400" />
+                                      </div>
+                                      <div className="space-y-1">
+                                        <h4 className="text-xs font-extrabold uppercase tracking-widest text-slate-400">Exam Assessment Completed</h4>
+                                        <div className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
+                                          Score: {examScore} / 10 ({examScore * 10}%)
+                                        </div>
+                                        <p className="text-[10px] font-semibold text-slate-500">
+                                          {examScore >= 8 ? "Pass - Excellent Clinical Acumen" : "Fail - Recommend Additional study cockpit sessions"}
+                                        </p>
+                                      </div>
+                                    </div>
+
+                                    {/* Diagnostics breakdown */}
+                                    <div className="space-y-3">
+                                      <span className="text-[8px] uppercase tracking-widest font-extrabold text-slate-500 block">Question Breakdown & Clinical Diagnostics</span>
+                                      <div className="max-h-72 overflow-y-auto space-y-3 pr-2" data-lenis-prevent>
+                                        {examQuestions.map((q: any, idx: number) => {
+                                          const userAns = examAnswers[idx];
+                                          const isCorrect = userAns === q.correctIdx;
+                                          return (
+                                            <div key={idx} className={`p-4 border rounded-2xl text-[10px] space-y-2 ${
+                                              isCorrect ? "bg-emerald-950/10 border-emerald-900/40" : "bg-rose-950/10 border-rose-900/40"
+                                            }`}>
+                                              <div className="flex justify-between items-center">
+                                                <span className="font-bold text-slate-200">Question {idx + 1}: Case Sheet</span>
+                                                <span className={`font-bold px-2 py-0.5 rounded text-[8.5px] uppercase ${isCorrect ? "bg-emerald-600/20 text-emerald-400" : "bg-rose-600/20 text-rose-400"}`}>
+                                                  {isCorrect ? "Correct" : "Incorrect"}
+                                                </span>
+                                              </div>
+                                              <p className="italic text-slate-400 leading-normal font-sans">{q.caseBody}</p>
+                                              <p className="font-bold text-slate-300">Question: {q.question}</p>
+                                              <div className="grid grid-cols-1 gap-1">
+                                                <p><span className="text-slate-500 text-[8.5px] block uppercase">Your Selection</span> <strong className={isCorrect ? "text-emerald-400" : "text-rose-400"}>{userAns !== undefined ? q.options[userAns] : "No Answer Selected"}</strong></p>
+                                                <p><span className="text-slate-500 text-[8.5px] block uppercase">Correct Remedy Key</span> <strong className="text-emerald-400">{q.options[q.correctIdx]}</strong></p>
+                                              </div>
+                                              <p className="text-slate-500 italic text-[9px] border-t border-slate-900/50 pt-1.5 leading-normal">{q.explanation}</p>
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                    </div>
+
+                                    <button
+                                      onClick={() => setExamActive(false)}
+                                      className="w-full py-2.5 bg-violet-600 hover:bg-violet-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                                    >
+                                      Return to Exam Setup
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
+                          </div>
+                        );
+                      })()}
+                    </div>
+
+                    {/* Timeline Milestones Section */}
+                    {(() => {
+                      const db = REMEDY_LEARNING_DB[learningRemedyId] || REMEDY_LEARNING_DB.rem_sulphur;
+                      return (
+                        <div className="bg-slate-950/80 border border-slate-900 rounded-[32px] p-6 shadow-2xl relative overflow-hidden">
+                          <div className="w-full flex items-center justify-between border-b border-slate-900 pb-3 mb-4">
+                            <span className="text-[8px] font-extrabold text-slate-500 uppercase tracking-widest">Historical Proving Timeline</span>
+                            <span className="text-[8.5px] font-bold text-teal-400 bg-teal-950/40 border border-teal-900/40 px-2 py-0.5 rounded-md">Chronology</span>
+                          </div>
+
+                          <div className="relative border-l-2 border-slate-900 pl-4 ml-2 space-y-4 py-2">
+                            {db.timeline.map((mile: any, i: number) => (
+                              <div key={i} className="relative space-y-1">
+                                <div className="absolute -left-[23px] top-1 w-2.5 h-2.5 rounded-full bg-teal-500 border-2 border-slate-950" />
+                                <div className="flex justify-between items-center text-[9px] font-bold">
+                                  <span className="text-teal-400">{mile.year}</span>
+                                  <span className="text-slate-500">{mile.author}</span>
+                                </div>
+                                <p className="text-[9.5px] font-semibold text-slate-300 leading-relaxed font-sans">{mile.milestone}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+
+                </div>
+              )}
+
+              {/* 2. MULTI-FACET SEARCH SUBTAB */}
+              {learningSubTab === "search" && (
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  
+                  {/* Left filters (4 cols) */}
+                  <div className="lg:col-span-4 bg-slate-950/80 border border-slate-900 rounded-[32px] p-6 shadow-2xl space-y-5">
+                    <div className="border-b border-slate-900 pb-3 mb-1">
+                      <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-200">Search Filters</h3>
+                      <p className="text-[9px] text-slate-500 font-semibold leading-relaxed">Narrow remedy library by symptom, theme, kingdom, and miasm.</p>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-[8px] font-extrabold text-slate-500 uppercase tracking-widest mb-1.5">Symptom Keyword</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Soles burning, standing worse..."
+                          value={searchSymptom}
+                          onChange={(e) => setSearchSymptom(e.target.value)}
+                          className="w-full p-2.5 bg-slate-900 border border-slate-800 text-xs font-semibold text-white rounded-xl outline-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[8px] font-extrabold text-slate-500 uppercase tracking-widest mb-1.5">Core Theme</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Insecurity, perfectionism, control..."
+                          value={searchTheme}
+                          onChange={(e) => setSearchTheme(e.target.value)}
+                          className="w-full p-2.5 bg-slate-900 border border-slate-800 text-xs font-semibold text-white rounded-xl outline-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[8px] font-extrabold text-slate-500 uppercase tracking-widest mb-1.5">Kingdom Classification</label>
+                        <select
+                          value={searchKingdoms[0] || ""}
+                          onChange={(e) => setSearchKingdoms(e.target.value ? [e.target.value] : [])}
+                          className="w-full p-2.5 bg-slate-900 border border-slate-800 text-xs font-semibold text-white rounded-xl outline-none"
+                        >
+                          <option value="">All Kingdoms</option>
+                          <option value="Plant">Plant</option>
+                          <option value="Animal">Animal</option>
+                          <option value="Mineral">Mineral</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-[8px] font-extrabold text-slate-500 uppercase tracking-widest mb-1.5">Dominant Miasm</label>
+                        <select
+                          value={searchMiasms[0] || ""}
+                          onChange={(e) => setSearchMiasms(e.target.value ? [e.target.value] : [])}
+                          className="w-full p-2.5 bg-slate-900 border border-slate-800 text-xs font-semibold text-white rounded-xl outline-none"
+                        >
+                          <option value="">All Miasms</option>
+                          <option value="Psora">Psora</option>
+                          <option value="Sycosis">Sycosis</option>
+                          <option value="Syphilis">Syphilis</option>
+                          <option value="Tubercular">Tubercular</option>
+                          <option value="Cancerinic">Cancerinic</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        const results = searchRemedies({
+                          symptomQuery: searchSymptom,
+                          themeQuery: searchTheme,
+                          kingdoms: searchKingdoms,
+                          miasms: searchMiasms
+                        });
+                        setLearningSearchResults(results);
+                      }}
+                      className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-colors cursor-pointer"
+                    >
+                      Execute Search
+                    </button>
+                  </div>
+
+                  {/* Right search results (8 cols) */}
+                  <div className="lg:col-span-8 bg-slate-950/80 border border-slate-900 rounded-[32px] p-6 shadow-2xl space-y-4">
+                    <div className="flex justify-between items-center border-b border-slate-900 pb-3 mb-2">
+                      <span className="text-[8px] font-extrabold text-slate-500 uppercase tracking-widest">Matched Remedies ({learningSearchResults.length})</span>
+                      <span className="text-[8.5px] font-bold text-teal-400 bg-teal-950/40 border border-teal-900/40 px-2 py-0.5 rounded-md">Search Results</span>
+                    </div>
+
+                    <div className="space-y-3">
+                      {learningSearchResults.length === 0 ? (
+                        <div className="text-center py-12 text-slate-500 text-xs font-semibold">
+                          No searches executed yet, or no matches found. Click "Execute Search" with any criteria.
+                        </div>
+                      ) : (
+                        learningSearchResults.map((res: any, i: number) => (
+                          <div key={i} className="p-4 bg-slate-900/40 border border-slate-900 hover:border-slate-800 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-all">
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2">
+                                <h4 className="text-xs font-bold text-slate-100">{res.remedy.identity.name} ({res.remedy.identity.abbreviation})</h4>
+                                <span className="text-[8.5px] px-2 py-0.5 rounded bg-emerald-950/40 border border-emerald-900/50 text-emerald-400 font-extrabold">Score: {res.score}</span>
+                              </div>
+                              <p className="text-[10px] text-slate-400 font-medium">Kingdom: {res.remedy.identity.kingdom} | Family: {res.remedy.identity.family}</p>
+                              <div className="flex flex-wrap gap-1.5 pt-1.5">
+                                {res.reasons.map((reason: any, cidx: number) => (
+                                  <span key={cidx} className="text-[8.5px] font-semibold text-slate-400 bg-slate-950 border border-slate-900 px-2 py-0.5 rounded-md">
+                                    {reason.facet}: {reason.matchText} (+{reason.score})
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => {
+                                setLearningRemedyId(res.remedy.id);
+                                setLearningSubTab("cockpit");
+                                setLearningMode("clinical");
+                              }}
+                              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold uppercase tracking-wider rounded-xl transition-colors cursor-pointer flex-shrink-0"
+                            >
+                              Study Remedy
+                            </button>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+
+                </div>
+              )}
+
+              {/* 3. ADVANCED COMPARISON SUBTAB */}
+              {learningSubTab === "compare" && (
+                <div className="bg-slate-950/80 border border-slate-900 rounded-[32px] p-6 shadow-2xl space-y-6">
+                  <div className="border-b border-slate-900 pb-3 mb-1">
+                    <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-200">Advanced Comparative Engine</h3>
+                    <p className="text-[9px] text-slate-500 font-semibold leading-relaxed">Side-by-side differential analysis of remedy keynotes, botanical families, kingdoms, and miasms.</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-3 bg-slate-900/50 p-2 rounded-2xl border border-slate-900">
+                    {[
+                      { id: "remedy", label: "Remedy vs Remedy" },
+                      { id: "family", label: "Family vs Family" },
+                      { id: "kingdom", label: "Kingdom vs Kingdom" },
+                      { id: "miasm", label: "Miasm vs Miasm" }
+                    ].map((btn: any) => (
+                      <button
+                        key={btn.id}
+                        onClick={() => setCompareType(btn.id as any)}
+                        className={`py-2 px-3 rounded-xl text-[10px] uppercase font-bold tracking-widest transition-all cursor-pointer ${
+                          compareType === btn.id ? "bg-emerald-600 text-white" : "text-slate-400 hover:bg-slate-950 hover:text-slate-200"
+                        }`}
+                      >
+                        {btn.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* selectors based on type */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {compareType === "remedy" && (
+                      <>
+                        <div>
+                          <label className="block text-[8px] font-extrabold text-slate-500 uppercase tracking-widest mb-1.5">First Remedy</label>
+                          <select
+                            value={compareIdA}
+                            onChange={(e) => setCompareIdA(e.target.value)}
+                            className="w-full p-2.5 bg-slate-900 border border-slate-800 text-xs font-semibold text-white rounded-xl outline-none"
+                          >
+                            {MASTER_REMEDY_DB.map((r: any) => (
+                              <option key={r.id} value={r.id}>{r.identity.name}</option>
+                            ))}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[8px] font-extrabold text-slate-500 uppercase tracking-widest mb-1.5">Second Remedy</label>
+                          <select
+                            value={compareIdB}
+                            onChange={(e) => setCompareIdB(e.target.value)}
+                            className="w-full p-2.5 bg-slate-900 border border-slate-800 text-xs font-semibold text-white rounded-xl outline-none"
+                          >
+                            {MASTER_REMEDY_DB.map((r: any) => (
+                              <option key={r.id} value={r.id}>{r.identity.name}</option>
+                            ))}
+                          </select>
+                        </div>
+                      </>
+                    )}
+
+                    {compareType === "family" && (
+                      <>
+                        <div>
+                          <label className="block text-[8px] font-extrabold text-slate-500 uppercase tracking-widest mb-1.5">First Family</label>
+                          <select
+                            value={compareFamilyA}
+                            onChange={(e) => setCompareFamilyA(e.target.value)}
+                            className="w-full p-2.5 bg-slate-900 border border-slate-800 text-xs font-semibold text-white rounded-xl outline-none"
+                          >
+                            <option value="Ranunculaceae">Ranunculaceae (Aconite, Pulsatilla, Helleborus)</option>
+                            <option value="Solanaceae">Solanaceae (Belladonna, Hyoscyamus, Stramonium)</option>
+                            <option value="Anacardiaceae">Anacardiaceae (Rhus Tox, Anacardium)</option>
+                            <option value="Compositae">Compositae (Arnica, Calendula, Chamomilla)</option>
+                            <option value="Papaveraceae">Papaveraceae (Opium, Chelidonium)</option>
+                            <option value="Loganiaceae">Loganiaceae (Nux Vomica, Ignatia, Gelsemium, Spigelia)</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[8px] font-extrabold text-slate-500 uppercase tracking-widest mb-1.5">Second Family</label>
+                          <select
+                            value={compareFamilyB}
+                            onChange={(e) => setCompareFamilyB(e.target.value)}
+                            className="w-full p-2.5 bg-slate-900 border border-slate-800 text-xs font-semibold text-white rounded-xl outline-none"
+                          >
+                            <option value="Solanaceae">Solanaceae (Belladonna, Hyoscyamus, Stramonium)</option>
+                            <option value="Ranunculaceae">Ranunculaceae (Aconite, Pulsatilla, Helleborus)</option>
+                            <option value="Anacardiaceae">Anacardiaceae (Rhus Tox, Anacardium)</option>
+                            <option value="Compositae">Compositae (Arnica, Calendula, Chamomilla)</option>
+                            <option value="Papaveraceae">Papaveraceae (Opium, Chelidonium)</option>
+                            <option value="Loganiaceae">Loganiaceae (Nux Vomica, Ignatia, Gelsemium, Spigelia)</option>
+                          </select>
+                        </div>
+                      </>
+                    )}
+
+                    {compareType === "kingdom" && (
+                      <>
+                        <div>
+                          <label className="block text-[8px] font-extrabold text-slate-500 uppercase tracking-widest mb-1.5">First Kingdom</label>
+                          <select
+                            value={compareKingdomA}
+                            onChange={(e) => setCompareKingdomA(e.target.value)}
+                            className="w-full p-2.5 bg-slate-900 border border-slate-800 text-xs font-semibold text-white rounded-xl outline-none"
+                          >
+                            <option value="Plant">Plant Kingdom</option>
+                            <option value="Animal">Animal Kingdom</option>
+                            <option value="Mineral">Mineral Kingdom</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[8px] font-extrabold text-slate-500 uppercase tracking-widest mb-1.5">Second Kingdom</label>
+                          <select
+                            value={compareKingdomB}
+                            onChange={(e) => setCompareKingdomB(e.target.value)}
+                            className="w-full p-2.5 bg-slate-900 border border-slate-800 text-xs font-semibold text-white rounded-xl outline-none"
+                          >
+                            <option value="Mineral">Mineral Kingdom</option>
+                            <option value="Plant">Plant Kingdom</option>
+                            <option value="Animal">Animal Kingdom</option>
+                          </select>
+                        </div>
+                      </>
+                    )}
+
+                    {compareType === "miasm" && (
+                      <>
+                        <div>
+                          <label className="block text-[8px] font-extrabold text-slate-500 uppercase tracking-widest mb-1.5">First Miasm</label>
+                          <select
+                            value={compareMiasmA}
+                            onChange={(e) => setCompareMiasmA(e.target.value)}
+                            className="w-full p-2.5 bg-slate-900 border border-slate-800 text-xs font-semibold text-white rounded-xl outline-none"
+                          >
+                            <option value="psora">Psora (Functional Sensitivity)</option>
+                            <option value="sycosis">Sycosis (Excess, Proliferation)</option>
+                            <option value="syphilis">Syphilis (Destruction, Degeneration)</option>
+                            <option value="tubercular">Tubercular (Hectic, Oppressed)</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[8px] font-extrabold text-slate-500 uppercase tracking-widest mb-1.5">Second Miasm</label>
+                          <select
+                            value={compareMiasmB}
+                            onChange={(e) => setCompareMiasmB(e.target.value)}
+                            className="w-full p-2.5 bg-slate-900 border border-slate-800 text-xs font-semibold text-white rounded-xl outline-none"
+                          >
+                            <option value="sycosis">Sycosis (Excess, Proliferation)</option>
+                            <option value="psora">Psora (Functional Sensitivity)</option>
+                            <option value="syphilis">Syphilis (Destruction, Degeneration)</option>
+                            <option value="tubercular">Tubercular (Hectic, Oppressed)</option>
+                          </select>
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Display comparison */}
+                  <div className="bg-slate-900/40 p-4 border border-slate-900 rounded-2xl select-text">
+                    {compareType === "remedy" && (() => {
+                      const rA = MASTER_REMEDY_DB.find((r: any) => r.id === compareIdA) || MASTER_REMEDY_DB[0];
+                      const rB = MASTER_REMEDY_DB.find((r: any) => r.id === compareIdB) || MASTER_REMEDY_DB[1];
+                      
+                      return (
+                        <div className="overflow-x-auto">
+                          <table className="w-full border-collapse text-xs text-slate-300">
+                            <thead>
+                              <tr className="border-b border-slate-800">
+                                <th className="text-left py-2 w-1/4 font-extrabold text-[8px] uppercase tracking-wider text-slate-500">Feature</th>
+                                <th className="text-left py-2 font-bold text-emerald-400 text-xs">{rA.identity.name} ({rA.identity.abbreviation})</th>
+                                <th className="text-left py-2 font-bold text-teal-400 text-xs">{rB.identity.name} ({rB.identity.abbreviation})</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-900/50">
+                              <tr>
+                                <td className="py-2.5 font-semibold text-slate-500">Kingdom / Family</td>
+                                <td className="py-2.5">{rA.identity.kingdom} Kingdom &rarr; {rA.identity.family}</td>
+                                <td className="py-2.5">{rB.identity.kingdom} Kingdom &rarr; {rB.identity.family}</td>
+                              </tr>
+                              <tr>
+                                <td className="py-2.5 font-semibold text-slate-500">Substance Source</td>
+                                <td className="py-2.5">{rA.identity.sourceSubstance}</td>
+                                <td className="py-2.5">{rB.identity.sourceSubstance}</td>
+                              </tr>
+                              <tr>
+                                <td className="py-2.5 font-semibold text-slate-500">Core Constitutional Theme</td>
+                                <td className="py-2.5 leading-relaxed">{rA.essence.coreTheme}</td>
+                                <td className="py-2.5 leading-relaxed">{rB.essence.coreTheme}</td>
+                              </tr>
+                              <tr>
+                                <td className="py-2.5 font-semibold text-slate-500">Central Conflict</td>
+                                <td className="py-2.5 leading-relaxed">{rA.essence.centralConflict}</td>
+                                <td className="py-2.5 leading-relaxed">{rB.essence.centralConflict}</td>
+                              </tr>
+                              <tr>
+                                <td className="py-2.5 font-semibold text-slate-500">Thermal / Thirst Index</td>
+                                <td className="py-2.5">{rA.physicalGenerals.thermalState} | {rA.physicalGenerals.thirst}</td>
+                                <td className="py-2.5">{rB.physicalGenerals.thermalState} | {rB.physicalGenerals.thirst}</td>
+                              </tr>
+                              <tr>
+                                <td className="py-2.5 font-semibold text-slate-500">Primary Aggravations</td>
+                                <td className="py-2.5 leading-normal">{rA.modalities.worseFrom.join(", ")}</td>
+                                <td className="py-2.5 leading-normal">{rB.modalities.worseFrom.join(", ")}</td>
+                              </tr>
+                              <tr>
+                                <td className="py-2.5 font-semibold text-slate-500">Primary Ameliorations</td>
+                                <td className="py-2.5 leading-normal">{rA.modalities.betterFrom.join(", ")}</td>
+                                <td className="py-2.5 leading-normal">{rB.modalities.betterFrom.join(", ")}</td>
+                              </tr>
+                              <tr>
+                                <td className="py-2.5 font-semibold text-slate-500">Miasmatic Spectrum</td>
+                                <td className="py-2.5">
+                                  <strong>{rA.miasmaticAnalysis.dominantMiasm}</strong> ({rA.miasmaticAnalysis.psora}% Ps / {rA.miasmaticAnalysis.sycosis}% Sy / {rA.miasmaticAnalysis.syphilis}% Syph)
+                                </td>
+                                <td className="py-2.5">
+                                  <strong>{rB.miasmaticAnalysis.dominantMiasm}</strong> ({rB.miasmaticAnalysis.psora}% Ps / {rB.miasmaticAnalysis.sycosis}% Sy / {rB.miasmaticAnalysis.syphilis}% Syph)
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="py-2.5 font-semibold text-slate-500">Top 10 keynote pointers</td>
+                                <td className="py-2.5">
+                                  <ul className="list-disc pl-4 space-y-1">
+                                    {(rA.keynotes.top10 || []).map((k: any, i: number) => <li key={i}>{k}</li>)}
+                                  </ul>
+                                </td>
+                                <td className="py-2.5">
+                                  <ul className="list-disc pl-4 space-y-1">
+                                    {(rB.keynotes.top10 || []).map((k: any, i: number) => <li key={i}>{k}</li>)}
+                                  </ul>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      );
+                    })()}
+
+                    {compareType === "family" && (() => {
+                      const data = compareFamilies(compareFamilyA, compareFamilyB);
+                      return (
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-2 gap-4 text-xs font-semibold">
+                            <div className="bg-slate-900/60 p-4 border border-slate-900 rounded-2xl space-y-3">
+                              <h4 className="text-sm font-bold text-emerald-400 border-b border-slate-950 pb-1.5">{data.familyA}</h4>
+                              <p><span className="text-slate-500 text-[8.5px] uppercase block">Remedies Mapped</span> {data.remediesA.join(", ") || "None"}</p>
+                              <p><span className="text-slate-500 text-[8.5px] uppercase block">Psychological Themes</span> {data.themesA.join(", ")}</p>
+                              <p><span className="text-slate-500 text-[8.5px] uppercase block">Physical Generals</span> {data.physicalA.join(", ")}</p>
+                              <p><span className="text-slate-500 text-[8.5px] uppercase block">Clinical Fields</span> {data.clinicalA.join(", ")}</p>
+                            </div>
+                            <div className="bg-slate-900/60 p-4 border border-slate-900 rounded-2xl space-y-3">
+                              <h4 className="text-sm font-bold text-teal-400 border-b border-slate-950 pb-1.5">{data.familyB}</h4>
+                              <p><span className="text-slate-500 text-[8.5px] uppercase block">Remedies Mapped</span> {data.remediesB.join(", ") || "None"}</p>
+                              <p><span className="text-slate-500 text-[8.5px] uppercase block">Psychological Themes</span> {data.themesB.join(", ")}</p>
+                              <p><span className="text-slate-500 text-[8.5px] uppercase block">Physical Generals</span> {data.physicalB.join(", ")}</p>
+                              <p><span className="text-slate-500 text-[8.5px] uppercase block">Clinical Fields</span> {data.clinicalB.join(", ")}</p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
+
+                    {compareType === "kingdom" && (() => {
+                      const data = compareKingdoms(compareKingdomA, compareKingdomB);
+                      return (
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-2 gap-4 text-xs font-semibold">
+                            <div className="bg-slate-900/60 p-4 border border-slate-900 rounded-2xl space-y-3">
+                              <h4 className="text-sm font-bold text-emerald-400 border-b border-slate-950 pb-1.5">{data.kingdomA} Kingdom</h4>
+                              <p><span className="text-slate-500 text-[8.5px] uppercase block">Remedies in DB</span> {data.remediesA.join(", ") || "None"}</p>
+                              <p><span className="text-slate-500 text-[8.5px] uppercase block">Psychological Themes</span> {data.psychologicalThemesA.join(", ")}</p>
+                              <p><span className="text-slate-500 text-[8.5px] uppercase block">Somatic Focus</span> {data.somaticFocusA.join(", ")}</p>
+                              <p><span className="text-slate-500 text-[8.5px] uppercase block">Miasmatic Tendency</span> {data.miasmaticTendencyA.join(", ")}</p>
+                              <p><span className="text-slate-500 text-[8.5px] uppercase block">Reaction Speed</span> {data.expressionSpeedA}</p>
+                            </div>
+                            <div className="bg-slate-900/60 p-4 border border-slate-900 rounded-2xl space-y-3">
+                              <h4 className="text-sm font-bold text-teal-400 border-b border-slate-950 pb-1.5">{data.kingdomB} Kingdom</h4>
+                              <p><span className="text-slate-500 text-[8.5px] uppercase block">Remedies in DB</span> {data.remediesB.join(", ") || "None"}</p>
+                              <p><span className="text-slate-500 text-[8.5px] uppercase block">Psychological Themes</span> {data.psychologicalThemesB.join(", ")}</p>
+                              <p><span className="text-slate-500 text-[8.5px] uppercase block">Somatic Focus</span> {data.somaticFocusB.join(", ")}</p>
+                              <p><span className="text-slate-500 text-[8.5px] uppercase block">Miasmatic Tendency</span> {data.miasmaticTendencyB.join(", ")}</p>
+                              <p><span className="text-slate-500 text-[8.5px] uppercase block">Reaction Speed</span> {data.expressionSpeedB}</p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
+
+                    {compareType === "miasm" && (() => {
+                      const data = compareMiasms(compareMiasmA, compareMiasmB);
+                      return (
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-2 gap-4 text-xs font-semibold">
+                            <div className="bg-slate-900/60 p-4 border border-slate-900 rounded-2xl space-y-3">
+                              <h4 className="text-sm font-bold text-emerald-400 border-b border-slate-950 pb-1.5">Miasm: {data.miasmA}</h4>
+                              <p><span className="text-slate-500 text-[8.5px] uppercase block">Core Concept</span> {data.coreConceptA}</p>
+                              <p><span className="text-slate-500 text-[8.5px] uppercase block">Mental State</span> {data.mentalStateA}</p>
+                              <p><span className="text-slate-500 text-[8.5px] uppercase block">Dermal Expression</span> {data.dermalExpressionA}</p>
+                              <p><span className="text-slate-500 text-[8.5px] uppercase block">Key Modalities</span> {data.modalitiesA.join(", ")}</p>
+                              <p><span className="text-slate-500 text-[8.5px] uppercase block">Representative Remedies</span> {data.representativeRemediesA.join(", ")}</p>
+                            </div>
+                            <div className="bg-slate-900/60 p-4 border border-slate-900 rounded-2xl space-y-3">
+                              <h4 className="text-sm font-bold text-teal-400 border-b border-slate-950 pb-1.5">Miasm: {data.miasmB}</h4>
+                              <p><span className="text-slate-500 text-[8.5px] uppercase block">Core Concept</span> {data.coreConceptB}</p>
+                              <p><span className="text-slate-500 text-[8.5px] uppercase block">Mental State</span> {data.mentalStateB}</p>
+                              <p><span className="text-slate-500 text-[8.5px] uppercase block">Dermal Expression</span> {data.dermalExpressionB}</p>
+                              <p><span className="text-slate-500 text-[8.5px] uppercase block">Key Modalities</span> {data.modalitiesB.join(", ")}</p>
+                              <p><span className="text-slate-500 text-[8.5px] uppercase block">Representative Remedies</span> {data.representativeRemediesB.join(", ")}</p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                </div>
+              )}
+
+              {/* 4. CONVERSATIONAL TUTOR SUBTAB */}
+              {learningSubTab === "tutor" && (
+                <div className="bg-slate-950/80 border border-slate-900 rounded-[32px] p-6 shadow-2xl relative overflow-hidden flex flex-col">
+                  <div className="flex items-center justify-between border-b border-slate-900 pb-4 mb-4">
+                    <div className="flex items-center gap-2">
+                      <Brain className="w-4 h-4 text-emerald-400" />
+                      <div>
+                        <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-200">Conversational AI Tutor</h3>
+                        <p className="text-[10px] text-slate-500 font-medium">Dialogue with the tutoring engine. Try clicking prompt chips or type questions.</p>
+                      </div>
+                    </div>
+                    <span className="text-[8.5px] font-bold text-emerald-400 bg-emerald-950/40 border border-emerald-900/40 px-2 py-0.5 rounded-md">Online</span>
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    {/* Left: Chat history panel (8 cols) */}
+                    <div className="lg:col-span-8 space-y-4 flex flex-col">
+                      <div 
+                        data-lenis-prevent
+                        className="bg-black/60 border border-slate-900 p-4 rounded-2xl h-80 overflow-y-auto flex flex-col space-y-4 relative shadow-inner select-text"
+                      >
+                        <div className="absolute top-2 right-2 text-[8px] text-slate-600 tracking-widest uppercase pointer-events-none">AI Dialogue Stream</div>
+                        
+                        {tutorChat.map((msg: any, idx: number) => {
+                          const isUser = msg.sender === "user";
+                          return (
+                            <div 
+                              key={idx} 
+                              className={`flex flex-col max-w-[85%] ${isUser ? 'self-end items-end' : 'self-start items-start'}`}
+                            >
+                              <span className="text-[8px] font-extrabold text-slate-500 uppercase tracking-widest mb-1.5">{isUser ? 'Clinician' : 'AI Tutor'}</span>
+                              <div 
+                                className={`p-3.5 rounded-2xl text-[10px] font-semibold leading-relaxed leading-normal font-sans shadow-md border ${
+                                  isUser 
+                                    ? 'bg-emerald-950/30 border-emerald-900 text-emerald-200 rounded-tr-none' 
+                                    : 'bg-slate-900 border-slate-800 text-slate-300 rounded-tl-none'
+                                }`}
+                                dangerouslySetInnerHTML={{ __html: msg.text }}
+                              />
+
+                              {/* Interactive quiz block embedded directly in chat history */}
+                              {msg.quizData && (
+                                <div className="w-full max-w-sm mt-3 bg-slate-950 border border-slate-800/80 rounded-2xl p-4 space-y-3.5 shadow-lg animate-fadeIn text-left self-start">
+                                  <div className="text-[8px] uppercase tracking-widest font-extrabold text-emerald-400 border-b border-slate-900 pb-1 mb-2">Embedded Test Practice</div>
+                                  
+                                  {msg.quizData.map((q: any, qidx: number) => {
+                                    const isSubmitted = msg.quizSubmitted;
+                                    const answers = msg.quizAnswers || {};
+                                    const selected = answers[qidx];
+                                    
+                                    return (
+                                      <div key={qidx} className="space-y-2">
+                                        <div className="text-[10px] font-bold text-slate-200">Q{qidx + 1}: {q.question}</div>
+                                        <div className="grid grid-cols-1 gap-1.5">
+                                          {q.options.map((opt: string, oidx: number) => {
+                                            const isSelected = selected === oidx;
+                                            let btnStyle = "bg-slate-900 border-slate-800 text-slate-400";
+                                            if (isSelected) {
+                                              btnStyle = "bg-emerald-950/20 border-emerald-800 text-emerald-300";
+                                            }
+                                            if (isSubmitted) {
+                                              if (oidx === q.correctIdx) {
+                                                btnStyle = "bg-emerald-600/20 border-emerald-500 text-emerald-300 font-bold";
+                                              } else if (isSelected) {
+                                                btnStyle = "bg-rose-950/20 border-rose-800 text-rose-300 line-through";
+                                              }
+                                            }
+                                            return (
+                                              <button
+                                                key={oidx}
+                                                type="button"
+                                                disabled={isSubmitted}
+                                                onClick={() => {
+                                                  setTutorChat((prev: any) => {
+                                                    const updated = [...prev];
+                                                    const item = { ...updated[idx] };
+                                                    item.quizAnswers = { ...(item.quizAnswers || {}), [qidx]: oidx };
+                                                    updated[idx] = item;
+                                                    return updated;
+                                                  });
+                                                }}
+                                                className={`text-left p-2 rounded-lg border text-[9px] font-semibold transition-all cursor-pointer ${btnStyle}`}
+                                              >
+                                                {opt}
+                                              </button>
+                                            );
+                                          })}
+                                        </div>
+                                        {isSubmitted && (
+                                          <p className="text-[8px] text-slate-500 font-semibold leading-normal italic">{q.explanation}</p>
+                                        )}
+                                      </div>
+                                    );
+                                  })}
+
+                                  {/* Action button inside chat history */}
+                                  {!msg.quizSubmitted ? (
+                                    <button
+                                      onClick={() => {
+                                        setTutorChat((prev: any) => {
+                                          const updated = [...prev];
+                                          const item = { ...updated[idx] };
+                                          let correct = 0;
+                                          item.quizData.forEach((q: any, i: number) => {
+                                            if ((item.quizAnswers || {})[i] === q.correctIdx) correct++;
+                                          });
+                                          item.quizSubmitted = true;
+                                          item.quizScore = correct;
+                                          item.text = `${item.text}<br/><br/><strong class='text-emerald-400'>Quiz Evaluated!</strong> Score: <strong>${correct} / ${item.quizData.length}</strong> correct.`;
+                                          updated[idx] = item;
+                                          return updated;
+                                        });
+                                      }}
+                                      className="w-full py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[9px] font-bold uppercase tracking-widest cursor-pointer mt-2"
+                                    >
+                                      Verify Answers
+                                    </button>
+                                  ) : (
+                                    <div className="text-[9px] font-bold text-slate-400 text-right mt-1">Checked - Score: {msg.quizScore}/{msg.quizData.length}</div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Input form */}
+                      <form onSubmit={handleTutorSubmit} className="flex gap-2 mt-3">
+                        <input
+                          type="text"
+                          placeholder="Ask tutor e.g. Teach me Lycopodium, Compare Sulphur and Arsenicum..."
+                          value={tutorInput}
+                          onChange={(e) => setTutorInput(e.target.value)}
+                          className="flex-1 px-4 py-2.5 bg-slate-900 border border-slate-800 focus:border-emerald-600 outline-none rounded-xl text-xs font-semibold text-white placeholder-slate-600 shadow-inner"
+                        />
+                        <button
+                          type="submit"
+                          className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                        >
+                          <Send className="w-3.5 h-3.5" />
+                          <span>Ask</span>
+                        </button>
+                      </form>
+                    </div>
+
+                    {/* Right: Quick query chips (4 cols) */}
+                    <div className="lg:col-span-4 space-y-4">
+                      <span className="text-[8px] uppercase tracking-widest font-extrabold text-slate-500 mb-1 block">Quick Query Prompts</span>
+                      <div className="flex flex-col gap-2">
+                        {[
+                          { label: "Teach me Lycopodium.", query: "Teach me Lycopodium." },
+                          { label: "Compare Sulphur and Arsenicum.", query: "Compare Sulphur and Arsenicum." },
+                          { label: "Quiz me on Lachesis.", query: "Quiz me on Lachesis." },
+                          { label: "Explain Nux Vomica like a professor.", query: "Explain Nux Vomica like a professor." },
+                          { label: "Generate complete drug picture of Sulphur.", query: "Generate complete drug picture of Sulphur." }
+                        ].map((chip, i) => (
+                          <button
+                            key={i}
+                            type="button"
+                            onClick={() => {
+                              setTutorInput(chip.query);
+                              // Trigger submit programmatically
+                              const dummyEvent = { preventDefault: () => {} } as any;
+                              setTutorChat((prev: any) => [...prev, { sender: "user", text: chip.query }]);
+                              setTimeout(() => {
+                                const response = parseLearningTutorQuery(chip.query);
+                                if (response.remedyId) {
+                                  setLearningRemedyId(response.remedyId);
+                                  if (response.mode) {
+                                    setLearningMode(response.mode);
+                                  }
+                                }
+                                setTutorChat((prev: any) => [...prev, {
+                                  sender: "tutor",
+                                  text: response.content,
+                                  quizData: response.quizData
+                                }]);
+                              }, 300);
+                              setTutorInput("");
+                            }}
+                            className="text-left py-2 px-3 border border-slate-900 hover:border-slate-800 bg-slate-900/40 rounded-xl text-[10px] font-semibold text-slate-300 hover:text-emerald-400 transition-all cursor-pointer font-sans leading-snug flex items-center justify-between"
+                          >
+                            <span>{chip.label}</span>
+                            <ChevronRight className="w-3 h-3 text-slate-500 flex-shrink-0" />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              )}
+
+              {/* 5. INGESTION PIPELINE SUBTAB */}
+              {learningSubTab === "pipeline" && (
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  
+                  {/* Left Controls (4 cols) */}
+                  <div className="lg:col-span-4 bg-slate-950/80 border border-slate-900 rounded-[32px] p-6 shadow-2xl space-y-5">
+                    <div className="border-b border-slate-900 pb-3 mb-1">
+                      <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-200">Text Ingestion Console</h3>
+                      <p className="text-[9px] text-slate-500 font-semibold leading-relaxed">Simulate ingestion of classical clinical literature into the active graph.</p>
+                    </div>
+
+                    <div className="space-y-3">
+                      <label className="block text-[8px] font-extrabold text-slate-500 uppercase tracking-widest mb-1.5">Source Text Selection</label>
+                      <select
+                        value={ingestionSourceId}
+                        onChange={(e) => setIngestionSourceId(e.target.value)}
+                        className="w-full p-2.5 bg-slate-900 border border-slate-800 text-xs font-semibold text-white rounded-xl outline-none"
+                      >
+                        {CLASSICAL_SOURCES.map((src: any) => (
+                          <option key={src.id} value={src.id}>{src.name} ({src.author})</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        setIsIngestionRunning(true);
+                        setIngestionLogs([]);
+                        setIngestionSummary(null);
+                        
+                        const summary = simulateMateriaMedicaIngestion(ingestionSourceId);
+                        let idx = 0;
+                        const interval = setInterval(() => {
+                          if (idx < summary.logs.length) {
+                            setIngestionLogs((prev: any) => [...prev, summary.logs[idx]]);
+                            idx++;
+                          } else {
+                            clearInterval(interval);
+                            setIsIngestionRunning(false);
+                            setIngestionSummary(summary);
+                          }
+                        }, 120);
+                      }}
+                      disabled={isIngestionRunning}
+                      className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-colors cursor-pointer disabled:opacity-50"
+                    >
+                      {isIngestionRunning ? "Running Parser..." : "Run Ingestion Pipeline"}
+                    </button>
+                  </div>
+
+                  {/* Right Logs / Summary (8 cols) */}
+                  <div className="lg:col-span-8 bg-slate-950/80 border border-slate-900 rounded-[32px] p-6 shadow-2xl space-y-4">
+                    <div className="border-b border-slate-900 pb-3 mb-2 flex justify-between items-center">
+                      <span className="text-[8px] font-extrabold text-slate-500 uppercase tracking-widest">Pipeline logs & Ingestion Output</span>
+                      <span className="text-[8.5px] font-bold text-teal-400 bg-teal-950/40 border border-teal-900/40 px-2 py-0.5 rounded-md">Live Stream</span>
+                    </div>
+
+                    {/* Console Logger */}
+                    <div className="bg-black/80 border border-slate-900 p-4 rounded-2xl h-56 overflow-y-auto font-mono text-[9px] space-y-1.5 shadow-inner" data-lenis-prevent>
+                      {ingestionLogs.length === 0 && (
+                        <div className="text-slate-600 italic">Console idle. Awaiting user pipeline trigger...</div>
+                      )}
+                      {ingestionLogs.map((log: any, i: number) => {
+                        let levelStyle = "text-slate-400";
+                        if (log.level === "success") levelStyle = "text-emerald-400 font-bold";
+                        if (log.level === "warning") levelStyle = "text-amber-400 font-bold";
+                        if (log.level === "error") levelStyle = "text-rose-500 font-bold";
+                        
+                        return (
+                          <div key={i} className="leading-relaxed">
+                            <span className="text-slate-500 mr-2">[{log.timestamp}]</span>
+                            <span className="text-slate-500 mr-2">[{log.stage}]</span>
+                            <span className={levelStyle}>{log.message}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Summary Result Metrics */}
+                    {ingestionSummary && (
+                      <div className="bg-slate-900/40 p-4 border border-slate-900 rounded-2xl space-y-3 animate-fadeIn">
+                        <div className="flex justify-between items-center border-b border-slate-950 pb-1.5">
+                          <span className="text-[10px] font-bold text-emerald-400">Ingestion Summary Report</span>
+                          <span className="text-[8.5px] text-slate-500 font-semibold">Parser: V2.1 OCR</span>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs font-semibold">
+                          <div>
+                            <span className="text-[8px] text-slate-500 uppercase tracking-wider block">Raw File Size</span>
+                            <span>{ingestionSummary.rawFileSizeKb} KB</span>
+                          </div>
+                          <div>
+                            <span className="text-[8px] text-slate-500 uppercase tracking-wider block">Monographs Detected</span>
+                            <span>{ingestionSummary.monographsDetected}</span>
+                          </div>
+                          <div>
+                            <span className="text-[8px] text-slate-500 uppercase tracking-wider block">Symptom Fragments</span>
+                            <span>{ingestionSummary.symptomsExtractedCount}</span>
+                          </div>
+                          <div>
+                            <span className="text-[8px] text-slate-500 uppercase tracking-wider block">Organ Mappings</span>
+                            <span>{ingestionSummary.organAffinitiesMappedCount}</span>
+                          </div>
+                        </div>
+
+                        {/* Miasm keyword density breakdown */}
+                        <div className="space-y-1 pt-1 border-t border-slate-950">
+                          <span className="text-[8.5px] text-slate-500 font-extrabold uppercase tracking-widest block">Miasmatic keyword counts</span>
+                          <div className="grid grid-cols-5 gap-2 text-center text-[9.5px] font-bold">
+                            <div className="bg-slate-950 p-1.5 border border-slate-900 rounded-lg">
+                              <div className="text-[7.5px] uppercase tracking-wider text-slate-500 font-extrabold">Psora</div>
+                              <div className="text-emerald-400">{ingestionSummary.miasmaticKeywordsCount.psora}</div>
+                            </div>
+                            <div className="bg-slate-950 p-1.5 border border-slate-900 rounded-lg">
+                              <div className="text-[7.5px] uppercase tracking-wider text-slate-500 font-extrabold">Sycosis</div>
+                              <div className="text-teal-400">{ingestionSummary.miasmaticKeywordsCount.sycosis}</div>
+                            </div>
+                            <div className="bg-slate-950 p-1.5 border border-slate-900 rounded-lg">
+                              <div className="text-[7.5px] uppercase tracking-wider text-slate-500 font-extrabold">Syphilis</div>
+                              <div className="text-rose-400">{ingestionSummary.miasmaticKeywordsCount.syphilis}</div>
+                            </div>
+                            <div className="bg-slate-950 p-1.5 border border-slate-900 rounded-lg">
+                              <div className="text-[7.5px] uppercase tracking-wider text-slate-500 font-extrabold">Tubercular</div>
+                              <div className="text-violet-400">{ingestionSummary.miasmaticKeywordsCount.tubercular}</div>
+                            </div>
+                            <div className="bg-slate-950 p-1.5 border border-slate-900 rounded-lg">
+                              <div className="text-[7.5px] uppercase tracking-wider text-slate-500 font-extrabold">Cancer</div>
+                              <div className="text-amber-400">{ingestionSummary.miasmaticKeywordsCount.cancerinic}</div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Extracted snippet showcase */}
+                        <div className="space-y-2 pt-2 border-t border-slate-950">
+                          <span className="text-[8.5px] text-slate-500 font-extrabold uppercase tracking-widest block">Sample Extracted Snippets (Confidence Analysis)</span>
+                          <div className="space-y-2">
+                            {ingestionSummary.snippets.map((snip: any, idx: number) => (
+                              <div key={idx} className="p-3 bg-slate-950 border border-slate-900 rounded-xl text-[10px] space-y-1 select-text">
+                                <p className="italic text-slate-400 leading-normal font-serif">&ldquo;{snip.sourceText}&rdquo;</p>
+                                <div className="flex justify-between items-center text-[8.5px] font-bold">
+                                  <span className="text-slate-500">Extracted: <strong className="text-emerald-400 font-medium">{snip.extractedSymptom}</strong> &rarr; Rubric: <strong className="text-teal-400 font-medium">{snip.matchedRubric}</strong></span>
+                                  <span className="text-emerald-400 bg-emerald-950/40 border border-emerald-900/50 px-1.5 py-0.5 rounded">Conf: {snip.confidenceScore}%</span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                      </div>
+                    )}
+                  </div>
+
+                </div>
+              )}
+
+            </div>
+          )}

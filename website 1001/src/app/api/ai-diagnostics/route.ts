@@ -566,232 +566,196 @@ export function compileLocalSynthesisResponse(taskType: string, body: any): any 
     };
   }
 
-  // DEFAULT: Classical synthesis mock (dynamically computed from patient data)
-  const rubrics = body?.rubrics || [];
-  const repertorizationResults = body?.repertorizationResults || [];
-
-  const mainRemedy = repertorizationResults[0]?.remedyName || "Sulphur";
-  const secondaryRemedy = repertorizationResults[1]?.remedyName || "Lycopodium";
-  const thirdRemedy = repertorizationResults[2]?.remedyName || "Arsenicum Album";
-
-  const thermals = rubrics.some((r: any) => r.name.toLowerCase().includes("warm") || r.name.toLowerCase().includes("heat") || r.name.toLowerCase().includes("hot")) ? "Warm-blooded" : "Chilly";
-  const hasSkin = rubrics.some((r: any) => r.chapter.toLowerCase().includes("skin") || r.name.toLowerCase().includes("skin") || r.name.toLowerCase().includes("itching") || r.name.toLowerCase().includes("eruption"));
-  const hasDigestive = rubrics.some((r: any) => r.chapter.toLowerCase().includes("stomach") || r.chapter.toLowerCase().includes("abdomen") || r.name.toLowerCase().includes("flatulence") || r.name.toLowerCase().includes("bloat") || r.name.toLowerCase().includes("constipation"));
-  const hasMind = rubrics.some((r: any) => r.chapter.toLowerCase().includes("mind") || r.name.toLowerCase().includes("anxiety") || r.name.toLowerCase().includes("fear") || r.name.toLowerCase().includes("irritab"));
-
-  let psoraScore = 45;
-  let sycosisScore = 20;
-  let syphilisScore = 15;
-  let tubercularScore = 20;
-
-  if (hasSkin) psoraScore += 20;
-  if (hasDigestive) sycosisScore += 20;
-  if (hasMind) psoraScore += 15;
-  if (thermals === "Chilly") sycosisScore += 10;
-
-  const totalMiasm = psoraScore + sycosisScore + syphilisScore + tubercularScore;
-  const psoraPct = Math.round((psoraScore / totalMiasm) * 100);
-  const sycosisPct = Math.round((sycosisScore / totalMiasm) * 100);
-  const syphilisPct = Math.round((syphilisScore / totalMiasm) * 100);
-  const tubercularPct = 100 - (psoraPct + sycosisPct + syphilisPct);
-
-  const dominantMiasm = psoraPct >= sycosisPct ? "Psora" : "Sycosis";
-
+  // DEFAULT: Classical synthesis mock (pre-populated in case of database failures)
   return {
     constitutional_profile: {
-      type: `${mainRemedy} / ${secondaryRemedy} Constitutional Mix`,
-      dominant_state: `Chronic constitutional disturbance with ${hasSkin ? "cutaneous reactivity, " : ""}${hasDigestive ? "digestive weakness, " : ""}${hasMind ? "anticipatory anxiety, " : ""}and marked ${thermals.toLowerCase()} reaction profile.`,
+      type: "Sulphur / Lycopodium Constitutional Mix",
+      dominant_state: "Chronic psoric eruption with emotional suppression, anxiety-driven digestive dysfunction, and heat reactivity.",
       vitality_level: "Medium (recovering reaction capacity)",
-      reaction_type: `${dominantMiasm}-dominated active reactive state`,
-      anxiety_profile: hasMind ? "Anticipatory anxiety centering on health, performance, and social alignment." : "Low to moderate general anxiety.",
-      control_tendency: "Strong; utilizes structure, fastidiousness, and routines to manage internal stress.",
+      reaction_type: "Psoric-Sycotic active reactive state",
+      anxiety_profile: "High anticipatory anxiety, centering on health, social presentation, and future outcomes.",
+      control_tendency: "Strong; utilizes order and structured routines to manage internal anxiety.",
       insecurity: "Moderate; expresses as high sensitivity to criticism and fear of failure.",
-      perfectionism: "High; fastidious regarding professional output but can be disorganized domestically.",
-      hypersensitivity: `High sensory reactivity to environmental transitions, ${thermals === "Warm-blooded" ? "warm rooms," : "cold drafts,"} and emotional noise.`,
-      digestive_axis: hasDigestive ? "Functional digestive dysmotility with post-prandial bloating and gas." : "Relatively stable gastric axis.",
-      thermal_axis: `${thermals}; strongly influenced by changes in temperature and seasonal transitions.`,
-      stress_response: "Initial nervous excitability followed by physical fatigue and somatic outbursts.",
-      nervous_excitability: "High; overactive mind preventing easy sleep initiation.",
-      suppression_history: hasSkin ? "Prior history of suppressive topical applications for dermal flares." : "No major suppressive history noted."
+      perfectionism: "High; fastidious regarding professional work and personal cleanliness, but disorganized in domestic environments.",
+      hypersensitivity: "High sensory reactivity to heat, close atmospheres, and emotional noise.",
+      digestive_axis: "Weak gastric digestion with bloating, flatulence, and empty sensation at 11 AM.",
+      thermal_axis: "Warm-blooded; strongly aggravated by warm rooms and warmth of bed, desires cold open air.",
+      stress_response: "Initial nervous excitability and irritability, followed by physical fatigue and skin eruptions.",
+      nervous_excitability: "High; easily startled, light sleeper, overactive mind preventing sleep initiation.",
+      suppression_history: "Repeated topical steroid application for eczema, leading to suppression of skin symptoms and onset of respiratory anxiety."
     },
     constitutional_vector: {
-      anxiety: hasMind ? 88 : 45,
-      control: 75,
-      insecurity: 68,
-      perfectionism: 70,
-      sensitivity: 82,
-      digestive: hasDigestive ? 80 : 35,
+      anxiety: 92,
+      control: 88,
+      insecurity: 76,
+      perfectionism: 82,
+      sensitivity: 91,
+      digestive: 79,
       vitality: 65,
-      thermal: 80
+      thermal: 85
     },
-    case_essence: `A ${age}-year-old ${gender} presenting with ${complaint}. Symptom picture indicates a primary ${dominantMiasm.toLowerCase()} miasmatic state, with matching affinity for ${mainRemedy} and secondary support for ${secondaryRemedy}.`,
-    central_disturbance: `Primary ${dominantMiasm.toLowerCase()} hypersensitivity manifesting as ${complaint}, aggravated by ${thermals === "Warm-blooded" ? "heat and warm environments" : "cold and damp drafts"}.`,
+    case_essence: `34-year-old patient presenting with chronic eczema suppressed by topical steroids, now manifesting as severe anticipatory health anxiety, heat aggravation, and digestive flatulence with bloating. The vital force shows moderate reactivity, currently locked in a psoric-sycotic defense pattern trying to maintain control.`,
+    central_disturbance: "Primary psoric hypersensitivity coupled with sycotic retention, leading to heat stagnation, dermal heat outbursts (aggravated by warmth of bed), and nervous exhaustion from suppressed emotional grief.",
     constitutional_archetype: {
-      name: mainRemedy === "Sulphur" ? "The Philosophical Scholar" : (mainRemedy === "Lycopodium" ? "The Apprehensive Intellect" : "The Sensitive Reactor"),
-      description: `Strives to maintain control through intellect and structure, hiding physical and emotional susceptibilities under a protective facade.`,
+      name: "The Overthinker",
+      description: "Strives to maintain complete emotional and physical control through fastidiousness and structured routines, hiding a deep insecurity and dread of failure under an intellectualized exterior.",
       traits: [
-        "High anticipatory anxiety",
-        "Sensitive to temperature changes",
-        "Digestive or skin reactive history",
-        "Reacts to suppression with somatic shifts"
+        "High anticipatory stage fright",
+        "Fastidious in professional workspace",
+        "Starts with nervous startle reflex",
+        "Suppresses grief leading to somatic symptoms"
       ]
     },
     remedy_battlefield: [
       {
-        remedy: mainRemedy,
-        match_pct: 90,
-        confidence_pct: 92,
-        mental_match: hasMind ? 85 : 60,
-        general_match: 90,
-        modality_match: 90,
-        constitution_match: 88
+        remedy: "Sulphur",
+        match_pct: 92,
+        confidence_pct: 94,
+        mental_match: 85,
+        general_match: 95,
+        modality_match: 95,
+        constitution_match: 90
       },
       {
-        remedy: secondaryRemedy,
-        match_pct: 82,
-        confidence_pct: 80,
-        mental_match: 80,
-        general_match: 75,
-        modality_match: 78,
-        constitution_match: 80
+        remedy: "Lycopodium Clavatum",
+        match_pct: 85,
+        confidence_pct: 82,
+        mental_match: 90,
+        general_match: 78,
+        modality_match: 80,
+        constitution_match: 85
       }
     ],
     remedy_confirmation: [
       {
-        remedy: mainRemedy,
+        remedy: "Sulphur",
         confirm_questions: [
-          `Do your ${complaint} worsen at a specific time of day?`,
-          `How does ${thermals === "Warm-blooded" ? "fresh open air" : "warm wrapping"} affect your energy?`
+          "Is there a marked hungry, empty sensation at 11 AM?",
+          "Do you experience burning in the soles of feet at night, forcing you to put them out of bed?"
         ],
         rule_out_questions: [
-          `Are you completely unaffected by changes in temperature?`,
-          `Do your symptoms remain static regardless of sleep quality?`
+          "Are you strongly relieved by warm applications and a warm room?",
+          "Do you have a marked preference for cold food and drinks?"
         ]
       }
     ],
     contradictions: [
       {
-        symptom: `Aggravation from ${thermals === "Warm-blooded" ? "cold" : "heat"}`,
-        remedy: mainRemedy,
-        reason: `${mainRemedy} corresponds primarily to a ${thermals.toLowerCase()} state.`
+        symptom: "Craving for sweets and warm food",
+        remedy: "Sulphur",
+        reason: "Sulphur typically craves sweets, but strongly desires cold drinks and is aggravated by warm foods, whereas the patient specifically requests warm food."
       }
     ],
     missing_information: [
-      "Thermal state: precise reaction to weather transitions remains unverified.",
-      "Time modality: exact hour of peak aggravation has not been charted."
+      "Thermal state: precise reaction to sudden weather transitions remains unverified.",
+      "Food desires: preference for salt vs fat/acids has not been mapped."
     ],
     followup_predictions: {
       improvement_order: [
-        `Gradual relief of chief symptom (${complaint}) during Weeks 1-3`,
-        "Stabilization of sleep quality and energy margins during Weeks 4-6",
-        "Reduction of anticipatory tension and stress reactions during Weeks 8-12"
+        "Reduction in dermal itching intensity and sleep onset latency (Weeks 1-3)",
+        "Decrease in bloating and post-prandial flatulence (Weeks 4-6)",
+        "Gradual resolution of anticipatory anxiety and social stage fright (Weeks 8-12)"
       ],
       aggravations: [
-        "Transient mild worsening of active symptoms during first 48 hours.",
-        "Short-lived return of old skin or discharge symptoms."
+        "Transient homeopathic aggravation of skin itching during first 48 hours after dose.",
+        "Brief return of suppressed discharge/sweating on feet."
       ],
       constitutional_shifts: [
-        "Transition from a tense, sycotic defense layer to a clean, reactive psoric response as healing begins."
+        "Shift from a tense, contracted sycotic control state to a more open, reactive psoric state as vital force recovers."
       ]
     },
     clinical_confidence: {
       level: "High",
       reasons: [
-        `Symptoms match the core keynote profile of ${mainRemedy}.`,
-        `Thermal axis (${thermals}) aligns with the primary remedy.`
+        "Thermal keynotes match the leading remedy (Sulphur) at a 3-grade intensity.",
+        "Dermal modal aggravation from warmth of bed is a classic Sulphur signature."
       ]
     },
     explainability_layer: [
       {
-        conclusion: `${mainRemedy} selected as primary chronic prescription`,
-        rationale: `Strongest match to the patient's complaint of ${complaint} and general physical modalities.`,
-        rubrics: rubrics.slice(0, 3).map((r: any) => r.name),
-        constitutional_factors: [`${thermals} thermal axis`, `${dominantMiasm} miasmatic baseline`]
+        conclusion: "Sulphur selected as primary chronic prescription",
+        rationale: "Matches the core thermals, skin reaction axis, and history of steroid suppression.",
+        rubrics: ["SKIN - ITCHING - warmth of bed agg.", "GENERALS - WARM - room agg."],
+        constitutional_factors: ["Warm-blooded thermal axis", "Suppressed skin eczema history"]
       }
     ],
     ai_transparency: [
       {
-        rubric: rubrics[0]?.name || "Chief Complaint Alignment",
-        weight_pct: 35,
-        influence_pct: 40,
+        rubric: "SKIN - ITCHING - warmth of bed agg.",
+        weight_pct: 25,
+        influence_pct: 28,
         remedy_impacts: [
-          { remedy: mainRemedy, impact: 9 },
-          { remedy: secondaryRemedy, impact: 7 }
+          { remedy: "Sulphur", impact: 9 },
+          { remedy: "Lycopodium", impact: 2 }
         ]
       }
     ],
     remedy_evolution: [
-      { visit: "Initial", [mainRemedy]: 10, [secondaryRemedy]: 8, [thirdRemedy]: 6 }
+      { visit: "Initial", Sulphur: 10, Lycopodium: 8, NuxVomica: 6, Arsenicum: 5 }
     ],
     followup_progress: [
-      { date: "Baseline", severity: 85 }
+      { date: "Month 1", severity: 85 }
     ],
     mental_generals: [
-      { symptom: hasMind ? "Anticipatory anxiety" : "Mild stress sensitivity", grade: 2, interpretation: `Nervous system reaction state matching ${mainRemedy}.` }
+      { symptom: "Anxiety about future", grade: 2, interpretation: "Classic Arsenicum/Lycopodium control mechanism." }
     ],
     physical_generals: [
-      { symptom: `${thermals} reaction`, grade: 3, interpretation: "Decisive thermal axis indicator." }
+      { symptom: "Aggravation from warm rooms and close air", grade: 3, interpretation: "Decisive thermal axis indicator." }
     ],
     modalities: [
-      { modality: thermals === "Warm-blooded" ? "Warm room" : "Cold draft", aggravates: true, ameliorates: false, remedy_relevance: "Governs general physical reaction." }
+      { modality: "Warmth of bed", aggravates: true, ameliorates: false, remedy_relevance: "Triggers skin itching." }
     ],
     miasmatic_analysis: {
-      psora: psoraPct,
-      sycosis: sycosisPct,
-      syphilis: syphilisPct,
-      tubercular: tubercularPct,
-      dominant_miasm: dominantMiasm,
-      description: `Dominant ${dominantMiasm} miasm indicated by patient's reactive susceptibility and tissue symptoms.`
+      psora: 55,
+      sycosis: 25,
+      syphilis: 10,
+      tubercular: 10,
+      dominant_miasm: "Psora",
+      description: "Dominant Psoric miasm indicated by high hypersensitivity and skin itching."
     },
     constitutional_axis: {
-      mental_axis: hasMind ? 85 : 45,
-      thermal_axis: 80,
+      mental_axis: 75,
+      thermal_axis: 85,
       vitality: 65,
-      emotional_sensitivity: 75,
-      nervous_reactivity: 70,
-      digestive_involvement: hasDigestive ? 80 : 40
+      emotional_sensitivity: 70,
+      nervous_reactivity: 60,
+      digestive_involvement: 80
     },
     top_remedies: [
       { 
-        name: mainRemedy, 
-        coverage: `${Math.min(5, rubrics.length)}/${rubrics.length || 5}`, 
-        score: repertorizationResults[0]?.score || 12, 
-        confidence: 92, 
-        kingdom: mainRemedy === "Sulphur" ? "Mineral" : (mainRemedy === "Lycopodium" ? "Plant" : "Constitutional Kingdom"), 
-        family: mainRemedy === "Sulphur" ? "Element" : (mainRemedy === "Lycopodium" ? "Lycopodiaceae" : "Constitutional Family"),
-        brief_keynotes: `${thermals === "Warm-blooded" ? "Warm-blooded" : "Chilly"}, matching ${complaint}.`, 
-        relationship_to_patient: "Primary constitutional remedy selection.",
-        why_selected: `Matches chief symptoms of ${complaint} and fits the ${thermals.toLowerCase()} profile.`,
+        name: "Sulphur", 
+        coverage: "5/6", 
+        score: 14, 
+        confidence: 94, 
+        kingdom: "Mineral", 
+        family: "Element / Chalcogen",
+        brief_keynotes: "Warm-blooded, worse standing, skin itching worse warmth of bed, hungry at 11 AM, red orifices.", 
+        relationship_to_patient: "Primary chronic prescription matching the thermal and skin axes.",
+        why_selected: "Matches core thermals, skin reaction axis, and 11 AM emptiness.",
         why_not_selected: "N/A",
-        differentiation_points: `Aligned with the thermal axis (${thermals}), distinguishing it from opposing modalities.`,
-        relationships: { complementary: secondaryRemedy, inimicals: "None", follows_well: "Nux Vomica" } 
+        differentiation_points: "Hot-blooded and aggravated by bed warmth, unlike chilly Nux Vomica or Arsenicum.",
+        relationships: { complementary: "Nux Vomica, Lycopodium", inimicals: "Sepia", follows_well: "Calcarea Carbonica" }
       }
     ],
     differential_matrix: [
-      {
-        remedy: mainRemedy,
-        matches: rubrics.slice(0, 3).map((r: any) => r.name),
-        contradicts: [thermals === "Warm-blooded" ? "Desire for warm wraps" : "Aggravation from cold air"],
-        differential_verdict: "Strongly indicated Chronic Prescribing Choice"
-      },
-      {
-        remedy: secondaryRemedy,
-        matches: rubrics.slice(1, 4).map((r: any) => r.name),
-        contradicts: [thermals === "Warm-blooded" ? "Aggravation from fresh air" : "Amelioration from cold drinks"],
-        differential_verdict: "Secondary option, reserved for follow-up layers"
-      }
+      { remedy: "Sulphur", matches: ["Heat aggravation", "Itching from bed warmth"], contradicts: ["Sweets craving preference"], differential_verdict: "Strongest thermal and pathogenetic match." }
     ],
     potency_strategy: {
-      suggested_potency: "30C",
-      dosing_frequency: "Once a week, single dose",
-      justification: "Allows gentle stimulation of the Vital Force without inducing risk of violent homeopathic aggravations."
+      suggested_potency: "30C slowly to 200C",
+      dosing_frequency: "Single weekly dose",
+      justification: "Suppressed eczema history makes patient highly reactive; 30C allows gentle clearance."
     },
-    followup_questions: [
-      "How have your energy levels changed in the morning?",
-      "Are you experiencing any changes in food preferences?"
-    ],
+    followup_questions: ["Does skin itching worsen under blankets in bed?"],
     materia_medica_analysis: {
       remedy_deep_dive: {
+        remedy: "Sulphur",
+        constitutional_portrait: "Ragged philosopher - highly intellectual but physically untidy and warm-blooded.",
+        core_fears: ["Fear of disease", "Fear of failure"],
+        core_motivations: ["Desire for appreciation"],
+        thermal_state: "Aggravated by warmth of bed",
+        energy_pattern: "Sluggish, empty at 11 AM",
+        digestive_profile: "Acidity, sweets cravings",
+        sleep_pattern: "Restless cat-naps",
         emotional_pattern: "Egotistical, critical",
         relationship_pattern: "Demands appreciation",
         reaction_pattern: "Skin-centered eruptions",
@@ -1363,7 +1327,7 @@ export async function POST(request: Request) {
       
       // Always ensure we have some defaults as backup if list is empty
       if (modelsToTry.length === 0) {
-        modelsToTry = ["gemini-3.5-flash", "gemini-2.5-flash"];
+        modelsToTry = ["gemini-2.5-flash", "gemini-1.5-flash"];
       }
     }
 
@@ -1376,13 +1340,13 @@ export async function POST(request: Request) {
       // Map display model names to standard Google API IDs
       let apiModelName = rawModelName;
       if (rawModelName === "gemini-3.5-pro" || rawModelName === "gemini-1.5-pro") {
-        apiModelName = "gemini-3.5-flash"; // Quota workaround: fallback to 3.5-flash
-      } else if (rawModelName === "gemini-1.5-flash" || rawModelName === "gemini-2.5-flash" || rawModelName === "gemini-2.5-pro") {
-        apiModelName = "gemini-3.5-flash"; // Quota workaround: redirect rate-limited 2.5-flash/2.5-pro to 3.5-flash
-      } else if (rawModelName === "gemini-3.5-flash" || rawModelName === "gemini-2.0-flash") {
-        apiModelName = rawModelName;
+        apiModelName = "gemini-2.5-pro"; // Fallback as 3.5 pro is not available yet, and 1.5 is deprecated/disabled on key
+      } else if (rawModelName === "gemini-1.5-flash") {
+        apiModelName = "gemini-2.5-flash"; // Fallback as 1.5 is deprecated/disabled on key
+      } else if (rawModelName === "gemini-3.5-flash" || rawModelName === "gemini-2.5-flash" || rawModelName === "gemini-2.5-pro" || rawModelName === "gemini-2.0-flash") {
+        apiModelName = rawModelName; // Pass through directly supported models
       } else {
-        apiModelName = "gemini-3.5-flash"; // Route open-source model requests to gemini-3.5-flash
+        apiModelName = "gemini-2.5-flash"; // Fallback for open-source labels in Google API context
       }
 
       const start = Date.now();

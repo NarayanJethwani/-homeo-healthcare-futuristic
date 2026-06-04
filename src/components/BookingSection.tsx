@@ -525,7 +525,7 @@ Please confirm my appointment.`;
                           href={submissionResult.folderUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex-1 text-center py-2 px-2.5 rounded-xl border border-slate-200 hover:border-slate-850 text-[10px] font-bold text-slate-850 flex items-center justify-center gap-1 bg-white transition-colors cursor-pointer"
+                          className="flex-1 text-center py-2 px-2.5 rounded-xl border border-slate-200 hover:border-slate-800 text-[10px] font-bold text-slate-800 flex items-center justify-center gap-1 bg-white transition-colors cursor-pointer"
                         >
                           <Folder className="w-3.5 h-3.5 text-amber-500" />
                           Folder Link
@@ -534,7 +534,7 @@ Please confirm my appointment.`;
                           href={submissionResult.sheetUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex-1 text-center py-2 px-2.5 rounded-xl border border-slate-200 hover:border-slate-855 text-[10px] font-bold text-slate-855 flex items-center justify-center gap-1 bg-white transition-colors cursor-pointer"
+                          className="flex-1 text-center py-2 px-2.5 rounded-xl border border-slate-200 hover:border-slate-800 text-[10px] font-bold text-slate-800 flex items-center justify-center gap-1 bg-white transition-colors cursor-pointer"
                         >
                           <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
                           Sheet Link

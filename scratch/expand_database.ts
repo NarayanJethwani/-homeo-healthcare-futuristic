@@ -1,0 +1,1 @@
+console.log("Database is dynamically inflated at runtime in src/lib/materiaMedicaDb.ts.");

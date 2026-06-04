@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     }
 
     const ai = new GoogleGenerativeAI(apiKey);
-    const model = ai.getGenerativeModel({ model: "gemini-1.5-flash" }); // Multimodal model supporting pdf/images
+    const model = ai.getGenerativeModel({ model: "gemini-2.5-flash" }); // Multimodal model supporting pdf/images
 
     const prompt = `You are a medical clinical uploader assistant. Analyze the uploaded patient record/case sheet and extract the patient's demographic information and symptoms.
 Return ONLY a valid JSON object matching the following structure. Do not include markdown code block syntax (like \`\`\`json) or extra text - return only the raw JSON string:

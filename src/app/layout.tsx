@@ -34,6 +34,7 @@ const playfairDisplay = Playfair_Display({
 export const metadata: Metadata = {
   title: "Homeo Healthcare | Advanced Homeopathic Care for Modern Life",
   description: "Experience next-generation personalized homeopathic healing driven by science and deep compassion. Book clinical and online consultations with Dr. Narayan Jethwani.",
+  manifest: "/manifest.json",
   keywords: [
     "Homeopathy",
     "Futuristic Healthcare",

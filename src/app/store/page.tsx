@@ -2477,7 +2477,7 @@ export default function StorePage() {
 
                     {walkInResult?.isMock && (
                       <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-900 text-left max-w-md mx-auto space-y-1.5 shadow-sm">
-                        <div className="flex items-center gap-2 font-black text-[10px] uppercase tracking-wider text-amber-850">
+                        <div className="flex items-center gap-2 font-black text-[10px] uppercase tracking-wider text-amber-800">
                           <AlertTriangle className="w-4 h-4 text-amber-600 animate-bounce" />
                           Google Workspace Offline Mode
                         </div>
@@ -2980,7 +2980,7 @@ export default function StorePage() {
                                       onClick={() => {
                                         setWalkInMedicineAddons([...walkInMedicineAddons, { id: Math.random().toString(), type: "Dilution", details: "", amount: "" }]);
                                       }}
-                                      className="w-full py-1.5 text-center rounded-xl bg-slate-50 border border-slate-200 text-[10px] font-bold text-slate-700 flex items-center justify-center gap-1 cursor-pointer hover:bg-slate-100 hover:border-slate-350 transition-all"
+                                      className="w-full py-1.5 text-center rounded-xl bg-slate-50 border border-slate-200 text-[10px] font-bold text-slate-700 flex items-center justify-center gap-1 cursor-pointer hover:bg-slate-100 hover:border-slate-300 transition-all"
                                     >
                                       <Plus className="w-3.5 h-3.5 animate-pulse" />
                                       <span>Add Another Medicine Type</span>

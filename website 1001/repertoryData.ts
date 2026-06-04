@@ -3209,6 +3209,7 @@ export function calculateClinicalIndices(symptoms: JethwaniSymptomConfig[]): Cli
     return indices;
   }
 
+  let totalWeight = 0;
   let vitalForceDecrement = 0;
 
   symptoms.forEach(s => {
@@ -3216,38 +3217,41 @@ export function calculateClinicalIndices(symptoms: JethwaniSymptomConfig[]): Cli
     const freqMult = s.frequency === 'constant' ? 1.2 : s.frequency === 'frequent' ? 1.0 : 0.8;
     const impMult = s.impact === 'severe' ? 1.2 : s.impact === 'moderate' ? 1.0 : 0.8;
     const symptomWeight = (s.severity / 10) * freqMult * impMult;
+    
+    totalWeight += symptomWeight;
 
     // Find the corresponding rubric in JETHWANI_REPERTORY_DATA to check index mappings
     const rubric = JETHWANI_REPERTORY_DATA.find(r => r.id === s.rubricId);
     if (rubric && rubric.indexWeights) {
       Object.entries(rubric.indexWeights).forEach(([indexKey, weight]) => {
-        const change = symptomWeight * Math.abs(weight) * 15; // Scale the impact
+        const change = symptomWeight * weight * 15; // Scale the impact
         if (indexKey === 'stress_load' || indexKey === 'anxiety_severity' || indexKey === 'chronic_disease') {
-          indices[indexKey as keyof ClinicalIndices] += change;
+          indices[indexKey as keyof ClinicalIndices] = Math.min(100, indices[indexKey as keyof ClinicalIndices] + change);
         } else if (indexKey === 'sleep_quality' || indexKey === 'digestive_function' || indexKey === 'hormonal_balance' || indexKey === 'immune_reactivity' || indexKey === 'constitutional_stability') {
-          indices[indexKey as keyof ClinicalIndices] -= change;
+          indices[indexKey as keyof ClinicalIndices] = Math.max(0, indices[indexKey as keyof ClinicalIndices] - change);
         } else if (indexKey === 'vital_force') {
+          // Vital force is decreased by negative weights
           vitalForceDecrement += symptomWeight * Math.abs(weight) * 12;
         }
       });
     } else {
       // Fallback weight mappings if indexWeights are missing
       if (s.rubricId.includes('mind') || s.rubricId.includes('stress') || s.rubricId.includes('burnout')) {
-        indices.stress_load += symptomWeight * 12;
-        indices.anxiety_severity += symptomWeight * 8;
+        indices.stress_load = Math.min(100, indices.stress_load + symptomWeight * 12);
+        indices.anxiety_severity = Math.min(100, indices.anxiety_severity + symptomWeight * 8);
       }
       if (s.rubricId.includes('sleep') || s.rubricId.includes('insomnia')) {
-        indices.sleep_quality -= symptomWeight * 15;
+        indices.sleep_quality = Math.max(0, indices.sleep_quality - symptomWeight * 15);
       }
       if (s.rubricId.includes('gerd') || s.rubricId.includes('ibs') || s.rubricId.includes('digest') || s.rubricId.includes('bloat')) {
-        indices.digestive_function -= symptomWeight * 15;
+        indices.digestive_function = Math.max(0, indices.digestive_function - symptomWeight * 15);
       }
       vitalForceDecrement += symptomWeight * 5;
     }
   });
 
   // Calculate final VFI (Vital Force Status Index)
-  indices.vital_force = 100 - vitalForceDecrement;
+  indices.vital_force = Math.max(10, Math.min(100, 100 - vitalForceDecrement));
 
   // Round and clamp values strictly to [0, 100]
   Object.keys(indices).forEach(k => {

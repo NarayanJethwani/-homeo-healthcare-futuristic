@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -9,7 +9,7 @@ import {
   Settings, LogOut, ShieldAlert, Award, FileText, ChevronRight, UserPlus, Upload,
   BookOpen, Book, ChevronLeft, Maximize2, Minimize2, Receipt, Printer,
   Gauge, AlertTriangle, Check, X, Compass, Layers, History, Zap, TrendingUp, Workflow, Calendar,
-  Network, Database, Cpu, GitBranch, Stethoscope, User, UploadCloud, Play, Mail, Mic
+  Network, Database, Cpu, GitBranch, Stethoscope, User, UploadCloud, Play, Mail
 } from "lucide-react";
 import { REPERTORY_DATA, REPERTORY_CHAPTERS, REMEDIES_METADATA, Rubric, BOERICKE_CHAPTERS, SEARCH_SYNONYMS, getRepertoryData, JETHWANI_SECTIONS, JETHWANI_REPERTORY_DATA, JETHWANI_REMEDY_CONFIRMATIONS, calculateClinicalIndices, type JethwaniRubric, type JethwaniSymptomConfig, type ClinicalIndices } from "@/lib/repertoryData";
 import { MATERIA_MEDICA_BOOKS, MateriaMedicaBook } from "@/lib/materiaMedicaData";
@@ -23,25 +23,9 @@ import { simulateMateriaMedicaIngestion, CLASSICAL_SOURCES } from "@/lib/materia
 import { GENOME_REMEDY_DB } from "@/lib/remedyGenomeSchema";
 import { reconcileSymptom, generateUnifiedRemedyProfile } from "@/lib/reconciliationEngine";
 import { calculateSM2, updateStudentMastery, initDefaultMastery, initDefaultSM2 } from "@/lib/adaptiveLearning";
-import { getIcdDiagnosis, getClinicalCoverageScore, CURATED_DIAGNOSES, ORGAN_SYSTEMS, type DiagnosisProfile, getAll15000Diagnoses } from "@/lib/clinicalDiagnosisLibrary";
 import { VIRTUAL_PATIENTS, evaluateCaseSubmission } from "@/lib/caseSimulationLab";
 import { calculateClinicalDecisionSupport } from "@/lib/clinicalDecisionSupport";
 import { parseNaturalLanguageQuery as parseNLQueryAdvanced, searchRemediesAdvanced } from "@/lib/advancedSearch";
-const INTAKE_QUESTIONS = [
-  "When did this condition first start?",
-  "What caused it or triggered it originally, in your opinion?",
-  "What factors make it feel worse (e.g. damp, heat, cold, specific hours, movement)?",
-  "What factors make it feel better (e.g. resting, pressure, warm apps, cool breeze)?",
-  "What specific time of the day or night is the symptom most intense?",
-  "Are there any other physical symptoms that happen alongside it?",
-  "Do you have a history of suppression (like eczema creams, blocking secretions)?",
-  "Is there any history of chronic conditions in your family (e.g., asthma, tuberculosis)?",
-  "Any sustained emotional triggers or mental stresses ongoing in your life?",
-  "Do you experience any deep fears (like fear of heights, darkness, failure, or crowds)?",
-  "Do you have any strong food cravings (sweet, salty, spicy, ice) or food aversions?",
-  "Have you noticed any sleep changes, insomnia, or recurring dream themes?",
-  "Are you sensitive to thermal shifts (do you identify as generally hot or chilly)?"
-];
 
 
 interface UserSession {
@@ -535,52 +519,6 @@ export default function AdminDashboard() {
   const [intakeSuppressionHistory, setIntakeSuppressionHistory] = useState("");
   const [intakeResult, setIntakeResult] = useState<any>(null);
   const [isIntakeLoading, setIsIntakeLoading] = useState(false);
-  const [intakeFontSize, setIntakeFontSize] = useState<number>(12);
-  const [intakeZoomLevel, setIntakeZoomLevel] = useState<number>(100);
-  const [showIntakeRepertory, setShowIntakeRepertory] = useState<boolean>(false);
-  const [intakeMappedRubrics, setIntakeMappedRubrics] = useState<JethwaniSymptomConfig[]>([]);
-
-  // AI Intake 2.0 Advanced States
-  const [intakeChatMessages, setIntakeChatMessages] = useState<Array<{ sender: 'ai' | 'user'; text: string }>>([
-    { sender: 'ai', text: 'Hello! I am your AI clinical assistant. Please enter or select a chief complaint in Step 1 to begin our guided case interview.' }
-  ]);
-
-  const chatEndRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [intakeChatMessages]);
-  const [intakeInterviewIndex, setIntakeInterviewIndex] = useState<number>(0);
-  const [intakeChatInput, setIntakeChatInput] = useState<string>("");
-  const [intakeInterviewActive, setIntakeInterviewActive] = useState<boolean>(false);
-  const [isDictating, setIsDictating] = useState<boolean>(false);
-  const [showUploadModal, setShowUploadModal] = useState<"lab" | "prescription" | "imaging" | null>(null);
-
-  // Step 3: Constitutional Capture States
-  const [constMentalState, setConstMentalState] = useState<string>("");
-  const [constEmotionalPattern, setConstEmotionalPattern] = useState<string>("Anxious/Restless");
-  const [constThermalState, setConstThermalState] = useState<"Hot" | "Chilly" | "Mixed">("Mixed");
-  const [constFoodDesires, setConstFoodDesires] = useState<string>("");
-  const [constFoodAversions, setConstFoodAversions] = useState<string>("");
-  const [constSleepPattern, setConstSleepPattern] = useState<string>("");
-  const [constDreams, setConstDreams] = useState<string>("");
-  const [constEnergyLevel, setConstEnergyLevel] = useState<number>(6);
-  const [constMiasmIndicators, setConstMiasmIndicators] = useState<string[]>(["Psora"]);
-
-  // Step 4: Diagnostic Clues States
-  const [diagDiagnosis, setDiagDiagnosis] = useState<string>("");
-  const [diagLabs, setDiagLabs] = useState<string>("");
-  const [diagImaging, setDiagImaging] = useState<string>("");
-  const [diagPastTreatments, setDiagPastTreatments] = useState<string>("");
-  const [diagCurrentMeds, setDiagCurrentMeds] = useState<string>("");
-
-  // Navigation and Sizing Controls
-  const [intakeStep, setIntakeStep] = useState<number>(1);
-  const [intakePresentationMode, setIntakePresentationMode] = useState<"Small" | "Medium" | "Large" | "Clinical">("Medium");
-  const [intakeQualityScore, setIntakeQualityScore] = useState<"Poor" | "Basic" | "Good" | "Excellent">("Poor");
-  const [intakeCaseCompleteness, setIntakeCaseCompleteness] = useState<number>(10);
-  const [synthesisOutput, setSynthesisOutput] = useState<any | null>(null);
 
   // Diagnostic Intelligence States
   const [diagOrganSystem, setDiagOrganSystem] = useState("All");
@@ -608,205 +546,6 @@ export default function AdminDashboard() {
   const [googleDriveModalOpen, setGoogleDriveModalOpen] = useState(false);
   const [googleDriveConnected, setGoogleDriveConnected] = useState(false);
   const [googleDriveLoading, setGoogleDriveLoading] = useState(false);
-
-  // Helper for sequential chat interview questions
-  const handleIntakeInterviewSend = (text: string) => {
-    if (!text.trim()) return;
-
-    // Append user answer
-    const updatedMessages = [...intakeChatMessages, { sender: 'user' as const, text }];
-    setIntakeChatMessages(updatedMessages);
-    setIntakeChatInput("");
-
-    const nextIndex = intakeInterviewIndex + 1;
-    setIntakeInterviewIndex(nextIndex);
-
-    // If there are more questions, AI asks the next one
-    if (nextIndex < INTAKE_QUESTIONS.length) {
-      setTimeout(() => {
-        setIntakeChatMessages(prev => [...prev, {
-          sender: 'ai' as const,
-          text: `Question ${nextIndex + 1}: ${INTAKE_QUESTIONS[nextIndex]}`
-        }]);
-      }, 500);
-    } else {
-      setTimeout(() => {
-        setIntakeChatMessages(prev => [...prev, {
-          sender: 'ai' as const,
-          text: "Excellent! I have compiled all classical intake responses. You can now tweak Step 3 (Constitutional Capture) and Step 4 (Diagnostic Clues), or trigger 'Generate Constitutional Analysis' to build the clinical report."
-        }]);
-      }, 500);
-    }
-  };
-
-  // Mock voice dictation with transcription simulation
-  const handleVoiceDictationStart = () => {
-    setIsDictating(true);
-    setTimeout(() => {
-      let transcription = "Patient reports condition started 2 years ago, worse from warm blankets in bed, and significantly improved by sitting near an open window in cold air.";
-      if (intakeComplaint.toLowerCase().includes("pcod")) {
-        transcription = "Irregular menses for 1 year, weight gain, cravings for chocolate and sweets, chilly thermal state, sleep restless with anxious dreams.";
-      } else if (intakeComplaint.toLowerCase().includes("ibs")) {
-        transcription = "Bloating and flatulence worse from 4 PM to 8 PM, craves warm drinks, mixed thermal state, very anxious about health and work.";
-      }
-      setIntakeChatInput(transcription);
-      setIsDictating(false);
-    }, 2500);
-  };
-
-  // Mock clinical report uploads with parameter auto-extraction
-  const handleReportUploadSimulation = (type: 'lab' | 'prescription' | 'imaging') => {
-    setShowUploadModal(type);
-    setTimeout(() => {
-      setShowUploadModal(null);
-      if (type === "lab") {
-        setDiagLabs("Elevated IgE: 420 IU/mL. Elevated TSH: 5.4 uIU/mL. Vitamin D: 14 ng/mL (Deficient).");
-        setDiagDiagnosis("Atopic Dermatitis & Mild Thyroid dysfunction.");
-        setConstThermalState("Chilly");
-        setConstEnergyLevel(4);
-        alert("Extracted Lab Parameters!\n- Diagnosis: Atopic Dermatitis\n- Labs: IgE: 420, TSH: 5.4\n- Thermal State updated to Chilly\n- Energy Level set to 4/10");
-      } else if (type === "prescription") {
-        setDiagPastTreatments("Topical Hydrocortisone 1% cream for 6 months. Antihistamines daily.");
-        setDiagCurrentMeds("Levothyroxine 25mcg daily.");
-        alert("Extracted Prescription Parameters!\n- Past Treatment: Hydrocortisone 1% (Steroid suppression history recorded)\n- Current Meds: Levothyroxine 25mcg");
-      } else if (type === "imaging") {
-        setDiagImaging("Ultrasound pelvis: Bilateral polycystic ovaries, enlarged volume, stromal echogenicity.");
-        setDiagDiagnosis("Polycystic Ovarian Syndrome (PCOS)");
-        setConstMiasmIndicators(["Psora", "Sycosis"]);
-        alert("Extracted Imaging Parameters!\n- Imaging: Polycystic Ovaries matched\n- Diagnosis: PCOS\n- Miasm indicator updated to Sycosis");
-      }
-    }, 2000);
-  };
-
-  // Triggering authentic analysis
-  const handleSmartAction = async (subTask: string) => {
-    setIsIntakeLoading(true);
-    try {
-      const activePatient = selectedPatientId ? patients.find((p) => p.id === selectedPatientId) : null;
-      const chatAnswersText = intakeChatMessages
-        .filter(m => m.sender === 'user')
-        .map((m, i) => `Q${i+1}: ${INTAKE_QUESTIONS[i] || 'Details'} -> Answer: ${m.text}`)
-        .join("\n");
-
-      const bodyPayload = {
-        complaint: intakeComplaint,
-        thermalGenerals: `State: ${constThermalState}. Food Desires: ${constFoodDesires}. Food Aversions: ${constFoodAversions}. Sleep: ${constSleepPattern}. Dreams: ${constDreams}. Energy Level: ${constEnergyLevel}/10. Miasms: ${constMiasmIndicators.join(", ")}`,
-        mentalProfile: `State: ${constMentalState}. Pattern: ${constEmotionalPattern}`,
-        suppressionHistory: `Past: ${diagPastTreatments || 'None'}. Current Meds: ${diagCurrentMeds || 'None'}`,
-        patientInfo: activePatient ? {
-          name: activePatient.name,
-          age: activePatient.age,
-          gender: activePatient.gender,
-          complaint: activePatient.complaint
-        } : {
-          name: "34-year-old Patient",
-          age: "34",
-          gender: "Female",
-          complaint: intakeComplaint
-        },
-        chatAnswers: chatAnswersText,
-        diagnosticClues: {
-          diagnosis: diagDiagnosis,
-          labs: diagLabs,
-          imaging: diagImaging,
-          pastTreatments: diagPastTreatments,
-          currentMeds: diagCurrentMeds
-        },
-        smartActionType: subTask
-      };
-
-      const data = await fetchAIDiagnostics("intake", bodyPayload);
-      if (data.success) {
-        const parsed = JSON.parse(data.analysis);
-        setSynthesisOutput(parsed);
-        setIntakeResult(parsed);
-      }
-    } catch (err) {
-      console.error(err);
-      alert("AI analysis complete: loaded diagnostic matching layers.");
-    } finally {
-      setIsIntakeLoading(false);
-    }
-  };
-
-  // Kent Rubrics transport mapping helper
-  const transportCaseToRepertory = (recommendedRubrics: string[]) => {
-    const newRubrics: JethwaniSymptomConfig[] = [];
-    recommendedRubrics.forEach((rubStr) => {
-      const lower = rubStr.toLowerCase();
-      let matchedId = "";
-      if (lower.includes("anxiety") && lower.includes("failure")) matchedId = "jeth_a_anticipatory_dread";
-      else if (lower.includes("anticipat") || lower.includes("stage")) matchedId = "jeth_a_anticipatory_dread";
-      else if (lower.includes("fastidious") || lower.includes("perfection")) matchedId = "jeth_f_cancerinic";
-      else if (lower.includes("sadness") || lower.includes("grief") || lower.includes("silent")) matchedId = "jeth_a_silent_grief";
-      else if (lower.includes("irritab") || lower.includes("anger")) matchedId = "jeth_a_irritability_morning";
-      else if (lower.includes("fear") || lower.includes("dark")) matchedId = "jeth_a_night_terrors";
-      else if (lower.includes("work") || lower.includes("burnout")) matchedId = "jeth_a_burnout";
-      else if (lower.includes("warmth") || lower.includes("bed") || lower.includes("skin") || lower.includes("itch")) matchedId = "jeth_d_atopic_dermatitis_eczema";
-      else if (lower.includes("cold") || lower.includes("chilly")) matchedId = "jeth_b_chilly_sensitive";
-      else if (lower.includes("bloat") || lower.includes("flatulence") || lower.includes("distension")) matchedId = "jeth_d_ibs_bloating";
-      else if (lower.includes("reflux") || lower.includes("acid")) matchedId = "jeth_d_gerd_reflux";
-      else if (lower.includes("sleepless") || lower.includes("insomnia")) matchedId = "jeth_a_insomnia_thoughts";
-      else if (lower.includes("waking") || lower.includes("3am")) matchedId = "jeth_a_insomnia_thoughts";
-      else if (lower.includes("exhaust") || lower.includes("fatigue") || lower.includes("weak")) matchedId = "jeth_d_chronic_fatigue_syndrome";
-      else if (lower.includes("hormone") || lower.includes("irregular")) matchedId = "jeth_d_pcos_cystic";
-      
-      if (!matchedId) {
-        const tokens = lower
-          .replace(/[;,]/g, " ")
-          .split(/\s+/)
-          .filter(t => t.length > 2 && !["mind", "generalities", "stomach", "skin", "sleep", "head", "eye", "ear", "cough", "fever", "joint", "urinary", "aggravation", "amelioration"].includes(t));
-        
-        let bestMatch: JethwaniRubric | null = null;
-        let maxMatches = 0;
-        
-        for (const r of JETHWANI_REPERTORY_DATA) {
-          const rName = r.name.toLowerCase();
-          const matchCount = tokens.filter(t => rName.includes(t)).length;
-          if (matchCount > maxMatches) {
-            maxMatches = matchCount;
-            bestMatch = r;
-          }
-        }
-        
-        if (bestMatch && maxMatches > 0) {
-          matchedId = bestMatch.id;
-        }
-      }
-      
-      if (matchedId && !newRubrics.some(r => r.rubricId === matchedId)) {
-        newRubrics.push({
-          rubricId: matchedId,
-          severity: 6,
-          frequency: "frequent",
-          impact: "moderate"
-        });
-      }
-    });
-
-    if (newRubrics.length === 0) {
-      if (intakeComplaint.toLowerCase().includes("stress")) {
-        newRubrics.push({ rubricId: "jeth_a_burnout", severity: 7, frequency: "frequent", impact: "moderate" });
-        newRubrics.push({ rubricId: "jeth_a_anticipatory_dread", severity: 6, frequency: "occasional", impact: "mild" });
-      } else if (intakeComplaint.toLowerCase().includes("migraine")) {
-        newRubrics.push({ rubricId: "jeth_d_migraine_throbbing", severity: 8, frequency: "occasional", impact: "severe" });
-      } else if (intakeComplaint.toLowerCase().includes("anxiety")) {
-        newRubrics.push({ rubricId: "jeth_a_anticipatory_dread", severity: 7, frequency: "frequent", impact: "moderate" });
-      }
-    }
-
-    setSelectedJethwaniRubrics(newRubrics);
-    if (constThermalState === "Chilly") {
-      if (!newRubrics.some(r => r.rubricId === "jeth_b_chilly_sensitive")) {
-        setSelectedJethwaniRubrics(prev => [...prev, { rubricId: "jeth_b_chilly_sensitive", severity: 6, frequency: "frequent", impact: "moderate" }]);
-      }
-    }
-
-    setActiveTab("nexus-atlas");
-    setNexusSubTab("repertory");
-    setRepertoryWorkbenchMode("jethwani");
-    alert(`Case Transport Successful!\nMatched rubrics loaded directly into Dr. Jethwani's Clinical Repertory Workbench for monograph analysis.`);
-  };
 
   const triggerSample = (type: string) => {
     if (type === "CBC") {
@@ -3796,43 +3535,13 @@ ${err.message || err}`);
 
   const runJethwaniNlpParser = (queryText: string) => {
     if (!queryText.trim()) return;
-    
-    // 1. Scan for clinical diagnoses and synonyms
-    const matchedDiagnoses: DiagnosisProfile[] = [];
-    const queryLower = queryText.toLowerCase();
-    
-    // Check curated diagnoses
-    CURATED_DIAGNOSES.forEach(d => {
-      const nameMatch = queryLower.includes(d.name.toLowerCase()) || queryLower.includes(d.id.toLowerCase());
-      if (nameMatch && !matchedDiagnoses.some(item => item.id === d.id)) {
-        matchedDiagnoses.push(d);
-      }
-    });
-
-    const matchedRubrics: JethwaniSymptomConfig[] = [];
-    
-    // 2. Load rubrics from matched diagnoses
-    matchedDiagnoses.forEach(diag => {
-      if (diag.homeopathicLayer?.kentRubrics) {
-        diag.homeopathicLayer.kentRubrics.forEach(rubricId => {
-          if (!matchedRubrics.some(r => r.rubricId === rubricId)) {
-            matchedRubrics.push({
-              rubricId,
-              severity: 6,
-              frequency: "frequent",
-              impact: "moderate"
-            });
-          }
-        });
-      }
-    });
-
-    // 3. Token-based matching fallback/supplement
     const tokens = queryText
       .toLowerCase()
       .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "")
       .split(/\s+/)
       .filter(t => t.length > 2 && !["the", "and", "for", "with", "about", "from", "then", "this"].includes(t));
+
+    const matchedRubrics: JethwaniSymptomConfig[] = [];
 
     JETHWANI_REPERTORY_DATA.forEach(rubric => {
       const nameLower = rubric.name.toLowerCase();
@@ -3851,36 +3560,28 @@ ${err.message || err}`);
       });
 
       if (matchCount > 0) {
+        // Set higher severity for multiple matches
         const severity = Math.min(10, 4 + matchCount * 2);
-        if (!matchedRubrics.some(r => r.rubricId === rubric.id)) {
-          matchedRubrics.push({
-            rubricId: rubric.id,
-            severity,
-            frequency: "frequent",
-            impact: "moderate"
-          });
-        }
+        matchedRubrics.push({
+          rubricId: rubric.id,
+          severity,
+          frequency: "frequent",
+          impact: "moderate"
+        });
       }
     });
 
     if (matchedRubrics.length > 0) {
       setSelectedJethwaniRubrics(prev => {
         const combined = [...prev];
-        let addedCount = 0;
         matchedRubrics.forEach(matched => {
           if (!combined.some(item => item.rubricId === matched.rubricId)) {
             combined.push(matched);
-            addedCount++;
           }
         });
-        
-        let msg = `AI Intake: Identified and added ${addedCount} symptoms/rubrics.`;
-        if (matchedDiagnoses.length > 0) {
-          msg += ` Mapped to diagnoses: ${matchedDiagnoses.map(d => d.name).join(", ")}.`;
-        }
-        alert(msg);
         return combined;
       });
+      alert(`AI Intake: Identified and added ${matchedRubrics.length} symptoms based on your text.`);
     } else {
       alert("AI Intake: No matches found. Try entering alternative terms like 'fatigue', 'acid reflux', 'anxiety', or 'sleeplessness'.");
     }
@@ -4328,22 +4029,6 @@ ${err.message || err}`);
     return hypotheses;
   };
 
-  const computedCompleteness = Math.min(
-    100,
-    (intakeComplaint ? 15 : 0) +
-    (intakeChatMessages.length > 1 ? 25 : 0) +
-    (constMentalState ? 15 : 0) +
-    (constFoodDesires ? 10 : 0) +
-    (diagDiagnosis ? 20 : 0) +
-    (diagLabs ? 15 : 0)
-  );
-
-  const computedQuality = 
-    computedCompleteness < 30 ? "Poor" :
-    computedCompleteness < 55 ? "Basic" :
-    computedCompleteness < 80 ? "Good" :
-    "Excellent";
-
   const displayedLogs = [
     ...clientTelemetryLogs,
     ...telemetryLogs.filter(log => !clientTelemetryLogs.some(cl => cl.id === log.id))
@@ -4352,10 +4037,14 @@ ${err.message || err}`);
   return (
     <div 
       className="min-h-screen flex flex-col bg-pearl transition-all duration-300"
+      style={{ 
+        zoom: `${globalLayoutZoom}%`, 
+        fontSize: globalFontSize === "S" ? "12px" : globalFontSize === "M" ? "14px" : globalFontSize === "L" ? "16px" : "18px" 
+      }}
     >
       
       {/* Dashboard Top Header */}
-      <header className="sticky top-0 z-35 w-full glass-panel border-b border-slate-900/5 px-6 py-4 flex items-center justify-between shadow-sm bg-white/70 backdrop-blur-md" style={{ fontSize: "16px" }}>
+      <header className="sticky top-0 z-30 w-full glass-panel border-b border-slate-900/5 px-6 py-4 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-white border border-slate-200/50 flex items-center justify-center shadow-sm breathe">
             <Activity className="w-5 h-5 text-mint" />
@@ -4451,17 +4140,13 @@ ${err.message || err}`);
 
       {/* Main Panel Content */}
       <div 
-        className={`flex-1 w-full mx-auto px-6 py-8 flex flex-col gap-6 select-text transition-all duration-300 global-font-${globalFontSize} ${
+        className={`flex-1 w-full mx-auto px-6 py-8 flex flex-col gap-6 select-text transition-all duration-300 ${
           globalReadingWidth === "standard" 
             ? "max-w-7xl" 
             : globalReadingWidth === "wide" 
             ? "max-w-[95%]" 
             : "max-w-full"
         }`}
-        style={{ 
-          zoom: `${globalLayoutZoom}%`,
-          fontSize: globalFontSize === "S" ? "12px" : globalFontSize === "M" ? "14px" : globalFontSize === "L" ? "16px" : "18px"
-        }}
       >
         
         {/* Navigation Tabs */}
@@ -4689,1193 +4374,353 @@ ${err.message || err}`);
             </div>
           )}
 
+          {/* TAB: AI Intake */}
           {activeTab === "intake" && (
-            <div className={`transition-all duration-300 ${fullscreenTab === "intake" ? "fixed inset-0 z-[50] h-screen bg-pearl flex flex-col p-6" : "relative flex flex-col space-y-4 h-[calc(100vh-230px)] min-h-[620px] overflow-hidden"}`}>
-              <style>{`
-                .intake-workspace .text-xs,
-                .intake-workspace .text-\\[11px\\],
-                .intake-workspace .text-\\[10px\\],
-                .intake-workspace .text-\\[9px\\] {
-                  font-size: calc(12px * var(--text-scale-factor, 1.0)) !important;
-                }
-                .intake-workspace .text-sm {
-                  font-size: calc(14px * var(--text-scale-factor, 1.0)) !important;
-                }
-                .intake-workspace .text-base,
-                .intake-workspace .text-lg {
-                  font-size: calc(16px * var(--text-scale-factor, 1.0)) !important;
-                }
-                .intake-workspace .text-xl,
-                .intake-workspace .text-2xl {
-                  font-size: calc(20px * var(--text-scale-factor, 1.0)) !important;
-                }
-              `}</style>
-              {/* Header section */}
-              <div className="flex items-center justify-between border-b border-slate-200 pb-3 flex-shrink-0">
+            <div className={`space-y-6 transition-all duration-300 ${fullscreenTab === "intake" ? "fixed inset-0 z-[50] overflow-y-auto bg-pearl p-8" : "relative"}`}>
+              <div className="flex items-center justify-between border-b border-slate-200 pb-3">
                 <div>
-                  <h2 className="text-xl font-serif font-bold text-slate-800">AI Guided Clinical Intake 2.0</h2>
-                  <p className="text-xs text-slate-400 font-sans mt-0.5">Advanced guided homeopathic interview, constitutional capture, and real-time rubric synthesis.</p>
+                  <h2 className="text-xl font-serif font-bold text-slate-800">AI Clinical Intake</h2>
+                  <p className="text-xs text-slate-400 font-sans mt-0.5">Synthesize chief complaint coordinates, thermals, and suppression history into Kent rubrics.</p>
                 </div>
-                <div className="flex items-center space-x-3">
-                  {/* Sizing controls */}
-                  <div className="bg-slate-100 p-0.5 rounded-xl flex items-center border border-slate-200">
-                    {(["Small", "Medium", "Large", "Clinical"] as const).map((mode) => (
-                      <button
-                        key={mode}
-                        onClick={() => setIntakePresentationMode(mode)}
-                        className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all ${
-                          intakePresentationMode === mode
-                            ? "bg-white text-slate-800 shadow-sm"
-                            : "text-slate-500 hover:text-slate-800"
-                        }`}
-                      >
-                        {mode}
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Fullscreen toggle */}
-                  <button
-                    onClick={() => setFullscreenTab(fullscreenTab === "intake" ? null : "intake")}
-                    className="px-3 py-1.5 border border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-bold text-slate-600 transition-all flex items-center gap-1.5 cursor-pointer bg-white"
-                  >
-                    {fullscreenTab === "intake" ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
-                    <span>{fullscreenTab === "intake" ? "Minimize" : "Full Screen"}</span>
-                  </button>
-                </div>
+                <button
+                  onClick={() => setFullscreenTab(fullscreenTab === "intake" ? null : "intake")}
+                  className="px-3 py-1.5 border border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-bold text-slate-600 transition-all flex items-center gap-1.5 cursor-pointer"
+                >
+                  {fullscreenTab === "intake" ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+                  <span>{fullscreenTab === "intake" ? "Minimize" : "Full Screen"}</span>
+                </button>
               </div>
 
-              {/* Main Content Grid */}
-              <div 
-                className="grid grid-cols-1 lg:grid-cols-10 gap-6 flex-grow overflow-hidden items-stretch intake-workspace"
-                style={{ 
-                  "--text-scale-factor": intakePresentationMode === "Small" ? "0.82" : intakePresentationMode === "Large" ? "1.22" : intakePresentationMode === "Clinical" ? "1.4" : "1.0"
-                } as React.CSSProperties}
-              >
-                {/* Left Panel: Patient Intake Builder (40%) */}
-                <div className={`lg:col-span-4 flex flex-col h-full bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden`}>
-                  {/* Dictation Waveform Overlay */}
-                  {isDictating && (
-                    <div className="absolute inset-0 z-30 bg-slate-900/80 backdrop-blur-md rounded-3xl flex flex-col items-center justify-center space-y-4">
-                      <div className="flex items-center space-x-1.5">
-                        <div className="w-1.5 h-8 bg-mint rounded-full animate-bounce" style={{ animationDelay: "100ms" }} />
-                        <div className="w-1.5 h-12 bg-mint rounded-full animate-bounce" style={{ animationDelay: "200ms" }} />
-                        <div className="w-1.5 h-16 bg-mint rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
-                        <div className="w-1.5 h-10 bg-mint rounded-full animate-bounce" style={{ animationDelay: "400ms" }} />
-                        <div className="w-1.5 h-6 bg-mint rounded-full animate-bounce" style={{ animationDelay: "500ms" }} />
-                      </div>
-                      <span className="text-xs font-mono text-slate-300 animate-pulse">Listening to patient dictation...</span>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
+                  <h3 className="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2">Case Coordinate Entry</h3>
+                  <div className="space-y-3.5">
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-400">Chief Complaint & Duration</label>
+                      <textarea
+                        value={intakeComplaint}
+                        onChange={(e) => setIntakeComplaint(e.target.value)}
+                        placeholder="Detail the physical complaints (e.g. chronic skin itching, flatulence worse evening...)"
+                        className="w-full p-3 border border-slate-200 focus:border-mint focus:ring-1 focus:ring-mint outline-none rounded-2xl bg-slate-50 text-xs font-semibold text-slate-700 min-h-[80px]"
+                      />
                     </div>
-                  )}
-
-                  {/* Clinical Scanner Overlay */}
-                  {showUploadModal && (
-                    <div className="absolute inset-0 z-30 bg-slate-900/85 backdrop-blur-md rounded-3xl flex flex-col items-center justify-center space-y-4">
-                      <div className="w-12 h-12 border-4 border-mint border-t-transparent rounded-full animate-spin" />
-                      <div className="flex flex-col items-center text-center px-6">
-                        <span className="text-sm font-semibold text-white">Ingesting Clinical Report ({showUploadModal.toUpperCase()})</span>
-                        <span className="text-xs text-slate-400 mt-1 animate-pulse">Running OCR & parsing homeopathic coordinates...</span>
-                      </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-400">Thermal State & Physical Modalities</label>
+                      <input
+                        type="text"
+                        value={intakeThermalGenerals}
+                        onChange={(e) => setIntakeThermalGenerals(e.target.value)}
+                        placeholder="e.g. Warm-blooded, aggravated by bed warmth, relieved by cool open air"
+                        className="w-full p-3 border border-slate-200 focus:border-mint focus:ring-1 focus:ring-mint outline-none rounded-2xl bg-slate-50 text-xs font-semibold text-slate-700"
+                      />
                     </div>
-                  )}
-
-                  {/* Header Title */}
-                  <div className="flex items-center justify-between border-b border-slate-100 pb-2 mb-4 flex-shrink-0">
-                    <span className="text-xs font-extrabold uppercase tracking-widest text-slate-400 font-mono">Patient Intake Builder</span>
-                    <span className="text-[10px] bg-slate-100 px-2 py-0.5 rounded-full font-bold text-slate-500 font-mono">Step {intakeStep} of 4</span>
-                  </div>
-
-                  {/* Step Navigation chips */}
-                  <div className="flex items-center space-x-1 border-b border-slate-100 pb-3 mb-4 flex-shrink-0 overflow-x-auto">
-                    {[
-                      { id: 1, label: "Chief Complaint" },
-                      { id: 2, label: "Guided Interview" },
-                      { id: 3, label: "Constitutional Capture" },
-                      { id: 4, label: "Diagnostic Clues" }
-                    ].map((step) => (
-                      <button
-                        key={step.id}
-                        onClick={() => setIntakeStep(step.id)}
-                        className={`px-3 py-1.5 rounded-xl text-[10px] font-bold transition-all whitespace-nowrap ${
-                          intakeStep === step.id
-                            ? "bg-mint text-white shadow-sm"
-                            : "bg-slate-50 text-slate-400 hover:bg-slate-100"
-                        }`}
-                      >
-                        {step.label}
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Step Content Panels */}
-                  <div 
-                    data-lenis-prevent 
-                    className="flex-grow overflow-y-auto pr-1 space-y-4 min-h-0"
-                    style={{ scrollBehavior: "smooth" }}
-                  >
-                    {/* STEP 1: Chief Complaint */}
-                    {intakeStep === 1 && (
-                      <div className="space-y-4">
-                        <div className="flex flex-col gap-1.5">
-                          <label className="text-[10px] uppercase font-extrabold text-slate-400 tracking-wider">Chief Complaint Description</label>
-                          <textarea
-                            value={intakeComplaint}
-                            onChange={(e) => setIntakeComplaint(e.target.value)}
-                            placeholder="Describe the physical, mental, or emotional issues in the patient's own words..."
-                            className="w-full p-3 border border-slate-200 focus:border-mint focus:ring-1 focus:ring-mint outline-none rounded-2xl bg-slate-50 text-xs font-semibold text-slate-700 min-h-[120px]"
-                          />
-                        </div>
-
-                        {/* Complaint suggestion chips */}
-                        <div className="space-y-2">
-                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Common Case Anchors</span>
-                          <div className="flex flex-wrap gap-1.5">
-                            {[
-                              { label: "Stress & Anxiety (34yo)", value: "34-year-old patient presenting with intense chronic work stress, anticipatory health anxiety, sleep onset insomnia, and physical fatigue. Wants natural support to restore energy balance." },
-                              { label: "Chronic Migraine", value: "Severe migraine attacks triggered by stress, light, and sleep deprivation. Better from cool air." },
-                              { label: "PCOS & Irregular Menses", value: "Polycystic Ovarian Syndrome (PCOS) presenting with highly irregular menses, acne, and sweet cravings." },
-                              { label: "IBS & Distension", value: "Irritable Bowel Syndrome (IBS) with painful abdominal bloating and flatulence worse late afternoon." },
-                              { label: "Psoriasis / Eczema", value: "Dry, itching skin eruptions on elbows and scalp. Itching becomes intense at night from bed warmth." }
-                            ].map((chip) => (
-                              <button
-                                key={chip.label}
-                                onClick={() => {
-                                  setIntakeComplaint(chip.value);
-                                  setIntakeChatMessages([
-                                    { sender: 'ai', text: `Chief complaint initialized: "${chip.label}". Let's collect classical homeopathic parameters sequentially.` },
-                                    { sender: 'ai', text: `Question 1: ${INTAKE_QUESTIONS[0]}` }
-                                  ]);
-                                  setIntakeInterviewIndex(0);
-                                  setIntakeStep(2);
-                                }}
-                                className="px-2.5 py-1.5 bg-slate-50 border border-slate-200 hover:border-mint hover:bg-mint/5 rounded-xl text-[10px] font-semibold text-slate-600 transition-all text-left"
-                              >
-                                {chip.label}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* STEP 2: Guided Chat Interview */}
-                    {intakeStep === 2 && (
-                      <div className="flex flex-col h-full space-y-3 min-h-[250px]">
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block flex-shrink-0">Clinical Interview Chat</span>
-                        
-                        <div 
-                          data-lenis-prevent 
-                          className="flex-grow bg-slate-50 border border-slate-200/60 rounded-2xl p-3 overflow-y-auto custom-scrollbar space-y-2.5 min-h-0 max-h-[300px]"
-                          style={{ scrollBehavior: "smooth" }}
-                        >
-                          {intakeChatMessages.map((msg, idx) => (
-                            <div
-                              key={idx}
-                              className={`flex ${msg.sender === "ai" ? "justify-start" : "justify-end"}`}
-                            >
-                              <div
-                                className={`max-w-[85%] rounded-2xl p-2.5 text-xs font-semibold leading-relaxed shadow-sm ${
-                                  msg.sender === "ai"
-                                    ? "bg-slate-900 text-white rounded-tl-none"
-                                    : "bg-mint text-white rounded-tr-none"
-                                  }`}
-                              >
-                                {msg.text}
-                              </div>
-                            </div>
-                          ))}
-                          <div ref={chatEndRef} />
-                        </div>
-
-                        {/* Suggest answers */}
-                        <div className="flex-shrink-0 flex gap-1.5 overflow-x-auto pb-1">
-                          {[
-                            "Started 2 years ago.",
-                            "Worse from bed warmth.",
-                            "Feels better from open cold air.",
-                            "Craves sweets and ice cream.",
-                            "Restless sleep, wake up tired."
-                          ].map((suggest) => (
-                            <button
-                              key={suggest}
-                              onClick={() => handleIntakeInterviewSend(suggest)}
-                              className="px-2 py-1 bg-white border border-slate-200 hover:border-mint rounded-lg text-[9px] font-bold text-slate-500 hover:text-slate-800 transition-all whitespace-nowrap"
-                            >
-                              {suggest}
-                            </button>
-                          ))}
-                        </div>
-
-                        {/* Input controls */}
-                        <div className="flex-shrink-0 flex items-center space-x-1.5">
-                          <input
-                            type="text"
-                            value={intakeChatInput}
-                            onChange={(e) => setIntakeChatInput(e.target.value)}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter") handleIntakeInterviewSend(intakeChatInput);
-                            }}
-                            placeholder="Type patient's answer or record..."
-                            className="flex-grow p-2.5 border border-slate-200 focus:border-mint focus:ring-1 focus:ring-mint outline-none rounded-xl bg-slate-50 text-xs font-semibold text-slate-700"
-                          />
-                          <button
-                            onClick={() => handleIntakeInterviewSend(intakeChatInput)}
-                            className="p-2.5 bg-mint hover:bg-mint-dark text-white rounded-xl transition-all cursor-pointer"
-                          >
-                            <Send className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* STEP 3: Constitutional Capture */}
-                    {intakeStep === 3 && (
-                      <div className="space-y-4">
-                        <div className="grid grid-cols-2 gap-3">
-                          <div className="flex flex-col gap-1">
-                            <label className="text-[9px] uppercase font-bold text-slate-400">Mental State</label>
-                            <input
-                              type="text"
-                              value={constMentalState}
-                              onChange={(e) => setConstMentalState(e.target.value)}
-                              placeholder="e.g. Anticipatory, restless"
-                              className="p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-xs font-semibold text-slate-700 outline-none focus:border-mint"
-                            />
-                          </div>
-                          <div className="flex flex-col gap-1">
-                            <label className="text-[9px] uppercase font-bold text-slate-400">Emotional Pattern</label>
-                            <select
-                              value={constEmotionalPattern}
-                              onChange={(e) => setConstEmotionalPattern(e.target.value)}
-                              className="p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-xs font-semibold text-slate-700 outline-none focus:border-mint"
-                            >
-                              <option value="Anxious/Restless">Anxious / Restless Control</option>
-                              <option value="Perfectionistic">Perfectionistic / Fastidious</option>
-                              <option value="Suppressed Grief">Suppressed Grief / Silent</option>
-                              <option value="Collapsed Exhaustion">Collapsed Exhaustion / Weary</option>
-                            </select>
-                          </div>
-                        </div>
-
-                        {/* Thermals */}
-                        <div className="flex flex-col gap-1">
-                          <label className="text-[9px] uppercase font-bold text-slate-400">Thermal Axis</label>
-                          <div className="grid grid-cols-3 gap-2">
-                            {(["Hot", "Chilly", "Mixed"] as const).map((temp) => (
-                              <button
-                                key={temp}
-                                onClick={() => setConstThermalState(temp)}
-                                className={`py-1.5 rounded-xl border text-[10px] font-extrabold uppercase transition-all ${
-                                  constThermalState === temp
-                                    ? "border-mint bg-mint/5 text-mint"
-                                    : "border-slate-200 text-slate-500 hover:bg-slate-50"
-                                }`}
-                              >
-                                {temp}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Desires & Aversions */}
-                        <div className="grid grid-cols-2 gap-3">
-                          <div className="flex flex-col gap-1">
-                            <label className="text-[9px] uppercase font-bold text-slate-400">Food Desires</label>
-                            <input
-                              type="text"
-                              value={constFoodDesires}
-                              onChange={(e) => setConstFoodDesires(e.target.value)}
-                              placeholder="e.g. Sweets, cold drinks"
-                              className="p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-xs font-semibold text-slate-700 outline-none focus:border-mint"
-                            />
-                          </div>
-                          <div className="flex flex-col gap-1">
-                            <label className="text-[9px] uppercase font-bold text-slate-400">Food Aversions</label>
-                            <input
-                              type="text"
-                              value={constFoodAversions}
-                              onChange={(e) => setConstFoodAversions(e.target.value)}
-                              placeholder="e.g. Warm food, fats"
-                              className="p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-xs font-semibold text-slate-700 outline-none focus:border-mint"
-                            />
-                          </div>
-                        </div>
-
-                        {/* Sleep & Dreams */}
-                        <div className="grid grid-cols-2 gap-3">
-                          <div className="flex flex-col gap-1">
-                            <label className="text-[9px] uppercase font-bold text-slate-400">Sleep Pattern</label>
-                            <input
-                              type="text"
-                              value={constSleepPattern}
-                              onChange={(e) => setConstSleepPattern(e.target.value)}
-                              placeholder="e.g. Restless sleep"
-                              className="p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-xs font-semibold text-slate-700 outline-none focus:border-mint"
-                            />
-                          </div>
-                          <div className="flex flex-col gap-1">
-                            <label className="text-[9px] uppercase font-bold text-slate-400">Dreams</label>
-                            <input
-                              type="text"
-                              value={constDreams}
-                              onChange={(e) => setConstDreams(e.target.value)}
-                              placeholder="e.g. Stress at work"
-                              className="p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-xs font-semibold text-slate-700 outline-none focus:border-mint"
-                            />
-                          </div>
-                        </div>
-
-                        {/* Energy Level Slider */}
-                        <div className="flex flex-col gap-1">
-                          <div className="flex items-center justify-between">
-                            <label className="text-[9px] uppercase font-bold text-slate-400">Vital Energy level (1-10)</label>
-                            <span className="text-xs font-bold text-mint font-mono">{constEnergyLevel}/10</span>
-                          </div>
-                          <input
-                            type="range"
-                            min="1"
-                            max="10"
-                            value={constEnergyLevel}
-                            onChange={(e) => setConstEnergyLevel(Number(e.target.value))}
-                            className="w-full accent-mint h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer"
-                          />
-                        </div>
-
-                        {/* Miasm Indicators Checkboxes */}
-                        <div className="flex flex-col gap-1">
-                          <label className="text-[9px] uppercase font-bold text-slate-400">Miasmatic Tendencies</label>
-                          <div className="flex flex-wrap gap-1.5">
-                            {["Psora", "Sycosis", "Syphilis", "Tubercular", "Cancerinic"].map((miasm) => (
-                              <label
-                                key={miasm}
-                                className={`px-2.5 py-1 rounded-xl border text-[10px] font-bold flex items-center space-x-1.5 cursor-pointer transition-all ${
-                                  constMiasmIndicators.includes(miasm)
-                                    ? "border-mint bg-mint/5 text-mint"
-                                    : "border-slate-200 text-slate-400 hover:bg-slate-50"
-                                }`}
-                              >
-                                <input
-                                  type="checkbox"
-                                  checked={constMiasmIndicators.includes(miasm)}
-                                  onChange={() => {
-                                    if (constMiasmIndicators.includes(miasm)) {
-                                      setConstMiasmIndicators(constMiasmIndicators.filter(m => m !== miasm));
-                                    } else {
-                                      setConstMiasmIndicators([...constMiasmIndicators, miasm]);
-                                    }
-                                  }}
-                                  className="hidden"
-                                />
-                                <span>{miasm}</span>
-                              </label>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* STEP 4: Diagnostic Clues */}
-                    {intakeStep === 4 && (
-                      <div className="space-y-4">
-                        <div className="flex flex-col gap-1">
-                          <label className="text-[9px] uppercase font-bold text-slate-400">Clinical Diagnosis (Allopathic)</label>
-                          <input
-                            type="text"
-                            value={diagDiagnosis}
-                            onChange={(e) => setDiagDiagnosis(e.target.value)}
-                            placeholder="e.g. Atopic Dermatitis, IBS, PCOS"
-                            className="p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-xs font-semibold text-slate-700 outline-none focus:border-mint"
-                          />
-                        </div>
-                        <div className="flex flex-col gap-1">
-                          <label className="text-[9px] uppercase font-bold text-slate-400">Lab Indicators</label>
-                          <textarea
-                            value={diagLabs}
-                            onChange={(e) => setDiagLabs(e.target.value)}
-                            placeholder="e.g. Elevated IgE: 420, elevated thyroid panel..."
-                            className="p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-xs font-semibold text-slate-700 outline-none focus:border-mint min-h-[60px]"
-                          />
-                        </div>
-                        <div className="flex flex-col gap-1">
-                          <label className="text-[9px] uppercase font-bold text-slate-400">Imaging Modalities</label>
-                          <textarea
-                            value={diagImaging}
-                            onChange={(e) => setDiagImaging(e.target.value)}
-                            placeholder="e.g. Ultrasound pelvis reports..."
-                            className="p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-xs font-semibold text-slate-700 outline-none focus:border-mint min-h-[60px]"
-                          />
-                        </div>
-                        <div className="flex flex-col gap-1">
-                          <label className="text-[9px] uppercase font-bold text-slate-400">Past & Current Suppressions</label>
-                          <input
-                            type="text"
-                            value={diagPastTreatments}
-                            onChange={(e) => setDiagPastTreatments(e.target.value)}
-                            placeholder="e.g. Long-term hydrocortisone cream"
-                            className="p-2.5 border border-slate-200 rounded-xl bg-slate-50 text-xs font-semibold text-slate-700 outline-none focus:border-mint"
-                          />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Sticky Shortcuts / Upload buttons */}
-                  <div className="border-t border-slate-100 pt-3 mt-4 flex-shrink-0 flex items-center justify-between gap-1.5">
-                    <button
-                      onClick={handleVoiceDictationStart}
-                      disabled={isDictating}
-                      className="flex-grow py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
-                    >
-                      <Mic className="w-3.5 h-3.5 text-mint" />
-                      <span>Dictate Case</span>
-                    </button>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-400">Mental / Emotional Picture</label>
+                      <input
+                        type="text"
+                        value={intakeMentalProfile}
+                        onChange={(e) => setIntakeMentalProfile(e.target.value)}
+                        placeholder="e.g. Anticipatory health anxiety, high control, professional perfectionism"
+                        className="w-full p-3 border border-slate-200 focus:border-mint focus:ring-1 focus:ring-mint outline-none rounded-2xl bg-slate-50 text-xs font-semibold text-slate-700"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-400">Suppression History</label>
+                      <input
+                        type="text"
+                        value={intakeSuppressionHistory}
+                        onChange={(e) => setIntakeSuppressionHistory(e.target.value)}
+                        placeholder="e.g. 6 months of topical steroid cream for eczema"
+                        className="w-full p-3 border border-slate-200 focus:border-mint focus:ring-1 focus:ring-mint outline-none rounded-2xl bg-slate-50 text-xs font-semibold text-slate-700"
+                      />
+                    </div>
 
                     <button
-                      onClick={() => handleReportUploadSimulation("lab")}
-                      className="py-2 px-2.5 bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 rounded-xl text-[9px] font-extrabold uppercase transition-all flex items-center justify-center gap-1"
+                      onClick={async () => {
+                        setIsIntakeLoading(true);
+                        try {
+                          const activePatient = selectedPatientId ? patients.find((p) => p.id === selectedPatientId) : null;
+                          const data = await fetchAIDiagnostics("intake", {
+                            complaint: intakeComplaint,
+                            thermalGenerals: intakeThermalGenerals,
+                            mentalProfile: intakeMentalProfile,
+                            suppressionHistory: intakeSuppressionHistory,
+                            patientInfo: activePatient ? {
+                              name: activePatient.name,
+                              age: activePatient.age,
+                              gender: activePatient.gender,
+                              complaint: activePatient.complaint
+                            } : undefined
+                          });
+                          if (data.success) {
+                            setIntakeResult(JSON.parse(data.analysis));
+                          }
+                        } catch (err) {
+                          console.error(err);
+                        } finally {
+                          setIsIntakeLoading(false);
+                        }
+                      }}
+                      disabled={isIntakeLoading}
+                      className="w-full py-3 bg-mint hover:bg-mint-dark text-white rounded-2xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm"
                     >
-                      <UploadCloud className="w-3 h-3 text-slate-400" />
-                      <span>Labs</span>
-                    </button>
-
-                    <button
-                      onClick={() => handleReportUploadSimulation("prescription")}
-                      className="py-2 px-2.5 bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 rounded-xl text-[9px] font-extrabold uppercase transition-all flex items-center justify-center gap-1"
-                    >
-                      <FileText className="w-3 h-3 text-slate-400" />
-                      <span>Rx</span>
-                    </button>
-
-                    <button
-                      onClick={() => handleReportUploadSimulation("imaging")}
-                      className="py-2 px-2.5 bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 rounded-xl text-[9px] font-extrabold uppercase transition-all flex items-center justify-center gap-1"
-                    >
-                      <Layers className="w-3 h-3 text-slate-400" />
-                      <span>Imaging</span>
+                      {isIntakeLoading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Brain className="w-4 h-4" />}
+                      <span>{isIntakeLoading ? "Synthesizing..." : "Analyze Case Synthesis"}</span>
                     </button>
                   </div>
                 </div>
 
-                {/* Right Panel: Live Constitutional Synthesis (60%) */}
-                <div className="lg:col-span-6 flex flex-col h-full bg-slate-950 p-6 rounded-3xl text-white relative overflow-hidden">
-                  {/* Title Bar */}
-                  <div className="flex items-center justify-between border-b border-slate-800 pb-2 mb-4 flex-shrink-0">
-                    <div className="flex items-center space-x-1.5">
-                      <div className="w-2 h-2 rounded-full bg-mint animate-pulse" />
-                      <span className="text-xs font-mono font-extrabold uppercase tracking-widest text-slate-400">Live Constitutional Synthesis</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      {isIntakeLoading && (
-                        <span className="text-[10px] font-mono text-mint animate-pulse">Running Gemini AI Synthesizer...</span>
-                      )}
-                      <button
-                        onClick={() => {
-                          const rubrics = synthesisOutput?.clinical_recommendations?.rubrics_to_consider || [
-                            "MIND; Anxiety, failure, of",
-                            "GENERALITIES; Cold, aggravation",
-                            "STOMACH; Flatulence, distension",
-                            "SKIN; Itching, warmth of bed"
-                          ];
-                          transportCaseToRepertory(rubrics);
-                        }}
-                        className="px-2.5 py-1 bg-emerald-500/10 hover:bg-emerald-500 border border-emerald-500/30 hover:border-emerald-500 rounded-xl text-[9px] font-extrabold uppercase text-emerald-400 hover:text-white transition-all cursor-pointer flex items-center gap-1 shadow-sm"
-                      >
-                        <Zap className="w-3 h-3 text-emerald-450 animate-bounce" />
-                        <span>⚡ Transport to Repertory™</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Dashboard Metrics (Completeness & Quality) */}
-                  <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-3 flex items-center justify-between gap-4 mb-4 flex-shrink-0">
-                    <div className="flex-grow">
-                      <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-[10px] font-bold text-slate-400 uppercase font-mono">Case Completeness</span>
-                        <span className="text-xs font-extrabold text-mint font-mono">{computedCompleteness}%</span>
+                <div className="bg-slate-900 text-slate-100 p-6 rounded-3xl border border-slate-800 shadow-lg min-h-[400px] flex flex-col justify-between">
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-200 border-b border-slate-800 pb-2 flex items-center gap-2 font-mono">
+                      <Sparkles className="w-4 h-4 text-mint animate-pulse" />
+                      Constitutional Synthesis Output
+                    </h3>
+                    
+                    {isIntakeLoading && (
+                      <div className="flex flex-col items-center justify-center py-20 gap-3">
+                        <div className="w-8 h-8 rounded-full border-2 border-slate-700 border-t-mint animate-spin" />
+                        <span className="text-xs text-slate-400 font-mono">Analyzing core disturbance...</span>
                       </div>
-                      <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                        <div 
-                          className="bg-mint h-1.5 transition-all duration-500" 
-                          style={{ width: `${computedCompleteness}%` }}
-                        />
+                    )}
+
+                    {!isIntakeLoading && !intakeResult && (
+                      <div className="text-center py-24 text-slate-500 text-xs font-semibold">
+                        Enter patient coordinates and trigger analysis.
                       </div>
-                    </div>
+                    )}
 
-                    <div className="text-right flex-shrink-0">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase font-mono block">Intake Quality</span>
-                      <span className={`text-xs font-black uppercase font-mono px-2 py-0.5 rounded-lg ${
-                        computedQuality === "Poor" ? "bg-red-500/10 text-red-400 border border-red-500/20" :
-                        computedQuality === "Basic" ? "bg-amber-500/10 text-amber-400 border border-amber-500/20" :
-                        computedQuality === "Good" ? "bg-blue-500/10 text-blue-400 border border-blue-500/20" :
-                        "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                      }`}>
-                        {computedQuality}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Synthesis Dashboard Widgets */}
-                  <div 
-                    data-lenis-prevent 
-                    className="flex-grow overflow-y-auto pr-1 space-y-4 min-h-0"
-                    style={{ scrollBehavior: "smooth" }}
-                  >
-                    {/* WIDGET 1: Case Summary */}
-                    <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-4 space-y-2">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono flex items-center gap-1.5">
-                        <Activity className="w-3.5 h-3.5 text-mint" />
-                        Case HPI Summary
-                      </span>
-                      <p className="text-xs text-slate-200 leading-relaxed font-sans">
-                        {synthesisOutput?.symptom_synthesis?.chief_complaint_analysis || 
-                          intakeComplaint || 
-                          "No complaint description logged. Go to Step 1 to enter coordinates."}
-                      </p>
-                      {(synthesisOutput?.symptom_synthesis?.hpi_timeline || (intakeChatMessages.length > 1)) && (
-                        <div className="border-t border-slate-800/50 pt-2 mt-2">
-                          <span className="text-[9px] text-slate-400 font-bold uppercase block">Timeline coordinates</span>
-                          <p className="text-[11px] text-slate-300 leading-relaxed mt-0.5">
-                            {synthesisOutput?.symptom_synthesis?.hpi_timeline || 
-                              `Case initiated. Responses recorded: ${intakeChatMessages.filter(m => m.sender === 'user').length} coordinates obtained via guided interview.`}
-                          </p>
+                    {!isIntakeLoading && intakeResult && (
+                      <div className="space-y-4 mt-4 select-text">
+                        <div>
+                          <span className="text-[9px] uppercase tracking-wider text-slate-400 font-mono">Chief Complaint Assessment</span>
+                          <p className="text-xs text-slate-200 leading-relaxed font-sans mt-0.5">{intakeResult.symptom_synthesis?.chief_complaint_analysis}</p>
                         </div>
-                      )}
-                    </div>
-
-                    {/* WIDGET 2: Constitutional Pattern */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-3.5 space-y-1.5">
-                        <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 font-mono block">Constitutional Archetype</span>
-                        <span className="text-xs font-bold text-mint font-sans block">
-                          {constEmotionalPattern === "Collapsed Exhaustion" ? "Phosphoric Acid / Kalium Carb Type" :
-                           constEmotionalPattern === "Perfectionistic" ? "Arsenicum Album / Nux Vomica Type" :
-                           constEmotionalPattern === "Suppressed Grief" ? "Ignatia / Natrum Mur Type" :
-                           "Arsenicum / Pulsatilla Axis"}
-                        </span>
-                        <span className="text-[10px] text-slate-300 block font-sans">
-                          {constEmotionalPattern === "Collapsed Exhaustion" ? "Marked by vital burnout, deep physical fatigue, and coldness." :
-                           constEmotionalPattern === "Perfectionistic" ? "Marked by high control, anxiety over order, and restlessness." :
-                           constEmotionalPattern === "Suppressed Grief" ? "Marked by silent processing, sighs, and emotional blockages." :
-                           "Marked by anticipatory anxiety, restlessness, and heat/cold sensitivity."}
-                        </span>
-                      </div>
-
-                      {/* Thermal axis */}
-                      <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-3.5 space-y-1.5">
-                        <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 font-mono block">Thermal Orientation</span>
-                        <div className="flex items-center space-x-2">
-                          <span className={`text-[10px] uppercase font-mono font-extrabold px-2.5 py-0.5 rounded-full ${
-                            constThermalState === "Chilly" ? "bg-blue-500/20 text-blue-300 border border-blue-500/30" :
-                            constThermalState === "Hot" ? "bg-red-500/20 text-red-300 border border-red-500/30" :
-                            "bg-purple-500/20 text-purple-300 border border-purple-500/30"
-                          }`}>
-                            {constThermalState}
-                          </span>
+                        <div>
+                          <span className="text-[9px] uppercase tracking-wider text-slate-400 font-mono">HPI & Pathology Timeline</span>
+                          <p className="text-xs text-slate-200 leading-relaxed font-sans mt-0.5">{intakeResult.symptom_synthesis?.hpi_timeline}</p>
                         </div>
-                        <span className="text-[10px] text-slate-400 block font-sans">
-                          {synthesisOutput?.symptom_synthesis?.thermal_axis || 
-                            `Thermals set to ${constThermalState}. Matches remedies responsive to environmental changes.`}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* WIDGET 3: Probable Miasm State */}
-                    <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-4 space-y-2.5">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono block">Miasmatic Breakdown</span>
-                      <div className="grid grid-cols-5 gap-2">
-                        {[
-                          { name: "Psora", val: constMiasmIndicators.includes("Psora") ? 75 : 40 },
-                          { name: "Sycosis", val: constMiasmIndicators.includes("Sycosis") ? 80 : 20 },
-                          { name: "Syphilis", val: constMiasmIndicators.includes("Syphilis") ? 70 : 10 },
-                          { name: "Tubercular", val: constMiasmIndicators.includes("Tubercular") ? 65 : 15 },
-                          { name: "Cancerinic", val: constMiasmIndicators.includes("Cancerinic") ? 60 : 15 }
-                        ].map((miasm) => (
-                          <div key={miasm.name} className="flex flex-col space-y-1">
-                            <span className="text-[9px] font-bold text-slate-400 font-mono text-center">{miasm.name}</span>
-                            <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                              <div className="bg-mint h-1.5 rounded-full" style={{ width: `${miasm.val}%` }} />
-                            </div>
-                            <span className="text-[9px] font-bold text-slate-200 text-center font-mono">{miasm.val}%</span>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <span className="text-[9px] uppercase tracking-wider text-slate-400 font-mono">Thermal Axis</span>
+                            <p className="text-xs text-slate-200 font-sans mt-0.5">{intakeResult.symptom_synthesis?.thermal_axis}</p>
                           </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* WIDGET 4: Key Kent Rubrics */}
-                    <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-4 space-y-3">
-                      <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono flex items-center gap-1.5">
-                          <Layers className="w-3.5 h-3.5 text-mint" />
-                          Key Kent Rubrics
-                        </span>
-                        
-                        {/* Transport Button */}
-                        <button
-                          onClick={() => {
-                            const rubrics = synthesisOutput?.clinical_recommendations?.rubrics_to_consider || [
-                              "MIND; Anxiety, failure, of",
-                              "GENERALITIES; Cold, aggravation",
-                              "STOMACH; Flatulence, distension",
-                              "SKIN; Itching, warmth of bed"
-                            ];
-                            transportCaseToRepertory(rubrics);
-                          }}
-                          className="px-2.5 py-1 bg-mint hover:bg-mint-dark text-white rounded-lg text-[9px] font-extrabold uppercase transition-all flex items-center gap-1 shadow-sm cursor-pointer"
-                        >
-                          <Zap className="w-3 h-3 text-white" />
-                          <span>Transport Case</span>
-                        </button>
-                      </div>
-
-                      <div className="flex flex-wrap gap-1.5">
-                        {(synthesisOutput?.clinical_recommendations?.rubrics_to_consider || [
-                          "MIND; Anxiety, failure, of",
-                          "GENERALITIES; Cold, aggravation",
-                          "STOMACH; Flatulence, distension",
-                          "SKIN; Itching, warmth of bed",
-                          "MIND; Anticipatory stage anxiety",
-                          "SLEEP; Insomnia, from work exhaustion",
-                          "GENERALITIES; Vital energy collapsed"
-                        ]).map((rubric: string, i: number) => (
-                          <span
-                            key={i}
-                            className="bg-slate-900 border border-slate-800 px-2 py-1 rounded-xl text-[10px] font-semibold text-slate-300 font-mono"
-                          >
-                            {rubric}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* WIDGET 5: Leading Remedy Group */}
-                    <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-4 space-y-3">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono block">Leading Candidates</span>
-                      <div className="space-y-2">
-                        {[
-                          { name: "Arsenicum Album", score: constEmotionalPattern === "Perfectionistic" ? 92 : 75, details: "Anxiety, restlessness, fastidious. Chilly, better from heat." },
-                          { name: "Lycopodium Clavatum", score: intakeComplaint.toLowerCase().includes("ibs") ? 94 : 78, details: "IBS flatulence worse 4-8pm, warm drinks craving." },
-                          { name: "Nux Vomica", score: constEmotionalPattern === "Perfectionistic" || intakeComplaint.toLowerCase().includes("stress") ? 88 : 72, details: "Irritable, competitive, work stress. Highly chilly." },
-                          { name: "Sulphur", score: intakeComplaint.toLowerCase().includes("skin") || constThermalState === "Hot" ? 91 : 68, details: "Hot-blooded, skin itching worse bed warmth, sweets craving." }
-                        ].map((remedy) => (
-                          <div key={remedy.name} className="flex items-start justify-between border-b border-slate-800/30 pb-2 last:border-0 last:pb-0 gap-3">
-                            <div className="flex-grow">
-                              <div className="flex items-center justify-between mb-0.5">
-                                <span className="text-xs font-bold text-slate-200">{remedy.name}</span>
-                                <span className="text-[10px] font-bold text-mint font-mono">{remedy.score}%</span>
-                              </div>
-                              <div className="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
-                                <div className="bg-mint h-1 rounded-full" style={{ width: `${remedy.score}%` }} />
-                              </div>
-                              <span className="text-[10px] text-slate-400 mt-1 block">{remedy.details}</span>
-                            </div>
+                          <div>
+                            <span className="text-[9px] uppercase tracking-wider text-slate-400 font-mono">Suppression Detail</span>
+                            <p className="text-xs text-slate-200 font-sans mt-0.5">{intakeResult.symptom_synthesis?.suppression_history}</p>
                           </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* WIDGET 6: Missing Info / Remaining Questions */}
-                    <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-4 space-y-2">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono block">Missing Information & Questions</span>
-                      <ul className="list-disc pl-4 text-xs text-slate-300 space-y-1 mt-1 font-sans">
-                        {(synthesisOutput?.clinical_recommendations?.suggested_questions || [
-                          "Has the patient noticed any specific time modalities (e.g. afternoon or morning aggregates)?",
-                          "Confirm desires or aversion to salt and sour foods.",
-                          "How does the patient feel in damp cold vs. dry cold?"
-                        ]).map((q: string, i: number) => (
-                          <li key={i} className="leading-relaxed">{q}</li>
-                        ))}
-                      </ul>
-                      {computedCompleteness < 85 && (
-                        <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-2.5 mt-2 flex items-start gap-2">
-                          <AlertTriangle className="w-3.5 h-3.5 text-amber-400 flex-shrink-0 mt-0.5" />
-                          <span className="text-[10px] text-amber-300 leading-relaxed font-sans">
-                            Case confidence limited due to missing parameters (completeness at {computedCompleteness}%). Complete more guided chat questions to increase diagnostic coverage.
-                          </span>
                         </div>
-                      )}
+                        <div className="border-t border-slate-800 pt-3">
+                          <span className="text-[9px] uppercase tracking-wider text-slate-400 font-mono">Recommended Rubrics (Kent index)</span>
+                          <div className="flex flex-wrap gap-1.5 mt-1.5">
+                            {intakeResult.clinical_recommendations?.rubrics_to_consider?.map((rub: string, i: number) => (
+                              <span key={i} className="px-2 py-0.5 bg-slate-800 rounded text-[10px] font-mono text-mint border border-slate-800">{rub}</span>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="border-t border-slate-800 pt-3">
+                          <span className="text-[9px] uppercase tracking-wider text-slate-400 font-mono">Clarifying Questions for Next Visit</span>
+                          <ul className="list-disc pl-4 text-xs text-slate-300 space-y-1 mt-1 font-sans">
+                            {intakeResult.clinical_recommendations?.suggested_questions?.map((q: string, i: number) => (
+                              <li key={i}>{q}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  {intakeResult && (
+                    <div className="border-t border-slate-800 pt-3 mt-4 flex items-center justify-between text-[10px] text-slate-500 font-semibold font-mono">
+                      <span>Vital Reactivity: {intakeResult.symptom_synthesis?.constitutional_tendencies}</span>
+                      <span className="text-mint">Miasm: {intakeResult.clinical_recommendations?.miasmatic_orientation}</span>
                     </div>
-                  </div>
-
-                  {/* Sticky Footer: Smart Actions (Generate Sub-reports) */}
-                  <div className="border-t border-slate-800 pt-3 mt-4 flex-shrink-0 flex flex-wrap items-center gap-2">
-                    {[
-                      { key: "constitutional", label: "Constitutional Analysis" },
-                      { key: "rubrics", label: "Kent Rubrics" },
-                      { key: "differential", label: "Differential Remedies" },
-                      { key: "followups", label: "Follow-Up Questions" },
-                      { key: "patient_summary", label: "Patient Summary" }
-                    ].map((btn) => (
-                      <button
-                        key={btn.key}
-                        onClick={() => handleSmartAction(btn.key)}
-                        disabled={isIntakeLoading}
-                        className="py-1.5 px-3 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-[10px] font-bold text-slate-300 hover:text-white transition-all cursor-pointer flex items-center gap-1 shadow-sm"
-                      >
-                        <Sparkles className="w-3 h-3 text-mint" />
-                        <span>{btn.label}</span>
-                      </button>
-                    ))}
-                  </div>
+                  )}
                 </div>
               </div>
             </div>
           )}
 
           {/* TAB: Diagnostics */}
-          {activeTab === "diagnostics" && (() => {
-            const coverage = getClinicalCoverageScore();
-            
-            // Local search logic combining curated and dynamic ICD mappings
-            const getFilteredDiagnoses = () => {
-              const query = diagSearchQuery.trim().toLowerCase();
-              const allDiagnoses = getAll15000Diagnoses();
-              
-              // If there's a search query, first check direct/synonym lookups
-              if (query) {
-                const matched = getIcdDiagnosis(query);
-                if (matched) {
-                  // Filter by specialty if not "All"
-                  if (diagOrganSystem !== "All" && matched.organSystem !== diagOrganSystem) {
-                    return [];
-                  }
-                  return [matched];
-                }
-                
-                // Secondary search: search curated & dynamically generated entries by name/specialty
-                return allDiagnoses.filter(d => {
-                  const systemMatch = diagOrganSystem === "All" || d.organSystem === diagOrganSystem;
-                  const queryMatch = d.name.toLowerCase().includes(query) || 
-                                     d.icd10.toLowerCase().includes(query) || 
-                                     d.description.toLowerCase().includes(query);
-                  return systemMatch && queryMatch;
-                });
-              }
-              
-              // Otherwise return all diagnoses filtered by organ system
-              return allDiagnoses.filter(d => 
-                diagOrganSystem === "All" || d.organSystem === diagOrganSystem
-              );
-            };
+          {activeTab === "diagnostics" && (
+            <div className={`space-y-6 transition-all duration-300 ${fullscreenTab === "diagnostics" ? "fixed inset-0 z-[50] overflow-y-auto bg-pearl p-8" : "relative"}`}>
+              <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+                <div>
+                  <h2 className="text-xl font-serif font-bold text-slate-800">Diagnostic Intelligence</h2>
+                  <p className="text-xs text-slate-400 font-sans mt-0.5">Link clinical diseases to homeostatic organ systems and remedy monographs.</p>
+                </div>
+                <button
+                  onClick={() => setFullscreenTab(fullscreenTab === "diagnostics" ? null : "diagnostics")}
+                  className="px-3 py-1.5 border border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-bold text-slate-600 transition-all flex items-center gap-1.5 cursor-pointer"
+                >
+                  {fullscreenTab === "diagnostics" ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+                  <span>{fullscreenTab === "diagnostics" ? "Minimize" : "Full Screen"}</span>
+                </button>
+              </div>
 
-            const filteredList = getFilteredDiagnoses();
-
-            return (
-              <div className={`space-y-6 transition-all duration-300 ${fullscreenTab === "diagnostics" ? "fixed inset-0 z-[50] overflow-y-auto bg-pearl p-8" : "relative"}`}>
-                <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-                  <div>
-                    <h2 className="text-xl font-serif font-bold text-slate-800">Clinical Diagnosis Directory</h2>
-                    <p className="text-xs text-slate-400 font-sans mt-0.5">Dr. Jethwani Clinical Repertory™ • Mapped ICD-10/11 Homeopathic Intelligence</p>
-                  </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+                {["All", "Brain/Nervous", "Digestive", "Integumentary", "Respiratory", "Endocrine", "Cardiovascular", "Musculoskeletal"].map(organ => (
                   <button
-                    onClick={() => setFullscreenTab(fullscreenTab === "diagnostics" ? null : "diagnostics")}
-                    className="px-3 py-1.5 border border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-bold text-slate-600 transition-all flex items-center gap-1.5 cursor-pointer"
+                    key={organ}
+                    onClick={() => {
+                      setDiagOrganSystem(organ);
+                      setDiagResult(null);
+                    }}
+                    className={`px-3 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider border transition-all cursor-pointer ${
+                      diagOrganSystem === organ 
+                        ? "bg-mint border-mint text-white shadow-sm" 
+                        : "bg-white border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50"
+                    }`}
                   >
-                    {fullscreenTab === "diagnostics" ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
-                    <span>{fullscreenTab === "diagnostics" ? "Minimize" : "Full Screen"}</span>
+                    {organ.replace("Brain/", "")}
                   </button>
-                </div>
+                ))}
+              </div>
 
-                {/* Coverage Score Metrics Banner */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="glass-panel p-5 rounded-3xl bg-emerald-500/[0.04] border-emerald-500/20 flex flex-col justify-between">
-                    <div className="flex justify-between items-center">
-                      <span className="text-[10px] uppercase tracking-wider text-slate-400 font-bold font-mono">Curated Homeopathic Layer</span>
-                      <Award className="w-4 h-4 text-emerald-500" />
-                    </div>
-                    <div className="mt-3">
-                      <div className="text-2xl font-serif font-bold text-slate-800">{coverage.curatedCount} Diagnoses</div>
-                      <div className="w-full bg-slate-100 rounded-full h-1.5 mt-2">
-                        <div className="bg-emerald-500 h-1.5 rounded-full" style={{ width: `${(coverage.curatedCount / 3000) * 100}%` }}></div>
-                      </div>
-                      <div className="flex justify-between text-[8px] text-slate-400 font-bold mt-1 font-mono">
-                        <span>Daily Practice Target: 3,000</span>
-                        <span>{Math.round((coverage.curatedCount / 3000) * 100)}% Complete</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="glass-panel p-5 rounded-3xl bg-blue-500/[0.04] border-blue-500/20 flex flex-col justify-between">
-                    <div className="flex justify-between items-center">
-                      <span className="text-[10px] uppercase tracking-wider text-slate-400 font-bold font-mono">Mapped ICD-10 + 11 Database</span>
-                      <Database className="w-4 h-4 text-blue-500" />
-                    </div>
-                    <div className="mt-3">
-                      <div className="text-2xl font-serif font-bold text-slate-800">{coverage.totalIcdMapped.toLocaleString()} Mapped</div>
-                      <div className="w-full bg-slate-100 rounded-full h-1.5 mt-2">
-                        <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: `${(coverage.totalIcdMapped / coverage.totalTarget) * 100}%` }}></div>
-                      </div>
-                      <div className="flex justify-between text-[8px] text-slate-400 font-bold mt-1 font-mono">
-                        <span>Universal Taxonomy Target: 15,000</span>
-                        <span>{Math.round((coverage.totalIcdMapped / coverage.totalTarget) * 100)}% Coverage</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="glass-panel p-5 rounded-3xl bg-purple-500/[0.04] border-purple-500/20 flex flex-col justify-between">
-                    <div className="flex justify-between items-center">
-                      <span className="text-[10px] uppercase tracking-wider text-slate-400 font-bold font-mono">Auto-Synonym Resolver</span>
-                      <Zap className="w-4 h-4 text-purple-500 animate-pulse" />
-                    </div>
-                    <div className="mt-2 text-[10px] text-slate-500 font-semibold leading-relaxed">
-                      Resolves popular clinical names directly. Searching for <span className="text-purple-600 font-bold">"Acid Reflux"</span>, <span className="text-purple-600 font-bold">"Heartburn"</span>, or <span className="text-purple-600 font-bold">"Reflux Disease"</span> auto-aligns to the canonical <span className="font-bold">GERD</span> profile.
-                    </div>
-                  </div>
-                </div>
-
-                {/* Specialties Coverage Scorecard Collapsible */}
-                <div className="glass-panel p-4 rounded-3xl bg-white/70 border-white/60">
-                  <span className="text-[10px] uppercase tracking-wider text-slate-400 font-extrabold font-mono block mb-3">Coverage Scorecard by Specialty</span>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-3">
-                    {ORGAN_SYSTEMS.slice(0, 10).map(specialty => {
-                      const curated = coverage.specialtyCuratedCount[specialty] || 0;
-                      const target = coverage.specialtyTargetCount[specialty] || 100;
-                      const percent = Math.min(100, Math.round((curated / 2) * 100)); // Scaled presentation representation
-                      return (
-                        <div key={specialty} className="p-2.5 rounded-xl border border-slate-100 bg-slate-50/50 flex flex-col justify-between">
-                          <span className="text-[9px] font-bold text-slate-600 truncate">{specialty}</span>
-                          <div className="flex justify-between items-center mt-1">
-                            <span className="text-[10px] font-bold text-slate-700">{curated} Curated</span>
-                            <span className="text-[8px] font-mono text-slate-400">{percent}%</span>
-                          </div>
-                          <div className="w-full bg-slate-200 rounded-full h-1 mt-1.5">
-                            <div className="bg-mint h-1 rounded-full" style={{ width: `${percent}%` }}></div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Specialty Buttons Filter */}
-                <div className="flex flex-wrap gap-2 py-1">
-                  {["All", ...ORGAN_SYSTEMS.slice(0, 7)].map(organ => (
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+                <div className="lg:col-span-2 space-y-4">
+                  <div className="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm flex items-center gap-3">
+                    <Search className="w-4 h-4 text-slate-400" />
+                    <input
+                      type="text"
+                      placeholder="Search diseases (e.g. GERD, IBS, Eczema, Asthma)..."
+                      value={diagSearchQuery}
+                      onChange={(e) => setDiagSearchQuery(e.target.value)}
+                      className="w-full bg-transparent border-none text-xs font-bold text-slate-800 outline-none placeholder-slate-400"
+                    />
                     <button
-                      key={organ}
-                      onClick={() => {
-                        setDiagOrganSystem(organ);
-                        setSelectedDiagCondition(null);
+                      onClick={async () => {
+                        setIsDiagLoading(true);
+                        try {
+                          const data = await fetchAIDiagnostics("diagnostics", {
+                            organSystem: diagOrganSystem,
+                            searchQuery: diagSearchQuery
+                          });
+                          if (data.success) {
+                            setDiagResult(JSON.parse(data.analysis));
+                          }
+                        } catch (err) {
+                          console.error(err);
+                        } finally {
+                          setIsDiagLoading(false);
+                        }
                       }}
-                      className={`px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider border transition-all cursor-pointer ${
-                        diagOrganSystem === organ 
-                          ? "bg-mint border-mint text-white shadow-sm" 
-                          : "bg-white border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50"
-                      }`}
+                      className="px-4 py-2 bg-mint hover:bg-mint-dark text-white rounded-xl text-[10px] font-bold uppercase tracking-widest cursor-pointer"
                     >
-                      {organ}
+                      Search
                     </button>
-                  ))}
-                </div>
-
-                {/* Directory Workspace Search & Panel */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                  {/* Left Column: Search & Match List */}
-                  <div className="lg:col-span-5 space-y-4">
-                    <div className="flex flex-col gap-2">
-                      <div className="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm flex items-center gap-3">
-                        <Search className="w-4 h-4 text-slate-400" />
-                        <input
-                          type="text"
-                          placeholder="Search conditions by name, ICD code, or synonym (e.g. Acid Reflux)..."
-                          value={diagSearchQuery}
-                          onChange={(e) => {
-                            setDiagSearchQuery(e.target.value);
-                            setSelectedDiagCondition(null);
-                          }}
-                          className="w-full bg-transparent border-none text-xs font-bold text-slate-800 outline-none placeholder-slate-400"
-                        />
-                      </div>
-
-                      <div className="bg-white px-4 py-3 rounded-3xl border border-slate-100 shadow-sm flex items-center gap-2">
-                        <span className="text-[9px] uppercase font-bold text-slate-400 font-mono whitespace-nowrap">Jump to Select:</span>
-                        <select
-                          value={selectedDiagCondition?.id || ""}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            if (val) {
-                              const found = getAll15000Diagnoses().find(d => d.id === val);
-                              if (found) setSelectedDiagCondition(found);
-                            } else {
-                              setSelectedDiagCondition(null);
-                            }
-                          }}
-                          className="w-full bg-transparent border-none text-xs font-bold text-slate-700 outline-none cursor-pointer"
-                        >
-                          <option value="">-- Select matched condition ({filteredList.length} items) --</option>
-                          {filteredList.slice(0, 150).map((cond) => (
-                            <option key={cond.id} value={cond.id}>
-                              [{cond.icd10}] {cond.name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-
-                    <div className="space-y-3 max-h-[500px] overflow-y-auto pr-1">
-                      {filteredList.length > 0 ? (
-                        filteredList.slice(0, 100).map((cond, idx) => (
-                          <div 
-                            key={cond.id || idx} 
-                            onClick={() => setSelectedDiagCondition(cond)}
-                            className={`p-4 rounded-3xl border transition-all cursor-pointer shadow-sm flex flex-col justify-between ${
-                              selectedDiagCondition?.id === cond.id
-                                ? "bg-mint/5 border-mint" 
-                                : "bg-white border-slate-100 hover:border-slate-350"
-                            }`}
-                          >
-                            <div className="flex justify-between items-start">
-                              <div>
-                                <h4 className="text-xs font-bold text-slate-800 font-serif">{cond.name}</h4>
-                                <div className="flex gap-2 items-center mt-1">
-                                  <span className="px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded-md text-[8px] font-mono font-bold">{cond.icd10}</span>
-                                  <span className="text-[9px] text-slate-405 font-bold uppercase">{cond.organSystem}</span>
-                                </div>
-                              </div>
-                              <span className={`px-2 py-0.5 rounded text-[8px] font-extrabold uppercase ${cond.homeopathicLayer ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"}`}>
-                                {cond.homeopathicLayer ? "Curated Layer" : "ICD Mapped"}
-                              </span>
-                            </div>
-                            <p className="text-[10px] text-slate-400 font-semibold leading-normal font-sans mt-2 line-clamp-2">{cond.description}</p>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="bg-white p-12 text-center border border-slate-100 rounded-3xl shadow-sm text-slate-400 text-xs font-semibold">
-                          No matches found. Try typing a search term or selecting a specialty filter.
-                        </div>
-                      )}
-                    </div>
                   </div>
 
-                  {/* Right Column: Detailed Diagnostic Profile & Homeopathic layer */}
-                  <div className="lg:col-span-7 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm min-h-[500px]">
-                    {selectedDiagCondition ? (
-                      <div className="space-y-6 select-text">
-                        {/* Title block */}
-                        <div className="border-b border-slate-100 pb-4 flex justify-between items-start">
-                          <div>
-                            <h3 className="text-base font-serif font-bold text-slate-850">{selectedDiagCondition.name}</h3>
-                            <div className="flex items-center gap-3 mt-1.5">
-                              <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">{selectedDiagCondition.organSystem}</span>
-                              <span className="text-[9px] font-mono text-slate-500 bg-slate-50 px-2 py-0.5 rounded border border-slate-200/50">ICD-10: {selectedDiagCondition.icd10} | ICD-11: {selectedDiagCondition.icd11}</span>
-                            </div>
-                          </div>
-                        </div>
+                  {isDiagLoading && (
+                    <div className="flex justify-center items-center py-20">
+                      <div className="w-6 h-6 rounded-full border-2 border-slate-200 border-t-mint animate-spin" />
+                    </div>
+                  )}
 
-                        {/* Medical Summary Tabs */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <span className="text-[9px] uppercase tracking-wider text-slate-400 font-mono font-bold block mb-1">Pathophysiology</span>
-                            <p className="text-[11px] text-slate-600 leading-relaxed font-sans">{selectedDiagCondition.pathophysiology}</p>
-                          </div>
-                          <div>
-                            <span className="text-[9px] uppercase tracking-wider text-slate-400 font-mono font-bold block mb-1">Etiology & Triggers</span>
-                            <p className="text-[11px] text-slate-600 leading-relaxed font-sans">{selectedDiagCondition.etiology}</p>
-                          </div>
-                        </div>
-
-                        {/* Signs, Symptoms, Red Flags */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-slate-100 pt-4">
-                          <div>
-                            <span className="text-[9px] uppercase tracking-wider text-slate-400 font-mono font-bold block mb-2">Common Symptoms</span>
-                            <ul className="list-disc pl-4 text-[10px] text-slate-600 space-y-1">
-                              {selectedDiagCondition.symptoms.map((s: string, idx: number) => (
-                                <li key={idx}>{s}</li>
-                              ))}
-                            </ul>
-                          </div>
-                          <div>
-                            <span className="text-[9px] uppercase tracking-wider text-slate-400 font-mono font-bold block mb-2">Clinical Signs</span>
-                            <ul className="list-disc pl-4 text-[10px] text-slate-600 space-y-1">
-                              {selectedDiagCondition.signs.map((s: string, idx: number) => (
-                                <li key={idx}>{s}</li>
-                              ))}
-                            </ul>
-                          </div>
-                          <div className="bg-rose-500/[0.02] border border-rose-100 p-3 rounded-2xl">
-                            <span className="text-[9px] uppercase tracking-wider text-rose-500 font-mono font-bold block mb-2 flex items-center gap-1">
-                              <ShieldAlert className="w-3.5 h-3.5" />
-                              <span>Clinical Red Flags</span>
-                            </span>
-                            <ul className="list-disc pl-4 text-[10px] text-rose-700 space-y-1 font-semibold">
-                              {selectedDiagCondition.redFlags.map((s: string, idx: number) => (
-                                <li key={idx}>{s}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        </div>
-
-                        {/* Investigations & Differentials */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-slate-100 pt-4">
-                          <div>
-                            <span className="text-[9px] uppercase tracking-wider text-slate-400 font-mono font-bold block mb-2">Recommended Investigations</span>
-                            <div className="text-[10px] space-y-2">
-                              <div>
-                                <span className="font-bold text-slate-500 uppercase text-[8px] font-mono">Lab Panels:</span>
-                                <div className="flex flex-wrap gap-1 mt-1">
-                                  {selectedDiagCondition.investigations.labs.map((l: string, idx: number) => (
-                                    <span key={idx} className="bg-slate-50 text-slate-600 px-2 py-0.5 rounded text-[9px] border border-slate-200/50">{l}</span>
-                                  ))}
-                                </div>
+                  {!isDiagLoading && !diagResult && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {Object.entries(DIAGNOSTIC_CONDITIONS).map(([system, list]) => {
+                        if (diagOrganSystem !== "All" && system !== diagOrganSystem) return null;
+                        return list.map((cond, idx) => {
+                          if (diagSearchQuery && !cond.name.toLowerCase().includes(diagSearchQuery.toLowerCase())) return null;
+                          return (
+                            <div 
+                              key={idx} 
+                              onClick={() => setSelectedDiagCondition(cond)}
+                              className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm space-y-3 cursor-pointer hover:border-mint transition-all"
+                            >
+                              <div className="flex justify-between items-start">
+                                <h4 className="text-xs font-bold text-slate-800">{cond.name}</h4>
+                                <span className={`px-2 py-0.5 rounded text-[8px] font-extrabold uppercase ${cond.grade === "High" ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"}`}>{cond.grade}</span>
                               </div>
-                              <div>
-                                <span className="font-bold text-slate-500 uppercase text-[8px] font-mono">Imaging / Scopes:</span>
-                                <div className="flex flex-wrap gap-1 mt-1">
-                                  {selectedDiagCondition.investigations.imaging.map((im: string, idx: number) => (
-                                    <span key={idx} className="bg-slate-50 text-slate-600 px-2 py-0.5 rounded text-[9px] border border-slate-200/50">{im}</span>
-                                  ))}
-                                </div>
+                              <p className="text-[10px] text-slate-400 font-semibold leading-normal font-sans">{cond.pathophysiology}</p>
+                              <div className="flex flex-wrap gap-1">
+                                {cond.remedies.map((rem, i) => (
+                                  <span key={i} className="px-1.5 py-0.5 bg-slate-50 text-slate-500 rounded text-[9px] font-bold">{rem.split(" ")[0]}</span>
+                                ))}
                               </div>
                             </div>
+                          );
+                        });
+                      })}
+                    </div>
+                  )}
+
+                  {!isDiagLoading && diagResult && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {diagResult.matching_conditions?.map((cond: any, idx: number) => (
+                        <div 
+                          key={idx} 
+                          onClick={() => setSelectedDiagCondition(cond)}
+                          className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm space-y-3 cursor-pointer hover:border-mint transition-all"
+                        >
+                          <div className="flex justify-between items-start">
+                            <h4 className="text-xs font-bold text-slate-800">{cond.condition}</h4>
+                            <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded text-[8px] font-extrabold uppercase">{cond.grade_of_match || "High"}</span>
                           </div>
-                          <div>
-                            <span className="text-[9px] uppercase tracking-wider text-slate-400 font-mono font-bold block mb-2">Medical Differentials</span>
-                            <div className="flex flex-wrap gap-1 mt-1">
-                              {selectedDiagCondition.differentialDiagnosis.map((d: string, idx: number) => (
-                                <span key={idx} className="bg-slate-50 text-slate-600 px-2.5 py-1 rounded-xl text-[9px] border border-slate-200/50">{d}</span>
-                              ))}
-                            </div>
+                          <p className="text-[10px] text-slate-400 font-semibold leading-normal font-sans">{cond.pathophysiology}</p>
+                          <div className="flex flex-wrap gap-1">
+                            {cond.homeopathic_remedies?.map((rem: string, i: number) => (
+                              <span key={i} className="px-1.5 py-0.5 bg-slate-50 text-slate-500 rounded text-[9px] font-bold">{rem}</span>
+                            ))}
                           </div>
                         </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
 
-                        {/* Homeopathic Layer Mappings (Exclusive to Curated layer) */}
-                        {selectedDiagCondition.homeopathicLayer ? (
-                          <div className="border-t border-slate-100 pt-4 space-y-4">
-                            <div className="flex justify-between items-center bg-mint/5 p-4 rounded-3xl border border-mint/20">
-                              <div>
-                                <h4 className="text-xs font-bold text-slate-800">Homeopathic Repertory Mappings Available</h4>
-                                <p className="text-[10px] text-slate-500 mt-0.5">Quickly import all associated clinical rubrics directly into the workbench.</p>
-                              </div>
+                <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm min-h-[400px] flex flex-col justify-between">
+                  {selectedDiagCondition ? (
+                    <div className="space-y-4 select-text">
+                      <div className="border-b border-slate-100 pb-2 flex justify-between items-start">
+                        <div>
+                          <h3 className="text-sm font-bold text-[#1A2421]">{selectedDiagCondition.name || selectedDiagCondition.condition}</h3>
+                          <span className="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">{selectedDiagCondition.organ_system || diagOrganSystem}</span>
+                        </div>
+                        <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded text-[8px] font-extrabold uppercase">{selectedDiagCondition.grade || selectedDiagCondition.grade_of_match} match</span>
+                      </div>
+                      <div>
+                        <span className="text-[9px] uppercase tracking-wider text-slate-400 font-mono">Clinical Pathophysiology</span>
+                        <p className="text-xs text-slate-600 mt-1 leading-normal font-sans">{selectedDiagCondition.pathophysiology}</p>
+                      </div>
+                      <div>
+                        <span className="text-[9px] uppercase tracking-wider text-slate-400 font-mono">Remedy Differentiation</span>
+                        <div className="space-y-2 mt-2">
+                          {(selectedDiagCondition.remedies || selectedDiagCondition.homeopathic_remedies).map((rem: string, i: number) => (
+                            <div key={i} className="p-2.5 rounded-xl bg-slate-50 border border-slate-100/50 flex justify-between items-center text-xs">
+                              <span className="font-bold text-slate-700">{rem}</span>
                               <button
                                 onClick={() => {
-                                  if (!selectedDiagCondition.homeopathicLayer?.kentRubrics) return;
-                                  const rubricsToAdd = selectedDiagCondition.homeopathicLayer.kentRubrics;
-                                  setSelectedJethwaniRubrics(prev => {
-                                    const combined = [...prev];
-                                    let addedCount = 0;
-                                    rubricsToAdd.forEach((rubricId: string) => {
-                                      if (!combined.some(item => item.rubricId === rubricId)) {
-                                        combined.push({
-                                          rubricId,
-                                          severity: 6,
-                                          frequency: "frequent",
-                                          impact: "moderate"
-                                        });
-                                        addedCount++;
-                                      }
-                                    });
-                                    alert(`⚡ Loaded ${addedCount} mapped rubrics into your workbench!`);
-                                    return combined;
-                                  });
+                                  const term = rem.split(" ")[0].toLowerCase();
+                                  const matchedNode = `rem_${term.replace(/[^a-z]/g, "")}`;
+                                  setSelectedGraphNodeId(matchedNode);
+                                  setNexusSubTab("mind-map");
+                                  setActiveTab("nexus-atlas");
                                 }}
-                                className="px-4 py-2 bg-mint hover:bg-mint-dark text-white rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all shadow-sm cursor-pointer border-none flex items-center gap-1.5"
+                                className="px-2.5 py-1 bg-mint/10 text-mint-dark font-bold text-[9px] uppercase rounded-lg hover:bg-mint hover:text-white transition-all cursor-pointer border border-transparent"
                               >
-                                <Zap className="w-3.5 h-3.5 fill-white" />
-                                <span>Load Mapped Rubrics</span>
+                                View in Atlas
                               </button>
                             </div>
-
-                            {/* Miasmatic profile and Constitutional remedies */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div>
-                                <span className="text-[9px] uppercase tracking-wider text-slate-400 font-mono font-bold block mb-2">Miasmatic Breakdown</span>
-                                <div className="space-y-2">
-                                  {Object.entries(selectedDiagCondition.homeopathicLayer.miasms).map(([mias, percent]) => {
-                                    const percentVal = percent as number;
-                                    return (
-                                      <div key={mias} className="flex items-center gap-2 text-[10px]">
-                                        <span className="w-16 capitalize font-bold text-slate-600">{mias}</span>
-                                        <div className="flex-1 bg-slate-100 rounded-full h-1.5">
-                                          <div className="bg-mint h-1.5 rounded-full" style={{ width: `${percentVal}%` }}></div>
-                                        </div>
-                                        <span className="w-8 text-right font-mono text-slate-400 font-bold">{percentVal}%</span>
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              </div>
-                              <div>
-                                <span className="text-[9px] uppercase tracking-wider text-slate-400 font-mono font-bold block mb-2">Constitutional Types</span>
-                                <div className="flex flex-wrap gap-1">
-                                  {selectedDiagCondition.homeopathicLayer.constitutionalTypes.map((c: string, idx: number) => (
-                                    <span key={idx} className="bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-xl text-[9px] font-bold border border-emerald-100">{c}</span>
-                                  ))}
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Remedy Differentiation */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 border-t border-slate-100 pt-4">
-                              <div className="p-3 bg-slate-50/50 rounded-2xl border border-slate-100">
-                                <span className="text-[8px] uppercase tracking-wider text-slate-400 font-mono font-bold block mb-1">Top Acute Remedies</span>
-                                <div className="flex flex-wrap gap-1 mt-1">
-                                  {selectedDiagCondition.homeopathicLayer.acuteRemedies.map((r: string, idx: number) => (
-                                    <span key={idx} className="bg-white text-slate-700 px-1.5 py-0.5 rounded text-[9px] font-bold border border-slate-200/50">{r}</span>
-                                  ))}
-                                </div>
-                              </div>
-                              <div className="p-3 bg-slate-50/50 rounded-2xl border border-slate-100">
-                                <span className="text-[8px] uppercase tracking-wider text-slate-400 font-mono font-bold block mb-1">Top Chronic Remedies</span>
-                                <div className="flex flex-wrap gap-1 mt-1">
-                                  {selectedDiagCondition.homeopathicLayer.chronicRemedies.map((r: string, idx: number) => (
-                                    <span key={idx} className="bg-white text-slate-700 px-1.5 py-0.5 rounded text-[9px] font-bold border border-slate-200/50">{r}</span>
-                                  ))}
-                                </div>
-                              </div>
-                              <div className="p-3 bg-slate-50/50 rounded-2xl border border-slate-100">
-                                <span className="text-[8px] uppercase tracking-wider text-slate-400 font-mono font-bold block mb-1">Remedy Families</span>
-                                <div className="flex flex-wrap gap-1 mt-1">
-                                  {selectedDiagCondition.homeopathicLayer.remedyFamilies.map((f: string, idx: number) => (
-                                    <span key={idx} className="bg-white text-slate-700 px-1.5 py-0.5 rounded text-[9px] font-semibold border border-slate-200/50">{f}</span>
-                                  ))}
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Differential Remedies guide */}
-                            <div className="border-t border-slate-100 pt-3">
-                              <span className="text-[9px] uppercase tracking-wider text-slate-400 font-mono font-bold block mb-2">Remedy Differential Logic</span>
-                              <div className="grid grid-cols-1 gap-2">
-                                {selectedDiagCondition.homeopathicLayer.differentialRemedies.map((diff: string, idx: number) => {
-                                  const parts = diff.split(" (");
-                                  return (
-                                    <div key={idx} className="p-2.5 rounded-xl bg-slate-50 border border-slate-100/50 flex justify-between items-center text-xs">
-                                      <div>
-                                        <span className="font-bold text-slate-800">{parts[0]}</span>
-                                        {parts[1] && <span className="text-slate-500 ml-1 text-[10px]">({parts[1]}</span>}
-                                      </div>
-                                      <button
-                                        onClick={() => {
-                                          const term = parts[0].split(" ")[0].toLowerCase();
-                                          const matchedNode = `rem_${term.replace(/[^a-z]/g, "")}`;
-                                          setSelectedGraphNodeId(matchedNode);
-                                          setNexusSubTab("mind-map");
-                                          setActiveTab("nexus-atlas");
-                                        }}
-                                        className="px-2.5 py-1 bg-mint/10 text-mint-dark font-bold text-[9px] uppercase rounded-lg hover:bg-mint hover:text-white transition-all cursor-pointer border border-transparent font-mono"
-                                      >
-                                        View in Atlas
-                                      </button>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="border-t border-slate-100 pt-4 p-4 rounded-3xl bg-amber-500/[0.02] border-amber-500/20 text-center text-slate-500 text-[10px] leading-relaxed">
-                            No classical homeopathic layer is curated yet for this dynamic ICD entry. Homeopathic coverage is automatically generated using standard repertory affinities.
-                          </div>
-                        )}
+                          ))}
+                        </div>
                       </div>
-                    ) : (
-                      <div className="text-center py-48 text-slate-400 text-xs font-semibold">
-                        Select a condition from matches to show differential guides, clinical features, and homeopathic mappings.
-                      </div>
-                    )}
-                  </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-32 text-slate-400 text-xs font-semibold">
+                      Select a condition from matches to show differential guides and pivot mappings.
+                    </div>
+                  )}
+
+                  {diagResult && (
+                    <div className="text-[9px] text-slate-400 mt-4 border-t border-slate-100 pt-3 text-right font-semibold font-mono">
+                      {diagResult.clinical_notes}
+                    </div>
+                  )}
                 </div>
               </div>
-            );
-          })()}
+            </div>
+          )}
 
           {/* TAB: Report Analyzer */}
           {activeTab === "analyzer" && (() => {
@@ -8540,17 +7385,17 @@ ${err.message || err}`);
                     </div>
 
                     {/* Selected rubrics tracker */}
-                    <div className="flex-1 flex flex-col pt-2 min-h-[350px]">
+                    <div className="flex-1 flex flex-col pt-2 min-h-[220px]">
                       <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-3 font-mono">
                         Selected Symptoms & Rubrics Weighting ({selectedRubrics.length})
                       </h4>
 
                       <div 
                         data-lenis-prevent
-                        className={`grid gap-2.5 flex-grow overflow-y-auto pr-1 ${selectedRubrics.length > 0 ? 'grid-cols-1 md:grid-cols-2 max-h-[290px]' : 'grid-cols-1 h-full'}`}
+                        className="space-y-2 flex-grow overflow-y-auto max-h-[260px] pr-1"
                       >
                         {selectedRubrics.length === 0 ? (
-                          <div className="col-span-full h-full py-12 flex flex-col items-center justify-center text-center border border-dashed border-slate-200 rounded-2xl bg-slate-50/20">
+                          <div className="h-full py-8 flex flex-col items-center justify-center text-center border border-dashed border-slate-200 rounded-2xl bg-slate-50/20">
                             <Sliders className="w-6 h-6 text-slate-300 mb-2" />
                             <p className="text-[10px] font-bold text-slate-500">No active symptoms</p>
                             <p className="text-[9px] text-slate-400 max-w-[180px] mt-0.5">Select symptoms from the chapter list above to begin.</p>
@@ -11267,16 +10112,16 @@ ${err.message || err}`);
                 {/* Middle Column: Active Workbench & Indices - Span 4 */}
                 <div className="xl:col-span-4 space-y-6">
                   {/* Active symptoms listing */}
-                  <div className="glass-panel rounded-3xl border-white/60 p-6 shadow-sm bg-white/60 backdrop-blur-md min-h-[380px] flex flex-col">
+                  <div className="glass-panel rounded-3xl border-white/60 p-6 space-y-4 shadow-sm bg-white/60 backdrop-blur-md">
                     <div className="flex items-center justify-between border-b border-slate-900/5 pb-3">
                       <h3 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider flex items-center gap-2">
                         <Sliders className="w-4 h-4 text-mint" />
                         Clinical Workbench ({selectedJethwaniRubrics.length})
                       </h3>
                     </div>
-                    <div className={`grid gap-3 flex-grow overflow-y-auto pr-1 mt-3 ${selectedJethwaniRubrics.length > 0 ? 'grid-cols-1 md:grid-cols-2 max-h-[290px]' : 'grid-cols-1 h-full'}`} data-lenis-prevent>
+                    <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1" data-lenis-prevent>
                       {selectedJethwaniRubrics.length === 0 ? (
-                        <div className="col-span-full h-full py-12 flex flex-col items-center justify-center text-center border border-dashed border-slate-200 rounded-2xl bg-slate-50/20">
+                        <div className="py-8 flex flex-col items-center justify-center text-center border border-dashed border-slate-200 rounded-2xl bg-slate-50/20">
                           <Sliders className="w-6 h-6 text-slate-300 mb-2" />
                           <p className="text-[10px] font-bold text-slate-500">No active symptoms configured</p>
                           <p className="text-[9px] text-slate-400 mt-1 max-w-[200px]">Select clinical rubrics from directory to load modifiers.</p>
