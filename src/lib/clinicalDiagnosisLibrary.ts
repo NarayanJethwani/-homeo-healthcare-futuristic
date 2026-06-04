@@ -306,6 +306,111 @@ export const CURATED_DIAGNOSES: DiagnosisProfile[] = [
       keynotes: ["Constant worry about the health of self and family", "Extreme restlessness, must pace or change places", "Hurried feeling, feels time passes too slowly"],
       confirmatorySymptoms: ["Anxiety worse after midnight (1-2 AM)", "Sleeplessness from anticipatory worry", "Trembling and diarrhea before stressful tasks"]
     }
+  },
+  {
+    id: "inguinal_hernia",
+    name: "Inguinal Hernia",
+    icd10: "K40.9",
+    icd11: "DD51.Z",
+    organSystem: "Gastroenterology",
+    description: "A condition in which soft tissue bulges through a weak point in the abdominal muscles, typically in the groin canal.",
+    pathophysiology: "Protrusion of intra-abdominal contents through a defect in the inguinal canal wall (direct or indirect).",
+    etiology: "Increased intra-abdominal pressure (lifting, straining, chronic cough), muscle wall weakness, congenital patent processus vaginalis.",
+    riskFactors: ["Male gender", "Older age", "Chronic cough", "Chronic constipation", "Heavy lifting", "Family history"],
+    symptoms: ["Bulge in the groin or scrotum area", "Pain or burning sensation at the bulge", "Slight dragging sensation in the groin", "Pain worse when lifting, coughing, or bending"],
+    signs: ["Visible and palpable bulge in the inguinal area, especially on coughing (Valsalva)", "Reducible mass on lying down (unless incarcerated)"],
+    redFlags: ["Incarceration (bulge cannot be pushed back)", "Strangulation (severe sudden pain, fever, rapid heart rate, redness over bulge)", "Nausea, vomiting, inability to pass gas or stool"],
+    investigations: {
+      labs: ["CBC (pre-op or to rule out infection in strangulation)"],
+      imaging: ["Groin Ultrasound", "Abdominal/Pelvis CT scan (if suspecting incarceration)"]
+    },
+    complications: ["Incarceration of bowel loop", "Strangulation with bowel necrosis", "Intestinal obstruction"],
+    differentialDiagnosis: ["Femoral hernia", "Hydrocele", "Groin lymphadenopathy", "Testicular torsion", "Epididymitis"],
+    evidenceReferences: [
+      "Hernia Surge Group: Groin hernia management guidelines, 2018.",
+      "Homeopathic Therapeutics for Hernias - Clinical Case Series, 2022."
+    ],
+    homeopathicLayer: {
+      kentRubrics: ["abdomen_hernia_inguinal", "abdomen_hernia_strangulated"],
+      boerickeRubrics: ["abdomen_hernia_groin"],
+      clinicalRubrics: ["inguinal_hernia_protrusion"],
+      miasms: { psora: 35, sycosis: 45, syphilis: 20, tubercular: 0 },
+      constitutionalTypes: ["Lycopodium", "Calcarea Carbonica", "Nux Vomica", "Silicea", "Sulphur"],
+      remedyFamilies: ["Mineral remedies", "Plant remedies"],
+      acuteRemedies: ["Nux Vomica", "Plumbum Metallicum", "Belladonna"],
+      chronicRemedies: ["Lycopodium", "Calcarea Carbonica", "Silicea"],
+      differentialRemedies: ["Nux-v (spasmodic choking hernia, worse coughing)", "Lyc (right-sided inguinal hernia)", "Calc (obese, flabby tissues with general muscle laxity)"],
+      keynotes: ["Sensation of weakness in the inguinal rings, feels as if hernia would protrude", "Hernia on the right side (Lyc) or left side (Nux-v)", "Worse from standing, lifting, or coughing"],
+      confirmatorySymptoms: ["Groin pain relieved by gentle pressure or lying down", "Frequent rumbling and gurgling of gas in the groin area"]
+    }
+  },
+  {
+    id: "femoral_hernia",
+    name: "Femoral Hernia",
+    icd10: "K41.9",
+    icd11: "DD51.Y",
+    organSystem: "Gastroenterology",
+    description: "A hernia that occurs when tissue pushes through a weak spot in the femoral canal, just below the groin crease.",
+    pathophysiology: "Protrusion of peritoneal sac and its contents through the femoral ring into the femoral canal.",
+    etiology: "Weakness of the femoral ring, chronic intra-abdominal pressure, multiple pregnancies.",
+    riskFactors: ["Female gender", "Older age", "Pregnancy", "Chronic strain"],
+    symptoms: ["Bulge just below the groin crease", "Pain or discomfort in the groin that worsens on standing/straining", "Nausea or vomiting if incarcerated"],
+    signs: ["Visible and palpable mass below the inguinal ligament, lateral to the pubic tubercle"],
+    redFlags: ["High rate of incarceration/strangulation", "Sudden severe pain in the bulge", "Skin discoloration over the bulge"],
+    investigations: {
+      labs: ["Pre-operative routine labs", "Leukocyte count if strangulation is suspected"],
+      imaging: ["Groin Ultrasound", "CT scan of abdomen/pelvis"]
+    },
+    complications: ["Bowel incarceration", "Bowel strangulation", "Gangrenous bowel segment"],
+    differentialDiagnosis: ["Inguinal hernia", "Saphena varix", "Femoral artery aneurysm", "Psoas abscess"],
+    evidenceReferences: ["European Hernia Society guidelines on groin hernias, 2020."],
+    homeopathicLayer: {
+      kentRubrics: ["abdomen_hernia_femoral"],
+      boerickeRubrics: ["abdomen_hernia_groin"],
+      clinicalRubrics: ["femoral_hernia_protrusion"],
+      miasms: { psora: 30, sycosis: 40, syphilis: 30, tubercular: 0 },
+      constitutionalTypes: ["Lycopodium", "Nux Vomica", "Cocculus Indicus"],
+      remedyFamilies: ["Plant remedies", "Mineral remedies"],
+      acuteRemedies: ["Nux Vomica", "Cocculus Indicus"],
+      chronicRemedies: ["Lycopodium", "Silicea"],
+      differentialRemedies: ["Cocculus (spasmodic femoral hernia with severe flatulence)", "Nux-v (choking hernia, left sided)"],
+      keynotes: ["Left-sided femoral hernia with cutting colic", "Pain worse when standing, better lying flat"],
+      confirmatorySymptoms: ["Relieved by drawing legs up towards chest", "Sensation of soreness or bruising in the groin area"]
+    }
+  },
+  {
+    id: "umbilical_hernia",
+    name: "Umbilical Hernia",
+    icd10: "K42.9",
+    icd11: "DD51.X",
+    organSystem: "Gastroenterology",
+    description: "A condition in which abdominal contents protrude through the umbilical ring defect.",
+    pathophysiology: "Protrusion of omentum or bowel through a patent or weakened umbilical ring.",
+    etiology: "Failure of the umbilical ring closure in infants, or acquired weakness in adults due to obesity, ascites, or pregnancy.",
+    riskFactors: ["Obesity", "Multiple pregnancies", "Chronic ascites", "Infant age", "Low birth weight"],
+    symptoms: ["Bulge at the navel (umbilicus)", "Discomfort or pain at the navel when coughing or straining", "Tenderness at the site"],
+    signs: ["Protruding umbilicus that increases in size with Valsalva maneuver", "Reducible mass on gentle pressure"],
+    redFlags: ["Incarceration (irreducible bulge)", "Severe pain, redness or purple color at the navel", "Signs of intestinal obstruction"],
+    investigations: {
+      labs: ["Usually clinical diagnosis; routine pre-op labs if surgical repair is planned"],
+      imaging: ["Abdominal Ultrasound", "CT scan of the abdomen (for large or complex adult hernias)"]
+    },
+    complications: ["Incarceration of bowel or omentum", "Strangulation", "Skin ulceration over large hernias"],
+    differentialDiagnosis: ["Paraumbilical hernia", "Epigastric hernia", "Omphalocele", "Umbilical metastasis (Sister Mary Joseph nodule)"],
+    evidenceReferences: ["Guidelines for the clinical management of umbilical hernias, 2021."],
+    homeopathicLayer: {
+      kentRubrics: ["abdomen_hernia_umbilical"],
+      boerickeRubrics: ["abdomen_hernia_umbilical"],
+      clinicalRubrics: ["umbilical_hernia_protrusion"],
+      miasms: { psora: 50, sycosis: 35, syphilis: 15, tubercular: 0 },
+      constitutionalTypes: ["Calcarea Carbonica", "Nux Vomica", "Lycopodium", "Silicea"],
+      remedyFamilies: ["Mineral remedies", "Plant remedies"],
+      acuteRemedies: ["Nux Vomica", "Colocynthis", "Belladonna"],
+      chronicRemedies: ["Calcarea Carbonica", "Silicea", "Sulphur"],
+      differentialRemedies: ["Calc (specifically in infants/children, flabby constitution)", "Nux-v (with constipation and straining)", "Colocynthis (severe cutting colic around navel)"],
+      keynotes: ["Navel protrudes like a cherry, worse when crying or straining", "Colic around the umbilicus relieved by bending double", "Soft, easily reducible umbilical bulge in infants"],
+      confirmatorySymptoms: ["Acidity and constipation in adults with umbilical weakness", "Slight tenderness when pressing the navel bulge"]
+    }
   }
 ];
 
@@ -352,7 +457,14 @@ export const SEARCH_SYNONYMS: Record<string, string> = {
   "generalized anxiety": "generalized_anxiety",
   "gad": "generalized_anxiety",
   "nervous anxiety": "generalized_anxiety",
-  "chronic worry": "generalized_anxiety"
+  "chronic worry": "generalized_anxiety",
+  
+  "inguinal hernia": "inguinal_hernia",
+  "groin hernia": "inguinal_hernia",
+  "hernia inguinal": "inguinal_hernia",
+  "femoral hernia": "femoral_hernia",
+  "umbilical hernia": "umbilical_hernia",
+  "rupture groin": "inguinal_hernia"
 };
 
 // Generates dynamic template-based diagnosis profiles for the rest of the 10,000+ conditions (ICD catalog)
@@ -543,13 +655,17 @@ export function getAll15000Diagnoses(): DiagnosisProfile[] {
     { name: "Hepato-biliary", organ: "Hepatology", letter: "K" },
     { name: "Duodenal", organ: "Gastroenterology", letter: "K" },
     { name: "Colonic", organ: "Gastroenterology", letter: "K" },
-    { name: "Laryngeal", organ: "ENT", letter: "J" }
+    { name: "Laryngeal", organ: "ENT", letter: "J" },
+    { name: "Inguinal", organ: "Gastroenterology", letter: "K" },
+    { name: "Umbilical", organ: "Gastroenterology", letter: "K" },
+    { name: "Femoral", organ: "Gastroenterology", letter: "K" }
   ];
   
   const pathologies = [
     "Inflammation", "Insufficiency", "Hypertrophy", "Degeneration", "Congestion", "Dysfunction", "Spasm", "Sclerosis", 
     "Infection", "Neuralgia", "Dermatitis", "Arthritis", "Colitis", "Nephropathy", "Neuropathy", "Myopathy", "Vasculitis", 
-    "Hyperplasia", "Obstructive Disease", "Irritation", "Syndrome", "Catarrh", "Ulceration", "Calculus", "Stenosis"
+    "Hyperplasia", "Obstructive Disease", "Irritation", "Syndrome", "Catarrh", "Ulceration", "Calculus", "Stenosis",
+    "Hernia", "Protrusion", "Obstruction"
   ];
 
   let count = list.length;

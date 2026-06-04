@@ -5429,32 +5429,43 @@ ${err.message || err}`);
             const getFilteredDiagnoses = () => {
               const query = diagSearchQuery.trim().toLowerCase();
               const allDiagnoses = getAll15000Diagnoses();
+              let listToReturn: DiagnosisProfile[] = [];
               
               // If there's a search query, first check direct/synonym lookups
               if (query) {
                 const matched = getIcdDiagnosis(query);
                 if (matched) {
                   // Filter by specialty if not "All"
-                  if (diagOrganSystem !== "All" && matched.organSystem !== diagOrganSystem) {
-                    return [];
+                  if (diagOrganSystem === "All" || matched.organSystem === diagOrganSystem) {
+                    listToReturn = [matched];
                   }
-                  return [matched];
+                } else {
+                  // Secondary search: search curated & dynamically generated entries by name/specialty
+                  listToReturn = allDiagnoses.filter(d => {
+                    const systemMatch = diagOrganSystem === "All" || d.organSystem === diagOrganSystem;
+                    const queryMatch = d.name.toLowerCase().includes(query) || 
+                                       d.icd10.toLowerCase().includes(query) || 
+                                       d.description.toLowerCase().includes(query);
+                    return systemMatch && queryMatch;
+                  });
                 }
-                
-                // Secondary search: search curated & dynamically generated entries by name/specialty
-                return allDiagnoses.filter(d => {
-                  const systemMatch = diagOrganSystem === "All" || d.organSystem === diagOrganSystem;
-                  const queryMatch = d.name.toLowerCase().includes(query) || 
-                                     d.icd10.toLowerCase().includes(query) || 
-                                     d.description.toLowerCase().includes(query);
-                  return systemMatch && queryMatch;
-                });
+              } else {
+                // Otherwise return all diagnoses filtered by organ system
+                listToReturn = allDiagnoses.filter(d => 
+                  diagOrganSystem === "All" || d.organSystem === diagOrganSystem
+                );
               }
-              
-              // Otherwise return all diagnoses filtered by organ system
-              return allDiagnoses.filter(d => 
-                diagOrganSystem === "All" || d.organSystem === diagOrganSystem
-              );
+
+              // Sort: Curated items first, then others, both ordered A-Z alphabetically by name
+              return listToReturn.sort((a, b) => {
+                const aIsCurated = CURATED_DIAGNOSES.some(cd => cd.id === a.id);
+                const bIsCurated = CURATED_DIAGNOSES.some(cd => cd.id === b.id);
+                
+                if (aIsCurated && !bIsCurated) return -1;
+                if (!aIsCurated && bIsCurated) return 1;
+                
+                return a.name.localeCompare(b.name);
+              });
             };
 
             const filteredList = getFilteredDiagnoses();
