@@ -25,7 +25,7 @@ export default function WhatsAppButton() {
             className="hidden sm:block px-4 py-2 rounded-2xl glass-panel text-xs font-bold text-slate-800 shadow-md border-white/40 whitespace-nowrap"
           >
             Chat with Dr. Narayan
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-[4px] w-2 h-2 rotate-45 bg-[#FAF9F6] border-r border-t border-white/40" />
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-[4px] w-2 h-2 rotate-45 bg-[#FAF9F6] dark:bg-slate-900 border-r border-t border-white/40 dark:border-slate-800/40" />
           </motion.div>
         )}
       </AnimatePresence>
@@ -60,7 +60,7 @@ export default function WhatsAppButton() {
         {/* Pulse Online Dot */}
         <span className="absolute top-1 right-1 flex h-3 w-3 z-20">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500 border border-[#FAF9F6]"></span>
+          <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500 border border-[#FAF9F6] dark:border-slate-950"></span>
         </span>
       </motion.a>
     </div>

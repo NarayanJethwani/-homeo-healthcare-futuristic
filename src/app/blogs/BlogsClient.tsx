@@ -748,10 +748,10 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 260 }}
-              className="fixed right-0 top-0 bottom-0 w-full sm:w-[600px] bg-[#FAF9F6]/95 border-l border-white/50 z-[51] shadow-2xl flex flex-col pointer-events-auto overflow-hidden"
+              className="fixed right-0 top-0 bottom-0 w-full sm:w-[600px] bg-[#FAF9F6]/95 dark:bg-slate-900/95 border-l border-white/50 dark:border-slate-800 z-[51] shadow-2xl flex flex-col pointer-events-auto overflow-hidden"
             >
               {/* Drawer Header */}
-              <div className="p-6 md:p-8 border-b border-slate-900/5 flex items-center justify-between bg-white/70 backdrop-blur-sm">
+              <div className="p-6 md:p-8 border-b border-slate-900/5 dark:border-slate-800/40 flex items-center justify-between bg-white/70 backdrop-blur-sm">
                 <div className="flex items-center gap-3">
                   <div className="flex items-center justify-center w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm text-mint">
                     <BookOpen className="w-5 h-5" />
@@ -814,7 +814,7 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
               </div>
 
               {/* Drawer Footer CTA */}
-              <div className="p-6 md:p-8 bg-white/70 backdrop-blur-sm border-t border-slate-900/5 flex flex-col items-center">
+              <div className="p-6 md:p-8 bg-white/70 backdrop-blur-sm border-t border-slate-900/5 dark:border-slate-800/40 flex flex-col items-center">
                 <div className="w-full text-center space-y-4">
                   <h4 className="text-sm font-bold text-[#1A2421]">Interested in constitutional treatment?</h4>
                   <p className="text-xs text-slate-700 font-semibold">

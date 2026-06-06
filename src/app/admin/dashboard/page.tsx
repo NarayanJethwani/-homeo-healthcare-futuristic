@@ -8903,7 +8903,7 @@ ${err.message || err}`);
                           <strong>Profile:</strong> {patient.age} Y/O · {patient.gender} · {patient.location}
                         </p>
                         
-                        <p className="text-xs font-semibold text-slate-800 bg-[#FAF9F6] p-3.5 rounded-2xl border border-slate-900/5 leading-relaxed">
+                        <p className="text-xs font-semibold text-slate-800 bg-[#FAF9F6] dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-900/5 dark:border-slate-800/40 leading-relaxed">
                           <strong>Chief Complaint:</strong> {patient.complaint}
                         </p>
                       </div>
@@ -11553,7 +11553,7 @@ ${err.message || err}`);
                         animate={{ x: 0 }}
                         exit={{ x: "100%" }}
                         transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                        className="w-full max-w-md bg-[#FAF9F6] h-full shadow-2xl p-6 overflow-y-auto flex flex-col space-y-6 relative border-l border-slate-200/50 text-slate-800"
+                        className="w-full max-w-md bg-[#FAF9F6] dark:bg-slate-900 h-full shadow-2xl p-6 overflow-y-auto flex flex-col space-y-6 relative border-l border-slate-200/50 dark:border-slate-800 text-slate-800"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <button
@@ -11589,17 +11589,17 @@ ${err.message || err}`);
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
-                              <div className="p-3.5 bg-rose-50/50 border border-rose-100/50 rounded-2xl">
-                                <h4 className="text-[10px] font-bold text-rose-800 uppercase tracking-wider mb-1.5 font-mono">Primary Aggravations</h4>
-                                <ul className="space-y-1 text-[10px] text-rose-700 font-semibold">
+                              <div className="p-3.5 bg-rose-50/50 dark:bg-rose-950/20 border border-rose-100/50 dark:border-rose-900/30 rounded-2xl">
+                                <h4 className="text-[10px] font-bold text-rose-800 dark:text-rose-300 uppercase tracking-wider mb-1.5 font-mono">Primary Aggravations</h4>
+                                <ul className="space-y-1 text-[10px] text-rose-700 dark:text-rose-400 font-semibold">
                                   {COMMON_REMEDIES_KEYNOTES[selectedRemedyDetail].aggravations.map((agg, idx) => (
                                     <li key={idx}>• {agg}</li>
                                   ))}
                                 </ul>
                               </div>
-                              <div className="p-3.5 bg-emerald-50/50 border border-[#0F766E]/10 rounded-2xl">
-                                <h4 className="text-[10px] font-bold text-[#0F766E] uppercase tracking-wider mb-1.5 font-mono">Primary Ameliorations</h4>
-                                <ul className="space-y-1 text-[10px] text-emerald-800 font-semibold">
+                              <div className="p-3.5 bg-emerald-50/50 dark:bg-emerald-950/20 border border-[#0F766E]/10 dark:border-emerald-900/30 rounded-2xl">
+                                <h4 className="text-[10px] font-bold text-[#0F766E] dark:text-mint uppercase tracking-wider mb-1.5 font-mono">Primary Ameliorations</h4>
+                                <ul className="space-y-1 text-[10px] text-emerald-800 dark:text-emerald-300 font-semibold">
                                   {COMMON_REMEDIES_KEYNOTES[selectedRemedyDetail].ameliorations.map((amel, idx) => (
                                     <li key={idx}>• {amel}</li>
                                   ))}
@@ -11609,7 +11609,7 @@ ${err.message || err}`);
 
                             <div className="p-3 bg-white border border-slate-200/50 rounded-2xl flex justify-between items-center text-xs">
                               <span className="text-[10px] font-bold text-slate-700 uppercase font-mono">Miasmatic Classification:</span>
-                              <span className="text-[10px] font-bold text-mint-dark bg-mint/5 px-2 py-0.5 rounded-lg border border-mint/10 font-mono">
+                              <span className="text-[10px] font-bold text-mint-dark dark:text-mint bg-mint/5 px-2 py-0.5 rounded-lg border border-mint/10 font-mono">
                                 {COMMON_REMEDIES_KEYNOTES[selectedRemedyDetail].miasm}
                               </span>
                             </div>
@@ -11629,17 +11629,17 @@ ${err.message || err}`);
                               return (
                                 <div key={rubric.id} className="flex justify-between items-center p-2.5 rounded-xl border border-slate-900/5 bg-white/50 text-xs">
                                   <div className="max-w-[70%]">
-                                    <span className="text-[8px] text-slate-400 uppercase font-semibold block font-mono">{rubric.chapter}</span>
+                                    <span className="text-[8px] text-slate-400 dark:text-slate-600 uppercase font-semibold block font-mono">{rubric.chapter}</span>
                                     <span className="font-semibold text-slate-700 truncate block">{rubric.name}</span>
                                   </div>
                                   <div className="flex items-center gap-2">
-                                    <span className="text-[10px] text-slate-400 font-medium" title="Patient Symptom Intensity">Case: {userGrade}</span>
+                                    <span className="text-[10px] text-slate-400 dark:text-slate-600 font-medium" title="Patient Symptom Intensity">Case: {userGrade}</span>
                                     {remGrade ? (
                                       <span className={`px-2 py-0.5 rounded text-[10px] font-bold bg-mint text-white`}>
                                         Grade {remGrade}
                                       </span>
                                     ) : (
-                                      <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-400 border border-slate-200/50 font-mono">
+                                      <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-600 border border-slate-200/50 dark:border-slate-700/50 font-mono">
                                         No cover
                                       </span>
                                     )}
@@ -20915,7 +20915,7 @@ Exported on: ${new Date().toLocaleDateString()}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
                 transition={{ type: "spring", damping: 25, stiffness: 220 }}
                 data-lenis-prevent
-                className="fixed inset-0 m-auto max-w-2xl w-full p-6 md:p-8 bg-[#FAF9F6]/95 border border-white/60 z-[51] shadow-2xl rounded-[36px] flex flex-col pointer-events-auto max-h-[85vh] overflow-y-auto"
+                className="fixed inset-0 m-auto max-w-2xl w-full p-6 md:p-8 bg-[#FAF9F6]/95 dark:bg-slate-900/95 border border-white/60 dark:border-slate-850 z-[51] shadow-2xl rounded-[36px] flex flex-col pointer-events-auto max-h-[85vh] overflow-y-auto"
               >
                 {/* Modal Header */}
                 <div className="flex items-center justify-between border-b border-slate-900/5 pb-4 mb-6">
@@ -21180,7 +21180,7 @@ Exported on: ${new Date().toLocaleDateString()}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
                 transition={{ type: "spring", damping: 25, stiffness: 220 }}
                 data-lenis-prevent
-                className="fixed inset-0 m-auto max-w-md w-full p-6 md:p-8 bg-[#FAF9F6]/95 border border-white/60 z-[51] shadow-2xl rounded-[36px] flex flex-col pointer-events-auto max-h-[80vh] overflow-y-auto"
+                className="fixed inset-0 m-auto max-w-md w-full p-6 md:p-8 bg-[#FAF9F6]/95 dark:bg-slate-900/95 border border-white/60 dark:border-slate-850 z-[51] shadow-2xl rounded-[36px] flex flex-col pointer-events-auto max-h-[80vh] overflow-y-auto"
               >
                 {/* Modal Header */}
                 <div className="flex items-center justify-between border-b border-slate-900/5 pb-4 mb-5">

@@ -358,10 +358,10 @@ export default function Conditions() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 260 }}
-              className="fixed right-0 top-0 bottom-0 w-full sm:w-[540px] bg-[#FAF9F6]/95 border-l border-white/50 z-[51] shadow-2xl flex flex-col pointer-events-auto overflow-hidden"
+              className="fixed right-0 top-0 bottom-0 w-full sm:w-[540px] bg-[#FAF9F6]/95 dark:bg-slate-900/95 border-l border-white/50 dark:border-slate-800 z-[51] shadow-2xl flex flex-col pointer-events-auto overflow-hidden"
             >
               {/* Drawer Header */}
-              <div className="p-6 md:p-8 border-b border-slate-900/5 flex items-center justify-between bg-white/70 backdrop-blur-sm">
+              <div className="p-6 md:p-8 border-b border-slate-900/5 dark:border-slate-800/40 flex items-center justify-between bg-white/70 backdrop-blur-sm">
                 <div className="flex items-center gap-3">
                   <div className="flex items-center justify-center w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm">
                     {selectedCondition.icon}
@@ -411,10 +411,10 @@ export default function Conditions() {
 
                       {/* Node 2: Nervous Axis */}
                       <div className="flex items-start gap-3">
-                        <div className="w-5 h-5 rounded-full bg-aqua/10 border border-aqua/20 flex items-center justify-center text-[10px] text-aqua-dark font-bold mt-0.5 shadow-[0_2px_8px_rgba(6,182,212,0.15)]">2</div>
+                        <div className="w-5 h-5 rounded-full bg-aqua/10 border border-aqua/20 flex items-center justify-center text-[10px] text-aqua-dark dark:text-aqua font-bold mt-0.5 shadow-[0_2px_8px_rgba(6,182,212,0.15)]">2</div>
                         <div>
                           <span className="block text-[10px] text-slate-700 font-extrabold uppercase tracking-wide">Neurological / Vital Pathway</span>
-                          <code className="block font-mono text-[9px] text-[#0E7490] mt-1 bg-white/70 px-2 py-1 rounded border border-slate-900/5 max-w-full overflow-x-auto whitespace-pre-wrap">
+                          <code className="block font-mono text-[9px] text-[#0E7490] dark:text-aqua mt-1 bg-white/70 px-2 py-1 rounded border border-slate-900/5 max-w-full overflow-x-auto whitespace-pre-wrap">
                             {activeProfile.neurologyPath}
                           </code>
                         </div>
@@ -425,7 +425,7 @@ export default function Conditions() {
 
                       {/* Node 3: Manifestation */}
                       <div className="flex items-start gap-3">
-                        <div className="w-5 h-5 rounded-full bg-lavender/10 border border-lavender/20 flex items-center justify-center text-[10px] text-lavender-dark font-bold mt-0.5 shadow-[0_2px_8px_rgba(168,85,247,0.15)]">3</div>
+                        <div className="w-5 h-5 rounded-full bg-lavender/10 border border-lavender/20 flex items-center justify-center text-[10px] text-lavender-dark dark:text-lavender font-bold mt-0.5 shadow-[0_2px_8px_rgba(168,85,247,0.15)]">3</div>
                         <div>
                           <span className="block text-[10px] text-slate-700 font-extrabold uppercase tracking-wide">Somatic Manifestation</span>
                           <span className="text-slate-800">{activeProfile.somaticManifestation}</span>
@@ -474,9 +474,9 @@ export default function Conditions() {
                   <div className="relative border-l border-slate-900/5 pl-6 ml-3 space-y-6">
                     {activeProfile.stages.map((stg, idx) => {
                       const colors = [
-                        { bg: "bg-mint/10 border-mint/20 text-mint-dark", dot: "bg-mint" },
-                        { bg: "bg-aqua/10 border-aqua/20 text-aqua-dark", dot: "bg-aqua" },
-                        { bg: "bg-lavender/10 border-lavender/20 text-lavender-dark", dot: "bg-lavender" }
+                        { bg: "bg-mint/10 border-mint/20 text-mint-dark dark:text-mint", dot: "bg-mint" },
+                        { bg: "bg-aqua/10 border-aqua/20 text-aqua-dark dark:text-aqua", dot: "bg-aqua" },
+                        { bg: "bg-lavender/10 border-lavender/20 text-lavender-dark dark:text-lavender", dot: "bg-lavender" }
                       ][idx];
                       return (
                         <div key={stg.phase} className="relative">
@@ -505,7 +505,7 @@ export default function Conditions() {
               </div>
 
               {/* Drawer Footer booking CTA */}
-              <div className="p-6 md:p-8 bg-white/70 backdrop-blur-sm border-t border-slate-900/5 flex flex-col items-center">
+              <div className="p-6 md:p-8 bg-white/70 backdrop-blur-sm border-t border-slate-900/5 dark:border-slate-800/40 flex flex-col items-center">
                 <Magnetic>
                   <button
                     onClick={handleBeginTreatment}
