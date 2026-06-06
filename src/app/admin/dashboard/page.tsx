@@ -5044,7 +5044,7 @@ ${err.message || err}`);
             <Activity className="w-5 h-5 text-mint" />
           </div>
           <div>
-            <h1 className="font-serif text-lg font-bold text-[#1A2421] leading-none mb-1">Dr. Jethwani Clinical Intelligence OS™</h1>
+            <h1 className="font-serif text-lg font-bold text-[#1A2421] leading-none mb-1">Dr. Jethwani's Clinical Intelligence OS™</h1>
             <span className="text-[10px] text-mint font-bold uppercase tracking-wider">
               {session?.role === "admin" ? "Master Control Panel (Admin)" : "Junior Medical Officer Panel"}
             </span>
