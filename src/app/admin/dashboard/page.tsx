@@ -21138,7 +21138,7 @@ Exported on: ${new Date().toLocaleDateString()}
                   </div>
                 ) : (
                   // Form State
-                  <form onSubmit={handleCreateCase} className="flex flex-col flex-grow min-h-0 overflow-hidden">
+                  <form onSubmit={handleCreateCase} className="contents">
                     {caseCreationError && (
                       <div className="p-4 bg-rose-50 border border-rose-100 rounded-2xl flex items-start gap-2.5 text-rose-800 text-xs font-semibold leading-relaxed flex-shrink-0 mb-4">
                         <ShieldAlert className="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" />

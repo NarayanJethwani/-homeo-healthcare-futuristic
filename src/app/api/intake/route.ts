@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/firebase";
-import { doc, setDoc } from "firebase/firestore";
+import { adminDb } from "@/lib/firebaseAdmin";
 import { 
   createPatientFolder, 
   createPatientClinicalSheet, 
@@ -74,8 +73,7 @@ export async function POST(request: Request) {
     };
 
     if (process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID && process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID !== "mock-project-id") {
-      const patientRef = doc(db, "patients", patientDoc.id);
-      await setDoc(patientRef, patientDoc);
+      await adminDb.collection("patients").doc(patientDoc.id).set(patientDoc);
     } else {
       console.log("Firebase not configured or operating in mock-project-id. Skipping Firestore write.");
     }

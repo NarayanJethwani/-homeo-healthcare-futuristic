@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/firebase";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { adminDb } from "@/lib/firebaseAdmin";
 import { appendAiReportToClinicalSheet } from "@/lib/googleDrive";
 
 export async function POST(request: Request) {
@@ -17,9 +16,8 @@ export async function POST(request: Request) {
 
     // 1. Fetch patient document to get sheetId using client-side SDK configuration
     if (process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID && process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID !== "mock-project-id") {
-      const patientRef = doc(db, "patients", patientId);
-      const patientSnap = await getDoc(patientRef);
-      if (patientSnap.exists()) {
+      const patientSnap = await adminDb.collection("patients").doc(patientId).get();
+      if (patientSnap.exists) {
         const patientData = patientSnap.data();
         sheetId = patientData?.sheetId || "mock-sheet-id";
       }
@@ -318,8 +316,7 @@ export async function POST(request: Request) {
 
     // 4. Update Firestore with the raw JSON string (so the dashboard metrics remain dynamic on reload)
     if (process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID && process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID !== "mock-project-id") {
-      const patientRef = doc(db, "patients", patientId);
-      await updateDoc(patientRef, {
+      await adminDb.collection("patients").doc(patientId).update({
         aiReport: aiReport,
         aiReportUpdated: new Date().toISOString()
       });

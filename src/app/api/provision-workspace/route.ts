@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/firebase";
-import { doc, updateDoc } from "firebase/firestore";
+import { adminDb } from "@/lib/firebaseAdmin";
 import { 
   createPatientFolder, 
   createPatientClinicalSheet, 
@@ -64,8 +63,7 @@ export async function POST(request: Request) {
     // 4. Update the patient document in Firestore
     const isMockProject = !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID === "mock-project-id";
     if (!isMockProject) {
-      const patientRef = doc(db, "patients", id);
-      await updateDoc(patientRef, {
+      await adminDb.collection("patients").doc(id).update({
         folderId: folderResult.folderId,
         folderUrl: folderResult.folderUrl,
         sheetId: sheetResult.sheetId,
