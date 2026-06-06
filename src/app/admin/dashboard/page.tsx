@@ -21041,7 +21041,7 @@ Exported on: ${new Date().toLocaleDateString()}
           {/* 1. New Case Taking Modal */}
         <AnimatePresence>
           {isNewCaseModalOpen && (
-            <>
+            <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none p-4 md:p-6">
               {/* Backdrop */}
               <motion.div
                 initial={{ opacity: 0 }}
@@ -21050,7 +21050,7 @@ Exported on: ${new Date().toLocaleDateString()}
                 onClick={() => {
                   if (!isCreatingCase) setIsNewCaseModalOpen(false);
                 }}
-                className="fixed inset-0 bg-slate-900/20 backdrop-blur-md z-50 pointer-events-auto"
+                className="absolute inset-0 bg-slate-900/20 backdrop-blur-md pointer-events-auto"
               />
 
               {/* Modal Container */}
@@ -21060,7 +21060,7 @@ Exported on: ${new Date().toLocaleDateString()}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
                 transition={{ type: "spring", damping: 25, stiffness: 220 }}
                 data-lenis-prevent
-                className="fixed inset-0 m-auto max-w-2xl w-full p-6 md:p-8 bg-[#FAF9F6]/95 dark:bg-slate-900/95 border border-white/60 dark:border-slate-850 z-[51] shadow-2xl rounded-[36px] flex flex-col pointer-events-auto max-h-[85vh] overflow-hidden"
+                className="relative max-w-2xl w-full p-6 md:p-8 bg-[#FAF9F6]/95 dark:bg-slate-900/95 border border-white/60 dark:border-slate-850 shadow-2xl rounded-[36px] flex flex-col pointer-events-auto max-h-[85vh] overflow-hidden"
               >
                 {/* Modal Header */}
                 <div className="flex items-center justify-between border-b border-slate-900/5 pb-4 mb-6 flex-shrink-0">
@@ -21392,21 +21392,21 @@ Exported on: ${new Date().toLocaleDateString()}
                   </form>
                 )}
               </motion.div>
-            </>
+            </div>
           )}
         </AnimatePresence>
 
         {/* 2. Import CSV Modal */}
         <AnimatePresence>
           {isImportModalOpen && (
-            <>
+            <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none p-4 md:p-6">
               {/* Backdrop */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setIsImportModalOpen(false)}
-                className="fixed inset-0 bg-slate-900/20 backdrop-blur-md z-50 pointer-events-auto"
+                className="absolute inset-0 bg-slate-900/20 backdrop-blur-md pointer-events-auto"
               />
 
               <motion.div
@@ -21415,7 +21415,7 @@ Exported on: ${new Date().toLocaleDateString()}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
                 transition={{ type: "spring", damping: 25, stiffness: 220 }}
                 data-lenis-prevent
-                className="fixed inset-0 m-auto max-w-md w-full p-6 md:p-8 bg-[#FAF9F6]/95 dark:bg-slate-900/95 border border-white/60 dark:border-slate-850 z-[51] shadow-2xl rounded-[36px] flex flex-col pointer-events-auto max-h-[85vh] overflow-hidden"
+                className="relative max-w-md w-full p-6 md:p-8 bg-[#FAF9F6]/95 dark:bg-slate-900/95 border border-white/60 dark:border-slate-850 shadow-2xl rounded-[36px] flex flex-col pointer-events-auto max-h-[85vh] overflow-hidden"
               >
                 {/* Modal Header */}
                 <div className="flex items-center justify-between border-b border-slate-900/5 pb-4 mb-5 flex-shrink-0">
@@ -21692,7 +21692,7 @@ Exported on: ${new Date().toLocaleDateString()}
                   </button>
                 </div>
               </motion.div>
-            </>
+            </div>
           )}
         </AnimatePresence>
 
