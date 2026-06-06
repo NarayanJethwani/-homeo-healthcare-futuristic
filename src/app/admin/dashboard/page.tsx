@@ -15,7 +15,7 @@ import { REPERTORY_DATA, REPERTORY_CHAPTERS, REMEDIES_METADATA, Rubric, BOERICKE
 import { MATERIA_MEDICA_BOOKS, MateriaMedicaBook } from "@/lib/materiaMedicaData";
 import { ORGANON_EDITIONS, ORGANON_KNOWLEDGE_TREE, ORGANON_APHORISMS, ORGANON_CASES, ACTIVE_RECALL_EXERCISES, TIMELINE_STEPS } from "@/lib/organonData";
 import { db } from "@/lib/firebase";
-import { collection, onSnapshot, query, orderBy, doc, updateDoc, setDoc, where, getDoc } from "firebase/firestore";
+import { collection, onSnapshot, query, orderBy, doc, updateDoc, setDoc, where, getDoc, getDocs } from "firebase/firestore";
 import { getKnowledgeGraph, getRemedyProfile } from "@/lib/knowledgeGraph";
 import { runIngestionSimulation, INGESTION_SOURCES } from "@/lib/ingestionPipeline";
 import { parseNaturalLanguageQuery } from "@/lib/searchEngine";
@@ -545,6 +545,13 @@ const getMmdDeepDive = (remedyName: string, aiData: any) => {
   return aiDeepDive || REMEDIES_DEEP_DIVE_TEMPLATES["Sulphur"];
 };
 
+interface Clinician {
+  uid: string;
+  name: string;
+  role: string;
+  email: string;
+}
+
 export default function AdminDashboard() {
   const router = useRouter();
   const [session, setSession] = useState<UserSession | null>(null);
@@ -557,10 +564,42 @@ export default function AdminDashboard() {
   const [globalReadingWidth, setGlobalReadingWidth] = useState<"standard" | "wide" | "borderless">("standard");
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
+  // Clinician roster state
+  const [clinicians, setClinicians] = useState<Clinician[]>([
+    { uid: "admin-bypass-id", name: "Dr. Narayan Jethwani", role: "admin", email: "narayan.jethwani@homeo.healthcare" },
+    { uid: "doctor-bypass-id", name: "Dr. Sarah (Junior)", role: "doctor", email: "sarah@homeo.healthcare" }
+  ]);
+
   useEffect(() => {
     const isDark = document.documentElement.classList.contains("dark");
     setTheme(isDark ? "dark" : "light");
   }, []);
+
+  useEffect(() => {
+    const fetchClinicians = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "users"));
+        const list: Clinician[] = [];
+        querySnapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          list.push({
+            uid: docSnap.id,
+            name: data.name || data.displayName || data.email || "Clinician",
+            role: data.role || "doctor",
+            email: data.email || ""
+          });
+        });
+        if (list.length > 0) {
+          setClinicians(list);
+        }
+      } catch (err) {
+        console.error("Failed to fetch clinicians from Firestore:", err);
+      }
+    };
+    if (session) {
+      fetchClinicians();
+    }
+  }, [session]);
 
   const toggleTheme = () => {
     const nextTheme = theme === "light" ? "dark" : "light";
@@ -9023,8 +9062,11 @@ ${err.message || err}`);
                             className="bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs outline-none focus:border-mint"
                           >
                             <option value="unassigned">Unassigned (OPD Queue)</option>
-                            <option value="doctor-bypass-id">Dr. Sarah (Junior)</option>
-                            <option value="admin-bypass-id">Dr. Narayan Jethwani</option>
+                            {clinicians.map((clinician) => (
+                              <option key={clinician.uid} value={clinician.uid}>
+                                {clinician.name} ({clinician.role})
+                              </option>
+                            ))}
                           </select>
                         ) : (
                           <span className="font-bold text-slate-800 bg-mint/5 px-3 py-1.5 rounded-xl border border-mint/10 inline-block">
