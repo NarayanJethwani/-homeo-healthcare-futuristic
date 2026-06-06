@@ -29,7 +29,9 @@ export async function POST(request: Request) {
       durationText: body.durationText || "One-Time consultation",
       finalPrice: Number(body.finalPrice || 300),
       deliveryMode: body.deliveryMode || "shipping",
-      address: body.address || ""
+      address: body.address || "",
+      receivedAmount: body.receivedAmount !== undefined ? Number(body.receivedAmount) : undefined,
+      remainingBalance: body.remainingBalance !== undefined ? Number(body.remainingBalance) : undefined
     };
 
     console.log("Processing intake automation for patient:", patientData.name);
@@ -59,6 +61,8 @@ export async function POST(request: Request) {
       conditionsCount: patientData.conditionsCount,
       durationText: patientData.durationText,
       finalPrice: patientData.finalPrice,
+      receivedAmount: Number(body.receivedAmount || patientData.finalPrice),
+      remainingBalance: Number(body.remainingBalance || 0),
       deliveryMode: patientData.deliveryMode,
       folderId: folderResult.folderId,
       folderUrl: folderResult.folderUrl,

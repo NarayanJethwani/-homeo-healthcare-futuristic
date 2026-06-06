@@ -44,6 +44,8 @@ export interface PatientIntakeData {
   finalPrice: number;
   deliveryMode?: string;
   address?: string;
+  receivedAmount?: number;
+  remainingBalance?: number;
 }
 
 /**
@@ -211,15 +213,15 @@ export async function createPatientClinicalSheet(
         // Create the newly designed custom case-taking sheet programmatically
         const today = new Date().toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" });
         const values = [
-          ["RAMKRISHNA HOMEO HEALTHCARE - CLINICAL CASE SHEET", "", "", "", "", ""],
+          ["HOMEO HEALTHCARE - CLINICAL CASE SHEET", "", "", "", "", ""],
           ["", "", "", "", "", ""],
           ["1. PATIENT DEMOGRAPHICS", "", "", "", "", ""],
-          ["Patient ID", data.id, "Register Date", today, "", ""],
-          ["Patient Name", data.name, "Age / Gender", `${data.age} / ${data.gender}`, "", ""],
-          ["Contact Phone", data.phone, "Email Address", data.email || "N/A", "", ""],
+          ["Patient ID", data.id, "Register Date", today, "Total Package Price", `INR ${(data.finalPrice || 0).toLocaleString("en-IN")}`],
+          ["Patient Name", data.name, "Age / Gender", `${data.age} / ${data.gender}`, "Received Total", `INR ${(data.receivedAmount !== undefined ? data.receivedAmount : data.finalPrice || 0).toLocaleString("en-IN")}`],
+          ["Contact Phone", data.phone, "Email Address", data.email || "N/A", "Remaining Balance", `INR ${(data.remainingBalance !== undefined ? data.remainingBalance : 0).toLocaleString("en-IN")}`],
           ["Delivery Option", data.deliveryMode || "Courier Shipping", "Location / Address", locationVal, "", ""],
           ["Recommended Tier", data.careLevel, "Billing Duration", data.durationText, "", ""],
-          ["Payment Status", "Paid (Verified)", "Payment Amount", `INR ${data.finalPrice.toLocaleString("en-IN")}`, "", ""],
+          ["", "", "", "", "", ""],
           ["", "", "", "", "", ""],
           ["2. CHIEF COMPLAINT & CASE ANALYSIS", "", "", "", "", ""],
           ["Chief Complaint Details", data.complaint, "", "", "", ""],
@@ -243,7 +245,7 @@ export async function createPatientClinicalSheet(
           ["", "", "", "", "", ""],
           ["", "", "", "", "", ""],
           ["5. CLINICAL PROGRESS & FOLLOW-UPS", "", "", "", "", ""],
-          ["Date", "Symptom Status & Patient Report", "Prescription Adjustments", "Next Review Date", "", ""],
+          ["Date", "Symptom Status & Patient Report", "Prescription Adjustments", "Next Review Date", "Amount Received (₹)", "Balance / Due (₹)"],
           ["", "", "", "", "", ""],
           ["", "", "", "", "", ""],
           ["", "", "", "", "", ""],

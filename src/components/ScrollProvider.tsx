@@ -2,12 +2,20 @@
 
 import { ReactLenis } from "lenis/react";
 import { ReactNode } from "react";
+import { usePathname } from "next/navigation";
 
 interface ScrollProviderProps {
   children: ReactNode;
 }
 
 export default function ScrollProvider({ children }: ScrollProviderProps) {
+  const pathname = usePathname();
+  const isAdmin = pathname?.startsWith("/admin");
+
+  if (isAdmin) {
+    return <>{children}</>;
+  }
+
   return (
     <ReactLenis 
       root 

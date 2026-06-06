@@ -9,7 +9,7 @@ import {
   Settings, LogOut, ShieldAlert, Award, FileText, ChevronRight, UserPlus, Upload,
   BookOpen, Book, ChevronLeft, Maximize2, Minimize2, Receipt, Printer,
   Gauge, AlertTriangle, Check, X, Compass, Layers, History, Zap, TrendingUp, Workflow, Calendar,
-  Network, Database, Cpu, GitBranch, Stethoscope, User, UploadCloud, Play, Mail, Mic, Sun, Moon
+  Network, Database, Cpu, GitBranch, Stethoscope, User, UploadCloud, Play, Mail, Mic, Sun, Moon, IndianRupee
 } from "lucide-react";
 import { REPERTORY_DATA, REPERTORY_CHAPTERS, REMEDIES_METADATA, Rubric, BOERICKE_CHAPTERS, SEARCH_SYNONYMS, getRepertoryData, JETHWANI_SECTIONS, JETHWANI_REPERTORY_DATA as JETHWANI_REPERTORY_DATA_ORIG, JETHWANI_REMEDY_CONFIRMATIONS, calculateClinicalIndices, type JethwaniRubric, type JethwaniSymptomConfig, type ClinicalIndices, setRepertoryData } from "@/lib/repertoryData";
 import { MATERIA_MEDICA_BOOKS, MateriaMedicaBook } from "@/lib/materiaMedicaData";
@@ -135,6 +135,8 @@ interface Patient {
   assignedDoctor: string;
   status: string;
   createdAt: string;
+  receivedAmount?: number;
+  remainingBalance?: number;
 }
 
 const INVOICE_TEMPLATES = [
@@ -2751,7 +2753,11 @@ export default function AdminDashboard() {
     complaint: "",
     careLevel: "🌱 Acute & Wellness Care",
     durationText: "1-Month Consultation",
-    finalPrice: 3500
+    basePrice: 3500,
+    discountOverride: 0,
+    finalPrice: 3500,
+    receivedAmount: 3500,
+    remainingBalance: 0
   });
   const [isCreatingCase, setIsCreatingCase] = useState(false);
   const [caseCreationError, setCaseCreationError] = useState("");
@@ -3249,16 +3255,95 @@ Homeo Healthcare`;
     router.push("/admin/login");
   };
 
+  const getDurationMonths = (duration: string) => {
+    if (duration.includes("3-Month")) return 3;
+    if (duration.includes("6-Month")) return 6;
+    if (duration.includes("12-Month")) return 12;
+    return 1;
+  };
+
+  const getCareLevelMonthlyRate = (level: string) => {
+    let rate = 3500;
+    if (level === "⚡ Standard Chronic Care") rate = 7500;
+    if (level === "🎯 Deep Systemic Care") rate = 12500;
+    if (level === "🫁 Advanced Pathological Care") rate = 18500;
+    if (level === "🔮 Multisystem Integrative Care") rate = 25000;
+    return rate;
+  };
+
+  const getOptionLabel = (baseLabel: string, basePrice: number) => {
+    if (newCaseForm.durationText.includes("One-Time")) {
+      return `${baseLabel} (₹${basePrice.toLocaleString("en-IN")} One-time)`;
+    }
+    const months = getDurationMonths(newCaseForm.durationText);
+    if (months === 1) {
+      return `${baseLabel} (₹${basePrice.toLocaleString("en-IN")}/mo)`;
+    }
+    return `${baseLabel} (₹${(basePrice * months).toLocaleString("en-IN")} for ${months} months)`;
+  };
+
   const handleCareLevelChange = (level: string) => {
-    let price = 3500;
-    if (level === "⚡ Standard Chronic Care") price = 7500;
-    if (level === "🎯 Deep Systemic Care") price = 12500;
-    if (level === "🫁 Advanced Pathological Care") price = 18500;
-    if (level === "🔮 Multisystem Integrative Care") price = 25000;
+    const rate = getCareLevelMonthlyRate(level);
+    const months = getDurationMonths(newCaseForm.durationText);
+    const base = rate * months;
+    const final = Math.max(0, base - newCaseForm.discountOverride);
     setNewCaseForm(prev => ({
       ...prev,
       careLevel: level,
-      finalPrice: price
+      basePrice: base,
+      finalPrice: final,
+      receivedAmount: final,
+      remainingBalance: 0
+    }));
+  };
+
+  const handleDurationChange = (duration: string) => {
+    const rate = getCareLevelMonthlyRate(newCaseForm.careLevel);
+    const months = getDurationMonths(duration);
+    const base = rate * months;
+    const final = Math.max(0, base - newCaseForm.discountOverride);
+    setNewCaseForm(prev => ({
+      ...prev,
+      durationText: duration,
+      basePrice: base,
+      finalPrice: final,
+      receivedAmount: final,
+      remainingBalance: 0
+    }));
+  };
+
+  const handleDiscountChange = (discount: number) => {
+    const final = Math.max(0, newCaseForm.basePrice - discount);
+    setNewCaseForm(prev => ({
+      ...prev,
+      discountOverride: discount,
+      finalPrice: final,
+      receivedAmount: final,
+      remainingBalance: 0
+    }));
+  };
+
+  const handleFinalPriceChange = (final: number) => {
+    setNewCaseForm(prev => ({
+      ...prev,
+      finalPrice: final,
+      receivedAmount: final,
+      remainingBalance: 0
+    }));
+  };
+
+  const handleReceivedAmountChange = (received: number) => {
+    setNewCaseForm(prev => ({
+      ...prev,
+      receivedAmount: received,
+      remainingBalance: Math.max(0, prev.finalPrice - received)
+    }));
+  };
+
+  const handleRemainingBalanceChange = (balance: number) => {
+    setNewCaseForm(prev => ({
+      ...prev,
+      remainingBalance: balance
     }));
   };
 
@@ -3286,6 +3371,8 @@ Homeo Healthcare`;
           conditionsCount: 1,
           durationText: newCaseForm.durationText,
           finalPrice: newCaseForm.finalPrice,
+          receivedAmount: newCaseForm.receivedAmount,
+          remainingBalance: newCaseForm.remainingBalance,
           assignedDoctor: session?.uid || "unassigned"
         })
       });
@@ -3311,6 +3398,8 @@ Homeo Healthcare`;
             careLevel: newCaseForm.careLevel,
             durationText: newCaseForm.durationText,
             finalPrice: newCaseForm.finalPrice,
+            receivedAmount: newCaseForm.receivedAmount,
+            remainingBalance: newCaseForm.remainingBalance,
             folderUrl: data.folderUrl,
             sheetUrl: data.sheetUrl,
             assignedDoctor: session?.uid || "unassigned",
@@ -3333,7 +3422,11 @@ Homeo Healthcare`;
           complaint: "",
           careLevel: "🌱 Acute & Wellness Care",
           durationText: "1-Month Consultation",
-          finalPrice: 3500
+          basePrice: 3500,
+          discountOverride: 0,
+          finalPrice: 3500,
+          receivedAmount: 3500,
+          remainingBalance: 0
         });
       } else {
         throw new Error(data.message);
@@ -3345,7 +3438,7 @@ Homeo Healthcare`;
       // Fallback for mock/offline testing
       const mockPatientId = `P-${Math.floor(100000 + Math.random() * 900000)}`;
       const folderUrl = "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link";
-      const sheetUrl = `/admin/mock-sheet?name=${encodeURIComponent(newCaseForm.name)}&id=${encodeURIComponent(mockPatientId)}&age=${encodeURIComponent(newCaseForm.age)}&gender=${encodeURIComponent(newCaseForm.gender)}&phone=${encodeURIComponent(newCaseForm.phone)}&email=${encodeURIComponent(newCaseForm.email)}&complaint=${encodeURIComponent(newCaseForm.complaint)}&careLevel=${encodeURIComponent(newCaseForm.careLevel)}&durationText=${encodeURIComponent(newCaseForm.durationText)}&finalPrice=${encodeURIComponent(newCaseForm.finalPrice)}`;
+      const sheetUrl = `/admin/mock-sheet?name=${encodeURIComponent(newCaseForm.name)}&id=${encodeURIComponent(mockPatientId)}&age=${encodeURIComponent(newCaseForm.age)}&gender=${encodeURIComponent(newCaseForm.gender)}&phone=${encodeURIComponent(newCaseForm.phone)}&email=${encodeURIComponent(newCaseForm.email)}&complaint=${encodeURIComponent(newCaseForm.complaint)}&careLevel=${encodeURIComponent(newCaseForm.careLevel)}&durationText=${encodeURIComponent(newCaseForm.durationText)}&finalPrice=${encodeURIComponent(newCaseForm.finalPrice)}&receivedAmount=${encodeURIComponent(String(newCaseForm.receivedAmount))}&remainingBalance=${encodeURIComponent(String(newCaseForm.remainingBalance))}`;
       
       setCreatedFolderUrl(folderUrl);
       setCreatedSheetUrl(sheetUrl);
@@ -3362,6 +3455,8 @@ Homeo Healthcare`;
         careLevel: newCaseForm.careLevel,
         durationText: newCaseForm.durationText,
         finalPrice: newCaseForm.finalPrice,
+        receivedAmount: newCaseForm.receivedAmount,
+        remainingBalance: newCaseForm.remainingBalance,
         folderUrl,
         sheetUrl,
         assignedDoctor: session?.uid || "unassigned",
@@ -3469,7 +3564,11 @@ Homeo Healthcare`;
           complaint,
           careLevel: "⚡ Standard Chronic Care",
           durationText: "1-Month Consultation",
-          finalPrice: 7500
+          basePrice: 7500,
+          discountOverride: 0,
+          finalPrice: 7500,
+          receivedAmount: 7500,
+          remainingBalance: 0
         });
 
         // Parse rubrics if present (e.g. "GERD (3); bloating (2)")
@@ -3735,7 +3834,11 @@ Homeo Healthcare`;
       complaint: patient.complaint,
       careLevel: "⚡ Standard Chronic Care",
       durationText: "1-Month Consultation",
-      finalPrice: 7500
+      basePrice: 7500,
+      discountOverride: 0,
+      finalPrice: 7500,
+      receivedAmount: 7500,
+      remainingBalance: 0
     });
 
     // Parse rubrics if present (e.g. "GERD (3); bloating (2)")
@@ -21096,18 +21199,105 @@ Exported on: ${new Date().toLocaleDateString()}
 
                       {/* Care Level Selector */}
                       <div>
-                        <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-2">Care Level</label>
+                        <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Care Level</label>
                         <select
                           value={newCaseForm.careLevel}
                           onChange={(e) => handleCareLevelChange(e.target.value)}
                           className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-semibold text-[#1A2421]"
                         >
-                          <option value="🌱 Acute & Wellness Care">🌱 Acute & Wellness Care (₹3,500/mo)</option>
-                          <option value="⚡ Standard Chronic Care">⚡ Standard Chronic Care (₹7,500/mo)</option>
-                          <option value="🎯 Deep Systemic Care">🎯 Deep Systemic Care (₹12,500/mo)</option>
-                          <option value="🫁 Advanced Pathological Care">🫁 Advanced Pathological Care (₹18,500/mo)</option>
-                          <option value="🔮 Multisystem Integrative Care">🔮 Multisystem Integrative Care (₹25,000/mo)</option>
+                          <option value="🌱 Acute & Wellness Care">{getOptionLabel("🌱 Acute & Wellness Care", 3500)}</option>
+                          <option value="⚡ Standard Chronic Care">{getOptionLabel("⚡ Standard Chronic Care", 7500)}</option>
+                          <option value="🎯 Deep Systemic Care">{getOptionLabel("🎯 Deep Systemic Care", 12500)}</option>
+                          <option value="🫁 Advanced Pathological Care">{getOptionLabel("🫁 Advanced Pathological Care", 18500)}</option>
+                          <option value="🔮 Multisystem Integrative Care">{getOptionLabel("🔮 Multisystem Integrative Care", 25000)}</option>
                         </select>
+                      </div>
+
+                      {/* Plan Duration Selector */}
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Plan Duration / Type</label>
+                        <select
+                          value={newCaseForm.durationText}
+                          onChange={(e) => handleDurationChange(e.target.value)}
+                          className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-semibold text-[#1A2421]"
+                        >
+                          <option value="1-Month Consultation">1-Month Consultation</option>
+                          <option value="3-Month Treatment Plan">3-Month Treatment Plan</option>
+                          <option value="6-Month Treatment Plan">6-Month Treatment Plan</option>
+                          <option value="12-Month Support Plan">12-Month Support Plan</option>
+                          <option value="One-Time Consultation">One-Time Consultation</option>
+                        </select>
+                      </div>
+
+                      {/* Treatment Planner & Fee Structure Card (Properly Spaced Layout) */}
+                      <div className="col-span-full bg-slate-50 dark:bg-slate-900/40 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 space-y-5 my-2">
+                        <h4 className="text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-100 dark:border-slate-800 pb-2.5">
+                          <IndianRupee className="w-3.5 h-3.5 text-teal-600 animate-pulse" />
+                          Treatment Planner & Fee Structure
+                        </h4>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          {/* Base Plan Price */}
+                          <div>
+                            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Base Plan Price (₹)</label>
+                            <input
+                              type="number"
+                              value={newCaseForm.basePrice}
+                              disabled
+                              className="w-full p-3 border border-slate-200 bg-slate-50 text-slate-505 outline-none rounded-xl text-xs font-bold"
+                            />
+                          </div>
+
+                          {/* Discount Override */}
+                          <div>
+                            <label className="block text-[10px] font-bold text-slate-705 dark:text-slate-300 uppercase tracking-wider mb-1.5 font-semibold text-teal-600">Condition Discount Override (₹)</label>
+                            <input
+                              type="number"
+                              value={newCaseForm.discountOverride || ""}
+                              onChange={(e) => handleDiscountChange(parseFloat(e.target.value) || 0)}
+                              placeholder="0"
+                              className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-semibold text-[#1A2421]"
+                            />
+                          </div>
+
+                          {/* Total Package Price */}
+                          <div>
+                            <label className="block text-[10px] font-bold text-slate-705 dark:text-slate-300 uppercase tracking-wider mb-1.5">Total Package Price (₹)</label>
+                            <input
+                              type="number"
+                              value={newCaseForm.finalPrice}
+                              onChange={(e) => handleFinalPriceChange(parseFloat(e.target.value) || 0)}
+                              className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-bold text-[#1A2421]"
+                              required
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1 border-t border-slate-100 dark:border-slate-800/60">
+                          {/* Amount Received */}
+                          <div>
+                            <label className="block text-[10px] font-bold text-slate-705 dark:text-slate-300 uppercase tracking-wider mb-1.5">Amount Received Today (₹)</label>
+                            <input
+                              type="number"
+                              value={newCaseForm.receivedAmount}
+                              onChange={(e) => handleReceivedAmountChange(parseFloat(e.target.value) || 0)}
+                              className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-semibold text-[#1A2421]"
+                              required
+                            />
+                          </div>
+
+                          {/* Remaining Balance */}
+                          <div>
+                            <label className="block text-[10px] font-bold text-slate-705 dark:text-slate-300 uppercase tracking-wider mb-1.5">Remaining Balance (₹)</label>
+                            <input
+                              type="number"
+                              value={newCaseForm.remainingBalance}
+                              onChange={(e) => handleRemainingBalanceChange(parseFloat(e.target.value) || 0)}
+                              className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-semibold text-[#1A2421]"
+                              required
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
 
