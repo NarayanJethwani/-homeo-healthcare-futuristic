@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #FAF9F6; /* Pearl White background */
   --foreground: #1A2421; /* Rich dark slate (calming and premium) */
@@ -13,6 +15,58 @@
   --color-sky: #0EA5E9; /* Soft Sky Blue */
   --color-sky-dark: #0369A1; /* High-contrast Sky Blue */
   --color-beige: #F5F2EB; /* Healing Beige */
+}
+
+.dark {
+  --background: #0B0F19;
+  --foreground: #F1F5F9;
+  --color-pearl: #0B0F19;
+  --color-beige: #162032;
+
+  /* Tailwind CSS v4 color scale overrides for automatic mapping */
+  --color-slate-50: #090d16;
+  --color-slate-100: #0f172a;
+  --color-slate-200: #1e293b;
+  --color-slate-300: #334155;
+  --color-slate-400: #475569;
+  --color-slate-500: #64748b;
+  --color-slate-600: #94a3b8;
+  --color-slate-700: #cbd5e1;
+  --color-slate-800: #e2e8f0;
+  --color-slate-900: #f1f5f9;
+  --color-slate-950: #f8fafc;
+}
+
+.dark .always-dark {
+  --color-slate-50: #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cbd5e1;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0f172a;
+  --color-slate-950: #090d16;
+}
+
+/* Dark Mode Selector mapping for hardcoded hex classes */
+.dark [class*="text-[#1A2421]"] {
+  color: var(--foreground) !important;
+}
+
+.dark [class*="hover:text-[#1A2421]"]:hover {
+  color: var(--foreground) !important;
+}
+
+.dark [class*="bg-[#1A2421]"] {
+  background-color: var(--color-slate-200) !important;
+  color: var(--foreground) !important;
+}
+
+.dark [class*="hover:bg-[#1A2421]"]:hover {
+  background-color: var(--color-slate-300) !important;
 }
 
 @theme {
@@ -38,7 +92,7 @@ html {
 
 body {
   background-color: var(--color-pearl);
-  color: #1A2421;
+  color: var(--foreground);
   overflow-x: hidden;
   position: relative;
   -webkit-font-smoothing: antialiased;
@@ -91,6 +145,36 @@ body {
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(26, 36, 33, 0.05);
+}
+
+/* Dark glassmorphic panels */
+.dark .glass-panel-sm {
+  background: rgba(15, 23, 42, 0.35);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 16px 0 rgba(20, 184, 166, 0.01);
+}
+
+.dark .glass-panel {
+  background: rgba(15, 23, 42, 0.45);
+  border-color: rgba(255, 255, 255, 0.09);
+  box-shadow: 0 8px 32px 0 rgba(20, 184, 166, 0.02);
+}
+
+.dark .glass-panel-lg {
+  background: rgba(15, 23, 42, 0.55);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 16px 48px 0 rgba(20, 184, 166, 0.03);
+}
+
+.dark .glass-panel-hover:hover {
+  background: rgba(15, 23, 42, 0.65);
+  border-color: rgba(20, 184, 166, 0.25);
+  box-shadow: 0 20px 48px 0 rgba(20, 184, 166, 0.08);
+}
+
+.dark .glass-card-dark {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.05);
 }
 
 /* Glow effects & Dynamic ambient lighting */
@@ -157,6 +241,14 @@ body {
   background: rgba(20, 184, 166, 0.3);
 }
 
+.dark ::-webkit-scrollbar-track {
+  background: #0B0F19;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(20, 184, 166, 0.35);
+  border-color: #0B0F19;
+}
+
 /* Lenis CSS */
 html.lenis, html.lenis body {
   height: auto;
@@ -189,8 +281,20 @@ html.lenis, html.lenis body {
   -webkit-text-fill-color: transparent;
 }
 
+.dark .text-gradient {
+  background: linear-gradient(135deg, #FAF9F6 30%, #14B8A6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 .text-gradient-soft {
   background: linear-gradient(135deg, #1A2421 50%, #64748B 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.dark .text-gradient-soft {
+  background: linear-gradient(135deg, #FAF9F6 50%, #94A3B8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -297,4 +401,92 @@ html.lenis, html.lenis body {
 .global-font-XL [class~="text-3xl"] { font-size: calc(1.875rem * 1.3) !important; }
 .global-font-XL [class~="text-4xl"] { font-size: calc(2.25rem * 1.3) !important; }
 
+/* Premium dynamic hover micro-animation: gentle float & pulse */
+@keyframes vibrate {
+  0%, 100% { transform: translateY(0) scale(1.05); }
+  50% { transform: translateY(-3.5px) scale(1.08); }
+}
 
+.hover-vibrate {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.hover-vibrate:hover {
+  animation: vibrate 2.2s ease-in-out infinite;
+}
+
+/* ==========================================
+   DARK MODE CONTRAST & ACCESSIBILITY OVERRIDES
+   ========================================== */
+
+/* Turn all solid white card backgrounds into deep slate in dark mode */
+.dark .bg-white,
+.dark [class*="bg-white "] {
+  background-color: #0f172a !important;
+}
+
+/* Map white background with transparency levels to corresponding dark slates */
+.dark [class*="bg-white/98"] { background-color: rgba(15, 23, 42, 0.98) !important; }
+.dark [class*="bg-white/95"] { background-color: rgba(15, 23, 42, 0.95) !important; }
+.dark [class*="bg-white/90"] { background-color: rgba(15, 23, 42, 0.9) !important; }
+.dark [class*="bg-white/85"] { background-color: rgba(15, 23, 42, 0.85) !important; }
+.dark [class*="bg-white/80"] { background-color: rgba(15, 23, 42, 0.8) !important; }
+.dark [class*="bg-white/75"] { background-color: rgba(15, 23, 42, 0.75) !important; }
+.dark [class*="bg-white/70"] { background-color: rgba(15, 23, 42, 0.7) !important; }
+.dark [class*="bg-white/60"] { background-color: rgba(15, 23, 42, 0.6) !important; }
+.dark [class*="bg-white/50"] { background-color: rgba(15, 23, 42, 0.5) !important; }
+.dark [class*="bg-white/40"] { background-color: rgba(15, 23, 42, 0.4) !important; }
+.dark [class*="bg-white/30"] { background-color: rgba(15, 23, 42, 0.3) !important; }
+.dark [class*="bg-white/20"] { background-color: rgba(15, 23, 42, 0.2) !important; }
+.dark [class*="bg-white/15"] { background-color: rgba(15, 23, 42, 0.15) !important; }
+.dark [class*="bg-white/10"] { background-color: rgba(15, 23, 42, 0.1) !important; }
+.dark [class*="bg-white/8"]  { background-color: rgba(15, 23, 42, 0.08) !important; }
+.dark [class*="bg-white/5"]  { background-color: rgba(15, 23, 42, 0.05) !important; }
+.dark [class*="bg-white/3"]  { background-color: rgba(15, 23, 42, 0.03) !important; }
+
+/* Improve active tab background when it is styled with slate-700/800 gradients */
+.dark [class*="from-slate-700"] {
+  background-image: linear-gradient(to right, #1e293b, #0f172a) !important;
+}
+
+/* Force dark backgrounds for button/surface slate classes that are backgrounds (decoupling from text-slate-*) */
+.dark .bg-slate-950,
+.dark [class*="bg-slate-950"] {
+  background-color: #090d16 !important;
+}
+.dark .bg-slate-900,
+.dark [class*="bg-slate-900"] {
+  background-color: #1e293b !important;
+}
+.dark .bg-slate-800,
+.dark [class*="bg-slate-800"] {
+  background-color: #162032 !important;
+}
+
+/* Google Drive Button styling override in dark mode */
+.dark .bg-blue-50,
+.dark [class*="bg-blue-50"] {
+  background-color: rgba(37, 99, 235, 0.15) !important;
+  color: #60a5fa !important;
+  border-color: rgba(37, 99, 235, 0.3) !important;
+}
+.dark [class*="hover:bg-blue-100/80"]:hover {
+  background-color: rgba(37, 99, 235, 0.25) !important;
+}
+
+/* Target and dim very bright light-colored hover backgrounds in dark mode (e.g. hover:bg-teal-50) */
+.dark [class*="hover:bg-"][class*="-50"]:hover {
+  background-color: rgba(20, 184, 166, 0.15) !important;
+}
+.dark [class*="hover:bg-[#1A2421]/5"]:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Ensure inputs and selects have correct border color in dark mode */
+.dark input, 
+.dark select, 
+.dark textarea {
+  border-color: var(--color-slate-200) !important;
+}

@@ -70,7 +70,30 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${plusJakartaSans.variable} ${inter.variable} ${playfairDisplay.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = localStorage.getItem('theme');
+                  var systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                  var activeTheme = theme || systemTheme;
+                  if (activeTheme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                    document.documentElement.style.colorScheme = 'dark';
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                    document.documentElement.style.colorScheme = 'light';
+                  }
+                } catch (e) {}
+              })();
+            `
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col font-sans bg-pearl text-[#1A2421]">
         <ScrollProvider>
           <div className="relative min-h-screen w-full overflow-x-hidden flex flex-col justify-between">

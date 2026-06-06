@@ -1,5 +1,5 @@
 import { MateriaMedicaDocument, RemedyRelationships, MiasmaticAnalysis, SourceAttribution } from "./materiaMedicaSchema";
-import { COMPRESSED_REMEDY_PACK } from "./remedyDataPack";
+import COMPRESSED_REMEDY_PACK from "./remedyDataPack.json";
 
 const CORE_16_REMEDIES: MateriaMedicaDocument[] = [
   {

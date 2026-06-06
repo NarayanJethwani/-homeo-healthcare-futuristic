@@ -177,7 +177,7 @@ export interface HKOSExtendedRemedy {
   };
 }
 
-import { COMPRESSED_REMEDY_PACK } from "./remedyDataPack";
+import COMPRESSED_REMEDY_PACK from "./remedyDataPack.json";
 
 function inflateGenome(c: any): HKOSExtendedRemedy {
   const isHot = c.thermalState.toLowerCase().includes("hot") || c.thermalState.toLowerCase().includes("warm");

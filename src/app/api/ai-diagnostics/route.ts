@@ -83,7 +83,25 @@ export function compileLocalSynthesisResponse(taskType: string, body: any): any 
             "Rapid, unexplained weight loss or significant loss of appetite",
             "Onset of deep clinical depression or suicidal feelings"
           ]
-        }
+        },
+        clinical_hypothesis_engine: [
+          {
+            condition: hasSkin ? "Atopic Dermatitis (Eczema)" : hasDigestive ? "Irritable Bowel Syndrome (IBS)" : "Generalized Anxiety Disorder / Autonomic Dysregulation",
+            likelihood: hasSkin ? 85 : hasDigestive ? 80 : 75,
+            supporting_findings: [
+              `Age 34, chief complaint of ${complaint}`,
+              `Thermal axis: ${thermals}`,
+              ...(hasSkin ? ["Somatic dermatological symptoms"] : []),
+              ...(hasDigestive ? ["Gastrointestinal bloating/flatulence"] : [])
+            ],
+            missing_findings: [
+              hasSkin ? "IgE levels, detailed history of contact irritants" : hasDigestive ? "Stool culture, lactose intolerance test" : "Adrenal stress profile, serum electrolytes"
+            ],
+            suggested_investigations: [
+              hasSkin ? "Complete Blood Count (CBC) with absolute eosinophil count, IgE" : hasDigestive ? "Celiac disease panel, abdominal ultrasound" : "TSH thyroid screen, fasting cortisol"
+            ]
+          }
+        ]
       }
     };
   }
@@ -566,6 +584,55 @@ export function compileLocalSynthesisResponse(taskType: string, body: any): any 
     };
   }
 
+  if (taskType === "organon_tutor") {
+    const question = (body?.question || "").toLowerCase();
+    const aphorismNumber = body?.aphorismNumber || "";
+    const studyMode = body?.studyMode || "Student";
+    
+    let answer = "";
+    let references = ["Organon of Medicine, 6th Edition"];
+    
+    if (aphorismNumber === "§153" || question.includes("153")) {
+      answer = `Greetings. Let us examine Aphorism 153, which is the foundational guide to homeopathic individualization. When selecting the specific medicine (the Simillimum), we must bypass the common, general symptoms (like fever, pain, or nausea) which belong to all diseases. Instead, we must focus 'chiefly and almost solely' on the striking, singular, uncommon, and peculiar (characteristic) signs. These PQRS symptoms are the true signature of the patient's individual vital derangement.
+
+Clinical Application:
+In a case of chronic migraine, standard pathology focuses on vascular dilation. A homeopath, however, seeks the peculiar characteristics: for example, if the migraine is relieved only by binding the head tightly (Argentum Nitricum) or is accompanied by a sensation of coldness in the brain (Phosphorus). These peculiar keynotes guide us to the curative simillimum.`;
+      references.push("Aphorism 153", "Aphorism 3");
+    } else if (question.includes("vital force") || question.includes("vital principle") || question.includes("dynamis")) {
+      answer = `The Vital Force (§9-15) is the spiritual, dynamic force that animates the physical body. In health, it rules with unbounded sway, maintaining all parts of the organism in perfect, harmonious operation, so that our indwelling, reason-gifted mind can freely employ this healthy instrument for the higher purposes of our existence. When dynamically deranged by morbific agents, it manifests this internal imbalance as symptoms. Curing consists of dynamically restoring its harmony.`;
+      references.push("Aphorisms 9, 10, 11, 12");
+    } else if (question.includes("single remedy") || question.includes("why single")) {
+      answer = `Aphorisms 272-274 establish the absolute rule of the Single Remedy. Since we only prove single, simple substances on healthy human beings, we only know the pathogenetic profile of one medicine at a time. Prescribing combination formulas or alternating remedies is unscientific. It creates unpredictable interactions within the vital force, makes it impossible to know which substance cured, and prevents true clinical learning.`;
+      references.push("Aphorisms 272, 273, 274");
+    } else if (question.includes("second prescription")) {
+      answer = `The Second Prescription (§249-253) requires the utmost patience and unprejudiced observation of remedy reactions. The primary rule is: if the patient is improving from the inside out (e.g. sleep, energy, and mood improve first), do not interfere; wait and let the remedy act. If the progress stops, we may repeat or escalate the potency. If the symptom picture shifts completely or new symptoms emerge, a new remedy is selected.`;
+      references.push("Aphorisms 248, 249, 250");
+    } else if (question.includes("acute") && question.includes("chronic")) {
+      answer = `Acute diseases (§73) are rapid, self-limiting processes of the vital force, often triggered by exciting factors like climate shifts, injuries, or infections. They run their course and resolve or lead to death. Chronic diseases (§78-82) are insidious, progressive derangements caused by chronic miasms (Psora, Sycosis, Syphilis) that the vital force cannot resolve on its own, requiring deep constitutional anti-miasmatic remedies.`;
+      references.push("Aphorisms 73, 78, 80");
+    } else {
+      answer = `Greetings. As a homeopath, we must always remember that cure is a dynamic restoration of harmony. Regarding your query: '${body?.question || "the principles of homeopathy"}', we must look at the patient's totality. The spiritual vital force responds to similar dynamic stimuli. Let us examine the symptoms, extract the striking characteristic signs (§153), select a single simple remedy (§273), and administer it in the minimum dose (§276) to achieve a rapid, gentle, and permanent restoration of health.`;
+    }
+    
+    return {
+      success: true,
+      isMock: true,
+      analysis: {
+        tutorResponse: {
+          answer,
+          modeUsed: studyMode,
+          aphorismContext: aphorismNumber || "General Philosophy",
+          references,
+          suggestedFollowUps: [
+            "Can you explain this with a clinical case example?",
+            "How does this relate to Hering's law?",
+            "What is the difference between centesimal and LM potencies?"
+          ]
+        }
+      }
+    };
+  }
+
   // DEFAULT: Classical synthesis mock (dynamically computed from patient data)
   const rubrics = body?.rubrics || [];
   const repertorizationResults = body?.repertorizationResults || [];
@@ -810,26 +877,36 @@ export function compileLocalSynthesisResponse(taskType: string, body: any): any 
       followup_predictions: { mental_changes: "Calmer anxiety", sleep_changes: "Fewer wakings", energy_changes: "11 AM sinking clears", physical_changes: "Skin eruption flaring temporarily then clearing", warning_signs: "Suppression of skin", reevaluate_weeks: 4 }
     },
     clinical_reasoning_v2: {
-      constitutional_interpretation: "Psoric constitution showing chronic dermal irritation and emotional suppression, leading to secondary digestive functional weakness and autonomic startle reactivity.",
-      etiological_analysis: "Physical suppression of skin eruptions through topical steroids, coupled with prolonged emotional stress and cognitive overload, causing the pathology to retreat inward.",
-      miasmatic_analysis_summary: "Predominantly Psoric hypersensitivity causing intense skin itching and health anxiety, with secondary Sycotic fluid retention and post-prandial abdominal bloating.",
-      affected_organ_systems: ["Integumentary System", "Gastrointestinal System", "Nervous System (Autonomic)"],
-      probable_clinical_patterns: ["Atopic Eczema with Secondary Suppression", "Irritable Bowel Syndrome (IBS)", "Generalized Anxiety & Hypervigilance"],
-      differential_diagnoses: [
-        "Sulphur (Matches heat, warmth of bed aggravation, and 11 AM emptiness; fits the core psoric eruption profile)",
-        "Lycopodium Clavatum (Matches flatulence and anticipatory stage fright, but lacks the extreme heat and skin burning of Sulphur)",
-        "Arsenicum Album (Matches health anxiety and restlessness, but is chilly and relieved by heat, opposite to Sulphur)"
+      constitutional_interpretation: `A ${age}-year-old ${gender} showing constitutional susceptibility matching ${mainRemedy} profile. Symptoms indicate a ${thermals.toLowerCase()} reactive state.`,
+      etiological_analysis: `Chronicity triggered or aggravated by: ${complaint || "environmental stressors"}. Pathological load indicates an inward functional shift.`,
+      miasmatic_analysis_summary: `Predominantly ${dominantMiasm} miasmatic layer (Psora: ${psoraPct}%, Sycosis: ${sycosisPct}%, Syphilis: ${syphilisPct}%, Tubercular: ${tubercularPct}%).`,
+      affected_organ_systems: [
+        ...(hasSkin ? ["Integumentary System"] : []),
+        ...(hasDigestive ? ["Gastrointestinal System"] : []),
+        ...(hasMind ? ["Nervous System (Autonomic)"] : []),
+        ...(!hasSkin && !hasDigestive && !hasMind ? ["Constitutional / Systemic Regulation"] : [])
       ],
-      remedy_justification: "Sulphur covers the primary thermal axis (warm-blooded, worse warmth of bed) and matches the history of suppressed skin eruptions, presenting as the clear chronic constitutional remedy.",
-      remedy_rejection_logic: "Lycopodium rejected as primary because the patient's heat aggravate modality contradicts Lycopodium's chilly nature. Nux Vomica is rejected because of the patient's warmth of bed aggravation and lack of chilliness.",
+      probable_clinical_patterns: [
+        ...(hasSkin ? ["Dermal Inflammatory Reactivity with Suppression Risk"] : []),
+        ...(hasDigestive ? ["Functional Gastric Dysmotility & Visceral Hypersensitivity"] : []),
+        ...(hasMind ? ["Sympathetic Nervous Overdrive with Health Anticipation"] : []),
+        ...(!hasSkin && !hasDigestive && !hasMind ? ["Functional Somatic Energy Stagnation"] : [])
+      ],
+      differential_diagnoses: [
+        `${mainRemedy} (Primary covered remedy matching physical generals and chief modalities)`,
+        `${secondaryRemedy} (Secondary coverage; rule out if key modalities/thermals conflict)`,
+        `${thirdRemedy} (Tertiary covered remedy; check for specific temporal or emotional triggers)`
+      ],
+      remedy_justification: `Prescription of ${mainRemedy} is justified by high symptom coverage and alignment with patient's ${thermals.toLowerCase()} thermal axis.`,
+      remedy_rejection_logic: `${secondaryRemedy} is deferred because it lacks matching modalities or thermal alignment. ${thirdRemedy} is ruled out unless specific keynotes emerge.`,
       confirmation_questions: [
-        "Do you experience a sudden empty, hungry feeling around 11 AM?",
-        "Are your feet so hot at night that you must uncover them or stick them out of the blankets?"
+        `Do the symptoms of ${complaint || "your complaint"} aggravate at any specific hour of the day or night?`,
+        `How does change of weather, temperature, or open fresh air affect your overall comfort?`
       ],
       clinical_red_flags: [
-        "Onset of severe asthma or respiratory distress (indicating further inward suppression)",
-        "Sudden unprovoked weight loss or blood in stools",
-        "Severe clinical depression with suicidal ideation"
+        "Development of severe breathing difficulty or sudden chest constriction",
+        "Rapid unexplained weight loss or severe appetite depletion",
+        "Onset of deep clinical depression or feelings of helplessness"
       ]
     },
     confidence_score: 88,
@@ -929,7 +1006,16 @@ You MUST return a JSON object with this EXACT schema:
     "remedy_rejection_logic": "string explaining why other major remedies were ruled out",
     "confirmation_questions": ["string specific questions to ask the patient to confirm"],
     "clinical_red_flags": ["string red flag warning symptoms for safety and referral"]
-  }
+  },
+  "clinical_hypothesis_engine": [
+    {
+      "condition": "string probable clinical condition (e.g. Atopic Dermatitis, Irritable Bowel Syndrome)",
+      "likelihood": number, // likelihood percentage as an integer from 0 to 100
+      "supporting_findings": ["string supporting clinical findings from the intake"],
+      "missing_findings": ["string missing findings needed to confirm"],
+      "suggested_investigations": ["string suggested investigations or tests"]
+    }
+  ]
 }`;
     const rubricsPrompt = (body?.rubrics || []).map((r: any) => `- [${r.chapter}] ${r.name} (Intensity/Severity Grade: ${r.grade})`).join("\n");
     const repertorizationResults = body?.repertorizationResults || [];
@@ -1103,6 +1189,39 @@ You MUST return a JSON object with this EXACT schema:
 - Prescribed Remedy: ${body?.prescribedRemedy || "Sulphur"}
 - Potency: ${body?.potency || "30C"}
 - Dose Instructions: ${body?.doseInstructions || "Take once a week"}`;
+    return { systemPrompt, userPrompt };
+  }
+
+  if (taskType === "organon_tutor") {
+    const question = body?.question || "";
+    const aphorismNumber = body?.aphorismNumber || "";
+    const studyMode = body?.studyMode || "Student";
+    const aphorismContextText = body?.aphorismText ? `\nSelected Aphorism Context: ${body.aphorismText}` : "";
+
+    const systemPrompt = `You are "Chat with Hahnemann™", an expert clinical homeopathic tutor speaking in the wise, authoritative, yet gentle tone of Dr. Samuel Hahnemann. 
+Your goal is to guide students and practitioners on the principles of the Organon of Medicine.
+Adapt your explanation complexity according to the requested Study Mode:
+- Beginner: Use simple analogies, avoid heavy jargon, explain core concepts step-by-step.
+- Student: Focus on standard academic definitions, BHMS syllabus alignment, and clear structure.
+- Practitioner: Include advanced clinical reasoning, comparative prescribing tips, and miasmatic analysis.
+- Advanced Practitioner: Focus on complex clinical scenarios, dynamic posology shifts, and potential obstacles to cure.
+- Teacher: Focus on explaining how to teach this concept, history of editions, and pedagogical analogies.
+
+You MUST return a JSON object with this EXACT schema:
+{
+  "tutorResponse": {
+    "answer": "Your detailed response explaining the concept, referencing the Organon text, and providing clinical/daily examples in the persona of Hahnemann.",
+    "modeUsed": "${studyMode}",
+    "aphorismContext": "${aphorismNumber || "General Philosophy"}",
+    "references": ["Organon Aphorism §X", "Chronic Diseases p. Y"],
+    "suggestedFollowUps": ["Follow-up question 1", "Follow-up question 2", "Follow-up question 3"]
+  }
+}`;
+    const userPrompt = `Query: "${question}"
+Aphorism Selection: ${aphorismNumber || "None"}${aphorismContextText}
+Study Mode: ${studyMode}
+
+Please provide your tutor response. Ensure the JSON is completely filled.`;
     return { systemPrompt, userPrompt };
   }
 
@@ -1345,6 +1464,8 @@ export async function POST(request: Request) {
         primaryModel = specialists.fast_nlp || "gemini-2.5-flash";
       } else if (taskType === "analyzer") {
         primaryModel = specialists.research || "gemini-2.5-pro";
+      } else if (taskType === "organon_tutor") {
+        primaryModel = specialists.research || "gemini-2.5-pro";
       } else {
         primaryModel = "gemini-2.5-flash";
       }
@@ -1367,24 +1488,43 @@ export async function POST(request: Request) {
       }
     }
 
+    const apiModelsToTry: { raw: string, api: string }[] = [];
+    for (const rawModelName of modelsToTry) {
+      let apiModelName = rawModelName;
+      if (rawModelName === "gemini-3.5-pro" || rawModelName === "gemini-1.5-pro" || rawModelName === "gemini-2.5-pro") {
+        apiModelName = "gemini-2.5-flash"; // Quota workaround for pro models
+      } else if (rawModelName === "gemini-1.5-flash" || rawModelName === "gemini-flash-latest" || rawModelName === "gemini-pro-latest") {
+        apiModelName = "gemini-1.5-flash";
+      } else if (rawModelName === "gemini-2.5-flash" || rawModelName === "gemini-2.5-flash-lite" || rawModelName === "gemini-3.5-flash" || rawModelName === "gemini-2.0-flash") {
+        apiModelName = rawModelName;
+      } else if (rawModelName.includes("qwen") || rawModelName.includes("deepseek") || rawModelName.includes("llama") || rawModelName.includes("mistral")) {
+        apiModelName = "gemini-2.5-flash"; // Map open-source model requests to gemini-2.5-flash
+      } else {
+        apiModelName = "gemini-2.5-flash";
+      }
+
+      if (!apiModelsToTry.some(m => m.api === apiModelName)) {
+        apiModelsToTry.push({ raw: rawModelName, api: apiModelName });
+      }
+    }
+
+    // Always append gemini-2.5-flash, gemini-2.5-flash-lite, and gemini-3.5-flash as safe backups if not present
+    if (!apiModelsToTry.some(m => m.api === "gemini-2.5-flash")) {
+      apiModelsToTry.push({ raw: "gemini-2.5-flash-backup", api: "gemini-2.5-flash" });
+    }
+    if (!apiModelsToTry.some(m => m.api === "gemini-2.5-flash-lite")) {
+      apiModelsToTry.push({ raw: "gemini-2.5-flash-lite-backup", api: "gemini-2.5-flash-lite" });
+    }
+    if (!apiModelsToTry.some(m => m.api === "gemini-3.5-flash")) {
+      apiModelsToTry.push({ raw: "gemini-3.5-flash-backup", api: "gemini-3.5-flash" });
+    }
+
     const ai = new GoogleGenerativeAI(apiKey);
     let result = null;
     let successfulModel = "";
     let latencyMs = 0;
 
-    for (const rawModelName of modelsToTry) {
-      // Map display model names to standard Google API IDs
-      let apiModelName = rawModelName;
-      if (rawModelName === "gemini-3.5-pro" || rawModelName === "gemini-1.5-pro") {
-        apiModelName = "gemini-3.5-flash"; // Quota workaround: fallback to 3.5-flash
-      } else if (rawModelName === "gemini-1.5-flash" || rawModelName === "gemini-2.5-flash" || rawModelName === "gemini-2.5-pro") {
-        apiModelName = "gemini-3.5-flash"; // Quota workaround: redirect rate-limited 2.5-flash/2.5-pro to 3.5-flash
-      } else if (rawModelName === "gemini-3.5-flash" || rawModelName === "gemini-2.0-flash") {
-        apiModelName = rawModelName;
-      } else {
-        apiModelName = "gemini-3.5-flash"; // Route open-source model requests to gemini-3.5-flash
-      }
-
+    for (const { raw: rawModelName, api: apiModelName } of apiModelsToTry) {
       const start = Date.now();
       try {
         console.log(`Querying AI Diagnostics with model: ${apiModelName} (from config label: ${rawModelName}) for task type ${taskType}`);
@@ -1398,7 +1538,7 @@ export async function POST(request: Request) {
               responseMimeType: "application/json"
             }
           }),
-          8000 // 8 seconds timeout per model!
+          30000 // 30 seconds timeout per model
         );
         if (result) {
           latencyMs = Date.now() - start;
@@ -1470,6 +1610,12 @@ export async function POST(request: Request) {
       const jsonMatch = responseText.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         responseText = jsonMatch[0];
+        try {
+          JSON.parse(responseText);
+        } catch (innerErr) {
+          console.error("Extracted text was still invalid JSON:", innerErr);
+          isJsonOk = false;
+        }
       } else {
         isJsonOk = false;
       }

@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import https from "https";
+import fs from "fs";
+import path from "path";
 
 // Robust network helper that tries Next.js native fetch (with revalidation cache)
 // and falls back to Node's native https module if fetch fails or is blocked.
@@ -67,9 +69,9 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const author = searchParams.get("author");
-    const path = searchParams.get("path");
+    const pathParam = searchParams.get("path");
 
-    if (!author && !path) {
+    if (!author && !pathParam) {
       return NextResponse.json(
         { success: false, message: "Missing parameter: 'author' or 'path' is required." },
         { status: 400 }
@@ -79,6 +81,19 @@ export async function GET(request: Request) {
     // CASE 1: Fetch and parse list of remedies for a specific author book
     if (author) {
       const sanitizedAuthor = encodeURIComponent(author.trim());
+      const cacheDir = path.join(process.cwd(), "src", "lib", "books-cache", sanitizedAuthor);
+      const cacheFile = path.join(cacheDir, "index.json");
+
+      if (fs.existsSync(cacheFile)) {
+        try {
+          const cachedData = fs.readFileSync(cacheFile, "utf-8");
+          const parsed = JSON.parse(cachedData);
+          return NextResponse.json(parsed);
+        } catch (err) {
+          console.warn(`Failed to read/parse cache file ${cacheFile}, will re-fetch:`, err);
+        }
+      }
+
       const targetUrl = `https://www.materiamedica.info/en/materia-medica/${sanitizedAuthor}/index`;
       console.log(`Fetching Materia Medica index from: ${targetUrl}`);
 
@@ -125,25 +140,59 @@ export async function GET(request: Request) {
       // Sort alphabetically
       remedies.sort((a, b) => a.name.localeCompare(b.name));
 
-      return NextResponse.json({
+      const responseData = {
         success: true,
         author,
         count: remedies.length,
         remedies
-      });
+      };
+
+      // Write to cache
+      try {
+        fs.mkdirSync(cacheDir, { recursive: true });
+        fs.writeFileSync(cacheFile, JSON.stringify(responseData, null, 2), "utf-8");
+      } catch (err) {
+        console.error(`Failed to write cache file ${cacheFile}:`, err);
+      }
+
+      return NextResponse.json(responseData);
     }
 
     // CASE 2: Fetch and parse a specific remedy detail page
-    if (path) {
+    if (pathParam) {
       // Validate path format to prevent directory traversal
-      if (!path.startsWith("/en/materia-medica/")) {
+      if (!pathParam.startsWith("/en/materia-medica/")) {
         return NextResponse.json(
           { success: false, message: "Invalid path parameter format." },
           { status: 400 }
         );
       }
 
-      const targetUrl = `https://www.materiamedica.info${path}`;
+      // Resolve bookId and remedySlug for caching
+      const relativePath = pathParam.substring("/en/materia-medica/".length);
+      const parts = relativePath.split("/");
+      let cacheFile = "";
+      let cacheDir = "";
+
+      if (parts.length === 2) {
+        const [bookId, remedySlug] = parts;
+        const safeRegex = /^[a-zA-Z0-9\._\-]+$/;
+        if (safeRegex.test(bookId) && safeRegex.test(remedySlug)) {
+          cacheDir = path.join(process.cwd(), "src", "lib", "books-cache", bookId);
+          cacheFile = path.join(cacheDir, `${remedySlug}.json`);
+          if (fs.existsSync(cacheFile)) {
+            try {
+              const cachedData = fs.readFileSync(cacheFile, "utf-8");
+              const parsed = JSON.parse(cachedData);
+              return NextResponse.json(parsed);
+            } catch (err) {
+              console.warn(`Failed to read/parse cache file ${cacheFile}, will re-fetch:`, err);
+            }
+          }
+        }
+      }
+
+      const targetUrl = `https://www.materiamedica.info${pathParam}`;
       console.log(`Fetching Materia Medica remedy details from: ${targetUrl}`);
 
       const html = await fetchHtml(targetUrl);
@@ -209,12 +258,24 @@ export async function GET(request: Request) {
         content = content.substring(0, content.length - 6).trim();
       }
 
-      return NextResponse.json({
+      const responseData = {
         success: true,
-        path,
+        path: pathParam,
         title,
         content
-      });
+      };
+
+      // Write to cache if we resolved a valid cache file path
+      if (cacheFile && cacheDir) {
+        try {
+          fs.mkdirSync(cacheDir, { recursive: true });
+          fs.writeFileSync(cacheFile, JSON.stringify(responseData, null, 2), "utf-8");
+        } catch (err) {
+          console.error(`Failed to write cache file ${cacheFile}:`, err);
+        }
+      }
+
+      return NextResponse.json(responseData);
     }
 
   } catch (error: any) {

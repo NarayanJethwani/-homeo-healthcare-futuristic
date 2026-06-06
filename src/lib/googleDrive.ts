@@ -23,7 +23,7 @@ const getGoogleAuth = () => {
   }
 };
 
-const PARENT_DRIVE_FOLDER_ID = "1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb";
+const PARENT_DRIVE_FOLDER_ID = process.env.GOOGLE_DRIVE_PARENT_FOLDER_ID || "1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb";
 const MASTER_SHEET_ID = process.env.GOOGLE_MASTER_SHEET_ID || ""; 
 const TEMPLATE_SHEET_ID = process.env.GOOGLE_TEMPLATE_SHEET_ID || ""; // standard clinical template file ID
 
@@ -1370,6 +1370,52 @@ export async function appendInvoiceToClinicalSheet(
     console.log(`Successfully synced invoice ${data.invoiceNo} into clinical sheet at range ${sheetRange}`);
   } catch (error) {
     console.error("Error appending invoice to clinical sheet:", error);
+  }
+}
+
+/**
+ * Downloads a file from Google Drive and saves it to the local filesystem
+ */
+export async function downloadFileFromGoogleDrive(fileId: string, destPath: string): Promise<boolean> {
+  const auth = getGoogleAuth();
+  if (!auth) {
+    console.warn("Google API Auth missing. Skipping Google Drive download.");
+    return false;
+  }
+  
+  const drive = google.drive({ version: "v3", auth });
+  
+  try {
+    const fs = await import("fs");
+    const path = await import("path");
+    
+    const destDir = path.dirname(destPath);
+    if (!fs.existsSync(destDir)) {
+      fs.mkdirSync(destDir, { recursive: true });
+    }
+    
+    const destStream = fs.createWriteStream(destPath);
+    
+    const res = await drive.files.get(
+      { fileId, alt: "media" },
+      { responseType: "stream" }
+    );
+    
+    return new Promise((resolve, reject) => {
+      res.data
+        .on("end", () => {
+          console.log(`Successfully downloaded file from Google Drive to ${destPath}`);
+          resolve(true);
+        })
+        .on("error", (err: any) => {
+          console.error("Error downloading file stream:", err);
+          reject(err);
+        })
+        .pipe(destStream);
+    });
+  } catch (error) {
+    console.error("Error fetching file from Google Drive:", error);
+    return false;
   }
 }
 

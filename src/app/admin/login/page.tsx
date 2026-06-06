@@ -117,7 +117,7 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center px-6 py-20 bg-pearl">
+    <div className="min-h-screen relative flex items-center justify-center px-6 py-20 bg-transparent">
       {/* Decorative gradient backdrops */}
       <div className="absolute w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-mint/10 via-aqua/5 to-transparent opacity-40 blur-[100px] top-[10%] left-[10%] pointer-events-none" />
       <div className="absolute w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-lavender/5 to-transparent opacity-30 blur-[80px] bottom-[10%] right-[10%] pointer-events-none" />

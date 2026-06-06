@@ -3221,12 +3221,12 @@ export default function StorePage() {
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                className="w-full max-w-2xl bg-white/90 border border-slate-200 shadow-2xl rounded-3xl p-6 md:p-8 relative overflow-hidden"
+                className="w-full max-w-2xl bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 shadow-2xl rounded-3xl p-6 md:p-8 relative overflow-hidden"
               >
                 {/* Close Button */}
                 <button
                   onClick={() => setIsHelperOpen(false)}
-                  className="absolute top-4 right-4 text-slate-400 hover:text-slate-900 transition-colors w-8 h-8 rounded-full flex items-center justify-center bg-slate-100/50 hover:bg-slate-100 cursor-pointer"
+                  className="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors w-8 h-8 rounded-full flex items-center justify-center bg-slate-100/50 hover:bg-slate-100 dark:bg-slate-800/50 dark:hover:bg-slate-850 cursor-pointer"
                 >
                   ✕
                 </button>
@@ -3452,12 +3452,12 @@ export default function StorePage() {
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                className="w-full max-w-4xl bg-white/95 border border-slate-200 shadow-2xl rounded-3xl p-6 md:p-8 relative overflow-hidden my-8"
+                className="w-full max-w-4xl bg-white/95 dark:bg-slate-900/95 border border-slate-200 dark:border-slate-800 shadow-2xl rounded-3xl p-6 md:p-8 relative overflow-hidden my-8"
               >
                 {/* Close Button */}
                 <button
                   onClick={() => setIsCheckoutOpen(false)}
-                  className="absolute top-4 right-4 text-slate-400 hover:text-slate-900 transition-colors w-8 h-8 rounded-full flex items-center justify-center bg-slate-100/50 hover:bg-slate-100 cursor-pointer z-10"
+                  className="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors w-8 h-8 rounded-full flex items-center justify-center bg-slate-100/50 hover:bg-slate-100 dark:bg-slate-800/50 dark:hover:bg-slate-850 cursor-pointer z-10"
                 >
                   ✕
                 </button>

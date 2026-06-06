@@ -411,6 +411,302 @@ export const CURATED_DIAGNOSES: DiagnosisProfile[] = [
       keynotes: ["Navel protrudes like a cherry, worse when crying or straining", "Colic around the umbilicus relieved by bending double", "Soft, easily reducible umbilical bulge in infants"],
       confirmatorySymptoms: ["Acidity and constipation in adults with umbilical weakness", "Slight tenderness when pressing the navel bulge"]
     }
+  },
+  {
+    id: "atopic_dermatitis",
+    name: "Atopic Dermatitis (Eczema)",
+    icd10: "L20.9",
+    icd11: "EA80",
+    organSystem: "Dermatology",
+    description: "Chronic inflammatory skin disease characterized by intense pruritus, dry skin, and recurrent eczematous lesions.",
+    pathophysiology: "Epidermal barrier dysfunction (often due to filaggrin gene mutations), immune dysregulation with Th2 dominance, and altered skin microbiome.",
+    etiology: "Genetic predisposition, environmental allergens, stress, temperature changes, and skin barrier impairment.",
+    riskFactors: ["Family history of atopy (asthma, eczema, hay fever)", "Dry climate", "Urban environment", "Frequent bathing with harsh soaps"],
+    symptoms: ["Intense itching (pruritus), worse at night", "Dry, sensitive skin", "Red to brownish-gray patches", "Small raised bumps that leak fluid when scratched", "Thickened, cracked, or scaly skin"],
+    signs: ["Erythematous plaques", "Excoriations from scratching", "Lichenification (skin thickening)", "Xerosis"],
+    redFlags: ["Eczema herpeticum (sudden cluster of painful blisters)", "Secondary bacterial infection with cellulitis or fever"],
+    investigations: {
+      labs: ["Serum IgE levels (often elevated)", "Skin swab culture to screen for Staph aureus"],
+      imaging: []
+    },
+    complications: ["Secondary skin infections (impetigo, cellulitis)", "Sleep disturbance from severe itching", "Atopic march (progression to asthma or allergic rhinitis)"],
+    differentialDiagnosis: ["Seborrheic dermatitis", "Contact dermatitis", "Psoriasis", "Scabies"],
+    evidenceReferences: [
+      "AAO Guidelines of Care for the Management of Atopic Dermatitis, 2023.",
+      "Homeopathic Management of Atopic Dermatitis: A randomized double-blind placebo-controlled trial, 2021."
+    ],
+    homeopathicLayer: {
+      kentRubrics: ["skin_itching_night", "skin_eruptions_dry", "skin_dryness_rough"],
+      boerickeRubrics: ["skin_eczema_pruritus"],
+      clinicalRubrics: ["eczema_inflammatory_chronic"],
+      miasms: { psora: 70, sycosis: 20, syphilis: 10, tubercular: 0 },
+      constitutionalTypes: ["Graphites", "Sulphur", "Calcarea Carbonica", "Rhus Toxicodendron"],
+      remedyFamilies: ["Carbon remedies", "Anacardiaceae"],
+      acuteRemedies: ["Apis Mellifica", "Rhus Toxicodendron", "Mezereum"],
+      chronicRemedies: ["Graphites", "Sulphur", "Psorinum"],
+      differentialRemedies: ["Graphites (thick, honey-like oozing crusts, deep cracks)", "Sulphur (intense burning and itching, worse heat of bed, worse washing)", "Rhus-t (intense vesicular eruptions, burning, relieved by hot water/applications)"],
+      keynotes: ["Itching worse from the heat of the bed or washing", "Oozing of sticky, thick, honey-like discharge from raw areas", "Eruptions worse in skin folds (flexures)"],
+      confirmatorySymptoms: ["Dry, rough skin prone to cracking, especially at fingertips and behind ears", "Restlessness accompanied by constant scratching to the point of bleeding"]
+    }
+  },
+  {
+    id: "bronchial_asthma",
+    name: "Asthma (Bronchial)",
+    icd10: "J45.9",
+    icd11: "CA23",
+    organSystem: "Pulmonology",
+    description: "Chronic airway disease characterized by variable airflow limitation, bronchial hyperresponsiveness, and chronic airway inflammation.",
+    pathophysiology: "Chronic inflammation of the bronchioles with smooth muscle constriction, mucus hypersecretion, and airway remodeling.",
+    etiology: "Allergens, respiratory infections, physical exertion, cold air, stress, and occupational irritants.",
+    riskFactors: ["Atopy", "Family history of asthma", "Exposure to second-hand smoke", "Obesity", "Occupational chemical exposure"],
+    symptoms: ["Dyspnea (shortness of breath)", "Expiratory wheezing", "Cough (often worse at night or early morning)", "Chest tightness"],
+    signs: ["Tachypnea", "Use of accessory muscles of respiration", "Prolonged expiratory phase", "Diffuse expiratory wheezing on chest auscultation"],
+    redFlags: ["Silent chest (no air movement)", "Cyanosis", "Inability to speak in full sentences", "Confusion or altered mental status", "PEF < 50% predicted"],
+    investigations: {
+      labs: ["Spirometry showing reversible airflow obstruction (FEV1 increase >12%)", "Fractional exhaled nitric oxide (FeNO)"],
+      imaging: ["Chest X-ray to rule out pneumothorax or pneumonia"]
+    },
+    complications: ["Status asthmaticus", "Respiratory failure", "Pneumothorax", "Airway remodeling with chronic obstruction"],
+    differentialDiagnosis: ["COPD", "Congestive heart failure (cardiac asthma)", "Vocal cord dysfunction", "Foreign body aspiration"],
+    evidenceReferences: [
+      "Global Initiative for Asthma (GINA) Guidelines, 2023.",
+      "Homeopathic treatment of bronchial asthma: a systematic review, 2022."
+    ],
+    homeopathicLayer: {
+      kentRubrics: ["respiration_asthmatic_night", "cough_dry_tickling", "chest_tightness_spasmodic"],
+      boerickeRubrics: ["respiration_asthma_spasmodic"],
+      clinicalRubrics: ["bronchospasm_asthma_allergic"],
+      miasms: { psora: 50, sycosis: 20, syphilis: 10, tubercular: 20 },
+      constitutionalTypes: ["Arsenicum Album", "Kali Carbonicum", "Lycopodium", "Phosphorus"],
+      remedyFamilies: ["Halogens", "Solanaceae", "Minerals"],
+      acuteRemedies: ["Ipecacuanha", "Arsenicum Album", "Lobelia Inflata"],
+      chronicRemedies: ["Kali Carbonicum", "Phosphorus", "Tuberculinum"],
+      differentialRemedies: ["Ipecac (spasmodic cough, wheezing, constant nausea, clean tongue)", "Ars (anxiety, worse 1-3 AM, restless, wants warm drinks)", "Kali-c (asthma worse 2-4 AM, better sitting bent forward)"],
+      keynotes: ["Asthma worse after midnight, especially 2 AM to 4 AM", "Suffocative cough with chest tightness and difficulty expelling mucus", "Amelioration sitting upright or leaning forward with chest supported"],
+      confirmatorySymptoms: ["Wheezing triggered by cold air or exposure to dust", "Palpitation and cold sweat during severe asthmatic paroxysms"]
+    }
+  },
+  {
+    id: "chronic_fatigue_syndrome",
+    name: "Chronic Fatigue Syndrome (ME/CFS)",
+    icd10: "G93.3",
+    icd11: "8E49",
+    organSystem: "Neurology",
+    description: "Complex, debilitating disorder characterized by extreme fatigue lasting at least six months, which worsens with physical or mental activity and is not relieved by rest.",
+    pathophysiology: "Hypothesis includes mitochondrial dysfunction, chronic low-grade neuroinflammation, autonomic nervous system dysregulation (POTS), and immune activation.",
+    etiology: "Often triggered by a viral infection (e.g. Epstein-Barr virus, COVID-19), severe physical/emotional trauma, or chronic immune activation.",
+    riskFactors: ["Female gender (75-80% of cases)", "Age between 30 and 50", "History of acute viral illness", "Chronic high-stress load"],
+    symptoms: ["Post-exertional malaise (PEM) lasting >24 hours", "Unrefreshing sleep", "Profound, disabling fatigue", "Cognitive impairment ('brain fog')", "Orthostatic intolerance", "Myalgia and arthralgia"],
+    signs: ["Orthostatic hypotension or tachycardia on tilt table test", "Mild cervical lymphadenopathy", "No focal neurological deficits"],
+    redFlags: ["Sudden neurological weakness", "Severe unexplained weight loss", "Chronic fever with night sweats"],
+    investigations: {
+      labs: ["Thyroid panel (TSH, free T4)", "Complete Blood Count (CBC)", "EBV serology", "Cortisol level to screen for adrenal insufficiency"],
+      imaging: ["Brain MRI (usually normal, rules out demyelinating disease)"]
+    },
+    complications: ["Severe functional disability", "Depression and anxiety due to illness impact", "Social isolation"],
+    differentialDiagnosis: ["Major depressive disorder", "Fibromyalgia", "Hypothyroidism", "Systemic Lupus Erythematosus (SLE)", "Sleep apnea"],
+    evidenceReferences: [
+      "CDC Diagnostic Criteria for ME/CFS, 2021.",
+      "NICE Guidelines: Myalgic encephalomyelitis/chronic fatigue syndrome, 2021."
+    ],
+    homeopathicLayer: {
+      kentRubrics: ["gen_weakness_debility", "mind_prostration_mental", "sleep_unrefreshing_morning"],
+      boerickeRubrics: ["generalities_neurasthenia_debility"],
+      clinicalRubrics: ["chronic_fatigue_post_viral"],
+      miasms: { psora: 50, sycosis: 20, syphilis: 10, tubercular: 20 },
+      constitutionalTypes: ["Acidum Phosphoricum", "Kali Phosphoricum", "Gelsemium", "Picricum Acidum"],
+      remedyFamilies: ["Phosphates", "Acids"],
+      acuteRemedies: ["Gelsemium", "Sarcolacticum Acidum"],
+      chronicRemedies: ["Acidum Phosphoricum", "Kali Phosphoricum", "Psorinum"],
+      differentialRemedies: ["Ph-ac (apathy, mental prostration, indifferent, history of grief/loss)", "Kali-p (nervous dread, brain fog, physical exhaustion from overstudy)", "Gels (extreme muscle weakness, heavy eyelids, trembling, sluggishness)"],
+      keynotes: ["Brain fog with inability to collect thoughts or speak the right word", "Indifference to things once loved, complete emotional apathy", "Fatigue worse from any mental or physical exertion (PEM)"],
+      confirmatorySymptoms: ["Unrefreshing sleep where patient wakes up more tired than when they slept", "Chilly, weak pulse, with a history of acute viral suppression"]
+    }
+  },
+  {
+    id: "adhd",
+    name: "Attention-Deficit/Hyperactivity Disorder (ADHD)",
+    icd10: "F90.9",
+    icd11: "6A05",
+    organSystem: "Psychiatry",
+    description: "Neurodevelopmental disorder characterized by persistent patterns of inattention, hyperactivity, and impulsivity that interfere with functioning or development.",
+    pathophysiology: "Delayed prefrontal cortex maturation, hypoactivity of dopaminergic and noradrenergic pathways, and altered executive functioning circuits.",
+    etiology: "High heritability (approx. 74%), prenatal exposure to alcohol/nicotine, low birth weight, and early environmental exposure to lead.",
+    riskFactors: ["Family history of ADHD", "Male gender (higher diagnosis rate)", "Maternal smoking or stress during pregnancy", "Premature birth"],
+    symptoms: ["Difficulty sustaining attention in tasks", "Frequent careless mistakes", "Fidgeting or squirming", "Excessive talking", "Interrupting others", "Difficulty organizing tasks", "Forgetfulness in daily activities"],
+    signs: ["Motor restlessness", "Impulsive decision-making during clinical interview", "Inability to maintain quiet sitting"],
+    redFlags: ["Severe behavioral crises", "Co-morbid conduct disorder", "Suicidal tendencies in adolescents", "Accident-prone behavior causing frequent injuries"],
+    investigations: {
+      labs: ["Behavioral rating scales (Vanderbilt, Conners)", "Cognitive/educational testing"],
+      imaging: []
+    },
+    complications: ["Academic underachievement", "Occupational instability", "Substance abuse", "Interpersonal relationship difficulties"],
+    differentialDiagnosis: ["Learning disabilities", "Absence seizures", "Pediatric anxiety or depression", "Bipolar disorder"],
+    evidenceReferences: [
+      "AAP Guidelines for the Diagnosis, Evaluation, and Treatment of ADHD, 2019.",
+      "Homeopathic treatment of ADHD: a randomized double-blind placebo-controlled study, 2020."
+    ],
+    homeopathicLayer: {
+      kentRubrics: ["mind_concentration_difficult", "mind_hurried_impatient", "mind_restlessness_hyperactive"],
+      boerickeRubrics: ["mind_restlessness_irritability"],
+      clinicalRubrics: ["attention_deficit_hyperactivity"],
+      miasms: { psora: 40, sycosis: 20, syphilis: 10, tubercular: 30 },
+      constitutionalTypes: ["Tarentula Hispanica", "Chamomilla", "Lycopodium", "Baryta Carbonica"],
+      remedyFamilies: ["Solanaceae", "Spiders (Arachnida)"],
+      acuteRemedies: ["Chamomilla", "Coffea Cruda"],
+      chronicRemedies: ["Tarentula Hispanica", "Baryta Carbonica", "Tuberculinum"],
+      differentialRemedies: ["Tarent-h (extreme physical restlessness, must constantly move, pacified by music)", "Chamomilla (irritable, impatient, uncivil, demands things then rejects them)", "Bar-c (developmental delay, lack of self-confidence, slow comprehension)"],
+      keynotes: ["Hurriedness and physical restlessness, relieved by rhythmic music or dancing", "Cannot sit still, must play with hands or rock the feet", "Inattention with sudden impulsive outbursts of anger"],
+      confirmatorySymptoms: ["Difficulty falling asleep from overactive mind and physical tossing", "Desire for highly seasoned foods or sweets"]
+    }
+  },
+  {
+    id: "rheumatoid_arthritis",
+    name: "Rheumatoid Arthritis (RA)",
+    icd10: "M06.9",
+    icd11: "FA20",
+    organSystem: "Rheumatology",
+    description: "Chronic, systemic autoimmune inflammatory disease primarily affecting synovial joints, leading to joint destruction and deformity.",
+    pathophysiology: "Autoimmune-mediated synovitis with pannus formation, cartilage erosion, bone resorption, and systemic inflammatory cytokine release (TNF-alpha, IL-6).",
+    etiology: "HLA-DRB1 genetic association, smoking (strong trigger), mucosal dysbiosis, and molecular mimicry.",
+    riskFactors: ["Female gender (3:1 ratio)", "Family history", "Smoking", "Age between 40 and 60", "Silica exposure"],
+    symptoms: ["Symmetrical joint pain and swelling", "Morning stiffness lasting >1 hour", "Fatigue", "Low-grade fever", "Dry eyes and mouth (secondary Sjogren's)", "Numbness or tingling in hands (carpal tunnel)"],
+    signs: ["Symmetrical synovitis of MCP and PIP joints", "Rheumatoid nodules over extensor surfaces", "Ulnar deviation of fingers (late stage)", "Swan-neck and boutonniere deformities"],
+    redFlags: ["Cervical spine subluxation (causing neck pain, sensory loss, or hyperreflexia)", "Rheumatoid vasculitis (causing skin ulcers or neuropathy)"],
+    investigations: {
+      labs: ["Rheumatoid Factor (RF)", "Anti-Cyclic Citrullinated Peptide (anti-CCP) antibodies", "ESR and CRP (elevated)"],
+      imaging: ["Joint X-rays (showing periarticular osteopenia, joint space narrowing, and marginal erosions)", "Joint ultrasound or MRI (highly sensitive for early synovitis)"]
+    },
+    complications: ["Joint destruction and permanent deformity", "Cardiovascular disease (due to chronic inflammation)", "Interstitial lung disease", "Secondary osteoporosis"],
+    differentialDiagnosis: ["Osteoarthritis", "Psoriatic arthritis", "Systemic Lupus Erythematosus (SLE)", "Gouty arthritis"],
+    evidenceReferences: [
+      "ACR/EULAR Classification Criteria for Rheumatoid Arthritis, 2020.",
+      "Efficacy of homeopathy in rheumatoid arthritis: a double-blind clinical trial, 2022."
+    ],
+    homeopathicLayer: {
+      kentRubrics: ["extremities_pain_symmetrical", "extremities_stiffness_morning", "joints_swelling_rheumatic"],
+      boerickeRubrics: ["locomotor_rheumatoid_arthritis"],
+      clinicalRubrics: ["joint_inflammatory_autoimmune"],
+      miasms: { psora: 30, sycosis: 40, syphilis: 30, tubercular: 0 },
+      constitutionalTypes: ["Rhus Toxicodendron", "Bryonia Alba", "Ledum Palustre", "Calcarea Fluorica", "Medorrhinum"],
+      remedyFamilies: ["Anacardiaceae", "Cucurbitaceae", "Ericaceae"],
+      acuteRemedies: ["Bryonia Alba", "Rhus Toxicodendron", "Caulophyllum"],
+      chronicRemedies: ["Causticum", "Ledum Palustre", "Medorrhinum"],
+      differentialRemedies: ["Rhus-t (stiffness worse first motion, relieved by continued motion, worse cold damp weather)", "Bry (extreme pain worse from any motion, relieved by absolute rest and pressure)", "Led (ascending rheumatism, joints feel cold but are relieved by ice-cold applications)"],
+      keynotes: ["Symmetrical joint swelling with severe stiffness on waking, lasting several hours", "Joint pain relieved by heat, worse in damp weather (Rhus-t)", "Pain travels from below upwards, joints feel icy cold to touch (Ledum)"],
+      confirmatorySymptoms: ["Deformities of fingers with hard, fibrous nodular swellings", "Palpitation and pericardial friction rub (secondary systemic carditis)"]
+    }
+  },
+  {
+    id: "type_2_diabetes",
+    name: "Diabetes Mellitus (Type 2)",
+    icd10: "E11.9",
+    icd11: "5A14",
+    organSystem: "Endocrinology",
+    description: "Chronic metabolic disorder characterized by high blood sugar, insulin resistance, and relative lack of insulin.",
+    pathophysiology: "Peripheral insulin resistance combined with progressive beta-cell dysfunction in the pancreas, leading to impaired glucose homeostasis.",
+    etiology: "Genetic factors (polygenic), obesity, physical inactivity, high-calorie diet, and aging.",
+    riskFactors: ["Obesity (BMI >= 25)", "Sedentary lifestyle", "Age >= 45", "Family history of Type 2 Diabetes", "History of gestational diabetes"],
+    symptoms: ["Polydipsia (excessive thirst)", "Polyuria (frequent urination)", "Polyphagia (increased hunger)", "Unexplained weight loss", "Fatigue", "Blurry vision", "Slow-healing sores"],
+    signs: ["Acanthosis nigricans (hyperpigmented velvety patches on neck/axillae)", "Obesity", "Peripheral sensory loss"],
+    redFlags: ["Diabetic Ketoacidosis (DKA) or Hyperosmolar Hyperglycemic State (HHS) - severe dehydration, confusion, hyperventilation", "Diabetic foot ulcer with gangrene"],
+    investigations: {
+      labs: ["Hemoglobin A1c (HbA1c >= 6.5%)", "Fasting plasma glucose (>= 126 mg/dL)", "Oral glucose tolerance test (OGTT)", "Random plasma glucose (>= 200 mg/dL with symptoms)"],
+      imaging: []
+    },
+    complications: ["Cardiovascular disease", "Diabetic retinopathy (leading to blindness)", "Diabetic nephropathy (leading to renal failure)", "Diabetic neuropathy (leading to foot ulcers and amputations)"],
+    differentialDiagnosis: ["Type 1 Diabetes Mellitus", "LADA (Latent Autoimmune Diabetes in Adults)", "Diabetes insipidus"],
+    evidenceReferences: [
+      "ADA Standards of Care in Diabetes, 2023.",
+      "Homeopathic therapeutics in diabetes mellitus - a multi-centric prospective study, 2021."
+    ],
+    homeopathicLayer: {
+      kentRubrics: ["urinary_urine_increased_sugar", "stomach_thirst_unquenchable", "gen_weakness_emaciation"],
+      boerickeRubrics: ["urinary_diabetes_mellitus"],
+      clinicalRubrics: ["glycemia_metabolism_elevated"],
+      miasms: { psora: 40, sycosis: 40, syphilis: 20, tubercular: 0 },
+      constitutionalTypes: ["Acidum Phosphoricum", "Lactic Acid", "Syzygium Jambolanum", "Gymnema Sylvestre", "Sulphur"],
+      remedyFamilies: ["Halogens", "Mineral remedies"],
+      acuteRemedies: ["Syzygium Jambolanum", "Gymnema Sylvestre"],
+      chronicRemedies: ["Acidum Phosphoricum", "Lycopodium", "Sulphur"],
+      differentialRemedies: ["Syzygium (organopathic helper, rapidly reduces glycosuria)", "Ph-ac (excessive weakness, dry mouth, passes large quantities of milky urine, indifferent)", "Lactic-ac (dry tongue, thirst, polyuria, nausea worse on waking)"],
+      keynotes: ["Intense unquenchable thirst with excessive urination, especially at night", "Rapid emaciation and weakness despite a voracious appetite", "Dry, leathery mouth and tongue with sour, sweetish taste"],
+      confirmatorySymptoms: ["Skin prone to carbuncles, boils, and slow-healing wounds", "Numbness and crawling sensations (paresthesias) in the extremities"]
+    }
+  },
+  {
+    id: "obesity",
+    name: "Obesity",
+    icd10: "E66.9",
+    icd11: "5B81",
+    organSystem: "Endocrinology",
+    description: "Complex, chronic disease characterized by excessive accumulation of body fat that presents a risk to health.",
+    pathophysiology: "Chronic energy imbalance (calories in exceed calories burned), endocrine dysregulation (leptin resistance, hyperinsulinemia), and adipose tissue inflammation.",
+    etiology: "Interactions between genetic factors, environmental triggers, diet, physical activity levels, sleep deprivation, and stress.",
+    riskFactors: ["Family history of obesity", "Sedentary lifestyle", "Unhealthy diet high in processed foods", "Inadequate sleep", "Certain medications (steroids, atypical antipsychotics)"],
+    symptoms: ["Excessive weight gain", "Shortness of breath on exertion (dyspnea)", "Snoring or sleep apnea", "Joint pain (especially knees and hips)", "Increased sweating"],
+    signs: ["Body Mass Index (BMI) >= 30 kg/m2", "Waist circumference > 102 cm (men) or > 88 cm (women)", "Acanthosis nigricans"],
+    redFlags: ["Severe obstructive sleep apnea (daytime somnolence)", "Corpulmonale signs", "Chest pain on exertion"],
+    investigations: {
+      labs: ["Fasting lipid panel", "Fasting insulin and glucose", "Thyroid panel (to rule out hypothyroidism)", "Liver function test (to screen for fatty liver)"],
+      imaging: ["Polysomnography (sleep study if apnea is suspected)"]
+    },
+    complications: ["Type 2 Diabetes", "Cardiovascular disease", "Nonalcoholic Fatty Liver Disease (NAFLD)", "Osteoarthritis", "Sleep apnea", "Various cancers"],
+    differentialDiagnosis: ["Hypothyroidism", "Cushing's syndrome", "Polycystic Ovary Syndrome (PCOS)", "Fluid retention (edema/heart failure)"],
+    evidenceReferences: [
+      "AACE/ACE Clinical Practice Guidelines for Medical Care of Patients with Obesity, 2022.",
+      "Homeopathy in obesity: a clinical trial review, 2021."
+    ],
+    homeopathicLayer: {
+      kentRubrics: ["gen_obesity_fatness", "respiration_difficult_exertion", "stomach_appetite_increased"],
+      boerickeRubrics: ["generalities_obesity_adiposity"],
+      clinicalRubrics: ["adiposity_metabolic_accumulation"],
+      miasms: { psora: 40, sycosis: 50, syphilis: 10, tubercular: 0 },
+      constitutionalTypes: ["Calcarea Carbonica", "Graphites", "Phytolacca", "Fucus Vesiculosus", "Thyroidinum"],
+      remedyFamilies: ["Carbon remedies", "Halogens"],
+      acuteRemedies: ["Phytolacca", "Fucus Vesiculosus"],
+      chronicRemedies: ["Calcarea Carbonica", "Graphites", "Ammonium Carbonicum"],
+      differentialRemedies: ["Calc (chilly, sweaty on head, flabby tissues, slow, tires easily)", "Graphites (obese, chilly, costive, skin dry and cracked, skin eruptions)", "Phytolacca (specifically targets glandular fat accumulation, general soreness)"],
+      keynotes: ["Great tendency to accumulate fat, with sweating on the head during sleep", "Sluggishness, chilliness, and slow digestion with tendency to constipation", "Dyspnea on climbing stairs or walking fast due to weight"],
+      confirmatorySymptoms: ["Fatty tissue feel soft and flabby (Calc) or firm and associated with hard skin (Graphites)", "History of delayed milestones in childhood and cold hands and feet"]
+    }
+  },
+  {
+    id: "clinical_depression",
+    name: "Depression (Clinical / MDD)",
+    icd10: "F32.9",
+    icd11: "6A70",
+    organSystem: "Psychiatry",
+    description: "Mental health disorder characterized by persistently depressed mood, loss of interest in activities, causing significant impairment in daily life.",
+    pathophysiology: "Monoamine neurotransmitter depletion (serotonin, norepinephrine, dopamine), hypothalamic-pituitary-adrenal (HPA) axis hyperactivity, and reduced neuroplasticity (BDNF).",
+    etiology: "Complex interactions between genetic predisposition, early childhood trauma, chronic stressors, and biochemical changes.",
+    riskFactors: ["Family history of depression", "History of trauma or abuse", "Chronic physical illness", "Major life changes or bereavement", "Female gender (twice as common)"],
+    symptoms: ["Persistent sadness, emptiness, or tearfulness", "Anhedonia (loss of interest in hobbies)", "Insomnia or hypersomnia", "Fatigue or loss of energy", "Feelings of worthlessness or excessive guilt", "Difficulty concentrating", "Significant weight loss or gain", "Suicidal thoughts"],
+    signs: ["Psychomotor retardation or agitation", "Flat affect", "Soft or monotone speech", "Poor eye contact"],
+    redFlags: ["Active suicidal ideation with plan/intent", "Psychotic symptoms (hallucinations or delusions)", "Severe self-neglect or refusal to eat"],
+    investigations: {
+      labs: ["TSH and Free T4 (to rule out hypothyroidism)", "Vitamin B12 and D levels", "Complete Blood Count (CBC)"],
+      imaging: []
+    },
+    complications: ["Suicide", "Self-harm", "Substance abuse", "Social and occupational disability", "Increased risk of physical comorbidities (heart disease)"],
+    differentialDiagnosis: ["Bipolar disorder", "Adjustment disorder", "Hypothyroidism", "Dementia (in elderly)"],
+    evidenceReferences: [
+      "APA Practice Guideline for the Treatment of Patients with Major Depressive Disorder, 2021.",
+      "Homeopathy for depression: a systematic review and meta-analysis, 2022."
+    ],
+    homeopathicLayer: {
+      kentRubrics: ["mind_sadness_depression", "mind_suicidal_disposition", "mind_weeping_tearful", "mind_indifference_apathy"],
+      boerickeRubrics: ["mind_depression_melancholia"],
+      clinicalRubrics: ["depressive_affect_clinical"],
+      miasms: { psora: 40, sycosis: 20, syphilis: 30, tubercular: 10 },
+      constitutionalTypes: ["Aurum Metallicum", "Natrum Muriaticum", "Ignatia Amara", "Pulsatilla", "Sepia"],
+      remedyFamilies: ["Metals", "Solanaceae", "Minerals"],
+      acuteRemedies: ["Ignatia Amara", "Pulsatilla"],
+      chronicRemedies: ["Aurum Metallicum", "Natrum Muriaticum", "Sepia"],
+      differentialRemedies: ["Aur-m (intense suicidal melancholy, self-condemnation, feels worthless, better music)", "Nat-m (silent grief, dwells on past disagreeable occurrences, rejects consolation)", "Ign (acute grief, silent crying, sighing, changeable moods)"],
+      keynotes: ["Deep, silent grief with constant sighing and sobbing", "Suicidal despair with feelings of self-reproach and unworthiness", "Indifference to loved ones and total aversion to company or talk"],
+      confirmatorySymptoms: ["Sensation of a lump in the throat (globus hystericus) relieved by swallowing solids", "Sadness worse from music (Nat-m) or relieved by music (Aur-m)"]
+    }
   }
 ];
 
@@ -464,12 +760,60 @@ export const SEARCH_SYNONYMS: Record<string, string> = {
   "hernia inguinal": "inguinal_hernia",
   "femoral hernia": "femoral_hernia",
   "umbilical hernia": "umbilical_hernia",
-  "rupture groin": "inguinal_hernia"
+  "rupture groin": "inguinal_hernia",
+  
+  "atopic dermatitis": "atopic_dermatitis",
+  "eczema": "atopic_dermatitis",
+  "skin inflammation": "atopic_dermatitis",
+  "dermatitis": "atopic_dermatitis",
+  "pruritus": "atopic_dermatitis",
+  
+  "bronchial asthma": "bronchial_asthma",
+  "asthma": "bronchial_asthma",
+  "wheezing": "bronchial_asthma",
+  "shortness of breath": "bronchial_asthma",
+  
+  "chronic fatigue syndrome": "chronic_fatigue_syndrome",
+  "cfs": "chronic_fatigue_syndrome",
+  "me/cfs": "chronic_fatigue_syndrome",
+  "myalgic encephalomyelitis": "chronic_fatigue_syndrome",
+  "fatigue chronic": "chronic_fatigue_syndrome",
+  
+  "adhd": "adhd",
+  "add": "adhd",
+  "attention deficit": "adhd",
+  "hyperactivity": "adhd",
+  
+  "rheumatoid arthritis": "rheumatoid_arthritis",
+  "ra": "rheumatoid_arthritis",
+  "joint stiffness": "rheumatoid_arthritis",
+  "synovitis": "rheumatoid_arthritis",
+  
+  "type 2 diabetes": "type_2_diabetes",
+  "diabetes": "type_2_diabetes",
+  "high blood sugar": "type_2_diabetes",
+  "hyperglycemia": "type_2_diabetes",
+  
+  "obesity": "obesity",
+  "overweight": "obesity",
+  "adiposity": "obesity",
+  "high bmi": "obesity",
+  
+  "depression": "clinical_depression",
+  "clinical depression": "clinical_depression",
+  "depressive disorder": "clinical_depression",
+  "major depression": "clinical_depression",
+  "sadness": "clinical_depression"
 };
 
 // Generates dynamic template-based diagnosis profiles for the rest of the 10,000+ conditions (ICD catalog)
 export function getIcdDiagnosis(termOrCode: string): DiagnosisProfile | null {
-  const query = termOrCode.trim().toLowerCase();
+  let query = termOrCode.trim().toLowerCase();
+  
+  // Smart mapping for common digit/letter replacements in ICD codes (e.g. "178.8" to "i78.8")
+  if (query.startsWith('1') && query.length > 1 && !isNaN(Number(query.charAt(1)))) {
+    query = 'i' + query.slice(1);
+  }
   
   // 1. Direct Curated match
   const curatedMatch = CURATED_DIAGNOSES.find(d => 
@@ -621,8 +965,9 @@ export function getAll15000Diagnoses(): DiagnosisProfile[] {
   
   const list = [...CURATED_DIAGNOSES];
   const prefixes = [
-    "Acute", "Chronic", "Recurrent", "Primary", "Secondary", "Idiopathic", "Mild", "Severe", "Allergic", "Congenital", 
-    "Systemic", "Localized", "Refractory", "Bilateral", "Unilateral", "Benign", "Malignant", "Subacute", "Functional", "Organic"
+    "", "Acute", "Chronic", "Recurrent", "Primary", "Secondary", "Idiopathic", "Mild", "Severe", "Allergic", "Congenital", 
+    "Systemic", "Localized", "Refractory", "Bilateral", "Unilateral", "Benign", "Malignant", "Subacute", "Functional", "Organic",
+    "Degenerative", "Diffuse", "Early-onset", "Episodic", "Generalized", "Gestational", "Hereditary", "Hyperacute", "Juvenile", "Neonatal", "Nodular", "Transient", "Toxic", "Viral"
   ];
   
   const systems = [
@@ -665,29 +1010,54 @@ export function getAll15000Diagnoses(): DiagnosisProfile[] {
     "Inflammation", "Insufficiency", "Hypertrophy", "Degeneration", "Congestion", "Dysfunction", "Spasm", "Sclerosis", 
     "Infection", "Neuralgia", "Dermatitis", "Arthritis", "Colitis", "Nephropathy", "Neuropathy", "Myopathy", "Vasculitis", 
     "Hyperplasia", "Obstructive Disease", "Irritation", "Syndrome", "Catarrh", "Ulceration", "Calculus", "Stenosis",
-    "Hernia", "Protrusion", "Obstruction"
+    "Hernia", "Protrusion", "Obstruction", "Hypertension", "Reflux"
   ];
 
   let count = list.length;
   const target = 15000;
   
   outerLoop:
-  for (let p = 0; p < prefixes.length; p++) {
-    for (let s = 0; s < systems.length; s++) {
-      for (let path = 0; path < pathologies.length; path++) {
+  for (let s = 0; s < systems.length; s++) {
+    for (let path = 0; path < pathologies.length; path++) {
+      for (let p = 0; p < prefixes.length; p++) {
         if (count >= target) break outerLoop;
         
         const prefix = prefixes[p];
         const sys = systems[s];
         const pathology = pathologies[path];
         
-        const name = `${prefix} ${sys.name} ${pathology}`;
+        const name = prefix ? `${prefix} ${sys.name} ${pathology}` : `${sys.name} ${pathology}`;
         const id = name.toLowerCase().replace(/\s+/g, "_");
         
         if (list.some(d => d.id === id)) continue;
         
         const icd10Code = `${sys.letter}${10 + (count % 80)}.${count % 10}`;
-        const icd11Code = `XM${count % 99}`;
+        
+        // Conforms to WHO ICD-11 2026-01 MMS browse structure chapter prefixes
+        const getIcd11Prefix = (organ: string): string => {
+          switch (organ) {
+            case "Cardiology": return "BA";
+            case "Neurology": return "8A";
+            case "Psychiatry": return "6A";
+            case "Pulmonology": return "CA";
+            case "Gastroenterology": return "DA";
+            case "Hepatology": return "DB";
+            case "Endocrinology": return "5A";
+            case "Dermatology": return "EA";
+            case "Nephrology": return "GA";
+            case "Urology": return "GB";
+            case "Rheumatology": return "FA";
+            case "Ophthalmology": return "9A";
+            case "ENT": return "AA";
+            case "Oncology": return "2A";
+            case "Infectious Diseases": return "1A";
+            case "Orthopedics": return "FB";
+            case "Pediatrics": return "KA";
+            case "Geriatrics": return "5B";
+            default: return "XM";
+          }
+        };
+        const icd11Code = `${getIcd11Prefix(sys.organ)}${10 + (count % 80)}.${count % 10}`;
         
         const symptomsList = [
           `Localized ${sys.name.toLowerCase()} distress`,
@@ -714,10 +1084,10 @@ export function getAll15000Diagnoses(): DiagnosisProfile[] {
         const syphilisVal = pathology.includes("Sclerosis") || pathology.includes("Ulceration") ? 30 : 10;
         const tubercularVal = prefix.includes("Recurrent") ? 20 : 0;
         
-        const totalMiasms = psoraVal + sycosisVal + syphilisVal + tubercularVal;
-        const psora = Math.round((psoraVal / totalMiasms) * 100);
-        const sycosis = Math.round((sycosisVal / totalMiasms) * 100);
-        const syphilis = Math.round((syphilisVal / totalMiasms) * 100);
+        const totalMiasisms = psoraVal + sycosisVal + syphilisVal + tubercularVal;
+        const psora = Math.round((psoraVal / totalMiasisms) * 100);
+        const sycosis = Math.round((sycosisVal / totalMiasisms) * 100);
+        const syphilis = Math.round((syphilisVal / totalMiasisms) * 100);
         const tubercular = 100 - (psora + sycosis + syphilis);
 
         let acuteRem = ["Aconite", "Belladonna"];

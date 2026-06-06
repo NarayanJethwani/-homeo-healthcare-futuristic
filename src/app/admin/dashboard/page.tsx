@@ -9,12 +9,13 @@ import {
   Settings, LogOut, ShieldAlert, Award, FileText, ChevronRight, UserPlus, Upload,
   BookOpen, Book, ChevronLeft, Maximize2, Minimize2, Receipt, Printer,
   Gauge, AlertTriangle, Check, X, Compass, Layers, History, Zap, TrendingUp, Workflow, Calendar,
-  Network, Database, Cpu, GitBranch, Stethoscope, User, UploadCloud, Play, Mail, Mic
+  Network, Database, Cpu, GitBranch, Stethoscope, User, UploadCloud, Play, Mail, Mic, Sun, Moon
 } from "lucide-react";
-import { REPERTORY_DATA, REPERTORY_CHAPTERS, REMEDIES_METADATA, Rubric, BOERICKE_CHAPTERS, SEARCH_SYNONYMS, getRepertoryData, JETHWANI_SECTIONS, JETHWANI_REPERTORY_DATA, JETHWANI_REMEDY_CONFIRMATIONS, calculateClinicalIndices, type JethwaniRubric, type JethwaniSymptomConfig, type ClinicalIndices } from "@/lib/repertoryData";
+import { REPERTORY_DATA, REPERTORY_CHAPTERS, REMEDIES_METADATA, Rubric, BOERICKE_CHAPTERS, SEARCH_SYNONYMS, getRepertoryData, JETHWANI_SECTIONS, JETHWANI_REPERTORY_DATA as JETHWANI_REPERTORY_DATA_ORIG, JETHWANI_REMEDY_CONFIRMATIONS, calculateClinicalIndices, type JethwaniRubric, type JethwaniSymptomConfig, type ClinicalIndices, setRepertoryData } from "@/lib/repertoryData";
 import { MATERIA_MEDICA_BOOKS, MateriaMedicaBook } from "@/lib/materiaMedicaData";
+import { ORGANON_EDITIONS, ORGANON_KNOWLEDGE_TREE, ORGANON_APHORISMS, ORGANON_CASES, ACTIVE_RECALL_EXERCISES, TIMELINE_STEPS } from "@/lib/organonData";
 import { db } from "@/lib/firebase";
-import { collection, onSnapshot, query, orderBy, doc, updateDoc, setDoc, where } from "firebase/firestore";
+import { collection, onSnapshot, query, orderBy, doc, updateDoc, setDoc, where, getDoc } from "firebase/firestore";
 import { getKnowledgeGraph, getRemedyProfile } from "@/lib/knowledgeGraph";
 import { runIngestionSimulation, INGESTION_SOURCES } from "@/lib/ingestionPipeline";
 import { parseNaturalLanguageQuery } from "@/lib/searchEngine";
@@ -23,10 +24,38 @@ import { simulateMateriaMedicaIngestion, CLASSICAL_SOURCES } from "@/lib/materia
 import { GENOME_REMEDY_DB } from "@/lib/remedyGenomeSchema";
 import { reconcileSymptom, generateUnifiedRemedyProfile } from "@/lib/reconciliationEngine";
 import { calculateSM2, updateStudentMastery, initDefaultMastery, initDefaultSM2 } from "@/lib/adaptiveLearning";
-import { getIcdDiagnosis, getClinicalCoverageScore, CURATED_DIAGNOSES, ORGAN_SYSTEMS, type DiagnosisProfile, getAll15000Diagnoses } from "@/lib/clinicalDiagnosisLibrary";
+import { getIcdDiagnosis, getClinicalCoverageScore, CURATED_DIAGNOSES, ORGAN_SYSTEMS, type DiagnosisProfile, getAll15000Diagnoses, SEARCH_SYNONYMS as DIAGNOSIS_SEARCH_SYNONYMS } from "@/lib/clinicalDiagnosisLibrary";
 import { VIRTUAL_PATIENTS, evaluateCaseSubmission } from "@/lib/caseSimulationLab";
 import { calculateClinicalDecisionSupport } from "@/lib/clinicalDecisionSupport";
 import { parseNaturalLanguageQuery as parseNLQueryAdvanced, searchRemediesAdvanced } from "@/lib/advancedSearch";
+
+
+const JETHWANI_REPERTORY_DATA: JethwaniRubric[] = new Proxy(JETHWANI_REPERTORY_DATA_ORIG, {
+  get(target, prop, receiver) {
+    if (prop === "find") {
+      return (callback: (r: JethwaniRubric) => boolean) => {
+        const match = target.find(callback);
+        if (match) return match;
+        
+        const allClassic = getRepertoryData("combined");
+        for (const classic of allClassic) {
+          const virtualRubric: JethwaniRubric = {
+            id: classic.id,
+            section: "Section D",
+            name: `[Classic] ${classic.chapter} - ${classic.name}`,
+            remedies: classic.remedies
+          };
+          if (callback(virtualRubric)) {
+            return virtualRubric;
+          }
+        }
+        return undefined;
+      };
+    }
+    return Reflect.get(target, prop, receiver);
+  }
+}) as unknown as JethwaniRubric[];
+
 const INTAKE_QUESTIONS = [
   "When did this condition first start?",
   "What caused it or triggered it originally, in your opinion?",
@@ -524,6 +553,26 @@ export default function AdminDashboard() {
   const [globalFontSize, setGlobalFontSize] = useState<"S" | "M" | "L" | "XL">("M");
   const [globalLayoutZoom, setGlobalLayoutZoom] = useState<number>(100);
   const [globalReadingWidth, setGlobalReadingWidth] = useState<"standard" | "wide" | "borderless">("standard");
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    const isDark = document.documentElement.classList.contains("dark");
+    setTheme(isDark ? "dark" : "light");
+  }, []);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === "light" ? "dark" : "light";
+    setTheme(nextTheme);
+    if (nextTheme === "dark") {
+      document.documentElement.classList.add("dark");
+      document.documentElement.style.colorScheme = "dark";
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      document.documentElement.style.colorScheme = "light";
+      localStorage.setItem("theme", "light");
+    }
+  };
 
   // Fullscreen view mode tracking
   const [fullscreenTab, setFullscreenTab] = useState<"dashboard" | "intake" | "patients" | "diagnostics" | "analyzer" | "diet-lifestyle" | "nexus-atlas" | "learning-hub" | "communication" | "ai-router" | null>(null);
@@ -585,9 +634,12 @@ export default function AdminDashboard() {
   // Diagnostic Intelligence States
   const [diagOrganSystem, setDiagOrganSystem] = useState("All");
   const [diagSearchQuery, setDiagSearchQuery] = useState("");
+  const [diagAlphabetFilter, setDiagAlphabetFilter] = useState("");
   const [diagResult, setDiagResult] = useState<any>(null);
   const [isDiagLoading, setIsDiagLoading] = useState(false);
   const [selectedDiagCondition, setSelectedDiagCondition] = useState<any>(null);
+  const [diagSearchMode, setDiagSearchMode] = useState<"strict" | "synonyms" | "related">("synonyms");
+  const [diagCuratedOnly, setDiagCuratedOnly] = useState(false);
 
   // Medical Analyzer States
   const [analyzerRawText, setAnalyzerRawText] = useState("");
@@ -906,6 +958,7 @@ export default function AdminDashboard() {
 
   const [patients, setPatients] = useState<Patient[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [chatsLoaded, setChatsLoaded] = useState(false);
   
   // Repertory State
   const [selectedRepertory, setSelectedRepertory] = useState<'kent' | 'boericke' | 'combined'>("kent");
@@ -915,6 +968,8 @@ export default function AdminDashboard() {
   const [selectedRubrics, setSelectedRubrics] = useState<Array<{ rubric: Rubric; grade: number; weightMultiplier?: number }>>([]);
   const [remedyColumns, setRemedyColumns] = useState<string[]>([]);
   const [remedyScores, setRemedyScores] = useState<Array<{ remedy: string; coverage: string; score: number }>>([]);
+  const [isRepertoryLoaded, setIsRepertoryLoaded] = useState(false);
+  const [isRepertoryLoading, setIsRepertoryLoading] = useState(false);
 
   // Dr. Jethwani's Clinical Repertory State
   const [repertoryWorkbenchMode, setRepertoryWorkbenchMode] = useState<"classical" | "jethwani">("classical");
@@ -979,6 +1034,63 @@ export default function AdminDashboard() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
+
+  // Hydrate classic repertory data asynchronously on client mount
+  useEffect(() => {
+    const hydrateRepertory = async () => {
+      setIsRepertoryLoading(true);
+      try {
+        const res = await fetch("/api/repertory");
+        const data = await res.json();
+        if (data.success) {
+          setRepertoryData(data.kent, data.boericke);
+          setIsRepertoryLoaded(true);
+        } else {
+          console.error("Failed to load repertory database: success=false");
+        }
+      } catch (err) {
+        console.error("Failed to hydrate repertory data:", err);
+      } finally {
+        setIsRepertoryLoading(false);
+      }
+    };
+    hydrateRepertory();
+  }, []);
+
+  // Hydrate Organon 6th Edition full database asynchronously on client mount
+  useEffect(() => {
+    const hydrateOrganon6th = async () => {
+      setIsOrganon6thLoading(true);
+      try {
+        const res = await fetch("/api/organon");
+        const resData = await res.json();
+        if (resData.success) {
+          setOrganon6thFullData(resData.data);
+          setIsOrganon6thLoaded(true);
+          
+          // Hydrate progress from localStorage if they exist
+          if (typeof window !== "undefined") {
+            const savedRead = localStorage.getItem("organon_6th_read_list");
+            const savedMastered = localStorage.getItem("organon_6th_mastered_list");
+            const savedRevision = localStorage.getItem("organon_6th_revision_list");
+            const savedWeak = localStorage.getItem("organon_6th_weak_list");
+            if (savedRead) setComplete6thReadList(JSON.parse(savedRead));
+            if (savedMastered) setComplete6thMasteredList(JSON.parse(savedMastered));
+            if (savedRevision) setComplete6thRevisionList(JSON.parse(savedRevision));
+            if (savedWeak) setComplete6thWeakList(JSON.parse(savedWeak));
+          }
+        } else {
+          console.error("Failed to load Organon 6th database:", resData.error);
+        }
+      } catch (err) {
+        console.error("Failed to hydrate Organon 6th data:", err);
+      } finally {
+        setIsOrganon6thLoading(false);
+      }
+    };
+    hydrateOrganon6th();
+  }, []);
+
 
   useEffect(() => {
     if (fullscreenTab) {
@@ -1299,12 +1411,15 @@ export default function AdminDashboard() {
   const [selectedMmdRemedy, setSelectedMmdRemedy] = useState<string>("");
   const [confirmedMmdQuestions, setConfirmedMmdQuestions] = useState<Record<string, boolean>>({});
 
-  const getRangeLabel = (val: number) => {
-    if (val <= 20) return { text: "Critical", style: "bg-rose-50 text-rose-700 border-rose-200/60" };
-    if (val <= 40) return { text: "Poor", style: "bg-amber-50 text-amber-700 border-amber-200/60" };
-    if (val <= 60) return { text: "Moderate", style: "bg-blue-50 text-blue-700 border-blue-200/60" };
-    if (val <= 80) return { text: "Good", style: "bg-emerald-50 text-emerald-700 border-emerald-200/60" };
-    return { text: "Excellent", style: "bg-purple-50 text-purple-700 border-purple-200/60" };
+  const getRangeDetails = (val: number, key: string) => {
+    const isNegative = key === "chronic_disease";
+    const healthVal = isNegative ? (100 - val) : val;
+
+    if (healthVal <= 20) return { text: "Critical", style: "bg-red-950/40 text-red-400 border-red-900/60" };
+    if (healthVal <= 40) return { text: "Poor", style: "bg-orange-950/40 text-orange-400 border-orange-900/60" };
+    if (healthVal <= 60) return { text: "Moderate", style: "bg-yellow-950/40 text-yellow-400 border-yellow-900/60" };
+    if (healthVal <= 80) return { text: "Good", style: "bg-sky-950/40 text-sky-400 border-sky-900/60" };
+    return { text: "Excellent", style: "bg-emerald-950/40 text-emerald-400 border-emerald-900/60" };
   };
 
   // Knowledge Graph States
@@ -1358,11 +1473,66 @@ export default function AdminDashboard() {
   const [isFlashcardFlipped, setIsFlashcardFlipped] = useState(false);
 
   // Sub-Tab Navigation
-  const [learningSubTab, setLearningSubTab] = useState<"cockpit" | "search" | "compare" | "tutor" | "pipeline" | "simulation" | "cds" | "genome" | "drugPicture">("cockpit");
+  const [learningSubTab, setLearningSubTab] = useState<"cockpit" | "search" | "compare" | "tutor" | "pipeline" | "simulation" | "cds" | "genome" | "drugPicture">("cds");
+  const [learningHubWorkspace, setLearningHubWorkspace] = useState<"workbench" | "academy">("workbench");
   const [isLearningHubFullscreen, setIsLearningHubFullscreen] = useState(false);
   const [isDrugPictureFullscreen, setIsDrugPictureFullscreen] = useState(false);
   const [drugPicSearchTerm, setDrugPicSearchTerm] = useState("");
   const [drugPictureFontSize, setDrugPictureFontSize] = useState<"sm" | "base" | "lg" | "xl" | "2xl">("base");
+
+  // Organon of Medicine Module States
+  const [learningHubModule, setLearningHubModule] = useState<"materia-medica" | "organon" | "chronic-diseases" | "philosophy" | "repertory-science" | "clinical-cases" | "historical-masters">("materia-medica");
+  const [selectedOrganonEdition, setSelectedOrganonEdition] = useState<number>(6); // Default to 6th Edition
+  const [selectedAphorismId, setSelectedAphorismId] = useState<string>("153"); // Default to §153
+  const [organonStudyMode, setOrganonStudyMode] = useState<"beginner" | "student" | "practitioner" | "advanced" | "teacher">("student");
+  const [organonViewMode, setOrganonViewMode] = useState<"editions" | "complete-6th-edition" | "dual-panel" | "relationship-graph" | "clinical-app" | "case-correlation" | "active-recall" | "timeline" | "search">("editions");
+  const [organonSearchQuery, setOrganonSearchQuery] = useState("");
+  const [isFullscreenDistractionFree, setIsFullscreenDistractionFree] = useState(false);
+  const [organonFontSize, setOrganonFontSize] = useState<"sm" | "base" | "lg" | "xl">("base");
+  const [isOrganonNightMode, setIsOrganonNightMode] = useState(true);
+  const [organonActiveConcept, setOrganonActiveConcept] = useState<string>("migraine");
+
+  // Complete 6th Edition States
+  const [organon6thFullData, setOrganon6thFullData] = useState<Record<string, any>>({});
+  const [isOrganon6thLoading, setIsOrganon6thLoading] = useState<boolean>(false);
+  const [isOrganon6thLoaded, setIsOrganon6thLoaded] = useState<boolean>(false);
+  const [selectedComplete6thAphorismId, setSelectedComplete6thAphorismId] = useState<string>("153");
+  const [complete6thSearchQuery, setComplete6thSearchQuery] = useState<string>("");
+  const [complete6thCompareMode, setComplete6thCompareMode] = useState<boolean>(false);
+  const [complete6thRightPanelMode, setComplete6thRightPanelMode] = useState<"explain" | "questions" | "examples" | "interpretation" | "compare">("explain");
+  const [complete6thExplainResult, setComplete6thExplainResult] = useState<string>("");
+  const [complete6thExplanationLoading, setComplete6thExplanationLoading] = useState<boolean>(false);
+  
+  // Quiz Recall state inside 6th edition
+  const [complete6thActiveRecallIndex, setComplete6thActiveRecallIndex] = useState<number>(0);
+  const [complete6thActiveRecallUserAnswer, setComplete6thActiveRecallUserAnswer] = useState<string>("");
+  const [complete6thActiveRecallChecked, setComplete6thActiveRecallChecked] = useState<boolean>(false);
+  const [complete6thActiveRecallStreak, setComplete6thActiveRecallStreak] = useState<number>(0);
+  
+  // Progress lists
+  const [complete6thReadList, setComplete6thReadList] = useState<string[]>([]);
+  const [complete6thMasteredList, setComplete6thMasteredList] = useState<string[]>([]);
+  const [complete6thRevisionList, setComplete6thRevisionList] = useState<string[]>([]);
+  const [complete6thWeakList, setComplete6thWeakList] = useState<string[]>([]);
+  const [isLmMasterSectionOpen, setIsLmMasterSectionOpen] = useState<boolean>(false);
+
+  
+  // AI Hahnemann Chat States
+  const [organonChatHistory, setOrganonChatHistory] = useState<Array<{ sender: "ai" | "user"; text: string; references?: string[] }>>([
+    { sender: "ai", text: "Greetings, my esteemed colleague. I am Samuel Hahnemann. Let us discuss the pure principles of the healing art, the derangements of the Vital Force, or the application of Aphorism 153. What is on your mind?" }
+  ]);
+  const [organonChatInput, setOrganonChatInput] = useState("");
+  const [isOrganonChatLoading, setIsOrganonChatLoading] = useState(false);
+  
+  // Active Recall States
+  const [activeRecallDifficulty, setActiveRecallDifficulty] = useState<"beginner" | "student" | "practitioner" | "advanced" | "teacher">("student");
+  const [activeRecallCategory, setActiveRecallCategory] = useState<"BHMS" | "MD" | "Competitive" | "Faculty">("BHMS");
+  const [activeRecallIdx, setActiveRecallIdx] = useState(0);
+  const [recallUserAnswers, setRecallUserAnswers] = useState<Record<string, string>>({});
+  const [isRecallChecked, setIsRecallChecked] = useState(false);
+  const [recallStreak, setRecallStreak] = useState(3);
+  const [recallMasteryScore, setRecallMasteryScore] = useState(72);
+  const [voicePlayActive, setVoicePlayActive] = useState(false);
 
   // HKOS Phase 7 - 19 States
   // 1. Spaced Repetition (SM-2) & Mastery
@@ -1444,6 +1614,63 @@ export default function AdminDashboard() {
       text: "Welcome to the Materia Medica AI Tutor! Select a remedy or query (e.g. <em>'Teach me Lycopodium'</em>, <em>'Quiz me on Lachesis'</em>) to begin."
     }
   ]);
+
+  // ------------------------------------------------------------
+  // CHRONIC DISEASES STATES
+  // ------------------------------------------------------------
+  const [chronicSelectedMiasm, setChronicSelectedMiasm] = useState<"psora" | "sycosis" | "syphilis" | "tubercular">("psora");
+  const [chronicViewMode, setChronicViewMode] = useState<"matrices" | "timeline" | "quiz" | "insights">("matrices");
+  const [chronicSymptomSelections, setChronicSymptomSelections] = useState<Record<string, boolean>>({});
+  const [chronicQuizIdx, setChronicQuizIdx] = useState(0);
+  const [chronicQuizAnswers, setChronicQuizAnswers] = useState<Record<string, string>>({});
+  const [isChronicQuizChecked, setIsChronicQuizChecked] = useState(false);
+  const [chronicTutorInput, setChronicTutorInput] = useState("");
+  const [chronicTutorChat, setChronicTutorChat] = useState<Array<{ sender: "user" | "tutor"; text: string }>>([
+    { sender: "tutor", text: "Welcome to the Chronic Diseases Study Vault. Ask me about the miasmatic theory, secondary symptoms, or Hahnemannian treatment principles." }
+  ]);
+  const [isChronicTutorLoading, setIsChronicTutorLoading] = useState(false);
+
+  // ------------------------------------------------------------
+  // HOMEOPATHIC PHILOSOPHY STATES
+  // ------------------------------------------------------------
+  const [philosophyActiveChapter, setPhilosophyActiveChapter] = useState<string>("vital-force");
+  const [philosophySelectedMaster, setPhilosophySelectedMaster] = useState<string>("kent");
+  const [philosophyViewMode, setPhilosophyViewMode] = useState<"overview" | "tracer" | "quiz" | "insights">("overview");
+  const [philosophyQuizIdx, setPhilosophyQuizIdx] = useState(0);
+  const [philosophyQuizAnswers, setPhilosophyQuizAnswers] = useState<Record<string, string>>({});
+  const [isPhilosophyQuizChecked, setIsPhilosophyQuizChecked] = useState(false);
+  const [philosophyTutorInput, setPhilosophyTutorInput] = useState("");
+  const [philosophyTutorChat, setPhilosophyTutorChat] = useState<Array<{ sender: "user" | "tutor"; text: string }>>([
+    { sender: "tutor", text: "Welcome to the Homeopathic Philosophy Sanctuary. Let's discuss Kent's 12 observations, Close's view of Susceptibility, or Roberts' principles." }
+  ]);
+  const [isPhilosophyTutorLoading, setIsPhilosophyTutorLoading] = useState(false);
+  const [susceptibilityValue, setSusceptibilityValue] = useState(5);
+  const [stimulusValue, setStimulusValue] = useState(5);
+
+  // ------------------------------------------------------------
+  // REPERTORY SCIENCE STATES
+  // ------------------------------------------------------------
+  const [repertorySource, setRepertorySource] = useState<'kent' | 'boericke' | 'jethwani'>('jethwani');
+  const [repertorySelectedChapter, setRepertorySelectedChapter] = useState<string>("Section A");
+  const [repertorySearchTerm, setRepertorySearchTerm] = useState("");
+  const [repertorySelectedSymptoms, setRepertorySelectedSymptoms] = useState<JethwaniSymptomConfig[]>([]);
+  const [repertorySelectedRubricId, setRepertorySelectedRubricId] = useState<string | null>(null);
+
+  // ------------------------------------------------------------
+  // MASTER CLINICAL CASES STATES
+  // ------------------------------------------------------------
+  const [selectedClinicalCaseId, setSelectedClinicalCaseId] = useState<string>("case_1");
+  const [clinicalCaseStage, setClinicalCaseStage] = useState<"intake" | "repertory" | "differential" | "prescription" | "followup">("intake");
+  const [clinicalCaseGuess, setClinicalCaseGuess] = useState("");
+  const [isClinicalCaseGuessed, setIsClinicalCaseGuessed] = useState(false);
+  const [clinicalCaseSuccess, setClinicalCaseSuccess] = useState<boolean | null>(null);
+
+  // ------------------------------------------------------------
+  // HISTORICAL MASTERS STATES
+  // ------------------------------------------------------------
+  const [selectedHistoricalMasterId, setSelectedHistoricalMasterId] = useState<string>("hahnemann");
+  const [historicalSearchQuery, setHistoricalSearchQuery] = useState("");
+  const [historicalViewMode, setHistoricalViewMode] = useState<"profiles" | "timeline" | "quotes">("profiles");
 
   const renderGraphVisualizerCard = (isFullscreen: boolean) => {
     const graph = getKnowledgeGraph();
@@ -1640,7 +1867,7 @@ export default function AdminDashboard() {
     };
 
     return (
-      <div className={`bg-slate-900/30 relative overflow-hidden flex flex-col ${
+      <div className={`always-dark bg-slate-900/30 relative overflow-hidden flex flex-col ${
         isFullscreen 
           ? "flex-grow flex-1 min-h-0 h-full w-full rounded-none border-none p-4" 
           : "border border-slate-900 rounded-[32px] p-6 shadow-md min-h-[600px]"
@@ -2809,6 +3036,73 @@ Homeo Healthcare`;
     }
   }, [router]);
 
+  // Load persistent chat history from Firestore on login/mount
+  useEffect(() => {
+    if (!session?.uid) return;
+    
+    const loadChats = async () => {
+      try {
+        const chatDocRef = doc(db, "conversations", session.uid);
+        const docSnap = await getDoc(chatDocRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          if (data.intakeChatMessages) setIntakeChatMessages(data.intakeChatMessages);
+          if (typeof data.intakeInterviewIndex === "number") setIntakeInterviewIndex(data.intakeInterviewIndex);
+          if (typeof data.intakeComplaint === "string") setIntakeComplaint(data.intakeComplaint);
+          if (typeof data.intakeStep === "number") setIntakeStep(data.intakeStep);
+          if (data.analyzerChatHistory) setAnalyzerChatHistory(data.analyzerChatHistory);
+          if (data.tutorChat) setTutorChat(data.tutorChat);
+          if (data.chronicTutorChat) setChronicTutorChat(data.chronicTutorChat);
+          if (data.philosophyTutorChat) setPhilosophyTutorChat(data.philosophyTutorChat);
+        }
+      } catch (err) {
+        console.error("Error loading chat history from Firestore:", err);
+      } finally {
+        setChatsLoaded(true);
+      }
+    };
+    
+    loadChats();
+  }, [session?.uid]);
+
+  // Save active chat history to Firestore when messages change
+  useEffect(() => {
+    if (!session?.uid || !chatsLoaded) return;
+    
+    const saveChats = async () => {
+      try {
+        const chatDocRef = doc(db, "conversations", session.uid);
+        await setDoc(chatDocRef, {
+          uid: session.uid,
+          intakeChatMessages,
+          intakeInterviewIndex,
+          intakeComplaint,
+          intakeStep,
+          analyzerChatHistory,
+          tutorChat,
+          chronicTutorChat,
+          philosophyTutorChat,
+          updatedAt: new Date().toISOString()
+        }, { merge: true });
+      } catch (err) {
+        console.error("Error saving chat history to Firestore:", err);
+      }
+    };
+    
+    saveChats();
+  }, [
+    session?.uid,
+    chatsLoaded,
+    intakeChatMessages,
+    intakeInterviewIndex,
+    intakeComplaint,
+    intakeStep,
+    analyzerChatHistory,
+    tutorChat,
+    chronicTutorChat,
+    philosophyTutorChat
+  ]);
+
   // Fetch Google Service Account Email for display
   useEffect(() => {
     if (isImportModalOpen && !serviceAccountEmail) {
@@ -3547,16 +3841,13 @@ Homeo Healthcare`;
     if (queryTokens.length === 0) return true;
 
     const rubricNameLower = r.name.toLowerCase();
-    const chapterNameLower = r.chapter.toLowerCase();
 
     return queryTokens.every((token) => {
-      if (rubricNameLower.includes(token) || chapterNameLower.includes(token)) return true;
+      if (rubricNameLower.includes(token)) return true;
 
       const synonyms = SEARCH_SYNONYMS[token];
       if (synonyms) {
-        return synonyms.some(
-          (syn) => rubricNameLower.includes(syn) || chapterNameLower.includes(syn)
-        );
+        return synonyms.some((syn) => rubricNameLower.includes(syn));
       }
 
       return false;
@@ -4109,77 +4400,146 @@ ${err.message || err}`);
   };
 
   const calculateRemedyIntelligenceBreakdown = (rem: string) => {
-    const coveredSymptoms = selectedJethwaniRubrics.filter(s => {
-      const rubric = JETHWANI_REPERTORY_DATA.find(r => r.id === s.rubricId);
-      return rubric && rubric.remedies && rubric.remedies[rem] > 0;
-    });
-
-    const totalSymptoms = selectedJethwaniRubrics.length;
-    const coverageScore = totalSymptoms > 0 ? Math.round((coveredSymptoms.length / totalSymptoms) * 100) : 0;
-
-    const mentalSymptoms = selectedJethwaniRubrics.filter(s => s.rubricId.startsWith("jeth_a_"));
-    const generalSymptoms = selectedJethwaniRubrics.filter(s => s.rubricId.startsWith("jeth_b_"));
-    const etiologySymptoms = selectedJethwaniRubrics.filter(s => s.rubricId.startsWith("jeth_c_"));
-    const clinicalSymptoms = selectedJethwaniRubrics.filter(s => s.rubricId.startsWith("jeth_d_"));
-
-    const getSymptomCoveredPct = (symptoms: typeof selectedJethwaniRubrics) => {
-      if (symptoms.length === 0) return 50; // Neutral baseline
-      const covered = symptoms.filter(s => {
+    const isJethwani = repertoryWorkbenchMode === "jethwani";
+    
+    if (isJethwani) {
+      const coveredSymptoms = selectedJethwaniRubrics.filter(s => {
         const rubric = JETHWANI_REPERTORY_DATA.find(r => r.id === s.rubricId);
         return rubric && rubric.remedies && rubric.remedies[rem] > 0;
       });
-      return Math.round((covered.length / symptoms.length) * 100);
-    };
 
-    const mentalScore = getSymptomCoveredPct(mentalSymptoms);
-    const generalScore = getSymptomCoveredPct(generalSymptoms);
-    const etiologyScore = getSymptomCoveredPct(etiologySymptoms);
-    const clinicalScore = getSymptomCoveredPct(clinicalSymptoms);
+      const totalSymptoms = selectedJethwaniRubrics.length;
+      const coverageScore = totalSymptoms > 0 ? Math.round((coveredSymptoms.length / totalSymptoms) * 100) : 0;
 
-    let miasmaticScore = 50;
-    const canonRemId = `rem_${rem.toLowerCase().replace(/[^a-z0-9]/g, "")}`;
-    const remedyInDb = MASTER_REMEDY_DB.find(
-      r => r.id.toLowerCase() === canonRemId || r.identity.abbreviation.toLowerCase() === rem.toLowerCase() || r.identity.name.toLowerCase() === rem.toLowerCase()
-    );
-    if (remedyInDb) {
-      const psoraWeight = remedyInDb.miasmaticAnalysis.psora || 0;
-      const sycosisWeight = remedyInDb.miasmaticAnalysis.sycosis || 0;
-      const syphilisWeight = remedyInDb.miasmaticAnalysis.syphilis || 0;
-      miasmaticScore = Math.max(psoraWeight, sycosisWeight, syphilisWeight);
+      const mentalSymptoms = selectedJethwaniRubrics.filter(s => s.rubricId.startsWith("jeth_a_"));
+      const generalSymptoms = selectedJethwaniRubrics.filter(s => s.rubricId.startsWith("jeth_b_"));
+      const etiologySymptoms = selectedJethwaniRubrics.filter(s => s.rubricId.startsWith("jeth_c_"));
+      const clinicalSymptoms = selectedJethwaniRubrics.filter(s => s.rubricId.startsWith("jeth_d_"));
+
+      const getSymptomCoveredPct = (symptoms: typeof selectedJethwaniRubrics) => {
+        if (symptoms.length === 0) return 50; // Neutral baseline
+        const covered = symptoms.filter(s => {
+          const rubric = JETHWANI_REPERTORY_DATA.find(r => r.id === s.rubricId);
+          return rubric && rubric.remedies && rubric.remedies[rem] > 0;
+        });
+        return Math.round((covered.length / symptoms.length) * 100);
+      };
+
+      const mentalScore = getSymptomCoveredPct(mentalSymptoms);
+      const generalScore = getSymptomCoveredPct(generalSymptoms);
+      const etiologyScore = getSymptomCoveredPct(etiologySymptoms);
+      const clinicalScore = getSymptomCoveredPct(clinicalSymptoms);
+
+      let miasmaticScore = 50;
+      const canonRemId = `rem_${rem.toLowerCase().replace(/[^a-z0-9]/g, "")}`;
+      const remedyInDb = MASTER_REMEDY_DB.find(
+        r => r.id.toLowerCase() === canonRemId || r.identity.abbreviation.toLowerCase() === rem.toLowerCase() || r.identity.name.toLowerCase() === rem.toLowerCase()
+      );
+      if (remedyInDb) {
+        const psoraWeight = remedyInDb.miasmaticAnalysis.psora || 0;
+        const sycosisWeight = remedyInDb.miasmaticAnalysis.sycosis || 0;
+        const syphilisWeight = remedyInDb.miasmaticAnalysis.syphilis || 0;
+        miasmaticScore = Math.max(psoraWeight, sycosisWeight, syphilisWeight);
+      } else {
+        miasmaticScore = 60;
+      }
+
+      const scoresObj = getJethwaniRemedyScores().find(s => s.remedy === rem);
+      const overallConfidence = scoresObj ? scoresObj.score : 0;
+
+      return {
+        coverage: coverageScore,
+        mental: mentalScore,
+        general: generalScore,
+        etiology: etiologyScore,
+        miasmatic: miasmaticScore,
+        clinical: clinicalScore,
+        confidence: overallConfidence
+      };
     } else {
-      miasmaticScore = 60;
+      const coveredSymptoms = selectedRubrics.filter(s => {
+        return s.rubric && s.rubric.remedies && s.rubric.remedies[rem] > 0;
+      });
+
+      const totalSymptoms = selectedRubrics.length;
+      const coverageScore = totalSymptoms > 0 ? Math.round((coveredSymptoms.length / totalSymptoms) * 100) : 0;
+
+      const mentalSymptoms = selectedRubrics.filter(s => s.rubric.chapter.toUpperCase() === "MIND");
+      const generalSymptoms = selectedRubrics.filter(s => ["GENERALS", "SLEEP", "FEVER"].includes(s.rubric.chapter.toUpperCase()));
+      const etiologySymptoms = selectedRubrics.filter(s => s.rubric.name.toLowerCase().includes("etiology") || s.rubric.name.toLowerCase().includes("ailments from"));
+      const clinicalSymptoms = selectedRubrics.filter(s => !mentalSymptoms.includes(s) && !generalSymptoms.includes(s) && !etiologySymptoms.includes(s));
+
+      const getSymptomCoveredPct = (symptoms: typeof selectedRubrics) => {
+        if (symptoms.length === 0) return 50;
+        const covered = symptoms.filter(s => {
+          return s.rubric && s.rubric.remedies && s.rubric.remedies[rem] > 0;
+        });
+        return Math.round((covered.length / symptoms.length) * 100);
+      };
+
+      const mentalScore = getSymptomCoveredPct(mentalSymptoms);
+      const generalScore = getSymptomCoveredPct(generalSymptoms);
+      const etiologyScore = getSymptomCoveredPct(etiologySymptoms);
+      const clinicalScore = getSymptomCoveredPct(clinicalSymptoms);
+
+      let miasmaticScore = 50;
+      const canonRemId = `rem_${rem.toLowerCase().replace(/[^a-z0-9]/g, "")}`;
+      const remedyInDb = MASTER_REMEDY_DB.find(
+        r => r.id.toLowerCase() === canonRemId || r.identity.abbreviation.toLowerCase() === rem.toLowerCase() || r.identity.name.toLowerCase() === rem.toLowerCase()
+      );
+      if (remedyInDb) {
+        const psoraWeight = remedyInDb.miasmaticAnalysis.psora || 0;
+        const sycosisWeight = remedyInDb.miasmaticAnalysis.sycosis || 0;
+        const syphilisWeight = remedyInDb.miasmaticAnalysis.syphilis || 0;
+        miasmaticScore = Math.max(psoraWeight, sycosisWeight, syphilisWeight);
+      } else {
+        miasmaticScore = 60;
+      }
+
+      const scoresObj = remedyScores.find(s => s.remedy === rem);
+      const overallConfidence = scoresObj ? scoresObj.score : 0;
+
+      return {
+        coverage: coverageScore,
+        mental: mentalScore,
+        general: generalScore,
+        etiology: etiologyScore,
+        miasmatic: miasmaticScore,
+        clinical: clinicalScore,
+        confidence: overallConfidence
+      };
     }
-
-    const scoresObj = getJethwaniRemedyScores().find(s => s.remedy === rem);
-    const overallConfidence = scoresObj ? scoresObj.score : 0;
-
-    return {
-      coverage: coverageScore,
-      mental: mentalScore,
-      general: generalScore,
-      etiology: etiologyScore,
-      miasmatic: miasmaticScore,
-      clinical: clinicalScore,
-      confidence: overallConfidence
-    };
   };
 
   const explainWhyRemedyFitsOrNot = (rem: string) => {
     const rubricMatches: string[] = [];
     const rubricMismatches: string[] = [];
+    const isJethwani = repertoryWorkbenchMode === "jethwani";
     
-    selectedJethwaniRubrics.forEach(s => {
-      const rubric = JETHWANI_REPERTORY_DATA.find(r => r.id === s.rubricId);
-      if (!rubric) return;
-      const grade = rubric.remedies[rem];
-      if (grade > 0) {
-        rubricMatches.push(`Fits symptom "${rubric.name}" (Grade ${grade}/3)`);
-      } else if (grade < 0) {
-        rubricMismatches.push(`Contraindicated by "${rubric.name}" (Negative weight)`);
-      } else {
-        rubricMismatches.push(`Does not cover "${rubric.name}"`);
-      }
-    });
+    if (isJethwani) {
+      selectedJethwaniRubrics.forEach(s => {
+        const rubric = JETHWANI_REPERTORY_DATA.find(r => r.id === s.rubricId);
+        if (!rubric) return;
+        const grade = rubric.remedies[rem];
+        if (grade > 0) {
+          rubricMatches.push(`Fits symptom "${rubric.name}" (Grade ${grade}/3)`);
+        } else if (grade < 0) {
+          rubricMismatches.push(`Contraindicated by "${rubric.name}" (Negative weight)`);
+        } else {
+          rubricMismatches.push(`Does not cover "${rubric.name}"`);
+        }
+      });
+    } else {
+      selectedRubrics.forEach(s => {
+        if (!s.rubric) return;
+        const grade = s.rubric.remedies && s.rubric.remedies[rem] ? s.rubric.remedies[rem] : 0;
+        if (grade > 0) {
+          rubricMatches.push(`Fits symptom "${s.rubric.name}" (Grade ${grade}/3)`);
+        } else {
+          rubricMismatches.push(`Does not cover "${s.rubric.name}"`);
+        }
+      });
+    }
 
     const confirmations = JETHWANI_REMEDY_CONFIRMATIONS[rem];
     const missingConfirmatory: string[] = [];
@@ -4187,10 +4547,14 @@ ${err.message || err}`);
 
     if (confirmations) {
       confirmations.confirmatory.forEach(c => {
-        const match = selectedJethwaniRubrics.some(s => {
-          const rubric = JETHWANI_REPERTORY_DATA.find(r => r.id === s.rubricId);
-          return rubric && rubric.name.toLowerCase().split(/\s+/).some(word => word.length > 4 && c.toLowerCase().includes(word));
-        });
+        const match = isJethwani
+          ? selectedJethwaniRubrics.some(s => {
+              const rubric = JETHWANI_REPERTORY_DATA.find(r => r.id === s.rubricId);
+              return rubric && rubric.name.toLowerCase().split(/\s+/).some(word => word.length > 4 && c.toLowerCase().includes(word));
+            })
+          : selectedRubrics.some(s => {
+              return s.rubric && s.rubric.name.toLowerCase().split(/\s+/).some(word => word.length > 4 && c.toLowerCase().includes(word));
+            });
         if (!match) {
           missingConfirmatory.push(c);
         }
@@ -4230,26 +4594,31 @@ ${err.message || err}`);
   };
 
   const getClinicalHypotheses = () => {
-    if (selectedJethwaniRubrics.length === 0) return [];
+    const isJethwani = repertoryWorkbenchMode === "jethwani";
+    const activeSymptoms = isJethwani
+      ? selectedJethwaniRubrics.map(s => {
+          const rub = JETHWANI_REPERTORY_DATA.find(r => r.id === s.rubricId);
+          return { id: s.rubricId, name: rub ? rub.name : s.rubricId };
+        })
+      : selectedRubrics.map(s => ({ id: s.rubric.id, name: s.rubric.name }));
+
+    if (activeSymptoms.length === 0) return [];
 
     const hypotheses: any[] = [];
 
-    const hasGerd = selectedJethwaniRubrics.some(s => s.rubricId.includes("gerd") || s.rubricId.includes("acid") || s.rubricId.includes("reflux") || s.rubricId.includes("heartburn") || s.rubricId.includes("burning_stomach") || s.rubricId.includes("esophag"));
-    const hasIbs = selectedJethwaniRubrics.some(s => s.rubricId.includes("ibs") || s.rubricId.includes("bloat") || s.rubricId.includes("flatulence") || s.rubricId.includes("diarrhea") || s.rubricId.includes("constipation") || s.rubricId.includes("stool"));
-    const hasAnxiety = selectedJethwaniRubrics.some(s => s.rubricId.includes("anxiety") || s.rubricId.includes("panic") || s.rubricId.includes("fear") || s.rubricId.includes("dread") || s.rubricId.includes("terrors"));
-    const hasBurnout = selectedJethwaniRubrics.some(s => s.rubricId.includes("burnout") || s.rubricId.includes("exhaustion") || s.rubricId.includes("fatigue") || s.rubricId.includes("brain_fog") || s.rubricId.includes("overdrive") || s.rubricId.includes("collapse"));
-    const hasSkin = selectedJethwaniRubrics.some(s => s.rubricId.includes("skin") || s.rubricId.includes("eczema") || s.rubricId.includes("itching") || s.rubricId.includes("eruption") || s.rubricId.includes("dermatitis") || s.rubricId.includes("suppress"));
+    const hasGerd = activeSymptoms.some(s => s.id.includes("gerd") || s.name.toLowerCase().includes("gerd") || s.name.toLowerCase().includes("acid") || s.name.toLowerCase().includes("reflux") || s.name.toLowerCase().includes("heartburn") || s.name.toLowerCase().includes("burning stomach") || s.name.toLowerCase().includes("esophag"));
+    const hasIbs = activeSymptoms.some(s => s.id.includes("ibs") || s.name.toLowerCase().includes("ibs") || s.name.toLowerCase().includes("bloat") || s.name.toLowerCase().includes("flatulence") || s.name.toLowerCase().includes("diarrhea") || s.name.toLowerCase().includes("constipation") || s.name.toLowerCase().includes("stool"));
+    const hasAnxiety = activeSymptoms.some(s => s.id.includes("anxiety") || s.name.toLowerCase().includes("anxiety") || s.name.toLowerCase().includes("panic") || s.name.toLowerCase().includes("fear") || s.name.toLowerCase().includes("dread") || s.name.toLowerCase().includes("terror"));
+    const hasBurnout = activeSymptoms.some(s => s.id.includes("burnout") || s.name.toLowerCase().includes("burnout") || s.name.toLowerCase().includes("exhaustion") || s.name.toLowerCase().includes("fatigue") || s.name.toLowerCase().includes("brain fog") || s.name.toLowerCase().includes("weary") || s.name.toLowerCase().includes("collapse"));
+    const hasSkin = activeSymptoms.some(s => s.id.includes("skin") || s.name.toLowerCase().includes("skin") || s.name.toLowerCase().includes("eczema") || s.name.toLowerCase().includes("itching") || s.name.toLowerCase().includes("eruption") || s.name.toLowerCase().includes("dermatitis") || s.name.toLowerCase().includes("suppress"));
 
     if (hasGerd) {
       hypotheses.push({
         condition: "Gastroesophageal Reflux Disease (GERD)",
         likelihood: 85,
-        supporting: selectedJethwaniRubrics
-          .filter(s => s.rubricId.includes("gerd") || s.rubricId.includes("acid") || s.rubricId.includes("reflux") || s.rubricId.includes("heartburn") || s.rubricId.includes("burning") || s.rubricId.includes("stomach"))
-          .map(s => {
-            const rub = JETHWANI_REPERTORY_DATA.find(r => r.id === s.rubricId);
-            return rub ? rub.name : s.rubricId;
-          }),
+        supporting: activeSymptoms
+          .filter(s => s.id.includes("gerd") || s.name.toLowerCase().includes("gerd") || s.name.toLowerCase().includes("acid") || s.name.toLowerCase().includes("reflux") || s.name.toLowerCase().includes("heartburn") || s.name.toLowerCase().includes("burning") || s.name.toLowerCase().includes("stomach"))
+          .map(s => s.name),
         missing: ["Esophageal pH monitoring profiles", "Barium swallow examination study"],
         investigations: ["Upper GI Endoscopy", "24-hour Ambulatory Esophageal pH Impedance Test"]
       });
@@ -4259,12 +4628,9 @@ ${err.message || err}`);
       hypotheses.push({
         condition: "Irritable Bowel Syndrome (IBS)",
         likelihood: 80,
-        supporting: selectedJethwaniRubrics
-          .filter(s => s.rubricId.includes("ibs") || s.rubricId.includes("bloat") || s.rubricId.includes("flatulence") || s.rubricId.includes("diarrhea") || s.rubricId.includes("constipation") || s.rubricId.includes("stool") || s.rubricId.includes("digest"))
-          .map(s => {
-            const rub = JETHWANI_REPERTORY_DATA.find(r => r.id === s.rubricId);
-            return rub ? rub.name : s.rubricId;
-          }),
+        supporting: activeSymptoms
+          .filter(s => s.id.includes("ibs") || s.name.toLowerCase().includes("ibs") || s.name.toLowerCase().includes("bloat") || s.name.toLowerCase().includes("flatulence") || s.name.toLowerCase().includes("diarrhea") || s.name.toLowerCase().includes("constipation") || s.name.toLowerCase().includes("stool") || s.name.toLowerCase().includes("digest"))
+          .map(s => s.name),
         missing: ["Celiac disease serology markers", "Stool fecal calprotectin (rules out Inflammatory Bowel Disease)"],
         investigations: ["Complete Celiac Serology (tTG-IgA)", "Stool Culture & Parasites Panel", "Fecal Calprotectin Test"]
       });
@@ -4274,12 +4640,9 @@ ${err.message || err}`);
       hypotheses.push({
         condition: "Generalized Anxiety Disorder (GAD)",
         likelihood: 75,
-        supporting: selectedJethwaniRubrics
-          .filter(s => s.rubricId.includes("anxiety") || s.rubricId.includes("panic") || s.rubricId.includes("fear") || s.rubricId.includes("dread") || s.rubricId.includes("terrors") || s.rubricId.includes("mind") || s.rubricId.includes("claustro"))
-          .map(s => {
-            const rub = JETHWANI_REPERTORY_DATA.find(r => r.id === s.rubricId);
-            return rub ? rub.name : s.rubricId;
-          }),
+        supporting: activeSymptoms
+          .filter(s => s.id.includes("anxiety") || s.name.toLowerCase().includes("anxiety") || s.name.toLowerCase().includes("panic") || s.name.toLowerCase().includes("fear") || s.name.toLowerCase().includes("dread") || s.name.toLowerCase().includes("terror") || s.name.toLowerCase().includes("mind") || s.name.toLowerCase().includes("claustro"))
+          .map(s => s.name),
         missing: ["Formal GAD-7 screening records", "Thyroid function index to rule out subclinical hyperthyroidism"],
         investigations: ["GAD-7 (Generalized Anxiety Disorder 7-item) assessment questionnaire", "Thyroid Stimulating Hormone (TSH) and Free T4 Panel"]
       });
@@ -4289,12 +4652,9 @@ ${err.message || err}`);
       hypotheses.push({
         condition: "Hypothalamic-Pituitary-Adrenal (HPA) Axis Dysfunction",
         likelihood: 70,
-        supporting: selectedJethwaniRubrics
-          .filter(s => s.rubricId.includes("burnout") || s.rubricId.includes("exhaustion") || s.rubricId.includes("fatigue") || s.rubricId.includes("fog") || s.rubricId.includes("weariness") || s.rubricId.includes("collapse"))
-          .map(s => {
-            const rub = JETHWANI_REPERTORY_DATA.find(r => r.id === s.rubricId);
-            return rub ? rub.name : s.rubricId;
-          }),
+        supporting: activeSymptoms
+          .filter(s => s.id.includes("burnout") || s.name.toLowerCase().includes("burnout") || s.name.toLowerCase().includes("exhaustion") || s.name.toLowerCase().includes("fatigue") || s.name.toLowerCase().includes("fog") || s.name.toLowerCase().includes("weariness") || s.name.toLowerCase().includes("collapse"))
+          .map(s => s.name),
         missing: ["Diurnal salivary cortisol curve profiles", "Serum DHEA-S levels"],
         investigations: ["4-Point Salivary Cortisol Test", "Adrenal Thyroid Nutrient Profile (Serum Vitamin D, B12, Iron, DHEA)"]
       });
@@ -4304,12 +4664,9 @@ ${err.message || err}`);
       hypotheses.push({
         condition: "Atopic Dermatitis (Eczema)",
         likelihood: 80,
-        supporting: selectedJethwaniRubrics
-          .filter(s => s.rubricId.includes("skin") || s.rubricId.includes("eczema") || s.rubricId.includes("itching") || s.rubricId.includes("eruption") || s.rubricId.includes("dermatitis") || s.rubricId.includes("suppress"))
-          .map(s => {
-            const rub = JETHWANI_REPERTORY_DATA.find(r => r.id === s.rubricId);
-            return rub ? rub.name : s.rubricId;
-          }),
+        supporting: activeSymptoms
+          .filter(s => s.id.includes("skin") || s.name.toLowerCase().includes("skin") || s.name.toLowerCase().includes("eczema") || s.name.toLowerCase().includes("itching") || s.name.toLowerCase().includes("eruption") || s.name.toLowerCase().includes("dermatitis") || s.name.toLowerCase().includes("suppress"))
+          .map(s => s.name),
         missing: ["Serum IgE antibodies index", "Allergy skin patch test reports"],
         investigations: ["Serum Total IgE testing", "Allergy Skin Patch Testing (Contact allergens)"]
       });
@@ -4326,6 +4683,190 @@ ${err.message || err}`);
     }
 
     return hypotheses;
+  };
+
+  const handleSendOrganonChat = async () => {
+    if (!organonChatInput.trim() || isOrganonChatLoading) return;
+    const userMsg = organonChatInput.trim();
+    setOrganonChatInput("");
+    setOrganonChatHistory(prev => [...prev, { sender: "user", text: userMsg }]);
+    setIsOrganonChatLoading(true);
+
+    try {
+      const response = await fetch("/api/ai-diagnostics", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          taskType: "organon_tutor",
+          question: userMsg,
+          aphorismNumber: selectedAphorismId ? `§${selectedAphorismId}` : "",
+          studyMode: organonStudyMode
+        })
+      });
+      const data = await response.json();
+      if (data.success) {
+        let answer = "I apologize, my friend. The vital force was interrupted.";
+        let refs: string[] = [];
+        try {
+          const parsed = typeof data.analysis === "string" ? JSON.parse(data.analysis) : data.analysis;
+          if (parsed && parsed.tutorResponse) {
+            answer = parsed.tutorResponse.answer;
+            refs = parsed.tutorResponse.references || [];
+          } else if (parsed && parsed.answer) {
+            answer = parsed.answer;
+            refs = parsed.references || [];
+          }
+        } catch {
+          if (data.analysis) {
+            answer = data.analysis;
+          }
+        }
+        setOrganonChatHistory(prev => [...prev, { sender: "ai", text: answer, references: refs }]);
+      } else {
+        throw new Error(data.error || "Failed to query Organon Tutor");
+      }
+    } catch (err: any) {
+      setOrganonChatHistory(prev => [...prev, { sender: "ai", text: `Failure to establish dynamic path. Error details: ${err.message}` }]);
+    } finally {
+      setIsOrganonChatLoading(false);
+    }
+  };
+
+  const handleTriggerClinicalReasoning = async () => {
+    setIsAiLoading(true);
+    try {
+      const isJ = repertoryWorkbenchMode === "jethwani";
+      const rubricPayload = isJ
+        ? selectedJethwaniRubrics.map(s => {
+            const rub = JETHWANI_REPERTORY_DATA.find(r => r.id === s.rubricId);
+            return {
+              chapter: rub ? rub.section : "General",
+              name: rub ? rub.name : s.rubricId
+            };
+          })
+        : selectedRubrics.map(s => ({
+            chapter: s.rubric.chapter,
+            name: s.rubric.name
+          }));
+
+      const gridPayload = isJ
+        ? getJethwaniRemedyScores().map(res => ({
+            remedyName: res.remedy,
+            fullName: REMEDIES_METADATA[res.remedy]?.fullName || res.remedy,
+            coverage: res.coverage,
+            score: res.score
+          }))
+        : remedyScores.map((res) => ({
+            remedyName: res.remedy,
+            fullName: REMEDIES_METADATA[res.remedy]?.fullName || res.remedy,
+            coverage: res.coverage,
+            score: res.score
+          }));
+
+      const patientInfo = {
+        name: intakeComplaint ? "Simulated Case" : "Workbench Patient",
+        age: 34,
+        gender: "Male",
+        complaint: intakeComplaint || customComplaint || "Chronic functional symptoms"
+      };
+
+      const data = await fetchAIDiagnostics("clinical_reasoning", {
+        patientInfo,
+        rubrics: rubricPayload,
+        repertorizationResults: gridPayload
+      });
+
+      if (data.success) {
+        try {
+          const parsed = typeof data.analysis === "string" ? JSON.parse(data.analysis) : data.analysis;
+          setAiData(parsed);
+        } catch (e) {
+          console.error("Failed to parse AI Clinical Reasoning JSON:", e);
+          setAiData(data.analysis);
+        }
+      } else {
+        throw new Error(data.message || "Failed to query AI Clinical Reasoning.");
+      }
+    } catch (err: any) {
+      console.error(err);
+      
+      const rubrics = repertoryWorkbenchMode === "jethwani" 
+        ? selectedJethwaniRubrics.map(s => {
+            const r = JETHWANI_REPERTORY_DATA.find(x => x.id === s.rubricId);
+            return { name: r ? r.name : s.rubricId, chapter: r ? r.section : "General" };
+          })
+        : selectedRubrics.map(s => ({ name: s.rubric.name, chapter: s.rubric.chapter }));
+      const repertorizationResults = repertoryWorkbenchMode === "jethwani" ? getJethwaniRemedyScores() : remedyScores;
+      
+      const complaint = intakeComplaint || customComplaint || "Chronic symptoms";
+      const mainRemedy = repertorizationResults[0]?.remedy || "Sulphur";
+      const secondaryRemedy = repertorizationResults[1]?.remedy || "Lycopodium";
+      
+      const thermals = rubrics.some((r: any) => r.name.toLowerCase().includes("warm") || r.name.toLowerCase().includes("heat")) ? "Warm-blooded" : "Chilly";
+      const hasSkin = rubrics.some((r: any) => r.chapter.toLowerCase().includes("skin") || r.name.toLowerCase().includes("skin") || r.name.toLowerCase().includes("itching"));
+      const hasDigestive = rubrics.some((r: any) => r.chapter.toLowerCase().includes("stomach") || r.chapter.toLowerCase().includes("abdomen") || r.name.toLowerCase().includes("flatulence") || r.name.toLowerCase().includes("bloat"));
+      const hasMind = rubrics.some((r: any) => r.chapter.toLowerCase().includes("mind") || r.name.toLowerCase().includes("anxiety") || r.name.toLowerCase().includes("fear"));
+
+      const systems: string[] = [];
+      if (hasSkin) systems.push("Integumentary System");
+      if (hasDigestive) systems.push("Gastrointestinal System");
+      if (hasMind) systems.push("Nervous System (Autonomic)");
+      if (systems.length === 0) systems.push("Constitutional / Systemic Regulation");
+
+      const patterns: string[] = [];
+      if (hasSkin) patterns.push("Dermal Inflammatory Reactivity with Suppression Risk");
+      if (hasDigestive) patterns.push("Functional Gastric Dysmotility & Visceral Hypersensitivity");
+      if (hasMind) patterns.push("Sympathetic Nervous Overdrive with Health Anticipation");
+      if (patterns.length === 0) patterns.push("Functional Somatic Energy Stagnation");
+
+      const fallbackAnalysis = {
+        clinical_reasoning_v2: {
+          constitutional_interpretation: `A 34-year-old Male presenting with ${complaint}. Constitutional profile suggests a reactive state matching the ${thermals.toLowerCase()} axis with sensitivity to environmental changes.`,
+          etiological_analysis: `Pathology represents a classic inward shift of functional disturbances. Chronicity aggravated by nervous tension and susceptibility to external stressors.`,
+          miasmatic_analysis_summary: `Predominantly Psoric hypersensitivity (${hasSkin ? "itching and sensory reactivity" : "functional irritations"}), with secondary Sycotic retention (${hasDigestive ? "flatulence and bloating" : "chronic tissue slow down"}).`,
+          affected_organ_systems: systems,
+          probable_clinical_patterns: patterns,
+          differential_diagnoses: [
+            `${mainRemedy} (Indicated by primary symptom coverage and physical generals)`,
+            `${secondaryRemedy} (Indicated by secondary modalities but lacks the primary thermal agreement)`,
+            "Arsenicum Album (Ruled out unless restlessness and midnight aggravation dominate)"
+          ],
+          remedy_justification: `Prescription of ${mainRemedy} is justified by its high coverage of the patient's symptoms and matching thermal affinity.`,
+          remedy_rejection_logic: `${secondaryRemedy} is deferred to a secondary tier as it does not align with the patient's key modal triggers or thermal axis.`,
+          confirmation_questions: [
+            `Do you experience worsening of symptoms at any specific hour of the day?`,
+            `How does fresh open air affect your energy and comfort levels?`
+          ],
+          clinical_red_flags: [
+            "Development of severe breathing difficulty or asthma-like symptoms",
+            "Rapid, unexplained weight loss or significant loss of appetite",
+            "Onset of deep clinical depression or suicidal feelings"
+          ]
+        },
+        clinical_hypothesis_engine: [
+          {
+            condition: hasSkin ? "Atopic Dermatitis (Eczema)" : hasDigestive ? "Irritable Bowel Syndrome (IBS)" : "Generalized Anxiety Disorder / Autonomic Dysregulation",
+            likelihood: hasSkin ? 85 : hasDigestive ? 80 : 75,
+            supporting_findings: [
+              `Age 34, chief complaint of ${complaint}`,
+              `Thermal axis: ${thermals}`,
+              ...(hasSkin ? ["Somatic dermatological symptoms"] : []),
+              ...(hasDigestive ? ["Gastrointestinal bloating/flatulence"] : [])
+            ],
+            missing_findings: [
+              hasSkin ? "IgE levels, detailed history of contact irritants" : hasDigestive ? "Stool culture, lactose intolerance test" : "Adrenal stress profile, serum electrolytes"
+            ],
+            suggested_investigations: [
+              hasSkin ? "Complete Blood Count (CBC) with absolute eosinophil count, IgE" : hasDigestive ? "Celiac disease panel, abdominal ultrasound" : "TSH thyroid screen, fasting cortisol"
+            ]
+          }
+        ]
+      };
+      
+      setAiData(fallbackAnalysis);
+    } finally {
+      setIsAiLoading(false);
+    }
   };
 
   const computedCompleteness = Math.min(
@@ -4351,7 +4892,7 @@ ${err.message || err}`);
 
   return (
     <div 
-      className="min-h-screen flex flex-col bg-pearl transition-all duration-300"
+      className="min-h-screen flex flex-col bg-transparent transition-all duration-300"
     >
       
       {/* Dashboard Top Header */}
@@ -4426,6 +4967,20 @@ ${err.message || err}`);
                 {w === "standard" ? "Std" : w === "wide" ? "Wide" : "Full"}
               </button>
             ))}
+          </div>
+
+          <div className="w-px h-4 bg-slate-300" />
+
+          {/* Theme Shift */}
+          <div className="flex items-center gap-1">
+            <span className="text-[9px] uppercase tracking-wider font-extrabold text-slate-500 mr-1">Theme</span>
+            <button
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
+              className="w-6 h-6 rounded-full flex items-center justify-center text-slate-500 hover:text-[#1A2421] transition-all cursor-pointer hover:bg-slate-200/50"
+            >
+              {theme === "light" ? <Moon className="w-3.5 h-3.5" /> : <Sun className="w-3.5 h-3.5" />}
+            </button>
           </div>
         </div>
 
@@ -5425,45 +5980,146 @@ ${err.message || err}`);
           {activeTab === "diagnostics" && (() => {
             const coverage = getClinicalCoverageScore();
             
-            // Local search logic combining curated and dynamic ICD mappings
+            // Universal search logic with synonym expansion and related conditions matching
             const getFilteredDiagnoses = () => {
               const query = diagSearchQuery.trim().toLowerCase();
               const allDiagnoses = getAll15000Diagnoses();
-              let listToReturn: DiagnosisProfile[] = [];
               
-              // If there's a search query, first check direct/synonym lookups
-              if (query) {
-                const matched = getIcdDiagnosis(query);
-                if (matched) {
-                  // Filter by specialty if not "All"
-                  if (diagOrganSystem === "All" || matched.organSystem === diagOrganSystem) {
-                    listToReturn = [matched];
-                  }
-                } else {
-                  // Secondary search: search curated & dynamically generated entries by name/specialty
-                  listToReturn = allDiagnoses.filter(d => {
-                    const systemMatch = diagOrganSystem === "All" || d.organSystem === diagOrganSystem;
-                    const queryMatch = d.name.toLowerCase().includes(query) || 
-                                       d.icd10.toLowerCase().includes(query) || 
-                                       d.description.toLowerCase().includes(query);
-                    return systemMatch && queryMatch;
-                  });
+              // Map items to include their match details for visual display and sorting
+              let listToReturn = allDiagnoses.map(d => {
+                const isCurated = CURATED_DIAGNOSES.some(cd => cd.id === d.id);
+                
+                // If filtering by curated only, exclude non-curated items by forcing no match
+                if (diagCuratedOnly && !isCurated) {
+                  return { ...d, matchReason: "", matchScore: 0, isMatch: false };
                 }
-              } else {
-                // Otherwise return all diagnoses filtered by organ system
-                listToReturn = allDiagnoses.filter(d => 
-                  diagOrganSystem === "All" || d.organSystem === diagOrganSystem
+
+                // Match organ system if selected
+                const systemMatch = diagOrganSystem === "All" || d.organSystem === diagOrganSystem;
+                if (!systemMatch) {
+                  return { ...d, matchReason: "", matchScore: 0, isMatch: false };
+                }
+
+                // If no query is typed, everything that passed the system filter is a match
+                if (!query) {
+                  return { ...d, matchReason: "exact", matchScore: 0, isMatch: true };
+                }
+
+                const queryWords = query.split(/\s+/).filter(Boolean);
+                const nameLower = d.name.toLowerCase();
+                const descLower = d.description.toLowerCase();
+                const pathLower = d.pathophysiology.toLowerCase();
+                const etioLower = d.etiology.toLowerCase();
+                const icd10Lower = d.icd10.toLowerCase();
+                const icd11Lower = d.icd11.toLowerCase();
+                
+                const symptomsStr = (d.symptoms || []).join(" ").toLowerCase();
+                const signsStr = (d.signs || []).join(" ").toLowerCase();
+                const redFlagsStr = (d.redFlags || []).join(" ").toLowerCase();
+                
+                const acuteRemStr = (d.homeopathicLayer?.acuteRemedies || []).join(" ").toLowerCase();
+                const chronicRemStr = (d.homeopathicLayer?.chronicRemedies || []).join(" ").toLowerCase();
+                const constitutionalRemStr = (d.homeopathicLayer?.constitutionalTypes || []).join(" ").toLowerCase();
+                const remedyFamiliesStr = (d.homeopathicLayer?.remedyFamilies || []).join(" ").toLowerCase();
+                
+                const synonyms = Object.entries(DIAGNOSIS_SEARCH_SYNONYMS)
+                  .filter(([_, valId]) => valId === d.id)
+                  .map(([synKey]) => synKey.toLowerCase());
+                
+                const diffStr = (d.differentialDiagnosis || []).join(" ").toLowerCase();
+                
+                let allWordsMatched = true;
+                let highestReason: "exact" | "synonym" | "symptom" | "related" = "related";
+                let score = 0;
+                
+                for (const word of queryWords) {
+                  let wordMatched = false;
+                  
+                  // Smart mapping for common digit/letter replacements in ICD codes (e.g. "178.8" to "i78.8")
+                  let mappedWord = word;
+                  if (word.startsWith('1') && word.length > 1 && !isNaN(Number(word.charAt(1)))) {
+                    mappedWord = 'i' + word.slice(1);
+                  }
+                  
+                  // Exact Match (highest priority)
+                  if (
+                    nameLower.includes(word) || 
+                    icd10Lower.includes(word) || 
+                    icd11Lower.includes(word) ||
+                    icd10Lower.includes(mappedWord) ||
+                    icd11Lower.includes(mappedWord)
+                  ) {
+                    wordMatched = true;
+                    if (highestReason !== "exact") highestReason = "exact";
+                    score += 15;
+                  }
+                  
+                  // Synonym Match
+                  if (!wordMatched && (synonyms.some(syn => syn.includes(word)) || word === d.id.toLowerCase())) {
+                    wordMatched = true;
+                    if (highestReason !== "exact" && highestReason !== "synonym") highestReason = "synonym";
+                    score += 10;
+                  }
+                  
+                  // Symptom Match
+                  if (!wordMatched && (symptomsStr.includes(word) || signsStr.includes(word) || redFlagsStr.includes(word) || descLower.includes(word) || pathLower.includes(word) || etioLower.includes(word))) {
+                    wordMatched = true;
+                    if (highestReason !== "exact" && highestReason !== "synonym" && highestReason !== "symptom") highestReason = "symptom";
+                    score += 6;
+                  }
+                  
+                  // Remedy affinities as Symptom Match
+                  if (!wordMatched && (acuteRemStr.includes(word) || chronicRemStr.includes(word) || constitutionalRemStr.includes(word) || remedyFamiliesStr.includes(word))) {
+                    wordMatched = true;
+                    if (highestReason !== "exact" && highestReason !== "synonym" && highestReason !== "symptom") highestReason = "symptom";
+                    score += 5;
+                  }
+                  
+                  // Related Match (Differentials) - only if search mode is 'related' or 'synonyms'
+                  if (!wordMatched && diagSearchMode !== "strict" && diffStr.includes(word)) {
+                    wordMatched = true;
+                    highestReason = "related";
+                    score += 3;
+                  }
+                  
+                  if (!wordMatched) {
+                    allWordsMatched = false;
+                    break;
+                  }
+                }
+                
+                return {
+                  ...d,
+                  matchReason: highestReason,
+                  matchScore: score,
+                  isMatch: allWordsMatched
+                };
+              });
+
+              // Filter out non-matches
+              let listToReturnFiltered = listToReturn.filter(item => item.isMatch);
+
+              // Apply alphabet filter if selected
+              if (diagAlphabetFilter) {
+                listToReturnFiltered = listToReturnFiltered.filter(d => 
+                  d.name.toLowerCase().startsWith(diagAlphabetFilter.toLowerCase())
                 );
               }
 
-              // Sort: Curated items first, then others, both ordered A-Z alphabetically by name
-              return listToReturn.sort((a, b) => {
+              // Sort logic: Match score descending, curated status first, then alphabetical A-Z
+              return listToReturnFiltered.sort((a, b) => {
+                // First sort by match score (highest first)
+                if (b.matchScore !== a.matchScore) {
+                  return b.matchScore - a.matchScore;
+                }
+                
+                // Second sort by curated status
                 const aIsCurated = CURATED_DIAGNOSES.some(cd => cd.id === a.id);
                 const bIsCurated = CURATED_DIAGNOSES.some(cd => cd.id === b.id);
-                
                 if (aIsCurated && !bIsCurated) return -1;
                 if (!aIsCurated && bIsCurated) return 1;
                 
+                // Third sort alphabetically
                 return a.name.localeCompare(b.name);
               });
             };
@@ -5577,16 +6233,59 @@ ${err.message || err}`);
                   ))}
                 </div>
 
+                {/* Alphabetical Browse Bar */}
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-2 scrollbar-none">
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider font-mono mr-1">Alphabet:</span>
+                  <button
+                    onClick={() => {
+                      setDiagAlphabetFilter("");
+                      setSelectedDiagCondition(null);
+                    }}
+                    className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase transition-all cursor-pointer ${
+                      !diagAlphabetFilter 
+                        ? "bg-slate-700 text-white" 
+                        : "bg-white border border-slate-200 text-slate-500 hover:bg-slate-50"
+                    }`}
+                  >
+                    All
+                  </button>
+                  {Array.from("ABCDEFGHIJKLMNOPQRSTUVWXYZ").map(char => (
+                    <button
+                      key={char}
+                      onClick={() => {
+                        setDiagAlphabetFilter(diagAlphabetFilter === char ? "" : char);
+                        setSelectedDiagCondition(null);
+                      }}
+                      className={`w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-bold transition-all cursor-pointer border ${
+                        diagAlphabetFilter === char 
+                          ? "bg-mint border-mint text-white" 
+                          : "bg-white border-slate-200 text-slate-500 hover:bg-slate-50"
+                      }`}
+                    >
+                      {char}
+                    </button>
+                  ))}
+                </div>
+
                 {/* Directory Workspace Search & Panel */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                   {/* Left Column: Search & Match List */}
                   <div className="lg:col-span-5 space-y-4">
-                    <div className="flex flex-col gap-2">
-                      <div className="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm flex items-center gap-3">
-                        <Search className="w-4 h-4 text-slate-400" />
+                    {/* Glassmorphic Search Nexus Container */}
+                    <div className="glass-panel p-5 rounded-3xl bg-white/40 backdrop-blur-md border border-white/30 shadow-lg space-y-3">
+                      <div className="flex items-center justify-between border-b border-slate-100/50 pb-2">
+                        <span className="text-[10px] uppercase tracking-wider text-slate-500 font-extrabold font-mono">Clinical Search Nexus</span>
+                        <div className="flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-ping"></span>
+                          <span className="text-[8px] font-mono font-bold text-slate-400">ENG v2.0 ACTIVE</span>
+                        </div>
+                      </div>
+
+                      <div className="bg-white/80 backdrop-blur-sm p-3 rounded-2xl border border-slate-150 flex items-center gap-3 shadow-inner group focus-within:border-indigo-400 transition-all">
+                        <Search className="w-4 h-4 text-slate-400 group-focus-within:text-indigo-500 transition-all" />
                         <input
                           type="text"
-                          placeholder="Search conditions by name, ICD code, or synonym (e.g. Acid Reflux)..."
+                          placeholder="Search symptoms, signs, ICD-10/11 or remedies..."
                           value={diagSearchQuery}
                           onChange={(e) => {
                             setDiagSearchQuery(e.target.value);
@@ -5596,8 +6295,63 @@ ${err.message || err}`);
                         />
                       </div>
 
-                      <div className="bg-white px-4 py-3 rounded-3xl border border-slate-100 shadow-sm flex items-center gap-2">
-                        <span className="text-[9px] uppercase font-bold text-slate-400 font-mono whitespace-nowrap">Jump to Select:</span>
+                      {/* Search Mode Toggles & Curated Check */}
+                      <div className="flex flex-wrap gap-1.5 items-center bg-white/50 backdrop-blur-sm p-3 rounded-2xl border border-slate-100/80">
+                        <span className="text-[9px] uppercase font-extrabold text-slate-500 font-mono tracking-wider mr-1">Scope:</span>
+                        {(["strict", "synonyms", "related"] as const).map(mode => (
+                          <button
+                            key={mode}
+                            type="button"
+                            onClick={() => {
+                              setDiagSearchMode(mode);
+                              setSelectedDiagCondition(null);
+                            }}
+                            className={`px-2 py-0.5 rounded text-[8px] font-extrabold uppercase tracking-wider transition-all cursor-pointer ${
+                              diagSearchMode === mode
+                                ? "bg-indigo-650 text-white shadow-sm"
+                                : "bg-white/90 border border-slate-100 text-slate-500 hover:bg-slate-100"
+                            }`}
+                          >
+                            {mode}
+                          </button>
+                        ))}
+                        
+                        <div className="w-full border-t border-slate-200/30 my-1"></div>
+                        
+                        <label className="flex items-center gap-1.5 cursor-pointer select-none">
+                          <input
+                            type="checkbox"
+                            checked={diagCuratedOnly}
+                            onChange={(e) => {
+                              setDiagCuratedOnly(e.target.checked);
+                              setSelectedDiagCondition(null);
+                            }}
+                            className="w-3 h-3 rounded text-indigo-650 border-slate-300 focus:ring-indigo-500 cursor-pointer"
+                          />
+                          <span className="text-[9px] font-extrabold text-slate-600">Curated Homeopathic Layer Only</span>
+                        </label>
+                      </div>
+
+                      {/* Search Match Metrics Summary */}
+                      {diagSearchQuery.trim() && (() => {
+                        const exactCount = filteredList.filter(d => (d as any).matchReason === "exact").length;
+                        const synonymCount = filteredList.filter(d => (d as any).matchReason === "synonym").length;
+                        const symptomCount = filteredList.filter(d => (d as any).matchReason === "symptom").length;
+                        const relatedCount = filteredList.filter(d => (d as any).matchReason === "related").length;
+                        return (
+                          <div className="flex gap-1.5 flex-wrap text-[8px] font-mono font-bold text-slate-400 mt-1">
+                            <span className="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600 border border-emerald-100/50">Exact: {exactCount}</span>
+                            <span className="px-1.5 py-0.5 rounded bg-blue-50 text-blue-600 border border-blue-100/50">Synonym: {synonymCount}</span>
+                            <span className="px-1.5 py-0.5 rounded bg-purple-50 text-purple-600 border border-purple-100/50">Symptom: {symptomCount}</span>
+                            {diagSearchMode !== "strict" && (
+                              <span className="px-1.5 py-0.5 rounded bg-orange-50 text-orange-605 border border-orange-100/50">Related: {relatedCount}</span>
+                            )}
+                          </div>
+                        );
+                      })()}
+
+                      <div className="bg-white/70 px-4 py-2 rounded-2xl border border-slate-100 flex items-center gap-2">
+                        <span className="text-[9px] uppercase font-bold text-slate-400 font-mono whitespace-nowrap">Jump list:</span>
                         <select
                           value={selectedDiagCondition?.id || ""}
                           onChange={(e) => {
@@ -5611,8 +6365,8 @@ ${err.message || err}`);
                           }}
                           className="w-full bg-transparent border-none text-xs font-bold text-slate-700 outline-none cursor-pointer"
                         >
-                          <option value="">-- Select matched condition ({filteredList.length} items) --</option>
-                          {filteredList.slice(0, 150).map((cond) => (
+                          <option value="">-- Select ({filteredList.length} items) --</option>
+                          {filteredList.map((cond) => (
                             <option key={cond.id} value={cond.id}>
                               {cond.name} [{cond.icd10}]
                             </option>
@@ -5621,6 +6375,7 @@ ${err.message || err}`);
                       </div>
                     </div>
 
+                    {/* Conditions List */}
                     <div className="space-y-3 max-h-[500px] overflow-y-auto pr-1">
                       {filteredList.length > 0 ? (
                         filteredList.slice(0, 100).map((cond, idx) => (
@@ -5636,13 +6391,28 @@ ${err.message || err}`);
                             <div className="flex justify-between items-start">
                               <div>
                                 <h4 className="text-xs font-bold text-slate-800 font-serif">{cond.name}</h4>
-                                <div className="flex gap-2 items-center mt-1">
+                                <div className="flex gap-2 items-center mt-1.5 flex-wrap">
                                   <span className="px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded-md text-[8px] font-mono font-bold">{cond.icd10}</span>
                                   <span className="text-[9px] text-slate-405 font-bold uppercase">{cond.organSystem}</span>
+                                  
+                                  {/* Match reason badge */}
+                                  {diagSearchQuery.trim() && (cond as any).matchReason && (
+                                    <span className={`px-1.5 py-0.2 rounded text-[7px] font-mono font-bold uppercase ${
+                                      (cond as any).matchReason === "exact"
+                                        ? "bg-emerald-50 text-emerald-600 border border-emerald-100/50"
+                                        : (cond as any).matchReason === "synonym"
+                                        ? "bg-blue-50 text-blue-600 border border-blue-100/50"
+                                        : (cond as any).matchReason === "symptom"
+                                        ? "bg-purple-50 text-purple-600 border border-purple-100/50"
+                                        : "bg-orange-50 text-orange-605 border border-orange-100/50"
+                                    }`}>
+                                      {(cond as any).matchReason} (+{(cond as any).matchScore})
+                                    </span>
+                                  )}
                                 </div>
                               </div>
                               <span className={`px-2 py-0.5 rounded text-[8px] font-extrabold uppercase ${cond.homeopathicLayer ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"}`}>
-                                {cond.homeopathicLayer ? "Curated Layer" : "ICD Mapped"}
+                                {cond.homeopathicLayer ? "Curated" : "ICD Mapped"}
                               </span>
                             </div>
                             <p className="text-[10px] text-slate-400 font-semibold leading-normal font-sans mt-2 line-clamp-2">{cond.description}</p>
@@ -5739,10 +6509,44 @@ ${err.message || err}`);
                           </div>
                           <div>
                             <span className="text-[9px] uppercase tracking-wider text-slate-400 font-mono font-bold block mb-2">Medical Differentials</span>
-                            <div className="flex flex-wrap gap-1 mt-1">
-                              {selectedDiagCondition.differentialDiagnosis.map((d: string, idx: number) => (
-                                <span key={idx} className="bg-slate-50 text-slate-600 px-2.5 py-1 rounded-xl text-[9px] border border-slate-200/50">{d}</span>
-                              ))}
+                            <div className="flex flex-wrap gap-1.5 mt-1">
+                              {selectedDiagCondition.differentialDiagnosis.map((d: string, idx: number) => {
+                                const matchedCond = getAll15000Diagnoses().find(c => 
+                                  c.name.toLowerCase() === d.toLowerCase() || 
+                                  c.id.toLowerCase() === d.toLowerCase() ||
+                                  Object.entries(DIAGNOSIS_SEARCH_SYNONYMS).some(([synKey, valId]) => 
+                                    synKey.toLowerCase() === d.toLowerCase() && valId === c.id
+                                  )
+                                );
+                                
+                                if (matchedCond) {
+                                  return (
+                                    <button
+                                      key={idx}
+                                      onClick={() => {
+                                        setSelectedDiagCondition(matchedCond);
+                                        setDiagAlphabetFilter("");
+                                        setDiagOrganSystem("All");
+                                      }}
+                                      className="bg-indigo-50/50 hover:bg-indigo-100 text-indigo-750 px-2.5 py-1 rounded-xl text-[9px] border border-indigo-205/50 hover:border-indigo-300 transition-all flex items-center gap-1 cursor-pointer font-bold"
+                                    >
+                                      <span>{d}</span>
+                                      <ExternalLink className="w-2.5 h-2.5 opacity-80" />
+                                    </button>
+                                  );
+                                } else {
+                                  return (
+                                    <span 
+                                      key={idx} 
+                                      className="bg-slate-50 text-slate-400 px-2.5 py-1 rounded-xl text-[9px] border border-slate-200/30 border-dashed flex items-center gap-1 font-medium cursor-not-allowed select-none"
+                                      title="Taxonomy Out-of-Scope"
+                                    >
+                                      <span>{d}</span>
+                                      <span className="text-[8px] opacity-60">(Out of Scope)</span>
+                                    </span>
+                                  );
+                                }
+                              })}
                             </div>
                           </div>
                         </div>
@@ -5776,6 +6580,9 @@ ${err.message || err}`);
                                     alert(`⚡ Loaded ${addedCount} mapped rubrics into your workbench!`);
                                     return combined;
                                   });
+                                  setActiveTab("nexus-atlas");
+                                  setNexusSubTab("repertory");
+                                  setRepertoryWorkbenchMode("jethwani");
                                 }}
                                 className="px-4 py-2 bg-mint hover:bg-mint-dark text-white rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all shadow-sm cursor-pointer border-none flex items-center gap-1.5"
                               >
@@ -6132,14 +6939,14 @@ ${err.message || err}`);
                   {/* Controls */}
                   <div className="flex flex-wrap items-center gap-3.5">
                     {/* Font controls */}
-                    <div className="flex items-center gap-1 bg-slate-100 border border-slate-200/65 rounded-xl p-1">
+                    <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-950 border border-slate-200/65 dark:border-slate-850 rounded-xl p-1">
                       <span className="text-[8px] font-black text-slate-400 px-1 font-mono uppercase">Font:</span>
                       {(["sm", "md", "lg", "xl", "reading"] as const).map((sz) => (
                         <button
                           key={sz}
                           onClick={() => setAnalyzerFontSize(sz)}
                           className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-tighter border-none cursor-pointer ${
-                            analyzerFontSize === sz ? "bg-slate-900 text-white shadow-xs" : "text-slate-500 hover:text-slate-900"
+                            analyzerFontSize === sz ? "bg-slate-900 text-white dark:bg-mint dark:text-slate-950 shadow-xs" : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                           }`}
                         >
                           {sz === "reading" ? "Read" : sz}
@@ -6148,11 +6955,11 @@ ${err.message || err}`);
                     </div>
 
                     {/* Mode toggles */}
-                    <div className="flex items-center bg-slate-100 border border-slate-200/65 rounded-xl p-1">
+                    <div className="flex items-center bg-slate-100 dark:bg-slate-950 border border-slate-200/65 dark:border-slate-850 rounded-xl p-1">
                       <button
                         onClick={() => setAnalyzerViewMode("doctor")}
                         className={`flex items-center gap-1 px-3 py-1 rounded-lg text-[9px] font-extrabold uppercase tracking-wider border-none cursor-pointer transition-all ${
-                          analyzerViewMode === "doctor" ? "bg-slate-900 text-white shadow-xs" : "text-slate-500 hover:text-slate-900"
+                          analyzerViewMode === "doctor" ? "bg-slate-900 text-white dark:bg-mint dark:text-slate-950 shadow-xs" : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                         }`}
                       >
                         <Stethoscope className="w-3 h-3" />
@@ -6161,7 +6968,7 @@ ${err.message || err}`);
                       <button
                         onClick={() => setAnalyzerViewMode("patient")}
                         className={`flex items-center gap-1 px-3 py-1 rounded-lg text-[9px] font-extrabold uppercase tracking-wider border-none cursor-pointer transition-all ${
-                          analyzerViewMode === "patient" ? "bg-slate-900 text-white shadow-xs" : "text-slate-500 hover:text-slate-900"
+                          analyzerViewMode === "patient" ? "bg-slate-900 text-white dark:bg-mint dark:text-slate-950 shadow-xs" : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                         }`}
                       >
                         <User className="w-3 h-3" />
@@ -6181,30 +6988,30 @@ ${err.message || err}`);
                 </div>
 
                 {/* AI Summary Card (Clinical Risk level) */}
-                <div className="bg-white/95 border border-slate-200/50 rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xs">
+                <div className="bg-white/95 dark:bg-slate-900/95 border border-slate-200/50 dark:border-slate-800/50 rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xs">
                   <div className="flex items-center gap-3">
                     <span className="relative flex h-3 w-3">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
                     </span>
                     <div>
-                      <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest font-mono">Case Clinical Risk Level Assessment</h4>
-                      <p className="text-slate-700 text-xs font-semibold leading-normal mt-0.5">
+                      <h4 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest font-mono">Case Clinical Risk Level Assessment</h4>
+                      <p className="text-slate-700 dark:text-slate-350 text-xs font-semibold leading-normal mt-0.5">
                         Multiple high-severity metabolic markers require attention. Homeopathic constitutional intervention is active.
                       </p>
                     </div>
                   </div>
                   <div className="flex gap-2">
                     {[
-                      { l: "Low", c: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-                      { l: "Moderate", c: "bg-amber-50 text-amber-700 border-amber-200" },
-                      { l: "High", c: "bg-red-50 text-red-700 border-red-200 border-2 font-black shadow-sm" },
-                      { l: "Urgent", c: "bg-rose-100 text-rose-800 border-rose-300" }
+                      { l: "Low", c: "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900/50" },
+                      { l: "Moderate", c: "bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-900/50" },
+                      { l: "High", c: "bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400 border-red-200 dark:border-red-900/50 border-2 font-black shadow-sm" },
+                      { l: "Urgent", c: "bg-rose-100 dark:bg-rose-950/40 text-rose-800 dark:text-rose-400 border-rose-300 dark:border-rose-900/50" }
                     ].map((rk) => (
                       <span
                         key={rk.l}
                         className={`px-3 py-1.5 rounded-xl text-[9px] font-extrabold uppercase tracking-wider border ${
-                          displayData.risk_level === rk.l ? rk.c : "bg-transparent text-slate-350 border-slate-100 opacity-50"
+                          displayData.risk_level === rk.l ? rk.c : "bg-transparent text-slate-350 dark:text-slate-550 border-slate-100 dark:border-slate-800/60 opacity-50"
                         }`}
                       >
                         {rk.l}
@@ -6214,8 +7021,8 @@ ${err.message || err}`);
                 </div>
 
                 {/* Organ System view selector */}
-                <div className="flex flex-wrap items-center gap-1.5 border-b border-slate-200/40 pb-2">
-                  <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest font-mono mr-2">Filter Organ:</span>
+                <div className="flex flex-wrap items-center gap-1.5 border-b border-slate-200/40 dark:border-slate-800/40 pb-2">
+                  <span className="text-[8px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest font-mono mr-2">Filter Organ:</span>
                   {[
                     { id: "all", label: "All Systems" },
                     { id: "blood", label: "Blood" },
@@ -6234,8 +7041,8 @@ ${err.message || err}`);
                       onClick={() => setAnalyzerOrganTab(tab.id)}
                       className={`px-2.5 py-1 rounded-lg text-[9px] font-extrabold uppercase tracking-wider transition-all border-none cursor-pointer ${
                         analyzerOrganTab === tab.id
-                          ? "bg-slate-900 text-white shadow-xs"
-                          : "text-slate-500 hover:text-slate-900 hover:bg-slate-100"
+                          ? "bg-slate-900 text-white dark:bg-mint dark:text-slate-950 shadow-xs"
+                          : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-850"
                       }`}
                     >
                       {tab.label}
@@ -8407,7 +9214,7 @@ ${err.message || err}`);
                       </h3>
                       <span className="text-[9px] font-bold text-mint bg-mint/5 px-2 py-0.5 rounded-full border border-mint/10 font-mono">Active Workbench</span>
                     </div>
-                    <div className="bg-slate-900/[0.03] border border-slate-900/[0.05] rounded-2xl p-1.5 flex gap-1">
+                    <div className="bg-slate-100/80 backdrop-blur-sm border border-slate-200/50 rounded-2xl p-1 flex gap-1 shadow-inner">
                       {[
                         { id: "kent", label: "Kent's Repertory" },
                         { id: "boericke", label: "Boericke Repertory" },
@@ -8417,10 +9224,10 @@ ${err.message || err}`);
                           key={item.id}
                           onClick={() => setSelectedRepertory(item.id as any)}
                           type="button"
-                          className={`flex-1 text-center py-1.5 rounded-xl text-[10px] font-extrabold uppercase tracking-wider transition-all cursor-pointer border-none ${
+                          className={`flex-1 text-center py-2 rounded-xl text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 cursor-pointer border-none ${
                             selectedRepertory === item.id
-                              ? "bg-slate-900 text-white shadow-md"
-                              : "text-slate-500 hover:text-slate-900 bg-transparent hover:bg-slate-900/5"
+                              ? "bg-gradient-to-r from-mint-dark to-mint text-white shadow-md shadow-mint/20 scale-[1.02]"
+                              : "text-slate-500 hover:text-slate-900 bg-transparent hover:bg-slate-200/50"
                           }`}
                         >
                           {item.label}
@@ -8429,21 +9236,21 @@ ${err.message || err}`);
                     </div>
 
                     {/* Case file dropdown */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 font-mono">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="flex flex-col gap-1">
+                        <label className="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 font-mono">
                           Active Case File
                         </label>
-                        <div className="flex gap-1.5">
+                        <div className="flex gap-1.5 relative">
                           <select
                             value={selectedPatientId}
                             onChange={(e) => handleSelectPatientForAnalysis(e.target.value)}
-                            className="flex-1 bg-white/80 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-mint focus:bg-white transition-all shadow-inner"
+                            className="flex-1 bg-white/70 backdrop-blur-md border border-slate-200/80 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-mint focus:ring-1 focus:ring-mint focus:bg-white transition-all shadow-sm"
                           >
                             <option value="">Custom Workspace (Unlinked)</option>
                             {patients.map((p) => (
                               <option key={p.id} value={p.id}>
-                                {p.name} ({p.id})
+                                👤 {p.name} ({p.id})
                               </option>
                             ))}
                           </select>
@@ -8462,19 +9269,19 @@ ${err.message || err}`);
                       </div>
 
                       {/* Chapter Select */}
-                      <div className={searchAllChapters ? "opacity-40 pointer-events-none transition-opacity" : "transition-opacity"}>
-                        <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 font-mono">
+                      <div className={`flex flex-col gap-1 ${searchAllChapters ? "opacity-30 pointer-events-none transition-opacity" : "transition-opacity"}`}>
+                        <label className="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 font-mono">
                           {selectedRepertory === "kent" ? "Kentian Chapter" : selectedRepertory === "boericke" ? "Boericke Chapter" : "Unified Chapter"}
                         </label>
                         <select
                           value={selectedChapter}
                           disabled={searchAllChapters}
                           onChange={(e) => setSelectedChapter(e.target.value)}
-                          className="w-full bg-white/80 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-mint focus:bg-white transition-all shadow-inner"
+                          className="w-full bg-white/70 backdrop-blur-md border border-slate-200/80 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-mint focus:ring-1 focus:ring-mint focus:bg-white transition-all shadow-sm"
                         >
                           {getActiveChapters().map((ch) => (
                             <option key={ch} value={ch}>
-                              {ch}
+                              📁 {ch}
                             </option>
                           ))}
                         </select>
@@ -8482,17 +9289,17 @@ ${err.message || err}`);
                     </div>
 
                     {/* Search Rubrics */}
-                    <div className="relative">
-                      <div className="flex justify-between items-center mb-1.5">
-                        <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider font-mono">
+                    <div className="flex flex-col gap-1">
+                      <div className="flex justify-between items-center">
+                        <label className="block text-[9px] font-black text-slate-400 uppercase tracking-widest font-mono">
                           Keyword Filter
                         </label>
-                        <label className="flex items-center gap-1.5 text-[9px] font-bold text-slate-600 cursor-pointer select-none font-mono">
+                        <label className="flex items-center gap-1.5 text-[9px] font-bold text-slate-500 hover:text-slate-800 cursor-pointer select-none font-mono transition-colors">
                           <input
                             type="checkbox"
                             checked={searchAllChapters}
                             onChange={(e) => setSearchAllChapters(e.target.checked)}
-                            className="w-3 h-3 rounded text-mint border-slate-300 focus:ring-mint cursor-pointer accent-emerald-600"
+                            className="w-3.5 h-3.5 rounded text-mint border-slate-300 focus:ring-mint cursor-pointer accent-emerald-600"
                           />
                           <span>🔍 Cross-Chapter Search</span>
                         </label>
@@ -8503,47 +9310,57 @@ ${err.message || err}`);
                           placeholder={searchAllChapters ? "Search all chapters for symptoms..." : "Type symptom keywords..."}
                           value={rubricSearch}
                           onChange={(e) => setRubricSearch(e.target.value)}
-                          className="w-full pl-9 pr-4 py-2 border border-slate-200 focus:border-mint focus:ring-1 focus:ring-mint outline-none rounded-xl bg-white/80 text-xs font-semibold transition-all shadow-inner"
+                          className="w-full pl-10 pr-4 py-2.5 border border-slate-200 focus:border-mint focus:ring-1 focus:ring-mint outline-none rounded-xl bg-white/70 backdrop-blur-md text-xs font-semibold transition-all shadow-sm"
                         />
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+                        <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
                       </div>
                     </div>
 
                     {/* Rubrics results list */}
                     <div 
                       data-lenis-prevent
-                      className="space-y-1.5 max-h-[160px] overflow-y-auto border border-slate-900/5 rounded-2xl p-2 bg-slate-50/50 shadow-inner"
+                      className="space-y-1.5 max-h-[300px] overflow-y-auto border border-slate-200/50 rounded-2xl p-2.5 bg-slate-50/50 shadow-inner"
                     >
-                      {filteredRubrics.length === 0 ? (
-                        <p className="text-[10px] text-slate-400 text-center py-4 font-semibold">No matching rubrics in this chapter</p>
+                      {isRepertoryLoading ? (
+                        <div className="flex flex-col items-center justify-center py-12 text-center text-slate-400">
+                          <RefreshCw className="w-5 h-5 animate-spin text-mint mb-2" />
+                          <p className="text-[10px] font-bold">Hydrating Classic Repertory...</p>
+                          <p className="text-[8px] opacity-75 max-w-[160px] mt-0.5 font-bold">Loading 64,000+ clinical rubrics into memory.</p>
+                        </div>
+                      ) : filteredRubrics.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-6 text-center text-slate-400">
+                          <Search className="w-5 h-5 opacity-40 mb-1" />
+                          <p className="text-[10px] font-bold">No matching rubrics in this chapter</p>
+                          <p className="text-[8px] opacity-75 max-w-[160px] mt-0.5">Try searching across all chapters or check spelling.</p>
+                        </div>
                       ) : (
                         filteredRubrics.map((rub) => {
                           const isKent = rub.source === "kent";
                           const badgeColor = isKent 
-                            ? "bg-slate-100 text-slate-600 border-slate-200" 
-                            : "bg-emerald-50 text-emerald-700 border-emerald-200";
+                            ? "bg-sky-50 text-sky-700 border-sky-100" 
+                            : "bg-emerald-50 text-emerald-700 border-emerald-100";
                           const badgeText = isKent ? "K" : "B";
 
                           return (
                             <button
                               key={rub.id}
                               onClick={() => addRubric(rub)}
-                              className="w-full text-left px-3 py-2 rounded-xl text-xs hover:bg-mint hover:text-white font-semibold transition-all flex items-center justify-between group cursor-pointer border border-transparent"
+                              className="w-full text-left px-3 py-2 rounded-xl text-xs hover:bg-mint/10 hover:text-mint-dark font-semibold transition-all duration-200 flex items-center justify-between group cursor-pointer border border-transparent hover:border-mint/20 border-l-4 hover:border-l-mint bg-white/40"
                             >
-                              <div className="flex items-center gap-2 min-w-0 flex-grow pr-2">
-                                <span className={`text-[8px] font-bold border rounded px-1 flex-shrink-0 ${badgeColor}`}>
+                              <div className="flex items-center gap-2.5 min-w-0 flex-grow pr-2">
+                                <span className={`text-[8px] font-black border rounded px-1.5 py-0.5 flex-shrink-0 font-mono tracking-wider shadow-2xs ${badgeColor}`}>
                                   {badgeText}
                                 </span>
                                 <div className="truncate flex flex-col">
-                                  <span className="truncate">{highlightQuery(rub.name, rubricSearch)}</span>
+                                  <span className="truncate text-slate-700 group-hover:text-slate-900">{highlightQuery(rub.name, rubricSearch)}</span>
                                   {searchAllChapters && (
-                                    <span className="text-[8px] opacity-60 font-mono tracking-wide truncate">
+                                    <span className="text-[8px] opacity-50 font-mono tracking-wide truncate">
                                       {rub.chapter}
                                     </span>
                                   )}
                                 </div>
                               </div>
-                              <Plus className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                              <Plus className="w-3.5 h-3.5 text-mint opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
                             </button>
                           );
                         })
@@ -8551,20 +9368,20 @@ ${err.message || err}`);
                     </div>
 
                     {/* Selected rubrics tracker */}
-                    <div className="flex-1 flex flex-col pt-2 min-h-[350px]">
-                      <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-3 font-mono">
+                    <div className="flex-1 flex flex-col pt-4 min-h-[350px]">
+                      <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 font-mono">
                         Selected Symptoms & Rubrics Weighting ({selectedRubrics.length})
                       </h4>
 
                       <div 
                         data-lenis-prevent
-                        className={`grid gap-2.5 flex-grow overflow-y-auto pr-1 ${selectedRubrics.length > 0 ? 'grid-cols-1 md:grid-cols-2 max-h-[290px]' : 'grid-cols-1 h-full'}`}
+                        className={`grid gap-2.5 flex-grow overflow-y-auto pr-1 ${selectedRubrics.length > 0 ? 'grid-cols-1 md:grid-cols-2 max-h-[420px]' : 'grid-cols-1 h-full'}`}
                       >
                         {selectedRubrics.length === 0 ? (
-                          <div className="col-span-full h-full py-12 flex flex-col items-center justify-center text-center border border-dashed border-slate-200 rounded-2xl bg-slate-50/20">
-                            <Sliders className="w-6 h-6 text-slate-300 mb-2" />
-                            <p className="text-[10px] font-bold text-slate-500">No active symptoms</p>
-                            <p className="text-[9px] text-slate-400 max-w-[180px] mt-0.5">Select symptoms from the chapter list above to begin.</p>
+                          <div className="col-span-full h-full py-16 flex flex-col items-center justify-center text-center border border-dashed border-slate-200 rounded-2xl bg-slate-50/20">
+                            <Sliders className="w-8 h-8 text-slate-300 mb-2.5 animate-pulse" />
+                            <p className="text-[10px] font-black text-slate-500 uppercase tracking-wider">No active symptoms</p>
+                            <p className="text-[9px] text-slate-400 max-w-[180px] mt-1">Select symptoms from the chapter list above to begin case repertorization.</p>
                           </div>
                         ) : (
                           selectedRubrics.map(({ rubric, grade, weightMultiplier }) => {
@@ -8572,30 +9389,30 @@ ${err.message || err}`);
                             return (
                               <div
                                 key={rubric.id}
-                                className="flex items-center justify-between p-3 rounded-2xl border border-slate-900/5 bg-white shadow-sm hover:shadow transition-shadow"
+                                className="flex items-center justify-between p-3.5 rounded-2xl border border-slate-200/50 bg-white/80 backdrop-blur-md shadow-sm hover:shadow-md hover:border-slate-300/80 transition-all duration-300"
                               >
-                                <div className="max-w-[50%] flex flex-col gap-0.5">
+                                <div className="max-w-[50%] flex flex-col gap-1">
                                   <div className="flex items-center gap-1.5">
-                                    <span className={`text-[8px] font-extrabold border rounded px-1 flex-shrink-0 ${
+                                    <span className={`text-[8px] font-black border rounded px-1.5 py-0.5 flex-shrink-0 font-mono ${
                                       rubric.source === "kent"
-                                        ? "bg-slate-100 text-slate-600 border-slate-200"
-                                        : "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                        ? "bg-sky-50 text-sky-700 border-sky-100"
+                                        : "bg-emerald-50 text-emerald-700 border-emerald-100"
                                     }`}>
                                       {rubric.source === "kent" ? "K" : "B"}
                                     </span>
-                                    <span className="text-[8px] text-mint uppercase font-bold tracking-wide block font-mono truncate">
+                                    <span className="text-[8px] text-mint-dark uppercase font-extrabold tracking-widest block font-mono truncate">
                                       {rubric.chapter}
                                     </span>
                                   </div>
-                                  <span className="text-xs font-semibold text-slate-800 truncate block" title={rubric.name}>{rubric.name}</span>
+                                  <span className="text-xs font-bold text-slate-800 leading-snug" title={rubric.name}>{rubric.name}</span>
                                 </div>
                                 
-                                <div className="flex items-center gap-2.5">
+                                <div className="flex items-center gap-2">
                                   {/* Grade selection */}
                                   <select
                                     value={grade}
                                     onChange={(e) => updateGrade(rubric.id, Number(e.target.value))}
-                                    className="bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg py-1 px-1.5 text-[9px] font-bold text-slate-700 outline-none cursor-pointer transition-colors"
+                                    className="bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg py-1 px-1.5 text-[9px] font-bold text-slate-700 outline-none cursor-pointer transition-colors shadow-2xs"
                                   >
                                     <option value="1">Grade 1</option>
                                     <option value="2">Grade 2</option>
@@ -8608,9 +9425,9 @@ ${err.message || err}`);
                                       <button
                                         key={w}
                                         onClick={() => updateRubricWeight(rubric.id, w)}
-                                        className={`px-1.5 py-0.5 rounded text-[8px] font-bold transition-all ${
+                                        className={`px-1.5 py-0.5 rounded text-[8px] font-black transition-all ${
                                           activeWeight === w
-                                            ? "bg-mint text-white shadow-xs"
+                                            ? "bg-gradient-to-r from-mint-dark to-mint text-white shadow-2xs"
                                             : "text-slate-500 hover:text-slate-800"
                                         }`}
                                       >
@@ -8621,7 +9438,7 @@ ${err.message || err}`);
 
                                   <button
                                     onClick={() => removeRubric(rubric.id)}
-                                    className="p-1 hover:text-rose-600 text-slate-400 transition-colors cursor-pointer"
+                                    className="p-1.5 hover:bg-rose-50 hover:text-rose-600 text-slate-400 rounded-lg transition-all cursor-pointer"
                                   >
                                     <Trash2 className="w-3.5 h-3.5" />
                                   </button>
@@ -9437,29 +10254,29 @@ ${err.message || err}`);
                         <p className="text-[10px] text-slate-400 mt-1">Please select symptom rubrics from Zone 1 to activate the grid.</p>
                       </div>
                     ) : (
-                      <div className="overflow-x-auto border border-slate-900/5 rounded-2xl bg-white shadow-sm">
+                      <div className="overflow-x-auto border border-slate-200/60 rounded-2xl bg-white shadow-md">
                         <table className="w-full border-collapse text-left text-xs">
                           <thead>
-                            <tr className="bg-slate-50 border-b border-slate-100 text-[9px] font-bold uppercase text-slate-600 tracking-wider">
-                              <th className="p-3 min-w-[160px] align-middle">Selected Rubric Name</th>
-                              <th className="p-3 text-center align-middle w-16">Grade</th>
+                            <tr className="bg-slate-50/80 border-b border-slate-200 text-[9px] font-black uppercase text-slate-500 tracking-wider">
+                              <th className="p-4.5 min-w-[200px] align-middle font-mono">Selected Rubric Name</th>
+                              <th className="p-4.5 text-center align-middle w-20 font-mono">Intake Grade</th>
                               {displayedRemedyColumns.map((rem) => {
                                 const card = getRemedyCardData(rem);
                                 return (
                                   <th 
                                     key={rem} 
                                     onClick={() => setSelectedRemedyDetail(rem)}
-                                    className="p-3 text-center border-l border-slate-100 hover:bg-slate-50 cursor-pointer transition-all w-24 group align-top"
+                                    className="p-3 text-center border-l border-slate-200/50 hover:bg-slate-50 cursor-pointer transition-all w-24 group align-top"
                                     title={`Inspect ${card.fullName}`}
                                   >
                                     {/* Remedy Card column header */}
-                                    <div className="flex flex-col items-center space-y-1 p-1 bg-slate-50/50 border border-slate-200/50 rounded-xl group-hover:border-mint transition-colors relative">
-                                      <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-mint shadow-[0_0_6px_#14B8A6] animate-pulse" />
-                                      <div className="text-[10px] font-black text-[#0F766E] font-mono tracking-wide">{card.abbrev}</div>
-                                      <div className="text-[14px] font-black text-slate-800 font-mono tracking-tight leading-none pt-0.5">{card.score}</div>
-                                      <div className="text-[7px] text-slate-400 font-extrabold uppercase font-mono">{card.kingdom}</div>
-                                      <div className="text-[7px] text-slate-400 font-extrabold uppercase font-mono">{card.miasm}</div>
-                                      <div className="text-[8px] font-black text-mint-dark bg-mint/5 px-1 rounded border border-mint/10 mt-0.5">{card.confidence}%</div>
+                                    <div className="flex flex-col items-center space-y-1 p-2 bg-slate-50/80 border border-slate-200 rounded-2xl group-hover:border-mint group-hover:shadow-sm transition-all duration-300 relative">
+                                      <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-mint shadow-[0_0_6px_#14B8A6] animate-pulse" />
+                                      <div className="text-[11px] font-black text-[#0F766E] font-mono tracking-widest">{card.abbrev}</div>
+                                      <div className="text-[16px] font-black text-slate-800 font-mono tracking-tight leading-none pt-0.5">{card.score}</div>
+                                      <div className="text-[6.5px] text-slate-400 font-bold uppercase font-mono tracking-wide">{card.kingdom}</div>
+                                      <div className="text-[6.5px] text-slate-400 font-bold uppercase font-mono tracking-wide">{card.miasm}</div>
+                                      <div className="text-[8px] font-black text-white bg-mint px-1.5 py-0.5 rounded-lg border border-mint/20 mt-1 shadow-2xs">{card.confidence}%</div>
                                     </div>
                                   </th>
                                 );
@@ -9469,17 +10286,17 @@ ${err.message || err}`);
                           <tbody className="divide-y divide-slate-100 font-semibold text-slate-700">
                             {selectedRubrics.map(({ rubric, grade: userGrade, weightMultiplier }) => (
                               <tr key={rubric.id} className="hover:bg-slate-50/50 transition-colors">
-                                <td className="p-3 text-xs font-bold leading-normal">
-                                  <span className="text-[8px] text-slate-400 block font-bold uppercase tracking-wider font-mono">
+                                <td className="p-4 text-xs font-bold leading-normal">
+                                  <span className="text-[8px] text-mint-dark block font-extrabold uppercase tracking-widest font-mono mb-1">
                                     {rubric.chapter} {weightMultiplier ? `(Weight: ${weightMultiplier}x)` : ""}
                                   </span>
-                                  {rubric.name}
+                                  <span className="text-slate-800">{rubric.name}</span>
                                 </td>
-                                <td className="p-3 text-center">
-                                  <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${
-                                    userGrade === 3 ? "bg-rose-50 text-rose-700 border border-rose-100" :
-                                    userGrade === 2 ? "bg-amber-50 text-amber-700 border border-amber-100" :
-                                    "bg-slate-50 text-slate-700 border border-slate-100"
+                                <td className="p-4 text-center">
+                                  <span className={`px-2.5 py-1 rounded-full text-[9px] font-black tracking-wider ${
+                                    userGrade === 3 ? "bg-rose-50 text-rose-600 border border-rose-100 shadow-2xs" :
+                                    userGrade === 2 ? "bg-amber-50 text-amber-600 border border-amber-100 shadow-2xs" :
+                                    "bg-sky-50 text-sky-600 border border-sky-100 shadow-2xs"
                                   }`}>
                                     Grade {userGrade}
                                   </span>
@@ -9490,23 +10307,23 @@ ${err.message || err}`);
                                     <td 
                                       key={rem} 
                                       onClick={() => setSelectedRemedyDetail(rem)}
-                                      className={`p-3 text-center border-l border-slate-100 font-mono font-bold cursor-pointer transition-all duration-300 hover:bg-mint/5 ${
-                                        remGrade === 3 ? "bg-teal-500/10 text-teal-800" :
-                                        remGrade === 2 ? "bg-teal-500/5 text-[#0F766E]" :
-                                        remGrade === 1 ? "bg-slate-100/30 text-slate-600" :
-                                        "text-slate-200"
+                                      className={`p-4 text-center border-l border-slate-100 font-mono font-bold cursor-pointer transition-all duration-300 hover:bg-mint/5 ${
+                                        remGrade === 3 ? "bg-rose-500/[0.03]" :
+                                        remGrade === 2 ? "bg-amber-500/[0.02]" :
+                                        remGrade === 1 ? "bg-sky-500/[0.01]" :
+                                        ""
                                       }`}
                                     >
                                       {remGrade ? (
-                                        <span className={`${
-                                          remGrade === 3 ? "text-rose-600 font-extrabold text-sm" :
-                                          remGrade === 2 ? "text-[#0F766E] italic font-semibold text-xs" :
-                                          "text-slate-700 font-semibold text-xs"
+                                        <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full font-black text-xs transition-transform duration-200 group-hover:scale-110 shadow-2xs ${
+                                          remGrade === 3 ? "bg-rose-50 text-rose-600 border border-rose-100" :
+                                          remGrade === 2 ? "bg-amber-50 text-amber-600 border border-amber-100" :
+                                          "bg-sky-50 text-sky-600 border border-sky-100"
                                         }`}>
                                           {remGrade}
                                         </span>
                                       ) : (
-                                        <span className="text-slate-200">-</span>
+                                        <span className="text-slate-200 font-normal">-</span>
                                       )}
                                     </td>
                                   );
@@ -9516,12 +10333,12 @@ ${err.message || err}`);
                             
                             {/* Totals Row: Coverage */}
                             <tr className="bg-slate-50/50 border-t border-slate-200 text-[9px] font-bold uppercase text-slate-600">
-                              <td className="p-3">Symptom Coverage</td>
-                              <td className="p-3"></td>
+                              <td className="p-4 font-mono font-black text-slate-500">Symptom Coverage</td>
+                              <td className="p-4"></td>
                               {displayedRemedyColumns.map((rem) => {
                                 const scoreObj = remedyScores.find((r) => r.remedy === rem);
                                 return (
-                                  <td key={rem} className="p-3 text-center border-l border-slate-100 font-mono text-[10px] font-black text-slate-700 bg-slate-50/20">
+                                  <td key={rem} className="p-4 text-center border-l border-slate-100 font-mono text-[10px] font-black text-slate-700 bg-slate-50/20">
                                     {scoreObj?.coverage || "0"}
                                   </td>
                                 );
@@ -9529,13 +10346,13 @@ ${err.message || err}`);
                             </tr>
 
                             {/* Totals Row: Sum of Grades */}
-                            <tr className="bg-white border-t border-slate-200 text-[9px] font-bold uppercase text-slate-800">
-                              <td className="p-3">Sum of Grades</td>
-                              <td className="p-3"></td>
+                            <tr className="bg-white border-t-2 border-slate-200 text-[9px] font-bold uppercase text-slate-800">
+                              <td className="p-4 font-mono font-black text-slate-700">Sum of Grades</td>
+                              <td className="p-4"></td>
                               {displayedRemedyColumns.map((rem) => {
                                 const scoreObj = remedyScores.find((r) => r.remedy === rem);
                                 return (
-                                  <td key={rem} className="p-3 text-center border-l border-slate-100 font-mono text-[11px] font-black text-[#0f766e] bg-[#14b8a6]/5">
+                                  <td key={rem} className="p-4 text-center border-l border-slate-100 font-mono text-[12px] font-black text-white bg-gradient-to-b from-[#0F766E] to-[#115E59] shadow-inner">
                                     {scoreObj?.score || 0}
                                   </td>
                                 );
@@ -9742,127 +10559,144 @@ ${err.message || err}`);
                           )}
 
                           {activeAiTab === "reasoning" && (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fadeIn">
-                              {/* Constitutional & Etiological Analysis */}
-                              <div className="bg-white/80 border border-slate-200/50 rounded-2xl p-4 space-y-4 shadow-xs">
-                                <h4 className="text-[10px] font-black text-sky-700 uppercase tracking-widest border-b border-slate-100 pb-1.5 font-mono">
-                                  Constitutional & Etiological Analysis
-                                </h4>
-                                <div className="space-y-3.5 text-xs font-semibold">
-                                  <div>
-                                    <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider font-mono">Constitutional Interpretation</span>
-                                    <p className="text-slate-700 leading-normal mt-0.5">
-                                      {aiData.clinical_reasoning_v2?.constitutional_interpretation || "Psoric/Sycotic mixed constitution with reactive autonomic hypersensitivity and neuro-endocrine stress."}
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider font-mono">Etiological Analysis (Causa Occasionalis)</span>
-                                    <p className="text-slate-700 leading-normal mt-0.5">
-                                      {aiData.clinical_reasoning_v2?.etiological_analysis || "Suppression of dermal eruptions, coupled with sympathetic nervous overload and sustained emotional conflicts."}
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider font-mono">Miasmatic Analysis Summary</span>
-                                    <p className="text-slate-700 leading-normal mt-0.5">
-                                      {aiData.clinical_reasoning_v2?.miasmatic_analysis_summary || "Dominant Psora manifesting in pruritus and health anxiety, with secondary Sycosis showing fluid dysregulation and bloating."}
-                                    </p>
-                                  </div>
+                            <div className="space-y-4 animate-fadeIn">
+                              <div className="flex justify-between items-center bg-sky-50/50 border border-sky-100/50 p-4 rounded-2xl">
+                                <div className="space-y-0.5">
+                                  <span className="text-[10px] font-black text-sky-850 uppercase font-mono block">Clinical Reasoning Engine V2</span>
+                                  <p className="text-[9.5px] text-slate-500 font-semibold">Generate or refresh deep constitutional, miasmatic, and organ system analysis.</p>
                                 </div>
+                                <button
+                                  type="button"
+                                  onClick={handleTriggerClinicalReasoning}
+                                  disabled={isAiLoading}
+                                  className="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-[9px] font-black uppercase tracking-wider transition-all cursor-pointer border-none font-mono shadow-xs"
+                                >
+                                  {isAiLoading ? "Processing..." : "Generate Reasoning Report"}
+                                </button>
                               </div>
-
-                              {/* Affected Systems & Clinical Patterns */}
-                              <div className="bg-white/80 border border-slate-200/50 rounded-2xl p-4 space-y-4 shadow-xs">
-                                <h4 className="text-[10px] font-black text-indigo-700 uppercase tracking-widest border-b border-slate-100 pb-1.5 font-mono">
-                                  Affected Systems & Clinical Patterns
-                                </h4>
-                                <div className="space-y-3 text-xs font-semibold">
-                                  <div>
-                                    <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider font-mono mb-1 block">Affected Organ Systems</span>
-                                    <div className="flex flex-wrap gap-1">
-                                      {(aiData.clinical_reasoning_v2?.affected_organ_systems || ["Nervous System", "Digestive System", "Integumentary System"]).map((s: string, idx: number) => (
-                                        <span key={idx} className="bg-indigo-50 text-indigo-700 border border-indigo-100 px-2 py-0.5 rounded text-[9px] font-bold">
-                                          {s}
-                                        </span>
-                                      ))}
+                              
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {/* Constitutional & Etiological Analysis */}
+                                <div className="bg-white/80 border border-slate-200/50 rounded-2xl p-4 space-y-4 shadow-xs">
+                                  <h4 className="text-[10px] font-black text-sky-700 uppercase tracking-widest border-b border-slate-100 pb-1.5 font-mono">
+                                    Constitutional & Etiological Analysis
+                                  </h4>
+                                  <div className="space-y-3.5 text-xs font-semibold">
+                                    <div>
+                                      <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider font-mono">Constitutional Interpretation</span>
+                                      <p className="text-slate-700 leading-normal mt-0.5">
+                                        {aiData.clinical_reasoning_v2?.constitutional_interpretation || "Psoric/Sycotic mixed constitution with reactive autonomic hypersensitivity and neuro-endocrine stress."}
+                                      </p>
+                                    </div>
+                                    <div>
+                                      <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider font-mono">Etiological Analysis (Causa Occasionalis)</span>
+                                      <p className="text-slate-700 leading-normal mt-0.5">
+                                        {aiData.clinical_reasoning_v2?.etiological_analysis || "Suppression of dermal eruptions, coupled with sympathetic nervous overload and sustained emotional conflicts."}
+                                      </p>
+                                    </div>
+                                    <div>
+                                      <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider font-mono">Miasmatic Analysis Summary</span>
+                                      <p className="text-slate-700 leading-normal mt-0.5">
+                                        {aiData.clinical_reasoning_v2?.miasmatic_analysis_summary || "Dominant Psora manifesting in pruritus and health anxiety, with secondary Sycosis showing fluid dysregulation and bloating."}
+                                      </p>
                                     </div>
                                   </div>
-                                  <div>
-                                    <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider font-mono mb-1 block">Probable Clinical Patterns</span>
-                                    <div className="flex flex-wrap gap-1">
-                                      {(aiData.clinical_reasoning_v2?.probable_clinical_patterns || ["Generalized Hyper-excitability", "Dermal Eruption with Suppression", "Autonomic Gut Dysmotility"]).map((p: string, idx: number) => (
-                                        <span key={idx} className="bg-[#f0fdf4] text-[#166534] border border-[#dcfce7] px-2 py-0.5 rounded text-[9px] font-bold">
-                                          {p}
-                                        </span>
-                                      ))}
+                                </div>
+
+                                {/* Affected Systems & Clinical Patterns */}
+                                <div className="bg-white/80 border border-slate-200/50 rounded-2xl p-4 space-y-4 shadow-xs">
+                                  <h4 className="text-[10px] font-black text-indigo-700 uppercase tracking-widest border-b border-slate-100 pb-1.5 font-mono">
+                                    Affected Systems & Clinical Patterns
+                                  </h4>
+                                  <div className="space-y-3 text-xs font-semibold">
+                                    <div>
+                                      <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider font-mono mb-1 block">Affected Organ Systems</span>
+                                      <div className="flex flex-wrap gap-1">
+                                        {(aiData.clinical_reasoning_v2?.affected_organ_systems || ["Nervous System", "Digestive System", "Integumentary System"]).map((s: string, idx: number) => (
+                                          <span key={idx} className="bg-indigo-50 text-indigo-700 border border-indigo-100 px-2 py-0.5 rounded text-[9px] font-bold">
+                                            {s}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider font-mono mb-1 block">Probable Clinical Patterns</span>
+                                      <div className="flex flex-wrap gap-1">
+                                        {(aiData.clinical_reasoning_v2?.probable_clinical_patterns || ["Generalized Hyper-excitability", "Dermal Eruption with Suppression", "Autonomic Gut Dysmotility"]).map((p: string, idx: number) => (
+                                          <span key={idx} className="bg-[#f0fdf4] text-[#166534] border border-[#dcfce7] px-2 py-0.5 rounded text-[9px] font-bold">
+                                            {p}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider font-mono mb-1 block">Differential Diagnoses (Materia Medica COMPARISON)</span>
+                                      <ul className="list-disc pl-3.5 space-y-1 text-[11px] text-slate-650">
+                                        {(aiData.clinical_reasoning_v2?.differential_diagnoses || [
+                                          "Sulphur (Warm-blooded, skin eruptions aggravated by warmth of bed, 11 AM emptiness)",
+                                          "Lycopodium (Warm-blooded but desires warm drinks, right-sided, 4-8 PM aggravation)",
+                                          "Arsenicum Album (Chilly, restless, midnight aggravation, relieved by heat)"
+                                        ]).map((d: string, idx: number) => (
+                                          <li key={idx} className="leading-relaxed">{d}</li>
+                                        ))}
+                                      </ul>
                                     </div>
                                   </div>
-                                  <div>
-                                    <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider font-mono mb-1 block">Differential Diagnoses (Materia Medica COMPARISON)</span>
-                                    <ul className="list-disc pl-3.5 space-y-1 text-[11px] text-slate-650">
-                                      {(aiData.clinical_reasoning_v2?.differential_diagnoses || [
-                                        "Sulphur (Warm-blooded, skin eruptions aggravated by warmth of bed, 11 AM emptiness)",
-                                        "Lycopodium (Warm-blooded but desires warm drinks, right-sided, 4-8 PM aggravation)",
-                                        "Arsenicum Album (Chilly, restless, midnight aggravation, relieved by heat)"
-                                      ]).map((d: string, idx: number) => (
-                                        <li key={idx} className="leading-relaxed">{d}</li>
-                                      ))}
-                                    </ul>
+                                </div>
+
+                                {/* Remedy Justification & Rejection Logic */}
+                                <div className="bg-white/80 border border-slate-200/50 rounded-2xl p-4 space-y-4 shadow-xs md:col-span-2">
+                                  <h4 className="text-[10px] font-black text-[#0f766e] uppercase tracking-widest border-b border-slate-100 pb-1.5 font-mono">
+                                    Remedy Select/Reject Intelligence
+                                  </h4>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-semibold">
+                                    <div className="p-3 bg-emerald-50/30 border border-emerald-100 rounded-xl space-y-1">
+                                      <span className="text-[8px] text-emerald-700 font-bold uppercase tracking-wider font-mono">Remedy Justification</span>
+                                      <p className="text-emerald-900 leading-normal">
+                                        {aiData.clinical_reasoning_v2?.remedy_justification || "Remedy matches the thermal axis (warmth-sensitive), history of suppression, and high coverage of primary general symptoms."}
+                                      </p>
+                                    </div>
+                                    <div className="p-3 bg-rose-50/30 border border-rose-100 rounded-xl space-y-1">
+                                      <span className="text-[8px] text-rose-700 font-bold uppercase tracking-wider font-mono">Remedy Rejection Logic</span>
+                                      <p className="text-rose-900 leading-normal">
+                                        {aiData.clinical_reasoning_v2?.remedy_rejection_logic || "Alternative remedies ruled out due to strict modality contradictions (e.g. Lycopodium is chilly, which contradicts patient's warm-blooded thermal axis)."}
+                                      </p>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
 
-                              {/* Remedy Justification & Rejection Logic */}
-                              <div className="bg-white/80 border border-slate-200/50 rounded-2xl p-4 space-y-4 shadow-xs md:col-span-2">
-                                <h4 className="text-[10px] font-black text-[#0f766e] uppercase tracking-widest border-b border-slate-100 pb-1.5 font-mono">
-                                  Remedy Select/Reject Intelligence
-                                </h4>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-semibold">
-                                  <div className="p-3 bg-emerald-50/30 border border-emerald-100 rounded-xl space-y-1">
-                                    <span className="text-[8px] text-emerald-700 font-bold uppercase tracking-wider font-mono">Remedy Justification</span>
-                                    <p className="text-emerald-900 leading-normal">
-                                      {aiData.clinical_reasoning_v2?.remedy_justification || "Remedy matches the thermal axis (warmth-sensitive), history of suppression, and high coverage of primary general symptoms."}
-                                    </p>
-                                  </div>
-                                  <div className="p-3 bg-rose-50/30 border border-rose-100 rounded-xl space-y-1">
-                                    <span className="text-[8px] text-rose-700 font-bold uppercase tracking-wider font-mono">Remedy Rejection Logic</span>
-                                    <p className="text-rose-900 leading-normal">
-                                      {aiData.clinical_reasoning_v2?.remedy_rejection_logic || "Alternative remedies ruled out due to strict modality contradictions (e.g. Lycopodium is chilly, which contradicts patient's warm-blooded thermal axis)."}
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* Confirmation Questions & Red Flags */}
-                              <div className="bg-white/80 border border-slate-200/50 rounded-2xl p-4 space-y-4 shadow-xs md:col-span-2">
-                                <h4 className="text-[10px] font-black text-amber-700 uppercase tracking-widest border-b border-slate-100 pb-1.5 font-mono">
-                                  Clinical Safety & Patient Differentiating Questions
-                                </h4>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-semibold">
-                                  <div className="p-3 bg-amber-50/30 border border-amber-100 rounded-xl space-y-1.5">
-                                    <span className="text-[8px] text-amber-700 font-bold uppercase tracking-wider font-mono">Required Confirmation Questions</span>
-                                    <ul className="list-disc pl-3.5 mt-1 space-y-0.5 text-slate-700">
-                                      {(aiData.clinical_reasoning_v2?.confirmation_questions || [
-                                        "Do you experience a sinking, empty feeling at 11 AM?",
-                                        "Are your feet so hot at night that you stick them out of the covers?"
-                                      ]).map((q: string, idx: number) => (
-                                        <li key={idx} className="leading-relaxed">{q}</li>
-                                      ))}
-                                    </ul>
-                                  </div>
-                                  <div className="p-3 bg-red-50/30 border border-red-150 rounded-xl space-y-1.5">
-                                    <span className="text-[8px] text-red-700 font-bold uppercase tracking-wider font-mono flex items-center gap-1">
-                                      <ShieldAlert className="w-3.5 h-3.5 text-red-650" />
-                                      Clinical Red Flags (Safety Warning)
-                                    </span>
-                                    <ul className="list-disc pl-3.5 mt-1 space-y-0.5 text-red-900">
-                                      {(aiData.clinical_reasoning_v2?.clinical_red_flags || [
-                                        "Onset of acute dyspnea/asthma representing deep somatic suppression",
-                                        "Severe acute clinical depression with suicidal ideation",
-                                        "Unexplained rapid weight loss or hematochezia"
-                                      ]).map((r: string, idx: number) => (
-                                        <li key={idx} className="leading-relaxed font-black">{r}</li>
-                                      ))}
-                                    </ul>
+                                {/* Confirmation Questions & Red Flags */}
+                                <div className="bg-white/80 border border-slate-200/50 rounded-2xl p-4 space-y-4 shadow-xs md:col-span-2">
+                                  <h4 className="text-[10px] font-black text-amber-700 uppercase tracking-widest border-b border-slate-100 pb-1.5 font-mono">
+                                    Clinical Safety & Patient Differentiating Questions
+                                  </h4>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-semibold">
+                                    <div className="p-3 bg-amber-50/30 border border-amber-100 rounded-xl space-y-1.5">
+                                      <span className="text-[8px] text-amber-700 font-bold uppercase tracking-wider font-mono">Required Confirmation Questions</span>
+                                      <ul className="list-disc pl-3.5 mt-1 space-y-0.5 text-slate-700">
+                                        {(aiData.clinical_reasoning_v2?.confirmation_questions || [
+                                          "Do you experience a sinking, empty feeling at 11 AM?",
+                                          "Are your feet so hot at night that you stick them out of the covers?"
+                                        ]).map((q: string, idx: number) => (
+                                          <li key={idx} className="leading-relaxed">{q}</li>
+                                        ))}
+                                      </ul>
+                                    </div>
+                                    <div className="p-3 bg-red-50/30 border border-red-150 rounded-xl space-y-1.5">
+                                      <span className="text-[8px] text-red-700 font-bold uppercase tracking-wider font-mono flex items-center gap-1">
+                                        <ShieldAlert className="w-3.5 h-3.5 text-red-650" />
+                                        Clinical Red Flags (Safety Warning)
+                                      </span>
+                                      <ul className="list-disc pl-3.5 mt-1 space-y-0.5 text-red-900">
+                                        {(aiData.clinical_reasoning_v2?.clinical_red_flags || [
+                                          "Onset of acute dyspnea/asthma representing deep somatic suppression",
+                                          "Severe acute clinical depression with suicidal ideation",
+                                          "Unexplained rapid weight loss or hematochezia"
+                                        ]).map((r: string, idx: number) => (
+                                          <li key={idx} className="leading-relaxed font-black">{r}</li>
+                                        ))}
+                                      </ul>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
@@ -9934,7 +10768,7 @@ ${err.message || err}`);
                                           key={item.rubric.id}
                                           onMouseEnter={() => setHoveredSymptomId(item.rubric.id)}
                                           onMouseLeave={() => setHoveredSymptomId(null)}
-                                          className="cursor-pointer group"
+                                          className="cursor-pointer group hover-vibrate"
                                         >
                                           <circle cx={rx} cy={ly} r={isHovered ? 6 : 4} fill={isHovered ? "#14B8A6" : "#475569"} className="transition-all" />
                                           <text x={rx + 12} y={ly + 3} textAnchor="start" className={`text-[8px] font-extrabold tracking-wide uppercase transition-colors ${isHovered ? "fill-white font-black" : "fill-slate-400"}`}>
@@ -9959,7 +10793,7 @@ ${err.message || err}`);
                                             if (match) setActiveMonographRemedy(match);
                                             else jumpToRemedyInMateriaMedica(remAbbrev);
                                           }}
-                                          className="cursor-pointer group"
+                                          className="cursor-pointer group hover-vibrate"
                                         >
                                           <rect x={remx - 30} y={ry - 12} width="60" height="24" rx="6" fill={isHovered ? "#14B8A6" : "#1e293b"} stroke="rgba(255,255,255,0.1)" className="transition-all" />
                                           <text x={remx} y={ry + 3} textAnchor="middle" className="text-[9px] font-black fill-white font-mono tracking-wider">
@@ -10063,12 +10897,32 @@ ${err.message || err}`);
                           {aiReport}
                         </div>
                       ) : (
-                        <div className="h-full flex flex-col items-center justify-center text-center py-12 flex-grow">
-                          <Brain className="w-10 h-10 text-slate-300 mb-2" />
-                          <p className="text-xs font-bold text-slate-500 font-mono">Clinical Reasoning System Idle</p>
-                          <p className="text-[9.5px] text-slate-400 max-w-xs mt-1 leading-normal">
-                            Populate the symptoms above, enter clinical notes, and click &quot;Synthesize&quot; to invoke the AI diagnostic workflow.
-                          </p>
+                        <div className="h-full flex flex-col items-center justify-center text-center py-12 flex-grow space-y-4">
+                          <Brain className="w-10 h-10 text-slate-350" />
+                          <div>
+                            <p className="text-xs font-black text-slate-700 font-mono uppercase tracking-wider">Clinical Reasoning System Idle</p>
+                            <p className="text-[9.5px] text-slate-400 max-w-xs mt-1 leading-normal">
+                              Populate the active workbench symptoms above, enter intake notes, and trigger the AI engine.
+                            </p>
+                          </div>
+                          <div className="flex flex-wrap gap-3 justify-center">
+                            <button
+                              type="button"
+                              onClick={handleQueryAi}
+                              disabled={isAiLoading || (!customComplaint.trim() && ((repertoryWorkbenchMode as string) === "jethwani" ? selectedJethwaniRubrics.length === 0 : selectedRubrics.length === 0))}
+                              className="px-5 py-2.5 bg-mint text-white font-mono text-[9.5px] font-black uppercase tracking-widest rounded-xl hover:bg-mint-dark transition-all disabled:opacity-50 cursor-pointer border-none shadow-sm"
+                            >
+                              Synthesize Profile
+                            </button>
+                            <button
+                              type="button"
+                              onClick={handleTriggerClinicalReasoning}
+                              disabled={isAiLoading || (!customComplaint.trim() && ((repertoryWorkbenchMode as string) === "jethwani" ? selectedJethwaniRubrics.length === 0 : selectedRubrics.length === 0))}
+                              className="px-5 py-2.5 bg-sky-600 text-white font-mono text-[9.5px] font-black uppercase tracking-widest rounded-xl hover:bg-sky-700 transition-all disabled:opacity-50 cursor-pointer border-none shadow-sm"
+                            >
+                              Run reasoning (V2)
+                            </button>
+                          </div>
                         </div>
                       )}
                     </div>
@@ -11358,7 +12212,7 @@ ${err.message || err}`);
                             <h4 className="text-2xl font-black text-emerald-900 font-mono tracking-tighter flex items-center justify-center gap-2">
                               {indices.vital_force}%
                               {(() => {
-                                const range = getRangeLabel(indices.vital_force);
+                                const range = getRangeDetails(indices.vital_force, "vital_force");
                                 return (
                                   <span className={`text-[8px] px-2 py-0.5 rounded-full border ${range.style} font-mono font-bold uppercase tracking-wider scale-90`}>
                                     {range.text}
@@ -11396,7 +12250,7 @@ ${err.message || err}`);
                                     <span className="flex items-center gap-1.5">
                                       {label}
                                       {(() => {
-                                        const range = getRangeLabel(val);
+                                        const range = getRangeDetails(val, key);
                                         return (
                                           <span className={`text-[7px] px-1 py-0.2 rounded border ${range.style} font-mono font-bold scale-90 origin-left`}>
                                             {range.text}
@@ -13131,36 +13985,36 @@ ${err.message || err}`);
         </div>
       )}
           {activeTab === "learning-hub" && (
-            <div className={`space-y-8 animate-fadeIn text-white select-none shadow-2xl transition-all duration-300 ${
+            <div className={`always-dark space-y-8 animate-fadeIn text-white select-none shadow-2xl transition-all duration-300 ${
               isLearningHubFullscreen
                 ? "fixed inset-0 z-[50] overflow-y-auto bg-slate-950 p-8 md:p-12"
-                : "relative bg-slate-950 border border-slate-900 rounded-[32px] p-6 md:p-8 overflow-hidden"
+                : "relative bg-slate-950 border border-zinc-800 rounded-[32px] p-6 md:p-8 overflow-hidden"
             }`}>
               <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
               <div className="absolute bottom-0 left-0 w-96 h-96 bg-violet-500/5 rounded-full blur-3xl pointer-events-none" />
 
               {/* Premium Header */}
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-800 pb-6 relative z-10">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-zinc-800/80 pb-6 relative z-10">
                 <div>
                   <h2 className="font-serif text-3xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">AI Materia Medica Learning Hub</h2>
-                  <p className="text-sm font-semibold text-slate-400 max-w-2xl leading-relaxed mt-2">
+                  <p className="text-sm font-semibold text-zinc-400 max-w-2xl leading-relaxed mt-2">
                     Delve into complete remedy pictures, trace physiological organ affinities, challenge yourself with active recall quizzes, and consult the conversational AI Tutor.
                   </p>
                 </div>
                 
                 <div className="flex items-center gap-3 relative z-20">
-                  <div className="grid grid-cols-3 gap-3 text-center bg-slate-900/60 border border-slate-800 px-4 py-2 rounded-xl">
+                  <div className="grid grid-cols-3 gap-3 text-center bg-slate-900/60 border border-zinc-800/80 px-4 py-2 rounded-xl">
                     <div>
                       <div className="text-sm font-bold text-emerald-400">{MASTER_REMEDY_DB.length}</div>
-                      <div className="text-[9px] uppercase tracking-widest text-slate-400 font-extrabold font-sans">Remedies</div>
+                      <div className="text-[9px] uppercase tracking-widest text-zinc-400 font-extrabold font-sans">Remedies</div>
                     </div>
-                    <div className="border-x border-slate-800 px-3">
+                    <div className="border-x border-zinc-800/80 px-3">
                       <div className="text-sm font-bold text-teal-400">8</div>
-                      <div className="text-[9px] uppercase tracking-widest text-slate-400 font-extrabold font-sans">Modes</div>
+                      <div className="text-[9px] uppercase tracking-widest text-zinc-400 font-extrabold font-sans">Modes</div>
                     </div>
                     <div>
                       <div className="text-sm font-bold text-violet-400">50+</div>
-                      <div className="text-[9px] uppercase tracking-widest text-slate-400 font-extrabold font-sans">Quizzes</div>
+                      <div className="text-[9px] uppercase tracking-widest text-zinc-400 font-extrabold font-sans">Quizzes</div>
                     </div>
                   </div>
 
@@ -13174,41 +14028,109 @@ ${err.message || err}`);
                   </button>
                 </div>
               </div>
+              {/* Workspace Switcher */}
+              <div className="flex bg-slate-900/60 p-1 border border-slate-800 rounded-2xl relative z-10 w-fit">
+                <button
+                  onClick={() => {
+                    setLearningHubWorkspace("workbench");
+                    setLearningSubTab("cds");
+                  }}
+                  className={`flex items-center gap-2 py-2 px-5 rounded-xl text-[10px] uppercase font-bold tracking-widest transition-all cursor-pointer border-none ${
+                    learningHubWorkspace === "workbench"
+                      ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg"
+                      : "text-zinc-400 hover:text-white bg-transparent"
+                  }`}
+                >
+                  <Compass className="w-3.5 h-3.5" />
+                  Clinical Workbench
+                </button>
+                <button
+                  onClick={() => {
+                    setLearningHubWorkspace("academy");
+                    setLearningSubTab("cockpit");
+                  }}
+                  className={`flex items-center gap-2 py-2 px-5 rounded-xl text-[10px] uppercase font-bold tracking-widest transition-all cursor-pointer border-none ${
+                    learningHubWorkspace === "academy"
+                      ? "bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-lg"
+                      : "text-zinc-400 hover:text-white bg-transparent"
+                  }`}
+                >
+                  <Award className="w-3.5 h-3.5" />
+                  Hahnemannian Academy
+                </button>
+              </div>
+              {/* Learning Hub Module Capsule Bar */}
+              {learningHubWorkspace === "academy" && (
+                <div className="flex bg-slate-900/40 p-1 border border-slate-800 rounded-2xl relative z-10 w-fit gap-1 overflow-x-auto max-w-full my-4">
+                  {[
+                    { id: "materia-medica", label: "Materia Medica", icon: BookOpen },
+                    { id: "organon", label: "Organon of Medicine", icon: Compass },
+                    { id: "chronic-diseases", label: "Chronic Diseases", icon: Layers },
+                    { id: "philosophy", label: "Philosophy", icon: Brain },
+                    { id: "repertory-science", label: "Repertory Science", icon: Network },
+                    { id: "clinical-cases", label: "Clinical Cases", icon: Users },
+                    { id: "historical-masters", label: "Historical Masters", icon: Award }
+                  ].map((mod) => {
+                    const Icon = mod.icon;
+                    const isSelected = learningHubModule === mod.id;
+                    return (
+                      <button
+                        key={mod.id}
+                        onClick={() => {
+                          setLearningHubModule(mod.id as any);
+                          if (mod.id === "materia-medica") {
+                            setLearningSubTab("cockpit");
+                          }
+                        }}
+                        className={`flex items-center gap-2 py-2 px-5 rounded-xl text-[10px] uppercase font-bold tracking-widest transition-all cursor-pointer border-none whitespace-nowrap ${
+                          isSelected
+                            ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg"
+                            : "text-zinc-400 hover:text-white bg-transparent"
+                        }`}
+                      >
+                        <Icon className="w-3.5 h-3.5" />
+                        {mod.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
 
               {/* Premium Sub-Tab Navigation Bar */}
-              <div className="flex border-b border-slate-800 pb-3 gap-2 overflow-x-auto select-none relative z-10">
-                {[
-                  { id: "cockpit", label: "Study Cockpit", icon: Gauge },
-                  { id: "drugPicture", label: "Complete Drug Picture", icon: BookOpen },
-                  { id: "search", label: "Multi-Facet Search", icon: Search },
-                  { id: "compare", label: "Advanced Comparison", icon: Workflow },
-                  { id: "tutor", label: "Conversational Tutor", icon: Brain },
-                  { id: "pipeline", label: "Content Ingestion", icon: Database },
-                  { id: "simulation", label: "Case Sim Lab", icon: Users },
-                  { id: "cds", label: "Clinical Decision Support", icon: Compass },
-                  { id: "genome", label: "Remedy Genome", icon: Layers }
-                ].map((subTab: any) => {
-                  const Icon = subTab.icon;
-                  const isSelected = learningSubTab === subTab.id;
-                  return (
-                    <button
-                      key={subTab.id}
-                      onClick={() => setLearningSubTab(subTab.id as any)}
-                      className={`flex items-center gap-2 py-2.5 px-4 rounded-xl text-[10px] uppercase font-bold tracking-widest transition-all cursor-pointer border ${
-                        isSelected
-                          ? "bg-emerald-600 border-emerald-500 text-white shadow-lg shadow-emerald-950/40"
-                          : "bg-slate-900/60 border-slate-800 text-slate-300 hover:text-white hover:border-slate-700 hover:bg-slate-800/80"
-                      }`}
-                    >
-                      <Icon className="w-3.5 h-3.5" />
-                      {subTab.label}
-                    </button>
-                  );
-                })}
-              </div>
+              {learningHubWorkspace === "academy" && learningHubModule === "materia-medica" && (
+                <div className="flex border-b border-slate-800 pb-3 gap-2 overflow-x-auto select-none relative z-10">
+                  {[
+                    { id: "cockpit", label: "Study Cockpit", icon: Gauge },
+                    { id: "drugPicture", label: "Complete Drug Picture", icon: BookOpen },
+                    { id: "search", label: "Multi-Facet Search", icon: Search },
+                    { id: "compare", label: "Advanced Comparison", icon: Workflow },
+                    { id: "tutor", label: "Conversational Tutor", icon: Brain },
+                    { id: "pipeline", label: "Content Ingestion", icon: Database },
+                    { id: "simulation", label: "Case Sim Lab", icon: Users },
+                    { id: "genome", label: "Remedy Genome", icon: Layers }
+                  ].map((subTab: any) => {
+                    const Icon = subTab.icon;
+                    const isSelected = learningSubTab === subTab.id;
+                    return (
+                      <button
+                        key={subTab.id}
+                        onClick={() => setLearningSubTab(subTab.id as any)}
+                        className={`flex items-center gap-2 py-2.5 px-4 rounded-xl text-[10px] uppercase font-bold tracking-widest transition-all cursor-pointer border ${
+                          isSelected
+                            ? "bg-emerald-600 border-emerald-500 text-white shadow-lg shadow-emerald-950/40"
+                            : "bg-slate-900/60 border-slate-800 text-zinc-400 hover:text-white hover:border-slate-700 hover:bg-slate-800/80"
+                        }`}
+                      >
+                        <Icon className="w-3.5 h-3.5" />
+                        {subTab.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
 
               {/* Main Tab Content Area */}
-              {(() => {
+              {(learningHubWorkspace === "workbench" || (learningHubWorkspace === "academy" && learningHubModule === "materia-medica")) && (() => {
                 const bodyTextSize = 
                   drugPictureFontSize === "sm" ? "text-xs" : 
                   drugPictureFontSize === "base" ? "text-sm" : 
@@ -13292,9 +14214,9 @@ ${err.message || err}`);
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
                           <TabIcon className="w-5 h-5 text-emerald-400" />
-                          <h3 className="text-lg font-serif font-bold text-slate-100">{activeTabMeta.title}</h3>
+                          <h3 className="text-lg font-serif font-bold text-zinc-100">{activeTabMeta.title}</h3>
                         </div>
-                        <p className="text-xs text-slate-400 font-medium font-sans">{activeTabMeta.description}</p>
+                        <p className="text-xs text-zinc-400 font-medium font-sans">{activeTabMeta.description}</p>
                       </div>
 
                       <div className="flex flex-wrap items-center gap-3 w-full xl:w-auto">
@@ -13376,12 +14298,12 @@ ${err.message || err}`);
                               const idx = scales.indexOf(drugPictureFontSize);
                               if (idx > 0) setDrugPictureFontSize(scales[idx - 1]);
                             }}
-                            className="w-7 h-7 flex items-center justify-center text-xs font-extrabold text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg cursor-pointer transition-all"
+                            className="w-7 h-7 flex items-center justify-center text-xs font-extrabold text-zinc-400 hover:bg-slate-800 hover:text-white rounded-lg cursor-pointer transition-all"
                             title="Decrease Font Size"
                           >
                             A-
                           </button>
-                          <span className="text-[9px] font-extrabold uppercase w-12 text-center text-slate-500 whitespace-nowrap">
+                          <span className="text-[9px] font-extrabold uppercase w-12 text-center text-zinc-400 whitespace-nowrap">
                             Size ({drugPictureFontSize})
                           </span>
                           <button
@@ -13390,7 +14312,7 @@ ${err.message || err}`);
                               const idx = scales.indexOf(drugPictureFontSize);
                               if (idx < scales.length - 1) setDrugPictureFontSize(scales[idx + 1]);
                             }}
-                            className="w-7 h-7 flex items-center justify-center text-xs font-extrabold text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg cursor-pointer transition-all"
+                            className="w-7 h-7 flex items-center justify-center text-xs font-extrabold text-zinc-400 hover:bg-slate-800 hover:text-white rounded-lg cursor-pointer transition-all"
                             title="Increase Font Size"
                           >
                             A+
@@ -13479,7 +14401,7 @@ ${err.message || err}`);
                                 const pulseRadius = aff.rating * 1.4;
 
                                 return (
-                                  <g key={idx} className="group/organ">
+                                  <g key={idx} className="group/organ hover-vibrate">
                                     <circle
                                       cx={coords.x}
                                       cy={coords.y}
@@ -13551,7 +14473,7 @@ ${err.message || err}`);
                             className={`flex-1 min-w-[90px] text-center py-2 px-3 rounded-xl text-[10px] uppercase font-bold tracking-widest transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                               isSelected 
                                 ? "bg-emerald-600 text-white shadow" 
-                                : "text-slate-400 hover:text-slate-200 hover:bg-slate-900"
+                                : "text-zinc-400 hover:text-zinc-100 hover:bg-slate-950/60"
                             }`}
                           >
                             <Icon className="w-3.5 h-3.5" />
@@ -15771,6 +16693,4200 @@ ${err.message || err}`);
             </>
           );
         })()}
+
+        {/* ORGANON OF MEDICINE INTELLIGENCE HUB */}
+        {learningHubWorkspace === "academy" && learningHubModule === "organon" && (() => {
+          const themeBg = isOrganonNightMode 
+            ? "bg-slate-950/80 border-slate-800 text-slate-200" 
+            : "bg-stone-50 border-stone-200 text-stone-800";
+          const themeHeader = isOrganonNightMode 
+            ? "bg-slate-900/60 border-slate-800 text-slate-100" 
+            : "bg-stone-100 border-stone-200 text-stone-900";
+          const themeSubCard = isOrganonNightMode 
+            ? "bg-slate-900/40 border-slate-800/80" 
+            : "bg-white border-stone-200 shadow-sm";
+          const themeButtonActive = "bg-emerald-600 border-emerald-500 text-white shadow-lg shadow-emerald-950/40";
+          const themeButtonInactive = isOrganonNightMode 
+            ? "bg-slate-900 border-slate-800 text-slate-300 hover:text-white hover:border-slate-700" 
+            : "bg-white border-stone-200 text-stone-600 hover:text-stone-900 hover:bg-stone-50";
+
+          const organonBodyTextSize = 
+            organonFontSize === "sm" ? "text-xs" : 
+            organonFontSize === "base" ? "text-sm" : 
+            organonFontSize === "lg" ? "text-base font-medium" : "text-lg font-medium";
+
+          const organonTitleTextSize = 
+            organonFontSize === "sm" ? "text-sm font-bold" : 
+            organonFontSize === "base" ? "text-base font-bold" : 
+            organonFontSize === "lg" ? "text-lg font-bold" : "text-xl font-bold";
+
+          const activeAphorism = ORGANON_APHORISMS.find(a => a.id === selectedAphorismId) || ORGANON_APHORISMS[0];
+          const activeCase = ORGANON_CASES.find(c => c.id === organonActiveConcept) || ORGANON_CASES[0];
+          const activeEdition = ORGANON_EDITIONS.find(e => e.id === selectedOrganonEdition) || ORGANON_EDITIONS[5];
+
+          // Voice Reader Speech Synthesis API
+          const playVoiceAudio = () => {
+            if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+            if (voicePlayActive) {
+              window.speechSynthesis.cancel();
+              setVoicePlayActive(false);
+            } else {
+              window.speechSynthesis.cancel();
+              const textToSpeak = `Aphorism ${activeAphorism.number}. ${activeAphorism.title}. Original text: ${activeAphorism.originalText}. Modern translation: ${activeAphorism.modernTranslation}`;
+              const utterance = new SpeechSynthesisUtterance(textToSpeak);
+              utterance.onend = () => setVoicePlayActive(false);
+              utterance.onerror = () => setVoicePlayActive(false);
+              utterance.rate = 0.95;
+              utterance.pitch = 1.0;
+              setVoicePlayActive(true);
+              window.speechSynthesis.speak(utterance);
+            }
+          };
+
+          const handleAphorismChange = (id: string) => {
+            setSelectedAphorismId(id);
+            if (typeof window !== "undefined" && "speechSynthesis" in window) {
+              window.speechSynthesis.cancel();
+            }
+            setVoicePlayActive(false);
+          };
+
+          // Chat Suggestion click handler
+          const handleSuggestionClick = async (promptText: string) => {
+            if (isOrganonChatLoading) return;
+            setOrganonChatHistory(prev => [...prev, { sender: "user", text: promptText }]);
+            setIsOrganonChatLoading(true);
+            try {
+              const response = await fetch("/api/ai-diagnostics", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  taskType: "organon_tutor",
+                  question: promptText,
+                  aphorismNumber: selectedAphorismId ? `§${selectedAphorismId}` : "",
+                  studyMode: organonStudyMode
+                })
+              });
+              const data = await response.json();
+              if (data.success) {
+                let answer = "I apologize, my friend. The vital force was interrupted.";
+                let refs: string[] = [];
+                try {
+                  const parsed = typeof data.analysis === "string" ? JSON.parse(data.analysis) : data.analysis;
+                  if (parsed && parsed.tutorResponse) {
+                    answer = parsed.tutorResponse.answer;
+                    refs = parsed.tutorResponse.references || [];
+                  } else if (parsed && parsed.answer) {
+                    answer = parsed.answer;
+                    refs = parsed.references || [];
+                  }
+                } catch {
+                  if (data.analysis) answer = data.analysis;
+                }
+                setOrganonChatHistory(prev => [...prev, { sender: "ai", text: answer, references: refs }]);
+              } else {
+                throw new Error(data.error || "Failed to query Organon Tutor");
+              }
+            } catch (err: any) {
+              setOrganonChatHistory(prev => [...prev, { sender: "ai", text: `Failure: ${err.message}` }]);
+            } finally {
+              setIsOrganonChatLoading(false);
+            }
+          };
+
+          // 6th Edition Active Aphorism
+          const activeFullAph = organon6thFullData[selectedComplete6thAphorismId] || Object.values(organon6thFullData)[0];
+
+          // 6th Edition sections range definition
+          const COMPLETE_6TH_SECTIONS = [
+            { name: "MISSION OF PHYSICIAN", range: [1, 4] },
+            { name: "IDEAL OF CURE", range: [5, 18] },
+            { name: "VITAL FORCE", range: [9, 18] },
+            { name: "DISEASE UNDERSTANDING", range: [19, 29] },
+            { name: "CASE TAKING", range: [83, 104] },
+            { name: "DRUG PROVING", range: [105, 145] },
+            { name: "REMEDY SELECTION", range: [146, 171] },
+            { name: "CHRONIC DISEASES", range: [72, 291] },
+            { name: "LM POTENCIES", range: [246, 248] },
+            { name: "POTENTIZATION", range: [269, 271] },
+            { name: "ADVANCED MANAGEMENT", range: [280, 291] }
+          ];
+
+          // dynamic search filter
+          const complete6thAphorismsArray = Object.values(organon6thFullData) as any[];
+          const filteredComplete6thAphorisms = complete6thAphorismsArray.filter((aph) => {
+            if (!complete6thSearchQuery.trim()) return true;
+            const q = complete6thSearchQuery.toLowerCase();
+            return (
+              aph.number.toLowerCase().includes(q) ||
+              aph.title.toLowerCase().includes(q) ||
+              aph.originalText.toLowerCase().includes(q) ||
+              aph.modernTranslation.toLowerCase().includes(q) ||
+              aph.clinicalMeaning.toLowerCase().includes(q) ||
+              (aph.summary && aph.summary.toLowerCase().includes(q)) ||
+              (aph.keyConcepts && aph.keyConcepts.some((c: string) => c.toLowerCase().includes(q))) ||
+              (aph.examNotes && aph.examNotes.some((e: string) => e.toLowerCase().includes(q))) ||
+              (aph.relatedRemedies && aph.relatedRemedies.some((r: string) => r.toLowerCase().includes(q))) ||
+              (aph.relatedOrganonTopics && aph.relatedOrganonTopics.some((t: string) => t.toLowerCase().includes(q)))
+            );
+          });
+
+          // Active Recall generator
+          const complete6thRecallItems = activeFullAph ? [
+            {
+              id: `fc_${selectedComplete6thAphorismId}`,
+              type: "flashcard",
+              question: `Define the core philosophical directive of Organon Aphorism §${selectedComplete6thAphorismId} ("${activeFullAph.title}"):`,
+              correctAnswer: activeFullAph.summary || "No summary available.",
+              explanation: `Modern translation: ${activeFullAph.modernTranslation}`
+            },
+            {
+              id: `mcq_${selectedComplete6thAphorismId}`,
+              type: "mcq",
+              question: `Which of the following best states the key clinical application of Aphorism §${selectedComplete6thAphorismId} ("${activeFullAph.title}")?`,
+              options: [
+                activeFullAph.clinicalMeaning || "Dynamic healing and restoration.",
+                "Strictly mechanical surgical intervention without dynamic remedies.",
+                "Polypharmacy (combining multiple remedies in a single mixture).",
+                "Suppressing local symptoms with chemical ointments."
+              ],
+              correctAnswer: "0",
+              explanation: `Reason: ${activeFullAph.clinicalMeaning}`
+            },
+            {
+              id: `viva_${selectedComplete6thAphorismId}`,
+              type: "oral-viva",
+              question: `If asked in a BHMS Viva to explain the exam significance of Aphorism §${selectedComplete6thAphorismId} ("${activeFullAph.title}"), what are the critical points?`,
+              correctAnswer: activeFullAph.examNotes?.join("\n") || "No exam notes available.",
+              explanation: `Key Concept focus: ${activeFullAph.keyConcepts?.join(", ")}`
+            },
+            {
+              id: `tf_${selectedComplete6thAphorismId}`,
+              type: "true-false",
+              question: `True or False: According to Aphorism §${selectedComplete6thAphorismId} ("${activeFullAph.title}"), the core guideline is: ${activeFullAph.summary}?`,
+              correctAnswer: "True",
+              explanation: `Explanation: ${activeFullAph.summary}`
+            },
+            {
+              id: `case_${selectedComplete6thAphorismId}`,
+              type: "case-based",
+              question: `A patient with chronic disease matches the principles of Aphorism §${selectedComplete6thAphorismId}. How does it relate to cases and remedies?`,
+              correctAnswer: `Related Remedies: ${activeFullAph.relatedRemedies?.join(", ") || "Constitutional polychrests"}. Related Cases: ${activeFullAph.relatedCases?.join(", ") || "Standard case intake"}.`,
+              explanation: `Clinical focus: ${activeFullAph.relatedOrganonTopics?.join(", ")}`
+            }
+          ] : [];
+
+          // edition comparison generator
+          const getEditionComparisonData = (numStr: string) => {
+            if (numStr === "1") {
+              return {
+                "1st Edition (1810)": "Focuses on the physician's duty to cure, but frames it in rationalist, medical art terms.",
+                "2nd Edition (1819)": "Expands the concept of cure to emphasize restoring the patient's organic state.",
+                "3rd Edition (1824)": "Establishes curing as a physical-spiritual synchronization.",
+                "4th Edition (1829)": "Integrates the duty to cure with miasmatic awareness.",
+                "5th Edition (1833)": "Declares curing as restoring the vital force to its healthy state.",
+                "6th Edition (1842/1921)": "Declares the 'high and only mission' is to restore the sick to health (curing) - establishing a purely clinical, non-theoretical focus."
+              };
+            }
+            if (numStr === "2") {
+              return {
+                "1st Edition (1810)": "Mentions that cure must be safe and rapid, but lacks the definition of 'easily comprehensible principles'.",
+                "2nd Edition (1819)": "Refines the ideal to include gentle restoration based on natural rules.",
+                "3rd Edition (1824)": "Adds constraints on remedy administration to ensure gentleness.",
+                "4th Edition (1829)": "Connects ideal cure to removing the chronic miasmatic obstacles.",
+                "5th Edition (1833)": "Emphasizes centesimal-scale minimum doses to achieve gentleness.",
+                "6th Edition (1842/1921)": "The highest ideal of cure is rapid, gentle, and permanent restoration based on easily comprehensible principles, using liquid LM water dosing."
+              };
+            }
+            if (numStr === "153") {
+              return {
+                "1st Edition (1810)": "Mentions selecting remedies matching the patient, but does not distinguish common vs peculiar symptoms clearly.",
+                "2nd Edition (1819)": "Advises matching overall symptoms but lacks the specific 'striking, singular, uncommon' definition.",
+                "3rd Edition (1824)": "Emphasizes matching primary proving symptoms.",
+                "4th Edition (1829)": "Focuses on distinguishing miasmatic symptoms from acute ones.",
+                "5th Edition (1833)": "Lays down the importance of characteristic symptoms for centesimal selection.",
+                "6th Edition (1842/1921)": "The definitive statement on PQRS: focus solely on striking, singular, uncommon, and peculiar symptoms to individualize the remedy selection."
+              };
+            }
+            if (numStr === "246" || numStr === "247" || numStr === "248") {
+              return {
+                "1st Edition (1810)": "Suggested repeating remedies when the action of the first dose finished (very vague timing).",
+                "2nd Edition (1819)": "Advocated waiting days or weeks to let the single dose act.",
+                "3rd Edition (1824)": "Enforced strict single dry dose administration with long wait periods.",
+                "4th Edition (1829)": "Allowed slight repetition of anti-psorics in chronic cases but with extreme caution.",
+                "5th Edition (1833)": "Enforced the strict single dry globule rule: 'Wait for the action of the single dose to complete. Do not repeat while improvement continues.'",
+                "6th Edition (1842/1921)": "Revolutionary shift: permit repeating the dose daily in chronic cases and hourly in acute cases, provided the remedy is in liquid solution and succussed before each dose to alter potency."
+              };
+            }
+            if (numStr === "269" || numStr === "270" || numStr === "271") {
+              return {
+                "1st Edition (1810)": "Remedies prepared by simple dilutions without a formalized succussion count at each step.",
+                "2nd Edition (1819)": "Introduced basic shaking rules to mix the solutions.",
+                "3rd Edition (1824)": "Standardized centesimal potency scale with 2 succussions per dilution step.",
+                "4th Edition (1829)": "Modified succussion count to 10 shakes per dilution step.",
+                "5th Edition (1833)": "Centesimal scale standardized with 10 succussions. Strictly dry globule prescription.",
+                "6th Edition (1842/1921)": "Introduces the 50-Millesimal (LM) scale prepared in 1:50,000 dilution ratio at each step (§270), requiring 100 succussions, and administered in liquid form."
+              };
+            }
+            return {
+              "1st Edition (1810)": `Initial formulation of the principle in Aphorism §${numStr} under the early rational healing system.`,
+              "2nd Edition (1819)": `Revised text for Aphorism §${numStr} expanding the role of the vital organization.`,
+              "3rd Edition (1824)": `Refined guidelines for Aphorism §${numStr} with early centesimal posology.`,
+              "4th Edition (1829)": `Miasmatic integration of the principles in Aphorism §${numStr} following chronic disease discovery.`,
+              "5th Edition (1833)": `Doctrine of dynamic vital force fully integrated into Aphorism §${numStr} with dry centesimal dosing.`,
+              "6th Edition (1842/1921)": `Final posthumous text of Aphorism §${numStr} incorporating LM potency, liquid repetitions, and advanced case management.`
+            };
+          };
+
+          // dynamic Explainer call handler
+          const handleRightPanelAction = async (action: "explain" | "questions" | "examples" | "interpretation" | "compare") => {
+            setComplete6thRightPanelMode(action);
+            if (action === "questions") {
+              setComplete6thActiveRecallChecked(false);
+              setComplete6thActiveRecallUserAnswer("");
+              setComplete6thActiveRecallIndex(0);
+              return;
+            }
+            if (action === "compare") {
+              setComplete6thCompareMode(true);
+              return;
+            }
+            
+            setComplete6thExplanationLoading(true);
+            setComplete6thExplainResult("");
+            
+            let promptText = "";
+            if (action === "explain") {
+              promptText = `Provide a comprehensive explanation of Organon 6th Edition Aphorism §${selectedComplete6thAphorismId} ("${activeFullAph?.title}"). Break down the philosophy and clinical context.`;
+            } else if (action === "examples") {
+              promptText = `Provide 4 concrete clinical case examples demonstrating the practical application of Organon 6th Edition Aphorism §${selectedComplete6thAphorismId} ("${activeFullAph?.title}") for:
+1. Migraine
+2. Asthma
+3. Psoriasis
+4. Anxiety`;
+            } else if (action === "interpretation") {
+              promptText = `Explain the clinical application and practical instructions for a homeopath applying Organon 6th Edition Aphorism §${selectedComplete6thAphorismId} ("${activeFullAph?.title}") in daily practice.`;
+            }
+            
+            try {
+              const response = await fetch("/api/ai-diagnostics", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  taskType: "organon_tutor",
+                  question: promptText,
+                  aphorismNumber: `§${selectedComplete6thAphorismId}`,
+                  studyMode: organonStudyMode
+                })
+              });
+              const data = await response.json();
+              if (data.success) {
+                let answer = "";
+                try {
+                  const parsed = typeof data.analysis === "string" ? JSON.parse(data.analysis) : data.analysis;
+                  answer = parsed.tutorResponse?.answer || parsed.answer || data.analysis;
+                } catch {
+                  answer = data.analysis;
+                }
+                setComplete6thExplainResult(answer);
+              } else {
+                setComplete6thExplainResult(`Error: ${data.error || "Failed to query AI Explainer"}`);
+              }
+            } catch (err: any) {
+              setComplete6thExplainResult(`Failed to query explainer: ${err.message}`);
+            } finally {
+              setComplete6thExplanationLoading(false);
+            }
+          };
+
+          // progress toggling hooks
+          const handleToggleRead = () => {
+            const id = selectedComplete6thAphorismId;
+            const updated = complete6thReadList.includes(id)
+              ? complete6thReadList.filter((x) => x !== id)
+              : [...complete6thReadList, id];
+            setComplete6thReadList(updated);
+            if (typeof window !== "undefined") {
+              localStorage.setItem("organon_6th_read_list", JSON.stringify(updated));
+            }
+          };
+
+          const handleToggleMastered = () => {
+            const id = selectedComplete6thAphorismId;
+            const updated = complete6thMasteredList.includes(id)
+              ? complete6thMasteredList.filter((x) => x !== id)
+              : [...complete6thMasteredList, id];
+            setComplete6thMasteredList(updated);
+            if (typeof window !== "undefined") {
+              localStorage.setItem("organon_6th_mastered_list", JSON.stringify(updated));
+            }
+          };
+
+          const handleToggleRevision = () => {
+            const id = selectedComplete6thAphorismId;
+            const updated = complete6thRevisionList.includes(id)
+              ? complete6thRevisionList.filter((x) => x !== id)
+              : [...complete6thRevisionList, id];
+            setComplete6thRevisionList(updated);
+            if (typeof window !== "undefined") {
+              localStorage.setItem("organon_6th_revision_list", JSON.stringify(updated));
+            }
+          };
+
+          const handleToggleWeak = () => {
+            const id = selectedComplete6thAphorismId;
+            const updated = complete6thWeakList.includes(id)
+              ? complete6thWeakList.filter((x) => x !== id)
+              : [...complete6thWeakList, id];
+            setComplete6thWeakList(updated);
+            if (typeof window !== "undefined") {
+              localStorage.setItem("organon_6th_weak_list", JSON.stringify(updated));
+            }
+          };
+
+          const handleExportNotes = () => {
+            if (!activeFullAph) return;
+            const notesContent = `ORGANON OF MEDICINE INTELLIGENCE HUB™
+COMPLETE ORGANON 6TH EDITION STUDY MODULE
+
+Aphorism: ${activeFullAph.number}
+Title: ${activeFullAph.title}
+
+ORIGINAL 6TH EDITION TEXT:
+"${activeFullAph.originalText}"
+
+MODERN ENGLISH INTERPRETATION:
+${activeFullAph.modernTranslation}
+
+CLINICAL APPLICATION:
+${activeFullAph.clinicalMeaning}
+
+KEY CONCEPTS:
+${activeFullAph.keyConcepts?.join(", ") || "None"}
+
+EXAM NOTES:
+${activeFullAph.examNotes?.join("\n- ") || "None"}
+
+Exported on: ${new Date().toLocaleDateString()}
+`;
+            const blob = new Blob([notesContent], { type: "text/plain;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `Aphorism_${selectedComplete6thAphorismId}_Notes.txt`;
+            link.click();
+            URL.revokeObjectURL(url);
+          };
+
+          const handlePrintNotes = () => {
+            window.print();
+          };
+
+          // Mind-Map Nodes Generator
+          const getAphorismGraphData = (id: string) => {
+            if (id === "153") {
+              return {
+                nodes: [
+                  { id: "center", label: "§153 PQRS Symptoms", x: 175, y: 150, type: "aphorism" },
+                  { id: "miasm_psora", label: "Psora (Sensory)", x: 75, y: 75, type: "miasm" },
+                  { id: "rem_puls", label: "Pulsatilla (Keynote)", x: 275, y: 75, type: "remedy" },
+                  { id: "rem_ign", label: "Ignatia (Modality)", x: 275, y: 225, type: "remedy" },
+                  { id: "aff_migraine", label: "Migraine Affinity", x: 75, y: 225, type: "affinity" }
+                ],
+                links: [
+                  { source: "center", target: "miasm_psora" },
+                  { source: "center", target: "rem_puls" },
+                  { source: "center", target: "rem_ign" },
+                  { source: "center", target: "aff_migraine" }
+                ]
+              };
+            }
+            if (id === "270") {
+              return {
+                nodes: [
+                  { id: "center", label: "§270 LM Potency", x: 175, y: 150, type: "aphorism" },
+                  { id: "miasm_syc", label: "Sycosis (Retention)", x: 75, y: 75, type: "miasm" },
+                  { id: "rem_sulph", label: "Sulphur LM", x: 275, y: 75, type: "remedy" },
+                  { id: "rem_sil", label: "Silicea LM", x: 275, y: 225, type: "remedy" },
+                  { id: "aff_autoimmune", label: "Autoimmune Affinity", x: 75, y: 225, type: "affinity" }
+                ],
+                links: [
+                  { source: "center", target: "miasm_syc" },
+                  { source: "center", target: "rem_sulph" },
+                  { source: "center", target: "rem_sil" },
+                  { source: "center", target: "aff_autoimmune" }
+                ]
+              };
+            }
+            if (id === "273") {
+              return {
+                nodes: [
+                  { id: "center", label: "§273 Single Remedy", x: 175, y: 150, type: "aphorism" },
+                  { id: "miasm_psora", label: "Psora (Functional)", x: 75, y: 75, type: "miasm" },
+                  { id: "rem_gels", label: "Gelsemium (Single)", x: 275, y: 75, type: "remedy" },
+                  { id: "rem_bry", label: "Bryonia (Single)", x: 275, y: 225, type: "remedy" },
+                  { id: "aff_anxiety", label: "Anxiety Affinity", x: 75, y: 225, type: "affinity" }
+                ],
+                links: [
+                  { source: "center", target: "miasm_psora" },
+                  { source: "center", target: "rem_gels" },
+                  { source: "center", target: "rem_bry" },
+                  { source: "center", target: "aff_anxiety" }
+                ]
+              };
+            }
+            // Fallback general nodes
+            return {
+              nodes: [
+                { id: "center", label: `§${id} Core Principle`, x: 175, y: 150, type: "aphorism" },
+                { id: "miasm_psora", label: "Psora Miasm", x: 75, y: 75, type: "miasm" },
+                { id: "rem_sulph", label: "Sulphur", x: 275, y: 75, type: "remedy" },
+                { id: "aff_general", label: "Clinical Generals", x: 175, y: 60, type: "affinity" }
+              ],
+              links: [
+                { source: "center", target: "miasm_psora" },
+                { source: "center", target: "rem_sulph" },
+                { source: "center", target: "aff_general" }
+              ]
+            };
+          };
+
+          const activeRecallQuestions = ACTIVE_RECALL_EXERCISES.filter(q => q.difficulty === activeRecallDifficulty && q.category === activeRecallCategory);
+          const recallList = activeRecallQuestions.length > 0 ? activeRecallQuestions : ACTIVE_RECALL_EXERCISES;
+          const currentRecallQuestion = recallList[activeRecallIdx % recallList.length];
+
+          const handleSelectRecallOption = (optionIdx: string) => {
+            if (isRecallChecked) return;
+            setRecallUserAnswers(prev => ({ ...prev, [currentRecallQuestion.id]: optionIdx }));
+          };
+
+          const handleCheckRecallAnswer = () => {
+            if (isRecallChecked) return;
+            setIsRecallChecked(true);
+            const userAns = recallUserAnswers[currentRecallQuestion.id];
+            const isCorrect = userAns === currentRecallQuestion.correctAnswer;
+            if (isCorrect) {
+              setRecallStreak(prev => prev + 1);
+              setRecallMasteryScore(prev => Math.min(100, prev + 5));
+            } else {
+              setRecallStreak(0);
+              setRecallMasteryScore(prev => Math.max(0, prev - 4));
+            }
+          };
+
+          const handleNextRecallQuestion = () => {
+            setIsRecallChecked(false);
+            setRecallUserAnswers(prev => {
+              const updated = { ...prev };
+              delete updated[currentRecallQuestion.id];
+              return updated;
+            });
+            setActiveRecallIdx(prev => prev + 1);
+          };
+
+          // Search feature
+          const filteredAphorisms = ORGANON_APHORISMS.filter(a => {
+            if (!organonSearchQuery.trim()) return true;
+            const q = organonSearchQuery.toLowerCase();
+            return (
+              a.number.toLowerCase().includes(q) ||
+              a.title.toLowerCase().includes(q) ||
+              a.originalText.toLowerCase().includes(q) ||
+              a.modernTranslation.toLowerCase().includes(q) ||
+              a.clinicalMeaning.toLowerCase().includes(q) ||
+              a.relatedConcepts.some(c => c.toLowerCase().includes(q))
+            );
+          });
+
+          return (
+            <div className={`space-y-6 ${isFullscreenDistractionFree ? "fixed inset-0 z-[60] bg-slate-950 p-8 overflow-y-auto" : ""}`}>
+              
+              {/* 1. Header Toolbar Controls */}
+              <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 bg-slate-900/60 border border-slate-800 p-6 rounded-3xl shadow-lg relative z-10">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <Compass className="w-5 h-5 text-emerald-400" />
+                    <h3 className="text-lg font-serif font-bold text-slate-100">Organon of Medicine Intelligence Hub™</h3>
+                  </div>
+                  <p className="text-xs text-slate-400 font-semibold font-sans">
+                    Master Hahnemann's original concepts, edition shifts, miasmatic laws, and clinical case correlations.
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-3 w-full xl:w-auto">
+                  {/* View Mode selection capsules */}
+                  <div className="flex bg-slate-950 border border-slate-800 p-1 rounded-xl gap-0.5 overflow-x-auto max-w-full">
+                    {[
+                      { id: "editions", label: "Overview", icon: Layers },
+                      { id: "complete-6th-edition", label: "Complete 6th Edition", icon: BookOpen },
+                      { id: "dual-panel", label: "Dual Panel", icon: BookOpen },
+                      { id: "relationship-graph", label: "Mind Map", icon: Network },
+                      { id: "clinical-app", label: "Affinities", icon: Activity },
+                      { id: "case-correlation", label: "Cases", icon: Users },
+                      { id: "active-recall", label: "Quiz Lab", icon: Award },
+                      { id: "timeline", label: "Edition Timeline", icon: History },
+                      { id: "search", label: "Index Search", icon: Search }
+                    ].map((mode) => {
+                      const Icon = mode.icon;
+                      const isSelected = organonViewMode === mode.id;
+                      return (
+                        <button
+                          key={mode.id}
+                          onClick={() => setOrganonViewMode(mode.id as any)}
+                          className={`flex items-center gap-1.5 py-1.5 px-3 rounded-lg text-[9.5px] uppercase font-bold tracking-wider transition-all cursor-pointer border-none whitespace-nowrap ${
+                            isSelected ? "bg-emerald-600 text-white shadow" : "text-slate-400 hover:text-white bg-transparent"
+                          }`}
+                        >
+                          <Icon className="w-3.5 h-3.5" />
+                          <span>{mode.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Font Sizers */}
+                  <div className="flex items-center gap-1 bg-slate-950 border border-slate-800 p-1 rounded-xl">
+                    <button
+                      onClick={() => {
+                        const sizes: Array<"sm"|"base"|"lg"|"xl"> = ["sm", "base", "lg", "xl"];
+                        const idx = sizes.indexOf(organonFontSize);
+                        if (idx > 0) setOrganonFontSize(sizes[idx - 1]);
+                      }}
+                      className="w-7 h-7 flex items-center justify-center text-xs font-extrabold text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg cursor-pointer transition-all border-none"
+                    >
+                      A-
+                    </button>
+                    <span className="text-[9.5px] font-extrabold uppercase w-10 text-center text-slate-500">
+                      {organonFontSize}
+                    </span>
+                    <button
+                      onClick={() => {
+                        const sizes: Array<"sm"|"base"|"lg"|"xl"> = ["sm", "base", "lg", "xl"];
+                        const idx = sizes.indexOf(organonFontSize);
+                        if (idx < sizes.length - 1) setOrganonFontSize(sizes[idx + 1]);
+                      }}
+                      className="w-7 h-7 flex items-center justify-center text-xs font-extrabold text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg cursor-pointer transition-all border-none"
+                    >
+                      A+
+                    </button>
+                  </div>
+
+                  {/* Dark Mode toggle */}
+                  <button
+                    onClick={() => setIsOrganonNightMode(!isOrganonNightMode)}
+                    className={`p-2 rounded-xl border border-slate-800 cursor-pointer hover:bg-slate-800 text-slate-300 transition-colors bg-slate-950`}
+                    title="Toggle Theme Mode"
+                  >
+                    <Sliders className="w-3.5 h-3.5" />
+                  </button>
+
+                  {/* Fullscreen distraction free button */}
+                  <button
+                    onClick={() => setIsFullscreenDistractionFree(!isFullscreenDistractionFree)}
+                    className="p-2 bg-emerald-600 hover:bg-emerald-700 rounded-xl text-white transition-all cursor-pointer shadow-md flex items-center justify-center gap-1 text-[9.5px] uppercase font-extrabold tracking-wider border-none"
+                  >
+                    {isFullscreenDistractionFree ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+                    <span>{isFullscreenDistractionFree ? "Minimize" : "Focus"}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* 2. STATS OVERVIEW DASHBOARD */}
+              {!isFullscreenDistractionFree && (
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                  <div className="bg-slate-900/50 border border-slate-900 p-5 rounded-3xl shadow flex items-center justify-between hover:scale-[1.01] transition-transform">
+                    <div>
+                      <span className="text-[9px] uppercase font-extrabold tracking-wider text-slate-500">Aphorisms Mastered</span>
+                      <h4 className="text-xl font-bold text-slate-200 mt-1">10 / 291 Aphorisms</h4>
+                      <div className="h-1.5 w-32 bg-slate-950 rounded-full mt-2 overflow-hidden">
+                        <div className="h-full bg-emerald-500" style={{ width: "3.4%" }} />
+                      </div>
+                    </div>
+                    <div className="w-10 h-10 rounded-xl bg-emerald-950/20 text-emerald-400 flex items-center justify-center font-bold text-sm border border-emerald-900/50">3%</div>
+                  </div>
+
+                  <div className="bg-slate-900/50 border border-slate-900 p-5 rounded-3xl shadow flex items-center justify-between hover:scale-[1.01] transition-transform">
+                    <div>
+                      <span className="text-[9px] uppercase font-extrabold tracking-wider text-slate-500">Hahnemannian Mastery</span>
+                      <h4 className="text-xl font-bold text-teal-400 mt-1">{recallMasteryScore}% Performance</h4>
+                      <div className="h-1.5 w-32 bg-slate-950 rounded-full mt-2 overflow-hidden">
+                        <div className="h-full bg-teal-500" style={{ width: `${recallMasteryScore}%` }} />
+                      </div>
+                    </div>
+                    <div className="w-10 h-10 rounded-xl bg-teal-950/20 text-teal-400 flex items-center justify-center font-bold text-sm border border-teal-900/50"><Award className="w-5 h-5" /></div>
+                  </div>
+
+                  <div className="bg-slate-900/50 border border-slate-900 p-5 rounded-3xl shadow flex items-center justify-between hover:scale-[1.01] transition-transform">
+                    <div>
+                      <span className="text-[9px] uppercase font-extrabold tracking-wider text-slate-500">Active Recall Streak</span>
+                      <h4 className="text-xl font-bold text-orange-400 mt-1">{recallStreak} Day Active Streak</h4>
+                      <p className="text-[10px] text-slate-500 font-semibold mt-1">Consistency maintains brain recall.</p>
+                    </div>
+                    <div className="w-10 h-10 rounded-xl bg-orange-950/20 text-orange-400 flex items-center justify-center font-bold text-sm border border-orange-900/50"><Activity className="w-5 h-5" /></div>
+                  </div>
+
+                  <div className="bg-slate-900/50 border border-slate-900 p-5 rounded-3xl shadow flex items-center justify-between hover:scale-[1.01] transition-transform">
+                    <div>
+                      <span className="text-[9px] uppercase font-extrabold tracking-wider text-slate-500">Study Mode Persona</span>
+                      <h4 className="text-xl font-bold text-violet-400 mt-1 capitalize">{organonStudyMode} Level</h4>
+                      <select
+                        value={organonStudyMode}
+                        onChange={(e) => setOrganonStudyMode(e.target.value as any)}
+                        className="bg-slate-950 border border-slate-800 text-[10px] font-bold text-slate-300 rounded-lg px-2 py-1 mt-1.5 outline-none cursor-pointer"
+                      >
+                        <option value="beginner">Beginner (Concept Only)</option>
+                        <option value="student">Student (Detailed Academic)</option>
+                        <option value="practitioner">Practitioner (Clinical Cases)</option>
+                        <option value="advanced">Advanced (Miasmatic layers)</option>
+                        <option value="teacher">Teacher (Hahnemann Scholar)</option>
+                      </select>
+                    </div>
+                    <div className="w-10 h-10 rounded-xl bg-purple-950/20 text-purple-400 flex items-center justify-center font-bold text-sm border border-purple-900/50"><Brain className="w-5 h-5" /></div>
+                  </div>
+                </div>
+              )}
+
+              {/* 3. CONDITIONAL VIEWS RENDERING */}
+
+              {/* VIEW: EDITIONS LANDING PAGE */}
+              {organonViewMode === "editions" && (
+                <div className="space-y-6 animate-fadeIn">
+                  <div>
+                    <h4 className="text-sm font-extrabold text-slate-350 uppercase tracking-widest border-b border-slate-900 pb-2">
+                      Hahnemann's Six Editions (1810 - 1842)
+                    </h4>
+                    <p className="text-xs text-slate-500 font-semibold mt-1">
+                      Click any edition card to explore its core shifts, transition highlights, or compare conceptual evolution over time.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {ORGANON_EDITIONS.map((ed) => {
+                      const isSelected = selectedOrganonEdition === ed.id;
+                      return (
+                        <div
+                          key={ed.id}
+                          onClick={() => setSelectedOrganonEdition(ed.id)}
+                          className={`group relative border rounded-[28px] p-6 cursor-pointer flex flex-col justify-between transition-all duration-350 hover:scale-[1.02] hover:shadow-xl ${
+                            isSelected
+                              ? "bg-slate-900/80 border-emerald-500/80 shadow-[0_0_20px_rgba(16,185,129,0.1)]"
+                              : "bg-slate-900/30 border-slate-900 hover:border-slate-850"
+                          }`}
+                        >
+                          {/* Accent Glow */}
+                          <div className={`absolute -right-4 -top-4 w-24 h-24 rounded-full blur-3xl pointer-events-none transition-opacity duration-300 ${
+                            isSelected ? "bg-emerald-500/10 opacity-100" : "bg-emerald-500/5 opacity-0 group-hover:opacity-100"
+                          }`} />
+
+                          <div className="space-y-4">
+                            <div className="flex justify-between items-start">
+                              <span className="text-[10px] font-mono font-bold text-slate-400 bg-slate-950/80 border border-slate-900 px-2 py-0.5 rounded-lg">
+                                {ed.year}
+                              </span>
+                              <span className="text-[10px] font-mono font-extrabold text-emerald-450 bg-emerald-950/20 border border-emerald-900/40 px-2 py-0.5 rounded-lg">
+                                {ed.aphorismsCount} Aphorisms
+                              </span>
+                            </div>
+
+                            <div className="space-y-1">
+                              <h5 className="font-serif text-base font-bold text-slate-200 group-hover:text-emerald-350 transition-colors">
+                                {ed.name}
+                              </h5>
+                              <p className="text-xs text-slate-400 leading-relaxed font-semibold">
+                                {ed.significance}
+                              </p>
+                            </div>
+
+                            <div className="space-y-1.5 border-t border-slate-900/60 pt-3">
+                              <span className="text-[8.5px] uppercase tracking-widest font-extrabold text-slate-500 block">
+                                Conceptual Shifts & Highlights:
+                              </span>
+                              <ul className="space-y-1">
+                                {ed.keyShifts.map((shift, sIdx) => (
+                                  <li key={sIdx} className="text-[10px] text-slate-405 leading-normal flex items-start gap-1.5 font-semibold">
+                                    <span className="text-emerald-500 mt-0.5 font-bold">•</span>
+                                    <span>{shift}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+
+                          <div className="flex gap-2 mt-5 border-t border-slate-900/40 pt-4">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedOrganonEdition(ed.id);
+                                setOrganonViewMode("timeline");
+                              }}
+                              className="flex-1 py-2 bg-slate-950 hover:bg-slate-800 text-[10px] font-bold uppercase tracking-wider text-slate-300 hover:text-white rounded-xl border border-slate-900 hover:border-slate-800 cursor-pointer transition-all text-center"
+                            >
+                              Compare Shifts
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedOrganonEdition(ed.id);
+                                setOrganonViewMode("dual-panel");
+                              }}
+                              className="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-[10px] font-bold uppercase tracking-wider text-white rounded-xl border-none cursor-pointer transition-all text-center"
+                            >
+                              Study Aphorisms
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* VIEW: COMPLETE 6TH EDITION MODULE */}
+              {organonViewMode === "complete-6th-edition" && (
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch animate-fadeIn">
+                  
+                  {/* Left Column: Aphorism Navigator Sidebar (3 Cols) */}
+                  {!isFullscreenDistractionFree && (
+                    <div className="lg:col-span-3 bg-slate-900/50 border border-slate-900 p-4 rounded-3xl space-y-4 max-h-[720px] overflow-y-auto" data-lenis-prevent="true">
+                      <div className="flex justify-between items-center border-b border-slate-800 pb-2">
+                        <div>
+                          <h4 className="text-xs font-extrabold text-slate-350 uppercase tracking-widest">Aphorism Navigator</h4>
+                          <p className="text-[10px] text-slate-500 font-semibold mt-1">Browse §1 - §291 6th Edition.</p>
+                        </div>
+                        <button
+                          onClick={() => setIsLmMasterSectionOpen(true)}
+                          className="px-2 py-1 bg-emerald-950/20 border border-emerald-900/50 hover:border-emerald-500 text-emerald-400 hover:text-emerald-350 rounded-lg text-[9px] font-bold uppercase tracking-wider cursor-pointer transition-colors"
+                        >
+                          LM Master
+                        </button>
+                      </div>
+
+                      {/* Search bar */}
+                      <div className="space-y-2">
+                        <div className="relative">
+                          <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
+                          <input
+                            type="text"
+                            placeholder="Search by keyword, remedy, miasm..."
+                            value={complete6thSearchQuery}
+                            onChange={(e) => setComplete6thSearchQuery(e.target.value)}
+                            className="w-full bg-slate-950 border border-slate-850 rounded-xl pl-9 pr-3 py-2 text-xs font-semibold outline-none focus:border-emerald-600 text-white placeholder-slate-600"
+                          />
+                        </div>
+                      </div>
+
+                      {isOrganon6thLoading ? (
+                        <div className="text-center py-12">
+                          <RefreshCw className="w-5 h-5 mx-auto text-emerald-500 animate-spin mb-2" />
+                          <span className="text-[10px] text-slate-500 font-bold uppercase">Loading...</span>
+                        </div>
+                      ) : complete6thSearchQuery ? (
+                        /* Flat search list */
+                        <div className="space-y-2 max-h-[520px] overflow-y-auto pr-1" data-lenis-prevent="true">
+                          {filteredComplete6thAphorisms.map((aph) => {
+                            const cleanNo = aph.number.replace("§", "");
+                            const isSelected = selectedComplete6thAphorismId === cleanNo;
+                            return (
+                              <button
+                                key={aph.number}
+                                onClick={() => setSelectedComplete6thAphorismId(cleanNo)}
+                                className={`w-full text-left p-3 rounded-2xl border transition-all cursor-pointer flex justify-between items-center ${
+                                  isSelected 
+                                    ? "bg-emerald-600/20 border-emerald-500/80 text-emerald-355 shadow-sm" 
+                                    : "bg-slate-950 border-slate-900 text-slate-405 hover:text-slate-200"
+                                }`}
+                              >
+                                <div className="space-y-1 truncate pr-2">
+                                  <span className="text-[9.5px] font-bold block">{aph.number}</span>
+                                  <span className="text-xs font-serif font-bold truncate block">{aph.title}</span>
+                                </div>
+                                <ChevronRight className="w-3.5 h-3.5 flex-shrink-0" />
+                              </button>
+                            );
+                          })}
+                          {filteredComplete6thAphorisms.length === 0 && (
+                            <div className="text-center py-12 text-slate-500 text-xs font-semibold">
+                              No matching aphorisms found.
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        /* Standard Accordion Tree grouped by Sections */
+                        <div className="space-y-3.5 max-h-[520px] overflow-y-auto pr-1" data-lenis-prevent="true">
+                          {COMPLETE_6TH_SECTIONS.map((sec, sIdx) => {
+                            return (
+                              <div key={sIdx} className="space-y-2 bg-slate-950/45 p-3 rounded-2xl border border-slate-900">
+                                <div className="flex justify-between items-center border-b border-slate-900 pb-1.5 mb-1.5">
+                                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-350 leading-tight">
+                                    {sec.name}
+                                  </span>
+                                  <span className="text-[9px] font-mono font-bold text-slate-500 bg-slate-900 px-1.5 py-0.5 rounded-md">
+                                    §{sec.range[0]}-{sec.range[1] === 291 ? "onwards" : sec.range[1]}
+                                  </span>
+                                </div>
+                                
+                                <div className="grid grid-cols-4 gap-1.5">
+                                  {Array.from({ length: sec.range[1] - sec.range[0] + 1 }).map((_, index) => {
+                                    const aphNum = sec.range[0] + index;
+                                    if (aphNum > 291) return null;
+                                    const numStr = aphNum.toString();
+                                    const isSelected = selectedComplete6thAphorismId === numStr;
+                                    const isRead = complete6thReadList.includes(numStr);
+                                    const isMastered = complete6thMasteredList.includes(numStr);
+                                    const isRevision = complete6thRevisionList.includes(numStr);
+                                    const isWeak = complete6thWeakList.includes(numStr);
+                                    
+                                    let statusColor = "bg-transparent";
+                                    if (isMastered) statusColor = "bg-emerald-500";
+                                    else if (isRead) statusColor = "bg-blue-500";
+                                    else if (isRevision) statusColor = "bg-orange-500";
+                                    else if (isWeak) statusColor = "bg-red-500";
+                                    
+                                    return (
+                                      <button
+                                        key={numStr}
+                                        onClick={() => setSelectedComplete6thAphorismId(numStr)}
+                                        className={`relative py-2 px-1 rounded-xl text-[10px] font-extrabold font-mono tracking-wider transition-all border cursor-pointer flex flex-col items-center justify-center gap-1 ${
+                                          isSelected 
+                                            ? "bg-emerald-600/30 border-emerald-500/80 text-emerald-355 shadow-sm" 
+                                            : "bg-slate-900 border-slate-850 text-slate-450 hover:text-slate-200"
+                                        }`}
+                                        title={`Aphorism §${numStr}`}
+                                      >
+                                        <span>§{numStr}</span>
+                                        {statusColor !== "bg-transparent" && (
+                                          <span className={`w-1.5 h-1.5 rounded-full ${statusColor}`} />
+                                        )}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Middle Column: Reading Panel (5 Cols or 9 Cols in Focus Mode) */}
+                  <div className={`${isFullscreenDistractionFree ? "lg:col-span-12" : "lg:col-span-5"} flex flex-col`}>
+                    {isOrganon6thLoading || !activeFullAph ? (
+                      <div className={`flex-1 border p-6 rounded-3xl flex flex-col justify-center items-center shadow-xl min-h-[560px] ${themeBg}`}>
+                        <RefreshCw className="w-8 h-8 text-emerald-500 animate-spin mb-4" />
+                        <h4 className="text-sm font-bold text-slate-200">Synchronizing Aphorism...</h4>
+                      </div>
+                    ) : isLmMasterSectionOpen ? (
+                      /* LM POTENCY MASTER SECTION OVERLAY */
+                      <div className={`flex-1 border p-6 rounded-3xl flex flex-col justify-between shadow-xl min-h-[560px] ${themeBg}`}>
+                        <div className="space-y-4 flex-1 overflow-y-auto pr-1" data-lenis-prevent="true">
+                          <div className="flex justify-between items-center border-b border-slate-800 pb-3">
+                            <div className="flex items-center gap-2">
+                              <Sparkles className="w-5 h-5 text-emerald-400" />
+                              <h4 className="text-base font-serif font-bold text-slate-100">Samuel Hahnemann's LM Potency Masterclass</h4>
+                            </div>
+                            <button
+                              onClick={() => setIsLmMasterSectionOpen(false)}
+                              className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-[10px] font-bold uppercase tracking-wider text-slate-350 border border-slate-800 rounded-lg cursor-pointer transition-all"
+                            >
+                              Exit Masterclass
+                            </button>
+                          </div>
+                          
+                          <p className="text-xs text-slate-400 leading-relaxed font-semibold">
+                            In the final 6th Edition, Hahnemann introduced the 50 Millesimal (LM) potency scale (§270) and liquid repeated dosing (§246-248). This revolutionized homeopathic posology by facilitating rapid stimulus to the Vital Force while minimizing severe dynamic aggravations.
+                          </p>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="p-4 bg-slate-950/40 border border-slate-900 rounded-2xl space-y-2">
+                              <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest block">1. 50 Millesimal Scale (LM)</span>
+                              <p className="text-[11px] text-slate-400 font-semibold leading-relaxed">
+                                Prepared using a dilution ratio of 1:50,000 at each step. This wide ratio separates the dynamic curative signal from the toxic material carrier, ensuring high efficacy and safety.
+                              </p>
+                            </div>
+                            
+                            <div className="p-4 bg-slate-950/40 border border-slate-900 rounded-2xl space-y-2">
+                              <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest block">2. Succussion & Dynamization</span>
+                              <p className="text-[11px] text-slate-400 font-semibold leading-relaxed">
+                                Stretching the medicine's dynamic signal requires 100 forceful succussions at each step (§270-271). This structural kinetic impact unlocks the spiritual curative power.
+                              </p>
+                            </div>
+                            
+                            <div className="p-4 bg-slate-950/40 border border-slate-900 rounded-2xl space-y-2">
+                              <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest block">3. Liquid Dosing Repetition</span>
+                              <p className="text-[11px] text-slate-400 font-semibold leading-relaxed">
+                                Unlike dry globules, liquid solutions are succussed 8-12 times before each dose. This slightly alters the potency pitch, preventing the vital force from entering dynamic shock.
+                              </p>
+                            </div>
+                            
+                            <div className="p-4 bg-slate-950/40 border border-slate-900 rounded-2xl space-y-2">
+                              <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest block">4. Water Dosing Protocol (§248)</span>
+                              <p className="text-[11px] text-slate-400 font-semibold leading-relaxed">
+                                Dissolve one globule in a bottle of water. Succuss it, take one teaspoonful, stir it into a dilution cup of water, and administer one teaspoonful to the patient.
+                              </p>
+                            </div>
+                          </div>
+                          
+                          <div className="p-4 bg-emerald-950/15 border border-emerald-900/40 rounded-2xl space-y-2">
+                            <span className="text-[10px] font-bold text-emerald-450 uppercase tracking-widest block">5. Clinical Applications & Prescribing</span>
+                            <p className="text-[11px] text-slate-400 font-semibold leading-relaxed">
+                              Ideal for highly sensitive patients, chronic autoimmune flares, and severe structural pathology. Allows smooth, rapid healing without the intense aggravations of Centesimal scales.
+                            </p>
+                          </div>
+                          
+                          <div className="space-y-2 pt-3 border-t border-slate-850">
+                            <span className="text-[9.5px] font-extrabold text-slate-500 uppercase tracking-wider block">Jump to LM Potency Aphorisms:</span>
+                            <div className="flex flex-wrap gap-2">
+                              {["246", "247", "248", "269", "270", "271"].map((no) => (
+                                <button
+                                  key={no}
+                                  onClick={() => {
+                                    setSelectedComplete6thAphorismId(no);
+                                    setIsLmMasterSectionOpen(false);
+                                  }}
+                                  className="px-3.5 py-1.5 bg-slate-950 hover:bg-slate-800 border border-slate-850 hover:border-slate-700 text-slate-350 hover:text-white rounded-xl text-xs font-bold font-mono cursor-pointer transition-all"
+                                >
+                                  §{no}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ) : complete6thCompareMode ? (
+                      /* EDITION COMPARISON MODE */
+                      <div className={`flex-1 border p-6 rounded-3xl flex flex-col justify-between shadow-xl min-h-[560px] ${themeBg}`}>
+                        <div className="space-y-4 flex-1 overflow-y-auto pr-1" data-lenis-prevent="true">
+                          <div className="flex justify-between items-center border-b border-slate-800 pb-3">
+                            <div>
+                              <span className="text-[9px] uppercase tracking-widest font-extrabold text-emerald-400 block">Edition Comparison</span>
+                              <h4 className="text-sm font-serif font-bold text-slate-100 mt-1">Aphorism {activeFullAph.number} Wording & Shift Evolution</h4>
+                            </div>
+                            <button
+                              onClick={() => setComplete6thCompareMode(false)}
+                              className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-[10px] font-bold uppercase tracking-wider text-slate-350 border border-slate-850 rounded-lg cursor-pointer transition-all"
+                            >
+                              Exit Compare
+                            </button>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {Object.entries(getEditionComparisonData(selectedComplete6thAphorismId)).map(([edName, text]) => {
+                              const isSixth = edName.includes("6th");
+                              return (
+                                <div key={edName} className={`p-4 rounded-2xl border transition-all ${
+                                  isSixth ? "bg-emerald-950/20 border-emerald-500/60 shadow-inner" : "bg-slate-950/45 border-slate-900"
+                                }`}>
+                                  <span className={`text-[9.5px] font-extrabold uppercase tracking-wider block mb-2 ${
+                                    isSixth ? "text-emerald-400" : "text-slate-500"
+                                  }`}>
+                                    {edName}
+                                  </span>
+                                  <p className="text-xs text-slate-350 leading-relaxed font-semibold">
+                                    {text}
+                                  </p>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      /* STANDARD STUDY READER PANEL */
+                      <div className={`flex-1 border p-6 rounded-3xl flex flex-col justify-between shadow-xl min-h-[560px] ${themeBg}`}>
+                        
+                        {/* Reader Toolbar Header */}
+                        <div className="flex justify-between items-start border-b border-slate-800 pb-4 mb-4">
+                          <div>
+                            <span className="inline-block px-2.5 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-950/40 border border-emerald-900/50 text-emerald-400 uppercase tracking-wider">
+                              Complete 6th Edition
+                            </span>
+                            <h4 className="font-serif text-lg font-bold text-slate-100 mt-1.5">{activeFullAph.title}</h4>
+                          </div>
+                          
+                          <div className="flex items-center gap-1.5">
+                            {/* Voice Reader */}
+                            <button
+                              onClick={() => {
+                                if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+                                if (voicePlayActive) {
+                                  window.speechSynthesis.cancel();
+                                  setVoicePlayActive(false);
+                                } else {
+                                  window.speechSynthesis.cancel();
+                                  const textToSpeak = `Aphorism ${activeFullAph.number}. ${activeFullAph.title}. Original text: ${activeFullAph.originalText}. Modern interpretation: ${activeFullAph.modernTranslation}`;
+                                  const utterance = new SpeechSynthesisUtterance(textToSpeak);
+                                  utterance.onend = () => setVoicePlayActive(false);
+                                  utterance.onerror = () => setVoicePlayActive(false);
+                                  utterance.rate = 0.95;
+                                  setVoicePlayActive(true);
+                                  window.speechSynthesis.speak(utterance);
+                                }
+                              }}
+                              className={`p-2 rounded-xl border border-slate-800 hover:bg-slate-800 cursor-pointer text-slate-300 transition-all ${
+                                voicePlayActive ? "bg-emerald-950 border-emerald-500 text-emerald-400" : "bg-slate-950"
+                              }`}
+                              title={voicePlayActive ? "Stop Voice Reader" : "Voice Reader"}
+                            >
+                              <Play className="w-3.5 h-3.5" />
+                            </button>
+                            
+                            {/* Compare Editions Button */}
+                            <button
+                              onClick={() => setComplete6thCompareMode(true)}
+                              className="p-2 bg-slate-950 border border-slate-800 hover:bg-slate-800 rounded-xl text-slate-300 cursor-pointer transition-colors text-xs font-bold uppercase tracking-wider"
+                              title="Compare Wording Across Editions"
+                            >
+                              Compare
+                            </button>
+
+                            {/* Export Notes */}
+                            <button
+                              onClick={handleExportNotes}
+                              className="p-2 bg-slate-950 border border-slate-800 hover:bg-slate-800 rounded-xl text-slate-300 cursor-pointer transition-colors"
+                              title="Export Study Notes"
+                            >
+                              <FileText className="w-3.5 h-3.5" />
+                            </button>
+
+                            {/* Print notes */}
+                            <button
+                              onClick={handlePrintNotes}
+                              className="p-2 bg-slate-950 border border-slate-800 hover:bg-slate-800 rounded-xl text-slate-300 cursor-pointer transition-colors"
+                              title="Print Aphorism Notes"
+                            >
+                              <Printer className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Aphorism content block */}
+                        <div className="space-y-6 flex-1 overflow-y-auto pr-1" data-lenis-prevent="true">
+                          {/* Original Text */}
+                          <div className="space-y-2.5">
+                            <label className="text-[9.5px] uppercase font-extrabold text-slate-500 tracking-widest block">Original Text (6th Edition)</label>
+                            <blockquote className={`border-l-4 border-emerald-500 pl-4 py-1 italic font-serif leading-relaxed text-slate-300 ${organonBodyTextSize}`}>
+                              "{activeFullAph.originalText}"
+                            </blockquote>
+                          </div>
+
+                          {/* Modern English interpretation */}
+                          <div className="space-y-2.5">
+                            <label className="text-[9.5px] uppercase font-extrabold text-slate-500 tracking-widest block">Modern English Interpretation</label>
+                            <div className={`p-4 bg-slate-950/40 border border-slate-900 rounded-2xl leading-relaxed text-slate-400 ${organonBodyTextSize}`}>
+                              {activeFullAph.modernTranslation}
+                            </div>
+                          </div>
+
+                          {/* Clinical Application */}
+                          <div className="space-y-2.5">
+                            <label className="text-[9.5px] uppercase font-extrabold text-slate-500 tracking-widest block">Clinical Application</label>
+                            <div className={`p-4 bg-slate-950/40 border border-slate-900 rounded-2xl leading-relaxed text-slate-400 ${organonBodyTextSize}`}>
+                              {activeFullAph.clinicalMeaning}
+                            </div>
+                          </div>
+
+                          {/* Key Concepts */}
+                          <div className="space-y-2.5">
+                            <label className="text-[9.5px] uppercase font-extrabold text-slate-500 tracking-widest block">Key Concepts</label>
+                            <div className="flex flex-wrap gap-2">
+                              {activeFullAph.keyConcepts?.map((c: string) => (
+                                <span key={c} className="text-[10px] font-bold bg-emerald-950/20 border border-emerald-900/40 text-emerald-400 px-2.5 py-1 rounded-full">
+                                  {c}
+                                </span>
+                              )) || <span className="text-xs text-slate-500 italic">None</span>}
+                            </div>
+                          </div>
+
+                          {/* Important Exam Points */}
+                          <div className="space-y-2.5">
+                            <label className="text-[9.5px] uppercase font-extrabold text-slate-500 tracking-widest block">Important Exam Points</label>
+                            <ul className="space-y-2 bg-slate-950/25 border border-slate-900/60 p-4 rounded-2xl">
+                              {activeFullAph.examNotes?.map((note: string, nIdx: number) => (
+                                <li key={nIdx} className="text-xs text-slate-400 leading-normal flex items-start gap-2 font-semibold">
+                                  <span className="text-emerald-500 mt-1 flex-shrink-0">•</span>
+                                  <span>{note}</span>
+                                </li>
+                              )) || <li className="text-xs text-slate-500 italic">None</li>}
+                            </ul>
+                          </div>
+
+                          {/* Cross-Disciplinary Connections */}
+                          <div className="space-y-4 pt-4 border-t border-slate-900">
+                            <div className="flex items-center gap-2">
+                              <Workflow className="w-4 h-4 text-emerald-400" />
+                              <span className="text-[10px] uppercase tracking-widest font-extrabold text-slate-350">Cross-Disciplinary Connections</span>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              {/* Repertory Links */}
+                              <div className="p-3 bg-slate-950/45 border border-slate-900 rounded-2xl space-y-2 text-xs font-semibold leading-normal">
+                                <span className="text-[9px] uppercase tracking-widest font-bold text-teal-400">Repertory Links</span>
+                                <div className="space-y-1.5 text-slate-450">
+                                  <div className="flex justify-between">
+                                    <span className="text-slate-550">Rubrics:</span>
+                                    <span className="text-[10.5px] text-slate-350">{activeFullAph.keyConcepts?.join(", ") || "No mapping"}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-slate-550">Principles:</span>
+                                    <span className="text-[10.5px] text-slate-350">{activeFullAph.relatedOrganonTopics?.slice(0, 2).join(", ") || "No mapping"}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              {/* Materia Medica Links */}
+                              <div className="p-3 bg-slate-950/45 border border-slate-900 rounded-2xl space-y-2 text-xs font-semibold leading-normal">
+                                <span className="text-[9px] uppercase tracking-widest font-bold text-violet-400">Materia Medica Links</span>
+                                <div className="space-y-1.5 text-slate-400">
+                                  <span className="text-slate-550 block mb-1">Click remedy to review profile:</span>
+                                  <div className="flex flex-wrap gap-1.5">
+                                    {activeFullAph.relatedRemedies?.map((rem: string) => (
+                                      <button
+                                        key={rem}
+                                        onClick={() => {
+                                          setLearningHubModule("materia-medica");
+                                          setLearningSubTab("cds");
+                                          const standardRemName = rem.toLowerCase() === "sulph" ? "rem_sulphur" :
+                                                                  rem.toLowerCase() === "ars" ? "rem_arsenicum" :
+                                                                  rem.toLowerCase() === "nux-v" ? "rem_nux_vomica" :
+                                                                  rem.toLowerCase() === "puls" ? "rem_pulsatilla" :
+                                                                  rem.toLowerCase() === "lyc" ? "rem_lycopodium" : "rem_sulphur";
+                                          setLearningRemedyId(standardRemName);
+                                        }}
+                                        className="px-2 py-0.5 bg-slate-900 hover:bg-slate-800 border border-slate-850 hover:border-slate-700 text-slate-300 rounded text-[9.5px] font-bold cursor-pointer transition-colors"
+                                      >
+                                        {rem}
+                                      </button>
+                                    )) || <span className="text-xs text-slate-500 italic">None</span>}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Study Progress dashboard */}
+                          <div className="space-y-3 pt-4 border-t border-slate-900">
+                            <span className="text-[10px] uppercase tracking-widest font-extrabold text-slate-350 block">Study Progress Tracker</span>
+                            
+                            <div className="grid grid-cols-4 gap-2 text-center bg-slate-950/30 p-3 rounded-2xl border border-slate-900">
+                              <div>
+                                <span className="text-[8.5px] uppercase font-extrabold tracking-wider text-slate-500">Read</span>
+                                <h5 className="text-xs font-bold text-slate-305 mt-0.5">{complete6thReadList.length} / 291</h5>
+                              </div>
+                              <div>
+                                <span className="text-[8.5px] uppercase font-extrabold tracking-wider text-slate-500">Mastered</span>
+                                <h5 className="text-xs font-bold text-emerald-400 mt-0.5">{complete6thMasteredList.length} / 291</h5>
+                              </div>
+                              <div>
+                                <span className="text-[8.5px] uppercase font-extrabold tracking-wider text-slate-500">Revision</span>
+                                <h5 className="text-xs font-bold text-orange-400 mt-0.5">{complete6thRevisionList.length}</h5>
+                              </div>
+                              <div>
+                                <span className="text-[8.5px] uppercase font-extrabold tracking-wider text-slate-500">Weak Areas</span>
+                                <h5 className="text-xs font-bold text-red-400 mt-0.5">{complete6thWeakList.length}</h5>
+                              </div>
+                            </div>
+                            
+                            <div className="flex flex-wrap gap-2 pt-1">
+                              <button
+                                onClick={handleToggleRead}
+                                className={`px-2.5 py-1.5 rounded-xl text-[9px] font-bold uppercase tracking-wider transition-colors border cursor-pointer ${
+                                  complete6thReadList.includes(selectedComplete6thAphorismId)
+                                    ? "bg-blue-950/30 border-blue-500/50 text-blue-400"
+                                    : "bg-slate-950 border-slate-900 text-slate-500 hover:text-slate-300"
+                                }`}
+                              >
+                                {complete6thReadList.includes(selectedComplete6thAphorismId) ? "Marked as Read" : "Mark as Read"}
+                              </button>
+                              <button
+                                onClick={handleToggleMastered}
+                                className={`px-2.5 py-1.5 rounded-xl text-[9px] font-bold uppercase tracking-wider transition-colors border cursor-pointer ${
+                                  complete6thMasteredList.includes(selectedComplete6thAphorismId)
+                                    ? "bg-emerald-950/30 border-emerald-500/50 text-emerald-400"
+                                    : "bg-slate-950 border-slate-900 text-slate-500 hover:text-slate-300"
+                                }`}
+                              >
+                                {complete6thMasteredList.includes(selectedComplete6thAphorismId) ? "Mastered" : "Mark as Mastered"}
+                              </button>
+                              <button
+                                onClick={handleToggleRevision}
+                                className={`px-2.5 py-1.5 rounded-xl text-[9px] font-bold uppercase tracking-wider transition-colors border cursor-pointer ${
+                                  complete6thRevisionList.includes(selectedComplete6thAphorismId)
+                                    ? "bg-orange-950/30 border-orange-500/50 text-orange-400"
+                                    : "bg-slate-950 border-slate-900 text-slate-500 hover:text-slate-300"
+                                }`}
+                              >
+                                {complete6thRevisionList.includes(selectedComplete6thAphorismId) ? "Revision Due" : "Schedule Revision"}
+                              </button>
+                              <button
+                                onClick={handleToggleWeak}
+                                className={`px-2.5 py-1.5 rounded-xl text-[9px] font-bold uppercase tracking-wider transition-colors border cursor-pointer ${
+                                  complete6thWeakList.includes(selectedComplete6thAphorismId)
+                                    ? "bg-red-950/30 border-red-500/50 text-red-400"
+                                    : "bg-slate-950 border-slate-900 text-slate-500 hover:text-slate-300"
+                                }`}
+                              >
+                                {complete6thWeakList.includes(selectedComplete6thAphorismId) ? "Weak Area" : "Mark as Weak Area"}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Footer navigation */}
+                        <div className="border-t border-slate-800 pt-4 mt-4 flex justify-between items-center text-xs">
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => {
+                                const cleanNo = Number(selectedComplete6thAphorismId);
+                                if (cleanNo > 1) {
+                                  setSelectedComplete6thAphorismId(String(cleanNo - 1));
+                                }
+                              }}
+                              className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 rounded-xl cursor-pointer transition-colors border-none"
+                            >
+                              Prev
+                            </button>
+                            <button
+                              onClick={() => {
+                                const cleanNo = Number(selectedComplete6thAphorismId);
+                                if (cleanNo < 291) {
+                                  setSelectedComplete6thAphorismId(String(cleanNo + 1));
+                                }
+                              }}
+                              className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 rounded-xl cursor-pointer transition-colors border-none"
+                            >
+                              Next
+                            </button>
+                          </div>
+
+                          <span className="text-[10px] font-mono text-slate-500 uppercase font-extrabold tracking-wider">Aphorism §{selectedComplete6thAphorismId}</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Right Column: AI Explainer Sidebar (4 Cols) */}
+                  {!isFullscreenDistractionFree && (
+                    <div className="lg:col-span-4 bg-slate-900/50 border border-slate-900 p-5 rounded-3xl flex flex-col justify-between max-h-[720px]">
+                      
+                      <div className="space-y-4 overflow-y-auto flex-1 pr-1" data-lenis-prevent="true">
+                        <div>
+                          <h4 className="text-xs font-extrabold text-slate-300 uppercase tracking-widest border-b border-slate-800 pb-2">AI Organon Explainer</h4>
+                          <span className="text-[9.5px] text-slate-500 font-semibold mt-1 block leading-normal">Interactive study aids and comparison consoles.</span>
+                        </div>
+                        
+                        {/* Selector Tabs */}
+                        <div className="grid grid-cols-5 gap-1">
+                          {[
+                            { id: "explain", label: "Explain" },
+                            { id: "questions", label: "Quiz" },
+                            { id: "examples", label: "Cases" },
+                            { id: "interpretation", label: "Clinical" },
+                            { id: "compare", label: "Compare" }
+                          ].map((tab) => {
+                            const isActive = complete6thRightPanelMode === tab.id;
+                            return (
+                              <button
+                                key={tab.id}
+                                onClick={() => handleRightPanelAction(tab.id as any)}
+                                className={`py-1 px-0.5 rounded-lg text-[9px] font-extrabold uppercase tracking-wider transition-all border cursor-pointer text-center ${
+                                  isActive 
+                                    ? "bg-emerald-600 border-emerald-500 text-white shadow" 
+                                    : "bg-slate-950 border-slate-900 text-slate-400 hover:text-slate-200"
+                                }`}
+                              >
+                                {tab.label}
+                              </button>
+                            );
+                          })}
+                        </div>
+                        
+                        {/* Dynamic Explanation view */}
+                        <div className="space-y-4 mt-2">
+                          {complete6thRightPanelMode === "questions" ? (
+                            /* ACTIVE RECALL QUIZ SYSTEM */
+                            <div className="space-y-4">
+                              <div className="flex justify-between items-center border-b border-slate-900 pb-1.5">
+                                <span className="text-[9.5px] uppercase tracking-widest font-extrabold text-teal-400">Recall Quiz ({complete6thActiveRecallIndex + 1} / 5)</span>
+                                <span className="text-[9px] bg-teal-950 text-teal-400 px-2 py-0.5 rounded font-bold uppercase">
+                                  {complete6thRecallItems[complete6thActiveRecallIndex]?.type}
+                                </span>
+                              </div>
+                              
+                              <div className="bg-slate-950 p-4 rounded-2xl border border-slate-900 space-y-3">
+                                <p className="text-xs text-slate-200 font-semibold leading-relaxed">
+                                  {complete6thRecallItems[complete6thActiveRecallIndex]?.question}
+                                </p>
+                                
+                                {/* MCQ options list */}
+                                {complete6thRecallItems[complete6thActiveRecallIndex]?.type === "mcq" && (
+                                  <div className="space-y-2">
+                                    {complete6thRecallItems[complete6thActiveRecallIndex]?.options?.map((opt: string, oIdx: number) => {
+                                      const isUserSel = complete6thActiveRecallUserAnswer === String(oIdx);
+                                      const isCorrectAns = String(oIdx) === complete6thRecallItems[complete6thActiveRecallIndex]?.correctAnswer;
+                                      
+                                      let optionClass = "bg-slate-900 border-slate-850 text-slate-400 hover:text-slate-200 hover:bg-slate-850";
+                                      if (complete6thActiveRecallChecked) {
+                                        if (isCorrectAns) optionClass = "bg-emerald-950/40 border-emerald-500/60 text-emerald-400";
+                                        else if (isUserSel) optionClass = "bg-red-950/40 border-red-500/60 text-red-400";
+                                      } else if (isUserSel) {
+                                        optionClass = "bg-emerald-950/30 border-emerald-500/50 text-emerald-350";
+                                      }
+                                      
+                                      return (
+                                        <button
+                                          key={oIdx}
+                                          disabled={complete6thActiveRecallChecked}
+                                          onClick={() => setComplete6thActiveRecallUserAnswer(String(oIdx))}
+                                          className={`w-full text-left p-2.5 rounded-xl border text-xs font-semibold cursor-pointer transition-all flex items-start gap-2 ${optionClass}`}
+                                        >
+                                          <span className="font-mono font-extrabold">Option {oIdx + 1}:</span>
+                                          <span>{opt}</span>
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                )}
+                                
+                                {/* True / False buttons */}
+                                {complete6thRecallItems[complete6thActiveRecallIndex]?.type === "true-false" && (
+                                  <div className="grid grid-cols-2 gap-3">
+                                    {["True", "False"].map((val) => {
+                                      const isUserSel = complete6thActiveRecallUserAnswer === val;
+                                      const isCorrectAns = val === complete6thRecallItems[complete6thActiveRecallIndex]?.correctAnswer;
+                                      
+                                      let optionClass = "bg-slate-900 border-slate-850 text-slate-400 hover:text-slate-250";
+                                      if (complete6thActiveRecallChecked) {
+                                        if (isCorrectAns) optionClass = "bg-emerald-950/40 border-emerald-500/60 text-emerald-400";
+                                        else if (isUserSel) optionClass = "bg-red-950/40 border-red-500/60 text-red-400";
+                                      } else if (isUserSel) {
+                                        optionClass = "bg-emerald-950/30 border-emerald-500/50 text-emerald-350";
+                                      }
+                                      
+                                      return (
+                                        <button
+                                          key={val}
+                                          disabled={complete6thActiveRecallChecked}
+                                          onClick={() => setComplete6thActiveRecallUserAnswer(val)}
+                                          className={`w-full py-2.5 rounded-xl border text-xs font-extrabold cursor-pointer transition-all text-center ${optionClass}`}
+                                        >
+                                          {val}
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                )}
+                                
+                                {/* Flashcard / Viva reveal */}
+                                {["flashcard", "oral-viva", "case-based"].includes(complete6thRecallItems[complete6thActiveRecallIndex]?.type) && (
+                                  <div className="space-y-3">
+                                    {complete6thActiveRecallChecked ? (
+                                      <div className="p-3 bg-emerald-955/20 border border-emerald-900/40 rounded-xl space-y-1.5">
+                                        <span className="text-[9px] uppercase tracking-widest font-extrabold text-emerald-450 block">Answer Key</span>
+                                        <p className="text-xs text-slate-350 font-semibold leading-relaxed whitespace-pre-line">
+                                          {complete6thRecallItems[complete6thActiveRecallIndex]?.correctAnswer}
+                                        </p>
+                                      </div>
+                                    ) : (
+                                      <button
+                                        onClick={() => setComplete6thActiveRecallChecked(true)}
+                                        className="w-full py-2.5 bg-emerald-950/30 hover:bg-emerald-950/50 text-emerald-400 hover:text-emerald-350 border border-emerald-900/50 rounded-xl text-xs font-extrabold cursor-pointer transition-colors text-center"
+                                      >
+                                        Reveal Answer
+                                      </button>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                              
+                              {/* Answer explanation card */}
+                              {complete6thActiveRecallChecked && (
+                                <div className="p-3.5 bg-slate-950/50 border border-slate-900 rounded-2xl space-y-2 text-xs font-semibold leading-normal">
+                                  <span className="text-[9px] uppercase tracking-widest font-bold text-slate-500 block">Explanation</span>
+                                  <p className="text-slate-400 font-medium leading-relaxed">
+                                    {complete6thRecallItems[complete6thActiveRecallIndex]?.explanation}
+                                  </p>
+                                </div>
+                              )}
+                              
+                              {/* Submit/Next Controls */}
+                              <div className="flex gap-2">
+                                {!complete6thActiveRecallChecked && ["mcq", "true-false"].includes(complete6thRecallItems[complete6thActiveRecallIndex]?.type) && (
+                                  <button
+                                    disabled={!complete6thActiveRecallUserAnswer}
+                                    onClick={() => {
+                                      setComplete6thActiveRecallChecked(true);
+                                      const isCorrect = complete6thActiveRecallUserAnswer === complete6thRecallItems[complete6thActiveRecallIndex]?.correctAnswer;
+                                      if (isCorrect) {
+                                        setComplete6thActiveRecallStreak(prev => prev + 1);
+                                      } else {
+                                        setComplete6thActiveRecallStreak(0);
+                                      }
+                                    }}
+                                    className="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer border-none transition-colors"
+                                  >
+                                    Submit Answer
+                                  </button>
+                                )}
+                                {complete6thActiveRecallChecked && (
+                                  <button
+                                    onClick={() => {
+                                      setComplete6thActiveRecallChecked(false);
+                                      setComplete6thActiveRecallUserAnswer("");
+                                      setComplete6thActiveRecallIndex((prev) => (prev + 1) % 5);
+                                    }}
+                                    className="flex-1 py-2 bg-slate-950 hover:bg-slate-900 border border-slate-900 text-slate-300 rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer transition-colors"
+                                  >
+                                    Next Question
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          ) : (
+                            /* GENERAL EXPLAINER VIEWS */
+                            <div className="space-y-3">
+                              <div className="flex justify-between items-center border-b border-slate-900 pb-1.5">
+                                <span className="text-[10px] uppercase tracking-widest font-extrabold text-teal-400">
+                                  {complete6thRightPanelMode === "explain" ? "Explanation Console" :
+                                   complete6thRightPanelMode === "examples" ? "Clinical Case Examples" : "Clinical application guidelines"}
+                                </span>
+                                <span className="text-[9px] bg-slate-950 text-slate-400 px-2 py-0.5 rounded font-bold uppercase">AI SAMUEL</span>
+                              </div>
+                              
+                              <div className="bg-black/45 border border-slate-950 rounded-2xl p-4 min-h-[300px] max-h-[380px] overflow-y-auto font-semibold text-xs leading-relaxed text-slate-350 space-y-3" data-lenis-prevent="true">
+                                {complete6thExplanationLoading ? (
+                                  <div className="flex items-center gap-2 text-slate-500 py-8 justify-center h-full">
+                                    <RefreshCw className="w-4 h-4 animate-spin text-emerald-500" />
+                                    <span className="text-xs italic font-semibold">Samuel Hahnemann is explaining...</span>
+                                  </div>
+                                ) : complete6thExplainResult ? (
+                                  <p className="whitespace-pre-line leading-relaxed">{complete6thExplainResult}</p>
+                                ) : (
+                                  <div className="text-center py-12 text-slate-650 font-semibold space-y-2">
+                                    <Brain className="w-8 h-8 mx-auto text-slate-805 breathe" />
+                                    <p>Select any category above to generate dynamic study aids or compare editions dynamically.</p>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Chat link console */}
+                      <div className="border-t border-slate-900 pt-3 mt-3 flex justify-between items-center">
+                        <span className="text-[9px] text-slate-550 font-bold uppercase">Chat Integration Console</span>
+                        <button
+                          onClick={() => {
+                            setOrganonViewMode("dual-panel");
+                            handleSuggestionClick(`Explain Aphorism §${selectedComplete6thAphorismId} in detail`);
+                          }}
+                          className="px-2.5 py-1.5 bg-emerald-950/20 hover:bg-emerald-950/40 border border-emerald-900/50 hover:border-emerald-500 text-emerald-400 hover:text-emerald-350 rounded-lg text-[9.5px] font-bold cursor-pointer transition-colors"
+                        >
+                          Open AI Tutor Chat
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* VIEW A: DUAL PANEL READER */}
+              {organonViewMode === "dual-panel" && (
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                  
+                  {/* Left Column: Explorer Knowledge Tree Sidebar (3 Cols) */}
+                  {!isFullscreenDistractionFree && (
+                    <div className="lg:col-span-3 bg-slate-900/50 border border-slate-900 p-4 rounded-3xl space-y-4 max-h-[720px] overflow-y-auto" data-lenis-prevent="true">
+                      <div>
+                        <h4 className="text-xs font-extrabold text-slate-300 uppercase tracking-widest border-b border-slate-800 pb-2">Organon Curriculum</h4>
+                        <p className="text-[10px] text-slate-500 font-semibold mt-1">Browse conceptual Aphorism branches.</p>
+                      </div>
+
+                      <div className="space-y-3.5">
+                        {ORGANON_KNOWLEDGE_TREE.map((branch, bIdx) => (
+                          <div key={bIdx} className="space-y-1.5 bg-slate-950/40 p-2.5 rounded-2xl border border-slate-900">
+                            <span className="text-[10.5px] font-bold text-slate-300 block leading-tight">{branch.title}</span>
+                            <span className="text-[9px] text-slate-500 font-medium leading-relaxed block">{branch.description}</span>
+                            
+                            <div className="flex flex-wrap gap-1.5 pt-1.5">
+                              {branch.aphorisms.map((aphNo) => {
+                                const cleanNo = aphNo.replace("§", "");
+                                const isSelected = selectedAphorismId === cleanNo;
+                                return (
+                                  <button
+                                    key={aphNo}
+                                    onClick={() => handleAphorismChange(cleanNo)}
+                                    className={`px-2 py-1 rounded-lg text-[9.5px] font-extrabold tracking-wider transition-all border cursor-pointer ${
+                                      isSelected 
+                                        ? "bg-emerald-600/30 border-emerald-500/50 text-emerald-300" 
+                                        : "bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200"
+                                    }`}
+                                  >
+                                    {aphNo}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Middle Column: Aphorism Core Reader (5 or 9 Cols depending on Fullscreen focus) */}
+                  <div className={`${isFullscreenDistractionFree ? "lg:col-span-12" : "lg:col-span-5"} flex flex-col`}>
+                    <div className={`flex-1 border p-6 rounded-3xl flex flex-col justify-between shadow-xl relative min-h-[560px] ${themeBg}`}>
+                      
+                      {/* Reader Header */}
+                      <div className="flex justify-between items-start border-b border-slate-800 pb-4 mb-4">
+                        <div>
+                          <span className="inline-block px-2.5 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-950/40 border border-emerald-900/50 text-emerald-400 uppercase tracking-wider">
+                            {activeAphorism.edition}
+                          </span>
+                          <h4 className="font-serif text-lg font-bold text-slate-100 mt-1.5">{activeAphorism.title}</h4>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            onClick={playVoiceAudio}
+                            className={`p-2.5 rounded-xl border border-slate-800 hover:bg-slate-800 cursor-pointer text-slate-300 transition-all ${
+                              voicePlayActive ? "bg-emerald-950 border-emerald-500 text-emerald-400" : "bg-slate-950"
+                            }`}
+                            title={voicePlayActive ? "Stop Voice Reader" : "Voice Reader"}
+                          >
+                            <Play className="w-3.5 h-3.5" />
+                          </button>
+                          
+                          {/* Speech active pulsating indicator */}
+                          {voicePlayActive && (
+                            <div className="flex items-center gap-0.5 px-2 py-1 bg-emerald-950 border border-emerald-900 rounded-lg">
+                              <span className="w-1.5 h-3.5 bg-emerald-500 rounded animate-pulse" />
+                              <span className="w-1.5 h-2.5 bg-emerald-500 rounded animate-pulse delay-75" />
+                              <span className="w-1.5 h-4 bg-emerald-500 rounded animate-pulse delay-150" />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Aphorism Original Text block */}
+                      <div className="space-y-6 flex-1 overflow-y-auto pr-1" data-lenis-prevent="true">
+                        <div className="space-y-2.5">
+                          <label className="text-[9.5px] uppercase font-extrabold text-slate-500 tracking-widest block">Original Text (German translation)</label>
+                          <blockquote className={`border-l-4 border-emerald-500 pl-4 py-1 italic font-serif leading-relaxed text-slate-300 ${organonBodyTextSize}`}>
+                            "{activeAphorism.originalText}"
+                          </blockquote>
+                        </div>
+
+                        {/* Modern Translation */}
+                        <div className="space-y-2.5">
+                          <label className="text-[9.5px] uppercase font-extrabold text-slate-500 tracking-widest block">Modern Plain Translation</label>
+                          <div className={`p-4 bg-slate-950/40 border border-slate-900 rounded-2xl leading-relaxed text-slate-400 ${organonBodyTextSize}`}>
+                            {activeAphorism.modernTranslation}
+                          </div>
+                        </div>
+
+                        {/* Repertory Link */}
+                        <div className="p-3 bg-slate-900/30 border border-slate-800/80 rounded-2xl flex items-center justify-between text-xs font-bold text-slate-300">
+                          <div className="flex items-center gap-2">
+                            <Compass className="w-4 h-4 text-emerald-400" />
+                            <span>Repertory Link Correlation:</span>
+                          </div>
+                          <span className="text-[10px] text-teal-400 font-extrabold uppercase">{activeAphorism.repertoryLink ? "Configured" : "None"}</span>
+                        </div>
+                      </div>
+
+                      {/* Footer reader actions */}
+                      <div className="border-t border-slate-800 pt-4 mt-4 flex justify-between items-center text-xs">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => {
+                              const cleanNo = Number(activeAphorism.id);
+                              if (cleanNo > 1) {
+                                // Find previous available ID in populated DB
+                                const populatedIds = ORGANON_APHORISMS.map(a => Number(a.id)).sort((a,b)=>a-b);
+                                const currentIdx = populatedIds.indexOf(cleanNo);
+                                if (currentIdx > 0) handleAphorismChange(String(populatedIds[currentIdx - 1]));
+                              }
+                            }}
+                            className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 rounded-xl cursor-pointer transition-colors border-none"
+                          >
+                            Prev
+                          </button>
+                          <button
+                            onClick={() => {
+                              const cleanNo = Number(activeAphorism.id);
+                              const populatedIds = ORGANON_APHORISMS.map(a => Number(a.id)).sort((a,b)=>a-b);
+                              const currentIdx = populatedIds.indexOf(cleanNo);
+                              if (currentIdx !== -1 && currentIdx < populatedIds.length - 1) {
+                                handleAphorismChange(String(populatedIds[currentIdx + 1]));
+                              }
+                            }}
+                            className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 rounded-xl cursor-pointer transition-colors border-none"
+                          >
+                            Next
+                          </button>
+                        </div>
+
+                        <span className="text-[10px] font-mono text-slate-500 uppercase font-extrabold tracking-wider">Aphorism {activeAphorism.number}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column: AI Explanation & Hahnemann Chat (4 Cols) */}
+                  {!isFullscreenDistractionFree && (
+                    <div className="lg:col-span-4 bg-slate-900/50 border border-slate-900 p-5 rounded-3xl flex flex-col justify-between max-h-[720px]">
+                      
+                      <div className="space-y-4 overflow-y-auto flex-1 pr-1" data-lenis-prevent="true">
+                        <div>
+                          <h4 className="text-xs font-extrabold text-slate-300 uppercase tracking-widest border-b border-slate-800 pb-2">Hahnemannian AI Insights</h4>
+                          <span className="text-[9.5px] text-slate-500 font-semibold mt-1 block leading-normal">Clinical interpretations by active study mode context.</span>
+                        </div>
+
+                        {/* Detailed meaning lists */}
+                        <div className="space-y-3.5 text-xs">
+                          <div className="space-y-1">
+                            <span className="text-[9px] uppercase tracking-widest font-extrabold text-emerald-400">Clinical Core Meaning</span>
+                            <p className="text-slate-400 font-semibold leading-relaxed">{activeAphorism.clinicalMeaning}</p>
+                          </div>
+                          
+                          <div className="space-y-1">
+                            <span className="text-[9px] uppercase tracking-widest font-extrabold text-teal-400">Practical Application</span>
+                            <p className="text-slate-400 font-semibold leading-relaxed">{activeAphorism.practicalApplication}</p>
+                          </div>
+
+                          <div className="space-y-1">
+                            <span className="text-[9px] uppercase tracking-widest font-extrabold text-violet-400">Daily Practice Example</span>
+                            <p className="text-slate-400 font-semibold leading-relaxed">{activeAphorism.dailyPracticeExample}</p>
+                          </div>
+
+                          <div className="flex flex-wrap gap-1.5 pt-1 border-t border-slate-900">
+                            {activeAphorism.relatedConcepts.map(c => (
+                              <span key={c} className="text-[9px] font-bold bg-slate-950 border border-slate-900 text-slate-400 px-2 py-0.5 rounded-full">
+                                {c}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* AI Chat Integration Panel */}
+                        <div className="border-t border-slate-900 pt-4 space-y-4">
+                          <div className="flex items-center gap-2">
+                            <Brain className="w-4 h-4 text-emerald-400 animate-pulse" />
+                            <h4 className="text-[11px] font-extrabold text-slate-200 uppercase tracking-wider">AI Organon Tutor (Chat with Hahnemann™)</h4>
+                          </div>
+
+                          {/* Chat Box */}
+                          <div className="bg-black/40 border border-slate-950 rounded-2xl p-3 h-52 overflow-y-auto space-y-3 font-semibold text-[10.5px] leading-relaxed shadow-inner" data-lenis-prevent="true">
+                            {organonChatHistory.map((msg, mIdx) => (
+                              <div key={mIdx} className={`flex flex-col ${msg.sender === "user" ? "items-end" : "items-start"}`}>
+                                <div className={`p-2.5 rounded-2xl max-w-[85%] leading-normal ${
+                                  msg.sender === "user" 
+                                    ? "bg-emerald-950/60 border border-emerald-900/50 text-emerald-300" 
+                                    : "bg-slate-900/80 border border-slate-800/80 text-slate-300"
+                                }`}>
+                                  {msg.text}
+                                </div>
+                                <span className="text-[8px] text-slate-600 font-bold uppercase mt-1 tracking-wider px-1">
+                                  {msg.sender === "user" ? "Clinician" : "Samuel Hahnemann"}
+                                </span>
+                              </div>
+                            ))}
+                            {isOrganonChatLoading && (
+                              <div className="flex items-center gap-2 text-slate-500 py-2">
+                                <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-500" />
+                                <span className="text-[9.5px] italic font-semibold">Tuning Vital Force...</span>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Suggested Queries */}
+                          <div className="space-y-1">
+                            <span className="text-[8.5px] font-bold text-slate-500 uppercase tracking-widest block">Quick Discussion prompts:</span>
+                            <div className="flex flex-col gap-1">
+                              {[
+                                `Explain §${activeAphorism.number} in chronic cases`,
+                                `Clinical example for §${activeAphorism.number}`,
+                                `How to avoid aggravation in §${activeAphorism.number}`
+                              ].map((prompt, pIdx) => (
+                                <button
+                                  key={pIdx}
+                                  onClick={() => handleSuggestionClick(prompt)}
+                                  className="text-left text-[9.5px] font-bold text-emerald-400 hover:text-emerald-300 bg-emerald-950/10 hover:bg-emerald-950/20 border border-emerald-900/50 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer block leading-normal whitespace-normal w-full"
+                                >
+                                  {prompt}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Chat Input Field Container */}
+                      <div className="flex gap-2 pt-3 border-t border-slate-900 mt-3">
+                        <input
+                          type="text"
+                          placeholder="Ask Hahnemann..."
+                          value={organonChatInput}
+                          onChange={(e) => setOrganonChatInput(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") handleSendOrganonChat();
+                          }}
+                          className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs font-semibold outline-none focus:border-emerald-600 text-white placeholder-slate-600"
+                        />
+                        <button
+                          onClick={handleSendOrganonChat}
+                          className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer border-none"
+                        >
+                          Send
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* VIEW B: INTERACTIVE RELATIONSHIP MIND-MAP */}
+              {organonViewMode === "relationship-graph" && (
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                  
+                  {/* Left Controls (4 Cols) */}
+                  <div className="lg:col-span-4 bg-slate-900/50 border border-slate-900 p-5 rounded-3xl space-y-4">
+                    <div>
+                      <h4 className="text-xs font-extrabold text-slate-300 uppercase tracking-widest border-b border-slate-800 pb-2">Graph Explorer</h4>
+                      <p className="text-[10px] text-slate-500 font-semibold mt-1 leading-normal">
+                        Click on nodes to trace active correlations of Aphorism §{activeAphorism.number} across categories.
+                      </p>
+                    </div>
+
+                    <div className="bg-slate-950 p-4 rounded-2xl border border-slate-900 space-y-3.5 text-xs">
+                      <div className="flex items-center justify-between border-b border-slate-900 pb-1.5">
+                        <span className="text-[9px] uppercase font-extrabold text-slate-500">Active Node Details</span>
+                        <span className="text-[9px] bg-emerald-950 text-emerald-400 px-2 py-0.5 rounded font-extrabold uppercase">Aphorism</span>
+                      </div>
+                      
+                      <div className="space-y-1.5">
+                        <strong className="text-slate-200 block text-xs">Aphorism §{activeAphorism.number}</strong>
+                        <p className="text-[10px] text-slate-400 font-semibold leading-relaxed">
+                          Title: {activeAphorism.title}
+                        </p>
+                        <p className="text-[10px] text-slate-400 font-semibold leading-relaxed">
+                          Miasmatic focus: Psora. Related Polychrests: {activeAphorism.relatedRemedies.join(", ")}.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Nodes Legend list */}
+                    <div className="space-y-2">
+                      <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest block">Graph Legend:</span>
+                      <div className="flex flex-wrap gap-2 text-[9.5px] font-bold">
+                        <span className="flex items-center gap-1.5 bg-emerald-950/40 border border-emerald-900 text-emerald-400 px-2 py-1 rounded-lg">
+                          <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                          <span>Aphorism Node</span>
+                        </span>
+                        <span className="flex items-center gap-1.5 bg-amber-950/40 border border-amber-900 text-amber-400 px-2 py-1 rounded-lg">
+                          <span className="w-2 h-2 rounded-full bg-amber-500" />
+                          <span>Miasmatic Node</span>
+                        </span>
+                        <span className="flex items-center gap-1.5 bg-blue-950/40 border border-blue-900 text-blue-400 px-2 py-1 rounded-lg">
+                          <span className="w-2 h-2 rounded-full bg-blue-500" />
+                          <span>Remedy Node</span>
+                        </span>
+                        <span className="flex items-center gap-1.5 bg-purple-950/40 border border-purple-900 text-purple-400 px-2 py-1 rounded-lg">
+                          <span className="w-2 h-2 rounded-full bg-purple-500" />
+                          <span>Affinity Node</span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Interactive SVG MIND-MAP (8 Cols) */}
+                  <div className="lg:col-span-8 bg-slate-900/50 border border-slate-900 rounded-3xl p-6 flex flex-col items-center justify-center min-h-[500px] relative overflow-hidden">
+                    <span className="absolute top-4 right-4 text-[9px] text-slate-500 font-extrabold uppercase tracking-widest pointer-events-none">Interactive SVG Graph</span>
+                    
+                    {(() => {
+                      const data = getAphorismGraphData(selectedAphorismId);
+                      return (
+                        <svg className="w-full max-w-[500px] h-[360px]" viewBox="0 0 350 300">
+                          <style dangerouslySetInnerHTML={{ __html: `
+                            @keyframes local-premium-float {
+                              0%, 100% { transform: translateY(0) scale(1.05); }
+                              50% { transform: translateY(-4px) scale(1.08); }
+                            }
+                            .hover-vibrate {
+                              transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+                              transform-box: fill-box !important;
+                              transform-origin: center !important;
+                            }
+                            .hover-vibrate:hover {
+                              animation: local-premium-float 2.2s ease-in-out infinite !important;
+                            }
+                          `}} />
+                          {/* Render links */}
+                          {data.links.map((link, idx) => {
+                            const sourceNode = data.nodes.find(n => n.id === link.source);
+                            const targetNode = data.nodes.find(n => n.id === link.target);
+                            if (!sourceNode || !targetNode) return null;
+                            return (
+                              <line
+                                key={idx}
+                                x1={sourceNode.x}
+                                y1={sourceNode.y}
+                                x2={targetNode.x}
+                                y2={targetNode.y}
+                                stroke="rgba(71, 85, 105, 0.4)"
+                                strokeWidth="1.5"
+                                strokeDasharray="4 2"
+                              />
+                            );
+                          })}
+
+                          {/* Render nodes */}
+                          {data.nodes.map((node) => {
+                            let colorClass = "fill-emerald-500 stroke-emerald-400";
+                            let bgClass = "bg-emerald-950/80 border-emerald-500 text-emerald-400";
+                            if (node.type === "miasm") {
+                              colorClass = "fill-amber-500 stroke-amber-400";
+                              bgClass = "bg-amber-950/80 border-amber-500 text-amber-400";
+                            } else if (node.type === "remedy") {
+                              colorClass = "fill-blue-500 stroke-blue-400";
+                              bgClass = "bg-blue-950/80 border-blue-500 text-blue-400";
+                            } else if (node.type === "affinity") {
+                              colorClass = "fill-purple-500 stroke-purple-400";
+                              bgClass = "bg-purple-950/80 border-purple-500 text-purple-400";
+                            }
+
+                            return (
+                              <g 
+                                key={node.id} 
+                                className="cursor-pointer group hover-vibrate"
+                                onClick={() => {
+                                  if (node.type === "aphorism") {
+                                    // Already active
+                                  } else if (node.type === "remedy") {
+                                    // Set learning remedy id
+                                    const matchingRemId = node.id === "rem_puls" ? "rem_pulsatilla" : node.id === "rem_ign" ? "rem_ignatia" : node.id === "rem_sulph" ? "rem_sulphur" : "rem_silicea";
+                                    setLearningRemedyId(matchingRemId);
+                                    setLearningHubWorkspace("academy");
+                                    setLearningHubModule("materia-medica");
+                                    setLearningSubTab("cockpit");
+                                  } else if (node.type === "affinity") {
+                                    setOrganonViewMode("clinical-app");
+                                    setOrganonActiveConcept("migraine");
+                                  }
+                                }}
+                              >
+                                <circle
+                                  cx={node.x}
+                                  cy={node.y}
+                                  r={node.id === "center" ? 22 : 16}
+                                  className={`${colorClass} shadow-lg`}
+                                />
+                                <text
+                                  x={node.x}
+                                  y={node.y + (node.id === "center" ? 34 : 26)}
+                                  textAnchor="middle"
+                                  className="fill-slate-300 font-bold text-[9px] select-none pointer-events-none"
+                                >
+                                  {node.label}
+                                </text>
+                              </g>
+                            );
+                          })}
+                        </svg>
+                      );
+                    })()}
+                  </div>
+                </div>
+              )}
+
+              {/* VIEW C: CLINICAL DISEASE AFFINITIES TAB MATRIX */}
+              {organonViewMode === "clinical-app" && (
+                <div className="space-y-6">
+                  
+                  {/* Select disease sub tab */}
+                  <div className="flex border-b border-slate-800 pb-3 gap-2 overflow-x-auto select-none" data-lenis-prevent="true">
+                    {[
+                      { id: "migraine", label: "Neurological (Migraine)" },
+                      { id: "asthma", label: "Respiratory (Asthma)" },
+                      { id: "psoriasis", label: "Dermatological (Psoriasis)" },
+                      { id: "anxiety", label: "Neuro-Psychiatric (Anxiety)" },
+                      { id: "ibs", label: "Gastrointestinal (IBS)" },
+                      { id: "autoimmune", label: "Immunological (Autoimmune)" },
+                      { id: "children", label: "Pediatrics (Children)" },
+                      { id: "geriatrics", label: "Geriatrics (Older Age)" },
+                      { id: "modernPractice", label: "Modern Clinical Practice" }
+                    ].map((tab) => {
+                      const isSelected = organonActiveConcept === tab.id;
+                      return (
+                        <button
+                          key={tab.id}
+                          onClick={() => setOrganonActiveConcept(tab.id)}
+                          className={`flex items-center gap-1.5 py-2 px-4 rounded-xl text-[10px] uppercase font-extrabold tracking-wider transition-all cursor-pointer border ${
+                            isSelected 
+                              ? "bg-emerald-600 border-emerald-500 text-white shadow" 
+                              : "bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200"
+                          }`}
+                        >
+                          {tab.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Grid displaying the clinical affinities notes */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {ORGANON_APHORISMS.map((aph) => {
+                      const note = (aph.affinities as any)[organonActiveConcept];
+                      if (!note) return null;
+                      return (
+                        <div key={aph.id} className="bg-slate-900/50 border border-slate-900 rounded-3xl p-6 space-y-4 hover:border-slate-800 transition-colors">
+                          <div className="flex justify-between items-start border-b border-slate-800 pb-2.5">
+                            <div>
+                              <span className="text-[10px] font-mono text-emerald-400 font-extrabold uppercase">Aphorism {aph.number}</span>
+                              <h5 className="text-xs font-bold text-slate-200 mt-1">{aph.title}</h5>
+                            </div>
+                            <button
+                              onClick={() => {
+                                handleAphorismChange(aph.id);
+                                setOrganonViewMode("dual-panel");
+                              }}
+                              className="text-[9px] font-extrabold text-teal-400 hover:underline cursor-pointer border-none bg-transparent"
+                            >
+                              Open Reader
+                            </button>
+                          </div>
+
+                          <div className="space-y-2">
+                            <span className="text-[9px] uppercase tracking-widest font-extrabold text-slate-500 block">Principle Clinical Affinity Note</span>
+                            <p className="text-xs text-slate-300 font-semibold leading-relaxed bg-slate-950/40 p-4 rounded-xl border border-slate-950">
+                              {note}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* VIEW D: CASE CORRELATION ENGINE */}
+              {organonViewMode === "case-correlation" && (
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                  
+                  {/* Left Column: Select Case list (4 Cols) */}
+                  <div className="lg:col-span-4 bg-slate-900/50 border border-slate-900 p-5 rounded-3xl space-y-4">
+                    <div>
+                      <h4 className="text-xs font-extrabold text-slate-300 uppercase tracking-widest border-b border-slate-800 pb-2">Clinical Case Files</h4>
+                      <p className="text-[10px] text-slate-500 font-semibold mt-1">Select real case files correlating with Organon principles.</p>
+                    </div>
+
+                    <div className="space-y-3">
+                      {ORGANON_CASES.map((c) => {
+                        const isSelected = organonActiveConcept === c.id;
+                        return (
+                          <button
+                            key={c.id}
+                            onClick={() => setOrganonActiveConcept(c.id)}
+                            className={`w-full text-left p-4 rounded-2xl border transition-all cursor-pointer block ${
+                              isSelected 
+                                ? "bg-slate-900 border-emerald-500 text-slate-100 shadow-md" 
+                                : "bg-slate-950/40 border-slate-900 text-slate-400 hover:text-slate-200"
+                            }`}
+                          >
+                            <span className="text-[9px] font-mono text-emerald-400 uppercase tracking-wider block font-bold">{c.principle}</span>
+                            <strong className="text-xs font-bold text-slate-200 block mt-1 leading-snug">{c.title}</strong>
+                            <span className="text-[9.5px] text-slate-500 font-medium leading-relaxed line-clamp-1 block mt-1">{c.patientProfile}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Right Column: Case Details displaying Hering's law cure direction (8 Cols) */}
+                  <div className="lg:col-span-8 flex flex-col">
+                    <div className="bg-slate-900/50 border border-slate-900 p-6 rounded-3xl flex-1 flex flex-col justify-between min-h-[500px]">
+                      
+                      {/* Case Header */}
+                      <div className="border-b border-slate-800 pb-4 mb-4">
+                        <span className="text-[10px] font-mono text-emerald-400 font-extrabold uppercase tracking-widest">{activeCase.principle}</span>
+                        <h4 className="font-serif text-lg font-bold text-slate-100 mt-1">{activeCase.title}</h4>
+                      </div>
+
+                      {/* Case details scroll */}
+                      <div className="space-y-4 flex-1 overflow-y-auto pr-1 text-xs" data-lenis-prevent="true">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="bg-slate-950/40 border border-slate-900 p-3.5 rounded-2xl space-y-1">
+                            <span className="text-[9.5px] uppercase tracking-widest font-extrabold text-slate-500 block">Patient Profile</span>
+                            <p className="text-slate-300 font-semibold leading-relaxed">{activeCase.patientProfile}</p>
+                          </div>
+                          
+                          <div className="bg-slate-950/40 border border-slate-900 p-3.5 rounded-2xl space-y-1">
+                            <span className="text-[9.5px] uppercase tracking-widest font-extrabold text-slate-500 block">Symptom Intake</span>
+                            <p className="text-slate-300 font-semibold leading-relaxed">{activeCase.symptomIntake}</p>
+                          </div>
+                        </div>
+
+                        <div className="bg-slate-950/40 border border-slate-900 p-4 rounded-2xl space-y-2">
+                          <span className="text-[9.5px] uppercase tracking-widest font-extrabold text-slate-500 block">Miasmatic & Clinical Analysis</span>
+                          <p className="text-slate-300 font-semibold leading-relaxed">{activeCase.analysis}</p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="bg-slate-950/40 border border-slate-900 p-3.5 rounded-2xl space-y-1">
+                            <span className="text-[9.5px] uppercase tracking-widest font-extrabold text-slate-500 block">Remedy Selection</span>
+                            <p className="text-emerald-400 font-bold leading-relaxed">{activeCase.remedySelection}</p>
+                          </div>
+
+                          <div className="bg-slate-950/40 border border-slate-900 p-3.5 rounded-2xl space-y-1">
+                            <span className="text-[9.5px] uppercase tracking-widest font-extrabold text-slate-500 block">Case Outcome</span>
+                            <p className="text-slate-300 font-semibold leading-relaxed">{activeCase.outcome}</p>
+                          </div>
+                        </div>
+
+                        {/* Hering's law direction of cure graphic wrapper */}
+                        {activeCase.id === "case_02" && (
+                          <div className="p-4 bg-teal-950/15 border border-teal-900/40 rounded-2xl space-y-2.5">
+                            <div className="flex items-center gap-1.5 border-b border-teal-900/60 pb-1.5">
+                              <TrendingUp className="w-4 h-4 text-teal-400" />
+                              <span className="text-[10px] font-bold text-teal-300 uppercase tracking-wider">Hering's Direction of Cure Flow</span>
+                            </div>
+                            <div className="flex items-center justify-between text-[9px] font-extrabold text-slate-400">
+                              <span className="bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-900 text-rose-400">SUPPRESSED LAYER (Wheezing / Asthma)</span>
+                              <span className="text-slate-600 font-mono">- - - &gt;</span>
+                              <span className="bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-900 text-emerald-400">SUPERFICIAL LAYER (Eczema itching skin)</span>
+                            </div>
+                            <p className="text-[9.5px] text-teal-500/90 font-medium leading-relaxed">
+                              Cure progresses from within outwards (vital internal lungs are cleared first, pushing the chronic disturbance back out to the superficial skin layers, confirming correct prescription).
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* VIEW E: ACTIVE RECALL QUIZ */}
+              {organonViewMode === "active-recall" && (
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                  
+                  {/* Left Column: Filter Settings & Score telemetry (4 Cols) */}
+                  <div className="lg:col-span-4 bg-slate-900/50 border border-slate-900 p-5 rounded-3xl space-y-4">
+                    <div>
+                      <h4 className="text-xs font-extrabold text-slate-300 uppercase tracking-widest border-b border-slate-800 pb-2">Active Recall Cockpit</h4>
+                      <p className="text-[10px] text-slate-500 font-semibold mt-1">Configure study parameters to start evaluation.</p>
+                    </div>
+
+                    <div className="space-y-4">
+                      {/* Difficulty Selection */}
+                      <div className="space-y-1.5">
+                        <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-widest">Difficulty Tier</label>
+                        <select
+                          value={activeRecallDifficulty}
+                          onChange={(e) => {
+                            setActiveRecallDifficulty(e.target.value as any);
+                            setActiveRecallIdx(0);
+                            setIsRecallChecked(false);
+                            setRecallUserAnswers({});
+                          }}
+                          className="w-full p-2.5 bg-slate-950 border border-slate-800 text-xs font-bold text-white rounded-xl outline-none cursor-pointer"
+                        >
+                          <option value="beginner">Beginner (Hahnemann Basics)</option>
+                          <option value="student">Student (Detailed Academic)</option>
+                          <option value="practitioner">Practitioner (Clinical Applied)</option>
+                          <option value="advanced">Advanced (Miasmatic loading)</option>
+                          <option value="teacher">Teacher (Scholar references)</option>
+                        </select>
+                      </div>
+
+                      {/* Category Selection */}
+                      <div className="space-y-1.5">
+                        <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-widest">Category Focus</label>
+                        <select
+                          value={activeRecallCategory}
+                          onChange={(e) => {
+                            setActiveRecallCategory(e.target.value as any);
+                            setActiveRecallIdx(0);
+                            setIsRecallChecked(false);
+                            setRecallUserAnswers({});
+                          }}
+                          className="w-full p-2.5 bg-slate-950 border border-slate-800 text-xs font-bold text-white rounded-xl outline-none cursor-pointer"
+                        >
+                          <option value="BHMS">BHMS (Graduation Standard)</option>
+                          <option value="MD">MD (Post-Graduation)</option>
+                          <option value="Competitive">Competitive (AIAPGET / Faculty Exams)</option>
+                          <option value="Faculty">Faculty Board Reviews</option>
+                        </select>
+                      </div>
+
+                      {/* Score telemetry stats */}
+                      <div className="bg-slate-950 p-4 rounded-2xl border border-slate-900 text-center grid grid-cols-2 gap-3 text-xs">
+                        <div className="bg-slate-900/60 p-2.5 rounded-lg border border-slate-900">
+                          <strong className="text-slate-200 block text-sm">{recallStreak}</strong>
+                          <span className="text-[8px] text-slate-500 uppercase font-extrabold tracking-widest">Streak Count</span>
+                        </div>
+                        <div className="bg-slate-900/60 p-2.5 rounded-lg border border-slate-900">
+                          <strong className="text-teal-400 block text-sm">{recallMasteryScore}%</strong>
+                          <span className="text-[8px] text-slate-500 uppercase font-extrabold tracking-widest">Mastery Level</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column: Quiz Question Panel (8 Cols) */}
+                  <div className="lg:col-span-8 flex flex-col">
+                    <div className="bg-slate-900/50 border border-slate-900 p-6 rounded-3xl flex-1 flex flex-col justify-between min-h-[500px]">
+                      
+                      {/* Card Header stats info */}
+                      <div className="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
+                        <span className="text-[9.5px] font-mono text-emerald-400 font-extrabold uppercase tracking-widest">Active Recall Question</span>
+                        <span className="text-[9px] bg-slate-950 px-2 py-0.5 rounded text-slate-500 font-mono font-bold">
+                          No. {activeRecallIdx + 1}
+                        </span>
+                      </div>
+
+                      {/* Content of active question */}
+                      <div className="space-y-6 flex-1 overflow-y-auto pr-1" data-lenis-prevent="true">
+                        <h4 className="text-sm font-bold text-slate-200 leading-relaxed">{currentRecallQuestion.question}</h4>
+
+                        {/* MCQ answers options */}
+                        {currentRecallQuestion.type === "mcq" && currentRecallQuestion.options && (
+                          <div className="grid grid-cols-1 gap-3 pt-2">
+                            {currentRecallQuestion.options.map((opt, oIdx) => {
+                              const strIdx = String(oIdx);
+                              const isUserSelected = recallUserAnswers[currentRecallQuestion.id] === strIdx;
+                              const isCorrectOption = strIdx === currentRecallQuestion.correctAnswer;
+                              
+                              let optionStyle = "bg-slate-950/40 border-slate-900 text-slate-400 hover:border-slate-800 hover:text-slate-200";
+                              if (isUserSelected && !isRecallChecked) {
+                                optionStyle = "bg-emerald-950/40 border-emerald-500/50 text-emerald-400";
+                              } else if (isRecallChecked) {
+                                if (isCorrectOption) {
+                                  optionStyle = "bg-emerald-900/30 border-emerald-500 text-emerald-300 shadow";
+                                } else if (isUserSelected && !isCorrectOption) {
+                                  optionStyle = "bg-rose-900/30 border-rose-500 text-rose-300";
+                                }
+                              }
+
+                              return (
+                                <button
+                                  key={oIdx}
+                                  onClick={() => handleSelectRecallOption(strIdx)}
+                                  className={`w-full text-left p-3.5 rounded-2xl border text-xs font-bold leading-relaxed transition-all cursor-pointer ${optionStyle}`}
+                                >
+                                  {opt}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
+
+                        {/* True / False answers options */}
+                        {currentRecallQuestion.type === "true-false" && (
+                          <div className="grid grid-cols-2 gap-4 pt-4">
+                            {["True", "False"].map((optVal) => {
+                              const isUserSelected = recallUserAnswers[currentRecallQuestion.id] === optVal;
+                              const isCorrectOption = optVal === currentRecallQuestion.correctAnswer;
+                              
+                              let optionStyle = "bg-slate-950/40 border-slate-900 text-slate-400 hover:border-slate-800 hover:text-slate-200";
+                              if (isUserSelected && !isRecallChecked) {
+                                optionStyle = "bg-emerald-950/40 border-emerald-500/50 text-emerald-400";
+                              } else if (isRecallChecked) {
+                                if (isCorrectOption) {
+                                  optionStyle = "bg-emerald-900/30 border-emerald-500 text-emerald-300 shadow";
+                                } else if (isUserSelected && !isCorrectOption) {
+                                  optionStyle = "bg-rose-900/30 border-rose-500 text-rose-300";
+                                }
+                              }
+
+                              return (
+                                <button
+                                  key={optVal}
+                                  onClick={() => handleSelectRecallOption(optVal)}
+                                  className={`p-4 rounded-2xl border text-sm font-bold tracking-wide transition-all cursor-pointer ${optionStyle}`}
+                                >
+                                  {optVal}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
+
+                        {/* Flashcard style reader */}
+                        {currentRecallQuestion.type === "flashcard" && (
+                          <div className="py-6 flex justify-center">
+                            <div 
+                              onClick={() => setIsFlashcardFlipped(!isFlashcardFlipped)}
+                              className={`w-full max-w-[420px] min-h-[160px] rounded-3xl border border-dashed border-slate-800 p-6 flex flex-col justify-center items-center text-center cursor-pointer select-none relative transition-all duration-300 ${
+                                isFlashcardFlipped ? "bg-slate-900" : "bg-slate-950/60"
+                              }`}
+                            >
+                              <span className="absolute top-3 right-4 text-[8.5px] text-slate-500 font-extrabold uppercase tracking-widest">
+                                {isFlashcardFlipped ? "Back (Answer)" : "Front (Question)"}
+                              </span>
+                              
+                              {isFlashcardFlipped ? (
+                                <div className="space-y-2">
+                                  <p className="text-xs font-serif italic text-emerald-400">"{currentRecallQuestion.correctAnswer}"</p>
+                                  <span className="text-[9px] uppercase tracking-wider font-extrabold text-slate-500 block">Click anywhere to flip back</span>
+                                </div>
+                              ) : (
+                                <div className="space-y-2">
+                                  <p className="text-xs font-bold text-slate-300">{currentRecallQuestion.question}</p>
+                                  <span className="text-[9px] uppercase tracking-wider font-extrabold text-slate-500 block">Click anywhere to flip and reveal</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Explanation block */}
+                        {isRecallChecked && (
+                          <div className="p-4 bg-emerald-950/10 border border-emerald-900/40 rounded-2xl space-y-1.5">
+                            <span className="text-[9.5px] uppercase tracking-widest font-extrabold text-emerald-400 block">Explanation Reference</span>
+                            <p className="text-[10.5px] text-slate-400 font-medium leading-relaxed">
+                              {currentRecallQuestion.explanation}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Footer Actions */}
+                      <div className="border-t border-slate-800 pt-4 mt-4 flex justify-between items-center text-xs">
+                        <button
+                          onClick={() => {
+                            if (activeRecallIdx > 0) {
+                              setIsRecallChecked(false);
+                              setActiveRecallIdx(prev => prev - 1);
+                              setRecallUserAnswers({});
+                            }
+                          }}
+                          disabled={activeRecallIdx === 0}
+                          className="px-3 py-1.5 bg-slate-900 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-800 border border-slate-800 text-slate-300 rounded-xl cursor-pointer transition-colors border-none"
+                        >
+                          Prev Question
+                        </button>
+                        
+                        <div className="flex gap-2">
+                          <button
+                            onClick={handleCheckRecallAnswer}
+                            disabled={isRecallChecked || !recallUserAnswers[currentRecallQuestion.id]}
+                            className="px-4 py-1.5 bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-emerald-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer border-none"
+                          >
+                            Check Answer
+                          </button>
+                          
+                          <button
+                            onClick={handleNextRecallQuestion}
+                            disabled={!isRecallChecked}
+                            className="px-4 py-1.5 bg-slate-900 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-800 border border-slate-800 text-slate-300 rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer border-none"
+                          >
+                            Next Question
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* VIEW F: TIMELINE CONCEPT EVOLUTION */}
+              {organonViewMode === "timeline" && (
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                  
+                  {/* Left Column: Select Concept (4 Cols) */}
+                  <div className="lg:col-span-4 bg-slate-900/50 border border-slate-900 p-5 rounded-3xl space-y-4">
+                    <div>
+                      <h4 className="text-xs font-extrabold text-slate-300 uppercase tracking-widest border-b border-slate-800 pb-2">Concept Evolution Timelines</h4>
+                      <p className="text-[10px] text-slate-500 font-semibold mt-1">Select key concepts to trace shifts from 1st to 6th Edition.</p>
+                    </div>
+
+                    <div className="space-y-2.5">
+                      {TIMELINE_STEPS.map((step, sIdx) => {
+                        const isSelected = selectedOrganonEdition === sIdx;
+                        return (
+                          <button
+                            key={sIdx}
+                            onClick={() => setSelectedOrganonEdition(sIdx)}
+                            className={`w-full text-left p-4 rounded-2xl border transition-all cursor-pointer block ${
+                              isSelected 
+                                ? "bg-slate-900 border-emerald-500 text-slate-100 shadow-md" 
+                                : "bg-slate-950/40 border-slate-900 text-slate-400 hover:text-slate-200"
+                            }`}
+                          >
+                            <span className="text-[9px] font-mono text-emerald-400 uppercase tracking-wider block font-bold">{step.edition} ({step.year})</span>
+                            <strong className="text-xs font-bold text-slate-200 block mt-1 leading-snug">{step.concept}</strong>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Right Column: Comparative Slider Card (8 Cols) */}
+                  {(() => {
+                    const activeStep = TIMELINE_STEPS[selectedOrganonEdition] || TIMELINE_STEPS[0];
+                    return (
+                      <div className="lg:col-span-8 flex flex-col">
+                        <div className="bg-slate-900/50 border border-slate-900 p-6 rounded-3xl flex-1 flex flex-col justify-between min-h-[500px]">
+                          
+                          {/* Header info */}
+                          <div className="border-b border-slate-800 pb-4 mb-4">
+                            <span className="text-[10px] font-mono text-emerald-400 font-extrabold uppercase tracking-widest">Aphorism progression path</span>
+                            <h4 className="font-serif text-lg font-bold text-slate-100 mt-1">Concept Shifts: {activeStep.concept}</h4>
+                          </div>
+
+                          {/* Content comparison */}
+                          <div className="space-y-4 flex-1 overflow-y-auto pr-1 text-xs" data-lenis-prevent="true">
+                            <div className="bg-slate-950/40 border border-slate-900 p-4 rounded-2xl space-y-1.5">
+                              <span className="text-[9.5px] uppercase tracking-widest font-extrabold text-slate-500 block">Shift Description</span>
+                              <p className="text-slate-300 font-semibold leading-relaxed">{activeStep.changeDescription}</p>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="bg-slate-950/40 border border-slate-900 p-4 rounded-2xl space-y-2">
+                                <span className="text-[9.5px] uppercase tracking-widest font-extrabold text-amber-400 block border-b border-slate-900 pb-1.5">Original / Early Stance</span>
+                                <p className="text-slate-300 font-semibold leading-relaxed font-serif italic">
+                                  "{activeStep.originalStance}"
+                                </p>
+                              </div>
+
+                              <div className="bg-slate-950/40 border border-slate-900 p-4 rounded-2xl space-y-2">
+                                <span className="text-[9.5px] uppercase tracking-widest font-extrabold text-emerald-400 block border-b border-slate-900 pb-1.5">Final 6th Edition Stance</span>
+                                <p className="text-slate-300 font-semibold leading-relaxed font-serif italic">
+                                  "{activeStep.sixthEditionStance}"
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+              )}
+
+              {/* VIEW G: INDEX SEARCH EXPANSION */}
+              {organonViewMode === "search" && (
+                <div className="space-y-6">
+                  
+                  {/* Search Bar Input */}
+                  <div className="flex gap-3 bg-slate-900/60 border border-slate-800 p-4 rounded-2xl max-w-xl">
+                    <Search className="w-4 h-4 text-slate-500 mt-1 shrink-0" />
+                    <input
+                      type="text"
+                      placeholder="Search Aphorism index (e.g. §153, vital force, single remedy)..."
+                      value={organonSearchQuery}
+                      onChange={(e) => setOrganonSearchQuery(e.target.value)}
+                      className="w-full bg-transparent text-xs font-semibold outline-none text-white placeholder-slate-600"
+                    />
+                    {organonSearchQuery && (
+                      <button
+                        onClick={() => setOrganonSearchQuery("")}
+                        className="text-[10px] uppercase font-extrabold text-slate-400 hover:text-white"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Search results list */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {filteredAphorisms.length === 0 ? (
+                      <div className="md:col-span-2 text-center py-12 text-xs font-semibold text-slate-500 italic border border-dashed border-slate-900 rounded-3xl bg-slate-950/40">
+                        No matching Aphorism entries found. Try looking up another principle name.
+                      </div>
+                    ) : (
+                      filteredAphorisms.map((aph) => (
+                        <div key={aph.id} className="bg-slate-900/50 border border-slate-900 rounded-3xl p-5 hover:border-slate-800 transition-colors flex flex-col justify-between space-y-4">
+                          <div className="space-y-2">
+                            <div className="flex justify-between items-center">
+                              <span className="text-[10px] font-mono text-emerald-400 font-extrabold uppercase">Aphorism {aph.number}</span>
+                              <span className="text-[9px] bg-slate-950 px-2 py-0.5 rounded text-slate-500 font-mono font-bold uppercase">{aph.edition}</span>
+                            </div>
+                            <h5 className="text-xs font-bold text-slate-200">{aph.title}</h5>
+                            <p className="text-[10.5px] text-slate-400 font-medium leading-relaxed line-clamp-3 italic">
+                              "{aph.originalText}"
+                            </p>
+                          </div>
+
+                          <div className="flex justify-between items-center pt-2.5 border-t border-slate-900">
+                            <span className="text-[9px] uppercase font-extrabold text-slate-500 tracking-wider">Concepts: {aph.relatedConcepts.slice(0,2).join(", ")}</span>
+                            <button
+                              onClick={() => {
+                                handleAphorismChange(aph.id);
+                                setOrganonViewMode("dual-panel");
+                              }}
+                              className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[10px] font-bold uppercase tracking-wider cursor-pointer border-none"
+                            >
+                              Open Reader
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+
+            </div>
+          );
+        })()}
+
+        {/* COMPLETED ACADEMY MODULES */}
+        {learningHubWorkspace === "academy" && !["materia-medica", "organon"].includes(learningHubModule) && (() => {
+          // --- STATIC DATAPACKS FOR COMPLETED MODULES ---
+          const CHRONIC_MIASM_SYMPTOMS = {
+            psora: [
+              { id: "p1", text: "Intense itching skin eruptions, dry, scaly skin" },
+              { id: "p2", text: "Worse from cold air and drafts, better from heat" },
+              { id: "p3", text: "High anxiety, fear of poverty, health anxiety" },
+              { id: "p4", text: "Functional disorders: acidity, bloating without structural changes" },
+              { id: "p5", text: "Chilly patient, lacks vital heat" }
+            ],
+            sycosis: [
+              { id: "sy1", text: "Warty growths, condylomata, skin tags, polyps" },
+              { id: "sy2", text: "Worse in damp, rainy weather and humid cold" },
+              { id: "sy3", text: "Suspicious, secretive mind, holds onto grudges" },
+              { id: "sy4", text: "Hypertrophy of tissues: fibroids, cysts, joint thickenings" },
+              { id: "sy5", text: "Better from slow, gentle movement and dry weather" }
+            ],
+            syphilis: [
+              { id: "s1", text: "Ulcerations, deep tissue destruction, bone necrosis" },
+              { id: "s2", text: "Aggravation at night, from sunset to sunrise" },
+              { id: "s3", text: "Deep melancholia, suicidal impulses, hopelessness" },
+              { id: "s4", text: "Structural changes: cardiovascular lesions, spinal degeneration" },
+              { id: "s5", text: "Extreme bone pains, tearing or boring sensation" }
+            ],
+            tubercular: [
+              { id: "t1", text: "Rapid emaciation despite ravenous appetite" },
+              { id: "t2", text: "Aggravation from sudden changes of weather" },
+              { id: "t3", text: "Constant desire to travel, change location, or job" },
+              { id: "t4", text: "Affection of respiratory system: recurrent bronchitis, lung issues" },
+              { id: "t5", text: "Highly artistic, active mind but easily fatigued physical body" }
+            ]
+          };
+
+          const CHRONIC_TIMELINES = [
+            { year: "1828", title: "The Chronic Diseases Publication", desc: "Samuel Hahnemann publishes his milestone treatise, introducing Psora, Sycosis, and Syphilis as the underlying causes of all persistent chronic conditions." },
+            { year: "1890s", title: "J.H. Allen expands Miasmatic Theory", desc: "J.H. Allen integrates the tubercular miasm (pseudopsora) and associates miasms with histological changes and pathology." },
+            { year: "1900", title: "Kent's Mental Mapping of Miasms", desc: "J.T. Kent links miasms with spiritual and emotional states of the patient, prioritizing mental symptoms in anti-miasmatic prescriptions." },
+            { year: "1936", title: "Roberts & Close Clinical Synthesis", desc: "Herbert Roberts and Stuart Close explain miasms as inherited biological deficiencies or diatheses, adapting theory for modern laboratory observations." },
+            { year: "Modern", title: "Epigenetic & Inflammatory Mapping", desc: "Modern clinical homeopathy views miasms as inherited gene expressions, epigenetic shifts, and chronic inflammatory response predispositions." }
+          ];
+
+          const CHRONIC_QUIZ = [
+            {
+              q: "Which miasm is characterized by functional hyper-reactivity, dry skin eruptions that itch intensely, and a primary amelioration by warmth?",
+              options: ["Psora", "Sycosis", "Syphilis", "Tubercular"],
+              ans: "0",
+              exp: "Psora is the fundamental miasm of functional deficiency, sensory hypersensitivity, and scaly skin eruptions, relieved by heat."
+            },
+            {
+              q: "A patient presenting with fibroids, warts, secretive behavior, and a history of suppressed gonorrhea is likely showing dominance in which miasm?",
+              options: ["Psora", "Sycosis", "Syphilis", "Tubercular"],
+              ans: "1",
+              exp: "Sycosis is the miasm of excess, hypertrophy, condensation (warts, fibroids, tumors), and psychological suspicion or secrecy."
+            },
+            {
+              q: "What is Samuel Hahnemann's stance on local topical treatments for primary anti-psoric skin eruptions?",
+              options: [
+                "Topical treatment is recommended to speed up the cure.",
+                "It is acceptable if combined with oral remedies.",
+                "It is highly dangerous, driving the disease inward into more vital organs (suppression).",
+                "It should only be used in acute emergencies."
+              ],
+              ans: "2",
+              exp: "Hahnemann warned that suppressing local eruptions with topical ointments drives the dynamic disease inward, creating internal chronic pathologies."
+            }
+          ];
+
+          const PHILOSOPHY_CONCEPTS = [
+            {
+              id: "vital-force",
+              title: "Vital Force (Dynamis)",
+              desc: "The spirit-like, automatic, self-regulating energy that animates the physical body, maintaining health and defending against morbid influences (§9-12).",
+              early: "A spirit-like force regulating physical harmony and chemical actions.",
+              late: "The vital principle which regulates susceptibility, response, and cure.",
+              clinical: "Matches modern concepts of homeostasis, immune response coordination, and autonomic nervous system equilibrium."
+            },
+            {
+              id: "similia",
+              title: "Law of Similars",
+              desc: "Similia Similibus Curentur: A substance that causes symptoms in a healthy person can cure similar symptoms in a sick person (§22-26).",
+              early: "Direct symptom matching on physical similarities.",
+              late: "Constitutional and miasmatic resonance matching the dynamic state.",
+              clinical: "Corresponds to modern hormesis, cell-signal receptor adaptation, and negative feedback loop modulation."
+            },
+            {
+              id: "susceptibility",
+              title: "Susceptibility",
+              desc: "The capacity of the living organism to receive impressions and react to stimuli. Health is balanced susceptibility.",
+              early: "Simple sensitivity to weather, food, and external disease vectors.",
+              late: "The biological threshold of reaction determining remedy dose and potency selection.",
+              clinical: "Directly correlates with neuro-endocrine-immune reactivity and individual threshold for stress."
+            },
+            {
+              id: "potentization",
+              title: "Potentization & Dynamization",
+              desc: "The process of serial dilution and succussion that diminishes material toxicity while releasing the dynamic curative power (§269-271).",
+              early: "Dilution to avoid toxic side effects of heavy metals.",
+              late: "Release of spirit-like dynamic force capable of acting on the Vital Force.",
+              clinical: "Correlates with nano-pharmacology, structural water-cluster formations, and molecular signaling changes."
+            },
+            {
+              id: "herings-law",
+              title: "Hering's Law of Cure",
+              desc: "The direction of cure: symptoms disappear from within outward, from above downward, from more important to less important organs, and in reverse order of appearance.",
+              early: "Clinical observation of skin eruptions returning as asthma gets better.",
+              late: "Universal law indicating the successful alignment of the healing process.",
+              clinical: "Matches systems biology predictions of multi-scale recovery and reverse disease progression path."
+            }
+          ];
+
+          const PHILOSOPHY_MASTERS = [
+            { id: "hahnemann", name: "Samuel Hahnemann", lifespan: "1755–1843", keyText: "Organon of Medicine", contribution: "Discovered the Law of Similars, introduced potentization, and laid the foundations of homeopathic philosophy." },
+            { id: "kent", name: "James Tyler Kent", lifespan: "1849–1916", keyText: "Lectures on Homoeopathic Philosophy", contribution: "Developed constitutional prescribing, high potency use, and mental symptom priority." },
+            { id: "close", name: "Stuart Close", lifespan: "1860–1929", keyText: "The Genius of Homoeopathy", contribution: "Synthesized Hahnemann's work with modern physiology, focusing deeply on Susceptibility." },
+            { id: "roberts", name: "Herbert A. Roberts", lifespan: "1868–1950", keyText: "Principles and Art of Cure by Homoeopathy", contribution: "Wrote clear, clinically applied expositions on susceptibility, remedy reactions, and miasms." },
+            { id: "dunham", name: "Carroll Dunham", lifespan: "1828–1877", keyText: "Homoeopathy the Science of Therapeutics", contribution: "Championed high scientific standards, detailed drug provings, and therapeutic freedom." }
+          ];
+
+          const PHILOSOPHY_QUIZ = [
+            {
+              q: "According to Hering's Law of Cure, symptoms should clear in which direction?",
+              options: [
+                "From below upward and outside inward.",
+                "From within outward, from above downward, and in reverse order of appearance.",
+                "From less important to more important organs.",
+                "Simultaneously across all tissues."
+              ],
+              ans: "1",
+              exp: "Hering's Law dictates that cure proceeds from within outward (more vital to less vital organs), from above downward, and in the reverse chronological order of symptom appearance."
+            },
+            {
+              q: "In Kentian philosophy, what does a sudden return of old skin symptoms after a prescription indicate?",
+              options: [
+                "Failure of the remedy, requiring a change of prescription.",
+                "A toxic drug aggravation.",
+                "A favorable direction of cure, showing the vital force driving pathology outward.",
+                "Suppression of the vital force."
+              ],
+              ans: "2",
+              exp: "The return of old symptoms (especially outward skin eruptions) is a key indicator of a correct anti-miasmatic prescription under Hering's Law."
+            },
+            {
+              q: "Which philosopher focused extensively on the concept of 'Susceptibility' as the threshold of biological reaction?",
+              options: ["Samuel Hahnemann", "Stuart Close", "James Tyler Kent", "William Boericke"],
+              ans: "1",
+              exp: "Stuart Close dedicated a major portion of his lectures in 'The Genius of Homoeopathy' to susceptibility, defining it as the fundamental quality of life."
+            }
+          ];
+
+          const CLINICAL_CASES_DB = [
+            {
+              id: "case_1",
+              title: "The Chronic Psoric Headache",
+              doctor: "Dr. Samuel Hahnemann",
+              patient: "38-year-old female, schoolmistress",
+              history: "Sufferer of severe, throbbing, blinding headaches for 12 years. Headaches are accompanied by heat in the vertex, burning palms, and empty sinking hunger at 11 AM. As a child, she had severe scaly eczema behind the ears, which was suppressed with sulfurous ointments, after which the headaches began.",
+              symptoms: [
+                "Severe vertex headache, throbbing, blinding",
+                "Burning in palms and soles of feet at night",
+                "Empty, sinking sensation in stomach at 11 AM",
+                "Chilly but head feels hot and desires cold air",
+                "Suppressed skin eruption behind ears in childhood"
+              ],
+              rubrics: [
+                "Mind: Irritable, worse morning",
+                "Head: Congestion, throbbing, vertex",
+                "Stomach: Empty, sinking sensation, 11 AM",
+                "Extremities: Burning palms and soles at night",
+                "Skin: Scaly eruptions behind ears, suppressed"
+              ],
+              remediesScored: [
+                { name: "Sulphur", score: 14, match: true },
+                { name: "Lycopodium", score: 9, match: false },
+                { name: "Arsenicum", score: 8, match: false },
+                { name: "Pulsatilla", score: 6, match: false }
+              ],
+              differential: "The patient is extremely hot, puts feet out of bed, has the typical 11 AM empty stomach, and vertex heat. This fits Sulphur perfectly. The etiology of suppressed skin eruptions in childhood leading to chronic headache is a textbook example of psoric suppression. Pulsatilla shares the thermal state but lacks the empty hunger and history. Arsenicum is restless and chilly.",
+              prescription: "Sulphur 30C, single dose, followed by placebo.",
+              followup: [
+                { time: "Month 1", note: "Headache intensity reduced by 50%. A mild, itchy, scaly eruption has reappeared behind both ears. No local treatment applied." },
+                { time: "Month 3", note: "Headaches completely resolved. Eruption behind ears flared up, then began drying and scaling off. Energy levels vastly improved." },
+                { time: "Month 6", note: "Eruption gone. Headaches did not return. Patient reports complete restoration of vigor." }
+              ],
+              answer: "Sulphur"
+            },
+            {
+              id: "case_2",
+              title: "Sycotic Asthma and Dyspnea",
+              doctor: "Dr. J.T. Kent",
+              patient: "45-year-old male, clerk",
+              history: "Presents with severe chronic asthma, worse in cold damp weather and at 3 AM. Breathing is rattling and whistling. The patient has multiple fleshy warts on his hands and fingers. Psychologically, he is highly suspicious, secretive, and anxious about his health.",
+              symptoms: [
+                "Asthma with rattling, worse 3 AM",
+                "Aggravation from damp weather and rainy days",
+                "Suspicious, secretive, anxious disposition",
+                "Multiple warts on hands and fingers",
+                "Chilly, better in warm dry room"
+              ],
+              rubrics: [
+                "Mind: Suspicious, secretive, reserved",
+                "Respiration: Asthmatic, worse damp weather, 3 AM",
+                "Skin: Warty excrescences, fleshy, hands",
+                "Generalities: Chilly, worse cold damp air"
+              ],
+              remediesScored: [
+                { name: "Thuja Occidentalis", score: 12, match: true },
+                { name: "Natrum Sulphuricum", score: 10, match: false },
+                { name: "Arsenicum", score: 7, match: false },
+                { name: "Antimonium Tartaricum", score: 6, match: false }
+              ],
+              differential: "Thuja is the king of sycotic remedies, covering the warts, the secretive/suspicious mental state, the asthma, and the damp weather aggravation. Natrum Sulphuricum is also a key sycotic remedy for asthma in damp weather, but lacks the specific warts and the suspicious mental state.",
+              prescription: "Thuja 200C, one dose.",
+              followup: [
+                { time: "Month 1", note: "Asthma attacks decreased in frequency. Warts on hands have become soft and are starting to shrink." },
+                { time: "Month 3", note: "Warts have completely disappeared. Asthma occurs only very mildly if exposed to direct rain. Mental state is much more open." },
+                { time: "Month 6", note: "No asthma. Health fully restored." }
+              ],
+              answer: "Thuja"
+            },
+            {
+              id: "case_3",
+              title: "The Silent Grief & Hysteria",
+              doctor: "Dr. Constantine Hering",
+              patient: "22-year-old female, student",
+              history: "Presents with a sensation of a lump in her throat (globus hystericus) and choking. Symptoms developed after the sudden death of her mother 2 months ago. She sighs constantly, is emotionally volatile, and exhibits highly paradoxical symptoms: her severe nausea is relieved by eating a heavy meal, and her toothache is relieved by chewing hard food.",
+              symptoms: [
+                "Sensation of lump in throat, choking, sighing",
+                "Grief from bereavement, silent sorrow, sobbing",
+                "Paradoxical symptoms: nausea relieved by eating",
+                "Emotionally volatile, laughing alternating with crying",
+                "Chilly, sensitive to emotional touch"
+              ],
+              rubrics: [
+                "Mind: Grief, silent, sighing, sobbing",
+                "Throat: Globus hystericus, lump feeling",
+                "Stomach: Nausea relieved by eating",
+                "Mind: Volatile, mood shifts rapidly"
+              ],
+              remediesScored: [
+                { name: "Ignatia Amara", score: 15, match: true },
+                { name: "Natrum Muriaticum", score: 10, match: false },
+                { name: "Acid Phosphoricum", score: 8, match: false },
+                { name: "Pulsatilla", score: 7, match: false }
+              ],
+              differential: "The hysterical globus, the constant sighing, the rapid mood swings, and the highly paradoxical physical symptoms (nausea relieved by eating) are absolute keynotes for Ignatia. Natrum Muriaticum is also indicated for silent grief but is more chronic, reserved, and lacks the paradoxical symptom profile.",
+              prescription: "Ignatia 1M, single dose, at bedtime.",
+              followup: [
+                { time: "Month 1", note: "Lump sensation in throat resolved. Sighing is less frequent. Patient is able to speak of her grief without choking up." },
+                { time: "Month 3", note: "Sleep is normal. Nausea fully gone. Patient has returned to her college classes." },
+                { time: "Month 6", note: "Mentally stable, fully recovered from the acute grief reaction." }
+              ],
+              answer: "Ignatia"
+            }
+          ];
+
+          const HISTORICAL_MASTERS_DB = [
+            { id: "hahnemann", name: "Samuel Hahnemann", lifespan: "1755–1843", keyText: "Organon of Medicine, The Chronic Diseases", contribution: "Founder of Homeopathy. Formulated the Law of Similars, dynamization, and the miasmatic theory.", desc: "A brilliant German physician, chemist, and linguist. Frustrated by the toxic medical practices of his era, he discovered homeopathy in 1790 while translating Cullen's Materia Medica. He dedicated his life to proving remedies and compiling the core laws of cure." },
+            { id: "boenninghausen", name: "Clemens von Bönninghausen", lifespan: "1785–1864", keyText: "Therapeutic Pocket Book", contribution: "Created the first practical Repertory. Developed the doctrine of analogy and concomitants.", desc: "A Dutch-German lawyer, botanist, and trusted advisor to Hahnemann. He pioneered the grouping of symptoms by location, sensation, and modality, enabling doctors to repertorize complex cases mathematically." },
+            { id: "hering", name: "Constantine Hering", lifespan: "1800–1880", keyText: "The Guiding Symptoms of our Materia Medica", contribution: "Discovered Hering's Law of Direction of Cure. Proved Lachesis and established American homeopathy.", desc: "Originally hired to write a treatise refuting homeopathy, he proved its truth on himself, saving his gangrenous hand with Arsenicum. He emigrated to Philadelphia and founded the world's first homeopathic college." },
+            { id: "kent", name: "James Tyler Kent", lifespan: "1849–1916", keyText: "Repertory of the Homoeopathic Materia Medica", contribution: "Standardized the modern repertory format. Advanced high potencies and mental symptom hierarchies.", desc: "An American physician who converted to homeopathy after his wife was cured of a chronic illness by a homeopath. He structured the repertory logically (from Mind to Generalities) and emphasized matching the patient's spiritual essence." },
+            { id: "boericke", name: "William Boericke", lifespan: "1849–1929", keyText: "Pocket Manual of Homoeopathic Materia Medica", contribution: "Compiled the most widely used clinical Materia Medica with concise symptom lists.", desc: "Born in Austria, he became a leading homeopathic doctor and publisher in San Francisco. His manual remains the gold standard for quick clinical lookups of polychrests and rare remedies." },
+            { id: "boger", name: "Cyrus Maxwell Boger", lifespan: "1861–1935", keyText: "Synoptic Key of the Materia Medica", contribution: "Synthesized Bönninghausen's and Kent's methodologies, emphasizing pathological time lines.", desc: "An American homeopath of German descent, he brought pathological and physiological timelines to repertorization, creating a bridge between classical and clinical prescribing." }
+          ];
+
+          const HISTORICAL_MILESTONES = [
+            { year: "1796", event: "Essay on a New Principle", desc: "Hahnemann publishes his discovery of the Law of Similars in Hufeland's Journal, marking the birth of homeopathy." },
+            { year: "1810", event: "Organon of Medicine (1st Ed)", desc: "The first edition of the Organon is published, defining the basic laws of homeopathic therapeutics." },
+            { year: "1828", event: "The Chronic Diseases", desc: "Hahnemann introduces the theory of chronic miasms (Psora, Sycosis, Syphilis) to resolve chronic cases." },
+            { year: "1846", event: "Bönninghausen's Repertory", desc: "Clemens von Bönninghausen publishes the Therapeutic Pocket Book, laying the foundation of repertory science." },
+            { year: "1897", event: "Kent's Repertory", desc: "James Tyler Kent publishes his massive Repertory, which becomes the modern standard for classical prescribing." },
+            { year: "1921", event: "Boericke's Materia Medica", desc: "William Boericke publishes the 9th edition of his concise clinical manual, standardizing pocket guides." }
+          ];
+
+          const HISTORICAL_QUOTES = [
+            { master: "Samuel Hahnemann", quote: "The highest ideal of cure is rapid, gentle and permanent restoration of the health, or removal and annihilation of the disease in its whole extent, in the shortest, most reliable, and most harmless way, on easily comprehensible principles." },
+            { master: "James Tyler Kent", quote: "There are no diseases, only sick people. Cure the patient, not the disease. The physician's highest mission is to harmonize the vital force so that the body can heal itself." },
+            { master: "Constantine Hering", quote: "The cure must proceed from within outward, from above downward, from more important to less important organs, and in the reverse order of the appearance of the symptoms." },
+            { master: "Clemens von Bönninghausen", quote: "A symptom is never complete without its location, its specific sensation, its accompanying modalities of aggravation and amelioration, and its concomitants." }
+          ];
+
+          // --- 1. CHRONIC DISEASES STUDY VAULT ---
+          if (learningHubModule === "chronic-diseases") {
+            // Calculate miasm percentages dynamically
+            const calculateMiasmScore = (miasmKey: "psora" | "sycosis" | "syphilis" | "tubercular") => {
+              const symptomList = CHRONIC_MIASM_SYMPTOMS[miasmKey];
+              const selectedCount = symptomList.filter(s => chronicSymptomSelections[s.id]).length;
+              return Math.round((selectedCount / symptomList.length) * 100);
+            };
+
+            const psoraScore = calculateMiasmScore("psora");
+            const sycosisScore = calculateMiasmScore("sycosis");
+            const syphilisScore = calculateMiasmScore("syphilis");
+            const tubercularScore = calculateMiasmScore("tubercular");
+
+            const scores = [
+              { label: "Psora (Functional Deficit)", val: psoraScore, color: "from-emerald-500 to-teal-500", key: "psora" as const },
+              { label: "Sycosis (Hyper-Proliferation)", val: sycosisScore, color: "from-amber-500 to-orange-500", key: "sycosis" as const },
+              { label: "Syphilis (Destruction)", val: syphilisScore, color: "from-rose-500 to-red-500", key: "syphilis" as const },
+              { label: "Tubercular (Wasting / Travel Desire)", val: tubercularScore, color: "from-indigo-500 to-purple-500", key: "tubercular" as const }
+            ];
+
+            const dominantMiasm = scores.reduce((max, current) => current.val > max.val ? current : max, scores[0]);
+
+            const triggerMiasmTutorSend = async (text: string) => {
+              if (!text.trim() || isChronicTutorLoading) return;
+              setChronicTutorChat(prev => [...prev, { sender: "user", text }]);
+              setChronicTutorInput("");
+              setIsChronicTutorLoading(true);
+
+              // Simulate anti-miasmatic tutor response
+              setTimeout(() => {
+                let reply = "Under anti-miasmatic principles, we always address the dominant symptoms and trace suppression. How can I help clarify Hahnemann's Chronic Diseases text?";
+                const cleanTxt = text.toLowerCase();
+                if (cleanTxt.includes("psora")) {
+                  reply = "Psora is the root of most chronic diseases. When psoric skin eruptions are suppressed, they drive pathological energy inward. Anti-psorics like Sulphur, Psorinum, and Calcarea Carbonica are indicated to re-establish primary elimination.";
+                } else if (cleanTxt.includes("sycosis")) {
+                  reply = "Sycosis represents hyper-proliferation, warts, secretive habits, and tissue condensation. The primary anti-sycotics (e.g., Thuja, Medorrhinum) must target the thick mucous membranes and tissues.";
+                } else if (cleanTxt.includes("syphilis")) {
+                  reply = "The Syphilitic miasm leads to ulceration, destruction, nighttime bone pains, and tissue necrosis. Anti-syphilitics like Mercurius Solubilis, Aurum Metallicum, and Nitric Acid help prevent degenerative structural changes.";
+                } else if (cleanTxt.includes("suppression")) {
+                  reply = "Suppression occurs when local ointments, cauterization, or strong suppressive drugs dry up primary cutaneous expressions, forcing the vital force to transfer the disturbance to deep visceral organs.";
+                }
+                setChronicTutorChat(prev => [...prev, { sender: "tutor", text: reply }]);
+                setIsChronicTutorLoading(false);
+              }, 1200);
+            };
+
+            const currentQ = CHRONIC_QUIZ[chronicQuizIdx];
+
+            return (
+              <div className="space-y-6">
+                {/* Control Panel Header */}
+                <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 bg-slate-900/60 border border-slate-800/60 p-6 rounded-3xl shadow-lg relative z-10 my-4">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Award className="w-5 h-5 text-emerald-400" />
+                      <h3 className="text-lg font-serif font-bold text-slate-100">Chronic Diseases Study Vault</h3>
+                    </div>
+                    <p className="text-xs text-slate-400 font-medium font-sans">
+                      Explore Samuel Hahnemann's anti-miasmatic matrices, timeline evolutions, and clinical diagnostics.
+                    </p>
+                  </div>
+
+                  {/* Mode switcher capsules */}
+                  <div className="flex bg-slate-950 border border-slate-800 p-1 rounded-xl gap-0.5 overflow-x-auto max-w-full">
+                    {[
+                      { id: "matrices", label: "Miasmatic Matrix", icon: Layers },
+                      { id: "timeline", label: "Evolution Timeline", icon: History },
+                      { id: "quiz", label: "Recall Quiz", icon: Award },
+                      { id: "insights", label: "AI Master Tutor", icon: Brain }
+                    ].map((mode) => {
+                      const Icon = mode.icon;
+                      const isSelected = chronicViewMode === mode.id;
+                      return (
+                        <button
+                          key={mode.id}
+                          onClick={() => setChronicViewMode(mode.id as any)}
+                          className={`flex items-center gap-1.5 py-1.5 px-3 rounded-lg text-[9.5px] uppercase font-bold tracking-wider transition-all cursor-pointer border-none whitespace-nowrap ${
+                            isSelected ? "bg-emerald-600 text-white shadow" : "text-slate-400 hover:text-white bg-transparent"
+                          }`}
+                        >
+                          <Icon className="w-3.5 h-3.5" />
+                          <span>{mode.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Sub-View: Miasmatic Matrix */}
+                {chronicViewMode === "matrices" && (
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                    {/* Left Checklist (7 cols) */}
+                    <div className="lg:col-span-7 bg-slate-900/50 border border-slate-900 p-6 rounded-3xl space-y-4">
+                      <div className="flex justify-between items-center border-b border-slate-800 pb-3">
+                        <div className="flex gap-2">
+                          {(["psora", "sycosis", "syphilis", "tubercular"] as const).map(m => (
+                            <button
+                              key={m}
+                              onClick={() => setChronicSelectedMiasm(m)}
+                              className={`px-3 py-1 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all border-none ${
+                                chronicSelectedMiasm === m 
+                                  ? "bg-slate-800 text-teal-400 border border-slate-700" 
+                                  : "text-slate-400 hover:text-white bg-transparent"
+                              }`}
+                            >
+                              {m}
+                            </button>
+                          ))}
+                        </div>
+                        <button
+                          onClick={() => setChronicSymptomSelections({})}
+                          className="text-[9px] uppercase tracking-wider font-extrabold text-slate-500 hover:text-white bg-transparent border-none cursor-pointer"
+                        >
+                          Reset Checkbox
+                        </button>
+                      </div>
+
+                      <div className="space-y-2.5 max-h-[350px] overflow-y-auto pr-1" data-lenis-prevent="true">
+                        {CHRONIC_MIASM_SYMPTOMS[chronicSelectedMiasm].map(sym => {
+                          const isChecked = !!chronicSymptomSelections[sym.id];
+                          return (
+                            <label
+                              key={sym.id}
+                              className={`flex items-start gap-3 p-3.5 rounded-2xl border transition-all cursor-pointer ${
+                                isChecked 
+                                  ? "bg-slate-950/60 border-teal-500/40 text-slate-100" 
+                                  : "bg-slate-950/20 border-slate-900 text-slate-400 hover:border-slate-800 hover:text-slate-200"
+                              }`}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={isChecked}
+                                onChange={() => {
+                                  setChronicSymptomSelections(prev => ({ ...prev, [sym.id]: !prev[sym.id] }));
+                                }}
+                                className="mt-0.5 rounded border-slate-800 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+                              />
+                              <span className="text-xs font-semibold leading-relaxed">{sym.text}</span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Right Telemetry / Results (5 cols) */}
+                    <div className="lg:col-span-5 bg-slate-900/50 border border-slate-900 p-6 rounded-3xl flex flex-col justify-between">
+                      <div className="space-y-4">
+                        <span className="text-[10px] font-mono text-emerald-400 font-extrabold uppercase tracking-widest block border-b border-slate-800 pb-2">
+                          Miasmatic Distribution
+                        </span>
+
+                        <div className="space-y-4">
+                          {scores.map(s => (
+                            <div key={s.label} className="space-y-1.5">
+                              <div className="flex justify-between items-center text-xs font-bold text-slate-300">
+                                <span>{s.label}</span>
+                                <span className="text-teal-400">{s.val}%</span>
+                              </div>
+                              <div className="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden border border-slate-900">
+                                <div
+                                  className={`bg-gradient-to-r ${s.color} h-full rounded-full transition-all duration-300`}
+                                  style={{ width: `${s.val}%` }}
+                                />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="bg-slate-950/80 border border-slate-900 p-4 rounded-2xl mt-4 space-y-2">
+                        <span className="text-[9px] uppercase tracking-widest font-extrabold text-slate-500 block">
+                          Dominant Miasmatic Diagnosis
+                        </span>
+                        {dominantMiasm.val > 0 ? (
+                          <>
+                            <strong className="text-xs text-teal-400 block font-bold capitalize">
+                              {dominantMiasm.key} Dominance Detected
+                            </strong>
+                            <p className="text-[10.5px] text-slate-400 leading-relaxed font-sans">
+                              {dominantMiasm.key === "psora" && "Patient shows primary functional deficiency and skin hypersensitivity. Anti-psoric therapy (e.g. Sulphur, Psorinum) must be prioritized to clear dynamic blocks."}
+                              {dominantMiasm.key === "sycosis" && "Hypertrophic condensation tendencies. Anti-sycotics like Thuja Occidentalis or Medorrhinum are indicated to counter systemic overgrowth."}
+                              {dominantMiasm.key === "syphilis" && "Destructive pathological vectors active. Anti-syphilitic remedies (Mercurius, Nit-ac) must be introduced to halt cellular degradation."}
+                              {dominantMiasm.key === "tubercular" && "High lung vulnerability combined with restlessness and metabolic wasting. Requires anti-tubercular core treatments (Tuberculinum, Phosphorus)."}
+                            </p>
+                          </>
+                        ) : (
+                          <p className="text-xs text-slate-500 italic">
+                            Select symptoms on the left to calculate miasmatic load ratio.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Sub-View: Timeline */}
+                {chronicViewMode === "timeline" && (
+                  <div className="bg-slate-900/50 border border-slate-900 p-6 rounded-3xl space-y-6">
+                    <div className="border-b border-slate-800 pb-3">
+                      <h4 className="text-sm font-bold text-slate-200">Anti-Miasmatic Concept Evolution</h4>
+                      <p className="text-[10.5px] text-slate-500 font-semibold mt-1">Trace shifts in how chronic diseases were treated from Hahnemann to modern times.</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                      {CHRONIC_TIMELINES.map((item, idx) => (
+                        <div key={idx} className="bg-slate-950/60 border border-slate-900 p-4 rounded-2xl space-y-2 flex flex-col justify-between hover:border-slate-800 transition-colors">
+                          <span className="text-emerald-400 font-mono text-xs font-bold block">{item.year}</span>
+                          <strong className="text-xs text-slate-200 block leading-snug">{item.title}</strong>
+                          <p className="text-[10px] text-slate-400 leading-relaxed font-sans">{item.desc}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Sub-View: Quiz */}
+                {chronicViewMode === "quiz" && (
+                  <div className="max-w-xl mx-auto bg-slate-900/50 border border-slate-900 p-6 rounded-3xl space-y-6">
+                    <div className="flex justify-between items-center border-b border-slate-800 pb-3">
+                      <span className="text-[9.5px] font-mono text-emerald-400 font-extrabold uppercase tracking-widest">Chronic Diseases Quiz</span>
+                      <span className="text-[9px] bg-slate-950 px-2 py-0.5 rounded text-slate-500 font-mono font-bold">
+                        Q. {chronicQuizIdx + 1} of {CHRONIC_QUIZ.length}
+                      </span>
+                    </div>
+
+                    <h4 className="text-sm font-bold text-slate-200 leading-relaxed">{currentQ.q}</h4>
+
+                    <div className="grid grid-cols-1 gap-2.5">
+                      {currentQ.options.map((opt, oIdx) => {
+                        const strIdx = String(oIdx);
+                        const isSelected = chronicQuizAnswers[chronicQuizIdx] === strIdx;
+                        const isCorrect = strIdx === currentQ.ans;
+                        
+                        let style = "bg-slate-950/40 border-slate-900 text-slate-400 hover:border-slate-850 hover:text-slate-200";
+                        if (isSelected && !isChronicQuizChecked) {
+                          style = "bg-emerald-950/40 border-emerald-500/55 text-emerald-400";
+                        } else if (isChronicQuizChecked) {
+                          if (isCorrect) {
+                            style = "bg-emerald-900/30 border-emerald-500 text-emerald-300";
+                          } else if (isSelected && !isCorrect) {
+                            style = "bg-rose-900/30 border-rose-500 text-rose-300";
+                          }
+                        }
+
+                        return (
+                          <button
+                            key={oIdx}
+                            onClick={() => {
+                              if (!isChronicQuizChecked) {
+                                setChronicQuizAnswers(prev => ({ ...prev, [chronicQuizIdx]: strIdx }));
+                              }
+                            }}
+                            className={`w-full text-left p-3 rounded-2xl border text-xs font-bold leading-normal transition-all cursor-pointer ${style}`}
+                          >
+                            {opt}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {isChronicQuizChecked && (
+                      <div className="p-4 bg-emerald-950/10 border border-emerald-900/30 rounded-2xl space-y-1 text-xs">
+                        <span className="text-[9.5px] uppercase tracking-widest font-extrabold text-emerald-400 block">Explanation</span>
+                        <p className="text-slate-400 leading-relaxed font-sans">{currentQ.exp}</p>
+                      </div>
+                    )}
+
+                    <div className="flex justify-between items-center pt-4 border-t border-slate-800">
+                      <button
+                        onClick={() => {
+                          if (chronicQuizIdx > 0) {
+                            setIsChronicQuizChecked(false);
+                            setChronicQuizIdx(prev => prev - 1);
+                          }
+                        }}
+                        disabled={chronicQuizIdx === 0}
+                        className="px-3 py-1.5 bg-slate-900 disabled:opacity-50 disabled:cursor-not-allowed text-xs hover:bg-slate-850 border border-slate-800 text-slate-300 rounded-xl cursor-pointer transition-colors border-none"
+                      >
+                        Prev
+                      </button>
+
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => setIsChronicQuizChecked(true)}
+                          disabled={isChronicQuizChecked || !chronicQuizAnswers[chronicQuizIdx]}
+                          className="px-4 py-1.5 bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-emerald-700 text-white rounded-xl text-[10px] font-bold uppercase tracking-wider cursor-pointer border-none"
+                        >
+                          Check
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (chronicQuizIdx < CHRONIC_QUIZ.length - 1) {
+                              setIsChronicQuizChecked(false);
+                              setChronicQuizIdx(prev => prev + 1);
+                            }
+                          }}
+                          disabled={!isChronicQuizChecked || chronicQuizIdx === CHRONIC_QUIZ.length - 1}
+                          className="px-4 py-1.5 bg-slate-900 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-850 border border-slate-800 text-slate-300 rounded-xl text-[10px] font-bold uppercase tracking-wider cursor-pointer transition-colors border-none"
+                        >
+                          Next
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Sub-View: AI Tutor */}
+                {chronicViewMode === "insights" && (
+                  <div className="max-w-2xl mx-auto bg-slate-900/50 border border-slate-900 p-6 rounded-3xl flex flex-col justify-between min-h-[450px]">
+                    <div className="border-b border-slate-800 pb-3 mb-4 flex items-center justify-between">
+                      <span className="text-[10px] font-mono text-emerald-400 font-extrabold uppercase">Miasms Tutor Chat</span>
+                      <span className="text-[9px] bg-slate-950 px-2 py-0.5 rounded text-slate-500 font-mono font-bold uppercase">Online</span>
+                    </div>
+
+                    <div className="space-y-4 flex-1 overflow-y-auto pr-1 max-h-[300px] my-3" data-lenis-prevent="true">
+                      {chronicTutorChat.map((msg, mIdx) => (
+                        <div key={mIdx} className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
+                          <div className={`max-w-[80%] p-3.5 rounded-2xl text-xs font-semibold leading-relaxed ${
+                            msg.sender === "user" 
+                              ? "bg-emerald-600 text-white rounded-tr-none" 
+                              : "bg-slate-950 border border-slate-900 text-slate-300 rounded-tl-none"
+                          }`}>
+                            {msg.text}
+                          </div>
+                        </div>
+                      ))}
+                      {isChronicTutorLoading && (
+                        <div className="flex justify-start">
+                          <div className="bg-slate-950 border border-slate-900 p-3 rounded-2xl text-[10px] text-slate-500 font-bold uppercase tracking-wider animate-pulse">
+                            Tutor is analyzing dynamic responses...
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex gap-2 bg-slate-950 border border-slate-900 p-2 rounded-2xl mt-4">
+                      <input
+                        type="text"
+                        placeholder="Ask about Psora, Sycosis, Syphilis, or suppression..."
+                        value={chronicTutorInput}
+                        onChange={(e) => setChronicTutorInput(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === "Enter") triggerMiasmTutorSend(chronicTutorInput); }}
+                        className="w-full bg-transparent border-none text-xs font-semibold outline-none text-white pl-2 placeholder-slate-650"
+                      />
+                      <button
+                        onClick={() => triggerMiasmTutorSend(chronicTutorInput)}
+                        disabled={isChronicTutorLoading || !chronicTutorInput.trim()}
+                        className="p-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl text-white flex items-center justify-center cursor-pointer border-none"
+                      >
+                        <Send className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          }
+
+          // --- 2. HOMEOPATHIC PHILOSOPHY SANCTUARY ---
+          if (learningHubModule === "philosophy") {
+            const currentConcept = PHILOSOPHY_CONCEPTS.find(c => c.id === philosophyActiveChapter) || PHILOSOPHY_CONCEPTS[0];
+            const currentMaster = PHILOSOPHY_MASTERS.find(m => m.id === philosophySelectedMaster) || PHILOSOPHY_MASTERS[0];
+            
+            // Susceptibility Simulator logic
+            let simulationResult = "";
+            let simulationPotency = "";
+            let suppressionRisk = "Low";
+            let aggravationRisk = "Low";
+
+            if (susceptibilityValue >= 7 && stimulusValue >= 7) {
+              simulationResult = "Hyper-reactive vital force feedback. High risk of dynamic rebound flare. The defense mechanism is over-reacting to the pathogen.";
+              simulationPotency = "LM1 - LM3 or low Centesimal (30C) split dose.";
+              suppressionRisk = "Low";
+              aggravationRisk = "Very High (Avoid 10M or CM)";
+            } else if (susceptibilityValue >= 7 && stimulusValue <= 3) {
+              simulationResult = "Highly receptive state. Perfect window for high-potency constitutional trigger. Clear, rapid healing response.";
+              simulationPotency = "200C or 1M, single dry dose.";
+              suppressionRisk = "None";
+              aggravationRisk = "Low";
+            } else if (susceptibilityValue <= 3) {
+              simulationResult = "Torpid, low reactivity. Pathogen is dominating while vital force fails to respond. High danger of pathology sinking deep.";
+              simulationPotency = "LM or frequent repetition of 6C/30C. May require intercurrent Psorinum.";
+              suppressionRisk = "High";
+              aggravationRisk = "None";
+            } else {
+              simulationResult = "Standard susceptibility and balanced stress load. Predicts a steady curative reaction over 4 to 8 weeks.";
+              simulationPotency = "200C potency.";
+              suppressionRisk = "Low";
+              aggravationRisk = "Moderate";
+            }
+
+            const currentQ = PHILOSOPHY_QUIZ[philosophyQuizIdx];
+
+            return (
+              <div className="space-y-6">
+                {/* Control Panel Header */}
+                <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 bg-slate-900/60 border border-slate-800/60 p-6 rounded-3xl shadow-lg relative z-10 my-4">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Brain className="w-5 h-5 text-emerald-400" />
+                      <h3 className="text-lg font-serif font-bold text-slate-100">Homeopathic Philosophy Sanctuary</h3>
+                    </div>
+                    <p className="text-xs text-slate-400 font-medium font-sans">
+                      Delve into pure Organon principles, historical masters lectures, and organic susceptibility simulations.
+                    </p>
+                  </div>
+
+                  {/* Mode switcher capsules */}
+                  <div className="flex bg-slate-950 border border-slate-800 p-1 rounded-xl gap-0.5 overflow-x-auto max-w-full">
+                    {[
+                      { id: "overview", label: "Master Lectures", icon: Users },
+                      { id: "tracer", label: "Concept Tracer", icon: Layers },
+                      { id: "insights", label: "Susceptibility Sim", icon: Sliders },
+                      { id: "quiz", label: "Active Recall", icon: Award }
+                    ].map((mode) => {
+                      const Icon = mode.icon;
+                      const isSelected = philosophyViewMode === mode.id;
+                      return (
+                        <button
+                          key={mode.id}
+                          onClick={() => setPhilosophyViewMode(mode.id as any)}
+                          className={`flex items-center gap-1.5 py-1.5 px-3 rounded-lg text-[9.5px] uppercase font-bold tracking-wider transition-all cursor-pointer border-none whitespace-nowrap ${
+                            isSelected ? "bg-emerald-600 text-white shadow" : "text-slate-400 hover:text-white bg-transparent"
+                          }`}
+                        >
+                          <Icon className="w-3.5 h-3.5" />
+                          <span>{mode.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Sub-View: Master Lectures */}
+                {philosophyViewMode === "overview" && (
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                    {/* Left List (4 cols) */}
+                    <div className="lg:col-span-4 bg-slate-900/50 border border-slate-900 p-5 rounded-3xl space-y-3">
+                      <h4 className="text-xs font-extrabold text-slate-300 uppercase tracking-widest border-b border-slate-800 pb-2">Philosophy Authors</h4>
+                      <div className="space-y-2">
+                        {PHILOSOPHY_MASTERS.map(master => (
+                          <button
+                            key={master.id}
+                            onClick={() => setPhilosophySelectedMaster(master.id)}
+                            className={`w-full text-left p-3.5 rounded-2xl border transition-all cursor-pointer block ${
+                              philosophySelectedMaster === master.id 
+                                ? "bg-slate-950/60 border-emerald-500 text-slate-100 shadow" 
+                                : "bg-slate-950/10 border-slate-900 text-slate-400 hover:text-slate-200"
+                            }`}
+                          >
+                            <span className="text-[9px] font-mono text-emerald-400 block font-bold">{master.lifespan}</span>
+                            <strong className="text-xs font-bold text-slate-200 block mt-1">{master.name}</strong>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Right Card Detail (8 cols) */}
+                    <div className="lg:col-span-8 bg-slate-900/50 border border-slate-900 p-6 rounded-3xl flex flex-col justify-between min-h-[350px]">
+                      <div className="space-y-4">
+                        <div className="border-b border-slate-800 pb-3">
+                          <span className="text-[10px] font-mono text-emerald-400 font-extrabold uppercase">Master Profile Overview</span>
+                          <h4 className="text-lg font-serif font-bold text-slate-100 mt-1">{currentMaster.name}</h4>
+                        </div>
+
+                        <div className="space-y-3 text-xs">
+                          <div className="bg-slate-950/40 border border-slate-900 p-3.5 rounded-xl space-y-1">
+                            <span className="text-[9.5px] uppercase tracking-widest font-extrabold text-slate-500 block">Primary Philosophical Works</span>
+                            <p className="text-slate-350 font-bold italic">"{currentMaster.keyText}"</p>
+                          </div>
+
+                          <div className="space-y-1">
+                            <span className="text-[9.5px] uppercase tracking-widest font-extrabold text-slate-500 block">Key Philosophy & Contribution</span>
+                            <p className="text-slate-300 leading-relaxed font-sans">{currentMaster.contribution}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="text-[10.5px] text-slate-500 border-t border-slate-900 pt-3 italic font-medium leading-relaxed">
+                        References: Classical BHMS Curriculum - Organon and Homeopathic Philosophy Papers.
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Sub-View: Concept Tracer */}
+                {philosophyViewMode === "tracer" && (
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                    {/* Left Concepts List (4 cols) */}
+                    <div className="lg:col-span-4 bg-slate-900/50 border border-slate-900 p-5 rounded-3xl space-y-3">
+                      <h4 className="text-xs font-extrabold text-slate-300 uppercase tracking-widest border-b border-slate-800 pb-2">Core Philosophical Concepts</h4>
+                      <div className="space-y-2">
+                        {PHILOSOPHY_CONCEPTS.map(concept => (
+                          <button
+                            key={concept.id}
+                            onClick={() => setPhilosophyActiveChapter(concept.id)}
+                            className={`w-full text-left p-3.5 rounded-2xl border transition-all cursor-pointer block ${
+                              philosophyActiveChapter === concept.id 
+                                ? "bg-slate-950/60 border-emerald-500 text-slate-100 shadow" 
+                                : "bg-slate-950/10 border-slate-900 text-slate-400 hover:text-slate-200"
+                            }`}
+                          >
+                            <strong className="text-xs font-bold text-slate-200 block">{concept.title}</strong>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Right Concept Details (8 cols) */}
+                    <div className="lg:col-span-8 bg-slate-900/50 border border-slate-900 p-6 rounded-3xl space-y-4 max-h-[400px] overflow-y-auto" data-lenis-prevent="true">
+                      <div className="border-b border-slate-800 pb-3">
+                        <span className="text-[9.5px] font-mono text-emerald-400 font-extrabold uppercase">Concept Trace Analysis</span>
+                        <h4 className="text-base font-serif font-bold text-slate-100 mt-1">{currentConcept.title}</h4>
+                      </div>
+
+                      <div className="bg-slate-950/40 p-4 rounded-xl border border-slate-900">
+                        <span className="text-[9.5px] uppercase tracking-widest font-extrabold text-slate-500 block mb-1">General Definition</span>
+                        <p className="text-xs text-slate-300 leading-relaxed font-sans">{currentConcept.desc}</p>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                        <div className="bg-slate-950/20 p-4 rounded-xl border border-slate-900 space-y-1">
+                          <span className="text-[9.5px] uppercase tracking-widest font-extrabold text-amber-500 block">Early Hahnemannian View</span>
+                          <p className="text-slate-400 leading-relaxed font-sans">{currentConcept.early}</p>
+                        </div>
+                        <div className="bg-slate-950/20 p-4 rounded-xl border border-slate-900 space-y-1">
+                          <span className="text-[9.5px] uppercase tracking-widest font-extrabold text-emerald-500 block">Later Expanded View (e.g. Kent)</span>
+                          <p className="text-slate-400 leading-relaxed font-sans">{currentConcept.late}</p>
+                        </div>
+                      </div>
+
+                      <div className="bg-emerald-950/10 p-4 rounded-xl border border-emerald-900/30 text-xs space-y-1">
+                        <span className="text-[9.5px] uppercase tracking-widest font-extrabold text-teal-400 block">Modern Clinical Correlation</span>
+                        <p className="text-slate-350 leading-relaxed font-sans">{currentConcept.clinical}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Sub-View: Susceptibility Simulator */}
+                {philosophyViewMode === "insights" && (
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                    {/* Left Controls (5 cols) */}
+                    <div className="lg:col-span-5 bg-slate-900/50 border border-slate-900 p-6 rounded-3xl space-y-5">
+                      <span className="text-[10px] font-mono text-emerald-400 font-extrabold uppercase tracking-widest block border-b border-slate-800 pb-2">
+                        Adjust Patient Parameters
+                      </span>
+
+                      {/* Susceptibility Slider */}
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-xs font-bold text-slate-300">
+                          <span>Patient Susceptibility</span>
+                          <span className="text-emerald-400">{susceptibilityValue}/10</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="1"
+                          max="10"
+                          value={susceptibilityValue}
+                          onChange={(e) => setSusceptibilityValue(Number(e.target.value))}
+                          className="w-full accent-emerald-500 cursor-pointer h-1.5 bg-slate-950 rounded-full"
+                        />
+                        <span className="text-[9px] text-slate-500 font-semibold block uppercase">
+                          {susceptibilityValue >= 7 ? "Hyper-reactive / Sensitive (Young / Mental signs)" : 
+                           susceptibilityValue <= 3 ? "Torpid / Low reaction (Old age / Pathological)" : "Average Vitality"}
+                        </span>
+                      </div>
+
+                      {/* Pathological Stimulus Slider */}
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-xs font-bold text-slate-300">
+                          <span>Pathological Stimulus</span>
+                          <span className="text-emerald-400">{stimulusValue}/10</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="1"
+                          max="10"
+                          value={stimulusValue}
+                          onChange={(e) => setStimulusValue(Number(e.target.value))}
+                          className="w-full accent-emerald-500 cursor-pointer h-1.5 bg-slate-950 rounded-full"
+                        />
+                        <span className="text-[9px] text-slate-500 font-semibold block uppercase">
+                          {stimulusValue >= 7 ? "Severe acute / Deep chronic miasm flare" : "Mild functional trigger"}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Right Results (7 cols) */}
+                    <div className="lg:col-span-7 bg-slate-900/50 border border-slate-900 p-6 rounded-3xl flex flex-col justify-between">
+                      <div className="space-y-4">
+                        <span className="text-[10px] font-mono text-emerald-400 font-extrabold uppercase tracking-widest block border-b border-slate-800 pb-2">
+                          Simulation Core Output
+                        </span>
+
+                        <div className="bg-slate-950/60 p-4 rounded-2xl border border-slate-900 space-y-3">
+                          <div className="space-y-1">
+                            <span className="text-[9px] uppercase tracking-widest font-extrabold text-slate-500 block">Vital Force Reaction</span>
+                            <p className="text-xs text-slate-200 leading-relaxed font-semibold">{simulationResult}</p>
+                          </div>
+
+                          <div className="space-y-1">
+                            <span className="text-[9px] uppercase tracking-widest font-extrabold text-slate-500 block">Recommended Posology / Potency</span>
+                            <p className="text-xs text-teal-400 font-bold">{simulationPotency}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3 mt-4 text-xs font-bold">
+                        <div className="bg-slate-950/40 p-3 rounded-xl border border-slate-900 text-center">
+                          <span className="text-[8.5px] uppercase font-extrabold text-slate-550 block mb-1">Aggravation Risk</span>
+                          <span className={`text-sm ${aggravationRisk.includes("High") ? "text-rose-400" : "text-emerald-400"}`}>{aggravationRisk}</span>
+                        </div>
+                        <div className="bg-slate-950/40 p-3 rounded-xl border border-slate-900 text-center">
+                          <span className="text-[8.5px] uppercase font-extrabold text-slate-550 block mb-1">Suppression Risk</span>
+                          <span className={`text-sm ${suppressionRisk.includes("High") ? "text-rose-400" : "text-emerald-400"}`}>{suppressionRisk}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Sub-View: Philosophy Quiz */}
+                {philosophyViewMode === "quiz" && (
+                  <div className="max-w-xl mx-auto bg-slate-900/50 border border-slate-900 p-6 rounded-3xl space-y-6">
+                    <div className="flex justify-between items-center border-b border-slate-800 pb-3">
+                      <span className="text-[9.5px] font-mono text-emerald-400 font-extrabold uppercase tracking-widest">Philosophy Quiz Lab</span>
+                      <span className="text-[9px] bg-slate-950 px-2 py-0.5 rounded text-slate-500 font-mono font-bold">
+                        Q. {philosophyQuizIdx + 1} of {PHILOSOPHY_QUIZ.length}
+                      </span>
+                    </div>
+
+                    <h4 className="text-sm font-bold text-slate-200 leading-relaxed">{currentQ.q}</h4>
+
+                    <div className="grid grid-cols-1 gap-2.5">
+                      {currentQ.options.map((opt, oIdx) => {
+                        const strIdx = String(oIdx);
+                        const isSelected = philosophyQuizAnswers[philosophyQuizIdx] === strIdx;
+                        const isCorrect = strIdx === currentQ.ans;
+                        
+                        let style = "bg-slate-950/40 border-slate-900 text-slate-400 hover:border-slate-850 hover:text-slate-200";
+                        if (isSelected && !isPhilosophyQuizChecked) {
+                          style = "bg-emerald-950/40 border-emerald-500/55 text-emerald-400";
+                        } else if (isPhilosophyQuizChecked) {
+                          if (isCorrect) {
+                            style = "bg-emerald-900/30 border-emerald-500 text-emerald-300";
+                          } else if (isSelected && !isCorrect) {
+                            style = "bg-rose-900/30 border-rose-500 text-rose-300";
+                          }
+                        }
+
+                        return (
+                          <button
+                            key={oIdx}
+                            onClick={() => {
+                              if (!isPhilosophyQuizChecked) {
+                                setPhilosophyQuizAnswers(prev => ({ ...prev, [philosophyQuizIdx]: strIdx }));
+                              }
+                            }}
+                            className={`w-full text-left p-3 rounded-2xl border text-xs font-bold leading-normal transition-all cursor-pointer ${style}`}
+                          >
+                            {opt}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {isPhilosophyQuizChecked && (
+                      <div className="p-4 bg-emerald-950/10 border border-emerald-900/30 rounded-2xl space-y-1 text-xs">
+                        <span className="text-[9.5px] uppercase tracking-widest font-extrabold text-emerald-400 block">Explanation Reference</span>
+                        <p className="text-slate-400 leading-relaxed font-sans">{currentQ.exp}</p>
+                      </div>
+                    )}
+
+                    <div className="flex justify-between items-center pt-4 border-t border-slate-800">
+                      <button
+                        onClick={() => {
+                          if (philosophyQuizIdx > 0) {
+                            setIsPhilosophyQuizChecked(false);
+                            setPhilosophyQuizIdx(prev => prev - 1);
+                          }
+                        }}
+                        disabled={philosophyQuizIdx === 0}
+                        className="px-3 py-1.5 bg-slate-900 disabled:opacity-50 disabled:cursor-not-allowed text-xs hover:bg-slate-850 border border-slate-800 text-slate-300 rounded-xl cursor-pointer transition-colors border-none"
+                      >
+                        Prev
+                      </button>
+
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => setIsPhilosophyQuizChecked(true)}
+                          disabled={isPhilosophyQuizChecked || !philosophyQuizAnswers[philosophyQuizIdx]}
+                          className="px-4 py-1.5 bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-emerald-700 text-white rounded-xl text-[10px] font-bold uppercase tracking-wider cursor-pointer border-none"
+                        >
+                          Check Answer
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (philosophyQuizIdx < PHILOSOPHY_QUIZ.length - 1) {
+                              setIsPhilosophyQuizChecked(false);
+                              setPhilosophyQuizIdx(prev => prev + 1);
+                            }
+                          }}
+                          disabled={!isPhilosophyQuizChecked || philosophyQuizIdx === PHILOSOPHY_QUIZ.length - 1}
+                          className="px-4 py-1.5 bg-slate-900 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-850 border border-slate-800 text-slate-300 rounded-xl text-[10px] font-bold uppercase tracking-wider cursor-pointer transition-colors border-none"
+                        >
+                          Next
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          }
+
+          // --- 3. REPERTORY SCIENCE LABORATORY ---
+          if (learningHubModule === "repertory-science") {
+            // Get matching rubrics based on search and chapter selection
+            const getMatchingRubrics = () => {
+              let sourceRubrics: any[] = [];
+              if (repertorySource === "jethwani") {
+                sourceRubrics = JETHWANI_REPERTORY_DATA.map(r => ({
+                  id: r.id,
+                  chapter: r.section,
+                  name: r.name,
+                  remedies: r.remedies
+                }));
+              } else {
+                sourceRubrics = getRepertoryData(repertorySource);
+              }
+
+              // Filter by selected chapter / section
+              let filtered = sourceRubrics;
+              if (repertorySource === "jethwani") {
+                filtered = sourceRubrics.filter(r => r.chapter === repertorySelectedChapter);
+              } else if (repertorySource === "kent") {
+                filtered = sourceRubrics.filter(r => r.chapter === repertorySelectedChapter);
+              } else if (repertorySource === "boericke") {
+                filtered = sourceRubrics.filter(r => r.chapter === repertorySelectedChapter);
+              }
+
+              // Filter by search term
+              if (repertorySearchTerm.trim()) {
+                const query = repertorySearchTerm.toLowerCase();
+                filtered = filtered.filter(r => 
+                  r.name.toLowerCase().includes(query) || 
+                  r.chapter.toLowerCase().includes(query)
+                );
+              }
+
+              return filtered.slice(0, 30); // Cap list
+            };
+
+            // Calculate ranked remedies
+            const getRankedRemedies = () => {
+              if (repertorySelectedSymptoms.length === 0) return [];
+              const totals: Record<string, number> = {};
+              const matchCounts: Record<string, number> = {};
+
+              repertorySelectedSymptoms.forEach(symptom => {
+                let rubricObj: any = null;
+                // find rubric in databases
+                rubricObj = JETHWANI_REPERTORY_DATA.find(r => r.id === symptom.rubricId);
+                if (!rubricObj) {
+                  const combined = getRepertoryData("combined");
+                  rubricObj = combined.find(r => r.id === symptom.rubricId);
+                }
+
+                if (rubricObj && rubricObj.remedies) {
+                  const freqMult = symptom.frequency === "constant" ? 1.0 : symptom.frequency === "frequent" ? 0.8 : 0.5;
+                  const impMult = symptom.impact === "severe" ? 1.0 : symptom.impact === "moderate" ? 0.7 : 0.4;
+                  const symptomWeight = symptom.severity * freqMult * impMult;
+
+                  Object.entries(rubricObj.remedies).forEach(([remedy, grade]: [string, any]) => {
+                    const value = Number(grade) * symptomWeight;
+                    totals[remedy] = (totals[remedy] || 0) + value;
+                    matchCounts[remedy] = (matchCounts[remedy] || 0) + 1;
+                  });
+                }
+              });
+
+              // Rank matches: sort by score, but also show how many rubrics matched
+              const list = Object.entries(totals).map(([name, score]) => {
+                // Round score
+                const roundedScore = Math.round(score * 10) / 10;
+                return {
+                  name,
+                  score: roundedScore,
+                  matches: matchCounts[name],
+                  totalRubrics: repertorySelectedSymptoms.length
+                };
+              });
+
+              return list.sort((a, b) => b.score - a.score).slice(0, 5);
+            };
+
+            const matchingRubrics = getMatchingRubrics();
+            const rankedRemedies = getRankedRemedies();
+            const activeConfirmations = repertorySelectedRubricId ? JETHWANI_REMEDY_CONFIRMATIONS[repertorySelectedRubricId] : null;
+
+            // Calculate indices if Jethwani selected
+            let clinicalIndices: ClinicalIndices | null = null;
+            if (repertorySelectedSymptoms.length > 0) {
+              clinicalIndices = calculateClinicalIndices(repertorySelectedSymptoms);
+            }
+
+            const addRubricToSelection = (rubric: any) => {
+              if (repertorySelectedSymptoms.some(s => s.rubricId === rubric.id)) return;
+              const newSymptom: JethwaniSymptomConfig = {
+                rubricId: rubric.id,
+                severity: 5,
+                frequency: "frequent",
+                impact: "moderate"
+              };
+              setRepertorySelectedSymptoms(prev => [...prev, newSymptom]);
+            };
+
+            const removeSymptom = (rubricId: string) => {
+              setRepertorySelectedSymptoms(prev => prev.filter(s => s.rubricId !== rubricId));
+            };
+
+            const getRubricName = (rubricId: string) => {
+              const rubric = JETHWANI_REPERTORY_DATA.find(r => r.id === rubricId);
+              if (rubric) return rubric.name;
+              const combined = getRepertoryData("combined");
+              const cRubric = combined.find(r => r.id === rubricId);
+              return cRubric ? `[Classic] ${cRubric.chapter} - ${cRubric.name}` : rubricId;
+            };
+
+            // Chapter list based on source
+            const getChaptersList = () => {
+              if (repertorySource === "jethwani") {
+                return Object.entries(JETHWANI_SECTIONS).map(([key, val]) => ({ id: key, label: val.name }));
+              } else if (repertorySource === "kent") {
+                return REPERTORY_CHAPTERS.map(ch => ({ id: ch, label: ch }));
+              } else {
+                return BOERICKE_CHAPTERS.map(ch => ({ id: ch, label: ch }));
+              }
+            };
+
+            const chapters = getChaptersList();
+
+            return (
+              <div className="space-y-6">
+                {/* Control Panel Header */}
+                <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 bg-slate-900/60 border border-slate-800/60 p-6 rounded-3xl shadow-lg relative z-10 my-4">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Sliders className="w-5 h-5 text-emerald-400" />
+                      <h3 className="text-lg font-serif font-bold text-slate-100">Repertory Science Laboratory</h3>
+                    </div>
+                    <p className="text-xs text-slate-400 font-medium font-sans">
+                      Select rubrics from Kent, Boericke, or Jethwani clinical indexes to run mathematical case repertorizations.
+                    </p>
+                  </div>
+
+                  {/* Repertory database source toggles */}
+                  <div className="flex bg-slate-950 border border-slate-800 p-1 rounded-xl gap-0.5 overflow-x-auto max-w-full">
+                    {[
+                      { id: "jethwani", label: "Jethwani Clinical" },
+                      { id: "kent", label: "Kent's Repertory" },
+                      { id: "boericke", label: "Boericke Pocket Book" }
+                    ].map((src) => {
+                      const isSelected = repertorySource === src.id;
+                      return (
+                        <button
+                          key={src.id}
+                          onClick={() => {
+                            setRepertorySource(src.id as any);
+                            // default chapter reset
+                            if (src.id === "jethwani") setRepertorySelectedChapter("Section A");
+                            else if (src.id === "kent") setRepertorySelectedChapter(REPERTORY_CHAPTERS[0]);
+                            else setRepertorySelectedChapter(BOERICKE_CHAPTERS[0]);
+                          }}
+                          className={`flex items-center py-1.5 px-3 rounded-lg text-[9.5px] uppercase font-bold tracking-wider transition-all cursor-pointer border-none whitespace-nowrap ${
+                            isSelected ? "bg-emerald-600 text-white shadow" : "text-slate-400 hover:text-white bg-transparent"
+                          }`}
+                        >
+                          <span>{src.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Main Grid: Left Selector, Right Workspace */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                  {/* Left Column: Rubric selector (5 cols) */}
+                  <div className="lg:col-span-5 bg-slate-900/50 border border-slate-900 p-5 rounded-3xl space-y-4">
+                    <div className="space-y-3">
+                      <span className="text-[10px] font-mono text-emerald-400 font-extrabold uppercase tracking-widest block border-b border-slate-800 pb-2">
+                        Browse Rubrics Directory
+                      </span>
+
+                      {/* Chapter Dropdown */}
+                      <div className="space-y-1">
+                        <label className="block text-[8.5px] font-extrabold text-slate-500 uppercase tracking-widest">Select Chapter / Section</label>
+                        <select
+                          value={repertorySelectedChapter}
+                          onChange={(e) => setRepertorySelectedChapter(e.target.value)}
+                          className="w-full p-2.5 bg-slate-950 border border-slate-850 text-xs font-bold text-white rounded-xl outline-none cursor-pointer"
+                        >
+                          {chapters.map(ch => (
+                            <option key={ch.id} value={ch.id}>{ch.label}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* Search Rubrics */}
+                      <div className="flex gap-2 bg-slate-950 border border-slate-850 p-2 rounded-xl">
+                        <Search className="w-3.5 h-3.5 text-slate-500 mt-1 shrink-0 ml-1.5" />
+                        <input
+                          type="text"
+                          placeholder="Search rubrics..."
+                          value={repertorySearchTerm}
+                          onChange={(e) => setRepertorySearchTerm(e.target.value)}
+                          className="w-full bg-transparent text-xs font-bold text-white outline-none placeholder-slate-600"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Matching Rubrics List */}
+                    <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1" data-lenis-prevent="true">
+                      {isRepertoryLoading ? (
+                        <div className="flex flex-col items-center justify-center py-8 text-center text-slate-400 bg-slate-955/20 border border-slate-900 rounded-2xl">
+                          <RefreshCw className="w-4 h-4 animate-spin text-mint mb-1.5" />
+                          <p className="text-[10px] font-bold">Hydrating Classic Repertory...</p>
+                        </div>
+                      ) : matchingRubrics.length === 0 ? (
+                        <div className="text-center py-8 text-[11px] font-semibold text-slate-550 italic bg-slate-950/20 border border-slate-900 rounded-2xl">
+                          No matching rubrics. Try changing filter or search.
+                        </div>
+                      ) : (
+                        matchingRubrics.map(rubric => {
+                          const isAlreadyAdded = repertorySelectedSymptoms.some(s => s.rubricId === rubric.id);
+                          return (
+                            <div
+                              key={rubric.id}
+                              className="bg-slate-950/40 border border-slate-900 p-3 rounded-2xl flex items-center justify-between hover:border-slate-800 transition-colors"
+                            >
+                              <div className="space-y-1 pr-3">
+                                <span className="text-[8.5px] font-mono text-slate-550 uppercase tracking-wider block font-bold">{rubric.chapter}</span>
+                                <span className="text-[11px] font-bold text-slate-355 leading-snug block">{rubric.name}</span>
+                              </div>
+                              <button
+                                onClick={() => addRubricToSelection(rubric)}
+                                disabled={isAlreadyAdded}
+                                className={`px-2.5 py-1 rounded-xl text-[9px] font-bold uppercase tracking-wider cursor-pointer border-none shrink-0 transition-colors ${
+                                  isAlreadyAdded 
+                                    ? "bg-slate-850 text-slate-500 cursor-not-allowed" 
+                                    : "bg-emerald-600 text-white hover:bg-emerald-700"
+                                }`}
+                              >
+                                {isAlreadyAdded ? "Added" : "Add"}
+                              </button>
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Right Column: Case Workspace & Scoring (7 cols) */}
+                  <div className="lg:col-span-7 space-y-6">
+                    {/* Selected Symptoms List */}
+                    <div className="bg-slate-900/50 border border-slate-900 p-5 rounded-3xl space-y-4">
+                      <span className="text-[10px] font-mono text-emerald-400 font-extrabold uppercase tracking-widest block border-b border-slate-800 pb-2">
+                        Active Case Rubrics ({repertorySelectedSymptoms.length})
+                      </span>
+
+                      {repertorySelectedSymptoms.length === 0 ? (
+                        <div className="text-center py-12 text-xs font-semibold text-slate-500 italic border border-dashed border-slate-900 rounded-3xl bg-slate-950/30">
+                          Case is empty. Browse and add rubrics from the left pane to begin.
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          <div className="space-y-2 max-h-[200px] overflow-y-auto pr-1" data-lenis-prevent="true">
+                            {repertorySelectedSymptoms.map((symptom, idx) => (
+                              <div
+                                key={symptom.rubricId}
+                                className="bg-slate-950/60 border border-slate-900 p-3 rounded-2xl flex items-center justify-between text-xs"
+                              >
+                                <div className="space-y-1.5 flex-1 pr-4">
+                                  <span className="text-[11px] font-bold text-slate-200 leading-snug">{getRubricName(symptom.rubricId)}</span>
+                                  
+                                  {/* Severity & Frequency select block */}
+                                  <div className="flex flex-wrap items-center gap-3 text-[9px] font-extrabold text-slate-500 uppercase">
+                                    <span className="flex items-center gap-1">
+                                      Severity:
+                                      <select
+                                        value={symptom.severity}
+                                        onChange={(e) => {
+                                          const val = Number(e.target.value);
+                                          setRepertorySelectedSymptoms(prev => prev.map((item, i) => i === idx ? { ...item, severity: val } : item));
+                                        }}
+                                        className="bg-transparent text-emerald-400 border-none outline-none font-extrabold cursor-pointer"
+                                      >
+                                        {[1,2,3,4,5,6,7,8,9,10].map(v => <option key={v} value={v}>{v}</option>)}
+                                      </select>
+                                    </span>
+
+                                    <span className="flex items-center gap-1">
+                                      Freq:
+                                      <select
+                                        value={symptom.frequency}
+                                        onChange={(e) => {
+                                          const val = e.target.value as any;
+                                          setRepertorySelectedSymptoms(prev => prev.map((item, i) => i === idx ? { ...item, frequency: val } : item));
+                                        }}
+                                        className="bg-transparent text-emerald-400 border-none outline-none font-extrabold cursor-pointer"
+                                      >
+                                        <option value="constant">Constant</option>
+                                        <option value="frequent">Frequent</option>
+                                        <option value="occasional">Occasional</option>
+                                      </select>
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <button
+                                  onClick={() => removeSymptom(symptom.rubricId)}
+                                  className="p-1.5 bg-slate-900 hover:bg-slate-800 text-rose-400 rounded-lg cursor-pointer border-none shrink-0"
+                                  title="Remove rubric"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Repertorial Scoring Results */}
+                    {repertorySelectedSymptoms.length > 0 && (
+                      <div className="bg-slate-900/50 border border-slate-900 p-5 rounded-3xl space-y-4">
+                        <span className="text-[10px] font-mono text-emerald-400 font-extrabold uppercase tracking-widest block border-b border-slate-800 pb-2">
+                          Mathematical Remedy Repertorization
+                        </span>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-stretch">
+                          {/* Remedy Scores */}
+                          <div className="bg-slate-950/60 p-4 rounded-2xl border border-slate-900 space-y-3">
+                            <span className="text-[9px] uppercase tracking-widest font-extrabold text-slate-500 block">Top Resonating Remedies</span>
+                            <div className="space-y-2.5">
+                              {rankedRemedies.map(rem => (
+                                <button
+                                  key={rem.name}
+                                  onClick={() => setRepertorySelectedRubricId(rem.name)}
+                                  className={`w-full text-left p-2.5 rounded-xl border transition-all flex justify-between items-center text-xs font-bold ${
+                                    repertorySelectedRubricId === rem.name 
+                                      ? "bg-slate-900 border-teal-500/50 text-slate-100" 
+                                      : "bg-slate-900/40 border-slate-900 text-slate-400 hover:text-white"
+                                  }`}
+                                >
+                                  <span>{rem.name}</span>
+                                  <span className="text-emerald-400 font-mono">{rem.score} pts ({rem.matches}/{rem.totalRubrics} rubrics)</span>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Clinical Indices */}
+                          {clinicalIndices && (
+                            <div className="bg-slate-950/60 p-4 rounded-2xl border border-slate-900 space-y-3">
+                              <span className="text-[9px] uppercase tracking-widest font-extrabold text-slate-500 block">Calculated Clinical Indices</span>
+                              <div className="grid grid-cols-2 gap-2.5 text-[10px] font-bold">
+                                {[
+                                  { label: "Stress Load", val: clinicalIndices.stress_load, color: "text-rose-455" },
+                                  { label: "Vital Force Status", val: clinicalIndices.vital_force, color: "text-emerald-400" },
+                                  { label: "Chronic Load", val: clinicalIndices.chronic_disease, color: "text-amber-500" },
+                                  { label: "Stability Index", val: clinicalIndices.constitutional_stability, color: "text-teal-400" }
+                                ].map(ind => (
+                                  <div key={ind.label} className="bg-slate-900/60 p-2 rounded-xl border border-slate-900 text-center">
+                                    <span className="text-[8px] uppercase tracking-wider font-extrabold text-slate-500 block mb-1">{ind.label}</span>
+                                    <span className={`${ind.color} text-xs font-mono`}>{ind.val}/100</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Top Remedy Differential confirmations */}
+                        {activeConfirmations && (
+                          <div className="bg-slate-950/60 p-4 rounded-2xl border border-slate-900 mt-4 space-y-3 text-xs">
+                            <div className="flex justify-between items-center border-b border-slate-800 pb-2">
+                              <strong className="text-teal-400 font-bold capitalize">{repertorySelectedRubricId} Prescribing Profile</strong>
+                              <button
+                                onClick={() => setRepertorySelectedRubricId(null)}
+                                className="text-[9px] text-slate-500 hover:text-white bg-transparent border-none cursor-pointer"
+                              >
+                                Close Profile
+                              </button>
+                            </div>
+
+                            <div className="space-y-2">
+                              <div>
+                                <span className="text-[8.5px] uppercase tracking-widest font-extrabold text-emerald-400 block mb-1">Confirmatory Signs</span>
+                                <ul className="list-disc pl-4 text-slate-350 space-y-0.5">
+                                  {activeConfirmations.confirmatory.map((c, idx) => <li key={idx}>{c}</li>)}
+                                </ul>
+                              </div>
+                              <div>
+                                <span className="text-[8.5px] uppercase tracking-widest font-extrabold text-rose-400 block mb-1">Eliminating (Contra-indicated) Signs</span>
+                                <ul className="list-disc pl-4 text-slate-350 space-y-0.5">
+                                  {activeConfirmations.eliminating.map((c, idx) => <li key={idx}>{c}</li>)}
+                                </ul>
+                              </div>
+                              <div>
+                                <span className="text-[8.5px] uppercase tracking-widest font-extrabold text-amber-500 block mb-1">Differential (vs. Competitors)</span>
+                                <ul className="list-disc pl-4 text-slate-350 space-y-0.5">
+                                  {activeConfirmations.differentiating.map((c, idx) => <li key={idx}>{c}</li>)}
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          }
+
+          // --- 4. MASTER CLINICAL CASES REPOSITORY ---
+          if (learningHubModule === "clinical-cases") {
+            const activeCase = CLINICAL_CASES_DB.find(c => c.id === selectedClinicalCaseId) || CLINICAL_CASES_DB[0];
+
+            return (
+              <div className="space-y-6">
+                {/* Control Panel Header */}
+                <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 bg-slate-900/60 border border-slate-800/60 p-6 rounded-3xl shadow-lg relative z-10 my-4">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Stethoscope className="w-5 h-5 text-emerald-400" />
+                      <h3 className="text-lg font-serif font-bold text-slate-100">Master Clinical Cases Repository</h3>
+                    </div>
+                    <p className="text-xs text-slate-400 font-medium font-sans">
+                      Browse peer-reviewed classical cures from homeopathic masters and trace follow-up directions.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Case selector sidebar & details */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                  {/* Left sidebar cases (4 cols) */}
+                  <div className="lg:col-span-4 bg-slate-900/50 border border-slate-900 p-5 rounded-3xl space-y-3">
+                    <h4 className="text-xs font-extrabold text-slate-300 uppercase tracking-widest border-b border-slate-800 pb-2">Case Registry</h4>
+                    <div className="space-y-2">
+                      {CLINICAL_CASES_DB.map(c => (
+                        <button
+                          key={c.id}
+                          onClick={() => {
+                            setSelectedClinicalCaseId(c.id);
+                            setClinicalCaseStage("intake");
+                            setClinicalCaseGuess("");
+                            setIsClinicalCaseGuessed(false);
+                            setClinicalCaseSuccess(null);
+                          }}
+                          className={`w-full text-left p-4 rounded-2xl border transition-all cursor-pointer block ${
+                            selectedClinicalCaseId === c.id 
+                              ? "bg-slate-950/60 border-teal-500 text-slate-100 shadow" 
+                              : "bg-slate-950/10 border-slate-900 text-slate-400 hover:text-white"
+                          }`}
+                        >
+                          <span className="text-[9px] font-mono text-emerald-400 block font-bold">{c.doctor}</span>
+                          <strong className="text-xs font-bold text-slate-200 block mt-1 leading-snug">{c.title}</strong>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Right main case panel (8 cols) */}
+                  <div className="lg:col-span-8 bg-slate-900/50 border border-slate-900 p-6 rounded-3xl flex flex-col justify-between min-h-[450px]">
+                    <div className="space-y-4">
+                      {/* Case details header */}
+                      <div className="flex justify-between items-start border-b border-slate-800 pb-3">
+                        <div>
+                          <span className="text-[10px] font-mono text-emerald-400 font-extrabold uppercase">Case Review: {activeCase.patient}</span>
+                          <h4 className="text-base font-serif font-bold text-slate-100 mt-1">{activeCase.title}</h4>
+                        </div>
+                        
+                        <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-850 gap-0.5 text-[9px] font-extrabold uppercase">
+                          {[
+                            { id: "intake", label: "Intake" },
+                            { id: "repertory", label: "Rubrics" },
+                            { id: "differential", label: "Differential" },
+                            { id: "followup", label: "Follow-Up" }
+                          ].map(t => (
+                            <button
+                              key={t.id}
+                              onClick={() => setClinicalCaseStage(t.id as any)}
+                              className={`px-2 py-1 rounded-lg border-none transition-colors whitespace-nowrap cursor-pointer ${
+                                clinicalCaseStage === t.id ? "bg-slate-800 text-teal-400" : "text-slate-500 hover:text-white bg-transparent"
+                              }`}
+                            >
+                              {t.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Content panel */}
+                      <div className="text-xs space-y-3 leading-relaxed max-h-[300px] overflow-y-auto pr-1" data-lenis-prevent="true">
+                        {clinicalCaseStage === "intake" && (
+                          <div className="space-y-3">
+                            <div className="bg-slate-950/40 p-4 rounded-xl border border-slate-900">
+                              <span className="text-[9.5px] uppercase tracking-widest font-extrabold text-slate-550 block mb-1">Chief complaint & history</span>
+                              <p className="text-slate-300 leading-relaxed font-sans">{activeCase.history}</p>
+                            </div>
+
+                            {/* Guess remedy mini-quiz */}
+                            <div className="bg-emerald-950/10 p-4 rounded-xl border border-emerald-900/30 space-y-3">
+                              <span className="text-[9.5px] uppercase tracking-widest font-extrabold text-teal-400 block">Constitutional Remedy Diagnostic Challenge</span>
+                              <div className="flex gap-3">
+                                <select
+                                  value={clinicalCaseGuess}
+                                  onChange={(e) => setClinicalCaseGuess(e.target.value)}
+                                  disabled={isClinicalCaseGuessed}
+                                  className="p-2 bg-slate-950 border border-slate-800 text-xs font-bold text-white rounded-xl outline-none cursor-pointer flex-1"
+                                >
+                                  <option value="">-- Choose Remedy --</option>
+                                  <option value="Sulphur">Sulphur</option>
+                                  <option value="Lycopodium">Lycopodium</option>
+                                  <option value="Arsenicum">Arsenicum</option>
+                                  <option value="Pulsatilla">Pulsatilla</option>
+                                  <option value="Thuja">Thuja Occidentalis</option>
+                                  <option value="Ignatia">Ignatia Amara</option>
+                                  <option value="Natrum Muriaticum">Natrum Muriaticum</option>
+                                </select>
+                                <button
+                                  onClick={() => {
+                                    setIsClinicalCaseGuessed(true);
+                                    const matched = clinicalCaseGuess.toLowerCase() === activeCase.answer.toLowerCase() || 
+                                                    activeCase.answer.toLowerCase().includes(clinicalCaseGuess.toLowerCase());
+                                    setClinicalCaseSuccess(matched);
+                                  }}
+                                  disabled={isClinicalCaseGuessed || !clinicalCaseGuess}
+                                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold uppercase tracking-wider text-[10px] cursor-pointer border-none shrink-0"
+                                >
+                                  Submit Guess
+                                </button>
+                              </div>
+
+                              {isClinicalCaseGuessed && (
+                                <div className="space-y-1 mt-2">
+                                  {clinicalCaseSuccess ? (
+                                    <span className="text-emerald-400 font-bold block">✓ Correct! Excellent diagnostic accuracy.</span>
+                                  ) : (
+                                    <span className="text-rose-400 font-bold block">✗ Incorrect. The master prescribed {activeCase.prescription}.</span>
+                                  )}
+                                  <p className="text-[10px] text-slate-400 leading-normal font-sans pt-1">
+                                    <strong>Final Prescription:</strong> {activeCase.prescription}<br/>
+                                    <strong>Differential reasoning:</strong> {activeCase.differential}
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {clinicalCaseStage === "repertory" && (
+                          <div className="space-y-3">
+                            <span className="text-[9.5px] uppercase tracking-widest font-extrabold text-slate-500 block mb-1">Key Case Rubrics Extracted</span>
+                            <div className="space-y-2">
+                              {activeCase.rubrics.map((r, idx) => (
+                                <div key={idx} className="bg-slate-950/60 p-3 rounded-xl border border-slate-900 text-slate-300 font-semibold font-serif italic">
+                                  "{r}"
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {clinicalCaseStage === "differential" && (
+                          <div className="space-y-4">
+                            <div className="bg-slate-950/60 p-4 rounded-xl border border-slate-900 space-y-2">
+                              <span className="text-[9.5px] uppercase tracking-widest font-extrabold text-slate-550 block">Differential diagnostics analysis</span>
+                              <p className="text-slate-300 leading-relaxed font-sans">{activeCase.differential}</p>
+                            </div>
+
+                            <div className="space-y-2">
+                              <span className="text-[9.5px] uppercase tracking-widest font-extrabold text-slate-550 block">Prescription grid match</span>
+                              <div className="grid grid-cols-4 gap-2 text-center text-[10px] font-bold">
+                                {activeCase.remediesScored.map((rem, rIdx) => (
+                                  <div key={rIdx} className={`p-2.5 rounded-xl border ${
+                                    rem.match 
+                                      ? "bg-emerald-950/30 border-emerald-500 text-emerald-355" 
+                                      : "bg-slate-950/40 border-slate-900 text-slate-400"
+                                  }`}>
+                                    <span className="block">{rem.name}</span>
+                                    <span className="text-[9px] font-mono opacity-60 block mt-0.5">{rem.score} pts</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {clinicalCaseStage === "followup" && (
+                          <div className="space-y-4">
+                            <span className="text-[9.5px] uppercase tracking-widest font-extrabold text-slate-550 block">Chronological follow-up timeline (Hering's Law check)</span>
+                            <div className="space-y-3 relative border-l border-slate-800 pl-4 ml-2">
+                              {activeCase.followup.map((f, idx) => (
+                                <div key={idx} className="space-y-1 relative">
+                                  <div className="absolute -left-[22px] top-1.5 w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                                  <span className="text-[10px] font-mono text-emerald-400 font-bold block">{f.time}</span>
+                                  <p className="text-slate-350 font-sans leading-normal">{f.note}</p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="text-[10px] text-slate-500 border-t border-slate-900 pt-3 italic font-semibold leading-relaxed">
+                      Source Reference: Clinical Cases Archives - Hahnemannian Society Publications.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          }
+
+          // --- 5. HISTORICAL MASTERS ARCHIVES ---
+          if (learningHubModule === "historical-masters") {
+            const activeMaster = HISTORICAL_MASTERS_DB.find(m => m.id === selectedHistoricalMasterId) || HISTORICAL_MASTERS_DB[0];
+
+            return (
+              <div className="space-y-6">
+                {/* Control Panel Header */}
+                <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 bg-slate-900/60 border border-slate-800/60 p-6 rounded-3xl shadow-lg relative z-10 my-4">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <History className="w-5 h-5 text-emerald-400" />
+                      <h3 className="text-lg font-serif font-bold text-slate-100">Historical Masters Archives</h3>
+                    </div>
+                    <p className="text-xs text-slate-400 font-medium font-sans">
+                      Trace timelines, publishing milestones, and core quotes from historical pioneers of homeopathy.
+                    </p>
+                  </div>
+
+                  {/* Mode switcher capsules */}
+                  <div className="flex bg-slate-950 border border-slate-800 p-1 rounded-xl gap-0.5 overflow-x-auto max-w-full">
+                    {[
+                      { id: "profiles", label: "Master Profiles", icon: Users },
+                      { id: "timeline", label: "Key Milestones", icon: History },
+                      { id: "quotes", label: "Quote Explorer", icon: BookOpen }
+                    ].map((mode) => {
+                      const Icon = mode.icon;
+                      const isSelected = historicalViewMode === mode.id;
+                      return (
+                        <button
+                          key={mode.id}
+                          onClick={() => setHistoricalViewMode(mode.id as any)}
+                          className={`flex items-center gap-1.5 py-1.5 px-3 rounded-lg text-[9.5px] uppercase font-bold tracking-wider transition-all cursor-pointer border-none whitespace-nowrap ${
+                            isSelected ? "bg-emerald-600 text-white shadow" : "text-slate-400 hover:text-white bg-transparent"
+                          }`}
+                        >
+                          <Icon className="w-3.5 h-3.5" />
+                          <span>{mode.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Sub-View: Profiles */}
+                {historicalViewMode === "profiles" && (
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                    {/* Left List (4 cols) */}
+                    <div className="lg:col-span-4 bg-slate-900/50 border border-slate-900 p-5 rounded-3xl space-y-3">
+                      <h4 className="text-xs font-extrabold text-slate-300 uppercase tracking-widest border-b border-slate-800 pb-2">Masters Directory</h4>
+                      <div className="space-y-2">
+                        {HISTORICAL_MASTERS_DB.map(m => (
+                          <button
+                            key={m.id}
+                            onClick={() => setSelectedHistoricalMasterId(m.id)}
+                            className={`w-full text-left p-3.5 rounded-2xl border transition-all cursor-pointer block ${
+                              selectedHistoricalMasterId === m.id 
+                                ? "bg-slate-950/60 border-teal-500 text-slate-100 shadow" 
+                                : "bg-slate-950/10 border-slate-900 text-slate-400 hover:text-white"
+                            }`}
+                          >
+                            <span className="text-[9px] font-mono text-emerald-400 block font-bold">{m.lifespan}</span>
+                            <strong className="text-xs font-bold text-slate-200 block mt-1">{m.name}</strong>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Right Details (8 cols) */}
+                    <div className="lg:col-span-8 bg-slate-900/50 border border-slate-900 p-6 rounded-3xl flex flex-col justify-between min-h-[350px]">
+                      <div className="space-y-4">
+                        <div className="border-b border-slate-800 pb-3">
+                          <span className="text-[10px] font-mono text-emerald-400 font-bold uppercase">{activeMaster.lifespan}</span>
+                          <h4 className="text-lg font-serif font-bold text-slate-100 mt-1">{activeMaster.name}</h4>
+                        </div>
+
+                        <div className="space-y-3 text-xs">
+                          <p className="text-slate-350 leading-relaxed font-sans">{activeMaster.desc}</p>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="bg-slate-950/40 p-4 rounded-xl border border-slate-900 space-y-1">
+                              <span className="text-[8.5px] uppercase tracking-widest font-extrabold text-slate-550 block">Key Texts</span>
+                              <p className="text-slate-300 font-bold italic font-serif">"{activeMaster.keyText}"</p>
+                            </div>
+                            <div className="bg-slate-950/40 p-4 rounded-xl border border-slate-900 space-y-1">
+                              <span className="text-[8.5px] uppercase tracking-widest font-extrabold text-slate-550 block">Pioneering Contribution</span>
+                              <p className="text-slate-300 leading-normal">{activeMaster.contribution}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="text-[10px] text-slate-500 border-t border-slate-900 pt-3 italic font-semibold">
+                        Homeopathic Heritage Library References.
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Sub-View: Milestones Timeline */}
+                {historicalViewMode === "timeline" && (
+                  <div className="bg-slate-900/50 border border-slate-900 p-6 rounded-3xl space-y-6">
+                    <div className="border-b border-slate-800 pb-3">
+                      <h4 className="text-sm font-bold text-slate-200">Chronological Milestones of Homeopathy</h4>
+                      <p className="text-[10.5px] text-slate-500 font-semibold mt-1">Trace important historical publications and discoveries from 1796 to 1921.</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {HISTORICAL_MILESTONES.map((item, idx) => (
+                        <div key={idx} className="bg-slate-950/60 border border-slate-900 p-4 rounded-2xl space-y-2 hover:border-slate-800 transition-colors">
+                          <span className="text-emerald-400 font-mono text-xs font-bold block">{item.year}</span>
+                          <strong className="text-xs text-slate-200 block leading-snug">{item.event}</strong>
+                          <p className="text-[10px] text-slate-400 leading-relaxed font-sans">{item.desc}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Sub-View: Quotes Explorer */}
+                {historicalViewMode === "quotes" && (
+                  <div className="max-w-xl mx-auto bg-slate-900/50 border border-slate-900 p-6 rounded-3xl space-y-6">
+                    <div className="border-b border-slate-800 pb-3">
+                      <h4 className="text-sm font-bold text-slate-200">Inspirational Quotes Explorer</h4>
+                      <p className="text-[10px] text-slate-500 font-semibold mt-1">Read foundational quotes guiding homeopathic principles and therapeutic art.</p>
+                    </div>
+
+                    <div className="space-y-4">
+                      {HISTORICAL_QUOTES.map((item, idx) => (
+                        <div key={idx} className="bg-slate-950/45 p-4 rounded-2xl border border-slate-900 space-y-2">
+                          <blockquote className="text-[11px] text-slate-300 font-serif italic leading-relaxed">
+                            "{item.quote}"
+                          </blockquote>
+                          <span className="text-[9px] uppercase tracking-wider font-extrabold text-emerald-400 block text-right">
+                            — {item.master}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          }
+
+          return null;
+        })()}
       </div>
     )}
             </motion.div>
@@ -17518,17 +22634,17 @@ ${err.message || err}`);
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
                 transition={{ type: "spring", damping: 25, stiffness: 220 }}
-                className="fixed inset-0 m-auto bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-md h-fit max-h-[90vh] overflow-hidden flex flex-col z-[100] pointer-events-auto"
+                className="fixed inset-0 m-auto bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl w-full max-w-md h-fit max-h-[90vh] overflow-hidden flex flex-col z-[100] pointer-events-auto"
               >
                 {/* Modal Header */}
-                <div className="bg-slate-50 px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+                <div className="bg-slate-50 dark:bg-slate-950 px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="w-5 h-5 flex items-center justify-center bg-blue-500 rounded-lg text-white font-black text-xs font-sans">▲</span>
-                    <span className="text-xs font-black text-slate-800 uppercase tracking-wider">Google Drive Workspace</span>
+                    <span className="text-xs font-black text-slate-800 dark:text-slate-200 uppercase tracking-wider">Google Drive Workspace</span>
                   </div>
                   <button
                     onClick={() => setGoogleDriveModalOpen(false)}
-                    className="p-1 hover:bg-slate-200 rounded-lg text-slate-400 hover:text-slate-700 cursor-pointer border-none bg-transparent"
+                    className="p-1 hover:bg-slate-200 dark:hover:bg-slate-800/80 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white cursor-pointer border-none bg-transparent"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -17539,16 +22655,16 @@ ${err.message || err}`);
                   {googleDriveLoading ? (
                     <div className="flex flex-col items-center justify-center gap-3 text-center py-8">
                       <RefreshCw className="w-8 h-8 text-blue-600 animate-spin" />
-                      <span className="text-[10px] font-black uppercase text-slate-500 tracking-wider">Syncing with Google Drive...</span>
+                      <span className="text-[10px] font-black uppercase text-slate-500 dark:text-slate-400 tracking-wider">Syncing with Google Drive...</span>
                     </div>
                   ) : !googleDriveConnected ? (
                     <div className="text-center space-y-5 py-4">
-                      <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center mx-auto">
+                      <div className="w-12 h-12 rounded-full bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center mx-auto">
                         <span className="text-blue-500 text-2xl font-black">▲</span>
                       </div>
                       <div className="space-y-1">
-                        <h4 className="text-xs font-black text-slate-800 uppercase tracking-wide">Connect Google Drive</h4>
-                        <p className="text-[10px] text-slate-400 max-w-xs mx-auto font-medium leading-normal">
+                        <h4 className="text-xs font-black text-slate-800 dark:text-slate-200 uppercase tracking-wide">Connect Google Drive</h4>
+                        <p className="text-[10px] text-slate-400 dark:text-slate-500 max-w-xs mx-auto font-medium leading-normal">
                           Connect Dr. Jethwani's Clinic database to securely import laboratory PDFs, scans, and patient record files directly.
                         </p>
                       </div>
@@ -17567,8 +22683,8 @@ ${err.message || err}`);
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest font-mono block">Patient Shared Reports:</span>
-                      <div className="border border-slate-100 rounded-xl overflow-hidden divide-y divide-slate-100 max-h-[200px] overflow-y-auto">
+                      <span className="text-[8px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest font-mono block">Patient Shared Reports:</span>
+                      <div className="border border-slate-100 dark:border-slate-800/60 rounded-xl overflow-hidden divide-y divide-slate-100 dark:divide-slate-800/60 max-h-[200px] overflow-y-auto">
                         {[
                           { name: "Clinical_Report_Anoop_Sharma_CBC.pdf", type: "CBC" },
                           { name: "TSH_Thyroid_Panel_Meera_Sen.pdf", type: "Thyroid" },
@@ -17583,19 +22699,19 @@ ${err.message || err}`);
                               triggerSample(item.type);
                               setGoogleDriveModalOpen(false);
                             }}
-                            className="w-full text-left p-3 hover:bg-slate-50 transition-all flex items-center gap-2 border-none bg-transparent cursor-pointer"
+                            className="w-full text-left p-3 hover:bg-slate-50 dark:hover:bg-slate-850/50 transition-all flex items-center gap-2 border-none bg-transparent cursor-pointer"
                           >
                             <FileText className="w-4 h-4 text-blue-500" />
                             <div className="flex-1 min-w-0">
-                              <p className="text-[10px] font-semibold text-slate-700 truncate">{item.name}</p>
-                              <p className="text-[8px] text-slate-400 font-mono">PDF • 1.42 MB</p>
+                              <p className="text-[10px] font-semibold text-slate-700 dark:text-slate-300 truncate">{item.name}</p>
+                              <p className="text-[8px] text-slate-400 dark:text-slate-500 font-mono">PDF • 1.42 MB</p>
                             </div>
                           </button>
                         ))}
                       </div>
                       <button
                         onClick={() => setGoogleDriveConnected(false)}
-                        className="text-[8px] font-black text-red-500 uppercase tracking-widest cursor-pointer bg-transparent border-none hover:underline"
+                        className="text-[8px] font-black text-red-500 dark:text-red-400 uppercase tracking-widest cursor-pointer bg-transparent border-none hover:underline"
                       >
                         Disconnect Google Drive Account
                       </button>
@@ -17629,15 +22745,15 @@ ${err.message || err}`);
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
                 transition={{ type: "spring", damping: 25, stiffness: 220 }}
                 data-lenis-prevent
-                className="fixed inset-0 m-auto max-w-4xl w-full p-6 md:p-8 bg-[#FAF9F6]/95 border border-white/60 z-[51] shadow-2xl rounded-[36px] flex flex-col pointer-events-auto max-h-[90vh] overflow-y-auto"
+                className="fixed inset-0 m-auto max-w-4xl w-full p-6 md:p-8 bg-[#FAF9F6]/95 dark:bg-slate-900/95 border border-white/60 dark:border-slate-850 z-[51] shadow-2xl rounded-[36px] flex flex-col pointer-events-auto max-h-[90vh] overflow-y-auto"
               >
                 {/* Modal Header */}
-                <div className="flex items-center justify-between border-b border-slate-900/5 pb-4 mb-6">
+                <div className="flex items-center justify-between border-b border-slate-900/5 dark:border-slate-800/40 pb-4 mb-6">
                   <div className="flex items-center gap-2">
-                    <Receipt className="w-5 h-5 text-[#0f766e]" />
+                    <Receipt className="w-5 h-5 text-[#0f766e] dark:text-mint" />
                     <div>
-                      <h3 className="text-lg font-bold text-[#1A2421]">Patient Billing & Invoicing</h3>
-                      <span className="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">
+                      <h3 className="text-lg font-bold text-[#1A2421] dark:text-slate-100">Patient Billing & Invoicing</h3>
+                      <span className="text-[9px] text-slate-400 dark:text-slate-500 font-semibold uppercase tracking-wider">
                         Patient: {selectedInvoicePatient.name} ({selectedInvoicePatient.id})
                       </span>
                     </div>
@@ -17645,7 +22761,7 @@ ${err.message || err}`);
                   <button
                     onClick={() => setIsInvoiceModalOpen(false)}
                     disabled={isGeneratingInvoice}
-                    className="w-8 h-8 rounded-full border border-slate-200 hover:border-slate-800 flex items-center justify-center transition-colors cursor-pointer disabled:opacity-50 text-xl font-bold"
+                    className="w-8 h-8 rounded-full border border-slate-200 dark:border-slate-800 hover:border-slate-800 dark:hover:border-slate-400 flex items-center justify-center transition-colors cursor-pointer disabled:opacity-50 text-xl font-bold text-slate-800 dark:text-slate-200"
                   >
                     ×
                   </button>

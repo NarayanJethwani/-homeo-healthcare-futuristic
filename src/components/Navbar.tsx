@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Menu, X, ArrowUpRight } from "lucide-react";
+import { Sparkles, Menu, X, ArrowUpRight, Sun, Moon } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import Magnetic from "./Magnetic";
@@ -12,6 +12,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -20,6 +21,25 @@ export default function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    const isDark = document.documentElement.classList.contains("dark");
+    setTheme(isDark ? "dark" : "light");
+  }, []);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === "light" ? "dark" : "light";
+    setTheme(nextTheme);
+    if (nextTheme === "dark") {
+      document.documentElement.classList.add("dark");
+      document.documentElement.style.colorScheme = "dark";
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      document.documentElement.style.colorScheme = "light";
+      localStorage.setItem("theme", "light");
+    }
+  };
 
   const menuItems = [
     { name: "Conditions", href: "/services" },
@@ -82,8 +102,18 @@ export default function Navbar() {
               ))}
             </div>
 
-            {/* CTA Button */}
-            <div className="hidden md:block">
+            {/* CTA Button & Desktop Theme Toggle */}
+            <div className="hidden md:flex items-center gap-4">
+              <Magnetic>
+                <button
+                  onClick={toggleTheme}
+                  aria-label="Toggle theme"
+                  className="glass-panel border-mint/20 hover:border-mint/60 bg-mint/5 hover:bg-mint/10 text-[#1A2421] dark:text-zinc-200 p-2.5 rounded-full cursor-pointer transition-all duration-300 flex items-center justify-center"
+                >
+                  {theme === "light" ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+                </button>
+              </Magnetic>
+
               <Magnetic>
                 <Link
                   href="https://homeo.healthcare/#booking"
@@ -96,13 +126,23 @@ export default function Navbar() {
               </Magnetic>
             </div>
 
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-1.5 text-[#1A2421] hover:text-mint transition-colors cursor-pointer"
-            >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
+            {/* Mobile Controls */}
+            <div className="lg:hidden flex items-center gap-3">
+              <button
+                onClick={toggleTheme}
+                aria-label="Toggle theme"
+                className="p-2 text-[#1A2421] dark:text-zinc-200 hover:text-mint transition-colors cursor-pointer"
+              >
+                {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+              </button>
+
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="p-1.5 text-[#1A2421] dark:text-zinc-200 hover:text-mint transition-colors cursor-pointer"
+              >
+                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+            </div>
           </div>
         </div>
       </motion.nav>

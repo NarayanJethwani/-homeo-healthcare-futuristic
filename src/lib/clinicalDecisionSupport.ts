@@ -61,8 +61,7 @@ export function calculateClinicalDecisionSupport(caseInput: {
   // Query rubrics in REPERTORY_DATA that contain any search tokens
   const matchedRubrics = REPERTORY_DATA.filter(rubric => {
     const rubName = rubric.name.toLowerCase();
-    const rubChap = rubric.chapter.toLowerCase();
-    return tokens.some(token => rubName.includes(token) || rubChap.includes(token));
+    return tokens.some(token => rubName.includes(token));
   });
 
   GENOME_REMEDY_DB.forEach(rem => {
