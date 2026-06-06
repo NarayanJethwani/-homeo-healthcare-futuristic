@@ -68,7 +68,8 @@ export async function createPatientFolder(data: PatientIntakeData): Promise<{ fo
     
     const response = await drive.files.create({
       requestBody: fileMetadata,
-      fields: "id,webViewLink"
+      fields: "id,webViewLink",
+      supportsAllDrives: true
     });
     
     const folderId = response.data.id || "";
@@ -82,6 +83,7 @@ export async function createPatientFolder(data: PatientIntakeData): Promise<{ fo
             await drive.permissions.create({
               fileId: folderId,
               sendNotificationEmail: false,
+              supportsAllDrives: true,
               requestBody: {
                 role: "writer",
                 type: "user",
@@ -135,7 +137,8 @@ export async function createPatientClinicalSheet(
           name: `${data.name} - Clinical Record`,
           parents: [folderId]
         },
-        fields: "id,webViewLink"
+        fields: "id,webViewLink",
+        supportsAllDrives: true
       });
       newSheetId = response.data.id || "";
       newSheetUrl = response.data.webViewLink || (newSheetId ? `https://docs.google.com/spreadsheets/d/${newSheetId}/edit` : "");
@@ -147,7 +150,8 @@ export async function createPatientClinicalSheet(
           mimeType: "application/vnd.google-apps.spreadsheet",
           parents: [folderId]
         },
-        fields: "id,webViewLink"
+        fields: "id,webViewLink",
+        supportsAllDrives: true
       });
       newSheetId = response.data.id || "";
       newSheetUrl = response.data.webViewLink || (newSheetId ? `https://docs.google.com/spreadsheets/d/${newSheetId}/edit` : "");
@@ -162,6 +166,7 @@ export async function createPatientClinicalSheet(
             await drive.permissions.create({
               fileId: newSheetId,
               sendNotificationEmail: false,
+              supportsAllDrives: true,
               requestBody: {
                 role: "writer",
                 type: "user",
@@ -926,7 +931,9 @@ export async function listFilesInFolder(folderId: string): Promise<any[]> {
     const response = await drive.files.list({
       q: `'${folderId}' in parents and trashed = false`,
       fields: "files(id, name, mimeType, webViewLink)",
-      pageSize: 100
+      pageSize: 100,
+      supportsAllDrives: true,
+      includeItemsFromAllDrives: true
     });
     return response.data.files || [];
   } catch (error: any) {
@@ -984,7 +991,8 @@ export async function createInvoiceSheet(
         mimeType: "application/vnd.google-apps.spreadsheet",
         parents: [folderId]
       },
-      fields: "id,webViewLink"
+      fields: "id,webViewLink",
+      supportsAllDrives: true
     });
     const sheetId = response.data.id || "";
     const sheetUrl = response.data.webViewLink || (sheetId ? `https://docs.google.com/spreadsheets/d/${sheetId}/edit` : "");
@@ -1268,6 +1276,7 @@ export async function createInvoiceSheet(
     try {
       await drive.permissions.create({
         fileId: sheetId,
+        supportsAllDrives: true,
         requestBody: {
           role: "reader",
           type: "anyone"
@@ -1399,7 +1408,7 @@ export async function downloadFileFromGoogleDrive(fileId: string, destPath: stri
     const destStream = fs.createWriteStream(destPath);
     
     const res = await drive.files.get(
-      { fileId, alt: "media" },
+      { fileId, alt: "media", supportsAllDrives: true },
       { responseType: "stream" }
     );
     

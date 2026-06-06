@@ -3584,7 +3584,7 @@ Homeo Healthcare`;
         const city = getVal(["city", "location", "town"]);
         const state = getVal(["state", "province"]);
         const complaint = getVal(["complaint", "symptoms", "history", "chief complaint"]);
-        const rubricsText = getVal(["rubrics", "repertory", "symptom rubrics"]);
+        const rubricsText = getVal(["rubric", "rubrics", "repertory", "symptom rubric", "symptom rubrics", "repertory rubric", "repertory rubrics"]);
 
         if (!name || !complaint) {
           throw new Error("CSV must at least contain 'Name' and 'Complaint' or 'Symptoms' columns.");
@@ -21405,17 +21405,16 @@ Exported on: ${new Date().toLocaleDateString()}
                 className="fixed inset-0 bg-slate-900/20 backdrop-blur-md z-50 pointer-events-auto"
               />
 
-              {/* Modal Container */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
                 transition={{ type: "spring", damping: 25, stiffness: 220 }}
                 data-lenis-prevent
-                className="fixed inset-0 m-auto max-w-md w-full p-6 md:p-8 bg-[#FAF9F6]/95 dark:bg-slate-900/95 border border-white/60 dark:border-slate-850 z-[51] shadow-2xl rounded-[36px] flex flex-col pointer-events-auto max-h-[80vh] overflow-y-auto"
+                className="fixed inset-0 m-auto max-w-md w-full p-6 md:p-8 bg-[#FAF9F6]/95 dark:bg-slate-900/95 border border-white/60 dark:border-slate-850 z-[51] shadow-2xl rounded-[36px] flex flex-col pointer-events-auto max-h-[85vh] overflow-hidden"
               >
                 {/* Modal Header */}
-                <div className="flex items-center justify-between border-b border-slate-900/5 pb-4 mb-5">
+                <div className="flex items-center justify-between border-b border-slate-900/5 pb-4 mb-5 flex-shrink-0">
                   <div className="flex items-center gap-2">
                     <Upload className="w-5 h-5 text-mint" />
                     <div>
@@ -21431,7 +21430,8 @@ Exported on: ${new Date().toLocaleDateString()}
                   </button>
                 </div>
 
-                <div className="space-y-4">
+                {/* Scrollable Content Wrapper */}
+                <div className="space-y-4 overflow-y-auto flex-grow pr-1" data-lenis-prevent="true">
                   {/* Import Method Toggle */}
                   <div className="flex gap-1.5 p-1 bg-slate-900/5 rounded-2xl border border-slate-900/5 mb-2">
                     <button
@@ -21509,7 +21509,7 @@ Exported on: ${new Date().toLocaleDateString()}
                         <p className="text-[10.5px] text-slate-700 leading-normal">
                           The uploader will automatically map case variables from the first data row. Keep column headers matching these titles:
                         </p>
-                        <code className="block p-2 bg-slate-900/5 border border-slate-900/5 rounded font-mono text-[9px] text-slate-700 overflow-x-auto whitespace-nowrap">
+                        <code className="block p-2 bg-slate-900/5 border border-slate-900/5 rounded font-mono text-[9px] text-slate-700 whitespace-pre-wrap break-all">
                           name, age, gender, email, phone, city, state, complaint, rubrics
                         </code>
                         <p className="text-[9.5px] text-slate-400 italic font-medium">
@@ -21676,14 +21676,16 @@ Exported on: ${new Date().toLocaleDateString()}
                     </>
                   )}
 
-                  <div className="pt-3 border-t border-slate-900/5 flex justify-end">
-                    <button
-                      onClick={() => setIsImportModalOpen(false)}
-                      className="px-6 py-2 rounded-full border border-slate-200 text-slate-700 text-xs font-bold uppercase tracking-wider hover:bg-slate-50 transition-colors cursor-pointer"
-                    >
-                      Close
-                    </button>
-                  </div>
+                </div>
+
+                {/* Fixed Footer */}
+                <div className="pt-3 border-t border-slate-900/5 flex justify-end flex-shrink-0 mt-4">
+                  <button
+                    onClick={() => setIsImportModalOpen(false)}
+                    className="px-6 py-2 rounded-full border border-slate-200 text-slate-700 text-xs font-bold uppercase tracking-wider hover:bg-slate-50 transition-colors cursor-pointer"
+                  >
+                    Close
+                  </button>
                 </div>
               </motion.div>
             </>

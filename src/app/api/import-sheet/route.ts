@@ -28,7 +28,7 @@ function parseSheetDataRows(rows: any[][]): any[] {
     const phone = getRowValue("contact phone") || getRowValue("phone");
     const email = getRowValue("email");
     const location = getRowValue("location") || getRowValue("address");
-    const rubrics = getRowValue("clinical findings") || getRowValue("rubrics") || getRowValue("symptom rubrics");
+    const rubrics = getRowValue("clinical findings") || getRowValue("rubrics") || getRowValue("rubric") || getRowValue("symptom rubrics") || getRowValue("symptom rubric") || getRowValue("repertory rubric") || getRowValue("repertory rubrics");
     
     return [{
       name,
@@ -68,7 +68,7 @@ function parseSheetDataRows(rows: any[][]): any[] {
       const phone = getVal(["phone", "contact", "mobile", "tel"]);
       const city = getVal(["city", "location", "town"]);
       const state = getVal(["state", "province"]);
-      const rubrics = getVal(["rubrics", "repertory", "symptom rubrics"]);
+      const rubrics = getVal(["rubric", "rubrics", "repertory", "symptom rubric", "symptom rubrics", "repertory rubric", "repertory rubrics", "clinical findings"]);
 
       patientsList.push({
         name: patientName,
