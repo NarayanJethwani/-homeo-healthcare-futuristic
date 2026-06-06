@@ -1,0 +1,387 @@
+{
+  "success": true,
+  "author": "james-tyler-kent",
+  "count": 95,
+  "remedies": [
+    {
+      "name": "Acetic Acid",
+      "path": "/en/materia-medica/james-tyler-kent/acetic-acid"
+    },
+    {
+      "name": "Actaea Racemosa Black Cohosh",
+      "path": "/en/materia-medica/james-tyler-kent/actaea-racemosa-black-cohosh"
+    },
+    {
+      "name": "Asafoetida",
+      "path": "/en/materia-medica/james-tyler-kent/asafoetida"
+    },
+    {
+      "name": "Aurum Muriaticum",
+      "path": "/en/materia-medica/james-tyler-kent/aurum-muriaticum"
+    },
+    {
+      "name": "Baptisia",
+      "path": "/en/materia-medica/james-tyler-kent/baptisia"
+    },
+    {
+      "name": "Benzoic Acid",
+      "path": "/en/materia-medica/james-tyler-kent/benzoic-acid"
+    },
+    {
+      "name": "Berberis",
+      "path": "/en/materia-medica/james-tyler-kent/berberis"
+    },
+    {
+      "name": "Borax",
+      "path": "/en/materia-medica/james-tyler-kent/borax"
+    },
+    {
+      "name": "Bryonia",
+      "path": "/en/materia-medica/james-tyler-kent/bryonia"
+    },
+    {
+      "name": "Bufo",
+      "path": "/en/materia-medica/james-tyler-kent/bufo"
+    },
+    {
+      "name": "Cadmium Sulphuricum",
+      "path": "/en/materia-medica/james-tyler-kent/cadmium-sulphuricum"
+    },
+    {
+      "name": "Caladium",
+      "path": "/en/materia-medica/james-tyler-kent/caladium"
+    },
+    {
+      "name": "Camphor",
+      "path": "/en/materia-medica/james-tyler-kent/camphor"
+    },
+    {
+      "name": "Cantharis",
+      "path": "/en/materia-medica/james-tyler-kent/cantharis"
+    },
+    {
+      "name": "Capsicum",
+      "path": "/en/materia-medica/james-tyler-kent/capsicum"
+    },
+    {
+      "name": "Chelidonium",
+      "path": "/en/materia-medica/james-tyler-kent/chelidonium"
+    },
+    {
+      "name": "Chininum Arsenicosum",
+      "path": "/en/materia-medica/james-tyler-kent/chininum-arsenicosum"
+    },
+    {
+      "name": "Chionanthus Virginica",
+      "path": "/en/materia-medica/james-tyler-kent/chionanthus-virginica"
+    },
+    {
+      "name": "Chloralum Hydratum",
+      "path": "/en/materia-medica/james-tyler-kent/chloralum-hydratum"
+    },
+    {
+      "name": "Chloroformium",
+      "path": "/en/materia-medica/james-tyler-kent/chloroformium"
+    },
+    {
+      "name": "Cholesterinum",
+      "path": "/en/materia-medica/james-tyler-kent/cholesterinum"
+    },
+    {
+      "name": "Chromicum Acidum",
+      "path": "/en/materia-medica/james-tyler-kent/chromicum-acidum"
+    },
+    {
+      "name": "Chrysarobinum",
+      "path": "/en/materia-medica/james-tyler-kent/chrysarobinum"
+    },
+    {
+      "name": "Cicuta Virosa",
+      "path": "/en/materia-medica/james-tyler-kent/cicuta-virosa"
+    },
+    {
+      "name": "Cina",
+      "path": "/en/materia-medica/james-tyler-kent/cina"
+    },
+    {
+      "name": "Cinchona",
+      "path": "/en/materia-medica/james-tyler-kent/cinchona"
+    },
+    {
+      "name": "Cistus Canadensis",
+      "path": "/en/materia-medica/james-tyler-kent/cistus-canadensis"
+    },
+    {
+      "name": "Clematis Erecta",
+      "path": "/en/materia-medica/james-tyler-kent/clematis-erecta"
+    },
+    {
+      "name": "Cocculus Indicus",
+      "path": "/en/materia-medica/james-tyler-kent/cocculus-indicus"
+    },
+    {
+      "name": "Coccus Cacti",
+      "path": "/en/materia-medica/james-tyler-kent/coccus-cacti"
+    },
+    {
+      "name": "Coffea",
+      "path": "/en/materia-medica/james-tyler-kent/coffea"
+    },
+    {
+      "name": "Colchicum",
+      "path": "/en/materia-medica/james-tyler-kent/colchicum"
+    },
+    {
+      "name": "Colocynth",
+      "path": "/en/materia-medica/james-tyler-kent/colocynth"
+    },
+    {
+      "name": "Conium Maculatum",
+      "path": "/en/materia-medica/james-tyler-kent/conium-maculatum"
+    },
+    {
+      "name": "Crotalus Horridus Rattlesnake",
+      "path": "/en/materia-medica/james-tyler-kent/crotalus-horridus-rattlesnake"
+    },
+    {
+      "name": "Croton Tiglium",
+      "path": "/en/materia-medica/james-tyler-kent/croton-tiglium"
+    },
+    {
+      "name": "Cuprum Metallicum",
+      "path": "/en/materia-medica/james-tyler-kent/cuprum-metallicum"
+    },
+    {
+      "name": "Cyclamen",
+      "path": "/en/materia-medica/james-tyler-kent/cyclamen"
+    },
+    {
+      "name": "Digitalis",
+      "path": "/en/materia-medica/james-tyler-kent/digitalis"
+    },
+    {
+      "name": "Dulcamara Bitter Sweet",
+      "path": "/en/materia-medica/james-tyler-kent/dulcamara-bitter-sweet"
+    },
+    {
+      "name": "Eupatorium Perfoliatum Boneset",
+      "path": "/en/materia-medica/james-tyler-kent/eupatorium-perfoliatum-boneset"
+    },
+    {
+      "name": "Euphrasia",
+      "path": "/en/materia-medica/james-tyler-kent/euphrasia"
+    },
+    {
+      "name": "Fluoric Acid",
+      "path": "/en/materia-medica/james-tyler-kent/fluoric-acid"
+    },
+    {
+      "name": "Gelsemium",
+      "path": "/en/materia-medica/james-tyler-kent/gelsemium"
+    },
+    {
+      "name": "Glonoinum",
+      "path": "/en/materia-medica/james-tyler-kent/glonoinum"
+    },
+    {
+      "name": "Gratiola",
+      "path": "/en/materia-medica/james-tyler-kent/gratiola"
+    },
+    {
+      "name": "Guaiacum",
+      "path": "/en/materia-medica/james-tyler-kent/guaiacum"
+    },
+    {
+      "name": "Hyoscyamus",
+      "path": "/en/materia-medica/james-tyler-kent/hyoscyamus"
+    },
+    {
+      "name": "Hypericum",
+      "path": "/en/materia-medica/james-tyler-kent/hypericum"
+    },
+    {
+      "name": "Ignatia",
+      "path": "/en/materia-medica/james-tyler-kent/ignatia"
+    },
+    {
+      "name": "Iodine",
+      "path": "/en/materia-medica/james-tyler-kent/iodine"
+    },
+    {
+      "name": "Kali Bichromicum",
+      "path": "/en/materia-medica/james-tyler-kent/kali-bichromicum"
+    },
+    {
+      "name": "Kali Carbonicum",
+      "path": "/en/materia-medica/james-tyler-kent/kali-carbonicum"
+    },
+    {
+      "name": "Kali Iodatum",
+      "path": "/en/materia-medica/james-tyler-kent/kali-iodatum"
+    },
+    {
+      "name": "Kali Phosphoricum",
+      "path": "/en/materia-medica/james-tyler-kent/kali-phosphoricum"
+    },
+    {
+      "name": "Kali Sulphuricum",
+      "path": "/en/materia-medica/james-tyler-kent/kali-sulphuricum"
+    },
+    {
+      "name": "Lachesis",
+      "path": "/en/materia-medica/james-tyler-kent/lachesis"
+    },
+    {
+      "name": "Lycopodium",
+      "path": "/en/materia-medica/james-tyler-kent/lycopodium"
+    },
+    {
+      "name": "Magnesia Carbonica",
+      "path": "/en/materia-medica/james-tyler-kent/magnesia-carbonica"
+    },
+    {
+      "name": "Magnesia Muriatica",
+      "path": "/en/materia-medica/james-tyler-kent/magnesia-muriatica"
+    },
+    {
+      "name": "Magnesia Phosphorica",
+      "path": "/en/materia-medica/james-tyler-kent/magnesia-phosphorica"
+    },
+    {
+      "name": "Manganum",
+      "path": "/en/materia-medica/james-tyler-kent/manganum"
+    },
+    {
+      "name": "Mercurius",
+      "path": "/en/materia-medica/james-tyler-kent/mercurius"
+    },
+    {
+      "name": "Mercurius Cinnabaris",
+      "path": "/en/materia-medica/james-tyler-kent/mercurius-cinnabaris"
+    },
+    {
+      "name": "Mercurius Iodatus Flaws",
+      "path": "/en/materia-medica/james-tyler-kent/mercurius-iodatus-flaws"
+    },
+    {
+      "name": "Mercurius Sulphuric",
+      "path": "/en/materia-medica/james-tyler-kent/mercurius-sulphuric"
+    },
+    {
+      "name": "Naja",
+      "path": "/en/materia-medica/james-tyler-kent/naja"
+    },
+    {
+      "name": "Natrum Arsenicosum",
+      "path": "/en/materia-medica/james-tyler-kent/natrum-arsenicosum"
+    },
+    {
+      "name": "Natrum Carbonicum",
+      "path": "/en/materia-medica/james-tyler-kent/natrum-carbonicum"
+    },
+    {
+      "name": "Natrum Muriaticum",
+      "path": "/en/materia-medica/james-tyler-kent/natrum-muriaticum"
+    },
+    {
+      "name": "Natrum Phosphoricum",
+      "path": "/en/materia-medica/james-tyler-kent/natrum-phosphoricum"
+    },
+    {
+      "name": "Natrum Sulphuricum",
+      "path": "/en/materia-medica/james-tyler-kent/natrum-sulphuricum"
+    },
+    {
+      "name": "Nitric Acid",
+      "path": "/en/materia-medica/james-tyler-kent/nitric-acid"
+    },
+    {
+      "name": "Oxalic Acid",
+      "path": "/en/materia-medica/james-tyler-kent/oxalic-acid"
+    },
+    {
+      "name": "Phosphoric Acid",
+      "path": "/en/materia-medica/james-tyler-kent/phosphoric-acid"
+    },
+    {
+      "name": "Phytolacca",
+      "path": "/en/materia-medica/james-tyler-kent/phytolacca"
+    },
+    {
+      "name": "Picric Acid",
+      "path": "/en/materia-medica/james-tyler-kent/picric-acid"
+    },
+    {
+      "name": "Platinum",
+      "path": "/en/materia-medica/james-tyler-kent/platinum"
+    },
+    {
+      "name": "Podophyllum",
+      "path": "/en/materia-medica/james-tyler-kent/podophyllum"
+    },
+    {
+      "name": "Pulsatilla",
+      "path": "/en/materia-medica/james-tyler-kent/pulsatilla"
+    },
+    {
+      "name": "Pyrogen",
+      "path": "/en/materia-medica/james-tyler-kent/pyrogen"
+    },
+    {
+      "name": "Rhododendron",
+      "path": "/en/materia-medica/james-tyler-kent/rhododendron"
+    },
+    {
+      "name": "Ruta Graveole S",
+      "path": "/en/materia-medica/james-tyler-kent/ruta-graveole-s"
+    },
+    {
+      "name": "Sanguinaria",
+      "path": "/en/materia-medica/james-tyler-kent/sanguinaria"
+    },
+    {
+      "name": "Sarsaparilla",
+      "path": "/en/materia-medica/james-tyler-kent/sarsaparilla"
+    },
+    {
+      "name": "Selenium",
+      "path": "/en/materia-medica/james-tyler-kent/selenium"
+    },
+    {
+      "name": "Sepia",
+      "path": "/en/materia-medica/james-tyler-kent/sepia"
+    },
+    {
+      "name": "Silica",
+      "path": "/en/materia-medica/james-tyler-kent/silica"
+    },
+    {
+      "name": "Spigelia Anthelmintica",
+      "path": "/en/materia-medica/james-tyler-kent/spigelia-anthelmintica"
+    },
+    {
+      "name": "Squilla",
+      "path": "/en/materia-medica/james-tyler-kent/squilla"
+    },
+    {
+      "name": "Staphisagria",
+      "path": "/en/materia-medica/james-tyler-kent/staphisagria"
+    },
+    {
+      "name": "Sulphuric Acid",
+      "path": "/en/materia-medica/james-tyler-kent/sulphuric-acid"
+    },
+    {
+      "name": "Theridion",
+      "path": "/en/materia-medica/james-tyler-kent/theridion"
+    },
+    {
+      "name": "Tuberculinum Bovinum",
+      "path": "/en/materia-medica/james-tyler-kent/tuberculinum-bovinum"
+    },
+    {
+      "name": "Valerian",
+      "path": "/en/materia-medica/james-tyler-kent/valerian"
+    }
+  ]
+}
