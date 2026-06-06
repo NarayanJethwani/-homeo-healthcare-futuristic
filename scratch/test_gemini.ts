@@ -10,8 +10,15 @@ async function test() {
 
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash" });
-    const response = await model.generateContent("Hello, are you active? Reply in one sentence.");
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+    const response = await model.generateContent({
+      contents: [
+        { role: "user", parts: [{ text: "Respond in JSON format: { \"status\": \"active\", \"msg\": \"hello\" }" }] }
+      ],
+      generationConfig: {
+        responseMimeType: "application/json"
+      }
+    });
     console.log("Success! Response text:", response.response.text());
   } catch (err: any) {
     console.error("Gemini API request failed:", err.message || err);
@@ -19,3 +26,4 @@ async function test() {
 }
 
 test();
+
