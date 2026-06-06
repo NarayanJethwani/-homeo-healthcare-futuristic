@@ -21060,10 +21060,10 @@ Exported on: ${new Date().toLocaleDateString()}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
                 transition={{ type: "spring", damping: 25, stiffness: 220 }}
                 data-lenis-prevent
-                className="fixed inset-0 m-auto max-w-2xl w-full p-6 md:p-8 bg-[#FAF9F6]/95 dark:bg-slate-900/95 border border-white/60 dark:border-slate-850 z-[51] shadow-2xl rounded-[36px] flex flex-col pointer-events-auto max-h-[85vh] overflow-y-auto"
+                className="fixed inset-0 m-auto max-w-2xl w-full p-6 md:p-8 bg-[#FAF9F6]/95 dark:bg-slate-900/95 border border-white/60 dark:border-slate-850 z-[51] shadow-2xl rounded-[36px] flex flex-col pointer-events-auto max-h-[85vh] overflow-hidden"
               >
                 {/* Modal Header */}
-                <div className="flex items-center justify-between border-b border-slate-900/5 pb-4 mb-6">
+                <div className="flex items-center justify-between border-b border-slate-900/5 pb-4 mb-6 flex-shrink-0">
                   <div className="flex items-center gap-2">
                     <Activity className="w-5 h-5 text-mint animate-pulse" />
                     <div>
@@ -21138,13 +21138,16 @@ Exported on: ${new Date().toLocaleDateString()}
                   </div>
                 ) : (
                   // Form State
-                  <form onSubmit={handleCreateCase} className="space-y-5">
+                  <form onSubmit={handleCreateCase} className="flex flex-col flex-grow min-h-0 overflow-hidden">
                     {caseCreationError && (
-                      <div className="p-4 bg-rose-50 border border-rose-100 rounded-2xl flex items-start gap-2.5 text-rose-800 text-xs font-semibold leading-relaxed">
+                      <div className="p-4 bg-rose-50 border border-rose-100 rounded-2xl flex items-start gap-2.5 text-rose-800 text-xs font-semibold leading-relaxed flex-shrink-0 mb-4">
                         <ShieldAlert className="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" />
                         <span>{caseCreationError}</span>
                       </div>
                     )}
+
+                    {/* Scrollable Form Body */}
+                    <div className="space-y-5 overflow-y-auto flex-grow min-h-0 pr-1 pb-2" data-lenis-prevent="true">
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Name */}
@@ -21355,9 +21358,10 @@ Exported on: ${new Date().toLocaleDateString()}
                         required
                       />
                     </div>
+                    </div>
 
                     {/* Bottom Actions */}
-                    <div className="pt-4 border-t border-slate-900/5 flex justify-end gap-3">
+                    <div className="pt-4 border-t border-slate-900/5 flex justify-end gap-3 flex-shrink-0 mt-4">
                       <button
                         type="button"
                         onClick={() => setIsNewCaseModalOpen(false)}
@@ -21431,7 +21435,7 @@ Exported on: ${new Date().toLocaleDateString()}
                 </div>
 
                 {/* Scrollable Content Wrapper */}
-                <div className="space-y-4 overflow-y-auto flex-grow pr-1" data-lenis-prevent="true">
+                <div className="space-y-4 overflow-y-auto flex-grow min-h-0 pr-1" data-lenis-prevent="true">
                   {/* Import Method Toggle */}
                   <div className="flex gap-1.5 p-1 bg-slate-900/5 rounded-2xl border border-slate-900/5 mb-2">
                     <button
