@@ -252,9 +252,8 @@ export async function createPatientClinicalSheet(
             }
           });
         }
-      } else {
         // Create the newly designed custom case-taking tabs programmatically
-        // 1. Rename Sheet1 to Dashboard, and add the remaining 7 sheets
+        // 1. Rename Sheet1 to Dashboard, and add the remaining 8 sheets
         await sheets.spreadsheets.batchUpdate({
           spreadsheetId: newSheetId,
           requestBody: {
@@ -273,6 +272,7 @@ export async function createPatientClinicalSheet(
               { addSheet: { properties: { sheetId: 3, title: "Repertorization" } } },
               { addSheet: { properties: { sheetId: 4, title: "Treatment Planner" } } },
               { addSheet: { properties: { sheetId: 7, title: "Finance" } } },
+              { addSheet: { properties: { sheetId: 8, title: "AI Repertory Lab" } } },
               { addSheet: { properties: { sheetId: 5, title: "Reports & Attachments" } } },
               { addSheet: { properties: { sheetId: 6, title: "Config DB" } } }
             ]
@@ -287,6 +287,7 @@ export async function createPatientClinicalSheet(
           "Repertorization": 3,
           "Treatment Planner": 4,
           "Finance": 7,
+          "AI Repertory Lab": 8,
           "Reports & Attachments": 5,
           "Config DB": 6
         };
@@ -302,12 +303,12 @@ export async function createPatientClinicalSheet(
           ["Patient ID", data.id, "", "Diagnosis", "='Case Taking'!B112", "", "Progress Score (%)", "=IFERROR(INDEX('Follow-Up Tracker'!C:C, MATCH(9.99999999999999E+307, 'Follow-Up Tracker'!A:A)), \"0%\")"],
           ["Patient Name", data.name, "", "Current Remedy", "='Case Taking'!B137", "", "Balance Due (₹)", "='Finance'!C4"],
           ["Age / Gender", `${data.age} / ${data.gender}`, "", "Last Visit Date", "=IFERROR(MAX('Follow-Up Tracker'!A4:A), \"N/A\")", "", "Top Totality Remedy", "='Repertorization'!B16"],
-          ["Contact Phone", data.phone, "", "Next Scheduled Review", "=IFERROR(INDEX('Follow-Up Tracker'!G:G, MATCH(9.99999999999999E+307, 'Follow-Up Tracker'!A:A)), \"Not Scheduled\")", "", "Miasmatic Summary", ""],
-          ["Email Address", data.email || "N/A", "", "Consulting Doctor", "Dr. Narayan Jethwani", "", "Psora Count", "=COUNTIF('Case Taking'!A3:D150, \"*[Psora]*\")"],
-          ["Location / Address", locationVal, "", "Clinic Branch", "Baner Clinic, Pune", "", "Sycosis Count", "=COUNTIF('Case Taking'!A3:D150, \"*[Sycosis]*\")"],
-          ["", "", "", "", "", "", "Syphilis Count", "=COUNTIF('Case Taking'!A3:D150, \"*[Syphilis]*\")"],
-          ["", "", "", "", "", "", "Tubercular Count", "=COUNTIF('Case Taking'!A3:D150, \"*[Tubercular]*\")"],
-          ["", "", "", "", "", "", "Cancerinic Count", "=COUNTIF('Case Taking'!A3:D150, \"*[Cancerinic]*\")"]
+          ["Contact Phone", data.phone, "", "Next Scheduled Review", "=IFERROR(INDEX('Follow-Up Tracker'!G:G, MATCH(9.99999999999999E+307, 'Follow-Up Tracker'!A:A)), \"Not Scheduled\")", "", "Miasmatic Summary", "=IFERROR('AI Repertory Lab'!B4, \"Psora\")"],
+          ["Email Address", data.email || "N/A", "", "Consulting Doctor", "Dr. Narayan Jethwani", "", "Psora Count", "='Case Taking'!B117"],
+          ["Location / Address", locationVal, "", "Clinic Branch", "Baner Clinic, Pune", "", "Sycosis Count", "='Case Taking'!B118"],
+          ["", "", "", "", "", "", "Syphilis Count", "='Case Taking'!B119"],
+          ["", "", "", "", "", "", "Tubercular Count", "='Case Taking'!B120"],
+          ["", "", "", "", "", "", "Cancerinic Count", "='Case Taking'!B121"]
         ];
 
         // values for Case Taking
@@ -468,6 +469,24 @@ export async function createPatientClinicalSheet(
           ["", "", "", "", "", "", "", ""]
         ];
 
+        // values for AI Repertory Lab
+        const aiRepertoryValues = [
+          ["AI REPERTORY LAB & NEURAL TOTALITY MATCHING MATRIX", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", ""],
+          ["SPREADSHEET REPERTORY PAYLOAD & MIASM VECTORS", "", "", "", "CLINICAL DIAGNOSTIC SYNTHESIS VERDICT", "", "", ""],
+          ["Dominant Miasm", `=IF('Case Taking'!B118>MAX('Case Taking'!B117,'Case Taking'!B119,'Case Taking'!B120,'Case Taking'!B121),"Sycosis",IF('Case Taking'!B117>MAX('Case Taking'!B118,'Case Taking'!B119,'Case Taking'!B120,'Case Taking'!B121),"Psora",IF('Case Taking'!B119>MAX('Case Taking'!B117,'Case Taking'!B118,'Case Taking'!B120,'Case Taking'!B121),"Syphilis",IF('Case Taking'!B120>MAX('Case Taking'!B117,'Case Taking'!B118,'Case Taking'!B119,'Case Taking'!B121),"Tubercular","Cancerinic"))))`, "", "", "AI Constitutional Justification & Totality Synthesis Report", "", "", ""],
+          ["Psora Count", "='Case Taking'!B117", "", "", `=IFERROR('Case Taking'!B131, "No AI Analysis Run yet. Transmit from portal to generate.")`, "", "", ""],
+          ["Sycosis Count", "='Case Taking'!B118", "", "", "", "", "", ""],
+          ["Syphilis Count", "='Case Taking'!B119", "", "", "", "", "", ""],
+          ["Tubercular Count", "='Case Taking'!B120", "", "", "", "", "", ""],
+          ["Cancerinic Count", "='Case Taking'!B121", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", ""],
+          ["TOP REMEDY RANKINGS FROM SPREADSHEET MATRIX", "", "", "", "MATERIA MEDICA KEYNOTE VERIFICATIONS", "", "", ""],
+          ["Rank 1 Remedy", "='Repertorization'!B16", "Score", "='Repertorization'!D16", "Nux Vomica:", "Chilly, irritable, stomach complaints worse after eating.", "", ""],
+          ["Rank 2 Remedy", "='Repertorization'!B17", "Score", "='Repertorization'!D17", "Arsenicum Album:", "Great anxiety, restlessness, chilly, worse at midnight.", "", ""],
+          ["Rank 3 Remedy", "='Repertorization'!B18", "Score", "='Repertorization'!D18", "Lycopodium Clavatum:", "Right-sided, flatulence, gas, warm food cravings.", "", ""]
+        ];
+
         // values for Reports & Attachments
         const attachmentsValues = [
           ["INVESTIGATION REPORTS & CLINICAL FILE ATTACHMENTS", "", "", ""],
@@ -507,6 +526,7 @@ export async function createPatientClinicalSheet(
               { range: "'Repertorization'!A1:P18", values: repertoryValues },
               { range: "'Treatment Planner'!A1:G21", values: plannerValues },
               { range: "'Finance'!A1:H10", values: financeValues },
+              { range: "'AI Repertory Lab'!A1:H14", values: aiRepertoryValues },
               { range: "'Reports & Attachments'!A1:D4", values: attachmentsValues },
               { range: "'Config DB'!A1:F15", values: configValues }
             ]
@@ -1769,6 +1789,360 @@ export async function createPatientClinicalSheet(
                   }
                 },
                 fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            }
+          );
+        }
+
+        // Formatting for AI Repertory Lab
+        const aiRepertoryId = sheetsMap["AI Repertory Lab"];
+        if (aiRepertoryId !== undefined) {
+          requests.push(
+            // Hide gridlines
+            {
+              updateSheetProperties: {
+                properties: {
+                  sheetId: aiRepertoryId,
+                  gridProperties: { hideGridlines: true }
+                },
+                fields: "gridProperties.hideGridlines"
+              }
+            },
+            // Column widths
+            {
+              updateDimensionProperties: {
+                range: { sheetId: aiRepertoryId, dimension: "COLUMNS", startIndex: 0, endIndex: 1 },
+                properties: { pixelSize: 150 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: aiRepertoryId, dimension: "COLUMNS", startIndex: 1, endIndex: 2 },
+                properties: { pixelSize: 150 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: aiRepertoryId, dimension: "COLUMNS", startIndex: 2, endIndex: 4 },
+                properties: { pixelSize: 80 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: aiRepertoryId, dimension: "COLUMNS", startIndex: 4, endIndex: 5 },
+                properties: { pixelSize: 160 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: aiRepertoryId, dimension: "COLUMNS", startIndex: 5, endIndex: 6 },
+                properties: { pixelSize: 350 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: aiRepertoryId, dimension: "COLUMNS", startIndex: 6, endIndex: 8 },
+                properties: { pixelSize: 80 }, fields: "pixelSize"
+              }
+            },
+            // Title Header Merged A1:H1
+            {
+              mergeCells: {
+                range: { sheetId: aiRepertoryId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 8 },
+                mergeType: "MERGE_ALL"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: aiRepertoryId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 8 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 15/255, green: 76/255, blue: 129/255 },
+                    textFormat: { foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 13, bold: true },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            // Left Card Section Header Merged A3:D3
+            {
+              mergeCells: {
+                range: { sheetId: aiRepertoryId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 4 },
+                mergeType: "MERGE_ALL"
+              }
+            },
+            // Right Card Section Header Merged E3:H3
+            {
+              mergeCells: {
+                range: { sheetId: aiRepertoryId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 4, endColumnIndex: 8 },
+                mergeType: "MERGE_ALL"
+              }
+            },
+            // Left Card Section Header style
+            {
+              repeatCell: {
+                range: { sheetId: aiRepertoryId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 8 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 }, // slate-200
+                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            // Right Card Subheader E4:H4
+            {
+              mergeCells: {
+                range: { sheetId: aiRepertoryId, startRowIndex: 3, endRowIndex: 4, startColumnIndex: 4, endColumnIndex: 8 },
+                mergeType: "MERGE_ALL"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: aiRepertoryId, startRowIndex: 3, endRowIndex: 4, startColumnIndex: 4, endColumnIndex: 8 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 241/255, green: 245/255, blue: 249/255 }, // slate-100
+                    textFormat: { bold: true, fontSize: 9, foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 } },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            // Synthesis Text Area Merged E5:H9
+            {
+              mergeCells: {
+                range: { sheetId: aiRepertoryId, startRowIndex: 4, endRowIndex: 9, startColumnIndex: 4, endColumnIndex: 8 },
+                mergeType: "MERGE_ALL"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: aiRepertoryId, startRowIndex: 4, endRowIndex: 9, startColumnIndex: 4, endColumnIndex: 8 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 1, green: 1, blue: 1 },
+                    textFormat: { fontSize: 10, foregroundColor: { red: 15/255, green: 23/255, blue: 42/255 } },
+                    verticalAlignment: "TOP",
+                    wrapStrategy: "WRAP"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment,wrapStrategy)"
+              }
+            },
+            // Left Card Keys (Col A, rows 4-9)
+            {
+              repeatCell: {
+                range: { sheetId: aiRepertoryId, startRowIndex: 3, endRowIndex: 9, startColumnIndex: 0, endColumnIndex: 1 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
+                    textFormat: { bold: true, fontSize: 9, foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 } },
+                    verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
+              }
+            },
+            // Left Card Values (Col B, rows 4-9)
+            {
+              repeatCell: {
+                range: { sheetId: aiRepertoryId, startRowIndex: 3, endRowIndex: 9, startColumnIndex: 1, endColumnIndex: 2 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 1, green: 1, blue: 1 },
+                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            // Left Card Spacers (Col C-D, rows 4-9)
+            {
+              repeatCell: {
+                range: { sheetId: aiRepertoryId, startRowIndex: 3, endRowIndex: 9, startColumnIndex: 2, endColumnIndex: 4 },
+                cell: { userEnteredFormat: { backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 } } },
+                fields: "userEnteredFormat.backgroundColor"
+              }
+            },
+            // Card borders for Left & Right top widgets
+            {
+              updateBorders: {
+                range: { sheetId: aiRepertoryId, startRowIndex: 2, endRowIndex: 9, startColumnIndex: 0, endColumnIndex: 4 },
+                top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                left: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                right: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                innerHorizontal: { style: "SOLID", color: { red: 241/255, green: 245/255, blue: 249/255 } },
+                innerVertical: { style: "SOLID", color: { red: 241/255, green: 245/255, blue: 249/255 } }
+              }
+            },
+            {
+              updateBorders: {
+                range: { sheetId: aiRepertoryId, startRowIndex: 2, endRowIndex: 9, startColumnIndex: 4, endColumnIndex: 8 },
+                top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                left: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                right: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } }
+              }
+            },
+            // Left Card 2 Section Header Merged A11:D11
+            {
+              mergeCells: {
+                range: { sheetId: aiRepertoryId, startRowIndex: 10, endRowIndex: 11, startColumnIndex: 0, endColumnIndex: 4 },
+                mergeType: "MERGE_ALL"
+              }
+            },
+            // Right Card 2 Section Header Merged E11:H11
+            {
+              mergeCells: {
+                range: { sheetId: aiRepertoryId, startRowIndex: 10, endRowIndex: 11, startColumnIndex: 4, endColumnIndex: 8 },
+                mergeType: "MERGE_ALL"
+              }
+            },
+            // Card 2 Section Headers style
+            {
+              repeatCell: {
+                range: { sheetId: aiRepertoryId, startRowIndex: 10, endRowIndex: 11, startColumnIndex: 0, endColumnIndex: 8 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 },
+                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            // Left Card 2 Rows 12-14 (indices 11-13)
+            // Keys Col A, C
+            {
+              repeatCell: {
+                range: { sheetId: aiRepertoryId, startRowIndex: 11, endRowIndex: 14, startColumnIndex: 0, endColumnIndex: 1 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
+                    textFormat: { bold: true, fontSize: 9, foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 } },
+                    verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: aiRepertoryId, startRowIndex: 11, endRowIndex: 14, startColumnIndex: 2, endColumnIndex: 3 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
+                    textFormat: { fontSize: 9, foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } },
+                    verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
+              }
+            },
+            // Values Col B, D
+            {
+              repeatCell: {
+                range: { sheetId: aiRepertoryId, startRowIndex: 11, endRowIndex: 14, startColumnIndex: 1, endColumnIndex: 2 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 1, green: 1, blue: 1 },
+                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: aiRepertoryId, startRowIndex: 11, endRowIndex: 14, startColumnIndex: 3, endColumnIndex: 4 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 1, green: 1, blue: 1 },
+                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 } },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            // Right Card 2 (Materia Medica) Rows 12-14
+            // Keys Col E
+            {
+              repeatCell: {
+                range: { sheetId: aiRepertoryId, startRowIndex: 11, endRowIndex: 14, startColumnIndex: 4, endColumnIndex: 5 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 241/255, green: 245/255, blue: 249/255 },
+                    textFormat: { bold: true, fontSize: 9, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
+              }
+            },
+            // Values Col F Merged F12:H12, F13:H13, F14:H14
+            {
+              mergeCells: {
+                range: { sheetId: aiRepertoryId, startRowIndex: 11, endRowIndex: 12, startColumnIndex: 5, endColumnIndex: 8 },
+                mergeType: "MERGE_ALL"
+              }
+            },
+            {
+              mergeCells: {
+                range: { sheetId: aiRepertoryId, startRowIndex: 12, endRowIndex: 13, startColumnIndex: 5, endColumnIndex: 8 },
+                mergeType: "MERGE_ALL"
+              }
+            },
+            {
+              mergeCells: {
+                range: { sheetId: aiRepertoryId, startRowIndex: 13, endRowIndex: 14, startColumnIndex: 5, endColumnIndex: 8 },
+                mergeType: "MERGE_ALL"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: aiRepertoryId, startRowIndex: 11, endRowIndex: 14, startColumnIndex: 5, endColumnIndex: 8 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 1, green: 1, blue: 1 },
+                    textFormat: { fontSize: 9, foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 } },
+                    verticalAlignment: "MIDDLE",
+                    wrapStrategy: "WRAP"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment,wrapStrategy)"
+              }
+            },
+            // Card borders for Left & Right bottom widgets
+            {
+              updateBorders: {
+                range: { sheetId: aiRepertoryId, startRowIndex: 10, endRowIndex: 14, startColumnIndex: 0, endColumnIndex: 4 },
+                top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                left: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                right: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                innerHorizontal: { style: "SOLID", color: { red: 241/255, green: 245/255, blue: 249/255 } },
+                innerVertical: { style: "SOLID", color: { red: 241/255, green: 245/255, blue: 249/255 } }
+              }
+            },
+            {
+              updateBorders: {
+                range: { sheetId: aiRepertoryId, startRowIndex: 10, endRowIndex: 14, startColumnIndex: 4, endColumnIndex: 8 },
+                top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                left: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                right: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                innerHorizontal: { style: "SOLID", color: { red: 241/255, green: 245/255, blue: 249/255 } },
+                innerVertical: { style: "SOLID", color: { red: 241/255, green: 245/255, blue: 249/255 } }
               }
             }
           );
