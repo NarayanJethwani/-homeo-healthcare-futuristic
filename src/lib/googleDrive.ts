@@ -414,11 +414,11 @@ export async function createPatientClinicalSheet(
           ["REPERTORY GRID & Dynamic ANALYSIS MATRIX", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
           ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
           ["Rubric Name", "Chapter / Location", "Source", "Importance Weight", "Nux-v", "Lyc", "Ars", "Puls", "Sulph", "Rhus-t", "Calc", "Sil", "Nat-m", "Ign", "Sep", "Totality Score"],
-          ["Acidity - eating, post", "Stomach", "Kent", 3, 3, 2, 3, 1, 2, 1, 1, 0, 0, 0, 0],
-          ["Irritability - eating, post", "Mind", "Kent", 2, 2, 3, 1, 2, 2, 1, 0, 0, 0, 0, 0],
-          ["Generalities - Chilly", "Generalities", "Kent", 3, 3, 1, 3, 0, 1, 3, 3, 2, 1, 0, 1],
-          ["Anxiety - anticipation, with", "Mind", "Kent", 2, 2, 2, 3, 2, 1, 0, 0, 0, 0, 3, 0],
-          ["Appetite - increased", "Stomach", "Kent", 1, 1, 3, 0, 0, 2, 0, 2, 0, 0, 0, 0],
+          ["Acidity - eating, post", "Stomach", "Kent", 3, 3, 2, 3, 1, 2, 1, 1, 0, 0, 0, 0, "=$D4*SUM(E4:O4)"],
+          ["Irritability - eating, post", "Mind", "Kent", 2, 2, 3, 1, 2, 2, 1, 0, 0, 0, 0, 0, "=$D5*SUM(E5:O5)"],
+          ["Generalities - Chilly", "Generalities", "Kent", 3, 3, 1, 3, 0, 1, 3, 3, 2, 1, 0, 1, "=$D6*SUM(E6:O6)"],
+          ["Clinical - Burnout / Adrenal Fatigue [Sycosis]", "Clinical", "Jethwani", 3, 3, 2, 2, 1, 2, 1, 3, 2, 2, 2, 2, "=$D7*SUM(E7:O7)"],
+          ["Mind - Hurry - constant", "Mind", "Custom", 2, 2, 1, 3, 1, 1, 2, 1, 1, 2, 3, 1, "=$D8*SUM(E8:O8)"],
           ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
           ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
           ["Symptom Coverage", "", "", "", "=COUNTIFS(E4:E8, \">0\") / 5", "=COUNTIFS(F4:F8, \">0\") / 5", "=COUNTIFS(G4:G8, \">0\") / 5", "=COUNTIFS(H4:H8, \">0\") / 5", "=COUNTIFS(I4:I8, \">0\") / 5", "=COUNTIFS(J4:J8, \">0\") / 5", "=COUNTIFS(K4:K8, \">0\") / 5", "=COUNTIFS(L4:L8, \">0\") / 5", "=COUNTIFS(M4:M8, \">0\") / 5", "=COUNTIFS(N4:N8, \">0\") / 5", "=COUNTIFS(O4:O8, \">0\") / 5"],
@@ -770,6 +770,16 @@ export async function createPatientClinicalSheet(
         const caseTakingId = sheetsMap["Case Taking"];
         if (caseTakingId !== undefined) {
           requests.push(
+            // Hide gridlines
+            {
+              updateSheetProperties: {
+                properties: {
+                  sheetId: caseTakingId,
+                  gridProperties: { hideGridlines: true }
+                },
+                fields: "gridProperties.hideGridlines"
+              }
+            },
             {
               updateDimensionProperties: {
                 range: { sheetId: caseTakingId, dimension: "COLUMNS", startIndex: 0, endIndex: 1 },
@@ -854,10 +864,443 @@ export async function createPatientClinicalSheet(
           }
         }
 
+        // Formatting for Follow-Up Tracker
+        const followUpId = sheetsMap["Follow-Up Tracker"];
+        if (followUpId !== undefined) {
+          requests.push(
+            // Hide gridlines
+            {
+              updateSheetProperties: {
+                properties: {
+                  sheetId: followUpId,
+                  gridProperties: { hideGridlines: true }
+                },
+                fields: "gridProperties.hideGridlines"
+              }
+            },
+            // Column widths
+            {
+              updateDimensionProperties: {
+                range: { sheetId: followUpId, dimension: "COLUMNS", startIndex: 0, endIndex: 1 },
+                properties: { pixelSize: 120 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: followUpId, dimension: "COLUMNS", startIndex: 1, endIndex: 2 },
+                properties: { pixelSize: 400 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: followUpId, dimension: "COLUMNS", startIndex: 2, endIndex: 3 },
+                properties: { pixelSize: 120 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: followUpId, dimension: "COLUMNS", startIndex: 3, endIndex: 4 },
+                properties: { pixelSize: 140 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: followUpId, dimension: "COLUMNS", startIndex: 4, endIndex: 5 },
+                properties: { pixelSize: 100 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: followUpId, dimension: "COLUMNS", startIndex: 5, endIndex: 6 },
+                properties: { pixelSize: 200 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: followUpId, dimension: "COLUMNS", startIndex: 6, endIndex: 7 },
+                properties: { pixelSize: 140 }, fields: "pixelSize"
+              }
+            },
+            // Merge Title Banner
+            {
+              mergeCells: {
+                range: { sheetId: followUpId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 7 },
+                mergeType: "MERGE_ALL"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: followUpId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 7 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 15/255, green: 76/255, blue: 129/255 },
+                    textFormat: { foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 12, bold: true },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            // Table headers
+            {
+              repeatCell: {
+                range: { sheetId: followUpId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 7 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 },
+                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            }
+          );
+        }
+
+        // Formatting for Repertorization
+        const repertoryId = sheetsMap["Repertorization"];
+        if (repertoryId !== undefined) {
+          requests.push(
+            // Hide gridlines
+            {
+              updateSheetProperties: {
+                properties: {
+                  sheetId: repertoryId,
+                  gridProperties: { hideGridlines: true }
+                },
+                fields: "gridProperties.hideGridlines"
+              }
+            },
+            // Column widths
+            {
+              updateDimensionProperties: {
+                range: { sheetId: repertoryId, dimension: "COLUMNS", startIndex: 0, endIndex: 1 },
+                properties: { pixelSize: 240 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: repertoryId, dimension: "COLUMNS", startIndex: 1, endIndex: 2 },
+                properties: { pixelSize: 140 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: repertoryId, dimension: "COLUMNS", startIndex: 2, endIndex: 4 },
+                properties: { pixelSize: 80 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: repertoryId, dimension: "COLUMNS", startIndex: 4, endIndex: 15 },
+                properties: { pixelSize: 65 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: repertoryId, dimension: "COLUMNS", startIndex: 15, endIndex: 16 },
+                properties: { pixelSize: 100 }, fields: "pixelSize"
+              }
+            },
+            // Merge Title Header
+            {
+              mergeCells: {
+                range: { sheetId: repertoryId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 16 },
+                mergeType: "MERGE_ALL"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: repertoryId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 16 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 15/255, green: 76/255, blue: 129/255 },
+                    textFormat: { foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 13, bold: true },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            // Table headers (Rubric, Chapter, etc.)
+            {
+              repeatCell: {
+                range: { sheetId: repertoryId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 16 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 },
+                    textFormat: { foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 }, fontSize: 10, bold: true },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            // Alternate matrix rows background
+            {
+              repeatCell: {
+                range: { sheetId: repertoryId, startRowIndex: 3, endRowIndex: 4, startColumnIndex: 0, endColumnIndex: 16 },
+                cell: { userEnteredFormat: { backgroundColor: { red: 1, green: 1, blue: 1 } } },
+                fields: "userEnteredFormat.backgroundColor"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: repertoryId, startRowIndex: 4, endRowIndex: 5, startColumnIndex: 0, endColumnIndex: 16 },
+                cell: { userEnteredFormat: { backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 } } },
+                fields: "userEnteredFormat.backgroundColor"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: repertoryId, startRowIndex: 5, endRowIndex: 6, startColumnIndex: 0, endColumnIndex: 16 },
+                cell: { userEnteredFormat: { backgroundColor: { red: 1, green: 1, blue: 1 } } },
+                fields: "userEnteredFormat.backgroundColor"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: repertoryId, startRowIndex: 6, endRowIndex: 7, startColumnIndex: 0, endColumnIndex: 16 },
+                cell: { userEnteredFormat: { backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 } } },
+                fields: "userEnteredFormat.backgroundColor"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: repertoryId, startRowIndex: 7, endRowIndex: 8, startColumnIndex: 0, endColumnIndex: 16 },
+                cell: { userEnteredFormat: { backgroundColor: { red: 1, green: 1, blue: 1 } } },
+                fields: "userEnteredFormat.backgroundColor"
+              }
+            },
+            // Grid borders for the matrix range (A3:P8)
+            {
+              updateBorders: {
+                range: { sheetId: repertoryId, startRowIndex: 2, endRowIndex: 8, startColumnIndex: 0, endColumnIndex: 16 },
+                top: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } },
+                bottom: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } },
+                left: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } },
+                right: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } },
+                innerHorizontal: { style: "SOLID", color: { red: 241/255, green: 245/255, blue: 249/255 } },
+                innerVertical: { style: "SOLID", color: { red: 241/255, green: 245/255, blue: 249/255 } }
+              }
+            },
+            // Centering Remedy Grades (E4:O8) and Totality Scores
+            {
+              repeatCell: {
+                range: { sheetId: repertoryId, startRowIndex: 3, endRowIndex: 8, startColumnIndex: 4, endColumnIndex: 16 },
+                cell: { userEnteredFormat: { horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE" } },
+                fields: "userEnteredFormat.horizontalAlignment,userEnteredFormat.verticalAlignment"
+              }
+            },
+            // Bold Totality Score text
+            {
+              repeatCell: {
+                range: { sheetId: repertoryId, startRowIndex: 3, endRowIndex: 8, startColumnIndex: 15, endColumnIndex: 16 },
+                cell: { userEnteredFormat: { textFormat: { bold: true, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } } } },
+                fields: "userEnteredFormat.textFormat.bold,userEnteredFormat.textFormat.foregroundColor"
+              }
+            },
+            // Symptom Coverage styling (Row 11, index 10)
+            {
+              repeatCell: {
+                range: { sheetId: repertoryId, startRowIndex: 10, endRowIndex: 11, startColumnIndex: 0, endColumnIndex: 16 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
+                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } },
+                    verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
+              }
+            },
+            {
+              updateBorders: {
+                range: { sheetId: repertoryId, startRowIndex: 10, endRowIndex: 11, startColumnIndex: 0, endColumnIndex: 16 },
+                top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } }
+              }
+            },
+            // Sum of Grades styling (Row 12, index 11)
+            {
+              repeatCell: {
+                range: { sheetId: repertoryId, startRowIndex: 11, endRowIndex: 12, startColumnIndex: 0, endColumnIndex: 16 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
+                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
+              }
+            },
+            {
+              updateBorders: {
+                range: { sheetId: repertoryId, startRowIndex: 11, endRowIndex: 12, startColumnIndex: 0, endColumnIndex: 16 },
+                top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } }
+              }
+            },
+            // Totality Rank Score styling (Row 13, index 12)
+            {
+              repeatCell: {
+                range: { sheetId: repertoryId, startRowIndex: 12, endRowIndex: 13, startColumnIndex: 0, endColumnIndex: 16 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 226/255, green: 251/255, blue: 247/255 }, // #E2FBF7
+                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 } }, // #0F766E
+                    verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
+              }
+            },
+            {
+              updateBorders: {
+                range: { sheetId: repertoryId, startRowIndex: 12, endRowIndex: 13, startColumnIndex: 0, endColumnIndex: 16 },
+                top: { style: "SOLID", color: { red: 15/255, green: 118/255, blue: 110/255 } },
+                bottom: { style: "SOLID", color: { red: 15/255, green: 118/255, blue: 110/255 } }
+              }
+            },
+            // Top Remedy Ranking header (Row 15, index 14)
+            {
+              mergeCells: {
+                range: { sheetId: repertoryId, startRowIndex: 14, endRowIndex: 15, startColumnIndex: 0, endColumnIndex: 4 },
+                mergeType: "MERGE_ALL"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: repertoryId, startRowIndex: 14, endRowIndex: 15, startColumnIndex: 0, endColumnIndex: 4 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 },
+                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            // Rank Cards Rows 16-18 (indices 15-17)
+            // Rank 1
+            {
+              repeatCell: {
+                range: { sheetId: repertoryId, startRowIndex: 15, endRowIndex: 16, startColumnIndex: 0, endColumnIndex: 1 },
+                cell: { userEnteredFormat: { backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 }, textFormat: { bold: true, foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } } } },
+                fields: "userEnteredFormat(backgroundColor,textFormat)"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: repertoryId, startRowIndex: 15, endRowIndex: 16, startColumnIndex: 1, endColumnIndex: 2 },
+                cell: { userEnteredFormat: { backgroundColor: { red: 1, green: 1, blue: 1 }, textFormat: { bold: true, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } }, horizontalAlignment: "CENTER" } },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: repertoryId, startRowIndex: 15, endRowIndex: 16, startColumnIndex: 2, endColumnIndex: 3 },
+                cell: { userEnteredFormat: { backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 }, textFormat: { foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } } } },
+                fields: "userEnteredFormat(backgroundColor,textFormat)"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: repertoryId, startRowIndex: 15, endRowIndex: 16, startColumnIndex: 3, endColumnIndex: 4 },
+                cell: { userEnteredFormat: { backgroundColor: { red: 1, green: 1, blue: 1 }, textFormat: { bold: true, foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 } }, horizontalAlignment: "CENTER" } },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
+              }
+            },
+            // Rank 2
+            {
+              repeatCell: {
+                range: { sheetId: repertoryId, startRowIndex: 16, endRowIndex: 17, startColumnIndex: 0, endColumnIndex: 1 },
+                cell: { userEnteredFormat: { backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 }, textFormat: { bold: true, foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } } } },
+                fields: "userEnteredFormat(backgroundColor,textFormat)"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: repertoryId, startRowIndex: 16, endRowIndex: 17, startColumnIndex: 1, endColumnIndex: 2 },
+                cell: { userEnteredFormat: { backgroundColor: { red: 1, green: 1, blue: 1 }, textFormat: { bold: true, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } }, horizontalAlignment: "CENTER" } },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: repertoryId, startRowIndex: 16, endRowIndex: 17, startColumnIndex: 2, endColumnIndex: 3 },
+                cell: { userEnteredFormat: { backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 }, textFormat: { foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } } } },
+                fields: "userEnteredFormat(backgroundColor,textFormat)"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: repertoryId, startRowIndex: 16, endRowIndex: 17, startColumnIndex: 3, endColumnIndex: 4 },
+                cell: { userEnteredFormat: { backgroundColor: { red: 1, green: 1, blue: 1 }, textFormat: { bold: true, foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 } }, horizontalAlignment: "CENTER" } },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
+              }
+            },
+            // Rank 3
+            {
+              repeatCell: {
+                range: { sheetId: repertoryId, startRowIndex: 17, endRowIndex: 18, startColumnIndex: 0, endColumnIndex: 1 },
+                cell: { userEnteredFormat: { backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 }, textFormat: { bold: true, foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } } } },
+                fields: "userEnteredFormat(backgroundColor,textFormat)"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: repertoryId, startRowIndex: 17, endRowIndex: 18, startColumnIndex: 1, endColumnIndex: 2 },
+                cell: { userEnteredFormat: { backgroundColor: { red: 1, green: 1, blue: 1 }, textFormat: { bold: true, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } }, horizontalAlignment: "CENTER" } },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: repertoryId, startRowIndex: 17, endRowIndex: 18, startColumnIndex: 2, endColumnIndex: 3 },
+                cell: { userEnteredFormat: { backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 }, textFormat: { foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } } } },
+                fields: "userEnteredFormat(backgroundColor,textFormat)"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: repertoryId, startRowIndex: 17, endRowIndex: 18, startColumnIndex: 3, endColumnIndex: 4 },
+                cell: { userEnteredFormat: { backgroundColor: { red: 1, green: 1, blue: 1 }, textFormat: { bold: true, foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 } }, horizontalAlignment: "CENTER" } },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
+              }
+            },
+            // Outline border for Rank cards A15:D18
+            {
+              updateBorders: {
+                range: { sheetId: repertoryId, startRowIndex: 14, endRowIndex: 18, startColumnIndex: 0, endColumnIndex: 4 },
+                top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                left: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                right: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                innerHorizontal: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } },
+                innerVertical: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } }
+              }
+            }
+          );
+        }
+
         // Formatting for Treatment Planner
         const plannerId = sheetsMap["Treatment Planner"];
         if (plannerId !== undefined) {
           requests.push(
+            // Hide gridlines
+            {
+              updateSheetProperties: {
+                properties: {
+                  sheetId: plannerId,
+                  gridProperties: { hideGridlines: true }
+                },
+                fields: "gridProperties.hideGridlines"
+              }
+            },
             {
               updateDimensionProperties: {
                 range: { sheetId: plannerId, dimension: "COLUMNS", startIndex: 0, endIndex: 1 },
@@ -947,10 +1390,21 @@ export async function createPatientClinicalSheet(
         const financeId = sheetsMap["Finance"];
         if (financeId !== undefined) {
           requests.push(
+            // Hide gridlines
+            {
+              updateSheetProperties: {
+                properties: {
+                  sheetId: financeId,
+                  gridProperties: { hideGridlines: true }
+                },
+                fields: "gridProperties.hideGridlines"
+              }
+            },
+            // Column widths
             {
               updateDimensionProperties: {
                 range: { sheetId: financeId, dimension: "COLUMNS", startIndex: 0, endIndex: 1 },
-                properties: { pixelSize: 120 }, fields: "pixelSize"
+                properties: { pixelSize: 100 }, fields: "pixelSize"
               }
             },
             {
@@ -961,20 +1415,8 @@ export async function createPatientClinicalSheet(
             },
             {
               updateDimensionProperties: {
-                range: { sheetId: financeId, dimension: "COLUMNS", startIndex: 2, endIndex: 3 },
+                range: { sheetId: financeId, dimension: "COLUMNS", startIndex: 2, endIndex: 5 },
                 properties: { pixelSize: 120 }, fields: "pixelSize"
-              }
-            },
-            {
-              updateDimensionProperties: {
-                range: { sheetId: financeId, dimension: "COLUMNS", startIndex: 3, endIndex: 4 },
-                properties: { pixelSize: 140 }, fields: "pixelSize"
-              }
-            },
-            {
-              updateDimensionProperties: {
-                range: { sheetId: financeId, dimension: "COLUMNS", startIndex: 4, endIndex: 5 },
-                properties: { pixelSize: 140 }, fields: "pixelSize"
               }
             },
             {
@@ -983,6 +1425,13 @@ export async function createPatientClinicalSheet(
                 properties: { pixelSize: 140 }, fields: "pixelSize"
               }
             },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: financeId, dimension: "COLUMNS", startIndex: 6, endIndex: 8 },
+                properties: { pixelSize: 120 }, fields: "pixelSize"
+              }
+            },
+            // Title Header Merged A1:H1
             {
               mergeCells: {
                 range: { sheetId: financeId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 8 },
@@ -1002,13 +1451,14 @@ export async function createPatientClinicalSheet(
                 fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
               }
             },
+            // Card 1 (A3:A4) Total Billed
             {
               repeatCell: {
-                range: { sheetId: financeId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 3 },
+                range: { sheetId: financeId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 1 },
                 cell: {
                   userEnteredFormat: {
-                    backgroundColor: { red: 241/255, green: 245/255, blue: 249/255 },
-                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
+                    textFormat: { bold: true, fontSize: 9, foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 } },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -1017,16 +1467,99 @@ export async function createPatientClinicalSheet(
             },
             {
               repeatCell: {
-                range: { sheetId: financeId, startRowIndex: 3, endRowIndex: 4, startColumnIndex: 0, endColumnIndex: 3 },
+                range: { sheetId: financeId, startRowIndex: 3, endRowIndex: 4, startColumnIndex: 0, endColumnIndex: 1 },
                 cell: {
                   userEnteredFormat: {
-                    textFormat: { bold: true, fontSize: 12, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    backgroundColor: { red: 1, green: 1, blue: 1 },
+                    textFormat: { bold: true, fontSize: 13, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
-                fields: "userEnteredFormat(textFormat,horizontalAlignment,verticalAlignment)"
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
               }
             },
+            {
+              updateBorders: {
+                range: { sheetId: financeId, startRowIndex: 2, endRowIndex: 4, startColumnIndex: 0, endColumnIndex: 1 },
+                top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                left: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                right: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } }
+              }
+            },
+            // Card 2 (B3:B4) Total Collected
+            {
+              repeatCell: {
+                range: { sheetId: financeId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 1, endColumnIndex: 2 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
+                    textFormat: { bold: true, fontSize: 9, foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 } },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: financeId, startRowIndex: 3, endRowIndex: 4, startColumnIndex: 1, endColumnIndex: 2 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 1, green: 1, blue: 1 },
+                    textFormat: { bold: true, fontSize: 13, foregroundColor: { red: 46/255, green: 139/255, blue: 87/255 } }, // SeaGreen #2E8B57
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            {
+              updateBorders: {
+                range: { sheetId: financeId, startRowIndex: 2, endRowIndex: 4, startColumnIndex: 1, endColumnIndex: 2 },
+                top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                left: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                right: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } }
+              }
+            },
+            // Card 3 (C3:C4) Outstanding Balance
+            {
+              repeatCell: {
+                range: { sheetId: financeId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 2, endColumnIndex: 3 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
+                    textFormat: { bold: true, fontSize: 9, foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 } },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: financeId, startRowIndex: 3, endRowIndex: 4, startColumnIndex: 2, endColumnIndex: 3 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 1, green: 1, blue: 1 },
+                    textFormat: { bold: true, fontSize: 13, foregroundColor: { red: 139/255, green: 46/255, blue: 46/255 } }, // Deep Red #8B2E2E
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            {
+              updateBorders: {
+                range: { sheetId: financeId, startRowIndex: 2, endRowIndex: 4, startColumnIndex: 2, endColumnIndex: 3 },
+                top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                left: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                right: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } }
+              }
+            },
+            // Table Section Header Merged A6:H6
             {
               mergeCells: {
                 range: { sheetId: financeId, startRowIndex: 5, endRowIndex: 6, startColumnIndex: 0, endColumnIndex: 8 },
@@ -1046,17 +1579,196 @@ export async function createPatientClinicalSheet(
                 fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
               }
             },
+            // Transaction History Table Headers (Row 7, index 6)
             {
               repeatCell: {
                 range: { sheetId: financeId, startRowIndex: 6, endRowIndex: 7, startColumnIndex: 0, endColumnIndex: 8 },
                 cell: {
                   userEnteredFormat: {
-                    backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
-                    textFormat: { bold: true, fontSize: 10 },
-                    verticalAlignment: "MIDDLE"
+                    backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 }, // slate-200
+                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
-                fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            }
+          );
+        }
+
+        // Formatting for Reports & Attachments
+        const attachmentsId = sheetsMap["Reports & Attachments"];
+        if (attachmentsId !== undefined) {
+          requests.push(
+            // Hide gridlines
+            {
+              updateSheetProperties: {
+                properties: {
+                  sheetId: attachmentsId,
+                  gridProperties: { hideGridlines: true }
+                },
+                fields: "gridProperties.hideGridlines"
+              }
+            },
+            // Column widths
+            {
+              updateDimensionProperties: {
+                range: { sheetId: attachmentsId, dimension: "COLUMNS", startIndex: 0, endIndex: 1 },
+                properties: { pixelSize: 120 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: attachmentsId, dimension: "COLUMNS", startIndex: 1, endIndex: 2 },
+                properties: { pixelSize: 160 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: attachmentsId, dimension: "COLUMNS", startIndex: 2, endIndex: 3 },
+                properties: { pixelSize: 250 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: attachmentsId, dimension: "COLUMNS", startIndex: 3, endIndex: 4 },
+                properties: { pixelSize: 350 }, fields: "pixelSize"
+              }
+            },
+            // Merge Title
+            {
+              mergeCells: {
+                range: { sheetId: attachmentsId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 4 },
+                mergeType: "MERGE_ALL"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: attachmentsId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 4 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 15/255, green: 76/255, blue: 129/255 },
+                    textFormat: { foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 12, bold: true },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            // Table Headers
+            {
+              repeatCell: {
+                range: { sheetId: attachmentsId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 4 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 },
+                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            }
+          );
+        }
+
+        // Formatting for Config DB
+        const configId = sheetsMap["Config DB"];
+        if (configId !== undefined) {
+          requests.push(
+            // Hide gridlines
+            {
+              updateSheetProperties: {
+                properties: {
+                  sheetId: configId,
+                  gridProperties: { hideGridlines: true }
+                },
+                fields: "gridProperties.hideGridlines"
+              }
+            },
+            // Column widths
+            {
+              updateDimensionProperties: {
+                range: { sheetId: configId, dimension: "COLUMNS", startIndex: 0, endIndex: 1 },
+                properties: { pixelSize: 180 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: configId, dimension: "COLUMNS", startIndex: 1, endIndex: 2 },
+                properties: { pixelSize: 100 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: configId, dimension: "COLUMNS", startIndex: 2, endIndex: 3 },
+                properties: { pixelSize: 120 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: configId, dimension: "COLUMNS", startIndex: 3, endIndex: 4 },
+                properties: { pixelSize: 160 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: configId, dimension: "COLUMNS", startIndex: 4, endIndex: 5 },
+                properties: { pixelSize: 180 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: configId, dimension: "COLUMNS", startIndex: 5, endIndex: 6 },
+                properties: { pixelSize: 100 }, fields: "pixelSize"
+              }
+            },
+            // Merge A1:D1
+            {
+              mergeCells: {
+                range: { sheetId: configId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 4 },
+                mergeType: "MERGE_ALL"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: configId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 4 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 15/255, green: 76/255, blue: 129/255 },
+                    textFormat: { foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 12, bold: true },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            // Style E1:F1
+            {
+              repeatCell: {
+                range: { sheetId: configId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 4, endColumnIndex: 6 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 },
+                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            // Style table headers (Row 3, index 2) Cols A-D
+            {
+              repeatCell: {
+                range: { sheetId: configId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 4 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 },
+                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
               }
             }
           );
