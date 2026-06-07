@@ -501,7 +501,7 @@ export async function createPatientClinicalSheet(
             valueInputOption: "USER_ENTERED",
             data: [
               { range: "'Dashboard'!A1:F11", values: dashboardValues },
-              { range: "'Case Taking'!A1:D142", values: caseTakingValues },
+              { range: "'Case Taking'!A1:D151", values: caseTakingValues },
               { range: "'Follow-Up Tracker'!A1:G4", values: followUpValues },
               { range: "'Repertorization'!A1:P18", values: repertoryValues },
               { range: "'Treatment Planner'!A1:G21", values: plannerValues },
