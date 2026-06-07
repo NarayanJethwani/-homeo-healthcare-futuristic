@@ -303,7 +303,7 @@ export async function createPatientClinicalSheet(
           ["PATIENT DEMOGRAPHICS", "", "", "ACTIVE TREATMENT", "", "", "OUTCOMES & LEDGER", ""],
           ["Patient ID", data.id, "", "Diagnosis", "='Case Taking'!B38", "", "Progress Score (%)", "=IFERROR(INDEX('Follow-Up Tracker'!C:C, MATCH(9.99999999999999E+307, 'Follow-Up Tracker'!A:A)), \"0%\")"],
           ["Patient Name", data.name, "", "Current Remedy", "='Case Taking'!B47", "", "Balance Due (₹)", "='Finance'!C4"],
-          ["Age / Gender", `${data.age} / ${data.gender}`, "", "Last Visit Date", "=IFERROR(MAX('Follow-Up Tracker'!A4:A), \"N/A\")", "", "Top Totality Remedy", "='Repertorization'!B16"],
+          ["Age / Gender", `${data.age} / ${data.gender}`, "", "Last Visit Date", "=IFERROR(MAX('Follow-Up Tracker'!A4:A), \"N/A\")", "", "Top Totality Remedy", "='Repertorization'!B16 & \" (\" & 'Repertorization'!D16 & \" pts)\""],
           ["Contact Phone", data.phone, "", "Next Scheduled Review", "=IFERROR(INDEX('Follow-Up Tracker'!G:G, MATCH(9.99999999999999E+307, 'Follow-Up Tracker'!A:A)), \"Not Scheduled\")", "", "Miasmatic Summary", "=IFERROR('AI Repertory Lab'!B4, \"Psora\")"],
           ["Email Address", data.email || "N/A", "", "Consulting Doctor", "Dr. Narayan Jethwani", "", "Psora Count", "='Case Taking'!B41"],
           ["Location / Address", locationVal, "", "Clinic Branch", "Baner Clinic, Pune", "", "Sycosis Count", "='Case Taking'!B42"],
@@ -393,7 +393,7 @@ export async function createPatientClinicalSheet(
           ["CLINICAL FOLLOW-UP TRACKER", "", "", "", "", "", ""],
           ["", "", "", "", "", "", ""],
           ["Date", "Symptoms & Patient Report", "Improvement %", "Remedy Prescribed", "Potency", "Assessment & Pathology", "Next Follow-up"],
-          [today, "Case initialized. Demographics and baseline complaint registered.", "0%", "Nux Vomica", "30C", "Baseline status. Patient is very chilly with severe post-meal burning.", "2 weeks later"]
+          [today, "Case initialized. Demographics and baseline complaint registered.", 0, "Nux Vomica", "30C", "Baseline status. Patient is very chilly with severe post-meal burning.", "2 weeks later"]
         ];
 
         // values for Repertorization
@@ -772,6 +772,207 @@ export async function createPatientClinicalSheet(
           }
         );
 
+        // Format H4 (Progress Score), H5 (Balance Due), and E6 (Last Visit Date) on Dashboard
+        requests.push(
+          {
+            repeatCell: {
+              range: {
+                sheetId: dashId,
+                startRowIndex: 3,
+                endRowIndex: 4,
+                startColumnIndex: 7,
+                endColumnIndex: 8
+              },
+              cell: {
+                userEnteredFormat: {
+                  numberFormat: {
+                    type: "NUMBER",
+                    pattern: "0%\" Improvement\""
+                  },
+                  textFormat: {
+                    bold: true,
+                    foregroundColor: { red: 46/255, green: 139/255, blue: 87/255 } // SeaGreen
+                  }
+                }
+              },
+              fields: "userEnteredFormat(numberFormat,textFormat(bold,foregroundColor))"
+            }
+          },
+          {
+            repeatCell: {
+              range: {
+                sheetId: dashId,
+                startRowIndex: 4,
+                endRowIndex: 5,
+                startColumnIndex: 7,
+                endColumnIndex: 8
+              },
+              cell: {
+                userEnteredFormat: {
+                  numberFormat: {
+                    type: "CURRENCY",
+                    pattern: "\"₹\"#,##0"
+                  },
+                  textFormat: {
+                    bold: true,
+                    foregroundColor: { red: 46/255, green: 139/255, blue: 87/255 } // SeaGreen
+                  }
+                }
+              },
+              fields: "userEnteredFormat(numberFormat,textFormat(bold,foregroundColor))"
+            }
+          },
+          {
+            repeatCell: {
+              range: {
+                sheetId: dashId,
+                startRowIndex: 5,
+                endRowIndex: 6,
+                startColumnIndex: 4,
+                endColumnIndex: 5
+              },
+              cell: {
+                userEnteredFormat: {
+                  numberFormat: {
+                    type: "DATE",
+                    pattern: "dd-mm-yyyy"
+                  }
+                }
+              },
+              fields: "userEnteredFormat.numberFormat"
+            }
+          }
+        );
+
+        // Add Miasmatic Profile COLUMN Chart to Dashboard
+        requests.push({
+          addChart: {
+            chart: {
+              spec: {
+                title: "MIASMATIC PROFILE (TOTALITY TAGS)",
+                basicChart: {
+                  chartType: "COLUMN",
+                  legendPosition: "NONE",
+                  domains: [
+                    {
+                      domain: {
+                        sourceRange: {
+                          sources: [
+                            {
+                              sheetId: dashId,
+                              startRowIndex: 7, // Row 8
+                              endRowIndex: 12,  // Row 12
+                              startColumnIndex: 6, // Column G (Psora Count, Sycosis Count, etc.)
+                              endColumnIndex: 7
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  ],
+                  series: [
+                    {
+                      series: {
+                        sourceRange: {
+                          sources: [
+                            {
+                              sheetId: dashId,
+                              startRowIndex: 7, // Row 8
+                              endRowIndex: 12,  // Row 12
+                              startColumnIndex: 7, // Column H (the scores)
+                              endColumnIndex: 8
+                            }
+                          ]
+                        }
+                      },
+                      targetAxis: "LEFT_AXIS"
+                    }
+                  ]
+                }
+              },
+              position: {
+                overlayPosition: {
+                  startCell: {
+                    sheetId: dashId,
+                    rowIndex: 14, // Row 15
+                    columnIndex: 0 // Column A
+                  },
+                  offsetXPixels: 10,
+                  offsetYPixels: 15,
+                  widthPixels: 420,
+                  heightPixels: 300
+                }
+              }
+            }
+          }
+        });
+
+        // Add Symptom Severity & Improvement Trend LINE Chart to Dashboard
+        const followUpId = sheetsMap["Follow-Up Tracker"];
+        if (followUpId !== undefined) {
+          requests.push({
+            addChart: {
+              chart: {
+                spec: {
+                  title: "SYMPTOM SEVERITY & IMPROVEMENT TREND",
+                  basicChart: {
+                    chartType: "LINE",
+                    legendPosition: "NONE",
+                    domains: [
+                      {
+                        domain: {
+                          sourceRange: {
+                            sources: [
+                              {
+                                sheetId: followUpId,
+                                startRowIndex: 2, // Row 3 (header "Date")
+                                endRowIndex: 15,  // Row 15
+                                startColumnIndex: 0, // Column A (Date)
+                                endColumnIndex: 1
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ],
+                    series: [
+                      {
+                        series: {
+                          sourceRange: {
+                            sources: [
+                              {
+                                sheetId: followUpId,
+                                startRowIndex: 2, // Row 3 (header "Improvement %")
+                                endRowIndex: 15,  // Row 15
+                                startColumnIndex: 2, // Column C (Improvement %)
+                                endColumnIndex: 3
+                              }
+                            ]
+                          }
+                        },
+                        targetAxis: "LEFT_AXIS"
+                      }
+                    ]
+                  }
+                },
+                position: {
+                  overlayPosition: {
+                    startCell: {
+                      sheetId: dashId,
+                      rowIndex: 14, // Row 15
+                      columnIndex: 4 // Column E
+                    },
+                    offsetXPixels: 10,
+                    offsetYPixels: 15,
+                    widthPixels: 420,
+                    heightPixels: 300
+                  }
+                }
+              }
+            }
+          });
+        }
+
         // Formatting for Case Taking
         const caseTakingId = sheetsMap["Case Taking"];
         if (caseTakingId !== undefined) {
@@ -929,7 +1130,6 @@ export async function createPatientClinicalSheet(
         }
 
         // Formatting for Follow-Up Tracker
-        const followUpId = sheetsMap["Follow-Up Tracker"];
         if (followUpId !== undefined) {
           requests.push(
             // Hide gridlines
@@ -1017,6 +1217,36 @@ export async function createPatientClinicalSheet(
                   }
                 },
                 fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            // Date format for Column A (Row 4 onwards)
+            {
+              repeatCell: {
+                range: { sheetId: followUpId, startRowIndex: 3, startColumnIndex: 0, endColumnIndex: 1 },
+                cell: {
+                  userEnteredFormat: {
+                    numberFormat: {
+                      type: "DATE",
+                      pattern: "dd-mm-yyyy"
+                    }
+                  }
+                },
+                fields: "userEnteredFormat.numberFormat"
+              }
+            },
+            // Percentage format for Column C (Row 4 onwards)
+            {
+              repeatCell: {
+                range: { sheetId: followUpId, startRowIndex: 3, startColumnIndex: 2, endColumnIndex: 3 },
+                cell: {
+                  userEnteredFormat: {
+                    numberFormat: {
+                      type: "NUMBER",
+                      pattern: "0%"
+                    }
+                  }
+                },
+                fields: "userEnteredFormat.numberFormat"
               }
             }
           );
