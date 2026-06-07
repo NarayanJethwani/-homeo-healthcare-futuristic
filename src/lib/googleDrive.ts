@@ -252,6 +252,7 @@ export async function createPatientClinicalSheet(
             }
           });
         }
+      } else {
         // Create the newly designed custom case-taking tabs programmatically
         // 1. Rename Sheet1 to Dashboard, and add the remaining 8 sheets
         await sheets.spreadsheets.batchUpdate({
