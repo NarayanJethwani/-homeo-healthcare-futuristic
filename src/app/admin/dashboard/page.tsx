@@ -3397,7 +3397,7 @@ Homeo Healthcare`;
       const controller = new AbortController();
       const timeoutId = setTimeout(() => {
         controller.abort();
-      }, 5500); // 5.5 seconds timeout to fallback to mock immediately if network is slow
+      }, 45000); // 45 seconds timeout to allow full Google Workspace creation
 
       const response = await fetch("/api/intake", {
         method: "POST",
