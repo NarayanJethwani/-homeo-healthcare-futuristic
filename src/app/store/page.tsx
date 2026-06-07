@@ -726,8 +726,8 @@ export default function StorePage() {
   const [viewMode, setViewMode] = useState<"dashboard" | "catalog" | "doctorPlan">("dashboard");
 
   // Calculator states
-  const [careLevel, setCareLevel] = useState<"mild" | "moderate" | "focused" | "organ" | "comprehensive">("focused");
-  const [billingCycle, setBillingCycle] = useState<"weekly" | "monthly">("monthly");
+  const [careLevel, setCareLevel] = useState<"mild" | "moderate" | "focused" | "organ" | "comprehensive">("mild");
+  const [billingCycle, setBillingCycle] = useState<"weekly" | "monthly">("weekly");
   const [durationValue, setDurationValue] = useState<number>(1); // Default to 1 period (1 month or 4 weeks depending on cycle)
   const [conditionsCount, setConditionsCount] = useState<number>(1); // 1, 2, or 3
 
@@ -825,7 +825,7 @@ export default function StorePage() {
 
   const [filter, setFilter] = useState<"all" | "consultation" | "specialty">("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [catalogBillingCycle, setCatalogBillingCycle] = useState<"weekly" | "monthly">("monthly");
+  const [catalogBillingCycle, setCatalogBillingCycle] = useState<"weekly" | "monthly">("weekly");
 
   // Load saved configs from localStorage and deep links on mount
   useEffect(() => {
