@@ -30,7 +30,12 @@ export async function POST(request: Request) {
       deliveryMode: body.deliveryMode || "shipping",
       address: body.address || "",
       receivedAmount: body.receivedAmount !== undefined ? Number(body.receivedAmount) : undefined,
-      remainingBalance: body.remainingBalance !== undefined ? Number(body.remainingBalance) : undefined
+      remainingBalance: body.remainingBalance !== undefined ? Number(body.remainingBalance) : undefined,
+      billingCycle: body.billingCycle,
+      durationValue: body.durationValue !== undefined ? Number(body.durationValue) : undefined,
+      concessionApplied: body.concessionApplied,
+      overridePrice: body.overridePrice !== undefined ? Number(body.overridePrice) : undefined,
+      medicineAddons: body.medicineAddons !== undefined ? Number(body.medicineAddons) : undefined
     };
 
     console.log("Processing intake automation for patient:", patientData.name);

@@ -57,14 +57,43 @@ export function compileLocalSynthesisResponse(taskType: string, body: any): any 
     if (hasMind) patterns.push("Sympathetic Nervous Overdrive with Health Anticipation");
     if (patterns.length === 0) patterns.push("Functional Somatic Energy Stagnation");
 
+    const jethwaniOrClinicalRubrics = rubrics.filter((r: any) => {
+      const src = (r.source || "").toLowerCase();
+      return src === "jethwani" || src === "clinical";
+    });
+
+    let etiologicalAnalysis = `Pathology represents a classic inward shift of functional disturbances. Chronicity aggravated by nervous tension and susceptibility to external stressors.`;
+    let miasmaticSummary = `Predominantly Psoric hypersensitivity (${hasSkin ? "itching and sensory reactivity" : "functional irritations"}), with secondary Sycotic retention (${hasDigestive ? "flatulence and bloating" : "chronic tissue slow down"}).`;
+
+    if (jethwaniOrClinicalRubrics.length > 0) {
+      const adrenalSymptom = rubrics.some((r: any) => {
+        const name = (r.name || "").toLowerCase();
+        return name.includes("adrenal") || name.includes("burnout") || name.includes("fatigue") || name.includes("exhaustion") || name.includes("post-viral");
+      });
+      const suppressionSymptom = rubrics.some((r: any) => {
+        const name = (r.name || "").toLowerCase();
+        return name.includes("steroid") || name.includes("suppress") || name.includes("cortisone");
+      });
+      if (adrenalSymptom) {
+        etiologicalAnalysis = `Etiology is traced to adrenal depletion, chronic physiological stress, or post-viral fatigue, leading to low vitality margins.`;
+        miasmaticSummary = `Miasmatic profile exhibits deep Psoric depletion combined with a Sycotic layer of endocrine exhaustion. Adrenal burnout and post-viral fatigue indicators are prominent, suggesting constitutional weakness under stress.`;
+      } else if (suppressionSymptom) {
+        etiologicalAnalysis = `Etiology reveals a clear history of pharmaceutical suppression (steroids or local therapies) which has locked functional symptoms into deep tissue structures.`;
+        miasmaticSummary = `Miasmatic profile shows a significant Sycotic/Syphilitic blockage. History of suppressive steroid or local therapies has locked the pathology in deep tissue structures, requiring an anti-sycotic clearing remedy.`;
+      } else {
+        etiologicalAnalysis = `Etiology incorporates custom clinical symptoms reflecting the practitioner's empirical observations.`;
+        miasmaticSummary = `Incorporates Jethwani Clinical Repertory and Custom indicators. Shows a mixed psoric-sycotic active layer with signs of chronic autonomic dysregulation.`;
+      }
+    }
+
     return {
       success: true,
       isMock: true,
       analysis: {
         clinical_reasoning_v2: {
           constitutional_interpretation: `A ${age}-year-old ${gender} presenting with ${complaint || "chronic functional symptoms"}. Constitutional profile suggests a reactive state matching the ${thermals.toLowerCase()} axis with sensitivity to environmental changes.`,
-          etiological_analysis: `Pathology represents a classic inward shift of functional disturbances. Chronicity aggravated by nervous tension and susceptibility to external stressors.`,
-          miasmatic_analysis_summary: `Predominantly Psoric hypersensitivity (${hasSkin ? "itching and sensory reactivity" : "functional irritations"}), with secondary Sycotic retention (${hasDigestive ? "flatulence and bloating" : "chronic tissue slow down"}).`,
+          etiological_analysis: etiologicalAnalysis,
+          miasmatic_analysis_summary: miasmaticSummary,
           affected_organ_systems: systems,
           probable_clinical_patterns: patterns,
           differential_diagnoses: [
@@ -656,6 +685,24 @@ In a case of chronic migraine, standard pathology focuses on vascular dilation. 
   if (hasMind) psoraScore += 15;
   if (thermals === "Chilly") sycosisScore += 10;
 
+  // Check Jethwani/Clinical rubrics for miasmatic adjustments
+  const jethwaniOrClinicalRubrics = rubrics.filter((r: any) => {
+    const src = (r.source || "").toLowerCase();
+    return src === "jethwani" || src === "clinical";
+  });
+
+  jethwaniOrClinicalRubrics.forEach((r: any) => {
+    const name = (r.name || "").toLowerCase();
+    if (name.includes("adrenal") || name.includes("burnout") || name.includes("fatigue") || name.includes("exhaustion") || name.includes("post-viral")) {
+      psoraScore += 25;
+      sycosisScore += 15;
+    }
+    if (name.includes("steroid") || name.includes("suppress") || name.includes("cortisone")) {
+      sycosisScore += 25;
+      syphilisScore += 20;
+    }
+  });
+
   const totalMiasm = psoraScore + sycosisScore + syphilisScore + tubercularScore;
   const psoraPct = Math.round((psoraScore / totalMiasm) * 100);
   const sycosisPct = Math.round((sycosisScore / totalMiasm) * 100);
@@ -679,7 +726,12 @@ In a case of chronic migraine, standard pathology focuses on vascular dilation. 
       thermal_axis: `${thermals}; strongly influenced by changes in temperature and seasonal transitions.`,
       stress_response: "Initial nervous excitability followed by physical fatigue and somatic outbursts.",
       nervous_excitability: "High; overactive mind preventing easy sleep initiation.",
-      suppression_history: hasSkin ? "Prior history of suppressive topical applications for dermal flares." : "No major suppressive history noted."
+      suppression_history: rubrics.some((r: any) => {
+        const name = (r.name || "").toLowerCase();
+        return name.includes("steroid") || name.includes("suppress") || name.includes("cortisone");
+      })
+        ? "Confirmed history of steroid or pharmaceutical suppression leading to active therapeutic blockages."
+        : (hasSkin ? "Prior history of suppressive topical applications for dermal flares." : "No major suppressive history noted.")
     },
     constitutional_vector: {
       anxiety: hasMind ? 88 : 45,
@@ -808,7 +860,18 @@ In a case of chronic migraine, standard pathology focuses on vascular dilation. 
       syphilis: syphilisPct,
       tubercular: tubercularPct,
       dominant_miasm: dominantMiasm,
-      description: `Dominant ${dominantMiasm} miasm indicated by patient's reactive susceptibility and tissue symptoms.`
+      description: jethwaniOrClinicalRubrics.length > 0
+        ? `Dominant ${dominantMiasm} miasm with specialized indications from Jethwani/Clinical repertories. Highlighted by ${
+            rubrics.some((r: any) => {
+              const name = (r.name || "").toLowerCase();
+              return name.includes("adrenal") || name.includes("burnout") || name.includes("fatigue") || name.includes("exhaustion") || name.includes("post-viral");
+            }) ? "adrenal fatigue/burnout depletion layer" : 
+            rubrics.some((r: any) => {
+              const name = (r.name || "").toLowerCase();
+              return name.includes("steroid") || name.includes("suppress");
+            }) ? "suppression/steroid blockage layer" : "custom clinical indicators"
+          }.`
+        : `Dominant ${dominantMiasm} miasm indicated by patient's reactive susceptibility and tissue symptoms.`
     },
     constitutional_axis: {
       mental_axis: hasMind ? 85 : 45,
@@ -923,8 +986,8 @@ export function getPromptsForTask(taskType: string, body: any): { systemPrompt: 
   if (taskType === "clinical_conference") {
     const systemPrompt = `You are the AI Clinical Case Conference Facilitator. Your mission is to coordinate a virtual consultation room between three expert models:
 1. Dr. Gemini (Expert Homeopathic Synthesizer): Focuses on holistic analysis, mental state integration, and classical Kentian repertory synthesis.
-2. Dr. Qwen (Clinical Keynote & Repertory Auditor): Focuses on physical keynotes, modalities (aggravation/amelioration conditions), and specific Boericke-style clinical associations.
-3. Dr. DeepSeek (Miasmatic & Pathological Differentiator): Focuses on underlying miasmatic load (Psora, Sycosis, Syphilis, Tubercular), pathological changes, and clinical differentiation.
+2. Dr. Qwen (Clinical Keynote & Repertory Auditor): Focuses on physical keynotes, modalities (aggravation/amelioration conditions), Boericke-style clinical associations, and Custom/Clinical experience.
+3. Dr. DeepSeek (Miasmatic & Pathological Differentiator): Focuses on underlying miasmatic load (Psora, Sycosis, Syphilis, Tubercular), incorporating classical miasms as well as Jethwani's clinical & miasmatic indicators (e.g. chronic blockages, suppression, post-viral depletion), pathological changes, and clinical differentiation.
 
 You MUST return a JSON object with this EXACT schema:
 {
@@ -976,7 +1039,7 @@ You MUST return a JSON object with this EXACT schema:
   }
 }`;
 
-    const rubricsText = (body?.rubrics || []).map((r: any) => `- ${r.chapter}: ${r.name} (Grade: ${r.grade || 1})`).join("\n");
+    const rubricsText = (body?.rubrics || []).map((r: any) => `- ${r.chapter}: ${r.name} (Source: ${r.source || "Kent"}, Grade: ${r.grade || 1})`).join("\n");
     const userPrompt = `Convene a case conference for this patient:
 Name: ${patientName}
 Age: ${age}
@@ -1017,7 +1080,7 @@ You MUST return a JSON object with this EXACT schema:
     }
   ]
 }`;
-    const rubricsPrompt = (body?.rubrics || []).map((r: any) => `- [${r.chapter}] ${r.name} (Intensity/Severity Grade: ${r.grade})`).join("\n");
+    const rubricsPrompt = (body?.rubrics || []).map((r: any) => `- [${r.chapter}] ${r.name} (Source: ${r.source || "Kent"}, Intensity/Severity Grade: ${r.grade})`).join("\n");
     const repertorizationResults = body?.repertorizationResults || [];
     const userPrompt = `Patient Case details:
 - Name: ${patientName}
@@ -1252,7 +1315,12 @@ Please provide your tutor response. Ensure the JSON is completely filled.`;
     ? `\n\nKNOWLEDGE GRAPH RELATIONSHIP INSIGHTS (Cross-Referenced Classical Connections):\n${matchedGraphRemedies.map((r: any) => `- ${r.remedyName} (Kingdom: ${r.kingdom}, Family: ${r.family})\n  - Essence: ${r.essence}\n  - Key Modalities: ${r.modalities}`).join("\n")}`
     : "";
 
-  const systemPrompt = `You are the AI Constitutional Homeopathic Intelligence Engine, a master clinical decision support system. Combine Kent's classical methodologies with modern clinical pathology.
+  const systemPrompt = `You are the AI Constitutional Homeopathic Intelligence Engine, a master clinical decision support system. Combine Kent's classical methodologies, Boericke's clinical keynotes, Jethwani's clinical repertory/miasmatic indicators, and Custom physician experience with modern clinical pathology.
+Weigh all symptoms from their respective sources:
+- Kent's repertory: classical constitutional and mental indications.
+- Boericke's repertory: key clinical indicators and physical modalities.
+- Jethwani's repertory: miasmatic tendencies (Psora/Sycosis/Syphilis) and specific clinical/miasmatic blockages (such as steroid/suppression histories, adrenal fatigue, post-viral depletion).
+- Clinical/Custom repertory: custom symptoms and doctor-assigned grades indicating the practitioner's direct empirical experience.
 You MUST return a single, valid JSON object following this EXACT schema, with NO markdown formatting around it (no backticks, no \`\`\`json blocks):
 {
   "constitutional_profile": {
@@ -1302,7 +1370,7 @@ You MUST return a single, valid JSON object following this EXACT schema, with NO
   "confidence_score": number, "case_complexity": number
 }`;
 
-  const rubricsPrompt = (body?.rubrics || []).map((r: any) => `- [${r.chapter}] ${r.name} (Intensity/Severity Grade: ${r.grade})`).join("\n");
+  const rubricsPrompt = (body?.rubrics || []).map((r: any) => `- [${r.chapter}] ${r.name} (Source: ${r.source || "Kent"}, Intensity/Severity Grade: ${r.grade})`).join("\n");
   const repertorizationResults = body?.repertorizationResults || [];
 
   const userPrompt = `Patient Demographics & Case History:

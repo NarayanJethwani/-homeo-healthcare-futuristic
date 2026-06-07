@@ -46,6 +46,11 @@ export interface PatientIntakeData {
   address?: string;
   receivedAmount?: number;
   remainingBalance?: number;
+  billingCycle?: "weekly" | "monthly";
+  durationValue?: number;
+  concessionApplied?: string;
+  overridePrice?: number;
+  medicineAddons?: number;
 }
 
 /**
@@ -78,22 +83,21 @@ export async function createPatientFolder(data: PatientIntakeData): Promise<{ fo
     if (folderId) {
       try {
         const emails = ["narayan.jethwani@gmail.com", "narayan.jethwani@homeo.healthcare"];
-        for (const email of emails) {
-          try {
-            await drive.permissions.create({
-              fileId: folderId,
-              sendNotificationEmail: false,
-              supportsAllDrives: true,
-              requestBody: {
-                role: "writer",
-                type: "user",
-                emailAddress: email
-              }
-            });
-          } catch (eErr) {
+        const sharePromises = emails.map(email =>
+          drive.permissions.create({
+            fileId: folderId,
+            sendNotificationEmail: false,
+            supportsAllDrives: true,
+            requestBody: {
+              role: "writer",
+              type: "user",
+              emailAddress: email
+            }
+          }).catch(eErr => {
             console.warn(`Failed to share folder with ${email}:`, eErr);
-          }
-        }
+          })
+        );
+        await Promise.all(sharePromises);
       } catch (permError) {
         console.error("Failed to share folder with doctors:", permError);
       }
@@ -161,22 +165,21 @@ export async function createPatientClinicalSheet(
     if (newSheetId) {
       try {
         const emails = ["narayan.jethwani@gmail.com", "narayan.jethwani@homeo.healthcare"];
-        for (const email of emails) {
-          try {
-            await drive.permissions.create({
-              fileId: newSheetId,
-              sendNotificationEmail: false,
-              supportsAllDrives: true,
-              requestBody: {
-                role: "writer",
-                type: "user",
-                emailAddress: email
-              }
-            });
-          } catch (eErr) {
+        const sharePromises = emails.map(email =>
+          drive.permissions.create({
+            fileId: newSheetId,
+            sendNotificationEmail: false,
+            supportsAllDrives: true,
+            requestBody: {
+              role: "writer",
+              type: "user",
+              emailAddress: email
+            }
+          }).catch(eErr => {
             console.warn(`Failed to share sheet with ${email}:`, eErr);
-          }
-        }
+          })
+        );
+        await Promise.all(sharePromises);
       } catch (permError) {
         console.error("Failed to share sheet with doctors:", permError);
       }
@@ -193,472 +196,701 @@ export async function createPatientClinicalSheet(
         : `${data.city}, ${data.state}, ${data.country}`;
 
       if (TEMPLATE_SHEET_ID) {
-        // If template sheet exists, write to the standard template range
-        await sheets.spreadsheets.values.update({
-          spreadsheetId: newSheetId,
-          range: "Sheet1!A1:B11",
-          valueInputOption: "RAW",
-          requestBody: {
-            values: [
-              ["PATIENT CLINICAL FILE", ""],
-              ["Patient Name", data.name],
-              ["Age / Gender", `${data.age} / ${data.gender}`],
-              ["Contact Phone", data.phone],
-              ["Email Address", data.email],
-              ["Delivery Option", data.deliveryMode || "Courier Shipping"],
-              ["Location / Address", locationVal],
-              ["Chief Complaint", data.complaint],
-              ["Recommended Tier", data.careLevel],
-              ["Billing Plan Duration", data.durationText],
-              ["Payment Amount", `INR ${data.finalPrice.toLocaleString("en-IN")}`]
-            ]
-          }
-        });
+        // If template sheet exists, write to standard template tabs
+        try {
+          await sheets.spreadsheets.values.batchUpdate({
+            spreadsheetId: newSheetId,
+            requestBody: {
+              valueInputOption: "USER_ENTERED",
+              data: [
+                {
+                  range: "'Dashboard'!B5:B11",
+                  values: [
+                    [data.id],
+                    [data.name],
+                    [`${data.age} / ${data.gender}`],
+                    ["Active"],
+                    [data.phone],
+                    [data.email],
+                    [locationVal]
+                  ]
+                },
+                {
+                  range: "'Case Taking'!B4:B9",
+                  values: [
+                    [data.id],
+                    [data.name],
+                    [`${data.age} / ${data.gender}`],
+                    [data.phone],
+                    [data.email],
+                    [locationVal]
+                  ]
+                }
+              ]
+            }
+          });
+        } catch (err) {
+          console.warn("Failed to populate template sheet, writing fallback to Sheet1:", err);
+          await sheets.spreadsheets.values.update({
+            spreadsheetId: newSheetId,
+            range: "Sheet1!A1:B11",
+            valueInputOption: "RAW",
+            requestBody: {
+              values: [
+                ["PATIENT CLINICAL FILE", ""],
+                ["Patient Name", data.name],
+                ["Age / Gender", `${data.age} / ${data.gender}`],
+                ["Contact Phone", data.phone],
+                ["Email Address", data.email],
+                ["Delivery Option", data.deliveryMode || "Courier Shipping"],
+                ["Location / Address", locationVal],
+                ["Chief Complaint", data.complaint],
+                ["Recommended Tier", data.careLevel],
+                ["Billing Plan Duration", data.durationText],
+                ["Payment Amount", `INR ${data.finalPrice.toLocaleString("en-IN")}`]
+              ]
+            }
+          });
+        }
       } else {
-        // Create the newly designed custom case-taking sheet programmatically
-        const today = new Date().toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" });
-        const values = [
-          ["HOMEO HEALTHCARE - CLINICAL CASE SHEET", "", "", "", "", ""],
-          ["", "", "", "", "", ""],
-          ["1. PATIENT DEMOGRAPHICS", "", "", "", "", ""],
-          ["Patient ID", data.id, "Register Date", today, "Total Package Price", `INR ${(data.finalPrice || 0).toLocaleString("en-IN")}`],
-          ["Patient Name", data.name, "Age / Gender", `${data.age} / ${data.gender}`, "Received Total", `INR ${(data.receivedAmount !== undefined ? data.receivedAmount : data.finalPrice || 0).toLocaleString("en-IN")}`],
-          ["Contact Phone", data.phone, "Email Address", data.email || "N/A", "Remaining Balance", `INR ${(data.remainingBalance !== undefined ? data.remainingBalance : 0).toLocaleString("en-IN")}`],
-          ["Delivery Option", data.deliveryMode || "Courier Shipping", "Location / Address", locationVal, "", ""],
-          ["Recommended Tier", data.careLevel, "Billing Duration", data.durationText, "", ""],
-          ["", "", "", "", "", ""],
-          ["", "", "", "", "", ""],
-          ["2. CHIEF COMPLAINT & CASE ANALYSIS", "", "", "", "", ""],
-          ["Chief Complaint Details", data.complaint, "", "", "", ""],
-          ["", "", "", "", "", ""],
-          ["", "", "", "", "", ""],
-          ["", "", "", "", "", ""],
-          ["3. CLINICAL REPERTORIZATION & RUBRICS", "", "", "", "", ""],
-          ["Rubric Name", "Chapter / Location", "Remedy Grade (1/2/3)", "Clinical Notes & Key Modalities", "", ""],
-          ["", "", "", "", "", ""],
-          ["", "", "", "", "", ""],
-          ["", "", "", "", "", ""],
-          ["", "", "", "", "", ""],
-          ["", "", "", "", "", ""],
-          ["", "", "", "", "", ""],
-          ["4. PRESCRIPTION & TREATMENT PLAN", "", "", "", "", ""],
-          ["Remedy Prescribed", "Potency & Scale", "Dosage & Frequency", "Duration & Schedule", "", ""],
-          ["", "", "", "", "", ""],
-          ["", "", "", "", "", ""],
-          ["", "", "", "", "", ""],
-          ["", "", "", "", "", ""],
-          ["", "", "", "", "", ""],
-          ["", "", "", "", "", ""],
-          ["5. CLINICAL PROGRESS & FOLLOW-UPS", "", "", "", "", ""],
-          ["Date", "Symptom Status & Patient Report", "Prescription Adjustments", "Next Review Date", "Amount Received (₹)", "Balance / Due (₹)"],
-          ["", "", "", "", "", ""],
-          ["", "", "", "", "", ""],
-          ["", "", "", "", "", ""],
-          ["", "", "", "", "", ""],
-          ["", "", "", "", "", ""],
-          ["", "", "", "", "", ""],
-          ["", "", "", "", "", ""],
-          ["6. INVOICING & BILLING HISTORY", "", "", "", "", ""],
-          ["Invoice No", "Date Issued", "Items Description", "Amount Paid (₹)", "Payment Mode", "Status"],
-          ["", "", "", "", "", ""],
-          ["", "", "", "", "", ""],
-          ["", "", "", "", "", ""],
-          ["", "", "", "", "", ""],
-          ["", "", "", "", "", ""],
-          ["", "", "", "", "", ""],
-          ["", "", "", "", "", ""]
-        ];
-
-        await sheets.spreadsheets.values.update({
-          spreadsheetId: newSheetId,
-          range: "Sheet1!A1:F49",
-          valueInputOption: "RAW",
-          requestBody: { values }
-        });
-
-        // Apply grid formatting, cell styling, background colors, and merges
+        // Create the newly designed custom case-taking tabs programmatically
+        // 1. Rename Sheet1 to Dashboard, and add the remaining 7 sheets
         await sheets.spreadsheets.batchUpdate({
           spreadsheetId: newSheetId,
           requestBody: {
             requests: [
-              // Column widths (A: 130px, B: 130px, C: 260px, D: 130px, E: 130px, F: 130px)
               {
-                updateDimensionProperties: {
-                  range: { sheetId: 0, dimension: "COLUMNS", startIndex: 0, endIndex: 1 },
-                  properties: { pixelSize: 130 },
-                  fields: "pixelSize"
-                }
-              },
-              {
-                updateDimensionProperties: {
-                  range: { sheetId: 0, dimension: "COLUMNS", startIndex: 1, endIndex: 2 },
-                  properties: { pixelSize: 130 },
-                  fields: "pixelSize"
-                }
-              },
-              {
-                updateDimensionProperties: {
-                  range: { sheetId: 0, dimension: "COLUMNS", startIndex: 2, endIndex: 3 },
-                  properties: { pixelSize: 260 },
-                  fields: "pixelSize"
-                }
-              },
-              {
-                updateDimensionProperties: {
-                  range: { sheetId: 0, dimension: "COLUMNS", startIndex: 3, endIndex: 4 },
-                  properties: { pixelSize: 130 },
-                  fields: "pixelSize"
-                }
-              },
-              {
-                updateDimensionProperties: {
-                  range: { sheetId: 0, dimension: "COLUMNS", startIndex: 4, endIndex: 5 },
-                  properties: { pixelSize: 130 },
-                  fields: "pixelSize"
-                }
-              },
-              {
-                updateDimensionProperties: {
-                  range: { sheetId: 0, dimension: "COLUMNS", startIndex: 5, endIndex: 6 },
-                  properties: { pixelSize: 130 },
-                  fields: "pixelSize"
-                }
-              },
-              // Merge cells for title header banner (A1:F1)
-              {
-                mergeCells: {
-                  range: { sheetId: 0, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 6 },
-                  mergeType: "MERGE_ALL"
-                }
-              },
-              // Merge cells for Section 1 Demographics Header (A3:F3)
-              {
-                mergeCells: {
-                  range: { sheetId: 0, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 6 },
-                  mergeType: "MERGE_ALL"
-                }
-              },
-              // Merge cells for Section 2 Complaint Header (A11:F11)
-              {
-                mergeCells: {
-                  range: { sheetId: 0, startRowIndex: 10, endRowIndex: 11, startColumnIndex: 0, endColumnIndex: 6 },
-                  mergeType: "MERGE_ALL"
-                }
-              },
-              // Merge B12:F15 for the Chief Complaint details text area
-              {
-                mergeCells: {
-                  range: { sheetId: 0, startRowIndex: 11, endRowIndex: 15, startColumnIndex: 1, endColumnIndex: 6 },
-                  mergeType: "MERGE_ALL"
-                }
-              },
-              // Merge cells for Section 3 Repertorization Header (A16:F16)
-              {
-                mergeCells: {
-                  range: { sheetId: 0, startRowIndex: 15, endRowIndex: 16, startColumnIndex: 0, endColumnIndex: 6 },
-                  mergeType: "MERGE_ALL"
-                }
-              },
-              // Merge cells for Section 4 Prescription Header (A24:F24)
-              {
-                mergeCells: {
-                  range: { sheetId: 0, startRowIndex: 23, endRowIndex: 24, startColumnIndex: 0, endColumnIndex: 6 },
-                  mergeType: "MERGE_ALL"
-                }
-              },
-              // Merge cells for Section 5 Follow-ups Header (A32:F32)
-              {
-                mergeCells: {
-                  range: { sheetId: 0, startRowIndex: 31, endRowIndex: 32, startColumnIndex: 0, endColumnIndex: 6 },
-                  mergeType: "MERGE_ALL"
-                }
-              },
-              // Merge cells for Section 6 Billing Header (A41:F41)
-              {
-                mergeCells: {
-                  range: { sheetId: 0, startRowIndex: 40, endRowIndex: 41, startColumnIndex: 0, endColumnIndex: 6 },
-                  mergeType: "MERGE_ALL"
-                }
-              },
-              // Styling: Header Banner (Dark Teal background #0f766e, White text, center aligned, bold)
-              {
-                repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 6 },
-                  cell: {
-                    userEnteredFormat: {
-                      backgroundColor: { red: 15/255, green: 118/255, blue: 110/255 },
-                      textFormat: { foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 13, bold: true, fontFamily: "Arial" },
-                      horizontalAlignment: "CENTER",
-                      verticalAlignment: "MIDDLE"
-                    }
+                updateSheetProperties: {
+                  properties: {
+                    sheetId: 0,
+                    title: "Dashboard"
                   },
-                  fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+                  fields: "title"
                 }
               },
-              // Styling: Section Banners (Light Mint background #ccfbf1, Dark Teal text #0f766e, bold)
-              {
-                repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 6 },
-                  cell: {
-                    userEnteredFormat: {
-                      backgroundColor: { red: 204/255, green: 251/255, blue: 241/255 },
-                      textFormat: { foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 }, fontSize: 10, bold: true, fontFamily: "Arial" },
-                      verticalAlignment: "MIDDLE"
-                    }
-                  },
-                  fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
-                }
-              },
-              {
-                repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 10, endRowIndex: 11, startColumnIndex: 0, endColumnIndex: 6 },
-                  cell: {
-                    userEnteredFormat: {
-                      backgroundColor: { red: 204/255, green: 251/255, blue: 241/255 },
-                      textFormat: { foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 }, fontSize: 10, bold: true, fontFamily: "Arial" },
-                      verticalAlignment: "MIDDLE"
-                    }
-                  },
-                  fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
-                }
-              },
-              {
-                repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 15, endRowIndex: 16, startColumnIndex: 0, endColumnIndex: 6 },
-                  cell: {
-                    userEnteredFormat: {
-                      backgroundColor: { red: 204/255, green: 251/255, blue: 241/255 },
-                      textFormat: { foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 }, fontSize: 10, bold: true, fontFamily: "Arial" },
-                      verticalAlignment: "MIDDLE"
-                    }
-                  },
-                  fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
-                }
-              },
-              {
-                repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 23, endRowIndex: 24, startColumnIndex: 0, endColumnIndex: 6 },
-                  cell: {
-                    userEnteredFormat: {
-                      backgroundColor: { red: 204/255, green: 251/255, blue: 241/255 },
-                      textFormat: { foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 }, fontSize: 10, bold: true, fontFamily: "Arial" },
-                      verticalAlignment: "MIDDLE"
-                    }
-                  },
-                  fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
-                }
-              },
-              {
-                repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 31, endRowIndex: 32, startColumnIndex: 0, endColumnIndex: 6 },
-                  cell: {
-                    userEnteredFormat: {
-                      backgroundColor: { red: 204/255, green: 251/255, blue: 241/255 },
-                      textFormat: { foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 }, fontSize: 10, bold: true, fontFamily: "Arial" },
-                      verticalAlignment: "MIDDLE"
-                    }
-                  },
-                  fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
-                }
-              },
-              {
-                repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 40, endRowIndex: 41, startColumnIndex: 0, endColumnIndex: 6 },
-                  cell: {
-                    userEnteredFormat: {
-                      backgroundColor: { red: 204/255, green: 251/255, blue: 241/255 },
-                      textFormat: { foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 }, fontSize: 10, bold: true, fontFamily: "Arial" },
-                      verticalAlignment: "MIDDLE"
-                    }
-                  },
-                  fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
-                }
-              },
-              // Table Header Styles (Row 17, Row 25, Row 33, Row 42): Soft Grey background, bold
-              {
-                repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 16, endRowIndex: 17, startColumnIndex: 0, endColumnIndex: 6 },
-                  cell: {
-                    userEnteredFormat: {
-                      backgroundColor: { red: 241/255, green: 245/255, blue: 249/255 },
-                      textFormat: { bold: true, fontSize: 9 }
-                    }
-                  },
-                  fields: "userEnteredFormat(backgroundColor,textFormat)"
-                }
-              },
-              {
-                repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 24, endRowIndex: 25, startColumnIndex: 0, endColumnIndex: 6 },
-                  cell: {
-                    userEnteredFormat: {
-                      backgroundColor: { red: 241/255, green: 245/255, blue: 249/255 },
-                      textFormat: { bold: true, fontSize: 9 }
-                    }
-                  },
-                  fields: "userEnteredFormat(backgroundColor,textFormat)"
-                }
-              },
-              {
-                repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 32, endRowIndex: 33, startColumnIndex: 0, endColumnIndex: 6 },
-                  cell: {
-                    userEnteredFormat: {
-                      backgroundColor: { red: 241/255, green: 245/255, blue: 249/255 },
-                      textFormat: { bold: true, fontSize: 9 }
-                    }
-                  },
-                  fields: "userEnteredFormat(backgroundColor,textFormat)"
-                }
-              },
-              {
-                repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 41, endRowIndex: 42, startColumnIndex: 0, endColumnIndex: 6 },
-                  cell: {
-                    userEnteredFormat: {
-                      backgroundColor: { red: 241/255, green: 245/255, blue: 249/255 },
-                      textFormat: { bold: true, fontSize: 9 }
-                    }
-                  },
-                  fields: "userEnteredFormat(backgroundColor,textFormat)"
-                }
-              },
-              // Wrap text & top alignment for chief complaint text box (B12:F15)
-              {
-                repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 11, endRowIndex: 15, startColumnIndex: 1, endColumnIndex: 6 },
-                  cell: {
-                    userEnteredFormat: { wrapStrategy: "WRAP", verticalAlignment: "TOP" }
-                  },
-                  fields: "userEnteredFormat(wrapStrategy,verticalAlignment)"
-                }
-              },
-              // Bold label cells for demographics labels (Cols A & C, rows 4-9) and complaint label (Col A, row 12)
-              {
-                repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 3, endRowIndex: 9, startColumnIndex: 0, endColumnIndex: 1 },
-                  cell: { userEnteredFormat: { textFormat: { bold: true } } },
-                  fields: "userEnteredFormat(textFormat(bold))"
-                }
-              },
-              {
-                repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 3, endRowIndex: 9, startColumnIndex: 2, endColumnIndex: 3 },
-                  cell: { userEnteredFormat: { textFormat: { bold: true } } },
-                  fields: "userEnteredFormat(textFormat(bold))"
-                }
-              },
-              {
-                repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 11, endRowIndex: 12, startColumnIndex: 0, endColumnIndex: 1 },
-                  cell: { userEnteredFormat: { textFormat: { bold: true }, verticalAlignment: "TOP" } },
-                  fields: "userEnteredFormat(textFormat(bold),verticalAlignment)"
-                }
-              },
-              // Add borders around Demographics block (rows 4-9, cols A-F)
-              {
-                repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 3, endRowIndex: 9, startColumnIndex: 0, endColumnIndex: 6 },
-                  cell: {
-                    userEnteredFormat: {
-                      borders: {
-                        top: { style: "SOLID", color: { red: 0.8, green: 0.8, blue: 0.8 } },
-                        bottom: { style: "SOLID", color: { red: 0.8, green: 0.8, blue: 0.8 } },
-                        left: { style: "SOLID", color: { red: 0.8, green: 0.8, blue: 0.8 } },
-                        right: { style: "SOLID", color: { red: 0.8, green: 0.8, blue: 0.8 } }
-                      }
-                    }
-                  },
-                  fields: "userEnteredFormat(borders)"
-                }
-              },
-              // Add borders around Complaint block (rows 12-15, cols A-F)
-              {
-                repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 11, endRowIndex: 15, startColumnIndex: 0, endColumnIndex: 6 },
-                  cell: {
-                    userEnteredFormat: {
-                      borders: {
-                        top: { style: "SOLID", color: { red: 0.8, green: 0.8, blue: 0.8 } },
-                        bottom: { style: "SOLID", color: { red: 0.8, green: 0.8, blue: 0.8 } },
-                        left: { style: "SOLID", color: { red: 0.8, green: 0.8, blue: 0.8 } },
-                        right: { style: "SOLID", color: { red: 0.8, green: 0.8, blue: 0.8 } }
-                      }
-                    }
-                  },
-                  fields: "userEnteredFormat(borders)"
-                }
-              },
-              // Add borders for Rubrics table (rows 17-22)
-              {
-                repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 16, endRowIndex: 22, startColumnIndex: 0, endColumnIndex: 6 },
-                  cell: {
-                    userEnteredFormat: {
-                      borders: {
-                        top: { style: "SOLID", color: { red: 0.8, green: 0.8, blue: 0.8 } },
-                        bottom: { style: "SOLID", color: { red: 0.8, green: 0.8, blue: 0.8 } },
-                        left: { style: "SOLID", color: { red: 0.8, green: 0.8, blue: 0.8 } },
-                        right: { style: "SOLID", color: { red: 0.8, green: 0.8, blue: 0.8 } }
-                      }
-                    }
-                  },
-                  fields: "userEnteredFormat(borders)"
-                }
-              },
-              // Add borders for Prescription table (rows 25-30)
-              {
-                repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 24, endRowIndex: 30, startColumnIndex: 0, endColumnIndex: 6 },
-                  cell: {
-                    userEnteredFormat: {
-                      borders: {
-                        top: { style: "SOLID", color: { red: 0.8, green: 0.8, blue: 0.8 } },
-                        bottom: { style: "SOLID", color: { red: 0.8, green: 0.8, blue: 0.8 } },
-                        left: { style: "SOLID", color: { red: 0.8, green: 0.8, blue: 0.8 } },
-                        right: { style: "SOLID", color: { red: 0.8, green: 0.8, blue: 0.8 } }
-                      }
-                    }
-                  },
-                  fields: "userEnteredFormat(borders)"
-                }
-              },
-              // Add borders for Follow-up table (rows 33-40)
-              {
-                repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 32, endRowIndex: 40, startColumnIndex: 0, endColumnIndex: 6 },
-                  cell: {
-                    userEnteredFormat: {
-                      borders: {
-                        top: { style: "SOLID", color: { red: 0.8, green: 0.8, blue: 0.8 } },
-                        bottom: { style: "SOLID", color: { red: 0.8, green: 0.8, blue: 0.8 } },
-                        left: { style: "SOLID", color: { red: 0.8, green: 0.8, blue: 0.8 } },
-                        right: { style: "SOLID", color: { red: 0.8, green: 0.8, blue: 0.8 } }
-                      }
-                    }
-                  },
-                  fields: "userEnteredFormat(borders)"
-                }
-              },
-              // Add borders for Billing table (rows 42-49)
-              {
-                repeatCell: {
-                  range: { sheetId: 0, startRowIndex: 41, endRowIndex: 49, startColumnIndex: 0, endColumnIndex: 6 },
-                  cell: {
-                    userEnteredFormat: {
-                      borders: {
-                        top: { style: "SOLID", color: { red: 0.8, green: 0.8, blue: 0.8 } },
-                        bottom: { style: "SOLID", color: { red: 0.8, green: 0.8, blue: 0.8 } },
-                        left: { style: "SOLID", color: { red: 0.8, green: 0.8, blue: 0.8 } },
-                        right: { style: "SOLID", color: { red: 0.8, green: 0.8, blue: 0.8 } }
-                      }
-                    }
-                  },
-                  fields: "userEnteredFormat(borders)"
-                }
-              }
+              { addSheet: { properties: { sheetId: 1, title: "Case Taking" } } },
+              { addSheet: { properties: { sheetId: 2, title: "Follow-Up Tracker" } } },
+              { addSheet: { properties: { sheetId: 3, title: "Repertorization" } } },
+              { addSheet: { properties: { sheetId: 4, title: "Treatment Planner" } } },
+              { addSheet: { properties: { sheetId: 7, title: "Finance" } } },
+              { addSheet: { properties: { sheetId: 5, title: "Reports & Attachments" } } },
+              { addSheet: { properties: { sheetId: 6, title: "Config DB" } } }
             ]
           }
+        });
+
+        // Define sheet ids mapping directly without spreadsheets.get call to optimize performance
+        const sheetsMap: { [title: string]: number } = {
+          "Dashboard": 0,
+          "Case Taking": 1,
+          "Follow-Up Tracker": 2,
+          "Repertorization": 3,
+          "Treatment Planner": 4,
+          "Finance": 7,
+          "Reports & Attachments": 5,
+          "Config DB": 6
+        };
+
+        // 2. Populate values across different tabs
+        const today = new Date().toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" });
+
+        // values for Dashboard
+        const dashboardValues = [
+          ["HOMEO HEALTHCARE - PATIENT CLINICAL DASHBOARD", "", "", "", "", ""],
+          ["", "", "", "", "", ""],
+          ["1. CLINICAL STATUS", "New Patient", "2. ACTIVE DIAGNOSIS", "Calculating...", "3. CLINICAL SUMMARY", ""],
+          ["Patient ID", data.id, "Current Remedy", "Calculating...", "Progress Score (%)", "=IFERROR(INDEX('Follow-Up Tracker'!C:C, MATCH(9.99999999999999E+307, 'Follow-Up Tracker'!A:A)), \"0%\")"],
+          ["Patient Name", data.name, "Last Visit Date", "=IFERROR(MAX('Follow-Up Tracker'!A4:A), \"N/A\")", "Balance Due (₹)", "='Finance'!C4"],
+          ["Age / Gender", `${data.age} / ${data.gender}`, "Next Scheduled Follow-up", "=IFERROR(INDEX('Follow-Up Tracker'!G:G, MATCH(9.99999999999999E+307, 'Follow-Up Tracker'!A:A)), \"Not Scheduled\")", "Miasmatic Summary", ""],
+          ["Contact Phone", data.phone, "", "", "Psora Count", "=COUNTIF('Case Taking'!A3:D150, \"*[Psora]*\")"],
+          ["Email Address", data.email || "N/A", "", "", "Sycosis Count", "=COUNTIF('Case Taking'!A3:D150, \"*[Sycosis]*\")"],
+          ["Location / Address", locationVal, "", "", "Syphilis Count", "=COUNTIF('Case Taking'!A3:D150, \"*[Syphilis]*\")"],
+          ["Consulting Doctor", "Dr. Narayan Jethwani", "", "", "Tubercular Count", "=COUNTIF('Case Taking'!A3:D150, \"*[Tubercular]*\")"],
+          ["Clinic Branch", "Baner, Pune", "", "", "Cancerinic Count", "=COUNTIF('Case Taking'!A3:D150, \"*[Cancerinic]*\")"]
+        ];
+
+        // values for Case Taking
+        const caseTakingValues = Array(151).fill(null).map(() => Array(4).fill(""));
+        caseTakingValues[0][0] = "CLINICAL CASE SHEET (MAIN INTENDED WORKING DOCUMENT)";
+        // Section 1 Patient Details
+        caseTakingValues[2][0] = "SECTION 1 – PATIENT DETAILS (COLLAPSIBLE)";
+        caseTakingValues[3][0] = "Patient ID"; caseTakingValues[3][1] = data.id;
+        caseTakingValues[4][0] = "Patient Name"; caseTakingValues[4][1] = data.name;
+        caseTakingValues[5][0] = "Age / Gender"; caseTakingValues[5][1] = `${data.age} / ${data.gender}`;
+        caseTakingValues[6][0] = "Contact Phone"; caseTakingValues[6][1] = data.phone;
+        caseTakingValues[7][0] = "Email Address"; caseTakingValues[7][1] = data.email || "N/A";
+        caseTakingValues[8][0] = "Location / Address"; caseTakingValues[8][1] = locationVal;
+        caseTakingValues[9][0] = "Register Date"; caseTakingValues[9][1] = today;
+
+        // Section 2 Chief Complaints
+        caseTakingValues[14][0] = "SECTION 2 – CHIEF COMPLAINTS";
+        caseTakingValues[15][0] = "Main Complaint"; caseTakingValues[15][1] = data.complaint;
+        caseTakingValues[16][0] = "Duration"; caseTakingValues[16][1] = data.durationText || "Chronic";
+        caseTakingValues[17][0] = "Onset Mode"; caseTakingValues[17][1] = "Gradual";
+        caseTakingValues[18][0] = "Progress"; caseTakingValues[18][1] = "Progressive";
+
+        // Section 3 Presenting Symptoms
+        caseTakingValues[25][0] = "SECTION 3 – PRESENTING SYMPTOMS (TOTALITY OF SYMPTOMS)";
+        caseTakingValues[26][0] = "Location / Extension"; caseTakingValues[26][1] = "";
+        caseTakingValues[27][0] = "Sensation / Character"; caseTakingValues[27][1] = "";
+        caseTakingValues[28][0] = "Modalities Better (Ameliorations)"; caseTakingValues[28][1] = "";
+        caseTakingValues[29][0] = "Modalities Worse (Aggravations)"; caseTakingValues[29][1] = "";
+        caseTakingValues[30][0] = "Concomitant Symptoms"; caseTakingValues[30][1] = "";
+        caseTakingValues[31][0] = "Etiology / Causes"; caseTakingValues[31][1] = "";
+        caseTakingValues[32][0] = "Maintaining Causes"; caseTakingValues[32][1] = "";
+
+        // Section 4 Mental Generals
+        caseTakingValues[35][0] = "SECTION 4 – MENTAL GENERALS";
+        caseTakingValues[36][0] = "Temperament Type"; caseTakingValues[36][1] = "Choleretic";
+        caseTakingValues[37][0] = "Fears / Phobias"; caseTakingValues[37][1] = "Fears dark, heights [Psora]";
+        caseTakingValues[38][0] = "Anxiety levels"; caseTakingValues[38][1] = "High anticipatory anxiety [Psora]";
+        caseTakingValues[39][0] = "Anger & Reaction"; caseTakingValues[39][1] = "Suppressed anger, turns silent [Sycosis]";
+        caseTakingValues[40][0] = "Grief / Depression"; caseTakingValues[40][1] = "Long-term grief, does not weep [Sycosis]";
+        caseTakingValues[41][0] = "Memory & Concentration"; caseTakingValues[41][1] = "Forgetful, loses thread [Psora]";
+
+        // Section 5 Physical Generals
+        caseTakingValues[50][0] = "SECTION 5 – PHYSICAL GENERALS";
+        caseTakingValues[51][0] = "Appetite & Hunger"; caseTakingValues[51][1] = "Good, eats fast";
+        caseTakingValues[52][0] = "Thirst"; caseTakingValues[52][1] = "Thirsty for small quantities [Ars]";
+        caseTakingValues[53][0] = "Food Desires"; caseTakingValues[53][1] = "Sweets, spicy foods [Psora]";
+        caseTakingValues[54][0] = "Food Aversions"; caseTakingValues[54][1] = "Milk [Psora]";
+        caseTakingValues[55][0] = "Thermal State"; caseTakingValues[55][1] = "Very Chilly [Psora]";
+        caseTakingValues[56][0] = "Perspiration"; caseTakingValues[56][1] = "Profuse on forehead [Psora]";
+        caseTakingValues[57][0] = "Sleep & Dreams"; caseTakingValues[57][1] = "Restless sleep, dreams of falling [Psora]";
+        caseTakingValues[58][0] = "Energy Levels"; caseTakingValues[58][1] = "Worse in morning";
+
+        // Section 6 Past History
+        caseTakingValues[70][0] = "SECTION 6 – PAST MEDICAL HISTORY";
+        caseTakingValues[71][0] = "Major Illnesses"; caseTakingValues[71][1] = "Typhoid in childhood";
+        caseTakingValues[72][0] = "Surgeries / Hospitalizations"; caseTakingValues[72][1] = "Appendectomy at age 22";
+        caseTakingValues[73][0] = "Allergies / Drug Reactions"; caseTakingValues[73][1] = "Allergic to Penicillin";
+
+        // Section 7 Family History
+        caseTakingValues[85][0] = "SECTION 7 – FAMILY HISTORY";
+        caseTakingValues[86][0] = "Maternal Side"; caseTakingValues[86][1] = "Mother has Diabetes";
+        caseTakingValues[87][0] = "Paternal Side"; caseTakingValues[87][1] = "Father has Hypertension";
+
+        // Section 8 Investigations
+        caseTakingValues[100][0] = "SECTION 8 – LABORATORY & IMAGING INVESTIGATIONS";
+        caseTakingValues[101][0] = "HbA1c"; caseTakingValues[101][1] = "";
+        caseTakingValues[102][0] = "Thyroid Panel (TSH)"; caseTakingValues[102][1] = "";
+        caseTakingValues[103][0] = "Other Key Findings"; caseTakingValues[103][1] = "";
+
+        // Section 9 Clinical Diagnosis
+        caseTakingValues[110][0] = "SECTION 9 – CLINICAL DIAGNOSIS";
+        caseTakingValues[111][0] = "Primary Clinical Diagnosis"; caseTakingValues[111][1] = "Chronic GERD / Acidity";
+
+        // Section 10 Miasmatic Assessment
+        caseTakingValues[115][0] = "SECTION 10 – MIASMATIC ASSESSMENT";
+        caseTakingValues[116][0] = "Psora Score"; caseTakingValues[116][1] = "=COUNTIF(A3:D110, \"*[Psora]*\")";
+        caseTakingValues[117][0] = "Sycosis Score"; caseTakingValues[117][1] = "=COUNTIF(A3:D110, \"*[Sycosis]*\")";
+        caseTakingValues[118][0] = "Syphilis Score"; caseTakingValues[118][1] = "=COUNTIF(A3:D110, \"*[Syphilis]*\")";
+        caseTakingValues[119][0] = "Tubercular Score"; caseTakingValues[119][1] = "=COUNTIF(A3:D110, \"*[Tubercular]*\")";
+        caseTakingValues[120][0] = "Cancerinic Score"; caseTakingValues[120][1] = "=COUNTIF(A3:D110, \"*[Cancerinic]*\")";
+
+        // Section 11 Totality Summary
+        caseTakingValues[125][0] = "SECTION 11 – TOTALITY SUMMARY & AI SYNTHESIS";
+        caseTakingValues[126][0] = "Constitutional Totality"; caseTakingValues[126][1] = "Chilly patient, stomach complaints worse after food, anxious temperament.";
+
+        // Section 12 Prescription
+        caseTakingValues[135][0] = "SECTION 12 – PRESCRIPTION & ADVICE";
+        caseTakingValues[136][0] = "Remedy Prescribed"; caseTakingValues[136][1] = "Nux Vomica";
+        caseTakingValues[137][0] = "Potency & Scale"; caseTakingValues[137][1] = "30C";
+        caseTakingValues[138][0] = "Dosage & Frequency"; caseTakingValues[138][1] = "4 pills, twice daily";
+        caseTakingValues[139][0] = "Duration"; caseTakingValues[139][1] = "14 Days";
+        caseTakingValues[140][0] = "Dietary Advice"; caseTakingValues[140][1] = "Avoid coffee and camphor";
+
+        // values for Follow-Up Tracker
+        const followUpValues = [
+          ["CLINICAL FOLLOW-UP TRACKER", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", ""],
+          ["Date", "Symptoms & Patient Report", "Improvement %", "Remedy Prescribed", "Potency", "Assessment & Pathology", "Next Follow-up"],
+          [today, "Case initialized. Demographics and baseline complaint registered.", "0%", "Nux Vomica", "30C", "Baseline status. Patient is very chilly with severe post-meal burning.", "2 weeks later"]
+        ];
+
+        // values for Repertorization
+        const repertoryValues = [
+          ["REPERTORY GRID & Dynamic ANALYSIS MATRIX", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+          ["Rubric Name", "Chapter / Location", "Source", "Importance Weight", "Nux-v", "Lyc", "Ars", "Puls", "Sulph", "Rhus-t", "Calc", "Sil", "Nat-m", "Ign", "Sep", "Totality Score"],
+          ["Acidity - eating, post", "Stomach", "Kent", 3, 3, 2, 3, 1, 2, 1, 1, 0, 0, 0, 0],
+          ["Irritability - eating, post", "Mind", "Kent", 2, 2, 3, 1, 2, 2, 1, 0, 0, 0, 0, 0],
+          ["Generalities - Chilly", "Generalities", "Kent", 3, 3, 1, 3, 0, 1, 3, 3, 2, 1, 0, 1],
+          ["Anxiety - anticipation, with", "Mind", "Kent", 2, 2, 2, 3, 2, 1, 0, 0, 0, 0, 3, 0],
+          ["Appetite - increased", "Stomach", "Kent", 1, 1, 3, 0, 0, 2, 0, 2, 0, 0, 0, 0],
+          ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+          ["Symptom Coverage", "", "", "", "=COUNTIFS(E4:E8, \">0\") / 5", "=COUNTIFS(F4:F8, \">0\") / 5", "=COUNTIFS(G4:G8, \">0\") / 5", "=COUNTIFS(H4:H8, \">0\") / 5", "=COUNTIFS(I4:I8, \">0\") / 5", "=COUNTIFS(J4:J8, \">0\") / 5", "=COUNTIFS(K4:K8, \">0\") / 5", "=COUNTIFS(L4:L8, \">0\") / 5", "=COUNTIFS(M4:M8, \">0\") / 5", "=COUNTIFS(N4:N8, \">0\") / 5", "=COUNTIFS(O4:O8, \">0\") / 5"],
+          ["Sum of Grades", "", "", "", "=SUMPRODUCT(E4:E8, $D$4:$D$8)", "=SUMPRODUCT(F4:F8, $D$4:$D$8)", "=SUMPRODUCT(G4:G8, $D$4:$D$8)", "=SUMPRODUCT(H4:H8, $D$4:$D$8)", "=SUMPRODUCT(I4:I8, $D$4:$D$8)", "=SUMPRODUCT(J4:J8, $D$4:$D$8)", "=SUMPRODUCT(K4:K8, $D$4:$D$8)", "=SUMPRODUCT(L4:L8, $D$4:$D$8)", "=SUMPRODUCT(M4:M8, $D$4:$D$8)", "=SUMPRODUCT(N4:N8, $D$4:$D$8)", "=SUMPRODUCT(O4:O8, $D$4:$D$8)"],
+          ["Totality Rank Score", "", "", "", "=(E11*100) + E12", "=(F11*100) + F12", "=(G11*100) + G12", "=(H11*100) + H12", "=(I11*100) + I12", "=(J11*100) + J12", "=(K11*100) + K12", "=(L11*100) + L12", "=(M11*100) + M12", "=(N11*100) + N12", "=(O11*100) + O12"],
+          ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+          ["Top Remedy Ranking", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+          ["Rank 1", "=INDEX($E$3:$O$3, MATCH(MAX(E13:O13), E13:O13, 0))", "Score", "=MAX(E13:O13)", "", "", "", "", "", "", "", "", "", "", "", ""],
+          ["Rank 2", "=INDEX($E$3:$O$3, MATCH(LARGE(E13:O13, 2), E13:O13, 0))", "Score", "=LARGE(E13:O13, 2)", "", "", "", "", "", "", "", "", "", "", "", ""],
+          ["Rank 3", "=INDEX($E$3:$O$3, MATCH(LARGE(E13:O13, 3), E13:O13, 0))", "Score", "=LARGE(E13:O13, 3)", "", "", "", "", "", "", "", "", "", "", "", ""]
+        ];
+
+        // values for Treatment Planner
+        const plannerValues = [
+          ["TREATMENT COMPLEXITY & FINANCIAL PLANNER", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", ""],
+          ["Care Level", "Billing Cycle", "Duration Value", "Conditions Count", "Concession Applied", "Override Price (₹)", "Medicine Add-ons (₹)"],
+          [data.careLevel || "Deep Systemic Care", data.billingCycle || "monthly", data.durationValue || 1, data.conditionsCount || 1, data.concessionApplied || "None", data.overridePrice || 0, data.medicineAddons || 0],
+          ["", "", "", "", "", "", ""],
+          ["PRICING BREAKDOWN", "", "", "", "", "", ""],
+          ["Component", "Rate / Amount (₹)", "Calculation Description", "", "", "", ""],
+          ["Base Rate", `=IF(ISNUMBER(SEARCH("Acute", A4)), IF(B4="Weekly", 1000, 3500), IF(ISNUMBER(SEARCH("Standard", A4)), IF(B4="Weekly", 2000, 7500), IF(ISNUMBER(SEARCH("Deep", A4)), IF(B4="Weekly", 3500, 12500), IF(ISNUMBER(SEARCH("Advanced", A4)), IF(B4="Weekly", 5000, 18500), IF(ISNUMBER(SEARCH("Multisystem", A4)), IF(B4="Weekly", 7000, 25000), 3500)))))`, "Base rate based on Care Level and Billing Cycle", "", "", ""],
+          ["Conditions Surcharge", `=IF(D4<=1, 0, IF(ISNUMBER(SEARCH("Acute", A4)), IF(B4="Weekly", IF(D4=2, 300, 600), IF(D4=2, 1000, 2000)), IF(ISNUMBER(SEARCH("Standard", A4)), IF(B4="Weekly", IF(D4=2, 500, 1000), IF(D4=2, 1500, 3000)), IF(ISNUMBER(SEARCH("Deep", A4)), IF(B4="Weekly", IF(D4=2, 800, 1600), IF(D4=2, 2500, 5000)), IF(ISNUMBER(SEARCH("Advanced", A4)), IF(B4="Weekly", IF(D4=2, 1200, 2400), IF(D4=2, 3500, 7000)), IF(B4="Weekly", IF(D4=2, 1500, 3000), IF(D4=2, 4500, 9000)))))))`, "Surcharge for co-existing chronic conditions", "", "", ""],
+          ["Gross Subtotal", "=(B10+B11)*C4", "Adjusted base rate multiplied by duration", "", "", "", ""],
+          ["Duration Discount %", `=IF(IF(B4="Weekly", C4, C4*4)>=48, 0.30, IF(IF(B4="Weekly", C4, C4*4)>=24, 0.25, IF(IF(B4="Weekly", C4, C4*4)>=12, 0.20, IF(IF(B4="Weekly", C4, C4*4)>=8, 0.15, IF(IF(B4="Weekly", C4, C4*4)>=4, 0.10, IF(IF(B4="Weekly", C4, C4*4)>=2, 0.05, 0))))))`, "Duration loyalty discount percentage", "", "", "", ""],
+          ["Duration Discount Amount", "=B12*B13", "Total savings from duration discount", "", "", "", ""],
+          ["Concession Discount Amount", `=IF(ISNUMBER(SEARCH("Senior", E4)), (B12-B14)*0.15, IF(ISNUMBER(SEARCH("Socio", E4)), (B12-B14)*0.30, IF(ISNUMBER(SEARCH("Override", E4)), MAX(0, (B12-B14) - F4), 0)))`, "Compassionate, Senior, or Override concession", "", "", "", ""],
+          ["Medicine Add-ons", "=G4", "Medicine charges and dynamic add-on scripts", "", "", "", ""],
+          ["Total Program Cost", "=B12-B14-B15+B16", "Final package cost taking all factors into consideration", "", "", "", ""],
+          ["Amount Received", data.receivedAmount !== undefined ? data.receivedAmount : data.finalPrice, "Amount collected from patient for this plan", "", "", "", ""],
+          ["Balance Due", "=B17-B18", "Outstanding dues for this treatment plan", "", "", "", ""],
+          ["", "", "", "", "", "", ""],
+          ["WhatsApp Invoice Message", `="Dear " & 'Case Taking'!B5 & ", thank you for consulting Homeo Healthcare. Your treatment package is: " & A4 & " (" & C4 & " " & IF(B4="Weekly","weeks","months") & " commit, " & D4 & " condition(s) " & IF(E4="None","", "[" & E4 & "]") & "). Total Cost: ₹" & B17 & ". Amount Paid: ₹" & B18 & ". Balance Due: ₹" & B19 & ". Please pay using UPI: narayan.jethwani@homeo.healthcare. Clinic Branch: Baner, Pune."`, "", "", "", "", ""]
+        ];
+
+        // values for Finance
+        const financeValues = [
+          ["PATIENT ACCOUNT FINANCE LEDGER & REVENUE SUMMARY", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", ""],
+          ["Total Billed (₹)", "Total Collected (₹)", "Outstanding Balance (₹)", "", "", "", "", ""],
+          ["=SUM(D8:D100)", "=SUM(E8:E100)", "=A4-B4", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", ""],
+          ["TRANSACTION HISTORY RECORD", "", "", "", "", "", "", ""],
+          ["Date", "Description / Event", "Reference ID", "Amount Charged (₹)", "Amount Received (₹)", "Outstanding Balance (₹)", "Payment Method", "Payment Status"],
+          [today, "Initial package setup charge", "Tx-Plan-" + data.id, "='Treatment Planner'!B17", "='Treatment Planner'!B18", "=D8-E8", "UPI", `=IF(F8<=0, "Paid", IF(E8>0, "Partially Paid", "Unpaid"))`],
+          ["", "Follow-up Consultation / Refill", "FU-Refill", 0, 0, "=D9-E9", "", ""],
+          ["", "", "", "", "", "", "", ""]
+        ];
+
+        // values for Reports & Attachments
+        const attachmentsValues = [
+          ["INVESTIGATION REPORTS & CLINICAL FILE ATTACHMENTS", "", "", ""],
+          ["", "", "", ""],
+          ["Report Date", "Report Category", "Investigation Target", "Report Hyperlink"],
+          [today, "Clinical Photo", "Initial Skin / Face Snapshot", `https://drive.google.com/drive/folders/${folderId}`]
+        ];
+
+        // values for Config DB
+        const configValues = [
+          ["REFERENCE METADATA DATABASE", "", "", "", "PACKAGES", "PRICE"],
+          ["", "", "", "", "", ""],
+          ["REMEDIES", "POTENCIES", "MIASMS", "DOCTORS", "Standard Consult", 300],
+          ["Nux Vomica", "6C", "Psora", "Dr. Narayan Jethwani", "Acute Care Plan", 1500],
+          ["Arsenicum Album", "30C", "Sycosis", "Dr. R. Jethwani", "3-Month Chronic", 4500],
+          ["Lycopodium Clavatum", "200C", "Syphilis", "", "6-Month Advanced", 8500],
+          ["Pulsatilla Pratensis", "1M", "Tubercular", "", "1-Year Premium", 15000],
+          ["Sulphur", "10M", "Cancerinic", "", "", ""],
+          ["Rhus Toxicodendron", "50M", "", "", "", ""],
+          ["Bryonia Alba", "CM", "", "", "", ""],
+          ["Calcarea Carbonica", "LM1", "", "", "", ""],
+          ["Silicea", "LM2", "", "", "", ""],
+          ["Natrum Muriaticum", "LM5", "", "", "", ""],
+          ["Ignatia Amara", "LM10", "", "", "", ""],
+          ["Sepia Officinalis", "LM30", "", "", "", ""]
+        ];
+
+        // Batch update sheet values
+        await sheets.spreadsheets.values.batchUpdate({
+          spreadsheetId: newSheetId,
+          requestBody: {
+            valueInputOption: "USER_ENTERED",
+            data: [
+              { range: "'Dashboard'!A1:F11", values: dashboardValues },
+              { range: "'Case Taking'!A1:D142", values: caseTakingValues },
+              { range: "'Follow-Up Tracker'!A1:G4", values: followUpValues },
+              { range: "'Repertorization'!A1:P18", values: repertoryValues },
+              { range: "'Treatment Planner'!A1:G21", values: plannerValues },
+              { range: "'Finance'!A1:H10", values: financeValues },
+              { range: "'Reports & Attachments'!A1:D4", values: attachmentsValues },
+              { range: "'Config DB'!A1:F15", values: configValues }
+            ]
+          }
+        });
+
+        // Apply grid formatting for columns, borders, merges across all tabs
+        const requests = [];
+
+        // Formatting for Dashboard (sheetId = Dashboard)
+        const dashId = sheetsMap["Dashboard"] || 0;
+        requests.push(
+          {
+            updateDimensionProperties: {
+              range: { sheetId: dashId, dimension: "COLUMNS", startIndex: 0, endIndex: 1 },
+              properties: { pixelSize: 140 }, fields: "pixelSize"
+            }
+          },
+          {
+            updateDimensionProperties: {
+              range: { sheetId: dashId, dimension: "COLUMNS", startIndex: 1, endIndex: 2 },
+              properties: { pixelSize: 180 }, fields: "pixelSize"
+            }
+          },
+          {
+            updateDimensionProperties: {
+              range: { sheetId: dashId, dimension: "COLUMNS", startIndex: 2, endIndex: 3 },
+              properties: { pixelSize: 140 }, fields: "pixelSize"
+            }
+          },
+          {
+            updateDimensionProperties: {
+              range: { sheetId: dashId, dimension: "COLUMNS", startIndex: 3, endIndex: 4 },
+              properties: { pixelSize: 180 }, fields: "pixelSize"
+            }
+          },
+          {
+            updateDimensionProperties: {
+              range: { sheetId: dashId, dimension: "COLUMNS", startIndex: 4, endIndex: 5 },
+              properties: { pixelSize: 140 }, fields: "pixelSize"
+            }
+          },
+          {
+            updateDimensionProperties: {
+              range: { sheetId: dashId, dimension: "COLUMNS", startIndex: 5, endIndex: 6 },
+              properties: { pixelSize: 180 }, fields: "pixelSize"
+            }
+          },
+          // Merge Title Header A1:F1
+          {
+            mergeCells: {
+              range: { sheetId: dashId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 6 },
+              mergeType: "MERGE_ALL"
+            }
+          },
+          // Header style
+          {
+            repeatCell: {
+              range: { sheetId: dashId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 6 },
+              cell: {
+                userEnteredFormat: {
+                  backgroundColor: { red: 15/255, green: 76/255, blue: 129/255 }, // Medical Blue #0F4C81
+                  textFormat: { foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 13, bold: true },
+                  horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                }
+              },
+              fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+            }
+          },
+          // Sub headers 1. CLINICAL STATUS, 2. ACTIVE DIAGNOSIS, 3. CLINICAL SUMMARY
+          {
+            repeatCell: {
+              range: { sheetId: dashId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 6 },
+              cell: {
+                userEnteredFormat: {
+                  backgroundColor: { red: 241/255, green: 245/255, blue: 249/255 },
+                  textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                  verticalAlignment: "MIDDLE"
+                }
+              },
+              fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
+            }
+          }
+        );
+
+        // Formatting for Case Taking
+        const caseTakingId = sheetsMap["Case Taking"];
+        if (caseTakingId !== undefined) {
+          requests.push(
+            {
+              updateDimensionProperties: {
+                range: { sheetId: caseTakingId, dimension: "COLUMNS", startIndex: 0, endIndex: 1 },
+                properties: { pixelSize: 240 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: caseTakingId, dimension: "COLUMNS", startIndex: 1, endIndex: 2 },
+                properties: { pixelSize: 450 }, fields: "pixelSize"
+              }
+            },
+            // Title block
+            {
+              mergeCells: {
+                range: { sheetId: caseTakingId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 4 },
+                mergeType: "MERGE_ALL"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: caseTakingId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 4 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 15/255, green: 76/255, blue: 129/255 },
+                    textFormat: { foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 12, bold: true },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            }
+          );
+
+          // Add Collapsible Groups for Case Taking
+          const groups = [
+            { start: 3, end: 13 },   // Section 1: Patient Details (0-indexed rows: 3 to 13)
+            { start: 14, end: 24 },  // Section 2: Chief Complaints
+            { start: 25, end: 34 },  // Section 3: Presenting Symptoms
+            { start: 35, end: 49 },  // Section 4: Mental Generals
+            { start: 50, end: 69 },  // Section 5: Physical Generals
+            { start: 70, end: 84 },  // Section 6: Past History
+            { start: 85, end: 99 },  // Section 7: Family History
+            { start: 100, end: 109 }, // Section 8: Investigations
+            { start: 110, end: 114 }, // Section 9: Diagnosis
+            { start: 115, end: 124 }, // Section 10: Miasmatic
+            { start: 125, end: 134 }, // Section 11: Totality
+            { start: 135, end: 149 }  // Section 12: Prescription
+          ];
+
+          for (const g of groups) {
+            requests.push({
+              addDimensionGroup: {
+                range: {
+                  sheetId: caseTakingId,
+                  dimension: "ROWS",
+                  startIndex: g.start,
+                  endIndex: g.end
+                }
+              }
+            });
+            // Also format section headers as soft blue banners
+            requests.push({
+              repeatCell: {
+                range: {
+                  sheetId: caseTakingId,
+                  startRowIndex: g.start - 1,
+                  endRowIndex: g.start,
+                  startColumnIndex: 0,
+                  endColumnIndex: 4
+                },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 226/255, green: 242/255, blue: 253/255 },
+                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
+              }
+            });
+          }
+        }
+
+        // Formatting for Treatment Planner
+        const plannerId = sheetsMap["Treatment Planner"];
+        if (plannerId !== undefined) {
+          requests.push(
+            {
+              updateDimensionProperties: {
+                range: { sheetId: plannerId, dimension: "COLUMNS", startIndex: 0, endIndex: 1 },
+                properties: { pixelSize: 180 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: plannerId, dimension: "COLUMNS", startIndex: 1, endIndex: 2 },
+                properties: { pixelSize: 150 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: plannerId, dimension: "COLUMNS", startIndex: 2, endIndex: 3 },
+                properties: { pixelSize: 300 }, fields: "pixelSize"
+              }
+            },
+            {
+              mergeCells: {
+                range: { sheetId: plannerId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 7 },
+                mergeType: "MERGE_ALL"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: plannerId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 7 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 15/255, green: 76/255, blue: 129/255 },
+                    textFormat: { foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 13, bold: true },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: plannerId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 7 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 241/255, green: 245/255, blue: 249/255 },
+                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
+              }
+            },
+            {
+              mergeCells: {
+                range: { sheetId: plannerId, startRowIndex: 5, endRowIndex: 6, startColumnIndex: 0, endColumnIndex: 3 },
+                mergeType: "MERGE_ALL"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: plannerId, startRowIndex: 5, endRowIndex: 6, startColumnIndex: 0, endColumnIndex: 3 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 226/255, green: 242/255, blue: 253/255 },
+                    textFormat: { bold: true, fontSize: 11, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: plannerId, startRowIndex: 6, endRowIndex: 7, startColumnIndex: 0, endColumnIndex: 3 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
+                    textFormat: { bold: true, fontSize: 10 },
+                    verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
+              }
+            }
+          );
+        }
+
+        // Formatting for Finance
+        const financeId = sheetsMap["Finance"];
+        if (financeId !== undefined) {
+          requests.push(
+            {
+              updateDimensionProperties: {
+                range: { sheetId: financeId, dimension: "COLUMNS", startIndex: 0, endIndex: 1 },
+                properties: { pixelSize: 120 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: financeId, dimension: "COLUMNS", startIndex: 1, endIndex: 2 },
+                properties: { pixelSize: 220 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: financeId, dimension: "COLUMNS", startIndex: 2, endIndex: 3 },
+                properties: { pixelSize: 120 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: financeId, dimension: "COLUMNS", startIndex: 3, endIndex: 4 },
+                properties: { pixelSize: 140 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: financeId, dimension: "COLUMNS", startIndex: 4, endIndex: 5 },
+                properties: { pixelSize: 140 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: financeId, dimension: "COLUMNS", startIndex: 5, endIndex: 6 },
+                properties: { pixelSize: 140 }, fields: "pixelSize"
+              }
+            },
+            {
+              mergeCells: {
+                range: { sheetId: financeId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 8 },
+                mergeType: "MERGE_ALL"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: financeId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 8 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 15/255, green: 76/255, blue: 129/255 },
+                    textFormat: { foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 13, bold: true },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: financeId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 3 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 241/255, green: 245/255, blue: 249/255 },
+                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: financeId, startRowIndex: 3, endRowIndex: 4, startColumnIndex: 0, endColumnIndex: 3 },
+                cell: {
+                  userEnteredFormat: {
+                    textFormat: { bold: true, fontSize: 12, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            {
+              mergeCells: {
+                range: { sheetId: financeId, startRowIndex: 5, endRowIndex: 6, startColumnIndex: 0, endColumnIndex: 8 },
+                mergeType: "MERGE_ALL"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: financeId, startRowIndex: 5, endRowIndex: 6, startColumnIndex: 0, endColumnIndex: 8 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 226/255, green: 242/255, blue: 253/255 },
+                    textFormat: { bold: true, fontSize: 11, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: financeId, startRowIndex: 6, endRowIndex: 7, startColumnIndex: 0, endColumnIndex: 8 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
+                    textFormat: { bold: true, fontSize: 10 },
+                    verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
+              }
+            }
+          );
+        }
+
+        // Apply all formats synchronously in one single API roundtrip
+        await sheets.spreadsheets.batchUpdate({
+          spreadsheetId: newSheetId,
+          requestBody: { requests }
         });
       }
     }
@@ -670,9 +902,6 @@ export async function createPatientClinicalSheet(
   }
 }
 
-/**
- * Appends registration info to the centralized Master Record sheet
- */
 export async function appendPatientToMasterRecord(
   data: PatientIntakeData,
   folderUrl: string,
@@ -743,15 +972,14 @@ export async function appendAiReportToClinicalSheet(
   try {
     await sheets.spreadsheets.values.update({
       spreadsheetId: sheetId,
-      range: "Sheet1!A13:B17",
+      range: "'Case Taking'!A128:B131",
       valueInputOption: "RAW",
       requestBody: {
         values: [
           ["AI CLINICAL DIAGNOSTICS REPORT", ""],
           ["Generated Engine", "Gemini 3.5 Clinical Synthesis"],
           ["Analysis Timestamp", new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })],
-          ["", ""],
-          ["Clinical Findings & Repertorization Summary", aiReport]
+          ["Clinical Findings & Totality Analysis", aiReport]
         ]
       }
     });
@@ -761,9 +989,6 @@ export async function appendAiReportToClinicalSheet(
   }
 }
 
-/**
- * Parses and extracts Google Spreadsheet ID from a URL or raw ID
- */
 export function extractSpreadsheetId(urlOrId: string): string {
   if (!urlOrId) return "";
   if (urlOrId.includes("docs.google.com/spreadsheets")) {

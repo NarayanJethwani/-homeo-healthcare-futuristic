@@ -2,338 +2,1264 @@
 
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect, Suspense } from "react";
-import { FileSpreadsheet, ArrowLeft, Info, AlertTriangle, Check, Grid, HelpCircle, Plus, Trash2, Calendar, IndianRupee } from "lucide-react";
+import { 
+  FileSpreadsheet, ArrowLeft, Info, AlertTriangle, Check, Grid, 
+  HelpCircle, Plus, Trash2, Calendar, IndianRupee, TrendingUp, 
+  Layers, Sparkles, Folder, Copy, ExternalLink, BarChart3, 
+  ChevronDown, ChevronRight, Activity, ShieldAlert, CheckCircle, 
+  AlertCircle, Search, X
+} from "lucide-react";
 import Link from "next/link";
+import { JETHWANI_REPERTORY_DATA, setRepertoryData } from "@/lib/repertoryData";
 
-interface FollowUp {
-  date: string;
-  report: string;
-  prescription: string;
-  nextReview: string;
-  amountReceived: string;
-  balance: string;
-}
+type TabType = "Dashboard" | "Case Taking" | "Follow-up Tracker" | "Repertorization" | "Treatment Planner" | "Finance" | "AI Repertory Lab" | "Reports & Attachments" | "Config DB";
+
+const mapCareLevel = (levelStr: string): "mild" | "moderate" | "focused" | "organ" | "comprehensive" => {
+  const l = levelStr.toLowerCase();
+  if (l.includes("acute") || l.includes("wellness") || l.includes("general") || l.includes("consult")) return "mild";
+  if (l.includes("standard") || l.includes("chronic") || l.includes("moderate")) return "moderate";
+  if (l.includes("deep") || l.includes("systemic") || l.includes("focused")) return "focused";
+  if (l.includes("organ") || l.includes("advanced") || l.includes("pathological")) return "organ";
+  if (l.includes("multisystem") || l.includes("premium") || l.includes("comprehensive") || l.includes("integrative")) return "comprehensive";
+  return "focused"; // default
+};
+
+const getDurationMonths = (text: string): number => {
+  const t = text.toLowerCase();
+  if (t.includes("12-month") || t.includes("1-year") || t.includes("1 year") || t.includes("12 months")) return 12;
+  if (t.includes("6-month") || t.includes("6 months")) return 6;
+  if (t.includes("3-month") || t.includes("3 months")) return 3;
+  if (t.includes("2-month") || t.includes("2 months")) return 2;
+  if (t.includes("1-month") || t.includes("1 month")) return 1;
+  return 1;
+};
+
+// Inbuilt Common Homeopathic Remedies
+const INBUILT_REMEDIES = [
+  "Aconitum Napellus",
+  "Allium Cepa",
+  "Antimonium Tartaricum",
+  "Apis Mellifica",
+  "Arnica Montana",
+  "Arsenicum Album",
+  "Arsenicum Iodatum",
+  "Avena Sativa",
+  "Baryta Carbonica",
+  "Belladonna",
+  "Berberis Vulgaris",
+  "Bryonia Alba",
+  "Calcarea Carbonica",
+  "Calcarea Fluorica",
+  "Calcarea Phosphorica",
+  "Calcarea Sulphurica",
+  "Cantharis",
+  "Carbo Vegetabilis",
+  "Carduus Marianus",
+  "Causticum",
+  "Chamomilla",
+  "Chelidonium Majus",
+  "Chininum Sulphuricum",
+  "Cina",
+  "Cinchona Officinalis (China)",
+  "Colocynthis",
+  "Conium Maculatum",
+  "Crataegus Oxyacantha",
+  "Damiana",
+  "Dioscorea Villosa",
+  "Dulcamara",
+  "Eupatorium Perfoliatum",
+  "Ferrum Phosphoricum",
+  "Gelsemium Sempervirens",
+  "Glonoine",
+  "Graphites",
+  "Gymnema Sylvestre",
+  "Hepar Sulphuris Calcareum",
+  "Hydrastis Canadensis",
+  "Hyoscyamus Niger",
+  "Hypericum Perforatum",
+  "Ignatia Amara",
+  "Ipecacuanha",
+  "Kali Bichromicum",
+  "Kali Muriaticum",
+  "Kali Phosphoricum",
+  "Kali Sulphuricum",
+  "Lachesis Muta",
+  "Ledum Palustre",
+  "Lycopodium Clavatum",
+  "Magnesia Phosphorica",
+  "Mercurius Solubilis",
+  "Natrum Muriaticum",
+  "Natrum Phosphoricum",
+  "Natrum Sulphuricum",
+  "Nux Vomica",
+  "Passiflora Incarnata",
+  "Phosphorus",
+  "Phytolacca Decandra",
+  "Podophyllum Peltatum",
+  "Pulsatilla Pratensis",
+  "Rhus Toxicodendron",
+  "Ruta Graveolens",
+  "Sabal Serrulata",
+  "Sarsaparilla Officinalis",
+  "Secale Cornutum",
+  "Sepia Officinalis",
+  "Silicea",
+  "Spongia Tosta",
+  "Staphysagria",
+  "Stramonium",
+  "Sulphur",
+  "Symphytum Officinale",
+  "Syzygium Jambolanum",
+  "Thlaspi Bursa Pastoris",
+  "Thuja Occidentalis",
+  "Urtica Urens",
+  "Veratrum Album",
+  // Bio-combinations
+  "BC-1 (Anemia)",
+  "BC-2 (Asthma)",
+  "BC-3 (Colic)",
+  "BC-4 (Constipation)",
+  "BC-5 (Coryza)",
+  "BC-6 (Cough, Cold)",
+  "BC-7 (Diabetes)",
+  "BC-8 (Diarrhea)",
+  "BC-9 (Dysentery)",
+  "BC-10 (Tonsillitis)",
+  "BC-11 (Fever)",
+  "BC-12 (Headache)",
+  "BC-13 (Leucorrhea)",
+  "BC-14 (Measles)",
+  "BC-15 (Menstrual Troubles)",
+  "BC-16 (Nervous Exhaustion)",
+  "BC-17 (Piles)",
+  "BC-18 (Pyorrhea)",
+  "BC-19 (Rheumatism)",
+  "BC-20 (Skin Diseases)",
+  "BC-21 (Teething Troubles)",
+  "BC-22 (Scrofula)",
+  "BC-23 (Toothache)",
+  "BC-24 (Debility)",
+  "BC-25 (Acidity, Flatulence)",
+  "BC-26 (Easy Parturition)",
+  "BC-27 (Lack of Vitality)",
+  "BC-28 (Tonic)"
+];
+
+const getClinicalMethodInfo = (medicines: any[]) => {
+  if (medicines.length === 0) return { title: "No Remedy", desc: "No medicines added yet.", color: "bg-slate-100 text-slate-650 border-slate-200" };
+  if (medicines.length === 1) {
+    const med = medicines[0];
+    return {
+      title: "Classical Method",
+      desc: `Single constitutional remedy (${med.name} ${med.potency}) matching patient totality.`,
+      color: "bg-blue-50 text-[#0F4C81] border-blue-200"
+    };
+  }
+  
+  const types = medicines.map(m => m.type);
+  const uniqueTypes = Array.from(new Set(types));
+  return {
+    title: "Complex Method",
+    desc: `Concurrent target remedies addressing separate systemic symptoms (${uniqueTypes.join(", ")}).`,
+    color: "bg-emerald-50 text-emerald-800 border-emerald-200"
+  };
+};
 
 function MockSheetContent() {
   const searchParams = useSearchParams();
 
-  // Extract query parameters
-  const name = searchParams.get("name") || "Aarav Mehta";
-  const id = searchParams.get("id") || "P-100234";
-  const age = searchParams.get("age") || "42";
-  const gender = searchParams.get("gender") || "Male";
-  const phone = searchParams.get("phone") || "+91 98200 12345";
-  const email = searchParams.get("email") || "aarav.mehta@gmail.com";
-  const complaint = searchParams.get("complaint") || "Chronic severe acidity, GERD, and abdominal bloating immediately after eating. Irritability, very chilly, worse cold drinks.";
-  const careLevel = searchParams.get("careLevel") || "Advanced Chronic Tier";
-  const durationText = searchParams.get("durationText") || "6-Month Treatment Plan";
-  const finalPriceVal = searchParams.get("finalPrice") || "8500";
-  const finalPrice = Number(finalPriceVal);
-
-  const initialReceived = Number(searchParams.get("receivedAmount") || finalPriceVal);
-  const initialBalance = Number(searchParams.get("remainingBalance") || "0");
+  // Extract query parameters for initial state
+  const initialName = searchParams.get("name") || "Aarav Mehta";
+  const initialId = searchParams.get("id") || "P-100234";
+  const initialAge = searchParams.get("age") || "42";
+  const initialGender = searchParams.get("gender") || "Male";
+  const initialPhone = searchParams.get("phone") || "+91 98200 12345";
+  const initialEmail = searchParams.get("email") || "aarav.mehta@gmail.com";
+  const initialComplaint = searchParams.get("complaint") || "Chronic severe acidity, GERD, and abdominal bloating immediately after eating. Irritability, very chilly, worse cold drinks [Psora] [Sycosis].";
+  const initialCareLevel = searchParams.get("careLevel") || "6-Month Advanced";
+  const initialDurationText = searchParams.get("durationText") || "6-Month Treatment Plan";
+  const initialPriceVal = Number(searchParams.get("finalPrice") || "8500");
+  const initialReceived = Number(searchParams.get("receivedAmount") || "8500");
 
   const today = new Date().toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" });
 
-  const rowCount = 65; // Fixed size to prevent shifting dependency arrays
-  const colCount = 6;  // 6 columns: A, B, C, D, E, F
-
-  // Single source of truth grid state
-  const [grid, setGrid] = useState<string[][]>([]);
-  const [editingCell, setEditingCell] = useState<{ row: number; col: number } | null>(null);
+  // ----------------------------------------------------
+  // STATE MANAGEMENT
+  // ----------------------------------------------------
+  const [activeTab, setActiveTab] = useState<TabType>("Dashboard");
+  const [editingCell, setEditingCell] = useState<{ section?: string; row?: number; field?: string; colIndex?: number } | null>(null);
   const [editValue, setEditValue] = useState("");
-  const [activeFollowUpCount, setActiveFollowUpCount] = useState(1);
 
-  // Recalculates amount received and remaining balances for the ledger in-place
-  const recalculateLedger = (currentGrid: string[][], activeCountVal = activeFollowUpCount) => {
-    if (!currentGrid || currentGrid.length === 0) return currentGrid;
-    const updatedGrid = currentGrid.map(row => [...row]);
+  // Patient Info State
+  const [patient, setPatient] = useState({
+    id: initialId,
+    name: initialName,
+    age: initialAge,
+    gender: initialGender,
+    phone: initialPhone,
+    email: initialEmail,
+    address: "Baner, Pune, Maharashtra, India",
+    bloodGroup: "O+ Pos",
+    referredBy: "Self",
+    clinicBranch: "Baner Clinic",
+    doctor: "Dr. Narayan Jethwani",
+    status: "Chronic"
+  });
 
-    // 1. Get package price from row 4 column F (index 3, 5)
-    const packagePriceStr = updatedGrid[3][5] || "";
-    const packagePrice = parseFloat(packagePriceStr.replace("INR", "").replace(/[^0-9.]/g, "")) || 0;
+  // Case Taking State
+  const [caseTaking, setCaseTaking] = useState({
+    mainComplaint: initialComplaint,
+    duration: initialDurationText,
+    onset: "Gradual",
+    progress: "Progressive",
+    severity: "8",
+    location: "Epigastrium and stomach area, radiating upwards",
+    sensation: "Burning fire-like pain with sour eructations",
+    modalBetter: "Warm drinks, sitting upright, warm applications [Psora]",
+    modalWorse: "Eating immediately, cold drinks, lying down flat [Psora]",
+    concomitants: "Headache and mild nausea during severe burning episodes [Psora] [Sycosis]",
+    etiology: "Mental stress and irregular eating hours [Psora]",
+    maintaining: "Sedentary lifestyle and excessive tea consumption [Psora]",
+    // Generals
+    temperament: "Choleretic (irritable and anxious)",
+    fears: "Fears disease, dark, and being alone [Psora]",
+    anxiety: "Anxious about future, high anticipation [Psora]",
+    anger: "Vocal and intense, gets irritable easily [Psora]",
+    grief: "Suppressed, does not like talking about grief [Sycosis]",
+    depression: "Intermittent sadness post-grief [Sycosis]",
+    memory: "Alert, but forgets names under stress [Psora]",
+    concentration: "Difficult after heavy meals [Psora]",
+    traits: "Perfectionist, fastidious, loves order [Psora]",
+    // Physicals
+    appetite: "Increased, hungry soon after eating",
+    thirst: "Frequent but drinks small sips [Ars]",
+    foodDesires: "Highly desires spicy and warm meals [Psora]",
+    foodAversions: "Aversion to cold milk and sweets [Psora]",
+    thermals: "Very Chilly (sensitive to cold drafts) [Psora]",
+    perspiration: "Profuse on head and neck, sour smelling [Psora]",
+    sleep: "Restless, wakes up between 3 AM to 4 AM [Nux-v]",
+    dreams: "Dreams of busy work and unresolved tasks [Psora]",
+    energy: "High in evening, low and sluggish in morning",
+    // History
+    pastIllnesses: "Typhoid fever at age 14, recurrent tonsillitis",
+    pastSurgeries: "Appendectomy at age 24",
+    pastAllergies: "Dust allergy, sensitive to sulfonamides",
+    familyMaternal: "Mother has Type 2 Diabetes [Psora]",
+    familyPaternal: "Father has Hypertension [Psora]",
+    // Diagnosis
+    primaryDiagnosis: "Gastroesophageal Reflux Disease (GERD) with dyspepsia",
+    complexity: "Moderate Chronic Multi-systemic",
+    totality: "Chilly patient with intense epigastric burning, worse cold, better warm. Highly irritable temperament, fastidious, restless sleep.",
+    remedy: "Nux Vomica",
+    potency: "30C",
+    scale: "Centesimal (C)",
+    dose: "4 pills, twice daily on dry tongue",
+    rxDuration: "14 Days",
+    advice: "Avoid tea, coffee, carbonated drinks, and deep-fried foods. Maintain 2 hours gap between dinner and sleep.",
+    nextFollowUp: "2 Weeks later"
+  });
 
-    // 2. Loop through all active follow-ups starting at row 39 (index 38)
-    let runningBalance = packagePrice;
-    let totalReceived = 0;
+  // Collapsible Sections State (Tab 2: Case Taking)
+  const [expandedSections, setExpandedSections] = useState({
+    details: true,
+    complaints: true,
+    symptoms: true,
+    mentals: true,
+    physicals: true,
+    pastHistory: false,
+    familyHistory: false,
+    investigations: false,
+    diagnosis: true,
+    miasm: true,
+    totality: true,
+    prescription: true
+  });
 
-    const displayCount = Math.max(6, activeCountVal);
-    for (let i = 0; i < displayCount; i++) {
-      const r = 38 + i;
-      if (r >= updatedGrid.length) break;
-
-      const amtReceivedStr = updatedGrid[r][4] || "";
-      const amtReceived = parseFloat(amtReceivedStr.replace("₹", "").replace(/[^0-9.]/g, "")) || 0;
-      
-      totalReceived += amtReceived;
-      runningBalance = Math.max(0, runningBalance - amtReceived);
-
-      // Update cells in grid
-      updatedGrid[r][4] = `₹${amtReceived.toLocaleString("en-IN")}`;
-      updatedGrid[r][5] = `₹${runningBalance.toLocaleString("en-IN")}`;
+  // Follow-up Tracker State
+  const [followUps, setFollowUps] = useState<any[]>([
+    {
+      date: today,
+      symptoms: "Baseline consult: severe epigastric burning post meals, anxiety, chilly.",
+      improvement: "0%",
+      medicines: [
+        { name: "Nux Vomica", potency: "30C", dose: "BD", type: "Dilution" }
+      ],
+      remedy: "Nux Vomica",
+      potency: "30C (BD)",
+      assessment: "Case taken, totality points to Nux-v. Symptom severity is 8/10.",
+      nextReview: "After 14 Days"
+    },
+    {
+      date: "21-06-2026",
+      symptoms: "Burning reduced by 40%. Sleep improved, waking up less at night. Stools regular.",
+      improvement: "40%",
+      medicines: [
+        { name: "Nux Vomica", potency: "30C", dose: "BD", type: "Dilution" }
+      ],
+      remedy: "Nux Vomica",
+      potency: "30C (BD)",
+      assessment: "Good response. Continue same remedy to stabilize.",
+      nextReview: "After 2 Weeks"
     }
+  ]);
 
-    // 3. Update Demographics summary values
-    updatedGrid[4][5] = `INR ${totalReceived.toLocaleString("en-IN")}`;
-    updatedGrid[5][5] = `INR ${runningBalance.toLocaleString("en-IN")}`;
+  // Prescription Titration Manager state
+  const [selectedFollowUpIndex, setSelectedFollowUpIndex] = useState<number | null>(null);
+  const [tempMedicines, setTempMedicines] = useState<any[]>([]);
+  const [remedySearch, setRemedySearch] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [newMedicine, setNewMedicine] = useState({
+    name: "",
+    potency: "30C",
+    dose: "BD",
+    type: "Dilution"
+  });
 
-    return updatedGrid;
-  };
-
-  useEffect(() => {
-    // Initialize sheet grid values ONCE on mount
-    const initialGrid = Array(rowCount).fill(null).map(() => Array(colCount).fill(""));
-
-    // Title banner
-    initialGrid[0][0] = "HOMEO HEALTHCARE - CLINICAL CASE SHEET";
-    
-    // Demographics header
-    initialGrid[2][0] = "1. PATIENT DEMOGRAPHICS";
-    
-    // Row 4
-    initialGrid[3][0] = "Patient ID";
-    initialGrid[3][1] = id;
-    initialGrid[3][2] = "Register Date";
-    initialGrid[3][3] = today;
-    initialGrid[3][4] = "Total Package Price";
-    initialGrid[3][5] = `INR ${finalPrice.toLocaleString("en-IN")}`;
-
-    // Row 5
-    initialGrid[4][0] = "Patient Name";
-    initialGrid[4][1] = name;
-    initialGrid[4][2] = "Age / Gender";
-    initialGrid[4][3] = `${age} / ${gender}`;
-    initialGrid[4][4] = "Received Total";
-    initialGrid[4][5] = `INR ${initialReceived.toLocaleString("en-IN")}`;
-
-    // Row 6
-    initialGrid[5][0] = "Contact Phone";
-    initialGrid[5][1] = phone;
-    initialGrid[5][2] = "Email Address";
-    initialGrid[5][3] = email;
-    initialGrid[5][4] = "Remaining Balance";
-    initialGrid[5][5] = `INR ${initialBalance.toLocaleString("en-IN")}`;
-
-    // Row 7
-    initialGrid[6][0] = "Delivery Option";
-    initialGrid[6][1] = "Courier Shipping";
-    initialGrid[6][2] = "Location / Address";
-    initialGrid[6][3] = "Pune, Maharashtra, India";
-    initialGrid[6][4] = "";
-    initialGrid[6][5] = "";
-
-    // Row 8
-    initialGrid[7][0] = "Recommended Tier";
-    initialGrid[7][1] = careLevel;
-    initialGrid[7][2] = "Billing Duration";
-    initialGrid[7][3] = durationText;
-    initialGrid[7][4] = "";
-    initialGrid[7][5] = "";
-
-    // Section 2 Header
-    initialGrid[9][0] = "2. CHIEF COMPLAINT & CASE ANALYSIS";
-    initialGrid[10][0] = "Chief Complaint Details";
-    initialGrid[10][1] = complaint; // Merged across B11:F14
-
-    // Section 3 Header
-    initialGrid[14][0] = "3. CLINICAL REPERTORIZATION & RUBRICS";
-    initialGrid[15][0] = "Rubric Name";
-    initialGrid[15][1] = "Chapter / Location";
-    initialGrid[15][2] = "Remedy Grade (1/2/3)";
-    initialGrid[15][3] = "Clinical Notes & Key Modalities";
-    initialGrid[15][4] = "";
-    initialGrid[15][5] = "";
-
-    // Standard rubrics suggestions
-    initialGrid[16][0] = "Stomach - Acidity - eating, after";
-    initialGrid[16][1] = "Stomach";
-    initialGrid[16][2] = "3";
-    initialGrid[16][3] = "Violent burning, worse post-meals";
-
-    initialGrid[17][0] = "Mind - Irritability";
-    initialGrid[17][1] = "Mind";
-    initialGrid[17][2] = "2";
-    initialGrid[17][3] = "Anxious restlessness";
-
-    initialGrid[18][0] = "Generalities - Chilly";
-    initialGrid[18][1] = "Generalities";
-    initialGrid[18][2] = "3";
-    initialGrid[18][3] = "Extreme sensitivity to drafts";
-
-    // Section 4 Header
-    initialGrid[22][0] = "4. PRESCRIPTION & TREATMENT PLAN";
-    initialGrid[23][0] = "Remedy Prescribed";
-    initialGrid[23][1] = "Potency & Scale";
-    initialGrid[23][2] = "Dosage & Frequency";
-    initialGrid[23][3] = "Duration & Schedule";
-    initialGrid[23][4] = "";
-    initialGrid[23][5] = "";
-
-    initialGrid[24][0] = "Nux Vomica";
-    initialGrid[24][1] = "30C";
-    initialGrid[24][2] = "4 pills, twice daily";
-    initialGrid[24][3] = "14 Days (Bedtime/Morning)";
-
-    initialGrid[25][0] = "Arsenicum Album";
-    initialGrid[25][1] = "200C";
-    initialGrid[25][2] = "4 pills, single dose";
-    initialGrid[25][3] = "SOS (For acute gastric distress)";
-
-    // Remaining prescription slots (remedies slots run from index 24 to 35, giving 12 total rows for prescriptions)
-    for (let r = 26; r <= 35; r++) {
-      initialGrid[r][0] = "";
-      initialGrid[r][1] = "";
-      initialGrid[r][2] = "";
-      initialGrid[r][3] = "";
-    }
-
-    // Section 5 Header (Follow-ups starting at index 36 / row 37)
-    initialGrid[36][0] = "5. CLINICAL PROGRESS & FOLLOW-UPS";
-    initialGrid[37][0] = "Date";
-    initialGrid[37][1] = "Symptom Status & Patient Report";
-    initialGrid[37][2] = "Prescription Adjustments";
-    initialGrid[37][3] = "Next Review Date";
-    initialGrid[37][4] = "Amount Received (₹)";
-    initialGrid[37][5] = "Balance / Due (₹)";
-
-    // First follow-up active row
-    initialGrid[38][0] = today;
-    initialGrid[38][1] = "Case initialized. Symptoms documented.";
-    initialGrid[38][2] = "Nux Vomica 30C + Ars Alb 200C prescribed.";
-    initialGrid[38][3] = "After 2 weeks";
-    initialGrid[38][4] = `₹${initialReceived.toLocaleString("en-IN")}`;
-    initialGrid[38][5] = `₹${initialBalance.toLocaleString("en-IN")}`;
-
-    // Fill the remaining follow-up slots as empty
-    for (let index = 1; index < 6; index++) {
-      const targetRow = 38 + index;
-      initialGrid[targetRow][0] = "";
-      initialGrid[targetRow][1] = "";
-      initialGrid[targetRow][2] = "";
-      initialGrid[targetRow][3] = "";
-      initialGrid[targetRow][4] = "";
-      initialGrid[targetRow][5] = "";
-    }
-
-    setGrid(initialGrid);
-  }, []); // Run ONLY once on mount
-
-  const handleAddFollowUp = () => {
-    const nextDate = new Date().toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" });
-    const targetRow = 38 + activeFollowUpCount;
-    
-    setGrid(prevGrid => {
-      const newGrid = prevGrid.map(row => [...row]);
-      
-      // Expand grid if needed
-      while (targetRow >= newGrid.length) {
-        newGrid.push(Array(colCount).fill(""));
-      }
-
-      newGrid[targetRow][0] = nextDate;
-      newGrid[targetRow][1] = `Follow-up ${activeFollowUpCount + 1} Status (Double-click to edit)`;
-      newGrid[targetRow][2] = "Adjustments";
-      newGrid[targetRow][3] = "2 Weeks";
-      newGrid[targetRow][4] = "₹0";
-      newGrid[targetRow][5] = "₹0";
-
-      const newCount = activeFollowUpCount + 1;
-      setActiveFollowUpCount(newCount);
-      return recalculateLedger(newGrid, newCount);
+  const handleOpenPrescriptionModal = (idx: number) => {
+    setSelectedFollowUpIndex(idx);
+    setTempMedicines(followUps[idx].medicines || []);
+    setRemedySearch("");
+    setShowSuggestions(false);
+    setNewMedicine({
+      name: "",
+      potency: "30C",
+      dose: "BD",
+      type: "Dilution"
     });
   };
 
-  const handleRemoveFollowUp = () => {
-    if (activeFollowUpCount > 1) {
-      const targetRow = 38 + activeFollowUpCount - 1;
-      setGrid(prevGrid => {
-        const newGrid = prevGrid.map(row => [...row]);
-        newGrid[targetRow][0] = "";
-        newGrid[targetRow][1] = "";
-        newGrid[targetRow][2] = "";
-        newGrid[targetRow][3] = "";
-        newGrid[targetRow][4] = "";
-        newGrid[targetRow][5] = "";
-
-        const newCount = activeFollowUpCount - 1;
-        setActiveFollowUpCount(newCount);
-        return recalculateLedger(newGrid, newCount);
+  const handleSavePrescription = () => {
+    if (selectedFollowUpIndex !== null) {
+      setFollowUps(prev => {
+        const next = [...prev];
+        const m = tempMedicines;
+        const remedyStr = m.map(item => item.name).join(", ");
+        const potencyStr = m.map(item => `${item.potency} (${item.dose})`).join(", ");
+        next[selectedFollowUpIndex] = {
+          ...next[selectedFollowUpIndex],
+          medicines: m,
+          remedy: remedyStr || "None",
+          potency: potencyStr || "-"
+        };
+        return next;
       });
+      setSelectedFollowUpIndex(null);
     }
   };
 
-  const handleCellClick = (r: number, c: number) => {
-    // Don't allow editing main section banners
-    if (r === 0 || r === 2 || r === 9 || r === 14 || r === 22 || r === 36) return;
-    
-    // Don't allow editing headers of tables
-    if (r === 15 || r === 23 || r === 37) return;
+  const handleSelectSuggestion = (remedy: string) => {
+    setNewMedicine(prev => ({ ...prev, name: remedy }));
+    setRemedySearch(remedy);
+    setShowSuggestions(false);
+  };
 
-    // Don't allow editing the running balance column of follow-up rows
-    const displayCount = Math.max(6, activeFollowUpCount);
-    if (r >= 38 && r < 38 + displayCount && c === 5) {
-      alert("Remaining balance is automatically calculated as a running total based on amount received.");
+  const handleAddMedicine = () => {
+    const medName = newMedicine.name.trim() || remedySearch.trim();
+    if (!medName) {
+      alert("Please select or type a remedy name.");
       return;
     }
+    setTempMedicines(prev => [
+      ...prev,
+      {
+        name: medName,
+        potency: newMedicine.potency,
+        dose: newMedicine.dose,
+        type: newMedicine.type
+      }
+    ]);
+    setNewMedicine(prev => ({
+      ...prev,
+      name: "",
+    }));
+    setRemedySearch("");
+  };
 
-    setEditingCell({ row: r, col: c });
-    setEditValue(grid[r]?.[c] || "");
+  const filteredSuggestions = remedySearch.trim() === ""
+    ? []
+    : INBUILT_REMEDIES.filter(r =>
+        r.toLowerCase().includes(remedySearch.toLowerCase())
+      ).slice(0, 5);
+
+  // Repertorization State
+  const [remediesList, setRemediesList] = useState(["Nux-v", "Lyc", "Ars", "Puls", "Sulph", "Rhus-t", "Calc", "Sil", "Nat-m", "Ign", "Sep"]);
+  
+  // Predefined library of symptoms/rubrics with scores
+  const PREDEFINED_LIBRARY_RUBRICS = [
+    { name: "Skin - Itching - warmth of bed, agg.", chapter: "Skin", source: "Kent", weight: 3, scores: { "Nux-v": 0, "Lyc": 2, "Ars": 1, "Puls": 3, "Sulph": 3, "Rhus-t": 2, "Calc": 1, "Sil": 0, "Nat-m": 1, "Ign": 0, "Sep": 2 } },
+    { name: "Mind - Fear - dark, of", chapter: "Mind", source: "Kent", weight: 2, scores: { "Nux-v": 0, "Lyc": 2, "Ars": 3, "Puls": 2, "Sulph": 1, "Rhus-t": 0, "Calc": 3, "Sil": 2, "Nat-m": 1, "Ign": 1, "Sep": 0 } },
+    { name: "Stomach - Desires - sweets", chapter: "Stomach", source: "Kent", weight: 2, scores: { "Nux-v": 0, "Lyc": 3, "Ars": 1, "Puls": 3, "Sulph": 3, "Rhus-t": 0, "Calc": 3, "Sil": 1, "Nat-m": 1, "Ign": 0, "Sep": 1 } },
+    { name: "Stomach - Aversion - milk", chapter: "Stomach", source: "Kent", weight: 2, scores: { "Nux-v": 1, "Lyc": 1, "Ars": 0, "Puls": 2, "Sulph": 2, "Rhus-t": 0, "Calc": 3, "Sil": 1, "Nat-m": 2, "Ign": 1, "Sep": 1 } },
+    { name: "Sleep - Sleeplessness - 3 AM after", chapter: "Sleep", source: "Kent", weight: 3, scores: { "Nux-v": 3, "Lyc": 1, "Ars": 2, "Puls": 0, "Sulph": 2, "Rhus-t": 1, "Calc": 1, "Sil": 0, "Nat-m": 1, "Ign": 1, "Sep": 0 } },
+    { name: "Cough - dry - night", chapter: "Cough", source: "Kent", weight: 2, scores: { "Nux-v": 2, "Lyc": 1, "Ars": 3, "Puls": 3, "Sulph": 2, "Rhus-t": 2, "Calc": 1, "Sil": 1, "Nat-m": 1, "Ign": 2, "Sep": 1 } },
+    { name: "Rectum - Constipation - urging ineffectual", chapter: "Rectum", source: "Kent", weight: 3, scores: { "Nux-v": 3, "Lyc": 2, "Ars": 0, "Puls": 0, "Sulph": 2, "Rhus-t": 0, "Calc": 1, "Sil": 2, "Nat-m": 2, "Ign": 1, "Sep": 1 } },
+    { name: "Mind - Fastidious", chapter: "Mind", source: "Kent", weight: 2, scores: { "Nux-v": 2, "Lyc": 1, "Ars": 3, "Puls": 0, "Sulph": 1, "Rhus-t": 0, "Calc": 0, "Sil": 3, "Nat-m": 2, "Ign": 1, "Sep": 0 } }
+  ];
+
+  const [rubrics, setRubrics] = useState<any[]>([
+    { name: "Stomach - Acidity - eating, post", chapter: "Stomach", source: "Kent", weight: 3, dateAdded: "07/06/2026", scores: { "Nux-v": 3, "Lyc": 2, "Ars": 3, "Puls": 1, "Sulph": 2, "Rhus-t": 1, "Calc": 1, "Sil": 0, "Nat-m": 0, "Ign": 1, "Sep": 0 } },
+    { name: "Mind - Irritability - eating, after", chapter: "Mind", source: "Kent", weight: 2, dateAdded: "07/06/2026", scores: { "Nux-v": 2, "Lyc": 3, "Ars": 1, "Puls": 2, "Sulph": 2, "Rhus-t": 1, "Calc": 0, "Sil": 0, "Nat-m": 0, "Ign": 0, "Sep": 0 } },
+    { name: "Generalities - Chilly - sensitive to cold", chapter: "Generalities", source: "Kent", weight: 3, dateAdded: "07/06/2026", scores: { "Nux-v": 3, "Lyc": 1, "Ars": 3, "Puls": 0, "Sulph": 1, "Rhus-t": 3, "Calc": 3, "Sil": 2, "Nat-m": 1, "Ign": 0, "Sep": 1 } },
+    { name: "Mind - Anxiety - anticipation, with", chapter: "Mind", source: "Kent", weight: 2, dateAdded: "07/06/2026", scores: { "Nux-v": 2, "Lyc": 2, "Ars": 3, "Puls": 2, "Sulph": 1, "Rhus-t": 0, "Calc": 0, "Sil": 0, "Nat-m": 0, "Ign": 3, "Sep": 0 } },
+    { name: "Stomach - Thirst - small quantities, for", chapter: "Stomach", source: "Kent", weight: 1, dateAdded: "07/06/2026", scores: { "Nux-v": 1, "Lyc": 0, "Ars": 3, "Puls": 0, "Sulph": 0, "Rhus-t": 0, "Calc": 1, "Sil": 0, "Nat-m": 0, "Ign": 0, "Sep": 0 } }
+  ]);
+
+  const [repertorySyncLogs, setRepertorySyncLogs] = useState<any[]>([
+    {
+      dateSynced: "07/06/2026",
+      rubricsCount: 5,
+      topRemedy: "Ars",
+      topScore: 129,
+      method: "Baseline Sync"
+    }
+  ]);
+
+  const [repertoryToast, setRepertoryToast] = useState<string | null>(null);
+
+  // Repertory Database Hydration & Search States
+  const [dbKent, setDbKent] = useState<any[]>([]);
+  const [dbBoericke, setDbBoericke] = useState<any[]>([]);
+  const [isRepertoryLoaded, setIsRepertoryLoaded] = useState(false);
+  const [isRepertoryLoading, setIsRepertoryLoading] = useState(false);
+  const [sheetRepSource, setSheetRepSource] = useState<"kent" | "boericke" | "jethwani" | "custom">("kent");
+  const [sheetRepSearch, setSheetRepSearch] = useState("");
+  const [activeSelectedDbRubric, setActiveSelectedDbRubric] = useState<any | null>(null);
+
+  // Helper to resolve remedy grades from database keys to target sheet remedies
+  const resolveRemedyGrade = (remedies: Record<string, number> | undefined, target: string): number => {
+    if (!remedies) return 0;
+    
+    // Direct match
+    if (remedies[target] !== undefined) return remedies[target];
+    
+    const targetLower = target.toLowerCase();
+    for (const [key, value] of Object.entries(remedies)) {
+      const keyLower = key.toLowerCase();
+      if (keyLower === targetLower) return value;
+      
+      // Common abbreviations mappings
+      if (targetLower === "sulph" && (keyLower === "sulphur" || keyLower === "sul-ac" || keyLower === "sulph-ac")) return value;
+      if (keyLower === "sulph" && (targetLower === "sulphur" || targetLower === "sul-ac" || targetLower === "sulph-ac")) return value;
+      
+      if (targetLower === "nux-v" && keyLower.startsWith("nux")) return value;
+      if (keyLower === "nux-v" && targetLower.startsWith("nux")) return value;
+
+      if (targetLower === "rhus-t" && keyLower.startsWith("rhus")) return value;
+      if (keyLower === "rhus-t" && targetLower.startsWith("rhus")) return value;
+
+      if (targetLower === "nat-m" && keyLower.startsWith("nat-m")) return value;
+      if (keyLower === "nat-m" && targetLower.startsWith("nat-m")) return value;
+
+      if (keyLower.startsWith(targetLower) || targetLower.startsWith(keyLower)) return value;
+    }
+    return 0;
+  };
+
+  // Hydrate classic repertory database asynchronously
+  useEffect(() => {
+    const hydrateRepertory = async () => {
+      setIsRepertoryLoading(true);
+      try {
+        const res = await fetch("/api/repertory");
+        const data = await res.json();
+        if (data.success) {
+          setDbKent(data.kent || []);
+          setDbBoericke(data.boericke || []);
+          setRepertoryData(data.kent || [], data.boericke || []);
+          setIsRepertoryLoaded(true);
+        } else {
+          console.error("Failed to load repertory database: success=false");
+        }
+      } catch (err) {
+        console.error("Failed to load repertory database in mock sheet:", err);
+      } finally {
+        setIsRepertoryLoading(false);
+      }
+    };
+    hydrateRepertory();
+  }, []);
+
+  // New rubric form state
+  const [selectedLibraryRubric, setSelectedLibraryRubric] = useState<string>("");
+  const [customRubricName, setCustomRubricName] = useState("");
+  const [customRubricChapter, setCustomRubricChapter] = useState("Stomach");
+  const [customRubricWeight, setCustomRubricWeight] = useState(2);
+  const [customRubricDate, setCustomRubricDate] = useState(today);
+  const [customScores, setCustomScores] = useState<{ [rem: string]: number }>({
+    "Nux-v": 0, "Lyc": 0, "Ars": 0, "Puls": 0, "Sulph": 0, "Rhus-t": 0, "Calc": 0, "Sil": 0, "Nat-m": 0, "Ign": 0, "Sep": 0
+  });
+
+  const [customRepSearchRemedy, setCustomRepSearchRemedy] = useState("");
+  
+  const handleAddRemedyToCompare = (remedyName: string) => {
+    const trimmed = remedyName.trim();
+    if (!trimmed) return;
+    
+    // Add to remediesList immediately if not already present
+    setRemediesList(prev => {
+      if (prev.includes(trimmed)) return prev;
+      return [...prev, trimmed];
+    });
+
+    // Add to customScores state with grade 0
+    setCustomScores(prev => {
+      if (prev[trimmed] !== undefined) return prev;
+      return { ...prev, [trimmed]: 0 };
+    });
+    
+    setCustomRepSearchRemedy("");
+  };
+
+  // AI Repertory Lab state variables
+  const [aiTransmitLoading, setAiTransmitLoading] = useState(false);
+  const [aiTransmitStep, setAiTransmitStep] = useState(0);
+  const [aiAnalysisResult, setAiAnalysisResult] = useState<any | null>(null);
+
+  // Import rubrics parameter on mount or once database is loaded
+  useEffect(() => {
+    const importRubricsParam = searchParams.get("importRubrics");
+    if (!importRubricsParam) return;
+    
+    const parsed = importRubricsParam.split("|").map(item => {
+      const [chapter, name, weightStr] = item.split(":");
+      const weight = Number(weightStr || "1");
+      
+      // 1. Look up in PREDEFINED_LIBRARY_RUBRICS
+      let match = PREDEFINED_LIBRARY_RUBRICS.find(r => r.name.toLowerCase() === name.toLowerCase());
+      
+      // 2. Look up in JETHWANI_REPERTORY_DATA
+      if (!match) {
+        const jethMatch = JETHWANI_REPERTORY_DATA.find(r => r.name.toLowerCase() === name.toLowerCase());
+        if (jethMatch) {
+          const scores: Record<string, number> = {};
+          remediesList.forEach(rem => {
+            scores[rem] = resolveRemedyGrade(jethMatch.remedies, rem);
+          });
+          match = {
+            name: jethMatch.name,
+            chapter: jethMatch.section,
+            source: "Jethwani" as any,
+            weight,
+            scores: scores as any
+          };
+        }
+      }
+      
+      // 3. Look up in Kent Database
+      if (!match && dbKent.length > 0) {
+        const kentMatch = dbKent.find(r => r.name.toLowerCase() === name.toLowerCase());
+        if (kentMatch) {
+          const scores: Record<string, number> = {};
+          remediesList.forEach(rem => {
+            scores[rem] = resolveRemedyGrade(kentMatch.remedies, rem);
+          });
+          match = {
+            name: kentMatch.name,
+            chapter: kentMatch.chapter,
+            source: "Kent" as any,
+            weight,
+            scores: scores as any
+          };
+        }
+      }
+      
+      // 4. Look up in Boericke Database
+      if (!match && dbBoericke.length > 0) {
+        const boerickeMatch = dbBoericke.find(r => r.name.toLowerCase() === name.toLowerCase());
+        if (boerickeMatch) {
+          const scores: Record<string, number> = {};
+          remediesList.forEach(rem => {
+            scores[rem] = resolveRemedyGrade(boerickeMatch.remedies, rem);
+          });
+          match = {
+            name: boerickeMatch.name,
+            chapter: boerickeMatch.chapter,
+            source: "Boericke" as any,
+            weight,
+            scores: scores as any
+          };
+        }
+      }
+      
+      // 5. Fallback as a custom rubric
+      if (!match) {
+        const mockScores: Record<string, number> = {};
+        remediesList.forEach(rem => {
+          mockScores[rem] = 2; // Default to 2
+        });
+        return {
+          name,
+          chapter: chapter || "Generalities",
+          source: "Clinical",
+          weight,
+          dateAdded: today,
+          scores: mockScores
+        };
+      }
+      
+      return {
+        ...match,
+        dateAdded: today,
+        weight
+      };
+    });
+    
+    // Update rubrics state avoiding duplicates by name
+    setRubrics(prev => {
+      const filteredPrev = prev.filter(p => !parsed.some(n => n.name.toLowerCase() === p.name.toLowerCase()));
+      return [...filteredPrev, ...parsed];
+    });
+    
+    // Automatically switch to Repertorization tab
+    setActiveTab("Repertorization");
+  }, [searchParams, isRepertoryLoaded, dbKent, dbBoericke]);
+
+  // Treatment Planner State
+  const initialCareLevelMapped = mapCareLevel(initialCareLevel);
+  const initialDurationMonthsVal = getDurationMonths(initialDurationText || initialCareLevel);
+
+  const [planner, setPlanner] = useState({
+    careLevel: initialCareLevelMapped,
+    billingCycle: (initialCareLevel.toLowerCase().includes("weekly") || initialDurationText.toLowerCase().includes("week")) ? "weekly" : "monthly" as "weekly" | "monthly",
+    durationValue: initialDurationMonthsVal,
+    conditionsCount: initialCareLevel.toLowerCase().includes("multisystem") ? 2 : 1,
+    concessionType: (parseInt(initialAge) >= 60) ? "senior" : "none" as "none" | "senior" | "compassionate" | "override",
+    overridePrice: initialPriceVal,
+    received: initialReceived,
+    medicineAddons: [] as { id: string; type: string; details: string; amount: number }[]
+  });
+
+  // Attachments State
+  const [attachments, setAttachments] = useState<any[]>([
+    { date: today, category: "Clinical Photo", target: "Epigastric Bloating Snapshot", url: `https://drive.google.com/drive/folders/mock-folder-id` },
+    { date: "05-06-2026", category: "Blood Test", target: "Complete Blood Count & Liver Panel", url: "https://drive.google.com/drive/folders/mock-folder-id" }
+  ]);
+
+  // Config DB
+  const packagesConfig: { [key: string]: number } = {
+    "Standard Consult": 300,
+    "Acute Care Plan": 1500,
+    "3-Month Chronic": 4500,
+    "6-Month Advanced": 8500,
+    "1-Year Premium": 15000
+  };
+
+  // ----------------------------------------------------
+  // CALCULATED FORMULAS (CROSS-TAB SYNC)
+  // ----------------------------------------------------
+
+  // 1. Calculate Miasm Scores based on keyword-tagging
+  const calculateMiasmScores = () => {
+    // Collect all text in caseTaking fields
+    const textBlocks = [
+      caseTaking.mainComplaint,
+      caseTaking.modalBetter,
+      caseTaking.modalWorse,
+      caseTaking.concomitants,
+      caseTaking.etiology,
+      caseTaking.maintaining,
+      caseTaking.fears,
+      caseTaking.anxiety,
+      caseTaking.anger,
+      caseTaking.grief,
+      caseTaking.depression,
+      caseTaking.memory,
+      caseTaking.concentration,
+      caseTaking.traits,
+      caseTaking.appetite,
+      caseTaking.thirst,
+      caseTaking.foodDesires,
+      caseTaking.foodAversions,
+      caseTaking.thermals,
+      caseTaking.perspiration,
+      caseTaking.sleep,
+      caseTaking.dreams,
+      caseTaking.familyPaternal,
+      caseTaking.familyMaternal
+    ];
+
+    const combinedText = textBlocks.join(" ").toLowerCase();
+
+    const counts = {
+      Psora: (combinedText.match(/\[psora\]/g) || []).length,
+      Sycosis: (combinedText.match(/\[sycosis\]/g) || []).length,
+      Syphilis: (combinedText.match(/\[syphilis\]/g) || []).length,
+      Tubercular: (combinedText.match(/\[tubercular\]/g) || []).length,
+      Cancerinic: (combinedText.match(/\[cancerinic\]/g) || []).length
+    };
+
+    return counts;
+  };
+
+  const miasmScores = calculateMiasmScores();
+
+  // 2. Repertory Matrix Calculations
+  const calculateRepertoryScores = () => {
+    const coverage: { [rem: string]: number } = {};
+    const sumGrades: { [rem: string]: number } = {};
+    const rankScores: { [rem: string]: number } = {};
+
+    remediesList.forEach(rem => {
+      let count = 0;
+      let sum = 0;
+      rubrics.forEach(rub => {
+        const score = rub.scores[rem] || 0;
+        if (score > 0) {
+          count++;
+          sum += score * rub.weight;
+        }
+      });
+      coverage[rem] = rubrics.length > 0 ? count / rubrics.length : 0;
+      sumGrades[rem] = sum;
+      rankScores[rem] = (coverage[rem] * 100) + sum;
+    });
+
+    // Sort remedies by Rank Score descending
+    const sortedRemedies = [...remediesList].sort((a, b) => rankScores[b] - rankScores[a]);
+
+    return { coverage, sumGrades, rankScores, sortedRemedies };
+  };
+
+  const repertoryResults = calculateRepertoryScores();
+
+  const handleSendRepertoryToPatient = () => {
+    const topRem = repertoryResults.sortedRemedies[0];
+    const topScr = Math.round(repertoryResults.rankScores[topRem] || 0);
+    const newLog = {
+      dateSynced: today,
+      rubricsCount: rubrics.length,
+      topRemedy: topRem,
+      topScore: topScr,
+      method: rubrics.length > 5 ? "Longitudinal Follow-up Sync" : "Intake Assessment Sync"
+    };
+    setRepertorySyncLogs(prev => [newLog, ...prev]);
+    setRepertoryToast(`Successfully synced repertory details to ${patient.name}'s active case file!`);
+    setTimeout(() => setRepertoryToast(null), 4000);
+  };
+
+  const getFilteredDbRubrics = () => {
+    const q = sheetRepSearch.trim().toLowerCase();
+    let srcList: any[] = [];
+    if (sheetRepSource === "kent") {
+      srcList = dbKent;
+    } else if (sheetRepSource === "boericke") {
+      srcList = dbBoericke;
+    } else if (sheetRepSource === "jethwani") {
+      srcList = JETHWANI_REPERTORY_DATA;
+    } else {
+      return [];
+    }
+
+    if (!q) {
+      return srcList.slice(0, 30);
+    }
+
+    const terms = q.split(/\s+/).filter(Boolean);
+    return srcList.filter(rub => {
+      const name = (rub.name || "").toLowerCase();
+      const chapter = (rub.chapter || rub.section || "").toLowerCase();
+      const textToSearch = `${chapter} ${name}`;
+      return terms.every(term => textToSearch.includes(term));
+    }).slice(0, 50);
+  };
+
+  const handleAddRubric = () => {
+    if (sheetRepSource !== "custom") {
+      if (!activeSelectedDbRubric) {
+        alert("Please select a rubric from the search list first.");
+        return;
+      }
+      const name = activeSelectedDbRubric.name;
+      if (rubrics.some(r => r.name.toLowerCase() === name.toLowerCase())) {
+        alert("This rubric is already in the matrix.");
+        return;
+      }
+      
+      const scores: Record<string, number> = {};
+      remediesList.forEach(rem => {
+        scores[rem] = resolveRemedyGrade(activeSelectedDbRubric.remedies, rem);
+      });
+      
+      const newRub = {
+        name,
+        chapter: activeSelectedDbRubric.chapter || activeSelectedDbRubric.section || "Generalities",
+        source: sheetRepSource === "kent" ? "Kent" : sheetRepSource === "boericke" ? "Boericke" : "Jethwani",
+        weight: Number(customRubricWeight),
+        dateAdded: customRubricDate,
+        scores
+      };
+      
+      setRubrics(prev => [...prev, newRub]);
+      setActiveSelectedDbRubric(null);
+      setSheetRepSearch("");
+      
+      setRepertoryToast(`Added: "${newRub.name}" to repertorization.`);
+      setTimeout(() => setRepertoryToast(null), 3000);
+    } else {
+      const name = customRubricName.trim();
+      if (!name) {
+        alert("Please enter a rubric name.");
+        return;
+      }
+      if (rubrics.some(r => r.name.toLowerCase() === name.toLowerCase())) {
+        alert("This rubric is already in the matrix.");
+        return;
+      }
+
+      // Add any custom remedy with grade > 0 that is not in remediesList to remediesList
+      const newRemediesToCompare: string[] = [];
+      Object.entries(customScores).forEach(([rem, score]) => {
+        if (score > 0 && !remediesList.includes(rem)) {
+          newRemediesToCompare.push(rem);
+        }
+      });
+      
+      if (newRemediesToCompare.length > 0) {
+        setRemediesList(prev => [...prev, ...newRemediesToCompare]);
+      }
+
+      const newRub = {
+        name,
+        chapter: customRubricChapter,
+        source: "Clinical" as any,
+        weight: Number(customRubricWeight),
+        dateAdded: customRubricDate,
+        scores: customScores
+      };
+      setRubrics(prev => [...prev, newRub]);
+      setCustomRubricName("");
+      // Reset customScores to all active remedies in remediesList with grade 0
+      const nextRemedies = Array.from(new Set([...remediesList, ...newRemediesToCompare]));
+      const defaultScores: Record<string, number> = {};
+      nextRemedies.forEach(rem => {
+        defaultScores[rem] = 0;
+      });
+      setCustomScores(defaultScores);
+      
+      setRepertoryToast(`Added custom rubric: "${newRub.name}"`);
+      setTimeout(() => setRepertoryToast(null), 3000);
+    }
+  };
+
+  const handleAddAllLibraryRubrics = () => {
+    setRubrics(prev => {
+      const next = [...prev];
+      PREDEFINED_LIBRARY_RUBRICS.forEach(libRub => {
+        if (!next.some(r => r.name === libRub.name)) {
+          next.push({
+            ...libRub,
+            dateAdded: today
+          });
+        }
+      });
+      return next;
+    });
+  };
+
+  const handleTransmitToAiLab = async () => {
+    setAiTransmitLoading(true);
+    setAiTransmitStep(1);
+    
+    try {
+      setAiTransmitStep(2);
+      
+      // Map our sheet rubrics format to the format expected by the API
+      const apiRubrics = rubrics.map(r => ({
+        name: r.name,
+        chapter: r.chapter,
+        grade: r.weight
+      }));
+      
+      // Map sheet compare remedy results
+      const apiRepertorizationResults = repertoryResults.sortedRemedies.map(rem => ({
+        remedyName: rem,
+        coverage: repertoryResults.coverage[rem] || 0,
+        score: repertoryResults.sumGrades[rem] || 0
+      }));
+      
+      const payload = {
+        taskType: "synthesis",
+        patientInfo: {
+          name: patient.name,
+          age: patient.age,
+          gender: patient.gender,
+          complaint: caseTaking.mainComplaint
+        },
+        rubrics: apiRubrics,
+        repertorizationResults: apiRepertorizationResults
+      };
+      
+      setAiTransmitStep(3);
+      
+      const res = await fetch("/api/ai-diagnostics", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+      
+      if (!res.ok) {
+        throw new Error(`HTTP error! Status: ${res.status}`);
+      }
+      
+      setAiTransmitStep(4);
+      const data = await res.json();
+      
+      if (data.success) {
+        // Parse the analysis JSON string if it is returned as a string
+        const parsed = typeof data.analysis === "string" ? JSON.parse(data.analysis) : data.analysis;
+        
+        // Extract keynotes, miasms, etc.
+        const verdict = parsed?.clinical_reasoning_v2?.remedy_justification || `${repertoryResults.sortedRemedies[0]} matches patient's physical Generals and Miasmatic Totality best.`;
+        
+        let synthesis = "";
+        if (parsed?.clinical_reasoning_v2?.constitutional_interpretation) {
+          synthesis = `${parsed.clinical_reasoning_v2.constitutional_interpretation}`;
+          if (parsed?.clinical_reasoning_v2?.miasmatic_analysis_summary) {
+            synthesis += ` Miasmatic Totality: ${parsed.clinical_reasoning_v2.miasmatic_analysis_summary}`;
+          }
+          if (parsed?.clinical_reasoning_v2?.etiological_analysis) {
+            synthesis += ` Etiology and Causa Occasionalis: ${parsed.clinical_reasoning_v2.etiological_analysis}`;
+          }
+        } else {
+          synthesis = `The patient's case presents a clear picture matching ${repertoryResults.sortedRemedies[0]} (Rank: ${Math.round(repertoryResults.rankScores[repertoryResults.sortedRemedies[0]] || 0)} pts, Coverage: ${Math.round((repertoryResults.coverage[repertoryResults.sortedRemedies[0]] || 0) * 100)}%).`;
+        }
+        
+        // Build cards from top_remedies
+        const topRemedies = parsed?.top_remedies || [];
+        let remedyCards: any[] = [];
+        if (topRemedies.length > 0) {
+          remedyCards = topRemedies.slice(0, 3).map((tr: any, idx: number) => ({
+            name: tr.name,
+            rank: idx + 1,
+            score: tr.score || Math.round(repertoryResults.rankScores[tr.name] || 0),
+            indications: tr.why_selected || tr.relationship_to_patient || "Indicated for constitutional totality.",
+            keynotes: tr.brief_keynotes || tr.why_not_selected || "No specific keynotes provided."
+          }));
+        }
+        
+        // Resiliently fill up to 3 cards
+        while (remedyCards.length < 3 && remedyCards.length < repertoryResults.sortedRemedies.length) {
+          const nextRem = repertoryResults.sortedRemedies[remedyCards.length];
+          remedyCards.push({
+            name: nextRem,
+            rank: remedyCards.length + 1,
+            score: Math.round(repertoryResults.rankScores[nextRem] || 0),
+            indications: "Repertorization match score indicates strong coverage.",
+            keynotes: "Verify modalities, thermal response, and characteristic generals."
+          });
+        }
+        
+        setAiAnalysisResult({
+          dateAnalyzed: today,
+          verdict,
+          synthesis,
+          remedyCards
+        });
+      } else {
+        throw new Error(data.message || "Failed to generate synthesis on backend.");
+      }
+      
+    } catch (err: any) {
+      console.error("AI transmit call failed, using graceful local fallback:", err);
+      // GRACEFUL FALLBACK
+      setAiTransmitStep(4);
+      await new Promise(resolve => setTimeout(resolve, 800));
+      setAiAnalysisResult({
+        dateAnalyzed: today,
+        verdict: `${repertoryResults.sortedRemedies[0]} matches patient's physical Generals and Miasmatic Totality best. (Local Fallback)`,
+        synthesis: `The patient's case presents a clear chilly, irritable picture matching ${repertoryResults.sortedRemedies[0]} (Rank: ${Math.round(repertoryResults.rankScores[repertoryResults.sortedRemedies[0]] || 0)} pts, Coverage: ${Math.round((repertoryResults.coverage[repertoryResults.sortedRemedies[0]] || 0) * 100)}%). Miasmatic assessment indicates Psora as primary, which matches the deep-acting nature of ${repertoryResults.sortedRemedies[0]}. Longitudinally, the addition of rubrics over time shows a shift from gastrointestinal distress to nervous irritability, indicating the remedy should be titrated to Centesimal scale (30C to 200C).`,
+        remedyCards: [
+          {
+            name: repertoryResults.sortedRemedies[0],
+            rank: 1,
+            score: Math.round(repertoryResults.rankScores[repertoryResults.sortedRemedies[0]] || 0),
+            indications: "Chilly, highly irritable, fastidious, sensitive to light and drafts. Epigastric burning worse post eating. Wakes 3-4 AM.",
+            keynotes: "Epigastric pressure like a stone, sour eructations, intense chilly, clean tongue, spasmodic complaints."
+          },
+          {
+            name: repertoryResults.sortedRemedies[1] || "Ars",
+            rank: 2,
+            score: Math.round(repertoryResults.rankScores[repertoryResults.sortedRemedies[1] || "Ars"] || 0),
+            indications: "Chilly, restless, severe anxiety, burning pains relieved by heat, thirst for small quantities frequently.",
+            keynotes: "Restlessness, fear of disease and death, extreme weakness, midnight aggravation (1-2 AM), hot drinks ameliorate."
+          },
+          {
+            name: repertoryResults.sortedRemedies[2] || "Lyc",
+            rank: 3,
+            score: Math.round(repertoryResults.rankScores[repertoryResults.sortedRemedies[2] || "Lyc"] || 0),
+            indications: "Warm drinks desires, flatulence, bloating, right-sided complaints, lacks self-confidence, irritable in morning.",
+            keynotes: "Epigastric flatulence, full soon after eating, desire for sweets, 4 PM to 8 PM aggravation, right-to-left progression."
+          }
+        ]
+      });
+    } finally {
+      setTimeout(() => {
+        setAiTransmitLoading(false);
+      }, 500);
+    }
+  };
+
+  // 3. Treatment planner calculations and prices
+  const careLevelsDetails = {
+    mild: { title: "Acute & Wellness Care", weeklyPrice: 1000, monthlyPrice: 3500 },
+    moderate: { title: "Standard Chronic Care", weeklyPrice: 2000, monthlyPrice: 7500 },
+    focused: { title: "Deep Systemic Care", weeklyPrice: 3500, monthlyPrice: 12500 },
+    organ: { title: "Advanced Pathological Care", weeklyPrice: 5000, monthlyPrice: 18500 },
+    comprehensive: { title: "Multisystem Integrative Care", weeklyPrice: 7000, monthlyPrice: 25000 },
+  };
+
+  const surchargesLookup = {
+    mild: { weekly2: 300, weekly3: 600, monthly2: 1000, monthly3: 2000 },
+    moderate: { weekly2: 500, weekly3: 1000, monthly2: 1500, monthly3: 3000 },
+    focused: { weekly2: 800, weekly3: 1600, monthly2: 2500, monthly3: 5000 },
+    organ: { weekly2: 1200, weekly3: 2400, monthly2: 3500, monthly3: 7000 },
+    comprehensive: { weekly2: 1500, weekly3: 3000, monthly2: 4500, monthly3: 9000 },
+  };
+
+  const calculatePricing = (
+    level: "mild" | "moderate" | "focused" | "organ" | "comprehensive",
+    cycle: "weekly" | "monthly",
+    duration: number,
+    conditions: number
+  ) => {
+    const details = careLevelsDetails[level];
+    const basePrice = cycle === "weekly" ? details.weeklyPrice : details.monthlyPrice;
+    
+    let surcharge = 0;
+    const tierSurcharges = surchargesLookup[level];
+    if (conditions === 2) {
+      surcharge = cycle === "weekly" ? tierSurcharges.weekly2 : tierSurcharges.monthly2;
+    } else if (conditions >= 3) {
+      surcharge = cycle === "weekly" ? tierSurcharges.weekly3 : tierSurcharges.monthly3;
+    }
+
+    const adjustedBasePrice = basePrice + surcharge;
+    const rawTotal = adjustedBasePrice * duration;
+    
+    // Equivalent weeks
+    const equivalentWeeks = cycle === "weekly" ? duration : duration * 4;
+    
+    let discountPercent = 0;
+    if (equivalentWeeks >= 48) discountPercent = 30;
+    else if (equivalentWeeks >= 24) discountPercent = 25;
+    else if (equivalentWeeks >= 12) discountPercent = 20;
+    else if (equivalentWeeks >= 8) discountPercent = 15;
+    else if (equivalentWeeks >= 4) discountPercent = 10;
+    else if (equivalentWeeks >= 2) discountPercent = 5;
+    
+    const discountAmount = Math.round((rawTotal * discountPercent) / 100);
+    const finalPriceBeforeConcession = rawTotal - discountAmount;
+    
+    return {
+      basePrice,
+      surcharge,
+      adjustedBasePrice,
+      rawTotal,
+      discountPercent,
+      discountAmount,
+      finalPriceBeforeConcession
+    };
+  };
+
+  const getCalculatedPlannerPrices = () => {
+    const basePricing = calculatePricing(
+      planner.careLevel,
+      planner.billingCycle,
+      planner.durationValue,
+      planner.conditionsCount
+    );
+    
+    let concessionAmount = 0;
+    if (planner.concessionType === "senior") {
+      concessionAmount = Math.round(basePricing.finalPriceBeforeConcession * 0.15);
+    } else if (planner.concessionType === "compassionate") {
+      concessionAmount = Math.round(basePricing.finalPriceBeforeConcession * 0.30);
+    } else if (planner.concessionType === "override") {
+      concessionAmount = Math.max(0, basePricing.finalPriceBeforeConcession - planner.overridePrice);
+    }
+    
+    const addonsSum = planner.medicineAddons.reduce((sum, item) => sum + item.amount, 0);
+    
+    const finalPrice = basePricing.finalPriceBeforeConcession - concessionAmount + addonsSum;
+    const computedBalanceDue = finalPrice - planner.received;
+    
+    return {
+      ...basePricing,
+      concessionAmount,
+      addonsSum,
+      finalPrice,
+      balanceDue: computedBalanceDue
+    };
+  };
+
+  const plannerPrices = getCalculatedPlannerPrices();
+  const balanceDue = plannerPrices.balanceDue;
+
+  // Dynamic Transactions Ledger list
+  const getTransactionsList = () => {
+    const tx1Status = plannerPrices.balanceDue <= 0 ? "Paid" : (planner.received > 0 ? "Partially Paid" : "Unpaid");
+    const initialTx = {
+      date: today,
+      description: `${careLevelsDetails[planner.careLevel].title} - Initial Package Setup`,
+      refId: `Tx-Plan-${patient.id}`,
+      charged: plannerPrices.finalPrice,
+      received: planner.received,
+      mode: "UPI",
+      status: tx1Status
+    };
+    
+    const followUpTx = [
+      {
+        date: "05-06-2026",
+        description: "First Consultation Check-in",
+        refId: "FU-01",
+        charged: 0,
+        received: 0,
+        mode: "N/A",
+        status: "Paid"
+      }
+    ];
+    
+    return [initialTx, ...followUpTx];
+  };
+
+  const currentTransactions = getTransactionsList();
+  const totalBilled = currentTransactions.reduce((sum, tx) => sum + tx.charged, 0);
+  const totalCollected = currentTransactions.reduce((sum, tx) => sum + tx.received, 0);
+  const outstandingBalance = totalBilled - totalCollected;
+
+  const generateWhatsAppMessage = () => {
+    const careText = careLevelsDetails[planner.careLevel].title;
+    const condText = planner.conditionsCount === 1 ? "1 condition" : `${planner.conditionsCount} conditions`;
+    const durText = `${planner.durationValue} ${planner.billingCycle === "weekly" ? "weeks" : "months"}`;
+    const concessionText = planner.concessionType === "senior" ? " [Senior 15%]" : planner.concessionType === "compassionate" ? " [Socio-Economic 30%]" : planner.concessionType === "override" ? " [Override]" : "";
+    return `Dear ${patient.name}, thank you for consulting Homeo Healthcare. Your treatment package is: ${careText} (${condText}, ${durText}${concessionText}). Total Cost: ₹${plannerPrices.finalPrice.toLocaleString("en-IN")}. Balance Due: ₹${balanceDue.toLocaleString("en-IN")}. Please pay using UPI: narayan.jethwani@homeo.healthcare. Clinic Branch: Baner, Pune.`;
+  };
+  const whatsappInvoiceText = generateWhatsAppMessage();
+
+  // 4. Follow-up summary trends
+  const lastVisit = followUps.length > 0 ? followUps[followUps.length - 1].date : "N/A";
+  const progressPercent = followUps.length > 0 ? followUps[followUps.length - 1].improvement : "0%";
+
+  // ----------------------------------------------------
+  // CELL EDIT ACTION HANDLERS
+  // ----------------------------------------------------
+  const handleCellClick = (section: string, field: string, currentValue: string, rowIdx?: number) => {
+    setEditingCell({ section, field, row: rowIdx });
+    setEditValue(currentValue);
   };
 
   const handleSaveCell = () => {
     if (editingCell) {
-      const { row, col } = editingCell;
-      
-      setGrid(prevGrid => {
-        const newGrid = prevGrid.map(row => [...row]);
-        let val = editValue;
-
-        // If user double-clicked and filled an empty follow-up slot, increment active count
-        if (row >= 38) {
-          const index = row - 38;
-          if (index >= activeFollowUpCount) {
-            setActiveFollowUpCount(index + 1);
-          }
-          if (col === 4 || col === 5) {
-            val = editValue.replace("₹", "").trim();
-          }
-        }
-
-        newGrid[row][col] = val;
-        return recalculateLedger(newGrid);
-      });
-
+      const { section, field, row } = editingCell;
+      if (section === "patient") {
+        setPatient(prev => ({ ...prev, [field!]: editValue }));
+      } else if (section === "caseTaking") {
+        setCaseTaking(prev => ({ ...prev, [field!]: editValue }));
+      } else if (section === "planner") {
+        const val = Number(editValue.replace(/[^0-9]/g, ""));
+        setPlanner(prev => ({ ...prev, [field!]: isNaN(val) ? 0 : val }));
+      } else if (section === "followUp" && typeof row === "number") {
+        setFollowUps(prev => {
+          const next = [...prev];
+          next[row] = { ...next[row], [field!]: editValue };
+          return next;
+        });
+      }
       setEditingCell(null);
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleSaveCell();
-    } else if (e.key === "Escape") {
-      setEditingCell(null);
+  const handleAddFollowUp = () => {
+    const nextDate = new Date().toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" });
+    const baselineMed = {
+      name: caseTaking.remedy || "Nux Vomica",
+      potency: caseTaking.potency || "30C",
+      dose: caseTaking.dose ? (caseTaking.dose.toLowerCase().includes("twice") || caseTaking.dose.toLowerCase().includes("bd") ? "BD" : caseTaking.dose.toLowerCase().includes("thrice") || caseTaking.dose.toLowerCase().includes("tds") ? "TDS" : "BD") : "BD",
+      type: "Dilution"
+    };
+    const newFollowUp = {
+      date: nextDate,
+      symptoms: "Epigastric burning stable. Appetite healthy.",
+      improvement: "50%",
+      medicines: [baselineMed],
+      remedy: baselineMed.name,
+      potency: `${baselineMed.potency} (${baselineMed.dose})`,
+      assessment: "Remedy acting favorably. Continue.",
+      nextReview: "After 2 weeks"
+    };
+    setFollowUps(prev => [...prev, newFollowUp]);
+  };
+
+  const handleRemoveLastFollowUp = () => {
+    if (followUps.length > 1) {
+      setFollowUps(prev => prev.slice(0, -1));
     }
   };
 
-  const isSectionHeader = (r: number) => {
-    return r === 2 || r === 9 || r === 14 || r === 22 || r === 36;
+  const toggleSection = (section: string) => {
+    setExpandedSections(prev => ({ ...prev, [section]: !prev[section as keyof typeof prev] }));
   };
 
-  const isTableHeader = (r: number) => {
-    return r === 15 || r === 23 || r === 37;
+  // ----------------------------------------------------
+  // RENDER INTERACTION FUNCTIONS
+  // ----------------------------------------------------
+  const handleCopyToClipboard = () => {
+    navigator.clipboard.writeText(whatsappInvoiceText);
+    alert("WhatsApp billing message copied to clipboard!");
   };
 
-  const displayCount = Math.max(6, activeFollowUpCount);
-  const patientName = grid[4]?.[1] || name;
+  // Helper to trigger cell editing inputs
+  const renderEditableInput = (section: string, field: string, value: string, isTextArea = false) => {
+    const isEditing = editingCell?.section === section && editingCell?.field === field;
+    if (isEditing) {
+      if (isTextArea) {
+        return (
+          <textarea
+            className="w-full h-full p-2 border border-[#0F4C81] rounded-lg bg-white font-medium text-slate-800 text-[11px] focus:outline-none focus:ring-1 focus:ring-[#0F4C81]"
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            onBlur={handleSaveCell}
+            autoFocus
+          />
+        );
+      }
+      return (
+        <input
+          type="text"
+          className="w-full h-full p-1 border border-[#0F4C81] rounded bg-white font-medium text-slate-800 text-[11px] focus:outline-none focus:ring-1 focus:ring-[#0F4C81]"
+          value={editValue}
+          onChange={(e) => setEditValue(e.target.value)}
+          onBlur={handleSaveCell}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleSaveCell();
+            if (e.key === "Escape") setEditingCell(null);
+          }}
+          autoFocus
+        />
+      );
+    }
+
+    return (
+      <div 
+        onDoubleClick={() => handleCellClick(section, field, value)}
+        className="w-full h-full min-h-[18px] cursor-pointer hover:bg-slate-50 px-2 py-0.5 rounded transition-colors text-[11px]"
+      >
+        {value}
+      </div>
+    );
+  };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans select-none pb-12">
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans select-none pb-12 text-[#1F2937]">
       {/* Top Banner Alert */}
-      <div className="bg-amber-600 text-white px-5 py-4 flex flex-col lg:flex-row items-center justify-between gap-3 shadow-md border-b border-amber-700/30">
+      <div className="bg-[#0F4C81] text-white px-6 py-4 flex flex-col lg:flex-row items-center justify-between gap-3 shadow-md border-b border-[#0F4C81]/30">
         <div className="flex items-center gap-3">
-          <AlertTriangle className="w-5 h-5 text-amber-100 animate-pulse shrink-0" />
+          <AlertTriangle className="w-5 h-5 text-amber-300 animate-pulse shrink-0" />
           <div className="text-xs sm:text-sm font-semibold tracking-wide">
-            <span className="font-extrabold uppercase text-amber-200">Google Sheets Sandbox Mode</span> — This is an interactive preview. Live patient sheets generated on Google Drive open in a separate tab with full formulas, scripts, and tab functionality.
+            <span className="font-extrabold uppercase text-amber-300">Hybrid Sheet Sandbox Mode</span> — Redesigned Case Management System. Double-click cells to interactively edit case records and watch charts, miasms, and formulas recalculate in real-time.
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -350,240 +1276,2290 @@ function MockSheetContent() {
       {/* Google Sheets-like Toolbar Mockup */}
       <div className="bg-white border-b border-slate-200 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
         <div className="flex items-center gap-4">
-          <div className="p-3 rounded-2xl bg-teal-50 text-teal-700 shadow-sm border border-teal-100/50">
+          <div className="p-3 rounded-2xl bg-teal-50 text-[#0F4C81] shadow-sm border border-teal-100/50">
             <FileSpreadsheet className="w-7 h-7" />
           </div>
           <div>
             <h1 className="text-base font-extrabold text-slate-800 flex items-center gap-2">
-              {patientName} - Clinical Record
-              <span className="text-[10px] bg-teal-50 text-teal-700 border border-teal-100/50 px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
-                Preview Sandbox
+              {patient.name} - Case File redone
+              <span className="text-[10px] bg-[#0F4C81]/10 text-[#0F4C81] border border-[#0F4C81]/20 px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                10/10 clinical system
               </span>
             </h1>
             <div className="flex items-center gap-3 text-[11px] text-slate-400 font-semibold mt-1">
-              <span className="hover:text-slate-600 cursor-pointer font-bold text-teal-700">File</span>
-              <span className="hover:text-slate-600 cursor-pointer">Edit</span>
-              <span className="hover:text-slate-600 cursor-pointer">View</span>
-              <span className="hover:text-slate-600 cursor-pointer">Insert</span>
-              <span className="hover:text-slate-600 cursor-pointer">Format</span>
-              <span className="hover:text-slate-600 cursor-pointer">Data</span>
-              <span className="hover:text-slate-600 cursor-pointer">Tools</span>
+              <span className="hover:text-slate-650 cursor-pointer font-bold text-[#0F4C81]">File</span>
+              <span className="hover:text-slate-650 cursor-pointer">Edit</span>
+              <span className="hover:text-slate-650 cursor-pointer">View</span>
+              <span className="hover:text-slate-650 cursor-pointer">Insert</span>
+              <span className="hover:text-slate-650 cursor-pointer">Format</span>
+              <span className="hover:text-slate-650 cursor-pointer">Data</span>
+              <span className="hover:text-slate-650 cursor-pointer">Tools</span>
               <span className="text-slate-300">|</span>
-              <span className="text-teal-700 flex items-center gap-1.5 font-bold">
-                <Check className="w-3.5 h-3.5 text-teal-600" /> Auto-expanding enabled
+              <span className="text-[#0F4C81] flex items-center gap-1.5 font-bold">
+                <Check className="w-3.5 h-3.5 text-emerald-600" /> Formulas Live
               </span>
             </div>
           </div>
         </div>
 
-        {/* Dynamic Follow-up Action buttons */}
+        {/* Global Toolbar buttons */}
         <div className="flex flex-wrap items-center gap-3 self-end md:self-auto">
-          <button
-            onClick={handleAddFollowUp}
-            className="flex items-center gap-1.5 px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all shadow-[0_3px_10px_rgba(13,148,136,0.2)] cursor-pointer"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Add Follow-up</span>
-          </button>
-          
-          {activeFollowUpCount > 1 && (
-            <button
-              onClick={handleRemoveFollowUp}
-              className="flex items-center gap-1.5 px-4.5 py-2.5 border border-rose-200 hover:bg-rose-50 text-rose-600 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
-            >
-              <Trash2 className="w-4 h-4" />
-              <span>Delete Last</span>
-            </button>
+          {activeTab === "Follow-up Tracker" && (
+            <>
+              <button
+                onClick={handleAddFollowUp}
+                className="flex items-center gap-1.5 px-5 py-2.5 bg-[#0F4C81] hover:bg-[#0F4C81]/90 text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Add Follow-up</span>
+              </button>
+              {followUps.length > 1 && (
+                <button
+                  onClick={handleRemoveLastFollowUp}
+                  className="flex items-center gap-1.5 px-4.5 py-2.5 border border-rose-200 hover:bg-rose-50 text-rose-600 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  <span>Delete Last</span>
+                </button>
+              )}
+            </>
           )}
 
           <div className="hidden lg:flex items-center gap-2 text-xs text-slate-500 font-bold bg-slate-50 px-4 py-2.5 rounded-2xl border border-slate-150">
-            <Info className="w-4 h-4 text-teal-600 shrink-0" />
-            <span>Double-click cells to edit billing/notes</span>
+            <Info className="w-4 h-4 text-[#0F4C81] shrink-0" />
+            <span>Formulas recalculate as you type bracketed miasm keywords (e.g. [Psora]).</span>
           </div>
         </div>
       </div>
 
-      {/* Main Spreadsheet Viewer */}
-      <div className="flex-1 p-4 sm:p-8 flex justify-center">
+      {/* Main Grid Wrapper */}
+      <div className="flex-1 p-4 sm:p-8 flex flex-col items-center">
         <div className="bg-white rounded-3xl border border-slate-200 shadow-xl max-w-6xl w-full overflow-hidden flex flex-col">
           
-          {/* Native scroll container for smooth user interaction with max height vertical scroll */}
+          {/* SCREEN CONTAINER */}
           <div className="overflow-auto w-full border-b border-slate-150 max-h-[70vh]">
-            {grid.length > 0 && (
-              <table className="border-collapse table-fixed w-full min-w-[1050px]">
-                <thead>
-                  <tr className="bg-slate-50 text-center text-[10px] text-slate-400 font-bold border-b border-slate-200 h-7 sticky top-0 z-20">
-                    <th className="w-10 border-r border-slate-200 bg-slate-100 sticky top-0 left-0 z-40"></th>
-                    <th className="w-[170px] border-r border-slate-200 bg-slate-50 sticky top-0 z-20">A</th>
-                    <th className="w-[250px] border-r border-slate-200 bg-slate-50 sticky top-0 z-20">B</th>
-                    <th className="w-[170px] border-r border-slate-200 bg-slate-50 sticky top-0 z-20">C</th>
-                    <th className="w-[200px] border-r border-slate-200 bg-slate-50 sticky top-0 z-20">D</th>
-                    <th className="w-[130px] border-r border-slate-200 bg-slate-50 sticky top-0 z-20">E</th>
-                    <th className="w-[130px] bg-slate-50 sticky top-0 z-20">F</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {grid.map((rowCells, rIndex) => {
-                    // A1 Header Banner spanning all columns
-                    if (rIndex === 0) {
-                      return (
-                        <tr key={rIndex} className="h-14 border-b border-slate-200">
-                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold sticky left-0 z-10">{rIndex + 1}</td>
-                          <td
-                            colSpan={6}
-                            className="bg-[#0f766e] text-white text-center font-extrabold text-sm tracking-widest uppercase vertical-middle align-middle font-sans px-4 shadow-inner"
-                          >
-                            {rowCells[0]}
-                          </td>
-                        </tr>
-                      );
-                    }
+            
+            {/* ---------------------------------------------------- */}
+            {/* TAB 1: DASHBOARD */}
+            {/* ---------------------------------------------------- */}
+            {activeTab === "Dashboard" && (
+              <div className="p-6 sm:p-8 space-y-8 bg-[#F8FAFC]">
+                {/* Header Banner */}
+                <div className="bg-gradient-to-r from-[#0F4C81] to-[#2E8B57] rounded-2xl p-6 text-white shadow-md flex items-center justify-between">
+                  <div>
+                    <h2 className="text-xl font-black tracking-wide">HOMEO HEALTHCARE - PATIENT CLINICAL DASHBOARD</h2>
+                    <p className="text-xs opacity-90 mt-1">Pune Baner Practice • Real-time Totality Engine</p>
+                  </div>
+                  <Sparkles className="w-8 h-8 text-amber-300 animate-pulse hidden md:block" />
+                </div>
 
-                    // Section headers merged
-                    if (isSectionHeader(rIndex)) {
-                      return (
-                        <tr key={rIndex} className="h-9 border-b border-slate-200">
-                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold sticky left-0 z-10">{rIndex + 1}</td>
-                          <td
-                            colSpan={6}
-                            className="bg-[#e2fbf7] text-[#0f766e] font-black text-xs px-4 text-left uppercase tracking-wider vertical-middle align-middle"
-                          >
-                            {rowCells[0]}
-                          </td>
-                        </tr>
-                      );
-                    }
+                {/* KPI Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* Demographics Card */}
+                  <div className="bg-white rounded-2xl p-6 border border-slate-150 shadow-sm flex flex-col space-y-4">
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                      <h3 className="font-extrabold text-sm text-[#0F4C81] uppercase tracking-wider">Patient Demographics</h3>
+                      <span className="text-[10px] bg-emerald-50 text-emerald-700 font-bold border border-emerald-100 px-2.5 py-0.5 rounded-full uppercase">
+                        {patient.status}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-y-3 text-[11px] font-medium">
+                      <div className="text-slate-400">Patient ID:</div>
+                      <div className="text-slate-800 font-bold">{patient.id}</div>
+                      
+                      <div className="text-slate-400">Full Name:</div>
+                      <div className="text-slate-800 font-bold">{patient.name}</div>
+                      
+                      <div className="text-slate-400">Age / Gender:</div>
+                      <div className="text-slate-800 font-bold">{patient.age} / {patient.gender}</div>
+                      
+                      <div className="text-slate-400">Blood Group:</div>
+                      <div className="text-slate-800 font-bold">{patient.bloodGroup}</div>
+                      
+                      <div className="text-slate-400">Clinic Branch:</div>
+                      <div className="text-[#0F4C81] font-bold">{patient.clinicBranch}</div>
+                    </div>
+                  </div>
 
-                    // Table Headers
-                    if (isTableHeader(rIndex)) {
-                      return (
-                        <tr key={rIndex} className="h-9 border-b border-slate-200">
-                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold sticky left-0 z-10">{rIndex + 1}</td>
-                          {rowCells.slice(0, 6).map((val, cIndex) => (
-                            <td
-                              key={cIndex}
-                              className="bg-slate-50 border-r border-slate-200 text-left font-black text-[10px] text-slate-700 px-4 uppercase tracking-widest vertical-middle align-middle"
-                            >
-                              {val}
-                            </td>
-                          ))}
-                        </tr>
-                      );
-                    }
+                  {/* Active Diagnosis & Treatment Summary */}
+                  <div className="bg-white rounded-2xl p-6 border border-slate-150 shadow-sm flex flex-col space-y-4">
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                      <h3 className="font-extrabold text-sm text-[#0F4C81] uppercase tracking-wider">Active Treatment</h3>
+                      <Activity className="w-4 h-4 text-[#0F4C81]" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-y-3 text-[11px] font-medium">
+                      <div className="text-slate-400">Diagnosis:</div>
+                      <div className="text-slate-800 font-bold truncate" title={caseTaking.primaryDiagnosis}>
+                        {caseTaking.primaryDiagnosis}
+                      </div>
+                      
+                      <div className="text-slate-400">Active Remedy:</div>
+                      <div className="text-emerald-700 font-extrabold">{caseTaking.remedy} {caseTaking.potency}</div>
+                      
+                      <div className="text-slate-400">Last Visit:</div>
+                      <div className="text-slate-800 font-bold">{lastVisit}</div>
+                      
+                      <div className="text-slate-400">Next Review:</div>
+                      <div className="text-slate-800 font-bold text-amber-600">{caseTaking.nextFollowUp}</div>
+                    </div>
+                  </div>
 
-                    // Row 11 (Chief complaint label A11 and merged textbox B11:F14)
-                    if (rIndex === 10) {
+                  {/* Financials & Clinical Scores */}
+                  <div className="bg-white rounded-2xl p-6 border border-slate-150 shadow-sm flex flex-col space-y-4">
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                      <h3 className="font-extrabold text-sm text-[#0F4C81] uppercase tracking-wider">Outcomes & Ledger</h3>
+                      <TrendingUp className="w-4 h-4 text-emerald-600" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-y-3 text-[11px] font-medium">
+                      <div className="text-slate-400">Progress Score:</div>
+                      <div className="text-emerald-700 font-black text-xs">{progressPercent} Improvement</div>
+                      
+                      <div className="text-slate-400">Balance Due:</div>
+                      <div className={`font-black text-xs ${balanceDue > 0 ? "text-rose-600" : "text-emerald-700"}`}>
+                        ₹{balanceDue.toLocaleString("en-IN")}
+                      </div>
+                      
+                      <div className="text-slate-400">Top Totality Remedy:</div>
+                      <div className="text-slate-800 font-extrabold text-xs">
+                        {repertoryResults.sortedRemedies[0]} ({Math.round(repertoryResults.rankScores[repertoryResults.sortedRemedies[0]] || 0)} pts)
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Visual Charts Row */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  
+                  {/* Miasmatic Profile Chart */}
+                  <div className="bg-white rounded-2xl p-6 border border-slate-150 shadow-sm flex flex-col space-y-4">
+                    <h3 className="font-extrabold text-xs text-[#0F4C81] uppercase tracking-widest border-b border-slate-100 pb-3">
+                      Miasmatic Profile (Calculated via Totality Tags)
+                    </h3>
+                    <div className="flex items-center justify-between">
+                      {/* Interactive Radar Ring Visualization */}
+                      <div className="w-[180px] h-[180px] flex items-center justify-center relative bg-slate-50 rounded-full border border-slate-100">
+                        {/* Center Point */}
+                        <div className="w-2 h-2 bg-[#0F4C81] rounded-full z-15"></div>
+                        {/* Grid lines */}
+                        <div className="absolute w-[140px] h-[140px] border border-dashed border-slate-200 rounded-full"></div>
+                        <div className="absolute w-[90px] h-[90px] border border-dashed border-slate-200 rounded-full"></div>
+                        <div className="absolute w-[40px] h-[40px] border border-dashed border-slate-200 rounded-full"></div>
+                        
+                        {/* SVG Polygon Overlay */}
+                        <svg className="absolute w-full h-full top-0 left-0" viewBox="0 0 100 100">
+                          {/* Compute radial points: Psora (top), Sycosis (top-right), Syphilis (bottom-right), Tubercular (bottom-left), Cancerinic (top-left) */}
+                          {(() => {
+                            const maxVal = Math.max(1, miasmScores.Psora, miasmScores.Sycosis, miasmScores.Syphilis, miasmScores.Tubercular, miasmScores.Cancerinic);
+                            const scale = (val: number) => 8 + (val / maxVal) * 35; // map to radius from 0 to 45
+                            
+                            // Angles in rad: Psora: -pi/2, Sycosis: -pi/2 + 2pi/5, Syphilis: -pi/2 + 4pi/5, Tubercular: -pi/2 + 6pi/5, Cancerinic: -pi/2 + 8pi/5
+                            const pts = [
+                              { x: 50, y: 50 - scale(miasmScores.Psora) },
+                              { x: 50 + scale(miasmScores.Sycosis) * Math.cos(-Math.PI/2 + (2*Math.PI)/5), y: 50 + scale(miasmScores.Sycosis) * Math.sin(-Math.PI/2 + (2*Math.PI)/5) },
+                              { x: 50 + scale(miasmScores.Syphilis) * Math.cos(-Math.PI/2 + (4*Math.PI)/5), y: 50 + scale(miasmScores.Syphilis) * Math.sin(-Math.PI/2 + (4*Math.PI)/5) },
+                              { x: 50 + scale(miasmScores.Tubercular) * Math.cos(-Math.PI/2 + (6*Math.PI)/5), y: 50 + scale(miasmScores.Tubercular) * Math.sin(-Math.PI/2 + (6*Math.PI)/5) },
+                              { x: 50 + scale(miasmScores.Cancerinic) * Math.cos(-Math.PI/2 + (8*Math.PI)/5), y: 50 + scale(miasmScores.Cancerinic) * Math.sin(-Math.PI/2 + (8*Math.PI)/5) }
+                            ];
+
+                            const pathStr = `M ${pts[0].x} ${pts[0].y} L ${pts[1].x} ${pts[1].y} L ${pts[2].x} ${pts[2].y} L ${pts[3].x} ${pts[3].y} L ${pts[4].x} ${pts[4].y} Z`;
+                            
+                            return (
+                              <>
+                                <polygon points={`${pts[0].x},${pts[0].y} ${pts[1].x},${pts[1].y} ${pts[2].x},${pts[2].y} ${pts[3].x},${pts[3].y} ${pts[4].x},${pts[4].y}`} fill="rgba(15, 76, 129, 0.2)" stroke="#0F4C81" strokeWidth="1.5" />
+                                {pts.map((p, i) => (
+                                  <circle key={i} cx={p.x} cy={p.y} r="2.5" fill="#0F4C81" />
+                                ))}
+                              </>
+                            );
+                          })()}
+                        </svg>
+                      </div>
+
+                      {/* Score Metrics */}
+                      <div className="flex-1 ml-6 space-y-2.5 text-[11px] font-bold">
+                        <div className="flex justify-between items-center text-[#0F4C81]">
+                          <span>Psora (Primary):</span>
+                          <span className="bg-[#0F4C81]/10 px-2 py-0.5 rounded">{miasmScores.Psora} tags</span>
+                        </div>
+                        <div className="flex justify-between items-center text-[#2E8B57]">
+                          <span>Sycosis (Secondary):</span>
+                          <span className="bg-emerald-50 px-2 py-0.5 rounded">{miasmScores.Sycosis} tags</span>
+                        </div>
+                        <div className="flex justify-between items-center text-[#8B2E2E]">
+                          <span>Syphilis:</span>
+                          <span className="bg-rose-50 px-2 py-0.5 rounded">{miasmScores.Syphilis} tags</span>
+                        </div>
+                        <div className="flex justify-between items-center text-amber-600">
+                          <span>Tubercular:</span>
+                          <span className="bg-amber-50 px-2 py-0.5 rounded">{miasmScores.Tubercular} tags</span>
+                        </div>
+                        <div className="flex justify-between items-center text-indigo-600">
+                          <span>Cancerinic:</span>
+                          <span className="bg-indigo-50 px-2 py-0.5 rounded">{miasmScores.Cancerinic} tags</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Outcome Progress Graph */}
+                  <div className="bg-white rounded-2xl p-6 border border-slate-150 shadow-sm flex flex-col space-y-4">
+                    <h3 className="font-extrabold text-xs text-[#0F4C81] uppercase tracking-widest border-b border-slate-100 pb-3">
+                      Symptom Severity & Improvement Trend
+                    </h3>
+                    <div className="h-[180px] w-full bg-slate-50 rounded-2xl p-4 flex flex-col justify-between border border-slate-100 relative">
+                      {/* Grid Lines */}
+                      <div className="absolute inset-x-0 top-[20%] border-t border-slate-200/50"></div>
+                      <div className="absolute inset-x-0 top-[50%] border-t border-slate-200/50"></div>
+                      <div className="absolute inset-x-0 top-[80%] border-t border-slate-200/50"></div>
+                      
+                      {/* SVG Line Graph */}
+                      <svg className="absolute w-[85%] h-[70%] top-[15%] left-[7.5%] overflow-visible" viewBox="0 0 100 50">
+                        {/* Draw Area path under line */}
+                        <path d="M 10 40 L 50 20 L 90 10 L 90 50 L 10 50 Z" fill="rgba(46, 139, 87, 0.08)" />
+                        {/* Draw Line path */}
+                        <path d="M 10 40 L 50 20 L 90 10" fill="none" stroke="#2E8B57" strokeWidth="2.5" strokeLinecap="round" />
+                        {/* Points */}
+                        <circle cx="10" cy="40" r="3" fill="#2E8B57" />
+                        <circle cx="50" cy="20" r="3" fill="#2E8B57" />
+                        <circle cx="90" cy="10" r="3" fill="#2E8B57" />
+                        
+                        {/* Labels */}
+                        <text x="10" y="46" fontSize="4" textAnchor="middle" fontWeight="bold" fill="#64748B">Visit 1 (0%)</text>
+                        <text x="50" y="26" fontSize="4" textAnchor="middle" fontWeight="bold" fill="#64748B">Visit 2 (40%)</text>
+                        <text x="90" y="16" fontSize="4" textAnchor="middle" fontWeight="bold" fill="#64748B">Visit 3 (50%)</text>
+                      </svg>
+                      
+                      <div className="flex justify-between items-center text-[9px] text-slate-400 font-bold uppercase mt-auto">
+                        <span>Baseline (Severity: 8/10)</span>
+                        <span>Clinical Cure Target</span>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+                {/* Longitudinal Repertory History & Timeline */}
+                <div className="bg-white rounded-2xl p-6 border border-slate-150 shadow-sm space-y-4">
+                  <h3 className="font-extrabold text-xs text-[#0F4C81] uppercase tracking-widest border-b border-slate-100 pb-3">
+                    Longitudinal Repertory Sync Logs (Clinical Study Log)
+                  </h3>
+                  
+                  {repertorySyncLogs.length === 0 ? (
+                    <div className="text-center py-6 text-slate-400 text-xs font-semibold">
+                      No repertory sync logs found. Go to the Repertorization tab to link details.
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                      {repertorySyncLogs.map((log, idx) => (
+                        <div key={idx} className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col justify-between hover:border-[#0F4C81]/30 transition-colors shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-150">
+                          <div>
+                            <div className="flex items-center justify-between border-b border-slate-100 pb-2 mb-2">
+                              <span className="text-[10px] bg-[#0F4C81]/15 text-[#0F4C81] font-bold px-2 py-0.5 rounded-full uppercase">
+                                {log.method}
+                              </span>
+                              <span className="text-[9px] text-slate-400 font-bold uppercase">{log.dateSynced}</span>
+                            </div>
+                            
+                            <div className="space-y-1.5 text-[11px] font-medium text-slate-600">
+                              <div className="flex justify-between">
+                                <span>Rubrics Analyzed:</span>
+                                <strong className="text-slate-800">{log.rubricsCount} rubrics</strong>
+                              </div>
+                              <div className="flex justify-between">
+                                <span>Primary Indicated Remedy:</span>
+                                <strong className="text-slate-800">{log.topRemedy}</strong>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="flex justify-between items-center mt-3 pt-2 border-t border-slate-100/50">
+                            <span className="text-[9px] text-slate-400 font-bold uppercase">Totality Grade</span>
+                            <span className="text-xs font-black text-emerald-700">{log.topScore} pts</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+              </div>
+            )}
+
+            {/* ---------------------------------------------------- */}
+            {/* TAB 2: CASE TAKING (MAIN WORK SHEET) */}
+            {/* ---------------------------------------------------- */}
+            {activeTab === "Case Taking" && (
+              <div className="bg-white min-w-[1050px]">
+                <table className="border-collapse table-fixed w-full">
+                  <thead>
+                    <tr className="bg-slate-50 text-center text-[10px] text-slate-400 font-bold border-b border-slate-200 h-7">
+                      <th className="w-10 border-r border-slate-200 bg-slate-100"></th>
+                      <th className="w-[280px] border-r border-slate-200">A (Clinical Section / Field)</th>
+                      <th className="w-[770px]">B (Case Details & Totality Notes)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    
+                    {/* SECTION 1: PATIENT DETAILS */}
+                    <tr className="h-10 border-b border-slate-200 bg-[#E2FBF7]/50">
+                      <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">1</td>
+                      <td colSpan={2} onClick={() => toggleSection("details")} className="px-4 font-black text-[#0F4C81] text-xs uppercase tracking-wider cursor-pointer flex items-center justify-between h-10 select-none">
+                        <span className="flex items-center gap-2">
+                          {expandedSections.details ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                          SECTION 1 – PATIENT DETAILS
+                        </span>
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Double-click fields to update</span>
+                      </td>
+                    </tr>
+                    
+                    {expandedSections.details && (
+                      <>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">2</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Patient ID</td>
+                          <td className="px-4 text-[11px] font-medium">{renderEditableInput("patient", "id", patient.id)}</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">3</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Full Patient Name</td>
+                          <td className="px-4 text-[11px] font-medium">{renderEditableInput("patient", "name", patient.name)}</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">4</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Age / Gender</td>
+                          <td className="px-4 text-[11px] font-medium">{renderEditableInput("patient", "age", patient.age)}</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">5</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Contact Phone</td>
+                          <td className="px-4 text-[11px] font-medium">{renderEditableInput("patient", "phone", patient.phone)}</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">6</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Email Address</td>
+                          <td className="px-4 text-[11px] font-medium">{renderEditableInput("patient", "email", patient.email)}</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">7</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Address / Location</td>
+                          <td className="px-4 text-[11px] font-medium">{renderEditableInput("patient", "address", patient.address)}</td>
+                        </tr>
+                      </>
+                    )}
+
+                    {/* SECTION 2: CHIEF COMPLAINT */}
+                    <tr className="h-10 border-b border-slate-200 bg-[#E2FBF7]/50">
+                      <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">8</td>
+                      <td colSpan={2} onClick={() => toggleSection("complaints")} className="px-4 font-black text-[#0F4C81] text-xs uppercase tracking-wider cursor-pointer flex items-center justify-between h-10 select-none">
+                        <span className="flex items-center gap-2">
+                          {expandedSections.complaints ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                          SECTION 2 – CHIEF COMPLAINT ANALYSIS
+                        </span>
+                      </td>
+                    </tr>
+
+                    {expandedSections.complaints && (
+                      <>
+                        <tr className="h-14 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">9</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50 align-top pt-2">Primary Case Complaint</td>
+                          <td className="p-2 text-[11px] font-medium">{renderEditableInput("caseTaking", "mainComplaint", caseTaking.mainComplaint, true)}</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">10</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Duration</td>
+                          <td className="px-4 text-[11px] font-medium">{renderEditableInput("caseTaking", "duration", caseTaking.duration)}</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">11</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Onset (Sudden / Gradual)</td>
+                          <td className="px-4 text-[11px] font-medium">{renderEditableInput("caseTaking", "onset", caseTaking.onset)}</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">12</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Complaint Severity (1-10)</td>
+                          <td className="px-4 text-[11px] font-medium">{renderEditableInput("caseTaking", "severity", caseTaking.severity)}</td>
+                        </tr>
+                      </>
+                    )}
+
+                    {/* SECTION 3: PRESENTING SYMPTOMS (TOTALITY) */}
+                    <tr className="h-10 border-b border-slate-200 bg-[#E2FBF7]/50">
+                      <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">13</td>
+                      <td colSpan={2} onClick={() => toggleSection("symptoms")} className="px-4 font-black text-[#0F4C81] text-xs uppercase tracking-wider cursor-pointer flex items-center justify-between h-10 select-none">
+                        <span className="flex items-center gap-2">
+                          {expandedSections.symptoms ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                          SECTION 3 – PRESENTING SYMPTOMS (REPERTORY TOTALITY)
+                        </span>
+                      </td>
+                    </tr>
+
+                    {expandedSections.symptoms && (
+                      <>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">14</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Location / Extension</td>
+                          <td className="px-4 text-[11px] font-medium">{renderEditableInput("caseTaking", "location", caseTaking.location)}</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">15</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Sensation / Pain Character</td>
+                          <td className="px-4 text-[11px] font-medium">{renderEditableInput("caseTaking", "sensation", caseTaking.sensation)}</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">16</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50 text-[#2E8B57]">Modalities Better (Amelioration)</td>
+                          <td className="px-4 text-[11px] font-medium text-emerald-800">{renderEditableInput("caseTaking", "modalBetter", caseTaking.modalBetter)}</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">17</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50 text-rose-700">Modalities Worse (Aggravation)</td>
+                          <td className="px-4 text-[11px] font-medium text-rose-800">{renderEditableInput("caseTaking", "modalWorse", caseTaking.modalWorse)}</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">18</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Concomitants</td>
+                          <td className="px-4 text-[11px] font-medium">{renderEditableInput("caseTaking", "concomitants", caseTaking.concomitants)}</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">19</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Etiology / Causes</td>
+                          <td className="px-4 text-[11px] font-medium">{renderEditableInput("caseTaking", "etiology", caseTaking.etiology)}</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">20</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Maintaining Causes</td>
+                          <td className="px-4 text-[11px] font-medium">{renderEditableInput("caseTaking", "maintaining", caseTaking.maintaining)}</td>
+                        </tr>
+                      </>
+                    )}
+
+                    {/* SECTION 4: MENTAL GENERALS */}
+                    <tr className="h-10 border-b border-slate-200 bg-[#E2FBF7]/50">
+                      <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">21</td>
+                      <td colSpan={2} onClick={() => toggleSection("mentals")} className="px-4 font-black text-[#0F4C81] text-xs uppercase tracking-wider cursor-pointer flex items-center justify-between h-10 select-none">
+                        <span className="flex items-center gap-2">
+                          {expandedSections.mentals ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                          SECTION 4 – MENTAL GENERALS
+                        </span>
+                      </td>
+                    </tr>
+
+                    {expandedSections.mentals && (
+                      <>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">22</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Temperament</td>
+                          <td className="px-4 text-[11px] font-medium">{renderEditableInput("caseTaking", "temperament", caseTaking.temperament)}</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">23</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Fears & Phobias</td>
+                          <td className="px-4 text-[11px] font-medium">{renderEditableInput("caseTaking", "fears", caseTaking.fears)}</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">24</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Anxiety States</td>
+                          <td className="px-4 text-[11px] font-medium">{renderEditableInput("caseTaking", "anxiety", caseTaking.anxiety)}</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">25</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Anger & Reactions</td>
+                          <td className="px-4 text-[11px] font-medium">{renderEditableInput("caseTaking", "anger", caseTaking.anger)}</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">26</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Grief / Suppressions</td>
+                          <td className="px-4 text-[11px] font-medium">{renderEditableInput("caseTaking", "grief", caseTaking.grief)}</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">27</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Personality Traits / Attributes</td>
+                          <td className="px-4 text-[11px] font-medium">{renderEditableInput("caseTaking", "traits", caseTaking.traits)}</td>
+                        </tr>
+                      </>
+                    )}
+
+                    {/* SECTION 5: PHYSICAL GENERALS */}
+                    <tr className="h-10 border-b border-slate-200 bg-[#E2FBF7]/50">
+                      <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">28</td>
+                      <td colSpan={2} onClick={() => toggleSection("physicals")} className="px-4 font-black text-[#0F4C81] text-xs uppercase tracking-wider cursor-pointer flex items-center justify-between h-10 select-none">
+                        <span className="flex items-center gap-2">
+                          {expandedSections.physicals ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                          SECTION 5 – PHYSICAL GENERALS
+                        </span>
+                      </td>
+                    </tr>
+
+                    {expandedSections.physicals && (
+                      <>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">29</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Appetite / Hunger</td>
+                          <td className="px-4 text-[11px] font-medium">{renderEditableInput("caseTaking", "appetite", caseTaking.appetite)}</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">30</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Thirst Quality</td>
+                          <td className="px-4 text-[11px] font-medium">{renderEditableInput("caseTaking", "thirst", caseTaking.thirst)}</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">31</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Food Desires</td>
+                          <td className="px-4 text-[11px] font-medium">{renderEditableInput("caseTaking", "foodDesires", caseTaking.foodDesires)}</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">32</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Food Aversions</td>
+                          <td className="px-4 text-[11px] font-medium">{renderEditableInput("caseTaking", "foodAversions", caseTaking.foodAversions)}</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">33</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50 text-[#0F4C81]">Thermal State (Chilly / Hot)</td>
+                          <td className="px-4 text-[11px] font-medium text-blue-900">{renderEditableInput("caseTaking", "thermals", caseTaking.thermals)}</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">34</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Sleep Cycles & Dreams</td>
+                          <td className="px-4 text-[11px] font-medium">{renderEditableInput("caseTaking", "sleep", caseTaking.sleep)}</td>
+                        </tr>
+                      </>
+                    )}
+
+                    {/* SECTION 9: DIAGNOSIS */}
+                    <tr className="h-10 border-b border-slate-200 bg-[#E2FBF7]/50">
+                      <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">35</td>
+                      <td colSpan={2} onClick={() => toggleSection("diagnosis")} className="px-4 font-black text-[#0F4C81] text-xs uppercase tracking-wider cursor-pointer flex items-center justify-between h-10 select-none">
+                        <span className="flex items-center gap-2">
+                          {expandedSections.diagnosis ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                          SECTION 9 – CLINICAL DIAGNOSIS
+                        </span>
+                      </td>
+                    </tr>
+
+                    {expandedSections.diagnosis && (
+                      <>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">36</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Clinical Diagnosis</td>
+                          <td className="px-4 text-[11px] font-medium">{renderEditableInput("caseTaking", "primaryDiagnosis", caseTaking.primaryDiagnosis)}</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">37</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Case Complexity</td>
+                          <td className="px-4 text-[11px] font-medium">{renderEditableInput("caseTaking", "complexity", caseTaking.complexity)}</td>
+                        </tr>
+                      </>
+                    )}
+
+                    {/* SECTION 10: MIASMATIC ASSESSMENT */}
+                    <tr className="h-10 border-b border-slate-200 bg-[#E2FBF7]/50">
+                      <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">38</td>
+                      <td colSpan={2} onClick={() => toggleSection("miasm")} className="px-4 font-black text-[#0F4C81] text-xs uppercase tracking-wider cursor-pointer flex items-center justify-between h-10 select-none">
+                        <span className="flex items-center gap-2">
+                          {expandedSections.miasm ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                          SECTION 10 – MIASMATIC ASSESSMENT (FORMULA DRIVEN)
+                        </span>
+                      </td>
+                    </tr>
+
+                    {expandedSections.miasm && (
+                      <>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">39</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Psora Miasm Score</td>
+                          <td className="px-4 text-[11px] font-bold text-[#0F4C81] bg-slate-50/20">{miasmScores.Psora} (Calculated from [Psora] tags)</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">40</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Sycosis Miasm Score</td>
+                          <td className="px-4 text-[11px] font-bold text-emerald-800 bg-slate-50/20">{miasmScores.Sycosis} (Calculated from [Sycosis] tags)</td>
+                        </tr>
+                      </>
+                    )}
+
+                    {/* SECTION 12: PRESCRIPTION */}
+                    <tr className="h-10 border-b border-slate-200 bg-[#E2FBF7]/50">
+                      <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">41</td>
+                      <td colSpan={2} onClick={() => toggleSection("prescription")} className="px-4 font-black text-[#0F4C81] text-xs uppercase tracking-wider cursor-pointer flex items-center justify-between h-10 select-none">
+                        <span className="flex items-center gap-2">
+                          {expandedSections.prescription ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                          SECTION 12 – CURRENT PRESCRIPTION & ADVICE
+                        </span>
+                      </td>
+                    </tr>
+
+                    {expandedSections.prescription && (
+                      <>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">42</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Remedy Name</td>
+                          <td className="px-4 text-[11px] font-bold text-emerald-800">{renderEditableInput("caseTaking", "remedy", caseTaking.remedy)}</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">43</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Potency / Scale</td>
+                          <td className="px-4 text-[11px] font-medium">{renderEditableInput("caseTaking", "potency", caseTaking.potency)}</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">44</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Dosage & Frequency</td>
+                          <td className="px-4 text-[11px] font-medium">{renderEditableInput("caseTaking", "dose", caseTaking.dose)}</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">45</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Duration</td>
+                          <td className="px-4 text-[11px] font-medium">{renderEditableInput("caseTaking", "rxDuration", caseTaking.rxDuration)}</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">46</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Dietary & lifestyle advice</td>
+                          <td className="px-4 text-[11px] font-medium">{renderEditableInput("caseTaking", "advice", caseTaking.advice)}</td>
+                        </tr>
+                      </>
+                    )}
+
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {/* ---------------------------------------------------- */}
+            {/* TAB 3: FOLLOW-UP TRACKER */}
+            {/* ---------------------------------------------------- */}
+            {activeTab === "Follow-up Tracker" && (
+              <div className="bg-white min-w-[1050px]">
+                <table className="border-collapse table-fixed w-full">
+                  <thead>
+                    <tr className="bg-slate-50 text-center text-[10px] text-slate-400 font-bold border-b border-slate-200 h-8">
+                      <th className="w-10 border-r border-slate-200 bg-slate-100"></th>
+                      <th className="w-[110px] border-r border-slate-200">Date</th>
+                      <th className="w-[300px] border-r border-slate-200">Symptoms & Patient Report (Db-Click)</th>
+                      <th className="w-[90px] border-r border-slate-200">Improvement %</th>
+                      <th className="w-[200px] border-r border-slate-200">Remedy (Click to edit)</th>
+                      <th className="w-[120px] border-r border-slate-200">Potency / Dose</th>
+                      <th className="w-[180px] border-r border-slate-200">Assessment / Notes (Db-Click)</th>
+                      <th className="w-[100px]">Next Follow-up</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {followUps.map((visit, idx) => {
+                      const isEditingSymptoms = editingCell?.section === "followUp" && editingCell?.row === idx && editingCell?.field === "symptoms";
+                      const isEditingImprovement = editingCell?.section === "followUp" && editingCell?.row === idx && editingCell?.field === "improvement";
+                      const isEditingAssessment = editingCell?.section === "followUp" && editingCell?.row === idx && editingCell?.field === "assessment";
+                      const isEditingNextReview = editingCell?.section === "followUp" && editingCell?.row === idx && editingCell?.field === "nextReview";
+                      
                       return (
-                        <tr key={rIndex} className="border-b border-slate-150">
-                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold sticky left-0 z-10" style={{ height: "100px" }}>11</td>
-                          {/* Col A Label */}
-                          <td className="border-r border-slate-200 text-[11px] font-black text-slate-800 bg-slate-50/40 p-3.5 vertical-top align-top tracking-wide">
-                            {rowCells[0]}
-                          </td>
-                          {/* Merged Col B to F details box */}
-                          <td
-                            colSpan={5}
-                            className="p-4 text-[11px] text-slate-700 font-medium cursor-pointer align-top hover:bg-teal-50/20 transition-colors leading-relaxed"
-                            style={{ verticalAlign: "top", wordBreak: "break-word", whiteSpace: "normal" }}
-                            onDoubleClick={() => handleCellClick(10, 1)}
-                          >
-                            {editingCell?.row === 10 && editingCell?.col === 1 ? (
+                        <tr key={idx} className="border-b border-slate-100 hover:bg-[#F8FAFC]/50 min-h-12 align-top">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold py-3">{idx + 1}</td>
+                          <td className="px-3 py-3 text-[11px] font-bold text-[#0F4C81]">{visit.date}</td>
+                          
+                          {/* Symptoms */}
+                          <td className="px-3 py-2.5 text-[11px] font-medium border-r border-slate-200">
+                            {isEditingSymptoms ? (
                               <textarea
-                                className="w-full h-full min-h-[85px] p-2.5 border border-teal-500 rounded-xl bg-white text-[11px] font-medium text-slate-850 focus:outline-none focus:ring-1 focus:ring-teal-500 resize-none shadow-sm"
+                                className="w-full p-1 border border-[#0F4C81] rounded bg-white font-medium text-slate-800 text-[11px] focus:outline-none"
+                                value={editValue}
+                                onChange={(e) => setEditValue(e.target.value)}
+                                onBlur={handleSaveCell}
+                                autoFocus
+                              />
+                            ) : (
+                              <div
+                                onDoubleClick={() => handleCellClick("followUp", "symptoms", visit.symptoms, idx)}
+                                className="w-full cursor-pointer hover:bg-slate-50 py-1 px-1 rounded transition-colors whitespace-pre-wrap leading-relaxed"
+                                title="Double-click to edit symptoms"
+                              >
+                                {visit.symptoms}
+                              </div>
+                            )}
+                          </td>
+                          
+                          {/* Improvement */}
+                          <td className="px-3 py-3 text-[11px] font-black text-emerald-700 bg-emerald-50/10 border-r border-slate-200 text-center">
+                            {isEditingImprovement ? (
+                              <input
+                                type="text"
+                                className="w-full p-1 border border-[#0F4C81] rounded bg-white font-black text-emerald-700 text-[11px] text-center focus:outline-none"
                                 value={editValue}
                                 onChange={(e) => setEditValue(e.target.value)}
                                 onBlur={handleSaveCell}
                                 onKeyDown={(e) => {
+                                  if (e.key === "Enter") handleSaveCell();
                                   if (e.key === "Escape") setEditingCell(null);
                                 }}
                                 autoFocus
                               />
                             ) : (
-                              rowCells[1]
+                              <div
+                                onDoubleClick={() => handleCellClick("followUp", "improvement", visit.improvement, idx)}
+                                className="w-full cursor-pointer hover:bg-emerald-100/30 py-1 rounded transition-colors"
+                                title="Double-click to edit improvement %"
+                              >
+                                {visit.improvement}
+                              </div>
+                            )}
+                          </td>
+                          
+                          {/* Remedy */}
+                          <td
+                            className="px-3 py-2.5 text-[11px] border-r border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors"
+                            onClick={() => handleOpenPrescriptionModal(idx)}
+                            title="Click to open Prescription Manager"
+                          >
+                            <div className="space-y-1.5">
+                              {visit.medicines && visit.medicines.length > 0 ? (
+                                visit.medicines.map((med: any, mIdx: number) => (
+                                  <div key={mIdx} className="flex flex-wrap items-center gap-1">
+                                    <span className="font-bold text-slate-800">{med.name}</span>
+                                    <span className="text-[8px] font-bold bg-[#0F4C81]/5 text-[#0F4C81] px-1 py-0.2 rounded border border-[#0F4C81]/10 uppercase tracking-wide">
+                                      {med.type === "Liquid Mother Tincture" ? "Q" : med.type === "Bio-Combination" ? "BC" : med.type === "Biochemic Tablet" ? "Biochem" : med.type === "Globules" ? "Glob" : "Dil"}
+                                    </span>
+                                  </div>
+                                ))
+                              ) : (
+                                <span className="text-slate-400 italic">No remedy - click to add</span>
+                              )}
+                            </div>
+                          </td>
+                          
+                          {/* Potency / Dose */}
+                          <td
+                            className="px-3 py-2.5 text-[11px] border-r border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors"
+                            onClick={() => handleOpenPrescriptionModal(idx)}
+                            title="Click to open Prescription Manager"
+                          >
+                            <div className="space-y-1.5">
+                              {visit.medicines && visit.medicines.length > 0 ? (
+                                visit.medicines.map((med: any, mIdx: number) => (
+                                  <div key={mIdx} className="flex items-center gap-1.5 h-[17px]">
+                                    <span className="font-semibold text-slate-700">{med.potency}</span>
+                                    <span className="text-[8px] font-black text-emerald-700 bg-emerald-50 px-1 py-0.2 rounded border border-emerald-100 uppercase">
+                                      {med.dose}
+                                    </span>
+                                  </div>
+                                ))
+                              ) : (
+                                <span className="text-slate-400 italic">-</span>
+                              )}
+                            </div>
+                          </td>
+                          
+                          {/* Assessment */}
+                          <td className="px-3 py-2.5 text-[11px] font-medium border-r border-slate-200">
+                            {isEditingAssessment ? (
+                              <textarea
+                                className="w-full p-1 border border-[#0F4C81] rounded bg-white font-medium text-slate-800 text-[11px] focus:outline-none"
+                                value={editValue}
+                                onChange={(e) => setEditValue(e.target.value)}
+                                onBlur={handleSaveCell}
+                                autoFocus
+                              />
+                            ) : (
+                              <div
+                                onDoubleClick={() => handleCellClick("followUp", "assessment", visit.assessment, idx)}
+                                className="w-full cursor-pointer hover:bg-slate-50 py-1 px-1 rounded transition-colors whitespace-pre-wrap leading-relaxed"
+                                title="Double-click to edit assessment/notes"
+                              >
+                                {visit.assessment}
+                              </div>
+                            )}
+                          </td>
+                          
+                          {/* Next Review */}
+                          <td className="px-3 py-3 text-[11px] font-bold text-amber-600">
+                            {isEditingNextReview ? (
+                              <input
+                                type="text"
+                                className="w-full p-1 border border-[#0F4C81] rounded bg-white font-bold text-amber-600 text-[11px] focus:outline-none"
+                                value={editValue}
+                                onChange={(e) => setEditValue(e.target.value)}
+                                onBlur={handleSaveCell}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") handleSaveCell();
+                                  if (e.key === "Escape") setEditingCell(null);
+                                }}
+                                autoFocus
+                              />
+                            ) : (
+                              <div
+                                onDoubleClick={() => handleCellClick("followUp", "nextReview", visit.nextReview, idx)}
+                                className="w-full cursor-pointer hover:bg-slate-50 py-1 rounded transition-colors"
+                                title="Double-click to edit next follow-up"
+                              >
+                                {visit.nextReview}
+                              </div>
                             )}
                           </td>
                         </tr>
                       );
-                    }
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
 
-                    // Hide rows 12, 13, 14 as they are visually merged into row 11 for the complaint box
-                    if (rIndex === 11 || rIndex === 12 || rIndex === 13) {
-                      return (
-                        <tr key={rIndex} className="hidden">
-                          <td></td>
-                        </tr>
-                      );
-                    }
+            {/* ---------------------------------------------------- */}
+            {/* TAB 4: REPERTORIZATION */}
+            {/* ---------------------------------------------------- */}
+            {activeTab === "Repertorization" && (
+              <div className="bg-white min-w-[1050px] p-6 space-y-6">
+                <div className="flex items-center justify-between border-b border-slate-150 pb-4">
+                  <h2 className="text-sm font-black text-[#0F4C81] uppercase tracking-wider">Clinical Repertorization Matrix</h2>
+                  <div className="text-xs bg-slate-100 text-[#0F4C81] px-4 py-1.5 rounded-full font-bold border border-slate-200/50">
+                    Auto-ranking 11 compare remedies
+                  </div>
+                </div>
 
-                    // Style follow-up rows specifically (starts at Row 39 / index 38)
-                    const isFollowUpRow = rIndex >= 38 && rIndex < 38 + displayCount;
+                {/* Sync & Transmit Actions Bar */}
+                <div className="flex flex-wrap items-center justify-between gap-4 bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-sm">
+                  <div className="flex items-center gap-2.5">
+                    <button
+                      onClick={handleSendRepertoryToPatient}
+                      className="flex items-center gap-1.5 px-4 py-2 bg-[#0F4C81] hover:bg-[#0F4C81]/90 text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all shadow cursor-pointer"
+                    >
+                      <CheckCircle className="w-4 h-4" />
+                      <span>Send to Patient Profile</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setActiveTab("AI Repertory Lab");
+                        // Automatically trigger analysis
+                        setTimeout(() => handleTransmitToAiLab(), 100);
+                      }}
+                      className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-pink-600 to-indigo-600 hover:opacity-90 text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all shadow cursor-pointer animate-pulse"
+                    >
+                      <Sparkles className="w-4 h-4" />
+                      <span>Send to AI Repertory Lab</span>
+                    </button>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={handleAddAllLibraryRubrics}
+                      className="px-4 py-2 border border-[#0F4C81]/20 hover:bg-[#0F4C81]/5 text-[#0F4C81] rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
+                    >
+                      Add All Library Rubrics
+                    </button>
+                  </div>
+                </div>
 
-                    // Normal rows
-                    return (
-                      <tr key={rIndex} className={`h-9 border-b border-slate-100 hover:bg-slate-50/50 transition-colors ${isFollowUpRow ? "bg-teal-50/5" : ""}`}>
-                        <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold sticky left-0 z-10">{rIndex + 1}</td>
-                        {rowCells.slice(0, 6).map((val, cIndex) => {
-                          const isLabel = (rIndex >= 3 && rIndex <= 8) && (cIndex === 0 || cIndex === 2 || cIndex === 4);
-                          const isDemographicData = (rIndex >= 3 && rIndex <= 8) && (cIndex === 1 || cIndex === 3 || cIndex === 5);
-                          
+                {/* Rubric Adding Interface */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-slate-50 border border-slate-200 rounded-3xl p-5 shadow-sm">
+                  
+                  {/* Left Column: Database Search Engine */}
+                  <div className="space-y-4">
+                    <h3 className="font-extrabold text-xs text-[#0F4C81] uppercase tracking-widest border-b border-slate-200 pb-2">
+                      Search Classical & Clinical Repertories
+                    </h3>
+                    
+                    {/* Database source tabs */}
+                    <div className="flex bg-slate-200/50 p-1 rounded-xl">
+                      {(["kent", "boericke", "jethwani", "custom"] as const).map(src => (
+                        <button
+                          key={src}
+                          onClick={() => {
+                            setSheetRepSource(src);
+                            setActiveSelectedDbRubric(null);
+                          }}
+                          className={`flex-1 text-center py-1.5 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all cursor-pointer ${
+                            sheetRepSource === src 
+                              ? "bg-white text-[#0F4C81] shadow-sm" 
+                              : "text-slate-500 hover:text-slate-700"
+                          }`}
+                        >
+                          {src === "kent" ? "Kent" : src === "boericke" ? "Boericke" : src === "jethwani" ? "Jethwani" : "Custom Form"}
+                        </button>
+                      ))}
+                    </div>
+
+                    {sheetRepSource !== "custom" && (
+                      <div className="space-y-3">
+                        {/* Search Input */}
+                        <div className="relative">
+                          <input
+                            type="text"
+                            placeholder={`Search ${sheetRepSource === 'kent' ? "Kent's" : sheetRepSource === 'boericke' ? "Boericke's" : "Jethwani's"} repertory...`}
+                            value={sheetRepSearch}
+                            onChange={(e) => setSheetRepSearch(e.target.value)}
+                            className="w-full pl-9 pr-4 py-2 border border-slate-250 bg-white rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#0F4C81] font-semibold text-slate-700 shadow-inner"
+                          />
+                          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                          {isRepertoryLoading && (
+                            <div className="w-3.5 h-3.5 rounded-full border border-[#0F4C81]/35 border-t-[#0F4C81] animate-spin absolute right-3 top-3" />
+                          )}
+                        </div>
+
+                        {/* Search Results list */}
+                        <div className="h-[260px] overflow-y-auto border border-slate-200 bg-white rounded-2xl p-2 divide-y divide-slate-100 shadow-inner">
+                          {getFilteredDbRubrics().length > 0 ? (
+                            getFilteredDbRubrics().map((rub) => {
+                              const isSelected = activeSelectedDbRubric?.name === rub.name;
+                              const remCount = Object.keys(rub.remedies || {}).length;
+                              return (
+                                <button
+                                  key={rub.id || rub.name}
+                                  onClick={() => setActiveSelectedDbRubric(rub)}
+                                  className={`w-full text-left p-2.5 text-[11px] hover:bg-slate-50 transition-colors flex items-start justify-between gap-3 rounded-lg ${
+                                    isSelected ? "bg-blue-50/50 border-l-3 border-[#0F4C81] pl-2 font-bold" : ""
+                                  }`}
+                                >
+                                  <div>
+                                    <span className="text-[9px] font-bold text-slate-455 uppercase block tracking-wider mb-0.5">
+                                      {rub.chapter || rub.section || "General"}
+                                    </span>
+                                    <span className="text-slate-700 leading-snug">{rub.name}</span>
+                                  </div>
+                                  <span className="bg-slate-100 text-slate-500 text-[8px] font-bold px-1.5 py-0.5 rounded-full shrink-0 uppercase tracking-wider">
+                                    {remCount} remedies
+                                  </span>
+                                </button>
+                              );
+                            })
+                          ) : (
+                            <div className="text-center text-slate-400 py-12 text-[11px] font-semibold">
+                              {isRepertoryLoading 
+                                ? "Loading repertory databases..." 
+                                : "No symptom matches found. Try another term."}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {sheetRepSource === "custom" && (
+                      <div className="space-y-4 pt-1">
+                        {/* Custom Rubric Inputs */}
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="flex flex-col gap-1">
+                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Custom Rubric Name</span>
+                            <input
+                              type="text"
+                              placeholder="e.g. Head - Pain - pressing"
+                              value={customRubricName}
+                              onChange={(e) => setCustomRubricName(e.target.value)}
+                              className="p-2 border border-slate-250 bg-white rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#0F4C81] font-semibold text-slate-700"
+                            />
+                          </div>
+
+                          <div className="flex flex-col gap-1">
+                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Chapter</span>
+                            <input
+                              type="text"
+                              list="custom-chapters-list"
+                              placeholder="Type or select chapter..."
+                              value={customRubricChapter}
+                              onChange={(e) => setCustomRubricChapter(e.target.value)}
+                              className="p-2 border border-slate-250 bg-white rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-1 focus:ring-[#0F4C81]"
+                            />
+                            <datalist id="custom-chapters-list">
+                              <option value="Mind" />
+                              <option value="Vertigo" />
+                              <option value="Head" />
+                              <option value="Eye" />
+                              <option value="Ear" />
+                              <option value="Hearing" />
+                              <option value="Nose" />
+                              <option value="Face" />
+                              <option value="Mouth" />
+                              <option value="Teeth" />
+                              <option value="Throat" />
+                              <option value="External Throat" />
+                              <option value="Stomach" />
+                              <option value="Abdomen" />
+                              <option value="Rectum" />
+                              <option value="Stool" />
+                              <option value="Bladder" />
+                              <option value="Kidneys" />
+                              <option value="Urethra" />
+                              <option value="Urine" />
+                              <option value="Male Genitalia" />
+                              <option value="Female Genitalia" />
+                              <option value="Larynx & Trachea" />
+                              <option value="Respiration" />
+                              <option value="Cough" />
+                              <option value="Expectoration" />
+                              <option value="Chest" />
+                              <option value="Back" />
+                              <option value="Extremities" />
+                              <option value="Sleep" />
+                              <option value="Chill" />
+                              <option value="Fever" />
+                              <option value="Perspiration" />
+                              <option value="Skin" />
+                              <option value="Generalities" />
+                            </datalist>
+                          </div>
+                        </div>
+
+                        {/* Search & Add New Remedy to sheet compare list */}
+                        <div className="flex items-end gap-2 p-3 bg-slate-100/50 border border-slate-200 rounded-2xl relative">
+                          <div className="flex-1 relative flex flex-col gap-1">
+                            <span className="text-[9px] font-black text-slate-500 uppercase tracking-wider">Add custom medicine column to compare:</span>
+                            <input
+                              type="text"
+                              placeholder="Type medicine name (e.g. Acon, Thuja, BC-4)..."
+                              value={customRepSearchRemedy}
+                              onChange={(e) => setCustomRepSearchRemedy(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault();
+                                  if (customRepSearchRemedy.trim()) {
+                                    handleAddRemedyToCompare(customRepSearchRemedy.trim());
+                                  }
+                                }
+                              }}
+                              className="p-1.5 border border-slate-250 bg-white rounded-lg text-[10px] font-semibold text-slate-700 focus:outline-none focus:ring-1 focus:ring-[#0F4C81]"
+                            />
+                            {customRepSearchRemedy.trim() !== "" && (
+                              <div className="absolute left-0 bottom-full mb-1 w-full bg-white border border-slate-200 rounded-xl shadow-lg z-50 divide-y divide-slate-100 max-h-36 overflow-y-auto">
+                                {INBUILT_REMEDIES.filter(r => 
+                                  r.toLowerCase().includes(customRepSearchRemedy.toLowerCase()) && 
+                                  customScores[r] === undefined
+                                ).slice(0, 5).map(sug => (
+                                  <button
+                                    key={sug}
+                                    type="button"
+                                    onClick={() => handleAddRemedyToCompare(sug)}
+                                    className="w-full text-left px-3 py-1.5 text-[10px] font-bold text-slate-700 hover:bg-slate-50 transition-colors block cursor-pointer"
+                                  >
+                                    {sug}
+                                  </button>
+                                ))}
+                                {INBUILT_REMEDIES.filter(r => 
+                                  r.toLowerCase().includes(customRepSearchRemedy.toLowerCase()) && 
+                                  customScores[r] === undefined
+                                ).length === 0 && (
+                                  <div className="px-3 py-1.5 text-[10px] text-slate-450 italic">
+                                    Press "Add Medicine" to add as custom name
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (customRepSearchRemedy.trim()) {
+                                handleAddRemedyToCompare(customRepSearchRemedy.trim());
+                              }
+                            }}
+                            className="px-3 py-2 bg-[#0F4C81] hover:bg-[#0F4C81]/90 text-white rounded-lg text-[9px] font-bold uppercase tracking-wider transition-colors shrink-0 cursor-pointer"
+                          >
+                            Add Medicine
+                          </button>
+                        </div>
+
+                        {/* Custom scores mapping (0-3 select boxes for each remedy) */}
+                        <div className="p-3 bg-white border border-slate-200 rounded-2xl space-y-2">
+                          <span className="text-[9px] font-black text-[#0F4C81] uppercase tracking-wider block">Assign Remedy Grades (0 to 3) for Custom Rubric:</span>
+                          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 max-h-[150px] overflow-y-auto pr-1">
+                            {Object.keys(customScores).map(rem => (
+                              <div key={rem} className="flex items-center justify-between gap-1 bg-slate-50 border border-slate-150 p-1.5 rounded-xl shadow-xs">
+                                <span className="text-[9px] font-black text-slate-700 select-none whitespace-nowrap shrink-0" title={rem}>{rem}</span>
+                                <select
+                                  value={customScores[rem] || 0}
+                                  onChange={(e) => setCustomScores(prev => ({ ...prev, [rem]: Number(e.target.value) }))}
+                                  className="p-0.5 border border-slate-255 bg-white rounded-md text-[9px] font-bold w-9 text-center focus:outline-none focus:ring-1 focus:ring-[#0F4C81] cursor-pointer shrink-0"
+                                >
+                                  <option value="0">0</option>
+                                  <option value="1">1</option>
+                                  <option value="2">2</option>
+                                  <option value="3">3</option>
+                                </select>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Right Column: Selected Rubric Details & Save Actions */}
+                  <div className="border-t lg:border-t-0 lg:border-l border-slate-200 pt-5 lg:pt-0 lg:pl-6 flex flex-col justify-between">
+                    <div>
+                      <h3 className="font-extrabold text-xs text-[#0F4C81] uppercase tracking-widest border-b border-slate-200 pb-2">
+                        Configure Selected Rubric Details
+                      </h3>
+
+                      {activeSelectedDbRubric || sheetRepSource === "custom" ? (
+                        <div className="space-y-5 pt-3">
+                          {/* Selected Rubric Card */}
+                          {sheetRepSource !== "custom" && activeSelectedDbRubric && (
+                            <div className="bg-[#0F4C81]/5 border border-[#0F4C81]/15 p-3.5 rounded-2xl space-y-2.5">
+                              <div>
+                                <span className="bg-[#0F4C81]/15 text-[#0F4C81] text-[8px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider">
+                                  {sheetRepSource.toUpperCase()} DB MATCH
+                                </span>
+                                <h4 className="font-bold text-[12px] text-slate-800 leading-snug mt-1.5">
+                                  {activeSelectedDbRubric.name}
+                                </h4>
+                              </div>
+
+                              <div className="text-[10px] text-slate-500">
+                                <strong>Chapter/Section:</strong> {activeSelectedDbRubric.chapter || activeSelectedDbRubric.section || "Generalities"}
+                              </div>
+
+                              {/* Grade mapping preview */}
+                              <div className="border-t border-slate-200/50 pt-2 space-y-1">
+                                <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest block">Matched Remedy Grades Preview:</span>
+                                <div className="flex flex-wrap gap-1.5">
+                                  {remediesList.map(rem => {
+                                    const gr = resolveRemedyGrade(activeSelectedDbRubric.remedies, rem);
+                                    if (gr === 0) return null;
+                                    return (
+                                      <span key={rem} className="bg-emerald-55 text-emerald-900 border border-emerald-100 text-[9px] font-extrabold px-2 py-0.5 rounded-md flex items-center gap-1">
+                                        {rem} <span className="text-[#0F4C81] bg-white rounded px-0.5 text-[8px] font-black">{gr}</span>
+                                      </span>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {sheetRepSource === "custom" && (
+                            <div className="bg-pink-50/25 border border-pink-100/50 p-3.5 rounded-2xl space-y-2">
+                              <span className="bg-pink-100 text-pink-700 text-[8px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider">
+                                CUSTOM CELL INJECTION
+                              </span>
+                              <h4 className="font-bold text-[12px] text-slate-800 leading-snug mt-1.5">
+                                {customRubricName.trim() || "Untitled Custom Rubric"}
+                              </h4>
+                              <p className="text-[10px] text-slate-500 italic">
+                                Grades will be injected manually based on your selection panel below.
+                              </p>
+                            </div>
+                          )}
+
+                          {/* Configuration selectors */}
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="flex flex-col gap-1">
+                              <span className="text-[9px] font-bold text-slate-450 uppercase tracking-wider">Rubric Weight (Clinical Severity)</span>
+                              <select
+                                value={customRubricWeight}
+                                onChange={(e) => setCustomRubricWeight(Number(e.target.value))}
+                                className="p-2.5 border border-slate-250 bg-white rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-1 focus:ring-[#0F4C81] cursor-pointer shadow-sm"
+                              >
+                                <option value="1">1 (Mild / Local)</option>
+                                <option value="2">2 (Moderate / General)</option>
+                                <option value="3">3 (Severe / Peculiar Keynote)</option>
+                              </select>
+                            </div>
+
+                            <div className="flex flex-col gap-1">
+                              <span className="text-[9px] font-bold text-slate-450 uppercase tracking-wider">Date Added</span>
+                              <input
+                                type="text"
+                                placeholder="DD/MM/YYYY"
+                                value={customRubricDate}
+                                onChange={(e) => setCustomRubricDate(e.target.value)}
+                                className="p-2 border border-slate-250 bg-white rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#0F4C81] font-semibold text-slate-700 shadow-sm"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center py-16 text-center text-slate-400 space-y-2">
+                          <Activity className="w-8 h-8 text-slate-300 stroke-1" />
+                          <p className="text-[11px] font-semibold leading-relaxed max-w-[200px]">
+                            Select a rubric from the database search list to configure parameters.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    {(activeSelectedDbRubric || (sheetRepSource === "custom" && customRubricName.trim() !== "")) && (
+                      <div className="flex items-center justify-end gap-3 pt-6 mt-auto">
+                        {sheetRepSource !== "custom" && (
+                          <button
+                            onClick={() => setActiveSelectedDbRubric(null)}
+                            className="px-4 py-2 border border-slate-200 hover:bg-slate-100 text-slate-600 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
+                          >
+                            Clear Selection
+                          </button>
+                        )}
+                        <button
+                          onClick={handleAddRubric}
+                          className="px-6 py-2.5 bg-[#0F4C81] hover:bg-[#0F4C81]/90 text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer flex items-center gap-1.5"
+                        >
+                          <Plus className="w-4 h-4" />
+                          <span>Add Rubric to Matrix</span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="bg-slate-50 border border-slate-200 rounded-3xl p-5 shadow-sm overflow-x-auto mt-6">
+                  <table className="border-collapse w-full text-left">
+                    <thead>
+                      <tr className="bg-slate-50 text-[10px] text-slate-600 font-black uppercase tracking-wider border-b border-slate-200">
+                        <th className="p-3 w-10 text-center bg-slate-100 border-r border-slate-200 text-[#0F4C81]">Del</th>
+                        <th className="p-3 border-r border-slate-200">Rubric Name</th>
+                        <th className="p-3 border-r border-slate-200">Chapter</th>
+                        <th className="p-3 border-r border-slate-200 w-[110px]">Date Added</th>
+                        <th className="p-3 border-r border-slate-200 w-[60px] text-center">Weight</th>
+                        {remediesList.map(rem => {
+                          const isCustom = !["Nux-v", "Lyc", "Ars", "Puls", "Sulph", "Rhus-t", "Calc", "Sil", "Nat-m", "Ign", "Sep"].includes(rem);
                           return (
-                            <td
-                              key={cIndex}
-                              onDoubleClick={() => handleCellClick(rIndex, cIndex)}
-                              className={`border-r border-slate-100 text-[11px] px-4 font-medium truncate ${
-                                isLabel 
-                                  ? "bg-slate-55/30 text-slate-800 font-black border-r border-slate-200 tracking-wide" 
-                                  : isDemographicData
-                                    ? "text-slate-900 font-semibold"
-                                    : isFollowUpRow && cIndex === 0
-                                      ? "text-teal-700 font-extrabold flex items-center gap-1.5"
-                                      : isFollowUpRow && (cIndex === 4 || cIndex === 5)
-                                        ? "text-teal-800 font-bold bg-teal-50/10"
-                                        : "text-slate-650"
-                              } cursor-pointer`}
+                            <th 
+                              key={rem} 
+                              className={`p-3 border-r border-slate-200 text-center font-extrabold relative ${
+                                isCustom ? "bg-amber-50/50 text-amber-800 border-b-2 border-amber-300/40" : "text-[#0F4C81]"
+                              }`}
+                              title={isCustom ? `${rem} (Dynamically Added Custom Remedy)` : rem}
                             >
-                              {editingCell?.row === rIndex && editingCell?.col === cIndex ? (
-                                <input
-                                  type="text"
-                                  className="w-full h-full p-1 border border-teal-500 rounded-lg bg-white text-[11px] font-medium text-slate-800 focus:outline-none focus:ring-1 focus:ring-teal-500 shadow-sm"
-                                  value={editValue}
-                                  onChange={(e) => setEditValue(e.target.value)}
-                                  onBlur={handleSaveCell}
-                                  onKeyDown={handleKeyDown}
-                                  autoFocus
-                                />
-                              ) : (
-                                <>
-                                  {isFollowUpRow && cIndex === 0 && <Calendar className="w-3.5 h-3.5 text-teal-600 shrink-0 inline-block mr-1" />}
-                                  {isFollowUpRow && (cIndex === 4 || cIndex === 5) && val !== "₹0" && val !== "₹" && <IndianRupee className="w-3.5 h-3.5 text-teal-600 shrink-0 inline-block mr-0.5" />}
-                                  {isFollowUpRow && (cIndex === 4 || cIndex === 5) ? val.replace("₹", "") : val}
-                                </>
+                              {rem}
+                              {isCustom && (
+                                <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-amber-400" />
                               )}
-                            </td>
+                            </th>
                           );
                         })}
                       </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                    </thead>
+                    <tbody>
+                      {rubrics.map((rub, rIdx) => (
+                        <tr key={rIdx} className="border-b border-slate-100 hover:bg-slate-50 text-[11px]">
+                          <td className="p-3 text-center bg-slate-50/50 border-r border-slate-200">
+                            <button
+                              onClick={() => setRubrics(prev => prev.filter((_, i) => i !== rIdx))}
+                              className="p-1 hover:bg-rose-50 text-rose-500 hover:text-rose-700 rounded-xl transition-all cursor-pointer border border-transparent hover:border-rose-100"
+                              title="Delete rubric"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </td>
+                          <td className="p-3 border-r border-slate-200 font-bold">{rub.name}</td>
+                          <td className="p-3 border-r border-slate-200 font-semibold text-slate-500">{rub.chapter}</td>
+                          <td className="p-3 border-r border-slate-200 font-bold text-slate-600">{rub.dateAdded || today}</td>
+                          <td className="p-3 border-r border-slate-200 text-center font-black text-[#0F4C81] bg-slate-50/50">{rub.weight}</td>
+                          {remediesList.map(rem => {
+                            const score = rub.scores[rem] || 0;
+                            return (
+                              <td key={rem} className={`p-3 border-r border-slate-200 text-center font-bold ${score > 0 ? "bg-emerald-50/40 text-emerald-800" : "text-slate-300"}`}>
+                                {score}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      ))}
+                      
+                      {/* Calculations rows */}
+                      <tr className="border-b border-slate-200 bg-slate-50/80 font-bold text-[10px] uppercase text-slate-500">
+                        <td colSpan={5} className="p-3 border-r border-slate-200">Symptom Coverage (%)</td>
+                        {remediesList.map(rem => (
+                          <td key={rem} className="p-3 border-r border-slate-200 text-center text-[#0F4C81]">
+                            {Math.round((repertoryResults.coverage[rem] || 0) * 100)}%
+                          </td>
+                        ))}
+                      </tr>
+                      <tr className="border-b border-slate-200 bg-slate-50/80 font-bold text-[10px] uppercase text-slate-500">
+                        <td colSpan={5} className="p-3 border-r border-slate-200">Weighted Grades</td>
+                        {remediesList.map(rem => (
+                          <td key={rem} className="p-3 border-r border-slate-200 text-center text-slate-700">
+                            {repertoryResults.sumGrades[rem] || 0}
+                          </td>
+                        ))}
+                      </tr>
+                      <tr className="bg-blue-50/40 font-black text-[11px] uppercase border-b-2 border-slate-300">
+                        <td colSpan={5} className="p-3 border-r border-slate-200 text-[#0F4C81]">Totality Rank Score</td>
+                        {remediesList.map(rem => (
+                          <td key={rem} className="p-3 border-r border-slate-200 text-center text-emerald-700 bg-emerald-50/20 font-black">
+                            {Math.round(repertoryResults.rankScores[rem] || 0)}
+                          </td>
+                        ))}
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Top Remedy Rankings display */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+                  {repertoryResults.sortedRemedies.slice(0, 3).map((rem, index) => (
+                    <div key={rem} className="bg-slate-50 border border-slate-200 rounded-2xl p-5 shadow-sm flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-[#0F4C81] text-white flex items-center justify-center font-black text-sm">
+                          {index + 1}
+                        </div>
+                        <div>
+                          <h4 className="font-extrabold text-slate-800 text-sm">{rem}</h4>
+                          <p className="text-[10px] text-slate-400 font-semibold uppercase">remedy totality match</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm font-black text-emerald-700">{Math.round(repertoryResults.rankScores[rem] || 0)}</div>
+                        <p className="text-[9px] text-slate-400 font-bold uppercase">points</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
+
+            {/* ---------------------------------------------------- */}
+            {/* TAB 4.5: AI REPERTORY LAB */}
+            {/* ---------------------------------------------------- */}
+            {activeTab === "AI Repertory Lab" && (
+              <div className="bg-white min-w-[1050px] p-6 space-y-6 animate-in fade-in duration-200">
+                <div className="flex items-center justify-between border-b border-slate-150 pb-4">
+                  <div>
+                    <h2 className="text-sm font-black text-[#0F4C81] uppercase tracking-wider">AI Repertory Lab</h2>
+                    <p className="text-[10px] text-slate-400 font-bold uppercase mt-0.5">High-Fidelity Neural Totality Matching Engine</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] bg-pink-50 text-pink-700 border border-pink-100 font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse flex items-center gap-1">
+                      <Sparkles className="w-3.5 h-3.5" />
+                      Active Node: portal.homeo.healthcare
+                    </span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  
+                  {/* Left Column: Data Payload (lg:col-span-5) */}
+                  <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-4 lg:col-span-5 flex flex-col justify-between shadow-sm">
+                    <div className="space-y-4">
+                      <h3 className="font-extrabold text-xs text-[#0F4C81] uppercase tracking-widest border-b border-slate-200 pb-2">
+                        Spreadsheet Repertory Payload
+                      </h3>
+                      
+                      {/* Rubrics Checklist */}
+                      <div className="space-y-2">
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Rubrics Selected for Transmit ({rubrics.length}):</span>
+                        <div className="space-y-1.5 max-h-[220px] overflow-y-auto pr-1">
+                          {rubrics.map((r, idx) => (
+                            <div key={idx} className="flex items-center justify-between p-2 bg-white border border-slate-150 rounded-xl text-[10px] font-medium text-slate-700 shadow-sm">
+                              <span className="font-bold truncate max-w-[200px]" title={r.name}>{r.name}</span>
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                <span className="bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200 text-[8px] font-bold uppercase">{r.chapter}</span>
+                                <span className="bg-[#0F4C81]/5 text-[#0F4C81] px-1 py-0.5 rounded font-bold">W:{r.weight}</span>
+                                <span className="text-slate-400 text-[8px]">{r.dateAdded || today}</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Summary calculations */}
+                      <div className="space-y-2 pt-2">
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Top Remedy Rankings:</span>
+                        <div className="grid grid-cols-3 gap-2">
+                          {repertoryResults.sortedRemedies.slice(0, 3).map((rem, rIdx) => (
+                            <div key={rem} className="bg-white border border-slate-150 rounded-xl p-2.5 text-center shadow-sm">
+                              <div className="text-[9px] font-extrabold text-[#0F4C81] uppercase">RANK {rIdx + 1}</div>
+                              <div className="text-xs font-black text-slate-800 mt-1">{rem}</div>
+                              <div className="text-[10px] font-black text-emerald-700 mt-0.5">
+                                {Math.round(repertoryResults.rankScores[rem] || 0)} pts
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Transmit Trigger Button */}
+                    <div className="pt-4 border-t border-slate-200">
+                      <button
+                        onClick={handleTransmitToAiLab}
+                        disabled={aiTransmitLoading}
+                        className="w-full py-3 bg-gradient-to-r from-pink-600 to-indigo-600 hover:opacity-95 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer shadow disabled:opacity-60"
+                      >
+                        <Sparkles className={`w-4.5 h-4.5 ${aiTransmitLoading ? "animate-spin" : ""}`} />
+                        <span>{aiTransmitLoading ? "TRANSMITTING DATA..." : "TRANSMIT DATA TO AI LAB"}</span>
+                      </button>
+                    </div>
+
+                  </div>
+
+                  {/* Right Column: AI Analysis Result (lg:col-span-7) */}
+                  <div className="border border-slate-200 rounded-2xl p-6 lg:col-span-7 flex flex-col justify-between min-h-[400px] bg-white relative overflow-hidden shadow-sm">
+                    
+                    <div className="absolute top-0 right-0 w-[250px] h-[250px] bg-gradient-to-bl from-pink-500/5 to-transparent rounded-full pointer-events-none filter blur-2xl"></div>
+
+                    {aiTransmitLoading ? (
+                      /* LOADING STATE */
+                      <div className="flex-1 flex flex-col items-center justify-center space-y-6 py-12">
+                        <div className="relative w-16 h-16">
+                          <div className="absolute inset-0 rounded-full border-4 border-slate-100"></div>
+                          <div className="absolute inset-0 rounded-full border-4 border-t-pink-600 animate-spin"></div>
+                          <Sparkles className="w-6 h-6 text-pink-600 absolute inset-0 m-auto animate-pulse" />
+                        </div>
+                        <div className="text-center space-y-2">
+                          <h4 className="text-xs font-black text-[#0F4C81] uppercase tracking-widest animate-pulse">
+                            {aiTransmitStep === 1 && "Connecting to portal.homeo.healthcare..."}
+                            {aiTransmitStep === 2 && "Serializing repertory data payload..."}
+                            {aiTransmitStep === 3 && "Analyzing miasmatic totality vectors..."}
+                            {aiTransmitStep === 4 && "Compiling Materia Medica database insights..."}
+                          </h4>
+                          <p className="text-[10px] text-slate-400 font-bold uppercase">Executing secure token protocol...</p>
+                        </div>
+                      </div>
+                    ) : aiAnalysisResult ? (
+                      /* COMPLETED STATE */
+                      <div className="space-y-6 flex-1 flex flex-col justify-between">
+                        <div className="space-y-5">
+                          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                            <span className="text-[10px] font-black text-pink-600 uppercase tracking-widest flex items-center gap-1.5">
+                              <CheckCircle className="w-4 h-4 text-emerald-600" />
+                              AI Analysis Synthesis Complete
+                            </span>
+                            <span className="text-[9px] text-slate-400 font-bold">DATE: {aiAnalysisResult.dateAnalyzed}</span>
+                          </div>
+
+                          {/* Verdict Summary */}
+                          <div className="bg-emerald-50/30 border border-emerald-100 rounded-2xl p-4 flex gap-3">
+                            <Activity className="w-5 h-5 text-emerald-700 shrink-0 mt-0.5" />
+                            <div>
+                              <h4 className="text-[11px] font-black text-emerald-800 uppercase tracking-wider">Clinical Diagnostic Verdict</h4>
+                              <p className="text-[11px] text-emerald-950 font-bold mt-0.5">{aiAnalysisResult.verdict}</p>
+                            </div>
+                          </div>
+
+                          {/* Long Synthesis */}
+                          <div className="space-y-2">
+                            <h4 className="text-[10px] font-black text-slate-450 uppercase tracking-wider">Dynamic Totality Match Analysis</h4>
+                            <p className="text-[11px] text-slate-600 leading-relaxed font-medium bg-slate-50 border border-slate-150 p-4 rounded-2xl">
+                              {aiAnalysisResult.synthesis}
+                            </p>
+                          </div>
+
+                          {/* Side-by-side card grid comparison */}
+                          <div className="space-y-3">
+                            <h4 className="text-[10px] font-black text-slate-450 uppercase tracking-wider">Materia Medica Keynotes & Verifications</h4>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                              {aiAnalysisResult.remedyCards.map((card: any) => (
+                                <div key={card.name} className="border border-slate-150 rounded-xl p-3 bg-slate-50/50 hover:bg-slate-50 transition-colors shadow-sm flex flex-col justify-between h-full">
+                                  <div>
+                                    <div className="flex items-center justify-between border-b border-slate-100 pb-1.5">
+                                      <span className="font-extrabold text-slate-800 text-xs truncate max-w-[80px]" title={card.name}>{card.name}</span>
+                                      <span className="bg-[#0F4C81]/15 text-[#0F4C81] text-[8px] font-black px-1.5 py-0.5 rounded-full uppercase">Rank {card.rank}</span>
+                                    </div>
+                                    <div className="text-[9px] text-slate-600 leading-relaxed mt-2">
+                                      <strong className="text-[8px] font-bold uppercase text-slate-400 block mb-0.5">Indications</strong>
+                                      {card.indications}
+                                    </div>
+                                  </div>
+                                  <div className="text-[9px] text-slate-600 leading-relaxed mt-3 border-t border-slate-100/50 pt-2">
+                                    <strong className="text-[8px] font-bold uppercase text-slate-400 block mb-0.5">Keynotes</strong>
+                                    {card.keynotes}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Export actions */}
+                        <div className="pt-4 border-t border-slate-100 flex items-center justify-end gap-3 mt-auto">
+                          <button
+                            onClick={() => {
+                              const summaryText = `Homeo Healthcare AI Analysis Summary:\nDate: ${aiAnalysisResult.dateAnalyzed}\nVerdict: ${aiAnalysisResult.verdict}\n\nSynthesis: ${aiAnalysisResult.synthesis}`;
+                              navigator.clipboard.writeText(summaryText);
+                              alert("AI Analysis Summary copied to clipboard!");
+                            }}
+                            className="px-4 py-2 border border-slate-200 hover:bg-slate-100 rounded-full text-[10px] font-bold uppercase tracking-wider text-slate-600 transition-colors cursor-pointer flex items-center gap-1.5"
+                          >
+                            <Copy className="w-3.5 h-3.5" />
+                            <span>Copy Summary</span>
+                          </button>
+                          <button
+                            onClick={() => {
+                              const shareText = `Dear ${patient.name}, thank you for your consultation. We have completed the clinical AI Totality Match analysis for your case. Top Remedy indicated: ${repertoryResults.sortedRemedies[0]}. We have saved these analysis details to your patient file. Clinical verified keynotes are being matching to your symptoms. Clinic Branch: Pune Baner.`;
+                              const url = `https://api.whatsapp.com/send?phone=${patient.phone.replace(/[^0-9]/g, "")}&text=${encodeURIComponent(shareText)}`;
+                              window.open(url, "_blank");
+                            }}
+                            className="px-5 py-2 bg-[#2E8B57] hover:bg-[#2E8B57]/90 text-white rounded-full text-[10px] font-bold uppercase tracking-wider transition-all shadow cursor-pointer flex items-center gap-1.5"
+                          >
+                            <ExternalLink className="w-3.5 h-3.5" />
+                            <span>Share with Patient</span>
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      /* EMPTY INITIAL STATE */
+                      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-4 py-16">
+                        <div className="w-12 h-12 rounded-full bg-pink-50 text-pink-600 flex items-center justify-center shadow-sm">
+                          <Sparkles className="w-6 h-6 animate-pulse" />
+                        </div>
+                        <div className="max-w-md space-y-1.5">
+                          <h4 className="text-xs font-black text-slate-800 uppercase tracking-widest">Repertory Totality Analysis Ready</h4>
+                          <p className="text-[11px] text-slate-500 font-medium leading-relaxed">
+                            Transmit your spreadsheet repertorization grid directly to the **AI Repertory Lab** at `portal.homeo.healthcare`. The neural model matches the rubrics and date intervals against 250,000+ verified Materia Medica keynotes and miasmatic vectors.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                  </div>
+
+                </div>
+              </div>
+            )}
+
+            {/* ---------------------------------------------------- */}
+            {/* TAB 5: TREATMENT PLANNER */}
+            {/* ---------------------------------------------------- */}
+            {activeTab === "Treatment Planner" && (
+              <div className="bg-white min-w-[1050px] p-6 space-y-6">
+                <div className="border-b border-slate-150 pb-4">
+                  <h2 className="text-sm font-black text-[#0F4C81] uppercase tracking-wider">Multi-Clinic Treatment Planner & Billing</h2>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  {/* Left Column: Config (lg:col-span-5) */}
+                  <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 space-y-4 lg:col-span-5">
+                    <h3 className="font-extrabold text-xs text-[#0F4C81] uppercase tracking-widest border-b border-slate-200 pb-2">
+                      Plan Configuration
+                    </h3>
+                    <div className="space-y-4 text-[11px] font-semibold">
+                      {/* Care Level */}
+                      <div className="flex flex-col gap-1">
+                        <span className="text-slate-400">Care Level:</span>
+                        <select
+                          className="p-2 border border-slate-250 bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-[#0F4C81]"
+                          value={planner.careLevel}
+                          onChange={(e) => {
+                            const level = e.target.value as any;
+                            setPlanner(prev => ({ ...prev, careLevel: level }));
+                          }}
+                        >
+                          <option value="mild">Acute & Wellness Care</option>
+                          <option value="moderate">Standard Chronic Care</option>
+                          <option value="focused">Deep Systemic Care</option>
+                          <option value="organ">Advanced Pathological Care</option>
+                          <option value="comprehensive">Multisystem Integrative Care</option>
+                        </select>
+                      </div>
+
+                      {/* Billing Cycle */}
+                      <div className="flex flex-col gap-1">
+                        <span className="text-slate-400">Billing Cycle:</span>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setPlanner(prev => ({ ...prev, billingCycle: "monthly", durationValue: 1 }))}
+                            className={`flex-1 py-1.5 rounded-lg border text-center font-bold transition-all ${
+                              planner.billingCycle === "monthly"
+                                ? "bg-[#0F4C81] text-white border-[#0F4C81]"
+                                : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50 cursor-pointer"
+                            }`}
+                          >
+                            Monthly Commit
+                          </button>
+                          <button
+                            onClick={() => setPlanner(prev => ({ ...prev, billingCycle: "weekly", durationValue: 4 }))}
+                            className={`flex-1 py-1.5 rounded-lg border text-center font-bold transition-all ${
+                              planner.billingCycle === "weekly"
+                                ? "bg-[#0F4C81] text-white border-[#0F4C81]"
+                                : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50 cursor-pointer"
+                            }`}
+                          >
+                            Weekly Settle
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Duration Value */}
+                      <div className="flex flex-col gap-1">
+                        <span className="text-slate-400">Duration ({planner.billingCycle === "weekly" ? "Weeks" : "Months"}):</span>
+                        <select
+                          className="p-2 border border-slate-250 bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-[#0F4C81]"
+                          value={planner.durationValue}
+                          onChange={(e) => {
+                            const val = Number(e.target.value);
+                            setPlanner(prev => ({ ...prev, durationValue: val }));
+                          }}
+                        >
+                          {planner.billingCycle === "weekly" ? (
+                            <>
+                              <option value={1}>1 Week</option>
+                              <option value={2}>2 Weeks</option>
+                              <option value={4}>4 Weeks (1 Month)</option>
+                              <option value={8}>8 Weeks (2 Months)</option>
+                              <option value={12}>12 Weeks (3 Months)</option>
+                              <option value={24}>24 Weeks (6 Months)</option>
+                              <option value={48}>48 Weeks (1 Year)</option>
+                            </>
+                          ) : (
+                            <>
+                              <option value={1}>1 Month</option>
+                              <option value={2}>2 Months</option>
+                              <option value={3}>3 Months</option>
+                              <option value={6}>6 Months</option>
+                              <option value={12}>12 Months (1 Year)</option>
+                            </>
+                          )}
+                        </select>
+                      </div>
+
+                      {/* Conditions Count */}
+                      <div className="flex flex-col gap-1">
+                        <span className="text-slate-400">Co-existing Conditions:</span>
+                        <select
+                          className="p-2 border border-slate-250 bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-[#0F4C81]"
+                          value={planner.conditionsCount}
+                          onChange={(e) => {
+                            const val = Number(e.target.value);
+                            setPlanner(prev => ({ ...prev, conditionsCount: val }));
+                          }}
+                        >
+                          <option value={1}>1 Condition (Standard)</option>
+                          <option value={2}>2 Conditions (+ Surcharge)</option>
+                          <option value={3}>3+ Conditions (+ Max Surcharge)</option>
+                        </select>
+                      </div>
+
+                      {/* Concession type */}
+                      <div className="flex flex-col gap-1">
+                        <span className="text-slate-400">Concession Applied:</span>
+                        <select
+                          className="p-2 border border-slate-250 bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-[#0F4C81]"
+                          value={planner.concessionType}
+                          onChange={(e) => {
+                            const type = e.target.value as any;
+                            setPlanner(prev => ({ ...prev, concessionType: type }));
+                          }}
+                        >
+                          <option value="none">None</option>
+                          <option value="senior">Senior Citizen (15% Concession)</option>
+                          <option value="compassionate">Socio-Economic (30% Compassionate)</option>
+                          <option value="override">Custom Override Price</option>
+                        </select>
+                      </div>
+
+                      {/* Custom Override Price (only if override) */}
+                      {planner.concessionType === "override" && (
+                        <div className="flex flex-col gap-1 bg-amber-50 border border-amber-200 p-3 rounded-xl animate-fade-in">
+                          <span className="text-amber-800 font-bold">Custom Override Price (₹):</span>
+                          <input
+                            type="number"
+                            className="p-2 border border-amber-300 bg-white rounded-lg focus:outline-none text-xs font-bold text-slate-800"
+                            value={planner.overridePrice}
+                            onChange={(e) => {
+                              const val = Math.max(0, parseInt(e.target.value) || 0);
+                              setPlanner(prev => ({ ...prev, overridePrice: val }));
+                            }}
+                          />
+                        </div>
+                      )}
+
+                      {/* Medicine Add-ons Section */}
+                      <div className="border-t border-slate-200 pt-3 space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-slate-400">Medicine Add-ons:</span>
+                          <button
+                            onClick={() => {
+                              const newAddon = {
+                                id: Math.random().toString(),
+                                type: "Dilution",
+                                details: "Custom dilution 30C",
+                                amount: 150
+                              };
+                              setPlanner(prev => ({ ...prev, medicineAddons: [...prev.medicineAddons, newAddon] }));
+                            }}
+                            className="text-[10px] text-[#0F4C81] hover:text-[#0F4C81]/80 font-black uppercase tracking-wider flex items-center gap-1 cursor-pointer bg-white border border-slate-200 px-2 py-0.5 rounded-full shadow-sm"
+                          >
+                            <Plus className="w-3 h-3" /> Add Item
+                          </button>
+                        </div>
+                        
+                        {planner.medicineAddons.length > 0 && (
+                          <div className="space-y-1.5 max-h-[120px] overflow-y-auto pr-1">
+                            {planner.medicineAddons.map((item) => (
+                              <div key={item.id} className="flex justify-between items-center bg-white p-2 border border-slate-200 rounded-lg text-[10px]">
+                                <div className="flex flex-col">
+                                  <span className="text-slate-700 font-bold">{item.type}</span>
+                                  <span className="text-slate-400 text-[8px]">{item.details}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="font-extrabold text-[#0F4C81]">₹{item.amount}</span>
+                                  <button
+                                    onClick={() => {
+                                      setPlanner(prev => ({ ...prev, medicineAddons: prev.medicineAddons.filter(x => x.id !== item.id) }));
+                                    }}
+                                    className="text-rose-500 hover:text-rose-700 cursor-pointer"
+                                  >
+                                    <Trash2 className="w-3 h-3" />
+                                  </button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                    </div>
+                  </div>
+
+                  {/* Right Column: Breakdown & Invoice (lg:col-span-7) */}
+                  <div className="lg:col-span-7 space-y-5">
+                    {/* Live Pricing Breakdown */}
+                    <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 space-y-4 shadow-sm">
+                      <h3 className="font-extrabold text-xs text-[#2E8B57] uppercase tracking-widest border-b border-slate-200 pb-2">
+                        Live Pricing Breakdown
+                      </h3>
+                      <div className="space-y-2 text-[11px] font-semibold text-slate-600">
+                        <div className="flex justify-between items-center">
+                          <span>Base Care Rate:</span>
+                          <span className="font-bold text-slate-800">₹{plannerPrices.basePrice.toLocaleString("en-IN")} / {planner.billingCycle === "weekly" ? "week" : "month"}</span>
+                        </div>
+                        {plannerPrices.surcharge > 0 && (
+                          <div className="flex justify-between items-center text-amber-700">
+                            <span>Co-existing Conditions Surcharge:</span>
+                            <span className="font-bold">+₹{plannerPrices.surcharge.toLocaleString("en-IN")}</span>
+                          </div>
+                        )}
+                        <div className="flex justify-between items-center border-t border-slate-100 pt-1.5">
+                          <span>Gross Adjusted Rate:</span>
+                          <span className="font-bold text-slate-800">₹{plannerPrices.adjustedBasePrice.toLocaleString("en-IN")}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span>Multiplier Duration:</span>
+                          <span className="font-bold text-slate-800">× {planner.durationValue} {planner.billingCycle === "weekly" ? (planner.durationValue === 1 ? "week" : "weeks") : (planner.durationValue === 1 ? "month" : "months")}</span>
+                        </div>
+                        <div className="flex justify-between items-center font-bold text-slate-800 bg-slate-100/60 p-2 rounded-lg">
+                          <span>Gross Subtotal:</span>
+                          <span>₹{plannerPrices.rawTotal.toLocaleString("en-IN")}</span>
+                        </div>
+                        {plannerPrices.discountPercent > 0 && (
+                          <div className="flex justify-between items-center text-emerald-700">
+                            <span>Duration Discount ({plannerPrices.discountPercent}%):</span>
+                            <span>-₹{plannerPrices.discountAmount.toLocaleString("en-IN")}</span>
+                          </div>
+                        )}
+                        {plannerPrices.concessionAmount > 0 && (
+                          <div className="flex justify-between items-center text-indigo-700 bg-indigo-50/50 px-2 py-1 rounded">
+                            <span>Concession Applied ({planner.concessionType === "senior" ? "Senior 15%" : planner.concessionType === "compassionate" ? "Socio-Economic 30%" : "Override"}):</span>
+                            <span>-₹{plannerPrices.concessionAmount.toLocaleString("en-IN")}</span>
+                          </div>
+                        )}
+                        {plannerPrices.addonsSum > 0 && (
+                          <div className="flex justify-between items-center text-[#0F4C81]">
+                            <span>Medicine Add-ons:</span>
+                            <span>+₹{plannerPrices.addonsSum.toLocaleString("en-IN")}</span>
+                          </div>
+                        )}
+                        
+                        <div className="flex justify-between items-center border-t border-slate-200 pt-2 text-xs font-black text-slate-800">
+                          <span>Total Program Cost:</span>
+                          <span className="text-[#0F4C81] text-sm font-black">₹{plannerPrices.finalPrice.toLocaleString("en-IN")}</span>
+                        </div>
+
+                        <div className="flex justify-between items-center border-t border-dashed border-slate-250 pt-2">
+                          <span className="text-slate-400">Amount Received Today (Editable):</span>
+                          <span className="font-black text-slate-800 text-xs">
+                            {renderEditableInput("planner", "received", `₹${planner.received.toLocaleString("en-IN")}`)}
+                          </span>
+                        </div>
+
+                        <div className="flex justify-between items-center border-t-2 border-slate-200 pt-2 text-xs font-black">
+                          <span className="text-slate-700">Outstanding Balance Due:</span>
+                          <span className={`text-sm font-black ${balanceDue > 0 ? "text-rose-600 animate-pulse" : "text-emerald-700"}`}>
+                            ₹{balanceDue.toLocaleString("en-IN")}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* WhatsApp Message Box */}
+                    <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 space-y-3 flex flex-col justify-between shadow-sm">
+                      <div>
+                        <h3 className="font-extrabold text-xs text-[#0F4C81] uppercase tracking-widest border-b border-slate-200 pb-2 flex items-center gap-1.5">
+                          <Copy className="w-4 h-4 text-slate-400" />
+                          WhatsApp Invoice Message (Copied via script)
+                        </h3>
+                        <p className="text-[10px] text-slate-505 text-slate-600 font-semibold mt-2 leading-relaxed bg-white border border-slate-200 rounded-xl p-3 select-all min-h-[60px]">
+                          {whatsappInvoiceText}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-3 pt-2">
+                        <button
+                          onClick={handleCopyToClipboard}
+                          className="flex-1 flex items-center justify-center gap-2 py-3 bg-[#0F4C81] hover:bg-[#0F4C81]/90 text-white rounded-full text-[10px] font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer"
+                        >
+                          <Copy className="w-4 h-4" />
+                          <span>Copy Message</span>
+                        </button>
+                        <button
+                          onClick={() => window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(whatsappInvoiceText)}`, "_blank")}
+                          className="flex-1 flex items-center justify-center gap-2 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full text-[10px] font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                          <span>Send via WhatsApp</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ---------------------------------------------------- */}
+            {/* TAB 5.5: FINANCE */}
+            {/* ---------------------------------------------------- */}
+            {activeTab === "Finance" && (
+              <div className="bg-white min-w-[1050px] p-6 space-y-6">
+                <div className="border-b border-slate-150 pb-4">
+                  <h2 className="text-sm font-black text-[#0F4C81] uppercase tracking-wider">Patient Financial Ledger & Revenue History</h2>
+                </div>
+
+                {/* Finance Overview KPI Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* Card 1: Total Billed */}
+                  <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 shadow-sm">
+                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Amount Billed</div>
+                    <div className="text-2xl font-black text-[#0F4C81] mt-1">₹{totalBilled.toLocaleString("en-IN")}</div>
+                    <div className="text-[9px] text-slate-500 font-bold uppercase mt-1.5">Initial Plan + Surcharges + Add-ons</div>
+                  </div>
+
+                  {/* Card 2: Total Revenue Collected */}
+                  <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 shadow-sm">
+                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider text-emerald-700">Total Revenue Collected</div>
+                    <div className="text-2xl font-black text-emerald-700 mt-1">₹{totalCollected.toLocaleString("en-IN")}</div>
+                    <div className="text-[9px] text-slate-500 font-bold uppercase mt-1.5">Direct payments received till date</div>
+                  </div>
+
+                  {/* Card 3: Outstanding Balance */}
+                  <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 shadow-sm">
+                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider text-rose-600">Outstanding Balance</div>
+                    <div className="text-2xl font-black text-rose-600 mt-1">₹{outstandingBalance.toLocaleString("en-IN")}</div>
+                    <div className="text-[9px] text-slate-500 font-bold uppercase mt-1.5">Remaining receivable amounts</div>
+                  </div>
+                </div>
+
+                {/* Ledger Transactions Table */}
+                <div className="border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                  <table className="w-full border-collapse text-left text-[11px]">
+                    <thead>
+                      <tr className="bg-slate-100 border-b border-slate-200 text-slate-700 font-bold uppercase tracking-wider">
+                        <th className="p-3">Date</th>
+                        <th className="p-3">Description / Event</th>
+                        <th className="p-3">Reference ID</th>
+                        <th className="p-3 text-right">Amount Charged</th>
+                        <th className="p-3 text-right">Amount Received</th>
+                        <th className="p-3 text-right">Outstanding Balance</th>
+                        <th className="p-3">Payment Mode</th>
+                        <th className="p-3">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-150 bg-white font-semibold text-slate-850 text-slate-700">
+                      {currentTransactions.map((tx, idx) => (
+                        <tr key={idx} className="hover:bg-slate-50/50">
+                          <td className="p-3 text-slate-400">{tx.date}</td>
+                          <td className="p-3 font-bold text-slate-805 text-slate-800">{tx.description}</td>
+                          <td className="p-3 font-mono text-slate-500">{tx.refId}</td>
+                          <td className="p-3 text-right text-slate-600">₹{tx.charged.toLocaleString("en-IN")}</td>
+                          <td className="p-3 text-right text-slate-800">
+                            {idx === 0 ? (
+                              renderEditableInput("planner", "received", `₹${tx.received.toLocaleString("en-IN")}`)
+                            ) : (
+                              `₹${tx.received.toLocaleString("en-IN")}`
+                            )}
+                          </td>
+                          <td className="p-3 text-right font-bold text-slate-700">₹{(tx.charged - tx.received).toLocaleString("en-IN")}</td>
+                          <td className="p-3 text-slate-500">{tx.mode}</td>
+                          <td className="p-3">
+                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider ${
+                              tx.status === "Paid" ? "bg-emerald-50 text-emerald-700 border border-emerald-150" :
+                              tx.status === "Partially Paid" ? "bg-indigo-50 text-indigo-700 border border-indigo-150" :
+                              "bg-rose-50 text-rose-700 border border-rose-150"
+                            }`}>
+                              {tx.status}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Ledger Help note */}
+                <div className="bg-slate-50 p-4 border border-slate-200 rounded-2xl text-[10px] text-slate-500 leading-relaxed font-semibold flex items-center gap-2">
+                  <Info className="w-4 h-4 text-[#0F4C81] flex-shrink-0" />
+                  <span>The Ledger logs transactions from case initiation to follow-up check-ins. Modify the initial plan payment by double-clicking on the Amount Received cell in either the Ledger or the Treatment Planner configuration.</span>
+                </div>
+              </div>
+            )}
+
+            {/* ---------------------------------------------------- */}
+            {/* TAB 6: REPORTS & ATTACHMENTS */}
+            {/* ---------------------------------------------------- */}
+            {activeTab === "Reports & Attachments" && (
+              <div className="bg-white min-w-[1050px] p-6 space-y-6">
+                <div className="border-b border-slate-150 pb-4">
+                  <h2 className="text-sm font-black text-[#0F4C81] uppercase tracking-wider">Clinical Investigation Reports (Google Drive Links Only)</h2>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {attachments.map((file, index) => (
+                    <div key={index} className="bg-slate-50 border border-slate-200 rounded-2xl p-5 flex items-center justify-between shadow-sm">
+                      <div className="flex items-center gap-4">
+                        <div className="p-3 bg-[#0F4C81]/10 rounded-xl text-[#0F4C81]">
+                          <Folder className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h4 className="font-extrabold text-slate-800 text-xs">{file.target}</h4>
+                          <p className="text-[10px] text-slate-400 font-bold uppercase mt-0.5">{file.category} • {file.date}</p>
+                        </div>
+                      </div>
+                      <a
+                        href={file.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 px-4 py-2 border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-800 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all shadow-sm"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        <span>Drive File</span>
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ---------------------------------------------------- */}
+            {/* TAB 7: CONFIG DB */}
+            {/* ---------------------------------------------------- */}
+            {activeTab === "Config DB" && (
+              <div className="bg-white min-w-[1050px] p-6 space-y-6">
+                <div className="border-b border-slate-150 pb-4">
+                  <h2 className="text-sm font-black text-[#0F4C81] uppercase tracking-wider">Dropdown Configurations & Schema reference</h2>
+                </div>
+                <div className="grid grid-cols-4 gap-6 text-[11px]">
+                  <div className="space-y-2">
+                    <h4 className="font-black text-slate-700 uppercase tracking-widest border-b border-slate-200 pb-1.5">Materia Medica List</h4>
+                    <ul className="space-y-1 font-semibold text-slate-500">
+                      <li>Nux Vomica (Nux-v)</li>
+                      <li>Arsenicum Album (Ars)</li>
+                      <li>Lycopodium Clavatum (Lyc)</li>
+                      <li>Pulsatilla Pratensis (Puls)</li>
+                      <li>Sulphur (Sulph)</li>
+                    </ul>
+                  </div>
+                  <div className="space-y-2">
+                    <h4 className="font-black text-slate-700 uppercase tracking-widest border-b border-slate-200 pb-1.5">Potency options</h4>
+                    <ul className="space-y-1 font-semibold text-slate-500">
+                      <li>6C, 30C, 200C, 1M, 10M</li>
+                      <li>Q (Mother Tincture)</li>
+                      <li>LM1, LM2, LM5, LM30 (50-Millesimal)</li>
+                    </ul>
+                  </div>
+                  <div className="space-y-2">
+                    <h4 className="font-black text-slate-700 uppercase tracking-widest border-b border-slate-200 pb-1.5">Miasm tags</h4>
+                    <ul className="space-y-1 font-semibold text-slate-500">
+                      <li>[Psora]</li>
+                      <li>[Sycosis]</li>
+                      <li>[Syphilis]</li>
+                      <li>[Tubercular]</li>
+                      <li>[Cancerinic]</li>
+                    </ul>
+                  </div>
+                  <div className="space-y-2">
+                    <h4 className="font-black text-slate-700 uppercase tracking-widest border-b border-slate-200 pb-1.5">Clinic locations</h4>
+                    <ul className="space-y-1 font-semibold text-slate-500">
+                      <li>Baner Clinic, Pune</li>
+                      <li>Koregaon Park Clinic, Pune</li>
+                      <li>Mumbai OPD</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            )}
+
           </div>
 
-          {/* Grid Footer Information */}
-          <div className="bg-slate-50 p-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-            <div className="flex items-center gap-2">
-              <Grid className="w-4 h-4 text-slate-400" />
-              <span>Grid Range: Sheet1!A1:F{rowCount} (6-Column Matrix)</span>
+          {/* Sheets Bottom Tab Bar */}
+          <div className="bg-slate-100 border-t border-slate-200 px-4 py-2 flex items-center justify-between flex-wrap gap-2 text-xs font-bold text-slate-600 z-10">
+            {/* Tabs List */}
+            <div className="flex flex-wrap gap-1">
+              {(["Dashboard", "Case Taking", "Follow-up Tracker", "Repertorization", "Treatment Planner", "Finance", "AI Repertory Lab", "Reports & Attachments", "Config DB"] as TabType[]).map(tab => {
+                const isActive = activeTab === tab;
+                const tabColors: { [key: string]: string } = {
+                  "Dashboard": "border-t-2 border-t-[#0F4C81] text-[#0F4C81]",
+                  "Case Taking": "border-t-2 border-t-[#2E8B57] text-[#2E8B57]",
+                  "Follow-up Tracker": "border-t-2 border-t-amber-600 text-amber-600",
+                  "Repertorization": "border-t-2 border-t-indigo-600 text-indigo-600",
+                  "Treatment Planner": "border-t-2 border-t-purple-600 text-purple-600",
+                  "Finance": "border-t-2 border-t-emerald-600 text-emerald-600",
+                  "AI Repertory Lab": "border-t-2 border-t-pink-600 text-pink-600",
+                  "Reports & Attachments": "border-t-2 border-t-teal-600 text-teal-600",
+                  "Config DB": "border-t-2 border-t-slate-500 text-slate-500"
+                };
+
+                return (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`px-4 py-2 bg-white rounded-t-lg shadow-sm border border-b-0 border-slate-200/80 cursor-pointer transition-all hover:bg-slate-50 ${
+                      isActive ? `${tabColors[tab] || "text-slate-800 font-extrabold"} font-extrabold` : "text-slate-500 hover:text-slate-700 font-semibold"
+                    }`}
+                  >
+                    {tab === "Dashboard" && "📊 "}
+                    {tab === "Case Taking" && "📝 "}
+                    {tab === "Follow-up Tracker" && "📈 "}
+                    {tab === "Repertorization" && "⚖️ "}
+                    {tab === "Treatment Planner" && "💼 "}
+                    {tab === "Finance" && "💰 "}
+                    {tab === "AI Repertory Lab" && "🧠 "}
+                    {tab === "Reports & Attachments" && "📂 "}
+                    {tab === "Config DB" && "⚙️ "}
+                    {tab}
+                  </button>
+                );
+              })}
             </div>
-            <div className="flex items-center gap-2">
-              <HelpCircle className="w-4 h-4 text-slate-400" />
-              <span>Each follow-up has custom billing logs. Total summaries update in real-time above.</span>
+
+            {/* Quick Status details */}
+            <div className="hidden sm:flex items-center gap-2 text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+              <span>Layout: Hybrid (Single Case Page + Tabs)</span>
+              <span>•</span>
+              <span>Active: {activeTab}</span>
             </div>
           </div>
 
         </div>
       </div>
+
+      {/* Prescription Titration Manager Modal Overlay */}
+      {selectedFollowUpIndex !== null && (() => {
+        const visit = followUps[selectedFollowUpIndex];
+        const methodInfo = getClinicalMethodInfo(tempMedicines);
+        
+        return (
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[999] flex items-center justify-center p-4">
+            <div className="bg-white rounded-3xl shadow-2xl border border-slate-150 max-w-2xl w-full max-h-[85vh] flex flex-col overflow-hidden animate-in fade-in-50 zoom-in-95 duration-150">
+              
+              {/* Header */}
+              <div className="px-6 py-4 border-b border-slate-150 flex items-center justify-between bg-slate-50">
+                <div>
+                  <h3 className="text-xs font-black text-slate-800 uppercase tracking-wider">Prescription Titration Manager</h3>
+                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wide mt-0.5">Follow-up Visit • {visit.date}</p>
+                </div>
+                <button 
+                  onClick={() => setSelectedFollowUpIndex(null)}
+                  className="p-1.5 hover:bg-slate-200 text-slate-400 hover:text-slate-600 rounded-full transition-colors cursor-pointer animate-pulse"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Scrollable Content */}
+              <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                
+                {/* Method Badge Card */}
+                <div className={`p-4 rounded-2xl border ${methodInfo.color} flex items-start gap-3 transition-all duration-305`}>
+                  <Activity className="w-5 h-5 mt-0.5 shrink-0" />
+                  <div>
+                    <div className="text-xs font-black uppercase tracking-wider">{methodInfo.title}</div>
+                    <div className="text-[11px] font-medium leading-relaxed mt-0.5">{methodInfo.desc}</div>
+                  </div>
+                </div>
+
+                {/* Add Remedy Form */}
+                <div className="bg-slate-50/50 p-4.5 rounded-2xl border border-slate-150 space-y-4">
+                  <h4 className="text-[10px] font-black text-[#0F4C81] uppercase tracking-wider">Add Remedy to Prescription</h4>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    
+                    {/* Remedy Search */}
+                    <div className="relative">
+                      <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Search or Type Remedy</label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          placeholder="e.g. Lycopodium, Nux Vomica..."
+                          className="w-full pl-8 pr-3 py-2 text-xs border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-1 focus:ring-[#0F4C81] font-semibold text-slate-700"
+                          value={remedySearch}
+                          onChange={(e) => {
+                            setRemedySearch(e.target.value);
+                            setNewMedicine(prev => ({ ...prev, name: e.target.value }));
+                            setShowSuggestions(true);
+                          }}
+                          onFocus={() => setShowSuggestions(true)}
+                        />
+                        <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3" />
+                      </div>
+                      
+                      {/* Suggestions dropdown */}
+                      {showSuggestions && filteredSuggestions.length > 0 && (
+                        <div className="absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-[1000] overflow-hidden max-h-48 overflow-y-auto">
+                          {filteredSuggestions.map((rem, sIdx) => (
+                            <button
+                              key={sIdx}
+                              type="button"
+                              onClick={() => handleSelectSuggestion(rem)}
+                              className="w-full text-left px-3 py-2 text-xs hover:bg-[#0F4C81]/5 hover:text-[#0F4C81] transition-colors border-b border-slate-50 last:border-0 font-bold text-slate-700"
+                            >
+                              {rem}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Form Factor / Type */}
+                    <div>
+                      <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Form Factor (Type)</label>
+                      <select
+                        value={newMedicine.type}
+                        onChange={(e) => {
+                          const newType = e.target.value;
+                          let defaultPotency = newMedicine.potency;
+                          if (newType === "Liquid Mother Tincture") defaultPotency = "Q";
+                          else if (newType === "Bio-Combination") defaultPotency = "6x";
+                          else if (newType === "Biochemic Tablet") defaultPotency = "6x";
+                          else if (newType === "Dilution" && (defaultPotency === "Q" || defaultPotency.endsWith("x"))) defaultPotency = "30C";
+                          
+                          setNewMedicine(prev => ({
+                            ...prev,
+                            type: newType,
+                            potency: defaultPotency
+                          }));
+                        }}
+                        className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-1 focus:ring-[#0F4C81] font-bold text-slate-700"
+                      >
+                        <option value="Dilution">Dilution</option>
+                        <option value="Liquid Mother Tincture">Liquid Mother Tincture</option>
+                        <option value="Bio-Combination">Bio-Combination</option>
+                        <option value="Biochemic Tablet">Biochemic Tablet</option>
+                        <option value="Globules">Globules</option>
+                      </select>
+                    </div>
+
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    
+                    {/* Potency */}
+                    <div>
+                      <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Potency / Scale</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. 30C, 200C, Q, 6x"
+                        className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-1 focus:ring-[#0F4C81] font-bold text-slate-700"
+                        value={newMedicine.potency}
+                        onChange={(e) => setNewMedicine(prev => ({ ...prev, potency: e.target.value }))}
+                      />
+                    </div>
+
+                    {/* Dosage */}
+                    <div>
+                      <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Dosage Frequency</label>
+                      <select
+                        value={newMedicine.dose}
+                        onChange={(e) => setNewMedicine(prev => ({ ...prev, dose: e.target.value }))}
+                        className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-1 focus:ring-[#0F4C81] font-bold text-slate-700"
+                      >
+                        <option value="BD">BD (Twice daily)</option>
+                        <option value="TDS">TDS (Thrice daily)</option>
+                        <option value="OD">OD (Once daily)</option>
+                        <option value="HS">HS (At bedtime)</option>
+                        <option value="SOS">SOS (When needed)</option>
+                        <option value="Stat">Stat (Once immediately)</option>
+                      </select>
+                    </div>
+
+                    {/* Add Button */}
+                    <div className="flex items-end">
+                      <button
+                        type="button"
+                        onClick={handleAddMedicine}
+                        className="w-full py-2 bg-[#0F4C81] hover:bg-[#0F4C81]/90 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
+                      >
+                        <Plus className="w-4 h-4" />
+                        <span>Add Remedy</span>
+                      </button>
+                    </div>
+
+                  </div>
+
+                </div>
+
+                {/* Current Remedies List */}
+                <div className="space-y-3">
+                  <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Active Prescription List</h4>
+                  
+                  {tempMedicines.length === 0 ? (
+                    <div className="text-center py-8 border-2 border-dashed border-slate-200 rounded-2xl text-slate-400 text-xs font-medium">
+                      No remedies added yet. Use the form above to build the prescription.
+                    </div>
+                  ) : (
+                    <div className="space-y-2.5">
+                      {tempMedicines.map((med, mIdx) => (
+                        <div 
+                          key={mIdx}
+                          className="flex items-center justify-between p-3.5 bg-white border border-slate-150 rounded-2xl hover:border-slate-350 transition-colors shadow-sm"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-7 h-7 rounded-full bg-[#0F4C81]/5 text-[#0F4C81] flex items-center justify-center text-xs font-black">
+                              {mIdx + 1}
+                            </div>
+                            <div>
+                              <div className="text-xs font-bold text-slate-800">{med.name}</div>
+                              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-0.5">
+                                <span className="text-[9px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded border border-slate-200/50 uppercase font-semibold">
+                                  {med.type}
+                                </span>
+                                <span className="text-[9px] text-slate-400 font-bold">•</span>
+                                <span className="text-[10px] text-slate-600 font-medium">
+                                  Potency: <strong className="text-slate-800">{med.potency}</strong>
+                                </span>
+                                <span className="text-[9px] text-slate-400 font-bold">•</span>
+                                <span className="text-[10px] text-slate-600 font-medium">
+                                  Dose: <strong className="text-[#2E8B57]">{med.dose}</strong>
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <button
+                            type="button"
+                            onClick={() => setTempMedicines(prev => prev.filter((_, i) => i !== mIdx))}
+                            className="p-1.5 hover:bg-rose-50 text-rose-500 hover:text-rose-700 rounded-xl transition-all cursor-pointer border border-transparent hover:border-rose-100"
+                          >
+                            <Trash2 className="w-4.5 h-4.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+              </div>
+
+              {/* Footer */}
+              <div className="px-6 py-4 border-t border-slate-150 flex items-center justify-end gap-3 bg-slate-50">
+                <button
+                  type="button"
+                  onClick={() => setSelectedFollowUpIndex(null)}
+                  className="px-5 py-2.5 border border-slate-200 hover:bg-slate-100 text-slate-600 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSavePrescription}
+                  className="px-6 py-2.5 bg-[#0F4C81] hover:bg-[#0F4C81]/90 text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer"
+                >
+                  Save Prescription
+                </button>
+              </div>
+
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* Toast Notification */}
+      {repertoryToast && (
+        <div className="fixed bottom-16 right-6 bg-slate-900/90 backdrop-blur-sm text-white px-5 py-3 rounded-2xl shadow-xl border border-slate-800 z-[9999] flex items-center gap-2.5 text-xs font-bold animate-in fade-in-50 slide-in-from-bottom-5 duration-205">
+          <CheckCircle className="w-4.5 h-4.5 text-emerald-400" />
+          <span>{repertoryToast}</span>
+        </div>
+      )}
+
     </div>
   );
 }

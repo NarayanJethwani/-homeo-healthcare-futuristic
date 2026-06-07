@@ -3394,6 +3394,11 @@ Homeo Healthcare`;
     setCaseCreationSuccess(false);
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        controller.abort();
+      }, 5500); // 5.5 seconds timeout to fallback to mock immediately if network is slow
+
       const response = await fetch("/api/intake", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -3408,14 +3413,21 @@ Homeo Healthcare`;
           country: newCaseForm.country,
           complaint: newCaseForm.complaint,
           careLevel: newCaseForm.careLevel,
-          conditionsCount: 1,
+          conditionsCount: newCaseForm.careLevel.includes("Multisystem") ? 2 : 1,
           durationText: newCaseForm.durationText,
           finalPrice: newCaseForm.finalPrice,
           receivedAmount: newCaseForm.receivedAmount,
           remainingBalance: newCaseForm.remainingBalance,
-          assignedDoctor: session?.uid || "unassigned"
-        })
+          assignedDoctor: session?.uid || "unassigned",
+          billingCycle: "monthly",
+          durationValue: getDurationMonths(newCaseForm.durationText),
+          concessionApplied: parseInt(newCaseForm.age) >= 60 ? "Senior 15%" : "None",
+          overridePrice: newCaseForm.finalPrice,
+          medicineAddons: 0
+        }),
+        signal: controller.signal
       });
+      clearTimeout(timeoutId);
 
       const data = await response.json();
       if (data.success) {
@@ -4206,6 +4218,37 @@ ${err.message || err}`);
     } finally {
       setTimeout(() => setSaveStatus(""), 3000);
     }
+  };
+
+  const handleSendRubricsToSheet = () => {
+    const activePatient = selectedPatientId ? patients.find((p) => p.id === selectedPatientId) : null;
+    if (!activePatient) {
+      alert("Please select an Active Case File first in Zone 1.");
+      return;
+    }
+    
+    const rubricsToExport = repertoryWorkbenchMode === "jethwani" 
+      ? selectedJethwaniRubrics.map(s => {
+          const r = JETHWANI_REPERTORY_DATA.find(item => item.id === s.rubricId);
+          const weight = s.severity >= 7 ? 3 : s.severity >= 4 ? 2 : 1;
+          return { chapter: r ? r.section : "Section A", name: r ? r.name : "Unknown clinical symptom", weight };
+        })
+      : selectedRubrics.map(r => ({ chapter: r.rubric.chapter, name: r.rubric.name, weight: r.weightMultiplier || 1 }));
+      
+    if (rubricsToExport.length === 0) {
+      alert("Please select at least one symptom rubric to send.");
+      return;
+    }
+    
+    const rubricsParam = rubricsToExport.map(r => {
+      return `${r.chapter}:${r.name}:${r.weight}`;
+    }).join("|");
+    
+    const baseUrl = activePatient.sheetUrl || "/admin/mock-sheet";
+    const separator = baseUrl.includes("?") ? "&" : "?";
+    const targetUrl = `${baseUrl}${separator}importRubrics=${encodeURIComponent(rubricsParam)}`;
+    
+    window.open(targetUrl, "_blank");
   };
 
   // --- DR. JETHWANI'S CLINICAL REPERTORY HELPER METHODS ---
@@ -10371,6 +10414,15 @@ ${err.message || err}`);
 
                       {selectedRubrics.length > 0 && (
                         <div className="flex items-center gap-2 self-end sm:self-auto">
+                          {/* Send to Sheet */}
+                          <button
+                            onClick={handleSendRubricsToSheet}
+                            className="px-3 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-white rounded-xl text-[10px] font-bold uppercase transition-all duration-300 cursor-pointer shadow-md flex items-center gap-1.5"
+                            title="Send selected rubrics directly to the patient's Clinical Sheet"
+                          >
+                            <FileSpreadsheet className="w-3.5 h-3.5" />
+                            <span>Send to Sheet</span>
+                          </button>
                           {/* Live Filter */}
                           <input
                             type="text"
@@ -12284,6 +12336,16 @@ ${err.message || err}`);
                         <Sliders className="w-4 h-4 text-mint" />
                         Clinical Workbench ({selectedJethwaniRubrics.length})
                       </h3>
+                      {selectedJethwaniRubrics.length > 0 && (
+                        <button
+                          onClick={handleSendRubricsToSheet}
+                          className="px-2.5 py-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-white rounded-lg text-[9px] font-bold uppercase transition-all duration-300 cursor-pointer shadow flex items-center gap-1"
+                          title="Send clinical rubrics directly to the patient's Clinical Sheet"
+                        >
+                          <FileSpreadsheet className="w-3.5 h-3.5" />
+                          <span>Send to Sheet</span>
+                        </button>
+                      )}
                     </div>
                     <div className={`grid gap-3 flex-grow overflow-y-auto pr-1 mt-3 ${selectedJethwaniRubrics.length > 0 ? 'grid-cols-1 md:grid-cols-2 max-h-[290px]' : 'grid-cols-1 h-full'}`} data-lenis-prevent>
                       {selectedJethwaniRubrics.length === 0 ? (
