@@ -3322,43 +3322,93 @@ Homeo Healthcare`;
     return `${baseLabel} (₹${(basePrice * months).toLocaleString("en-IN")} for ${months} months)`;
   };
 
-  const handleCareLevelChange = (level: string) => {
+  const calculateCaseFormPricing = (
+    level: string,
+    durationText: string,
+    age: string,
+    discountOverride: number,
+    manualFinalPrice?: number
+  ) => {
     const rate = getCareLevelMonthlyRate(level);
-    const months = getDurationMonths(newCaseForm.durationText);
+    const months = getDurationMonths(durationText);
     const base = rate * months;
-    const final = Math.max(0, base - newCaseForm.discountOverride);
+    
+    // Duration discount
+    let discountPercent = 0;
+    const equivalentWeeks = months * 4;
+    if (equivalentWeeks >= 48) discountPercent = 30;
+    else if (equivalentWeeks >= 24) discountPercent = 25;
+    else if (equivalentWeeks >= 12) discountPercent = 20;
+    else if (equivalentWeeks >= 8) discountPercent = 15;
+    else if (equivalentWeeks >= 4) discountPercent = 10;
+    else if (equivalentWeeks >= 2) discountPercent = 5;
+    
+    const durationDiscountAmount = Math.round((base * discountPercent) / 100);
+    const afterDurationDiscount = base - durationDiscountAmount;
+    
+    // Senior discount (15% if age >= 60)
+    const ageNum = parseInt(age) || 0;
+    const isSenior = ageNum >= 60;
+    const seniorDiscountAmount = isSenior ? Math.round(afterDurationDiscount * 0.15) : 0;
+    
+    // Standard calculated final price
+    const calculatedFinal = Math.max(0, afterDurationDiscount - seniorDiscountAmount - discountOverride);
+    
+    const finalPrice = manualFinalPrice !== undefined ? manualFinalPrice : calculatedFinal;
+    
+    return {
+      basePrice: base,
+      discountPercent,
+      durationDiscountAmount,
+      seniorDiscountAmount,
+      calculatedFinal,
+      finalPrice
+    };
+  };
+
+  const handleCareLevelChange = (level: string) => {
+    const pricing = calculateCaseFormPricing(level, newCaseForm.durationText, newCaseForm.age, newCaseForm.discountOverride);
     setNewCaseForm(prev => ({
       ...prev,
       careLevel: level,
-      basePrice: base,
-      finalPrice: final,
-      receivedAmount: final,
+      basePrice: pricing.basePrice,
+      finalPrice: pricing.finalPrice,
+      receivedAmount: pricing.finalPrice,
       remainingBalance: 0
     }));
   };
 
   const handleDurationChange = (duration: string) => {
-    const rate = getCareLevelMonthlyRate(newCaseForm.careLevel);
-    const months = getDurationMonths(duration);
-    const base = rate * months;
-    const final = Math.max(0, base - newCaseForm.discountOverride);
+    const pricing = calculateCaseFormPricing(newCaseForm.careLevel, duration, newCaseForm.age, newCaseForm.discountOverride);
     setNewCaseForm(prev => ({
       ...prev,
       durationText: duration,
-      basePrice: base,
-      finalPrice: final,
-      receivedAmount: final,
+      basePrice: pricing.basePrice,
+      finalPrice: pricing.finalPrice,
+      receivedAmount: pricing.finalPrice,
+      remainingBalance: 0
+    }));
+  };
+
+  const handleAgeChange = (age: string) => {
+    const pricing = calculateCaseFormPricing(newCaseForm.careLevel, newCaseForm.durationText, age, newCaseForm.discountOverride);
+    setNewCaseForm(prev => ({
+      ...prev,
+      age,
+      basePrice: pricing.basePrice,
+      finalPrice: pricing.finalPrice,
+      receivedAmount: pricing.finalPrice,
       remainingBalance: 0
     }));
   };
 
   const handleDiscountChange = (discount: number) => {
-    const final = Math.max(0, newCaseForm.basePrice - discount);
+    const pricing = calculateCaseFormPricing(newCaseForm.careLevel, newCaseForm.durationText, newCaseForm.age, discount);
     setNewCaseForm(prev => ({
       ...prev,
       discountOverride: discount,
-      finalPrice: final,
-      receivedAmount: final,
+      finalPrice: pricing.finalPrice,
+      receivedAmount: pricing.finalPrice,
       remainingBalance: 0
     }));
   };
@@ -3399,6 +3449,19 @@ Homeo Healthcare`;
         controller.abort();
       }, 45000); // 45 seconds timeout to allow full Google Workspace creation
 
+      const pricing = calculateCaseFormPricing(
+        newCaseForm.careLevel,
+        newCaseForm.durationText,
+        newCaseForm.age,
+        newCaseForm.discountOverride
+      );
+      const isOverridden = newCaseForm.finalPrice !== pricing.calculatedFinal;
+      const concessionVal = isOverridden
+        ? "Override"
+        : parseInt(newCaseForm.age) >= 60
+          ? "Senior 15%"
+          : "None";
+
       const response = await fetch("/api/intake", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -3421,7 +3484,7 @@ Homeo Healthcare`;
           assignedDoctor: session?.uid || "unassigned",
           billingCycle: "monthly",
           durationValue: getDurationMonths(newCaseForm.durationText),
-          concessionApplied: parseInt(newCaseForm.age) >= 60 ? "Senior 15%" : "None",
+          concessionApplied: concessionVal,
           overridePrice: newCaseForm.finalPrice,
           medicineAddons: 0
         }),
@@ -5075,6 +5138,13 @@ ${err.message || err}`);
     ...clientTelemetryLogs,
     ...telemetryLogs.filter(log => !clientTelemetryLogs.some(cl => cl.id === log.id))
   ];
+
+  const currentPricing = calculateCaseFormPricing(
+    newCaseForm.careLevel,
+    newCaseForm.durationText,
+    newCaseForm.age,
+    newCaseForm.discountOverride
+  );
 
   return (
     <div 
@@ -21233,7 +21303,7 @@ Exported on: ${new Date().toLocaleDateString()}
                           <input
                             type="number"
                             value={newCaseForm.age}
-                            onChange={(e) => setNewCaseForm({ ...newCaseForm, age: e.target.value })}
+                            onChange={(e) => handleAgeChange(e.target.value)}
                             placeholder="45"
                             className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-medium text-[#1A2421]"
                             required
@@ -21380,6 +21450,36 @@ Exported on: ${new Date().toLocaleDateString()}
                             />
                           </div>
                         </div>
+
+                        {/* Live Estimate Breakdown aligned with Treatment Planner */}
+                        {(currentPricing.discountPercent > 0 || currentPricing.seniorDiscountAmount > 0) && (
+                          <div className="p-3.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/50 dark:border-slate-800 space-y-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400">
+                            <div className="flex justify-between items-center text-slate-400 dark:text-slate-500 uppercase tracking-wider text-[9px] font-bold pb-1.5 border-b border-slate-100 dark:border-slate-800 mb-1">
+                              <span>Pricing breakdown estimate</span>
+                              <span className="text-[#0c6b5e]">Live calculation</span>
+                            </div>
+                            <div className="flex justify-between text-slate-700 dark:text-slate-300">
+                              <span>Base Plan Price:</span>
+                              <span className="font-bold">₹{currentPricing.basePrice.toLocaleString("en-IN")}</span>
+                            </div>
+                            {currentPricing.discountPercent > 0 && (
+                              <div className="flex justify-between text-[#0c6b5e] dark:text-teal-400">
+                                <span>Duration Discount ({currentPricing.discountPercent}%):</span>
+                                <span className="font-bold">-₹{currentPricing.durationDiscountAmount.toLocaleString("en-IN")}</span>
+                              </div>
+                            )}
+                            {currentPricing.seniorDiscountAmount > 0 && (
+                              <div className="flex justify-between text-[#0c6b5e] dark:text-teal-400">
+                                <span>Senior Citizen Concession (15%):</span>
+                                <span className="font-bold">-₹{currentPricing.seniorDiscountAmount.toLocaleString("en-IN")}</span>
+                              </div>
+                            )}
+                            <div className="flex justify-between pt-1 border-t border-slate-100 dark:border-slate-800/80 font-bold text-slate-800 dark:text-slate-200">
+                              <span>Total Standard Cost:</span>
+                              <span>₹{currentPricing.calculatedFinal.toLocaleString("en-IN")}</span>
+                            </div>
+                          </div>
+                        )}
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1 border-t border-slate-100 dark:border-slate-800/60">
                           {/* Amount Received */}
