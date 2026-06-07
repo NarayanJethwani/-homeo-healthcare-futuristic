@@ -28,6 +28,7 @@ import { getIcdDiagnosis, getClinicalCoverageScore, CURATED_DIAGNOSES, ORGAN_SYS
 import { VIRTUAL_PATIENTS, evaluateCaseSubmission } from "@/lib/caseSimulationLab";
 import { calculateClinicalDecisionSupport } from "@/lib/clinicalDecisionSupport";
 import { parseNaturalLanguageQuery as parseNLQueryAdvanced, searchRemediesAdvanced } from "@/lib/advancedSearch";
+import Portal from "@/components/Portal";
 
 
 const JETHWANI_REPERTORY_DATA: JethwaniRubric[] = new Proxy(JETHWANI_REPERTORY_DATA_ORIG, {
@@ -21037,11 +21038,11 @@ Exported on: ${new Date().toLocaleDateString()}
             </motion.div>
           </AnimatePresence>
 
-
           {/* 1. New Case Taking Modal */}
+        <Portal>
         <AnimatePresence>
           {isNewCaseModalOpen && (
-            <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none p-4 md:p-6">
+            <div className="fixed inset-0 h-full w-full flex items-center justify-center z-50 pointer-events-none p-4 md:p-6">
               {/* Backdrop */}
               <motion.div
                 initial={{ opacity: 0 }}
@@ -21138,7 +21139,7 @@ Exported on: ${new Date().toLocaleDateString()}
                   </div>
                 ) : (
                   // Form State
-                  <form onSubmit={handleCreateCase} className="contents">
+                  <form onSubmit={handleCreateCase} className="flex flex-col flex-grow min-h-0 overflow-hidden">
                     {caseCreationError && (
                       <div className="p-4 bg-rose-50 border border-rose-100 rounded-2xl flex items-start gap-2.5 text-rose-800 text-xs font-semibold leading-relaxed flex-shrink-0 mb-4">
                         <ShieldAlert className="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" />
@@ -21395,11 +21396,13 @@ Exported on: ${new Date().toLocaleDateString()}
             </div>
           )}
         </AnimatePresence>
+        </Portal>
 
         {/* 2. Import CSV Modal */}
+        <Portal>
         <AnimatePresence>
           {isImportModalOpen && (
-            <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none p-4 md:p-6">
+            <div className="fixed inset-0 h-full w-full flex items-center justify-center z-50 pointer-events-none p-4 md:p-6">
               {/* Backdrop */}
               <motion.div
                 initial={{ opacity: 0 }}
@@ -21695,8 +21698,10 @@ Exported on: ${new Date().toLocaleDateString()}
             </div>
           )}
         </AnimatePresence>
+        </Portal>
 
         {/* Fullscreen Materia Medica E-Reader Modal */}
+        <Portal>
         <AnimatePresence>
           {isReaderFullscreen && selectedRemedy && (
             <motion.div
@@ -21858,8 +21863,10 @@ Exported on: ${new Date().toLocaleDateString()}
             </motion.div>
           )}
         </AnimatePresence>
+        </Portal>
 
         {/* Fullscreen Mind Map Drug Picture Modal */}
+        <Portal>
         <AnimatePresence>
           {mindMapDrugPictureId && (
             <>
@@ -22131,8 +22138,10 @@ Exported on: ${new Date().toLocaleDateString()}
             </>
           )}
         </AnimatePresence>
+        </Portal>
 
         {/* Fullscreen Clinical Research & Monograph Comparison Modal */}
+        <Portal>
         <AnimatePresence>
           {isResearchFullscreen && (
             <>
@@ -22491,8 +22500,10 @@ Exported on: ${new Date().toLocaleDateString()}
             </>
           )}
         </AnimatePresence>
+        </Portal>
 
         {/* Fullscreen AI Knowledge Search Modal */}
+        <Portal>
         <AnimatePresence>
           {isSearchFullscreen && (
             <>
@@ -22852,8 +22863,10 @@ Exported on: ${new Date().toLocaleDateString()}
             </>
           )}
         </AnimatePresence>
+        </Portal>
 
         {/* Google Drive Workspace Sync Modal */}
+        <Portal>
         <AnimatePresence>
           {googleDriveModalOpen && (
             <>
@@ -22960,8 +22973,10 @@ Exported on: ${new Date().toLocaleDateString()}
             </>
           )}
         </AnimatePresence>
+        </Portal>
 
         {/* 3. Invoicing & Billing Modal */}
+        <Portal>
         <AnimatePresence>
           {isInvoiceModalOpen && selectedInvoicePatient && (
             <>
@@ -23327,9 +23342,11 @@ Exported on: ${new Date().toLocaleDateString()}
             </>
           )}
         </AnimatePresence>
+        </Portal>
 
         {/* Workspace Provisioning Loader Overlay */}
         {isProvisioningWorkspace && (
+          <Portal>
           <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[100] flex items-center justify-center pointer-events-auto">
             <div className="bg-white p-8 rounded-[36px] max-w-sm w-full text-center space-y-4 border border-white/60 shadow-2xl">
               <div className="w-12 h-12 rounded-full border-4 border-slate-100 border-t-mint animate-spin mx-auto"></div>
@@ -23339,6 +23356,7 @@ Exported on: ${new Date().toLocaleDateString()}
               </p>
             </div>
           </div>
+          </Portal>
         )}
 
       </div>
