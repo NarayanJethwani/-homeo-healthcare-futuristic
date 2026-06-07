@@ -301,107 +301,92 @@ export async function createPatientClinicalSheet(
           ["HOMEO HEALTHCARE - PATIENT CLINICAL DASHBOARD", "", "", "", "", "", "", ""],
           ["", "", "", "", "", "", "", ""],
           ["PATIENT DEMOGRAPHICS", "", "", "ACTIVE TREATMENT", "", "", "OUTCOMES & LEDGER", ""],
-          ["Patient ID", data.id, "", "Diagnosis", "='Case Taking'!B112", "", "Progress Score (%)", "=IFERROR(INDEX('Follow-Up Tracker'!C:C, MATCH(9.99999999999999E+307, 'Follow-Up Tracker'!A:A)), \"0%\")"],
-          ["Patient Name", data.name, "", "Current Remedy", "='Case Taking'!B137", "", "Balance Due (₹)", "='Finance'!C4"],
+          ["Patient ID", data.id, "", "Diagnosis", "='Case Taking'!B38", "", "Progress Score (%)", "=IFERROR(INDEX('Follow-Up Tracker'!C:C, MATCH(9.99999999999999E+307, 'Follow-Up Tracker'!A:A)), \"0%\")"],
+          ["Patient Name", data.name, "", "Current Remedy", "='Case Taking'!B47", "", "Balance Due (₹)", "='Finance'!C4"],
           ["Age / Gender", `${data.age} / ${data.gender}`, "", "Last Visit Date", "=IFERROR(MAX('Follow-Up Tracker'!A4:A), \"N/A\")", "", "Top Totality Remedy", "='Repertorization'!B16"],
           ["Contact Phone", data.phone, "", "Next Scheduled Review", "=IFERROR(INDEX('Follow-Up Tracker'!G:G, MATCH(9.99999999999999E+307, 'Follow-Up Tracker'!A:A)), \"Not Scheduled\")", "", "Miasmatic Summary", "=IFERROR('AI Repertory Lab'!B4, \"Psora\")"],
-          ["Email Address", data.email || "N/A", "", "Consulting Doctor", "Dr. Narayan Jethwani", "", "Psora Count", "='Case Taking'!B117"],
-          ["Location / Address", locationVal, "", "Clinic Branch", "Baner Clinic, Pune", "", "Sycosis Count", "='Case Taking'!B118"],
-          ["", "", "", "", "", "", "Syphilis Count", "='Case Taking'!B119"],
-          ["", "", "", "", "", "", "Tubercular Count", "='Case Taking'!B120"],
-          ["", "", "", "", "", "", "Cancerinic Count", "='Case Taking'!B121"]
+          ["Email Address", data.email || "N/A", "", "Consulting Doctor", "Dr. Narayan Jethwani", "", "Psora Count", "='Case Taking'!B41"],
+          ["Location / Address", locationVal, "", "Clinic Branch", "Baner Clinic, Pune", "", "Sycosis Count", "='Case Taking'!B42"],
+          ["", "", "", "", "", "", "Syphilis Count", "='Case Taking'!B43"],
+          ["", "", "", "", "", "", "Tubercular Count", "='Case Taking'!B44"],
+          ["", "", "", "", "", "", "Cancerinic Count", "='Case Taking'!B45"]
         ];
 
         // values for Case Taking
-        const caseTakingValues = Array(151).fill(null).map(() => Array(4).fill(""));
+        const caseTakingValues = Array(55).fill(null).map(() => Array(4).fill(""));
         caseTakingValues[0][0] = "CLINICAL CASE SHEET (MAIN INTENDED WORKING DOCUMENT)";
+        
         // Section 1 Patient Details
-        caseTakingValues[2][0] = "SECTION 1 – PATIENT DETAILS (COLLAPSIBLE)";
-        caseTakingValues[3][0] = "Patient ID"; caseTakingValues[3][1] = data.id;
-        caseTakingValues[4][0] = "Patient Name"; caseTakingValues[4][1] = data.name;
-        caseTakingValues[5][0] = "Age / Gender"; caseTakingValues[5][1] = `${data.age} / ${data.gender}`;
-        caseTakingValues[6][0] = "Contact Phone"; caseTakingValues[6][1] = data.phone;
-        caseTakingValues[7][0] = "Email Address"; caseTakingValues[7][1] = data.email || "N/A";
-        caseTakingValues[8][0] = "Location / Address"; caseTakingValues[8][1] = locationVal;
-        caseTakingValues[9][0] = "Register Date"; caseTakingValues[9][1] = today;
+        caseTakingValues[1][0] = "SECTION 1 – PATIENT DETAILS (COLLAPSIBLE)";
+        caseTakingValues[2][0] = "Patient ID"; caseTakingValues[2][1] = data.id;
+        caseTakingValues[3][0] = "Full Patient Name"; caseTakingValues[3][1] = data.name;
+        caseTakingValues[4][0] = "Age / Gender"; caseTakingValues[4][1] = `${data.age} / ${data.gender}`;
+        caseTakingValues[5][0] = "Contact Phone"; caseTakingValues[5][1] = data.phone;
+        caseTakingValues[6][0] = "Email Address"; caseTakingValues[6][1] = data.email || "N/A";
+        caseTakingValues[7][0] = "Address / Location"; caseTakingValues[7][1] = locationVal;
+        caseTakingValues[8][0] = "Register Date"; caseTakingValues[8][1] = today;
 
         // Section 2 Chief Complaints
-        caseTakingValues[14][0] = "SECTION 2 – CHIEF COMPLAINTS";
-        caseTakingValues[15][0] = "Main Complaint"; caseTakingValues[15][1] = data.complaint;
-        caseTakingValues[16][0] = "Duration"; caseTakingValues[16][1] = data.durationText || "Chronic";
-        caseTakingValues[17][0] = "Onset Mode"; caseTakingValues[17][1] = "Gradual";
-        caseTakingValues[18][0] = "Progress"; caseTakingValues[18][1] = "Progressive";
+        caseTakingValues[9][0] = "SECTION 2 – CHIEF COMPLAINT ANALYSIS";
+        caseTakingValues[10][0] = "Primary Case Complaint"; caseTakingValues[10][1] = data.complaint;
+        caseTakingValues[11][0] = "Duration"; caseTakingValues[11][1] = data.durationText || "Chronic";
+        caseTakingValues[12][0] = "Onset (Sudden / Gradual)"; caseTakingValues[12][1] = "Gradual";
+        caseTakingValues[13][0] = "Complaint Severity (1-10)"; caseTakingValues[13][1] = "8";
 
         // Section 3 Presenting Symptoms
-        caseTakingValues[25][0] = "SECTION 3 – PRESENTING SYMPTOMS (TOTALITY OF SYMPTOMS)";
-        caseTakingValues[26][0] = "Location / Extension"; caseTakingValues[26][1] = "";
-        caseTakingValues[27][0] = "Sensation / Character"; caseTakingValues[27][1] = "";
-        caseTakingValues[28][0] = "Modalities Better (Ameliorations)"; caseTakingValues[28][1] = "";
-        caseTakingValues[29][0] = "Modalities Worse (Aggravations)"; caseTakingValues[29][1] = "";
-        caseTakingValues[30][0] = "Concomitant Symptoms"; caseTakingValues[30][1] = "";
-        caseTakingValues[31][0] = "Etiology / Causes"; caseTakingValues[31][1] = "";
-        caseTakingValues[32][0] = "Maintaining Causes"; caseTakingValues[32][1] = "";
+        caseTakingValues[14][0] = "SECTION 3 – PRESENTING SYMPTOMS (REPERTORY TOTALITY)";
+        caseTakingValues[15][0] = "Location / Extension"; caseTakingValues[15][1] = "";
+        caseTakingValues[16][0] = "Sensation / Pain Character"; caseTakingValues[16][1] = "";
+        caseTakingValues[17][0] = "Modalities Better (Amelioration)"; caseTakingValues[17][1] = "";
+        caseTakingValues[18][0] = "Modalities Worse (Aggravation)"; caseTakingValues[18][1] = "";
+        caseTakingValues[19][0] = "Concomitants"; caseTakingValues[19][1] = "";
+        caseTakingValues[20][0] = "Etiology / Causes"; caseTakingValues[20][1] = "";
+        caseTakingValues[21][0] = "Maintaining Causes"; caseTakingValues[21][1] = "";
 
         // Section 4 Mental Generals
-        caseTakingValues[35][0] = "SECTION 4 – MENTAL GENERALS";
-        caseTakingValues[36][0] = "Temperament Type"; caseTakingValues[36][1] = "Choleretic";
-        caseTakingValues[37][0] = "Fears / Phobias"; caseTakingValues[37][1] = "Fears dark, heights [Psora]";
-        caseTakingValues[38][0] = "Anxiety levels"; caseTakingValues[38][1] = "High anticipatory anxiety [Psora]";
-        caseTakingValues[39][0] = "Anger & Reaction"; caseTakingValues[39][1] = "Suppressed anger, turns silent [Sycosis]";
-        caseTakingValues[40][0] = "Grief / Depression"; caseTakingValues[40][1] = "Long-term grief, does not weep [Sycosis]";
-        caseTakingValues[41][0] = "Memory & Concentration"; caseTakingValues[41][1] = "Forgetful, loses thread [Psora]";
+        caseTakingValues[22][0] = "SECTION 4 – MENTAL GENERALS";
+        caseTakingValues[23][0] = "Temperament"; caseTakingValues[23][1] = "Irritable, anxious, fastidious [Psora]";
+        caseTakingValues[24][0] = "Fears & Phobias"; caseTakingValues[24][1] = "Fears dark, heights [Psora]";
+        caseTakingValues[25][0] = "Anxiety States"; caseTakingValues[25][1] = "High anticipatory anxiety [Psora]";
+        caseTakingValues[26][0] = "Anger & Reactions"; caseTakingValues[26][1] = "Suppressed anger, turns silent [Sycosis]";
+        caseTakingValues[27][0] = "Grief / Suppressions"; caseTakingValues[27][1] = "Long-term grief, does not weep [Sycosis]";
+        caseTakingValues[28][0] = "Personality Traits / Attributes"; caseTakingValues[28][1] = "Forgetful, loses thread [Psora]";
 
         // Section 5 Physical Generals
-        caseTakingValues[50][0] = "SECTION 5 – PHYSICAL GENERALS";
-        caseTakingValues[51][0] = "Appetite & Hunger"; caseTakingValues[51][1] = "Good, eats fast";
-        caseTakingValues[52][0] = "Thirst"; caseTakingValues[52][1] = "Thirsty for small quantities [Ars]";
-        caseTakingValues[53][0] = "Food Desires"; caseTakingValues[53][1] = "Sweets, spicy foods [Psora]";
-        caseTakingValues[54][0] = "Food Aversions"; caseTakingValues[54][1] = "Milk [Psora]";
-        caseTakingValues[55][0] = "Thermal State"; caseTakingValues[55][1] = "Very Chilly [Psora]";
-        caseTakingValues[56][0] = "Perspiration"; caseTakingValues[56][1] = "Profuse on forehead [Psora]";
-        caseTakingValues[57][0] = "Sleep & Dreams"; caseTakingValues[57][1] = "Restless sleep, dreams of falling [Psora]";
-        caseTakingValues[58][0] = "Energy Levels"; caseTakingValues[58][1] = "Worse in morning";
-
-        // Section 6 Past History
-        caseTakingValues[70][0] = "SECTION 6 – PAST MEDICAL HISTORY";
-        caseTakingValues[71][0] = "Major Illnesses"; caseTakingValues[71][1] = "Typhoid in childhood";
-        caseTakingValues[72][0] = "Surgeries / Hospitalizations"; caseTakingValues[72][1] = "Appendectomy at age 22";
-        caseTakingValues[73][0] = "Allergies / Drug Reactions"; caseTakingValues[73][1] = "Allergic to Penicillin";
-
-        // Section 7 Family History
-        caseTakingValues[85][0] = "SECTION 7 – FAMILY HISTORY";
-        caseTakingValues[86][0] = "Maternal Side"; caseTakingValues[86][1] = "Mother has Diabetes";
-        caseTakingValues[87][0] = "Paternal Side"; caseTakingValues[87][1] = "Father has Hypertension";
-
-        // Section 8 Investigations
-        caseTakingValues[100][0] = "SECTION 8 – LABORATORY & IMAGING INVESTIGATIONS";
-        caseTakingValues[101][0] = "HbA1c"; caseTakingValues[101][1] = "";
-        caseTakingValues[102][0] = "Thyroid Panel (TSH)"; caseTakingValues[102][1] = "";
-        caseTakingValues[103][0] = "Other Key Findings"; caseTakingValues[103][1] = "";
+        caseTakingValues[29][0] = "SECTION 5 – PHYSICAL GENERALS";
+        caseTakingValues[30][0] = "Appetite / Hunger"; caseTakingValues[30][1] = "Good, eats fast";
+        caseTakingValues[31][0] = "Thirst Quality"; caseTakingValues[31][1] = "Thirsty for small quantities [Ars]";
+        caseTakingValues[32][0] = "Food Desires"; caseTakingValues[32][1] = "Sweets, spicy foods [Psora]";
+        caseTakingValues[33][0] = "Food Aversions"; caseTakingValues[33][1] = "Milk [Psora]";
+        caseTakingValues[34][0] = "Thermal State (Chilly / Hot)"; caseTakingValues[34][1] = "Very Chilly [Psora]";
+        caseTakingValues[35][0] = "Sleep Cycles & Dreams"; caseTakingValues[35][1] = "Restless sleep, dreams of falling [Psora]";
 
         // Section 9 Clinical Diagnosis
-        caseTakingValues[110][0] = "SECTION 9 – CLINICAL DIAGNOSIS";
-        caseTakingValues[111][0] = "Primary Clinical Diagnosis"; caseTakingValues[111][1] = "Chronic GERD / Acidity";
+        caseTakingValues[36][0] = "SECTION 9 – CLINICAL DIAGNOSIS";
+        caseTakingValues[37][0] = "Clinical Diagnosis"; caseTakingValues[37][1] = "Chronic GERD / Acidity";
+        caseTakingValues[38][0] = "Case Complexity"; caseTakingValues[38][1] = "Moderate";
 
         // Section 10 Miasmatic Assessment
-        caseTakingValues[115][0] = "SECTION 10 – MIASMATIC ASSESSMENT";
-        caseTakingValues[116][0] = "Psora Score"; caseTakingValues[116][1] = "=COUNTIF(A3:D110, \"*[Psora]*\")";
-        caseTakingValues[117][0] = "Sycosis Score"; caseTakingValues[117][1] = "=COUNTIF(A3:D110, \"*[Sycosis]*\")";
-        caseTakingValues[118][0] = "Syphilis Score"; caseTakingValues[118][1] = "=COUNTIF(A3:D110, \"*[Syphilis]*\")";
-        caseTakingValues[119][0] = "Tubercular Score"; caseTakingValues[119][1] = "=COUNTIF(A3:D110, \"*[Tubercular]*\")";
-        caseTakingValues[120][0] = "Cancerinic Score"; caseTakingValues[120][1] = "=COUNTIF(A3:D110, \"*[Cancerinic]*\")";
-
-        // Section 11 Totality Summary
-        caseTakingValues[125][0] = "SECTION 11 – TOTALITY SUMMARY & AI SYNTHESIS";
-        caseTakingValues[126][0] = "Constitutional Totality"; caseTakingValues[126][1] = "Chilly patient, stomach complaints worse after food, anxious temperament.";
+        caseTakingValues[39][0] = "SECTION 10 – MIASMATIC ASSESSMENT (FORMULA DRIVEN)";
+        caseTakingValues[40][0] = "Psora Miasm Score"; caseTakingValues[40][1] = "=COUNTIF(B3:B39, \"*[Psora]*\")";
+        caseTakingValues[41][0] = "Sycosis Miasm Score"; caseTakingValues[41][1] = "=COUNTIF(B3:B39, \"*[Sycosis]*\")";
+        caseTakingValues[42][0] = "Syphilis Miasm Score"; caseTakingValues[42][1] = "=COUNTIF(B3:B39, \"*[Syphilis]*\")";
+        caseTakingValues[43][0] = "Tubercular Miasm Score"; caseTakingValues[43][1] = "=COUNTIF(B3:B39, \"*[Tubercular]*\")";
+        caseTakingValues[44][0] = "Cancerinic Miasm Score"; caseTakingValues[44][1] = "=COUNTIF(B3:B39, \"*[Cancerinic]*\")";
 
         // Section 12 Prescription
-        caseTakingValues[135][0] = "SECTION 12 – PRESCRIPTION & ADVICE";
-        caseTakingValues[136][0] = "Remedy Prescribed"; caseTakingValues[136][1] = "Nux Vomica";
-        caseTakingValues[137][0] = "Potency & Scale"; caseTakingValues[137][1] = "30C";
-        caseTakingValues[138][0] = "Dosage & Frequency"; caseTakingValues[138][1] = "4 pills, twice daily";
-        caseTakingValues[139][0] = "Duration"; caseTakingValues[139][1] = "14 Days";
-        caseTakingValues[140][0] = "Dietary Advice"; caseTakingValues[140][1] = "Avoid coffee and camphor";
+        caseTakingValues[45][0] = "SECTION 12 – CURRENT PRESCRIPTION & ADVICE";
+        caseTakingValues[46][0] = "Remedy Name"; caseTakingValues[46][1] = "Nux Vomica";
+        caseTakingValues[47][0] = "Potency / Scale"; caseTakingValues[47][1] = "30C";
+        caseTakingValues[48][0] = "Dosage & Frequency"; caseTakingValues[48][1] = "4 pills, twice daily";
+        caseTakingValues[49][0] = "Duration"; caseTakingValues[49][1] = "14 Days";
+        caseTakingValues[50][0] = "Dietary & lifestyle advice"; caseTakingValues[50][1] = "Avoid coffee and camphor";
+
+        // Section 13 AI Diagnostics (to be populated by portal)
+        caseTakingValues[51][0] = "SECTION 13 – AI CLINICAL SYNTHESIS VERDICT";
+        caseTakingValues[52][0] = "AI Analysis Engine"; caseTakingValues[52][1] = "Gemini 3.5 Clinical Synthesis";
+        caseTakingValues[53][0] = "Analysis Timestamp"; caseTakingValues[53][1] = "";
+        caseTakingValues[54][0] = "AI Constitutional Justification"; caseTakingValues[54][1] = "";
 
         // values for Follow-Up Tracker
         const followUpValues = [
@@ -453,7 +438,7 @@ export async function createPatientClinicalSheet(
           ["Amount Received", data.receivedAmount !== undefined ? data.receivedAmount : data.finalPrice, "Amount collected from patient for this plan", "", "", "", ""],
           ["Balance Due", "=B15-B16", "Outstanding dues for this treatment plan", "", "", "", ""],
           ["", "", "", "", "", "", ""],
-          ["WhatsApp Invoice Message", `="Dear " & 'Case Taking'!B5 & ", thank you for consulting Homeo Healthcare. Your treatment package is: " & A4 & " (" & C4 & " " & IF(B4="Weekly","weeks","months") & " commit, " & D4 & " condition(s) " & IF(E4="None","", "[" & E4 & "]") & "). Total Cost: ₹" & B15 & ". Amount Paid: ₹" & B16 & ". Balance Due: ₹" & B17 & ". Please pay using UPI: narayan.jethwani@homeo.healthcare. Clinic Branch: Baner, Pune."`, "", "", "", "", ""]
+          ["WhatsApp Invoice Message", `="Dear " & 'Case Taking'!B4 & ", thank you for consulting Homeo Healthcare. Your treatment package is: " & A4 & " (" & C4 & " " & IF(B4="Weekly","weeks","months") & " commit, " & D4 & " condition(s) " & IF(E4="None","", "[" & E4 & "]") & "). Total Cost: ₹" & B15 & ". Amount Paid: ₹" & B16 & ". Balance Due: ₹" & B17 & ". Please pay using UPI: narayan.jethwani@homeo.healthcare. Clinic Branch: Baner, Pune."`, "", "", "", "", ""]
         ];
 
         // values for Finance
@@ -475,12 +460,12 @@ export async function createPatientClinicalSheet(
           ["AI REPERTORY LAB & NEURAL TOTALITY MATCHING MATRIX", "", "", "", "", "", "", ""],
           ["", "", "", "", "", "", "", ""],
           ["SPREADSHEET REPERTORY PAYLOAD & MIASM VECTORS", "", "", "", "CLINICAL DIAGNOSTIC SYNTHESIS VERDICT", "", "", ""],
-          ["Dominant Miasm", `=IF('Case Taking'!B118>MAX('Case Taking'!B117,'Case Taking'!B119,'Case Taking'!B120,'Case Taking'!B121),"Sycosis",IF('Case Taking'!B117>MAX('Case Taking'!B118,'Case Taking'!B119,'Case Taking'!B120,'Case Taking'!B121),"Psora",IF('Case Taking'!B119>MAX('Case Taking'!B117,'Case Taking'!B118,'Case Taking'!B120,'Case Taking'!B121),"Syphilis",IF('Case Taking'!B120>MAX('Case Taking'!B117,'Case Taking'!B118,'Case Taking'!B119,'Case Taking'!B121),"Tubercular","Cancerinic"))))`, "", "", "AI Constitutional Justification & Totality Synthesis Report", "", "", ""],
-          ["Psora Count", "='Case Taking'!B117", "", "", `=IFERROR('Case Taking'!B131, "No AI Analysis Run yet. Transmit from portal to generate.")`, "", "", ""],
-          ["Sycosis Count", "='Case Taking'!B118", "", "", "", "", "", ""],
-          ["Syphilis Count", "='Case Taking'!B119", "", "", "", "", "", ""],
-          ["Tubercular Count", "='Case Taking'!B120", "", "", "", "", "", ""],
-          ["Cancerinic Count", "='Case Taking'!B121", "", "", "", "", "", ""],
+          ["Dominant Miasm", `=IF('Case Taking'!B42>MAX('Case Taking'!B41,'Case Taking'!B43,'Case Taking'!B44,'Case Taking'!B45),"Sycosis",IF('Case Taking'!B41>MAX('Case Taking'!B42,'Case Taking'!B43,'Case Taking'!B44,'Case Taking'!B45),"Psora",IF('Case Taking'!B43>MAX('Case Taking'!B41,'Case Taking'!B42,'Case Taking'!B44,'Case Taking'!B45),"Syphilis",IF('Case Taking'!B44>MAX('Case Taking'!B41,'Case Taking'!B42,'Case Taking'!B43,'Case Taking'!B45),"Tubercular","Cancerinic"))))`, "", "", "AI Constitutional Justification & Totality Synthesis Report", "", "", ""],
+          ["Psora Count", "='Case Taking'!B41", "", "", `=IFERROR('Case Taking'!B55, "No AI Analysis Run yet. Transmit from portal to generate.")`, "", "", ""],
+          ["Sycosis Count", "='Case Taking'!B42", "", "", "", "", "", ""],
+          ["Syphilis Count", "='Case Taking'!B43", "", "", "", "", "", ""],
+          ["Tubercular Count", "='Case Taking'!B44", "", "", "", "", "", ""],
+          ["Cancerinic Count", "='Case Taking'!B45", "", "", "", "", "", ""],
           ["", "", "", "", "", "", "", ""],
           ["TOP REMEDY RANKINGS FROM SPREADSHEET MATRIX", "", "", "", "MATERIA MEDICA KEYNOTE VERIFICATIONS", "", "", ""],
           ["Rank 1 Remedy", "='Repertorization'!B16", "Score", "='Repertorization'!D16", "Nux Vomica:", "Chilly, irritable, stomach complaints worse after eating.", "", ""],
@@ -522,7 +507,7 @@ export async function createPatientClinicalSheet(
             valueInputOption: "USER_ENTERED",
             data: [
               { range: "'Dashboard'!A1:H12", values: dashboardValues },
-              { range: "'Case Taking'!A1:D151", values: caseTakingValues },
+              { range: "'Case Taking'!A1:D55", values: caseTakingValues },
               { range: "'Follow-Up Tracker'!A1:G4", values: followUpValues },
               { range: "'Repertorization'!A1:P18", values: repertoryValues },
               { range: "'Treatment Planner'!A1:G21", values: plannerValues },
@@ -801,6 +786,7 @@ export async function createPatientClinicalSheet(
                 fields: "gridProperties.hideGridlines"
               }
             },
+            // Column widths
             {
               updateDimensionProperties: {
                 range: { sheetId: caseTakingId, dimension: "COLUMNS", startIndex: 0, endIndex: 1 },
@@ -811,6 +797,66 @@ export async function createPatientClinicalSheet(
               updateDimensionProperties: {
                 range: { sheetId: caseTakingId, dimension: "COLUMNS", startIndex: 1, endIndex: 2 },
                 properties: { pixelSize: 450 }, fields: "pixelSize"
+              }
+            },
+            // Grid borders for the Case Taking range (A2:B55)
+            {
+              updateBorders: {
+                range: {
+                  sheetId: caseTakingId,
+                  startRowIndex: 1,
+                  endRowIndex: 55,
+                  startColumnIndex: 0,
+                  endColumnIndex: 2
+                },
+                top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                left: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                right: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                innerHorizontal: { style: "SOLID", color: { red: 241/255, green: 245/255, blue: 249/255 } },
+                innerVertical: { style: "SOLID", color: { red: 241/255, green: 245/255, blue: 249/255 } }
+              }
+            },
+            // Style Column A labels (Col A, rows 3-55)
+            {
+              repeatCell: {
+                range: {
+                  sheetId: caseTakingId,
+                  startRowIndex: 2,
+                  endRowIndex: 55,
+                  startColumnIndex: 0,
+                  endColumnIndex: 1
+                },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
+                    textFormat: { foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 }, fontSize: 9, bold: true },
+                    horizontalAlignment: "LEFT",
+                    verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            // Style Column B values (Col B, rows 3-55, left-aligned)
+            {
+              repeatCell: {
+                range: {
+                  sheetId: caseTakingId,
+                  startRowIndex: 2,
+                  endRowIndex: 55,
+                  startColumnIndex: 1,
+                  endColumnIndex: 2
+                },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 1, green: 1, blue: 1 },
+                    textFormat: { foregroundColor: { red: 15/255, green: 23/255, blue: 42/255 }, fontSize: 10, bold: true },
+                    horizontalAlignment: "LEFT",
+                    verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
               }
             },
             // Title block
@@ -835,20 +881,17 @@ export async function createPatientClinicalSheet(
             }
           );
 
-          // Add Collapsible Groups for Case Taking
+          // Add Collapsible Groups for Case Taking (new contiguous coordinates)
           const groups = [
-            { start: 3, end: 13 },   // Section 1: Patient Details (0-indexed rows: 3 to 13)
-            { start: 14, end: 24 },  // Section 2: Chief Complaints
-            { start: 25, end: 34 },  // Section 3: Presenting Symptoms
-            { start: 35, end: 49 },  // Section 4: Mental Generals
-            { start: 50, end: 69 },  // Section 5: Physical Generals
-            { start: 70, end: 84 },  // Section 6: Past History
-            { start: 85, end: 99 },  // Section 7: Family History
-            { start: 100, end: 109 }, // Section 8: Investigations
-            { start: 110, end: 114 }, // Section 9: Diagnosis
-            { start: 115, end: 124 }, // Section 10: Miasmatic
-            { start: 125, end: 134 }, // Section 11: Totality
-            { start: 135, end: 149 }  // Section 12: Prescription
+            { start: 2, end: 9 },    // Section 1: Patient Details
+            { start: 10, end: 14 },  // Section 2: Chief Complaints
+            { start: 15, end: 22 },  // Section 3: Presenting Symptoms
+            { start: 23, end: 29 },  // Section 4: Mental Generals
+            { start: 30, end: 36 },  // Section 5: Physical Generals
+            { start: 37, end: 39 },  // Section 9: Clinical Diagnosis
+            { start: 40, end: 45 },  // Section 10: Miasmatic Assessment
+            { start: 46, end: 51 },  // Section 12: Prescription & Advice
+            { start: 52, end: 55 }   // Section 13: AI Diagnostics Verdict
           ];
 
           for (const g of groups) {
@@ -2234,14 +2277,14 @@ export async function appendAiReportToClinicalSheet(
   try {
     await sheets.spreadsheets.values.update({
       spreadsheetId: sheetId,
-      range: "'Case Taking'!A128:B131",
+      range: "'Case Taking'!A52:B55",
       valueInputOption: "RAW",
       requestBody: {
         values: [
-          ["AI CLINICAL DIAGNOSTICS REPORT", ""],
-          ["Generated Engine", "Gemini 3.5 Clinical Synthesis"],
+          ["SECTION 13 – AI CLINICAL SYNTHESIS VERDICT", ""],
+          ["AI Analysis Engine", "Gemini 3.5 Clinical Synthesis"],
           ["Analysis Timestamp", new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })],
-          ["Clinical Findings & Totality Analysis", aiReport]
+          ["AI Constitutional Justification", aiReport]
         ]
       }
     });
