@@ -304,7 +304,7 @@ export async function createPatientClinicalSheet(
           ["Patient ID", data.id, "", "Diagnosis", "='Case Taking'!B38", "", "Progress Score (%)", "=IFERROR(INDEX('Follow-Up Tracker'!C:C, MATCH(9.99999999999999E+307, 'Follow-Up Tracker'!A:A)), \"0%\")"],
           ["Patient Name", data.name, "", "Current Remedy", "='Case Taking'!B47", "", "Balance Due (₹)", "='Finance'!C4"],
           ["Age / Gender", `${data.age} / ${data.gender}`, "", "Last Visit Date", "=IFERROR(MAX('Follow-Up Tracker'!A4:A), \"N/A\")", "", "Top Totality Remedy", "='Repertorization'!B16 & \" (\" & 'Repertorization'!D16 & \" pts)\""],
-          ["Contact Phone", data.phone, "", "Next Scheduled Review", "=IFERROR(INDEX('Follow-Up Tracker'!G:G, MATCH(9.99999999999999E+307, 'Follow-Up Tracker'!A:A)), \"Not Scheduled\")", "", "Miasmatic Summary", "=IFERROR('AI Repertory Lab'!B4, \"Psora\")"],
+          ["Contact Phone", data.phone, "", "Next Scheduled Review", "=IFERROR(INDEX('Follow-Up Tracker'!H:H, MATCH(9.99999999999999E+307, 'Follow-Up Tracker'!A:A)), \"Not Scheduled\")", "", "Miasmatic Summary", "=IFERROR('AI Repertory Lab'!B4, \"Psora\")"],
           ["Email Address", data.email || "N/A", "", "Consulting Doctor", "Dr. Narayan Jethwani", "", "Psora Count", "='Case Taking'!B41"],
           ["Location / Address", locationVal, "", "Clinic Branch", "Baner Clinic, Pune", "", "Sycosis Count", "='Case Taking'!B42"],
           ["", "", "", "", "", "", "Syphilis Count", "='Case Taking'!B43"],
@@ -390,10 +390,10 @@ export async function createPatientClinicalSheet(
 
         // values for Follow-Up Tracker
         const followUpValues = [
-          ["CLINICAL FOLLOW-UP TRACKER", "", "", "", "", "", ""],
-          ["", "", "", "", "", "", ""],
-          ["Date", "Symptoms & Patient Report", "Improvement %", "Remedy Prescribed", "Potency", "Assessment & Pathology", "Next Follow-up"],
-          [today, "Case initialized. Demographics and baseline complaint registered.", 0, "Nux Vomica", "30C", "Baseline status. Patient is very chilly with severe post-meal burning.", "2 weeks later"]
+          ["CLINICAL FOLLOW-UP TRACKER", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", ""],
+          ["Date", "Symptoms & Patient Report", "Improvement %", "Remedy Prescribed", "Potency", "Prescribing Method", "Assessment & Pathology", "Next Follow-up"],
+          [today, "Case initialized. Demographics and baseline complaint registered.", 0, "Nux Vomica", "30C", `=ARRAYFORMULA(IF(ISBLANK(A4:A), "", IF(ISBLANK(D4:D), "No Remedy", IF(ISNUMBER(SEARCH(",", D4:D)), "Complex Method", "Classical Method"))))`, "Baseline status. Patient is very chilly with severe post-meal burning.", "2 weeks later"]
         ];
 
         // values for Repertorization
@@ -508,7 +508,7 @@ export async function createPatientClinicalSheet(
             data: [
               { range: "'Dashboard'!A1:H12", values: dashboardValues },
               { range: "'Case Taking'!A1:D55", values: caseTakingValues },
-              { range: "'Follow-Up Tracker'!A1:G4", values: followUpValues },
+              { range: "'Follow-Up Tracker'!A1:H4", values: followUpValues },
               { range: "'Repertorization'!A1:P18", values: repertoryValues },
               { range: "'Treatment Planner'!A1:G21", values: plannerValues },
               { range: "'Finance'!A1:H10", values: financeValues },
@@ -1146,55 +1146,61 @@ export async function createPatientClinicalSheet(
             {
               updateDimensionProperties: {
                 range: { sheetId: followUpId, dimension: "COLUMNS", startIndex: 0, endIndex: 1 },
-                properties: { pixelSize: 120 }, fields: "pixelSize"
+                properties: { pixelSize: 110 }, fields: "pixelSize"
               }
             },
             {
               updateDimensionProperties: {
                 range: { sheetId: followUpId, dimension: "COLUMNS", startIndex: 1, endIndex: 2 },
-                properties: { pixelSize: 400 }, fields: "pixelSize"
+                properties: { pixelSize: 300 }, fields: "pixelSize"
               }
             },
             {
               updateDimensionProperties: {
                 range: { sheetId: followUpId, dimension: "COLUMNS", startIndex: 2, endIndex: 3 },
-                properties: { pixelSize: 120 }, fields: "pixelSize"
+                properties: { pixelSize: 90 }, fields: "pixelSize"
               }
             },
             {
               updateDimensionProperties: {
                 range: { sheetId: followUpId, dimension: "COLUMNS", startIndex: 3, endIndex: 4 },
-                properties: { pixelSize: 140 }, fields: "pixelSize"
+                properties: { pixelSize: 180 }, fields: "pixelSize"
               }
             },
             {
               updateDimensionProperties: {
                 range: { sheetId: followUpId, dimension: "COLUMNS", startIndex: 4, endIndex: 5 },
-                properties: { pixelSize: 100 }, fields: "pixelSize"
+                properties: { pixelSize: 110 }, fields: "pixelSize"
               }
             },
             {
               updateDimensionProperties: {
                 range: { sheetId: followUpId, dimension: "COLUMNS", startIndex: 5, endIndex: 6 },
-                properties: { pixelSize: 200 }, fields: "pixelSize"
+                properties: { pixelSize: 150 }, fields: "pixelSize"
               }
             },
             {
               updateDimensionProperties: {
                 range: { sheetId: followUpId, dimension: "COLUMNS", startIndex: 6, endIndex: 7 },
-                properties: { pixelSize: 140 }, fields: "pixelSize"
+                properties: { pixelSize: 250 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: followUpId, dimension: "COLUMNS", startIndex: 7, endIndex: 8 },
+                properties: { pixelSize: 110 }, fields: "pixelSize"
               }
             },
             // Merge Title Banner
             {
               mergeCells: {
-                range: { sheetId: followUpId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 7 },
+                range: { sheetId: followUpId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 8 },
                 mergeType: "MERGE_ALL"
               }
             },
             {
               repeatCell: {
-                range: { sheetId: followUpId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 7 },
+                range: { sheetId: followUpId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 8 },
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 15/255, green: 76/255, blue: 129/255 },
@@ -1208,45 +1214,134 @@ export async function createPatientClinicalSheet(
             // Table headers
             {
               repeatCell: {
-                range: { sheetId: followUpId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 7 },
+                range: { sheetId: followUpId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 8 },
                 cell: {
                   userEnteredFormat: {
-                    backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 },
-                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    backgroundColor: { red: 241/255, green: 245/255, blue: 249/255 },
+                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 } },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
                 fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
               }
             },
-            // Date format for Column A (Row 4 onwards)
+            // Table Borders A3:H100
             {
-              repeatCell: {
-                range: { sheetId: followUpId, startRowIndex: 3, startColumnIndex: 0, endColumnIndex: 1 },
-                cell: {
-                  userEnteredFormat: {
-                    numberFormat: {
-                      type: "DATE",
-                      pattern: "dd-mm-yyyy"
-                    }
-                  }
-                },
-                fields: "userEnteredFormat.numberFormat"
+              updateBorders: {
+                range: { sheetId: followUpId, startRowIndex: 2, endRowIndex: 100, startColumnIndex: 0, endColumnIndex: 8 },
+                top: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } },
+                bottom: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } },
+                left: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } },
+                right: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } },
+                innerHorizontal: { style: "SOLID", color: { red: 241/255, green: 245/255, blue: 249/255 } },
+                innerVertical: { style: "SOLID", color: { red: 241/255, green: 245/255, blue: 249/255 } }
               }
             },
-            // Percentage format for Column C (Row 4 onwards)
+            // Date format for Column A (Row 4 onwards) + align CENTER + bold blue text
             {
               repeatCell: {
-                range: { sheetId: followUpId, startRowIndex: 3, startColumnIndex: 2, endColumnIndex: 3 },
+                range: { sheetId: followUpId, startRowIndex: 3, endRowIndex: 100, startColumnIndex: 0, endColumnIndex: 1 },
                 cell: {
                   userEnteredFormat: {
-                    numberFormat: {
-                      type: "NUMBER",
-                      pattern: "0%"
+                    numberFormat: { type: "DATE", pattern: "dd-mm-yyyy" },
+                    textFormat: { bold: true, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(numberFormat,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            // Percentage format for Column C (Row 4 onwards) + bold green + bg ECFDF5
+            {
+              repeatCell: {
+                range: { sheetId: followUpId, startRowIndex: 3, endRowIndex: 100, startColumnIndex: 2, endColumnIndex: 3 },
+                cell: {
+                  userEnteredFormat: {
+                    numberFormat: { type: "NUMBER", pattern: "0%" },
+                    textFormat: { bold: true, foregroundColor: { red: 4/255, green: 120/255, blue: 87/255 } },
+                    backgroundColor: { red: 236/255, green: 253/255, blue: 245/255 },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(numberFormat,textFormat,backgroundColor,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            // Prescribing Method Column F (Row 4 onwards) - center align + bold
+            {
+              repeatCell: {
+                range: { sheetId: followUpId, startRowIndex: 3, endRowIndex: 100, startColumnIndex: 5, endColumnIndex: 6 },
+                cell: {
+                  userEnteredFormat: {
+                    textFormat: { bold: true },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            // Next Follow-up Column H (Row 4 onwards) - bold amber text
+            {
+              repeatCell: {
+                range: { sheetId: followUpId, startRowIndex: 3, endRowIndex: 100, startColumnIndex: 7, endColumnIndex: 8 },
+                cell: {
+                  userEnteredFormat: {
+                    textFormat: { bold: true, foregroundColor: { red: 180/255, green: 83/255, blue: 9/255 } },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            // Conditional formatting rules for Prescribing Method (Column F)
+            {
+              addConditionalFormatRule: {
+                rule: {
+                  ranges: [
+                    { sheetId: followUpId, startRowIndex: 3, endRowIndex: 100, startColumnIndex: 5, endColumnIndex: 6 }
+                  ],
+                  booleanRule: {
+                    condition: { type: "TEXT_CONTAINS", values: [{ userEnteredValue: "Classical" }] },
+                    format: {
+                      backgroundColor: { red: 239/255, green: 246/255, blue: 255/255 }, // blue-50 #EFF6FF
+                      textFormat: { foregroundColor: { red: 30/255, green: 64/255, blue: 175/255 }, bold: true } // blue-800
                     }
                   }
                 },
-                fields: "userEnteredFormat.numberFormat"
+                index: 0
+              }
+            },
+            {
+              addConditionalFormatRule: {
+                rule: {
+                  ranges: [
+                    { sheetId: followUpId, startRowIndex: 3, endRowIndex: 100, startColumnIndex: 5, endColumnIndex: 6 }
+                  ],
+                  booleanRule: {
+                    condition: { type: "TEXT_CONTAINS", values: [{ userEnteredValue: "Complex" }] },
+                    format: {
+                      backgroundColor: { red: 236/255, green: 253/255, blue: 245/255 }, // emerald-50 #ECFDF5
+                      textFormat: { foregroundColor: { red: 6/255, green: 95/255, blue: 70/255 }, bold: true } // emerald-800
+                    }
+                  }
+                },
+                index: 1
+              }
+            },
+            {
+              addConditionalFormatRule: {
+                rule: {
+                  ranges: [
+                    { sheetId: followUpId, startRowIndex: 3, endRowIndex: 100, startColumnIndex: 5, endColumnIndex: 6 }
+                  ],
+                  booleanRule: {
+                    condition: { type: "TEXT_CONTAINS", values: [{ userEnteredValue: "No Remedy" }] },
+                    format: {
+                      backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 }, // slate-50 #F8FAFC
+                      textFormat: { foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 }, bold: false } // slate-500
+                    }
+                  }
+                },
+                index: 2
               }
             }
           );
