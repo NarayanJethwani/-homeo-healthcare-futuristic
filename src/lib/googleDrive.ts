@@ -398,19 +398,19 @@ export async function createPatientClinicalSheet(
 
         // values for Repertorization
         const repertoryValues = [
+          ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
           ["REPERTORY GRID & Dynamic ANALYSIS MATRIX", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
-          ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
           ["Rubric Name", "Chapter / Location", "Source", "Importance Weight", "Nux-v", "Lyc", "Ars", "Puls", "Sulph", "Rhus-t", "Calc", "Sil", "Nat-m", "Ign", "Sep", "Totality Score"],
-          ["Acidity - eating, post", "Stomach", "Kent", 3, 3, 2, 3, 1, 2, 1, 1, 0, 0, 0, 0, "=$D4*SUM(E4:O4)"],
-          ["Irritability - eating, post", "Mind", "Kent", 2, 2, 3, 1, 2, 2, 1, 0, 0, 0, 0, 0, "=$D5*SUM(E5:O5)"],
-          ["Generalities - Chilly", "Generalities", "Kent", 3, 3, 1, 3, 0, 1, 3, 3, 2, 1, 0, 1, "=$D6*SUM(E6:O6)"],
-          ["Clinical - Burnout / Adrenal Fatigue [Sycosis]", "Clinical", "Jethwani", 3, 3, 2, 2, 1, 2, 1, 3, 2, 2, 2, 2, "=$D7*SUM(E7:O7)"],
-          ["Mind - Hurry - constant", "Mind", "Custom", 2, 2, 1, 3, 1, 1, 2, 1, 1, 2, 3, 1, "=$D8*SUM(E8:O8)"],
+          ["Acidity - eating, post", "Stomach", "Kent", 3, 3, 2, 3, 1, 2, 1, 1, 0, 0, 0, 0, "=D4*SUM(E4:O4)"],
+          ["Irritability - eating, post", "Mind", "Kent", 2, 2, 3, 1, 2, 2, 1, 0, 0, 0, 0, 0, "=D5*SUM(E5:O5)"],
+          ["Generalities - Chilly", "Generalities", "Kent", 3, 3, 1, 3, 0, 1, 3, 3, 2, 1, 0, 1, "=D6*SUM(E6:O6)"],
+          ["Clinical - Burnout / Adrenal Fatigue [Sycosis]", "Clinical", "Jethwani", 3, 3, 2, 2, 1, 2, 1, 3, 2, 2, 2, 2, "=D7*SUM(E7:O7)"],
+          ["Mind - Hurry - constant", "Mind", "Custom", 2, 2, 1, 3, 1, 1, 2, 1, 1, 2, 3, 1, "=D8*SUM(E8:O8)"],
           ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
           ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
-          ["Symptom Coverage", "", "", "", "=COUNTIFS(E4:E8, \">0\") / 5", "=COUNTIFS(F4:F8, \">0\") / 5", "=COUNTIFS(G4:G8, \">0\") / 5", "=COUNTIFS(H4:H8, \">0\") / 5", "=COUNTIFS(I4:I8, \">0\") / 5", "=COUNTIFS(J4:J8, \">0\") / 5", "=COUNTIFS(K4:K8, \">0\") / 5", "=COUNTIFS(L4:L8, \">0\") / 5", "=COUNTIFS(M4:M8, \">0\") / 5", "=COUNTIFS(N4:N8, \">0\") / 5", "=COUNTIFS(O4:O8, \">0\") / 5"],
-          ["Sum of Grades", "", "", "", "=SUMPRODUCT(E4:E8, $D$4:$D$8)", "=SUMPRODUCT(F4:F8, $D$4:$D$8)", "=SUMPRODUCT(G4:G8, $D$4:$D$8)", "=SUMPRODUCT(H4:H8, $D$4:$D$8)", "=SUMPRODUCT(I4:I8, $D$4:$D$8)", "=SUMPRODUCT(J4:J8, $D$4:$D$8)", "=SUMPRODUCT(K4:K8, $D$4:$D$8)", "=SUMPRODUCT(L4:L8, $D$4:$D$8)", "=SUMPRODUCT(M4:M8, $D$4:$D$8)", "=SUMPRODUCT(N4:N8, $D$4:$D$8)", "=SUMPRODUCT(O4:O8, $D$4:$D$8)"],
-          ["Totality Rank Score", "", "", "", "=(E11*100) + E12", "=(F11*100) + F12", "=(G11*100) + G12", "=(H11*100) + H12", "=(I11*100) + I12", "=(J11*100) + J12", "=(K11*100) + K12", "=(L11*100) + L12", "=(M11*100) + M12", "=(N11*100) + N12", "=(O11*100) + O12"],
+          ["Symptom Coverage", "", "", "", "=COUNTIFS(E4:E8, \">0\") / 5", "=COUNTIFS(F4:F8, \">0\") / 5", "=COUNTIFS(G4:G8, \">0\") / 5", "=COUNTIFS(H4:H8, \">0\") / 5", "=COUNTIFS(I4:I8, \">0\") / 5", "=COUNTIFS(J4:J8, \">0\") / 5", "=COUNTIFS(K4:K8, \">0\") / 5", "=COUNTIFS(L4:L8, \">0\") / 5", "=COUNTIFS(M4:M8, \">0\") / 5", "=COUNTIFS(N4:N8, \">0\") / 5", "=COUNTIFS(O4:O8, \">0\") / 5", ""],
+          ["Sum of Grades", "", "", "", "=SUMPRODUCT(E4:E8, $D$4:$D$8)", "=SUMPRODUCT(F4:F8, $D$4:$D$8)", "=SUMPRODUCT(G4:G8, $D$4:$D$8)", "=SUMPRODUCT(H4:H8, $D$4:$D$8)", "=SUMPRODUCT(I4:I8, $D$4:$D$8)", "=SUMPRODUCT(J4:J8, $D$4:$D$8)", "=SUMPRODUCT(K4:K8, $D$4:$D$8)", "=SUMPRODUCT(L4:L8, $D$4:$D$8)", "=SUMPRODUCT(M4:M8, $D$4:$D$8)", "=SUMPRODUCT(N4:N8, $D$4:$D$8)", "=SUMPRODUCT(O4:O8, $D$4:$D$8)", ""],
+          ["Totality Rank Score", "", "", "", "=(E11*100) + E12", "=(F11*100) + F12", "=(G11*100) + G12", "=(H11*100) + H12", "=(I11*100) + I12", "=(J11*100) + J12", "=(K11*100) + K12", "=(L11*100) + L12", "=(M11*100) + M12", "=(N11*100) + N12", "=(O11*100) + O12", ""],
           ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
           ["Top Remedy Ranking", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
           ["Rank 1", "=INDEX($E$3:$O$3, MATCH(MAX(E13:O13), E13:O13, 0))", "Score", "=MAX(E13:O13)", "", "", "", "", "", "", "", "", "", "", "", ""],
@@ -420,8 +420,8 @@ export async function createPatientClinicalSheet(
 
         // values for Treatment Planner (adjusted for exact row indices to prevent circular references)
         const plannerValues = [
-          ["TREATMENT COMPLEXITY & FINANCIAL PLANNER", "", "", "", "", "", ""],
           ["", "", "", "", "", "", ""],
+          ["TREATMENT COMPLEXITY & FINANCIAL PLANNER", "", "", "", "", "", ""],
           ["Care Level", "Billing Cycle", "Duration Value", "Conditions Count", "Concession Applied", "Override Price (₹)", "Medicine Add-ons (₹)"],
           [data.careLevel || "Deep Systemic Care", data.billingCycle || "monthly", data.durationValue || 1, data.conditionsCount || 1, data.concessionApplied || "None", data.overridePrice || 0, data.medicineAddons || 0],
           ["", "", "", "", "", "", ""],
@@ -430,7 +430,7 @@ export async function createPatientClinicalSheet(
           ["Base Rate", `=IF(ISNUMBER(SEARCH("Acute", A4)), IF(B4="Weekly", 1000, 3500), IF(ISNUMBER(SEARCH("Standard", A4)), IF(B4="Weekly", 2000, 7500), IF(ISNUMBER(SEARCH("Deep", A4)), IF(B4="Weekly", 3500, 12500), IF(ISNUMBER(SEARCH("Advanced", A4)), IF(B4="Weekly", 5000, 18500), IF(ISNUMBER(SEARCH("Multisystem", A4)), IF(B4="Weekly", 7000, 25000), 3500)))))`, "Base rate based on Care Level and Billing Cycle", "", "", ""],
           ["Conditions Surcharge", `=IF(D4<=1, 0, IF(ISNUMBER(SEARCH("Acute", A4)), IF(B4="Weekly", IF(D4=2, 300, 600), IF(D4=2, 1000, 2000)), IF(ISNUMBER(SEARCH("Standard", A4)), IF(B4="Weekly", IF(D4=2, 500, 1000), IF(D4=2, 1500, 3000)), IF(ISNUMBER(SEARCH("Deep", A4)), IF(B4="Weekly", IF(D4=2, 800, 1600), IF(D4=2, 2500, 5000)), IF(ISNUMBER(SEARCH("Advanced", A4)), IF(B4="Weekly", IF(D4=2, 1200, 2400), IF(D4=2, 3500, 7000)), IF(B4="Weekly", IF(D4=2, 1500, 3000), IF(D4=2, 4500, 9000)))))))`, "Surcharge for co-existing chronic conditions", "", "", ""],
           ["Gross Subtotal", "=(B8+B9)*C4", "Adjusted base rate multiplied by duration", "", "", "", ""],
-          ["Duration Discount %", `=IF(IF(B4="Weekly", C4, C4*4)>=48, 0.30, IF(IF(B4="Weekly", C4, C4*4)>=24, 0.25, IF(IF(B4="Weekly", C4, C4*4)>=12, 0.20, IF(IF(B4="Weekly", C4, C4*4)>=8, 0.15, IF(IF(B4="Weekly", C4, C4*4)>=4, 0.10, IF(IF(B4="Weekly", C4, C4*4)>=2, 0.05, 0))))))`, "Duration loyalty discount percentage", "", "", "", ""],
+          ["Duration Discount %", `=IF(IF(B4="Weekly", C4, C4*4)>=48, 0.30, IF(IF(B4="Weekly", C4, C4*4)>=24, 0.25, IF(IF(B4="Weekly", C4, C4*4)>=12, 0.20, IF(IF(B4="Weekly", C4, C4*4)>=8, 0.15, IF(IF(B4="Weekly", C4, C4=4)>=4, 0.10, IF(IF(B4="Weekly", C4, C4*4)>=2, 0.05, 0))))))`, "Duration loyalty discount percentage", "", "", "", ""],
           ["Duration Discount Amount", "=B10*B11", "Total savings from duration discount", "", "", "", ""],
           ["Concession Discount Amount", `=IF(ISNUMBER(SEARCH("Senior", E4)), (B10-B12)*0.15, IF(ISNUMBER(SEARCH("Socio", E4)), (B10-B12)*0.30, IF(ISNUMBER(SEARCH("Override", E4)), MAX(0, (B10-B12) - F4), 0)))`, "Compassionate, Senior, or Override concession", "", "", "", ""],
           ["Medicine Add-ons", "=G4", "Medicine charges and dynamic add-on scripts", "", "", "", ""],
@@ -443,10 +443,10 @@ export async function createPatientClinicalSheet(
 
         // values for Finance
         const financeValues = [
-          ["PATIENT ACCOUNT FINANCE LEDGER & REVENUE SUMMARY", "", "", "", "", "", "", ""],
           ["", "", "", "", "", "", "", ""],
-          ["Total Billed (₹)", "Total Collected (₹)", "Outstanding Balance (₹)", "", "", "", "", ""],
-          ["=SUM(D8:D100)", "=SUM(E8:E100)", "=A4-B4", "", "", "", "", ""],
+          ["PATIENT ACCOUNT FINANCE LEDGER & REVENUE SUMMARY", "", "", "", "", "", "", ""],
+          ["Total Billed (₹)", "", "Total Collected (₹)", "", "Outstanding Balance (₹)", "", "", ""],
+          ["=SUM(D8:D100)", "", "=SUM(E8:E100)", "", "=A4-C4", "", "", ""],
           ["", "", "", "", "", "", "", ""],
           ["TRANSACTION HISTORY RECORD", "", "", "", "", "", "", ""],
           ["Date", "Description / Event", "Reference ID", "Amount Charged (₹)", "Amount Received (₹)", "Outstanding Balance (₹)", "Payment Method", "Payment Status"],
@@ -1376,8 +1376,14 @@ export async function createPatientClinicalSheet(
             },
             {
               updateDimensionProperties: {
-                range: { sheetId: repertoryId, dimension: "COLUMNS", startIndex: 2, endIndex: 4 },
+                range: { sheetId: repertoryId, dimension: "COLUMNS", startIndex: 2, endIndex: 3 },
                 properties: { pixelSize: 80 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: repertoryId, dimension: "COLUMNS", startIndex: 3, endIndex: 4 },
+                properties: { pixelSize: 120 }, fields: "pixelSize"
               }
             },
             {
@@ -1389,19 +1395,32 @@ export async function createPatientClinicalSheet(
             {
               updateDimensionProperties: {
                 range: { sheetId: repertoryId, dimension: "COLUMNS", startIndex: 15, endIndex: 16 },
-                properties: { pixelSize: 100 }, fields: "pixelSize"
+                properties: { pixelSize: 90 }, fields: "pixelSize"
               }
             },
-            // Merge Title Header
+            // Row Heights
+            {
+              updateDimensionProperties: {
+                range: { sheetId: repertoryId, dimension: "ROWS", startIndex: 0, endIndex: 1 },
+                properties: { pixelSize: 15 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: repertoryId, dimension: "ROWS", startIndex: 1, endIndex: 2 },
+                properties: { pixelSize: 35 }, fields: "pixelSize"
+              }
+            },
+            // Merge Title Header (Cols A-P)
             {
               mergeCells: {
-                range: { sheetId: repertoryId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 16 },
+                range: { sheetId: repertoryId, startRowIndex: 1, endRowIndex: 2, startColumnIndex: 0, endColumnIndex: 16 },
                 mergeType: "MERGE_ALL"
               }
             },
             {
               repeatCell: {
-                range: { sheetId: repertoryId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 16 },
+                range: { sheetId: repertoryId, startRowIndex: 1, endRowIndex: 2, startColumnIndex: 0, endColumnIndex: 16 },
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 15/255, green: 76/255, blue: 129/255 },
@@ -1412,7 +1431,7 @@ export async function createPatientClinicalSheet(
                 fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
               }
             },
-            // Table headers (Rubric, Chapter, etc.)
+            // Table headers (Rubric, Chapter, etc. A3:P3)
             {
               repeatCell: {
                 range: { sheetId: repertoryId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 16 },
@@ -1426,7 +1445,7 @@ export async function createPatientClinicalSheet(
                 fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
               }
             },
-            // Alternate matrix rows background
+            // Alternate matrix rows background (A4:P8, indices 3-7)
             {
               repeatCell: {
                 range: { sheetId: repertoryId, startRowIndex: 3, endRowIndex: 4, startColumnIndex: 0, endColumnIndex: 16 },
@@ -1474,23 +1493,63 @@ export async function createPatientClinicalSheet(
                 innerVertical: { style: "SOLID", color: { red: 241/255, green: 245/255, blue: 249/255 } }
               }
             },
-            // Centering Remedy Grades (E4:O8) and Totality Scores
+            // Centering Remedy Grades (E4:O8, indices 4 to 15)
             {
               repeatCell: {
-                range: { sheetId: repertoryId, startRowIndex: 3, endRowIndex: 8, startColumnIndex: 4, endColumnIndex: 16 },
+                range: { sheetId: repertoryId, startRowIndex: 3, endRowIndex: 8, startColumnIndex: 4, endColumnIndex: 15 },
                 cell: { userEnteredFormat: { horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE" } },
                 fields: "userEnteredFormat.horizontalAlignment,userEnteredFormat.verticalAlignment"
               }
             },
-            // Bold Totality Score text
+            // Centering and bold blue styling for Totality Score column values (P4:P8, Column P, indices 15 to 16)
             {
               repeatCell: {
                 range: { sheetId: repertoryId, startRowIndex: 3, endRowIndex: 8, startColumnIndex: 15, endColumnIndex: 16 },
-                cell: { userEnteredFormat: { textFormat: { bold: true, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } } } },
-                fields: "userEnteredFormat.textFormat.bold,userEnteredFormat.textFormat.foregroundColor"
+                cell: {
+                  userEnteredFormat: {
+                    textFormat: { bold: true, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    horizontalAlignment: "CENTER",
+                    verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat.textFormat,userEnteredFormat.horizontalAlignment,userEnteredFormat.verticalAlignment"
               }
             },
-            // Symptom Coverage styling (Row 11, index 10)
+            // Conditional formatting for grades in the matrix range E4:O8 (grades > 0 are bold green on light green)
+            {
+              addConditionalFormatRule: {
+                rule: {
+                  ranges: [
+                    { sheetId: repertoryId, startRowIndex: 3, endRowIndex: 8, startColumnIndex: 4, endColumnIndex: 15 }
+                  ],
+                  booleanRule: {
+                    condition: { type: "NUMBER_GREATER", values: [{ userEnteredValue: "0" }] },
+                    format: {
+                      backgroundColor: { red: 236/255, green: 253/255, blue: 245/255 },
+                      textFormat: { foregroundColor: { red: 4/255, green: 120/255, blue: 87/255 }, bold: true }
+                    }
+                  }
+                },
+                index: 0
+              }
+            },
+            {
+              addConditionalFormatRule: {
+                rule: {
+                  ranges: [
+                    { sheetId: repertoryId, startRowIndex: 3, endRowIndex: 8, startColumnIndex: 4, endColumnIndex: 15 }
+                  ],
+                  booleanRule: {
+                    condition: { type: "NUMBER_EQUALS", values: [{ userEnteredValue: "0" }] },
+                    format: {
+                      textFormat: { foregroundColor: { red: 203/255, green: 213/255, blue: 225/255 } }
+                    }
+                  }
+                },
+                index: 1
+              }
+            },
+            // Symptom Coverage styling (Row 11, index 10, Cols A-P)
             {
               repeatCell: {
                 range: { sheetId: repertoryId, startRowIndex: 10, endRowIndex: 11, startColumnIndex: 0, endColumnIndex: 16 },
@@ -1511,7 +1570,20 @@ export async function createPatientClinicalSheet(
                 bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } }
               }
             },
-            // Sum of Grades styling (Row 12, index 11)
+            // Decimal format for Coverage row (Row 11, index 10, Columns E to O)
+            {
+              repeatCell: {
+                range: { sheetId: repertoryId, startRowIndex: 10, endRowIndex: 11, startColumnIndex: 4, endColumnIndex: 15 },
+                cell: {
+                  userEnteredFormat: {
+                    numberFormat: { type: "NUMBER", pattern: "0.0" },
+                    horizontalAlignment: "CENTER"
+                  }
+                },
+                fields: "userEnteredFormat.numberFormat,userEnteredFormat.horizontalAlignment"
+              }
+            },
+            // Sum of Grades styling (Row 12, index 11, Cols A-P)
             {
               repeatCell: {
                 range: { sheetId: repertoryId, startRowIndex: 11, endRowIndex: 12, startColumnIndex: 0, endColumnIndex: 16 },
@@ -1526,13 +1598,24 @@ export async function createPatientClinicalSheet(
               }
             },
             {
+              repeatCell: {
+                range: { sheetId: repertoryId, startRowIndex: 11, endRowIndex: 12, startColumnIndex: 4, endColumnIndex: 15 },
+                cell: {
+                  userEnteredFormat: {
+                    horizontalAlignment: "CENTER"
+                  }
+                },
+                fields: "userEnteredFormat.horizontalAlignment"
+              }
+            },
+            {
               updateBorders: {
                 range: { sheetId: repertoryId, startRowIndex: 11, endRowIndex: 12, startColumnIndex: 0, endColumnIndex: 16 },
                 top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
                 bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } }
               }
             },
-            // Totality Rank Score styling (Row 13, index 12)
+            // Totality Rank Score styling (Row 13, index 12, Cols A-P)
             {
               repeatCell: {
                 range: { sheetId: repertoryId, startRowIndex: 12, endRowIndex: 13, startColumnIndex: 0, endColumnIndex: 16 },
@@ -1544,6 +1627,17 @@ export async function createPatientClinicalSheet(
                   }
                 },
                 fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: repertoryId, startRowIndex: 12, endRowIndex: 13, startColumnIndex: 4, endColumnIndex: 15 },
+                cell: {
+                  userEnteredFormat: {
+                    horizontalAlignment: "CENTER"
+                  }
+                },
+                fields: "userEnteredFormat.horizontalAlignment"
               }
             },
             {
@@ -1690,10 +1784,66 @@ export async function createPatientClinicalSheet(
                 fields: "gridProperties.hideGridlines"
               }
             },
+            // Row heights
+            {
+              updateDimensionProperties: {
+                range: { sheetId: plannerId, dimension: "ROWS", startIndex: 0, endIndex: 1 },
+                properties: { pixelSize: 15 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: plannerId, dimension: "ROWS", startIndex: 1, endIndex: 2 },
+                properties: { pixelSize: 35 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: plannerId, dimension: "ROWS", startIndex: 2, endIndex: 4 },
+                properties: { pixelSize: 26 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: plannerId, dimension: "ROWS", startIndex: 4, endIndex: 5 },
+                properties: { pixelSize: 15 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: plannerId, dimension: "ROWS", startIndex: 5, endIndex: 6 },
+                properties: { pixelSize: 28 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: plannerId, dimension: "ROWS", startIndex: 6, endIndex: 7 },
+                properties: { pixelSize: 24 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: plannerId, dimension: "ROWS", startIndex: 7, endIndex: 17 },
+                properties: { pixelSize: 22 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: plannerId, dimension: "ROWS", startIndex: 17, endIndex: 18 },
+                properties: { pixelSize: 15 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: plannerId, dimension: "ROWS", startIndex: 18, endIndex: 19 },
+                properties: { pixelSize: 50 }, fields: "pixelSize"
+              }
+            },
+            // Column widths
             {
               updateDimensionProperties: {
                 range: { sheetId: plannerId, dimension: "COLUMNS", startIndex: 0, endIndex: 1 },
-                properties: { pixelSize: 180 }, fields: "pixelSize"
+                properties: { pixelSize: 240 }, fields: "pixelSize"
               }
             },
             {
@@ -1705,18 +1855,43 @@ export async function createPatientClinicalSheet(
             {
               updateDimensionProperties: {
                 range: { sheetId: plannerId, dimension: "COLUMNS", startIndex: 2, endIndex: 3 },
-                properties: { pixelSize: 300 }, fields: "pixelSize"
+                properties: { pixelSize: 350 }, fields: "pixelSize"
               }
             },
             {
+              updateDimensionProperties: {
+                range: { sheetId: plannerId, dimension: "COLUMNS", startIndex: 3, endIndex: 4 },
+                properties: { pixelSize: 120 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: plannerId, dimension: "COLUMNS", startIndex: 4, endIndex: 5 },
+                properties: { pixelSize: 130 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: plannerId, dimension: "COLUMNS", startIndex: 5, endIndex: 6 },
+                properties: { pixelSize: 130 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: plannerId, dimension: "COLUMNS", startIndex: 6, endIndex: 7 },
+                properties: { pixelSize: 150 }, fields: "pixelSize"
+              }
+            },
+            // Merge & format Title Banner on Row 2
+            {
               mergeCells: {
-                range: { sheetId: plannerId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 7 },
+                range: { sheetId: plannerId, startRowIndex: 1, endRowIndex: 2, startColumnIndex: 0, endColumnIndex: 7 },
                 mergeType: "MERGE_ALL"
               }
             },
             {
               repeatCell: {
-                range: { sheetId: plannerId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 7 },
+                range: { sheetId: plannerId, startRowIndex: 1, endRowIndex: 2, startColumnIndex: 0, endColumnIndex: 7 },
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 15/255, green: 76/255, blue: 129/255 },
@@ -1727,6 +1902,7 @@ export async function createPatientClinicalSheet(
                 fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
               }
             },
+            // Format upper table headers (Row 3)
             {
               repeatCell: {
                 range: { sheetId: plannerId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 7 },
@@ -1740,6 +1916,62 @@ export async function createPatientClinicalSheet(
                 fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
               }
             },
+            {
+              repeatCell: {
+                range: { sheetId: plannerId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 1, endColumnIndex: 5 },
+                cell: { userEnteredFormat: { horizontalAlignment: "CENTER" } },
+                fields: "userEnteredFormat.horizontalAlignment"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: plannerId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 5, endColumnIndex: 7 },
+                cell: { userEnteredFormat: { horizontalAlignment: "RIGHT" } },
+                fields: "userEnteredFormat.horizontalAlignment"
+              }
+            },
+            // Format upper table data row (Row 4)
+            {
+              repeatCell: {
+                range: { sheetId: plannerId, startRowIndex: 3, endRowIndex: 4, startColumnIndex: 0, endColumnIndex: 1 },
+                cell: {
+                  userEnteredFormat: {
+                    horizontalAlignment: "LEFT",
+                    verticalAlignment: "MIDDLE",
+                    textFormat: { fontSize: 10 }
+                  }
+                },
+                fields: "userEnteredFormat(horizontalAlignment,verticalAlignment,textFormat.fontSize)"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: plannerId, startRowIndex: 3, endRowIndex: 4, startColumnIndex: 1, endColumnIndex: 5 },
+                cell: {
+                  userEnteredFormat: {
+                    horizontalAlignment: "CENTER",
+                    verticalAlignment: "MIDDLE",
+                    textFormat: { fontSize: 10 }
+                  }
+                },
+                fields: "userEnteredFormat(horizontalAlignment,verticalAlignment,textFormat.fontSize)"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: plannerId, startRowIndex: 3, endRowIndex: 4, startColumnIndex: 5, endColumnIndex: 7 },
+                cell: {
+                  userEnteredFormat: {
+                    horizontalAlignment: "RIGHT",
+                    verticalAlignment: "MIDDLE",
+                    textFormat: { fontSize: 10 },
+                    numberFormat: { type: "NUMBER", pattern: "#,##0" }
+                  }
+                },
+                fields: "userEnteredFormat(horizontalAlignment,verticalAlignment,textFormat.fontSize,numberFormat)"
+              }
+            },
+            // Merge & format Pricing Breakdown Subheader (Row 6)
             {
               mergeCells: {
                 range: { sheetId: plannerId, startRowIndex: 5, endRowIndex: 6, startColumnIndex: 0, endColumnIndex: 3 },
@@ -1759,6 +1991,7 @@ export async function createPatientClinicalSheet(
                 fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
               }
             },
+            // Format Pricing Breakdown headers (Row 7)
             {
               repeatCell: {
                 range: { sheetId: plannerId, startRowIndex: 6, endRowIndex: 7, startColumnIndex: 0, endColumnIndex: 3 },
@@ -1770,6 +2003,126 @@ export async function createPatientClinicalSheet(
                   }
                 },
                 fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: plannerId, startRowIndex: 6, endRowIndex: 7, startColumnIndex: 1, endColumnIndex: 2 },
+                cell: { userEnteredFormat: { horizontalAlignment: "RIGHT" } },
+                fields: "userEnteredFormat.horizontalAlignment"
+              }
+            },
+            // Format Pricing Breakdown Data Rows (Rows 8-17)
+            {
+              repeatCell: {
+                range: { sheetId: plannerId, startRowIndex: 7, endRowIndex: 17, startColumnIndex: 0, endColumnIndex: 3 },
+                cell: {
+                  userEnteredFormat: {
+                    textFormat: { fontSize: 10 },
+                    verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(textFormat.fontSize,verticalAlignment)"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: plannerId, startRowIndex: 7, endRowIndex: 17, startColumnIndex: 0, endColumnIndex: 1 },
+                cell: {
+                  userEnteredFormat: {
+                    textFormat: { bold: true }
+                  }
+                },
+                fields: "userEnteredFormat.textFormat.bold"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: plannerId, startRowIndex: 7, endRowIndex: 17, startColumnIndex: 1, endColumnIndex: 2 },
+                cell: {
+                  userEnteredFormat: {
+                    horizontalAlignment: "RIGHT",
+                    numberFormat: { type: "NUMBER", pattern: "#,##0" }
+                  }
+                },
+                fields: "userEnteredFormat(horizontalAlignment,numberFormat)"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: plannerId, startRowIndex: 10, endRowIndex: 11, startColumnIndex: 1, endColumnIndex: 2 },
+                cell: {
+                  userEnteredFormat: {
+                    numberFormat: { type: "NUMBER", pattern: "0%" }
+                  }
+                },
+                fields: "userEnteredFormat.numberFormat"
+              }
+            },
+            // Merge & Format WhatsApp Invoice Message (Row 19)
+            {
+              mergeCells: {
+                range: { sheetId: plannerId, startRowIndex: 18, endRowIndex: 19, startColumnIndex: 1, endColumnIndex: 7 },
+                mergeType: "MERGE_ALL"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: plannerId, startRowIndex: 18, endRowIndex: 19, startColumnIndex: 0, endColumnIndex: 1 },
+                cell: {
+                  userEnteredFormat: {
+                    textFormat: { bold: true, fontSize: 10 },
+                    verticalAlignment: "MIDDLE",
+                    horizontalAlignment: "LEFT"
+                  }
+                },
+                fields: "userEnteredFormat(textFormat,verticalAlignment,horizontalAlignment)"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: plannerId, startRowIndex: 18, endRowIndex: 19, startColumnIndex: 1, endColumnIndex: 7 },
+                cell: {
+                  userEnteredFormat: {
+                    textFormat: { fontSize: 10 },
+                    verticalAlignment: "MIDDLE",
+                    horizontalAlignment: "LEFT",
+                    wrapStrategy: "WRAP"
+                  }
+                },
+                fields: "userEnteredFormat(textFormat,verticalAlignment,horizontalAlignment,wrapStrategy)"
+              }
+            },
+            // Apply solid thin borders to tables and cards
+            {
+              updateBorders: {
+                range: { sheetId: plannerId, startRowIndex: 2, endRowIndex: 4, startColumnIndex: 0, endColumnIndex: 7 },
+                top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                left: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                right: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                innerHorizontal: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } },
+                innerVertical: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } }
+              }
+            },
+            {
+              updateBorders: {
+                range: { sheetId: plannerId, startRowIndex: 6, endRowIndex: 17, startColumnIndex: 0, endColumnIndex: 3 },
+                top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                left: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                right: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                innerHorizontal: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } },
+                innerVertical: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } }
+              }
+            },
+            {
+              updateBorders: {
+                range: { sheetId: plannerId, startRowIndex: 18, endRowIndex: 19, startColumnIndex: 0, endColumnIndex: 7 },
+                top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                left: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                right: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } }
               }
             }
           );
@@ -1789,6 +2142,55 @@ export async function createPatientClinicalSheet(
                 fields: "gridProperties.hideGridlines"
               }
             },
+            // Row heights
+            {
+              updateDimensionProperties: {
+                range: { sheetId: financeId, dimension: "ROWS", startIndex: 0, endIndex: 1 },
+                properties: { pixelSize: 15 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: financeId, dimension: "ROWS", startIndex: 1, endIndex: 2 },
+                properties: { pixelSize: 35 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: financeId, dimension: "ROWS", startIndex: 2, endIndex: 3 },
+                properties: { pixelSize: 24 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: financeId, dimension: "ROWS", startIndex: 3, endIndex: 4 },
+                properties: { pixelSize: 30 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: financeId, dimension: "ROWS", startIndex: 4, endIndex: 5 },
+                properties: { pixelSize: 15 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: financeId, dimension: "ROWS", startIndex: 5, endIndex: 6 },
+                properties: { pixelSize: 28 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: financeId, dimension: "ROWS", startIndex: 6, endIndex: 7 },
+                properties: { pixelSize: 26 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: financeId, dimension: "ROWS", startIndex: 7, endIndex: 100 },
+                properties: { pixelSize: 22 }, fields: "pixelSize"
+              }
+            },
             // Column widths
             {
               updateDimensionProperties: {
@@ -1799,37 +2201,55 @@ export async function createPatientClinicalSheet(
             {
               updateDimensionProperties: {
                 range: { sheetId: financeId, dimension: "COLUMNS", startIndex: 1, endIndex: 2 },
-                properties: { pixelSize: 220 }, fields: "pixelSize"
+                properties: { pixelSize: 250 }, fields: "pixelSize"
               }
             },
             {
               updateDimensionProperties: {
-                range: { sheetId: financeId, dimension: "COLUMNS", startIndex: 2, endIndex: 5 },
-                properties: { pixelSize: 120 }, fields: "pixelSize"
+                range: { sheetId: financeId, dimension: "COLUMNS", startIndex: 2, endIndex: 3 },
+                properties: { pixelSize: 150 }, fields: "pixelSize"
               }
             },
             {
               updateDimensionProperties: {
-                range: { sheetId: financeId, dimension: "COLUMNS", startIndex: 5, endIndex: 6 },
+                range: { sheetId: financeId, dimension: "COLUMNS", startIndex: 3, endIndex: 4 },
                 properties: { pixelSize: 140 }, fields: "pixelSize"
               }
             },
             {
               updateDimensionProperties: {
-                range: { sheetId: financeId, dimension: "COLUMNS", startIndex: 6, endIndex: 8 },
-                properties: { pixelSize: 120 }, fields: "pixelSize"
+                range: { sheetId: financeId, dimension: "COLUMNS", startIndex: 4, endIndex: 5 },
+                properties: { pixelSize: 140 }, fields: "pixelSize"
               }
             },
-            // Title Header Merged A1:H1
+            {
+              updateDimensionProperties: {
+                range: { sheetId: financeId, dimension: "COLUMNS", startIndex: 5, endIndex: 6 },
+                properties: { pixelSize: 160 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: financeId, dimension: "COLUMNS", startIndex: 6, endIndex: 7 },
+                properties: { pixelSize: 130 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: financeId, dimension: "COLUMNS", startIndex: 7, endIndex: 8 },
+                properties: { pixelSize: 125 }, fields: "pixelSize"
+              }
+            },
+            // Title Header Merged on Row 2
             {
               mergeCells: {
-                range: { sheetId: financeId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 8 },
+                range: { sheetId: financeId, startRowIndex: 1, endRowIndex: 2, startColumnIndex: 0, endColumnIndex: 8 },
                 mergeType: "MERGE_ALL"
               }
             },
             {
               repeatCell: {
-                range: { sheetId: financeId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 8 },
+                range: { sheetId: financeId, startRowIndex: 1, endRowIndex: 2, startColumnIndex: 0, endColumnIndex: 8 },
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 15/255, green: 76/255, blue: 129/255 },
@@ -1840,10 +2260,51 @@ export async function createPatientClinicalSheet(
                 fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
               }
             },
-            // Card 1 (A3:A4) Total Billed
+            // Merge Summary KPI Cards
+            // Card 1
+            {
+              mergeCells: {
+                range: { sheetId: financeId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 2 },
+                mergeType: "MERGE_ALL"
+              }
+            },
+            {
+              mergeCells: {
+                range: { sheetId: financeId, startRowIndex: 3, endRowIndex: 4, startColumnIndex: 0, endColumnIndex: 2 },
+                mergeType: "MERGE_ALL"
+              }
+            },
+            // Card 2
+            {
+              mergeCells: {
+                range: { sheetId: financeId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 2, endColumnIndex: 4 },
+                mergeType: "MERGE_ALL"
+              }
+            },
+            {
+              mergeCells: {
+                range: { sheetId: financeId, startRowIndex: 3, endRowIndex: 4, startColumnIndex: 2, endColumnIndex: 4 },
+                mergeType: "MERGE_ALL"
+              }
+            },
+            // Card 3
+            {
+              mergeCells: {
+                range: { sheetId: financeId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 4, endColumnIndex: 6 },
+                mergeType: "MERGE_ALL"
+              }
+            },
+            {
+              mergeCells: {
+                range: { sheetId: financeId, startRowIndex: 3, endRowIndex: 4, startColumnIndex: 4, endColumnIndex: 6 },
+                mergeType: "MERGE_ALL"
+              }
+            },
+            // Format Summary KPI Cards
+            // Card 1 Format: Total Billed
             {
               repeatCell: {
-                range: { sheetId: financeId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 1 },
+                range: { sheetId: financeId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 2 },
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
@@ -1856,7 +2317,7 @@ export async function createPatientClinicalSheet(
             },
             {
               repeatCell: {
-                range: { sheetId: financeId, startRowIndex: 3, endRowIndex: 4, startColumnIndex: 0, endColumnIndex: 1 },
+                range: { sheetId: financeId, startRowIndex: 3, endRowIndex: 4, startColumnIndex: 0, endColumnIndex: 2 },
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 1, green: 1, blue: 1 },
@@ -1869,21 +2330,21 @@ export async function createPatientClinicalSheet(
             },
             {
               updateBorders: {
-                range: { sheetId: financeId, startRowIndex: 2, endRowIndex: 4, startColumnIndex: 0, endColumnIndex: 1 },
+                range: { sheetId: financeId, startRowIndex: 2, endRowIndex: 4, startColumnIndex: 0, endColumnIndex: 2 },
                 top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
                 bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
                 left: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
                 right: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } }
               }
             },
-            // Card 2 (B3:B4) Total Collected
+            // Card 2 Format: Total Collected
             {
               repeatCell: {
-                range: { sheetId: financeId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 1, endColumnIndex: 2 },
+                range: { sheetId: financeId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 2, endColumnIndex: 4 },
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
-                    textFormat: { bold: true, fontSize: 9, foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 } },
+                    textFormat: { bold: true, fontSize: 9, foregroundColor: { red: 46/255, green: 139/255, blue: 87/255 } }, // SeaGreen text for Collected header
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -1892,7 +2353,7 @@ export async function createPatientClinicalSheet(
             },
             {
               repeatCell: {
-                range: { sheetId: financeId, startRowIndex: 3, endRowIndex: 4, startColumnIndex: 1, endColumnIndex: 2 },
+                range: { sheetId: financeId, startRowIndex: 3, endRowIndex: 4, startColumnIndex: 2, endColumnIndex: 4 },
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 1, green: 1, blue: 1 },
@@ -1905,21 +2366,21 @@ export async function createPatientClinicalSheet(
             },
             {
               updateBorders: {
-                range: { sheetId: financeId, startRowIndex: 2, endRowIndex: 4, startColumnIndex: 1, endColumnIndex: 2 },
+                range: { sheetId: financeId, startRowIndex: 2, endRowIndex: 4, startColumnIndex: 2, endColumnIndex: 4 },
                 top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
                 bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
                 left: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
                 right: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } }
               }
             },
-            // Card 3 (C3:C4) Outstanding Balance
+            // Card 3 Format: Outstanding Balance
             {
               repeatCell: {
-                range: { sheetId: financeId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 2, endColumnIndex: 3 },
+                range: { sheetId: financeId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 4, endColumnIndex: 6 },
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
-                    textFormat: { bold: true, fontSize: 9, foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 } },
+                    textFormat: { bold: true, fontSize: 9, foregroundColor: { red: 139/255, green: 46/255, blue: 46/255 } }, // Deep Red text for Outstanding header
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -1928,7 +2389,7 @@ export async function createPatientClinicalSheet(
             },
             {
               repeatCell: {
-                range: { sheetId: financeId, startRowIndex: 3, endRowIndex: 4, startColumnIndex: 2, endColumnIndex: 3 },
+                range: { sheetId: financeId, startRowIndex: 3, endRowIndex: 4, startColumnIndex: 4, endColumnIndex: 6 },
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 1, green: 1, blue: 1 },
@@ -1941,7 +2402,7 @@ export async function createPatientClinicalSheet(
             },
             {
               updateBorders: {
-                range: { sheetId: financeId, startRowIndex: 2, endRowIndex: 4, startColumnIndex: 2, endColumnIndex: 3 },
+                range: { sheetId: financeId, startRowIndex: 2, endRowIndex: 4, startColumnIndex: 4, endColumnIndex: 6 },
                 top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
                 bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
                 left: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
@@ -1980,6 +2441,89 @@ export async function createPatientClinicalSheet(
                   }
                 },
                 fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: financeId, startRowIndex: 6, endRowIndex: 7, startColumnIndex: 1, endColumnIndex: 2 },
+                cell: { userEnteredFormat: { horizontalAlignment: "LEFT" } },
+                fields: "userEnteredFormat.horizontalAlignment"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: financeId, startRowIndex: 6, endRowIndex: 7, startColumnIndex: 3, endColumnIndex: 6 },
+                cell: { userEnteredFormat: { horizontalAlignment: "RIGHT" } },
+                fields: "userEnteredFormat.horizontalAlignment"
+              }
+            },
+            // Transaction data row alignments and fonts (Rows 8-100)
+            {
+              repeatCell: {
+                range: { sheetId: financeId, startRowIndex: 7, endRowIndex: 100, startColumnIndex: 0, endColumnIndex: 8 },
+                cell: {
+                  userEnteredFormat: {
+                    textFormat: { fontSize: 10 },
+                    verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(textFormat.fontSize,verticalAlignment)"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: financeId, startRowIndex: 7, endRowIndex: 100, startColumnIndex: 0, endColumnIndex: 1 },
+                cell: { userEnteredFormat: { horizontalAlignment: "CENTER" } },
+                fields: "userEnteredFormat.horizontalAlignment"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: financeId, startRowIndex: 7, endRowIndex: 100, startColumnIndex: 2, endColumnIndex: 3 },
+                cell: { userEnteredFormat: { horizontalAlignment: "CENTER" } },
+                fields: "userEnteredFormat.horizontalAlignment"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: financeId, startRowIndex: 7, endRowIndex: 100, startColumnIndex: 3, endColumnIndex: 6 },
+                cell: {
+                  userEnteredFormat: {
+                    horizontalAlignment: "RIGHT",
+                    numberFormat: { type: "NUMBER", pattern: "#,##0" }
+                  }
+                },
+                fields: "userEnteredFormat(horizontalAlignment,numberFormat)"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: financeId, startRowIndex: 7, endRowIndex: 100, startColumnIndex: 6, endColumnIndex: 8 },
+                cell: { userEnteredFormat: { horizontalAlignment: "CENTER" } },
+                fields: "userEnteredFormat.horizontalAlignment"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: financeId, startRowIndex: 7, endRowIndex: 100, startColumnIndex: 7, endColumnIndex: 8 },
+                cell: {
+                  userEnteredFormat: {
+                    textFormat: { bold: true }
+                  }
+                },
+                fields: "userEnteredFormat.textFormat.bold"
+              }
+            },
+            // Table outline and inner grid borders
+            {
+              updateBorders: {
+                range: { sheetId: financeId, startRowIndex: 6, endRowIndex: 100, startColumnIndex: 0, endColumnIndex: 8 },
+                top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                left: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                right: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                innerHorizontal: { style: "SOLID", color: { red: 241/255, green: 245/255, blue: 249/255 } },
+                innerVertical: { style: "SOLID", color: { red: 241/255, green: 245/255, blue: 249/255 } }
               }
             }
           );

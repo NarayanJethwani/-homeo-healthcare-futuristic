@@ -256,7 +256,10 @@ function MockSheetContent() {
     dose: "4 pills, twice daily on dry tongue",
     rxDuration: "14 Days",
     advice: "Avoid tea, coffee, carbonated drinks, and deep-fried foods. Maintain 2 hours gap between dinner and sleep.",
-    nextFollowUp: "2 Weeks later"
+    nextFollowUp: "2 Weeks later",
+    aiEngine: "Gemini 3.5 Clinical Synthesis",
+    aiTimestamp: "",
+    aiJustification: ""
   });
 
   // Collapsible Sections State (Tab 2: Case Taking)
@@ -272,7 +275,8 @@ function MockSheetContent() {
     diagnosis: true,
     miasm: true,
     totality: true,
-    prescription: true
+    prescription: true,
+    aiVerdict: true
   });
 
   // Follow-up Tracker State
@@ -951,6 +955,30 @@ function MockSheetContent() {
           });
         }
         
+        // Update local caseTaking state with AI results
+        const timeZoneKolkata = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
+        setCaseTaking(prev => ({
+          ...prev,
+          aiTimestamp: timeZoneKolkata,
+          aiJustification: synthesis
+        }));
+
+        // Export/save the analysis to the patient record (both Google Sheets and Firestore)
+        try {
+          await fetch("/api/export-analysis", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              patientId: patient.id,
+              aiReport: typeof data.analysis === "string" ? data.analysis : JSON.stringify(data.analysis)
+            })
+          });
+        } catch (exportErr) {
+          console.error("Failed to export AI analysis to Google Sheets:", exportErr);
+        }
+
         setAiAnalysisResult({
           dateAnalyzed: today,
           verdict,
@@ -966,10 +994,37 @@ function MockSheetContent() {
       // GRACEFUL FALLBACK
       setAiTransmitStep(4);
       await new Promise(resolve => setTimeout(resolve, 800));
+
+      const fallbackSynthesis = `The patient's case presents a clear chilly, irritable picture matching ${repertoryResults.sortedRemedies[0]} (Rank: ${Math.round(repertoryResults.rankScores[repertoryResults.sortedRemedies[0]] || 0)} pts, Coverage: ${Math.round((repertoryResults.coverage[repertoryResults.sortedRemedies[0]] || 0) * 100)}%). Miasmatic assessment indicates Psora as primary, which matches the deep-acting nature of ${repertoryResults.sortedRemedies[0]}. Longitudinally, the addition of rubrics over time shows a shift from gastrointestinal distress to nervous irritability, indicating the remedy should be titrated to Centesimal scale (30C to 200C).`;
+      
+      // Update local caseTaking state with AI fallback results
+      const timeZoneKolkata = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
+      setCaseTaking(prev => ({
+        ...prev,
+        aiTimestamp: timeZoneKolkata,
+        aiJustification: fallbackSynthesis
+      }));
+
+      // Export/save fallback report to Google Sheet / Firestore
+      try {
+        await fetch("/api/export-analysis", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            patientId: patient.id,
+            aiReport: `CLINICAL VERDICT:\n${repertoryResults.sortedRemedies[0]} matches patient's physical Generals and Miasmatic Totality best.\n\nSYNTHESIS:\n${fallbackSynthesis}`
+          })
+        });
+      } catch (exportErr) {
+        console.error("Failed to export fallback AI analysis to Google Sheets:", exportErr);
+      }
+
       setAiAnalysisResult({
         dateAnalyzed: today,
         verdict: `${repertoryResults.sortedRemedies[0]} matches patient's physical Generals and Miasmatic Totality best. (Local Fallback)`,
-        synthesis: `The patient's case presents a clear chilly, irritable picture matching ${repertoryResults.sortedRemedies[0]} (Rank: ${Math.round(repertoryResults.rankScores[repertoryResults.sortedRemedies[0]] || 0)} pts, Coverage: ${Math.round((repertoryResults.coverage[repertoryResults.sortedRemedies[0]] || 0) * 100)}%). Miasmatic assessment indicates Psora as primary, which matches the deep-acting nature of ${repertoryResults.sortedRemedies[0]}. Longitudinally, the addition of rubrics over time shows a shift from gastrointestinal distress to nervous irritability, indicating the remedy should be titrated to Centesimal scale (30C to 200C).`,
+        synthesis: fallbackSynthesis,
         remedyCards: [
           {
             name: repertoryResults.sortedRemedies[0],
@@ -1854,7 +1909,7 @@ function MockSheetContent() {
 
                     {/* SECTION 10: MIASMATIC ASSESSMENT */}
                     <tr className="h-10 border-b border-slate-200 bg-[#E2FBF7]/50">
-                      <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">38</td>
+                      <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">40</td>
                       <td colSpan={2} onClick={() => toggleSection("miasm")} className="px-4 font-black text-[#0F4C81] text-xs uppercase tracking-wider cursor-pointer flex items-center justify-between h-10 select-none">
                         <span className="flex items-center gap-2">
                           {expandedSections.miasm ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
@@ -1866,21 +1921,36 @@ function MockSheetContent() {
                     {expandedSections.miasm && (
                       <>
                         <tr className="h-9 border-b border-slate-100">
-                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">39</td>
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">41</td>
                           <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Psora Miasm Score</td>
                           <td className="px-4 text-[11px] font-bold text-[#0F4C81] bg-slate-50/20">{miasmScores.Psora} (Calculated from [Psora] tags)</td>
                         </tr>
                         <tr className="h-9 border-b border-slate-100">
-                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">40</td>
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">42</td>
                           <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Sycosis Miasm Score</td>
                           <td className="px-4 text-[11px] font-bold text-emerald-800 bg-slate-50/20">{miasmScores.Sycosis} (Calculated from [Sycosis] tags)</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">43</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Syphilis Miasm Score</td>
+                          <td className="px-4 text-[11px] font-bold text-rose-800 bg-slate-50/20">{miasmScores.Syphilis} (Calculated from [Syphilis] tags)</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">44</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Tubercular Miasm Score</td>
+                          <td className="px-4 text-[11px] font-bold text-amber-800 bg-slate-50/20">{miasmScores.Tubercular} (Calculated from [Tubercular] tags)</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">45</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Cancerinic Miasm Score</td>
+                          <td className="px-4 text-[11px] font-bold text-indigo-800 bg-slate-50/20">{miasmScores.Cancerinic} (Calculated from [Cancerinic] tags)</td>
                         </tr>
                       </>
                     )}
 
                     {/* SECTION 12: PRESCRIPTION */}
                     <tr className="h-10 border-b border-slate-200 bg-[#E2FBF7]/50">
-                      <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">41</td>
+                      <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">46</td>
                       <td colSpan={2} onClick={() => toggleSection("prescription")} className="px-4 font-black text-[#0F4C81] text-xs uppercase tracking-wider cursor-pointer flex items-center justify-between h-10 select-none">
                         <span className="flex items-center gap-2">
                           {expandedSections.prescription ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
@@ -1892,29 +1962,63 @@ function MockSheetContent() {
                     {expandedSections.prescription && (
                       <>
                         <tr className="h-9 border-b border-slate-100">
-                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">42</td>
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">47</td>
                           <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Remedy Name</td>
                           <td className="px-4 text-[11px] font-bold text-emerald-800">{renderEditableInput("caseTaking", "remedy", caseTaking.remedy)}</td>
                         </tr>
                         <tr className="h-9 border-b border-slate-100">
-                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">43</td>
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">48</td>
                           <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Potency / Scale</td>
                           <td className="px-4 text-[11px] font-medium">{renderEditableInput("caseTaking", "potency", caseTaking.potency)}</td>
                         </tr>
                         <tr className="h-9 border-b border-slate-100">
-                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">44</td>
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">49</td>
                           <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Dosage & Frequency</td>
                           <td className="px-4 text-[11px] font-medium">{renderEditableInput("caseTaking", "dose", caseTaking.dose)}</td>
                         </tr>
                         <tr className="h-9 border-b border-slate-100">
-                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">45</td>
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">50</td>
                           <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Duration</td>
                           <td className="px-4 text-[11px] font-medium">{renderEditableInput("caseTaking", "rxDuration", caseTaking.rxDuration)}</td>
                         </tr>
                         <tr className="h-9 border-b border-slate-100">
-                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">46</td>
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">51</td>
                           <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Dietary & lifestyle advice</td>
                           <td className="px-4 text-[11px] font-medium">{renderEditableInput("caseTaking", "advice", caseTaking.advice)}</td>
+                        </tr>
+                      </>
+                    )}
+
+                    {/* SECTION 13: AI CLINICAL SYNTHESIS VERDICT */}
+                    <tr className="h-10 border-b border-slate-200 bg-pink-50/30">
+                      <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">52</td>
+                      <td colSpan={2} onClick={() => toggleSection("aiVerdict")} className="px-4 font-black text-pink-700 text-xs uppercase tracking-wider cursor-pointer flex items-center justify-between h-10 select-none">
+                        <span className="flex items-center gap-2">
+                          {expandedSections.aiVerdict ? <ChevronDown className="w-4 h-4 text-pink-600" /> : <ChevronRight className="w-4 h-4 text-pink-600" />}
+                          <Sparkles className="w-3.5 h-3.5 text-pink-600 animate-pulse" />
+                          SECTION 13 – AI CLINICAL SYNTHESIS VERDICT
+                        </span>
+                      </td>
+                    </tr>
+
+                    {expandedSections.aiVerdict && (
+                      <>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">53</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">AI Analysis Engine</td>
+                          <td className="px-4 text-[11px] font-bold text-slate-700 bg-pink-50/5">{caseTaking.aiEngine || "Gemini 3.5 Clinical Synthesis"}</td>
+                        </tr>
+                        <tr className="h-9 border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold">54</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50">Analysis Timestamp</td>
+                          <td className="px-4 text-[11px] font-medium text-slate-600 bg-pink-50/5">{caseTaking.aiTimestamp || <span className="text-slate-400 italic">No AI Analysis Run yet. Transmit from AI Lab to generate.</span>}</td>
+                        </tr>
+                        <tr className="h-auto min-h-[60px] border-b border-slate-100">
+                          <td className="bg-slate-100 border-r border-slate-200 text-center text-[10px] text-slate-400 font-bold py-2">55</td>
+                          <td className="px-4 font-bold border-r border-slate-150 text-[11px] bg-slate-50/50 py-2">AI Constitutional Justification</td>
+                          <td className="px-4 py-2 text-[11px] font-medium text-slate-805 bg-pink-50/5 whitespace-pre-wrap leading-relaxed">
+                            {caseTaking.aiJustification || <span className="text-slate-400 italic">No AI Analysis Run yet. Go to "AI Repertory Lab" tab and click "Transmit Data to AI Lab".</span>}
+                          </td>
                         </tr>
                       </>
                     )}
@@ -2497,9 +2601,9 @@ function MockSheetContent() {
                       <tr className="bg-slate-50 text-[10px] text-slate-600 font-black uppercase tracking-wider border-b border-slate-200">
                         <th className="p-3 w-10 text-center bg-slate-100 border-r border-slate-200 text-[#0F4C81]">Del</th>
                         <th className="p-3 border-r border-slate-200">Rubric Name</th>
-                        <th className="p-3 border-r border-slate-200">Chapter</th>
-                        <th className="p-3 border-r border-slate-200 w-[110px]">Date Added</th>
-                        <th className="p-3 border-r border-slate-200 w-[60px] text-center">Weight</th>
+                        <th className="p-3 border-r border-slate-200">Chapter / Location</th>
+                        <th className="p-3 border-r border-slate-200 w-[90px]">Source</th>
+                        <th className="p-3 border-r border-slate-200 w-[120px] text-center">Importance Weight</th>
                         {remediesList.map(rem => {
                           const isCustom = !["Nux-v", "Lyc", "Ars", "Puls", "Sulph", "Rhus-t", "Calc", "Sil", "Nat-m", "Ign", "Sep"].includes(rem);
                           return (
@@ -2517,51 +2621,61 @@ function MockSheetContent() {
                             </th>
                           );
                         })}
+                        <th className="p-3 border-r border-slate-200 text-center text-[#0F4C81] w-[110px] bg-[#F1F5F9] font-black">Totality Score</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {rubrics.map((rub, rIdx) => (
-                        <tr key={rIdx} className="border-b border-slate-100 hover:bg-slate-50 text-[11px]">
-                          <td className="p-3 text-center bg-slate-50/50 border-r border-slate-200">
-                            <button
-                              onClick={() => setRubrics(prev => prev.filter((_, i) => i !== rIdx))}
-                              className="p-1 hover:bg-rose-50 text-rose-500 hover:text-rose-700 rounded-xl transition-all cursor-pointer border border-transparent hover:border-rose-100"
-                              title="Delete rubric"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          </td>
-                          <td className="p-3 border-r border-slate-200 font-bold">{rub.name}</td>
-                          <td className="p-3 border-r border-slate-200 font-semibold text-slate-500">{rub.chapter}</td>
-                          <td className="p-3 border-r border-slate-200 font-bold text-slate-600">{rub.dateAdded || today}</td>
-                          <td className="p-3 border-r border-slate-200 text-center font-black text-[#0F4C81] bg-slate-50/50">{rub.weight}</td>
-                          {remediesList.map(rem => {
-                            const score = rub.scores[rem] || 0;
-                            return (
-                              <td key={rem} className={`p-3 border-r border-slate-200 text-center font-bold ${score > 0 ? "bg-emerald-50/40 text-emerald-800" : "text-slate-300"}`}>
-                                {score}
-                              </td>
-                            );
-                          })}
-                        </tr>
-                      ))}
+                      {rubrics.map((rub, rIdx) => {
+                        const sumOfGrades = remediesList.reduce((acc, rem) => acc + (rub.scores[rem] || 0), 0);
+                        const totalityScore = rub.weight * sumOfGrades;
+                        return (
+                          <tr key={rIdx} className="border-b border-slate-100 hover:bg-slate-50 text-[11px]">
+                            <td className="p-3 text-center bg-slate-50/50 border-r border-slate-200">
+                              <button
+                                onClick={() => setRubrics(prev => prev.filter((_, i) => i !== rIdx))}
+                                className="p-1 hover:bg-rose-50 text-rose-500 hover:text-rose-700 rounded-xl transition-all cursor-pointer border border-transparent hover:border-rose-100"
+                                title="Delete rubric"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </td>
+                            <td className="p-3 border-r border-slate-200 font-bold">{rub.name}</td>
+                            <td className="p-3 border-r border-slate-200 font-semibold text-slate-500">{rub.chapter}</td>
+                            <td className="p-3 border-r border-slate-200 font-bold text-slate-650">{rub.source || "Kent"}</td>
+                            <td className="p-3 border-r border-slate-200 text-center font-black text-[#0F4C81] bg-slate-50/50">{rub.weight}</td>
+                            {remediesList.map(rem => {
+                              const score = rub.scores[rem] || 0;
+                              return (
+                                <td key={rem} className={`p-3 border-r border-slate-200 text-center font-bold ${score > 0 ? "bg-[#ECFDF5] text-[#047857]" : "text-[#CBD5E1]"}`}>
+                                  {score}
+                                </td>
+                              );
+                            })}
+                            <td className="p-3 border-r border-slate-200 text-center font-black text-[#0F4C81] bg-[#F1F5F9]">
+                              {totalityScore}
+                            </td>
+                          </tr>
+                        );
+                      })}
                       
                       {/* Calculations rows */}
                       <tr className="border-b border-slate-200 bg-slate-50/80 font-bold text-[10px] uppercase text-slate-500">
-                        <td colSpan={5} className="p-3 border-r border-slate-200">Symptom Coverage (%)</td>
+                        <td colSpan={5} className="p-3 border-r border-slate-200">Symptom Coverage</td>
                         {remediesList.map(rem => (
                           <td key={rem} className="p-3 border-r border-slate-200 text-center text-[#0F4C81]">
-                            {Math.round((repertoryResults.coverage[rem] || 0) * 100)}%
+                            {(repertoryResults.coverage[rem] || 0).toFixed(1)}
                           </td>
                         ))}
+                        <td className="p-3 border-r border-slate-200 text-center bg-slate-100/50"></td>
                       </tr>
                       <tr className="border-b border-slate-200 bg-slate-50/80 font-bold text-[10px] uppercase text-slate-500">
-                        <td colSpan={5} className="p-3 border-r border-slate-200">Weighted Grades</td>
+                        <td colSpan={5} className="p-3 border-r border-slate-200">Sum of Grades</td>
                         {remediesList.map(rem => (
                           <td key={rem} className="p-3 border-r border-slate-200 text-center text-slate-700">
                             {repertoryResults.sumGrades[rem] || 0}
                           </td>
                         ))}
+                        <td className="p-3 border-r border-slate-200 text-center bg-slate-100/50"></td>
                       </tr>
                       <tr className="bg-blue-50/40 font-black text-[11px] uppercase border-b-2 border-slate-300">
                         <td colSpan={5} className="p-3 border-r border-slate-200 text-[#0F4C81]">Totality Rank Score</td>
@@ -2570,6 +2684,7 @@ function MockSheetContent() {
                             {Math.round(repertoryResults.rankScores[rem] || 0)}
                           </td>
                         ))}
+                        <td className="p-3 border-r border-slate-200 text-center bg-slate-100/50"></td>
                       </tr>
                     </tbody>
                   </table>
