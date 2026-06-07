@@ -294,19 +294,20 @@ export async function createPatientClinicalSheet(
         // 2. Populate values across different tabs
         const today = new Date().toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" });
 
-        // values for Dashboard
+        // values for Dashboard (formatted as columns: A-B for Demographics, C spacing, D-E for Active Treatment, F spacing, G-H for Outcomes & Ledger)
         const dashboardValues = [
-          ["HOMEO HEALTHCARE - PATIENT CLINICAL DASHBOARD", "", "", "", "", ""],
-          ["", "", "", "", "", ""],
-          ["1. CLINICAL STATUS", "New Patient", "2. ACTIVE DIAGNOSIS", "Calculating...", "3. CLINICAL SUMMARY", ""],
-          ["Patient ID", data.id, "Current Remedy", "Calculating...", "Progress Score (%)", "=IFERROR(INDEX('Follow-Up Tracker'!C:C, MATCH(9.99999999999999E+307, 'Follow-Up Tracker'!A:A)), \"0%\")"],
-          ["Patient Name", data.name, "Last Visit Date", "=IFERROR(MAX('Follow-Up Tracker'!A4:A), \"N/A\")", "Balance Due (₹)", "='Finance'!C4"],
-          ["Age / Gender", `${data.age} / ${data.gender}`, "Next Scheduled Follow-up", "=IFERROR(INDEX('Follow-Up Tracker'!G:G, MATCH(9.99999999999999E+307, 'Follow-Up Tracker'!A:A)), \"Not Scheduled\")", "Miasmatic Summary", ""],
-          ["Contact Phone", data.phone, "", "", "Psora Count", "=COUNTIF('Case Taking'!A3:D150, \"*[Psora]*\")"],
-          ["Email Address", data.email || "N/A", "", "", "Sycosis Count", "=COUNTIF('Case Taking'!A3:D150, \"*[Sycosis]*\")"],
-          ["Location / Address", locationVal, "", "", "Syphilis Count", "=COUNTIF('Case Taking'!A3:D150, \"*[Syphilis]*\")"],
-          ["Consulting Doctor", "Dr. Narayan Jethwani", "", "", "Tubercular Count", "=COUNTIF('Case Taking'!A3:D150, \"*[Tubercular]*\")"],
-          ["Clinic Branch", "Baner, Pune", "", "", "Cancerinic Count", "=COUNTIF('Case Taking'!A3:D150, \"*[Cancerinic]*\")"]
+          ["HOMEO HEALTHCARE - PATIENT CLINICAL DASHBOARD", "", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", "", ""],
+          ["PATIENT DEMOGRAPHICS", "", "", "ACTIVE TREATMENT", "", "", "OUTCOMES & LEDGER", ""],
+          ["Patient ID", data.id, "", "Diagnosis", "='Case Taking'!B112", "", "Progress Score (%)", "=IFERROR(INDEX('Follow-Up Tracker'!C:C, MATCH(9.99999999999999E+307, 'Follow-Up Tracker'!A:A)), \"0%\")"],
+          ["Patient Name", data.name, "", "Current Remedy", "='Case Taking'!B137", "", "Balance Due (₹)", "='Finance'!C4"],
+          ["Age / Gender", `${data.age} / ${data.gender}`, "", "Last Visit Date", "=IFERROR(MAX('Follow-Up Tracker'!A4:A), \"N/A\")", "", "Top Totality Remedy", "='Repertorization'!B16"],
+          ["Contact Phone", data.phone, "", "Next Scheduled Review", "=IFERROR(INDEX('Follow-Up Tracker'!G:G, MATCH(9.99999999999999E+307, 'Follow-Up Tracker'!A:A)), \"Not Scheduled\")", "", "Miasmatic Summary", ""],
+          ["Email Address", data.email || "N/A", "", "Consulting Doctor", "Dr. Narayan Jethwani", "", "Psora Count", "=COUNTIF('Case Taking'!A3:D150, \"*[Psora]*\")"],
+          ["Location / Address", locationVal, "", "Clinic Branch", "Baner Clinic, Pune", "", "Sycosis Count", "=COUNTIF('Case Taking'!A3:D150, \"*[Sycosis]*\")"],
+          ["", "", "", "", "", "", "Syphilis Count", "=COUNTIF('Case Taking'!A3:D150, \"*[Syphilis]*\")"],
+          ["", "", "", "", "", "", "Tubercular Count", "=COUNTIF('Case Taking'!A3:D150, \"*[Tubercular]*\")"],
+          ["", "", "", "", "", "", "Cancerinic Count", "=COUNTIF('Case Taking'!A3:D150, \"*[Cancerinic]*\")"]
         ];
 
         // values for Case Taking
@@ -430,7 +431,7 @@ export async function createPatientClinicalSheet(
           ["Rank 3", "=INDEX($E$3:$O$3, MATCH(LARGE(E13:O13, 3), E13:O13, 0))", "Score", "=LARGE(E13:O13, 3)", "", "", "", "", "", "", "", "", "", "", "", ""]
         ];
 
-        // values for Treatment Planner
+        // values for Treatment Planner (adjusted for exact row indices to prevent circular references)
         const plannerValues = [
           ["TREATMENT COMPLEXITY & FINANCIAL PLANNER", "", "", "", "", "", ""],
           ["", "", "", "", "", "", ""],
@@ -441,16 +442,16 @@ export async function createPatientClinicalSheet(
           ["Component", "Rate / Amount (₹)", "Calculation Description", "", "", "", ""],
           ["Base Rate", `=IF(ISNUMBER(SEARCH("Acute", A4)), IF(B4="Weekly", 1000, 3500), IF(ISNUMBER(SEARCH("Standard", A4)), IF(B4="Weekly", 2000, 7500), IF(ISNUMBER(SEARCH("Deep", A4)), IF(B4="Weekly", 3500, 12500), IF(ISNUMBER(SEARCH("Advanced", A4)), IF(B4="Weekly", 5000, 18500), IF(ISNUMBER(SEARCH("Multisystem", A4)), IF(B4="Weekly", 7000, 25000), 3500)))))`, "Base rate based on Care Level and Billing Cycle", "", "", ""],
           ["Conditions Surcharge", `=IF(D4<=1, 0, IF(ISNUMBER(SEARCH("Acute", A4)), IF(B4="Weekly", IF(D4=2, 300, 600), IF(D4=2, 1000, 2000)), IF(ISNUMBER(SEARCH("Standard", A4)), IF(B4="Weekly", IF(D4=2, 500, 1000), IF(D4=2, 1500, 3000)), IF(ISNUMBER(SEARCH("Deep", A4)), IF(B4="Weekly", IF(D4=2, 800, 1600), IF(D4=2, 2500, 5000)), IF(ISNUMBER(SEARCH("Advanced", A4)), IF(B4="Weekly", IF(D4=2, 1200, 2400), IF(D4=2, 3500, 7000)), IF(B4="Weekly", IF(D4=2, 1500, 3000), IF(D4=2, 4500, 9000)))))))`, "Surcharge for co-existing chronic conditions", "", "", ""],
-          ["Gross Subtotal", "=(B10+B11)*C4", "Adjusted base rate multiplied by duration", "", "", "", ""],
+          ["Gross Subtotal", "=(B8+B9)*C4", "Adjusted base rate multiplied by duration", "", "", "", ""],
           ["Duration Discount %", `=IF(IF(B4="Weekly", C4, C4*4)>=48, 0.30, IF(IF(B4="Weekly", C4, C4*4)>=24, 0.25, IF(IF(B4="Weekly", C4, C4*4)>=12, 0.20, IF(IF(B4="Weekly", C4, C4*4)>=8, 0.15, IF(IF(B4="Weekly", C4, C4*4)>=4, 0.10, IF(IF(B4="Weekly", C4, C4*4)>=2, 0.05, 0))))))`, "Duration loyalty discount percentage", "", "", "", ""],
-          ["Duration Discount Amount", "=B12*B13", "Total savings from duration discount", "", "", "", ""],
-          ["Concession Discount Amount", `=IF(ISNUMBER(SEARCH("Senior", E4)), (B12-B14)*0.15, IF(ISNUMBER(SEARCH("Socio", E4)), (B12-B14)*0.30, IF(ISNUMBER(SEARCH("Override", E4)), MAX(0, (B12-B14) - F4), 0)))`, "Compassionate, Senior, or Override concession", "", "", "", ""],
+          ["Duration Discount Amount", "=B10*B11", "Total savings from duration discount", "", "", "", ""],
+          ["Concession Discount Amount", `=IF(ISNUMBER(SEARCH("Senior", E4)), (B10-B12)*0.15, IF(ISNUMBER(SEARCH("Socio", E4)), (B10-B12)*0.30, IF(ISNUMBER(SEARCH("Override", E4)), MAX(0, (B10-B12) - F4), 0)))`, "Compassionate, Senior, or Override concession", "", "", "", ""],
           ["Medicine Add-ons", "=G4", "Medicine charges and dynamic add-on scripts", "", "", "", ""],
-          ["Total Program Cost", "=B12-B14-B15+B16", "Final package cost taking all factors into consideration", "", "", "", ""],
+          ["Total Program Cost", "=B10-B12-B13+B14", "Final package cost taking all factors into consideration", "", "", "", ""],
           ["Amount Received", data.receivedAmount !== undefined ? data.receivedAmount : data.finalPrice, "Amount collected from patient for this plan", "", "", "", ""],
-          ["Balance Due", "=B17-B18", "Outstanding dues for this treatment plan", "", "", "", ""],
+          ["Balance Due", "=B15-B16", "Outstanding dues for this treatment plan", "", "", "", ""],
           ["", "", "", "", "", "", ""],
-          ["WhatsApp Invoice Message", `="Dear " & 'Case Taking'!B5 & ", thank you for consulting Homeo Healthcare. Your treatment package is: " & A4 & " (" & C4 & " " & IF(B4="Weekly","weeks","months") & " commit, " & D4 & " condition(s) " & IF(E4="None","", "[" & E4 & "]") & "). Total Cost: ₹" & B17 & ". Amount Paid: ₹" & B18 & ". Balance Due: ₹" & B19 & ". Please pay using UPI: narayan.jethwani@homeo.healthcare. Clinic Branch: Baner, Pune."`, "", "", "", "", ""]
+          ["WhatsApp Invoice Message", `="Dear " & 'Case Taking'!B5 & ", thank you for consulting Homeo Healthcare. Your treatment package is: " & A4 & " (" & C4 & " " & IF(B4="Weekly","weeks","months") & " commit, " & D4 & " condition(s) " & IF(E4="None","", "[" & E4 & "]") & "). Total Cost: ₹" & B15 & ". Amount Paid: ₹" & B16 & ". Balance Due: ₹" & B17 & ". Please pay using UPI: narayan.jethwani@homeo.healthcare. Clinic Branch: Baner, Pune."`, "", "", "", "", ""]
         ];
 
         // values for Finance
@@ -462,7 +463,7 @@ export async function createPatientClinicalSheet(
           ["", "", "", "", "", "", "", ""],
           ["TRANSACTION HISTORY RECORD", "", "", "", "", "", "", ""],
           ["Date", "Description / Event", "Reference ID", "Amount Charged (₹)", "Amount Received (₹)", "Outstanding Balance (₹)", "Payment Method", "Payment Status"],
-          [today, "Initial package setup charge", "Tx-Plan-" + data.id, "='Treatment Planner'!B17", "='Treatment Planner'!B18", "=D8-E8", "UPI", `=IF(F8<=0, "Paid", IF(E8>0, "Partially Paid", "Unpaid"))`],
+          [today, "Initial package setup charge", "Tx-Plan-" + data.id, "='Treatment Planner'!B15", "='Treatment Planner'!B16", "=D8-E8", "UPI", `=IF(F8<=0, "Paid", IF(E8>0, "Partially Paid", "Unpaid"))`],
           ["", "Follow-up Consultation / Refill", "FU-Refill", 0, 0, "=D9-E9", "", ""],
           ["", "", "", "", "", "", "", ""]
         ];
@@ -500,7 +501,7 @@ export async function createPatientClinicalSheet(
           requestBody: {
             valueInputOption: "USER_ENTERED",
             data: [
-              { range: "'Dashboard'!A1:F11", values: dashboardValues },
+              { range: "'Dashboard'!A1:H12", values: dashboardValues },
               { range: "'Case Taking'!A1:D151", values: caseTakingValues },
               { range: "'Follow-Up Tracker'!A1:G4", values: followUpValues },
               { range: "'Repertorization'!A1:P18", values: repertoryValues },
@@ -518,6 +519,37 @@ export async function createPatientClinicalSheet(
         // Formatting for Dashboard (sheetId = Dashboard)
         const dashId = sheetsMap["Dashboard"] || 0;
         requests.push(
+          // Hide gridlines
+          {
+            updateSheetProperties: {
+              properties: {
+                sheetId: dashId,
+                gridProperties: {
+                  hideGridlines: true
+                }
+              },
+              fields: "gridProperties.hideGridlines"
+            }
+          },
+          // Canvas background color (#F1F5F9)
+          {
+            repeatCell: {
+              range: {
+                sheetId: dashId,
+                startRowIndex: 0,
+                endRowIndex: 100,
+                startColumnIndex: 0,
+                endColumnIndex: 8
+              },
+              cell: {
+                userEnteredFormat: {
+                  backgroundColor: { red: 241/255, green: 245/255, blue: 249/255 }
+                }
+              },
+              fields: "userEnteredFormat.backgroundColor"
+            }
+          },
+          // Update dimension properties for A-H columns
           {
             updateDimensionProperties: {
               range: { sheetId: dashId, dimension: "COLUMNS", startIndex: 0, endIndex: 1 },
@@ -527,44 +559,56 @@ export async function createPatientClinicalSheet(
           {
             updateDimensionProperties: {
               range: { sheetId: dashId, dimension: "COLUMNS", startIndex: 1, endIndex: 2 },
-              properties: { pixelSize: 180 }, fields: "pixelSize"
+              properties: { pixelSize: 190 }, fields: "pixelSize"
             }
           },
           {
             updateDimensionProperties: {
               range: { sheetId: dashId, dimension: "COLUMNS", startIndex: 2, endIndex: 3 },
-              properties: { pixelSize: 140 }, fields: "pixelSize"
+              properties: { pixelSize: 20 }, fields: "pixelSize" // Spacing C
             }
           },
           {
             updateDimensionProperties: {
               range: { sheetId: dashId, dimension: "COLUMNS", startIndex: 3, endIndex: 4 },
-              properties: { pixelSize: 180 }, fields: "pixelSize"
-            }
-          },
-          {
-            updateDimensionProperties: {
-              range: { sheetId: dashId, dimension: "COLUMNS", startIndex: 4, endIndex: 5 },
               properties: { pixelSize: 140 }, fields: "pixelSize"
             }
           },
           {
             updateDimensionProperties: {
-              range: { sheetId: dashId, dimension: "COLUMNS", startIndex: 5, endIndex: 6 },
-              properties: { pixelSize: 180 }, fields: "pixelSize"
+              range: { sheetId: dashId, dimension: "COLUMNS", startIndex: 4, endIndex: 5 },
+              properties: { pixelSize: 190 }, fields: "pixelSize"
             }
           },
-          // Merge Title Header A1:F1
+          {
+            updateDimensionProperties: {
+              range: { sheetId: dashId, dimension: "COLUMNS", startIndex: 5, endIndex: 6 },
+              properties: { pixelSize: 20 }, fields: "pixelSize" // Spacing F
+            }
+          },
+          {
+            updateDimensionProperties: {
+              range: { sheetId: dashId, dimension: "COLUMNS", startIndex: 6, endIndex: 7 },
+              properties: { pixelSize: 140 }, fields: "pixelSize"
+            }
+          },
+          {
+            updateDimensionProperties: {
+              range: { sheetId: dashId, dimension: "COLUMNS", startIndex: 7, endIndex: 8 },
+              properties: { pixelSize: 190 }, fields: "pixelSize"
+            }
+          },
+          // Merge Title Header A1:H1
           {
             mergeCells: {
-              range: { sheetId: dashId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 6 },
+              range: { sheetId: dashId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 8 },
               mergeType: "MERGE_ALL"
             }
           },
           // Header style
           {
             repeatCell: {
-              range: { sheetId: dashId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 6 },
+              range: { sheetId: dashId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 8 },
               cell: {
                 userEnteredFormat: {
                   backgroundColor: { red: 15/255, green: 76/255, blue: 129/255 }, // Medical Blue #0F4C81
@@ -575,18 +619,149 @@ export async function createPatientClinicalSheet(
               fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
             }
           },
-          // Sub headers 1. CLINICAL STATUS, 2. ACTIVE DIAGNOSIS, 3. CLINICAL SUMMARY
+          // Merge Card Headers: PATIENT DEMOGRAPHICS (A3:B3), ACTIVE TREATMENT (D3:E3), OUTCOMES & LEDGER (G3:H3)
+          {
+            mergeCells: {
+              range: { sheetId: dashId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 2 },
+              mergeType: "MERGE_ALL"
+            }
+          },
+          {
+            mergeCells: {
+              range: { sheetId: dashId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 3, endColumnIndex: 5 },
+              mergeType: "MERGE_ALL"
+            }
+          },
+          {
+            mergeCells: {
+              range: { sheetId: dashId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 6, endColumnIndex: 8 },
+              mergeType: "MERGE_ALL"
+            }
+          },
+          // Format Card Headers
           {
             repeatCell: {
-              range: { sheetId: dashId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 6 },
+              range: { sheetId: dashId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 8 },
               cell: {
                 userEnteredFormat: {
-                  backgroundColor: { red: 241/255, green: 245/255, blue: 249/255 },
-                  textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
-                  verticalAlignment: "MIDDLE"
+                  backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 }, // Slate-200 #E2E8F0
+                  textFormat: { foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 }, fontSize: 10, bold: true },
+                  horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                 }
               },
-              fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
+              fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+            }
+          },
+          // Card 1 Keys (Col A, rows 4-9)
+          {
+            repeatCell: {
+              range: { sheetId: dashId, startRowIndex: 3, endRowIndex: 9, startColumnIndex: 0, endColumnIndex: 1 },
+              cell: {
+                userEnteredFormat: {
+                  backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 }, // slate-50 #F8FAFC
+                  textFormat: { foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 }, fontSize: 9, bold: true },
+                  horizontalAlignment: "LEFT", verticalAlignment: "MIDDLE"
+                }
+              },
+              fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+            }
+          },
+          // Card 1 Values (Col B, rows 4-9)
+          {
+            repeatCell: {
+              range: { sheetId: dashId, startRowIndex: 3, endRowIndex: 9, startColumnIndex: 1, endColumnIndex: 2 },
+              cell: {
+                userEnteredFormat: {
+                  backgroundColor: { red: 1, green: 1, blue: 1 }, // white #FFFFFF
+                  textFormat: { foregroundColor: { red: 15/255, green: 23/255, blue: 42/255 }, fontSize: 10, bold: true },
+                  horizontalAlignment: "LEFT", verticalAlignment: "MIDDLE"
+                }
+              },
+              fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+            }
+          },
+          // Card 2 Keys (Col D, rows 4-9)
+          {
+            repeatCell: {
+              range: { sheetId: dashId, startRowIndex: 3, endRowIndex: 9, startColumnIndex: 3, endColumnIndex: 4 },
+              cell: {
+                userEnteredFormat: {
+                  backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
+                  textFormat: { foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 }, fontSize: 9, bold: true },
+                  horizontalAlignment: "LEFT", verticalAlignment: "MIDDLE"
+                }
+              },
+              fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+            }
+          },
+          // Card 2 Values (Col E, rows 4-9)
+          {
+            repeatCell: {
+              range: { sheetId: dashId, startRowIndex: 3, endRowIndex: 9, startColumnIndex: 4, endColumnIndex: 5 },
+              cell: {
+                userEnteredFormat: {
+                  backgroundColor: { red: 1, green: 1, blue: 1 },
+                  textFormat: { foregroundColor: { red: 15/255, green: 23/255, blue: 42/255 }, fontSize: 10, bold: true },
+                  horizontalAlignment: "LEFT", verticalAlignment: "MIDDLE"
+                }
+              },
+              fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+            }
+          },
+          // Card 3 Keys (Col G, rows 4-12)
+          {
+            repeatCell: {
+              range: { sheetId: dashId, startRowIndex: 3, endRowIndex: 12, startColumnIndex: 6, endColumnIndex: 7 },
+              cell: {
+                userEnteredFormat: {
+                  backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
+                  textFormat: { foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 }, fontSize: 9, bold: true },
+                  horizontalAlignment: "LEFT", verticalAlignment: "MIDDLE"
+                }
+              },
+              fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+            }
+          },
+          // Card 3 Values (Col H, rows 4-12)
+          {
+            repeatCell: {
+              range: { sheetId: dashId, startRowIndex: 3, endRowIndex: 12, startColumnIndex: 7, endColumnIndex: 8 },
+              cell: {
+                userEnteredFormat: {
+                  backgroundColor: { red: 1, green: 1, blue: 1 },
+                  textFormat: { foregroundColor: { red: 15/255, green: 23/255, blue: 42/255 }, fontSize: 10, bold: true },
+                  horizontalAlignment: "LEFT", verticalAlignment: "MIDDLE"
+                }
+              },
+              fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+            }
+          },
+          // Card Borders (Card 1: A3:B9, Card 2: D3:E9, Card 3: G3:H12)
+          {
+            updateBorders: {
+              range: { sheetId: dashId, startRowIndex: 2, endRowIndex: 9, startColumnIndex: 0, endColumnIndex: 2 },
+              top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } }, // slate-300
+              bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+              left: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+              right: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } }
+            }
+          },
+          {
+            updateBorders: {
+              range: { sheetId: dashId, startRowIndex: 2, endRowIndex: 9, startColumnIndex: 3, endColumnIndex: 5 },
+              top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+              bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+              left: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+              right: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } }
+            }
+          },
+          {
+            updateBorders: {
+              range: { sheetId: dashId, startRowIndex: 2, endRowIndex: 12, startColumnIndex: 6, endColumnIndex: 8 },
+              top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+              bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+              left: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+              right: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } }
             }
           }
         );
