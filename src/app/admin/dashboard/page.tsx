@@ -3578,14 +3578,34 @@ Homeo Healthcare`;
       const data = await response.json();
       if (data.success) {
         setCreatedFolderUrl(data.folderUrl);
-        setCreatedSheetUrl(data.sheetUrl);
+        
+        // Build mockSheetUrl containing all treatment planner options
+        const mockPatientId = data.patientId || `P-${Math.floor(100000 + Math.random() * 900000)}`;
+        const mockSheetUrl = `/admin/mock-sheet?name=${encodeURIComponent(newCaseForm.name)}` +
+          `&id=${encodeURIComponent(mockPatientId)}` +
+          `&age=${encodeURIComponent(newCaseForm.age)}` +
+          `&gender=${encodeURIComponent(newCaseForm.gender)}` +
+          `&phone=${encodeURIComponent(newCaseForm.phone)}` +
+          `&email=${encodeURIComponent(newCaseForm.email)}` +
+          `&complaint=${encodeURIComponent(newCaseForm.complaint)}` +
+          `&careLevel=${encodeURIComponent(newCaseForm.careLevel)}` +
+          `&durationText=${encodeURIComponent(newCaseForm.durationText)}` +
+          `&finalPrice=${encodeURIComponent(newCaseForm.finalPrice)}` +
+          `&receivedAmount=${encodeURIComponent(String(newCaseForm.receivedAmount))}` +
+          `&remainingBalance=${encodeURIComponent(String(newCaseForm.remainingBalance))}` +
+          `&billingCycle=${encodeURIComponent(newCaseForm.billingCycle)}` +
+          `&concessionApplied=${encodeURIComponent(concessionVal)}` +
+          `&conditionsCount=${encodeURIComponent(String(newCaseForm.careLevel.includes("Multisystem") ? 2 : 1))}` +
+          `&durationValue=${encodeURIComponent(String(getDurationValue(newCaseForm.durationText)))}`;
+
+        setCreatedSheetUrl(mockSheetUrl);
         setCaseCreationSuccess(true);
         
         // Append to local state if Firestore is in mock-project mode
         const isMockProject = !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID === "mock-project-id";
         if (isMockProject) {
           const newPatient: Patient = {
-            id: data.patientId || `P-${Math.floor(100000 + Math.random() * 900000)}`,
+            id: mockPatientId,
             name: newCaseForm.name,
             age: newCaseForm.age,
             gender: newCaseForm.gender,
@@ -3599,11 +3619,15 @@ Homeo Healthcare`;
             receivedAmount: newCaseForm.receivedAmount,
             remainingBalance: newCaseForm.remainingBalance,
             folderUrl: data.folderUrl,
-            sheetUrl: data.sheetUrl,
+            sheetUrl: mockSheetUrl,
             assignedDoctor: session?.uid || "unassigned",
             status: "active",
-            createdAt: new Date().toISOString()
-          };
+            createdAt: new Date().toISOString(),
+            billingCycle: newCaseForm.billingCycle,
+            concessionApplied: concessionVal,
+            conditionsCount: newCaseForm.careLevel.includes("Multisystem") ? 2 : 1,
+            durationValue: getDurationValue(newCaseForm.durationText)
+          } as any;
           setPatients(prev => [newPatient, ...prev]);
         }
 
@@ -3638,7 +3662,31 @@ Homeo Healthcare`;
       // Fallback for mock/offline testing
       const mockPatientId = `P-${Math.floor(100000 + Math.random() * 900000)}`;
       const folderUrl = "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link";
-      const sheetUrl = `/admin/mock-sheet?name=${encodeURIComponent(newCaseForm.name)}&id=${encodeURIComponent(mockPatientId)}&age=${encodeURIComponent(newCaseForm.age)}&gender=${encodeURIComponent(newCaseForm.gender)}&phone=${encodeURIComponent(newCaseForm.phone)}&email=${encodeURIComponent(newCaseForm.email)}&complaint=${encodeURIComponent(newCaseForm.complaint)}&careLevel=${encodeURIComponent(newCaseForm.careLevel)}&durationText=${encodeURIComponent(newCaseForm.durationText)}&finalPrice=${encodeURIComponent(newCaseForm.finalPrice)}&receivedAmount=${encodeURIComponent(String(newCaseForm.receivedAmount))}&remainingBalance=${encodeURIComponent(String(newCaseForm.remainingBalance))}`;
+      
+      const concessionVal = newCaseForm.concessionType === "Senior"
+        ? "Senior 15%"
+        : newCaseForm.concessionType === "Socio"
+          ? "Socio-Economic 30%"
+          : newCaseForm.concessionType === "Override"
+            ? "Override"
+            : (parseInt(newCaseForm.age) >= 60 ? "Senior 15%" : "None");
+
+      const sheetUrl = `/admin/mock-sheet?name=${encodeURIComponent(newCaseForm.name)}` +
+        `&id=${encodeURIComponent(mockPatientId)}` +
+        `&age=${encodeURIComponent(newCaseForm.age)}` +
+        `&gender=${encodeURIComponent(newCaseForm.gender)}` +
+        `&phone=${encodeURIComponent(newCaseForm.phone)}` +
+        `&email=${encodeURIComponent(newCaseForm.email)}` +
+        `&complaint=${encodeURIComponent(newCaseForm.complaint)}` +
+        `&careLevel=${encodeURIComponent(newCaseForm.careLevel)}` +
+        `&durationText=${encodeURIComponent(newCaseForm.durationText)}` +
+        `&finalPrice=${encodeURIComponent(newCaseForm.finalPrice)}` +
+        `&receivedAmount=${encodeURIComponent(String(newCaseForm.receivedAmount))}` +
+        `&remainingBalance=${encodeURIComponent(String(newCaseForm.remainingBalance))}` +
+        `&billingCycle=${encodeURIComponent(newCaseForm.billingCycle)}` +
+        `&concessionApplied=${encodeURIComponent(concessionVal)}` +
+        `&conditionsCount=${encodeURIComponent(String(newCaseForm.careLevel.includes("Multisystem") ? 2 : 1))}` +
+        `&durationValue=${encodeURIComponent(String(getDurationValue(newCaseForm.durationText)))}`;
       
       setCreatedFolderUrl(folderUrl);
       setCreatedSheetUrl(sheetUrl);
@@ -3661,8 +3709,12 @@ Homeo Healthcare`;
         sheetUrl,
         assignedDoctor: session?.uid || "unassigned",
         status: "active",
-        createdAt: new Date().toISOString()
-      };
+        createdAt: new Date().toISOString(),
+        billingCycle: newCaseForm.billingCycle,
+        concessionApplied: concessionVal,
+        conditionsCount: newCaseForm.careLevel.includes("Multisystem") ? 2 : 1,
+        durationValue: getDurationValue(newCaseForm.durationText)
+      } as any;
       
       try {
         const isMockProject = !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID === "mock-project-id";
@@ -3751,10 +3803,18 @@ Homeo Healthcare`;
           throw new Error("CSV must at least contain 'Name' and 'Complaint' or 'Symptoms' columns.");
         }
 
+        const ageVal = age || "30";
+        const ageNum = parseInt(ageVal) || 0;
+        const concession = ageNum >= 60 ? "Senior" : "None";
+        const careLevel = "⚡ Standard Chronic Care";
+        const duration = "1-Month Consultation";
+        const cycle = "Monthly";
+        const pricing = calculateCaseFormPricing(careLevel, duration, ageVal, 0, cycle, concession);
+
         // Prefill New Case Form
         setNewCaseForm({
           name,
-          age: age || "30",
+          age: ageVal,
           gender: gender || "Male",
           phone: phone || "",
           email: email || "",
@@ -3762,14 +3822,14 @@ Homeo Healthcare`;
           state: state || "",
           country: "India",
           complaint,
-          careLevel: "⚡ Standard Chronic Care",
-          billingCycle: "Monthly",
-          concessionType: "None",
-          durationText: "1-Month Consultation",
-          basePrice: 7500,
+          careLevel: careLevel,
+          billingCycle: cycle,
+          concessionType: concession,
+          durationText: duration,
+          basePrice: pricing.basePrice,
           discountOverride: 0,
-          finalPrice: 7500,
-          receivedAmount: 7500,
+          finalPrice: pricing.finalPrice,
+          receivedAmount: pricing.finalPrice,
           remainingBalance: 0
         });
 
@@ -3959,6 +4019,31 @@ Homeo Healthcare`;
     patient: Patient,
     type: "folder" | "sheet"
   ) => {
+    if (type === "sheet") {
+      e.preventDefault();
+      
+      const mockPatientId = patient.id;
+      const mockSheetUrl = `/admin/mock-sheet?name=${encodeURIComponent(patient.name)}` +
+        `&id=${encodeURIComponent(mockPatientId)}` +
+        `&age=${encodeURIComponent(patient.age)}` +
+        `&gender=${encodeURIComponent(patient.gender)}` +
+        `&phone=${encodeURIComponent(patient.phone || "")}` +
+        `&email=${encodeURIComponent(patient.email || "")}` +
+        `&complaint=${encodeURIComponent(patient.complaint || "")}` +
+        `&careLevel=${encodeURIComponent(patient.careLevel || "")}` +
+        `&durationText=${encodeURIComponent(patient.durationText || "")}` +
+        `&finalPrice=${encodeURIComponent(String(patient.finalPrice || 0))}` +
+        `&receivedAmount=${encodeURIComponent(String(patient.receivedAmount !== undefined ? patient.receivedAmount : (patient.finalPrice || 0)))}` +
+        `&remainingBalance=${encodeURIComponent(String(patient.remainingBalance || 0))}` +
+        `&billingCycle=${encodeURIComponent((patient as any).billingCycle || "Monthly")}` +
+        `&concessionApplied=${encodeURIComponent((patient as any).concessionApplied || "None")}` +
+        `&conditionsCount=${encodeURIComponent(String((patient as any).conditionsCount || (patient.careLevel.includes("Multisystem") ? 2 : 1)))}` +
+        `&durationValue=${encodeURIComponent(String((patient as any).durationValue || getDurationValue(patient.durationText)))}`;
+
+      window.open(mockSheetUrl, "_blank", "noopener,noreferrer");
+      return;
+    }
+
     const currentUrl = type === "folder" ? patient.folderUrl : patient.sheetUrl;
     const isMockUrl = !currentUrl || 
                       (currentUrl.includes("mock-") && !currentUrl.startsWith("/admin/mock-sheet")) || 
@@ -4023,10 +4108,18 @@ Homeo Healthcare`;
   };
 
   const selectPatientForImport = (patient: any) => {
+    const ageVal = patient.age || "30";
+    const ageNum = parseInt(ageVal) || 0;
+    const concession = ageNum >= 60 ? "Senior" : "None";
+    const careLevel = "⚡ Standard Chronic Care";
+    const duration = "1-Month Consultation";
+    const cycle = "Monthly";
+    const pricing = calculateCaseFormPricing(careLevel, duration, ageVal, 0, cycle, concession);
+    
     // Prefill new case taking form
     setNewCaseForm({
       name: patient.name,
-      age: patient.age || "30",
+      age: ageVal,
       gender: patient.gender || "Male",
       phone: patient.phone || "",
       email: patient.email || "",
@@ -4034,14 +4127,14 @@ Homeo Healthcare`;
       state: patient.state || "",
       country: "India",
       complaint: patient.complaint,
-      careLevel: "⚡ Standard Chronic Care",
-      billingCycle: "Monthly",
-      concessionType: "None",
-      durationText: "1-Month Consultation",
-      basePrice: 7500,
+      careLevel: careLevel,
+      billingCycle: cycle,
+      concessionType: concession,
+      durationText: duration,
+      basePrice: pricing.basePrice,
       discountOverride: 0,
-      finalPrice: 7500,
-      receivedAmount: 7500,
+      finalPrice: pricing.finalPrice,
+      receivedAmount: pricing.finalPrice,
       remainingBalance: 0
     });
 
@@ -4396,7 +4489,27 @@ ${err.message || err}`);
       return `${r.chapter}:${r.name}:${r.weight}`;
     }).join("|");
     
-    const baseUrl = activePatient.sheetUrl || "/admin/mock-sheet";
+    let baseUrl = activePatient.sheetUrl || "/admin/mock-sheet";
+    if (baseUrl.includes("google.com/spreadsheets") || !baseUrl.startsWith("/admin/mock-sheet")) {
+      // Build mock sheet URL populated with patient parameters
+      baseUrl = `/admin/mock-sheet?name=${encodeURIComponent(activePatient.name)}` +
+        `&id=${encodeURIComponent(activePatient.id)}` +
+        `&age=${encodeURIComponent(activePatient.age)}` +
+        `&gender=${encodeURIComponent(activePatient.gender)}` +
+        `&phone=${encodeURIComponent(activePatient.phone || "")}` +
+        `&email=${encodeURIComponent(activePatient.email || "")}` +
+        `&complaint=${encodeURIComponent(activePatient.complaint || "")}` +
+        `&careLevel=${encodeURIComponent(activePatient.careLevel || "")}` +
+        `&durationText=${encodeURIComponent(activePatient.durationText || "")}` +
+        `&finalPrice=${encodeURIComponent(String(activePatient.finalPrice || 0))}` +
+        `&receivedAmount=${encodeURIComponent(String(activePatient.receivedAmount !== undefined ? activePatient.receivedAmount : (activePatient.finalPrice || 0)))}` +
+        `&remainingBalance=${encodeURIComponent(String(activePatient.remainingBalance || 0))}` +
+        `&billingCycle=${encodeURIComponent((activePatient as any).billingCycle || "Monthly")}` +
+        `&concessionApplied=${encodeURIComponent((activePatient as any).concessionApplied || "None")}` +
+        `&conditionsCount=${encodeURIComponent(String((activePatient as any).conditionsCount || (activePatient.careLevel.includes("Multisystem") ? 2 : 1)))}` +
+        `&durationValue=${encodeURIComponent(String((activePatient as any).durationValue || getDurationValue(activePatient.durationText)))}`;
+    }
+    
     const separator = baseUrl.includes("?") ? "&" : "?";
     const targetUrl = `${baseUrl}${separator}importRubrics=${encodeURIComponent(rubricsParam)}`;
     
@@ -21530,7 +21643,7 @@ Exported on: ${new Date().toLocaleDateString()}
                           Treatment Planner & Fee Structure
                         </h4>
                         
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {/* Base Plan Price */}
                           <div>
                             <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Base Plan Price (₹)</label>
@@ -21542,20 +21655,37 @@ Exported on: ${new Date().toLocaleDateString()}
                             />
                           </div>
 
-                          {/* Discount Override */}
+                          {/* Concession Applied dropdown */}
                           <div>
-                            <label className="block text-[10px] font-bold text-slate-705 dark:text-slate-300 uppercase tracking-wider mb-1.5 font-semibold text-teal-600">Condition Discount Override (₹)</label>
-                            <input
-                              type="number"
-                              value={newCaseForm.discountOverride || ""}
-                              onChange={(e) => handleDiscountChange(parseFloat(e.target.value) || 0)}
-                              placeholder="0"
+                            <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Concession Applied</label>
+                            <select
+                              value={newCaseForm.concessionType}
+                              onChange={(e) => handleConcessionTypeChange(e.target.value)}
                               className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-semibold text-[#1A2421]"
-                            />
+                            >
+                              <option value="None">None</option>
+                              <option value="Senior">Senior Citizen (15% Concession)</option>
+                              <option value="Socio">Socio-Economic (30% Compassionate)</option>
+                              <option value="Override">Custom Override Price</option>
+                            </select>
                           </div>
 
+                          {/* Discount Override */}
+                          {newCaseForm.concessionType === "Override" && (
+                            <div className="col-span-full md:col-span-1">
+                              <label className="block text-[10px] font-bold text-slate-705 dark:text-slate-300 uppercase tracking-wider mb-1.5 font-semibold text-teal-600">Custom Override Discount (₹)</label>
+                              <input
+                                type="number"
+                                value={newCaseForm.discountOverride || ""}
+                                onChange={(e) => handleDiscountChange(parseFloat(e.target.value) || 0)}
+                                placeholder="0"
+                                className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-semibold text-[#1A2421]"
+                              />
+                            </div>
+                          )}
+
                           {/* Total Package Price */}
-                          <div>
+                          <div className={newCaseForm.concessionType === "Override" ? "col-span-full md:col-span-1" : "col-span-full"}>
                             <label className="block text-[10px] font-bold text-slate-705 dark:text-slate-300 uppercase tracking-wider mb-1.5">Total Package Price (₹)</label>
                             <input
                               type="number"
@@ -21568,7 +21698,7 @@ Exported on: ${new Date().toLocaleDateString()}
                         </div>
 
                         {/* Live Estimate Breakdown aligned with Treatment Planner */}
-                        {(currentPricing.discountPercent > 0 || currentPricing.seniorDiscountAmount > 0) && (
+                        {(currentPricing.discountPercent > 0 || currentPricing.seniorDiscountAmount > 0 || currentPricing.socioDiscountAmount > 0) && (
                           <div className="p-3.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/50 dark:border-slate-800 space-y-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400">
                             <div className="flex justify-between items-center text-slate-400 dark:text-slate-500 uppercase tracking-wider text-[9px] font-bold pb-1.5 border-b border-slate-100 dark:border-slate-800 mb-1">
                               <span>Pricing breakdown estimate</span>
@@ -21580,14 +21710,20 @@ Exported on: ${new Date().toLocaleDateString()}
                             </div>
                             {currentPricing.discountPercent > 0 && (
                               <div className="flex justify-between text-[#0c6b5e] dark:text-teal-400">
-                                <span>Duration Discount ({currentPricing.discountPercent}%):</span>
-                                <span className="font-bold">-₹{currentPricing.durationDiscountAmount.toLocaleString("en-IN")}</span>
+                                  <span>Duration Discount ({currentPricing.discountPercent}%):</span>
+                                  <span className="font-bold">-₹{currentPricing.durationDiscountAmount.toLocaleString("en-IN")}</span>
                               </div>
                             )}
                             {currentPricing.seniorDiscountAmount > 0 && (
                               <div className="flex justify-between text-[#0c6b5e] dark:text-teal-400">
                                 <span>Senior Citizen Concession (15%):</span>
                                 <span className="font-bold">-₹{currentPricing.seniorDiscountAmount.toLocaleString("en-IN")}</span>
+                              </div>
+                            )}
+                            {currentPricing.socioDiscountAmount > 0 && (
+                              <div className="flex justify-between text-[#0c6b5e] dark:text-teal-400">
+                                <span>Socio-Economic Concession (30%):</span>
+                                <span className="font-bold">-₹{currentPricing.socioDiscountAmount.toLocaleString("en-IN")}</span>
                               </div>
                             )}
                             <div className="flex justify-between pt-1 border-t border-slate-100 dark:border-slate-800/80 font-bold text-slate-800 dark:text-slate-200">

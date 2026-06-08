@@ -179,7 +179,13 @@ function MockSheetContent() {
   const initialCareLevel = searchParams.get("careLevel") || "6-Month Advanced";
   const initialDurationText = searchParams.get("durationText") || "6-Month Treatment Plan";
   const initialPriceVal = Number(searchParams.get("finalPrice") || "8500");
-  const initialReceived = Number(searchParams.get("receivedAmount") || "8500");
+  const initialReceived = searchParams.get("receivedAmount") !== null && searchParams.get("receivedAmount") !== ""
+    ? Number(searchParams.get("receivedAmount"))
+    : initialPriceVal;
+  const initialBillingCycle = searchParams.get("billingCycle") || "";
+  const initialConcessionApplied = searchParams.get("concessionApplied") || "";
+  const initialConditionsCount = searchParams.get("conditionsCount") ? Number(searchParams.get("conditionsCount")) : null;
+  const initialDurationValue = searchParams.get("durationValue") ? Number(searchParams.get("durationValue")) : null;
 
   const today = new Date().toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" });
 
@@ -658,10 +664,14 @@ function MockSheetContent() {
 
   const [planner, setPlanner] = useState({
     careLevel: initialCareLevelMapped,
-    billingCycle: (initialCareLevel.toLowerCase().includes("weekly") || initialDurationText.toLowerCase().includes("week")) ? "weekly" : "monthly" as "weekly" | "monthly",
-    durationValue: initialDurationMonthsVal,
-    conditionsCount: initialCareLevel.toLowerCase().includes("multisystem") ? 2 : 1,
-    concessionType: (parseInt(initialAge) >= 60) ? "senior" : "none" as "none" | "senior" | "compassionate" | "override",
+    billingCycle: (initialBillingCycle 
+      ? (initialBillingCycle.toLowerCase() === "weekly" ? "weekly" : "monthly")
+      : ((initialCareLevel.toLowerCase().includes("weekly") || initialDurationText.toLowerCase().includes("week")) ? "weekly" : "monthly")) as "weekly" | "monthly",
+    durationValue: initialDurationValue !== null ? initialDurationValue : initialDurationMonthsVal,
+    conditionsCount: initialConditionsCount !== null ? initialConditionsCount : (initialCareLevel.toLowerCase().includes("multisystem") ? 2 : 1),
+    concessionType: (initialConcessionApplied 
+      ? (initialConcessionApplied.toLowerCase().includes("senior") ? "senior" : initialConcessionApplied.toLowerCase().includes("socio") ? "compassionate" : initialConcessionApplied.toLowerCase().includes("override") ? "override" : "none")
+      : ((parseInt(initialAge) >= 60) ? "senior" : "none")) as "none" | "senior" | "compassionate" | "override",
     overridePrice: initialPriceVal,
     received: initialReceived,
     medicineAddons: [] as { id: string; type: string; details: string; amount: number }[]

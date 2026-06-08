@@ -74,7 +74,10 @@ export async function POST(request: Request) {
       sheetUrl: sheetResult.sheetUrl,
       assignedDoctor: body.assignedDoctor || "unassigned", // default to unassigned
       status: "active",
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      billingCycle: patientData.billingCycle || "Monthly",
+      concessionApplied: patientData.concessionApplied || "None",
+      durationValue: patientData.durationValue || 1
     };
 
     if (process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID && process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID !== "mock-project-id") {
