@@ -3163,6 +3163,120 @@ export async function appendAiReportToClinicalSheet(
   }
 }
 
+/**
+ * Synchronizes the list of reports and attachments to the patient's individual clinical sheet
+ */
+export async function syncAttachmentsToClinicalSheet(
+  sheetId: string,
+  attachments: Array<{ date: string; category: string; target: string; url: string }>
+): Promise<void> {
+  const auth = getGoogleAuth();
+  if (!auth) {
+    console.warn("Google API Auth missing. Skipping Attachments sync to Google Sheets.");
+    return;
+  }
+
+  const sheets = google.sheets({ version: "v4", auth });
+
+  try {
+    const rows = [];
+    for (let i = 0; i < 30; i++) {
+      if (i < attachments.length) {
+        const att = attachments[i];
+        rows.push([
+          att.date || "",
+          att.category || "",
+          att.target || "",
+          att.url || ""
+        ]);
+      } else {
+        rows.push(["", "", "", ""]);
+      }
+    }
+
+    await sheets.spreadsheets.values.update({
+      spreadsheetId: sheetId,
+      range: "'Reports & Attachments'!A4:D33",
+      valueInputOption: "USER_ENTERED",
+      requestBody: {
+        values: rows
+      }
+    });
+  } catch (error) {
+    console.error("Error writing attachments to patient Google Sheet:", error);
+    throw error;
+  }
+}
+
+/**
+ * Synchronizes the configuration database to the patient's individual clinical sheet
+ */
+export async function syncConfigDbToClinicalSheet(
+  sheetId: string,
+  configDb: {
+    remedies: string[];
+    potencies: string[];
+    miasms: string[];
+    locations: string[];
+    packages: Array<{ name: string; price: number }>;
+  }
+): Promise<void> {
+  const auth = getGoogleAuth();
+  if (!auth) {
+    console.warn("Google API Auth missing. Skipping Config DB sync to Google Sheets.");
+    return;
+  }
+
+  const sheets = google.sheets({ version: "v4", auth });
+
+  try {
+    const maxRows = Math.max(
+      configDb.remedies.length,
+      configDb.potencies.length,
+      configDb.miasms.length,
+      configDb.locations.length,
+      configDb.packages.length
+    );
+
+    const rows = [];
+    
+    // Row 0 corresponds to headers A-D and the first package in E-F
+    const firstPkg = configDb.packages[0] || { name: "", price: 0 };
+    rows.push([
+      "REMEDIES",
+      "POTENCIES",
+      "MIASMS",
+      "DOCTORS",
+      firstPkg.name || "",
+      firstPkg.price || ""
+    ]);
+
+    // Format the rest of the config rows
+    const totalRowsToUpdate = Math.max(50, maxRows + 5);
+    for (let i = 0; i < totalRowsToUpdate; i++) {
+      const remedy = configDb.remedies[i] || "";
+      const potency = configDb.potencies[i] || "";
+      const miasm = configDb.miasms[i] || "";
+      const loc = configDb.locations[i] || "";
+      const pkg = configDb.packages[i + 1] || { name: "", price: "" };
+
+      rows.push([remedy, potency, miasm, loc, pkg.name || "", pkg.price || ""]);
+    }
+
+    await sheets.spreadsheets.values.update({
+      spreadsheetId: sheetId,
+      range: "'Config DB'!A3:F100",
+      valueInputOption: "USER_ENTERED",
+      requestBody: {
+        values: rows
+      }
+    });
+  } catch (error) {
+    console.error("Error writing Config DB to patient Google Sheet:", error);
+    throw error;
+  }
+}
+
 export function extractSpreadsheetId(urlOrId: string): string {
   if (!urlOrId) return "";
   if (urlOrId.includes("docs.google.com/spreadsheets")) {

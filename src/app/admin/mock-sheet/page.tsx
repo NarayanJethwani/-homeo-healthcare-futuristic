@@ -483,6 +483,40 @@ function MockSheetContent() {
     hydrateRepertory();
   }, []);
 
+  // Hydrate patient attachments on mount/id change
+  useEffect(() => {
+    const fetchAttachments = async () => {
+      if (!patient.id) return;
+      try {
+        const res = await fetch(`/api/export-attachments?patientId=${encodeURIComponent(patient.id)}`);
+        const data = await res.json();
+        if (data.success && Array.isArray(data.attachments)) {
+          setAttachments(data.attachments);
+        }
+      } catch (err) {
+        console.error("Failed to fetch attachments on mount:", err);
+      }
+    };
+    fetchAttachments();
+  }, [patient.id]);
+
+  // Hydrate Config DB on mount/id change
+  useEffect(() => {
+    const fetchConfigDb = async () => {
+      if (!patient.id) return;
+      try {
+        const res = await fetch(`/api/export-config?patientId=${encodeURIComponent(patient.id)}`);
+        const data = await res.json();
+        if (data.success && data.configDb) {
+          setConfigDb(data.configDb);
+        }
+      } catch (err) {
+        console.error("Failed to fetch Config DB on mount:", err);
+      }
+    };
+    fetchConfigDb();
+  }, [patient.id]);
+
   // New rubric form state
   const [selectedLibraryRubric, setSelectedLibraryRubric] = useState<string>("");
   const [customRubricName, setCustomRubricName] = useState("");
@@ -639,13 +673,287 @@ function MockSheetContent() {
     { date: "05-06-2026", category: "Blood Test", target: "Complete Blood Count & Liver Panel", url: "https://drive.google.com/drive/folders/mock-folder-id" }
   ]);
 
-  // Config DB
-  const packagesConfig: { [key: string]: number } = {
-    "Standard Consult": 300,
-    "Acute Care Plan": 1500,
-    "3-Month Chronic": 4500,
-    "6-Month Advanced": 8500,
-    "1-Year Premium": 15000
+  const [syncingAttachments, setSyncingAttachments] = useState(false);
+  const [syncMessage, setSyncMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
+  const [uploadingFile, setUploadingFile] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [manualTitle, setManualTitle] = useState("");
+  const [manualCategory, setManualCategory] = useState("Blood Test");
+  const [manualUrl, setManualUrl] = useState("");
+  const [importMode, setImportMode] = useState<"lab" | "demographics" | "manual">("lab");
+  const [extractedDemographics, setExtractedDemographics] = useState<any | null>(null);
+  const [expandedNotesIndex, setExpandedNotesIndex] = useState<number | null>(null);
+
+  // Sync to database and sheet helper
+  const handleSyncAttachments = async (currentAttachments: any[]) => {
+    setSyncingAttachments(true);
+    setSyncMessage(null);
+    try {
+      const res = await fetch("/api/export-attachments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          patientId: patient.id,
+          attachments: currentAttachments
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSyncMessage({ text: "Attachments successfully synced to Google Sheet & Firestore!", type: "success" });
+      } else {
+        setSyncMessage({ text: `Sync failed: ${data.message}`, type: "error" });
+      }
+    } catch (err: any) {
+      setSyncMessage({ text: `Sync error: ${err.message || err}`, type: "error" });
+    } finally {
+      setSyncingAttachments(false);
+    }
+  };
+
+  const handleAddManualAttachment = async () => {
+    if (!manualTitle.trim()) {
+      setUploadError("Please provide a title for the attachment.");
+      return;
+    }
+    const newAtt = {
+      date: today,
+      category: manualCategory,
+      target: manualTitle.trim(),
+      url: manualUrl.trim() || "https://drive.google.com/drive/folders/mock-folder-id"
+    };
+    const updated = [...attachments, newAtt];
+    setAttachments(updated);
+    setManualTitle("");
+    setManualUrl("");
+    setUploadError(null);
+    await handleSyncAttachments(updated);
+  };
+
+  const handleDeleteAttachment = async (indexToDelete: number) => {
+    const updated = attachments.filter((_, idx) => idx !== indexToDelete);
+    setAttachments(updated);
+    await handleSyncAttachments(updated);
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingFile(true);
+    setUploadError(null);
+    setExtractedDemographics(null);
+
+    try {
+      // Convert file to Base64
+      const base64Str = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+          const result = reader.result as string;
+          resolve(result.split(",")[1]);
+        };
+        reader.onerror = err => reject(err);
+      });
+
+      // Choose API based on mode
+      if (importMode === "lab") {
+        const res = await fetch("/api/import-lab", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fileData: base64Str,
+            mimeType: file.type,
+            fileName: file.name
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          const newAtt = {
+            date: today,
+            category: "Lab Report",
+            target: file.name.replace(/\.[^/.]+$/, ""),
+            url: "https://drive.google.com/drive/folders/mock-folder-id",
+            notes: data.text
+          };
+          const updated = [...attachments, newAtt];
+          setAttachments(updated);
+          await handleSyncAttachments(updated);
+        } else {
+          setUploadError(`Failed to process lab report: ${data.message}`);
+        }
+      } else {
+        // Demographics extraction
+        const res = await fetch("/api/import-file", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fileData: base64Str,
+            mimeType: file.type,
+            fileName: file.name
+          })
+        });
+        const data = await res.json();
+        if (data.success && data.patient) {
+          setExtractedDemographics(data.patient);
+        } else {
+          setUploadError(`Failed to extract demographics: ${data.message}`);
+        }
+      }
+    } catch (err: any) {
+      setUploadError(`Upload error: ${err.message || err}`);
+    } finally {
+      setUploadingFile(false);
+      // Reset file input value
+      e.target.value = "";
+    }
+  };
+
+  const handleApplyDemographics = async () => {
+    if (!extractedDemographics) return;
+    
+    // Update patient details
+    setPatient(prev => ({
+      ...prev,
+      name: extractedDemographics.name || prev.name,
+      age: extractedDemographics.age || prev.age,
+      gender: extractedDemographics.gender || prev.gender,
+      email: extractedDemographics.email || prev.email,
+      phone: extractedDemographics.phone || prev.phone,
+      address: `${extractedDemographics.city || ""}${extractedDemographics.city && extractedDemographics.state ? ", " : ""}${extractedDemographics.state || ""}` || prev.address
+    }));
+
+    // Update caseTaking details
+    setCaseTaking(prev => ({
+      ...prev,
+      mainComplaint: extractedDemographics.complaint || prev.mainComplaint
+    }));
+
+    // Add to attachments log
+    const newAtt = {
+      date: today,
+      category: "Case Intake",
+      target: `Intake Extract - ${extractedDemographics.name || "Patient"}`,
+      url: "https://drive.google.com/drive/folders/mock-folder-id",
+      notes: `Extracted Complaint:\n${extractedDemographics.complaint || "None"}\n\nExtracted Rubrics:\n${extractedDemographics.rubrics || "None"}`
+    };
+
+    const updated = [...attachments, newAtt];
+    setAttachments(updated);
+    setExtractedDemographics(null);
+    setUploadError(null);
+    await handleSyncAttachments(updated);
+  };
+
+  // Config DB State
+  const [configDb, setConfigDb] = useState({
+    remedies: [
+      "Nux Vomica", "Arsenicum Album", "Lycopodium Clavatum", "Pulsatilla Pratensis", 
+      "Sulphur", "Rhus Toxicodendron", "Bryonia Alba", "Calcarea Carbonica", 
+      "Silicea", "Natrum Muriaticum", "Ignatia Amara", "Sepia Officinalis"
+    ],
+    potencies: ["6C", "30C", "200C", "1M", "10M", "50M", "CM", "LM1", "LM2", "LM5", "LM10", "LM30"],
+    miasms: ["Psora", "Sycosis", "Syphilis", "Tubercular", "Cancerinic"],
+    locations: ["Baner Clinic, Pune", "Koregaon Park Clinic, Pune", "Mumbai OPD"],
+    packages: [
+      { name: "Standard Consult", price: 300 },
+      { name: "Acute Care Plan", price: 1500 },
+      { name: "3-Month Chronic", price: 4500 },
+      { name: "6-Month Advanced", price: 8500 },
+      { name: "1-Year Premium", price: 15000 }
+    ]
+  });
+
+  const [syncingConfig, setSyncingConfig] = useState(false);
+  const [configSyncMessage, setConfigSyncMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
+
+  // Input states for adding new config items
+  const [newRemedyInput, setNewRemedyInput] = useState("");
+  const [newPotencyInput, setNewPotencyInput] = useState("");
+  const [newMiasmInput, setNewMiasmInput] = useState("");
+  const [newLocationInput, setNewLocationInput] = useState("");
+  const [newPackageNameInput, setNewPackageNameInput] = useState("");
+  const [newPackagePriceInput, setNewPackagePriceInput] = useState("");
+
+  const handleSyncConfig = async (currentConfig: typeof configDb) => {
+    setSyncingConfig(true);
+    setConfigSyncMessage(null);
+    try {
+      const res = await fetch("/api/export-config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          patientId: patient.id,
+          configDb: currentConfig
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setConfigSyncMessage({ text: "Dropdown configurations successfully synced to Google Sheet & Firestore!", type: "success" });
+      } else {
+        setConfigSyncMessage({ text: `Sync failed: ${data.message}`, type: "error" });
+      }
+    } catch (err: any) {
+      setConfigSyncMessage({ text: `Sync error: ${err.message || err}`, type: "error" });
+    } finally {
+      setSyncingConfig(false);
+    }
+  };
+
+  const handleAddConfigItem = async (type: "remedies" | "potencies" | "miasms" | "locations") => {
+    let value = "";
+    if (type === "remedies") { value = newRemedyInput.trim(); setNewRemedyInput(""); }
+    else if (type === "potencies") { value = newPotencyInput.trim(); setNewPotencyInput(""); }
+    else if (type === "miasms") { value = newMiasmInput.trim(); setNewMiasmInput(""); }
+    else if (type === "locations") { value = newLocationInput.trim(); setNewLocationInput(""); }
+
+    if (!value) return;
+
+    setConfigDb(prev => {
+      const updatedList = [...(prev[type] as string[])];
+      if (!updatedList.includes(value)) {
+        updatedList.push(value);
+      }
+      const updatedConfig = { ...prev, [type]: updatedList };
+      handleSyncConfig(updatedConfig);
+      return updatedConfig;
+    });
+  };
+
+  const handleRemoveConfigItem = async (type: "remedies" | "potencies" | "miasms" | "locations", index: number) => {
+    setConfigDb(prev => {
+      const updatedList = (prev[type] as string[]).filter((_, i) => i !== index);
+      const updatedConfig = { ...prev, [type]: updatedList };
+      handleSyncConfig(updatedConfig);
+      return updatedConfig;
+    });
+  };
+
+  const handleAddPackageConfig = async () => {
+    const name = newPackageNameInput.trim();
+    const price = parseInt(newPackagePriceInput.trim());
+
+    if (!name || isNaN(price)) return;
+    setNewPackageNameInput("");
+    setNewPackagePriceInput("");
+
+    setConfigDb(prev => {
+      const updatedPackages = [...prev.packages];
+      if (!updatedPackages.some(p => p.name === name)) {
+        updatedPackages.push({ name, price });
+      }
+      const updatedConfig = { ...prev, packages: updatedPackages };
+      handleSyncConfig(updatedConfig);
+      return updatedConfig;
+    });
+  };
+
+  const handleRemovePackageConfig = async (index: number) => {
+    setConfigDb(prev => {
+      const updatedPackages = prev.packages.filter((_, i) => i !== index);
+      const updatedConfig = { ...prev, packages: updatedPackages };
+      handleSyncConfig(updatedConfig);
+      return updatedConfig;
+    });
   };
 
   // ----------------------------------------------------
@@ -3303,33 +3611,329 @@ function MockSheetContent() {
             {/* ---------------------------------------------------- */}
             {activeTab === "Reports & Attachments" && (
               <div className="bg-white min-w-[1050px] p-6 space-y-6">
-                <div className="border-b border-slate-150 pb-4">
-                  <h2 className="text-sm font-black text-[#0F4C81] uppercase tracking-wider">Clinical Investigation Reports (Google Drive Links Only)</h2>
+                <div className="border-b border-slate-150 pb-4 flex items-center justify-between">
+                  <div>
+                    <h2 className="text-sm font-black text-[#0F4C81] uppercase tracking-wider">Reports & Attachments Log</h2>
+                    <p className="text-[10px] text-slate-500 font-bold uppercase mt-1">Upload lab investigations, photos, or intake sheets to parse with Gemini Multimodal AI and sync to Google Sheets</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleSyncAttachments(attachments)}
+                      disabled={syncingAttachments}
+                      className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-wider transition-all shadow-sm border ${
+                        syncingAttachments
+                          ? "bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed"
+                          : "bg-[#0F4C81] hover:bg-[#0F4C81]/90 text-white border-[#0F4C81]"
+                      }`}
+                    >
+                      {syncingAttachments ? (
+                        <>
+                          <Activity className="w-3.5 h-3.5 animate-spin" />
+                          <span>Syncing...</span>
+                        </>
+                      ) : (
+                        <>
+                          <FileSpreadsheet className="w-3.5 h-3.5" />
+                          <span>Sync to Google Sheet</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {attachments.map((file, index) => (
-                    <div key={index} className="bg-slate-50 border border-slate-200 rounded-2xl p-5 flex items-center justify-between shadow-sm">
-                      <div className="flex items-center gap-4">
-                        <div className="p-3 bg-[#0F4C81]/10 rounded-xl text-[#0F4C81]">
-                          <Folder className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <h4 className="font-extrabold text-slate-800 text-xs">{file.target}</h4>
-                          <p className="text-[10px] text-slate-400 font-bold uppercase mt-0.5">{file.category} • {file.date}</p>
-                        </div>
-                      </div>
-                      <a
-                        href={file.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1.5 px-4 py-2 border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-800 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all shadow-sm"
-                      >
-                        <ExternalLink className="w-3.5 h-3.5" />
-                        <span>Drive File</span>
-                      </a>
+                {/* Status Banners */}
+                {syncMessage && (
+                  <div className={`p-3.5 rounded-xl border flex items-center justify-between ${
+                    syncMessage.type === "success"
+                      ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+                      : "bg-rose-50 border-rose-200 text-rose-800"
+                  }`}>
+                    <div className="flex items-center gap-2.5">
+                      {syncMessage.type === "success" ? (
+                        <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                      ) : (
+                        <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                      )}
+                      <span className="text-[11px] font-bold">{syncMessage.text}</span>
                     </div>
-                  ))}
+                    <button onClick={() => setSyncMessage(null)} className="text-slate-400 hover:text-slate-600">
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-12 gap-6">
+                  {/* LEFT PANEL: Uploader & Form (col-span-5) */}
+                  <div className="col-span-5 bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-5 shadow-sm">
+                    <div>
+                      <h3 className="font-extrabold text-slate-800 text-xs uppercase tracking-wider">Upload & Import Center</h3>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase mt-0.5">Process files using Gemini multimodal engines</p>
+                    </div>
+
+                    {/* Mode Toggle Buttons */}
+                    <div className="grid grid-cols-3 gap-1 bg-slate-200/60 p-1 rounded-xl">
+                      <button
+                        onClick={() => { setImportMode("lab"); setUploadError(null); }}
+                        className={`py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all ${
+                          importMode === "lab"
+                            ? "bg-white text-[#0F4C81] shadow-sm"
+                            : "text-slate-600 hover:text-slate-800"
+                        }`}
+                      >
+                        Lab Report
+                      </button>
+                      <button
+                        onClick={() => { setImportMode("demographics"); setUploadError(null); }}
+                        className={`py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all ${
+                          importMode === "demographics"
+                            ? "bg-white text-[#0F4C81] shadow-sm"
+                            : "text-slate-600 hover:text-slate-800"
+                        }`}
+                      >
+                        Intake File
+                      </button>
+                      <button
+                        onClick={() => { setImportMode("manual"); setUploadError(null); }}
+                        className={`py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all ${
+                          importMode === "manual"
+                            ? "bg-white text-[#0F4C81] shadow-sm"
+                            : "text-slate-600 hover:text-slate-800"
+                        }`}
+                      >
+                        Manual Link
+                      </button>
+                    </div>
+
+                    {/* ERROR BOX */}
+                    {uploadError && (
+                      <div className="bg-rose-50 border border-rose-200 rounded-xl p-3 text-[10px] text-rose-800 font-bold flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          <AlertTriangle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                          <span>{uploadError}</span>
+                        </div>
+                        <button onClick={() => setUploadError(null)} className="text-rose-500 hover:text-rose-700">
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    )}
+
+                    {/* UPLOADER / MANUAL FORM */}
+                    {importMode !== "manual" ? (
+                      <div className="space-y-4">
+                        <div className="relative border-2 border-dashed border-slate-300 hover:border-slate-400 bg-white rounded-2xl p-6 transition-all text-center flex flex-col items-center justify-center min-h-[160px] group cursor-pointer">
+                          <input
+                            type="file"
+                            onChange={handleFileUpload}
+                            disabled={uploadingFile}
+                            accept=".pdf,image/png,image/jpeg,image/jpg,text/plain"
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                          />
+                          {uploadingFile ? (
+                            <div className="space-y-3 flex flex-col items-center">
+                              <Activity className="w-8 h-8 text-[#0F4C81] animate-spin" />
+                              <div className="space-y-1">
+                                <p className="text-[11px] font-extrabold text-[#0F4C81] uppercase tracking-wider animate-pulse">Gemini AI is transcribing...</p>
+                                <p className="text-[9px] text-slate-400 font-bold uppercase">Extracting structured clinical findings</p>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="space-y-2 flex flex-col items-center group-hover:scale-[1.02] transition-transform">
+                              <div className="p-3 bg-slate-100 rounded-2xl text-slate-50 group-hover:bg-[#0F4C81]/10 group-hover:text-[#0F4C81] transition-colors">
+                                <Sparkles className="w-6 h-6" />
+                              </div>
+                              <div>
+                                <p className="text-[11px] font-extrabold text-slate-700 uppercase tracking-wider">Drag & drop your file here</p>
+                                <p className="text-[9px] text-slate-400 font-bold uppercase mt-1">or click to browse files</p>
+                              </div>
+                              <p className="text-[8px] text-slate-400 font-semibold mt-2">Supports PDF, PNG, JPG, JPEG, TXT (Max 5MB)</p>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Extractions Preview Card */}
+                        {extractedDemographics && (
+                          <div className="bg-emerald-50/50 border border-emerald-200 rounded-2xl p-4 space-y-3.5 shadow-sm">
+                            <div className="flex items-center justify-between border-b border-emerald-100 pb-2">
+                              <div className="flex items-center gap-1.5">
+                                <Sparkles className="w-4 h-4 text-emerald-600" />
+                                <span className="font-extrabold text-emerald-800 text-[10px] uppercase tracking-wider">AI Extracted Demographics</span>
+                              </div>
+                              <span className="bg-emerald-100 text-emerald-800 text-[8px] font-black uppercase px-2 py-0.5 rounded-full">Intake Ready</span>
+                            </div>
+                            <div className="space-y-2 text-[10px] font-medium text-slate-600">
+                              <div className="grid grid-cols-12 gap-1.5 border-b border-slate-100 pb-1.5">
+                                <span className="col-span-4 font-bold uppercase text-slate-400">Name:</span>
+                                <span className="col-span-8 font-extrabold text-slate-800">{extractedDemographics.name || "N/A"}</span>
+                              </div>
+                              <div className="grid grid-cols-12 gap-1.5 border-b border-slate-100 pb-1.5">
+                                <span className="col-span-4 font-bold uppercase text-slate-400">Age / Sex:</span>
+                                <span className="col-span-8 font-extrabold text-slate-800">{extractedDemographics.age || "N/A"} / {extractedDemographics.gender || "N/A"}</span>
+                              </div>
+                              <div className="grid grid-cols-12 gap-1.5 border-b border-slate-100 pb-1.5">
+                                <span className="col-span-4 font-bold uppercase text-slate-400">Contact:</span>
+                                <span className="col-span-8 font-extrabold text-slate-800">{extractedDemographics.phone || "N/A"} | {extractedDemographics.email || "N/A"}</span>
+                              </div>
+                              <div className="grid grid-cols-12 gap-1.5 border-b border-slate-100 pb-1.5">
+                                <span className="col-span-4 font-bold uppercase text-slate-400">Location:</span>
+                                <span className="col-span-8 font-extrabold text-slate-800">{extractedDemographics.city || "N/A"}, {extractedDemographics.state || "N/A"}</span>
+                              </div>
+                              <div className="space-y-1">
+                                <span className="font-bold uppercase text-slate-400">Chief Complaint:</span>
+                                <p className="bg-white border border-slate-150 rounded-lg p-2 text-[9.5px] font-semibold text-slate-700 leading-normal">{extractedDemographics.complaint || "N/A"}</p>
+                              </div>
+                            </div>
+                            <button
+                              onClick={handleApplyDemographics}
+                              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow-sm"
+                            >
+                              <Check className="w-3.5 h-3.5" />
+                              <span>Apply to Case Sheet & Log</span>
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {/* Manual Attachment Form */}
+                        <div className="space-y-1.5">
+                          <label className="text-[9px] text-slate-400 font-extrabold uppercase tracking-wider">Attachment Title / Target</label>
+                          <input
+                            type="text"
+                            value={manualTitle}
+                            onChange={e => setManualTitle(e.target.value)}
+                            placeholder="e.g. Complete Thyroid Profile (T3, T4, TSH)"
+                            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-[#0F4C81]"
+                          />
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <label className="text-[9px] text-slate-400 font-extrabold uppercase tracking-wider">Investigation Category</label>
+                          <select
+                            value={manualCategory}
+                            onChange={e => setManualCategory(e.target.value)}
+                            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-[#0F4C81]"
+                          >
+                            <option value="Blood Test">Blood Test</option>
+                            <option value="Clinical Photo">Clinical Photo</option>
+                            <option value="Thyroid Report">Thyroid Report</option>
+                            <option value="GERD Scan">GERD Scan</option>
+                            <option value="Other Scan">Other Scan</option>
+                            <option value="Consultation Note">Consultation Note</option>
+                            <option value="Other">Other</option>
+                          </select>
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <label className="text-[9px] text-slate-400 font-extrabold uppercase tracking-wider">Google Drive Hyperlink</label>
+                          <input
+                            type="text"
+                            value={manualUrl}
+                            onChange={e => setManualUrl(e.target.value)}
+                            placeholder="https://drive.google.com/..."
+                            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-[#0F4C81]"
+                          />
+                        </div>
+
+                        <button
+                          onClick={handleAddManualAttachment}
+                          className="w-full bg-[#0F4C81] hover:bg-[#0F4C81]/90 text-white py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow-sm"
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                          <span>Add Attachment</span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* RIGHT PANEL: Attachments list (col-span-7) */}
+                  <div className="col-span-7 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-extrabold text-slate-800 text-xs uppercase tracking-wider">Clinical Investigation Log</h3>
+                      <span className="bg-slate-200 text-slate-700 text-[9px] font-black uppercase px-2 py-0.5 rounded-full">{attachments.length} files logged</span>
+                    </div>
+
+                    <div className="space-y-4 max-h-[500px] overflow-y-auto pr-1">
+                      {attachments.length === 0 ? (
+                        <div className="bg-slate-50 border border-slate-200 border-dashed rounded-2xl p-8 text-center flex flex-col items-center justify-center space-y-2">
+                          <Folder className="w-8 h-8 text-slate-350" />
+                          <p className="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">No clinical attachments logged</p>
+                          <p className="text-[9px] text-slate-400 font-bold uppercase">Use the Upload Center to log investigations</p>
+                        </div>
+                      ) : (
+                        attachments.map((file, index) => (
+                          <div key={index} className="bg-slate-50 border border-slate-200 rounded-2xl p-4.5 space-y-3 transition-all hover:shadow-md hover:border-slate-300">
+                            <div className="flex items-start justify-between">
+                              <div className="flex items-center gap-3.5">
+                                <div className="p-3 bg-[#0F4C81]/10 rounded-xl text-[#0F4C81]">
+                                  {file.category === "Clinical Photo" ? (
+                                    <Sparkles className="w-5 h-5 text-indigo-600" />
+                                  ) : file.category === "Blood Test" || file.category === "Thyroid Report" ? (
+                                    <Activity className="w-5 h-5 text-emerald-600" />
+                                  ) : (
+                                    <Folder className="w-5 h-5" />
+                                  )}
+                                </div>
+                                <div>
+                                  <h4 className="font-extrabold text-slate-800 text-xs leading-normal">{file.target}</h4>
+                                  <div className="flex items-center gap-2 mt-1">
+                                    <span className="text-[9px] bg-slate-200 text-slate-700 px-2 py-0.5 rounded-md font-bold uppercase tracking-wider">{file.category}</span>
+                                    <span className="text-[9px] text-slate-400 font-bold uppercase">{file.date}</span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center gap-2">
+                                <a
+                                  href={file.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="p-2 border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-800 rounded-xl transition-all shadow-sm"
+                                  title="View on Google Drive"
+                                >
+                                  <ExternalLink className="w-4 h-4" />
+                                </a>
+                                <button
+                                  onClick={() => handleDeleteAttachment(index)}
+                                  className="p-2 border border-rose-200 bg-white hover:bg-rose-50 text-rose-600 hover:text-rose-800 rounded-xl transition-all shadow-sm"
+                                  title="Delete attachment"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Collapsible AI Notes block */}
+                            {file.notes && (
+                              <div className="border-t border-slate-200/60 pt-2.5">
+                                <button
+                                  onClick={() => setExpandedNotesIndex(expandedNotesIndex === index ? null : index)}
+                                  className="flex items-center gap-1.5 text-slate-500 hover:text-slate-700 text-[10px] font-black uppercase tracking-wider transition-all"
+                                >
+                                  {expandedNotesIndex === index ? (
+                                    <>
+                                      <ChevronDown className="w-3.5 h-3.5 text-teal-600" />
+                                      <span className="text-teal-600 font-extrabold">Hide Transcribed AI Notes</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <ChevronRight className="w-3.5 h-3.5" />
+                                      <span>View Transcribed AI Notes</span>
+                                    </>
+                                  )}
+                                </button>
+
+                                {expandedNotesIndex === index && (
+                                  <div className="mt-2.5 bg-slate-100/70 border border-slate-200/50 rounded-xl p-3 text-[10.5px] font-mono text-slate-600 whitespace-pre-wrap leading-relaxed select-all">
+                                    {file.notes}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -3339,45 +3943,268 @@ function MockSheetContent() {
             {/* ---------------------------------------------------- */}
             {activeTab === "Config DB" && (
               <div className="bg-white min-w-[1050px] p-6 space-y-6">
-                <div className="border-b border-slate-150 pb-4">
-                  <h2 className="text-sm font-black text-[#0F4C81] uppercase tracking-wider">Dropdown Configurations & Schema reference</h2>
+                {/* Header */}
+                <div className="border-b border-slate-150 pb-4 flex items-center justify-between">
+                  <div>
+                    <h2 className="text-sm font-black text-[#0F4C81] uppercase tracking-wider">Reference Metadata Database (Config DB)</h2>
+                    <p className="text-[10px] text-slate-500 font-bold uppercase mt-1">Configure dropdown validation options and treatment packages. Updates are synced to range 'Config DB'!A3:F100 in Google Sheets.</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleSyncConfig(configDb)}
+                      disabled={syncingConfig}
+                      className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-wider transition-all shadow-sm border ${
+                        syncingConfig
+                          ? "bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed"
+                          : "bg-[#0F4C81] hover:bg-[#0F4C81]/90 text-white border-[#0F4C81]"
+                      }`}
+                    >
+                      {syncingConfig ? (
+                        <>
+                          <Activity className="w-3.5 h-3.5 animate-spin" />
+                          <span>Syncing...</span>
+                        </>
+                      ) : (
+                        <>
+                          <FileSpreadsheet className="w-3.5 h-3.5" />
+                          <span>Sync to Google Sheet</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
-                <div className="grid grid-cols-4 gap-6 text-[11px]">
-                  <div className="space-y-2">
-                    <h4 className="font-black text-slate-700 uppercase tracking-widest border-b border-slate-200 pb-1.5">Materia Medica List</h4>
-                    <ul className="space-y-1 font-semibold text-slate-500">
-                      <li>Nux Vomica (Nux-v)</li>
-                      <li>Arsenicum Album (Ars)</li>
-                      <li>Lycopodium Clavatum (Lyc)</li>
-                      <li>Pulsatilla Pratensis (Puls)</li>
-                      <li>Sulphur (Sulph)</li>
-                    </ul>
+
+                {/* Status Banners */}
+                {configSyncMessage && (
+                  <div className={`p-3.5 rounded-xl border flex items-center justify-between ${
+                    configSyncMessage.type === "success"
+                      ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+                      : "bg-rose-50 border-rose-200 text-rose-800"
+                  }`}>
+                    <div className="flex items-center gap-2.5">
+                      {configSyncMessage.type === "success" ? (
+                        <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                      ) : (
+                        <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                      )}
+                      <span className="text-[11px] font-bold">{configSyncMessage.text}</span>
+                    </div>
+                    <button onClick={() => setConfigSyncMessage(null)} className="text-slate-400 hover:text-slate-600">
+                      <X className="w-3.5 h-3.5" />
+                    </button>
                   </div>
-                  <div className="space-y-2">
-                    <h4 className="font-black text-slate-700 uppercase tracking-widest border-b border-slate-200 pb-1.5">Potency options</h4>
-                    <ul className="space-y-1 font-semibold text-slate-500">
-                      <li>6C, 30C, 200C, 1M, 10M</li>
-                      <li>Q (Mother Tincture)</li>
-                      <li>LM1, LM2, LM5, LM30 (50-Millesimal)</li>
-                    </ul>
+                )}
+
+                {/* 5-Column Grid Layout */}
+                <div className="grid grid-cols-5 gap-4">
+                  {/* Column 1: Materia Medica */}
+                  <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col justify-between min-h-[400px] shadow-sm">
+                    <div className="space-y-3.5">
+                      <div className="border-b border-slate-200 pb-2">
+                        <h4 className="font-extrabold text-[#0F4C81] text-xs uppercase tracking-wider">Materia Medica</h4>
+                        <p className="text-[9px] text-slate-400 font-bold uppercase mt-0.5">{configDb.remedies.length} Remedies</p>
+                      </div>
+                      <div className="space-y-1.5 max-h-[260px] overflow-y-auto pr-1">
+                        {configDb.remedies.map((remedy, index) => (
+                          <div key={index} className="flex items-center justify-between bg-white border border-slate-150 rounded-xl px-3 py-1.5 hover:shadow-sm group transition-all">
+                            <span className="text-[11px] font-bold text-slate-700">{remedy}</span>
+                            <button
+                              onClick={() => handleRemoveConfigItem("remedies", index)}
+                              className="text-slate-355 hover:text-rose-600 opacity-0 group-hover:opacity-100 transition-all"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="pt-3 border-t border-slate-250 flex items-center gap-1.5 mt-4">
+                      <input
+                        type="text"
+                        placeholder="Add Remedy..."
+                        value={newRemedyInput}
+                        onChange={e => setNewRemedyInput(e.target.value)}
+                        onKeyDown={e => e.key === "Enter" && handleAddConfigItem("remedies")}
+                        className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-[10.5px] font-bold text-slate-700 focus:outline-none focus:border-[#0F4C81]"
+                      />
+                      <button
+                        onClick={() => handleAddConfigItem("remedies")}
+                        className="p-2 bg-[#0F4C81] hover:bg-[#0F4C81]/90 text-white rounded-xl transition-all shadow-sm shrink-0"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <h4 className="font-black text-slate-700 uppercase tracking-widest border-b border-slate-200 pb-1.5">Miasm tags</h4>
-                    <ul className="space-y-1 font-semibold text-slate-500">
-                      <li>[Psora]</li>
-                      <li>[Sycosis]</li>
-                      <li>[Syphilis]</li>
-                      <li>[Tubercular]</li>
-                      <li>[Cancerinic]</li>
-                    </ul>
+
+                  {/* Column 2: Potencies */}
+                  <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col justify-between min-h-[400px] shadow-sm">
+                    <div className="space-y-3.5">
+                      <div className="border-b border-slate-200 pb-2">
+                        <h4 className="font-extrabold text-[#0F4C81] text-xs uppercase tracking-wider">Potency Options</h4>
+                        <p className="text-[9px] text-slate-400 font-bold uppercase mt-0.5">{configDb.potencies.length} Scales</p>
+                      </div>
+                      <div className="space-y-1.5 max-h-[260px] overflow-y-auto pr-1">
+                        {configDb.potencies.map((potency, index) => (
+                          <div key={index} className="flex items-center justify-between bg-white border border-slate-150 rounded-xl px-3 py-1.5 hover:shadow-sm group transition-all">
+                            <span className="text-[11px] font-bold text-slate-700">{potency}</span>
+                            <button
+                              onClick={() => handleRemoveConfigItem("potencies", index)}
+                              className="text-slate-355 hover:text-rose-600 opacity-0 group-hover:opacity-100 transition-all"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="pt-3 border-t border-slate-250 flex items-center gap-1.5 mt-4">
+                      <input
+                        type="text"
+                        placeholder="Add Potency..."
+                        value={newPotencyInput}
+                        onChange={e => setNewPotencyInput(e.target.value)}
+                        onKeyDown={e => e.key === "Enter" && handleAddConfigItem("potencies")}
+                        className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-[10.5px] font-bold text-slate-700 focus:outline-none focus:border-[#0F4C81]"
+                      />
+                      <button
+                        onClick={() => handleAddConfigItem("potencies")}
+                        className="p-2 bg-[#0F4C81] hover:bg-[#0F4C81]/90 text-white rounded-xl transition-all shadow-sm shrink-0"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <h4 className="font-black text-slate-700 uppercase tracking-widest border-b border-slate-200 pb-1.5">Clinic locations</h4>
-                    <ul className="space-y-1 font-semibold text-slate-500">
-                      <li>Baner Clinic, Pune</li>
-                      <li>Koregaon Park Clinic, Pune</li>
-                      <li>Mumbai OPD</li>
-                    </ul>
+
+                  {/* Column 3: Miasms */}
+                  <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col justify-between min-h-[400px] shadow-sm">
+                    <div className="space-y-3.5">
+                      <div className="border-b border-slate-200 pb-2">
+                        <h4 className="font-extrabold text-[#0F4C81] text-xs uppercase tracking-wider">Miasm Tags</h4>
+                        <p className="text-[9px] text-slate-400 font-bold uppercase mt-0.5">{configDb.miasms.length} Miasms</p>
+                      </div>
+                      <div className="space-y-1.5 max-h-[260px] overflow-y-auto pr-1">
+                        {configDb.miasms.map((miasm, index) => (
+                          <div key={index} className="flex items-center justify-between bg-white border border-slate-150 rounded-xl px-3 py-1.5 hover:shadow-sm group transition-all">
+                            <span className="text-[11px] font-bold text-slate-700">{miasm}</span>
+                            <button
+                              onClick={() => handleRemoveConfigItem("miasms", index)}
+                              className="text-slate-355 hover:text-rose-600 opacity-0 group-hover:opacity-100 transition-all"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="pt-3 border-t border-slate-250 flex items-center gap-1.5 mt-4">
+                      <input
+                        type="text"
+                        placeholder="Add Miasm..."
+                        value={newMiasmInput}
+                        onChange={e => setNewMiasmInput(e.target.value)}
+                        onKeyDown={e => e.key === "Enter" && handleAddConfigItem("miasms")}
+                        className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-[10.5px] font-bold text-slate-700 focus:outline-none focus:border-[#0F4C81]"
+                      />
+                      <button
+                        onClick={() => handleAddConfigItem("miasms")}
+                        className="p-2 bg-[#0F4C81] hover:bg-[#0F4C81]/90 text-white rounded-xl transition-all shadow-sm shrink-0"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Column 4: Locations */}
+                  <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col justify-between min-h-[400px] shadow-sm">
+                    <div className="space-y-3.5">
+                      <div className="border-b border-slate-200 pb-2">
+                        <h4 className="font-extrabold text-[#0F4C81] text-xs uppercase tracking-wider">Clinic Branches</h4>
+                        <p className="text-[9px] text-slate-400 font-bold uppercase mt-0.5">{configDb.locations.length} OPDs</p>
+                      </div>
+                      <div className="space-y-1.5 max-h-[260px] overflow-y-auto pr-1">
+                        {configDb.locations.map((loc, index) => (
+                          <div key={index} className="flex items-center justify-between bg-white border border-slate-150 rounded-xl px-3 py-1.5 hover:shadow-sm group transition-all">
+                            <span className="text-[11px] font-bold text-slate-700 break-words max-w-[85%]">{loc}</span>
+                            <button
+                              onClick={() => handleRemoveConfigItem("locations", index)}
+                              className="text-slate-355 hover:text-rose-600 opacity-0 group-hover:opacity-100 transition-all shrink-0"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="pt-3 border-t border-slate-250 flex items-center gap-1.5 mt-4">
+                      <input
+                        type="text"
+                        placeholder="Add OPD..."
+                        value={newLocationInput}
+                        onChange={e => setNewLocationInput(e.target.value)}
+                        onKeyDown={e => e.key === "Enter" && handleAddConfigItem("locations")}
+                        className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-[10.5px] font-bold text-slate-700 focus:outline-none focus:border-[#0F4C81]"
+                      />
+                      <button
+                        onClick={() => handleAddConfigItem("locations")}
+                        className="p-2 bg-[#0F4C81] hover:bg-[#0F4C81]/90 text-white rounded-xl transition-all shadow-sm shrink-0"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Column 5: Packages & Pricing */}
+                  <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col justify-between min-h-[400px] shadow-sm">
+                    <div className="space-y-3.5">
+                      <div className="border-b border-slate-200 pb-2">
+                        <h4 className="font-extrabold text-[#0F4C81] text-xs uppercase tracking-wider">Packages & Pricing</h4>
+                        <p className="text-[9px] text-slate-400 font-bold uppercase mt-0.5">{configDb.packages.length} Tiers</p>
+                      </div>
+                      <div className="space-y-1.5 max-h-[240px] overflow-y-auto pr-1">
+                        {configDb.packages.map((pkg, index) => (
+                          <div key={index} className="bg-white border border-slate-150 rounded-xl p-2.5 hover:shadow-sm group transition-all space-y-1">
+                            <div className="flex items-center justify-between">
+                              <span className="text-[11px] font-black text-slate-800">{pkg.name}</span>
+                              <button
+                                onClick={() => handleRemovePackageConfig(index)}
+                                className="text-slate-355 hover:text-rose-600 opacity-0 group-hover:opacity-100 transition-all shrink-0"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                            <div className="flex items-center text-[#0F4C81] gap-0.5">
+                              <span className="text-[9px] font-bold uppercase tracking-wider">Standard Rate:</span>
+                              <span className="text-[10px] font-black font-mono">₹{pkg.price.toLocaleString("en-IN")}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="pt-3 border-t border-slate-250 space-y-2 mt-4">
+                      <input
+                        type="text"
+                        placeholder="Package Name..."
+                        value={newPackageNameInput}
+                        onChange={e => setNewPackageNameInput(e.target.value)}
+                        className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-[10.5px] font-bold text-slate-700 focus:outline-none focus:border-[#0F4C81]"
+                      />
+                      <div className="flex items-center gap-1.5">
+                        <input
+                          type="text"
+                          placeholder="Price (₹)..."
+                          value={newPackagePriceInput}
+                          onChange={e => setNewPackagePriceInput(e.target.value)}
+                          onKeyDown={e => e.key === "Enter" && handleAddPackageConfig()}
+                          className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-[10.5px] font-bold text-[#0F4C81] focus:outline-none focus:border-[#0F4C81]"
+                        />
+                        <button
+                          onClick={handleAddPackageConfig}
+                          className="p-2 bg-[#0F4C81] hover:bg-[#0F4C81]/90 text-white rounded-xl transition-all shadow-sm shrink-0"
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
