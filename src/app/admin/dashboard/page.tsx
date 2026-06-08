@@ -4456,6 +4456,8 @@ ${err.message || err}`);
     }
   };
 
+  const [isSyncingRepertory, setIsSyncingRepertory] = useState(false);
+
   const handleSendRubricsToSheet = () => {
     const activePatient = selectedPatientId ? patients.find((p) => p.id === selectedPatientId) : null;
     if (!activePatient) {
@@ -4463,26 +4465,83 @@ ${err.message || err}`);
       return;
     }
     
-    const rubricsToExport = repertoryWorkbenchMode === "jethwani" 
+    const remedies = ["Nux-v", "Lyc", "Ars", "Puls", "Sulph", "Rhus-t", "Calc", "Sil", "Nat-m", "Ign", "Sep"];
+
+    const rubricsPayload = repertoryWorkbenchMode === "jethwani"
       ? selectedJethwaniRubrics.map(s => {
           const r = JETHWANI_REPERTORY_DATA.find(item => item.id === s.rubricId);
           const weight = s.severity >= 7 ? 3 : s.severity >= 4 ? 2 : 1;
-          return { chapter: r ? r.section : "Section A", name: r ? r.name : "Unknown clinical symptom", weight };
+          const grades: Record<string, number> = {};
+          remedies.forEach(rem => {
+            grades[rem] = r?.remedies[rem] || 0;
+          });
+          return {
+            name: r ? r.name : s.rubricId,
+            chapter: r ? JETHWANI_SECTIONS[r.section]?.name || r.section : "Clinical Modifier",
+            source: "Jethwani",
+            weight,
+            grades
+          };
         })
-      : selectedRubrics.map(r => ({ chapter: r.rubric.chapter, name: r.rubric.name, weight: r.weightMultiplier || 1 }));
+      : selectedRubrics.map(r => {
+          const grades: Record<string, number> = {};
+          remedies.forEach(rem => {
+            grades[rem] = r.rubric.remedies[rem] || 0;
+          });
+          return {
+            name: r.rubric.name,
+            chapter: r.rubric.chapter,
+            source: r.rubric.source || "Kent",
+            weight: r.weightMultiplier || 1,
+            grades
+          };
+        });
       
-    if (rubricsToExport.length === 0) {
+    if (rubricsPayload.length === 0) {
       alert("Please select at least one symptom rubric to send.");
       return;
     }
     
-    const rubricsParam = rubricsToExport.map(r => {
+    const hasRealSheet = activePatient.sheetUrl && 
+                         activePatient.sheetUrl.startsWith("https://") && 
+                         activePatient.sheetUrl.includes("google.com/spreadsheets");
+
+    if (hasRealSheet) {
+      setIsSyncingRepertory(true);
+      fetch("/api/export-repertory", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          patientId: activePatient.id,
+          rubrics: rubricsPayload
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          alert("Selected rubrics synchronized directly to your actual Google Sheet Repertorization matrix!");
+          window.open(activePatient.sheetUrl, "_blank");
+        } else {
+          alert(`Sync failed: ${data.message || "Unknown error"}`);
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        alert(`Error syncing rubrics to sheet: ${err.message || err}`);
+      })
+      .finally(() => {
+        setIsSyncingRepertory(false);
+      });
+      return;
+    }
+
+    // Fallback: Build mock sheet URL populated with patient parameters
+    const rubricsParam = rubricsPayload.map(r => {
       return `${r.chapter}:${r.name}:${r.weight}`;
     }).join("|");
     
     let baseUrl = activePatient.sheetUrl || "/admin/mock-sheet";
     if (baseUrl.includes("google.com/spreadsheets") || !baseUrl.startsWith("/admin/mock-sheet")) {
-      // Build mock sheet URL populated with patient parameters
       baseUrl = `/admin/mock-sheet?name=${encodeURIComponent(activePatient.name)}` +
         `&id=${encodeURIComponent(activePatient.id)}` +
         `&age=${encodeURIComponent(activePatient.age)}` +
@@ -10682,11 +10741,12 @@ ${err.message || err}`);
                           {/* Send to Sheet */}
                           <button
                             onClick={handleSendRubricsToSheet}
-                            className="px-3 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-white rounded-xl text-[10px] font-bold uppercase transition-all duration-300 cursor-pointer shadow-md flex items-center gap-1.5"
+                            disabled={isSyncingRepertory}
+                            className="px-3 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-white rounded-xl text-[10px] font-bold uppercase transition-all duration-300 cursor-pointer shadow-md flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
                             title="Send selected rubrics directly to the patient's Clinical Sheet"
                           >
                             <FileSpreadsheet className="w-3.5 h-3.5" />
-                            <span>Send to Sheet</span>
+                            <span>{isSyncingRepertory ? "Syncing..." : "Send to Sheet"}</span>
                           </button>
                           {/* Live Filter */}
                           <input
@@ -12604,11 +12664,12 @@ ${err.message || err}`);
                       {selectedJethwaniRubrics.length > 0 && (
                         <button
                           onClick={handleSendRubricsToSheet}
-                          className="px-2.5 py-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-white rounded-lg text-[9px] font-bold uppercase transition-all duration-300 cursor-pointer shadow flex items-center gap-1"
+                          disabled={isSyncingRepertory}
+                          className="px-2.5 py-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-white rounded-lg text-[9px] font-bold uppercase transition-all duration-300 cursor-pointer shadow flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
                           title="Send clinical rubrics directly to the patient's Clinical Sheet"
                         >
                           <FileSpreadsheet className="w-3.5 h-3.5" />
-                          <span>Send to Sheet</span>
+                          <span>{isSyncingRepertory ? "Syncing..." : "Send to Sheet"}</span>
                         </button>
                       )}
                     </div>

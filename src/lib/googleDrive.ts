@@ -317,14 +317,11 @@ export async function createPatientClinicalSheet(
           ["", "", "", "", "", "", "", ""],
           ["PATIENT DEMOGRAPHICS", "", "", "ACTIVE TREATMENT", "", "", "OUTCOMES & LEDGER", ""],
           ["Patient ID", data.id, "", "Diagnosis", "='Case Taking'!B38", "", "Progress Score (%)", "=IFERROR(INDEX('Follow-Up Tracker'!C:C, MATCH(9.99999999999999E+307, 'Follow-Up Tracker'!A:A)), \"0%\")"],
-          ["Patient Name", data.name, "", "Current Remedy", "='Case Taking'!B47", "", "Balance Due (₹)", "='Finance'!C4"],
+          ["Full Name", data.name, "", "Active Remedy", "='Case Taking'!B47 & \" \" & 'Case Taking'!B48", "", "Balance Due (₹)", "='Finance'!C4"],
           ["Age / Gender", `${data.age} / ${data.gender}`, "", "Last Visit Date", "=IFERROR(MAX('Follow-Up Tracker'!A4:A), \"N/A\")", "", "Top Totality Remedy", "='Repertorization'!B16 & \" (\" & 'Repertorization'!D16 & \" pts)\""],
-          ["Contact Phone", data.phone, "", "Next Scheduled Review", "=IFERROR(INDEX('Follow-Up Tracker'!H:H, MATCH(9.99999999999999E+307, 'Follow-Up Tracker'!A:A)), \"Not Scheduled\")", "", "Miasmatic Summary", "=IFERROR('AI Repertory Lab'!B4, \"Psora\")"],
-          ["Email Address", data.email || "N/A", "", "Consulting Doctor", "Dr. Narayan Jethwani", "", "Psora Count", "='Case Taking'!B41"],
-          ["Location / Address", locationVal, "", "Clinic Branch", "Baner Clinic, Pune", "", "Sycosis Count", "='Case Taking'!B42"],
-          ["", "", "", "", "", "", "Syphilis Count", "='Case Taking'!B43"],
-          ["", "", "", "", "", "", "Tubercular Count", "='Case Taking'!B44"],
-          ["", "", "", "", "", "", "Cancerinic Count", "='Case Taking'!B45"]
+          ["Blood Group", "O+ Pos", "", "Next Review", "=IFERROR(INDEX('Follow-Up Tracker'!G:G, MATCH(9.99999999999999E+307, 'Follow-Up Tracker'!A:A)), \"Not Scheduled\")", "", "Miasmatic Summary", "=IFERROR('AI Repertory Lab'!B4, \"Psora\")"],
+          ["Clinic Branch", "Baner Clinic", "", "Consulting Doctor", "Dr. Narayan Jethwani", "", "Primary Doctor", "Dr. Narayan Jethwani"],
+          ["Patient Status", data.careLevel.toLowerCase().includes("acute") ? "Acute" : "Chronic", "", "Clinic Branch", "Baner Clinic, Pune", "", "Account Status", "=IF('Finance'!E4<=0, \"Paid\", \"Balance Pending\")"]
         ];
 
         // values for Case Taking
@@ -405,10 +402,10 @@ export async function createPatientClinicalSheet(
 
         // values for Follow-Up Tracker
         const followUpValues = [
-          ["CLINICAL FOLLOW-UP TRACKER", "", "", "", "", "", "", ""],
-          ["", "", "", "", "", "", "", ""],
-          ["Date", "Symptoms & Patient Report", "Improvement %", "Remedy Prescribed", "Potency", "Prescribing Method", "Assessment & Pathology", "Next Follow-up"],
-          [today, "Case initialized. Demographics and baseline complaint registered.", 0, "Nux Vomica", "30C", `=ARRAYFORMULA(IF(ISBLANK(A4:A), "", IF(ISBLANK(D4:D), "No Remedy", IF(ISNUMBER(SEARCH(",", D4:D)), "Complex Method", "Classical Method"))))`, "Baseline status. Patient is very chilly with severe post-meal burning.", "2 weeks later"]
+          ["CLINICAL FOLLOW-UP TRACKER", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", ""],
+          ["Date", "Symptoms & Patient Report (Db-Click)", "Improvement %", "Remedy (Click to edit)", "Potency / Dose", "Assessment / Notes (Db-Click)", "Next Follow-up"],
+          [today, "Case initialized. Demographics and baseline complaint registered.", 0, "Nux Vomica (DIL)", "30C (BD)", "Baseline status. Patient is very chilly with severe post-meal burning.", "2 weeks later"]
         ];
 
         // values for Repertorization
@@ -472,7 +469,7 @@ export async function createPatientClinicalSheet(
 
         // values for AI Repertory Lab
         const aiRepertoryValues = [
-          ["AI REPERTORY LAB & NEURAL TOTALITY MATCHING MATRIX", "", "", "", "", "", "", ""],
+          ["AI REPERTORY LAB & NEURAL TOTALITY MATCHING MATRIX", "", "", "", "CLINICAL DIAGNOSTIC SYNTHESIS VERDICT", "", "", ""],
           ["", "", "", "", "", "", "", ""],
           ["SPREADSHEET REPERTORY PAYLOAD & MIASM VECTORS", "", "", "", "CLINICAL DIAGNOSTIC SYNTHESIS VERDICT", "", "", ""],
           ["Dominant Miasm", `=IF('Case Taking'!B42>MAX('Case Taking'!B41,'Case Taking'!B43,'Case Taking'!B44,'Case Taking'!B45),"Sycosis",IF('Case Taking'!B41>MAX('Case Taking'!B42,'Case Taking'!B43,'Case Taking'!B44,'Case Taking'!B45),"Psora",IF('Case Taking'!B43>MAX('Case Taking'!B41,'Case Taking'!B42,'Case Taking'!B44,'Case Taking'!B45),"Syphilis",IF('Case Taking'!B44>MAX('Case Taking'!B41,'Case Taking'!B42,'Case Taking'!B43,'Case Taking'!B45),"Tubercular","Cancerinic"))))`, "", "", "AI Constitutional Justification & Totality Synthesis Report", "", "", ""],
@@ -480,12 +477,7 @@ export async function createPatientClinicalSheet(
           ["Sycosis Count", "='Case Taking'!B42", "", "", "", "", "", ""],
           ["Syphilis Count", "='Case Taking'!B43", "", "", "", "", "", ""],
           ["Tubercular Count", "='Case Taking'!B44", "", "", "", "", "", ""],
-          ["Cancerinic Count", "='Case Taking'!B45", "", "", "", "", "", ""],
-          ["", "", "", "", "", "", "", ""],
-          ["TOP REMEDY RANKINGS FROM SPREADSHEET MATRIX", "", "", "", "MATERIA MEDICA KEYNOTE VERIFICATIONS", "", "", ""],
-          ["Rank 1 Remedy", "='Repertorization'!B16", "Score", "='Repertorization'!D16", "Nux Vomica:", "Chilly, irritable, stomach complaints worse after eating.", "", ""],
-          ["Rank 2 Remedy", "='Repertorization'!B17", "Score", "='Repertorization'!D17", "Arsenicum Album:", "Great anxiety, restlessness, chilly, worse at midnight.", "", ""],
-          ["Rank 3 Remedy", "='Repertorization'!B18", "Score", "='Repertorization'!D18", "Lycopodium Clavatum:", "Right-sided, flatulence, gas, warm food cravings.", "", ""]
+          ["Cancerinic Count", "='Case Taking'!B45", "", "", "", "", "", ""]
         ];
 
         // values for Reports & Attachments
@@ -521,9 +513,9 @@ export async function createPatientClinicalSheet(
           requestBody: {
             valueInputOption: "USER_ENTERED",
             data: [
-              { range: "'Dashboard'!A1:H12", values: dashboardValues },
+              { range: "'Dashboard'!A1:H9", values: dashboardValues },
               { range: "'Case Taking'!A1:D55", values: caseTakingValues },
-              { range: "'Follow-Up Tracker'!A1:H4", values: followUpValues },
+              { range: "'Follow-Up Tracker'!A1:G4", values: followUpValues },
               { range: "'Repertorization'!A1:P18", values: repertoryValues },
               { range: "'Treatment Planner'!A1:G21", values: plannerValues },
               { range: "'Finance'!A1:H10", values: financeValues },
@@ -539,6 +531,8 @@ export async function createPatientClinicalSheet(
 
         // Formatting for Dashboard (sheetId = Dashboard)
         const dashId = sheetsMap["Dashboard"] || 0;
+        const caseTakingId = sheetsMap["Case Taking"];
+        const followUpId = sheetsMap["Follow-Up Tracker"];
         requests.push(
           // Hide gridlines
           {
@@ -632,7 +626,7 @@ export async function createPatientClinicalSheet(
               range: { sheetId: dashId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 8 },
               cell: {
                 userEnteredFormat: {
-                  backgroundColor: { red: 15/255, green: 76/255, blue: 129/255 }, // Medical Blue #0F4C81
+                  backgroundColor: { red: 15/255, green: 118/255, blue: 110/255 }, // Brand Teal #0F766E
                   textFormat: { foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 13, bold: true },
                   horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                 }
@@ -666,7 +660,7 @@ export async function createPatientClinicalSheet(
               cell: {
                 userEnteredFormat: {
                   backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 }, // Slate-200 #E2E8F0
-                  textFormat: { foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 }, fontSize: 10, bold: true },
+                  textFormat: { foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 }, fontSize: 10, bold: true }, // Brand Teal #0F766E
                   horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                 }
               },
@@ -729,10 +723,10 @@ export async function createPatientClinicalSheet(
               fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
             }
           },
-          // Card 3 Keys (Col G, rows 4-12)
+          // Card 3 Keys (Col G, rows 4-9)
           {
             repeatCell: {
-              range: { sheetId: dashId, startRowIndex: 3, endRowIndex: 12, startColumnIndex: 6, endColumnIndex: 7 },
+              range: { sheetId: dashId, startRowIndex: 3, endRowIndex: 9, startColumnIndex: 6, endColumnIndex: 7 },
               cell: {
                 userEnteredFormat: {
                   backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
@@ -743,10 +737,10 @@ export async function createPatientClinicalSheet(
               fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
             }
           },
-          // Card 3 Values (Col H, rows 4-12)
+          // Card 3 Values (Col H, rows 4-9)
           {
             repeatCell: {
-              range: { sheetId: dashId, startRowIndex: 3, endRowIndex: 12, startColumnIndex: 7, endColumnIndex: 8 },
+              range: { sheetId: dashId, startRowIndex: 3, endRowIndex: 9, startColumnIndex: 7, endColumnIndex: 8 },
               cell: {
                 userEnteredFormat: {
                   backgroundColor: { red: 1, green: 1, blue: 1 },
@@ -757,7 +751,7 @@ export async function createPatientClinicalSheet(
               fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
             }
           },
-          // Card Borders (Card 1: A3:B9, Card 2: D3:E9, Card 3: G3:H12)
+          // Card Borders (Card 1: A3:B9, Card 2: D3:E9, Card 3: G3:H9)
           {
             updateBorders: {
               range: { sheetId: dashId, startRowIndex: 2, endRowIndex: 9, startColumnIndex: 0, endColumnIndex: 2 },
@@ -778,7 +772,7 @@ export async function createPatientClinicalSheet(
           },
           {
             updateBorders: {
-              range: { sheetId: dashId, startRowIndex: 2, endRowIndex: 12, startColumnIndex: 6, endColumnIndex: 8 },
+              range: { sheetId: dashId, startRowIndex: 2, endRowIndex: 9, startColumnIndex: 6, endColumnIndex: 8 },
               top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
               bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
               left: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
@@ -813,6 +807,7 @@ export async function createPatientClinicalSheet(
               fields: "userEnteredFormat(numberFormat,textFormat(bold,foregroundColor))"
             }
           },
+          // Currency formatting for H5 (Balance Due) - colors set via conditional formatting below
           {
             repeatCell: {
               range: {
@@ -827,16 +822,67 @@ export async function createPatientClinicalSheet(
                   numberFormat: {
                     type: "CURRENCY",
                     pattern: "\"₹\"#,##0"
-                  },
-                  textFormat: {
-                    bold: true,
-                    foregroundColor: { red: 46/255, green: 139/255, blue: 87/255 } // SeaGreen
                   }
                 }
               },
-              fields: "userEnteredFormat(numberFormat,textFormat(bold,foregroundColor))"
+              fields: "userEnteredFormat(numberFormat)"
             }
           },
+          // Balance Due H5 conditional formatting (green if <= 0, red if > 0)
+          {
+            addConditionalFormatRule: {
+              rule: {
+                ranges: [
+                  { sheetId: dashId, startRowIndex: 4, endRowIndex: 5, startColumnIndex: 7, endColumnIndex: 8 }
+                ],
+                booleanRule: {
+                  condition: { type: "NUMBER_GREATER", values: [{ userEnteredValue: "0" }] },
+                  format: {
+                    textFormat: { foregroundColor: { red: 225/255, green: 29/255, blue: 72/255 }, bold: true } // rose-600
+                  }
+                }
+              },
+              index: 0
+            }
+          },
+          {
+            addConditionalFormatRule: {
+              rule: {
+                ranges: [
+                  { sheetId: dashId, startRowIndex: 4, endRowIndex: 5, startColumnIndex: 7, endColumnIndex: 8 }
+                ],
+                booleanRule: {
+                  condition: { type: "NUMBER_LESS_THAN_OR_EQUAL", values: [{ userEnteredValue: "0" }] },
+                  format: {
+                    textFormat: { foregroundColor: { red: 4/255, green: 120/255, blue: 87/255 }, bold: true } // emerald-700
+                  }
+                }
+              },
+              index: 1
+            }
+          },
+          // Format E5 (Active Remedy) in bold emerald green
+          {
+            repeatCell: {
+              range: {
+                sheetId: dashId,
+                startRowIndex: 4,
+                endRowIndex: 5,
+                startColumnIndex: 4,
+                endColumnIndex: 5
+              },
+              cell: {
+                userEnteredFormat: {
+                  textFormat: {
+                    bold: true,
+                    foregroundColor: { red: 4/255, green: 120/255, blue: 87/255 } // emerald-700
+                  }
+                }
+              },
+              fields: "userEnteredFormat.textFormat(bold,foregroundColor)"
+            }
+          },
+          // Format E6 (Last Visit Date)
           {
             repeatCell: {
               range: {
@@ -874,11 +920,11 @@ export async function createPatientClinicalSheet(
                         sourceRange: {
                           sources: [
                             {
-                              sheetId: dashId,
-                              startRowIndex: 7, // Row 8
-                              endRowIndex: 12,  // Row 12
-                              startColumnIndex: 6, // Column G (Psora Count, Sycosis Count, etc.)
-                              endColumnIndex: 7
+                              sheetId: caseTakingId,
+                              startRowIndex: 42, // Row 43 (Psora Count)
+                              endRowIndex: 47,  // Row 47 (Cancerinic Count)
+                              startColumnIndex: 0, // Column A (labels)
+                              endColumnIndex: 1
                             }
                           ]
                         }
@@ -891,11 +937,11 @@ export async function createPatientClinicalSheet(
                         sourceRange: {
                           sources: [
                             {
-                              sheetId: dashId,
-                              startRowIndex: 7, // Row 8
-                              endRowIndex: 12,  // Row 12
-                              startColumnIndex: 7, // Column H (the scores)
-                              endColumnIndex: 8
+                              sheetId: caseTakingId,
+                              startRowIndex: 42, // Row 43
+                              endRowIndex: 47,  // Row 47
+                              startColumnIndex: 1, // Column B (scores)
+                              endColumnIndex: 2
                             }
                           ]
                         }
@@ -909,7 +955,7 @@ export async function createPatientClinicalSheet(
                 overlayPosition: {
                   anchorCell: {
                     sheetId: dashId,
-                    rowIndex: 14, // Row 15
+                    rowIndex: 10, // Row 11 (starting compact layout below cards ending at Row 9)
                     columnIndex: 0 // Column A
                   },
                   offsetXPixels: 10,
@@ -923,7 +969,6 @@ export async function createPatientClinicalSheet(
         });
 
         // Add Symptom Severity & Improvement Trend LINE Chart to Dashboard
-        const followUpId = sheetsMap["Follow-Up Tracker"];
         if (followUpId !== undefined) {
           requests.push({
             addChart: {
@@ -974,7 +1019,7 @@ export async function createPatientClinicalSheet(
                   overlayPosition: {
                     anchorCell: {
                       sheetId: dashId,
-                      rowIndex: 14, // Row 15
+                      rowIndex: 10, // Row 11 (starting compact layout below cards ending at Row 9)
                       columnIndex: 4 // Column E
                     },
                     offsetXPixels: 10,
@@ -989,7 +1034,6 @@ export async function createPatientClinicalSheet(
         }
 
         // Formatting for Case Taking
-        const caseTakingId = sheetsMap["Case Taking"];
         if (caseTakingId !== undefined) {
           requests.push(
             // Hide gridlines
@@ -1087,7 +1131,7 @@ export async function createPatientClinicalSheet(
                 range: { sheetId: caseTakingId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 4 },
                 cell: {
                   userEnteredFormat: {
-                    backgroundColor: { red: 15/255, green: 76/255, blue: 129/255 },
+                    backgroundColor: { red: 15/255, green: 118/255, blue: 110/255 }, // Brand Teal #0F766E
                     textFormat: { foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 12, bold: true },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
@@ -1099,15 +1143,15 @@ export async function createPatientClinicalSheet(
 
           // Add Collapsible Groups for Case Taking (new contiguous coordinates)
           const groups = [
-            { start: 2, end: 9 },    // Section 1: Patient Details
-            { start: 10, end: 14 },  // Section 2: Chief Complaints
-            { start: 15, end: 22 },  // Section 3: Presenting Symptoms
-            { start: 23, end: 29 },  // Section 4: Mental Generals
-            { start: 30, end: 36 },  // Section 5: Physical Generals
-            { start: 37, end: 39 },  // Section 9: Clinical Diagnosis
-            { start: 40, end: 45 },  // Section 10: Miasmatic Assessment
-            { start: 46, end: 51 },  // Section 12: Prescription & Advice
-            { start: 52, end: 55 }   // Section 13: AI Diagnostics Verdict
+            { start: 2, end: 9 },    // Section 1: Patient Details (rows 3 to 9, indices 2 to 8)
+            { start: 10, end: 14 },  // Section 2: Chief Complaints (rows 11 to 14, indices 10 to 13)
+            { start: 15, end: 22 },  // Section 3: Presenting Symptoms (rows 16 to 22, indices 15 to 21)
+            { start: 23, end: 29 },  // Section 4: Mental Generals (rows 24 to 29, indices 23 to 28)
+            { start: 30, end: 36 },  // Section 5: Physical Generals (rows 31 to 36, indices 30 to 35)
+            { start: 37, end: 39 },  // Section 9: Clinical Diagnosis (rows 38 to 39, indices 37 to 38)
+            { start: 40, end: 45 },  // Section 10: Miasmatic Assessment (rows 41 to 45, indices 40 to 44)
+            { start: 46, end: 51 },  // Section 12: Prescription & Advice (rows 47 to 51, indices 46 to 50)
+            { start: 52, end: 55 }   // Section 13: AI Diagnostics Verdict (rows 53 to 55, indices 52 to 54)
           ];
 
           for (const g of groups) {
@@ -1134,7 +1178,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 226/255, green: 242/255, blue: 253/255 },
-                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 } }, // Brand Teal #0F766E
                     verticalAlignment: "MIDDLE"
                   }
                 },
@@ -1173,49 +1217,43 @@ export async function createPatientClinicalSheet(
             {
               updateDimensionProperties: {
                 range: { sheetId: followUpId, dimension: "COLUMNS", startIndex: 2, endIndex: 3 },
-                properties: { pixelSize: 90 }, fields: "pixelSize"
+                properties: { pixelSize: 100 }, fields: "pixelSize"
               }
             },
             {
               updateDimensionProperties: {
                 range: { sheetId: followUpId, dimension: "COLUMNS", startIndex: 3, endIndex: 4 },
-                properties: { pixelSize: 180 }, fields: "pixelSize"
+                properties: { pixelSize: 200 }, fields: "pixelSize"
               }
             },
             {
               updateDimensionProperties: {
                 range: { sheetId: followUpId, dimension: "COLUMNS", startIndex: 4, endIndex: 5 },
-                properties: { pixelSize: 110 }, fields: "pixelSize"
+                properties: { pixelSize: 130 }, fields: "pixelSize"
               }
             },
             {
               updateDimensionProperties: {
                 range: { sheetId: followUpId, dimension: "COLUMNS", startIndex: 5, endIndex: 6 },
-                properties: { pixelSize: 150 }, fields: "pixelSize"
+                properties: { pixelSize: 280 }, fields: "pixelSize"
               }
             },
             {
               updateDimensionProperties: {
                 range: { sheetId: followUpId, dimension: "COLUMNS", startIndex: 6, endIndex: 7 },
-                properties: { pixelSize: 250 }, fields: "pixelSize"
-              }
-            },
-            {
-              updateDimensionProperties: {
-                range: { sheetId: followUpId, dimension: "COLUMNS", startIndex: 7, endIndex: 8 },
-                properties: { pixelSize: 110 }, fields: "pixelSize"
+                properties: { pixelSize: 120 }, fields: "pixelSize"
               }
             },
             // Merge Title Banner
             {
               mergeCells: {
-                range: { sheetId: followUpId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 8 },
+                range: { sheetId: followUpId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 7 },
                 mergeType: "MERGE_ALL"
               }
             },
             {
               repeatCell: {
-                range: { sheetId: followUpId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 8 },
+                range: { sheetId: followUpId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 7 },
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 15/255, green: 76/255, blue: 129/255 },
@@ -1229,7 +1267,7 @@ export async function createPatientClinicalSheet(
             // Table headers
             {
               repeatCell: {
-                range: { sheetId: followUpId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 8 },
+                range: { sheetId: followUpId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 7 },
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 241/255, green: 245/255, blue: 249/255 },
@@ -1240,10 +1278,10 @@ export async function createPatientClinicalSheet(
                 fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
               }
             },
-            // Table Borders A3:H100
+            // Table Borders A3:G100
             {
               updateBorders: {
-                range: { sheetId: followUpId, startRowIndex: 2, endRowIndex: 100, startColumnIndex: 0, endColumnIndex: 8 },
+                range: { sheetId: followUpId, startRowIndex: 2, endRowIndex: 100, startColumnIndex: 0, endColumnIndex: 7 },
                 top: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } },
                 bottom: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } },
                 left: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } },
@@ -1281,10 +1319,23 @@ export async function createPatientClinicalSheet(
                 fields: "userEnteredFormat(numberFormat,textFormat,backgroundColor,horizontalAlignment,verticalAlignment)"
               }
             },
-            // Prescribing Method Column F (Row 4 onwards) - center align + bold
+            // Remedy Column D (Row 4 onwards) - left align + bold
             {
               repeatCell: {
-                range: { sheetId: followUpId, startRowIndex: 3, endRowIndex: 100, startColumnIndex: 5, endColumnIndex: 6 },
+                range: { sheetId: followUpId, startRowIndex: 3, endRowIndex: 100, startColumnIndex: 3, endColumnIndex: 4 },
+                cell: {
+                  userEnteredFormat: {
+                    textFormat: { bold: true },
+                    horizontalAlignment: "LEFT", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            // Potency / Dose Column E (Row 4 onwards) - center align + bold
+            {
+              repeatCell: {
+                range: { sheetId: followUpId, startRowIndex: 3, endRowIndex: 100, startColumnIndex: 4, endColumnIndex: 5 },
                 cell: {
                   userEnteredFormat: {
                     textFormat: { bold: true },
@@ -1294,10 +1345,10 @@ export async function createPatientClinicalSheet(
                 fields: "userEnteredFormat(textFormat,horizontalAlignment,verticalAlignment)"
               }
             },
-            // Next Follow-up Column H (Row 4 onwards) - bold amber text
+            // Next Follow-up Column G (Row 4 onwards) - bold amber text
             {
               repeatCell: {
-                range: { sheetId: followUpId, startRowIndex: 3, endRowIndex: 100, startColumnIndex: 7, endColumnIndex: 8 },
+                range: { sheetId: followUpId, startRowIndex: 3, endRowIndex: 100, startColumnIndex: 6, endColumnIndex: 7 },
                 cell: {
                   userEnteredFormat: {
                     textFormat: { bold: true, foregroundColor: { red: 180/255, green: 83/255, blue: 9/255 } },
@@ -1305,58 +1356,6 @@ export async function createPatientClinicalSheet(
                   }
                 },
                 fields: "userEnteredFormat(textFormat,horizontalAlignment,verticalAlignment)"
-              }
-            },
-            // Conditional formatting rules for Prescribing Method (Column F)
-            {
-              addConditionalFormatRule: {
-                rule: {
-                  ranges: [
-                    { sheetId: followUpId, startRowIndex: 3, endRowIndex: 100, startColumnIndex: 5, endColumnIndex: 6 }
-                  ],
-                  booleanRule: {
-                    condition: { type: "TEXT_CONTAINS", values: [{ userEnteredValue: "Classical" }] },
-                    format: {
-                      backgroundColor: { red: 239/255, green: 246/255, blue: 255/255 }, // blue-50 #EFF6FF
-                      textFormat: { foregroundColor: { red: 30/255, green: 64/255, blue: 175/255 }, bold: true } // blue-800
-                    }
-                  }
-                },
-                index: 0
-              }
-            },
-            {
-              addConditionalFormatRule: {
-                rule: {
-                  ranges: [
-                    { sheetId: followUpId, startRowIndex: 3, endRowIndex: 100, startColumnIndex: 5, endColumnIndex: 6 }
-                  ],
-                  booleanRule: {
-                    condition: { type: "TEXT_CONTAINS", values: [{ userEnteredValue: "Complex" }] },
-                    format: {
-                      backgroundColor: { red: 236/255, green: 253/255, blue: 245/255 }, // emerald-50 #ECFDF5
-                      textFormat: { foregroundColor: { red: 6/255, green: 95/255, blue: 70/255 }, bold: true } // emerald-800
-                    }
-                  }
-                },
-                index: 1
-              }
-            },
-            {
-              addConditionalFormatRule: {
-                rule: {
-                  ranges: [
-                    { sheetId: followUpId, startRowIndex: 3, endRowIndex: 100, startColumnIndex: 5, endColumnIndex: 6 }
-                  ],
-                  booleanRule: {
-                    condition: { type: "TEXT_CONTAINS", values: [{ userEnteredValue: "No Remedy" }] },
-                    format: {
-                      backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 }, // slate-50 #F8FAFC
-                      textFormat: { foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 }, bold: false } // slate-500
-                    }
-                  }
-                },
-                index: 2
               }
             }
           );
@@ -3957,6 +3956,170 @@ export async function downloadFileFromGoogleDrive(fileId: string, destPath: stri
     return false;
   }
 }
+
+export interface RepertoryExportRubric {
+  name: string;
+  chapter: string;
+  source: string;
+  weight: number;
+  grades: Record<string, number>;
+}
+
+/**
+ * Synchronizes selected repertory rubrics directly to the patient's clinical sheet 'Repertorization' tab
+ */
+export async function syncRepertoryToClinicalSheet(
+  sheetId: string,
+  rubrics: RepertoryExportRubric[]
+): Promise<void> {
+  const auth = getGoogleAuth();
+  if (!auth) {
+    console.warn("Google API Auth missing. Skipping Repertory sync to Google Sheets.");
+    return;
+  }
+
+  const sheets = google.sheets({ version: "v4", auth });
+
+  try {
+    const remedies = ["Nux-v", "Lyc", "Ars", "Puls", "Sulph", "Rhus-t", "Calc", "Sil", "Nat-m", "Ign", "Sep"];
+    const N = rubrics.length;
+    
+    // In case N is 0, we just clear the sheet (or write default headers)
+    if (N === 0) {
+      const emptyRows = [
+        ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+        ["REPERTORY GRID & Dynamic ANALYSIS MATRIX", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+        ["Rubric Name", "Chapter / Location", "Source", "Importance Weight", ...remedies, "Totality Score"]
+      ];
+      for (let i = 3; i < 50; i++) {
+        emptyRows.push(Array(16).fill(""));
+      }
+      await sheets.spreadsheets.values.update({
+        spreadsheetId: sheetId,
+        range: "'Repertorization'!A1:P50",
+        valueInputOption: "USER_ENTERED",
+        requestBody: {
+          values: emptyRows
+        }
+      });
+      return;
+    }
+
+    const lastRubricRow = 4 + N - 1;
+
+    const rows: any[][] = [
+      ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+      ["REPERTORY GRID & Dynamic ANALYSIS MATRIX", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+      ["Rubric Name", "Chapter / Location", "Source", "Importance Weight", ...remedies, "Totality Score"]
+    ];
+
+    // Add rubric rows
+    rubrics.forEach((r, idx) => {
+      const rowNum = 4 + idx;
+      const rowValues = [
+        r.name,
+        r.chapter,
+        r.source || "Kent",
+        r.weight || 1
+      ];
+      remedies.forEach(rem => {
+        rowValues.push(r.grades[rem] || 0);
+      });
+      // Totality Score formula: e.g. "=D4*SUM(E4:O4)"
+      rowValues.push(`=D${rowNum}*SUM(E${rowNum}:O${rowNum})`);
+      rows.push(rowValues);
+    });
+
+    // Add spacer rows
+    rows.push(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
+    rows.push(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
+
+    // Formula row indices (1-indexed for sheets)
+    const coverageRowIndex = lastRubricRow + 3;
+    const sumGradesRowIndex = lastRubricRow + 4;
+    const totalityRankRowIndex = lastRubricRow + 5;
+
+    // Symptom Coverage row
+    const coverageRow = ["Symptom Coverage", "", "", ""];
+    remedies.forEach((rem, idx) => {
+      const colLetter = String.fromCharCode(69 + idx); // E, F, G...
+      coverageRow.push(`=COUNTIFS(${colLetter}4:${colLetter}${lastRubricRow}, ">0") / ${N}`);
+    });
+    coverageRow.push("");
+    rows.push(coverageRow);
+
+    // Sum of Grades row
+    const sumGradesRow = ["Sum of Grades", "", "", ""];
+    remedies.forEach((rem, idx) => {
+      const colLetter = String.fromCharCode(69 + idx); // E, F, G...
+      sumGradesRow.push(`=SUMPRODUCT(${colLetter}4:${colLetter}${lastRubricRow}, $D$4:$D$${lastRubricRow})`);
+    });
+    sumGradesRow.push("");
+    rows.push(sumGradesRow);
+
+    // Totality Rank Score row
+    const totalityRankRow = ["Totality Rank Score", "", "", ""];
+    remedies.forEach((rem, idx) => {
+      const colLetter = String.fromCharCode(69 + idx); // E, F, G...
+      totalityRankRow.push(`=(${colLetter}${coverageRowIndex}*100) + ${colLetter}${sumGradesRowIndex}`);
+    });
+    totalityRankRow.push("");
+    rows.push(totalityRankRow);
+
+    // Spacer
+    rows.push(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
+
+    // Top Remedy Ranking label
+    rows.push(["Top Remedy Ranking", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
+
+    // Rank 1
+    rows.push([
+      "Rank 1",
+      `=INDEX($E$3:$O$3, MATCH(MAX(E${totalityRankRowIndex}:O${totalityRankRowIndex}), E${totalityRankRowIndex}:O${totalityRankRowIndex}, 0))`,
+      "Score",
+      `=MAX(E${totalityRankRowIndex}:O${totalityRankRowIndex})`,
+      "", "", "", "", "", "", "", "", "", "", "", ""
+    ]);
+
+    // Rank 2
+    rows.push([
+      "Rank 2",
+      `=INDEX($E$3:$O$3, MATCH(LARGE(E${totalityRankRowIndex}:O${totalityRankRowIndex}, 2), E${totalityRankRowIndex}:O${totalityRankRowIndex}, 0))`,
+      "Score",
+      `=LARGE(E${totalityRankRowIndex}:O${totalityRankRowIndex}, 2)`,
+      "", "", "", "", "", "", "", "", "", "", "", ""
+    ]);
+
+    // Rank 3
+    rows.push([
+      "Rank 3",
+      `=INDEX($E$3:$O$3, MATCH(LARGE(E${totalityRankRowIndex}:O${totalityRankRowIndex}, 3), E${totalityRankRowIndex}:O${totalityRankRowIndex}, 0))`,
+      "Score",
+      `=LARGE(E${totalityRankRowIndex}:O${totalityRankRowIndex}, 3)`,
+      "", "", "", "", "", "", "", "", "", "", "", ""
+    ]);
+
+    // Fill up to 50 rows with blank rows to clear any previous data
+    const currentLength = rows.length;
+    for (let i = currentLength; i < 50; i++) {
+      rows.push(Array(16).fill(""));
+    }
+
+    await sheets.spreadsheets.values.update({
+      spreadsheetId: sheetId,
+      range: "'Repertorization'!A1:P50",
+      valueInputOption: "USER_ENTERED",
+      requestBody: {
+        values: rows
+      }
+    });
+
+  } catch (error) {
+    console.error("Error writing repertory rubrics to patient Google Sheet:", error);
+    throw error;
+  }
+}
+
 
 
 
