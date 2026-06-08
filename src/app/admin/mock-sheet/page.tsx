@@ -808,6 +808,7 @@ function MockSheetContent() {
     potencies: ["6C", "30C", "200C", "1M", "10M", "50M", "CM", "LM1", "LM2", "LM5", "LM10", "LM30"],
     miasms: ["Psora", "Sycosis", "Syphilis", "Tubercular", "Cancerinic"],
     locations: ["Baner Clinic, Pune", "Koregaon Park Clinic, Pune", "Mumbai OPD"],
+    doctors: ["Dr. Narayan Jethwani", "Dr. R. Jethwani"],
     packages: [
       { name: "Standard Consult", price: 300 },
       { name: "Acute Care Plan", price: 1500 },
@@ -825,6 +826,7 @@ function MockSheetContent() {
   const [newPotencyInput, setNewPotencyInput] = useState("");
   const [newMiasmInput, setNewMiasmInput] = useState("");
   const [newLocationInput, setNewLocationInput] = useState("");
+  const [newDoctorInput, setNewDoctorInput] = useState("");
   const [newPackageNameInput, setNewPackageNameInput] = useState("");
   const [newPackagePriceInput, setNewPackagePriceInput] = useState("");
 
@@ -911,12 +913,13 @@ function MockSheetContent() {
     fetchConfigDb();
   }, [patient.id]);
 
-  const handleAddConfigItem = async (type: "remedies" | "potencies" | "miasms" | "locations") => {
+  const handleAddConfigItem = async (type: "remedies" | "potencies" | "miasms" | "locations" | "doctors") => {
     let value = "";
     if (type === "remedies") { value = newRemedyInput.trim(); setNewRemedyInput(""); }
     else if (type === "potencies") { value = newPotencyInput.trim(); setNewPotencyInput(""); }
     else if (type === "miasms") { value = newMiasmInput.trim(); setNewMiasmInput(""); }
     else if (type === "locations") { value = newLocationInput.trim(); setNewLocationInput(""); }
+    else if (type === "doctors") { value = newDoctorInput.trim(); setNewDoctorInput(""); }
 
     if (!value) return;
 
@@ -931,7 +934,7 @@ function MockSheetContent() {
     });
   };
 
-  const handleRemoveConfigItem = async (type: "remedies" | "potencies" | "miasms" | "locations", index: number) => {
+  const handleRemoveConfigItem = async (type: "remedies" | "potencies" | "miasms" | "locations" | "doctors", index: number) => {
     setConfigDb(prev => {
       const updatedList = (prev[type] as string[]).filter((_, i) => i !== index);
       const updatedConfig = { ...prev, [type]: updatedList };
@@ -3954,12 +3957,12 @@ function MockSheetContent() {
             {/* TAB 7: CONFIG DB */}
             {/* ---------------------------------------------------- */}
             {activeTab === "Config DB" && (
-              <div className="bg-white min-w-[1050px] p-6 space-y-6">
+              <div className="bg-white min-w-[1250px] p-6 space-y-6">
                 {/* Header */}
                 <div className="border-b border-slate-150 pb-4 flex items-center justify-between">
                   <div>
                     <h2 className="text-sm font-black text-[#0F4C81] uppercase tracking-wider">Reference Metadata Database (Config DB)</h2>
-                    <p className="text-[10px] text-slate-500 font-bold uppercase mt-1">Configure dropdown validation options and treatment packages. Updates are synced to range 'Config DB'!A3:F100 in Google Sheets.</p>
+                    <p className="text-[10px] text-slate-500 font-bold uppercase mt-1">Configure dropdown validation options and treatment packages. Updates are synced to range 'Config DB'!A3:G100 in Google Sheets.</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
@@ -3967,8 +3970,8 @@ function MockSheetContent() {
                       disabled={syncingConfig}
                       className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-wider transition-all shadow-sm border ${
                         syncingConfig
-                          ? "bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed"
-                          : "bg-[#0F4C81] hover:bg-[#0F4C81]/90 text-white border-[#0F4C81]"
+                           ? "bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed"
+                           : "bg-[#0F4C81] hover:bg-[#0F4C81]/90 text-white border-[#0F4C81]"
                       }`}
                     >
                       {syncingConfig ? (
@@ -4007,8 +4010,8 @@ function MockSheetContent() {
                   </div>
                 )}
 
-                {/* 5-Column Grid Layout */}
-                <div className="grid grid-cols-5 gap-4">
+                {/* 6-Column Grid Layout */}
+                <div className="grid grid-cols-6 gap-4">
                   {/* Column 1: Materia Medica */}
                   <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col justify-between min-h-[400px] shadow-sm">
                     <div className="space-y-3.5">
@@ -4165,7 +4168,46 @@ function MockSheetContent() {
                     </div>
                   </div>
 
-                  {/* Column 5: Packages & Pricing */}
+                  {/* Column 5: Consulting Doctors */}
+                  <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col justify-between min-h-[400px] shadow-sm">
+                    <div className="space-y-3.5">
+                      <div className="border-b border-slate-200 pb-2">
+                        <h4 className="font-extrabold text-[#0F4C81] text-xs uppercase tracking-wider">Consulting Doctors</h4>
+                        <p className="text-[9px] text-slate-400 font-bold uppercase mt-0.5">{(configDb.doctors || []).length} Doctors</p>
+                      </div>
+                      <div className="space-y-1.5 max-h-[260px] overflow-y-auto pr-1">
+                        {(configDb.doctors || []).map((doc, index) => (
+                          <div key={index} className="flex items-center justify-between bg-white border border-slate-150 rounded-xl px-3 py-1.5 hover:shadow-sm group transition-all">
+                            <span className="text-[11px] font-bold text-slate-700 break-words max-w-[85%]">{doc}</span>
+                            <button
+                              onClick={() => handleRemoveConfigItem("doctors", index)}
+                              className="text-slate-355 hover:text-rose-600 opacity-0 group-hover:opacity-100 transition-all shrink-0"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="pt-3 border-t border-slate-250 flex items-center gap-1.5 mt-4">
+                      <input
+                        type="text"
+                        placeholder="Add Doctor..."
+                        value={newDoctorInput}
+                        onChange={e => setNewDoctorInput(e.target.value)}
+                        onKeyDown={e => e.key === "Enter" && handleAddConfigItem("doctors")}
+                        className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-[10.5px] font-bold text-slate-700 focus:outline-none focus:border-[#0F4C81]"
+                      />
+                      <button
+                        onClick={() => handleAddConfigItem("doctors")}
+                        className="p-2 bg-[#0F4C81] hover:bg-[#0F4C81]/90 text-white rounded-xl transition-all shadow-sm shrink-0"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Column 6: Packages & Pricing */}
                   <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col justify-between min-h-[400px] shadow-sm">
                     <div className="space-y-3.5">
                       <div className="border-b border-slate-200 pb-2">

@@ -23,6 +23,7 @@ export async function GET(request: Request) {
       potencies: ["6C", "30C", "200C", "1M", "10M", "50M", "CM", "LM1", "LM2", "LM5", "LM10", "LM30"],
       miasms: ["Psora", "Sycosis", "Syphilis", "Tubercular", "Cancerinic"],
       locations: ["Baner Clinic, Pune", "Koregaon Park Clinic, Pune", "Mumbai OPD"],
+      doctors: ["Dr. Narayan Jethwani", "Dr. R. Jethwani"],
       packages: [
         { name: "Standard Consult", price: 300 },
         { name: "Acute Care Plan", price: 1500 },
