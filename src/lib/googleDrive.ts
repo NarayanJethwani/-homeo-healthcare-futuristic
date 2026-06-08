@@ -867,7 +867,7 @@ export async function createPatientClinicalSheet(
                 title: "MIASMATIC PROFILE (TOTALITY TAGS)",
                 basicChart: {
                   chartType: "COLUMN",
-                  legendPosition: "NONE",
+                  legendPosition: "NO_LEGEND",
                   domains: [
                     {
                       domain: {
@@ -907,7 +907,7 @@ export async function createPatientClinicalSheet(
               },
               position: {
                 overlayPosition: {
-                  startCell: {
+                  anchorCell: {
                     sheetId: dashId,
                     rowIndex: 14, // Row 15
                     columnIndex: 0 // Column A
@@ -932,7 +932,7 @@ export async function createPatientClinicalSheet(
                   title: "SYMPTOM SEVERITY & IMPROVEMENT TREND",
                   basicChart: {
                     chartType: "LINE",
-                    legendPosition: "NONE",
+                    legendPosition: "NO_LEGEND",
                     domains: [
                       {
                         domain: {
@@ -972,7 +972,7 @@ export async function createPatientClinicalSheet(
                 },
                 position: {
                   overlayPosition: {
-                    startCell: {
+                    anchorCell: {
                       sheetId: dashId,
                       rowIndex: 14, // Row 15
                       columnIndex: 4 // Column E
@@ -1555,7 +1555,7 @@ export async function createPatientClinicalSheet(
                     { sheetId: repertoryId, startRowIndex: 3, endRowIndex: 8, startColumnIndex: 4, endColumnIndex: 15 }
                   ],
                   booleanRule: {
-                    condition: { type: "NUMBER_EQUALS", values: [{ userEnteredValue: "0" }] },
+                    condition: { type: "NUMBER_EQ", values: [{ userEnteredValue: "0" }] },
                     format: {
                       textFormat: { foregroundColor: { red: 203/255, green: 213/255, blue: 225/255 } }
                     }
