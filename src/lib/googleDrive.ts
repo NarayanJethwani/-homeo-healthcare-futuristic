@@ -3965,6 +3965,19 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
     });
   });
 
+  // Unmerge all cells in the matrix area (to clear old merges from different rubric sizes)
+  requests.push({
+    unmergeCells: {
+      range: {
+        sheetId: repertoryId,
+        startRowIndex: 3,
+        endRowIndex: 50,
+        startColumnIndex: 0,
+        endColumnIndex: 16
+      }
+    }
+  });
+
   // Hide gridlines
   requests.push({
     updateSheetProperties: {
