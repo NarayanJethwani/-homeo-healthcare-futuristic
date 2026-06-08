@@ -317,14 +317,11 @@ export async function createPatientClinicalSheet(
           ["", "", "", "", "", "", "", ""],
           ["PATIENT DEMOGRAPHICS", "", "", "ACTIVE TREATMENT", "", "", "OUTCOMES & LEDGER", ""],
           ["Patient ID", data.id, "", "Diagnosis", "='Case Taking'!B38", "", "Progress Score (%)", "=IFERROR(INDEX('Follow-Up Tracker'!C:C, MATCH(9.99999999999999E+307, 'Follow-Up Tracker'!A:A)), \"0%\")"],
-          ["Patient Name", data.name, "", "Current Remedy", "='Case Taking'!B47", "", "Balance Due (₹)", "='Finance'!C4"],
+          ["Full Name", data.name, "", "Active Remedy", "='Case Taking'!B47 & \" \" & 'Case Taking'!B48", "", "Balance Due (₹)", "='Finance'!E4"],
           ["Age / Gender", `${data.age} / ${data.gender}`, "", "Last Visit Date", "=IFERROR(MAX('Follow-Up Tracker'!A4:A), \"N/A\")", "", "Top Totality Remedy", "='Repertorization'!B16 & \" (\" & 'Repertorization'!D16 & \" pts)\""],
-          ["Contact Phone", data.phone, "", "Next Scheduled Review", "=IFERROR(INDEX('Follow-Up Tracker'!H:H, MATCH(9.99999999999999E+307, 'Follow-Up Tracker'!A:A)), \"Not Scheduled\")", "", "Miasmatic Summary", "=IFERROR('AI Repertory Lab'!B4, \"Psora\")"],
-          ["Email Address", data.email || "N/A", "", "Consulting Doctor", "Dr. Narayan Jethwani", "", "Psora Count", "='Case Taking'!B41"],
-          ["Location / Address", locationVal, "", "Clinic Branch", "Baner Clinic, Pune", "", "Sycosis Count", "='Case Taking'!B42"],
-          ["", "", "", "", "", "", "Syphilis Count", "='Case Taking'!B43"],
-          ["", "", "", "", "", "", "Tubercular Count", "='Case Taking'!B44"],
-          ["", "", "", "", "", "", "Cancerinic Count", "='Case Taking'!B45"]
+          ["Blood Group", "O+ Pos", "", "Next Review", "=IFERROR(INDEX('Follow-Up Tracker'!G:G, MATCH(9.99999999999999E+307, 'Follow-Up Tracker'!A:A)), \"Not Scheduled\")", "", "Miasmatic Summary", "=IFERROR('AI Repertory Lab'!B4, \"Psora\")"],
+          ["Clinic Branch", "Baner Clinic", "", "Consulting Doctor", "Dr. Narayan Jethwani", "", "Primary Doctor", "Dr. Narayan Jethwani"],
+          ["Patient Status", data.careLevel.toLowerCase().includes("acute") ? "Acute" : "Chronic", "", "Clinic Branch", "Baner Clinic, Pune", "", "Account Status", "=IF('Finance'!E4<=0, \"Paid\", \"Balance Pending\")"]
         ];
 
         // values for Case Taking
@@ -405,10 +402,10 @@ export async function createPatientClinicalSheet(
 
         // values for Follow-Up Tracker
         const followUpValues = [
-          ["CLINICAL FOLLOW-UP TRACKER", "", "", "", "", "", "", ""],
-          ["", "", "", "", "", "", "", ""],
-          ["Date", "Symptoms & Patient Report", "Improvement %", "Remedy Prescribed", "Potency", "Prescribing Method", "Assessment & Pathology", "Next Follow-up"],
-          [today, "Case initialized. Demographics and baseline complaint registered.", 0, "Nux Vomica", "30C", `=ARRAYFORMULA(IF(ISBLANK(A4:A), "", IF(ISBLANK(D4:D), "No Remedy", IF(ISNUMBER(SEARCH(",", D4:D)), "Complex Method", "Classical Method"))))`, "Baseline status. Patient is very chilly with severe post-meal burning.", "2 weeks later"]
+          ["CLINICAL FOLLOW-UP TRACKER", "", "", "", "", "", ""],
+          ["", "", "", "", "", "", ""],
+          ["Date", "Symptoms & Patient Report (Db-Click)", "Improvement %", "Remedy (Click to edit)", "Potency / Dose", "Assessment / Notes (Db-Click)", "Next Follow-up"],
+          [today, "Case initialized. Demographics and baseline complaint registered.", 0, "Nux Vomica (DIL)", "30C (BD)", "Baseline status. Patient is very chilly with severe post-meal burning.", "2 weeks later"]
         ];
 
         // values for Repertorization
@@ -433,12 +430,40 @@ export async function createPatientClinicalSheet(
           ["Rank 3", "=INDEX($E$3:$O$3, MATCH(LARGE(E13:O13, 3), E13:O13, 0))", "Score", "=LARGE(E13:O13, 3)", "", "", "", "", "", "", "", "", "", "", "", ""]
         ];
 
+        // Normalize and map inputs to align with mock and premium options
+        const normalizedCareLevel = data.careLevel ? data.careLevel.toLowerCase().trim() : "";
+        let resolvedCareLevel = data.careLevel || "🎯 Deep Systemic Care";
+        if (normalizedCareLevel === "mild" || normalizedCareLevel.includes("acute") || normalizedCareLevel.includes("wellness")) {
+          resolvedCareLevel = "🌱 Acute & Wellness Care";
+        } else if (normalizedCareLevel === "moderate" || normalizedCareLevel.includes("standard") || normalizedCareLevel.includes("chronic")) {
+          resolvedCareLevel = "⚡ Standard Chronic Care";
+        } else if (normalizedCareLevel === "focused" || normalizedCareLevel.includes("deep") || normalizedCareLevel.includes("systemic")) {
+          resolvedCareLevel = "🎯 Deep Systemic Care";
+        } else if (normalizedCareLevel === "organ" || normalizedCareLevel.includes("advanced") || normalizedCareLevel.includes("pathological")) {
+          resolvedCareLevel = "🫁 Advanced Pathological Care";
+        } else if (normalizedCareLevel === "comprehensive" || normalizedCareLevel.includes("multisystem") || normalizedCareLevel.includes("integrative")) {
+          resolvedCareLevel = "🔮 Multisystem Integrative Care";
+        }
+
+        const rawCycle = data.billingCycle ? data.billingCycle.toLowerCase().trim() : "";
+        const resolvedBillingCycle = rawCycle === "weekly" ? "Weekly" : "Monthly";
+
+        const rawConcession = data.concessionApplied ? data.concessionApplied.toLowerCase().trim() : "";
+        let resolvedConcession = "None";
+        if (rawConcession.includes("senior")) {
+          resolvedConcession = "Senior 15%";
+        } else if (rawConcession.includes("socio") || rawConcession.includes("compassionate")) {
+          resolvedConcession = "Socio-Economic 30%";
+        } else if (rawConcession.includes("override")) {
+          resolvedConcession = "Override";
+        }
+
         // values for Treatment Planner (adjusted for exact row indices to prevent circular references)
         const plannerValues = [
           ["", "", "", "", "", "", ""],
           ["TREATMENT COMPLEXITY & FINANCIAL PLANNER", "", "", "", "", "", ""],
           ["Care Level", "Billing Cycle", "Duration Value", "Conditions Count", "Concession Applied", "Override Price (₹)", "Medicine Add-ons (₹)"],
-          [data.careLevel || "Deep Systemic Care", data.billingCycle || "monthly", data.durationValue || 1, data.conditionsCount || 1, data.concessionApplied || "None", data.overridePrice || 0, data.medicineAddons || 0],
+          [resolvedCareLevel, resolvedBillingCycle, data.durationValue || 1, data.conditionsCount || 1, resolvedConcession, data.overridePrice || 0, data.medicineAddons || 0],
           ["", "", "", "", "", "", ""],
           ["PRICING BREAKDOWN", "", "", "", "", "", ""],
           ["Component", "Rate / Amount (₹)", "Calculation Description", "", "", "", ""],
@@ -453,26 +478,27 @@ export async function createPatientClinicalSheet(
           ["Amount Received", data.receivedAmount !== undefined ? data.receivedAmount : data.finalPrice, "Amount collected from patient for this plan", "", "", "", ""],
           ["Balance Due", "=B15-B16", "Outstanding dues for this treatment plan", "", "", "", ""],
           ["", "", "", "", "", "", ""],
-          ["WhatsApp Invoice Message", `="Dear " & 'Case Taking'!B4 & ", thank you for consulting Homeo Healthcare. Your treatment package is: " & A4 & " (" & C4 & " " & IF(B4="Weekly","weeks","months") & " commit, " & D4 & " condition(s) " & IF(E4="None","", "[" & E4 & "]") & "). Total Cost: ₹" & B15 & ". Amount Paid: ₹" & B16 & ". Balance Due: ₹" & B17 & ". Please pay using UPI: narayan.jethwani@homeo.healthcare. Clinic Branch: Baner, Pune."`, "", "", "", "", ""]
+          ["WhatsApp Invoice Message", `="Dear " & 'Case Taking'!B4 & ", thank you for consulting Homeo Healthcare. Your treatment package is: " & A4 & " (" & IF(D4=1, "1 condition", D4 & " conditions") & ", " & C4 & " " & IF(B4="Weekly", IF(C4=1, "week", "weeks"), IF(C4=1, "month", "months")) & IF(E4="None", "", " [" & E4 & "]") & "). Total Cost: ₹" & TEXT(B15, "#,##0") & ". Balance Due: ₹" & TEXT(B17, "#,##0") & ". Please pay using UPI: narayan.jethwani@homeo.healthcare. Clinic Branch: Baner, Pune."`, "", "", "", "", ""]
         ];
 
         // values for Finance
         const financeValues = [
           ["", "", "", "", "", "", "", ""],
-          ["PATIENT ACCOUNT FINANCE LEDGER & REVENUE SUMMARY", "", "", "", "", "", "", ""],
-          ["Total Billed (₹)", "", "Total Collected (₹)", "", "Outstanding Balance (₹)", "", "", ""],
-          ["=SUM(D8:D100)", "", "=SUM(E8:E100)", "", "=A4-C4", "", "", ""],
+          ["PATIENT FINANCIAL LEDGER & REVENUE HISTORY", "", "", "", "", "", "", ""],
+          ["TOTAL AMOUNT BILLED", "", "TOTAL REVENUE COLLECTED", "", "OUTSTANDING BALANCE", "", "", ""],
+          ["=SUM(D9:D100)", "", "=SUM(E9:E100)", "", "=A4-C4", "", "", ""],
+          ["INITIAL PLAN + SURCHARGES + ADD-ONS", "", "DIRECT PAYMENTS RECEIVED TILL DATE", "", "REMAINING RECEIVABLE AMOUNTS", "", "", ""],
           ["", "", "", "", "", "", "", ""],
           ["TRANSACTION HISTORY RECORD", "", "", "", "", "", "", ""],
-          ["Date", "Description / Event", "Reference ID", "Amount Charged (₹)", "Amount Received (₹)", "Outstanding Balance (₹)", "Payment Method", "Payment Status"],
-          [today, "Initial package setup charge", "Tx-Plan-" + data.id, "='Treatment Planner'!B15", "='Treatment Planner'!B16", "=D8-E8", "UPI", `=IF(F8<=0, "Paid", IF(E8>0, "Partially Paid", "Unpaid"))`],
-          ["", "Follow-up Consultation / Refill", "FU-Refill", 0, 0, "=D9-E9", "", ""],
+          ["DATE", "DESCRIPTION / EVENT", "REFERENCE ID", "AMOUNT CHARGED", "AMOUNT RECEIVED", "OUTSTANDING BALANCE", "PAYMENT MODE", "STATUS"],
+          [today, `${data.careLevel} - Initial Package Setup`, "Tx-Plan-" + data.id, "='Treatment Planner'!B15", "='Treatment Planner'!B16", "=D9-E9", "UPI", `=IF(F9<=0, "PAID", IF(E9>0, "PARTIALLY PAID", "UNPAID"))`],
+          ["05-06-2026", "First Consultation Check-in", "FU-01", 0, 0, "=D10-E10", "N/A", "PAID"],
           ["", "", "", "", "", "", "", ""]
         ];
 
         // values for AI Repertory Lab
         const aiRepertoryValues = [
-          ["AI REPERTORY LAB & NEURAL TOTALITY MATCHING MATRIX", "", "", "", "", "", "", ""],
+          ["AI REPERTORY LAB & NEURAL TOTALITY MATCHING MATRIX", "", "", "", "CLINICAL DIAGNOSTIC SYNTHESIS VERDICT", "", "", ""],
           ["", "", "", "", "", "", "", ""],
           ["SPREADSHEET REPERTORY PAYLOAD & MIASM VECTORS", "", "", "", "CLINICAL DIAGNOSTIC SYNTHESIS VERDICT", "", "", ""],
           ["Dominant Miasm", `=IF('Case Taking'!B42>MAX('Case Taking'!B41,'Case Taking'!B43,'Case Taking'!B44,'Case Taking'!B45),"Sycosis",IF('Case Taking'!B41>MAX('Case Taking'!B42,'Case Taking'!B43,'Case Taking'!B44,'Case Taking'!B45),"Psora",IF('Case Taking'!B43>MAX('Case Taking'!B41,'Case Taking'!B42,'Case Taking'!B44,'Case Taking'!B45),"Syphilis",IF('Case Taking'!B44>MAX('Case Taking'!B41,'Case Taking'!B42,'Case Taking'!B43,'Case Taking'!B45),"Tubercular","Cancerinic"))))`, "", "", "AI Constitutional Justification & Totality Synthesis Report", "", "", ""],
@@ -483,9 +509,9 @@ export async function createPatientClinicalSheet(
           ["Cancerinic Count", "='Case Taking'!B45", "", "", "", "", "", ""],
           ["", "", "", "", "", "", "", ""],
           ["TOP REMEDY RANKINGS FROM SPREADSHEET MATRIX", "", "", "", "MATERIA MEDICA KEYNOTE VERIFICATIONS", "", "", ""],
-          ["Rank 1 Remedy", "='Repertorization'!B16", "Score", "='Repertorization'!D16", "Nux Vomica:", "Chilly, irritable, stomach complaints worse after eating.", "", ""],
-          ["Rank 2 Remedy", "='Repertorization'!B17", "Score", "='Repertorization'!D17", "Arsenicum Album:", "Great anxiety, restlessness, chilly, worse at midnight.", "", ""],
-          ["Rank 3 Remedy", "='Repertorization'!B18", "Score", "='Repertorization'!D18", "Lycopodium Clavatum:", "Right-sided, flatulence, gas, warm food cravings.", "", ""]
+          ["Rank 1 Remedy", `=IFERROR(INDEX('Repertorization'!B:B, MATCH("Rank 1", 'Repertorization'!A:A, 0)), "N/A")`, "Score", `=IFERROR(INDEX('Repertorization'!D:D, MATCH("Rank 1", 'Repertorization'!A:A, 0)), 0)`, "Nux Vomica:", "Chilly, irritable, stomach complaints worse after eating.", "", ""],
+          ["Rank 2 Remedy", `=IFERROR(INDEX('Repertorization'!B:B, MATCH("Rank 2", 'Repertorization'!A:A, 0)), "N/A")`, "Score", `=IFERROR(INDEX('Repertorization'!D:D, MATCH("Rank 2", 'Repertorization'!A:A, 0)), 0)`, "Arsenicum Album:", "Great anxiety, restlessness, chilly, worse at midnight.", "", ""],
+          ["Rank 3 Remedy", `=IFERROR(INDEX('Repertorization'!B:B, MATCH("Rank 3", 'Repertorization'!A:A, 0)), "N/A")`, "Score", `=IFERROR(INDEX('Repertorization'!D:D, MATCH("Rank 3", 'Repertorization'!A:A, 0)), 0)`, "Lycopodium Clavatum:", "Right-sided, flatulence, gas, warm food cravings.", "", ""]
         ];
 
         // values for Reports & Attachments
@@ -493,26 +519,27 @@ export async function createPatientClinicalSheet(
           ["INVESTIGATION REPORTS & CLINICAL FILE ATTACHMENTS", "", "", ""],
           ["", "", "", ""],
           ["Report Date", "Report Category", "Investigation Target", "Report Hyperlink"],
-          [today, "Clinical Photo", "Initial Skin / Face Snapshot", `https://drive.google.com/drive/folders/${folderId}`]
+          [today, "Clinical Photo", "Epigastric Bloating Snapshot", `https://drive.google.com/drive/folders/${folderId}`],
+          ["05-06-2026", "Blood Test", "Complete Blood Count & Liver Panel", `https://drive.google.com/drive/folders/${folderId}`]
         ];
 
         // values for Config DB
         const configValues = [
-          ["REFERENCE METADATA DATABASE", "", "", "", "PACKAGES", "PRICE"],
-          ["", "", "", "", "", ""],
-          ["REMEDIES", "POTENCIES", "MIASMS", "DOCTORS", "Standard Consult", 300],
-          ["Nux Vomica", "6C", "Psora", "Dr. Narayan Jethwani", "Acute Care Plan", 1500],
-          ["Arsenicum Album", "30C", "Sycosis", "Dr. R. Jethwani", "3-Month Chronic", 4500],
-          ["Lycopodium Clavatum", "200C", "Syphilis", "", "6-Month Advanced", 8500],
-          ["Pulsatilla Pratensis", "1M", "Tubercular", "", "1-Year Premium", 15000],
-          ["Sulphur", "10M", "Cancerinic", "", "", ""],
-          ["Rhus Toxicodendron", "50M", "", "", "", ""],
-          ["Bryonia Alba", "CM", "", "", "", ""],
-          ["Calcarea Carbonica", "LM1", "", "", "", ""],
-          ["Silicea", "LM2", "", "", "", ""],
-          ["Natrum Muriaticum", "LM5", "", "", "", ""],
-          ["Ignatia Amara", "LM10", "", "", "", ""],
-          ["Sepia Officinalis", "LM30", "", "", "", ""]
+          ["REFERENCE METADATA DATABASE", "", "", "", "", "PACKAGES", "PRICE"],
+          ["", "", "", "", "", "", ""],
+          ["REMEDIES", "POTENCIES", "MIASMS", "CLINIC BRANCHES", "DOCTORS", "Standard Consult", 300],
+          ["Nux Vomica", "6C", "Psora", "Baner Clinic, Pune", "Dr. Narayan Jethwani", "Acute Care Plan", 1500],
+          ["Arsenicum Album", "30C", "Sycosis", "Koregaon Park Clinic, Pune", "Dr. R. Jethwani", "3-Month Chronic", 4500],
+          ["Lycopodium Clavatum", "200C", "Syphilis", "Mumbai OPD", "", "6-Month Advanced", 8500],
+          ["Pulsatilla Pratensis", "1M", "Tubercular", "", "", "1-Year Premium", 15000],
+          ["Sulphur", "10M", "Cancerinic", "", "", "", ""],
+          ["Rhus Toxicodendron", "50M", "", "", "", "", ""],
+          ["Bryonia Alba", "CM", "", "", "", "", ""],
+          ["Calcarea Carbonica", "LM1", "", "", "", "", ""],
+          ["Silicea", "LM2", "", "", "", "", ""],
+          ["Natrum Muriaticum", "LM5", "", "", "", "", ""],
+          ["Ignatia Amara", "LM10", "", "", "", "", ""],
+          ["Sepia Officinalis", "LM30", "", "", "", "", ""]
         ];
 
         // Batch update sheet values
@@ -521,15 +548,15 @@ export async function createPatientClinicalSheet(
           requestBody: {
             valueInputOption: "USER_ENTERED",
             data: [
-              { range: "'Dashboard'!A1:H12", values: dashboardValues },
+              { range: "'Dashboard'!A1:H9", values: dashboardValues },
               { range: "'Case Taking'!A1:D55", values: caseTakingValues },
-              { range: "'Follow-Up Tracker'!A1:H4", values: followUpValues },
+              { range: "'Follow-Up Tracker'!A1:G4", values: followUpValues },
               { range: "'Repertorization'!A1:P18", values: repertoryValues },
               { range: "'Treatment Planner'!A1:G21", values: plannerValues },
               { range: "'Finance'!A1:H10", values: financeValues },
               { range: "'AI Repertory Lab'!A1:H14", values: aiRepertoryValues },
-              { range: "'Reports & Attachments'!A1:D4", values: attachmentsValues },
-              { range: "'Config DB'!A1:F15", values: configValues }
+              { range: "'Reports & Attachments'!A1:D5", values: attachmentsValues },
+              { range: "'Config DB'!A1:G15", values: configValues }
             ]
           }
         });
@@ -539,6 +566,8 @@ export async function createPatientClinicalSheet(
 
         // Formatting for Dashboard (sheetId = Dashboard)
         const dashId = sheetsMap["Dashboard"] || 0;
+        const caseTakingId = sheetsMap["Case Taking"];
+        const followUpId = sheetsMap["Follow-Up Tracker"];
         requests.push(
           // Hide gridlines
           {
@@ -632,7 +661,7 @@ export async function createPatientClinicalSheet(
               range: { sheetId: dashId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 8 },
               cell: {
                 userEnteredFormat: {
-                  backgroundColor: { red: 15/255, green: 76/255, blue: 129/255 }, // Medical Blue #0F4C81
+                  backgroundColor: { red: 15/255, green: 118/255, blue: 110/255 }, // Brand Teal #0F766E
                   textFormat: { foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 13, bold: true },
                   horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                 }
@@ -666,7 +695,7 @@ export async function createPatientClinicalSheet(
               cell: {
                 userEnteredFormat: {
                   backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 }, // Slate-200 #E2E8F0
-                  textFormat: { foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 }, fontSize: 10, bold: true },
+                  textFormat: { foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 }, fontSize: 10, bold: true }, // Brand Teal #0F766E
                   horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                 }
               },
@@ -729,10 +758,10 @@ export async function createPatientClinicalSheet(
               fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
             }
           },
-          // Card 3 Keys (Col G, rows 4-12)
+          // Card 3 Keys (Col G, rows 4-9)
           {
             repeatCell: {
-              range: { sheetId: dashId, startRowIndex: 3, endRowIndex: 12, startColumnIndex: 6, endColumnIndex: 7 },
+              range: { sheetId: dashId, startRowIndex: 3, endRowIndex: 9, startColumnIndex: 6, endColumnIndex: 7 },
               cell: {
                 userEnteredFormat: {
                   backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
@@ -743,10 +772,10 @@ export async function createPatientClinicalSheet(
               fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
             }
           },
-          // Card 3 Values (Col H, rows 4-12)
+          // Card 3 Values (Col H, rows 4-9)
           {
             repeatCell: {
-              range: { sheetId: dashId, startRowIndex: 3, endRowIndex: 12, startColumnIndex: 7, endColumnIndex: 8 },
+              range: { sheetId: dashId, startRowIndex: 3, endRowIndex: 9, startColumnIndex: 7, endColumnIndex: 8 },
               cell: {
                 userEnteredFormat: {
                   backgroundColor: { red: 1, green: 1, blue: 1 },
@@ -757,7 +786,7 @@ export async function createPatientClinicalSheet(
               fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
             }
           },
-          // Card Borders (Card 1: A3:B9, Card 2: D3:E9, Card 3: G3:H12)
+          // Card Borders (Card 1: A3:B9, Card 2: D3:E9, Card 3: G3:H9)
           {
             updateBorders: {
               range: { sheetId: dashId, startRowIndex: 2, endRowIndex: 9, startColumnIndex: 0, endColumnIndex: 2 },
@@ -778,7 +807,7 @@ export async function createPatientClinicalSheet(
           },
           {
             updateBorders: {
-              range: { sheetId: dashId, startRowIndex: 2, endRowIndex: 12, startColumnIndex: 6, endColumnIndex: 8 },
+              range: { sheetId: dashId, startRowIndex: 2, endRowIndex: 9, startColumnIndex: 6, endColumnIndex: 8 },
               top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
               bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
               left: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
@@ -813,6 +842,7 @@ export async function createPatientClinicalSheet(
               fields: "userEnteredFormat(numberFormat,textFormat(bold,foregroundColor))"
             }
           },
+          // Currency formatting for H5 (Balance Due) - colors set via conditional formatting below
           {
             repeatCell: {
               range: {
@@ -827,16 +857,67 @@ export async function createPatientClinicalSheet(
                   numberFormat: {
                     type: "CURRENCY",
                     pattern: "\"₹\"#,##0"
-                  },
-                  textFormat: {
-                    bold: true,
-                    foregroundColor: { red: 46/255, green: 139/255, blue: 87/255 } // SeaGreen
                   }
                 }
               },
-              fields: "userEnteredFormat(numberFormat,textFormat(bold,foregroundColor))"
+              fields: "userEnteredFormat(numberFormat)"
             }
           },
+          // Balance Due H5 conditional formatting (green if <= 0, red if > 0)
+          {
+            addConditionalFormatRule: {
+              rule: {
+                ranges: [
+                  { sheetId: dashId, startRowIndex: 4, endRowIndex: 5, startColumnIndex: 7, endColumnIndex: 8 }
+                ],
+                booleanRule: {
+                  condition: { type: "NUMBER_GREATER", values: [{ userEnteredValue: "0" }] },
+                  format: {
+                    textFormat: { foregroundColor: { red: 225/255, green: 29/255, blue: 72/255 }, bold: true } // rose-600
+                  }
+                }
+              },
+              index: 0
+            }
+          },
+          {
+            addConditionalFormatRule: {
+              rule: {
+                ranges: [
+                  { sheetId: dashId, startRowIndex: 4, endRowIndex: 5, startColumnIndex: 7, endColumnIndex: 8 }
+                ],
+                booleanRule: {
+                  condition: { type: "NUMBER_LESS_THAN_OR_EQUAL", values: [{ userEnteredValue: "0" }] },
+                  format: {
+                    textFormat: { foregroundColor: { red: 4/255, green: 120/255, blue: 87/255 }, bold: true } // emerald-700
+                  }
+                }
+              },
+              index: 1
+            }
+          },
+          // Format E5 (Active Remedy) in bold emerald green
+          {
+            repeatCell: {
+              range: {
+                sheetId: dashId,
+                startRowIndex: 4,
+                endRowIndex: 5,
+                startColumnIndex: 4,
+                endColumnIndex: 5
+              },
+              cell: {
+                userEnteredFormat: {
+                  textFormat: {
+                    bold: true,
+                    foregroundColor: { red: 4/255, green: 120/255, blue: 87/255 } // emerald-700
+                  }
+                }
+              },
+              fields: "userEnteredFormat.textFormat(bold,foregroundColor)"
+            }
+          },
+          // Format E6 (Last Visit Date)
           {
             repeatCell: {
               range: {
@@ -874,11 +955,11 @@ export async function createPatientClinicalSheet(
                         sourceRange: {
                           sources: [
                             {
-                              sheetId: dashId,
-                              startRowIndex: 7, // Row 8
-                              endRowIndex: 12,  // Row 12
-                              startColumnIndex: 6, // Column G (Psora Count, Sycosis Count, etc.)
-                              endColumnIndex: 7
+                              sheetId: caseTakingId,
+                              startRowIndex: 42, // Row 43 (Psora Count)
+                              endRowIndex: 47,  // Row 47 (Cancerinic Count)
+                              startColumnIndex: 0, // Column A (labels)
+                              endColumnIndex: 1
                             }
                           ]
                         }
@@ -891,11 +972,11 @@ export async function createPatientClinicalSheet(
                         sourceRange: {
                           sources: [
                             {
-                              sheetId: dashId,
-                              startRowIndex: 7, // Row 8
-                              endRowIndex: 12,  // Row 12
-                              startColumnIndex: 7, // Column H (the scores)
-                              endColumnIndex: 8
+                              sheetId: caseTakingId,
+                              startRowIndex: 42, // Row 43
+                              endRowIndex: 47,  // Row 47
+                              startColumnIndex: 1, // Column B (scores)
+                              endColumnIndex: 2
                             }
                           ]
                         }
@@ -909,7 +990,7 @@ export async function createPatientClinicalSheet(
                 overlayPosition: {
                   anchorCell: {
                     sheetId: dashId,
-                    rowIndex: 14, // Row 15
+                    rowIndex: 10, // Row 11 (starting compact layout below cards ending at Row 9)
                     columnIndex: 0 // Column A
                   },
                   offsetXPixels: 10,
@@ -923,7 +1004,6 @@ export async function createPatientClinicalSheet(
         });
 
         // Add Symptom Severity & Improvement Trend LINE Chart to Dashboard
-        const followUpId = sheetsMap["Follow-Up Tracker"];
         if (followUpId !== undefined) {
           requests.push({
             addChart: {
@@ -974,7 +1054,7 @@ export async function createPatientClinicalSheet(
                   overlayPosition: {
                     anchorCell: {
                       sheetId: dashId,
-                      rowIndex: 14, // Row 15
+                      rowIndex: 10, // Row 11 (starting compact layout below cards ending at Row 9)
                       columnIndex: 4 // Column E
                     },
                     offsetXPixels: 10,
@@ -989,7 +1069,6 @@ export async function createPatientClinicalSheet(
         }
 
         // Formatting for Case Taking
-        const caseTakingId = sheetsMap["Case Taking"];
         if (caseTakingId !== undefined) {
           requests.push(
             // Hide gridlines
@@ -1087,7 +1166,7 @@ export async function createPatientClinicalSheet(
                 range: { sheetId: caseTakingId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 4 },
                 cell: {
                   userEnteredFormat: {
-                    backgroundColor: { red: 15/255, green: 76/255, blue: 129/255 },
+                    backgroundColor: { red: 15/255, green: 118/255, blue: 110/255 }, // Brand Teal #0F766E
                     textFormat: { foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 12, bold: true },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
@@ -1099,15 +1178,15 @@ export async function createPatientClinicalSheet(
 
           // Add Collapsible Groups for Case Taking (new contiguous coordinates)
           const groups = [
-            { start: 2, end: 9 },    // Section 1: Patient Details
-            { start: 10, end: 14 },  // Section 2: Chief Complaints
-            { start: 15, end: 22 },  // Section 3: Presenting Symptoms
-            { start: 23, end: 29 },  // Section 4: Mental Generals
-            { start: 30, end: 36 },  // Section 5: Physical Generals
-            { start: 37, end: 39 },  // Section 9: Clinical Diagnosis
-            { start: 40, end: 45 },  // Section 10: Miasmatic Assessment
-            { start: 46, end: 51 },  // Section 12: Prescription & Advice
-            { start: 52, end: 55 }   // Section 13: AI Diagnostics Verdict
+            { start: 2, end: 9 },    // Section 1: Patient Details (rows 3 to 9, indices 2 to 8)
+            { start: 10, end: 14 },  // Section 2: Chief Complaints (rows 11 to 14, indices 10 to 13)
+            { start: 15, end: 22 },  // Section 3: Presenting Symptoms (rows 16 to 22, indices 15 to 21)
+            { start: 23, end: 29 },  // Section 4: Mental Generals (rows 24 to 29, indices 23 to 28)
+            { start: 30, end: 36 },  // Section 5: Physical Generals (rows 31 to 36, indices 30 to 35)
+            { start: 37, end: 39 },  // Section 9: Clinical Diagnosis (rows 38 to 39, indices 37 to 38)
+            { start: 40, end: 45 },  // Section 10: Miasmatic Assessment (rows 41 to 45, indices 40 to 44)
+            { start: 46, end: 51 },  // Section 12: Prescription & Advice (rows 47 to 51, indices 46 to 50)
+            { start: 52, end: 55 }   // Section 13: AI Diagnostics Verdict (rows 53 to 55, indices 52 to 54)
           ];
 
           for (const g of groups) {
@@ -1134,7 +1213,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 226/255, green: 242/255, blue: 253/255 },
-                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 } }, // Brand Teal #0F766E
                     verticalAlignment: "MIDDLE"
                   }
                 },
@@ -1173,49 +1252,43 @@ export async function createPatientClinicalSheet(
             {
               updateDimensionProperties: {
                 range: { sheetId: followUpId, dimension: "COLUMNS", startIndex: 2, endIndex: 3 },
-                properties: { pixelSize: 90 }, fields: "pixelSize"
+                properties: { pixelSize: 100 }, fields: "pixelSize"
               }
             },
             {
               updateDimensionProperties: {
                 range: { sheetId: followUpId, dimension: "COLUMNS", startIndex: 3, endIndex: 4 },
-                properties: { pixelSize: 180 }, fields: "pixelSize"
+                properties: { pixelSize: 200 }, fields: "pixelSize"
               }
             },
             {
               updateDimensionProperties: {
                 range: { sheetId: followUpId, dimension: "COLUMNS", startIndex: 4, endIndex: 5 },
-                properties: { pixelSize: 110 }, fields: "pixelSize"
+                properties: { pixelSize: 130 }, fields: "pixelSize"
               }
             },
             {
               updateDimensionProperties: {
                 range: { sheetId: followUpId, dimension: "COLUMNS", startIndex: 5, endIndex: 6 },
-                properties: { pixelSize: 150 }, fields: "pixelSize"
+                properties: { pixelSize: 280 }, fields: "pixelSize"
               }
             },
             {
               updateDimensionProperties: {
                 range: { sheetId: followUpId, dimension: "COLUMNS", startIndex: 6, endIndex: 7 },
-                properties: { pixelSize: 250 }, fields: "pixelSize"
-              }
-            },
-            {
-              updateDimensionProperties: {
-                range: { sheetId: followUpId, dimension: "COLUMNS", startIndex: 7, endIndex: 8 },
-                properties: { pixelSize: 110 }, fields: "pixelSize"
+                properties: { pixelSize: 120 }, fields: "pixelSize"
               }
             },
             // Merge Title Banner
             {
               mergeCells: {
-                range: { sheetId: followUpId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 8 },
+                range: { sheetId: followUpId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 7 },
                 mergeType: "MERGE_ALL"
               }
             },
             {
               repeatCell: {
-                range: { sheetId: followUpId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 8 },
+                range: { sheetId: followUpId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 7 },
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 15/255, green: 76/255, blue: 129/255 },
@@ -1229,7 +1302,7 @@ export async function createPatientClinicalSheet(
             // Table headers
             {
               repeatCell: {
-                range: { sheetId: followUpId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 8 },
+                range: { sheetId: followUpId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 7 },
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 241/255, green: 245/255, blue: 249/255 },
@@ -1240,10 +1313,10 @@ export async function createPatientClinicalSheet(
                 fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
               }
             },
-            // Table Borders A3:H100
+            // Table Borders A3:G100
             {
               updateBorders: {
-                range: { sheetId: followUpId, startRowIndex: 2, endRowIndex: 100, startColumnIndex: 0, endColumnIndex: 8 },
+                range: { sheetId: followUpId, startRowIndex: 2, endRowIndex: 100, startColumnIndex: 0, endColumnIndex: 7 },
                 top: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } },
                 bottom: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } },
                 left: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } },
@@ -1281,10 +1354,23 @@ export async function createPatientClinicalSheet(
                 fields: "userEnteredFormat(numberFormat,textFormat,backgroundColor,horizontalAlignment,verticalAlignment)"
               }
             },
-            // Prescribing Method Column F (Row 4 onwards) - center align + bold
+            // Remedy Column D (Row 4 onwards) - left align + bold
             {
               repeatCell: {
-                range: { sheetId: followUpId, startRowIndex: 3, endRowIndex: 100, startColumnIndex: 5, endColumnIndex: 6 },
+                range: { sheetId: followUpId, startRowIndex: 3, endRowIndex: 100, startColumnIndex: 3, endColumnIndex: 4 },
+                cell: {
+                  userEnteredFormat: {
+                    textFormat: { bold: true },
+                    horizontalAlignment: "LEFT", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            // Potency / Dose Column E (Row 4 onwards) - center align + bold
+            {
+              repeatCell: {
+                range: { sheetId: followUpId, startRowIndex: 3, endRowIndex: 100, startColumnIndex: 4, endColumnIndex: 5 },
                 cell: {
                   userEnteredFormat: {
                     textFormat: { bold: true },
@@ -1294,10 +1380,10 @@ export async function createPatientClinicalSheet(
                 fields: "userEnteredFormat(textFormat,horizontalAlignment,verticalAlignment)"
               }
             },
-            // Next Follow-up Column H (Row 4 onwards) - bold amber text
+            // Next Follow-up Column G (Row 4 onwards) - bold amber text
             {
               repeatCell: {
-                range: { sheetId: followUpId, startRowIndex: 3, endRowIndex: 100, startColumnIndex: 7, endColumnIndex: 8 },
+                range: { sheetId: followUpId, startRowIndex: 3, endRowIndex: 100, startColumnIndex: 6, endColumnIndex: 7 },
                 cell: {
                   userEnteredFormat: {
                     textFormat: { bold: true, foregroundColor: { red: 180/255, green: 83/255, blue: 9/255 } },
@@ -1306,58 +1392,6 @@ export async function createPatientClinicalSheet(
                 },
                 fields: "userEnteredFormat(textFormat,horizontalAlignment,verticalAlignment)"
               }
-            },
-            // Conditional formatting rules for Prescribing Method (Column F)
-            {
-              addConditionalFormatRule: {
-                rule: {
-                  ranges: [
-                    { sheetId: followUpId, startRowIndex: 3, endRowIndex: 100, startColumnIndex: 5, endColumnIndex: 6 }
-                  ],
-                  booleanRule: {
-                    condition: { type: "TEXT_CONTAINS", values: [{ userEnteredValue: "Classical" }] },
-                    format: {
-                      backgroundColor: { red: 239/255, green: 246/255, blue: 255/255 }, // blue-50 #EFF6FF
-                      textFormat: { foregroundColor: { red: 30/255, green: 64/255, blue: 175/255 }, bold: true } // blue-800
-                    }
-                  }
-                },
-                index: 0
-              }
-            },
-            {
-              addConditionalFormatRule: {
-                rule: {
-                  ranges: [
-                    { sheetId: followUpId, startRowIndex: 3, endRowIndex: 100, startColumnIndex: 5, endColumnIndex: 6 }
-                  ],
-                  booleanRule: {
-                    condition: { type: "TEXT_CONTAINS", values: [{ userEnteredValue: "Complex" }] },
-                    format: {
-                      backgroundColor: { red: 236/255, green: 253/255, blue: 245/255 }, // emerald-50 #ECFDF5
-                      textFormat: { foregroundColor: { red: 6/255, green: 95/255, blue: 70/255 }, bold: true } // emerald-800
-                    }
-                  }
-                },
-                index: 1
-              }
-            },
-            {
-              addConditionalFormatRule: {
-                rule: {
-                  ranges: [
-                    { sheetId: followUpId, startRowIndex: 3, endRowIndex: 100, startColumnIndex: 5, endColumnIndex: 6 }
-                  ],
-                  booleanRule: {
-                    condition: { type: "TEXT_CONTAINS", values: [{ userEnteredValue: "No Remedy" }] },
-                    format: {
-                      backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 }, // slate-50 #F8FAFC
-                      textFormat: { foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 }, bold: false } // slate-500
-                    }
-                  }
-                },
-                index: 2
-              }
             }
           );
         }
@@ -1365,424 +1399,7 @@ export async function createPatientClinicalSheet(
         // Formatting for Repertorization
         const repertoryId = sheetsMap["Repertorization"];
         if (repertoryId !== undefined) {
-          requests.push(
-            // Hide gridlines
-            {
-              updateSheetProperties: {
-                properties: {
-                  sheetId: repertoryId,
-                  gridProperties: { hideGridlines: true }
-                },
-                fields: "gridProperties.hideGridlines"
-              }
-            },
-            // Column widths
-            {
-              updateDimensionProperties: {
-                range: { sheetId: repertoryId, dimension: "COLUMNS", startIndex: 0, endIndex: 1 },
-                properties: { pixelSize: 240 }, fields: "pixelSize"
-              }
-            },
-            {
-              updateDimensionProperties: {
-                range: { sheetId: repertoryId, dimension: "COLUMNS", startIndex: 1, endIndex: 2 },
-                properties: { pixelSize: 140 }, fields: "pixelSize"
-              }
-            },
-            {
-              updateDimensionProperties: {
-                range: { sheetId: repertoryId, dimension: "COLUMNS", startIndex: 2, endIndex: 3 },
-                properties: { pixelSize: 80 }, fields: "pixelSize"
-              }
-            },
-            {
-              updateDimensionProperties: {
-                range: { sheetId: repertoryId, dimension: "COLUMNS", startIndex: 3, endIndex: 4 },
-                properties: { pixelSize: 120 }, fields: "pixelSize"
-              }
-            },
-            {
-              updateDimensionProperties: {
-                range: { sheetId: repertoryId, dimension: "COLUMNS", startIndex: 4, endIndex: 15 },
-                properties: { pixelSize: 65 }, fields: "pixelSize"
-              }
-            },
-            {
-              updateDimensionProperties: {
-                range: { sheetId: repertoryId, dimension: "COLUMNS", startIndex: 15, endIndex: 16 },
-                properties: { pixelSize: 90 }, fields: "pixelSize"
-              }
-            },
-            // Row Heights
-            {
-              updateDimensionProperties: {
-                range: { sheetId: repertoryId, dimension: "ROWS", startIndex: 0, endIndex: 1 },
-                properties: { pixelSize: 15 }, fields: "pixelSize"
-              }
-            },
-            {
-              updateDimensionProperties: {
-                range: { sheetId: repertoryId, dimension: "ROWS", startIndex: 1, endIndex: 2 },
-                properties: { pixelSize: 35 }, fields: "pixelSize"
-              }
-            },
-            // Merge Title Header (Cols A-P)
-            {
-              mergeCells: {
-                range: { sheetId: repertoryId, startRowIndex: 1, endRowIndex: 2, startColumnIndex: 0, endColumnIndex: 16 },
-                mergeType: "MERGE_ALL"
-              }
-            },
-            {
-              repeatCell: {
-                range: { sheetId: repertoryId, startRowIndex: 1, endRowIndex: 2, startColumnIndex: 0, endColumnIndex: 16 },
-                cell: {
-                  userEnteredFormat: {
-                    backgroundColor: { red: 15/255, green: 76/255, blue: 129/255 },
-                    textFormat: { foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 13, bold: true },
-                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
-                  }
-                },
-                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
-              }
-            },
-            // Table headers (Rubric, Chapter, etc. A3:P3)
-            {
-              repeatCell: {
-                range: { sheetId: repertoryId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 16 },
-                cell: {
-                  userEnteredFormat: {
-                    backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 },
-                    textFormat: { foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 }, fontSize: 10, bold: true },
-                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
-                  }
-                },
-                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
-              }
-            },
-            // Alternate matrix rows background (A4:P8, indices 3-7)
-            {
-              repeatCell: {
-                range: { sheetId: repertoryId, startRowIndex: 3, endRowIndex: 4, startColumnIndex: 0, endColumnIndex: 16 },
-                cell: { userEnteredFormat: { backgroundColor: { red: 1, green: 1, blue: 1 } } },
-                fields: "userEnteredFormat.backgroundColor"
-              }
-            },
-            {
-              repeatCell: {
-                range: { sheetId: repertoryId, startRowIndex: 4, endRowIndex: 5, startColumnIndex: 0, endColumnIndex: 16 },
-                cell: { userEnteredFormat: { backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 } } },
-                fields: "userEnteredFormat.backgroundColor"
-              }
-            },
-            {
-              repeatCell: {
-                range: { sheetId: repertoryId, startRowIndex: 5, endRowIndex: 6, startColumnIndex: 0, endColumnIndex: 16 },
-                cell: { userEnteredFormat: { backgroundColor: { red: 1, green: 1, blue: 1 } } },
-                fields: "userEnteredFormat.backgroundColor"
-              }
-            },
-            {
-              repeatCell: {
-                range: { sheetId: repertoryId, startRowIndex: 6, endRowIndex: 7, startColumnIndex: 0, endColumnIndex: 16 },
-                cell: { userEnteredFormat: { backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 } } },
-                fields: "userEnteredFormat.backgroundColor"
-              }
-            },
-            {
-              repeatCell: {
-                range: { sheetId: repertoryId, startRowIndex: 7, endRowIndex: 8, startColumnIndex: 0, endColumnIndex: 16 },
-                cell: { userEnteredFormat: { backgroundColor: { red: 1, green: 1, blue: 1 } } },
-                fields: "userEnteredFormat.backgroundColor"
-              }
-            },
-            // Grid borders for the matrix range (A3:P8)
-            {
-              updateBorders: {
-                range: { sheetId: repertoryId, startRowIndex: 2, endRowIndex: 8, startColumnIndex: 0, endColumnIndex: 16 },
-                top: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } },
-                bottom: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } },
-                left: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } },
-                right: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } },
-                innerHorizontal: { style: "SOLID", color: { red: 241/255, green: 245/255, blue: 249/255 } },
-                innerVertical: { style: "SOLID", color: { red: 241/255, green: 245/255, blue: 249/255 } }
-              }
-            },
-            // Centering Remedy Grades (E4:O8, indices 4 to 15)
-            {
-              repeatCell: {
-                range: { sheetId: repertoryId, startRowIndex: 3, endRowIndex: 8, startColumnIndex: 4, endColumnIndex: 15 },
-                cell: { userEnteredFormat: { horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE" } },
-                fields: "userEnteredFormat.horizontalAlignment,userEnteredFormat.verticalAlignment"
-              }
-            },
-            // Centering and bold blue styling for Totality Score column values (P4:P8, Column P, indices 15 to 16)
-            {
-              repeatCell: {
-                range: { sheetId: repertoryId, startRowIndex: 3, endRowIndex: 8, startColumnIndex: 15, endColumnIndex: 16 },
-                cell: {
-                  userEnteredFormat: {
-                    textFormat: { bold: true, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
-                    horizontalAlignment: "CENTER",
-                    verticalAlignment: "MIDDLE"
-                  }
-                },
-                fields: "userEnteredFormat.textFormat,userEnteredFormat.horizontalAlignment,userEnteredFormat.verticalAlignment"
-              }
-            },
-            // Conditional formatting for grades in the matrix range E4:O8 (grades > 0 are bold green on light green)
-            {
-              addConditionalFormatRule: {
-                rule: {
-                  ranges: [
-                    { sheetId: repertoryId, startRowIndex: 3, endRowIndex: 8, startColumnIndex: 4, endColumnIndex: 15 }
-                  ],
-                  booleanRule: {
-                    condition: { type: "NUMBER_GREATER", values: [{ userEnteredValue: "0" }] },
-                    format: {
-                      backgroundColor: { red: 236/255, green: 253/255, blue: 245/255 },
-                      textFormat: { foregroundColor: { red: 4/255, green: 120/255, blue: 87/255 }, bold: true }
-                    }
-                  }
-                },
-                index: 0
-              }
-            },
-            {
-              addConditionalFormatRule: {
-                rule: {
-                  ranges: [
-                    { sheetId: repertoryId, startRowIndex: 3, endRowIndex: 8, startColumnIndex: 4, endColumnIndex: 15 }
-                  ],
-                  booleanRule: {
-                    condition: { type: "NUMBER_EQ", values: [{ userEnteredValue: "0" }] },
-                    format: {
-                      textFormat: { foregroundColor: { red: 203/255, green: 213/255, blue: 225/255 } }
-                    }
-                  }
-                },
-                index: 1
-              }
-            },
-            // Symptom Coverage styling (Row 11, index 10, Cols A-P)
-            {
-              repeatCell: {
-                range: { sheetId: repertoryId, startRowIndex: 10, endRowIndex: 11, startColumnIndex: 0, endColumnIndex: 16 },
-                cell: {
-                  userEnteredFormat: {
-                    backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
-                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } },
-                    verticalAlignment: "MIDDLE"
-                  }
-                },
-                fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
-              }
-            },
-            {
-              updateBorders: {
-                range: { sheetId: repertoryId, startRowIndex: 10, endRowIndex: 11, startColumnIndex: 0, endColumnIndex: 16 },
-                top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
-                bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } }
-              }
-            },
-            // Decimal format for Coverage row (Row 11, index 10, Columns E to O)
-            {
-              repeatCell: {
-                range: { sheetId: repertoryId, startRowIndex: 10, endRowIndex: 11, startColumnIndex: 4, endColumnIndex: 15 },
-                cell: {
-                  userEnteredFormat: {
-                    numberFormat: { type: "NUMBER", pattern: "0.0" },
-                    horizontalAlignment: "CENTER"
-                  }
-                },
-                fields: "userEnteredFormat.numberFormat,userEnteredFormat.horizontalAlignment"
-              }
-            },
-            // Sum of Grades styling (Row 12, index 11, Cols A-P)
-            {
-              repeatCell: {
-                range: { sheetId: repertoryId, startRowIndex: 11, endRowIndex: 12, startColumnIndex: 0, endColumnIndex: 16 },
-                cell: {
-                  userEnteredFormat: {
-                    backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
-                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
-                    verticalAlignment: "MIDDLE"
-                  }
-                },
-                fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
-              }
-            },
-            {
-              repeatCell: {
-                range: { sheetId: repertoryId, startRowIndex: 11, endRowIndex: 12, startColumnIndex: 4, endColumnIndex: 15 },
-                cell: {
-                  userEnteredFormat: {
-                    horizontalAlignment: "CENTER"
-                  }
-                },
-                fields: "userEnteredFormat.horizontalAlignment"
-              }
-            },
-            {
-              updateBorders: {
-                range: { sheetId: repertoryId, startRowIndex: 11, endRowIndex: 12, startColumnIndex: 0, endColumnIndex: 16 },
-                top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
-                bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } }
-              }
-            },
-            // Totality Rank Score styling (Row 13, index 12, Cols A-P)
-            {
-              repeatCell: {
-                range: { sheetId: repertoryId, startRowIndex: 12, endRowIndex: 13, startColumnIndex: 0, endColumnIndex: 16 },
-                cell: {
-                  userEnteredFormat: {
-                    backgroundColor: { red: 226/255, green: 251/255, blue: 247/255 }, // #E2FBF7
-                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 } }, // #0F766E
-                    verticalAlignment: "MIDDLE"
-                  }
-                },
-                fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
-              }
-            },
-            {
-              repeatCell: {
-                range: { sheetId: repertoryId, startRowIndex: 12, endRowIndex: 13, startColumnIndex: 4, endColumnIndex: 15 },
-                cell: {
-                  userEnteredFormat: {
-                    horizontalAlignment: "CENTER"
-                  }
-                },
-                fields: "userEnteredFormat.horizontalAlignment"
-              }
-            },
-            {
-              updateBorders: {
-                range: { sheetId: repertoryId, startRowIndex: 12, endRowIndex: 13, startColumnIndex: 0, endColumnIndex: 16 },
-                top: { style: "SOLID", color: { red: 15/255, green: 118/255, blue: 110/255 } },
-                bottom: { style: "SOLID", color: { red: 15/255, green: 118/255, blue: 110/255 } }
-              }
-            },
-            // Top Remedy Ranking header (Row 15, index 14)
-            {
-              mergeCells: {
-                range: { sheetId: repertoryId, startRowIndex: 14, endRowIndex: 15, startColumnIndex: 0, endColumnIndex: 4 },
-                mergeType: "MERGE_ALL"
-              }
-            },
-            {
-              repeatCell: {
-                range: { sheetId: repertoryId, startRowIndex: 14, endRowIndex: 15, startColumnIndex: 0, endColumnIndex: 4 },
-                cell: {
-                  userEnteredFormat: {
-                    backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 },
-                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
-                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
-                  }
-                },
-                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
-              }
-            },
-            // Rank Cards Rows 16-18 (indices 15-17)
-            // Rank 1
-            {
-              repeatCell: {
-                range: { sheetId: repertoryId, startRowIndex: 15, endRowIndex: 16, startColumnIndex: 0, endColumnIndex: 1 },
-                cell: { userEnteredFormat: { backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 }, textFormat: { bold: true, foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } } } },
-                fields: "userEnteredFormat(backgroundColor,textFormat)"
-              }
-            },
-            {
-              repeatCell: {
-                range: { sheetId: repertoryId, startRowIndex: 15, endRowIndex: 16, startColumnIndex: 1, endColumnIndex: 2 },
-                cell: { userEnteredFormat: { backgroundColor: { red: 1, green: 1, blue: 1 }, textFormat: { bold: true, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } }, horizontalAlignment: "CENTER" } },
-                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
-              }
-            },
-            {
-              repeatCell: {
-                range: { sheetId: repertoryId, startRowIndex: 15, endRowIndex: 16, startColumnIndex: 2, endColumnIndex: 3 },
-                cell: { userEnteredFormat: { backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 }, textFormat: { foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } } } },
-                fields: "userEnteredFormat(backgroundColor,textFormat)"
-              }
-            },
-            {
-              repeatCell: {
-                range: { sheetId: repertoryId, startRowIndex: 15, endRowIndex: 16, startColumnIndex: 3, endColumnIndex: 4 },
-                cell: { userEnteredFormat: { backgroundColor: { red: 1, green: 1, blue: 1 }, textFormat: { bold: true, foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 } }, horizontalAlignment: "CENTER" } },
-                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
-              }
-            },
-            // Rank 2
-            {
-              repeatCell: {
-                range: { sheetId: repertoryId, startRowIndex: 16, endRowIndex: 17, startColumnIndex: 0, endColumnIndex: 1 },
-                cell: { userEnteredFormat: { backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 }, textFormat: { bold: true, foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } } } },
-                fields: "userEnteredFormat(backgroundColor,textFormat)"
-              }
-            },
-            {
-              repeatCell: {
-                range: { sheetId: repertoryId, startRowIndex: 16, endRowIndex: 17, startColumnIndex: 1, endColumnIndex: 2 },
-                cell: { userEnteredFormat: { backgroundColor: { red: 1, green: 1, blue: 1 }, textFormat: { bold: true, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } }, horizontalAlignment: "CENTER" } },
-                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
-              }
-            },
-            {
-              repeatCell: {
-                range: { sheetId: repertoryId, startRowIndex: 16, endRowIndex: 17, startColumnIndex: 2, endColumnIndex: 3 },
-                cell: { userEnteredFormat: { backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 }, textFormat: { foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } } } },
-                fields: "userEnteredFormat(backgroundColor,textFormat)"
-              }
-            },
-            {
-              repeatCell: {
-                range: { sheetId: repertoryId, startRowIndex: 16, endRowIndex: 17, startColumnIndex: 3, endColumnIndex: 4 },
-                cell: { userEnteredFormat: { backgroundColor: { red: 1, green: 1, blue: 1 }, textFormat: { bold: true, foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 } }, horizontalAlignment: "CENTER" } },
-                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
-              }
-            },
-            // Rank 3
-            {
-              repeatCell: {
-                range: { sheetId: repertoryId, startRowIndex: 17, endRowIndex: 18, startColumnIndex: 0, endColumnIndex: 1 },
-                cell: { userEnteredFormat: { backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 }, textFormat: { bold: true, foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } } } },
-                fields: "userEnteredFormat(backgroundColor,textFormat)"
-              }
-            },
-            {
-              repeatCell: {
-                range: { sheetId: repertoryId, startRowIndex: 17, endRowIndex: 18, startColumnIndex: 1, endColumnIndex: 2 },
-                cell: { userEnteredFormat: { backgroundColor: { red: 1, green: 1, blue: 1 }, textFormat: { bold: true, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } }, horizontalAlignment: "CENTER" } },
-                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
-              }
-            },
-            {
-              repeatCell: {
-                range: { sheetId: repertoryId, startRowIndex: 17, endRowIndex: 18, startColumnIndex: 2, endColumnIndex: 3 },
-                cell: { userEnteredFormat: { backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 }, textFormat: { foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } } } },
-                fields: "userEnteredFormat(backgroundColor,textFormat)"
-              }
-            },
-            {
-              repeatCell: {
-                range: { sheetId: repertoryId, startRowIndex: 17, endRowIndex: 18, startColumnIndex: 3, endColumnIndex: 4 },
-                cell: { userEnteredFormat: { backgroundColor: { red: 1, green: 1, blue: 1 }, textFormat: { bold: true, foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 } }, horizontalAlignment: "CENTER" } },
-                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
-              }
-            },
-            // Outline border for Rank cards A15:D18
-            {
-              updateBorders: {
-                range: { sheetId: repertoryId, startRowIndex: 14, endRowIndex: 18, startColumnIndex: 0, endColumnIndex: 4 },
-                top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
-                bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
-                left: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
-                right: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
-                innerHorizontal: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } },
-                innerVertical: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } }
-              }
-            }
-          );
+          requests.push(...getRepertoryFormattingRequests(repertoryId, 5));
         }
 
         // Formatting for Treatment Planner
@@ -2108,6 +1725,75 @@ export async function createPatientClinicalSheet(
                 fields: "userEnteredFormat(textFormat,verticalAlignment,horizontalAlignment,wrapStrategy)"
               }
             },
+            // Format B15 (Total Program Cost) - bold & brand blue color (#0F4C81)
+            {
+              repeatCell: {
+                range: { sheetId: plannerId, startRowIndex: 14, endRowIndex: 15, startColumnIndex: 1, endColumnIndex: 2 },
+                cell: {
+                  userEnteredFormat: {
+                    textFormat: { bold: true, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } }
+                  }
+                },
+                fields: "userEnteredFormat.textFormat(bold,foregroundColor)"
+              }
+            },
+            // Format B16 (Amount Received) - bold
+            {
+              repeatCell: {
+                range: { sheetId: plannerId, startRowIndex: 15, endRowIndex: 16, startColumnIndex: 1, endColumnIndex: 2 },
+                cell: {
+                  userEnteredFormat: {
+                    textFormat: { bold: true }
+                  }
+                },
+                fields: "userEnteredFormat.textFormat.bold"
+              }
+            },
+            // Format B17 (Balance Due) - bold
+            {
+              repeatCell: {
+                range: { sheetId: plannerId, startRowIndex: 16, endRowIndex: 17, startColumnIndex: 1, endColumnIndex: 2 },
+                cell: {
+                  userEnteredFormat: {
+                    textFormat: { bold: true }
+                  }
+                },
+                fields: "userEnteredFormat.textFormat.bold"
+              }
+            },
+            // Conditional formatting for B17 (Balance Due): green if <= 0, red if > 0
+            {
+              addConditionalFormatRule: {
+                rule: {
+                  ranges: [
+                    { sheetId: plannerId, startRowIndex: 16, endRowIndex: 17, startColumnIndex: 1, endColumnIndex: 2 }
+                  ],
+                  booleanRule: {
+                    condition: { type: "NUMBER_GREATER", values: [{ userEnteredValue: "0" }] },
+                    format: {
+                      textFormat: { foregroundColor: { red: 225/255, green: 29/255, blue: 72/255 }, bold: true } // rose-600
+                    }
+                  }
+                },
+                index: 0
+              }
+            },
+            {
+              addConditionalFormatRule: {
+                rule: {
+                  ranges: [
+                    { sheetId: plannerId, startRowIndex: 16, endRowIndex: 17, startColumnIndex: 1, endColumnIndex: 2 }
+                  ],
+                  booleanRule: {
+                    condition: { type: "NUMBER_LESS_THAN_OR_EQUAL", values: [{ userEnteredValue: "0" }] },
+                    format: {
+                      textFormat: { foregroundColor: { red: 4/255, green: 120/255, blue: 87/255 }, bold: true } // emerald-700
+                    }
+                  }
+                },
+                index: 1
+              }
+            },
             // Apply solid thin borders to tables and cards
             {
               updateBorders: {
@@ -2184,25 +1870,31 @@ export async function createPatientClinicalSheet(
             },
             {
               updateDimensionProperties: {
-                range: { sheetId: financeId, dimension: "ROWS", startIndex: 4, endIndex: 5 },
+                range: { sheetId: financeId, dimension: "ROWS", startIndex: 4, endIndex: 5 }, // Subtitle Row
+                properties: { pixelSize: 20 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: financeId, dimension: "ROWS", startIndex: 5, endIndex: 6 }, // Spacer Row
                 properties: { pixelSize: 15 }, fields: "pixelSize"
               }
             },
             {
               updateDimensionProperties: {
-                range: { sheetId: financeId, dimension: "ROWS", startIndex: 5, endIndex: 6 },
+                range: { sheetId: financeId, dimension: "ROWS", startIndex: 6, endIndex: 7 }, // Section Header Row
                 properties: { pixelSize: 28 }, fields: "pixelSize"
               }
             },
             {
               updateDimensionProperties: {
-                range: { sheetId: financeId, dimension: "ROWS", startIndex: 6, endIndex: 7 },
+                range: { sheetId: financeId, dimension: "ROWS", startIndex: 7, endIndex: 8 }, // Table Header Row
                 properties: { pixelSize: 26 }, fields: "pixelSize"
               }
             },
             {
               updateDimensionProperties: {
-                range: { sheetId: financeId, dimension: "ROWS", startIndex: 7, endIndex: 100 },
+                range: { sheetId: financeId, dimension: "ROWS", startIndex: 8, endIndex: 100 }, // Table Data Rows
                 properties: { pixelSize: 22 }, fields: "pixelSize"
               }
             },
@@ -2289,6 +1981,12 @@ export async function createPatientClinicalSheet(
                 mergeType: "MERGE_ALL"
               }
             },
+            {
+              mergeCells: {
+                range: { sheetId: financeId, startRowIndex: 4, endRowIndex: 5, startColumnIndex: 0, endColumnIndex: 2 },
+                mergeType: "MERGE_ALL"
+              }
+            },
             // Card 2
             {
               mergeCells: {
@@ -2302,6 +2000,12 @@ export async function createPatientClinicalSheet(
                 mergeType: "MERGE_ALL"
               }
             },
+            {
+              mergeCells: {
+                range: { sheetId: financeId, startRowIndex: 4, endRowIndex: 5, startColumnIndex: 2, endColumnIndex: 4 },
+                mergeType: "MERGE_ALL"
+              }
+            },
             // Card 3
             {
               mergeCells: {
@@ -2312,6 +2016,12 @@ export async function createPatientClinicalSheet(
             {
               mergeCells: {
                 range: { sheetId: financeId, startRowIndex: 3, endRowIndex: 4, startColumnIndex: 4, endColumnIndex: 6 },
+                mergeType: "MERGE_ALL"
+              }
+            },
+            {
+              mergeCells: {
+                range: { sheetId: financeId, startRowIndex: 4, endRowIndex: 5, startColumnIndex: 4, endColumnIndex: 6 },
                 mergeType: "MERGE_ALL"
               }
             },
@@ -2337,6 +2047,20 @@ export async function createPatientClinicalSheet(
                   userEnteredFormat: {
                     backgroundColor: { red: 1, green: 1, blue: 1 },
                     textFormat: { bold: true, fontSize: 13, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE",
+                    numberFormat: { type: "CURRENCY", pattern: "\"₹\"#,##0" }
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment,numberFormat)"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: financeId, startRowIndex: 4, endRowIndex: 5, startColumnIndex: 0, endColumnIndex: 2 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 1, green: 1, blue: 1 },
+                    textFormat: { fontSize: 8, foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -2345,7 +2069,7 @@ export async function createPatientClinicalSheet(
             },
             {
               updateBorders: {
-                range: { sheetId: financeId, startRowIndex: 2, endRowIndex: 4, startColumnIndex: 0, endColumnIndex: 2 },
+                range: { sheetId: financeId, startRowIndex: 2, endRowIndex: 5, startColumnIndex: 0, endColumnIndex: 2 },
                 top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
                 bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
                 left: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
@@ -2373,6 +2097,20 @@ export async function createPatientClinicalSheet(
                   userEnteredFormat: {
                     backgroundColor: { red: 1, green: 1, blue: 1 },
                     textFormat: { bold: true, fontSize: 13, foregroundColor: { red: 46/255, green: 139/255, blue: 87/255 } }, // SeaGreen #2E8B57
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE",
+                    numberFormat: { type: "CURRENCY", pattern: "\"₹\"#,##0" }
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment,numberFormat)"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: financeId, startRowIndex: 4, endRowIndex: 5, startColumnIndex: 2, endColumnIndex: 4 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 1, green: 1, blue: 1 },
+                    textFormat: { fontSize: 8, foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -2381,7 +2119,7 @@ export async function createPatientClinicalSheet(
             },
             {
               updateBorders: {
-                range: { sheetId: financeId, startRowIndex: 2, endRowIndex: 4, startColumnIndex: 2, endColumnIndex: 4 },
+                range: { sheetId: financeId, startRowIndex: 2, endRowIndex: 5, startColumnIndex: 2, endColumnIndex: 4 },
                 top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
                 bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
                 left: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
@@ -2409,6 +2147,20 @@ export async function createPatientClinicalSheet(
                   userEnteredFormat: {
                     backgroundColor: { red: 1, green: 1, blue: 1 },
                     textFormat: { bold: true, fontSize: 13, foregroundColor: { red: 139/255, green: 46/255, blue: 46/255 } }, // Deep Red #8B2E2E
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE",
+                    numberFormat: { type: "CURRENCY", pattern: "\"₹\"#,##0" }
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment,numberFormat)"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: financeId, startRowIndex: 4, endRowIndex: 5, startColumnIndex: 4, endColumnIndex: 6 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 1, green: 1, blue: 1 },
+                    textFormat: { fontSize: 8, foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -2417,23 +2169,23 @@ export async function createPatientClinicalSheet(
             },
             {
               updateBorders: {
-                range: { sheetId: financeId, startRowIndex: 2, endRowIndex: 4, startColumnIndex: 4, endColumnIndex: 6 },
+                range: { sheetId: financeId, startRowIndex: 2, endRowIndex: 5, startColumnIndex: 4, endColumnIndex: 6 },
                 top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
                 bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
                 left: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
                 right: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } }
               }
             },
-            // Table Section Header Merged A6:H6
+            // Table Section Header Merged A7:H7
             {
               mergeCells: {
-                range: { sheetId: financeId, startRowIndex: 5, endRowIndex: 6, startColumnIndex: 0, endColumnIndex: 8 },
+                range: { sheetId: financeId, startRowIndex: 6, endRowIndex: 7, startColumnIndex: 0, endColumnIndex: 8 },
                 mergeType: "MERGE_ALL"
               }
             },
             {
               repeatCell: {
-                range: { sheetId: financeId, startRowIndex: 5, endRowIndex: 6, startColumnIndex: 0, endColumnIndex: 8 },
+                range: { sheetId: financeId, startRowIndex: 6, endRowIndex: 7, startColumnIndex: 0, endColumnIndex: 8 },
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 226/255, green: 242/255, blue: 253/255 },
@@ -2444,10 +2196,10 @@ export async function createPatientClinicalSheet(
                 fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
               }
             },
-            // Transaction History Table Headers (Row 7, index 6)
+            // Transaction History Table Headers (Row 8, index 7)
             {
               repeatCell: {
-                range: { sheetId: financeId, startRowIndex: 6, endRowIndex: 7, startColumnIndex: 0, endColumnIndex: 8 },
+                range: { sheetId: financeId, startRowIndex: 7, endRowIndex: 8, startColumnIndex: 0, endColumnIndex: 8 },
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 }, // slate-200
@@ -2460,22 +2212,22 @@ export async function createPatientClinicalSheet(
             },
             {
               repeatCell: {
-                range: { sheetId: financeId, startRowIndex: 6, endRowIndex: 7, startColumnIndex: 1, endColumnIndex: 2 },
+                range: { sheetId: financeId, startRowIndex: 7, endRowIndex: 8, startColumnIndex: 1, endColumnIndex: 2 },
                 cell: { userEnteredFormat: { horizontalAlignment: "LEFT" } },
                 fields: "userEnteredFormat.horizontalAlignment"
               }
             },
             {
               repeatCell: {
-                range: { sheetId: financeId, startRowIndex: 6, endRowIndex: 7, startColumnIndex: 3, endColumnIndex: 6 },
+                range: { sheetId: financeId, startRowIndex: 7, endRowIndex: 8, startColumnIndex: 3, endColumnIndex: 6 },
                 cell: { userEnteredFormat: { horizontalAlignment: "RIGHT" } },
                 fields: "userEnteredFormat.horizontalAlignment"
               }
             },
-            // Transaction data row alignments and fonts (Rows 8-100)
+            // Transaction data row alignments and fonts (Rows 9-100)
             {
               repeatCell: {
-                range: { sheetId: financeId, startRowIndex: 7, endRowIndex: 100, startColumnIndex: 0, endColumnIndex: 8 },
+                range: { sheetId: financeId, startRowIndex: 8, endRowIndex: 100, startColumnIndex: 0, endColumnIndex: 8 },
                 cell: {
                   userEnteredFormat: {
                     textFormat: { fontSize: 10 },
@@ -2487,25 +2239,25 @@ export async function createPatientClinicalSheet(
             },
             {
               repeatCell: {
-                range: { sheetId: financeId, startRowIndex: 7, endRowIndex: 100, startColumnIndex: 0, endColumnIndex: 1 },
+                range: { sheetId: financeId, startRowIndex: 8, endRowIndex: 100, startColumnIndex: 0, endColumnIndex: 1 },
                 cell: { userEnteredFormat: { horizontalAlignment: "CENTER" } },
                 fields: "userEnteredFormat.horizontalAlignment"
               }
             },
             {
               repeatCell: {
-                range: { sheetId: financeId, startRowIndex: 7, endRowIndex: 100, startColumnIndex: 2, endColumnIndex: 3 },
+                range: { sheetId: financeId, startRowIndex: 8, endRowIndex: 100, startColumnIndex: 2, endColumnIndex: 3 },
                 cell: { userEnteredFormat: { horizontalAlignment: "CENTER" } },
                 fields: "userEnteredFormat.horizontalAlignment"
               }
             },
             {
               repeatCell: {
-                range: { sheetId: financeId, startRowIndex: 7, endRowIndex: 100, startColumnIndex: 3, endColumnIndex: 6 },
+                range: { sheetId: financeId, startRowIndex: 8, endRowIndex: 100, startColumnIndex: 3, endColumnIndex: 6 },
                 cell: {
                   userEnteredFormat: {
                     horizontalAlignment: "RIGHT",
-                    numberFormat: { type: "NUMBER", pattern: "#,##0" }
+                    numberFormat: { type: "CURRENCY", pattern: "\"₹\"#,##0" }
                   }
                 },
                 fields: "userEnteredFormat(horizontalAlignment,numberFormat)"
@@ -2513,14 +2265,14 @@ export async function createPatientClinicalSheet(
             },
             {
               repeatCell: {
-                range: { sheetId: financeId, startRowIndex: 7, endRowIndex: 100, startColumnIndex: 6, endColumnIndex: 8 },
+                range: { sheetId: financeId, startRowIndex: 8, endRowIndex: 100, startColumnIndex: 6, endColumnIndex: 8 },
                 cell: { userEnteredFormat: { horizontalAlignment: "CENTER" } },
                 fields: "userEnteredFormat.horizontalAlignment"
               }
             },
             {
               repeatCell: {
-                range: { sheetId: financeId, startRowIndex: 7, endRowIndex: 100, startColumnIndex: 7, endColumnIndex: 8 },
+                range: { sheetId: financeId, startRowIndex: 8, endRowIndex: 100, startColumnIndex: 7, endColumnIndex: 8 },
                 cell: {
                   userEnteredFormat: {
                     textFormat: { bold: true }
@@ -2532,13 +2284,65 @@ export async function createPatientClinicalSheet(
             // Table outline and inner grid borders
             {
               updateBorders: {
-                range: { sheetId: financeId, startRowIndex: 6, endRowIndex: 100, startColumnIndex: 0, endColumnIndex: 8 },
+                range: { sheetId: financeId, startRowIndex: 7, endRowIndex: 100, startColumnIndex: 0, endColumnIndex: 8 },
                 top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
                 bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
                 left: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
                 right: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
                 innerHorizontal: { style: "SOLID", color: { red: 241/255, green: 245/255, blue: 249/255 } },
                 innerVertical: { style: "SOLID", color: { red: 241/255, green: 245/255, blue: 249/255 } }
+              }
+            },
+            // Status column conditional formatting rules (PAID, PARTIALLY PAID, UNPAID)
+            {
+              addConditionalFormatRule: {
+                rule: {
+                  ranges: [
+                    { sheetId: financeId, startRowIndex: 8, endRowIndex: 100, startColumnIndex: 7, endColumnIndex: 8 }
+                  ],
+                  booleanRule: {
+                    condition: { type: "TEXT_EQ", values: [{ userEnteredValue: "PAID" }] },
+                    format: {
+                      textFormat: { foregroundColor: { red: 4/255, green: 120/255, blue: 87/255 }, bold: true },
+                      backgroundColor: { red: 236/255, green: 253/255, blue: 245/255 }
+                    }
+                  }
+                },
+                index: 0
+              }
+            },
+            {
+              addConditionalFormatRule: {
+                rule: {
+                  ranges: [
+                    { sheetId: financeId, startRowIndex: 8, endRowIndex: 100, startColumnIndex: 7, endColumnIndex: 8 }
+                  ],
+                  booleanRule: {
+                    condition: { type: "TEXT_EQ", values: [{ userEnteredValue: "PARTIALLY PAID" }] },
+                    format: {
+                      textFormat: { foregroundColor: { red: 67/255, green: 56/255, blue: 202/255 }, bold: true },
+                      backgroundColor: { red: 238/255, green: 242/255, blue: 255/255 }
+                    }
+                  }
+                },
+                index: 1
+              }
+            },
+            {
+              addConditionalFormatRule: {
+                rule: {
+                  ranges: [
+                    { sheetId: financeId, startRowIndex: 8, endRowIndex: 100, startColumnIndex: 7, endColumnIndex: 8 }
+                  ],
+                  booleanRule: {
+                    condition: { type: "TEXT_EQ", values: [{ userEnteredValue: "UNPAID" }] },
+                    format: {
+                      textFormat: { foregroundColor: { red: 190/255, green: 24/255, blue: 74/255 }, bold: true },
+                      backgroundColor: { red: 255/255, green: 241/255, blue: 242/255 }
+                    }
+                  }
+                },
+                index: 2
               }
             }
           );
@@ -2615,6 +2419,80 @@ export async function createPatientClinicalSheet(
                   }
                 },
                 fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            // Row heights
+            {
+              updateDimensionProperties: {
+                range: { sheetId: attachmentsId, dimension: "ROWS", startIndex: 0, endIndex: 1 },
+                properties: { pixelSize: 35 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: attachmentsId, dimension: "ROWS", startIndex: 1, endIndex: 2 },
+                properties: { pixelSize: 15 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: attachmentsId, dimension: "ROWS", startIndex: 2, endIndex: 3 },
+                properties: { pixelSize: 26 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: attachmentsId, dimension: "ROWS", startIndex: 3, endIndex: 33 },
+                properties: { pixelSize: 22 }, fields: "pixelSize"
+              }
+            },
+            // Format data rows (Rows 4 to 33, indices 3 to 33)
+            {
+              repeatCell: {
+                range: { sheetId: attachmentsId, startRowIndex: 3, endRowIndex: 33, startColumnIndex: 0, endColumnIndex: 4 },
+                cell: {
+                  userEnteredFormat: {
+                    textFormat: { fontSize: 10 },
+                    verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(textFormat.fontSize,verticalAlignment)"
+              }
+            },
+            // Alignment for Columns A (Report Date) and B (Report Category)
+            {
+              repeatCell: {
+                range: { sheetId: attachmentsId, startRowIndex: 3, endRowIndex: 33, startColumnIndex: 0, endColumnIndex: 2 },
+                cell: {
+                  userEnteredFormat: {
+                    horizontalAlignment: "CENTER"
+                  }
+                },
+                fields: "userEnteredFormat.horizontalAlignment"
+              }
+            },
+            // Alignment for Columns C (Investigation Target) and D (Report Hyperlink)
+            {
+              repeatCell: {
+                range: { sheetId: attachmentsId, startRowIndex: 3, endRowIndex: 33, startColumnIndex: 2, endColumnIndex: 4 },
+                cell: {
+                  userEnteredFormat: {
+                    horizontalAlignment: "LEFT"
+                  }
+                },
+                fields: "userEnteredFormat.horizontalAlignment"
+              }
+            },
+            // Grid borders (outer and inner)
+            {
+              updateBorders: {
+                range: { sheetId: attachmentsId, startRowIndex: 2, endRowIndex: 33, startColumnIndex: 0, endColumnIndex: 4 },
+                top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                left: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                right: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+                innerHorizontal: { style: "SOLID", color: { red: 241/255, green: 245/255, blue: 249/255 } },
+                innerVertical: { style: "SOLID", color: { red: 241/255, green: 245/255, blue: 249/255 } }
               }
             }
           );
@@ -3144,6 +3022,23 @@ export async function appendPatientToMasterRecord(
 }
 
 /**
+ * Standard keynote definitions for core repertory remedies
+ */
+const REMEDY_DETAILS_LOOKUP: Record<string, { fullName: string; keynotes: string }> = {
+  "Nux-v": { fullName: "Nux Vomica", keynotes: "Chilly, irritable, stomach complaints worse after eating." },
+  "Lyc": { fullName: "Lycopodium Clavatum", keynotes: "Right-sided, flatulence, gas, warm food cravings." },
+  "Ars": { fullName: "Arsenicum Album", keynotes: "Great anxiety, restlessness, chilly, worse at midnight." },
+  "Puls": { fullName: "Pulsatilla Pratensis", keynotes: "Mild, yielding disposition, desires open air and consolation, thirstless." },
+  "Sulph": { fullName: "Sulphur", keynotes: "Warm-blooded, desires sweets, empty sinking at 11 AM, red orifices." },
+  "Rhus-t": { fullName: "Rhus Toxicodendron", keynotes: "Restless, joints stiff on first motion, improves with continuous motion, worse damp cold." },
+  "Calc": { fullName: "Calcarea Carbonica", keynotes: "Chilly, sluggish metabolism, tendency to obesity, sweaty head, desires eggs." },
+  "Sil": { fullName: "Silicea", keynotes: "Chilly, lacks grit, sensitive to cold drafts, sweaty feet (offensive), slow healing." },
+  "Nat-m": { fullName: "Natrum Muriaticum", keynotes: "Reserved, silent grief, craves salt, worse warmth of sun, mapped emotional tension." },
+  "Ign": { fullName: "Ignatia Amara", keynotes: "Ailments from recent grief or shock, sighing, contradictory symptoms." },
+  "Sep": { fullName: "Sepia Officinalis", keynotes: "Indifferent to loved ones, dragging down sensation, better from vigorous exercise." }
+};
+
+/**
  * Appends the AI diagnostics report to the patient's individual clinical sheet
  */
 export async function appendAiReportToClinicalSheet(
@@ -3159,6 +3054,7 @@ export async function appendAiReportToClinicalSheet(
   const sheets = google.sheets({ version: "v4", auth });
 
   try {
+    // 1. Write the main AI diagnostics report to Case Taking tab (which will populate E5 on AI Repertory Lab dynamically via formula)
     await sheets.spreadsheets.values.update({
       spreadsheetId: sheetId,
       range: "'Case Taking'!A52:B55",
@@ -3172,6 +3068,89 @@ export async function appendAiReportToClinicalSheet(
         ]
       }
     });
+
+    // 2. Ensure the top rankings formulas are written in AI Repertory Lab Col B and D (just in case)
+    await sheets.spreadsheets.values.update({
+      spreadsheetId: sheetId,
+      range: "'AI Repertory Lab'!A12:D14",
+      valueInputOption: "USER_ENTERED",
+      requestBody: {
+        values: [
+          ["Rank 1 Remedy", `=IFERROR(INDEX('Repertorization'!B:B, MATCH("Rank 1", 'Repertorization'!A:A, 0)), "N/A")`, "Score", `=IFERROR(INDEX('Repertorization'!D:D, MATCH("Rank 1", 'Repertorization'!A:A, 0)), 0)`],
+          ["Rank 2 Remedy", `=IFERROR(INDEX('Repertorization'!B:B, MATCH("Rank 2", 'Repertorization'!A:A, 0)), "N/A")`, "Score", `=IFERROR(INDEX('Repertorization'!D:D, MATCH("Rank 2", 'Repertorization'!A:A, 0)), 0)`],
+          ["Rank 3 Remedy", `=IFERROR(INDEX('Repertorization'!B:B, MATCH("Rank 3", 'Repertorization'!A:A, 0)), "N/A")`, "Score", `=IFERROR(INDEX('Repertorization'!D:D, MATCH("Rank 3", 'Repertorization'!A:A, 0)), 0)`],
+        ]
+      }
+    });
+
+    // 3. Read back the calculated Rank 1, 2, 3 remedy abbreviations from AI Repertory Lab B12:B14
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: sheetId,
+      range: "'AI Repertory Lab'!B12:B14"
+    });
+
+    const rows = response.data.values || [];
+    const remedyRanks = [
+      rows[0]?.[0] || "N/A",
+      rows[1]?.[0] || "N/A",
+      rows[2]?.[0] || "N/A"
+    ];
+
+    // 4. Try parsing the aiReport string if it is a JSON representation from the AI Diagnostics
+    let aiTopRemedies: any[] = [];
+    try {
+      const trimmed = aiReport.trim();
+      if (trimmed.startsWith("{")) {
+        const parsed = JSON.parse(trimmed);
+        aiTopRemedies = parsed?.top_remedies || parsed?.analysis?.top_remedies || [];
+      }
+    } catch (e) {
+      console.warn("Could not parse aiReport as JSON, using standard keynote fallbacks:", e);
+    }
+
+    // 5. Look up the full name and keynotes for each of the 3 remedies
+    const updateValues: string[][] = [];
+
+    remedyRanks.forEach((abbrev) => {
+      let fullName = "";
+      let keynotes = "";
+
+      // Try matching with AI-generated top remedies first
+      const matchedAiRem = aiTopRemedies.find(r => {
+        const rName = (r?.name || "").toLowerCase();
+        const abbrevLower = abbrev.toLowerCase();
+        return rName.includes(abbrevLower) || abbrevLower.includes(rName);
+      });
+
+      if (matchedAiRem) {
+        fullName = matchedAiRem.name;
+        keynotes = matchedAiRem.brief_keynotes || matchedAiRem.why_selected || "Constitutional simillimum keynote verification.";
+      } else {
+        // Fallback to standard lookup
+        const lookup = REMEDY_DETAILS_LOOKUP[abbrev];
+        if (lookup) {
+          fullName = lookup.fullName;
+          keynotes = lookup.keynotes;
+        } else {
+          fullName = abbrev !== "N/A" ? abbrev : "";
+          keynotes = abbrev !== "N/A" ? "Verify modalities, thermal response, and characteristic generals." : "";
+        }
+      }
+
+      const formattedName = fullName ? `${fullName}:` : "";
+      updateValues.push([formattedName, keynotes]);
+    });
+
+    // 6. Write the resolved names and keynotes to AI Repertory Lab E12:F14
+    await sheets.spreadsheets.values.update({
+      spreadsheetId: sheetId,
+      range: "'AI Repertory Lab'!E12:F14",
+      valueInputOption: "RAW",
+      requestBody: {
+        values: updateValues
+      }
+    });
+
   } catch (error) {
     console.error("Error writing AI report to patient Google Sheet:", error);
     throw error;
@@ -3233,6 +3212,7 @@ export async function syncConfigDbToClinicalSheet(
     potencies: string[];
     miasms: string[];
     locations: string[];
+    doctors?: string[];
     packages: Array<{ name: string; price: number }>;
   }
 ): Promise<void> {
@@ -3250,17 +3230,19 @@ export async function syncConfigDbToClinicalSheet(
       configDb.potencies.length,
       configDb.miasms.length,
       configDb.locations.length,
+      (configDb.doctors || []).length,
       configDb.packages.length
     );
 
     const rows = [];
     
-    // Row 0 corresponds to headers A-D and the first package in E-F
+    // Row 0 corresponds to headers A-E and the first package in F-G
     const firstPkg = configDb.packages[0] || { name: "", price: 0 };
     rows.push([
       "REMEDIES",
       "POTENCIES",
       "MIASMS",
+      "CLINIC BRANCHES",
       "DOCTORS",
       firstPkg.name || "",
       firstPkg.price || ""
@@ -3273,14 +3255,15 @@ export async function syncConfigDbToClinicalSheet(
       const potency = configDb.potencies[i] || "";
       const miasm = configDb.miasms[i] || "";
       const loc = configDb.locations[i] || "";
+      const doc = configDb.doctors?.[i] || "";
       const pkg = configDb.packages[i + 1] || { name: "", price: "" };
 
-      rows.push([remedy, potency, miasm, loc, pkg.name || "", pkg.price || ""]);
+      rows.push([remedy, potency, miasm, loc, doc, pkg.name || "", pkg.price || ""]);
     }
 
     await sheets.spreadsheets.values.update({
       spreadsheetId: sheetId,
-      range: "'Config DB'!A3:F100",
+      range: "'Config DB'!A3:G100",
       valueInputOption: "USER_ENTERED",
       requestBody: {
         values: rows
@@ -3957,6 +3940,670 @@ export async function downloadFileFromGoogleDrive(fileId: string, destPath: stri
     return false;
   }
 }
+
+export interface RepertoryExportRubric {
+  name: string;
+  chapter: string;
+  source: string;
+  weight: number;
+  grades: Record<string, number>;
+}
+
+/**
+ * Helper to generate formatting requests for the Repertorization tab dynamically based on the number of rubrics (N).
+ */
+export function getRepertoryFormattingRequests(repertoryId: number, N: number, existingRules: any[] = []): any[] {
+  const requests: any[] = [];
+
+  // Clear existing conditional format rules
+  existingRules.forEach(() => {
+    requests.push({
+      deleteConditionalFormatRule: {
+        index: 0,
+        sheetId: repertoryId
+      }
+    });
+  });
+
+  // Hide gridlines
+  requests.push({
+    updateSheetProperties: {
+      properties: {
+        sheetId: repertoryId,
+        gridProperties: { hideGridlines: true }
+      },
+      fields: "gridProperties.hideGridlines"
+    }
+  });
+
+  // Column widths
+  requests.push(
+    {
+      updateDimensionProperties: {
+        range: { sheetId: repertoryId, dimension: "COLUMNS", startIndex: 0, endIndex: 1 },
+        properties: { pixelSize: 240 }, fields: "pixelSize"
+      }
+    },
+    {
+      updateDimensionProperties: {
+        range: { sheetId: repertoryId, dimension: "COLUMNS", startIndex: 1, endIndex: 2 },
+        properties: { pixelSize: 140 }, fields: "pixelSize"
+      }
+    },
+    {
+      updateDimensionProperties: {
+        range: { sheetId: repertoryId, dimension: "COLUMNS", startIndex: 2, endIndex: 3 },
+        properties: { pixelSize: 80 }, fields: "pixelSize"
+      }
+    },
+    {
+      updateDimensionProperties: {
+        range: { sheetId: repertoryId, dimension: "COLUMNS", startIndex: 3, endIndex: 4 },
+        properties: { pixelSize: 120 }, fields: "pixelSize"
+      }
+    },
+    {
+      updateDimensionProperties: {
+        range: { sheetId: repertoryId, dimension: "COLUMNS", startIndex: 4, endIndex: 15 },
+        properties: { pixelSize: 65 }, fields: "pixelSize"
+      }
+    },
+    {
+      updateDimensionProperties: {
+        range: { sheetId: repertoryId, dimension: "COLUMNS", startIndex: 15, endIndex: 16 },
+        properties: { pixelSize: 90 }, fields: "pixelSize"
+      }
+    }
+  );
+
+  // Row Heights
+  requests.push(
+    {
+      updateDimensionProperties: {
+        range: { sheetId: repertoryId, dimension: "ROWS", startIndex: 0, endIndex: 1 },
+        properties: { pixelSize: 15 }, fields: "pixelSize"
+      }
+    },
+    {
+      updateDimensionProperties: {
+        range: { sheetId: repertoryId, dimension: "ROWS", startIndex: 1, endIndex: 2 },
+        properties: { pixelSize: 35 }, fields: "pixelSize"
+      }
+    }
+  );
+
+  // Merge Title Header (Cols A-P)
+  requests.push(
+    {
+      mergeCells: {
+        range: { sheetId: repertoryId, startRowIndex: 1, endRowIndex: 2, startColumnIndex: 0, endColumnIndex: 16 },
+        mergeType: "MERGE_ALL"
+      }
+    },
+    {
+      repeatCell: {
+        range: { sheetId: repertoryId, startRowIndex: 1, endRowIndex: 2, startColumnIndex: 0, endColumnIndex: 16 },
+        cell: {
+          userEnteredFormat: {
+            backgroundColor: { red: 15/255, green: 76/255, blue: 129/255 },
+            textFormat: { foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 13, bold: true },
+            horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+          }
+        },
+        fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+      }
+    }
+  );
+
+  // Table headers (Rubric, Chapter, etc. A3:P3)
+  requests.push({
+    repeatCell: {
+      range: { sheetId: repertoryId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 16 },
+      cell: {
+        userEnteredFormat: {
+          backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 },
+          textFormat: { foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 }, fontSize: 10, bold: true },
+          horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+        }
+      },
+      fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+    }
+  });
+
+  // Alternate matrix rows background (A4 to P[lastRubricRow])
+  for (let i = 0; i < N; i++) {
+    const rIdx = 3 + i;
+    const isOdd = i % 2 !== 0;
+    requests.push({
+      repeatCell: {
+        range: { sheetId: repertoryId, startRowIndex: rIdx, endRowIndex: rIdx + 1, startColumnIndex: 0, endColumnIndex: 16 },
+        cell: {
+          userEnteredFormat: {
+            backgroundColor: isOdd 
+              ? { red: 248/255, green: 250/255, blue: 252/255 }
+              : { red: 1, green: 1, blue: 1 }
+          }
+        },
+        fields: "userEnteredFormat.backgroundColor"
+      }
+    });
+  }
+
+  // Grid borders for the matrix range (A3 to P[lastRubricRow], which is startRowIndex 2 to 3+N)
+  requests.push({
+    updateBorders: {
+      range: { sheetId: repertoryId, startRowIndex: 2, endRowIndex: 3 + N, startColumnIndex: 0, endColumnIndex: 16 },
+      top: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } },
+      bottom: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } },
+      left: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } },
+      right: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } },
+      innerHorizontal: { style: "SOLID", color: { red: 241/255, green: 245/255, blue: 249/255 } },
+      innerVertical: { style: "SOLID", color: { red: 241/255, green: 245/255, blue: 249/255 } }
+    }
+  });
+
+  // Centering Remedy Grades (E4 to O[lastRubricRow])
+  requests.push({
+    repeatCell: {
+      range: { sheetId: repertoryId, startRowIndex: 3, endRowIndex: 3 + N, startColumnIndex: 4, endColumnIndex: 15 },
+      cell: { userEnteredFormat: { horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE" } },
+      fields: "userEnteredFormat.horizontalAlignment,userEnteredFormat.verticalAlignment"
+    }
+  });
+
+  // Centering and bold blue styling for Totality Score column values (Column P)
+  requests.push({
+    repeatCell: {
+      range: { sheetId: repertoryId, startRowIndex: 3, endRowIndex: 3 + N, startColumnIndex: 15, endColumnIndex: 16 },
+      cell: {
+        userEnteredFormat: {
+          textFormat: { bold: true, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+          horizontalAlignment: "CENTER",
+          verticalAlignment: "MIDDLE"
+        }
+      },
+      fields: "userEnteredFormat.textFormat,userEnteredFormat.horizontalAlignment,userEnteredFormat.verticalAlignment"
+    }
+  });
+
+  // Conditional formatting for grades in the matrix range E4:O[lastRubricRow]
+  requests.push(
+    {
+      addConditionalFormatRule: {
+        rule: {
+          ranges: [
+            { sheetId: repertoryId, startRowIndex: 3, endRowIndex: 3 + N, startColumnIndex: 4, endColumnIndex: 15 }
+          ],
+          booleanRule: {
+            condition: { type: "NUMBER_GREATER", values: [{ userEnteredValue: "0" }] },
+            format: {
+              backgroundColor: { red: 236/255, green: 253/255, blue: 245/255 },
+              textFormat: { foregroundColor: { red: 4/255, green: 120/255, blue: 87/255 }, bold: true }
+            }
+          }
+        },
+        index: 0
+      }
+    },
+    {
+      addConditionalFormatRule: {
+        rule: {
+          ranges: [
+            { sheetId: repertoryId, startRowIndex: 3, endRowIndex: 3 + N, startColumnIndex: 4, endColumnIndex: 15 }
+          ],
+          booleanRule: {
+            condition: { type: "NUMBER_EQ", values: [{ userEnteredValue: "0" }] },
+            format: {
+              textFormat: { foregroundColor: { red: 203/255, green: 213/255, blue: 225/255 } }
+            }
+          }
+        },
+        index: 1
+      }
+    }
+  );
+
+  // Clear formatting and borders for spacer rows (from 3+N to 5+N)
+  requests.push(
+    {
+      repeatCell: {
+        range: { sheetId: repertoryId, startRowIndex: 3 + N, endRowIndex: 5 + N, startColumnIndex: 0, endColumnIndex: 16 },
+        cell: {
+          userEnteredFormat: {
+            backgroundColor: { red: 1, green: 1, blue: 1 },
+            textFormat: { bold: false, italic: false, fontSize: 10, foregroundColor: { red: 0, green: 0, blue: 0 } }
+          }
+        },
+        fields: "userEnteredFormat(backgroundColor,textFormat)"
+      }
+    },
+    {
+      updateBorders: {
+        range: { sheetId: repertoryId, startRowIndex: 3 + N, endRowIndex: 5 + N, startColumnIndex: 0, endColumnIndex: 16 },
+        top: { style: "NONE" },
+        bottom: { style: "NONE" },
+        left: { style: "NONE" },
+        right: { style: "NONE" },
+        innerHorizontal: { style: "NONE" },
+        innerVertical: { style: "NONE" }
+      }
+    }
+  );
+
+  // Symptom Coverage styling (Row 11, index 5+N, Cols A-P)
+  requests.push(
+    {
+      repeatCell: {
+        range: { sheetId: repertoryId, startRowIndex: 5 + N, endRowIndex: 6 + N, startColumnIndex: 0, endColumnIndex: 16 },
+        cell: {
+          userEnteredFormat: {
+            backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
+            textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } },
+            verticalAlignment: "MIDDLE"
+          }
+        },
+        fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
+      }
+    },
+    {
+      updateBorders: {
+        range: { sheetId: repertoryId, startRowIndex: 5 + N, endRowIndex: 6 + N, startColumnIndex: 0, endColumnIndex: 16 },
+        top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 226/255 } },
+        bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 226/255 } }
+      }
+    },
+    // Decimal format for Coverage row (Columns E to O)
+    {
+      repeatCell: {
+        range: { sheetId: repertoryId, startRowIndex: 5 + N, endRowIndex: 6 + N, startColumnIndex: 4, endColumnIndex: 15 },
+        cell: {
+          userEnteredFormat: {
+            numberFormat: { type: "NUMBER", pattern: "0.0" },
+            horizontalAlignment: "CENTER"
+          }
+        },
+        fields: "userEnteredFormat.numberFormat,userEnteredFormat.horizontalAlignment"
+      }
+    }
+  );
+
+  // Sum of Grades styling (Row 12, index 6+N, Cols A-P)
+  requests.push(
+    {
+      repeatCell: {
+        range: { sheetId: repertoryId, startRowIndex: 6 + N, endRowIndex: 7 + N, startColumnIndex: 0, endColumnIndex: 16 },
+        cell: {
+          userEnteredFormat: {
+            backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
+            textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+            verticalAlignment: "MIDDLE"
+          }
+        },
+        fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
+      }
+    },
+    {
+      repeatCell: {
+        range: { sheetId: repertoryId, startRowIndex: 6 + N, endRowIndex: 7 + N, startColumnIndex: 4, endColumnIndex: 15 },
+        cell: {
+          userEnteredFormat: {
+            horizontalAlignment: "CENTER"
+          }
+        },
+        fields: "userEnteredFormat.horizontalAlignment"
+      }
+    },
+    {
+      updateBorders: {
+        range: { sheetId: repertoryId, startRowIndex: 6 + N, endRowIndex: 7 + N, startColumnIndex: 0, endColumnIndex: 16 },
+        top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+        bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } }
+      }
+    }
+  );
+
+  // Totality Rank Score styling (Row 13, index 7+N, Cols A-P)
+  requests.push(
+    {
+      repeatCell: {
+        range: { sheetId: repertoryId, startRowIndex: 7 + N, endRowIndex: 8 + N, startColumnIndex: 0, endColumnIndex: 16 },
+        cell: {
+          userEnteredFormat: {
+            backgroundColor: { red: 226/255, green: 251/255, blue: 247/255 },
+            textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 } },
+            verticalAlignment: "MIDDLE"
+          }
+        },
+        fields: "userEnteredFormat(backgroundColor,textFormat,verticalAlignment)"
+      }
+    },
+    {
+      repeatCell: {
+        range: { sheetId: repertoryId, startRowIndex: 7 + N, endRowIndex: 8 + N, startColumnIndex: 4, endColumnIndex: 15 },
+        cell: {
+          userEnteredFormat: {
+            horizontalAlignment: "CENTER"
+          }
+        },
+        fields: "userEnteredFormat.horizontalAlignment"
+      }
+    },
+    {
+      updateBorders: {
+        range: { sheetId: repertoryId, startRowIndex: 7 + N, endRowIndex: 8 + N, startColumnIndex: 0, endColumnIndex: 16 },
+        top: { style: "SOLID", color: { red: 15/255, green: 118/255, blue: 110/255 } },
+        bottom: { style: "SOLID", color: { red: 15/255, green: 118/255, blue: 110/255 } }
+      }
+    }
+  );
+
+  // Clear spacer at index 8+N
+  requests.push(
+    {
+      repeatCell: {
+        range: { sheetId: repertoryId, startRowIndex: 8 + N, endRowIndex: 9 + N, startColumnIndex: 0, endColumnIndex: 16 },
+        cell: {
+          userEnteredFormat: {
+            backgroundColor: { red: 1, green: 1, blue: 1 },
+            textFormat: { bold: false, italic: false, fontSize: 10, foregroundColor: { red: 0, green: 0, blue: 0 } }
+          }
+        },
+        fields: "userEnteredFormat(backgroundColor,textFormat)"
+      }
+    },
+    {
+      updateBorders: {
+        range: { sheetId: repertoryId, startRowIndex: 8 + N, endRowIndex: 9 + N, startColumnIndex: 0, endColumnIndex: 16 },
+        top: { style: "NONE" },
+        bottom: { style: "NONE" },
+        left: { style: "NONE" },
+        right: { style: "NONE" },
+        innerHorizontal: { style: "NONE" },
+        innerVertical: { style: "NONE" }
+      }
+    }
+  );
+
+  // Top Remedy Ranking header (Row 15, index 9+N)
+  requests.push(
+    {
+      mergeCells: {
+        range: { sheetId: repertoryId, startRowIndex: 9 + N, endRowIndex: 10 + N, startColumnIndex: 0, endColumnIndex: 4 },
+        mergeType: "MERGE_ALL"
+      }
+    },
+    {
+      repeatCell: {
+        range: { sheetId: repertoryId, startRowIndex: 9 + N, endRowIndex: 10 + N, startColumnIndex: 0, endColumnIndex: 4 },
+        cell: {
+          userEnteredFormat: {
+            backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 },
+            textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+            horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+          }
+        },
+        fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+      }
+    }
+  );
+
+  // Rank Cards (Rows 16-18, indices 10+N to 13+N)
+  for (let r = 0; r < 3; r++) {
+    const cardRow = 10 + N + r;
+    const scoreColor = r === 0 
+      ? { red: 15/255, green: 118/255, blue: 110/255 } // Rank 1 teal
+      : r === 1
+        ? { red: 217/255, green: 119/255, blue: 6/255 } // Rank 2 amber
+        : { red: 79/255, green: 70/255, blue: 229/255 }; // Rank 3 indigo
+
+    requests.push(
+      {
+        repeatCell: {
+          range: { sheetId: repertoryId, startRowIndex: cardRow, endRowIndex: cardRow + 1, startColumnIndex: 0, endColumnIndex: 1 },
+          cell: { userEnteredFormat: { backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 }, textFormat: { bold: true, foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } } } },
+          fields: "userEnteredFormat(backgroundColor,textFormat)"
+        }
+      },
+      {
+        repeatCell: {
+          range: { sheetId: repertoryId, startRowIndex: cardRow, endRowIndex: cardRow + 1, startColumnIndex: 1, endColumnIndex: 2 },
+          cell: { userEnteredFormat: { backgroundColor: { red: 1, green: 1, blue: 1 }, textFormat: { bold: true, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } }, horizontalAlignment: "CENTER" } },
+          fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
+        }
+      },
+      {
+        repeatCell: {
+          range: { sheetId: repertoryId, startRowIndex: cardRow, endRowIndex: cardRow + 1, startColumnIndex: 2, endColumnIndex: 3 },
+          cell: { userEnteredFormat: { backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 }, textFormat: { foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } } } },
+          fields: "userEnteredFormat(backgroundColor,textFormat)"
+        }
+      },
+      {
+        repeatCell: {
+          range: { sheetId: repertoryId, startRowIndex: cardRow, endRowIndex: cardRow + 1, startColumnIndex: 3, endColumnIndex: 4 },
+          cell: { userEnteredFormat: { backgroundColor: { red: 1, green: 1, blue: 1 }, textFormat: { bold: true, foregroundColor: scoreColor }, horizontalAlignment: "CENTER" } },
+          fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
+        }
+      }
+    );
+  }
+
+  // Outline border for Rank cards (Rows 15-18, indices 9+N to 13+N)
+  requests.push({
+    updateBorders: {
+      range: { sheetId: repertoryId, startRowIndex: 9 + N, endRowIndex: 13 + N, startColumnIndex: 0, endColumnIndex: 4 },
+      top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+      bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+      left: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+      right: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
+      innerHorizontal: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } },
+      innerVertical: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } }
+    }
+  });
+
+  // Clear borders and styles below rank cards (up to row 50)
+  requests.push(
+    {
+      repeatCell: {
+        range: { sheetId: repertoryId, startRowIndex: 13 + N, endRowIndex: 50, startColumnIndex: 0, endColumnIndex: 16 },
+        cell: {
+          userEnteredFormat: {
+            backgroundColor: { red: 1, green: 1, blue: 1 },
+            textFormat: { bold: false, italic: false, fontSize: 10, foregroundColor: { red: 0, green: 0, blue: 0 } }
+          }
+        },
+        fields: "userEnteredFormat(backgroundColor,textFormat)"
+      }
+    },
+    {
+      updateBorders: {
+        range: { sheetId: repertoryId, startRowIndex: 13 + N, endRowIndex: 50, startColumnIndex: 0, endColumnIndex: 16 },
+        top: { style: "NONE" },
+        bottom: { style: "NONE" },
+        left: { style: "NONE" },
+        right: { style: "NONE" },
+        innerHorizontal: { style: "NONE" },
+        innerVertical: { style: "NONE" }
+      }
+    }
+  );
+
+  return requests;
+}
+
+/**
+ * Synchronizes selected repertory rubrics directly to the patient's clinical sheet 'Repertorization' tab
+ */
+export async function syncRepertoryToClinicalSheet(
+  sheetId: string,
+  rubrics: RepertoryExportRubric[]
+): Promise<void> {
+  const auth = getGoogleAuth();
+  if (!auth) {
+    console.warn("Google API Auth missing. Skipping Repertory sync to Google Sheets.");
+    return;
+  }
+
+  const sheets = google.sheets({ version: "v4", auth });
+
+  try {
+    const remedies = ["Nux-v", "Lyc", "Ars", "Puls", "Sulph", "Rhus-t", "Calc", "Sil", "Nat-m", "Ign", "Sep"];
+    const N = rubrics.length;
+    
+    // Fetch spreadsheet metadata to get the sheetId and existing conditional formatting rules of "Repertorization"
+    const spreadsheetInfo = await sheets.spreadsheets.get({ spreadsheetId: sheetId });
+    const repertorySheet = spreadsheetInfo.data.sheets?.find(s => s.properties?.title === "Repertorization");
+    if (!repertorySheet) {
+      throw new Error("Repertorization tab not found in the spreadsheet.");
+    }
+    const repertoryId = repertorySheet.properties?.sheetId ?? 3;
+    const existingRules = repertorySheet.conditionalFormats || [];
+
+    // In case N is 0, we just clear the sheet (or write default headers)
+    if (N === 0) {
+      const emptyRows = [
+        ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+        ["REPERTORY GRID & Dynamic ANALYSIS MATRIX", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+        ["Rubric Name", "Chapter / Location", "Source", "Importance Weight", ...remedies, "Totality Score"]
+      ];
+      for (let i = 3; i < 50; i++) {
+        emptyRows.push(Array(16).fill(""));
+      }
+      await sheets.spreadsheets.values.update({
+        spreadsheetId: sheetId,
+        range: "'Repertorization'!A1:P50",
+        valueInputOption: "USER_ENTERED",
+        requestBody: {
+          values: emptyRows
+        }
+      });
+      return;
+    }
+
+    const lastRubricRow = 4 + N - 1;
+
+    const rows: any[][] = [
+      ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+      ["REPERTORY GRID & Dynamic ANALYSIS MATRIX", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+      ["Rubric Name", "Chapter / Location", "Source", "Importance Weight", ...remedies, "Totality Score"]
+    ];
+
+    // Add rubric rows
+    rubrics.forEach((r, idx) => {
+      const rowNum = 4 + idx;
+      const rowValues = [
+        r.name,
+        r.chapter,
+        r.source || "Kent",
+        r.weight || 1
+      ];
+      remedies.forEach(rem => {
+        rowValues.push(r.grades[rem] || 0);
+      });
+      // Totality Score formula: e.g. "=D4*SUM(E4:O4)"
+      rowValues.push(`=D${rowNum}*SUM(E${rowNum}:O${rowNum})`);
+      rows.push(rowValues);
+    });
+
+    // Add spacer rows
+    rows.push(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
+    rows.push(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
+
+    // Formula row indices (1-indexed for sheets)
+    const coverageRowIndex = lastRubricRow + 3;
+    const sumGradesRowIndex = lastRubricRow + 4;
+    const totalityRankRowIndex = lastRubricRow + 5;
+
+    // Symptom Coverage row
+    const coverageRow = ["Symptom Coverage", "", "", ""];
+    remedies.forEach((rem, idx) => {
+      const colLetter = String.fromCharCode(69 + idx); // E, F, G...
+      coverageRow.push(`=COUNTIFS(${colLetter}4:${colLetter}${lastRubricRow}, ">0") / ${N}`);
+    });
+    coverageRow.push("");
+    rows.push(coverageRow);
+
+    // Sum of Grades row
+    const sumGradesRow = ["Sum of Grades", "", "", ""];
+    remedies.forEach((rem, idx) => {
+      const colLetter = String.fromCharCode(69 + idx); // E, F, G...
+      sumGradesRow.push(`=SUMPRODUCT(${colLetter}4:${colLetter}${lastRubricRow}, $D$4:$D$${lastRubricRow})`);
+    });
+    sumGradesRow.push("");
+    rows.push(sumGradesRow);
+
+    // Totality Rank Score row
+    const totalityRankRow = ["Totality Rank Score", "", "", ""];
+    remedies.forEach((rem, idx) => {
+      const colLetter = String.fromCharCode(69 + idx); // E, F, G...
+      totalityRankRow.push(`=(${colLetter}${coverageRowIndex}*100) + ${colLetter}${sumGradesRowIndex}`);
+    });
+    totalityRankRow.push("");
+    rows.push(totalityRankRow);
+
+    // Spacer
+    rows.push(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
+
+    // Top Remedy Ranking label
+    rows.push(["Top Remedy Ranking", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
+
+    // Rank 1
+    rows.push([
+      "Rank 1",
+      `=INDEX($E$3:$O$3, MATCH(MAX(E${totalityRankRowIndex}:O${totalityRankRowIndex}), E${totalityRankRowIndex}:O${totalityRankRowIndex}, 0))`,
+      "Score",
+      `=MAX(E${totalityRankRowIndex}:O${totalityRankRowIndex})`,
+      "", "", "", "", "", "", "", "", "", "", "", ""
+    ]);
+
+    // Rank 2
+    rows.push([
+      "Rank 2",
+      `=INDEX($E$3:$O$3, MATCH(LARGE(E${totalityRankRowIndex}:O${totalityRankRowIndex}, 2), E${totalityRankRowIndex}:O${totalityRankRowIndex}, 0))`,
+      "Score",
+      `=LARGE(E${totalityRankRowIndex}:O${totalityRankRowIndex}, 2)`,
+      "", "", "", "", "", "", "", "", "", "", "", ""
+    ]);
+
+    // Rank 3
+    rows.push([
+      "Rank 3",
+      `=INDEX($E$3:$O$3, MATCH(LARGE(E${totalityRankRowIndex}:O${totalityRankRowIndex}, 3), E${totalityRankRowIndex}:O${totalityRankRowIndex}, 0))`,
+      "Score",
+      `=LARGE(E${totalityRankRowIndex}:O${totalityRankRowIndex}, 3)`,
+      "", "", "", "", "", "", "", "", "", "", "", ""
+    ]);
+
+    // Fill up to 50 rows with blank rows to clear any previous data
+    const currentLength = rows.length;
+    for (let i = currentLength; i < 50; i++) {
+      rows.push(Array(16).fill(""));
+    }
+
+    await sheets.spreadsheets.values.update({
+      spreadsheetId: sheetId,
+      range: "'Repertorization'!A1:P50",
+      valueInputOption: "USER_ENTERED",
+      requestBody: {
+        values: rows
+      }
+    });
+
+    // Apply dynamic formatting to match the number of rubrics (N)
+    const formattingRequests = getRepertoryFormattingRequests(repertoryId, N, existingRules);
+    await sheets.spreadsheets.batchUpdate({
+      spreadsheetId: sheetId,
+      requestBody: {
+        requests: formattingRequests
+      }
+    });
+
+  } catch (error) {
+    console.error("Error writing repertory rubrics to patient Google Sheet:", error);
+    throw error;
+  }
+}
+
 
 
 
