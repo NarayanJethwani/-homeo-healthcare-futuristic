@@ -362,37 +362,38 @@ export const RELATIONSHIP_DICTIONARY: Record<string, {
   }
 };
 
+const STATIC_PARTICLES = Array.from({ length: 20 }, (_, i) => ({
+  size: (i * 7.3 % 2) + 1, // pseudo-random size between 1 and 3
+  delay: (i * 13.7 % 15), // pseudo-random delay between 0 and 15
+  duration: (i * 17.3 % 20) + 10, // pseudo-random duration between 10 and 30
+  left: (i * 23.9 % 100) // pseudo-random left position between 0 and 100
+}));
+
 const AntiGravityParticles = () => {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-      {[...Array(20)].map((_, i) => {
-        const size = Math.random() * 2 + 1;
-        const delay = Math.random() * 15;
-        const duration = Math.random() * 20 + 10;
-        const left = Math.random() * 100;
-        return (
-          <motion.div
-            key={i}
-            className="absolute rounded-full bg-teal-400/20"
-            style={{
-              width: size,
-              height: size,
-              left: `${left}%`,
-              bottom: "-10px",
-            }}
-            animate={{
-              y: ["0px", "-600px"],
-              opacity: [0, 0.7, 0],
-            }}
-            transition={{
-              duration: duration,
-              repeat: Infinity,
-              delay: delay,
-              ease: "linear",
-            }}
-          />
-        );
-      })}
+      {STATIC_PARTICLES.map((p, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full bg-teal-400/20"
+          style={{
+            width: p.size,
+            height: p.size,
+            left: `${p.left}%`,
+            bottom: "-10px",
+          }}
+          animate={{
+            y: ["0px", "-600px"],
+            opacity: [0, 0.7, 0],
+          }}
+          transition={{
+            duration: p.duration,
+            repeat: Infinity,
+            delay: p.delay,
+            ease: "linear",
+          }}
+        />
+      ))}
     </div>
   );
 };
@@ -3598,7 +3599,7 @@ Homeo Healthcare`;
           `&conditionsCount=${encodeURIComponent(String(newCaseForm.careLevel.includes("Multisystem") ? 2 : 1))}` +
           `&durationValue=${encodeURIComponent(String(getDurationValue(newCaseForm.durationText)))}`;
 
-        setCreatedSheetUrl(mockSheetUrl);
+        setCreatedSheetUrl(data.sheetUrl || mockSheetUrl);
         setCaseCreationSuccess(true);
         
         // Append to local state if Firestore is in mock-project mode
@@ -3619,7 +3620,7 @@ Homeo Healthcare`;
             receivedAmount: newCaseForm.receivedAmount,
             remainingBalance: newCaseForm.remainingBalance,
             folderUrl: data.folderUrl,
-            sheetUrl: mockSheetUrl,
+            sheetUrl: data.sheetUrl || mockSheetUrl,
             assignedDoctor: session?.uid || "unassigned",
             status: "active",
             createdAt: new Date().toISOString(),
@@ -4019,80 +4020,70 @@ Homeo Healthcare`;
     patient: Patient,
     type: "folder" | "sheet"
   ) => {
-    if (type === "sheet") {
-      e.preventDefault();
-      
-      const mockPatientId = patient.id;
-      const mockSheetUrl = `/admin/mock-sheet?name=${encodeURIComponent(patient.name)}` +
-        `&id=${encodeURIComponent(mockPatientId)}` +
-        `&age=${encodeURIComponent(patient.age)}` +
-        `&gender=${encodeURIComponent(patient.gender)}` +
-        `&phone=${encodeURIComponent(patient.phone || "")}` +
-        `&email=${encodeURIComponent(patient.email || "")}` +
-        `&complaint=${encodeURIComponent(patient.complaint || "")}` +
-        `&careLevel=${encodeURIComponent(patient.careLevel || "")}` +
-        `&durationText=${encodeURIComponent(patient.durationText || "")}` +
-        `&finalPrice=${encodeURIComponent(String(patient.finalPrice || 0))}` +
-        `&receivedAmount=${encodeURIComponent(String(patient.receivedAmount !== undefined ? patient.receivedAmount : (patient.finalPrice || 0)))}` +
-        `&remainingBalance=${encodeURIComponent(String(patient.remainingBalance || 0))}` +
-        `&billingCycle=${encodeURIComponent((patient as any).billingCycle || "Monthly")}` +
-        `&concessionApplied=${encodeURIComponent((patient as any).concessionApplied || "None")}` +
-        `&conditionsCount=${encodeURIComponent(String((patient as any).conditionsCount || (patient.careLevel.includes("Multisystem") ? 2 : 1)))}` +
-        `&durationValue=${encodeURIComponent(String((patient as any).durationValue || getDurationValue(patient.durationText)))}`;
+    // If we have a real Google Sheets or Drive URL, let it open natively
+    const currentUrl = type === "folder" ? patient.folderUrl : patient.sheetUrl;
+    const isRealUrl = currentUrl && 
+                      currentUrl.startsWith("https://") && 
+                      (type === "sheet" 
+                        ? currentUrl.includes("google.com/spreadsheets") 
+                        : currentUrl.includes("google.com/drive"));
 
-      window.open(mockSheetUrl, "_blank", "noopener,noreferrer");
+    if (isRealUrl) {
+      // Allow browser native navigation to the actual Google Sheet or Folder
       return;
     }
 
-    const currentUrl = type === "folder" ? patient.folderUrl : patient.sheetUrl;
-    const isMockUrl = !currentUrl || 
-                      (currentUrl.includes("mock-") && !currentUrl.startsWith("/admin/mock-sheet")) || 
-                      (currentUrl.includes("/mock") && !currentUrl.startsWith("/admin/mock-sheet")) ||
-                      (currentUrl.includes("1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb") && !patient.sheetUrl?.startsWith("/admin/mock-sheet"));
+    // Otherwise, it is a mock link or not yet provisioned. We attempt to provision it
+    // if Google API credentials exist, or fall back to the mock sheet sandbox / mock folder.
+    e.preventDefault();
+    setIsProvisioningWorkspace(true);
+    setProvisioningPatientName(patient.name);
     
-    if (isMockUrl) {
-      e.preventDefault();
-      setIsProvisioningWorkspace(true);
-      setProvisioningPatientName(patient.name);
+    try {
+      const res = await fetch("/api/provision-workspace", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: patient.id,
+          name: patient.name,
+          age: patient.age,
+          gender: patient.gender,
+          phone: patient.phone,
+          email: patient.email,
+          location: patient.location,
+          complaint: patient.complaint,
+          careLevel: patient.careLevel,
+          durationText: patient.durationText,
+          finalPrice: patient.finalPrice
+        })
+      });
       
-      try {
-        const res = await fetch("/api/provision-workspace", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            id: patient.id,
-            name: patient.name,
-            age: patient.age,
-            gender: patient.gender,
-            phone: patient.phone,
-            email: patient.email,
-            location: patient.location,
-            complaint: patient.complaint,
-            careLevel: patient.careLevel,
-            durationText: patient.durationText,
-            finalPrice: patient.finalPrice
-          })
-        });
-        
-        const data = await res.json();
-        if (!res.ok || !data.success) {
-          throw new Error(data.message || "Failed to provision workspace");
-        }
-        
-        const targetUrl = type === "folder" ? data.folderUrl : data.sheetUrl;
-        
-        if (data.isMock) {
-          alert(`Operating in Mock Mode (No Google API credentials configured).\n\nRedirecting to folder:\n${targetUrl}`);
-        }
-        // Open the URL in a new tab (real URL or parent folder URL fallback)
-        window.open(targetUrl, "_blank", "noopener,noreferrer");
-      } catch (err: any) {
-        console.error(err);
-        alert(`Failed to create Google Drive workspace: ${err.message || err}`);
-      } finally {
-        setIsProvisioningWorkspace(false);
-        setProvisioningPatientName("");
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || "Failed to provision workspace");
       }
+      
+      const targetUrl = type === "folder" ? data.folderUrl : data.sheetUrl;
+      
+      if (data.isMock) {
+        alert(`Operating in Mock Mode (No Google API credentials configured).\n\nRedirecting to folder:\n${targetUrl}`);
+      }
+      
+      // Update local state with the newly created real Google Sheets and Folder URLs
+      setPatients(prev => prev.map(p => p.id === patient.id ? { 
+        ...p, 
+        folderUrl: data.folderUrl, 
+        sheetUrl: data.sheetUrl 
+      } : p));
+
+      // Open the URL in a new tab (real URL or parent folder URL fallback)
+      window.open(targetUrl, "_blank", "noopener,noreferrer");
+    } catch (err: any) {
+      console.error(err);
+      alert(`Failed to create Google Drive workspace: ${err.message || err}`);
+    } finally {
+      setIsProvisioningWorkspace(false);
+      setProvisioningPatientName("");
     }
   };
 

@@ -308,7 +308,7 @@ export const REPERTORY_CHAPTERS = [
   "Clinical Tiers (Peds/Geri/Vet)",
 ];
 
-export let REPERTORY_DATA: Rubric[] = [];
+export const REPERTORY_DATA: Rubric[] = [];
 
 export const BOERICKE_CHAPTERS = [
   "Mind & Nervous System",
@@ -325,7 +325,7 @@ export const BOERICKE_CHAPTERS = [
   "Modalities & Generalities",
 ];
 
-export let BOERICKE_REPERTORY_DATA: Rubric[] = [];
+export const BOERICKE_REPERTORY_DATA: Rubric[] = [];
 
 export function setRepertoryData(kentData: Rubric[], boerickeData: Rubric[]) {
   REPERTORY_DATA.length = 0;

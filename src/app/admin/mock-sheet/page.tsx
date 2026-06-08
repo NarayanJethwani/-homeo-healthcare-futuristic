@@ -465,63 +465,7 @@ function MockSheetContent() {
     return 0;
   };
 
-  // Hydrate classic repertory database asynchronously
-  useEffect(() => {
-    const hydrateRepertory = async () => {
-      setIsRepertoryLoading(true);
-      try {
-        const res = await fetch("/api/repertory");
-        const data = await res.json();
-        if (data.success) {
-          setDbKent(data.kent || []);
-          setDbBoericke(data.boericke || []);
-          setRepertoryData(data.kent || [], data.boericke || []);
-          setIsRepertoryLoaded(true);
-        } else {
-          console.error("Failed to load repertory database: success=false");
-        }
-      } catch (err) {
-        console.error("Failed to load repertory database in mock sheet:", err);
-      } finally {
-        setIsRepertoryLoading(false);
-      }
-    };
-    hydrateRepertory();
-  }, []);
 
-  // Hydrate patient attachments on mount/id change
-  useEffect(() => {
-    const fetchAttachments = async () => {
-      if (!patient.id) return;
-      try {
-        const res = await fetch(`/api/export-attachments?patientId=${encodeURIComponent(patient.id)}`);
-        const data = await res.json();
-        if (data.success && Array.isArray(data.attachments)) {
-          setAttachments(data.attachments);
-        }
-      } catch (err) {
-        console.error("Failed to fetch attachments on mount:", err);
-      }
-    };
-    fetchAttachments();
-  }, [patient.id]);
-
-  // Hydrate Config DB on mount/id change
-  useEffect(() => {
-    const fetchConfigDb = async () => {
-      if (!patient.id) return;
-      try {
-        const res = await fetch(`/api/export-config?patientId=${encodeURIComponent(patient.id)}`);
-        const data = await res.json();
-        if (data.success && data.configDb) {
-          setConfigDb(data.configDb);
-        }
-      } catch (err) {
-        console.error("Failed to fetch Config DB on mount:", err);
-      }
-    };
-    fetchConfigDb();
-  }, [patient.id]);
 
   // New rubric form state
   const [selectedLibraryRubric, setSelectedLibraryRubric] = useState<string>("");
@@ -908,6 +852,64 @@ function MockSheetContent() {
       setSyncingConfig(false);
     }
   };
+
+  // Hydrate classic repertory database asynchronously
+  useEffect(() => {
+    const hydrateRepertory = async () => {
+      setIsRepertoryLoading(true);
+      try {
+        const res = await fetch("/api/repertory");
+        const data = await res.json();
+        if (data.success) {
+          setDbKent(data.kent || []);
+          setDbBoericke(data.boericke || []);
+          setRepertoryData(data.kent || [], data.boericke || []);
+          setIsRepertoryLoaded(true);
+        } else {
+          console.error("Failed to load repertory database: success=false");
+        }
+      } catch (err) {
+        console.error("Failed to load repertory database in mock sheet:", err);
+      } finally {
+        setIsRepertoryLoading(false);
+      }
+    };
+    hydrateRepertory();
+  }, []);
+
+  // Hydrate patient attachments on mount/id change
+  useEffect(() => {
+    const fetchAttachments = async () => {
+      if (!patient.id) return;
+      try {
+        const res = await fetch(`/api/export-attachments?patientId=${encodeURIComponent(patient.id)}`);
+        const data = await res.json();
+        if (data.success && Array.isArray(data.attachments)) {
+          setAttachments(data.attachments);
+        }
+      } catch (err) {
+        console.error("Failed to fetch attachments on mount:", err);
+      }
+    };
+    fetchAttachments();
+  }, [patient.id]);
+
+  // Hydrate Config DB on mount/id change
+  useEffect(() => {
+    const fetchConfigDb = async () => {
+      if (!patient.id) return;
+      try {
+        const res = await fetch(`/api/export-config?patientId=${encodeURIComponent(patient.id)}`);
+        const data = await res.json();
+        if (data.success && data.configDb) {
+          setConfigDb(data.configDb);
+        }
+      } catch (err) {
+        console.error("Failed to fetch Config DB on mount:", err);
+      }
+    };
+    fetchConfigDb();
+  }, [patient.id]);
 
   const handleAddConfigItem = async (type: "remedies" | "potencies" | "miasms" | "locations") => {
     let value = "";

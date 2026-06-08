@@ -65,8 +65,6 @@ export function calculateClinicalDecisionSupport(caseInput: {
   });
 
   GENOME_REMEDY_DB.forEach(rem => {
-    let matchPoints = 0;
-    let totalPoints = 0;
     const rubricMatches: string[] = [];
     const contradictionAlerts: string[] = [];
     let contradictionPenalty = 0;
@@ -74,7 +72,6 @@ export function calculateClinicalDecisionSupport(caseInput: {
     // --- 1. Dynamic Primary Symptom Rubric Matching ---
     let somaticMatchPoints = 0;
     let somaticTotalPoints = 0;
-    let somaticRubricsMatched = 0;
     const abbr = remedyIdToAbbr[rem.id];
 
     if (abbr) {
@@ -84,7 +81,6 @@ export function calculateClinicalDecisionSupport(caseInput: {
           if (grade > 0) {
             somaticMatchPoints += grade * 15;
             somaticTotalPoints += 45; // Max possible grade is 3 (3 * 15 = 45)
-            somaticRubricsMatched++;
             
             const citation = grade === 3 ? '[Kent]' : grade === 2 ? '[Boericke]' : '[Allen]';
             rubricMatches.push(`${rubric.chapter}: ${rubric.name} - Grade ${grade} ${citation}`);
