@@ -593,9 +593,9 @@ export async function createPatientClinicalSheet(
 
         // values for AI Repertory Lab
         const aiRepertoryValues = [
-          ["AI REPERTORY LAB & NEURAL TOTALITY MATCHING MATRIX", "", "", "", "CLINICAL DIAGNOSTIC SYNTHESIS VERDICT", "", "", ""],
+          ["AI REPERTORY LAB • HIGH-FIDELITY NEURAL TOTALITY MATCHING ENGINE", "", "", "", "CLINICAL DIAGNOSTIC SYNTHESIS VERDICT", "", "", ""],
           ["", "", "", "", "", "", "", ""],
-          ["SPREADSHEET REPERTORY PAYLOAD & MIASM VECTORS", "", "", "", "CLINICAL DIAGNOSTIC SYNTHESIS VERDICT", "", "", ""],
+          ["SPREADSHEET REPERTORY PAYLOAD", "", "", "", "CLINICAL DIAGNOSTIC SYNTHESIS VERDICT", "", "", ""],
           ["Dominant Miasm", `=IF('Case Taking'!B42>MAX('Case Taking'!B41,'Case Taking'!B43,'Case Taking'!B44,'Case Taking'!B45),"Sycosis",IF('Case Taking'!B41>MAX('Case Taking'!B42,'Case Taking'!B43,'Case Taking'!B44,'Case Taking'!B45),"Psora",IF('Case Taking'!B43>MAX('Case Taking'!B41,'Case Taking'!B42,'Case Taking'!B44,'Case Taking'!B45),"Syphilis",IF('Case Taking'!B44>MAX('Case Taking'!B41,'Case Taking'!B42,'Case Taking'!B43,'Case Taking'!B45),"Tubercular","Cancerinic"))))`, "", "", "AI Constitutional Justification & Totality Synthesis Report", "", "", ""],
           ["Psora Count", "='Case Taking'!B41", "", "", `=IFERROR('Case Taking'!B55, "No AI Analysis Run yet. Transmit from portal to generate.")`, "", "", ""],
           ["Sycosis Count", "='Case Taking'!B42", "", "", "", "", "", ""],
@@ -604,9 +604,9 @@ export async function createPatientClinicalSheet(
           ["Cancerinic Count", "='Case Taking'!B45", "", "", "", "", "", ""],
           ["", "", "", "", "", "", "", ""],
           ["TOP REMEDY RANKINGS FROM SPREADSHEET MATRIX", "", "", "", "MATERIA MEDICA KEYNOTE VERIFICATIONS", "", "", ""],
-          ["Rank 1 Remedy", `=IFERROR(INDEX('Repertorization'!B:B, MATCH("Rank 1", 'Repertorization'!A:A, 0)), "N/A")`, "Score", `=IFERROR(INDEX('Repertorization'!D:D, MATCH("Rank 1", 'Repertorization'!A:A, 0)), 0)`, "Nux Vomica:", "Chilly, irritable, stomach complaints worse after eating.", "", ""],
-          ["Rank 2 Remedy", `=IFERROR(INDEX('Repertorization'!B:B, MATCH("Rank 2", 'Repertorization'!A:A, 0)), "N/A")`, "Score", `=IFERROR(INDEX('Repertorization'!D:D, MATCH("Rank 2", 'Repertorization'!A:A, 0)), 0)`, "Arsenicum Album:", "Great anxiety, restlessness, chilly, worse at midnight.", "", ""],
-          ["Rank 3 Remedy", `=IFERROR(INDEX('Repertorization'!B:B, MATCH("Rank 3", 'Repertorization'!A:A, 0)), "N/A")`, "Score", `=IFERROR(INDEX('Repertorization'!D:D, MATCH("Rank 3", 'Repertorization'!A:A, 0)), 0)`, "Lycopodium Clavatum:", "Right-sided, flatulence, gas, warm food cravings.", "", ""]
+          ["Rank 1 Remedy", `=IFERROR(INDEX('Repertorization'!B:B, MATCH("Rank 1", 'Repertorization'!A:A, 0)), "N/A")`, "Score", `=IFERROR(INDEX('Repertorization'!D:D, MATCH("Rank 1", 'Repertorization'!A:A, 0)), 0)`, `=IFERROR(INDEX('Config DB'!I$4:I$100, MATCH(B12, 'Config DB'!H$4:H$100, 0)) & ":", B12 & ":")`, `=IFERROR(INDEX('Config DB'!J$4:J$100, MATCH(B12, 'Config DB'!H$4:H$100, 0)), "Verify modalities, thermal response, and characteristic generals.")`, "", ""],
+          ["Rank 2 Remedy", `=IFERROR(INDEX('Repertorization'!B:B, MATCH("Rank 2", 'Repertorization'!A:A, 0)), "N/A")`, "Score", `=IFERROR(INDEX('Repertorization'!D:D, MATCH("Rank 2", 'Repertorization'!A:A, 0)), 0)`, `=IFERROR(INDEX('Config DB'!I$4:I$100, MATCH(B13, 'Config DB'!H$4:H$100, 0)) & ":", B13 & ":")`, `=IFERROR(INDEX('Config DB'!J$4:J$100, MATCH(B13, 'Config DB'!H$4:H$100, 0)), "Verify modalities, thermal response, and characteristic generals.")`, "", ""],
+          ["Rank 3 Remedy", `=IFERROR(INDEX('Repertorization'!B:B, MATCH("Rank 3", 'Repertorization'!A:A, 0)), "N/A")`, "Score", `=IFERROR(INDEX('Repertorization'!D:D, MATCH("Rank 3", 'Repertorization'!A:A, 0)), 0)`, `=IFERROR(INDEX('Config DB'!I$4:I$100, MATCH(B14, 'Config DB'!H$4:H$100, 0)) & ":", B14 & ":")`, `=IFERROR(INDEX('Config DB'!J$4:J$100, MATCH(B14, 'Config DB'!H$4:H$100, 0)), "Verify modalities, thermal response, and characteristic generals.")`, "", ""]
         ];
 
         // values for Reports & Attachments
@@ -620,21 +620,21 @@ export async function createPatientClinicalSheet(
 
         // values for Config DB
         const configValues = [
-          ["REFERENCE METADATA DATABASE", "", "", "", "", "PACKAGES", "PRICE"],
-          ["", "", "", "", "", "", ""],
-          ["REMEDIES", "POTENCIES", "MIASMS", "CLINIC BRANCHES", "DOCTORS", "Standard Consult", 300],
-          ["Nux Vomica", "6C", "Psora", "Baner Clinic, Pune", "Dr. Narayan Jethwani", "Acute Care Plan", 1500],
-          ["Arsenicum Album", "30C", "Sycosis", "Koregaon Park Clinic, Pune", "Dr. R. Jethwani", "3-Month Chronic", 4500],
-          ["Lycopodium Clavatum", "200C", "Syphilis", "Mumbai OPD", "", "6-Month Advanced", 8500],
-          ["Pulsatilla Pratensis", "1M", "Tubercular", "", "", "1-Year Premium", 15000],
-          ["Sulphur", "10M", "Cancerinic", "", "", "", ""],
-          ["Rhus Toxicodendron", "50M", "", "", "", "", ""],
-          ["Bryonia Alba", "CM", "", "", "", "", ""],
-          ["Calcarea Carbonica", "LM1", "", "", "", "", ""],
-          ["Silicea", "LM2", "", "", "", "", ""],
-          ["Natrum Muriaticum", "LM5", "", "", "", "", ""],
-          ["Ignatia Amara", "LM10", "", "", "", "", ""],
-          ["Sepia Officinalis", "LM30", "", "", "", "", ""]
+          ["REFERENCE METADATA DATABASE", "", "", "", "", "PACKAGES", "PRICE", "REMEDY KEYNOTE DIRECTORY", "", ""],
+          ["", "", "", "", "", "", "", "", "", ""],
+          ["REMEDIES", "POTENCIES", "MIASMS", "CLINIC BRANCHES", "DOCTORS", "Standard Consult", 300, "ABBREVIATION", "REMEDY FULL NAME", "KEYNOTES"],
+          ["Nux Vomica", "6C", "Psora", "Baner Clinic, Pune", "Dr. Narayan Jethwani", "Acute Care Plan", 1500, "Nux-v", "Nux Vomica", "Chilly, irritable, stomach complaints worse after eating."],
+          ["Arsenicum Album", "30C", "Sycosis", "Koregaon Park Clinic, Pune", "Dr. R. Jethwani", "3-Month Chronic", 4500, "Ars", "Arsenicum Album", "Great anxiety, restlessness, chilly, worse at midnight."],
+          ["Lycopodium Clavatum", "200C", "Syphilis", "Mumbai OPD", "", "6-Month Advanced", 8500, "Lyc", "Lycopodium Clavatum", "Right-sided, flatulence, gas, warm food cravings."],
+          ["Pulsatilla Pratensis", "1M", "Tubercular", "", "", "1-Year Premium", 15000, "Puls", "Pulsatilla Pratensis", "Mild, yielding disposition, desires open air and consolation, thirstless."],
+          ["Sulphur", "10M", "Cancerinic", "", "", "", "", "Sulph", "Sulphur", "Warm-blooded, desires sweets, empty sinking at 11 AM, red orifices."],
+          ["Rhus Toxicodendron", "50M", "", "", "", "", "", "Rhus-t", "Rhus Toxicodendron", "Restless, joints stiff on first motion, improves with continuous motion, worse damp cold."],
+          ["Bryonia Alba", "CM", "", "", "", "", "", "Bry", "Bryonia Alba", "Worse from least motion, better from absolute rest, stitching pains, dry mouth, great thirst."],
+          ["Calcarea Carbonica", "LM1", "", "", "", "", "", "Calc", "Calcarea Carbonica", "Chilly, sluggish metabolism, tendency to obesity, sweaty head, desires eggs."],
+          ["Silicea", "LM2", "", "", "", "", "", "Sil", "Silicea", "Chilly, lacks grit, sensitive to cold drafts, sweaty feet (offensive), slow healing."],
+          ["Natrum Muriaticum", "LM5", "", "", "", "", "", "Nat-m", "Natrum Muriaticum", "Reserved, silent grief, craves salt, worse warmth of sun, mapped emotional tension."],
+          ["Ignatia Amara", "LM10", "", "", "", "", "", "Ign", "Ignatia Amara", "Ailments from recent grief or shock, sighing, contradictory symptoms."],
+          ["Sepia Officinalis", "LM30", "", "", "", "", "", "Sep", "Sepia Officinalis", "Indifferent to loved ones, dragging down sensation, better from vigorous exercise."]
         ];
 
         // Batch update sheet values
@@ -651,7 +651,7 @@ export async function createPatientClinicalSheet(
               { range: "'Finance'!A1:H11", values: financeValues },
               { range: "'AI Repertory Lab'!A1:H14", values: aiRepertoryValues },
               { range: "'Reports & Attachments'!A1:D5", values: attachmentsValues },
-              { range: "'Config DB'!A1:G15", values: configValues }
+              { range: "'Config DB'!A1:J15", values: configValues }
             ]
           }
         });
@@ -2644,6 +2644,30 @@ export async function createPatientClinicalSheet(
                 properties: { pixelSize: 100 }, fields: "pixelSize"
               }
             },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: configId, dimension: "COLUMNS", startIndex: 6, endIndex: 7 },
+                properties: { pixelSize: 100 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: configId, dimension: "COLUMNS", startIndex: 7, endIndex: 8 },
+                properties: { pixelSize: 100 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: configId, dimension: "COLUMNS", startIndex: 8, endIndex: 9 },
+                properties: { pixelSize: 160 }, fields: "pixelSize"
+              }
+            },
+            {
+              updateDimensionProperties: {
+                range: { sheetId: configId, dimension: "COLUMNS", startIndex: 9, endIndex: 10 },
+                properties: { pixelSize: 385 }, fields: "pixelSize"
+              }
+            },
             // Merge A1:D1
             {
               mergeCells: {
@@ -2664,10 +2688,16 @@ export async function createPatientClinicalSheet(
                 fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
               }
             },
-            // Style E1:F1
+            // Style E1:F1 (Actually E1:G1)
+            {
+              mergeCells: {
+                range: { sheetId: configId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 5, endColumnIndex: 7 },
+                mergeType: "MERGE_ALL"
+              }
+            },
             {
               repeatCell: {
-                range: { sheetId: configId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 4, endColumnIndex: 6 },
+                range: { sheetId: configId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 5, endColumnIndex: 7 },
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 },
@@ -2678,10 +2708,30 @@ export async function createPatientClinicalSheet(
                 fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
               }
             },
-            // Style table headers (Row 3, index 2) Cols A-D
+            // Merge and style H1:J1 (Remedy Directory Banner)
+            {
+              mergeCells: {
+                range: { sheetId: configId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 7, endColumnIndex: 10 },
+                mergeType: "MERGE_ALL"
+              }
+            },
             {
               repeatCell: {
-                range: { sheetId: configId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 4 },
+                range: { sheetId: configId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 7, endColumnIndex: 10 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 15/255, green: 76/255, blue: 129/255 },
+                    textFormat: { fontFamily: "Inter", foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 11, bold: true },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            // Style table headers (Row 3, index 2) Cols A-E
+            {
+              repeatCell: {
+                range: { sheetId: configId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 5 },
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 },
@@ -2690,6 +2740,60 @@ export async function createPatientClinicalSheet(
                   }
                 },
                 fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            // Style table headers Cols F-G (Packages)
+            {
+              repeatCell: {
+                range: { sheetId: configId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 5, endColumnIndex: 7 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 },
+                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            // Style table headers Cols H-J (Remedy Keynote Directory)
+            {
+              repeatCell: {
+                range: { sheetId: configId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 7, endColumnIndex: 10 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 },
+                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            // Format Keynote descriptions data range (H4:J14)
+            {
+              repeatCell: {
+                range: { sheetId: configId, startRowIndex: 3, endRowIndex: 14, startColumnIndex: 7, endColumnIndex: 9 },
+                cell: {
+                  userEnteredFormat: {
+                    textFormat: { fontFamily: "Inter", fontSize: 9 },
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: configId, startRowIndex: 3, endRowIndex: 14, startColumnIndex: 9, endColumnIndex: 10 },
+                cell: {
+                  userEnteredFormat: {
+                    textFormat: { fontFamily: "Inter", fontSize: 9 },
+                    horizontalAlignment: "LEFT", verticalAlignment: "MIDDLE",
+                    wrapStrategy: "WRAP"
+                  }
+                },
+                fields: "userEnteredFormat(textFormat,horizontalAlignment,verticalAlignment,wrapStrategy)"
               }
             }
           );
@@ -2758,7 +2862,7 @@ export async function createPatientClinicalSheet(
                 range: { sheetId: aiRepertoryId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 8 },
                 cell: {
                   userEnteredFormat: {
-                    backgroundColor: { red: 15/255, green: 76/255, blue: 129/255 },
+                    backgroundColor: { red: 236/255, green: 72/255, blue: 153/255 }, // pink-500 #EC4899
                     textFormat: { fontFamily: "Inter", foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 13, bold: true },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
@@ -2780,14 +2884,28 @@ export async function createPatientClinicalSheet(
                 mergeType: "MERGE_ALL"
               }
             },
-            // Left Card Section Header style
+            // Left Card Section Header style (Repertory Payload)
             {
               repeatCell: {
-                range: { sheetId: aiRepertoryId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 8 },
+                range: { sheetId: aiRepertoryId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 4 },
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 }, // slate-200
-                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } }, // navy
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            // Right Card Section Header style (AI Verdict)
+            {
+              repeatCell: {
+                range: { sheetId: aiRepertoryId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 4, endColumnIndex: 8 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 243/255, green: 232/255, blue: 255/255 }, // violet-100
+                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 10, foregroundColor: { red: 109/255, green: 40/255, blue: 217/255 } }, // violet-700
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -2906,14 +3024,27 @@ export async function createPatientClinicalSheet(
                 mergeType: "MERGE_ALL"
               }
             },
-            // Card 2 Section Headers style
+            // Card 2 Section Headers style (Left: Remedy Rankings, Right: Materia Medica Keynotes)
             {
               repeatCell: {
-                range: { sheetId: aiRepertoryId, startRowIndex: 10, endRowIndex: 11, startColumnIndex: 0, endColumnIndex: 8 },
+                range: { sheetId: aiRepertoryId, startRowIndex: 10, endRowIndex: 11, startColumnIndex: 0, endColumnIndex: 4 },
                 cell: {
                   userEnteredFormat: {
-                    backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 },
-                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 }, // slate-200
+                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } }, // navy
+                    horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
+                  }
+                },
+                fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+              }
+            },
+            {
+              repeatCell: {
+                range: { sheetId: aiRepertoryId, startRowIndex: 10, endRowIndex: 11, startColumnIndex: 4, endColumnIndex: 8 },
+                cell: {
+                  userEnteredFormat: {
+                    backgroundColor: { red: 253/255, green: 242/255, blue: 248/255 }, // pink-50 #FDF2F8
+                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 10, foregroundColor: { red: 190/255, green: 24/255, blue: 74/255 } }, // pink-700 #BE185D
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -3126,6 +3257,7 @@ const REMEDY_DETAILS_LOOKUP: Record<string, { fullName: string; keynotes: string
   "Puls": { fullName: "Pulsatilla Pratensis", keynotes: "Mild, yielding disposition, desires open air and consolation, thirstless." },
   "Sulph": { fullName: "Sulphur", keynotes: "Warm-blooded, desires sweets, empty sinking at 11 AM, red orifices." },
   "Rhus-t": { fullName: "Rhus Toxicodendron", keynotes: "Restless, joints stiff on first motion, improves with continuous motion, worse damp cold." },
+  "Bry": { fullName: "Bryonia Alba", keynotes: "Worse from least motion, better from absolute rest, stitching pains, dry mouth, great thirst." },
   "Calc": { fullName: "Calcarea Carbonica", keynotes: "Chilly, sluggish metabolism, tendency to obesity, sweaty head, desires eggs." },
   "Sil": { fullName: "Silicea", keynotes: "Chilly, lacks grit, sensitive to cold drafts, sweaty feet (offensive), slow healing." },
   "Nat-m": { fullName: "Natrum Muriaticum", keynotes: "Reserved, silent grief, craves salt, worse warmth of sun, mapped emotional tension." },
@@ -3236,13 +3368,17 @@ export async function appendAiReportToClinicalSheet(
       updateValues.push([formattedName, keynotes]);
     });
 
-    // 6. Write the resolved names and keynotes to AI Repertory Lab E12:F14
+    // 6. Write the dynamic lookup formulas to AI Repertory Lab E12:F14 to preserve live update capability
     await sheets.spreadsheets.values.update({
       spreadsheetId: sheetId,
       range: "'AI Repertory Lab'!E12:F14",
-      valueInputOption: "RAW",
+      valueInputOption: "USER_ENTERED",
       requestBody: {
-        values: updateValues
+        values: [
+          ["=IFERROR(INDEX('Config DB'!I$4:I$100, MATCH(B12, 'Config DB'!H$4:H$100, 0)) & \":\", B12 & \":\")", "=IFERROR(INDEX('Config DB'!J$4:J$100, MATCH(B12, 'Config DB'!H$4:H$100, 0)), \"Verify modalities, thermal response, and characteristic generals.\")"],
+          ["=IFERROR(INDEX('Config DB'!I$4:I$100, MATCH(B13, 'Config DB'!H$4:H$100, 0)) & \":\", B13 & \":\")", "=IFERROR(INDEX('Config DB'!J$4:J$100, MATCH(B13, 'Config DB'!H$4:H$100, 0)), \"Verify modalities, thermal response, and characteristic generals.\")"],
+          ["=IFERROR(INDEX('Config DB'!I$4:I$100, MATCH(B14, 'Config DB'!H$4:H$100, 0)) & \":\", B14 & \":\")", "=IFERROR(INDEX('Config DB'!J$4:J$100, MATCH(B14, 'Config DB'!H$4:H$100, 0)), \"Verify modalities, thermal response, and characteristic generals.\")"]
+        ]
       }
     });
 
