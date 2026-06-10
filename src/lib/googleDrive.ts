@@ -2,13 +2,26 @@ import { google } from "googleapis";
 
 // Initialize Google Auth client using Service Account credentials
 const getGoogleAuth = () => {
-  const serviceAccountKeyJson = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
+  let serviceAccountKeyJson = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
   if (!serviceAccountKeyJson) {
     console.warn("GOOGLE_SERVICE_ACCOUNT_KEY not set. Operating in mock mode.");
     return null;
   }
   try {
+    // Sanitize: strip outer single or double quotes that Vercel env vars sometimes add
+    serviceAccountKeyJson = serviceAccountKeyJson.trim();
+    if (
+      (serviceAccountKeyJson.startsWith("'") && serviceAccountKeyJson.endsWith("'")) ||
+      (serviceAccountKeyJson.startsWith('"') && serviceAccountKeyJson.endsWith('"'))
+    ) {
+      serviceAccountKeyJson = serviceAccountKeyJson.slice(1, -1);
+    }
     const credentials = JSON.parse(serviceAccountKeyJson);
+    if (!credentials.client_email || !credentials.private_key) {
+      console.error("GOOGLE_SERVICE_ACCOUNT_KEY parsed but missing client_email or private_key fields.");
+      return null;
+    }
+    console.log("Google Auth initialized successfully for:", credentials.client_email);
     return new google.auth.JWT({
       email: credentials.client_email,
       key: credentials.private_key,
@@ -17,8 +30,9 @@ const getGoogleAuth = () => {
         "https://www.googleapis.com/auth/spreadsheets"
       ]
     });
-  } catch (error) {
-    console.error("Failed to parse GOOGLE_SERVICE_ACCOUNT_KEY:", error);
+  } catch (error: any) {
+    console.error("Failed to parse GOOGLE_SERVICE_ACCOUNT_KEY:", error?.message || error);
+    console.error("Key starts with:", serviceAccountKeyJson?.substring(0, 30), "... length:", serviceAccountKeyJson?.length);
     return null;
   }
 };
