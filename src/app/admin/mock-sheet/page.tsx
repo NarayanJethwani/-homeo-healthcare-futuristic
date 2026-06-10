@@ -821,6 +821,57 @@ function MockSheetContent() {
   const [syncingConfig, setSyncingConfig] = useState(false);
   const [configSyncMessage, setConfigSyncMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
 
+  const [downloadingTemplate, setDownloadingTemplate] = useState(false);
+  const [templateMessage, setTemplateMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
+
+  const handleDownloadTemplate = async () => {
+    setDownloadingTemplate(true);
+    setTemplateMessage(null);
+    try {
+      const res = await fetch("/api/download-template");
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.message || "Failed to download template.");
+      }
+      
+      const disposition = res.headers.get("content-disposition");
+      let filename = "clinical_record_template.xlsx";
+      if (disposition && disposition.indexOf("filename=") !== -1) {
+        const parts = disposition.split(";");
+        for (let part of parts) {
+          part = part.trim();
+          if (part.startsWith("filename=")) {
+            filename = part.substring("filename=".length).replace(/['"]/g, "");
+          }
+        }
+      }
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+      
+      const tempId = res.headers.get("x-template-id") || "";
+      setTemplateMessage({
+        text: `Template Excel downloaded! ID: ${tempId}. Upload this sheet to Google Drive, share it with narayan.jethwani@homeo.healthcare as writer, and set GOOGLE_TEMPLATE_SHEET_ID to this ID in Vercel to copy it on new case creations.`,
+        type: "success"
+      });
+    } catch (err: any) {
+      console.error(err);
+      setTemplateMessage({
+        text: `Download failed: ${err.message || err}`,
+        type: "error"
+      });
+    } finally {
+      setDownloadingTemplate(false);
+    }
+  };
+
   // Input states for adding new config items
   const [newRemedyInput, setNewRemedyInput] = useState("");
   const [newPotencyInput, setNewPotencyInput] = useState("");
@@ -1676,6 +1727,16 @@ function MockSheetContent() {
               <span className="text-[#0F4C81] flex items-center gap-1.5 font-bold">
                 <Check className="w-3.5 h-3.5 text-emerald-600" /> Formulas Live
               </span>
+              <span className="text-slate-300">|</span>
+              <button
+                onClick={handleDownloadTemplate}
+                disabled={downloadingTemplate}
+                className="text-emerald-700 hover:text-emerald-900 flex items-center gap-1.5 font-bold cursor-pointer transition-all disabled:opacity-50 text-[11px]"
+                title="Download the clinical record template as an Excel sheet to upload to Google Drive"
+              >
+                <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-650" />
+                {downloadingTemplate ? "Generating Excel..." : "Download Excel Template"}
+              </button>
             </div>
           </div>
         </div>
@@ -1709,6 +1770,47 @@ function MockSheetContent() {
           </div>
         </div>
       </div>
+
+      {/* Template Download Alert/Instructions */}
+      {templateMessage && (
+        <div className={`mx-6 mt-4 p-5 rounded-3xl border ${
+          templateMessage.type === "success" 
+            ? "bg-emerald-50/90 text-emerald-950 border-emerald-200/60" 
+            : "bg-rose-50/90 text-rose-950 border-rose-200/60"
+        } text-xs font-semibold leading-relaxed flex items-start gap-3 shadow-md`}>
+          <Info className={`w-5 h-5 shrink-0 mt-0.5 ${templateMessage.type === "success" ? "text-emerald-700" : "text-rose-700"}`} />
+          <div className="flex-1">
+            <p className="font-extrabold text-sm text-[#0F766E]">{templateMessage.type === "success" ? "✓ Action Required for Sheet Automation" : "✗ Error Occurred"}</p>
+            <p className="mt-1.5 font-medium text-[12px] opacity-90">{templateMessage.text}</p>
+            {templateMessage.type === "success" && (
+              <div className="mt-4 bg-white/70 p-4 rounded-2xl border border-emerald-100 font-mono text-[11px] space-y-3.5 text-emerald-950 shadow-inner">
+                <p className="font-bold uppercase tracking-wider text-[10px] text-[#0F4C81]">Step-by-Step Setup Guide:</p>
+                <ol className="list-decimal list-inside space-y-2 font-medium leading-relaxed font-sans text-xs">
+                  <li>
+                    <strong>Upload to Google Drive:</strong> Open your Google Drive, go to the parent folder and upload the downloaded Excel sheet (<code>clinical_record_template.xlsx</code>).
+                  </li>
+                  <li>
+                    <strong>Save as Google Sheets:</strong> Open the uploaded sheet in Google Drive, go to <code>File &gt; Save as Google Sheets</code>.
+                  </li>
+                  <li>
+                    <strong>Get Spreadsheet ID:</strong> From the URL of the newly created Google Sheet, copy the Spreadsheet ID (the long string of characters in the address bar).
+                  </li>
+                  <li>
+                    <strong>Configure Vercel:</strong> Paste the copied ID in your Vercel Environment Variables:
+                    <code className="block mt-2 bg-slate-900 text-slate-100 p-2.5 rounded-xl border border-slate-800 font-mono text-[11px]">GOOGLE_TEMPLATE_SHEET_ID="your_copied_id"</code>
+                  </li>
+                  <li>
+                    <strong>Enjoy Live Updates:</strong> Redeploy the project on Vercel. Now, when a patient registers, the app will instantly clone this template sheet! You can change styling directly in Google Sheets without modifying any code!
+                  </li>
+                </ol>
+              </div>
+            )}
+          </div>
+          <button onClick={() => setTemplateMessage(null)} className="text-slate-400 hover:text-slate-650 cursor-pointer p-1">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
       {/* Main Grid Wrapper */}
       <div className="flex-1 p-4 sm:p-8 flex flex-col items-center">

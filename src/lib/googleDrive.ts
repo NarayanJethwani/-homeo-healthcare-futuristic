@@ -22,9 +22,13 @@ const getGoogleAuth = () => {
       return null;
     }
     console.log("Google Auth initialized successfully for:", credentials.client_email);
+    
+    // Replace double-escaped newlines with real newlines for PEM format
+    const privateKey = credentials.private_key.replace(/\\n/g, "\n");
+    
     return new google.auth.JWT({
       email: credentials.client_email,
-      key: credentials.private_key,
+      key: privateKey,
       scopes: [
         "https://www.googleapis.com/auth/drive",
         "https://www.googleapis.com/auth/spreadsheets"
@@ -227,32 +231,97 @@ export async function createPatientClinicalSheet(
       if (TEMPLATE_SHEET_ID) {
         // If template sheet exists, write to standard template tabs
         try {
+          const today = new Date().toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" });
+
+          // Normalize and map inputs to align with mock and premium options
+          const normalizedCareLevel = data.careLevel ? data.careLevel.toLowerCase().trim() : "";
+          let resolvedCareLevel = data.careLevel || "🎯 Deep Systemic Care";
+          if (normalizedCareLevel === "mild" || normalizedCareLevel.includes("acute") || normalizedCareLevel.includes("wellness")) {
+            resolvedCareLevel = "🌱 Acute & Wellness Care";
+          } else if (normalizedCareLevel === "moderate" || normalizedCareLevel.includes("standard") || normalizedCareLevel.includes("chronic")) {
+            resolvedCareLevel = "⚡ Standard Chronic Care";
+          } else if (normalizedCareLevel === "focused" || normalizedCareLevel.includes("deep") || normalizedCareLevel.includes("systemic")) {
+            resolvedCareLevel = "🎯 Deep Systemic Care";
+          } else if (normalizedCareLevel === "organ" || normalizedCareLevel.includes("advanced") || normalizedCareLevel.includes("pathological")) {
+            resolvedCareLevel = "🫁 Advanced Pathological Care";
+          } else if (normalizedCareLevel === "comprehensive" || normalizedCareLevel.includes("multisystem") || normalizedCareLevel.includes("integrative")) {
+            resolvedCareLevel = "🔮 Multisystem Integrative Care";
+          }
+
+          const rawCycle = data.billingCycle ? data.billingCycle.toLowerCase().trim() : "";
+          const resolvedBillingCycle = rawCycle === "weekly" ? "Weekly" : "Monthly";
+
+          const rawConcession = data.concessionApplied ? data.concessionApplied.toLowerCase().trim() : "";
+          let resolvedConcession = "None";
+          if (rawConcession.includes("senior")) {
+            resolvedConcession = "Senior 15%";
+          } else if (rawConcession.includes("socio") || rawConcession.includes("compassionate")) {
+            resolvedConcession = "Socio-Economic 30%";
+          } else if (rawConcession.includes("override")) {
+            resolvedConcession = "Override";
+          }
+
           await sheets.spreadsheets.values.batchUpdate({
             spreadsheetId: newSheetId,
             requestBody: {
               valueInputOption: "USER_ENTERED",
               data: [
                 {
-                  range: "'Dashboard'!B5:B11",
+                  range: "'Dashboard'!B4:B6",
                   values: [
                     [data.id],
                     [data.name],
-                    [`${data.age} / ${data.gender}`],
-                    ["Active"],
-                    [data.phone],
-                    [data.email],
-                    [locationVal]
+                    [`${data.age} / ${data.gender}`]
                   ]
                 },
                 {
-                  range: "'Case Taking'!B4:B9",
+                  range: "'Dashboard'!B9",
+                  values: [
+                    [data.careLevel.toLowerCase().includes("acute") ? "Acute" : "Chronic"]
+                  ]
+                },
+                {
+                  range: "'Case Taking'!B3:B9",
                   values: [
                     [data.id],
                     [data.name],
                     [`${data.age} / ${data.gender}`],
                     [data.phone],
-                    [data.email],
-                    [locationVal]
+                    [data.email || "N/A"],
+                    [locationVal],
+                    [today]
+                  ]
+                },
+                {
+                  range: "'Case Taking'!B11:B12",
+                  values: [
+                    [data.complaint],
+                    [data.durationText || "Chronic"]
+                  ]
+                },
+                {
+                  range: "'Treatment Planner'!A4:G4",
+                  values: [
+                    [resolvedCareLevel, resolvedBillingCycle, data.durationValue || 1, data.conditionsCount || 1, resolvedConcession, data.overridePrice || 0, data.medicineAddons || 0]
+                  ]
+                },
+                {
+                  range: "'Treatment Planner'!B16",
+                  values: [
+                    [data.receivedAmount !== undefined ? data.receivedAmount : data.finalPrice]
+                  ]
+                },
+                {
+                  range: "'Finance'!A9:C9",
+                  values: [
+                    [today, `${resolvedCareLevel} - Initial Package Setup`, `Tx-Plan-${data.id}`]
+                  ]
+                },
+                {
+                  range: "'Reports & Attachments'!D4:D5",
+                  values: [
+                    [`https://drive.google.com/drive/folders/${folderId}`],
+                    [`https://drive.google.com/drive/folders/${folderId}`]
                   ]
                 }
               ]
@@ -3976,10 +4045,29 @@ export interface RepertoryExportRubric {
 }
 
 /**
+ * Helper to convert a column index to Excel column label (0 -> A, 27 -> AB, etc.)
+ */
+export function getColumnLetter(colIndex: number): string {
+  let letter = "";
+  let temp = colIndex;
+  while (temp >= 0) {
+    letter = String.fromCharCode((temp % 26) + 65) + letter;
+    temp = Math.floor(temp / 26) - 1;
+  }
+  return letter;
+}
+
+/**
  * Helper to generate formatting requests for the Repertorization tab dynamically based on the number of rubrics (N).
  */
-export function getRepertoryFormattingRequests(repertoryId: number, N: number, existingRules: any[] = []): any[] {
+export function getRepertoryFormattingRequests(
+  repertoryId: number,
+  N: number,
+  existingRules: any[] = [],
+  remediesCount: number = 11
+): any[] {
   const requests: any[] = [];
+  const totalCols = 5 + remediesCount;
 
   // Clear existing conditional format rules
   existingRules.forEach(() => {
@@ -3999,7 +4087,7 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
         startRowIndex: 3,
         endRowIndex: 50,
         startColumnIndex: 0,
-        endColumnIndex: 16
+        endColumnIndex: totalCols
       }
     }
   });
@@ -4043,13 +4131,13 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
     },
     {
       updateDimensionProperties: {
-        range: { sheetId: repertoryId, dimension: "COLUMNS", startIndex: 4, endIndex: 15 },
+        range: { sheetId: repertoryId, dimension: "COLUMNS", startIndex: 4, endIndex: 4 + remediesCount },
         properties: { pixelSize: 65 }, fields: "pixelSize"
       }
     },
     {
       updateDimensionProperties: {
-        range: { sheetId: repertoryId, dimension: "COLUMNS", startIndex: 15, endIndex: 16 },
+        range: { sheetId: repertoryId, dimension: "COLUMNS", startIndex: 4 + remediesCount, endIndex: 5 + remediesCount },
         properties: { pixelSize: 90 }, fields: "pixelSize"
       }
     }
@@ -4071,17 +4159,17 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
     }
   );
 
-  // Merge Title Header (Cols A-P)
+  // Merge Title Header (Cols A to Totality Score)
   requests.push(
     {
       mergeCells: {
-        range: { sheetId: repertoryId, startRowIndex: 1, endRowIndex: 2, startColumnIndex: 0, endColumnIndex: 16 },
+        range: { sheetId: repertoryId, startRowIndex: 1, endRowIndex: 2, startColumnIndex: 0, endColumnIndex: totalCols },
         mergeType: "MERGE_ALL"
       }
     },
     {
       repeatCell: {
-        range: { sheetId: repertoryId, startRowIndex: 1, endRowIndex: 2, startColumnIndex: 0, endColumnIndex: 16 },
+        range: { sheetId: repertoryId, startRowIndex: 1, endRowIndex: 2, startColumnIndex: 0, endColumnIndex: totalCols },
         cell: {
           userEnteredFormat: {
             backgroundColor: { red: 15/255, green: 76/255, blue: 129/255 },
@@ -4094,10 +4182,10 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
     }
   );
 
-  // Table headers (Rubric, Chapter, etc. A3:P3)
+  // Table headers (Rubric, Chapter, etc. A3 to Totality Score)
   requests.push({
     repeatCell: {
-      range: { sheetId: repertoryId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: 16 },
+      range: { sheetId: repertoryId, startRowIndex: 2, endRowIndex: 3, startColumnIndex: 0, endColumnIndex: totalCols },
       cell: {
         userEnteredFormat: {
           backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 },
@@ -4109,13 +4197,13 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
     }
   });
 
-  // Alternate matrix rows background (A4 to P[lastRubricRow])
+  // Alternate matrix rows background (A4 to Totality Score)
   for (let i = 0; i < N; i++) {
     const rIdx = 3 + i;
     const isOdd = i % 2 !== 0;
     requests.push({
       repeatCell: {
-        range: { sheetId: repertoryId, startRowIndex: rIdx, endRowIndex: rIdx + 1, startColumnIndex: 0, endColumnIndex: 16 },
+        range: { sheetId: repertoryId, startRowIndex: rIdx, endRowIndex: rIdx + 1, startColumnIndex: 0, endColumnIndex: totalCols },
         cell: {
           userEnteredFormat: {
             backgroundColor: isOdd 
@@ -4128,10 +4216,10 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
     });
   }
 
-  // Grid borders for the matrix range (A3 to P[lastRubricRow], which is startRowIndex 2 to 3+N)
+  // Grid borders for the matrix range (A3 to Totality Score)
   requests.push({
     updateBorders: {
-      range: { sheetId: repertoryId, startRowIndex: 2, endRowIndex: 3 + N, startColumnIndex: 0, endColumnIndex: 16 },
+      range: { sheetId: repertoryId, startRowIndex: 2, endRowIndex: 3 + N, startColumnIndex: 0, endColumnIndex: totalCols },
       top: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } },
       bottom: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } },
       left: { style: "SOLID", color: { red: 226/255, green: 232/255, blue: 240/255 } },
@@ -4141,19 +4229,19 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
     }
   });
 
-  // Centering Remedy Grades (E4 to O[lastRubricRow])
+  // Centering Remedy Grades (E4 to last remedy)
   requests.push({
     repeatCell: {
-      range: { sheetId: repertoryId, startRowIndex: 3, endRowIndex: 3 + N, startColumnIndex: 4, endColumnIndex: 15 },
+      range: { sheetId: repertoryId, startRowIndex: 3, endRowIndex: 3 + N, startColumnIndex: 4, endColumnIndex: 4 + remediesCount },
       cell: { userEnteredFormat: { horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE" } },
       fields: "userEnteredFormat.horizontalAlignment,userEnteredFormat.verticalAlignment"
     }
   });
 
-  // Centering and bold blue styling for Totality Score column values (Column P)
+  // Centering and bold blue styling for Totality Score column values (Last column)
   requests.push({
     repeatCell: {
-      range: { sheetId: repertoryId, startRowIndex: 3, endRowIndex: 3 + N, startColumnIndex: 15, endColumnIndex: 16 },
+      range: { sheetId: repertoryId, startRowIndex: 3, endRowIndex: 3 + N, startColumnIndex: 4 + remediesCount, endColumnIndex: 5 + remediesCount },
       cell: {
         userEnteredFormat: {
           textFormat: { fontFamily: "Inter", bold: true, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
@@ -4165,13 +4253,13 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
     }
   });
 
-  // Conditional formatting for grades in the matrix range E4:O[lastRubricRow]
+  // Conditional formatting for grades in the matrix range
   requests.push(
     {
       addConditionalFormatRule: {
         rule: {
           ranges: [
-            { sheetId: repertoryId, startRowIndex: 3, endRowIndex: 3 + N, startColumnIndex: 4, endColumnIndex: 15 }
+            { sheetId: repertoryId, startRowIndex: 3, endRowIndex: 3 + N, startColumnIndex: 4, endColumnIndex: 4 + remediesCount }
           ],
           booleanRule: {
             condition: { type: "NUMBER_GREATER", values: [{ userEnteredValue: "0" }] },
@@ -4188,7 +4276,7 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
       addConditionalFormatRule: {
         rule: {
           ranges: [
-            { sheetId: repertoryId, startRowIndex: 3, endRowIndex: 3 + N, startColumnIndex: 4, endColumnIndex: 15 }
+            { sheetId: repertoryId, startRowIndex: 3, endRowIndex: 3 + N, startColumnIndex: 4, endColumnIndex: 4 + remediesCount }
           ],
           booleanRule: {
             condition: { type: "NUMBER_EQ", values: [{ userEnteredValue: "0" }] },
@@ -4206,7 +4294,7 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
   requests.push(
     {
       repeatCell: {
-        range: { sheetId: repertoryId, startRowIndex: 3 + N, endRowIndex: 5 + N, startColumnIndex: 0, endColumnIndex: 16 },
+        range: { sheetId: repertoryId, startRowIndex: 3 + N, endRowIndex: 5 + N, startColumnIndex: 0, endColumnIndex: totalCols },
         cell: {
           userEnteredFormat: {
             backgroundColor: { red: 1, green: 1, blue: 1 },
@@ -4218,7 +4306,7 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
     },
     {
       updateBorders: {
-        range: { sheetId: repertoryId, startRowIndex: 3 + N, endRowIndex: 5 + N, startColumnIndex: 0, endColumnIndex: 16 },
+        range: { sheetId: repertoryId, startRowIndex: 3 + N, endRowIndex: 5 + N, startColumnIndex: 0, endColumnIndex: totalCols },
         top: { style: "NONE" },
         bottom: { style: "NONE" },
         left: { style: "NONE" },
@@ -4229,11 +4317,11 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
     }
   );
 
-  // Symptom Coverage styling (Row 11, index 5+N, Cols A-P)
+  // Symptom Coverage styling (Row 11, index 5+N, Cols A to Totality Score)
   requests.push(
     {
       repeatCell: {
-        range: { sheetId: repertoryId, startRowIndex: 5 + N, endRowIndex: 6 + N, startColumnIndex: 0, endColumnIndex: 16 },
+        range: { sheetId: repertoryId, startRowIndex: 5 + N, endRowIndex: 6 + N, startColumnIndex: 0, endColumnIndex: totalCols },
         cell: {
           userEnteredFormat: {
             backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
@@ -4246,15 +4334,15 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
     },
     {
       updateBorders: {
-        range: { sheetId: repertoryId, startRowIndex: 5 + N, endRowIndex: 6 + N, startColumnIndex: 0, endColumnIndex: 16 },
+        range: { sheetId: repertoryId, startRowIndex: 5 + N, endRowIndex: 6 + N, startColumnIndex: 0, endColumnIndex: totalCols },
         top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 226/255 } },
         bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 226/255 } }
       }
     },
-    // Decimal format for Coverage row (Columns E to O)
+    // Decimal format for Coverage row (Columns E to last remedy)
     {
       repeatCell: {
-        range: { sheetId: repertoryId, startRowIndex: 5 + N, endRowIndex: 6 + N, startColumnIndex: 4, endColumnIndex: 15 },
+        range: { sheetId: repertoryId, startRowIndex: 5 + N, endRowIndex: 6 + N, startColumnIndex: 4, endColumnIndex: 4 + remediesCount },
         cell: {
           userEnteredFormat: {
             numberFormat: { type: "NUMBER", pattern: "0.0" },
@@ -4266,11 +4354,11 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
     }
   );
 
-  // Sum of Grades styling (Row 12, index 6+N, Cols A-P)
+  // Sum of Grades styling (Row 12, index 6+N, Cols A to Totality Score)
   requests.push(
     {
       repeatCell: {
-        range: { sheetId: repertoryId, startRowIndex: 6 + N, endRowIndex: 7 + N, startColumnIndex: 0, endColumnIndex: 16 },
+        range: { sheetId: repertoryId, startRowIndex: 6 + N, endRowIndex: 7 + N, startColumnIndex: 0, endColumnIndex: totalCols },
         cell: {
           userEnteredFormat: {
             backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
@@ -4283,7 +4371,7 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
     },
     {
       repeatCell: {
-        range: { sheetId: repertoryId, startRowIndex: 6 + N, endRowIndex: 7 + N, startColumnIndex: 4, endColumnIndex: 15 },
+        range: { sheetId: repertoryId, startRowIndex: 6 + N, endRowIndex: 7 + N, startColumnIndex: 4, endColumnIndex: 4 + remediesCount },
         cell: {
           userEnteredFormat: {
             horizontalAlignment: "CENTER"
@@ -4294,18 +4382,18 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
     },
     {
       updateBorders: {
-        range: { sheetId: repertoryId, startRowIndex: 6 + N, endRowIndex: 7 + N, startColumnIndex: 0, endColumnIndex: 16 },
+        range: { sheetId: repertoryId, startRowIndex: 6 + N, endRowIndex: 7 + N, startColumnIndex: 0, endColumnIndex: totalCols },
         top: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } },
         bottom: { style: "SOLID", color: { red: 203/255, green: 213/255, blue: 225/255 } }
       }
     }
   );
 
-  // Totality Rank Score styling (Row 13, index 7+N, Cols A-P)
+  // Totality Rank Score styling (Row 13, index 7+N, Cols A to Totality Score)
   requests.push(
     {
       repeatCell: {
-        range: { sheetId: repertoryId, startRowIndex: 7 + N, endRowIndex: 8 + N, startColumnIndex: 0, endColumnIndex: 16 },
+        range: { sheetId: repertoryId, startRowIndex: 7 + N, endRowIndex: 8 + N, startColumnIndex: 0, endColumnIndex: totalCols },
         cell: {
           userEnteredFormat: {
             backgroundColor: { red: 226/255, green: 251/255, blue: 247/255 },
@@ -4318,7 +4406,7 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
     },
     {
       repeatCell: {
-        range: { sheetId: repertoryId, startRowIndex: 7 + N, endRowIndex: 8 + N, startColumnIndex: 4, endColumnIndex: 15 },
+        range: { sheetId: repertoryId, startRowIndex: 7 + N, endRowIndex: 8 + N, startColumnIndex: 4, endColumnIndex: 4 + remediesCount },
         cell: {
           userEnteredFormat: {
             horizontalAlignment: "CENTER"
@@ -4329,7 +4417,7 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
     },
     {
       updateBorders: {
-        range: { sheetId: repertoryId, startRowIndex: 7 + N, endRowIndex: 8 + N, startColumnIndex: 0, endColumnIndex: 16 },
+        range: { sheetId: repertoryId, startRowIndex: 7 + N, endRowIndex: 8 + N, startColumnIndex: 0, endColumnIndex: totalCols },
         top: { style: "SOLID", color: { red: 15/255, green: 118/255, blue: 110/255 } },
         bottom: { style: "SOLID", color: { red: 15/255, green: 118/255, blue: 110/255 } }
       }
@@ -4340,7 +4428,7 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
   requests.push(
     {
       repeatCell: {
-        range: { sheetId: repertoryId, startRowIndex: 8 + N, endRowIndex: 9 + N, startColumnIndex: 0, endColumnIndex: 16 },
+        range: { sheetId: repertoryId, startRowIndex: 8 + N, endRowIndex: 9 + N, startColumnIndex: 0, endColumnIndex: totalCols },
         cell: {
           userEnteredFormat: {
             backgroundColor: { red: 1, green: 1, blue: 1 },
@@ -4352,7 +4440,7 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
     },
     {
       updateBorders: {
-        range: { sheetId: repertoryId, startRowIndex: 8 + N, endRowIndex: 9 + N, startColumnIndex: 0, endColumnIndex: 16 },
+        range: { sheetId: repertoryId, startRowIndex: 8 + N, endRowIndex: 9 + N, startColumnIndex: 0, endColumnIndex: totalCols },
         top: { style: "NONE" },
         bottom: { style: "NONE" },
         left: { style: "NONE" },
@@ -4444,7 +4532,7 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
   requests.push(
     {
       repeatCell: {
-        range: { sheetId: repertoryId, startRowIndex: 13 + N, endRowIndex: 50, startColumnIndex: 0, endColumnIndex: 16 },
+        range: { sheetId: repertoryId, startRowIndex: 13 + N, endRowIndex: 50, startColumnIndex: 0, endColumnIndex: totalCols },
         cell: {
           userEnteredFormat: {
             backgroundColor: { red: 1, green: 1, blue: 1 },
@@ -4456,7 +4544,7 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
     },
     {
       updateBorders: {
-        range: { sheetId: repertoryId, startRowIndex: 13 + N, endRowIndex: 50, startColumnIndex: 0, endColumnIndex: 16 },
+        range: { sheetId: repertoryId, startRowIndex: 13 + N, endRowIndex: 50, startColumnIndex: 0, endColumnIndex: totalCols },
         top: { style: "NONE" },
         bottom: { style: "NONE" },
         left: { style: "NONE" },
@@ -4475,7 +4563,8 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
  */
 export async function syncRepertoryToClinicalSheet(
   sheetId: string,
-  rubrics: RepertoryExportRubric[]
+  rubrics: RepertoryExportRubric[],
+  remedies: string[] = ["Nux-v", "Lyc", "Ars", "Puls", "Sulph", "Rhus-t", "Calc", "Sil", "Nat-m", "Ign", "Sep"]
 ): Promise<void> {
   const auth = getGoogleAuth();
   if (!auth) {
@@ -4486,9 +4575,10 @@ export async function syncRepertoryToClinicalSheet(
   const sheets = google.sheets({ version: "v4", auth });
 
   try {
-    const remedies = ["Nux-v", "Lyc", "Ars", "Puls", "Sulph", "Rhus-t", "Calc", "Sil", "Nat-m", "Ign", "Sep"];
     const N = rubrics.length;
-    
+    const M = remedies.length;
+    const totalCols = 5 + M; // 4 initial columns (A,B,C,D) + M remedies + 1 Totality Score column
+
     // Fetch spreadsheet metadata to get the sheetId and existing conditional formatting rules of "Repertorization"
     const spreadsheetInfo = await sheets.spreadsheets.get({ spreadsheetId: sheetId });
     const repertorySheet = spreadsheetInfo.data.sheets?.find(s => s.properties?.title === "Repertorization");
@@ -4500,17 +4590,21 @@ export async function syncRepertoryToClinicalSheet(
 
     // In case N is 0, we just clear the sheet (or write default headers)
     if (N === 0) {
+      const emptyRow = Array(totalCols).fill("");
+      const titleRow = [...emptyRow];
+      titleRow[0] = "REPERTORY GRID & Dynamic ANALYSIS MATRIX";
+      const headerRow = ["Rubric Name", "Chapter / Location", "Source", "Importance Weight", ...remedies, "Totality Score"];
       const emptyRows = [
-        ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
-        ["REPERTORY GRID & Dynamic ANALYSIS MATRIX", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
-        ["Rubric Name", "Chapter / Location", "Source", "Importance Weight", ...remedies, "Totality Score"]
+        emptyRow,
+        titleRow,
+        headerRow
       ];
       for (let i = 3; i < 50; i++) {
-        emptyRows.push(Array(16).fill(""));
+        emptyRows.push(Array(totalCols).fill(""));
       }
       await sheets.spreadsheets.values.update({
         spreadsheetId: sheetId,
-        range: "'Repertorization'!A1:P50",
+        range: `'Repertorization'!A1:${getColumnLetter(totalCols - 1)}50`,
         valueInputOption: "USER_ENTERED",
         requestBody: {
           values: emptyRows
@@ -4522,8 +4616,8 @@ export async function syncRepertoryToClinicalSheet(
     const lastRubricRow = 4 + N - 1;
 
     const rows: any[][] = [
-      ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
-      ["REPERTORY GRID & Dynamic ANALYSIS MATRIX", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+      Array(totalCols).fill(""),
+      ["REPERTORY GRID & Dynamic ANALYSIS MATRIX", ...Array(totalCols - 1).fill("")],
       ["Rubric Name", "Chapter / Location", "Source", "Importance Weight", ...remedies, "Totality Score"]
     ];
 
@@ -4539,14 +4633,17 @@ export async function syncRepertoryToClinicalSheet(
       remedies.forEach(rem => {
         rowValues.push(r.grades[rem] || 0);
       });
+      
       // Totality Score formula: e.g. "=D4*SUM(E4:O4)"
-      rowValues.push(`=D${rowNum}*SUM(E${rowNum}:O${rowNum})`);
+      const firstRemCol = getColumnLetter(4);
+      const lastRemCol = getColumnLetter(4 + M - 1);
+      rowValues.push(`=D${rowNum}*SUM(${firstRemCol}${rowNum}:${lastRemCol}${rowNum})`);
       rows.push(rowValues);
     });
 
     // Add spacer rows
-    rows.push(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
-    rows.push(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
+    rows.push(Array(totalCols).fill(""));
+    rows.push(Array(totalCols).fill(""));
 
     // Formula row indices (1-indexed for sheets)
     const coverageRowIndex = lastRubricRow + 3;
@@ -4556,7 +4653,7 @@ export async function syncRepertoryToClinicalSheet(
     // Symptom Coverage row
     const coverageRow = ["Symptom Coverage", "", "", ""];
     remedies.forEach((rem, idx) => {
-      const colLetter = String.fromCharCode(69 + idx); // E, F, G...
+      const colLetter = getColumnLetter(4 + idx);
       coverageRow.push(`=COUNTIFS(${colLetter}4:${colLetter}${lastRubricRow}, ">0") / ${N}`);
     });
     coverageRow.push("");
@@ -4565,7 +4662,7 @@ export async function syncRepertoryToClinicalSheet(
     // Sum of Grades row
     const sumGradesRow = ["Sum of Grades", "", "", ""];
     remedies.forEach((rem, idx) => {
-      const colLetter = String.fromCharCode(69 + idx); // E, F, G...
+      const colLetter = getColumnLetter(4 + idx);
       sumGradesRow.push(`=SUMPRODUCT(${colLetter}4:${colLetter}${lastRubricRow}, $D$4:$D$${lastRubricRow})`);
     });
     sumGradesRow.push("");
@@ -4574,62 +4671,65 @@ export async function syncRepertoryToClinicalSheet(
     // Totality Rank Score row
     const totalityRankRow = ["Totality Rank Score", "", "", ""];
     remedies.forEach((rem, idx) => {
-      const colLetter = String.fromCharCode(69 + idx); // E, F, G...
+      const colLetter = getColumnLetter(4 + idx);
       totalityRankRow.push(`=(${colLetter}${coverageRowIndex}*100) + ${colLetter}${sumGradesRowIndex}`);
     });
     totalityRankRow.push("");
     rows.push(totalityRankRow);
 
     // Spacer
-    rows.push(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
+    rows.push(Array(totalCols).fill(""));
 
     // Top Remedy Ranking label
-    rows.push(["Top Remedy Ranking", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
+    rows.push(["Top Remedy Ranking", ...Array(totalCols - 1).fill("")]);
+
+    const firstRemCol = getColumnLetter(4);
+    const lastRemCol = getColumnLetter(4 + M - 1);
 
     // Rank 1
     rows.push([
       "Rank 1",
-      `=INDEX($E$3:$O$3, MATCH(MAX(E${totalityRankRowIndex}:O${totalityRankRowIndex}), E${totalityRankRowIndex}:O${totalityRankRowIndex}, 0))`,
+      `=INDEX($${firstRemCol}$3:$${lastRemCol}$3, MATCH(MAX(${firstRemCol}${totalityRankRowIndex}:${lastRemCol}${totalityRankRowIndex}), ${firstRemCol}${totalityRankRowIndex}:${lastRemCol}${totalityRankRowIndex}, 0))`,
       "Score",
-      `=MAX(E${totalityRankRowIndex}:O${totalityRankRowIndex})`,
-      "", "", "", "", "", "", "", "", "", "", "", ""
+      `=MAX(${firstRemCol}${totalityRankRowIndex}:${lastRemCol}${totalityRankRowIndex})`,
+      ...Array(totalCols - 4).fill("")
     ]);
 
     // Rank 2
     rows.push([
       "Rank 2",
-      `=INDEX($E$3:$O$3, MATCH(LARGE(E${totalityRankRowIndex}:O${totalityRankRowIndex}, 2), E${totalityRankRowIndex}:O${totalityRankRowIndex}, 0))`,
+      `=INDEX($${firstRemCol}$3:$${lastRemCol}$3, MATCH(LARGE(${firstRemCol}${totalityRankRowIndex}:${lastRemCol}${totalityRankRowIndex}, 2), ${firstRemCol}${totalityRankRowIndex}:${lastRemCol}${totalityRankRowIndex}, 0))`,
       "Score",
-      `=LARGE(E${totalityRankRowIndex}:O${totalityRankRowIndex}, 2)`,
-      "", "", "", "", "", "", "", "", "", "", "", ""
+      `=LARGE(${firstRemCol}${totalityRankRowIndex}:${lastRemCol}${totalityRankRowIndex}, 2)`,
+      ...Array(totalCols - 4).fill("")
     ]);
 
     // Rank 3
     rows.push([
       "Rank 3",
-      `=INDEX($E$3:$O$3, MATCH(LARGE(E${totalityRankRowIndex}:O${totalityRankRowIndex}, 3), E${totalityRankRowIndex}:O${totalityRankRowIndex}, 0))`,
+      `=INDEX($${firstRemCol}$3:$${lastRemCol}$3, MATCH(LARGE(${firstRemCol}${totalityRankRowIndex}:${lastRemCol}${totalityRankRowIndex}, 3), ${firstRemCol}${totalityRankRowIndex}:${lastRemCol}${totalityRankRowIndex}, 0))`,
       "Score",
-      `=LARGE(E${totalityRankRowIndex}:O${totalityRankRowIndex}, 3)`,
-      "", "", "", "", "", "", "", "", "", "", "", ""
+      `=LARGE(${firstRemCol}${totalityRankRowIndex}:${lastRemCol}${totalityRankRowIndex}, 3)`,
+      ...Array(totalCols - 4).fill("")
     ]);
 
     // Fill up to 50 rows with blank rows to clear any previous data
     const currentLength = rows.length;
     for (let i = currentLength; i < 50; i++) {
-      rows.push(Array(16).fill(""));
+      rows.push(Array(totalCols).fill(""));
     }
 
     await sheets.spreadsheets.values.update({
       spreadsheetId: sheetId,
-      range: "'Repertorization'!A1:P50",
+      range: `'Repertorization'!A1:${getColumnLetter(totalCols - 1)}50`,
       valueInputOption: "USER_ENTERED",
       requestBody: {
         values: rows
       }
     });
 
-    // Apply dynamic formatting to match the number of rubrics (N)
-    const formattingRequests = getRepertoryFormattingRequests(repertoryId, N, existingRules);
+    // Apply dynamic formatting to match the number of rubrics (N) and remedies (M)
+    const formattingRequests = getRepertoryFormattingRequests(repertoryId, N, existingRules, M);
     await sheets.spreadsheets.batchUpdate({
       spreadsheetId: sheetId,
       requestBody: {
@@ -4642,7 +4742,3 @@ export async function syncRepertoryToClinicalSheet(
     throw error;
   }
 }
-
-
-
-

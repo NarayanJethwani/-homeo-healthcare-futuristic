@@ -4,7 +4,7 @@ import { syncRepertoryToClinicalSheet, RepertoryExportRubric } from "@/lib/googl
 
 export async function POST(request: Request) {
   try {
-    const { patientId, rubrics } = await request.json();
+    const { patientId, rubrics, remedies } = await request.json();
     if (!patientId || !rubrics || !Array.isArray(rubrics)) {
       return NextResponse.json(
         { success: false, message: "Missing patientId or invalid rubrics parameter." },
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
     // 2. If it is a real Google Sheet, push the repertory matrix values to the sheet
     if (sheetId && sheetId !== "mock-sheet-id" && sheetId !== "mock-sheet") {
       try {
-        await syncRepertoryToClinicalSheet(sheetId, rubrics);
+        await syncRepertoryToClinicalSheet(sheetId, rubrics, remedies);
       } catch (sheetErr: any) {
         console.error("Failed to push repertory rubrics to Google Sheets:", sheetErr);
         return NextResponse.json(

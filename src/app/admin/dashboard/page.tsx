@@ -1009,7 +1009,8 @@ export default function AdminDashboard() {
   const [selectedChapter, setSelectedChapter] = useState(REPERTORY_CHAPTERS[0]);
   const [rubricSearch, setRubricSearch] = useState("");
   const [selectedRubrics, setSelectedRubrics] = useState<Array<{ rubric: Rubric; grade: number; weightMultiplier?: number }>>([]);
-  const [remedyColumns, setRemedyColumns] = useState<string[]>([]);
+  const [remedyColumns, setRemedyColumns] = useState<string[]>(["Nux-v", "Lyc", "Ars", "Puls", "Sulph", "Rhus-t", "Calc", "Sil", "Nat-m", "Ign", "Sep"]);
+  const [customRemedyInput, setCustomRemedyInput] = useState("");
   const [remedyScores, setRemedyScores] = useState<Array<{ remedy: string; coverage: string; score: number }>>([]);
   const [isRepertoryLoaded, setIsRepertoryLoaded] = useState(false);
   const [isRepertoryLoading, setIsRepertoryLoading] = useState(false);
@@ -2803,6 +2804,8 @@ export default function AdminDashboard() {
     remainingBalance: 0
   });
   const [isCreatingCase, setIsCreatingCase] = useState(false);
+  const [isPlanningRegisteredPatient, setIsPlanningRegisteredPatient] = useState(false);
+  const [planningPatientId, setPlanningPatientId] = useState("");
   const [caseCreationError, setCaseCreationError] = useState("");
   const [caseCreationSuccess, setCaseCreationSuccess] = useState(false);
   const [createdFolderUrl, setCreatedFolderUrl] = useState("");
@@ -3550,6 +3553,7 @@ Homeo Healthcare`;
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          id: isPlanningRegisteredPatient ? planningPatientId : undefined,
           name: newCaseForm.name,
           age: newCaseForm.age,
           gender: newCaseForm.gender,
@@ -3570,7 +3574,8 @@ Homeo Healthcare`;
           durationValue: getDurationValue(newCaseForm.durationText),
           concessionApplied: concessionVal,
           overridePrice: newCaseForm.finalPrice,
-          medicineAddons: 0
+          medicineAddons: 0,
+          status: "active"
         }),
         signal: controller.signal
       });
@@ -3629,7 +3634,11 @@ Homeo Healthcare`;
             conditionsCount: newCaseForm.careLevel.includes("Multisystem") ? 2 : 1,
             durationValue: getDurationValue(newCaseForm.durationText)
           } as any;
-          setPatients(prev => [newPatient, ...prev]);
+          if (isPlanningRegisteredPatient) {
+            setPatients(prev => prev.map(p => p.id === planningPatientId ? newPatient : p));
+          } else {
+            setPatients(prev => [newPatient, ...prev]);
+          }
         }
 
         // Reset form
@@ -3661,7 +3670,7 @@ Homeo Healthcare`;
       setCaseCreationError(error.message || "Failed to connect to Google Drive intake automation. Operating in Mock link mode.");
       
       // Fallback for mock/offline testing
-      const mockPatientId = `P-${Math.floor(100000 + Math.random() * 900000)}`;
+      const mockPatientId = isPlanningRegisteredPatient ? planningPatientId : `P-${Math.floor(100000 + Math.random() * 900000)}`;
       const folderUrl = "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link";
       
       const concessionVal = newCaseForm.concessionType === "Senior"
@@ -3723,18 +3732,72 @@ Homeo Healthcare`;
           await setDoc(doc(db, "patients", mockPatientId), newPatient);
         } else {
           console.log("Firebase operating in mock-project-id. Appending patient locally.");
-          setPatients(prev => [newPatient, ...prev]);
+          if (isPlanningRegisteredPatient) {
+            setPatients(prev => prev.map(p => p.id === planningPatientId ? newPatient : p));
+          } else {
+            setPatients(prev => [newPatient, ...prev]);
+          }
         }
         setCaseCreationSuccess(true);
       } catch (dbErr) {
         console.error("Failed to save mock patient to Firestore:", dbErr);
         // Fallback local update if Firestore offline
-        setPatients(prev => [newPatient, ...prev]);
+        if (isPlanningRegisteredPatient) {
+          setPatients(prev => prev.map(p => p.id === planningPatientId ? newPatient : p));
+        } else {
+          setPatients(prev => [newPatient, ...prev]);
+        }
         setCaseCreationSuccess(true);
       }
     } finally {
       setIsCreatingCase(false);
     }
+  };
+
+  const handleStartPlanning = (patient: Patient) => {
+    setIsPlanningRegisteredPatient(true);
+    setPlanningPatientId(patient.id);
+    
+    // Parse location if possible into city/state/country
+    let city = "";
+    let state = "";
+    let country = "India";
+    if (patient.location) {
+      const parts = patient.location.split(",").map(p => p.trim());
+      if (parts.length >= 3) {
+        city = parts[parts.length - 3];
+        state = parts[parts.length - 2];
+        country = parts[parts.length - 1];
+      } else if (parts.length === 2) {
+        city = parts[0];
+        country = parts[1];
+      } else if (parts.length === 1) {
+        country = parts[0];
+      }
+    }
+
+    setNewCaseForm({
+      name: patient.name,
+      age: patient.age,
+      gender: (patient.gender === "Male" || patient.gender === "Female") ? patient.gender : "Male",
+      phone: patient.phone || "",
+      email: patient.email && patient.email !== "N/A" ? patient.email : "",
+      city,
+      state,
+      country,
+      complaint: patient.complaint || "",
+      careLevel: "🌱 Acute & Wellness Care",
+      billingCycle: "Monthly",
+      concessionType: "None",
+      durationText: "1-Month Consultation",
+      basePrice: 3500,
+      discountOverride: 0,
+      finalPrice: 3500,
+      receivedAmount: 3500,
+      remainingBalance: 0
+    });
+    
+    setIsNewCaseModalOpen(true);
   };
 
   const handleCSVImport = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -4283,7 +4346,6 @@ Homeo Healthcare`;
   // Calculate Repertorization Grid results
   useEffect(() => {
     if (selectedRubrics.length === 0) {
-      setRemedyColumns([]);
       setRemedyScores([]);
       return;
     }
@@ -4306,23 +4368,18 @@ Homeo Healthcare`;
       });
     });
 
-    // 2. Format scores
-    const calculatedScores = Object.entries(remedyList).map(([remedy, stats]) => {
+    // 2. Format scores for current remedyColumns
+    const calculatedScores = remedyColumns.map((rem) => {
+      const stats = remedyList[rem] || { coverage: 0, score: 0 };
       return {
-        remedy,
+        remedy: rem,
         coverage: `${stats.coverage}/${selectedRubrics.length}`,
         score: stats.score
       };
     });
 
-    // 3. Sort by score (descending) then coverage (descending)
-    calculatedScores.sort((a, b) => b.score - a.score || parseInt(b.coverage) - parseInt(a.coverage));
-
-    // 4. Update state with top remedies (max 10 columns for visualization)
-    const topRemedies = calculatedScores.slice(0, 10);
-    setRemedyColumns(topRemedies.map((s) => s.remedy));
-    setRemedyScores(topRemedies);
-  }, [selectedRubrics]);
+    setRemedyScores(calculatedScores);
+  }, [selectedRubrics, remedyColumns]);
 
   // Pre-fill active rubrics and complaint based on patient selection
   const handleSelectPatientForAnalysis = (patientId: string) => {
@@ -4465,7 +4522,9 @@ ${err.message || err}`);
       return;
     }
     
-    const remedies = ["Nux-v", "Lyc", "Ars", "Puls", "Sulph", "Rhus-t", "Calc", "Sil", "Nat-m", "Ign", "Sep"];
+    const remedies = remedyColumns.length > 0
+      ? remedyColumns
+      : ["Nux-v", "Lyc", "Ars", "Puls", "Sulph", "Rhus-t", "Calc", "Sil", "Nat-m", "Ign", "Sep"];
 
     const rubricsPayload = repertoryWorkbenchMode === "jethwani"
       ? selectedJethwaniRubrics.map(s => {
@@ -4513,7 +4572,8 @@ ${err.message || err}`);
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           patientId: activePatient.id,
-          rubrics: rubricsPayload
+          rubrics: rubricsPayload,
+          remedies: remedies
         })
       })
       .then(res => res.json())
@@ -9404,9 +9464,15 @@ ${err.message || err}`);
                           <span className="text-[9px] font-extrabold uppercase px-2 py-0.5 rounded bg-slate-900/5 border border-slate-900/5 text-slate-600">
                             {patient.id}
                           </span>
-                          <span className="text-[9px] font-extrabold uppercase px-2 py-0.5 rounded bg-mint/10 border border-mint/20 text-mint-dark">
-                            {patient.careLevel}
-                          </span>
+                          {patient.status === "pending_plan" ? (
+                            <span className="text-[9px] font-extrabold uppercase px-2 py-0.5 rounded bg-amber-100 border border-amber-200 text-amber-800 animate-pulse">
+                              Pending Case Plan
+                            </span>
+                          ) : (
+                            <span className="text-[9px] font-extrabold uppercase px-2 py-0.5 rounded bg-mint/10 border border-mint/20 text-mint-dark">
+                              {patient.careLevel}
+                            </span>
+                          )}
                         </div>
                         
                         <p className="text-xs font-semibold text-slate-700">
@@ -9461,10 +9527,21 @@ ${err.message || err}`);
                           <span>Repertorise Case</span>
                         </button>
 
-                        {/* Google Folder Link */}
-                        <a
-                          href={patient.folderUrl}
-                          onClick={(e) => handleWorkspaceLinkClick(e, patient, "folder")}
+                        {patient.status === "pending_plan" ? (
+                          /* Plan Case Button for Registered Patients */
+                          <button
+                            onClick={() => handleStartPlanning(patient)}
+                            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4.5 py-3 rounded-full bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold uppercase tracking-wider transition-all shadow-sm cursor-pointer animate-pulse"
+                          >
+                            <Sparkles className="w-4 h-4" />
+                            <span>Plan Case</span>
+                          </button>
+                        ) : (
+                          <>
+                            {/* Google Folder Link */}
+                            <a
+                              href={patient.folderUrl}
+                              onClick={(e) => handleWorkspaceLinkClick(e, patient, "folder")}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-3 rounded-full border border-slate-200 hover:border-slate-800 text-slate-800 text-xs font-bold uppercase tracking-wider transition-all bg-white shadow-sm cursor-pointer"
@@ -9495,6 +9572,8 @@ ${err.message || err}`);
                           <Receipt className="w-4 h-4" />
                           <span>Billing</span>
                         </button>
+                          </>
+                        )}
                       </div>
                     </motion.div>
                   ))
@@ -10754,8 +10833,79 @@ ${err.message || err}`);
                             placeholder="Filter columns..."
                             value={remedyFilter}
                             onChange={(e) => setRemedyFilter(e.target.value)}
-                            className="px-3 py-1.5 border border-slate-200 focus:border-mint outline-none rounded-xl text-[10px] bg-white font-semibold w-28 shadow-sm transition-all"
+                            className="px-3 py-1.5 border border-slate-200 focus:border-mint outline-none rounded-xl text-[10px] bg-white font-semibold w-24 shadow-sm transition-all"
                           />
+                          {/* Custom Remedy Input */}
+                          <div className="flex items-center gap-1">
+                            <input
+                              type="text"
+                              placeholder="Add remedy (e.g. Thuja)..."
+                              value={customRemedyInput}
+                              onChange={(e) => setCustomRemedyInput(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault();
+                                  if (customRemedyInput.trim()) {
+                                    const rem = customRemedyInput.trim();
+                                    if (!remedyColumns.includes(rem)) {
+                                      setRemedyColumns([...remedyColumns, rem]);
+                                    }
+                                    setCustomRemedyInput("");
+                                  }
+                                }
+                              }}
+                              className="px-3 py-1.5 border border-slate-200 focus:border-mint outline-none rounded-xl text-[10px] bg-white font-semibold w-36 shadow-sm transition-all"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (customRemedyInput.trim()) {
+                                  const rem = customRemedyInput.trim();
+                                  if (!remedyColumns.includes(rem)) {
+                                    setRemedyColumns([...remedyColumns, rem]);
+                                  }
+                                  setCustomRemedyInput("");
+                                }
+                              }}
+                              className="px-2.5 py-1.5 bg-mint hover:bg-mint-dark text-white rounded-xl text-[10px] font-bold uppercase transition-all duration-200 cursor-pointer border-none shadow-sm"
+                            >
+                              Add
+                            </button>
+                          </div>
+                          {/* Auto Top 10 Button */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const remedyList: Record<string, { coverage: number; score: number }> = {};
+                              selectedRubrics.forEach(({ rubric, grade: userWeight, weightMultiplier }) => {
+                                const mult = weightMultiplier || 1;
+                                Object.entries(rubric.remedies).forEach(([remedy, remGrade]) => {
+                                  if (remGrade < 0) return;
+                                  if (!remedyList[remedy]) {
+                                    remedyList[remedy] = { coverage: 0, score: 0 };
+                                  }
+                                  remedyList[remedy].coverage += 1;
+                                  remedyList[remedy].score += remGrade * userWeight * mult;
+                                });
+                              });
+                              const calculatedScores = Object.entries(remedyList).map(([remedy, stats]) => ({
+                                remedy,
+                                coverage: stats.coverage,
+                                score: stats.score
+                              }));
+                              calculatedScores.sort((a, b) => b.score - a.score || b.coverage - a.coverage);
+                              const topRemedies = calculatedScores.slice(0, 10).map(s => s.remedy);
+                              if (topRemedies.length > 0) {
+                                setRemedyColumns(topRemedies);
+                              } else {
+                                alert("No matching remedies found to auto-suggest.");
+                              }
+                            }}
+                            className="px-2.5 py-1.5 border border-mint text-mint hover:bg-mint/5 rounded-xl text-[10px] font-bold uppercase transition-all duration-200 cursor-pointer shadow-sm"
+                            title="Auto-populate compare grid with the top 10 remedies for active rubrics"
+                          >
+                            Auto Top 10
+                          </button>
                           {/* Group by Kingdom */}
                           <button
                             onClick={() => setGroupByKingdom(!groupByKingdom)}
@@ -10788,12 +10938,26 @@ ${err.message || err}`);
                                 return (
                                   <th 
                                     key={rem} 
-                                    onClick={() => setSelectedRemedyDetail(rem)}
-                                    className="p-3 text-center border-l border-slate-200/50 hover:bg-slate-50 cursor-pointer transition-all w-24 group align-top"
-                                    title={`Inspect ${card.fullName}`}
+                                    className="p-3 text-center border-l border-slate-200/50 hover:bg-slate-50 w-24 group align-top relative animate-fadeIn"
                                   >
+                                    {/* Delete remedy button */}
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setRemedyColumns(remedyColumns.filter(c => c !== rem));
+                                      }}
+                                      className="absolute top-1 right-1 w-4 h-4 rounded-full bg-slate-200 text-slate-500 hover:bg-rose-500 hover:text-white flex items-center justify-center text-[9px] font-bold cursor-pointer border-none shadow-2xs z-30 transition-all opacity-0 group-hover:opacity-100"
+                                      title={`Remove ${rem} from comparison`}
+                                    >
+                                      ×
+                                    </button>
                                     {/* Remedy Card column header */}
-                                    <div className="flex flex-col items-center space-y-1 p-2 bg-slate-50/80 border border-slate-200 rounded-2xl group-hover:border-mint group-hover:shadow-sm transition-all duration-300 relative">
+                                    <div 
+                                      onClick={() => setSelectedRemedyDetail(rem)}
+                                      className="flex flex-col items-center space-y-1 p-2 bg-slate-50/80 border border-slate-200 rounded-2xl group-hover:border-mint group-hover:shadow-sm transition-all duration-300 relative cursor-pointer"
+                                      title={`Inspect ${card.fullName}`}
+                                    >
                                       <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-mint shadow-[0_0_6px_#14B8A6] animate-pulse" />
                                       <div className="text-[11px] font-black text-[#0F766E] font-mono tracking-widest">{card.abbrev}</div>
                                       <div className="text-[16px] font-black text-slate-800 font-mono tracking-tight leading-none pt-0.5">{card.score}</div>
@@ -21437,7 +21601,11 @@ Exported on: ${new Date().toLocaleDateString()}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => {
-                  if (!isCreatingCase) setIsNewCaseModalOpen(false);
+                  if (!isCreatingCase) {
+                    setIsNewCaseModalOpen(false);
+                    setIsPlanningRegisteredPatient(false);
+                    setPlanningPatientId("");
+                  }
                 }}
                 className="absolute inset-0 bg-slate-900/20 backdrop-blur-md pointer-events-auto"
               />
@@ -21461,7 +21629,11 @@ Exported on: ${new Date().toLocaleDateString()}
                     </div>
                   </div>
                   <button
-                    onClick={() => setIsNewCaseModalOpen(false)}
+                    onClick={() => {
+                      setIsNewCaseModalOpen(false);
+                      setIsPlanningRegisteredPatient(false);
+                      setPlanningPatientId("");
+                    }}
                     disabled={isCreatingCase}
                     className="w-8 h-8 rounded-full border border-slate-200 hover:border-slate-800 flex items-center justify-center transition-colors cursor-pointer disabled:opacity-50"
                   >
@@ -21518,6 +21690,8 @@ Exported on: ${new Date().toLocaleDateString()}
                         onClick={() => {
                           setIsNewCaseModalOpen(false);
                           setCaseCreationSuccess(false);
+                          setIsPlanningRegisteredPatient(false);
+                          setPlanningPatientId("");
                         }}
                         className="px-6 py-2.5 rounded-full bg-mint text-white text-xs font-bold uppercase tracking-wider hover:bg-mint-dark cursor-pointer transition-colors shadow-sm"
                       >

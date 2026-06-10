@@ -40,77 +40,35 @@ export async function POST(request: Request) {
 
     console.log("Processing intake automation for patient:", patientData.name);
 
-    // Check if Google credentials are available before attempting real API calls
-    const hasGoogleCredentials = !!process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
+    console.log("Registering case intake in Firestore for:", patientData.name);
     
-    if (!hasGoogleCredentials) {
-      console.warn("GOOGLE_SERVICE_ACCOUNT_KEY not set. Intake operating in mock mode for:", patientData.name);
-      
-      // Save to Firestore WITHOUT mock sheet URLs — leave them empty for lazy provisioning later
-      const patientDoc = {
-        id: patientData.id,
-        name: patientData.name,
-        age: patientData.age,
-        gender: patientData.gender,
-        phone: patientData.phone,
-        email: patientData.email,
-        location: `${patientData.city}, ${patientData.state}, ${patientData.country}`,
-        complaint: patientData.complaint,
-        careLevel: patientData.careLevel,
-        conditionsCount: patientData.conditionsCount,
-        durationText: patientData.durationText,
-        finalPrice: patientData.finalPrice,
-        receivedAmount: Number(body.receivedAmount || patientData.finalPrice),
-        remainingBalance: Number(body.remainingBalance || 0),
-        deliveryMode: patientData.deliveryMode,
-        folderId: "",
-        folderUrl: "",
-        sheetId: "",
-        sheetUrl: "",
-        assignedDoctor: body.assignedDoctor || "unassigned",
-        status: "active",
-        createdAt: new Date().toISOString(),
-        billingCycle: patientData.billingCycle || "Monthly",
-        concessionApplied: patientData.concessionApplied || "None",
-        durationValue: patientData.durationValue || 1
-      };
+    let folderId = "";
+    let folderUrl = "";
+    let sheetId = "";
+    let sheetUrl = "";
+    let status = body.status || "active";
+    let createdAt = new Date().toISOString();
 
-      if (process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID && process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID !== "mock-project-id") {
-        await adminDb.collection("patients").doc(patientDoc.id).set(patientDoc);
+    const isFirebaseConfigured = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID && process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID !== "mock-project-id";
+    if (isFirebaseConfigured) {
+      try {
+        const docRef = adminDb.collection("patients").doc(patientData.id);
+        const docSnap = await docRef.get();
+        if (docSnap.exists) {
+          const existingData = docSnap.data() || {};
+          folderId = existingData.folderId || "";
+          folderUrl = existingData.folderUrl || "";
+          sheetId = existingData.sheetId || "";
+          sheetUrl = existingData.sheetUrl || "";
+          status = body.status || existingData.status || "active";
+          createdAt = existingData.createdAt || new Date().toISOString();
+        }
+      } catch (err) {
+        console.warn("Failed to check existing patient document in Firestore:", err);
       }
-
-      // Build mock sheet URL for display purposes
-      const mockSheetUrl = `/admin/mock-sheet?name=${encodeURIComponent(patientData.name)}` +
-        `&id=${encodeURIComponent(patientData.id)}` +
-        `&age=${encodeURIComponent(patientData.age)}` +
-        `&gender=${encodeURIComponent(patientData.gender)}` +
-        `&phone=${encodeURIComponent(patientData.phone)}` +
-        `&email=${encodeURIComponent(patientData.email || "")}` +
-        `&complaint=${encodeURIComponent(patientData.complaint)}` +
-        `&careLevel=${encodeURIComponent(patientData.careLevel)}` +
-        `&durationText=${encodeURIComponent(patientData.durationText)}` +
-        `&finalPrice=${encodeURIComponent(String(patientData.finalPrice))}`;
-
-      return NextResponse.json({
-        success: true,
-        isMock: true,
-        message: "Patient intake saved. Google Workspace not provisioned (no credentials). Sheet will be created on first access.",
-        patientId: patientDoc.id,
-        folderUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link",
-        sheetUrl: mockSheetUrl
-      });
     }
 
-    // 1. Create Patient Folder in Google Drive under Parent Folder
-    const folderResult = await createPatientFolder(patientData);
-    
-    // 2. Create Patient Clinical Sheet inside their new Folder
-    const sheetResult = await createPatientClinicalSheet(folderResult.folderId, patientData);
-    
-    // 3. Append summary row to Master Google Sheet
-    await appendPatientToMasterRecord(patientData, folderResult.folderUrl, sheetResult.sheetUrl);
-
-    // 4. Save metadata record to Firestore using client-side SDK configuration
+    // Save to Firestore with empty folder and sheet fields (to be dynamically provisioned on-demand by the doctor)
     const patientDoc = {
       id: patientData.id,
       name: patientData.name,
@@ -133,31 +91,30 @@ export async function POST(request: Request) {
       receivedAmount: Number(body.receivedAmount || patientData.finalPrice),
       remainingBalance: Number(body.remainingBalance || 0),
       deliveryMode: patientData.deliveryMode,
-      folderId: folderResult.folderId,
-      folderUrl: folderResult.folderUrl,
-      sheetId: sheetResult.sheetId,
-      sheetUrl: sheetResult.sheetUrl,
+      folderId,
+      folderUrl,
+      sheetId,
+      sheetUrl,
       assignedDoctor: body.assignedDoctor || "unassigned",
-      status: "active",
-      createdAt: new Date().toISOString(),
+      status,
+      createdAt,
       billingCycle: patientData.billingCycle || "Monthly",
       concessionApplied: patientData.concessionApplied || "None",
       durationValue: patientData.durationValue || 1
     };
 
-    if (process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID && process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID !== "mock-project-id") {
-      await adminDb.collection("patients").doc(patientDoc.id).set(patientDoc);
+    if (isFirebaseConfigured) {
+      await adminDb.collection("patients").doc(patientDoc.id).set(patientDoc, { merge: true });
     } else {
       console.log("Firebase not configured or operating in mock-project-id. Skipping Firestore write.");
     }
 
     return NextResponse.json({
       success: true,
-      isMock: false,
-      message: "Patient intake processed, Google Workspace files created and synced successfully.",
+      message: "Patient case registered successfully in Firestore. Clinical Sheet and Folder will be dynamically provisioned on first doctor access.",
       patientId: patientDoc.id,
-      folderUrl: folderResult.folderUrl,
-      sheetUrl: sheetResult.sheetUrl
+      folderUrl: "",
+      sheetUrl: ""
     });
 
   } catch (error: any) {
