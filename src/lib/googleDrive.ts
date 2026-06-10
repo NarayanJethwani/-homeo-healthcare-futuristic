@@ -899,7 +899,7 @@ export async function createPatientClinicalSheet(
                 booleanRule: {
                   condition: { type: "NUMBER_GREATER", values: [{ userEnteredValue: "0" }] },
                   format: {
-                    textFormat: { fontFamily: "Inter", foregroundColor: { red: 225/255, green: 29/255, blue: 72/255 }, bold: true } // rose-600
+                    textFormat: {  foregroundColor: { red: 225/255, green: 29/255, blue: 72/255 }, bold: true } // rose-600
                   }
                 }
               },
@@ -915,7 +915,7 @@ export async function createPatientClinicalSheet(
                 booleanRule: {
                   condition: { type: "NUMBER_LESS_THAN_EQ", values: [{ userEnteredValue: "0" }] },
                   format: {
-                    textFormat: { fontFamily: "Inter", foregroundColor: { red: 4/255, green: 120/255, blue: 87/255 }, bold: true } // emerald-700
+                    textFormat: {  foregroundColor: { red: 4/255, green: 120/255, blue: 87/255 }, bold: true } // emerald-700
                   }
                 }
               },
@@ -1797,7 +1797,7 @@ export async function createPatientClinicalSheet(
                   booleanRule: {
                     condition: { type: "NUMBER_GREATER", values: [{ userEnteredValue: "0" }] },
                     format: {
-                      textFormat: { fontFamily: "Inter", foregroundColor: { red: 225/255, green: 29/255, blue: 72/255 }, bold: true } // rose-600
+                      textFormat: {  foregroundColor: { red: 225/255, green: 29/255, blue: 72/255 }, bold: true } // rose-600
                     }
                   }
                 },
@@ -1813,7 +1813,7 @@ export async function createPatientClinicalSheet(
                   booleanRule: {
                     condition: { type: "NUMBER_LESS_THAN_EQ", values: [{ userEnteredValue: "0" }] },
                     format: {
-                      textFormat: { fontFamily: "Inter", foregroundColor: { red: 4/255, green: 120/255, blue: 87/255 }, bold: true } // emerald-700
+                      textFormat: {  foregroundColor: { red: 4/255, green: 120/255, blue: 87/255 }, bold: true } // emerald-700
                     }
                   }
                 },
@@ -2329,7 +2329,7 @@ export async function createPatientClinicalSheet(
                   booleanRule: {
                     condition: { type: "TEXT_EQ", values: [{ userEnteredValue: "PAID" }] },
                     format: {
-                      textFormat: { fontFamily: "Inter", foregroundColor: { red: 4/255, green: 120/255, blue: 87/255 }, bold: true },
+                      textFormat: {  foregroundColor: { red: 4/255, green: 120/255, blue: 87/255 }, bold: true },
                       backgroundColor: { red: 236/255, green: 253/255, blue: 245/255 }
                     }
                   }
@@ -2346,7 +2346,7 @@ export async function createPatientClinicalSheet(
                   booleanRule: {
                     condition: { type: "TEXT_EQ", values: [{ userEnteredValue: "PARTIALLY PAID" }] },
                     format: {
-                      textFormat: { fontFamily: "Inter", foregroundColor: { red: 67/255, green: 56/255, blue: 202/255 }, bold: true },
+                      textFormat: {  foregroundColor: { red: 67/255, green: 56/255, blue: 202/255 }, bold: true },
                       backgroundColor: { red: 238/255, green: 242/255, blue: 255/255 }
                     }
                   }
@@ -2363,7 +2363,7 @@ export async function createPatientClinicalSheet(
                   booleanRule: {
                     condition: { type: "TEXT_EQ", values: [{ userEnteredValue: "UNPAID" }] },
                     format: {
-                      textFormat: { fontFamily: "Inter", foregroundColor: { red: 190/255, green: 24/255, blue: 74/255 }, bold: true },
+                      textFormat: {  foregroundColor: { red: 190/255, green: 24/255, blue: 74/255 }, bold: true },
                       backgroundColor: { red: 255/255, green: 241/255, blue: 242/255 }
                     }
                   }
@@ -4177,7 +4177,7 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
             condition: { type: "NUMBER_GREATER", values: [{ userEnteredValue: "0" }] },
             format: {
               backgroundColor: { red: 236/255, green: 253/255, blue: 245/255 },
-              textFormat: { fontFamily: "Inter", foregroundColor: { red: 4/255, green: 120/255, blue: 87/255 }, bold: true }
+              textFormat: {  foregroundColor: { red: 4/255, green: 120/255, blue: 87/255 }, bold: true }
             }
           }
         },
@@ -4193,7 +4193,7 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
           booleanRule: {
             condition: { type: "NUMBER_EQ", values: [{ userEnteredValue: "0" }] },
             format: {
-              textFormat: { fontFamily: "Inter", foregroundColor: { red: 203/255, green: 213/255, blue: 225/255 } }
+              textFormat: {  foregroundColor: { red: 203/255, green: 213/255, blue: 225/255 } }
             }
           }
         },
