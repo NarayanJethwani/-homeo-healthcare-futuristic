@@ -1000,6 +1000,21 @@ export default function AdminDashboard() {
   const [isEduLoading, setIsEduLoading] = useState(false);
 
   const [patients, setPatients] = useState<Patient[]>([]);
+  const [sheetOpeningMode, setSheetOpeningMode] = useState<"real" | "mock">("real");
+
+  // Load sheet opening mode on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("sheet_opening_mode");
+    if (saved === "mock" || saved === "real") {
+      setSheetOpeningMode(saved);
+    }
+  }, []);
+
+  const handleToggleSheetMode = (mode: "real" | "mock") => {
+    setSheetOpeningMode(mode);
+    localStorage.setItem("sheet_opening_mode", mode);
+  };
+
   const [searchTerm, setSearchTerm] = useState("");
   const [chatsLoaded, setChatsLoaded] = useState(false);
   
@@ -4083,6 +4098,30 @@ Homeo Healthcare`;
     patient: Patient,
     type: "folder" | "sheet"
   ) => {
+    // If the preference is set to open the Mock Sheet UI, always redirect sheet clicks to mock-sheet page
+    if (type === "sheet" && sheetOpeningMode === "mock") {
+      e.preventDefault();
+      const mockUrl = `/admin/mock-sheet?name=${encodeURIComponent(patient.name)}` +
+        `&id=${encodeURIComponent(patient.id)}` +
+        `&age=${encodeURIComponent(patient.age)}` +
+        `&gender=${encodeURIComponent(patient.gender)}` +
+        `&phone=${encodeURIComponent(patient.phone || "")}` +
+        `&email=${encodeURIComponent(patient.email || "")}` +
+        `&complaint=${encodeURIComponent(patient.complaint || "")}` +
+        `&careLevel=${encodeURIComponent(patient.careLevel || "")}` +
+        `&durationText=${encodeURIComponent(patient.durationText || "")}` +
+        `&finalPrice=${encodeURIComponent(String(patient.finalPrice || 0))}` +
+        `&receivedAmount=${encodeURIComponent(String(patient.receivedAmount !== undefined ? patient.receivedAmount : (patient.finalPrice || 0)))}` +
+        `&remainingBalance=${encodeURIComponent(String(patient.remainingBalance || 0))}` +
+        `&billingCycle=${encodeURIComponent((patient as any).billingCycle || "Monthly")}` +
+        `&concessionApplied=${encodeURIComponent((patient as any).concessionApplied || "None")}` +
+        `&conditionsCount=${encodeURIComponent(String((patient as any).conditionsCount || (patient.careLevel.includes("Multisystem") ? 2 : 1)))}` +
+        `&durationValue=${encodeURIComponent(String((patient as any).durationValue || getDurationValue(patient.durationText)))}` +
+        (patient.sheetUrl && patient.sheetUrl.startsWith("https://") ? `&sheetUrl=${encodeURIComponent(patient.sheetUrl)}` : "");
+      window.open(mockUrl, "_blank", "noopener,noreferrer");
+      return;
+    }
+
     // If we have a real Google Sheets or Drive URL, let it open natively
     const currentUrl = type === "folder" ? patient.folderUrl : patient.sheetUrl;
     const isRealUrl = currentUrl && 
@@ -4565,7 +4604,7 @@ ${err.message || err}`);
                          activePatient.sheetUrl.startsWith("https://") && 
                          activePatient.sheetUrl.includes("google.com/spreadsheets");
 
-    if (hasRealSheet) {
+    if (hasRealSheet && sheetOpeningMode === "real") {
       setIsSyncingRepertory(true);
       fetch("/api/export-repertory", {
         method: "POST",
@@ -4601,7 +4640,7 @@ ${err.message || err}`);
     }).join("|");
     
     let baseUrl = activePatient.sheetUrl || "/admin/mock-sheet";
-    if (baseUrl.includes("google.com/spreadsheets") || !baseUrl.startsWith("/admin/mock-sheet")) {
+    if (sheetOpeningMode === "mock" || baseUrl.includes("google.com/spreadsheets") || !baseUrl.startsWith("/admin/mock-sheet")) {
       baseUrl = `/admin/mock-sheet?name=${encodeURIComponent(activePatient.name)}` +
         `&id=${encodeURIComponent(activePatient.id)}` +
         `&age=${encodeURIComponent(activePatient.age)}` +
@@ -4617,7 +4656,8 @@ ${err.message || err}`);
         `&billingCycle=${encodeURIComponent((activePatient as any).billingCycle || "Monthly")}` +
         `&concessionApplied=${encodeURIComponent((activePatient as any).concessionApplied || "None")}` +
         `&conditionsCount=${encodeURIComponent(String((activePatient as any).conditionsCount || (activePatient.careLevel.includes("Multisystem") ? 2 : 1)))}` +
-        `&durationValue=${encodeURIComponent(String((activePatient as any).durationValue || getDurationValue(activePatient.durationText)))}`;
+        `&durationValue=${encodeURIComponent(String((activePatient as any).durationValue || getDurationValue(activePatient.durationText)))}` +
+        (activePatient.sheetUrl && activePatient.sheetUrl.startsWith("https://") ? `&sheetUrl=${encodeURIComponent(activePatient.sheetUrl)}` : "");
     }
     
     const separator = baseUrl.includes("?") ? "&" : "?";
@@ -9432,6 +9472,35 @@ ${err.message || err}`);
                     <Upload className="w-4 h-4 text-slate-500" />
                     <span>Import Patients (XLSX / Google Sheet)</span>
                   </button>
+
+                  {/* Sheet Opening Mode Toggle */}
+                  <div className="flex items-center gap-1 px-2 py-1 rounded-xl border border-slate-200 bg-white text-[10px] font-bold shadow-sm">
+                    <span className="text-slate-400 uppercase tracking-wider text-[8px] px-1 mr-0.5">Sheet Mode:</span>
+                    <button
+                      onClick={() => handleToggleSheetMode("real")}
+                      type="button"
+                      title="Open actual Google Sheet in a new tab when clicking Clinical Sheet"
+                      className={`px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
+                        sheetOpeningMode === "real"
+                          ? "bg-emerald-600 text-white shadow-sm font-extrabold"
+                          : "text-slate-600 hover:bg-slate-50"
+                      }`}
+                    >
+                      Real
+                    </button>
+                    <button
+                      onClick={() => handleToggleSheetMode("mock")}
+                      type="button"
+                      title="Always open Mock Sheet sandbox UI when clicking Clinical Sheet"
+                      className={`px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
+                        sheetOpeningMode === "mock"
+                          ? "bg-purple-600 text-white shadow-sm font-extrabold"
+                          : "text-slate-600 hover:bg-slate-50"
+                      }`}
+                    >
+                      Mock
+                    </button>
+                  </div>
 
                   <div className="text-[10px] text-slate-500 font-semibold bg-slate-900/5 px-4 py-2.5 rounded-xl border border-slate-900/5 whitespace-nowrap">
                     Showing <strong>{filteredPatients.length}</strong> cases

@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Ensure repertory JSON data files are bundled with serverless functions on Vercel
+  outputFileTracingIncludes: {
+    "/api/repertory": ["./public/data/**/*.json"],
+  },
   async redirects() {
     return [
       {

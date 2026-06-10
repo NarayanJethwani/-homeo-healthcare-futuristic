@@ -167,6 +167,7 @@ const getClinicalMethodInfo = (medicines: any[]) => {
 
 function MockSheetContent() {
   const searchParams = useSearchParams();
+  const sheetUrl = searchParams.get("sheetUrl") || "";
 
   // Extract query parameters for initial state
   const initialName = searchParams.get("name") || "Aarav Mehta";
@@ -429,6 +430,7 @@ function MockSheetContent() {
   // Repertory Database Hydration & Search States
   const [dbKent, setDbKent] = useState<any[]>([]);
   const [dbBoericke, setDbBoericke] = useState<any[]>([]);
+  const [dbJethwani, setDbJethwani] = useState<any[]>(JETHWANI_REPERTORY_DATA);
   const [isRepertoryLoaded, setIsRepertoryLoaded] = useState(false);
   const [isRepertoryLoading, setIsRepertoryLoading] = useState(false);
   const [sheetRepSource, setSheetRepSource] = useState<"kent" | "boericke" | "jethwani" | "custom">("kent");
@@ -515,9 +517,9 @@ function MockSheetContent() {
       // 1. Look up in PREDEFINED_LIBRARY_RUBRICS
       let match = PREDEFINED_LIBRARY_RUBRICS.find(r => r.name.toLowerCase() === name.toLowerCase());
       
-      // 2. Look up in JETHWANI_REPERTORY_DATA
-      if (!match) {
-        const jethMatch = JETHWANI_REPERTORY_DATA.find(r => r.name.toLowerCase() === name.toLowerCase());
+      // 2. Look up in Jethwani Database (loaded from static JSON)
+      if (!match && dbJethwani.length > 0) {
+        const jethMatch = dbJethwani.find(r => r.name.toLowerCase() === name.toLowerCase());
         if (jethMatch) {
           const scores: Record<string, number> = {};
           remediesList.forEach(rem => {
@@ -907,20 +909,63 @@ function MockSheetContent() {
   };
 
   // Hydrate classic repertory database asynchronously
+  // Fetch directly from static JSON files in /data/ to avoid Vercel API response size limits
   useEffect(() => {
     const hydrateRepertory = async () => {
       setIsRepertoryLoading(true);
       try {
-        const res = await fetch("/api/repertory");
-        const data = await res.json();
-        if (data.success) {
-          setDbKent(data.kent || []);
-          setDbBoericke(data.boericke || []);
-          setRepertoryData(data.kent || [], data.boericke || []);
-          setIsRepertoryLoaded(true);
+        // Fetch Kent, Boericke & Jethwani in parallel from static public/data/ files
+        const [kentRes, boerickeRes, jethwaniRes] = await Promise.allSettled([
+          fetch("/data/kentRepertoryData.json"),
+          fetch("/data/boerickeRepertoryData.json"),
+          fetch("/data/jethwaniRepertoryData.json")
+        ]);
+
+        let kentData: any[] = [];
+        let boerickeData: any[] = [];
+        let jethwaniData: any[] = [];
+
+        if (kentRes.status === "fulfilled" && kentRes.value.ok) {
+          kentData = await kentRes.value.json();
+          console.log(`Loaded Kent repertory: ${kentData.length} rubrics`);
         } else {
-          console.error("Failed to load repertory database: success=false");
+          console.warn("Failed to load Kent data from static file, trying API fallback...");
         }
+
+        if (boerickeRes.status === "fulfilled" && boerickeRes.value.ok) {
+          boerickeData = await boerickeRes.value.json();
+          console.log(`Loaded Boericke repertory: ${boerickeData.length} rubrics`);
+        } else {
+          console.warn("Failed to load Boericke data from static file, trying API fallback...");
+        }
+
+        if (jethwaniRes.status === "fulfilled" && jethwaniRes.value.ok) {
+          jethwaniData = await jethwaniRes.value.json();
+          console.log(`Loaded Jethwani repertory: ${jethwaniData.length} rubrics`);
+        } else {
+          console.warn("Failed to load Jethwani data from static file, using inline fallback.");
+          jethwaniData = JETHWANI_REPERTORY_DATA;
+        }
+
+        // If Kent or Boericke failed, try API fallback
+        if (kentData.length === 0 || boerickeData.length === 0) {
+          try {
+            const apiRes = await fetch("/api/repertory");
+            const apiData = await apiRes.json();
+            if (apiData.success) {
+              if (kentData.length === 0) kentData = apiData.kent || [];
+              if (boerickeData.length === 0) boerickeData = apiData.boericke || [];
+            }
+          } catch (apiErr) {
+            console.warn("API fallback also failed:", apiErr);
+          }
+        }
+
+        setDbKent(kentData);
+        setDbBoericke(boerickeData);
+        setDbJethwani(jethwaniData);
+        setRepertoryData(kentData, boerickeData);
+        setIsRepertoryLoaded(true);
       } catch (err) {
         console.error("Failed to load repertory database in mock sheet:", err);
       } finally {
@@ -1123,7 +1168,7 @@ function MockSheetContent() {
     } else if (sheetRepSource === "boericke") {
       srcList = dbBoericke;
     } else if (sheetRepSource === "jethwani") {
-      srcList = JETHWANI_REPERTORY_DATA;
+      srcList = dbJethwani;
     } else {
       return [];
     }
@@ -1727,6 +1772,21 @@ function MockSheetContent() {
               <span className="text-[#0F4C81] flex items-center gap-1.5 font-bold">
                 <Check className="w-3.5 h-3.5 text-emerald-600" /> Formulas Live
               </span>
+              {sheetUrl && (sheetUrl.startsWith("https://docs.google.com") || sheetUrl.startsWith("https://sheets.google.com") || sheetUrl.startsWith("https://drive.google.com")) && (
+                <>
+                  <span className="text-slate-300">|</span>
+                  <a
+                    href={sheetUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-emerald-700 hover:text-emerald-950 flex items-center gap-1.5 font-bold cursor-pointer transition-all text-[11px]"
+                    title="Open the actual Google Sheet for this patient in a new tab"
+                  >
+                    <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600 animate-pulse" />
+                    Open Real Google Sheet
+                  </a>
+                </>
+              )}
               <span className="text-slate-300">|</span>
               <button
                 onClick={handleDownloadTemplate}

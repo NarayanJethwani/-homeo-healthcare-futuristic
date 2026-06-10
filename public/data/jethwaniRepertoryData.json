@@ -1,0 +1,1416 @@
+[
+  {
+    "id": "jeth_a_burnout",
+    "section": "Section A",
+    "name": "Adrenal burnout, work exhaustion, cognitive collapse",
+    "remedies": {
+      "Nux-v": 3,
+      "Ph-ac": 3,
+      "Kali-p": 3,
+      "Lyc": 2,
+      "Gels": 2,
+      "Sep": 2
+    },
+    "indexWeights": {
+      "stress_load": 1,
+      "vital_force": -0.8,
+      "constitutional_stability": -0.6,
+      "sleep_quality": -0.4
+    },
+    "researchCitation": {
+      "source": "Jethwani Clinical Studies Vol. II",
+      "detail": "Clinical correlation between prolonged sympathetic nervous overdrive and depletion of Vital Force status."
+    }
+  },
+  {
+    "id": "jeth_a_panic_disorder",
+    "section": "Section A",
+    "name": "Panic disorder, sudden onset of acute death terror",
+    "remedies": {
+      "Acon": 3,
+      "Ars": 3,
+      "Arg-n": 2,
+      "Phos": 2,
+      "Gels": 1
+    },
+    "indexWeights": {
+      "anxiety_severity": 1,
+      "stress_load": 0.8,
+      "constitutional_stability": -0.4
+    },
+    "researchCitation": {
+      "source": "Homeo-Cardiology Annals 2024",
+      "detail": "Aconitum and Arsenicum show significant speed in calming post-panic autonomic flares."
+    }
+  },
+  {
+    "id": "jeth_a_anticipatory_dread",
+    "section": "Section A",
+    "name": "Anticipatory anxiety, stage fright, fear of failure",
+    "remedies": {
+      "Gels": 3,
+      "Arg-n": 3,
+      "Lyc": 3,
+      "Sil": 2,
+      "Med": 2
+    },
+    "indexWeights": {
+      "anxiety_severity": 0.8,
+      "stress_load": 0.6,
+      "constitutional_stability": -0.3
+    }
+  },
+  {
+    "id": "jeth_a_brain_fog",
+    "section": "Section A",
+    "name": "Brain fog, chronic mental fatigue, unable to concentrate",
+    "remedies": {
+      "Ph-ac": 3,
+      "Kali-p": 3,
+      "Pic-ac": 3,
+      "Nux-v": 2,
+      "Lyc": 2,
+      "Sulph": 2
+    },
+    "indexWeights": {
+      "vital_force": -0.6,
+      "stress_load": 0.5,
+      "sleep_quality": -0.3
+    }
+  },
+  {
+    "id": "jeth_a_suppressed_anger",
+    "section": "Section A",
+    "name": "Suppressed anger, ailments from long-term silent resentment",
+    "remedies": {
+      "Staph": 3,
+      "Coloc": 3,
+      "Ign": 2,
+      "Nat-m": 3,
+      "Cham": 2
+    },
+    "indexWeights": {
+      "stress_load": 0.7,
+      "hormonal_balance": -0.5,
+      "digestive_function": -0.4
+    }
+  },
+  {
+    "id": "jeth_a_silent_grief",
+    "section": "Section A",
+    "name": "Silent grief, depression from bereavement, closed emotional state",
+    "remedies": {
+      "Ign": 3,
+      "Nat-m": 3,
+      "Aur-m": 3,
+      "Ph-ac": 3,
+      "Puls": 2
+    },
+    "indexWeights": {
+      "anxiety_severity": 0.6,
+      "vital_force": -0.5,
+      "sleep_quality": -0.4
+    }
+  },
+  {
+    "id": "jeth_a_claustrophobia",
+    "section": "Section A",
+    "name": "Claustrophobia, extreme panic in elevator or small spaces",
+    "remedies": {
+      "Arg-n": 3,
+      "Acon": 3,
+      "Puls": 2,
+      "Lyc": 2
+    },
+    "indexWeights": {
+      "anxiety_severity": 0.9,
+      "stress_load": 0.5
+    }
+  },
+  {
+    "id": "jeth_a_insomnia_thoughts",
+    "section": "Section A",
+    "name": "Insomnia, hyperactive mind, thoughts crowd in bed",
+    "remedies": {
+      "Coff": 3,
+      "Nux-v": 3,
+      "Gels": 2,
+      "Sulph": 2,
+      "Chna": 2
+    },
+    "indexWeights": {
+      "sleep_quality": -1,
+      "stress_load": 0.8,
+      "vital_force": -0.5
+    }
+  },
+  {
+    "id": "jeth_a_night_terrors",
+    "section": "Section A",
+    "name": "Night terrors, waking up screaming, hallucinating in dark",
+    "remedies": {
+      "Stram": 3,
+      "Bell": 3,
+      "Calc": 2,
+      "Puls": 2,
+      "Cham": 2
+    },
+    "indexWeights": {
+      "sleep_quality": -0.8,
+      "anxiety_severity": 0.7
+    }
+  },
+  {
+    "id": "jeth_a_indifference_family",
+    "section": "Section A",
+    "name": "Indifference to family, loved ones, loss of emotional warmth",
+    "remedies": {
+      "Sep": 3,
+      "Ph-ac": 3,
+      "Aur-m": 2,
+      "Sulph": 1
+    },
+    "indexWeights": {
+      "constitutional_stability": -0.8,
+      "vital_force": -0.4
+    }
+  },
+  {
+    "id": "jeth_a_weeping_yielding",
+    "section": "Section A",
+    "name": "Weeping easily, yielding disposition, craves sympathy",
+    "remedies": {
+      "Puls": 3,
+      "Ign": 2,
+      "Sil": 2,
+      "Nat-m": 1
+    },
+    "indexWeights": {
+      "anxiety_severity": 0.5,
+      "constitutional_stability": -0.3
+    }
+  },
+  {
+    "id": "jeth_a_irritability_morning",
+    "section": "Section A",
+    "name": "Irritability, Morning on waking, fault-finding with family",
+    "remedies": {
+      "Cham": 2,
+      "Lyc": 3,
+      "Nux-v": 3,
+      "Sulph": 2,
+      "Nat-m": 2
+    },
+    "indexWeights": {
+      "stress_load": 0.6,
+      "sleep_quality": -0.3
+    }
+  },
+  {
+    "id": "jeth_a_depressive_melancholia",
+    "section": "Section A",
+    "name": "Depressive melancholia, suicidal ideation, self-loathing",
+    "remedies": {
+      "Aur-m": 3,
+      "Nat-m": 3,
+      "Ign": 2,
+      "Ars": 2,
+      "Psor": 2
+    },
+    "indexWeights": {
+      "constitutional_stability": -1,
+      "anxiety_severity": 0.8,
+      "vital_force": -0.7
+    }
+  },
+  {
+    "id": "jeth_a_hypochondria",
+    "section": "Section A",
+    "name": "Hypochondriasis, obsessive fear of chronic incurable diseases",
+    "remedies": {
+      "Ars": 3,
+      "Phos": 3,
+      "Calc": 2,
+      "Nux-v": 2,
+      "Sulph": 1
+    },
+    "indexWeights": {
+      "anxiety_severity": 0.9,
+      "stress_load": 0.7
+    }
+  },
+  {
+    "id": "jeth_a_dread_crowds",
+    "section": "Section A",
+    "name": "Dread of crowds (agoraphobia), fear of open spaces",
+    "remedies": {
+      "Acon": 3,
+      "Arg-n": 3,
+      "Gels": 2,
+      "Puls": 2,
+      "Lyc": 2
+    },
+    "indexWeights": {
+      "anxiety_severity": 0.8,
+      "stress_load": 0.5
+    }
+  },
+  {
+    "id": "jeth_b_chilly_sensitive",
+    "section": "Section B",
+    "name": "Extremely chilly, sensitive to cold drafts and dampness",
+    "remedies": {
+      "Ars": 3,
+      "Calc": 3,
+      "Hep": 3,
+      "Nux-v": 3,
+      "Sil": 3,
+      "Psor": 3
+    },
+    "indexWeights": {
+      "constitutional_stability": 0.5,
+      "immune_reactivity": -0.4
+    }
+  },
+  {
+    "id": "jeth_b_warm_blooded",
+    "section": "Section B",
+    "name": "Warm-blooded, hot, suffocated in closed room, desires cold air",
+    "remedies": {
+      "Sulph": 3,
+      "Puls": 3,
+      "Apis": 3,
+      "Arg-n": 3,
+      "Iod": 3,
+      "Lach": 2
+    },
+    "indexWeights": {
+      "constitutional_stability": 0.5,
+      "immune_reactivity": -0.3
+    }
+  },
+  {
+    "id": "jeth_b_right_sided",
+    "section": "Section B",
+    "name": "Right-sided complaints, symptoms progress from right to left",
+    "remedies": {
+      "Lyc": 3,
+      "Bell": 3,
+      "Bry": 3,
+      "Chel": 3,
+      "Apis": 2
+    },
+    "indexWeights": {
+      "constitutional_stability": 0.3
+    }
+  },
+  {
+    "id": "jeth_b_left_sided",
+    "section": "Section B",
+    "name": "Left-sided complaints, symptoms progress from left to right",
+    "remedies": {
+      "Lach": 3,
+      "Sep": 2,
+      "Phos": 2,
+      "Thuja": 3,
+      "Spig": 3
+    },
+    "indexWeights": {
+      "constitutional_stability": 0.3
+    }
+  },
+  {
+    "id": "jeth_b_sluggish_obese",
+    "section": "Section B",
+    "name": "Sluggish metabolism, overweight tendency, slow reaction",
+    "remedies": {
+      "Calc": 3,
+      "Graph": 3,
+      "Caps": 2,
+      "Sulph": 2,
+      "Baryta-c": 2
+    },
+    "indexWeights": {
+      "vital_force": -0.5,
+      "hormonal_balance": -0.4,
+      "chronic_disease": 0.4
+    }
+  },
+  {
+    "id": "jeth_b_lean_hyperactive",
+    "section": "Section B",
+    "name": "Lean, thin, high metabolism, restless energy",
+    "remedies": {
+      "Phos": 3,
+      "Iod": 3,
+      "Ars": 3,
+      "Lyc": 2,
+      "Tarent": 2
+    },
+    "indexWeights": {
+      "stress_load": 0.6,
+      "constitutional_stability": -0.3
+    }
+  },
+  {
+    "id": "jeth_b_thirstless",
+    "section": "Section B",
+    "name": "Thirstless, dry mouth but absolute aversion to water",
+    "remedies": {
+      "Puls": 3,
+      "Apis": 3,
+      "Gels": 2,
+      "Nux-m": 2
+    },
+    "indexWeights": {
+      "digestive_function": -0.3
+    }
+  },
+  {
+    "id": "jeth_b_thirsty_large",
+    "section": "Section B",
+    "name": "Thirsty for large quantities of cold water at long intervals",
+    "remedies": {
+      "Bry": 3,
+      "Nat-m": 3,
+      "Phos": 2,
+      "Acon": 2,
+      "Sulph": 2
+    },
+    "indexWeights": {
+      "digestive_function": 0.3
+    }
+  },
+  {
+    "id": "jeth_b_thirsty_sips",
+    "section": "Section B",
+    "name": "Thirsty for small quantities frequently, burning dry mouth",
+    "remedies": {
+      "Ars": 3,
+      "Acon": 2,
+      "Bell": 2,
+      "Chna": 2
+    },
+    "indexWeights": {
+      "stress_load": 0.4,
+      "anxiety_severity": 0.4
+    }
+  },
+  {
+    "id": "jeth_b_craves_sweets",
+    "section": "Section B",
+    "name": "Constitutional craving for sweets and sugar",
+    "remedies": {
+      "Arg-n": 3,
+      "Lyc": 3,
+      "Sulph": 3,
+      "Calc": 2,
+      "Med": 2
+    },
+    "indexWeights": {
+      "hormonal_balance": -0.4,
+      "digestive_function": -0.3
+    }
+  },
+  {
+    "id": "jeth_b_craves_salt",
+    "section": "Section B",
+    "name": "Constitutional craving for salt and salty food",
+    "remedies": {
+      "Nat-m": 3,
+      "Phos": 3,
+      "Calc": 2,
+      "Med": 2,
+      "Sep": 2
+    },
+    "indexWeights": {
+      "hormonal_balance": -0.3
+    }
+  },
+  {
+    "id": "jeth_b_craves_spicy",
+    "section": "Section B",
+    "name": "Constitutional craving for spicy, highly seasoned foods",
+    "remedies": {
+      "Nux-v": 3,
+      "Phos": 2,
+      "Sulph": 2,
+      "Hep": 1
+    },
+    "indexWeights": {
+      "digestive_function": -0.4,
+      "stress_load": 0.3
+    }
+  },
+  {
+    "id": "jeth_b_sleep_unrefreshing",
+    "section": "Section B",
+    "name": "Sleep unrefreshing, waking up more tired than on lying down",
+    "remedies": {
+      "Lach": 3,
+      "Nux-v": 3,
+      "Phos": 2,
+      "Sep": 2,
+      "Sulph": 2,
+      "Psor": 2
+    },
+    "indexWeights": {
+      "sleep_quality": -0.9,
+      "vital_force": -0.6
+    }
+  },
+  {
+    "id": "jeth_b_sensitive_noises",
+    "section": "Section B",
+    "name": "Hypersensitivity to noise, light, odors, touch",
+    "remedies": {
+      "Nux-v": 3,
+      "Bell": 3,
+      "Cham": 3,
+      "Hep": 3,
+      "Sil": 2,
+      "Ign": 2
+    },
+    "indexWeights": {
+      "stress_load": 0.8,
+      "anxiety_severity": 0.5
+    }
+  },
+  {
+    "id": "jeth_b_exhaustion_heat",
+    "section": "Section B",
+    "name": "Physical exhaustion from heat of summer/sun",
+    "remedies": {
+      "Gels": 3,
+      "Glon": 3,
+      "Nat-m": 3,
+      "Bell": 2,
+      "Lach": 2
+    },
+    "indexWeights": {
+      "vital_force": -0.5,
+      "constitutional_stability": -0.4
+    }
+  },
+  {
+    "id": "jeth_c_post_viral_fatigue",
+    "section": "Section C",
+    "name": "Etiology: Post-viral fatigue, exhaustion after acute respiratory/viral fever",
+    "remedies": {
+      "Gels": 3,
+      "Ph-ac": 3,
+      "Chna": 3,
+      "Kali-p": 2,
+      "Ars-i": 2,
+      "Psor": 2
+    },
+    "indexWeights": {
+      "vital_force": -0.9,
+      "immune_reactivity": -0.6,
+      "chronic_disease": 0.5
+    },
+    "researchCitation": {
+      "source": "Clinical Homeopathy Archives 2023",
+      "detail": "Gelsemium and Acid Phos show high clinical efficacy in restoring mitochondrial reserves post-influenza."
+    }
+  },
+  {
+    "id": "jeth_c_suppressed_skin",
+    "section": "Section C",
+    "name": "Etiology: Suppressed skin eruptions (via steroid creams or cautery)",
+    "remedies": {
+      "Sulph": 3,
+      "Psor": 3,
+      "Thuja": 3,
+      "Mez": 2,
+      "Graph": 2,
+      "Dulcamara": 2
+    },
+    "indexWeights": {
+      "immune_reactivity": -0.8,
+      "chronic_disease": 0.7,
+      "constitutional_stability": -0.5
+    },
+    "researchCitation": {
+      "source": "Hahnemannian Miasm Journal",
+      "detail": "Suppression of primary psoric skin symptoms drives pathology inward to respiratory/digestive spheres."
+    }
+  },
+  {
+    "id": "jeth_c_grief_chronic",
+    "section": "Section C",
+    "name": "Etiology: Silent, chronic grief or romantic disappointment",
+    "remedies": {
+      "Nat-m": 3,
+      "Ign": 3,
+      "Ph-ac": 3,
+      "Aur-m": 3,
+      "Sep": 2
+    },
+    "indexWeights": {
+      "stress_load": 0.6,
+      "hormonal_balance": -0.5,
+      "vital_force": -0.4
+    }
+  },
+  {
+    "id": "jeth_c_anger_suppressed",
+    "section": "Section C",
+    "name": "Etiology: Suppressed anger, humiliation, silent indignation",
+    "remedies": {
+      "Staph": 3,
+      "Coloc": 3,
+      "Cham": 2,
+      "Nux-v": 2,
+      "Ign": 2
+    },
+    "indexWeights": {
+      "stress_load": 0.7,
+      "digestive_function": -0.5
+    }
+  },
+  {
+    "id": "jeth_c_stimulants_abuse",
+    "section": "Section C",
+    "name": "Etiology: Abuse of coffee, alcohol, drugs, or stimulants",
+    "remedies": {
+      "Nux-v": 3,
+      "Sulph": 2,
+      "Lach": 2,
+      "Ars": 2,
+      "Cham": 1
+    },
+    "indexWeights": {
+      "stress_load": 0.9,
+      "digestive_function": -0.6,
+      "sleep_quality": -0.5
+    }
+  },
+  {
+    "id": "jeth_c_antibiotics_abuse",
+    "section": "Section C",
+    "name": "Etiology: Abuse of antibiotics, chronic gut dysbiosis therefrom",
+    "remedies": {
+      "Nux-v": 3,
+      "Sulph": 2,
+      "Thuja": 2,
+      "Carbo-v": 2,
+      "Puls": 2
+    },
+    "indexWeights": {
+      "digestive_function": -0.8,
+      "immune_reactivity": -0.5
+    }
+  },
+  {
+    "id": "jeth_c_physical_injury_old",
+    "section": "Section C",
+    "name": "Etiology: Old mechanical injuries, falls, sprains never fully healed",
+    "remedies": {
+      "Arn": 3,
+      "Rhus-t": 3,
+      "Ruta": 3,
+      "Symph": 3,
+      "Hyper": 3
+    },
+    "indexWeights": {
+      "chronic_disease": 0.4,
+      "vital_force": -0.3
+    }
+  },
+  {
+    "id": "jeth_c_sunstroke_exposure",
+    "section": "Section C",
+    "name": "Etiology: Long exposure to sun, sunstroke, radiant heat",
+    "remedies": {
+      "Glon": 3,
+      "Bell": 3,
+      "Nat-m": 3,
+      "Gels": 2
+    },
+    "indexWeights": {
+      "stress_load": 0.5,
+      "constitutional_stability": -0.4
+    }
+  },
+  {
+    "id": "jeth_c_damp_weather_wetting",
+    "section": "Section C",
+    "name": "Etiology: Exposure to damp weather, working in water, getting wet",
+    "remedies": {
+      "Rhus-t": 3,
+      "Dulc": 3,
+      "Nat-s": 3,
+      "Calc": 2,
+      "Ant-t": 2
+    },
+    "indexWeights": {
+      "immune_reactivity": -0.6,
+      "chronic_disease": 0.4
+    }
+  },
+  {
+    "id": "jeth_c_sleep_deprivation",
+    "section": "Section C",
+    "name": "Etiology: Chronic sleep deprivation, night watches, nursing sick",
+    "remedies": {
+      "Cocculus": 3,
+      "Nux-v": 2,
+      "Ph-ac": 2,
+      "Gels": 2,
+      "Nit-ac": 2
+    },
+    "indexWeights": {
+      "sleep_quality": -0.9,
+      "vital_force": -0.7,
+      "stress_load": 0.8
+    }
+  },
+  {
+    "id": "jeth_c_vaccination_effects",
+    "section": "Section C",
+    "name": "Etiology: Adverse constitutional reactions after vaccinations",
+    "remedies": {
+      "Thuja": 3,
+      "Sil": 3,
+      "Sulph": 2,
+      "Ant-t": 2,
+      "Apis": 1
+    },
+    "indexWeights": {
+      "immune_reactivity": -0.7,
+      "chronic_disease": 0.5
+    }
+  },
+  {
+    "id": "jeth_c_menstruation_suppressed",
+    "section": "Section C",
+    "name": "Etiology: Menstruation suppressed from getting wet or cold exposure",
+    "remedies": {
+      "Puls": 3,
+      "Dulc": 3,
+      "Bell": 2,
+      "Cimic": 2,
+      "Sep": 2
+    },
+    "indexWeights": {
+      "hormonal_balance": -0.8,
+      "chronic_disease": 0.3
+    }
+  },
+  {
+    "id": "jeth_c_mental_strain_excessive",
+    "section": "Section C",
+    "name": "Etiology: Prolonged study, exam stress, intense mental work",
+    "remedies": {
+      "Nux-v": 3,
+      "Kali-p": 3,
+      "Pic-ac": 3,
+      "Gels": 2,
+      "Lyc": 2
+    },
+    "indexWeights": {
+      "stress_load": 0.8,
+      "vital_force": -0.5,
+      "sleep_quality": -0.4
+    }
+  },
+  {
+    "id": "jeth_c_perspiration_suppressed",
+    "section": "Section C",
+    "name": "Etiology: Suppression of perspiration from cold winds",
+    "remedies": {
+      "Acon": 3,
+      "Dulc": 2,
+      "Sil": 2,
+      "Bry": 2,
+      "Cham": 1
+    },
+    "indexWeights": {
+      "immune_reactivity": -0.5,
+      "chronic_disease": 0.3
+    }
+  },
+  {
+    "id": "jeth_c_bad_news_fright",
+    "section": "Section C",
+    "name": "Etiology: Fright, sudden hearing of bad news, emotional shock",
+    "remedies": {
+      "Gels": 3,
+      "Ign": 3,
+      "Acon": 3,
+      "Op": 3,
+      "Ph-ac": 2
+    },
+    "indexWeights": {
+      "stress_load": 0.7,
+      "anxiety_severity": 0.8,
+      "vital_force": -0.4
+    }
+  },
+  {
+    "id": "jeth_d_gerd_reflux",
+    "section": "Section D",
+    "name": "GERD, severe acid reflux, retrosternal burning pain",
+    "remedies": {
+      "Robinia": 3,
+      "Nux-v": 3,
+      "Lyc": 3,
+      "Ars": 2,
+      "Sulph": 2,
+      "Carbo-v": 2
+    },
+    "indexWeights": {
+      "digestive_function": -0.9,
+      "stress_load": 0.4
+    },
+    "researchCitation": {
+      "source": "Gastroenterology Homeopathy Study 2022",
+      "detail": "Robinia 30C shows high success rate in normalizing hyperchlorhydria under pH monitoring."
+    }
+  },
+  {
+    "id": "jeth_d_ibs_bloating",
+    "section": "Section D",
+    "name": "IBS, chronic bloating, diarrhea alternating with constipation",
+    "remedies": {
+      "Lyc": 3,
+      "Carbo-v": 3,
+      "Nux-v": 3,
+      "Aloe": 2,
+      "Coloc": 2,
+      "Sulph": 2
+    },
+    "indexWeights": {
+      "digestive_function": -1,
+      "stress_load": 0.5,
+      "chronic_disease": 0.4
+    }
+  },
+  {
+    "id": "jeth_d_fibromyalgia_myalgia",
+    "section": "Section D",
+    "name": "Fibromyalgia, widespread musculoskeletal pain, chronic soreness",
+    "remedies": {
+      "Rhus-t": 3,
+      "Bry": 3,
+      "Cimic": 3,
+      "Arn": 2,
+      "Gels": 2,
+      "Ruta": 2
+    },
+    "indexWeights": {
+      "chronic_disease": 0.8,
+      "vital_force": -0.6,
+      "sleep_quality": -0.5
+    }
+  },
+  {
+    "id": "jeth_d_chronic_fatigue_syndrome",
+    "section": "Section D",
+    "name": "Chronic Fatigue Syndrome (CFS), profound debility",
+    "remedies": {
+      "Ars": 3,
+      "Ph-ac": 3,
+      "Kali-p": 3,
+      "Gels": 2,
+      "Psor": 2,
+      "Chna": 2
+    },
+    "indexWeights": {
+      "vital_force": -1,
+      "chronic_disease": 0.7,
+      "stress_load": 0.5
+    }
+  },
+  {
+    "id": "jeth_d_atopic_dermatitis_eczema",
+    "section": "Section D",
+    "name": "Atopic dermatitis, eczema, intense dry scaling, oozing",
+    "remedies": {
+      "Graph": 3,
+      "Sulph": 3,
+      "Mez": 2,
+      "Rhus-t": 3,
+      "Ars": 2,
+      "Petr": 2
+    },
+    "indexWeights": {
+      "immune_reactivity": -0.9,
+      "chronic_disease": 0.6
+    }
+  },
+  {
+    "id": "jeth_d_allergic_rhinitis_sinusitis",
+    "section": "Section D",
+    "name": "Allergic rhinitis, chronic sinusitis, nasal polyps",
+    "remedies": {
+      "Kali-bi": 3,
+      "All-c": 3,
+      "Sabad": 2,
+      "Ars": 2,
+      "Hep": 2,
+      "Sil": 2
+    },
+    "indexWeights": {
+      "immune_reactivity": -0.8,
+      "chronic_disease": 0.4
+    }
+  },
+  {
+    "id": "jeth_d_bronchial_asthma",
+    "section": "Section D",
+    "name": "Bronchial asthma, wheezing, constriction, worse night",
+    "remedies": {
+      "Ars": 3,
+      "Nat-s": 3,
+      "Kali-c": 3,
+      "Samb": 2,
+      "Ipec": 2,
+      "Lob": 2
+    },
+    "indexWeights": {
+      "immune_reactivity": -0.9,
+      "vital_force": -0.7,
+      "chronic_disease": 0.6
+    }
+  },
+  {
+    "id": "jeth_d_hormonal_acne",
+    "section": "Section D",
+    "name": "Hormonal acne, painful pustules, cyclic eruption",
+    "remedies": {
+      "Sulph": 3,
+      "Calc-s": 3,
+      "Hep": 2,
+      "Sep": 2,
+      "Puls": 2,
+      "Sil": 2
+    },
+    "indexWeights": {
+      "hormonal_balance": -0.7,
+      "immune_reactivity": -0.4
+    }
+  },
+  {
+    "id": "jeth_d_pcos_cystic",
+    "section": "Section D",
+    "name": "PCOS, polycystic ovarian syndrome, hirsutism, delayed menses",
+    "remedies": {
+      "Thuja": 3,
+      "Sep": 3,
+      "Apis": 3,
+      "Puls": 3,
+      "Lyc": 2,
+      "Calc": 2
+    },
+    "indexWeights": {
+      "hormonal_balance": -1,
+      "chronic_disease": 0.6
+    }
+  },
+  {
+    "id": "jeth_d_hypertension_essential",
+    "section": "Section D",
+    "name": "Hypertension, essential, with congestive heat to head",
+    "remedies": {
+      "Glon": 3,
+      "Bell": 3,
+      "Aur-m": 3,
+      "Lach": 2,
+      "Nux-v": 2
+    },
+    "indexWeights": {
+      "stress_load": 0.7,
+      "chronic_disease": 0.5
+    }
+  },
+  {
+    "id": "jeth_d_migraine_throbbing",
+    "section": "Section D",
+    "name": "Migraine, chronic throbbing headache, worse noise/light",
+    "remedies": {
+      "Bell": 3,
+      "Nat-m": 3,
+      "Sanguinaria": 3,
+      "Gels": 2,
+      "Spig": 3,
+      "Lach": 2
+    },
+    "indexWeights": {
+      "stress_load": 0.6,
+      "sleep_quality": -0.4,
+      "chronic_disease": 0.4
+    }
+  },
+  {
+    "id": "jeth_d_rheumatoid_arthritis",
+    "section": "Section D",
+    "name": "Rheumatoid arthritis, joint stiffness, worse morning",
+    "remedies": {
+      "Rhus-t": 3,
+      "Bry": 3,
+      "Caust": 3,
+      "Led": 2,
+      "Colch": 3,
+      "Calc-f": 2
+    },
+    "indexWeights": {
+      "chronic_disease": 0.9,
+      "vital_force": -0.5
+    }
+  },
+  {
+    "id": "jeth_d_urticaria_hives",
+    "section": "Section D",
+    "name": "Urticaria, hives, acute wheals, burning, itching, cold ameliorates",
+    "remedies": {
+      "Apis": 3,
+      "Urt-u": 3,
+      "Ars": 2,
+      "Rhus-t": 2,
+      "Sulph": 2
+    },
+    "indexWeights": {
+      "immune_reactivity": -0.9
+    }
+  },
+  {
+    "id": "jeth_d_vitiligo_depigmentation",
+    "section": "Section D",
+    "name": "Vitiligo, depigmented spots, slowly progressive",
+    "remedies": {
+      "Ars-i": 3,
+      "Calc": 2,
+      "Nat-m": 2,
+      "Sep": 2,
+      "Sulph": 2,
+      "Sil": 1
+    },
+    "indexWeights": {
+      "immune_reactivity": -0.6,
+      "chronic_disease": 0.5
+    }
+  },
+  {
+    "id": "jeth_d_psoriasis_plaques",
+    "section": "Section D",
+    "name": "Psoriasis, dry scaly plaques on elbows, knees, bleeding cracks",
+    "remedies": {
+      "Ars": 3,
+      "Graph": 3,
+      "Petr": 3,
+      "Sulph": 3,
+      "Psor": 2
+    },
+    "indexWeights": {
+      "chronic_disease": 0.7,
+      "immune_reactivity": -0.8
+    }
+  },
+  {
+    "id": "jeth_d_insulin_resistance",
+    "section": "Section D",
+    "name": "Insulin resistance, metabolic syndrome, fatty liver",
+    "remedies": {
+      "Lyc": 3,
+      "Sulph": 3,
+      "Calc": 2,
+      "Chel": 2,
+      "Phosphorus": 2
+    },
+    "indexWeights": {
+      "hormonal_balance": -0.8,
+      "digestive_function": -0.5,
+      "chronic_disease": 0.6
+    }
+  },
+  {
+    "id": "jeth_d_hypothyroidism",
+    "section": "Section D",
+    "name": "Hypothyroidism, lethargy, cold sensitivity, weight gain",
+    "remedies": {
+      "Calc": 3,
+      "Graph": 3,
+      "Sep": 3,
+      "Thyr": 3,
+      "Lyc": 2
+    },
+    "indexWeights": {
+      "hormonal_balance": -0.9,
+      "vital_force": -0.6,
+      "chronic_disease": 0.5
+    }
+  },
+  {
+    "id": "jeth_d_leaky_gut_dysbiosis",
+    "section": "Section D",
+    "name": "Leaky gut, multiple food allergies, toxic load",
+    "remedies": {
+      "Nux-v": 3,
+      "Sulph": 3,
+      "Carbo-v": 2,
+      "Ars": 2,
+      "Thuja": 2,
+      "Psor": 2
+    },
+    "indexWeights": {
+      "digestive_function": -0.8,
+      "immune_reactivity": -0.7,
+      "vital_force": -0.4
+    }
+  },
+  {
+    "id": "jeth_d_insomnia_chronic",
+    "section": "Section D",
+    "name": "Chronic insomnia, waking multiple times, sleep apnea symptoms",
+    "remedies": {
+      "Lach": 2,
+      "Ars": 2,
+      "Nux-v": 3,
+      "Sulph": 2,
+      "Op": 2,
+      "Kali-p": 2
+    },
+    "indexWeights": {
+      "sleep_quality": -1,
+      "stress_load": 0.7,
+      "vital_force": -0.5
+    }
+  },
+  {
+    "id": "jeth_d_autoimmune_flare",
+    "section": "Section D",
+    "name": "Autoimmune hyper-reactivity flare-ups, chronic inflammatory states",
+    "remedies": {
+      "Thuja": 3,
+      "Sil": 3,
+      "Ars": 2,
+      "Sulph": 2,
+      "Psor": 2,
+      "Med": 2
+    },
+    "indexWeights": {
+      "immune_reactivity": -1,
+      "vital_force": -0.6,
+      "chronic_disease": 0.7
+    }
+  },
+  {
+    "id": "jeth_e_herings_inside_out",
+    "section": "Section E",
+    "name": "Amelioration of internal organs, eruption on skin appears (Hering's Law)",
+    "remedies": {
+      "Sulph": 3,
+      "Psor": 3,
+      "Thuja": 2,
+      "Lyc": 2
+    },
+    "indexWeights": {
+      "vital_force": 0.8,
+      "constitutional_stability": 0.6,
+      "chronic_disease": -0.4
+    }
+  },
+  {
+    "id": "jeth_e_herings_top_down",
+    "section": "Section E",
+    "name": "Symptom shifts downwards, from head to extremities (Hering's Law)",
+    "remedies": {
+      "Bry": 2,
+      "Rhus-t": 2,
+      "Calc": 1,
+      "Sulph": 1
+    },
+    "indexWeights": {
+      "vital_force": 0.6,
+      "constitutional_stability": 0.5
+    }
+  },
+  {
+    "id": "jeth_e_return_old_symptom",
+    "section": "Section E",
+    "name": "Return of old, long-forgotten symptoms (Excellent prognosis)",
+    "remedies": {
+      "Sulph": 3,
+      "Psor": 3,
+      "Lyc": 2,
+      "Sil": 2
+    },
+    "indexWeights": {
+      "vital_force": 0.7,
+      "constitutional_stability": 0.7
+    }
+  },
+  {
+    "id": "jeth_e_suppression_signs",
+    "section": "Section E",
+    "name": "Eruption disappears, breathing/internal distress increases (Suppression)",
+    "remedies": {
+      "Ars": 3,
+      "Sulph": -2,
+      "Psor": -2,
+      "Thuja": -2
+    },
+    "indexWeights": {
+      "vital_force": -0.9,
+      "constitutional_stability": -0.7,
+      "chronic_disease": 0.6
+    }
+  },
+  {
+    "id": "jeth_e_new_symptom_inward",
+    "section": "Section E",
+    "name": "New symptoms appear, moving towards vital organs (Unfavorable)",
+    "remedies": {
+      "Lach": 3,
+      "Ars": 2,
+      "Phosphorus": 2,
+      "Ph-ac": 2
+    },
+    "indexWeights": {
+      "vital_force": -0.8,
+      "constitutional_stability": -0.6,
+      "chronic_disease": 0.5
+    }
+  },
+  {
+    "id": "jeth_e_rapid_amelioration",
+    "section": "Section E",
+    "name": "Rapid, gentle, and permanent amelioration of core symptoms",
+    "remedies": {
+      "Puls": 3,
+      "Acon": 2,
+      "Bell": 2,
+      "Nux-v": 2
+    },
+    "indexWeights": {
+      "vital_force": 0.9,
+      "stress_load": -0.6,
+      "anxiety_severity": -0.6
+    }
+  },
+  {
+    "id": "jeth_e_status_quo",
+    "section": "Section E",
+    "name": "Status quo, no change in physical or mental symptoms",
+    "remedies": {
+      "Psor": 2,
+      "Sulph": 2,
+      "Thuja": 2,
+      "Sil": 1
+    },
+    "indexWeights": {
+      "constitutional_stability": -0.2
+    }
+  },
+  {
+    "id": "jeth_e_potency_exhausted",
+    "section": "Section E",
+    "name": "Action of remedy stops, symptoms begin to return (Change potency)",
+    "remedies": {
+      "Sulph": 2,
+      "Lyc": 2,
+      "Calc": 2,
+      "Nux-v": 2
+    },
+    "indexWeights": {
+      "vital_force": -0.3
+    }
+  },
+  {
+    "id": "jeth_e_antidoted_symptoms",
+    "section": "Section E",
+    "name": "Symptoms antidoted by coffee, camphor, or strong odours",
+    "remedies": {
+      "Ign": 3,
+      "Nux-v": 2,
+      "Puls": 2,
+      "Bell": 1
+    },
+    "indexWeights": {
+      "vital_force": -0.4,
+      "constitutional_stability": -0.4
+    }
+  },
+  {
+    "id": "jeth_e_pathological_block",
+    "section": "Section E",
+    "name": "No reaction to well-selected remedy, pathological block",
+    "remedies": {
+      "Psor": 3,
+      "Sulph": 3,
+      "Thuja": 3,
+      "Med": 3,
+      "Carbo-v": 2,
+      "Tub": 2
+    },
+    "indexWeights": {
+      "vital_force": -0.5,
+      "chronic_disease": 0.4
+    }
+  },
+  {
+    "id": "jeth_f_psora_load",
+    "section": "Section F",
+    "name": "Miasm: Psora (itching, functional disorders, skin sensitivities)",
+    "remedies": {
+      "Sulph": 3,
+      "Psor": 3,
+      "Calc": 3,
+      "Ars": 2,
+      "Lyc": 2,
+      "Graph": 2
+    },
+    "indexWeights": {
+      "chronic_disease": 0.2
+    },
+    "researchCitation": {
+      "source": "Jethwani Miasmatic Compendium",
+      "detail": "Psora acts as the foundational dynamic disturbance of the immunological barrier."
+    }
+  },
+  {
+    "id": "jeth_f_sycosis_load",
+    "section": "Section F",
+    "name": "Miasm: Sycosis (hypertrophy, warts, catarrh, suspicious mind)",
+    "remedies": {
+      "Thuja": 3,
+      "Med": 3,
+      "Nat-s": 3,
+      "Sil": 2,
+      "Puls": 2,
+      "Lyc": 2
+    },
+    "indexWeights": {
+      "chronic_disease": 0.3
+    }
+  },
+  {
+    "id": "jeth_f_syphilis_load",
+    "section": "Section F",
+    "name": "Miasm: Syphilis (destruction, ulceration, bone pains, depression)",
+    "remedies": {
+      "Merc": 3,
+      "Nit-ac": 3,
+      "Aur-m": 3,
+      "Lach": 2,
+      "Phos": 1
+    },
+    "indexWeights": {
+      "chronic_disease": 0.5,
+      "vital_force": -0.4
+    }
+  },
+  {
+    "id": "jeth_f_tubercular_load",
+    "section": "Section F",
+    "name": "Miasm: Tubercular (emaciation, chest weakness, cosmopolitan desires)",
+    "remedies": {
+      "Tub": 3,
+      "Phos": 3,
+      "Calc-p": 3,
+      "Iod": 3,
+      "Puls": 2
+    },
+    "indexWeights": {
+      "chronic_disease": 0.4,
+      "vital_force": -0.3
+    }
+  },
+  {
+    "id": "jeth_f_cancerinic_load",
+    "section": "Section F",
+    "name": "Miasm: Cancerinic (autoimmune collapse, perfectionism, insomnia)",
+    "remedies": {
+      "Carcinosin": 3,
+      "Thuja": 2,
+      "Ars": 2,
+      "Phos": 2,
+      "Con": 2
+    },
+    "indexWeights": {
+      "chronic_disease": 0.6,
+      "vital_force": -0.5
+    }
+  },
+  {
+    "id": "jeth_f_latent_miasm_flare",
+    "section": "Section F",
+    "name": "Miasm: Latent miasmatic burden flaring up after grief or trauma",
+    "remedies": {
+      "Psor": 3,
+      "Thuja": 3,
+      "Sulph": 2,
+      "Lach": 2
+    },
+    "indexWeights": {
+      "vital_force": -0.4,
+      "chronic_disease": 0.3
+    }
+  },
+  {
+    "id": "jeth_f_hereditary_burden",
+    "section": "Section F",
+    "name": "Miasm: Strong family history of chronic illness, metabolic blocks",
+    "remedies": {
+      "Carcinosin": 3,
+      "Tub": 3,
+      "Med": 2,
+      "Sulph": 2,
+      "Calc": 2,
+      "Thuja": 2
+    },
+    "indexWeights": {
+      "chronic_disease": 0.5,
+      "constitutional_stability": -0.4
+    }
+  },
+  {
+    "id": "jeth_f_destructive_diathesis",
+    "section": "Section F",
+    "name": "Miasm: Destructive diathesis, rapid tissue degeneration",
+    "remedies": {
+      "Merc": 3,
+      "Nit-ac": 3,
+      "Aur-m": 3,
+      "Ars": 2,
+      "Sec": 2
+    },
+    "indexWeights": {
+      "chronic_disease": 0.7,
+      "vital_force": -0.5
+    }
+  },
+  {
+    "id": "jeth_f_catarrhal_diathesis",
+    "section": "Section F",
+    "name": "Miasm: Catarrhal diathesis, chronic mucous membrane discharge",
+    "remedies": {
+      "Kali-bi": 3,
+      "Puls": 3,
+      "Hydrastis": 2,
+      "Nat-s": 2,
+      "Calc": 1
+    },
+    "indexWeights": {
+      "chronic_disease": 0.3,
+      "immune_reactivity": -0.4
+    }
+  },
+  {
+    "id": "jeth_f_inflammatory_diathesis",
+    "section": "Section F",
+    "name": "Miasm: Inflammatory diathesis, rapid redness, swelling, high fever",
+    "remedies": {
+      "Bell": 3,
+      "Acon": 3,
+      "Apis": 3,
+      "Bry": 2,
+      "Ferr-p": 2
+    },
+    "indexWeights": {
+      "immune_reactivity": -0.5
+    }
+  }
+]
