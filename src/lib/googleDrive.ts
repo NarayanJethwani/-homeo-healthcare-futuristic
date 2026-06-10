@@ -289,6 +289,18 @@ export async function createPatientClinicalSheet(
           requestBody: {
             requests: [
               {
+                updateSpreadsheetProperties: {
+                  properties: {
+                    defaultFormat: {
+                      textFormat: {
+                        fontFamily: "Inter"
+                      }
+                    }
+                  },
+                  fields: "defaultFormat.textFormat.fontFamily"
+                }
+              },
+              {
                 updateSheetProperties: {
                   properties: {
                     sheetId: 0,
@@ -567,7 +579,7 @@ export async function createPatientClinicalSheet(
               { range: "'Follow-Up Tracker'!A1:G4", values: followUpValues },
               { range: "'Repertorization'!A1:P18", values: repertoryValues },
               { range: "'Treatment Planner'!A1:G21", values: plannerValues },
-              { range: "'Finance'!A1:H10", values: financeValues },
+              { range: "'Finance'!A1:H11", values: financeValues },
               { range: "'AI Repertory Lab'!A1:H14", values: aiRepertoryValues },
               { range: "'Reports & Attachments'!A1:D5", values: attachmentsValues },
               { range: "'Config DB'!A1:G15", values: configValues }
@@ -676,7 +688,7 @@ export async function createPatientClinicalSheet(
               cell: {
                 userEnteredFormat: {
                   backgroundColor: { red: 15/255, green: 118/255, blue: 110/255 }, // Brand Teal #0F766E
-                  textFormat: { foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 13, bold: true },
+                  textFormat: { fontFamily: "Inter", foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 13, bold: true },
                   horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                 }
               },
@@ -709,7 +721,7 @@ export async function createPatientClinicalSheet(
               cell: {
                 userEnteredFormat: {
                   backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 }, // Slate-200 #E2E8F0
-                  textFormat: { foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 }, fontSize: 10, bold: true }, // Brand Teal #0F766E
+                  textFormat: { fontFamily: "Inter", foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 }, fontSize: 10, bold: true }, // Brand Teal #0F766E
                   horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                 }
               },
@@ -723,7 +735,7 @@ export async function createPatientClinicalSheet(
               cell: {
                 userEnteredFormat: {
                   backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 }, // slate-50 #F8FAFC
-                  textFormat: { foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 }, fontSize: 9, bold: true },
+                  textFormat: { fontFamily: "Inter", foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 }, fontSize: 9, bold: true },
                   horizontalAlignment: "LEFT", verticalAlignment: "MIDDLE"
                 }
               },
@@ -737,7 +749,7 @@ export async function createPatientClinicalSheet(
               cell: {
                 userEnteredFormat: {
                   backgroundColor: { red: 1, green: 1, blue: 1 }, // white #FFFFFF
-                  textFormat: { foregroundColor: { red: 15/255, green: 23/255, blue: 42/255 }, fontSize: 10, bold: true },
+                  textFormat: { fontFamily: "Inter", foregroundColor: { red: 15/255, green: 23/255, blue: 42/255 }, fontSize: 10, bold: true },
                   horizontalAlignment: "LEFT", verticalAlignment: "MIDDLE"
                 }
               },
@@ -751,7 +763,7 @@ export async function createPatientClinicalSheet(
               cell: {
                 userEnteredFormat: {
                   backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
-                  textFormat: { foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 }, fontSize: 9, bold: true },
+                  textFormat: { fontFamily: "Inter", foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 }, fontSize: 9, bold: true },
                   horizontalAlignment: "LEFT", verticalAlignment: "MIDDLE"
                 }
               },
@@ -765,7 +777,7 @@ export async function createPatientClinicalSheet(
               cell: {
                 userEnteredFormat: {
                   backgroundColor: { red: 1, green: 1, blue: 1 },
-                  textFormat: { foregroundColor: { red: 15/255, green: 23/255, blue: 42/255 }, fontSize: 10, bold: true },
+                  textFormat: { fontFamily: "Inter", foregroundColor: { red: 15/255, green: 23/255, blue: 42/255 }, fontSize: 10, bold: true },
                   horizontalAlignment: "LEFT", verticalAlignment: "MIDDLE"
                 }
               },
@@ -779,7 +791,7 @@ export async function createPatientClinicalSheet(
               cell: {
                 userEnteredFormat: {
                   backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
-                  textFormat: { foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 }, fontSize: 9, bold: true },
+                  textFormat: { fontFamily: "Inter", foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 }, fontSize: 9, bold: true },
                   horizontalAlignment: "LEFT", verticalAlignment: "MIDDLE"
                 }
               },
@@ -793,7 +805,7 @@ export async function createPatientClinicalSheet(
               cell: {
                 userEnteredFormat: {
                   backgroundColor: { red: 1, green: 1, blue: 1 },
-                  textFormat: { foregroundColor: { red: 15/255, green: 23/255, blue: 42/255 }, fontSize: 10, bold: true },
+                  textFormat: { fontFamily: "Inter", foregroundColor: { red: 15/255, green: 23/255, blue: 42/255 }, fontSize: 10, bold: true },
                   horizontalAlignment: "LEFT", verticalAlignment: "MIDDLE"
                 }
               },
@@ -848,7 +860,7 @@ export async function createPatientClinicalSheet(
                     pattern: "0%\" Improvement\""
                   },
                   textFormat: {
-                    bold: true,
+                    fontFamily: "Inter",bold: true,
                     foregroundColor: { red: 46/255, green: 139/255, blue: 87/255 } // SeaGreen
                   }
                 }
@@ -887,7 +899,7 @@ export async function createPatientClinicalSheet(
                 booleanRule: {
                   condition: { type: "NUMBER_GREATER", values: [{ userEnteredValue: "0" }] },
                   format: {
-                    textFormat: { foregroundColor: { red: 225/255, green: 29/255, blue: 72/255 }, bold: true } // rose-600
+                    textFormat: { fontFamily: "Inter", foregroundColor: { red: 225/255, green: 29/255, blue: 72/255 }, bold: true } // rose-600
                   }
                 }
               },
@@ -903,7 +915,7 @@ export async function createPatientClinicalSheet(
                 booleanRule: {
                   condition: { type: "NUMBER_LESS_THAN_OR_EQUAL", values: [{ userEnteredValue: "0" }] },
                   format: {
-                    textFormat: { foregroundColor: { red: 4/255, green: 120/255, blue: 87/255 }, bold: true } // emerald-700
+                    textFormat: { fontFamily: "Inter", foregroundColor: { red: 4/255, green: 120/255, blue: 87/255 }, bold: true } // emerald-700
                   }
                 }
               },
@@ -923,7 +935,7 @@ export async function createPatientClinicalSheet(
               cell: {
                 userEnteredFormat: {
                   textFormat: {
-                    bold: true,
+                    fontFamily: "Inter",bold: true,
                     foregroundColor: { red: 4/255, green: 120/255, blue: 87/255 } // emerald-700
                   }
                 }
@@ -1139,7 +1151,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
-                    textFormat: { foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 }, fontSize: 9, bold: true },
+                    textFormat: { fontFamily: "Inter", foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 }, fontSize: 9, bold: true },
                     horizontalAlignment: "LEFT",
                     verticalAlignment: "MIDDLE"
                   }
@@ -1160,7 +1172,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 1, green: 1, blue: 1 },
-                    textFormat: { foregroundColor: { red: 15/255, green: 23/255, blue: 42/255 }, fontSize: 10, bold: true },
+                    textFormat: { fontFamily: "Inter", foregroundColor: { red: 15/255, green: 23/255, blue: 42/255 }, fontSize: 10, bold: true },
                     horizontalAlignment: "LEFT",
                     verticalAlignment: "MIDDLE"
                   }
@@ -1181,7 +1193,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 15/255, green: 118/255, blue: 110/255 }, // Brand Teal #0F766E
-                    textFormat: { foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 12, bold: true },
+                    textFormat: { fontFamily: "Inter", foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 12, bold: true },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -1227,7 +1239,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 226/255, green: 242/255, blue: 253/255 },
-                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 } }, // Brand Teal #0F766E
+                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 } }, // Brand Teal #0F766E
                     verticalAlignment: "MIDDLE"
                   }
                 },
@@ -1306,7 +1318,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 15/255, green: 76/255, blue: 129/255 },
-                    textFormat: { foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 12, bold: true },
+                    textFormat: { fontFamily: "Inter", foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 12, bold: true },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -1320,7 +1332,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 241/255, green: 245/255, blue: 249/255 },
-                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 } },
+                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 10, foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 } },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -1346,7 +1358,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     numberFormat: { type: "DATE", pattern: "dd-mm-yyyy" },
-                    textFormat: { bold: true, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    textFormat: { fontFamily: "Inter", bold: true, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -1360,7 +1372,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     numberFormat: { type: "NUMBER", pattern: "0%" },
-                    textFormat: { bold: true, foregroundColor: { red: 4/255, green: 120/255, blue: 87/255 } },
+                    textFormat: { fontFamily: "Inter", bold: true, foregroundColor: { red: 4/255, green: 120/255, blue: 87/255 } },
                     backgroundColor: { red: 236/255, green: 253/255, blue: 245/255 },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
@@ -1374,7 +1386,7 @@ export async function createPatientClinicalSheet(
                 range: { sheetId: followUpId, startRowIndex: 3, endRowIndex: 100, startColumnIndex: 3, endColumnIndex: 4 },
                 cell: {
                   userEnteredFormat: {
-                    textFormat: { bold: true },
+                    textFormat: { fontFamily: "Inter", bold: true },
                     horizontalAlignment: "LEFT", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -1387,7 +1399,7 @@ export async function createPatientClinicalSheet(
                 range: { sheetId: followUpId, startRowIndex: 3, endRowIndex: 100, startColumnIndex: 4, endColumnIndex: 5 },
                 cell: {
                   userEnteredFormat: {
-                    textFormat: { bold: true },
+                    textFormat: { fontFamily: "Inter", bold: true },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -1400,7 +1412,7 @@ export async function createPatientClinicalSheet(
                 range: { sheetId: followUpId, startRowIndex: 3, endRowIndex: 100, startColumnIndex: 6, endColumnIndex: 7 },
                 cell: {
                   userEnteredFormat: {
-                    textFormat: { bold: true, foregroundColor: { red: 180/255, green: 83/255, blue: 9/255 } },
+                    textFormat: { fontFamily: "Inter", bold: true, foregroundColor: { red: 180/255, green: 83/255, blue: 9/255 } },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -1541,7 +1553,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 15/255, green: 76/255, blue: 129/255 },
-                    textFormat: { foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 13, bold: true },
+                    textFormat: { fontFamily: "Inter", foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 13, bold: true },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -1555,7 +1567,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 241/255, green: 245/255, blue: 249/255 },
-                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
                     verticalAlignment: "MIDDLE"
                   }
                 },
@@ -1584,7 +1596,7 @@ export async function createPatientClinicalSheet(
                   userEnteredFormat: {
                     horizontalAlignment: "LEFT",
                     verticalAlignment: "MIDDLE",
-                    textFormat: { fontSize: 10 }
+                    textFormat: { fontFamily: "Inter", fontSize: 10 }
                   }
                 },
                 fields: "userEnteredFormat(horizontalAlignment,verticalAlignment,textFormat.fontSize)"
@@ -1597,7 +1609,7 @@ export async function createPatientClinicalSheet(
                   userEnteredFormat: {
                     horizontalAlignment: "CENTER",
                     verticalAlignment: "MIDDLE",
-                    textFormat: { fontSize: 10 }
+                    textFormat: { fontFamily: "Inter", fontSize: 10 }
                   }
                 },
                 fields: "userEnteredFormat(horizontalAlignment,verticalAlignment,textFormat.fontSize)"
@@ -1610,7 +1622,7 @@ export async function createPatientClinicalSheet(
                   userEnteredFormat: {
                     horizontalAlignment: "RIGHT",
                     verticalAlignment: "MIDDLE",
-                    textFormat: { fontSize: 10 },
+                    textFormat: { fontFamily: "Inter", fontSize: 10 },
                     numberFormat: { type: "NUMBER", pattern: "#,##0" }
                   }
                 },
@@ -1630,7 +1642,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 226/255, green: 242/255, blue: 253/255 },
-                    textFormat: { bold: true, fontSize: 11, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 11, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
                     verticalAlignment: "MIDDLE"
                   }
                 },
@@ -1644,7 +1656,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
-                    textFormat: { bold: true, fontSize: 10 },
+                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 10 },
                     verticalAlignment: "MIDDLE"
                   }
                 },
@@ -1664,7 +1676,7 @@ export async function createPatientClinicalSheet(
                 range: { sheetId: plannerId, startRowIndex: 7, endRowIndex: 17, startColumnIndex: 0, endColumnIndex: 3 },
                 cell: {
                   userEnteredFormat: {
-                    textFormat: { fontSize: 10 },
+                    textFormat: { fontFamily: "Inter", fontSize: 10 },
                     verticalAlignment: "MIDDLE"
                   }
                 },
@@ -1676,7 +1688,7 @@ export async function createPatientClinicalSheet(
                 range: { sheetId: plannerId, startRowIndex: 7, endRowIndex: 17, startColumnIndex: 0, endColumnIndex: 1 },
                 cell: {
                   userEnteredFormat: {
-                    textFormat: { bold: true }
+                    textFormat: { fontFamily: "Inter", bold: true }
                   }
                 },
                 fields: "userEnteredFormat.textFormat.bold"
@@ -1717,7 +1729,7 @@ export async function createPatientClinicalSheet(
                 range: { sheetId: plannerId, startRowIndex: 18, endRowIndex: 19, startColumnIndex: 0, endColumnIndex: 1 },
                 cell: {
                   userEnteredFormat: {
-                    textFormat: { bold: true, fontSize: 10 },
+                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 10 },
                     verticalAlignment: "MIDDLE",
                     horizontalAlignment: "LEFT"
                   }
@@ -1730,7 +1742,7 @@ export async function createPatientClinicalSheet(
                 range: { sheetId: plannerId, startRowIndex: 18, endRowIndex: 19, startColumnIndex: 1, endColumnIndex: 7 },
                 cell: {
                   userEnteredFormat: {
-                    textFormat: { fontSize: 10 },
+                    textFormat: { fontFamily: "Inter", fontSize: 10 },
                     verticalAlignment: "MIDDLE",
                     horizontalAlignment: "LEFT",
                     wrapStrategy: "WRAP"
@@ -1745,7 +1757,7 @@ export async function createPatientClinicalSheet(
                 range: { sheetId: plannerId, startRowIndex: 14, endRowIndex: 15, startColumnIndex: 1, endColumnIndex: 2 },
                 cell: {
                   userEnteredFormat: {
-                    textFormat: { bold: true, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } }
+                    textFormat: { fontFamily: "Inter", bold: true, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } }
                   }
                 },
                 fields: "userEnteredFormat.textFormat(bold,foregroundColor)"
@@ -1757,7 +1769,7 @@ export async function createPatientClinicalSheet(
                 range: { sheetId: plannerId, startRowIndex: 15, endRowIndex: 16, startColumnIndex: 1, endColumnIndex: 2 },
                 cell: {
                   userEnteredFormat: {
-                    textFormat: { bold: true }
+                    textFormat: { fontFamily: "Inter", bold: true }
                   }
                 },
                 fields: "userEnteredFormat.textFormat.bold"
@@ -1769,7 +1781,7 @@ export async function createPatientClinicalSheet(
                 range: { sheetId: plannerId, startRowIndex: 16, endRowIndex: 17, startColumnIndex: 1, endColumnIndex: 2 },
                 cell: {
                   userEnteredFormat: {
-                    textFormat: { bold: true }
+                    textFormat: { fontFamily: "Inter", bold: true }
                   }
                 },
                 fields: "userEnteredFormat.textFormat.bold"
@@ -1785,7 +1797,7 @@ export async function createPatientClinicalSheet(
                   booleanRule: {
                     condition: { type: "NUMBER_GREATER", values: [{ userEnteredValue: "0" }] },
                     format: {
-                      textFormat: { foregroundColor: { red: 225/255, green: 29/255, blue: 72/255 }, bold: true } // rose-600
+                      textFormat: { fontFamily: "Inter", foregroundColor: { red: 225/255, green: 29/255, blue: 72/255 }, bold: true } // rose-600
                     }
                   }
                 },
@@ -1801,7 +1813,7 @@ export async function createPatientClinicalSheet(
                   booleanRule: {
                     condition: { type: "NUMBER_LESS_THAN_OR_EQUAL", values: [{ userEnteredValue: "0" }] },
                     format: {
-                      textFormat: { foregroundColor: { red: 4/255, green: 120/255, blue: 87/255 }, bold: true } // emerald-700
+                      textFormat: { fontFamily: "Inter", foregroundColor: { red: 4/255, green: 120/255, blue: 87/255 }, bold: true } // emerald-700
                     }
                   }
                 },
@@ -1974,7 +1986,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 15/255, green: 76/255, blue: 129/255 },
-                    textFormat: { foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 13, bold: true },
+                    textFormat: { fontFamily: "Inter", foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 13, bold: true },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -2047,7 +2059,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
-                    textFormat: { bold: true, fontSize: 9, foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 } },
+                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 9, foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 } },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -2060,7 +2072,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 1, green: 1, blue: 1 },
-                    textFormat: { bold: true, fontSize: 13, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 13, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE",
                     numberFormat: { type: "CURRENCY", pattern: "\"₹\"#,##0" }
                   }
@@ -2074,7 +2086,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 1, green: 1, blue: 1 },
-                    textFormat: { fontSize: 8, foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } },
+                    textFormat: { fontFamily: "Inter", fontSize: 8, foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -2097,7 +2109,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
-                    textFormat: { bold: true, fontSize: 9, foregroundColor: { red: 46/255, green: 139/255, blue: 87/255 } }, // SeaGreen text for Collected header
+                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 9, foregroundColor: { red: 46/255, green: 139/255, blue: 87/255 } }, // SeaGreen text for Collected header
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -2110,7 +2122,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 1, green: 1, blue: 1 },
-                    textFormat: { bold: true, fontSize: 13, foregroundColor: { red: 46/255, green: 139/255, blue: 87/255 } }, // SeaGreen #2E8B57
+                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 13, foregroundColor: { red: 46/255, green: 139/255, blue: 87/255 } }, // SeaGreen #2E8B57
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE",
                     numberFormat: { type: "CURRENCY", pattern: "\"₹\"#,##0" }
                   }
@@ -2124,7 +2136,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 1, green: 1, blue: 1 },
-                    textFormat: { fontSize: 8, foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } },
+                    textFormat: { fontFamily: "Inter", fontSize: 8, foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -2147,7 +2159,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
-                    textFormat: { bold: true, fontSize: 9, foregroundColor: { red: 139/255, green: 46/255, blue: 46/255 } }, // Deep Red text for Outstanding header
+                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 9, foregroundColor: { red: 139/255, green: 46/255, blue: 46/255 } }, // Deep Red text for Outstanding header
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -2160,7 +2172,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 1, green: 1, blue: 1 },
-                    textFormat: { bold: true, fontSize: 13, foregroundColor: { red: 139/255, green: 46/255, blue: 46/255 } }, // Deep Red #8B2E2E
+                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 13, foregroundColor: { red: 139/255, green: 46/255, blue: 46/255 } }, // Deep Red #8B2E2E
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE",
                     numberFormat: { type: "CURRENCY", pattern: "\"₹\"#,##0" }
                   }
@@ -2174,7 +2186,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 1, green: 1, blue: 1 },
-                    textFormat: { fontSize: 8, foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } },
+                    textFormat: { fontFamily: "Inter", fontSize: 8, foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -2203,7 +2215,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 226/255, green: 242/255, blue: 253/255 },
-                    textFormat: { bold: true, fontSize: 11, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 11, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
                     verticalAlignment: "MIDDLE"
                   }
                 },
@@ -2217,7 +2229,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 }, // slate-200
-                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -2244,7 +2256,7 @@ export async function createPatientClinicalSheet(
                 range: { sheetId: financeId, startRowIndex: 8, endRowIndex: 100, startColumnIndex: 0, endColumnIndex: 8 },
                 cell: {
                   userEnteredFormat: {
-                    textFormat: { fontSize: 10 },
+                    textFormat: { fontFamily: "Inter", fontSize: 10 },
                     verticalAlignment: "MIDDLE"
                   }
                 },
@@ -2289,7 +2301,7 @@ export async function createPatientClinicalSheet(
                 range: { sheetId: financeId, startRowIndex: 8, endRowIndex: 100, startColumnIndex: 7, endColumnIndex: 8 },
                 cell: {
                   userEnteredFormat: {
-                    textFormat: { bold: true }
+                    textFormat: { fontFamily: "Inter", bold: true }
                   }
                 },
                 fields: "userEnteredFormat.textFormat.bold"
@@ -2317,7 +2329,7 @@ export async function createPatientClinicalSheet(
                   booleanRule: {
                     condition: { type: "TEXT_EQ", values: [{ userEnteredValue: "PAID" }] },
                     format: {
-                      textFormat: { foregroundColor: { red: 4/255, green: 120/255, blue: 87/255 }, bold: true },
+                      textFormat: { fontFamily: "Inter", foregroundColor: { red: 4/255, green: 120/255, blue: 87/255 }, bold: true },
                       backgroundColor: { red: 236/255, green: 253/255, blue: 245/255 }
                     }
                   }
@@ -2334,7 +2346,7 @@ export async function createPatientClinicalSheet(
                   booleanRule: {
                     condition: { type: "TEXT_EQ", values: [{ userEnteredValue: "PARTIALLY PAID" }] },
                     format: {
-                      textFormat: { foregroundColor: { red: 67/255, green: 56/255, blue: 202/255 }, bold: true },
+                      textFormat: { fontFamily: "Inter", foregroundColor: { red: 67/255, green: 56/255, blue: 202/255 }, bold: true },
                       backgroundColor: { red: 238/255, green: 242/255, blue: 255/255 }
                     }
                   }
@@ -2351,7 +2363,7 @@ export async function createPatientClinicalSheet(
                   booleanRule: {
                     condition: { type: "TEXT_EQ", values: [{ userEnteredValue: "UNPAID" }] },
                     format: {
-                      textFormat: { foregroundColor: { red: 190/255, green: 24/255, blue: 74/255 }, bold: true },
+                      textFormat: { fontFamily: "Inter", foregroundColor: { red: 190/255, green: 24/255, blue: 74/255 }, bold: true },
                       backgroundColor: { red: 255/255, green: 241/255, blue: 242/255 }
                     }
                   }
@@ -2414,7 +2426,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 15/255, green: 76/255, blue: 129/255 },
-                    textFormat: { foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 12, bold: true },
+                    textFormat: { fontFamily: "Inter", foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 12, bold: true },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -2428,7 +2440,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 },
-                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -2466,7 +2478,7 @@ export async function createPatientClinicalSheet(
                 range: { sheetId: attachmentsId, startRowIndex: 3, endRowIndex: 33, startColumnIndex: 0, endColumnIndex: 4 },
                 cell: {
                   userEnteredFormat: {
-                    textFormat: { fontSize: 10 },
+                    textFormat: { fontFamily: "Inter", fontSize: 10 },
                     verticalAlignment: "MIDDLE"
                   }
                 },
@@ -2576,7 +2588,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 15/255, green: 76/255, blue: 129/255 },
-                    textFormat: { foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 12, bold: true },
+                    textFormat: { fontFamily: "Inter", foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 12, bold: true },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -2590,7 +2602,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 },
-                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -2604,7 +2616,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 },
-                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -2678,7 +2690,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 15/255, green: 76/255, blue: 129/255 },
-                    textFormat: { foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 13, bold: true },
+                    textFormat: { fontFamily: "Inter", foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 13, bold: true },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -2706,7 +2718,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 }, // slate-200
-                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -2726,7 +2738,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 241/255, green: 245/255, blue: 249/255 }, // slate-100
-                    textFormat: { bold: true, fontSize: 9, foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 } },
+                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 9, foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 } },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -2746,7 +2758,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 1, green: 1, blue: 1 },
-                    textFormat: { fontSize: 10, foregroundColor: { red: 15/255, green: 23/255, blue: 42/255 } },
+                    textFormat: { fontFamily: "Inter", fontSize: 10, foregroundColor: { red: 15/255, green: 23/255, blue: 42/255 } },
                     verticalAlignment: "TOP",
                     wrapStrategy: "WRAP"
                   }
@@ -2761,7 +2773,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
-                    textFormat: { bold: true, fontSize: 9, foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 } },
+                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 9, foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 } },
                     verticalAlignment: "MIDDLE"
                   }
                 },
@@ -2775,7 +2787,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 1, green: 1, blue: 1 },
-                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -2832,7 +2844,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 },
-                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -2847,7 +2859,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
-                    textFormat: { bold: true, fontSize: 9, foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 } },
+                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 9, foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 } },
                     verticalAlignment: "MIDDLE"
                   }
                 },
@@ -2860,7 +2872,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
-                    textFormat: { fontSize: 9, foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } },
+                    textFormat: { fontFamily: "Inter", fontSize: 9, foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } },
                     verticalAlignment: "MIDDLE"
                   }
                 },
@@ -2874,7 +2886,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 1, green: 1, blue: 1 },
-                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -2887,7 +2899,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 1, green: 1, blue: 1 },
-                    textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 } },
+                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 } },
                     horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
                   }
                 },
@@ -2902,7 +2914,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 241/255, green: 245/255, blue: 249/255 },
-                    textFormat: { bold: true, fontSize: 9, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+                    textFormat: { fontFamily: "Inter", bold: true, fontSize: 9, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
                     verticalAlignment: "MIDDLE"
                   }
                 },
@@ -2934,7 +2946,7 @@ export async function createPatientClinicalSheet(
                 cell: {
                   userEnteredFormat: {
                     backgroundColor: { red: 1, green: 1, blue: 1 },
-                    textFormat: { fontSize: 9, foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 } },
+                    textFormat: { fontFamily: "Inter", fontSize: 9, foregroundColor: { red: 71/255, green: 85/255, blue: 105/255 } },
                     verticalAlignment: "MIDDLE",
                     wrapStrategy: "WRAP"
                   }
@@ -3676,7 +3688,7 @@ export async function createInvoiceSheet(
           cell: {
             userEnteredFormat: {
               backgroundColor: { red: 15/255, green: 118/255, blue: 110/255 },
-              textFormat: { foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 14, bold: true },
+              textFormat: { fontFamily: "Inter", foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 14, bold: true },
               horizontalAlignment: "CENTER",
               verticalAlignment: "MIDDLE"
             }
@@ -3691,7 +3703,7 @@ export async function createInvoiceSheet(
           cell: {
             userEnteredFormat: {
               backgroundColor: { red: 204/255, green: 251/255, blue: 241/255 },
-              textFormat: { foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 }, bold: true, fontSize: 10 },
+              textFormat: { fontFamily: "Inter", foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 }, bold: true, fontSize: 10 },
               verticalAlignment: "MIDDLE"
             }
           },
@@ -3705,7 +3717,7 @@ export async function createInvoiceSheet(
           cell: {
             userEnteredFormat: {
               backgroundColor: { red: 241/255, green: 245/255, blue: 249/255 },
-              textFormat: { bold: true, fontSize: 9 }
+              textFormat: { fontFamily: "Inter", bold: true, fontSize: 9 }
             }
           },
           fields: "userEnteredFormat(backgroundColor,textFormat)"
@@ -3715,7 +3727,7 @@ export async function createInvoiceSheet(
       {
         repeatCell: {
           range: { sheetId: 0, startRowIndex: 12, endRowIndex: 15, startColumnIndex: 3, endColumnIndex: 5 },
-          cell: { userEnteredFormat: { textFormat: { bold: true } } },
+          cell: { userEnteredFormat: { textFormat: { fontFamily: "Inter", bold: true } } },
           fields: "userEnteredFormat(textFormat(bold))"
         }
       },
@@ -3726,7 +3738,7 @@ export async function createInvoiceSheet(
           cell: {
             userEnteredFormat: {
               backgroundColor: { red: 204/255, green: 251/255, blue: 241/255 },
-              textFormat: { foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 }, bold: true }
+              textFormat: { fontFamily: "Inter", foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 }, bold: true }
             }
           },
           fields: "userEnteredFormat(backgroundColor,textFormat)"
@@ -3739,7 +3751,7 @@ export async function createInvoiceSheet(
           cell: {
             userEnteredFormat: {
               backgroundColor: { red: 241/255, green: 245/255, blue: 249/255 },
-              textFormat: { bold: true, fontSize: 9 }
+              textFormat: { fontFamily: "Inter", bold: true, fontSize: 9 }
             }
           },
           fields: "userEnteredFormat(backgroundColor,textFormat)"
@@ -3749,14 +3761,14 @@ export async function createInvoiceSheet(
       {
         repeatCell: {
           range: { sheetId: 0, startRowIndex: 3, endRowIndex: 8, startColumnIndex: 0, endColumnIndex: 1 },
-          cell: { userEnteredFormat: { textFormat: { bold: true } } },
+          cell: { userEnteredFormat: { textFormat: { fontFamily: "Inter", bold: true } } },
           fields: "userEnteredFormat(textFormat(bold))"
         }
       },
       {
         repeatCell: {
           range: { sheetId: 0, startRowIndex: 3, endRowIndex: 8, startColumnIndex: 3, endColumnIndex: 4 },
-          cell: { userEnteredFormat: { textFormat: { bold: true } } },
+          cell: { userEnteredFormat: { textFormat: { fontFamily: "Inter", bold: true } } },
           fields: "userEnteredFormat(textFormat(bold))"
         }
       },
@@ -3766,7 +3778,7 @@ export async function createInvoiceSheet(
           range: { sheetId: 0, startRowIndex: 26, endRowIndex: 27, startColumnIndex: 0, endColumnIndex: 5 },
           cell: {
             userEnteredFormat: {
-              textFormat: { italic: true, fontSize: 9, color: { red: 0.4, green: 0.4, blue: 0.4 } },
+              textFormat: { fontFamily: "Inter", italic: true, fontSize: 9, color: { red: 0.4, green: 0.4, blue: 0.4 } },
               horizontalAlignment: "CENTER"
             }
           },
@@ -4073,7 +4085,7 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
         cell: {
           userEnteredFormat: {
             backgroundColor: { red: 15/255, green: 76/255, blue: 129/255 },
-            textFormat: { foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 13, bold: true },
+            textFormat: { fontFamily: "Inter", foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 13, bold: true },
             horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
           }
         },
@@ -4089,7 +4101,7 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
       cell: {
         userEnteredFormat: {
           backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 },
-          textFormat: { foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 }, fontSize: 10, bold: true },
+          textFormat: { fontFamily: "Inter", foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 }, fontSize: 10, bold: true },
           horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
         }
       },
@@ -4144,7 +4156,7 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
       range: { sheetId: repertoryId, startRowIndex: 3, endRowIndex: 3 + N, startColumnIndex: 15, endColumnIndex: 16 },
       cell: {
         userEnteredFormat: {
-          textFormat: { bold: true, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+          textFormat: { fontFamily: "Inter", bold: true, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
           horizontalAlignment: "CENTER",
           verticalAlignment: "MIDDLE"
         }
@@ -4165,7 +4177,7 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
             condition: { type: "NUMBER_GREATER", values: [{ userEnteredValue: "0" }] },
             format: {
               backgroundColor: { red: 236/255, green: 253/255, blue: 245/255 },
-              textFormat: { foregroundColor: { red: 4/255, green: 120/255, blue: 87/255 }, bold: true }
+              textFormat: { fontFamily: "Inter", foregroundColor: { red: 4/255, green: 120/255, blue: 87/255 }, bold: true }
             }
           }
         },
@@ -4181,7 +4193,7 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
           booleanRule: {
             condition: { type: "NUMBER_EQ", values: [{ userEnteredValue: "0" }] },
             format: {
-              textFormat: { foregroundColor: { red: 203/255, green: 213/255, blue: 225/255 } }
+              textFormat: { fontFamily: "Inter", foregroundColor: { red: 203/255, green: 213/255, blue: 225/255 } }
             }
           }
         },
@@ -4198,7 +4210,7 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
         cell: {
           userEnteredFormat: {
             backgroundColor: { red: 1, green: 1, blue: 1 },
-            textFormat: { bold: false, italic: false, fontSize: 10, foregroundColor: { red: 0, green: 0, blue: 0 } }
+            textFormat: { fontFamily: "Inter", bold: false, italic: false, fontSize: 10, foregroundColor: { red: 0, green: 0, blue: 0 } }
           }
         },
         fields: "userEnteredFormat(backgroundColor,textFormat)"
@@ -4225,7 +4237,7 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
         cell: {
           userEnteredFormat: {
             backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
-            textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } },
+            textFormat: { fontFamily: "Inter", bold: true, fontSize: 10, foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } },
             verticalAlignment: "MIDDLE"
           }
         },
@@ -4262,7 +4274,7 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
         cell: {
           userEnteredFormat: {
             backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 },
-            textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+            textFormat: { fontFamily: "Inter", bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
             verticalAlignment: "MIDDLE"
           }
         },
@@ -4297,7 +4309,7 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
         cell: {
           userEnteredFormat: {
             backgroundColor: { red: 226/255, green: 251/255, blue: 247/255 },
-            textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 } },
+            textFormat: { fontFamily: "Inter", bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 118/255, blue: 110/255 } },
             verticalAlignment: "MIDDLE"
           }
         },
@@ -4332,7 +4344,7 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
         cell: {
           userEnteredFormat: {
             backgroundColor: { red: 1, green: 1, blue: 1 },
-            textFormat: { bold: false, italic: false, fontSize: 10, foregroundColor: { red: 0, green: 0, blue: 0 } }
+            textFormat: { fontFamily: "Inter", bold: false, italic: false, fontSize: 10, foregroundColor: { red: 0, green: 0, blue: 0 } }
           }
         },
         fields: "userEnteredFormat(backgroundColor,textFormat)"
@@ -4365,7 +4377,7 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
         cell: {
           userEnteredFormat: {
             backgroundColor: { red: 226/255, green: 232/255, blue: 240/255 },
-            textFormat: { bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
+            textFormat: { fontFamily: "Inter", bold: true, fontSize: 10, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } },
             horizontalAlignment: "CENTER", verticalAlignment: "MIDDLE"
           }
         },
@@ -4387,28 +4399,28 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
       {
         repeatCell: {
           range: { sheetId: repertoryId, startRowIndex: cardRow, endRowIndex: cardRow + 1, startColumnIndex: 0, endColumnIndex: 1 },
-          cell: { userEnteredFormat: { backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 }, textFormat: { bold: true, foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } } } },
+          cell: { userEnteredFormat: { backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 }, textFormat: { fontFamily: "Inter", bold: true, foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } } } },
           fields: "userEnteredFormat(backgroundColor,textFormat)"
         }
       },
       {
         repeatCell: {
           range: { sheetId: repertoryId, startRowIndex: cardRow, endRowIndex: cardRow + 1, startColumnIndex: 1, endColumnIndex: 2 },
-          cell: { userEnteredFormat: { backgroundColor: { red: 1, green: 1, blue: 1 }, textFormat: { bold: true, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } }, horizontalAlignment: "CENTER" } },
+          cell: { userEnteredFormat: { backgroundColor: { red: 1, green: 1, blue: 1 }, textFormat: { fontFamily: "Inter", bold: true, foregroundColor: { red: 15/255, green: 76/255, blue: 129/255 } }, horizontalAlignment: "CENTER" } },
           fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
         }
       },
       {
         repeatCell: {
           range: { sheetId: repertoryId, startRowIndex: cardRow, endRowIndex: cardRow + 1, startColumnIndex: 2, endColumnIndex: 3 },
-          cell: { userEnteredFormat: { backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 }, textFormat: { foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } } } },
+          cell: { userEnteredFormat: { backgroundColor: { red: 248/255, green: 250/255, blue: 252/255 }, textFormat: { fontFamily: "Inter", foregroundColor: { red: 100/255, green: 116/255, blue: 139/255 } } } },
           fields: "userEnteredFormat(backgroundColor,textFormat)"
         }
       },
       {
         repeatCell: {
           range: { sheetId: repertoryId, startRowIndex: cardRow, endRowIndex: cardRow + 1, startColumnIndex: 3, endColumnIndex: 4 },
-          cell: { userEnteredFormat: { backgroundColor: { red: 1, green: 1, blue: 1 }, textFormat: { bold: true, foregroundColor: scoreColor }, horizontalAlignment: "CENTER" } },
+          cell: { userEnteredFormat: { backgroundColor: { red: 1, green: 1, blue: 1 }, textFormat: { fontFamily: "Inter", bold: true, foregroundColor: scoreColor }, horizontalAlignment: "CENTER" } },
           fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
         }
       }
@@ -4436,7 +4448,7 @@ export function getRepertoryFormattingRequests(repertoryId: number, N: number, e
         cell: {
           userEnteredFormat: {
             backgroundColor: { red: 1, green: 1, blue: 1 },
-            textFormat: { bold: false, italic: false, fontSize: 10, foregroundColor: { red: 0, green: 0, blue: 0 } }
+            textFormat: { fontFamily: "Inter", bold: false, italic: false, fontSize: 10, foregroundColor: { red: 0, green: 0, blue: 0 } }
           }
         },
         fields: "userEnteredFormat(backgroundColor,textFormat)"
