@@ -913,7 +913,7 @@ export async function createPatientClinicalSheet(
                   { sheetId: dashId, startRowIndex: 4, endRowIndex: 5, startColumnIndex: 7, endColumnIndex: 8 }
                 ],
                 booleanRule: {
-                  condition: { type: "NUMBER_LESS_EQUAL", values: [{ userEnteredValue: "0" }] },
+                  condition: { type: "NUMBER_LESS_THAN_EQ", values: [{ userEnteredValue: "0" }] },
                   format: {
                     textFormat: { fontFamily: "Inter", foregroundColor: { red: 4/255, green: 120/255, blue: 87/255 }, bold: true } // emerald-700
                   }
@@ -1811,7 +1811,7 @@ export async function createPatientClinicalSheet(
                     { sheetId: plannerId, startRowIndex: 16, endRowIndex: 17, startColumnIndex: 1, endColumnIndex: 2 }
                   ],
                   booleanRule: {
-                    condition: { type: "NUMBER_LESS_EQUAL", values: [{ userEnteredValue: "0" }] },
+                    condition: { type: "NUMBER_LESS_THAN_EQ", values: [{ userEnteredValue: "0" }] },
                     format: {
                       textFormat: { fontFamily: "Inter", foregroundColor: { red: 4/255, green: 120/255, blue: 87/255 }, bold: true } // emerald-700
                     }
