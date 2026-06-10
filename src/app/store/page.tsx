@@ -1064,11 +1064,22 @@ export default function StorePage() {
           gender: walkInGender,
           age: String(walkInAge),
           complaint: walkInComplaint,
-          careLevel: "🌱 Pending Case Plan",
-          conditionsCount: 1,
-          durationText: "Pending Doctor Review",
-          finalPrice: 0,
-          receivedAmount: 0,
+          careLevel: careLevelsDetails[walkInTier as keyof typeof careLevelsDetails]?.title || "Doctor-Led Custom Care",
+          conditionsCount: walkInConditionsCount,
+          durationText: `${walkInDurationValue} ${walkInBillingCycle === "weekly" ? (walkInDurationValue === 1 ? "week" : "weeks") : (walkInDurationValue === 1 ? "month" : "months")} (${walkInBillingCycle === "weekly" ? "Weekly" : "Monthly"})${walkInApplyConcession ? ` [Concession: ${walkInConcessionType === "senior" ? "Senior 15%" : walkInConcessionType === "compassionate" ? "Socio-Economic 30%" : "Custom Override"}]` : ""}${
+            walkInApplyMedicineAddon 
+              ? ` [Medicine Add-ons: ${walkInMedicineAddons
+                  .filter(item => {
+                    const amt = parseInt(item.amount);
+                    return !isNaN(amt) && amt > 0;
+                  })
+                  .map(item => `+₹${item.amount} for ${item.type}${item.details ? ` (${item.details})` : ""}`)
+                  .join(", ")
+                }]`
+              : ""
+          }`,
+          finalPrice: getWalkInFinalPrice(),
+          receivedAmount: getWalkInFinalPrice(),
           remainingBalance: 0,
           deliveryMode: walkInType === "Walk-In Appointment" 
             ? "walkin" 
@@ -1076,7 +1087,15 @@ export default function StorePage() {
               ? "shipping" 
               : "pickup",
           address: walkInType === "Shipping / Courier Delivery" ? walkInAddress : walkInType,
-          status: "pending_plan"
+          status: "pending_plan",
+          billingCycle: walkInBillingCycle === "weekly" ? "Weekly" : "Monthly",
+          concessionApplied: walkInApplyConcession 
+            ? (walkInConcessionType === "senior" ? "Senior 15%" : walkInConcessionType === "compassionate" ? "Socio-Economic 30%" : "Override")
+            : "None",
+          durationValue: walkInDurationValue,
+          medicineAddons: walkInApplyMedicineAddon
+            ? walkInMedicineAddons.reduce((sum, item) => sum + (parseInt(item.amount) || 0), 0)
+            : 0
         })
       });
       const data = await response.json();
@@ -1091,7 +1110,7 @@ export default function StorePage() {
         throw new Error(data.message);
       }
     } catch (err: any) {
-      console.error("Walk-in intake failed:", err);
+      console.error("Walk-in registration failed:", err);
       setWalkInError(err.message || "Failed to complete patient registration.");
     } finally {
       setIsWalkInSubmitting(false);
@@ -2376,7 +2395,7 @@ export default function StorePage() {
                     <div>
                       <h3 className="text-2xl font-black text-slate-900">Case Registered Successfully</h3>
                       <p className="text-xs text-slate-500 font-semibold mt-1">
-                        Your intake registration is complete. The consulting physician will review your details, plan your case, and configure your portal workspace.
+                        Workspace folder and case sheet have been provisioned in Google Drive.
                       </p>
                     </div>
 
@@ -2398,21 +2417,33 @@ export default function StorePage() {
                           <span className="text-slate-900 font-extrabold">{walkInAge} / {walkInGender}</span>
                         </div>
                         <div>
-                          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Appointment Type</span>
-                          <span className="text-slate-900 font-extrabold">{walkInType}</span>
+                          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Care Level</span>
+                          <span className="text-slate-900 font-extrabold">{careLevelsDetails[walkInTier as keyof typeof careLevelsDetails]?.title || "Custom Treatment"}</span>
                         </div>
-                        {walkInType === "Shipping / Courier Delivery" && walkInAddress && (
-                          <div className="col-span-2">
-                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Shipping Address</span>
-                            <span className="text-slate-900 font-extrabold">{walkInAddress}</span>
+                        <div>
+                          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Est. Cost</span>
+                          <span className="text-slate-900 font-extrabold">₹{getWalkInFinalPrice().toLocaleString("en-IN")}</span>
+                        </div>
+                        {walkInApplyMedicineAddon && (
+                          <div className="col-span-2 border-t border-slate-100 pt-2 mt-1 space-y-1">
+                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Medicine Add-ons</span>
+                            {walkInMedicineAddons
+                              .filter(item => {
+                                const amt = parseInt(item.amount);
+                                return !isNaN(amt) && amt > 0;
+                              })
+                              .map(item => (
+                                <div key={item.id} className="flex justify-between text-xs font-semibold text-slate-700">
+                                  <span className="text-slate-900">{item.type}{item.details ? ` (${item.details})` : ""}</span>
+                                  <span className="text-[#0f766e] font-extrabold">+₹{Number(item.amount).toLocaleString("en-IN")}</span>
+                                </div>
+                              ))}
                           </div>
                         )}
-                        <div className="col-span-2 border-t border-slate-100 pt-2 mt-1">
-                          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Chief Complaint</span>
-                          <span className="text-slate-900 font-extrabold leading-relaxed block">{walkInComplaint}</span>
-                        </div>
                       </div>
                     </div>
+
+{/* Hidden Workspace links as they are provisioned on demand in Doctor Portal */}
 
                     <div className="pt-6 border-t border-slate-100">
                       <button
@@ -2427,8 +2458,15 @@ export default function StorePage() {
                           setWalkInPhone("");
                           setWalkInEmail("");
                           setWalkInComplaint("");
-                          setWalkInAddress("");
                           setWalkInType("Walk-In Appointment");
+                          setWalkInTier("moderate");
+                          setWalkInBillingCycle("monthly");
+                          setWalkInConditionsCount(1);
+                          setWalkInDurationValue(1);
+                          setWalkInApplyConcession(false);
+                          setWalkInConcessionType("senior");
+                          setWalkInOverridePrice("");
+                          setWalkInAddress("");
                         }}
                         className="text-xs font-bold text-mint-dark hover:text-mint transition-colors uppercase tracking-wider cursor-pointer"
                       >
@@ -2439,8 +2477,8 @@ export default function StorePage() {
                 ) : (
                   <form onSubmit={handleWalkInSubmit} className="space-y-6">
                     {/* Portal redirection card for Doctor / Admin */}
-                    <div className="p-5 bg-gradient-to-r from-teal-500/[0.04] to-emerald-500/[0.04] border border-mint/20 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm">
-                      <div className="space-y-1 max-w-xl">
+                    <div className="p-5 bg-gradient-to-r from-teal-500/[0.04] to-emerald-500/[0.04] border border-mint/20 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm mb-6">
+                      <div className="space-y-1 max-w-xl text-left">
                         <span className="text-[9px] font-extrabold uppercase px-2 py-0.5 rounded bg-mint/10 border border-mint/20 text-mint-dark inline-block mb-1">
                           Doctor / Staff Portal
                         </span>
@@ -2462,18 +2500,11 @@ export default function StorePage() {
 
                     <div>
                       <span className="text-[10px] font-bold text-mint uppercase tracking-widest block mb-1">Let Doctor Plan</span>
-                      <h3 className="text-2xl font-black text-slate-900">Patient Intake & Registration</h3>
+                      <h3 className="text-2xl font-black text-slate-900">Custom & Walk-in Case Setup</h3>
                       <p className="text-xs text-slate-500 font-semibold mt-1">
-                        Register a walk-in patient or initiate custom treatment. This will save coordinates to the database for doctor planning.
+                        Register a walk-in patient or initiate custom treatment. This will automatically provision a patient folder and case planning spreadsheet.
                       </p>
                     </div>
-
-                    {walkInError && (
-                      <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-800 text-xs font-semibold flex items-center gap-2 max-w-lg mx-auto">
-                        <AlertTriangle className="w-4 h-4 text-rose-600 flex-shrink-0" />
-                        <span>{walkInError}</span>
-                      </div>
-                    )}
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {/* Name */}
@@ -2563,8 +2594,8 @@ export default function StorePage() {
 
                     {/* Shipping Address field - appears conditionally */}
                     {walkInType === "Shipping / Courier Delivery" && (
-                      <div className="space-y-1 animate-fadeIn">
-                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Courier Shipping Address *</label>
+                      <div className="space-y-1 animate-fadeIn text-left">
+                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">Courier Shipping Address *</label>
                         <textarea
                           required
                           rows={3}
@@ -2576,18 +2607,528 @@ export default function StorePage() {
                       </div>
                     )}
 
-                    {/* Main Complaint */}
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Symptom Complaint & History *</label>
-                      <textarea
-                        required
-                        rows={4}
-                        value={walkInComplaint}
-                        onChange={(e) => setWalkInComplaint(e.target.value)}
-                        placeholder="Describe symptoms, medical history, duration, and any existing treatments..."
-                        className="w-full p-3 rounded-xl border border-slate-200 bg-white/50 text-sm focus:outline-none focus:border-slate-800 transition-all resize-none font-medium"
-                      />
+                    <div className="grid grid-cols-1 gap-4">
+                      {/* Care Complexity Tier Selector */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">Estimated Care Complexity Level *</label>
+                        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                          {Object.entries(careLevelsDetails).map(([key, details]) => {
+                            const tierTheme = {
+                              mild: {
+                                activeClass: "border-teal-400 bg-teal-500/[0.04] ring-1 ring-teal-300/30 text-teal-800 dark:text-teal-400 shadow-md",
+                                textClass: "text-teal-700 dark:text-teal-400",
+                                glow: "rgba(20,184,166,0.15)"
+                              },
+                              moderate: {
+                                activeClass: "border-purple-400 bg-purple-500/[0.04] ring-1 ring-purple-300/30 text-purple-800 dark:text-purple-400 shadow-md",
+                                textClass: "text-purple-700 dark:text-purple-400",
+                                glow: "rgba(168,85,247,0.15)"
+                              },
+                              focused: {
+                                activeClass: "border-sky-400 bg-sky-500/[0.04] ring-1 ring-sky-300/30 text-sky-800 dark:text-sky-400 shadow-md",
+                                textClass: "text-sky-700 dark:text-sky-400",
+                                glow: "rgba(14,165,233,0.15)"
+                              },
+                              organ: {
+                                activeClass: "border-emerald-400 bg-emerald-500/[0.04] ring-1 ring-emerald-300/30 text-emerald-800 dark:text-emerald-400 shadow-md",
+                                textClass: "text-emerald-700 dark:text-emerald-400",
+                                glow: "rgba(16,185,129,0.15)"
+                              },
+                              comprehensive: {
+                                activeClass: "border-rose-400 bg-rose-500/[0.04] ring-1 ring-rose-300/30 text-rose-800 dark:text-rose-400 shadow-md",
+                                textClass: "text-rose-700 dark:text-rose-400",
+                                glow: "rgba(244,63,94,0.15)"
+                              }
+                            }[key] || {
+                              activeClass: "border-mint bg-mint/[0.04] ring-1 ring-mint/20 text-slate-900 shadow-md",
+                              textClass: "text-slate-900",
+                              glow: "rgba(16,185,129,0.1)"
+                            };
+
+                            const isSelected = walkInTier === key;
+                            return (
+                              <button
+                                key={key}
+                                type="button"
+                                onClick={() => setWalkInTier(key)}
+                                style={{
+                                  boxShadow: isSelected ? `0 8px 24px -4px ${tierTheme.glow}, 0 4px 8px -4px ${tierTheme.glow}` : "none"
+                                }}
+                                className={`p-3 text-left border rounded-2xl transition-all duration-300 flex flex-col justify-between cursor-pointer hover:-translate-y-0.5 active:scale-[0.98] ${
+                                  isSelected
+                                    ? tierTheme.activeClass
+                                    : "border-slate-200/80 hover:border-slate-400 bg-white/40 hover:bg-white/60"
+                                }`}
+                              >
+                                <div className="flex items-center justify-between w-full mb-1">
+                                  <span className="text-lg">{details.icon}</span>
+                                  <span className={`text-[8px] font-extrabold uppercase px-1.5 py-0.5 rounded-full transition-colors ${
+                                    isSelected ? "bg-slate-900/10 text-slate-800" : "bg-slate-900/5 text-slate-500"
+                                  }`}>
+                                    {key}
+                                  </span>
+                                </div>
+                                <div className="space-y-0.5">
+                                  <span className="text-[10px] font-black text-slate-900 leading-tight block">{details.title}</span>
+                                  <span className={`text-[9px] font-black block transition-colors ${
+                                    isSelected ? tierTheme.textClass : "text-mint-dark"
+                                  }`}>
+                                    ₹{(walkInBillingCycle === "weekly" ? details.weeklyPrice : details.monthlyPrice).toLocaleString("en-IN")}
+                                    /{walkInBillingCycle === "weekly" ? "wk" : "mo"}
+                                  </span>
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Pricing grid & Details & Calculations Wrapper */}
+                      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                        {/* Selector Controls Column (8 cols) */}
+                        <div className="lg:col-span-8 space-y-6">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* Billing Frequency Selector */}
+                            <div className="p-4 bg-white/40 backdrop-blur-sm rounded-2xl border border-white/60 space-y-3 shadow-sm hover:border-slate-300 transition-all duration-300">
+                              <div>
+                                <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider">Billing Frequency</h4>
+                                <p className="text-[10px] text-slate-500 font-semibold">Choose weekly or monthly billing</p>
+                              </div>
+                              <div className="flex items-center gap-1.5 bg-white/60 p-1 rounded-full border border-slate-200/50 w-fit">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setWalkInBillingCycle("weekly");
+                                    setWalkInDurationValue(1);
+                                  }}
+                                  className={`px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
+                                    walkInBillingCycle === "weekly"
+                                      ? "bg-[#1A2421] text-white shadow-sm"
+                                      : "text-slate-500 hover:text-[#1A2421]"
+                                  }`}
+                                >
+                                  Weekly
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setWalkInBillingCycle("monthly");
+                                    setWalkInDurationValue(1);
+                                  }}
+                                  className={`px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 cursor-pointer ${
+                                    walkInBillingCycle === "monthly"
+                                      ? "bg-[#1A2421] text-white shadow-sm"
+                                      : "text-slate-500 hover:text-[#1A2421]"
+                                  }`}
+                                >
+                                  Monthly
+                                  <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-emerald-500 text-white font-black tracking-normal">
+                                    SAVE ~17%
+                                  </span>
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Conditions Selector */}
+                            <div className="p-4 bg-white/40 backdrop-blur-sm rounded-2xl border border-white/60 space-y-3 shadow-sm hover:border-slate-300 transition-all duration-300">
+                              <div>
+                                <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider">Conditions Covered</h4>
+                                <p className="text-[10px] text-slate-500 font-semibold">Active medical concerns to treat</p>
+                              </div>
+                              <div className="flex items-center gap-1.5 bg-white/60 p-1 rounded-full border border-slate-200/50 w-fit">
+                                {[1, 2, 3].map((count) => (
+                                  <button
+                                    key={count}
+                                    type="button"
+                                    onClick={() => setWalkInConditionsCount(count)}
+                                    className={`px-3.5 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
+                                      walkInConditionsCount === count
+                                        ? "bg-[#1A2421] text-white shadow-sm"
+                                        : "text-slate-500 hover:text-[#1A2421]"
+                                    }`}
+                                  >
+                                    {count === 3 ? "3+" : count} {count === 1 ? "Cond." : "Conds."}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Commitment Duration Selector */}
+                          <div className="space-y-2">
+                            <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider">Commitment Duration</h4>
+                            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                              {(walkInBillingCycle === "weekly"
+                                ? [
+                                    { value: 1, label: "1 Week", desc: "No Discount" },
+                                    { value: 2, label: "2 Weeks", desc: "5% Discount" },
+                                    { value: 4, label: "4 Weeks", desc: "10% Discount" },
+                                    { value: 8, label: "8 Weeks", desc: "15% Discount" },
+                                    { value: 12, label: "12 Weeks", desc: "20% Discount" }
+                                  ]
+                                : [
+                                    { value: 1, label: "1 Month", desc: "10% Discount" },
+                                    { value: 2, label: "2 Months", desc: "15% Discount" },
+                                    { value: 3, label: "3 Months", desc: "20% Discount" },
+                                    { value: 6, label: "6 Months", desc: "25% Discount" },
+                                    { value: 12, label: "12 Months", desc: "30% Discount" }
+                                  ]
+                              ).map((opt) => (
+                                <button
+                                  key={opt.value}
+                                  type="button"
+                                  onClick={() => setWalkInDurationValue(opt.value)}
+                                  className={`p-2.5 rounded-xl border text-center transition-all duration-300 cursor-pointer ${
+                                    walkInDurationValue === opt.value
+                                      ? "border-mint bg-mint/[0.04] text-mint-dark font-bold ring-1 ring-mint/20"
+                                      : "border-slate-200/60 hover:border-slate-800 text-slate-700 bg-white/40 hover:bg-white"
+                                  }`}
+                                >
+                                  <span className="text-xs block font-bold">{opt.label}</span>
+                                  <span className="text-[8px] text-slate-500 block mt-0.5 font-semibold">{opt.desc}</span>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Concession / Discount Override Panel */}
+                          <div className="p-4 bg-white/40 backdrop-blur-sm rounded-2xl border border-white/60 space-y-4 shadow-sm hover:border-slate-300 transition-all duration-300">
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider flex items-center gap-1">
+                                  <Percent className="w-3.5 h-3.5 text-mint" />
+                                  Concession / Discount
+                                </h4>
+                                <p className="text-[10px] text-slate-500 font-semibold">Apply senior, socio-economic, or custom discount</p>
+                              </div>
+                              <label className="relative inline-flex items-center cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  checked={walkInApplyConcession}
+                                  onChange={(e) => setWalkInApplyConcession(e.target.checked)}
+                                  className="sr-only peer"
+                                />
+                                <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-mint"></div>
+                              </label>
+                            </div>
+
+                            <AnimatePresence initial={false}>
+                              {walkInApplyConcession && (
+                                <motion.div
+                                  initial={{ opacity: 0, height: 0 }}
+                                  animate={{ opacity: 1, height: "auto" }}
+                                  exit={{ opacity: 0, height: 0 }}
+                                  transition={{ duration: 0.25, ease: "easeInOut" }}
+                                  className="space-y-3 pt-2 border-t border-slate-200 overflow-hidden"
+                                >
+                                  <div className="space-y-1">
+                                    <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Concession Type</label>
+                                    <div className="flex gap-2">
+                                      {[
+                                        { type: "senior", label: "Senior (15%)" },
+                                        { type: "compassionate", label: "Socio-Economic (30%)" },
+                                        { type: "override", label: "Custom Override" }
+                                      ].map((opt) => (
+                                        <button
+                                          key={opt.type}
+                                          type="button"
+                                          onClick={() => setWalkInConcessionType(opt.type as any)}
+                                          className={`flex-1 py-2 text-center rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all duration-300 border cursor-pointer ${
+                                            walkInConcessionType === opt.type
+                                              ? "bg-[#1A2421] text-white border-transparent"
+                                              : "bg-white/60 text-slate-500 border-slate-200 hover:border-slate-400"
+                                          }`}
+                                        >
+                                          {opt.label}
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </div>
+
+                                  <AnimatePresence initial={false}>
+                                    {walkInConcessionType === "override" && (
+                                      <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: "auto" }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        transition={{ duration: 0.2, ease: "easeInOut" }}
+                                        className="space-y-1 overflow-hidden"
+                                      >
+                                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Custom Final Price (₹) *</label>
+                                        <input
+                                          type="number"
+                                          min="0"
+                                          value={walkInOverridePrice}
+                                          onChange={(e) => setWalkInOverridePrice(e.target.value)}
+                                          placeholder="Enter custom price"
+                                          className="w-full p-2.5 rounded-xl border border-slate-200 bg-white/50 text-sm focus:outline-none focus:border-slate-800 transition-all"
+                                        />
+                                      </motion.div>
+                                    )}
+                                  </AnimatePresence>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </div>
+
+                          {/* Medicine Add-on Section */}
+                          <div className="p-4 bg-white/40 backdrop-blur-sm rounded-2xl border border-white/60 space-y-4 shadow-sm hover:border-slate-300 transition-all duration-300">
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider flex items-center gap-1">
+                                  <PlusCircle className="w-3.5 h-3.5 text-mint" />
+                                  Add-on for Medicines
+                                </h4>
+                                <p className="text-[10px] text-slate-500 font-semibold">Add extra amount for special remedies, tinctures, or oils</p>
+                              </div>
+                              <label className="relative inline-flex items-center cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  checked={walkInApplyMedicineAddon}
+                                  onChange={(e) => setWalkInApplyMedicineAddon(e.target.checked)}
+                                  className="sr-only peer"
+                                />
+                                <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-mint"></div>
+                              </label>
+                            </div>
+
+                            <AnimatePresence initial={false}>
+                              {walkInApplyMedicineAddon && (
+                                <motion.div
+                                  initial={{ opacity: 0, height: 0 }}
+                                  animate={{ opacity: 1, height: "auto" }}
+                                  exit={{ opacity: 0, height: 0 }}
+                                  transition={{ duration: 0.25, ease: "easeInOut" }}
+                                  className="space-y-3 pt-2 border-t border-slate-200 overflow-hidden"
+                                >
+                                  <div className="space-y-3">
+                                    {walkInMedicineAddons.map((item, idx) => (
+                                      <div key={item.id} className="flex gap-2.5 items-end">
+                                        <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                          <div className="space-y-1">
+                                            <label className="text-[9px] font-black text-slate-700 uppercase tracking-wider block">Medicine Type</label>
+                                            <select
+                                              value={item.type}
+                                              onChange={(e) => {
+                                                const list = [...walkInMedicineAddons];
+                                                list[idx].type = e.target.value;
+                                                setWalkInMedicineAddons(list);
+                                              }}
+                                              className="w-full p-2 py-1.5 rounded-lg border border-slate-200 bg-white/50 text-xs focus:outline-none focus:border-slate-800 transition-all font-semibold"
+                                            >
+                                              <option value="Dilution">Dilution (30C / 200C / 1M)</option>
+                                              <option value="Mother Tincture">Mother Tincture (Q)</option>
+                                              <option value="Biochemic">Biochemic / Tissue Salts</option>
+                                              <option value="Trituration">Trituration / Tablets</option>
+                                              <option value="External Application">External Application (Oils/Creams)</option>
+                                              <option value="Specialty Remedy">Specialty Remedy / Nosode</option>
+                                              <option value="Custom/Other">Other Add-on / Custom</option>
+                                            </select>
+                                          </div>
+                                          <div className="space-y-1">
+                                            <label className="text-[9px] font-black text-slate-700 uppercase tracking-wider block">Specific Remedy / Details</label>
+                                            <input
+                                              type="text"
+                                              value={item.details}
+                                              onChange={(e) => {
+                                                const list = [...walkInMedicineAddons];
+                                                list[idx].details = e.target.value;
+                                                setWalkInMedicineAddons(list);
+                                              }}
+                                              placeholder="e.g. Thuja 200, Arnica Q"
+                                              className="w-full p-2 py-1.5 rounded-lg border border-slate-200 bg-white/50 text-xs focus:outline-none focus:border-slate-800 transition-all font-semibold"
+                                            />
+                                          </div>
+                                          <div className="space-y-1">
+                                            <label className="text-[9px] font-black text-slate-700 uppercase tracking-wider block">Add-on Amount (₹) *</label>
+                                            <input
+                                              type="number"
+                                              min="0"
+                                              value={item.amount}
+                                              onChange={(e) => {
+                                                const list = [...walkInMedicineAddons];
+                                                list[idx].amount = e.target.value;
+                                                setWalkInMedicineAddons(list);
+                                              }}
+                                              placeholder="e.g. 500"
+                                              className="w-full p-2 py-1.5 rounded-lg border border-slate-200 bg-white/50 text-xs focus:outline-none focus:border-slate-800 transition-all font-semibold"
+                                            />
+                                          </div>
+                                        </div>
+                                        {walkInMedicineAddons.length > 1 && (
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              setWalkInMedicineAddons(walkInMedicineAddons.filter((_, i) => i !== idx));
+                                            }}
+                                            className="p-2 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-600 cursor-pointer transition-colors border border-red-200/25 mb-[1px]"
+                                          >
+                                            <Trash2 className="w-3.5 h-3.5" />
+                                          </button>
+                                        )}
+                                      </div>
+                                    ))}
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setWalkInMedicineAddons([...walkInMedicineAddons, { id: Math.random().toString(), type: "Dilution", details: "", amount: "" }]);
+                                      }}
+                                      className="w-full py-1.5 text-center rounded-xl bg-slate-50 border border-slate-200 text-[10px] font-bold text-slate-700 flex items-center justify-center gap-1 cursor-pointer hover:bg-slate-100 hover:border-slate-300 transition-all"
+                                    >
+                                      <Plus className="w-3.5 h-3.5 animate-pulse" />
+                                      <span>Add Another Medicine Type</span>
+                                    </button>
+                                  </div>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </div>
+
+                          {/* Selected Care Level Detail Box */}
+                          {walkInTier && careLevelsDetails[walkInTier as keyof typeof careLevelsDetails] && (() => {
+                            const selectedDetails = careLevelsDetails[walkInTier as keyof typeof careLevelsDetails];
+                            return (
+                              <div className="p-4 border-l-4 border-l-mint border-y border-r border-slate-200/60 bg-white/40 backdrop-blur-sm rounded-2xl space-y-2.5 animate-fadeIn shadow-sm hover:border-slate-300 transition-all duration-300">
+                                <div className="flex items-center justify-between border-b border-mint/10 pb-2">
+                                  <h4 className="text-xs font-black text-[#1A2421] uppercase tracking-wider flex items-center gap-1.5">
+                                    <span>{selectedDetails.icon}</span>
+                                    <span>{selectedDetails.title} Details</span>
+                                  </h4>
+                                </div>
+                                <p className="text-[10px] text-slate-500 font-semibold leading-relaxed">
+                                  {selectedDetails.description}
+                                </p>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 pt-1.5 border-t border-slate-100">
+                                  {selectedDetails.features.map((feat, idx) => (
+                                    <div key={idx} className="flex items-start gap-1.5 text-[9px] font-extrabold uppercase tracking-tight text-slate-600">
+                                      <span className="text-mint">✓</span>
+                                      <span>{feat}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            );
+                          })()}
+                        </div>
+
+                        {/* Calculations summary column (4 cols) */}
+                        <div className="lg:col-span-4">
+                          {walkInTier && careLevelsDetails[walkInTier as keyof typeof careLevelsDetails] && (() => {
+                            const pricing = calculatePricing(
+                              walkInTier as keyof typeof careLevelsDetails,
+                              walkInBillingCycle,
+                              walkInDurationValue,
+                              walkInConditionsCount
+                            );
+                            
+                            const baseConcessionPrice = (() => {
+                              if (!walkInApplyConcession) return pricing.finalPrice;
+                              if (walkInConcessionType === "senior") return Math.round(pricing.finalPrice * 0.85);
+                              if (walkInConcessionType === "compassionate") return Math.round(pricing.finalPrice * 0.70);
+                              if (walkInConcessionType === "override") {
+                                const overrideVal = parseInt(walkInOverridePrice);
+                                return isNaN(overrideVal) ? pricing.finalPrice : Math.max(0, overrideVal);
+                              }
+                              return pricing.finalPrice;
+                            })();
+                            const concessionDiscount = pricing.finalPrice - baseConcessionPrice;
+                            
+                            const addonAmount = (() => {
+                              if (!walkInApplyMedicineAddon) return 0;
+                              return walkInMedicineAddons.reduce((sum, item) => {
+                                const amt = parseInt(item.amount);
+                                return sum + (isNaN(amt) || amt < 0 ? 0 : amt);
+                              }, 0);
+                            })();
+                            
+                            const finalPrice = baseConcessionPrice + addonAmount;
+
+                            return (
+                              <div className="p-6 border border-white/60 bg-white/60 backdrop-blur-md rounded-3xl space-y-4 shadow-md sticky top-6 hover:shadow-lg transition-all duration-300">
+                                <div>
+                                  <span className="text-[8px] font-black text-mint uppercase tracking-wider block">Live Estimate</span>
+                                  <h4 className="text-sm font-black text-slate-900 mt-0.5">Billing Calculation</h4>
+                                </div>
+
+                                <div className="space-y-2 text-xs font-semibold text-slate-700">
+                                  <div className="flex justify-between">
+                                    <span>Base Rate</span>
+                                    <span>₹{pricing.basePrice.toLocaleString("en-IN")} / {walkInBillingCycle === "weekly" ? "wk" : "mo"}</span>
+                                  </div>
+                                  {pricing.surcharge > 0 && (
+                                    <div className="flex justify-between text-amber-600">
+                                      <span>Surcharge</span>
+                                      <span>+₹{pricing.surcharge.toLocaleString("en-IN")} / {walkInBillingCycle === "weekly" ? "wk" : "mo"}</span>
+                                    </div>
+                                  )}
+                                  <div className="flex justify-between border-t border-slate-100 pt-1.5 font-bold text-slate-900">
+                                    <span>Adjusted Rate</span>
+                                    <span>₹{pricing.adjustedBasePrice.toLocaleString("en-IN")} / {walkInBillingCycle === "weekly" ? "wk" : "mo"}</span>
+                                  </div>
+                                  {pricing.discountPercent > 0 && (
+                                    <div className="flex justify-between text-emerald-600">
+                                      <span>Discount ({pricing.discountPercent}%)</span>
+                                      <span>-₹{Math.round(pricing.adjustedBasePrice * walkInDurationValue * (pricing.discountPercent / 100)).toLocaleString("en-IN")}</span>
+                                    </div>
+                                  )}
+                                  {walkInApplyConcession && concessionDiscount > 0 && (
+                                    <div className="flex justify-between text-[#9333ea] font-bold">
+                                      <span>
+                                        Concession ({walkInConcessionType === "senior" ? "Senior 15%" : walkInConcessionType === "compassionate" ? "Socio-Economic 30%" : "Override"})
+                                      </span>
+                                      <span>-₹{concessionDiscount.toLocaleString("en-IN")}</span>
+                                    </div>
+                                  )}
+                                  {walkInApplyConcession && walkInConcessionType === "override" && concessionDiscount < 0 && (
+                                    <div className="flex justify-between text-amber-600 font-bold">
+                                      <span>Override Increase</span>
+                                      <span>+₹{Math.abs(concessionDiscount).toLocaleString("en-IN")}</span>
+                                    </div>
+                                  )}
+                                  {walkInApplyMedicineAddon && walkInMedicineAddons.filter(item => {
+                                    const amt = parseInt(item.amount);
+                                    return !isNaN(amt) && amt > 0;
+                                  }).map((item) => (
+                                    <div key={item.id} className="flex justify-between text-emerald-600 font-bold">
+                                      <span>Add-on: {item.type}{item.details ? ` (${item.details})` : ""}</span>
+                                      <span>+₹{Number(item.amount).toLocaleString("en-IN")}</span>
+                                    </div>
+                                  ))}
+                                  <div className="flex justify-between border-t-2 border-slate-900/10 pt-2 text-sm font-black text-slate-900">
+                                    <span>Total Payable</span>
+                                    <span className="text-mint-dark">₹{finalPrice.toLocaleString("en-IN")}</span>
+                                  </div>
+                                </div>
+
+                                <div className="pt-2 border-t border-slate-100 text-[9px] text-slate-400 font-semibold leading-relaxed">
+                                  Includes initial case mapping, shipping, constitutional remedy supply, and priority clinical assistance.
+                                </div>
+                              </div>
+                            );
+                          })()}
+                        </div>
+                      </div>
+
+                      {/* Main Complaint */}
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Symptom Complaint & History *</label>
+                        <textarea
+                          required
+                          rows={4}
+                          value={walkInComplaint}
+                          onChange={(e) => setWalkInComplaint(e.target.value)}
+                          placeholder="Describe symptoms, medical history, duration, and any existing treatments..."
+                          className="w-full p-3 rounded-xl border border-slate-200 bg-white/50 text-sm focus:outline-none focus:border-slate-800 transition-all resize-none"
+                        />
+                      </div>
                     </div>
+
+                    {walkInError && (
+                      <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-800 text-xs font-bold flex items-center gap-2 max-w-lg mx-auto">
+                        <AlertTriangle className="w-4 h-4 text-rose-600 flex-shrink-0" />
+                        <span>{walkInError}</span>
+                      </div>
+                    )}
 
                     <div className="flex justify-end pt-4 border-t border-slate-100">
                       <button
@@ -2598,7 +3139,7 @@ export default function StorePage() {
                         {isWalkInSubmitting ? (
                           <>
                             <span className="animate-spin inline-block w-3 h-3 border-2 border-white border-t-transparent rounded-full" />
-                            Registering Case...
+                            Provisioning Workspace...
                           </>
                         ) : (
                           <>
