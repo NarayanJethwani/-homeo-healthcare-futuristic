@@ -68,7 +68,60 @@ export async function POST(request: Request) {
       }
     }
 
-    // Save to Firestore with empty folder and sheet fields (to be dynamically provisioned on-demand by the doctor)
+    let isMock = false;
+
+    // Only provision Google Workspace if the status is active (or anything other than pending_plan)
+    // AND if the patient doesn't already have a provisioned folder/sheet.
+    if (status !== "pending_plan" && (!folderUrl || !sheetUrl)) {
+      const hasGoogleCredentials = !!process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
+      
+      if (hasGoogleCredentials) {
+        try {
+          // 1. Create Patient Folder in Google Drive under Parent Folder
+          const folderResult = await createPatientFolder(patientData);
+          folderId = folderResult.folderId;
+          folderUrl = folderResult.folderUrl;
+          
+          // 2. Create Patient Clinical Sheet inside their new Folder
+          const sheetResult = await createPatientClinicalSheet(folderId, patientData);
+          sheetId = sheetResult.sheetId;
+          sheetUrl = sheetResult.sheetUrl;
+          
+          // 3. Append summary row to Master Google Sheet
+          try {
+            await appendPatientToMasterRecord(patientData, folderUrl, sheetUrl);
+          } catch (mErr) {
+            console.warn("Could not sync dynamically provisioned patient to Master Record Sheet:", mErr);
+          }
+        } catch (gpErr) {
+          console.error("Failed to provision Google Drive files:", gpErr);
+          // Don't fail the whole request, fallback to mock if Drive fails
+          isMock = true;
+        }
+      } else {
+        console.warn("GOOGLE_SERVICE_ACCOUNT_KEY not set. Intake operating in mock mode for:", patientData.name);
+        isMock = true;
+      }
+
+      if (isMock) {
+        // Build mock sheet URL for display purposes
+        const mockSheetUrl = `/admin/mock-sheet?name=${encodeURIComponent(patientData.name)}` +
+          `&id=${encodeURIComponent(patientData.id)}` +
+          `&age=${encodeURIComponent(patientData.age)}` +
+          `&gender=${encodeURIComponent(patientData.gender)}` +
+          `&phone=${encodeURIComponent(patientData.phone)}` +
+          `&email=${encodeURIComponent(patientData.email || "")}` +
+          `&complaint=${encodeURIComponent(patientData.complaint)}` +
+          `&careLevel=${encodeURIComponent(patientData.careLevel)}` +
+          `&durationText=${encodeURIComponent(patientData.durationText)}` +
+          `&finalPrice=${encodeURIComponent(String(patientData.finalPrice))}`;
+
+        folderUrl = "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link";
+        sheetUrl = mockSheetUrl;
+      }
+    }
+
+    // Save to Firestore
     const patientDoc = {
       id: patientData.id,
       name: patientData.name,
@@ -111,10 +164,13 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      message: "Patient case registered successfully in Firestore. Clinical Sheet and Folder will be dynamically provisioned on first doctor access.",
+      message: status === "pending_plan" 
+        ? "Patient case registered successfully in Firestore. Clinical Sheet and Folder will be dynamically provisioned on first doctor access."
+        : "Patient case registered and workspace provisioned successfully.",
       patientId: patientDoc.id,
-      folderUrl: "",
-      sheetUrl: ""
+      folderUrl: patientDoc.folderUrl,
+      sheetUrl: patientDoc.sheetUrl,
+      isMock
     });
 
   } catch (error: any) {

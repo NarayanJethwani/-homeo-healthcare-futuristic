@@ -2395,7 +2395,7 @@ export default function StorePage() {
                     <div>
                       <h3 className="text-2xl font-black text-slate-900">Case Registered Successfully</h3>
                       <p className="text-xs text-slate-500 font-semibold mt-1">
-                        Workspace folder and case sheet have been provisioned in Google Drive.
+                        Your intake registration is complete. The consulting physician will review your details, plan your case, and configure your portal workspace.
                       </p>
                     </div>
 
@@ -2502,7 +2502,7 @@ export default function StorePage() {
                       <span className="text-[10px] font-bold text-mint uppercase tracking-widest block mb-1">Let Doctor Plan</span>
                       <h3 className="text-2xl font-black text-slate-900">Custom & Walk-in Case Setup</h3>
                       <p className="text-xs text-slate-500 font-semibold mt-1">
-                        Register a walk-in patient or initiate custom treatment. This will automatically provision a patient folder and case planning spreadsheet.
+                        Register a walk-in patient or initiate custom treatment. This will save coordinates to the database for doctor planning.
                       </p>
                     </div>
 
