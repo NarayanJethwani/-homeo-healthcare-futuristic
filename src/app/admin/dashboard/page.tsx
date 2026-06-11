@@ -1161,7 +1161,10 @@ export default function AdminDashboard() {
             if (kentData.length === 0) kentData = apiData.kent || [];
             if (boerickeData.length === 0) boerickeData = apiData.boericke || [];
             if (apiData.jethwani && apiData.jethwani.length > 0) {
-              jethwaniData = apiData.jethwani;
+              jethwaniData = apiData.jethwani.map((r: any) => ({
+                ...r,
+                section: r.section || r.category || "Section D"
+              }));
             }
           }
         } catch (apiErr) {
@@ -1171,6 +1174,10 @@ export default function AdminDashboard() {
         if (jethwaniData.length === 0) {
           jethwaniData = JETHWANI_REPERTORY_DATA_ORIG || [];
         }
+        jethwaniData = jethwaniData.map((r: any) => ({
+          ...r,
+          section: r.section || r.category || "Section D"
+        }));
 
         setRepertoryData(kentData, boerickeData);
         if (jethwaniData.length > 0) {
@@ -13051,9 +13058,9 @@ ${err.message || err}`);
                 </AnimatePresence>
               </div>
             ) : (
-              <div className="w-full grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
-                {/* Left Column: Modern Clinical Accordion Directory - Span 4 */}
-                <div className="xl:col-span-4 space-y-6">
+              <div className="w-full grid grid-cols-1 xl:grid-cols-12 gap-5 items-start">
+                {/* Left Column: Modern Clinical Workspace & Directory - Span 5 */}
+                <div className="xl:col-span-5 space-y-5">
                   {/* AI Natural Language Intake Card */}
                   <div className="glass-panel rounded-3xl border-white/60 p-6 space-y-4 shadow-sm bg-white/60 backdrop-blur-md">
                     <div className="flex items-center gap-2 border-b border-slate-900/5 pb-3">
@@ -13331,27 +13338,67 @@ ${err.message || err}`);
                             className="bg-slate-900 hover:bg-slate-800 text-white px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer border-none flex items-center gap-1 font-mono"
                           >
                             <Plus className="w-3 h-3" />
-                            <span>Create Rubric</span>
+                            Add Rubric
                           </button>
                         </div>
 
                         {/* Search and Synonym Display */}
-                        <div className="relative">
-                          <Search className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
-                          <input
-                            type="text"
-                            placeholder="Search rubrics, remedies, or synonyms (e.g. 'sweat')..."
-                            value={jethwaniSearchTerm}
-                            onChange={(e) => setJethwaniSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-10 py-2.5 border border-slate-200 rounded-2xl text-xs outline-none focus:border-mint focus:ring-1 focus:ring-mint bg-white shadow-inner font-semibold text-slate-800"
-                          />
-                          {jethwaniSearchTerm && (
+                        <div className="flex gap-2">
+                          <div className="relative flex-1">
+                            <Search className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
+                            <input
+                              type="text"
+                              placeholder="Search rubrics, remedies, or synonyms (e.g. 'sweat')..."
+                              value={jethwaniSearchTerm}
+                              onChange={(e) => setJethwaniSearchTerm(e.target.value)}
+                              className="w-full pl-10 pr-10 py-2.5 border border-slate-200 rounded-2xl text-xs outline-none focus:border-mint focus:ring-1 focus:ring-mint bg-white shadow-inner font-semibold text-slate-800"
+                            />
+                            {jethwaniSearchTerm && (
+                              <button
+                                type="button"
+                                onClick={() => setJethwaniSearchTerm("")}
+                                className="absolute right-3.5 top-3 text-slate-400 hover:text-slate-600 font-bold text-xs cursor-pointer"
+                              >
+                                Clear
+                              </button>
+                            )}
+                          </div>
+                          <button
+                            type="button"
+                            className="bg-slate-900 hover:bg-slate-800 text-white px-4 rounded-2xl text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1 font-mono shrink-0 border-none"
+                            title="Execute search"
+                          >
+                            <Search className="w-3.5 h-3.5" />
+                            <span>Search</span>
+                          </button>
+                        </div>
+
+                        {/* Dynamic Search & Group Actions */}
+                        <div className="flex items-center justify-between gap-2 bg-emerald-50/50 border border-emerald-100/30 p-3 rounded-2xl">
+                          <span className="text-[10px] font-bold text-emerald-800 flex items-center gap-1 font-mono">
+                            <Sparkles className="w-3.5 h-3.5 text-mint animate-pulse" />
+                            {filtered.length} symptoms found
+                          </span>
+                          {filtered.length > 0 && (
                             <button
                               type="button"
-                              onClick={() => setJethwaniSearchTerm("")}
-                              className="absolute right-3.5 top-3 text-slate-400 hover:text-slate-600 font-bold text-xs cursor-pointer"
+                              onClick={() => {
+                                setSelectedJethwaniRubrics(prev => {
+                                  const updated = [...prev];
+                                  filtered.forEach(rubric => {
+                                    if (!updated.some(s => s.rubricId === rubric.id)) {
+                                      updated.push({ rubricId: rubric.id, severity: 5, frequency: 'frequent', impact: 'moderate' });
+                                    }
+                                  });
+                                  return updated;
+                                });
+                                handleAddToRecentlyUsed(filtered[0]?.id);
+                              }}
+                              className="px-3 py-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-95 text-white rounded-xl text-[9px] font-black uppercase tracking-wider transition-all shadow cursor-pointer border-none flex items-center gap-1"
+                              title="Add all currently filtered/searched symptoms to the workbench as a group"
                             >
-                              Clear
+                              <Plus className="w-3 h-3" />
+                              <span>Add Group ({filtered.length})</span>
                             </button>
                           )}
                         </div>
@@ -13435,7 +13482,7 @@ ${err.message || err}`);
                         </div>
 
                         {/* Content Scroll Container */}
-                        <div className="space-y-2.5 max-h-[500px] overflow-y-auto pr-1" data-lenis-prevent>
+                        <div className="space-y-2.5 max-h-[62vh] overflow-y-auto pr-1" data-lenis-prevent>
                           {jethwaniDirTab === "tree" && (
                             Object.entries(JETHWANI_SECTIONS).map(([secKey, secMeta]) => {
                               const sectionRubrics = filtered.filter(r => r.section === secKey);
@@ -13526,12 +13573,9 @@ ${err.message || err}`);
                       </div>
                     );
                   })()}
-                </div>
-
-                {/* Middle Column: Active Workbench & Indices - Span 4 */}
-                <div className="xl:col-span-4 space-y-6">
+                  {/* Clinical Workbench is merged directly into Left Column */}
                   {/* Active symptoms listing */}
-                  <div className="glass-panel rounded-3xl border-white/60 p-6 shadow-sm bg-white/60 backdrop-blur-md min-h-[380px] flex flex-col">
+                  <div className="glass-panel rounded-3xl border-white/60 p-6 shadow-sm bg-white/60 backdrop-blur-md min-h-[440px] flex flex-col">
                     <div className="flex items-center justify-between border-b border-slate-900/5 pb-3 mb-3">
                       <h3 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider flex items-center gap-2">
                         <Sliders className="w-4 h-4 text-mint" />
@@ -13579,7 +13623,7 @@ ${err.message || err}`);
                       </select>
                     </div>
 
-                    <div className={`grid gap-3 flex-grow overflow-y-auto pr-1 ${selectedJethwaniRubrics.length > 0 ? 'grid-cols-1 md:grid-cols-2 max-h-[200px]' : 'grid-cols-1 h-full'}`} data-lenis-prevent>
+                    <div className={`grid gap-3 flex-grow overflow-y-auto pr-1 ${selectedJethwaniRubrics.length > 0 ? 'grid-cols-1 md:grid-cols-2 max-h-[38vh]' : 'grid-cols-1 h-full'}`} data-lenis-prevent>
                       {selectedJethwaniRubrics.length === 0 ? (
                         <div className="col-span-full h-full py-12 flex flex-col items-center justify-center text-center border border-dashed border-slate-200 rounded-2xl bg-slate-50/20">
                           <Sliders className="w-6 h-6 text-slate-300 mb-2" />
@@ -13631,7 +13675,10 @@ ${err.message || err}`);
                       )}
                     </div>
                   </div>
+                </div>
 
+                {/* Right Column: Prescribing Analytics & Outcomes - Span 7 */}
+                <div className="xl:col-span-7 space-y-5">
                   {/* Vital Force Status & Clinical Indices */}
                   <div className="glass-panel rounded-3xl border-white/60 p-6 space-y-4 shadow-sm bg-white/60 backdrop-blur-md">
                     <div className="flex items-center justify-between border-b border-slate-900/5 pb-3">
@@ -13672,7 +13719,7 @@ ${err.message || err}`);
                           </div>
 
                           {/* Remaining 8 Indices */}
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[350px] overflow-y-auto pr-1" data-lenis-prevent>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[48vh] overflow-y-auto pr-1" data-lenis-prevent>
                             {[
                               { key: "stress_load", label: "Stress Load", color: "bg-red-500" },
                               { key: "anxiety_severity", label: "Anxiety Severity", color: "bg-orange-500" },
@@ -13735,7 +13782,7 @@ ${err.message || err}`);
                         );
                       }
                       return (
-                        <div className="space-y-4 max-h-[350px] overflow-y-auto pr-1" data-lenis-prevent>
+                        <div className="space-y-4 max-h-[48vh] overflow-y-auto pr-1" data-lenis-prevent>
                           {hypotheses.map((h, i) => (
                             <div key={i} className="bg-white border border-slate-200/50 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all duration-300 space-y-3">
                               {/* Title & Likelihood */}
@@ -14091,10 +14138,6 @@ ${err.message || err}`);
                       </div>
                     )}
                   </div>
-                </div>
-
-                {/* Right Column: Remedy Confidence Engine & Outcomes - Span 4 */}
-                <div className="xl:col-span-4 space-y-6">
                   {/* Remedy Confidence Engine */}
                   <div className="glass-panel rounded-3xl border-white/60 p-6 space-y-4 shadow-sm bg-white/60 backdrop-blur-md">
                     <div className="flex items-center justify-between border-b border-slate-900/5 pb-3">
@@ -14124,7 +14167,7 @@ ${err.message || err}`);
                         );
                       }
                       return (
-                        <div className="space-y-3.5 max-h-[350px] overflow-y-auto pr-1" data-lenis-prevent>
+                        <div className="space-y-3.5 max-h-[48vh] overflow-y-auto pr-1" data-lenis-prevent>
                           {scores.slice(0, 5).map((item, idx) => {
                             const metadata = REMEDIES_METADATA[item.remedy] || { fullName: item.remedy, source: "Unknown" };
                             const confirmations = JETHWANI_REMEDY_CONFIRMATIONS[item.remedy];
@@ -14297,7 +14340,7 @@ ${err.message || err}`);
                     </form>
 
                     {/* Outcome history log timeline */}
-                    <div className="space-y-2 max-h-[180px] overflow-y-auto pr-1" data-lenis-prevent>
+                    <div className="space-y-2 max-h-[280px] overflow-y-auto pr-1" data-lenis-prevent>
                       {prescribedOutcomes.map(out => (
                         <div key={out.id} className="bg-white border border-slate-200 rounded-2xl p-3 text-[10px] shadow-sm relative overflow-hidden font-sans text-left">
                           <div className="flex justify-between items-start">

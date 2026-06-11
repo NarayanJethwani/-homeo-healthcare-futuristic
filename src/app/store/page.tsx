@@ -39,10 +39,62 @@ interface Package {
 
 const packages: Package[] = [
   {
+    id: "wellness-care",
+    title: "Acute & Wellness Care",
+    priceWeekly: "₹1,200",
+    priceMonthly: "₹4,200",
+    category: "consultation",
+    desc: "Ideal for general immunity, hair fall, seasonal acute complaints, or general wellness guidance.",
+    features: [
+      "General constitutional wellness analysis",
+      "Corrective micro-dosing remedy supply",
+      "Standard wellness dietary guide sheet",
+      "WhatsApp clinical team updates (bi-weekly)"
+    ],
+    duration: "Flexible Billing",
+    glowColor: "rgba(20,184,166,0.15)",
+    colorTheme: {
+      text: "text-teal-700 dark:text-teal-400",
+      border: "border-teal-200/80 hover:border-teal-400/80 dark:border-teal-950 dark:hover:border-teal-800",
+      bg: "bg-teal-500/[0.04] dark:bg-teal-950/20",
+      badgeBg: "bg-teal-105 dark:bg-teal-950/40 border border-teal-200/50",
+      badgeText: "text-teal-700 dark:text-teal-300",
+      glow: "rgba(20,184,166,0.15)"
+    },
+    productIdWeekly: "wellness_care_weekly",
+    productIdMonthly: "wellness_care_monthly"
+  },
+  {
+    id: "standard-chronic-care",
+    title: "Standard Chronic Care",
+    priceWeekly: "₹2,400",
+    priceMonthly: "₹9,000",
+    category: "consultation",
+    desc: "Designed for a single chronic condition (e.g. eczema, IBS, thyroid) requiring active tracking and bi-weekly checks.",
+    features: [
+      "Single chronic condition profile mapping",
+      "Targeted constitutional remedy preparation",
+      "Anti-inflammatory diet & lifestyle sheets",
+      "Standard clinical response monitoring checkups"
+    ],
+    duration: "Flexible Billing",
+    glowColor: "rgba(168,85,247,0.15)",
+    colorTheme: {
+      text: "text-purple-750 dark:text-purple-400",
+      border: "border-purple-200/80 hover:border-purple-400/80 dark:border-purple-950 dark:hover:border-purple-800",
+      bg: "bg-purple-500/[0.04] dark:bg-purple-950/20",
+      badgeBg: "bg-purple-100 dark:bg-purple-950/40 border border-purple-200/50",
+      badgeText: "text-purple-700 dark:text-purple-300",
+      glow: "rgba(168,85,247,0.15)"
+    },
+    productIdWeekly: "standard_care_weekly",
+    productIdMonthly: "standard_care_monthly"
+  },
+  {
     id: "focused-care",
     title: "Deep Systemic Care",
-    priceWeekly: "₹3,500",
-    priceMonthly: "₹12,500",
+    priceWeekly: "₹4,200",
+    priceMonthly: "₹15,000",
     category: "consultation",
     desc: "Deep homeopathic treatment for complex chronic or systemic health conditions (e.g. asthma, migraine, severe eczema).",
     features: [
@@ -52,23 +104,50 @@ const packages: Package[] = [
       "Standard clinical response monitoring"
     ],
     duration: "Flexible Billing",
-    glowColor: "rgba(147,51,234,0.15)",
+    glowColor: "rgba(14,165,233,0.15)",
     colorTheme: {
-      text: "text-purple-700 dark:text-purple-400",
-      border: "border-purple-200/80 hover:border-purple-400/80 dark:border-purple-950 dark:hover:border-purple-800",
-      bg: "bg-purple-500/[0.04] dark:bg-purple-950/20",
-      badgeBg: "bg-purple-100 dark:bg-purple-950/40 border border-purple-200/50",
-      badgeText: "text-purple-700 dark:text-purple-300",
-      glow: "rgba(147,51,234,0.15)"
+      text: "text-sky-700 dark:text-sky-400",
+      border: "border-sky-200/80 hover:border-sky-400/80 dark:border-sky-950 dark:hover:border-sky-800",
+      bg: "bg-sky-500/[0.04] dark:bg-sky-950/20",
+      badgeBg: "bg-sky-100 dark:bg-sky-950/40 border border-sky-200/50",
+      badgeText: "text-sky-700 dark:text-sky-300",
+      glow: "rgba(14,165,233,0.15)"
     },
     productIdWeekly: "focused_care_weekly",
     productIdMonthly: "focused_care_monthly"
   },
   {
+    id: "critical-care",
+    title: "Acute Critical Care",
+    priceWeekly: "₹4,800",
+    priceMonthly: "₹16,800",
+    category: "consultation",
+    desc: "For urgent, high-intensity acute cases requiring daily tracking, frequent remedy adjustments, and intensive physician study.",
+    features: [
+      "Daily doctor clinical review and check-ins",
+      "Intensive daily remedy titration and support",
+      "Emergency/priority WhatsApp communication channel",
+      "Detailed case study and Organon-guided repertorization"
+    ],
+    duration: "Flexible Billing",
+    badge: "🚨 Daily Check-ins",
+    glowColor: "rgba(239,68,68,0.15)",
+    colorTheme: {
+      text: "text-rose-700 dark:text-rose-400",
+      border: "border-rose-200/80 hover:border-rose-400/80 dark:border-rose-950 dark:hover:border-rose-800",
+      bg: "bg-rose-500/[0.04] dark:bg-rose-950/20",
+      badgeBg: "bg-rose-100 dark:bg-rose-950/40 border border-rose-200/50",
+      badgeText: "text-rose-700 dark:text-rose-300",
+      glow: "rgba(239,68,68,0.15)"
+    },
+    productIdWeekly: "critical_care_weekly",
+    productIdMonthly: "critical_care_monthly"
+  },
+  {
     id: "recommended-system-care",
     title: "Advanced Pathological Care",
-    priceWeekly: "₹5,000",
-    priceMonthly: "₹18,500",
+    priceWeekly: "₹6,000",
+    priceMonthly: "₹22,000",
     category: "consultation",
     desc: "Targeted recovery protocols for deep-seated pathology, including organ system rebalancing and biomarker reviews.",
     features: [
@@ -79,14 +158,14 @@ const packages: Package[] = [
     ],
     duration: "Flexible Billing",
     badge: "⭐ Recommended",
-    glowColor: "rgba(59,130,246,0.15)",
+    glowColor: "rgba(16,185,129,0.15)",
     colorTheme: {
-      text: "text-indigo-700 dark:text-indigo-400",
-      border: "border-indigo-300/80 hover:border-indigo-500/80 dark:border-indigo-900 dark:hover:border-indigo-700 shadow-sm shadow-indigo-500/5",
-      bg: "bg-indigo-500/[0.04] dark:bg-indigo-950/20",
-      badgeBg: "bg-indigo-600 dark:bg-indigo-500 border border-indigo-700",
+      text: "text-emerald-700 dark:text-emerald-400",
+      border: "border-emerald-250 hover:border-emerald-400/80 dark:border-emerald-950 dark:hover:border-emerald-800 shadow-sm shadow-emerald-500/5",
+      bg: "bg-emerald-500/[0.04] dark:bg-emerald-950/20",
+      badgeBg: "bg-emerald-600 dark:bg-emerald-500 border border-emerald-700",
       badgeText: "text-white",
-      glow: "rgba(59,130,246,0.2)"
+      glow: "rgba(16,185,129,0.2)"
     },
     productIdWeekly: "system_care_weekly",
     productIdMonthly: "system_care_monthly"
@@ -94,8 +173,8 @@ const packages: Package[] = [
   {
     id: "comprehensive-care",
     title: "Multisystem Integrative Care",
-    priceWeekly: "₹7,000",
-    priceMonthly: "₹25,000",
+    priceWeekly: "₹8,400",
+    priceMonthly: "₹30,000",
     category: "consultation",
     desc: "High-intensity multi-organ care program under direct physician supervision for advanced chronic diseases.",
     features: [
@@ -105,14 +184,14 @@ const packages: Package[] = [
       "Ongoing supervision by clinical team"
     ],
     duration: "Flexible Billing",
-    glowColor: "rgba(16,185,129,0.15)",
+    glowColor: "rgba(99,102,241,0.15)",
     colorTheme: {
-      text: "text-emerald-700 dark:text-emerald-400",
-      border: "border-emerald-200/80 hover:border-emerald-400/80 dark:border-emerald-950 dark:hover:border-emerald-800",
-      bg: "bg-emerald-500/[0.04] dark:bg-emerald-950/20",
-      badgeBg: "bg-emerald-100 dark:bg-emerald-950/40 border border-emerald-200/50",
-      badgeText: "text-emerald-700 dark:text-emerald-300",
-      glow: "rgba(16,185,129,0.15)"
+      text: "text-indigo-700 dark:text-indigo-400",
+      border: "border-indigo-200/80 hover:border-indigo-400/80 dark:border-indigo-950 dark:hover:border-indigo-800",
+      bg: "bg-indigo-500/[0.04] dark:bg-indigo-950/20",
+      badgeBg: "bg-indigo-100 dark:bg-indigo-950/40 border border-indigo-200/50",
+      badgeText: "text-indigo-700 dark:text-indigo-300",
+      glow: "rgba(99,102,241,0.15)"
     },
     productIdWeekly: "comprehensive_care_weekly",
     productIdMonthly: "comprehensive_care_monthly"
@@ -2800,19 +2879,19 @@ export default function StorePage() {
                                 <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider">Conditions Covered</h4>
                                 <p className="text-[10px] text-slate-500 font-semibold">Active medical concerns to treat</p>
                               </div>
-                              <div className="flex items-center gap-1.5 bg-white/60 p-1 rounded-full border border-slate-200/50 w-fit">
+                              <div className="flex items-center gap-1 bg-white/60 p-1 rounded-full border border-slate-200/50 w-full justify-between">
                                 {[1, 2, 3, 4, 5].map((count) => (
                                   <button
                                     key={count}
                                     type="button"
                                     onClick={() => setWalkInConditionsCount(count)}
-                                    className={`px-3 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
+                                    className={`w-9 h-9 rounded-full text-[10px] font-extrabold transition-all duration-300 cursor-pointer flex items-center justify-center ${
                                       walkInConditionsCount === count
                                         ? "bg-[#1A2421] text-white shadow-sm"
                                         : "text-slate-500 hover:text-[#1A2421]"
                                     }`}
                                   >
-                                    {count === 5 ? "5+" : count} {count === 1 ? "Cond." : "Conds."}
+                                    {count === 5 ? "5+" : count}
                                   </button>
                                 ))}
                               </div>
