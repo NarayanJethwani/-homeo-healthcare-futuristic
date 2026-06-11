@@ -20,12 +20,16 @@ export async function GET(request: Request) {
     ];
 
     if (process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID && process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID !== "mock-project-id") {
-      const patientSnap = await adminDb.collection("patients").doc(patientId).get();
-      if (patientSnap.exists) {
-        const patientData = patientSnap.data();
-        if (patientData?.attachments) {
-          attachments = patientData.attachments;
+      try {
+        const patientSnap = await adminDb.collection("patients").doc(patientId).get();
+        if (patientSnap.exists) {
+          const patientData = patientSnap.data();
+          if (patientData?.attachments) {
+            attachments = patientData.attachments;
+          }
         }
+      } catch (dbErr: any) {
+        console.error("Firestore patient attachments fetch failed:", dbErr);
       }
     }
 
@@ -41,7 +45,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const { patientId, attachments } = await request.json();
+    const { patientId, attachments, sheetId: clientSheetId } = await request.json();
     if (!patientId || !Array.isArray(attachments)) {
       return NextResponse.json(
         { success: false, message: "Missing patientId or invalid attachments parameter." },
@@ -49,14 +53,18 @@ export async function POST(request: Request) {
       );
     }
 
-    let sheetId = "mock-sheet-id";
+    let sheetId = clientSheetId || "mock-sheet-id";
 
-    // 1. Fetch patient document to get sheetId
-    if (process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID && process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID !== "mock-project-id") {
-      const patientSnap = await adminDb.collection("patients").doc(patientId).get();
-      if (patientSnap.exists) {
-        const patientData = patientSnap.data();
-        sheetId = patientData?.sheetId || "mock-sheet-id";
+    // 1. Fetch patient document to get sheetId only if not provided by client
+    if ((!sheetId || sheetId === "mock-sheet-id") && process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID && process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID !== "mock-project-id") {
+      try {
+        const patientSnap = await adminDb.collection("patients").doc(patientId).get();
+        if (patientSnap.exists) {
+          const patientData = patientSnap.data();
+          sheetId = patientData?.sheetId || "mock-sheet-id";
+        }
+      } catch (dbErr: any) {
+        console.error("Firestore patient fetch failed in export-attachments:", dbErr);
       }
     }
 
@@ -71,10 +79,14 @@ export async function POST(request: Request) {
 
     // 3. Update Firestore with the attachments array
     if (process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID && process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID !== "mock-project-id") {
-      await adminDb.collection("patients").doc(patientId).update({
-        attachments: attachments,
-        attachmentsUpdated: new Date().toISOString()
-      });
+      try {
+        await adminDb.collection("patients").doc(patientId).update({
+          attachments: attachments,
+          attachmentsUpdated: new Date().toISOString()
+        });
+      } catch (dbUpdateErr: any) {
+        console.error("Firestore attachments update failed in export-attachments:", dbUpdateErr);
+      }
     } else {
       console.log("Firebase not configured or operating in mock-project-id. Skipping Firestore update.");
     }

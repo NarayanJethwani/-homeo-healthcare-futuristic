@@ -4635,10 +4635,23 @@ ${err.message || err}`);
     setSaveStatus("exporting");
     
     try {
+      const activePatient = patients.find((p) => p.id === selectedPatientId);
+      let sheetId = activePatient ? (activePatient as any).sheetId : null;
+      if (!sheetId && activePatient?.sheetUrl) {
+        const match = activePatient.sheetUrl.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+        if (match) {
+          sheetId = match[1];
+        }
+      }
+
       const response = await fetch("/api/export-analysis", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ patientId: selectedPatientId, aiReport })
+        body: JSON.stringify({
+          patientId: selectedPatientId,
+          aiReport,
+          sheetId: sheetId || ""
+        })
       });
       const data = await response.json();
       if (data.success) {
@@ -4706,11 +4719,21 @@ ${err.message || err}`);
 
     if (hasRealSheet && sheetOpeningMode === "real") {
       setIsSyncingRepertory(true);
+
+      let sheetId = (activePatient as any).sheetId;
+      if (!sheetId && activePatient.sheetUrl) {
+        const match = activePatient.sheetUrl.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+        if (match) {
+          sheetId = match[1];
+        }
+      }
+
       fetch("/api/export-repertory", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           patientId: activePatient.id,
+          sheetId: sheetId || "",
           rubrics: rubricsPayload,
           remedies: remedies
         })

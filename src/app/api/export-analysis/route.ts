@@ -4,7 +4,7 @@ import { appendAiReportToClinicalSheet } from "@/lib/googleDrive";
 
 export async function POST(request: Request) {
   try {
-    const { patientId, aiReport } = await request.json();
+    const { patientId, aiReport, sheetId: clientSheetId } = await request.json();
     if (!patientId || !aiReport) {
       return NextResponse.json(
         { success: false, message: "Missing patientId or aiReport parameter." },
@@ -12,14 +12,18 @@ export async function POST(request: Request) {
       );
     }
 
-    let sheetId = "mock-sheet-id";
+    let sheetId = clientSheetId || "mock-sheet-id";
 
     // 1. Fetch patient document to get sheetId using client-side SDK configuration
-    if (process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID && process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID !== "mock-project-id") {
-      const patientSnap = await adminDb.collection("patients").doc(patientId).get();
-      if (patientSnap.exists) {
-        const patientData = patientSnap.data();
-        sheetId = patientData?.sheetId || "mock-sheet-id";
+    if ((!sheetId || sheetId === "mock-sheet-id") && process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID && process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID !== "mock-project-id") {
+      try {
+        const patientSnap = await adminDb.collection("patients").doc(patientId).get();
+        if (patientSnap.exists) {
+          const patientData = patientSnap.data();
+          sheetId = patientData?.sheetId || "mock-sheet-id";
+        }
+      } catch (dbErr: any) {
+        console.error("Firestore patient fetch failed in export-analysis:", dbErr);
       }
     }
 
@@ -316,10 +320,14 @@ export async function POST(request: Request) {
 
     // 4. Update Firestore with the raw JSON string (so the dashboard metrics remain dynamic on reload)
     if (process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID && process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID !== "mock-project-id") {
-      await adminDb.collection("patients").doc(patientId).update({
-        aiReport: aiReport,
-        aiReportUpdated: new Date().toISOString()
-      });
+      try {
+        await adminDb.collection("patients").doc(patientId).update({
+          aiReport: aiReport,
+          aiReportUpdated: new Date().toISOString()
+        });
+      } catch (dbUpdateErr: any) {
+        console.error("Firestore patient report update failed in export-analysis:", dbUpdateErr);
+      }
     } else {
       console.log("Firebase not configured or operating in mock-project-id. Skipping Firestore update.");
     }
