@@ -9,7 +9,8 @@ import {
   Settings, LogOut, ShieldAlert, Award, FileText, ChevronRight, UserPlus, Upload,
   BookOpen, Book, ChevronLeft, Maximize2, Minimize2, Receipt, Printer,
   Gauge, AlertTriangle, Check, X, Compass, Layers, History, Zap, TrendingUp, Workflow, Calendar,
-  Network, Database, Cpu, GitBranch, Stethoscope, User, UploadCloud, Play, Mail, Mic, Sun, Moon, IndianRupee
+  Network, Database, Cpu, GitBranch, Stethoscope, User, UploadCloud, Play, Mail, Mic, Sun, Moon, IndianRupee,
+  Star, Copy, Edit, GitMerge, Filter, Info
 } from "lucide-react";
 import { REPERTORY_DATA, REPERTORY_CHAPTERS, REMEDIES_METADATA, Rubric, BOERICKE_CHAPTERS, SEARCH_SYNONYMS, getRepertoryData, JETHWANI_SECTIONS, JETHWANI_REPERTORY_DATA as JETHWANI_REPERTORY_DATA_ORIG, JETHWANI_REMEDY_CONFIRMATIONS, calculateClinicalIndices, type JethwaniRubric, type JethwaniSymptomConfig, type ClinicalIndices, setRepertoryData } from "@/lib/repertoryData";
 import { MATERIA_MEDICA_BOOKS, MateriaMedicaBook } from "@/lib/materiaMedicaData";
@@ -31,7 +32,9 @@ import { parseNaturalLanguageQuery as parseNLQueryAdvanced, searchRemediesAdvanc
 import Portal from "@/components/Portal";
 
 
-const JETHWANI_REPERTORY_DATA: JethwaniRubric[] = new Proxy(JETHWANI_REPERTORY_DATA_ORIG, {
+let GLOBAL_JETHWANI_DATA: JethwaniRubric[] = [...JETHWANI_REPERTORY_DATA_ORIG];
+
+const JETHWANI_REPERTORY_DATA: JethwaniRubric[] = new Proxy(GLOBAL_JETHWANI_DATA, {
   get(target, prop, receiver) {
     if (prop === "find") {
       return (callback: (r: JethwaniRubric) => boolean) => {
@@ -1035,6 +1038,33 @@ export default function AdminDashboard() {
   const [selectedJethwaniRubrics, setSelectedJethwaniRubrics] = useState<JethwaniSymptomConfig[]>([]);
   const [activeSymptomConfig, setActiveSymptomConfig] = useState<JethwaniSymptomConfig | null>(null);
   const [nlpQuery, setNlpQuery] = useState("");
+  
+  // Database-first Jethwani Repertory States
+  const [jethwaniRubrics, setJethwaniRubrics] = useState<JethwaniRubric[]>(JETHWANI_REPERTORY_DATA_ORIG);
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const [recentlyUsed, setRecentlyUsed] = useState<string[]>([]);
+  const [jethwaniDirTab, setJethwaniDirTab] = useState<"tree" | "favs" | "recents" | "custom">("tree");
+  const [expandedRubricDetailsId, setExpandedRubricDetailsId] = useState<string | null>(null);
+  
+  // Custom rubrics builder states
+  const [isRubricBuilderOpen, setIsRubricBuilderOpen] = useState(false);
+  const [editingRubric, setEditingRubric] = useState<Partial<JethwaniRubric> | null>(null);
+  const [rubricNameInput, setRubricNameInput] = useState("");
+  const [rubricSectionInput, setRubricSectionInput] = useState("Section A");
+  const [rubricOrganSystem, setRubricOrganSystem] = useState("Gastrointestinal");
+  const [rubricRemediesInput, setRubricRemediesInput] = useState<Record<string, number>>({});
+  const [rubricDescription, setRubricDescription] = useState("");
+  const [rubricCitationSource, setRubricCitationSource] = useState("");
+  const [rubricCitationDetail, setRubricCitationDetail] = useState("");
+  
+  // Advanced filters state
+  const [jethwaniFilterCategory, setJethwaniFilterCategory] = useState("All");
+  const [jethwaniFilterOrganSystem, setJethwaniFilterOrganSystem] = useState("All");
+  const [jethwaniFilterMiasm, setJethwaniFilterMiasm] = useState("All");
+  const [jethwaniFilterRemedy, setJethwaniFilterRemedy] = useState("All");
+  const [jethwaniSearchTerm, setJethwaniSearchTerm] = useState("");
+
+  const [isSyncingRepertory, setIsSyncingRepertory] = useState(false);
   const [prescribedOutcomes, setPrescribedOutcomes] = useState<Array<{
     id: string;
     patientId: string;
@@ -1095,18 +1125,60 @@ export default function AdminDashboard() {
   }, []);
 
   // Hydrate classic repertory data asynchronously on client mount
+  // Fetch directly from static JSON files in /data/ to avoid Vercel API response size limits
   useEffect(() => {
     const hydrateRepertory = async () => {
       setIsRepertoryLoading(true);
       try {
-        const res = await fetch("/api/repertory");
-        const data = await res.json();
-        if (data.success) {
-          setRepertoryData(data.kent, data.boericke);
-          setIsRepertoryLoaded(true);
-        } else {
-          console.error("Failed to load repertory database: success=false");
+        const [kentRes, boerickeRes, jethwaniRes] = await Promise.allSettled([
+          fetch("/data/kentRepertoryData.json"),
+          fetch("/data/boerickeRepertoryData.json"),
+          fetch("/data/jethwaniRepertoryData.json")
+        ]);
+
+        let kentData: any[] = [];
+        let boerickeData: any[] = [];
+        let jethwaniData: any[] = [];
+
+        if (kentRes.status === "fulfilled" && kentRes.value.ok) {
+          kentData = await kentRes.value.json();
+          console.log(`Loaded Kent repertory: ${kentData.length} rubrics`);
         }
+        if (boerickeRes.status === "fulfilled" && boerickeRes.value.ok) {
+          boerickeData = await boerickeRes.value.json();
+          console.log(`Loaded Boericke repertory: ${boerickeData.length} rubrics`);
+        }
+        if (jethwaniRes.status === "fulfilled" && jethwaniRes.value.ok) {
+          jethwaniData = await jethwaniRes.value.json();
+          console.log(`Loaded Jethwani repertory from static: ${jethwaniData.length} rubrics`);
+        }
+
+        // Try API fallback and load Jethwani dynamic rubrics
+        try {
+          const apiRes = await fetch("/api/repertory");
+          const apiData = await apiRes.json();
+          if (apiData.success) {
+            if (kentData.length === 0) kentData = apiData.kent || [];
+            if (boerickeData.length === 0) boerickeData = apiData.boericke || [];
+            if (apiData.jethwani && apiData.jethwani.length > 0) {
+              jethwaniData = apiData.jethwani;
+            }
+          }
+        } catch (apiErr) {
+          console.warn("API fallback failed:", apiErr);
+        }
+
+        if (jethwaniData.length === 0) {
+          jethwaniData = JETHWANI_REPERTORY_DATA_ORIG || [];
+        }
+
+        setRepertoryData(kentData, boerickeData);
+        if (jethwaniData.length > 0) {
+          GLOBAL_JETHWANI_DATA.length = 0;
+          GLOBAL_JETHWANI_DATA.push(...jethwaniData);
+          setJethwaniRubrics(jethwaniData);
+        }
+        setIsRepertoryLoaded(true);
       } catch (err) {
         console.error("Failed to hydrate repertory data:", err);
       } finally {
@@ -1114,6 +1186,17 @@ export default function AdminDashboard() {
       }
     };
     hydrateRepertory();
+  }, []);
+
+  // Load favorites and recentlyUsed from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedRecents = localStorage.getItem("jethwani_recents");
+      if (storedRecents) setRecentlyUsed(JSON.parse(storedRecents));
+
+      const storedFavs = localStorage.getItem("jethwani_favs");
+      if (storedFavs) setFavorites(JSON.parse(storedFavs));
+    }
   }, []);
 
   // Hydrate Organon 6th Edition full database asynchronously on client mount
@@ -1357,6 +1440,8 @@ export default function AdminDashboard() {
         });
         setRouterConfig(defaultConfig);
       }
+    }, (error) => {
+      console.error("Error listening to AI router config settings:", error);
     });
     return () => unsubscribe();
   }, []);
@@ -2589,20 +2674,28 @@ export default function AdminDashboard() {
       return;
     }
     try {
-      const trimmed = aiReport.trim();
-      if (trimmed.startsWith("{")) {
-        const parsed = JSON.parse(trimmed);
+      let parsed: any = null;
+      if (typeof aiReport === "object") {
+        parsed = aiReport;
+      } else if (typeof aiReport === "string") {
+        const trimmed = aiReport.trim();
+        if (trimmed.startsWith("{")) {
+          parsed = JSON.parse(trimmed);
+        }
+      }
+
+      if (parsed) {
         setAiData(parsed);
-        if (parsed.remedy_confirmation && parsed.remedy_confirmation.length > 0) {
-          setConfirmActiveRemedy(parsed.remedy_confirmation[0].remedy);
-        } else if (parsed.top_remedies && parsed.top_remedies.length > 0) {
-          setConfirmActiveRemedy(parsed.top_remedies[0].name);
+        if (parsed.remedy_confirmation && Array.isArray(parsed.remedy_confirmation) && parsed.remedy_confirmation.length > 0) {
+          setConfirmActiveRemedy(parsed.remedy_confirmation[0]?.remedy || "");
+        } else if (parsed.top_remedies && Array.isArray(parsed.top_remedies) && parsed.top_remedies.length > 0) {
+          setConfirmActiveRemedy(parsed.top_remedies[0]?.name || "");
         }
         
         if (parsed.materia_medica_analysis?.remedy_deep_dive?.remedy) {
           setSelectedMmdRemedy(parsed.materia_medica_analysis.remedy_deep_dive.remedy);
-        } else if (parsed.top_remedies && parsed.top_remedies.length > 0) {
-          setSelectedMmdRemedy(parsed.top_remedies[0].name);
+        } else if (parsed.top_remedies && Array.isArray(parsed.top_remedies) && parsed.top_remedies.length > 0) {
+          setSelectedMmdRemedy(parsed.top_remedies[0]?.name || "");
         }
       } else {
         setAiData(null);
@@ -4552,8 +4645,6 @@ ${err.message || err}`);
     }
   };
 
-  const [isSyncingRepertory, setIsSyncingRepertory] = useState(false);
-
   const handleSendRubricsToSheet = () => {
     const activePatient = selectedPatientId ? patients.find((p) => p.id === selectedPatientId) : null;
     if (!activePatient) {
@@ -4777,6 +4868,176 @@ ${err.message || err}`);
       alert("AI Intake: No matches found. Try entering alternative terms like 'fatigue', 'acid reflux', 'anxiety', or 'sleeplessness'.");
     }
     setNlpQuery("");
+  };
+
+  const handleToggleFavorite = (rubricId: string) => {
+    setFavorites(prev => {
+      const updated = prev.includes(rubricId)
+        ? prev.filter(id => id !== rubricId)
+        : [...prev, rubricId];
+      localStorage.setItem("jethwani_favs", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const handleAddToRecentlyUsed = (rubricId: string) => {
+    setRecentlyUsed(prev => {
+      const filtered = prev.filter(id => id !== rubricId);
+      const updated = [rubricId, ...filtered].slice(0, 10);
+      localStorage.setItem("jethwani_recents", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const handleSaveCustomRubric = async () => {
+    if (!rubricNameInput.trim()) return alert("Rubric name is required.");
+    try {
+      const res = await fetch("/api/repertory/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "save",
+          rubricData: {
+            id: editingRubric?.id,
+            name: rubricNameInput,
+            category: rubricSectionInput,
+            organSystem: rubricOrganSystem,
+            description: rubricDescription,
+            remedies: rubricRemediesInput,
+            researchCitation: {
+              source: rubricCitationSource,
+              detail: rubricCitationDetail
+            }
+          }
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setJethwaniRubrics(prev => {
+          const idx = prev.findIndex(r => r.id === data.rubric.id);
+          const next = [...prev];
+          if (idx > -1) next[idx] = data.rubric;
+          else next.push(data.rubric);
+          
+          GLOBAL_JETHWANI_DATA.length = 0;
+          GLOBAL_JETHWANI_DATA.push(...next);
+          return next;
+        });
+        alert("Rubric saved successfully!");
+        setIsRubricBuilderOpen(false);
+        setEditingRubric(null);
+        setRubricNameInput("");
+        setRubricRemediesInput({});
+        setRubricDescription("");
+        setRubricCitationSource("");
+        setRubricCitationDetail("");
+      } else {
+        alert("Failed to save rubric: " + data.message);
+      }
+    } catch (err) {
+      console.error("Save custom rubric failed:", err);
+    }
+  };
+
+  const handleMergeRubricsAction = async () => {
+    if (selectedJethwaniRubrics.length < 2) {
+      alert("Please select at least 2 rubrics on the clinical workbench to merge.");
+      return;
+    }
+    const targetName = prompt("Enter a name for the merged rubric:");
+    if (!targetName) return;
+    
+    const sourceIds = selectedJethwaniRubrics.map(s => s.rubricId);
+    try {
+      const res = await fetch("/api/repertory/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "merge",
+          mergeData: { targetName, sourceIds }
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setJethwaniRubrics(prev => {
+          const next = [...prev, data.rubric];
+          GLOBAL_JETHWANI_DATA.length = 0;
+          GLOBAL_JETHWANI_DATA.push(...next);
+          return next;
+        });
+        alert("Rubrics merged successfully under: " + targetName);
+        // Add the new merged rubric to active workbench
+        setSelectedJethwaniRubrics(prev => [...prev, {
+          rubricId: data.rubric.id,
+          severity: 5,
+          frequency: "frequent",
+          impact: "moderate"
+        }]);
+      } else {
+        alert("Merge failed: " + data.message);
+      }
+    } catch (err) {
+      console.error("Merge failed:", err);
+    }
+  };
+
+  const handleCloneRubricAction = async (sourceId: string) => {
+    const source = jethwaniRubrics.find(r => r.id === sourceId);
+    if (!source) return;
+    const newName = prompt("Enter a name for the cloned rubric:", `Copy of ${source.name}`);
+    if (!newName) return;
+
+    try {
+      const res = await fetch("/api/repertory/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "clone",
+          cloneData: { sourceId, newName }
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setJethwaniRubrics(prev => {
+          const next = [...prev, data.rubric];
+          GLOBAL_JETHWANI_DATA.length = 0;
+          GLOBAL_JETHWANI_DATA.push(...next);
+          return next;
+        });
+        alert("Rubric cloned successfully as: " + newName);
+      } else {
+        alert("Clone failed: " + data.message);
+      }
+    } catch (err) {
+      console.error("Clone failed:", err);
+    }
+  };
+
+  const handleDeleteRubricAction = async (rubricId: string) => {
+    if (!confirm("Are you sure you want to delete/archive this rubric?")) return;
+    try {
+      const res = await fetch("/api/repertory/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: rubricId })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setJethwaniRubrics(prev => {
+          const next = prev.filter(r => r.id !== rubricId);
+          GLOBAL_JETHWANI_DATA.length = 0;
+          GLOBAL_JETHWANI_DATA.push(...next);
+          return next;
+        });
+        // Remove from active workbench if selected
+        setSelectedJethwaniRubrics(prev => prev.filter(s => s.rubricId !== rubricId));
+        alert("Rubric deleted/archived successfully.");
+      } else {
+        alert("Delete failed: " + data.message);
+      }
+    } catch (err) {
+      console.error("Delete failed:", err);
+    }
   };
 
   const runJethwaniCaseConference = async () => {
@@ -9754,6 +10015,12 @@ ${err.message || err}`);
 
             const liveVectors = aiData?.constitutional_vector || getLiveVectors();
             const liveMiasms = aiData?.miasmatic_analysis || getLiveMiasms();
+            const psoraVal = Number(liveMiasms?.psora) || 0;
+            const sycosisVal = Number(liveMiasms?.sycosis) || 0;
+            const syphilisVal = Number(liveMiasms?.syphilis) || 0;
+            const tubercularVal = Number(liveMiasms?.tubercular) || 0;
+            const dominantMiasm = liveMiasms?.dominant_miasm || "Psora";
+
 
             // displayed remedies filtering and sorting
             const displayedRemedyColumns = [...remedyColumns]
@@ -9864,7 +10131,7 @@ ${err.message || err}`);
                   <div className="w-full grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch pb-12">
                 
                 {/* ZONE 1 (Top Left) - Column Span 5 */}
-                <div className="xl:col-span-5 xl:order-1 flex flex-col gap-6">
+                <div className="order-1 xl:order-1 xl:col-span-5 flex flex-col gap-6">
                   
                   {/* ZONE 1: Rubrics & Case Intake */}
                   <div className="glass-panel rounded-3xl border-white/60 p-6 space-y-5 flex flex-col shadow-sm bg-white/60 backdrop-blur-md">
@@ -10113,8 +10380,259 @@ ${err.message || err}`);
                   </div>
                 </div>
 
+                {/* ZONE 3 (Top Right) - Column Span 7 */}
+                <div className="order-2 xl:order-2 xl:col-span-7 flex flex-col gap-6">
+                  
+                  {/* ZONE 3: Repertorization Engine Matrix */}
+                  <div className="glass-panel rounded-3xl border-white/60 p-6 space-y-4 shadow-sm bg-white/60 backdrop-blur-md">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-900/5 pb-3 gap-3">
+                      <div>
+                        <h3 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider flex items-center gap-2 font-mono">
+                          <Activity className="w-4 h-4 text-mint" />
+                          Zone 3: Constitutional Repertorization Matrix
+                        </h3>
+                        <p className="text-[9px] text-slate-400 font-semibold mt-0.5">High-density Bloomberg Terminal remedy comparison</p>
+                      </div>
+
+                      {selectedRubrics.length > 0 && (
+                        <div className="flex items-center gap-2 self-end sm:self-auto">
+                          {/* Send to Sheet */}
+                          <button
+                            onClick={handleSendRubricsToSheet}
+                            disabled={isSyncingRepertory}
+                            className="px-3 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-white rounded-xl text-[10px] font-bold uppercase transition-all duration-300 cursor-pointer shadow-md flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                            title="Send selected rubrics directly to the patient's Clinical Sheet"
+                          >
+                            <FileSpreadsheet className="w-3.5 h-3.5" />
+                            <span>{isSyncingRepertory ? "Syncing..." : "Send to Sheet"}</span>
+                          </button>
+                          {/* Live Filter */}
+                          <input
+                            type="text"
+                            placeholder="Filter columns..."
+                            value={remedyFilter}
+                            onChange={(e) => setRemedyFilter(e.target.value)}
+                            className="px-3 py-1.5 border border-slate-200 focus:border-mint outline-none rounded-xl text-[10px] bg-white font-semibold w-24 shadow-sm transition-all"
+                          />
+                          {/* Custom Remedy Input */}
+                          <div className="flex items-center gap-1">
+                            <input
+                              type="text"
+                              placeholder="Add remedy (e.g. Thuja)..."
+                              value={customRemedyInput}
+                              onChange={(e) => setCustomRemedyInput(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault();
+                                  if (customRemedyInput.trim()) {
+                                    const rem = customRemedyInput.trim();
+                                    if (!remedyColumns.includes(rem)) {
+                                      setRemedyColumns([...remedyColumns, rem]);
+                                    }
+                                    setCustomRemedyInput("");
+                                  }
+                                }
+                              }}
+                              className="px-3 py-1.5 border border-slate-200 focus:border-mint outline-none rounded-xl text-[10px] bg-white font-semibold w-36 shadow-sm transition-all"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (customRemedyInput.trim()) {
+                                  const rem = customRemedyInput.trim();
+                                  if (!remedyColumns.includes(rem)) {
+                                    setRemedyColumns([...remedyColumns, rem]);
+                                  }
+                                  setCustomRemedyInput("");
+                                }
+                              }}
+                              className="px-2.5 py-1.5 bg-mint hover:bg-mint-dark text-white rounded-xl text-[10px] font-bold uppercase transition-all duration-200 cursor-pointer border-none shadow-sm"
+                            >
+                              Add
+                            </button>
+                          </div>
+                          {/* Auto Top 10 Button */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const remedyList: Record<string, { coverage: number; score: number }> = {};
+                              selectedRubrics.forEach(({ rubric, grade: userWeight, weightMultiplier }) => {
+                                const mult = weightMultiplier || 1;
+                                Object.entries(rubric.remedies).forEach(([remedy, remGrade]) => {
+                                  if (remGrade < 0) return;
+                                  if (!remedyList[remedy]) {
+                                    remedyList[remedy] = { coverage: 0, score: 0 };
+                                  }
+                                  remedyList[remedy].coverage += 1;
+                                  remedyList[remedy].score += remGrade * userWeight * mult;
+                                });
+                              });
+                              const calculatedScores = Object.entries(remedyList).map(([remedy, stats]) => ({
+                                remedy,
+                                coverage: stats.coverage,
+                                score: stats.score
+                              }));
+                              calculatedScores.sort((a, b) => b.score - a.score || b.coverage - a.coverage);
+                              const topRemedies = calculatedScores.slice(0, 10).map(s => s.remedy);
+                              if (topRemedies.length > 0) {
+                                setRemedyColumns(topRemedies);
+                              } else {
+                                alert("No matching remedies found to auto-suggest.");
+                              }
+                            }}
+                            className="px-2.5 py-1.5 border border-mint text-mint hover:bg-mint/5 rounded-xl text-[10px] font-bold uppercase transition-all duration-200 cursor-pointer shadow-sm"
+                            title="Auto-populate compare grid with the top 10 remedies for active rubrics"
+                          >
+                            Auto Top 10
+                          </button>
+                          {/* Group by Kingdom */}
+                          <button
+                            onClick={() => setGroupByKingdom(!groupByKingdom)}
+                            className={`px-3 py-1.5 border rounded-xl text-[10px] font-bold uppercase transition-all duration-300 cursor-pointer shadow-sm ${
+                              groupByKingdom 
+                                ? "bg-[#0F766E] text-white border-[#0F766E]" 
+                                : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+                            }`}
+                          >
+                            {groupByKingdom ? "Kingdom Grouped" : "Group Kingdom"}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    {selectedRubrics.length === 0 ? (
+                      <div className="p-12 text-center border border-dashed border-slate-200 rounded-2xl bg-slate-50/20">
+                        <p className="text-xs font-bold text-slate-500">Repertorization Grid Offline</p>
+                        <p className="text-[10px] text-slate-400 mt-1">Please select symptom rubrics from Zone 1 to activate the grid.</p>
+                      </div>
+                    ) : (
+                      <div className="overflow-x-auto border border-slate-200/60 rounded-2xl bg-white shadow-md">
+                        <table className="w-full border-collapse text-left text-xs">
+                          <thead>
+                            <tr className="bg-slate-50/80 border-b border-slate-200 text-[9px] font-black uppercase text-slate-500 tracking-wider">
+                              <th className="p-4.5 min-w-[200px] align-middle font-mono">Selected Rubric Name</th>
+                              <th className="p-4.5 text-center align-middle w-20 font-mono">Intake Grade</th>
+                              {displayedRemedyColumns.map((rem) => {
+                                const card = getRemedyCardData(rem);
+                                return (
+                                  <th 
+                                    key={rem} 
+                                    className="p-3 text-center border-l border-slate-200/50 hover:bg-slate-50 w-24 group align-top relative animate-fadeIn"
+                                  >
+                                    {/* Delete remedy button */}
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setRemedyColumns(remedyColumns.filter(c => c !== rem));
+                                      }}
+                                      className="absolute top-1 right-1 w-4 h-4 rounded-full bg-slate-200 text-slate-500 hover:bg-rose-500 hover:text-white flex items-center justify-center text-[9px] font-bold cursor-pointer border-none shadow-2xs z-30 transition-all opacity-0 group-hover:opacity-100"
+                                      title={`Remove ${rem} from comparison`}
+                                    >
+                                      ×
+                                    </button>
+                                    {/* Remedy Card column header */}
+                                    <div 
+                                      onClick={() => setSelectedRemedyDetail(rem)}
+                                      className="flex flex-col items-center space-y-1 p-2 bg-slate-50/80 border border-slate-200 rounded-2xl group-hover:border-mint group-hover:shadow-sm transition-all duration-300 relative cursor-pointer"
+                                      title={`Inspect ${card.fullName}`}
+                                    >
+                                      <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-mint shadow-[0_0_6px_#14B8A6] animate-pulse" />
+                                      <div className="text-[11px] font-black text-[#0F766E] font-mono tracking-widest">{card.abbrev}</div>
+                                      <div className="text-[16px] font-black text-slate-800 font-mono tracking-tight leading-none pt-0.5">{card.score}</div>
+                                      <div className="text-[6.5px] text-slate-400 font-bold uppercase font-mono tracking-wide">{card.kingdom}</div>
+                                      <div className="text-[6.5px] text-slate-400 font-bold uppercase font-mono tracking-wide">{card.miasm}</div>
+                                      <div className="text-[8px] font-black text-white bg-mint px-1.5 py-0.5 rounded-lg border border-mint/20 mt-1 shadow-2xs">{card.confidence}%</div>
+                                    </div>
+                                  </th>
+                                );
+                              })}
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100 font-semibold text-slate-700">
+                            {selectedRubrics.map(({ rubric, grade: userGrade, weightMultiplier }) => (
+                              <tr key={rubric.id} className="hover:bg-slate-50/50 transition-colors">
+                                <td className="p-4 text-xs font-bold leading-normal">
+                                  <span className="text-[8px] text-mint-dark block font-extrabold uppercase tracking-widest font-mono mb-1">
+                                    {rubric.chapter} {weightMultiplier ? `(Weight: ${weightMultiplier}x)` : ""}
+                                  </span>
+                                  <span className="text-slate-800">{rubric.name}</span>
+                                </td>
+                                <td className="p-4 text-center">
+                                  <span className={`px-2.5 py-1 rounded-full text-[9px] font-black tracking-wider ${
+                                    userGrade === 3 ? "bg-rose-50 text-rose-600 border border-rose-100 shadow-2xs" :
+                                    userGrade === 2 ? "bg-amber-50 text-amber-600 border border-amber-100 shadow-2xs" :
+                                    "bg-sky-50 text-sky-600 border border-sky-100 shadow-2xs"
+                                  }`}>
+                                    Grade {userGrade}
+                                  </span>
+                                </td>
+                                {displayedRemedyColumns.map((rem) => {
+                                  const remGrade = rubric.remedies[rem];
+                                  return (
+                                    <td 
+                                      key={rem} 
+                                      onClick={() => setSelectedRemedyDetail(rem)}
+                                      className={`p-4 text-center border-l border-slate-100 font-mono font-bold cursor-pointer transition-all duration-300 hover:bg-mint/5 ${
+                                        remGrade === 3 ? "bg-rose-500/[0.03]" :
+                                        remGrade === 2 ? "bg-amber-500/[0.02]" :
+                                        remGrade === 1 ? "bg-sky-500/[0.01]" :
+                                        ""
+                                      }`}
+                                    >
+                                      {remGrade ? (
+                                        <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full font-black text-xs transition-transform duration-200 group-hover:scale-110 shadow-2xs ${
+                                          remGrade === 3 ? "bg-rose-50 text-rose-600 border border-rose-100" :
+                                          remGrade === 2 ? "bg-amber-50 text-amber-600 border border-amber-100" :
+                                          "bg-sky-50 text-sky-600 border border-sky-100"
+                                        }`}>
+                                          {remGrade}
+                                        </span>
+                                      ) : (
+                                        <span className="text-slate-200 font-normal">-</span>
+                                      )}
+                                    </td>
+                                  );
+                                })}
+                              </tr>
+                            ))}
+                            
+                            {/* Totals Row: Coverage */}
+                            <tr className="bg-slate-50/50 border-t border-slate-200 text-[9px] font-bold uppercase text-slate-600">
+                              <td className="p-4 font-mono font-black text-slate-500">Symptom Coverage</td>
+                              <td className="p-4"></td>
+                              {displayedRemedyColumns.map((rem) => {
+                                const scoreObj = remedyScores.find((r) => r.remedy === rem);
+                                return (
+                                  <td key={rem} className="p-4 text-center border-l border-slate-100 font-mono text-[10px] font-black text-slate-700 bg-slate-50/20">
+                                    {scoreObj?.coverage || "0"}
+                                  </td>
+                                );
+                              })}
+                            </tr>
+
+                            {/* Totals Row: Sum of Grades */}
+                            <tr className="bg-white border-t-2 border-slate-200 text-[9px] font-bold uppercase text-slate-800">
+                              <td className="p-4 font-mono font-black text-slate-700">Sum of Grades</td>
+                              <td className="p-4"></td>
+                              {displayedRemedyColumns.map((rem) => {
+                                const scoreObj = remedyScores.find((r) => r.remedy === rem);
+                                return (
+                                  <td key={rem} className="p-4 text-center border-l border-slate-100 font-mono text-[12px] font-black text-white bg-gradient-to-b from-[#0F766E] to-[#115E59] shadow-inner">
+                                    {scoreObj?.score || 0}
+                                  </td>
+                                );
+                              })}
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 {/* ZONE 2: Constitutional Vector Analytics - Column Span 12 */}
-                <div className="xl:col-span-12 xl:order-3">
+                <div className="order-3 xl:order-3 xl:col-span-12">
                   <div className="rounded-3xl border border-slate-800 p-6 space-y-6 flex flex-col shadow-2xl bg-slate-950 text-white relative overflow-hidden">
                     {/* Glowing particle container */}
                     <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
@@ -10229,30 +10747,33 @@ ${err.message || err}`);
                         <div className="w-44 h-44 flex items-center justify-center">
                           {(() => {
                             const totCircumference = 219.9;
+
+
                             const psoraOffset = 0;
-                            const sycosisOffset = -((liveMiasms.psora / 100) * totCircumference);
-                            const syphilisOffset = -(((liveMiasms.psora + liveMiasms.sycosis) / 100) * totCircumference);
-                            const tubercularOffset = -(((liveMiasms.psora + liveMiasms.sycosis + liveMiasms.syphilis) / 100) * totCircumference);
+                            const sycosisOffset = -((psoraVal / 100) * totCircumference);
+                            const syphilisOffset = -(((psoraVal + sycosisVal) / 105) * totCircumference); // wait, let's keep it normalized using psoraVal + sycosisVal
+                            const syphilisOffsetComputed = -(((psoraVal + sycosisVal) / 100) * totCircumference);
+                            const tubercularOffsetComputed = -(((psoraVal + sycosisVal + syphilisVal) / 100) * totCircumference);
 
                             return (
                               <svg width="140" height="140" viewBox="0 0 100 100" className="overflow-visible">
                                 <circle cx="50" cy="50" r="35" fill="transparent" stroke="rgba(255,255,255,0.03)" strokeWidth="12" />
-                                <circle cx="50" cy="50" r="35" fill="transparent" stroke="#14B8A6" strokeWidth="10" strokeDasharray={`${(liveMiasms.psora / 100) * totCircumference} ${totCircumference}`} strokeDashoffset={psoraOffset} transform="rotate(-90 50 50)" className="transition-all duration-500" />
-                                <circle cx="50" cy="50" r="35" fill="transparent" stroke="#0ea5e9" strokeWidth="10" strokeDasharray={`${(liveMiasms.sycosis / 100) * totCircumference} ${totCircumference}`} strokeDashoffset={sycosisOffset} transform="rotate(-90 50 50)" className="transition-all duration-500" />
-                                <circle cx="50" cy="50" r="35" fill="transparent" stroke="#a855f7" strokeWidth="10" strokeDasharray={`${(liveMiasms.syphilis / 100) * totCircumference} ${totCircumference}`} strokeDashoffset={syphilisOffset} transform="rotate(-90 50 50)" className="transition-all duration-500" />
-                                <circle cx="50" cy="50" r="35" fill="transparent" stroke="#f43f5e" strokeWidth="10" strokeDasharray={`${(liveMiasms.tubercular / 100) * totCircumference} ${totCircumference}`} strokeDashoffset={tubercularOffset} transform="rotate(-90 50 50)" className="transition-all duration-500" />
+                                <circle cx="50" cy="50" r="35" fill="transparent" stroke="#14B8A6" strokeWidth="10" strokeDasharray={`${(psoraVal / 100) * totCircumference} ${totCircumference}`} strokeDashoffset={psoraOffset} transform="rotate(-90 50 50)" className="transition-all duration-500" />
+                                <circle cx="50" cy="50" r="35" fill="transparent" stroke="#0ea5e9" strokeWidth="10" strokeDasharray={`${(sycosisVal / 100) * totCircumference} ${totCircumference}`} strokeDashoffset={sycosisOffset} transform="rotate(-90 50 50)" className="transition-all duration-500" />
+                                <circle cx="50" cy="50" r="35" fill="transparent" stroke="#a855f7" strokeWidth="10" strokeDasharray={`${(syphilisVal / 100) * totCircumference} ${totCircumference}`} strokeDashoffset={syphilisOffsetComputed} transform="rotate(-90 50 50)" className="transition-all duration-500" />
+                                <circle cx="50" cy="50" r="35" fill="transparent" stroke="#f43f5e" strokeWidth="10" strokeDasharray={`${(tubercularVal / 100) * totCircumference} ${totCircumference}`} strokeDashoffset={tubercularOffsetComputed} transform="rotate(-90 50 50)" className="transition-all duration-500" />
                                 
                                 <text x="50" y="47" textAnchor="middle" dominantBaseline="middle" className="text-[7px] font-bold fill-slate-400 uppercase tracking-widest">Dominant</text>
-                                <text x="50" y="58" textAnchor="middle" dominantBaseline="middle" className="text-[9px] font-black fill-[#14B8A6] uppercase tracking-wide">{liveMiasms.dominant_miasm}</text>
+                                <text x="50" y="58" textAnchor="middle" dominantBaseline="middle" className="text-[9px] font-black fill-[#14B8A6] uppercase tracking-wide">{dominantMiasm}</text>
                               </svg>
                             );
                           })()}
                         </div>
                         <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[7px] font-extrabold uppercase mt-1 w-full text-center">
-                          <span className="text-mint">Psora: {liveMiasms.psora}%</span>
-                          <span className="text-[#0ea5e9]">Syc: {liveMiasms.sycosis}%</span>
-                          <span className="text-[#a855f7]">Syph: {liveMiasms.syphilis}%</span>
-                          <span className="text-[#f43f5e]">Tub: {liveMiasms.tubercular}%</span>
+                          <span className="text-mint">Psora: {psoraVal}%</span>
+                          <span className="text-[#0ea5e9]">Syc: {sycosisVal}%</span>
+                          <span className="text-[#a855f7]">Syph: {syphilisVal}%</span>
+                          <span className="text-[#f43f5e]">Tub: {tubercularVal}%</span>
                         </div>
                       </div>
                     </div>
@@ -10310,7 +10831,7 @@ ${err.message || err}`);
                         <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-3 font-mono">Remedy Dominance Curve</span>
                         <div className="w-full h-24 flex items-center justify-center">
                           {(() => {
-                            if (!aiData?.remedy_evolution || aiData.remedy_evolution.length === 0) {
+                            if (!aiData?.remedy_evolution || !Array.isArray(aiData.remedy_evolution) || aiData.remedy_evolution.length === 0) {
                               return (
                                 <div className="text-center text-[9px] text-slate-500 font-semibold p-4">
                                   Awaiting clinical follow-ups to map remedy evolution lines.
@@ -10319,7 +10840,7 @@ ${err.message || err}`);
                             }
 
                             const data = aiData.remedy_evolution;
-                            const topRems = Object.keys(data[0]).filter(k => k !== "visit");
+                            const topRems = data[0] ? Object.keys(data[0]).filter(k => k !== "visit") : [];
                             const colors = ["#14B8A6", "#3b82f6", "#a855f7", "#f43f5e"];
                             
                             return (
@@ -10363,7 +10884,7 @@ ${err.message || err}`);
                 </div>
 
                 {/* AI CASE COMMAND CENTER - Column Span 12 */}
-                <div className="xl:col-span-12 xl:order-4">
+                <div className="order-4 xl:order-4 xl:col-span-12">
                   {aiData ? (
                     <div className="rounded-3xl border border-slate-800 p-6 space-y-6 flex flex-col shadow-2xl bg-slate-950 text-white relative overflow-hidden">
                       <AntiGravityParticles />
@@ -10741,7 +11262,7 @@ ${err.message || err}`);
                                   <div key={idx} className="bg-slate-950/60 border border-slate-800 rounded-xl p-2.5 relative flex flex-col justify-between">
                                     <div className="flex items-center justify-between mb-1">
                                       <span className="text-[7.5px] font-bold text-teal-400 font-mono uppercase">Stage 0{idx + 1}</span>
-                                      {idx < (aiData.followup_predictions.improvement_order.length - 1) && (
+                                      {idx < ((aiData.followup_predictions?.improvement_order?.length || 0) - 1) && (
                                         <ChevronRight className="w-3.5 h-3.5 text-slate-700 absolute -right-3 top-1/2 transform -translate-y-1/2 z-10 hidden sm:block" />
                                       )}
                                     </div>
@@ -10870,259 +11391,8 @@ ${err.message || err}`);
                   )}
                 </div>
 
-                {/* ZONE 3 (Top Right) - Column Span 7 */}
-                <div className="xl:col-span-7 xl:order-2 flex flex-col gap-6">
-                  
-                  {/* ZONE 3: Repertorization Engine Matrix */}
-                  <div className="glass-panel rounded-3xl border-white/60 p-6 space-y-4 shadow-sm bg-white/60 backdrop-blur-md">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-900/5 pb-3 gap-3">
-                      <div>
-                        <h3 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider flex items-center gap-2 font-mono">
-                          <Activity className="w-4 h-4 text-mint" />
-                          Zone 3: Constitutional Repertorization Matrix
-                        </h3>
-                        <p className="text-[9px] text-slate-400 font-semibold mt-0.5">High-density Bloomberg Terminal remedy comparison</p>
-                      </div>
-
-                      {selectedRubrics.length > 0 && (
-                        <div className="flex items-center gap-2 self-end sm:self-auto">
-                          {/* Send to Sheet */}
-                          <button
-                            onClick={handleSendRubricsToSheet}
-                            disabled={isSyncingRepertory}
-                            className="px-3 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-white rounded-xl text-[10px] font-bold uppercase transition-all duration-300 cursor-pointer shadow-md flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
-                            title="Send selected rubrics directly to the patient's Clinical Sheet"
-                          >
-                            <FileSpreadsheet className="w-3.5 h-3.5" />
-                            <span>{isSyncingRepertory ? "Syncing..." : "Send to Sheet"}</span>
-                          </button>
-                          {/* Live Filter */}
-                          <input
-                            type="text"
-                            placeholder="Filter columns..."
-                            value={remedyFilter}
-                            onChange={(e) => setRemedyFilter(e.target.value)}
-                            className="px-3 py-1.5 border border-slate-200 focus:border-mint outline-none rounded-xl text-[10px] bg-white font-semibold w-24 shadow-sm transition-all"
-                          />
-                          {/* Custom Remedy Input */}
-                          <div className="flex items-center gap-1">
-                            <input
-                              type="text"
-                              placeholder="Add remedy (e.g. Thuja)..."
-                              value={customRemedyInput}
-                              onChange={(e) => setCustomRemedyInput(e.target.value)}
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                  e.preventDefault();
-                                  if (customRemedyInput.trim()) {
-                                    const rem = customRemedyInput.trim();
-                                    if (!remedyColumns.includes(rem)) {
-                                      setRemedyColumns([...remedyColumns, rem]);
-                                    }
-                                    setCustomRemedyInput("");
-                                  }
-                                }
-                              }}
-                              className="px-3 py-1.5 border border-slate-200 focus:border-mint outline-none rounded-xl text-[10px] bg-white font-semibold w-36 shadow-sm transition-all"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => {
-                                if (customRemedyInput.trim()) {
-                                  const rem = customRemedyInput.trim();
-                                  if (!remedyColumns.includes(rem)) {
-                                    setRemedyColumns([...remedyColumns, rem]);
-                                  }
-                                  setCustomRemedyInput("");
-                                }
-                              }}
-                              className="px-2.5 py-1.5 bg-mint hover:bg-mint-dark text-white rounded-xl text-[10px] font-bold uppercase transition-all duration-200 cursor-pointer border-none shadow-sm"
-                            >
-                              Add
-                            </button>
-                          </div>
-                          {/* Auto Top 10 Button */}
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const remedyList: Record<string, { coverage: number; score: number }> = {};
-                              selectedRubrics.forEach(({ rubric, grade: userWeight, weightMultiplier }) => {
-                                const mult = weightMultiplier || 1;
-                                Object.entries(rubric.remedies).forEach(([remedy, remGrade]) => {
-                                  if (remGrade < 0) return;
-                                  if (!remedyList[remedy]) {
-                                    remedyList[remedy] = { coverage: 0, score: 0 };
-                                  }
-                                  remedyList[remedy].coverage += 1;
-                                  remedyList[remedy].score += remGrade * userWeight * mult;
-                                });
-                              });
-                              const calculatedScores = Object.entries(remedyList).map(([remedy, stats]) => ({
-                                remedy,
-                                coverage: stats.coverage,
-                                score: stats.score
-                              }));
-                              calculatedScores.sort((a, b) => b.score - a.score || b.coverage - a.coverage);
-                              const topRemedies = calculatedScores.slice(0, 10).map(s => s.remedy);
-                              if (topRemedies.length > 0) {
-                                setRemedyColumns(topRemedies);
-                              } else {
-                                alert("No matching remedies found to auto-suggest.");
-                              }
-                            }}
-                            className="px-2.5 py-1.5 border border-mint text-mint hover:bg-mint/5 rounded-xl text-[10px] font-bold uppercase transition-all duration-200 cursor-pointer shadow-sm"
-                            title="Auto-populate compare grid with the top 10 remedies for active rubrics"
-                          >
-                            Auto Top 10
-                          </button>
-                          {/* Group by Kingdom */}
-                          <button
-                            onClick={() => setGroupByKingdom(!groupByKingdom)}
-                            className={`px-3 py-1.5 border rounded-xl text-[10px] font-bold uppercase transition-all duration-300 cursor-pointer shadow-sm ${
-                              groupByKingdom 
-                                ? "bg-[#0F766E] text-white border-[#0F766E]" 
-                                : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
-                            }`}
-                          >
-                            {groupByKingdom ? "Kingdom Grouped" : "Group Kingdom"}
-                          </button>
-                        </div>
-                      )}
-                    </div>
-
-                    {selectedRubrics.length === 0 ? (
-                      <div className="p-12 text-center border border-dashed border-slate-200 rounded-2xl bg-slate-50/20">
-                        <p className="text-xs font-bold text-slate-500">Repertorization Grid Offline</p>
-                        <p className="text-[10px] text-slate-400 mt-1">Please select symptom rubrics from Zone 1 to activate the grid.</p>
-                      </div>
-                    ) : (
-                      <div className="overflow-x-auto border border-slate-200/60 rounded-2xl bg-white shadow-md">
-                        <table className="w-full border-collapse text-left text-xs">
-                          <thead>
-                            <tr className="bg-slate-50/80 border-b border-slate-200 text-[9px] font-black uppercase text-slate-500 tracking-wider">
-                              <th className="p-4.5 min-w-[200px] align-middle font-mono">Selected Rubric Name</th>
-                              <th className="p-4.5 text-center align-middle w-20 font-mono">Intake Grade</th>
-                              {displayedRemedyColumns.map((rem) => {
-                                const card = getRemedyCardData(rem);
-                                return (
-                                  <th 
-                                    key={rem} 
-                                    className="p-3 text-center border-l border-slate-200/50 hover:bg-slate-50 w-24 group align-top relative animate-fadeIn"
-                                  >
-                                    {/* Delete remedy button */}
-                                    <button
-                                      type="button"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setRemedyColumns(remedyColumns.filter(c => c !== rem));
-                                      }}
-                                      className="absolute top-1 right-1 w-4 h-4 rounded-full bg-slate-200 text-slate-500 hover:bg-rose-500 hover:text-white flex items-center justify-center text-[9px] font-bold cursor-pointer border-none shadow-2xs z-30 transition-all opacity-0 group-hover:opacity-100"
-                                      title={`Remove ${rem} from comparison`}
-                                    >
-                                      ×
-                                    </button>
-                                    {/* Remedy Card column header */}
-                                    <div 
-                                      onClick={() => setSelectedRemedyDetail(rem)}
-                                      className="flex flex-col items-center space-y-1 p-2 bg-slate-50/80 border border-slate-200 rounded-2xl group-hover:border-mint group-hover:shadow-sm transition-all duration-300 relative cursor-pointer"
-                                      title={`Inspect ${card.fullName}`}
-                                    >
-                                      <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-mint shadow-[0_0_6px_#14B8A6] animate-pulse" />
-                                      <div className="text-[11px] font-black text-[#0F766E] font-mono tracking-widest">{card.abbrev}</div>
-                                      <div className="text-[16px] font-black text-slate-800 font-mono tracking-tight leading-none pt-0.5">{card.score}</div>
-                                      <div className="text-[6.5px] text-slate-400 font-bold uppercase font-mono tracking-wide">{card.kingdom}</div>
-                                      <div className="text-[6.5px] text-slate-400 font-bold uppercase font-mono tracking-wide">{card.miasm}</div>
-                                      <div className="text-[8px] font-black text-white bg-mint px-1.5 py-0.5 rounded-lg border border-mint/20 mt-1 shadow-2xs">{card.confidence}%</div>
-                                    </div>
-                                  </th>
-                                );
-                              })}
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-slate-100 font-semibold text-slate-700">
-                            {selectedRubrics.map(({ rubric, grade: userGrade, weightMultiplier }) => (
-                              <tr key={rubric.id} className="hover:bg-slate-50/50 transition-colors">
-                                <td className="p-4 text-xs font-bold leading-normal">
-                                  <span className="text-[8px] text-mint-dark block font-extrabold uppercase tracking-widest font-mono mb-1">
-                                    {rubric.chapter} {weightMultiplier ? `(Weight: ${weightMultiplier}x)` : ""}
-                                  </span>
-                                  <span className="text-slate-800">{rubric.name}</span>
-                                </td>
-                                <td className="p-4 text-center">
-                                  <span className={`px-2.5 py-1 rounded-full text-[9px] font-black tracking-wider ${
-                                    userGrade === 3 ? "bg-rose-50 text-rose-600 border border-rose-100 shadow-2xs" :
-                                    userGrade === 2 ? "bg-amber-50 text-amber-600 border border-amber-100 shadow-2xs" :
-                                    "bg-sky-50 text-sky-600 border border-sky-100 shadow-2xs"
-                                  }`}>
-                                    Grade {userGrade}
-                                  </span>
-                                </td>
-                                {displayedRemedyColumns.map((rem) => {
-                                  const remGrade = rubric.remedies[rem];
-                                  return (
-                                    <td 
-                                      key={rem} 
-                                      onClick={() => setSelectedRemedyDetail(rem)}
-                                      className={`p-4 text-center border-l border-slate-100 font-mono font-bold cursor-pointer transition-all duration-300 hover:bg-mint/5 ${
-                                        remGrade === 3 ? "bg-rose-500/[0.03]" :
-                                        remGrade === 2 ? "bg-amber-500/[0.02]" :
-                                        remGrade === 1 ? "bg-sky-500/[0.01]" :
-                                        ""
-                                      }`}
-                                    >
-                                      {remGrade ? (
-                                        <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full font-black text-xs transition-transform duration-200 group-hover:scale-110 shadow-2xs ${
-                                          remGrade === 3 ? "bg-rose-50 text-rose-600 border border-rose-100" :
-                                          remGrade === 2 ? "bg-amber-50 text-amber-600 border border-amber-100" :
-                                          "bg-sky-50 text-sky-600 border border-sky-100"
-                                        }`}>
-                                          {remGrade}
-                                        </span>
-                                      ) : (
-                                        <span className="text-slate-200 font-normal">-</span>
-                                      )}
-                                    </td>
-                                  );
-                                })}
-                              </tr>
-                            ))}
-                            
-                            {/* Totals Row: Coverage */}
-                            <tr className="bg-slate-50/50 border-t border-slate-200 text-[9px] font-bold uppercase text-slate-600">
-                              <td className="p-4 font-mono font-black text-slate-500">Symptom Coverage</td>
-                              <td className="p-4"></td>
-                              {displayedRemedyColumns.map((rem) => {
-                                const scoreObj = remedyScores.find((r) => r.remedy === rem);
-                                return (
-                                  <td key={rem} className="p-4 text-center border-l border-slate-100 font-mono text-[10px] font-black text-slate-700 bg-slate-50/20">
-                                    {scoreObj?.coverage || "0"}
-                                  </td>
-                                );
-                              })}
-                            </tr>
-
-                            {/* Totals Row: Sum of Grades */}
-                            <tr className="bg-white border-t-2 border-slate-200 text-[9px] font-bold uppercase text-slate-800">
-                              <td className="p-4 font-mono font-black text-slate-700">Sum of Grades</td>
-                              <td className="p-4"></td>
-                              {displayedRemedyColumns.map((rem) => {
-                                const scoreObj = remedyScores.find((r) => r.remedy === rem);
-                                return (
-                                  <td key={rem} className="p-4 text-center border-l border-slate-100 font-mono text-[12px] font-black text-white bg-gradient-to-b from-[#0F766E] to-[#115E59] shadow-inner">
-                                    {scoreObj?.score || 0}
-                                  </td>
-                                );
-                              })}
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
                 {/* ZONE 4: AI Clinical Prescribing Intelligence - Column Span 12 */}
-                <div className="xl:col-span-12 xl:order-5">
+                <div className="order-5 xl:order-5 xl:col-span-12">
                   <div className="glass-panel rounded-3xl border-white/60 p-6 space-y-4 flex-grow flex flex-col relative overflow-hidden shadow-sm bg-white/60 backdrop-blur-md min-h-[460px]">
                     <div className="flex items-center justify-between border-b border-slate-900/5 pb-3">
                       <h3 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider flex items-center gap-2 font-mono">
@@ -11460,9 +11730,9 @@ ${err.message || err}`);
                           )}
 
                           {activeAiTab === "network" && (() => {
-                            const topRemA = aiData.top_remedies[0]?.name || "Sulphur";
-                            const topRemB = aiData.top_remedies[1]?.name || "Lycopodium";
-                            const topRemC = aiData.top_remedies[2]?.name || "Nux Vomica";
+                            const topRemA = aiData.top_remedies?.[0]?.name || "Sulphur";
+                            const topRemB = aiData.top_remedies?.[1]?.name || "Lycopodium";
+                            const topRemC = aiData.top_remedies?.[2]?.name || "Nux Vomica";
                             
                             const leftNodes = selectedRubrics.slice(0, 5);
                             const rightNodes = [topRemA, topRemB, topRemC];
@@ -11687,7 +11957,7 @@ ${err.message || err}`);
 
                 {/* ZONE 5: AI Materia Medica Intelligence Engine - Column Span 12 */}
                 {aiData && aiData.materia_medica_analysis && (
-                  <div className="xl:col-span-12 xl:order-6 mt-6">
+                  <div className="order-6 xl:order-6 xl:col-span-12 mt-6">
                     <div className="rounded-3xl border border-slate-800 p-6 space-y-6 flex-grow flex flex-col relative overflow-hidden shadow-2xl bg-slate-950 text-white">
                       
                       {/* Floating background particles */}
@@ -12829,84 +13099,485 @@ ${err.message || err}`);
                     </button>
                   </div>
 
-                  {/* Clinical Directory Accordions */}
-                  <div className="glass-panel rounded-3xl border-white/60 p-6 space-y-4 shadow-sm bg-white/60 backdrop-blur-md">
-                    <div className="flex items-center justify-between border-b border-slate-900/5 pb-3">
-                      <h3 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider flex items-center gap-2">
-                        <Layers className="w-4 h-4 text-mint" />
-                        Clinical Symptom Directory
-                      </h3>
-                    </div>
-                    <div className="space-y-2.5 max-h-[500px] overflow-y-auto pr-1" data-lenis-prevent>
-                      {Object.entries(JETHWANI_SECTIONS).map(([secKey, secMeta]) => {
-                        const sectionRubrics = JETHWANI_REPERTORY_DATA.filter(r => r.section === secKey);
-                        return (
-                          <details key={secKey} className="group border border-slate-900/5 bg-slate-900/[0.02] rounded-2xl p-3 select-none">
-                            <summary className="flex items-center justify-between text-xs font-bold text-slate-700 cursor-pointer">
-                              <span className="flex items-center gap-2">
-                                <span className="text-sm">{secMeta.icon}</span>
-                                <span>{secMeta.name}</span>
-                              </span>
-                              <span className="text-[10px] bg-slate-200/50 px-2 py-0.5 rounded-full font-mono text-slate-500">{sectionRubrics.length}</span>
-                            </summary>
-                            <div className="mt-3 space-y-1.5">
-                              {sectionRubrics.map(rubric => {
-                                const existing = selectedJethwaniRubrics.find(s => s.rubricId === rubric.id);
-                                const isActive = !!existing;
-                                return (
-                                  <button
-                                    key={rubric.id}
-                                    type="button"
-                                    onClick={() => {
-                                      setActiveSymptomConfig(existing || { rubricId: rubric.id, severity: 5, frequency: 'frequent', impact: 'moderate' });
-                                    }}
-                                    className={`w-full text-left px-3 py-2.5 rounded-xl text-[11px] font-semibold flex items-center justify-between transition-all border ${
-                                      isActive
-                                        ? "bg-emerald-950/10 border-emerald-500/20 text-emerald-800"
-                                        : "bg-white hover:bg-slate-50 border-slate-200 text-slate-700 hover:text-slate-900"
-                                    }`}
-                                  >
-                                    <span className="truncate pr-2">{rubric.name}</span>
-                                    {isActive ? (
-                                      <span className="flex items-center gap-1 text-[8px] bg-emerald-500 text-white font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider font-mono">
-                                        {existing.severity}/10
-                                      </span>
-                                    ) : (
-                                      <Plus className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 flex-shrink-0" />
-                                    )}
-                                  </button>
-                                );
-                              })}
+                  {/* Clinical Directory Upgrade */}
+                  {(() => {
+                    const safeFavorites = Array.isArray(favorites) ? favorites : [];
+                    const safeRecentlyUsed = Array.isArray(recentlyUsed) ? recentlyUsed : [];
+                    const inferOrganSystemLocal = (name: string, section: string): string => {
+                      const text = name.toLowerCase();
+                      if (text.includes("heart") || text.includes("pulse") || text.includes("hypertension") || text.includes("circulation")) return "Cardiovascular";
+                      if (text.includes("stomach") || text.includes("gerd") || text.includes("ibs") || text.includes("gastric") || text.includes("acidity") || text.includes("bloating")) return "Gastrointestinal";
+                      if (text.includes("asthma") || text.includes("respiratory") || text.includes("cough") || text.includes("sinusitis") || text.includes("rhinitis") || text.includes("bronchial")) return "Respiratory";
+                      if (text.includes("eczema") || text.includes("skin") || text.includes("dermatitis") || text.includes("acne") || text.includes("psoriasis") || text.includes("urticaria") || text.includes("hives")) return "Skin / Integumentary";
+                      if (text.includes("thyroid") || text.includes("hypothyroidism") || text.includes("pcos") || text.includes("hormonal") || text.includes("metabolism") || text.includes("insulin")) return "Endocrine";
+                      if (text.includes("joint") || text.includes("arthritis") || text.includes("musculoskeletal") || text.includes("fibromyalgia") || text.includes("back") || text.includes("pain")) return "Musculoskeletal";
+                      if (text.includes("burnout") || text.includes("anxiety") || text.includes("panic") || text.includes("insomnia") || text.includes("sleep") || text.includes("mind") || text.includes("depression")) return "Psychology & Psychiatry";
+                      return "Generalities";
+                    };
+
+                    const getFilteredRubrics = () => {
+                      let result = [...jethwaniRubrics];
+                      if (jethwaniFilterCategory && jethwaniFilterCategory !== "All") {
+                        result = result.filter(r => r.section === jethwaniFilterCategory);
+                      }
+                      if (jethwaniFilterOrganSystem && jethwaniFilterOrganSystem !== "All") {
+                        result = result.filter(r => {
+                          const os = (r as any).organSystem || inferOrganSystemLocal(r.name, r.section);
+                          return os === jethwaniFilterOrganSystem;
+                        });
+                      }
+                      if (jethwaniFilterMiasm && jethwaniFilterMiasm !== "All") {
+                        result = result.filter(r => {
+                          const miasms = (r as any).miasms || (r.id.includes("psora") ? ["Psora"] : r.id.includes("sycosis") ? ["Sycosis"] : r.id.includes("syphilis") ? ["Syphilis"] : []);
+                          return miasms.some((m: string) => m.toLowerCase() === jethwaniFilterMiasm.toLowerCase());
+                        });
+                      }
+                      if (jethwaniFilterRemedy && jethwaniFilterRemedy !== "All") {
+                        result = result.filter(r => r.remedies && r.remedies[jethwaniFilterRemedy] !== undefined);
+                      }
+                      if (jethwaniSearchTerm.trim()) {
+                        const term = jethwaniSearchTerm.toLowerCase().trim();
+                        let searchPatterns = [term];
+                        const foundSynonyms = SEARCH_SYNONYMS[term];
+                        if (foundSynonyms) {
+                          searchPatterns = Array.from(new Set([term, ...foundSynonyms]));
+                        }
+                        result = result.filter(r => {
+                          const name = r.name.toLowerCase();
+                          const desc = ((r as any).description || "").toLowerCase();
+                          const remediesKeys = Object.keys(r.remedies || {}).map(k => k.toLowerCase());
+                          return searchPatterns.some(pat => name.includes(pat) || desc.includes(pat) || remediesKeys.includes(pat));
+                        });
+                      }
+                      return result;
+                    };
+
+                    const filtered = getFilteredRubrics();
+
+                    const renderRubricItem = (rubric: JethwaniRubric) => {
+                      const existing = selectedJethwaniRubrics.find(s => s.rubricId === rubric.id);
+                      const isActive = !!existing;
+                      const isFav = safeFavorites.includes(rubric.id);
+                      const organSystem = (rubric as any).organSystem || inferOrganSystemLocal(rubric.name, rubric.section);
+                      const isDetailsExpanded = expandedRubricDetailsId === rubric.id;
+
+                      return (
+                        <div key={rubric.id} className="flex flex-col bg-white rounded-2xl border border-slate-100 hover:border-slate-200 p-2.5 transition-all shadow-sm">
+                          <div className="group/item flex items-center justify-between gap-2">
+                            <div className="flex-grow min-w-0 flex flex-col text-left">
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-[11px] font-bold text-slate-800 line-clamp-2 leading-tight">{rubric.name}</span>
+                                {rubric.id.startsWith("custom_") && (
+                                  <span className="text-[7px] bg-indigo-50 border border-indigo-100 text-indigo-600 font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider scale-95 shrink-0">Custom</span>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-1.5 text-[8px] text-slate-400 font-bold uppercase tracking-wider mt-1">
+                                <span className="bg-slate-100 text-slate-650 px-1.5 py-0.5 rounded-md">{organSystem}</span>
+                                <span>•</span>
+                                <span>{Object.keys(rubric.remedies || {}).length} remedies</span>
+                              </div>
                             </div>
-                          </details>
-                        );
-                      })}
-                    </div>
-                  </div>
+                            
+                            <div className="flex items-center gap-1 shrink-0">
+                              {/* View Details Toggle */}
+                              <button
+                                type="button"
+                                onClick={() => setExpandedRubricDetailsId(isDetailsExpanded ? null : rubric.id)}
+                                className={`p-1.5 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer ${
+                                  isDetailsExpanded ? "text-mint font-black" : "text-slate-350 hover:text-slate-500"
+                                }`}
+                                title="View Remedies & Details"
+                              >
+                                <Info className="w-3.5 h-3.5" />
+                              </button>
+
+                              {/* Favorite Toggle */}
+                              <button
+                                type="button"
+                                onClick={() => handleToggleFavorite(rubric.id)}
+                                className={`p-1.5 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer ${
+                                  isFav ? "text-amber-500" : "text-slate-350 hover:text-slate-500"
+                                }`}
+                                title={isFav ? "Remove from Favorites" : "Add to Favorites"}
+                              >
+                                <Star className="w-3.5 h-3.5 fill-current" />
+                              </button>
+
+                              {/* Clone */}
+                              <button
+                                type="button"
+                                onClick={() => handleCloneRubricAction(rubric.id)}
+                                className="p-1.5 hover:bg-slate-100 text-slate-350 hover:text-slate-600 rounded-lg transition-colors cursor-pointer"
+                                title="Clone Rubric"
+                              >
+                                <Copy className="w-3.5 h-3.5" />
+                              </button>
+
+                              {/* Edit */}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setEditingRubric(rubric);
+                                  setRubricNameInput(rubric.name);
+                                  setRubricSectionInput(rubric.section);
+                                  setRubricOrganSystem(organSystem);
+                                  setRubricDescription((rubric as any).description || "");
+                                  setRubricRemediesInput(rubric.remedies || {});
+                                  setRubricCitationSource(rubric.researchCitation?.source || "");
+                                  setRubricCitationDetail(rubric.researchCitation?.detail || "");
+                                  setIsRubricBuilderOpen(true);
+                                }}
+                                className="p-1.5 hover:bg-slate-100 text-slate-350 hover:text-slate-600 rounded-lg transition-colors cursor-pointer"
+                                title={rubric.id.startsWith("custom_") ? "Edit Rubric" : "Edit as New"}
+                              >
+                                <Edit className="w-3.5 h-3.5" />
+                              </button>
+
+                              {/* Delete (custom only) */}
+                              {rubric.id.startsWith("custom_") && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteRubricAction(rubric.id)}
+                                  className="p-1.5 hover:bg-slate-100 text-slate-350 hover:text-red-500 rounded-lg transition-colors cursor-pointer"
+                                  title="Delete Custom Rubric"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              )}
+
+                              {/* Workbench Add */}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (isActive) {
+                                    setSelectedJethwaniRubrics(prev => prev.filter(s => s.rubricId !== rubric.id));
+                                  } else {
+                                    setSelectedJethwaniRubrics(prev => [...prev, { rubricId: rubric.id, severity: 5, frequency: 'frequent', impact: 'moderate' }]);
+                                    handleAddToRecentlyUsed(rubric.id);
+                                  }
+                                }}
+                                className={`p-1.5 rounded-lg border transition-all ${
+                                  isActive
+                                    ? "bg-emerald-500 border-emerald-500 text-white cursor-pointer"
+                                    : "border-slate-200 hover:border-slate-800 hover:bg-slate-50 text-slate-500 cursor-pointer"
+                                }`}
+                                title={isActive ? "Remove from Workbench" : "Add to Workbench"}
+                              >
+                                {isActive ? <Check className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
+                              </button>
+                            </div>
+                          </div>
+
+                          {isDetailsExpanded && (
+                            <div className="w-full mt-2 pt-2 border-t border-slate-100 text-[10px] space-y-1.5 text-left bg-slate-50 p-2.5 rounded-xl border border-slate-200/50">
+                              {((rubric as any).description || (rubric as any).notes) && (
+                                <div className="text-slate-500 italic font-semibold leading-relaxed">
+                                  {(rubric as any).description || (rubric as any).notes}
+                                </div>
+                              )}
+                              <div>
+                                <span className="text-[8px] text-slate-400 font-extrabold uppercase tracking-wider block font-mono">Remedies & Grades</span>
+                                <div className="flex flex-wrap gap-1.5 mt-1">
+                                  {Object.entries(rubric.remedies || {})
+                                    .sort((a, b) => b[1] - a[1])
+                                    .map(([remName, grade]) => (
+                                      <span 
+                                        key={remName} 
+                                        className={`px-1.5 py-0.5 rounded text-[8px] font-extrabold uppercase font-mono ${
+                                          grade === 3 ? "bg-rose-50 text-rose-600 border border-rose-100" :
+                                          grade === 2 ? "bg-amber-50 text-amber-600 border border-amber-100" :
+                                          "bg-slate-150 text-slate-650"
+                                        }`}
+                                      >
+                                        {remName} ({grade})
+                                      </span>
+                                    ))}
+                                </div>
+                              </div>
+                              {rubric.researchCitation && (
+                                <div className="text-[8.5px] text-[#0f766e] font-bold">
+                                  Source: {rubric.researchCitation.source} {rubric.researchCitation.detail && `• ${rubric.researchCitation.detail}`}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    };
+
+                    return (
+                      <div className="glass-panel rounded-3xl border-white/60 p-6 space-y-4 shadow-sm bg-white/60 backdrop-blur-md">
+                        {/* Title Bar */}
+                        <div className="flex items-center justify-between border-b border-slate-900/5 pb-3">
+                          <h3 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider flex items-center gap-2">
+                            <Layers className="w-4 h-4 text-mint" />
+                            Clinical Symptom Directory
+                          </h3>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingRubric(null);
+                              setRubricNameInput("");
+                              setRubricSectionInput("Section A");
+                              setRubricOrganSystem("Gastrointestinal");
+                              setRubricDescription("");
+                              setRubricRemediesInput({});
+                              setRubricCitationSource("");
+                              setRubricCitationDetail("");
+                              setIsRubricBuilderOpen(true);
+                            }}
+                            className="bg-slate-900 hover:bg-slate-800 text-white px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer border-none flex items-center gap-1 font-mono"
+                          >
+                            <Plus className="w-3 h-3" />
+                            <span>Create Rubric</span>
+                          </button>
+                        </div>
+
+                        {/* Search and Synonym Display */}
+                        <div className="relative">
+                          <Search className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
+                          <input
+                            type="text"
+                            placeholder="Search rubrics, remedies, or synonyms (e.g. 'sweat')..."
+                            value={jethwaniSearchTerm}
+                            onChange={(e) => setJethwaniSearchTerm(e.target.value)}
+                            className="w-full pl-10 pr-10 py-2.5 border border-slate-200 rounded-2xl text-xs outline-none focus:border-mint focus:ring-1 focus:ring-mint bg-white shadow-inner font-semibold text-slate-800"
+                          />
+                          {jethwaniSearchTerm && (
+                            <button
+                              type="button"
+                              onClick={() => setJethwaniSearchTerm("")}
+                              className="absolute right-3.5 top-3 text-slate-400 hover:text-slate-600 font-bold text-xs cursor-pointer"
+                            >
+                              Clear
+                            </button>
+                          )}
+                        </div>
+
+                        {/* Advanced Filters Grid */}
+                        <div className="grid grid-cols-3 gap-2.5 bg-slate-950/[0.02] p-3 rounded-2xl border border-slate-200/50">
+                          {/* Organ System Filter */}
+                          <div className="space-y-1">
+                            <label className="text-[8px] font-bold text-slate-400 uppercase tracking-wider block text-left">Organ System</label>
+                            <select
+                              value={jethwaniFilterOrganSystem}
+                              onChange={(e) => setJethwaniFilterOrganSystem(e.target.value)}
+                              className="w-full border border-slate-200 rounded-xl px-2 py-1 text-[10px] outline-none bg-white font-semibold text-slate-700"
+                            >
+                              <option value="All">All Systems</option>
+                              {["Cardiovascular", "Gastrointestinal", "Respiratory", "Skin / Integumentary", "Endocrine", "Musculoskeletal", "Psychology & Psychiatry", "Generalities"].map((os) => (
+                                <option key={os} value={os}>{os}</option>
+                              ))}
+                            </select>
+                          </div>
+
+                          {/* Miasm Filter */}
+                          <div className="space-y-1">
+                            <label className="text-[8px] font-bold text-slate-400 uppercase tracking-wider block text-left">Miasmatic Load</label>
+                            <select
+                              value={jethwaniFilterMiasm}
+                              onChange={(e) => setJethwaniFilterMiasm(e.target.value)}
+                              className="w-full border border-slate-200 rounded-xl px-2 py-1 text-[10px] outline-none bg-white font-semibold text-slate-700"
+                            >
+                              <option value="All">All Miasms</option>
+                              {["Psora", "Sycosis", "Syphilis", "Tubercular"].map((m) => (
+                                <option key={m} value={m}>{m}</option>
+                              ))}
+                            </select>
+                          </div>
+
+                          {/* Remedy Filter */}
+                          <div className="space-y-1">
+                            <label className="text-[8px] font-bold text-slate-400 uppercase tracking-wider block text-left">Contains Remedy</label>
+                            <select
+                              value={jethwaniFilterRemedy}
+                              onChange={(e) => setJethwaniFilterRemedy(e.target.value)}
+                              className="w-full border border-slate-200 rounded-xl px-2 py-1 text-[10px] outline-none bg-white font-semibold text-slate-700"
+                            >
+                              <option value="All">All Remedies</option>
+                              {["Nux-v", "Lyc", "Ars", "Sulph", "Puls", "Sep", "Lach", "Bell", "Gels", "Sil", "Calc", "Nat-m", "Ign", "Phos"].map((r) => (
+                                <option key={r} value={r}>{r}</option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+
+                        {/* Folder / Tabs View */}
+                        <div className="flex border-b border-slate-100 gap-1.5 pb-1">
+                          {[
+                            { id: "tree", label: "Directory", count: filtered.length },
+                            { id: "favs", label: "Favorites", count: filtered.filter(r => safeFavorites.includes(r.id)).length },
+                            { id: "recents", label: "Recents", count: safeRecentlyUsed.filter(id => filtered.some(r => r.id === id)).length },
+                            { id: "custom", label: "Custom", count: filtered.filter(r => r.id.startsWith("custom_")).length }
+                          ].map((tab) => (
+                            <button
+                              key={tab.id}
+                              type="button"
+                              onClick={() => setJethwaniDirTab(tab.id as any)}
+                              className={`px-3 py-1.5 text-[10px] font-bold rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
+                                jethwaniDirTab === tab.id
+                                  ? "bg-slate-900 text-white shadow-sm"
+                                  : "text-slate-500 hover:text-slate-800 hover:bg-slate-100"
+                              }`}
+                            >
+                              <span>{tab.label}</span>
+                              <span className={`text-[8px] px-1.5 py-0.5 rounded-full font-mono ${
+                                jethwaniDirTab === tab.id
+                                  ? "bg-white/20 text-white"
+                                  : "bg-slate-200/60 text-slate-550"
+                              }`}>
+                                {tab.count}
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+
+                        {/* Content Scroll Container */}
+                        <div className="space-y-2.5 max-h-[500px] overflow-y-auto pr-1" data-lenis-prevent>
+                          {jethwaniDirTab === "tree" && (
+                            Object.entries(JETHWANI_SECTIONS).map(([secKey, secMeta]) => {
+                              const sectionRubrics = filtered.filter(r => r.section === secKey);
+                              if (sectionRubrics.length === 0) return null;
+                              return (
+                                <details key={secKey} className="group border border-slate-900/5 bg-slate-900/[0.01] rounded-2xl p-3 select-none" open={!!jethwaniSearchTerm}>
+                                  <summary className="flex items-center justify-between text-xs font-bold text-slate-700 cursor-pointer">
+                                    <span className="flex items-center gap-2">
+                                      <span className="text-sm">{secMeta.icon}</span>
+                                      <span>{secMeta.name}</span>
+                                    </span>
+                                    <span className="text-[10px] bg-slate-200/50 px-2 py-0.5 rounded-full font-mono text-slate-500">{sectionRubrics.length}</span>
+                                  </summary>
+                                  <div className="mt-3 space-y-2">
+                                    {sectionRubrics.slice(0, 100).map(renderRubricItem)}
+                                    {sectionRubrics.length > 100 && (
+                                      <div className="text-[9px] text-slate-400 font-bold font-mono text-center py-2 bg-slate-50 border border-slate-100 rounded-xl">
+                                        Showing 100 of {sectionRubrics.length} rubrics. Use filters or search keyword to see more.
+                                      </div>
+                                    )}
+                                  </div>
+                                </details>
+                              );
+                            })
+                          )}
+
+                          {jethwaniDirTab === "favs" && (
+                            (() => {
+                              const favList = filtered.filter(r => safeFavorites.includes(r.id));
+                              if (favList.length === 0) {
+                                return (
+                                  <div className="py-10 text-center text-[10px] text-slate-450 font-bold border border-dashed border-slate-200 rounded-2xl bg-slate-50/20">
+                                    No favorites added. Star your top rubrics to find them here instantly!
+                                  </div>
+                                );
+                              }
+                              return <div className="space-y-2">{favList.map(renderRubricItem)}</div>;
+                            })()
+                          )}
+
+                          {jethwaniDirTab === "recents" && (
+                            (() => {
+                              const recentList = safeRecentlyUsed
+                                .map(id => filtered.find(r => r.id === id))
+                                .filter(Boolean) as JethwaniRubric[];
+                              if (recentList.length === 0) {
+                                return (
+                                  <div className="py-10 text-center text-[10px] text-slate-450 font-bold border border-dashed border-slate-200 rounded-2xl bg-slate-50/20">
+                                    Recently configured rubrics will appear here.
+                                  </div>
+                                );
+                              }
+                              return <div className="space-y-2">{recentList.map(renderRubricItem)}</div>;
+                            })()
+                          )}
+
+                          {jethwaniDirTab === "custom" && (
+                            (() => {
+                              const customList = filtered.filter(r => r.id.startsWith("custom_"));
+                              if (customList.length === 0) {
+                                return (
+                                  <div className="py-10 text-center text-[10px] text-slate-450 font-bold border border-dashed border-slate-200 rounded-2xl bg-slate-50/20 space-y-2 flex flex-col items-center justify-center">
+                                    <span>No custom rubrics created yet.</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setEditingRubric(null);
+                                        setRubricNameInput("");
+                                        setRubricSectionInput("Section A");
+                                        setRubricOrganSystem("Gastrointestinal");
+                                        setRubricDescription("");
+                                        setRubricRemediesInput({});
+                                        setRubricCitationSource("");
+                                        setRubricCitationDetail("");
+                                        setIsRubricBuilderOpen(true);
+                                      }}
+                                      className="px-3 py-1 bg-slate-900 text-white text-[9px] font-bold uppercase rounded-lg hover:bg-slate-800 transition-colors"
+                                    >
+                                      Create Now
+                                    </button>
+                                  </div>
+                                );
+                              }
+                              return <div className="space-y-2">{customList.map(renderRubricItem)}</div>;
+                            })()
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 {/* Middle Column: Active Workbench & Indices - Span 4 */}
                 <div className="xl:col-span-4 space-y-6">
                   {/* Active symptoms listing */}
                   <div className="glass-panel rounded-3xl border-white/60 p-6 shadow-sm bg-white/60 backdrop-blur-md min-h-[380px] flex flex-col">
-                    <div className="flex items-center justify-between border-b border-slate-900/5 pb-3">
+                    <div className="flex items-center justify-between border-b border-slate-900/5 pb-3 mb-3">
                       <h3 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider flex items-center gap-2">
                         <Sliders className="w-4 h-4 text-mint" />
                         Clinical Workbench ({selectedJethwaniRubrics.length})
                       </h3>
                       {selectedJethwaniRubrics.length > 0 && (
-                        <button
-                          onClick={handleSendRubricsToSheet}
-                          disabled={isSyncingRepertory}
-                          className="px-2.5 py-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-white rounded-lg text-[9px] font-bold uppercase transition-all duration-300 cursor-pointer shadow flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
-                          title="Send clinical rubrics directly to the patient's Clinical Sheet"
-                        >
-                          <FileSpreadsheet className="w-3.5 h-3.5" />
-                          <span>{isSyncingRepertory ? "Syncing..." : "Send to Sheet"}</span>
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => setSelectedJethwaniRubrics([])}
+                            className="px-2.5 py-1 bg-rose-50 border border-rose-200 hover:bg-rose-100 text-rose-600 rounded-lg text-[9px] font-bold uppercase transition-all duration-300 cursor-pointer flex items-center gap-1"
+                            title="Clear all active symptoms"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                            <span>Clear All</span>
+                          </button>
+                          <button
+                            onClick={handleSendRubricsToSheet}
+                            disabled={isSyncingRepertory}
+                            className="px-2.5 py-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-white rounded-lg text-[9px] font-bold uppercase transition-all duration-300 cursor-pointer shadow flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                            title="Send clinical rubrics directly to the patient's Clinical Sheet"
+                          >
+                            <FileSpreadsheet className="w-3.5 h-3.5" />
+                            <span>{isSyncingRepertory ? "Syncing..." : "Send to Sheet"}</span>
+                          </button>
+                        </div>
                       )}
                     </div>
-                    <div className={`grid gap-3 flex-grow overflow-y-auto pr-1 mt-3 ${selectedJethwaniRubrics.length > 0 ? 'grid-cols-1 md:grid-cols-2 max-h-[290px]' : 'grid-cols-1 h-full'}`} data-lenis-prevent>
+
+                    {/* Case file dropdown */}
+                    <div className="flex flex-col gap-1 mb-4 bg-slate-50 p-2.5 rounded-xl border border-slate-150">
+                      <label className="block text-[8px] font-black text-slate-400 uppercase tracking-widest font-mono text-left">
+                        Active Case File
+                      </label>
+                      <select
+                        value={selectedPatientId}
+                        onChange={(e) => handleSelectPatientForAnalysis(e.target.value)}
+                        className="bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs font-semibold outline-none focus:border-mint focus:ring-1 focus:ring-mint transition-all shadow-xs"
+                      >
+                        <option value="">Custom Workspace (Unlinked)</option>
+                        {patients.map((p) => (
+                          <option key={p.id} value={p.id}>
+                            👤 {p.name} ({p.id})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className={`grid gap-3 flex-grow overflow-y-auto pr-1 ${selectedJethwaniRubrics.length > 0 ? 'grid-cols-1 md:grid-cols-2 max-h-[200px]' : 'grid-cols-1 h-full'}`} data-lenis-prevent>
                       {selectedJethwaniRubrics.length === 0 ? (
                         <div className="col-span-full h-full py-12 flex flex-col items-center justify-center text-center border border-dashed border-slate-200 rounded-2xl bg-slate-50/20">
                           <Sliders className="w-6 h-6 text-slate-300 mb-2" />
@@ -13242,7 +13913,7 @@ ${err.message || err}`);
                                 <div className="space-y-1.5">
                                   <span className="text-[7.5px] font-extrabold text-rose-500 uppercase tracking-wider font-mono block">Discussions & Conflicts</span>
                                   <div className="space-y-1">
-                                    {conferenceData.discussion.conflict_alerts.map((alertText: string, idx: number) => (
+                                    {conferenceData.discussion?.conflict_alerts?.map((alertText: string, idx: number) => (
                                       <div key={idx} className="bg-rose-50/50 border border-rose-100/50 p-2 rounded-xl text-[9px] font-semibold text-rose-700 flex items-start gap-1.5">
                                         <span className="mt-0.5">⚠️</span>
                                         <span className="leading-normal">{alertText}</span>
@@ -13387,7 +14058,7 @@ ${err.message || err}`);
                           <div className="border border-slate-100 rounded-2xl p-4 bg-slate-50/30 space-y-3">
                             <span className="text-[8px] font-black uppercase text-slate-500 tracking-wider font-mono block">Multi-Agent Debate History</span>
                             <div className="space-y-3 max-h-[200px] overflow-y-auto pr-1" data-lenis-prevent="true">
-                              {conferenceData.discussion.consensus_debate_history.map((chat: any, idx: number) => (
+                              {conferenceData.discussion?.consensus_debate_history?.map((chat: any, idx: number) => (
                                 <div key={idx} className="flex gap-2">
                                   <span className={`text-[8.5px] px-2 py-0.5 rounded font-mono font-bold tracking-wider h-fit mt-0.5 ${
                                     chat.speaker === "gemini" ? "bg-blue-100 text-blue-700 border border-blue-200/50" :
@@ -24051,6 +24722,214 @@ Exported on: ${new Date().toLocaleDateString()}
             </>
           )}
         </AnimatePresence>
+        </Portal>
+        {/* Rubric Builder Modal */}
+        <Portal>
+          <AnimatePresence>
+            {isRubricBuilderOpen && (
+              <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[100] flex items-center justify-center pointer-events-auto p-4 overflow-y-auto">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                  className="bg-white rounded-[32px] max-w-lg w-full border border-white/60 shadow-2xl p-6 relative max-h-[90vh] flex flex-col"
+                >
+                  {/* Header */}
+                  <div className="flex items-center justify-between border-b border-slate-105 pb-3 mb-4">
+                    <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                      <Database className="w-4 h-4 text-mint" />
+                      {editingRubric?.id ? "Edit Clinical Rubric" : "Create Custom Rubric"}
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsRubricBuilderOpen(false);
+                        setEditingRubric(null);
+                      }}
+                      className="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-50 rounded-lg cursor-pointer border-none bg-transparent"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                  
+                  {/* Scrollable Body */}
+                  <div className="space-y-4 overflow-y-auto pr-1 flex-grow scrollbar-thin text-left">
+                    {/* Rubric Name */}
+                    <div className="space-y-1">
+                      <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Rubric Name</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Hypothyroidism with cold extremities and extreme lethargy"
+                        value={rubricNameInput}
+                        onChange={(e) => setRubricNameInput(e.target.value)}
+                        className="w-full border border-slate-200 rounded-xl p-2.5 text-xs outline-none focus:border-mint focus:ring-1 focus:ring-mint bg-white font-semibold text-slate-800"
+                      />
+                    </div>
+
+                    {/* Category and Organ System */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Section Category</label>
+                        <select
+                          value={rubricSectionInput}
+                          onChange={(e) => setRubricSectionInput(e.target.value)}
+                          className="w-full border border-slate-200 rounded-xl p-2.5 text-xs outline-none focus:border-mint focus:ring-1 focus:ring-mint bg-white font-semibold text-slate-800"
+                        >
+                          {Object.entries(JETHWANI_SECTIONS).map(([key, value]) => (
+                            <option key={key} value={key}>{value.name}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Organ System</label>
+                        <select
+                          value={rubricOrganSystem}
+                          onChange={(e) => setRubricOrganSystem(e.target.value)}
+                          className="w-full border border-slate-200 rounded-xl p-2.5 text-xs outline-none focus:border-mint focus:ring-1 focus:ring-mint bg-white font-semibold text-slate-800"
+                        >
+                          {["Gastrointestinal", "Respiratory", "Cardiovascular", "Skin / Integumentary", "Endocrine", "Musculoskeletal", "Psychology & Psychiatry", "Generalities"].map((os) => (
+                            <option key={os} value={os}>{os}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Description */}
+                    <div className="space-y-1">
+                      <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Clinical Description / Indications</label>
+                      <textarea
+                        placeholder="Describe key modalities, thermal trends, or clinical specifics..."
+                        value={rubricDescription}
+                        onChange={(e) => setRubricDescription(e.target.value)}
+                        rows={2}
+                        className="w-full border border-slate-200 rounded-xl p-2.5 text-xs outline-none focus:border-mint focus:ring-1 focus:ring-mint bg-white font-semibold text-slate-800 resize-none"
+                      />
+                    </div>
+
+                    {/* Remedy Add Section */}
+                    <div className="space-y-2 border-t border-slate-100 pt-3">
+                      <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Add Remedies & Grades</label>
+                      <div className="flex gap-2 items-center">
+                        <input
+                          type="text"
+                          id="builder_remedy_name"
+                          placeholder="e.g. Nux-v"
+                          className="border border-slate-200 rounded-xl p-2 text-xs outline-none focus:border-mint focus:ring-1 focus:ring-mint bg-white font-semibold text-slate-800 w-28 uppercase"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              const input = document.getElementById("builder_remedy_name") as HTMLInputElement;
+                              const gradeSelect = document.getElementById("builder_remedy_grade") as HTMLSelectElement;
+                              if (input && input.value.trim()) {
+                                const rem = input.value.trim();
+                                const grade = parseInt(gradeSelect.value, 10);
+                                setRubricRemediesInput(prev => ({ ...prev, [rem]: grade }));
+                                input.value = "";
+                                input.focus();
+                              }
+                            }
+                          }}
+                        />
+                        <select
+                          id="builder_remedy_grade"
+                          className="border border-slate-200 rounded-xl p-2 text-xs outline-none focus:border-mint focus:ring-1 focus:ring-mint bg-white font-semibold text-slate-800 w-20"
+                        >
+                          <option value="1">Grade 1</option>
+                          <option value="2">Grade 2</option>
+                          <option value="3">Grade 3</option>
+                        </select>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const input = document.getElementById("builder_remedy_name") as HTMLInputElement;
+                            const gradeSelect = document.getElementById("builder_remedy_grade") as HTMLSelectElement;
+                            if (input && input.value.trim()) {
+                              const rem = input.value.trim();
+                              const grade = parseInt(gradeSelect.value, 10);
+                              setRubricRemediesInput(prev => ({ ...prev, [rem]: grade }));
+                              input.value = "";
+                              input.focus();
+                            }
+                          }}
+                          className="bg-slate-900 hover:bg-slate-800 text-white px-3 py-2 rounded-xl text-[10px] font-bold transition-all cursor-pointer border-none font-mono uppercase tracking-wider"
+                        >
+                          Add
+                        </button>
+                      </div>
+
+                      {/* Remedies List */}
+                      <div className="flex flex-wrap gap-2 p-3 bg-slate-50 rounded-2xl border border-slate-100 min-h-[60px]">
+                        {Object.entries(rubricRemediesInput).length === 0 ? (
+                          <span className="text-[10px] text-slate-400 font-semibold self-center">No remedies added yet.</span>
+                        ) : (
+                          Object.entries(rubricRemediesInput).map(([rem, grade]) => (
+                            <span key={rem} className="inline-flex items-center gap-1.5 bg-white border border-slate-200 px-2 py-1 rounded-xl text-[10px] font-bold text-slate-700">
+                              <span>{rem}</span>
+                              <span className="bg-emerald-50 text-emerald-700 font-mono px-1 rounded text-[9px]">Gr. {grade}</span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const next = { ...rubricRemediesInput };
+                                  delete next[rem];
+                                  setRubricRemediesInput(next);
+                                }}
+                                className="text-slate-400 hover:text-red-500 cursor-pointer font-bold scale-110 border-none bg-transparent"
+                              >
+                                ×
+                              </button>
+                            </span>
+                          ))
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Citations */}
+                    <div className="space-y-2 border-t border-slate-100 pt-3">
+                      <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Research Citation (Optional)</label>
+                      <div className="grid grid-cols-2 gap-3">
+                        <input
+                          type="text"
+                          placeholder="Source (e.g. Kent Repertory)"
+                          value={rubricCitationSource}
+                          onChange={(e) => setRubricCitationSource(e.target.value)}
+                          className="w-full border border-slate-200 rounded-xl p-2.5 text-xs outline-none focus:border-mint focus:ring-1 focus:ring-mint bg-white font-semibold text-slate-800"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Detail (e.g. Mind, anger page 2)"
+                          value={rubricCitationDetail}
+                          onChange={(e) => setRubricCitationDetail(e.target.value)}
+                          className="w-full border border-slate-200 rounded-xl p-2.5 text-xs outline-none focus:border-mint focus:ring-1 focus:ring-mint bg-white font-semibold text-slate-800"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Footer Buttons */}
+                  <div className="flex justify-end gap-3 border-t border-slate-100 pt-3 mt-4">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsRubricBuilderOpen(false);
+                        setEditingRubric(null);
+                      }}
+                      className="px-4 py-2 border border-slate-205 hover:border-slate-800 hover:bg-slate-50 rounded-xl text-xs font-bold text-slate-700 hover:text-slate-900 transition-all cursor-pointer bg-transparent"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleSaveCustomRubric}
+                      className="px-5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-sm border-none uppercase tracking-wider font-mono"
+                    >
+                      Save Rubric
+                    </button>
+                  </div>
+                </motion.div>
+              </div>
+            )}
+          </AnimatePresence>
         </Portal>
 
         {/* Workspace Provisioning Loader Overlay */}

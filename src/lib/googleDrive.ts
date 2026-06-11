@@ -413,7 +413,7 @@ export async function createPatientClinicalSheet(
           ["PATIENT DEMOGRAPHICS", "", "", "ACTIVE TREATMENT", "", "", "OUTCOMES & LEDGER", ""],
           ["Patient ID", data.id, "", "Diagnosis", "='Case Taking'!B38", "", "Progress Score (%)", "=IFERROR(INDEX('Follow-Up Tracker'!C:C, MATCH(9.99999999999999E+307, 'Follow-Up Tracker'!A:A)), \"0%\")"],
           ["Full Name", data.name, "", "Active Remedy", "='Case Taking'!B47 & \" \" & 'Case Taking'!B48", "", "Balance Due (₹)", "='Finance'!E4"],
-          ["Age / Gender", `${data.age} / ${data.gender}`, "", "Last Visit Date", "=IFERROR(MAX('Follow-Up Tracker'!A4:A), \"N/A\")", "", "Top Totality Remedy", "='Repertorization'!B16 & \" (\" & 'Repertorization'!D16 & \" pts)\""],
+          ["Age / Gender", `${data.age} / ${data.gender}`, "", "Last Visit Date", "=IFERROR(MAX('Follow-Up Tracker'!A4:A), \"N/A\")", "", "Top Totality Remedy", "=INDEX('Repertorization'!B:B, MATCH(\"Rank 1\", 'Repertorization'!A:A, 0)) & \" (\" & INDEX('Repertorization'!D:D, MATCH(\"Rank 1\", 'Repertorization'!A:A, 0)) & \" pts)\""],
           ["Blood Group", "O+ Pos", "", "Next Review", "=IFERROR(INDEX('Follow-Up Tracker'!G:G, MATCH(9.99999999999999E+307, 'Follow-Up Tracker'!A:A)), \"Not Scheduled\")", "", "Miasmatic Summary", "=IFERROR('AI Repertory Lab'!B4, \"Psora\")"],
           ["Clinic Branch", "Baner Clinic", "", "Consulting Doctor", "Dr. Narayan Jethwani", "", "Primary Doctor", "Dr. Narayan Jethwani"],
           ["Patient Status", data.careLevel.toLowerCase().includes("acute") ? "Acute" : "Chronic", "", "Clinic Branch", "Baner Clinic, Pune", "", "Account Status", "=IF('Finance'!E4<=0, \"Paid\", \"Balance Pending\")"]
@@ -508,21 +508,59 @@ export async function createPatientClinicalSheet(
           ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
           ["REPERTORY GRID & Dynamic ANALYSIS MATRIX", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
           ["Rubric Name", "Chapter / Location", "Source", "Importance Weight", "Nux-v", "Lyc", "Ars", "Puls", "Sulph", "Rhus-t", "Calc", "Sil", "Nat-m", "Ign", "Sep", "Totality Score"],
-          ["Acidity - eating, post", "Stomach", "Kent", 3, 3, 2, 3, 1, 2, 1, 1, 0, 0, 0, 0, "=D4*SUM(E4:O4)"],
-          ["Irritability - eating, post", "Mind", "Kent", 2, 2, 3, 1, 2, 2, 1, 0, 0, 0, 0, 0, "=D5*SUM(E5:O5)"],
-          ["Generalities - Chilly", "Generalities", "Kent", 3, 3, 1, 3, 0, 1, 3, 3, 2, 1, 0, 1, "=D6*SUM(E6:O6)"],
-          ["Clinical - Burnout / Adrenal Fatigue [Sycosis]", "Clinical", "Jethwani", 3, 3, 2, 2, 1, 2, 1, 3, 2, 2, 2, 2, "=D7*SUM(E7:O7)"],
-          ["Mind - Hurry - constant", "Mind", "Custom", 2, 2, 1, 3, 1, 1, 2, 1, 1, 2, 3, 1, "=D8*SUM(E8:O8)"],
+          ["Acidity - eating, post", "Stomach", "Kent", 3, 3, 2, 3, 1, 2, 1, 1, 0, 0, 0, 0, "=IF(D4=\"\", \"\", D4*SUM(E4:O4))"],
+          ["Irritability - eating, post", "Mind", "Kent", 2, 2, 3, 1, 2, 2, 1, 0, 0, 0, 0, 0, "=IF(D5=\"\", \"\", D5*SUM(E5:O5))"],
+          ["Generalities - Chilly", "Generalities", "Kent", 3, 3, 1, 3, 0, 1, 3, 3, 2, 1, 0, 1, "=IF(D6=\"\", \"\", D6*SUM(E6:O6))"],
+          ["Clinical - Burnout / Adrenal Fatigue [Sycosis]", "Clinical", "Jethwani", 3, 3, 2, 2, 1, 2, 1, 3, 2, 2, 2, 2, "=IF(D7=\"\", \"\", D7*SUM(E7:O7))"],
+          ["Mind - Hurry - constant", "Mind", "Custom", 2, 2, 1, 3, 1, 1, 2, 1, 1, 2, 3, 1, "=IF(D8=\"\", \"\", D8*SUM(E8:O8))"],
+          ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "=IF(D9=\"\", \"\", D9*SUM(E9:O9))"],
+          ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "=IF(D10=\"\", \"\", D10*SUM(E10:O10))"],
+          ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "=IF(D11=\"\", \"\", D11*SUM(E11:O11))"],
+          ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "=IF(D12=\"\", \"\", D12*SUM(E12:O12))"],
+          ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "=IF(D13=\"\", \"\", D13*SUM(E13:O13))"],
           ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
           ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
-          ["Symptom Coverage", "", "", "", "=COUNTIFS(E4:E8, \">0\") / 5", "=COUNTIFS(F4:F8, \">0\") / 5", "=COUNTIFS(G4:G8, \">0\") / 5", "=COUNTIFS(H4:H8, \">0\") / 5", "=COUNTIFS(I4:I8, \">0\") / 5", "=COUNTIFS(J4:J8, \">0\") / 5", "=COUNTIFS(K4:K8, \">0\") / 5", "=COUNTIFS(L4:L8, \">0\") / 5", "=COUNTIFS(M4:M8, \">0\") / 5", "=COUNTIFS(N4:N8, \">0\") / 5", "=COUNTIFS(O4:O8, \">0\") / 5", ""],
-          ["Sum of Grades", "", "", "", "=SUMPRODUCT(E4:E8, $D$4:$D$8)", "=SUMPRODUCT(F4:F8, $D$4:$D$8)", "=SUMPRODUCT(G4:G8, $D$4:$D$8)", "=SUMPRODUCT(H4:H8, $D$4:$D$8)", "=SUMPRODUCT(I4:I8, $D$4:$D$8)", "=SUMPRODUCT(J4:J8, $D$4:$D$8)", "=SUMPRODUCT(K4:K8, $D$4:$D$8)", "=SUMPRODUCT(L4:L8, $D$4:$D$8)", "=SUMPRODUCT(M4:M8, $D$4:$D$8)", "=SUMPRODUCT(N4:N8, $D$4:$D$8)", "=SUMPRODUCT(O4:O8, $D$4:$D$8)", ""],
-          ["Totality Rank Score", "", "", "", "=(E11*100) + E12", "=(F11*100) + F12", "=(G11*100) + G12", "=(H11*100) + H12", "=(I11*100) + I12", "=(J11*100) + J12", "=(K11*100) + K12", "=(L11*100) + L12", "=(M11*100) + M12", "=(N11*100) + N12", "=(O11*100) + O12", ""],
+          ["Symptom Coverage", "", "", "", 
+            "=COUNTIFS(E4:E13, \">0\") / MAX(1, COUNTA($D$4:$D$13))", 
+            "=COUNTIFS(F4:F13, \">0\") / MAX(1, COUNTA($D$4:$D$13))", 
+            "=COUNTIFS(G4:G13, \">0\") / MAX(1, COUNTA($D$4:$D$13))", 
+            "=COUNTIFS(H4:H13, \">0\") / MAX(1, COUNTA($D$4:$D$13))", 
+            "=COUNTIFS(I4:I13, \">0\") / MAX(1, COUNTA($D$4:$D$13))", 
+            "=COUNTIFS(J4:J13, \">0\") / MAX(1, COUNTA($D$4:$D$13))", 
+            "=COUNTIFS(K4:K13, \">0\") / MAX(1, COUNTA($D$4:$D$13))", 
+            "=COUNTIFS(L4:L13, \">0\") / MAX(1, COUNTA($D$4:$D$13))", 
+            "=COUNTIFS(M4:M13, \">0\") / MAX(1, COUNTA($D$4:$D$13))", 
+            "=COUNTIFS(N4:N13, \">0\") / MAX(1, COUNTA($D$4:$D$13))", 
+            "=COUNTIFS(O4:O13, \">0\") / MAX(1, COUNTA($D$4:$D$13))", ""],
+          ["Sum of Grades", "", "", "", 
+            "=SUMPRODUCT(E4:E13, $D$4:$D$13)", 
+            "=SUMPRODUCT(F4:F13, $D$4:$D$13)", 
+            "=SUMPRODUCT(G4:G13, $D$4:$D$13)", 
+            "=SUMPRODUCT(H4:H13, $D$4:$D$13)", 
+            "=SUMPRODUCT(I4:I13, $D$4:$D$13)", 
+            "=SUMPRODUCT(J4:J13, $D$4:$D$13)", 
+            "=SUMPRODUCT(K4:K13, $D$4:$D$13)", 
+            "=SUMPRODUCT(L4:L13, $D$4:$D$13)", 
+            "=SUMPRODUCT(M4:M13, $D$4:$D$13)", 
+            "=SUMPRODUCT(N4:N13, $D$4:$D$13)", 
+            "=SUMPRODUCT(O4:O13, $D$4:$D$13)", ""],
+          ["Totality Rank Score", "", "", "", 
+            "=(E16*100) + E17", 
+            "=(F16*100) + F17", 
+            "=(G16*100) + G17", 
+            "=(H16*100) + H17", 
+            "=(I16*100) + I17", 
+            "=(J16*100) + J17", 
+            "=(K16*100) + K17", 
+            "=(L16*100) + L17", 
+            "=(M16*100) + M17", 
+            "=(N16*100) + N17", 
+            "=(O16*100) + O17", ""],
           ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
           ["Top Remedy Ranking", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
-          ["Rank 1", "=INDEX($E$3:$O$3, MATCH(MAX(E13:O13), E13:O13, 0))", "Score", "=MAX(E13:O13)", "", "", "", "", "", "", "", "", "", "", "", ""],
-          ["Rank 2", "=INDEX($E$3:$O$3, MATCH(LARGE(E13:O13, 2), E13:O13, 0))", "Score", "=LARGE(E13:O13, 2)", "", "", "", "", "", "", "", "", "", "", "", ""],
-          ["Rank 3", "=INDEX($E$3:$O$3, MATCH(LARGE(E13:O13, 3), E13:O13, 0))", "Score", "=LARGE(E13:O13, 3)", "", "", "", "", "", "", "", "", "", "", "", ""]
+          ["Rank 1", "=INDEX($E$3:$O$3, MATCH(MAX(E18:O18), E18:O18, 0))", "Score", "=MAX(E18:O18)", "", "", "", "", "", "", "", "", "", "", "", ""],
+          ["Rank 2", "=INDEX($E$3:$O$3, MATCH(LARGE(E18:O18, 2), E18:O18, 0))", "Score", "=LARGE(E18:O18, 2)", "", "", "", "", "", "", "", "", "", "", "", ""],
+          ["Rank 3", "=INDEX($E$3:$O$3, MATCH(LARGE(E18:O18, 3), E18:O18, 0))", "Score", "=LARGE(E18:O18, 3)", "", "", "", "", "", "", "", "", "", "", "", ""]
         ];
 
         // Normalize and map inputs to align with mock and premium options
@@ -646,7 +684,7 @@ export async function createPatientClinicalSheet(
               { range: "'Dashboard'!A1:H9", values: dashboardValues },
               { range: "'Case Taking'!A1:D55", values: caseTakingValues },
               { range: "'Follow-Up Tracker'!A1:G4", values: followUpValues },
-              { range: "'Repertorization'!A1:P18", values: repertoryValues },
+              { range: "'Repertorization'!A1:P23", values: repertoryValues },
               { range: "'Treatment Planner'!A1:G21", values: plannerValues },
               { range: "'Finance'!A1:H11", values: financeValues },
               { range: "'AI Repertory Lab'!A1:H14", values: aiRepertoryValues },
@@ -1494,7 +1532,7 @@ export async function createPatientClinicalSheet(
         // Formatting for Repertorization
         const repertoryId = sheetsMap["Repertorization"];
         if (repertoryId !== undefined) {
-          requests.push(...getRepertoryFormattingRequests(repertoryId, 5));
+          requests.push(...getRepertoryFormattingRequests(repertoryId, 10));
         }
 
         // Formatting for Treatment Planner
@@ -4749,7 +4787,8 @@ export async function syncRepertoryToClinicalSheet(
       return;
     }
 
-    const lastRubricRow = 4 + N - 1;
+    const numRubrics = Math.max(10, N);
+    const lastRubricRow = 4 + numRubrics - 1;
 
     const rows: any[][] = [
       Array(totalCols).fill(""),
@@ -4773,9 +4812,28 @@ export async function syncRepertoryToClinicalSheet(
       // Totality Score formula: e.g. "=D4*SUM(E4:O4)"
       const firstRemCol = getColumnLetter(4);
       const lastRemCol = getColumnLetter(4 + M - 1);
-      rowValues.push(`=D${rowNum}*SUM(${firstRemCol}${rowNum}:${lastRemCol}${rowNum})`);
+      rowValues.push(`=IF(D${rowNum}="", "", D${rowNum}*SUM(${firstRemCol}${rowNum}:${lastRemCol}${rowNum}))`);
       rows.push(rowValues);
     });
+
+    // Pad remaining rows up to numRubrics
+    for (let idx = N; idx < numRubrics; idx++) {
+      const rowNum = 4 + idx;
+      const rowValues = [
+        "", // Rubric Name
+        "", // Chapter / Location
+        "", // Source
+        ""  // Importance Weight
+      ];
+      remedies.forEach(() => {
+        rowValues.push("");
+      });
+      
+      const firstRemCol = getColumnLetter(4);
+      const lastRemCol = getColumnLetter(4 + M - 1);
+      rowValues.push(`=IF(D${rowNum}="", "", D${rowNum}*SUM(${firstRemCol}${rowNum}:${lastRemCol}${rowNum}))`);
+      rows.push(rowValues);
+    }
 
     // Add spacer rows
     rows.push(Array(totalCols).fill(""));
@@ -4790,7 +4848,7 @@ export async function syncRepertoryToClinicalSheet(
     const coverageRow = ["Symptom Coverage", "", "", ""];
     remedies.forEach((rem, idx) => {
       const colLetter = getColumnLetter(4 + idx);
-      coverageRow.push(`=COUNTIFS(${colLetter}4:${colLetter}${lastRubricRow}, ">0") / ${N}`);
+      coverageRow.push(`=COUNTIFS(${colLetter}4:${colLetter}${lastRubricRow}, ">0") / MAX(1, COUNTA($D$4:$D$${lastRubricRow}))`);
     });
     coverageRow.push("");
     rows.push(coverageRow);
@@ -4864,8 +4922,8 @@ export async function syncRepertoryToClinicalSheet(
       }
     });
 
-    // Apply dynamic formatting to match the number of rubrics (N) and remedies (M)
-    const formattingRequests = getRepertoryFormattingRequests(repertoryId, N, existingRules, M);
+    // Apply dynamic formatting to match the number of rubrics (numRubrics) and remedies (M)
+    const formattingRequests = getRepertoryFormattingRequests(repertoryId, numRubrics, existingRules, M);
     await sheets.spreadsheets.batchUpdate({
       spreadsheetId: sheetId,
       requestBody: {

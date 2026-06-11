@@ -25,5 +25,40 @@ service cloud.firestore {
     function getUserData() {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
     }
+
+    // Repertory collections rules
+    match /rubrics/{rubricId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+    
+    match /synonyms/{synonymId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+
+    match /favorites/{favoriteId} {
+      allow read, write: if request.auth != null && (
+        favoriteId == request.auth.uid || 
+        (resource != null && resource.data.userId == request.auth.uid) || 
+        (request.resource != null && request.resource.data.userId == request.auth.uid)
+      );
+    }
+
+    match /repertorization_sessions/{sessionId} {
+      allow read, write: if request.auth != null;
+    }
+
+    match /settings/{settingsId} {
+      allow read, write: if request.auth != null;
+    }
+
+    match /ai_telemetry_logs/{logId} {
+      allow read, write: if request.auth != null;
+    }
+
+    match /conversations/{conversationId} {
+      allow read, write: if request.auth != null && conversationId == request.auth.uid;
+    }
   }
 }

@@ -53,10 +53,37 @@ export async function GET() {
       console.warn("Boericke repertory data not found in any path. Will serve empty.");
     }
 
+    // Load Jethwani clinical rubrics from Firestore with fallback
+    let jethwaniData: any[] = [];
+    try {
+      const { adminDb } = require("@/lib/firebaseAdmin");
+      const rubricsSnap = await adminDb.collection("rubrics").where("status", "==", "active").get();
+      rubricsSnap.forEach((doc: any) => {
+        jethwaniData.push(doc.data());
+      });
+      
+      if (jethwaniData.length === 0) {
+        console.warn("Jethwani rubrics collection is empty. Loading fallback data.");
+        const { JETHWANI_REPERTORY_DATA } = require("@/lib/repertoryData");
+        jethwaniData = JETHWANI_REPERTORY_DATA;
+      } else {
+        console.log(`Loaded ${jethwaniData.length} Jethwani rubrics from Firestore.`);
+      }
+    } catch (e) {
+      console.warn("Failed to load Jethwani rubrics from Firestore. Using local fallback:", e);
+      try {
+        const { JETHWANI_REPERTORY_DATA } = require("@/lib/repertoryData");
+        jethwaniData = JETHWANI_REPERTORY_DATA;
+      } catch (err) {
+        console.error("Local fallback load failed:", err);
+      }
+    }
+
     return NextResponse.json({
       success: true,
       kent: kentData,
-      boericke: boerickeData
+      boericke: boerickeData,
+      jethwani: jethwaniData
     });
   } catch (error: any) {
     console.error("Repertory API failed:", error);

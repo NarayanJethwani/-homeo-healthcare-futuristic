@@ -323,7 +323,7 @@ const packages: Package[] = [
 export interface SavedConfig {
   id: string;
   name: string;
-  careLevel: "mild" | "moderate" | "focused" | "organ" | "comprehensive";
+  careLevel: "mild" | "moderate" | "focused" | "organ" | "comprehensive" | "acute_critical";
   billingCycle: "weekly" | "monthly";
   durationValue: number;
   finalPrice: number;
@@ -335,8 +335,8 @@ export interface SavedConfig {
 const careLevelsDetails = {
   mild: {
     title: "Acute & Wellness Care",
-    weeklyPrice: 1000,
-    monthlyPrice: 3500,
+    weeklyPrice: 1200,
+    monthlyPrice: 4200,
     badge: "Acute & General Support",
     icon: "🌱",
     description: "Ideal for general immunity, hair fall, seasonal acute complaints, or general wellness guidance.",
@@ -350,8 +350,8 @@ const careLevelsDetails = {
   },
   moderate: {
     title: "Standard Chronic Care",
-    weeklyPrice: 2000,
-    monthlyPrice: 7500,
+    weeklyPrice: 2400,
+    monthlyPrice: 9000,
     badge: "Focused Chronic Management",
     icon: "⚡",
     description: "Designed for a single chronic condition (e.g. eczema, IBS, thyroid) requiring active tracking and bi-weekly checks.",
@@ -365,8 +365,8 @@ const careLevelsDetails = {
   },
   focused: {
     title: "Deep Systemic Care",
-    weeklyPrice: 3500,
-    monthlyPrice: 12500,
+    weeklyPrice: 4200,
+    monthlyPrice: 15000,
     badge: "Complex Chronic Therapy",
     icon: "🎯",
     description: "Deep management of complex chronic or systemic health conditions (e.g. asthma, migraine, severe eczema).",
@@ -380,8 +380,8 @@ const careLevelsDetails = {
   },
   organ: {
     title: "Advanced Pathological Care",
-    weeklyPrice: 5000,
-    monthlyPrice: 18500,
+    weeklyPrice: 6000,
+    monthlyPrice: 22000,
     badge: "Organ System Recovery",
     icon: "🫁",
     description: "Advanced recovery protocols for deep-seated pathology, including organ system rebalancing and biomarker reviews.",
@@ -395,8 +395,8 @@ const careLevelsDetails = {
   },
   comprehensive: {
     title: "Multisystem Integrative Care",
-    weeklyPrice: 7000,
-    monthlyPrice: 25000,
+    weeklyPrice: 8400,
+    monthlyPrice: 30000,
     badge: "Multi-Organ Intensive Care",
     icon: "🔮",
     description: "For long-standing, multi-system chronic pathologies requiring intensive clinical supervision by Dr. Jethwani.",
@@ -407,6 +407,21 @@ const careLevelsDetails = {
       "Direct priority clinical assistance channel"
     ],
     glowColor: "rgba(244,63,94,0.15)"
+  },
+  acute_critical: {
+    title: "Acute Critical Care",
+    weeklyPrice: 4800,
+    monthlyPrice: 16800,
+    badge: "Intensive Daily Supervision",
+    icon: "🚨",
+    description: "For urgent, high-intensity acute cases requiring daily tracking, frequent remedy adjustments, and intensive physician study.",
+    features: [
+      "Daily doctor clinical review and check-ins",
+      "Intensive daily remedy titration and support",
+      "Emergency/priority WhatsApp communication channel",
+      "Detailed case study and Organon-guided repertorization"
+    ],
+    glowColor: "rgba(239,68,68,0.15)"
   }
 };
 
@@ -522,7 +537,7 @@ const majorIndianCities = [
 
 interface DiseaseConfig {
   name: string;
-  careLevel: "mild" | "moderate" | "focused" | "organ" | "comprehensive";
+  careLevel: "mild" | "moderate" | "focused" | "organ" | "comprehensive" | "acute_critical";
   conditionsCount: number;
   rationale: string;
 }
@@ -726,10 +741,10 @@ export default function StorePage() {
   const [viewMode, setViewMode] = useState<"dashboard" | "catalog" | "doctorPlan">("dashboard");
 
   // Calculator states
-  const [careLevel, setCareLevel] = useState<"mild" | "moderate" | "focused" | "organ" | "comprehensive">("mild");
+  const [careLevel, setCareLevel] = useState<"mild" | "moderate" | "focused" | "organ" | "comprehensive" | "acute_critical">("mild");
   const [billingCycle, setBillingCycle] = useState<"weekly" | "monthly">("weekly");
   const [durationValue, setDurationValue] = useState<number>(1); // Default to 1 period (1 month or 4 weeks depending on cycle)
-  const [conditionsCount, setConditionsCount] = useState<number>(1); // 1, 2, or 3
+  const [conditionsCount, setConditionsCount] = useState<number>(1); // 1, 2, 3, 4, 5
 
   // Saved configs list
   const [savedConfigs, setSavedConfigs] = useState<SavedConfig[]>([]);
@@ -741,9 +756,9 @@ export default function StorePage() {
   const [isGuidelinesOpen, setIsGuidelinesOpen] = useState(false);
   const [triageStep, setTriageStep] = useState<number | "result">(1);
   const [triageAnswers, setTriageAnswers] = useState({
-    symptomsComplexity: "moderate", // 'mild' | 'moderate' | 'focused' | 'organ'
-    conditionsNumber: 1, // 1 | 2 | 3
-    supervisionNeed: "standard" // 'standard' | 'high'
+    symptomsComplexity: "moderate", // 'mild' | 'moderate' | 'focused' | 'organ' | 'acute_critical'
+    conditionsNumber: 1, // 1 | 2 | 3 | 4 | 5
+    supervisionNeed: "standard" // 'standard' | 'high' | 'urgent'
   });
   const [triageRecommendationExplanation, setTriageRecommendationExplanation] = useState<string | null>(null);
 
@@ -812,7 +827,7 @@ export default function StorePage() {
     durationText: string;
     conditionsText: string;
     discountPercent: number;
-    careLevel?: "mild" | "moderate" | "focused" | "organ" | "comprehensive";
+    careLevel?: "mild" | "moderate" | "focused" | "organ" | "comprehensive" | "acute_critical";
     conditionsCount?: number;
     durationValue?: number;
   } | null>(null);
@@ -853,7 +868,7 @@ export default function StorePage() {
         setViewMode(modeParam as any);
       }
       
-      if (levelParam && ["mild", "moderate", "focused", "organ", "comprehensive"].includes(levelParam)) {
+      if (levelParam && ["mild", "moderate", "focused", "organ", "comprehensive", "acute_critical"].includes(levelParam)) {
         setCareLevel(levelParam as any);
       }
       
@@ -870,7 +885,7 @@ export default function StorePage() {
 
       if (conditionsParam) {
         const val = parseInt(conditionsParam);
-        if (val === 1 || val === 2 || val === 3) {
+        if (val >= 1 && val <= 5) {
           setConditionsCount(val);
         }
       }
@@ -902,19 +917,19 @@ export default function StorePage() {
     
     // Dynamic coordination surcharges lookup based on care level and cycle
     const surchargesLookup = {
-      mild: { weekly2: 300, weekly3: 600, monthly2: 1000, monthly3: 2000 },
-      moderate: { weekly2: 500, weekly3: 1000, monthly2: 1500, monthly3: 3000 },
-      focused: { weekly2: 800, weekly3: 1600, monthly2: 2500, monthly3: 5000 },
-      organ: { weekly2: 1200, weekly3: 2400, monthly2: 3500, monthly3: 7000 },
-      comprehensive: { weekly2: 1500, weekly3: 3000, monthly2: 4500, monthly3: 9000 },
+      mild: { unitWeekly: 360, unitMonthly: 1200 },
+      moderate: { unitWeekly: 600, unitMonthly: 1800 },
+      focused: { unitWeekly: 1000, unitMonthly: 3000 },
+      organ: { unitWeekly: 1500, unitMonthly: 4200 },
+      comprehensive: { unitWeekly: 1800, unitMonthly: 5400 },
+      acute_critical: { unitWeekly: 1200, unitMonthly: 3600 }
     };
 
     let surcharge = 0;
-    const tierSurcharges = surchargesLookup[level];
-    if (conditions === 2) {
-      surcharge = cycle === "weekly" ? tierSurcharges.weekly2 : tierSurcharges.monthly2;
-    } else if (conditions >= 3) {
-      surcharge = cycle === "weekly" ? tierSurcharges.weekly3 : tierSurcharges.monthly3;
+    if (conditions > 1) {
+      const tierSurcharges = surchargesLookup[level];
+      const unit = cycle === "weekly" ? tierSurcharges.unitWeekly : tierSurcharges.unitMonthly;
+      surcharge = (conditions - 1) * unit;
     }
 
     const adjustedBasePrice = basePrice + surcharge;
@@ -991,7 +1006,15 @@ export default function StorePage() {
     const durationText = billingCycle === "weekly"
       ? `${durationValue} ${durationValue === 1 ? "Week" : "Weeks"}`
       : `${durationValue} ${durationValue === 1 ? "Month" : "Months"}`;
-    const conditionsText = conditionsCount === 1 ? "1 Cond." : conditionsCount === 2 ? "2 Cond." : "3+ Cond.";
+    const conditionsText = conditionsCount === 1 
+      ? "1 Cond." 
+      : conditionsCount === 2 
+        ? "2 Cond." 
+        : conditionsCount === 3 
+          ? "3 Cond." 
+          : conditionsCount === 4 
+            ? "4 Cond." 
+            : "5+ Cond.";
 
     const newConfig: SavedConfig = {
       id: Math.random().toString(36).substring(2, 9),
@@ -1127,7 +1150,11 @@ export default function StorePage() {
       ? "1 Condition (Standard)" 
       : conditionsCount === 2 
         ? "2 co-existing conditions" 
-        : "3+ co-existing conditions";
+        : conditionsCount === 3
+          ? "3 co-existing conditions"
+          : conditionsCount === 4
+            ? "4 co-existing conditions"
+            : "5+ co-existing conditions";
       
     setCheckoutPlan({
       title: details.title,
@@ -1199,7 +1226,11 @@ export default function StorePage() {
       ? "1 Condition (Standard)" 
       : (config.conditionsCount || 1) === 2 
         ? "2 co-existing conditions" 
-        : "3+ co-existing conditions";
+        : (config.conditionsCount || 1) === 3
+          ? "3 co-existing conditions"
+          : (config.conditionsCount || 1) === 4
+            ? "4 co-existing conditions"
+            : "5+ co-existing conditions";
 
     setCheckoutPlan({
       title: details.title,
@@ -1238,9 +1269,11 @@ export default function StorePage() {
   const getTriageRecommendation = () => {
     const { symptomsComplexity, conditionsNumber, supervisionNeed } = triageAnswers;
     
-    let recommendedLevel: "mild" | "moderate" | "focused" | "organ" | "comprehensive" = "focused";
+    let recommendedLevel: "mild" | "moderate" | "focused" | "organ" | "comprehensive" | "acute_critical" = "focused";
     
-    if (supervisionNeed === "high") {
+    if (supervisionNeed === "urgent" || symptomsComplexity === "acute_critical") {
+      recommendedLevel = "acute_critical";
+    } else if (supervisionNeed === "high") {
       if (symptomsComplexity === "organ" || conditionsNumber >= 3) {
         recommendedLevel = "comprehensive";
       } else {
@@ -1259,7 +1292,7 @@ export default function StorePage() {
         if (conditionsNumber === 1) recommendedLevel = "focused";
         else recommendedLevel = "organ";
       } else {
-        if (conditionsNumber === 3) recommendedLevel = "comprehensive";
+        if (conditionsNumber >= 3) recommendedLevel = "comprehensive";
         else recommendedLevel = "organ";
       }
     }
@@ -1278,13 +1311,15 @@ export default function StorePage() {
     supervisionNeed: string
   ) => {
     let detail = "";
-    if (recommendedLevel === "mild") {
+    if (recommendedLevel === "acute_critical") {
+      detail = "Your case is an urgent acute case requiring daily clinical monitoring, frequent remedy adjustments, and priority supervision.";
+    } else if (recommendedLevel === "mild") {
       detail = "You have a single mild, seasonal, or acute condition that can be managed with standard constitutional support and guidelines.";
     } else if (recommendedLevel === "moderate") {
       detail = "Your condition is chronic but localized to a single primary issue (such as eczema or IBS), which fits constitutional tracking with bi-weekly coordination.";
     } else if (recommendedLevel === "focused") {
       if (symptomsComplexity === "mild" && conditionsNumber >= 3) {
-        detail = "Although your symptoms are mild individually, managing 3+ co-existing complaints requires a focused systemic plan to coordinate remedies without interactions.";
+        detail = "Although your symptoms are mild individually, managing multiple co-existing complaints requires a focused systemic plan to coordinate remedies without interactions.";
       } else {
         detail = "Your primary concern involves a deep-seated target system (like bronchial asthma or severe psoriasis), which requires targeted high-potency organ-level care.";
       }
@@ -1610,20 +1645,23 @@ export default function StorePage() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
                       {(() => {
                         const surchargesLookup = {
-                          mild: { weekly2: 300, weekly3: 600, monthly2: 1000, monthly3: 2000 },
-                          moderate: { weekly2: 500, weekly3: 1000, monthly2: 1500, monthly3: 3000 },
-                          focused: { weekly2: 800, weekly3: 1600, monthly2: 2500, monthly3: 5000 },
-                          organ: { weekly2: 1200, weekly3: 2400, monthly2: 3500, monthly3: 7000 },
-                          comprehensive: { weekly2: 1500, weekly3: 3000, monthly2: 4500, monthly3: 9000 },
+                          mild: { unitWeekly: 360, unitMonthly: 1200 },
+                          moderate: { unitWeekly: 600, unitMonthly: 1800 },
+                          focused: { unitWeekly: 1000, unitMonthly: 3000 },
+                          organ: { unitWeekly: 1500, unitMonthly: 4200 },
+                          comprehensive: { unitWeekly: 1800, unitMonthly: 5400 },
+                          acute_critical: { unitWeekly: 1200, unitMonthly: 3600 }
                         };
                         const activeTierSurcharges = surchargesLookup[careLevel];
                         const items = [
-                          { count: 1, label: "1 Condition", surchargeText: "Standard plan coverage", surchargeInfo: "No coordination fee" },
-                          { count: 2, label: "2 Conditions", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.weekly2} / week` : `+₹${activeTierSurcharges.monthly2} / month`, surchargeInfo: "Dual-condition coordination" },
-                          { count: 3, label: "3+ Conditions", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.weekly3} / week` : `+₹${activeTierSurcharges.monthly3} / month`, surchargeInfo: "Complex multi-condition management" }
+                          { count: 1, label: "1 Condition", surchargeText: "Standard plan", surchargeInfo: "No coordination fee" },
+                          { count: 2, label: "2 Conditions", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly} / wk` : `+₹${activeTierSurcharges.unitMonthly} / mo`, surchargeInfo: "Dual-condition coordination" },
+                          { count: 3, label: "3 Conditions", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly * 2} / wk` : `+₹${activeTierSurcharges.unitMonthly * 2} / mo`, surchargeInfo: "Triple-condition mapping" },
+                          { count: 4, label: "4 Conditions", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly * 3} / wk` : `+₹${activeTierSurcharges.unitMonthly * 3} / mo`, surchargeInfo: "Quad-condition tracking" },
+                          { count: 5, label: "5+ Conditions", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly * 4} / wk` : `+₹${activeTierSurcharges.unitMonthly * 4} / mo`, surchargeInfo: "Complex multi-system coordination" }
                         ];
 
                         return items.map((item) => {
@@ -1814,7 +1852,7 @@ export default function StorePage() {
 
                         {conditionsCount > 1 && (
                           <div className="flex justify-between text-xs text-slate-500 font-bold uppercase tracking-wider">
-                            <span>Coordination Fee ({conditionsCount === 2 ? "2 Conditions" : "3+ Conditions"})</span>
+                            <span>Coordination Fee ({conditionsCount} Conds)</span>
                             <span>+₹{activePricing.surcharge.toLocaleString("en-IN")} / {billingCycle === "weekly" ? "wk" : "mo"}</span>
                           </div>
                         )}
@@ -1826,7 +1864,7 @@ export default function StorePage() {
                           </div>
                         )}
 
-                        <div className="flex justify-between text-xs text-slate-500 font-bold uppercase tracking-wider border-b border-slate-900/5 pb-2">
+                        <div className="flex justify-between text-xs text-slate-500 font-bold uppercase tracking-wider">
                           <span>Timeline ({durationValue} {billingCycle === "weekly" ? (durationValue === 1 ? "week" : "weeks") : (durationValue === 1 ? "month" : "months")})</span>
                           <span>₹{activePricing.rawTotal.toLocaleString("en-IN")}</span>
                         </div>
@@ -1838,7 +1876,18 @@ export default function StorePage() {
                           </div>
                         )}
 
-                        <div className="pt-2 border-t border-slate-900/5 flex justify-between items-baseline">
+                        <div className="pt-2 border-t border-slate-900/5 space-y-1.5">
+                          <div className="flex justify-between text-[10px] text-slate-500 font-bold uppercase tracking-wider">
+                            <span>Care Period</span>
+                            <span className="text-slate-800 font-extrabold">{billingCycle === "weekly" ? durationValue * 7 : durationValue * 30} Days</span>
+                          </div>
+                          <div className="flex justify-between text-[10px] text-slate-500 font-bold uppercase tracking-wider border-b border-slate-900/5 pb-2">
+                            <span>Daily Cost Equivalent</span>
+                            <span className="text-emerald-700 font-extrabold">₹{Math.round(activePricing.finalPrice / (billingCycle === "weekly" ? durationValue * 7 : durationValue * 30))}/day</span>
+                          </div>
+                        </div>
+
+                        <div className="pt-1 flex justify-between items-baseline">
                           <span className="text-xs font-black text-slate-900 uppercase">Total Cost</span>
                           <div className="text-right">
                             <span className="text-3xl font-black text-[#1A2421] font-sans">
@@ -2025,9 +2074,17 @@ export default function StorePage() {
                                 <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-full border ${badgeClass}`}>
                                   {details.title}
                                 </span>
-                                <span className="text-[8px] font-bold uppercase px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200/50">
-                                  {cond.conditionsCount === 1 ? "1 Condition" : cond.conditionsCount === 2 ? "2 Conditions" : "3+ Conditions"}
-                                </span>
+                                 <span className="text-[8px] font-bold uppercase px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200/50">
+                                   {cond.conditionsCount === 1 
+                                     ? "1 Condition" 
+                                     : cond.conditionsCount === 2 
+                                       ? "2 Conditions" 
+                                       : cond.conditionsCount === 3
+                                         ? "3 Conditions"
+                                         : cond.conditionsCount === 4
+                                           ? "4 Conditions"
+                                           : "5+ Conditions"}
+                                 </span>
                               </div>
                             </div>
 
@@ -3250,7 +3307,8 @@ export default function StorePage() {
                         { key: "mild", label: "Acute or Mild Complaints", desc: "Short-term/mild issues like acute seasonal colds, mild acne, general hair fall, or minor indigestion." },
                         { key: "moderate", label: "Single Chronic Condition", desc: "A persistent long-standing issue localized to one organ/system, e.g. chronic sinusitis, mild thyroid dysfunction, localized eczema." },
                         { key: "focused", label: "Deep Constitutional / Organ System Pathology", desc: "Requires targeted management of a complex system, e.g. bronchial asthma, severe psoriasis, hormonal acne with PCOS, chronic vascular migraines." },
-                        { key: "organ", label: "Severe Systemic Pathology", desc: "Advanced or multi-organ chronic complaints, e.g. Chronic Kidney Disease (CKD), liver cirrhosis, advanced rheumatoid arthritis." }
+                        { key: "organ", label: "Severe Systemic Pathology", desc: "Advanced or multi-organ chronic complaints, e.g. Chronic Kidney Disease (CKD), liver cirrhosis, advanced rheumatoid arthritis." },
+                        { key: "acute_critical", label: "Urgent / Critical Acute Condition", desc: "Urgent acute illness requiring daily check-ins, frequent remedy titrations, and high-priority supervision." }
                       ].map((item) => (
                         <div
                           key={item.key}
@@ -3343,7 +3401,8 @@ export default function StorePage() {
                     <div className="space-y-3">
                       {[
                         { key: "standard", label: "Standard Clinical Management", desc: "Regular progress tracking checks every 2 to 4 weeks. No immediate need for laboratory analysis integrations." },
-                        { key: "high", label: "High Supervision & Medical Reviews", desc: "Requires regular blood/lab report review comparisons, multi-remedy coordination, or direct clinician oversight by Dr. Jethwani." }
+                        { key: "high", label: "High Supervision & Medical Reviews", desc: "Requires regular blood/lab report review comparisons, multi-remedy coordination, or direct clinician oversight by Dr. Jethwani." },
+                        { key: "urgent", label: "Urgent / Daily Clinical Coordination", desc: "Requires daily clinical reviews, immediate dosage adjustments, and priority communications." }
                       ].map((item) => (
                         <div
                           key={item.key}
@@ -3396,7 +3455,7 @@ export default function StorePage() {
                             </span>
                             <h4 className="text-lg font-black text-[#1A2421]">{recDetails.title}</h4>
                             <span className="text-[10px] text-slate-500 font-bold uppercase block mt-0.5">
-                              For {rec.conditionsCount === 1 ? "1 Condition" : rec.conditionsCount === 2 ? "2 Conditions" : "3+ Conditions"}
+                              For {rec.conditionsCount === 1 ? "1 Condition" : rec.conditionsCount === 2 ? "2 Conditions" : rec.conditionsCount === 3 ? "3 Conditions" : rec.conditionsCount === 4 ? "4 Conditions" : "5+ Conditions"}
                             </span>
                           </div>
                           <span className="text-3xl">{recDetails.icon}</span>
