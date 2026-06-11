@@ -984,6 +984,18 @@ export default function StorePage() {
     }
   }, [walkInAge]);
 
+  // Lock body scroll when checkout modal or triage helper is open to prevent double scrollbars and layout shifts
+  useEffect(() => {
+    if (isCheckoutOpen || isHelperOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isCheckoutOpen, isHelperOpen]);
+
 
   const calculatePricing = (
     level: keyof typeof careLevelsDetails,
@@ -3809,7 +3821,7 @@ export default function StorePage() {
           {isCheckoutOpen && checkoutPlan && (
             <div 
               data-lenis-prevent
-              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md overflow-y-auto"
+              className="fixed inset-0 z-50 flex items-start justify-center p-4 md:py-12 bg-slate-900/60 backdrop-blur-md overflow-y-auto"
             >
               <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
