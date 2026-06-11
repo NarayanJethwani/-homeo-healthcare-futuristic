@@ -1562,7 +1562,7 @@ export async function POST(request: Request) {
       if (rawModelName === "gemini-3.5-pro" || rawModelName === "gemini-1.5-pro" || rawModelName === "gemini-2.5-pro") {
         apiModelName = "gemini-2.5-flash"; // Quota workaround for pro models
       } else if (rawModelName === "gemini-1.5-flash" || rawModelName === "gemini-flash-latest" || rawModelName === "gemini-pro-latest") {
-        apiModelName = "gemini-1.5-flash";
+        apiModelName = "gemini-2.5-flash-lite"; // Map 1.5-flash to 2.5-flash-lite to avoid 404 unsupported model errors
       } else if (rawModelName === "gemini-2.5-flash" || rawModelName === "gemini-2.5-flash-lite" || rawModelName === "gemini-3.5-flash" || rawModelName === "gemini-2.0-flash") {
         apiModelName = rawModelName;
       } else if (rawModelName.includes("qwen") || rawModelName.includes("deepseek") || rawModelName.includes("llama") || rawModelName.includes("mistral")) {

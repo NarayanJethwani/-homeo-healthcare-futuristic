@@ -7996,11 +7996,10 @@ ${err.message || err}`);
                       <div className="space-y-4 animate-fadeIn">
                         {/* Drag & Drop or Browse upload zone */}
                         <div 
-                          onClick={() => !isImportingLocalFile && document.getElementById("laptop-file-picker")?.click()}
                           className="border-2 border-dashed border-slate-200 hover:border-mint/60 bg-slate-50/50 hover:bg-slate-50 rounded-2xl p-4 flex flex-col items-center justify-center text-center cursor-pointer transition-all relative min-h-[120px]"
                         >
                           {isImportingLocalFile ? (
-                            <div className="flex flex-col items-center justify-center gap-2">
+                            <div className="pointer-events-none flex flex-col items-center justify-center gap-2">
                               <RefreshCw className="w-6 h-6 text-mint animate-spin" />
                               <span className="text-[9px] font-black text-slate-700 uppercase tracking-wide">Importing & Parsing File...</span>
                               <span className="text-[8px] text-slate-400">Gemini is extracting report text</span>
@@ -8010,14 +8009,16 @@ ${err.message || err}`);
                               <input
                                 id="laptop-file-picker"
                                 type="file"
-                                className="hidden"
                                 accept=".pdf,.png,.jpg,.jpeg,.txt"
                                 onChange={handleLaptopFileImport}
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                               />
-                              <UploadCloud className="w-7 h-7 text-slate-400" />
-                              <span className="text-[9px] font-black text-slate-700 uppercase tracking-wide mt-1.5">Drag & Drop or Browse</span>
-                              <span className="text-[8px] text-slate-400 mt-0.5">Click to select files from Laptop</span>
-                              <span className="text-[8px] font-mono font-bold text-mint bg-mint/5 px-1.5 py-0.5 rounded border border-mint/10 mt-2">Support Multi-file Upload</span>
+                              <div className="pointer-events-none flex flex-col items-center justify-center">
+                                <UploadCloud className="w-7 h-7 text-slate-400" />
+                                <span className="text-[9px] font-black text-slate-700 uppercase tracking-wide mt-1.5">Drag & Drop or Browse</span>
+                                <span className="text-[8px] text-slate-400 mt-0.5">Click to select files from Laptop</span>
+                                <span className="text-[8px] font-mono font-bold text-mint bg-mint/5 px-1.5 py-0.5 rounded border border-mint/10 mt-2">Support Multi-file Upload</span>
+                              </div>
                             </>
                           )}
                         </div>
@@ -22979,11 +22980,13 @@ Exported on: ${new Date().toLocaleDateString()}
                           type="file"
                           accept=".csv"
                           onChange={handleCSVImport}
-                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                         />
-                        <Upload className="w-8 h-8 text-slate-400 group-hover:text-mint mx-auto mb-2 transition-colors" />
-                        <span className="block text-xs font-bold text-slate-800">Choose Exported Patient CSV File</span>
-                        <span className="block text-[9.5px] text-slate-400 font-semibold mt-0.5">Drag & drop or browse your local file</span>
+                        <div className="pointer-events-none">
+                          <Upload className="w-8 h-8 text-slate-400 group-hover:text-mint mx-auto mb-2 transition-colors" />
+                          <span className="block text-xs font-bold text-slate-800">Choose Exported Patient CSV File</span>
+                          <span className="block text-[9.5px] text-slate-400 font-semibold mt-0.5">Drag & drop or browse your local file</span>
+                        </div>
                       </div>
                     </>
                   ) : importMethod === "google" ? (
@@ -23113,20 +23116,20 @@ Exported on: ${new Date().toLocaleDateString()}
                           accept=".txt,.pdf,.docx,.png,.jpg,.jpeg"
                           onChange={handleMedicalFileImport}
                           disabled={isAnalyzingFile}
-                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed z-10"
                         />
                         {isAnalyzingFile ? (
-                          <div className="space-y-2 py-2">
+                          <div className="pointer-events-none space-y-2 py-2">
                             <div className="w-8 h-8 rounded-full border-2 border-slate-200 border-t-mint animate-spin mx-auto"></div>
                             <span className="block text-xs font-bold text-slate-800">Analyzing Document with AI...</span>
                             <span className="block text-[9.5px] text-slate-400 font-semibold mt-0.5">Extracting patient details and clinical history</span>
                           </div>
                         ) : (
-                          <>
+                          <div className="pointer-events-none">
                             <Upload className="w-8 h-8 text-slate-400 group-hover:text-mint mx-auto mb-2 transition-colors" />
                             <span className="block text-xs font-bold text-slate-800">Choose Case Document or Image</span>
                             <span className="block text-[9.5px] text-slate-400 font-semibold mt-0.5">Supports PDF, DOCX, Text, and Photos</span>
-                          </>
+                          </div>
                         )}
                       </div>
                     </>

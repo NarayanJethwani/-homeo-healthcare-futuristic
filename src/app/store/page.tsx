@@ -1710,52 +1710,62 @@ export default function StorePage() {
                       )}
                     </AnimatePresence>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
-
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                       {(Object.keys(careLevelsDetails) as (keyof typeof careLevelsDetails)[]).map((level) => {
                         const active = careLevel === level;
                         const details = careLevelsDetails[level];
                         const displayPrice = billingCycle === "weekly" ? details.weeklyPrice : details.monthlyPrice;
                         
                         return (
-                          <div
+                          <button
+                            type="button"
                             key={level}
                             onClick={() => setCareLevel(level)}
-                            className={`glass-panel p-4 rounded-2xl flex flex-col justify-between cursor-pointer transition-all duration-300 relative group overflow-hidden ${
+                            className={`p-3 rounded-2xl border text-left transition-all duration-300 flex items-center gap-3 cursor-pointer hover:-translate-y-0.5 active:scale-[0.98] relative group overflow-hidden ${
                               active
-                                ? "border-mint bg-mint/[0.04] ring-2 ring-mint/10"
-                                : "border-slate-200/60 hover:border-slate-800 bg-white/30"
+                                ? "border-mint bg-mint/[0.06] ring-1 ring-mint/20 shadow-md shadow-mint/5"
+                                : "border-slate-200/80 hover:border-slate-800 bg-white/40 hover:bg-white/70"
                             }`}
                           >
-                            {/* Spotlight glow */}
-                            <div 
-                              className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                              style={{
-                                background: `radial-gradient(circle at 50% 50%, ${details.glowColor} 0%, transparent 70%)`
-                              }}
-                            />
-
-                            <div>
-                              <div className="text-2xl mb-3 flex items-center justify-between">
-                                <span>{details.icon}</span>
-                                {active && <div className="w-1.5 h-1.5 rounded-full bg-mint breathe" />}
-                              </div>
-                              <h4 className="text-sm font-bold text-[#1A2421] leading-tight mb-1">{details.title}</h4>
-                              <p className="text-[9px] text-slate-500 font-semibold leading-normal line-clamp-3 mb-4">
-                                {details.description}
-                              </p>
-                            </div>
-
-                            <div className="pt-3 border-t border-slate-900/5">
-                              <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Base Rate</span>
-                              <span className="text-sm font-black text-[#1A2421] font-sans">
-                                ₹{displayPrice.toLocaleString("en-IN")}
+                            <span className="text-xl p-1.5 bg-white/60 dark:bg-slate-950/20 rounded-xl shadow-sm border border-slate-100/30">
+                              {details.icon}
+                            </span>
+                            <div className="flex-1 min-w-0">
+                              <h4 className="text-xs font-black text-slate-900 leading-tight truncate">{details.title}</h4>
+                              <span className="text-[10px] font-bold text-slate-500 font-sans block mt-0.5">
+                                ₹{displayPrice.toLocaleString("en-IN")}/{billingCycle === "weekly" ? "wk" : "mo"}
                               </span>
-                              <span className="text-[9px] text-slate-500 font-semibold">/{billingCycle === "weekly" ? "wk" : "mo"}</span>
                             </div>
-                          </div>
+                            {active && <div className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-mint breathe" />}
+                          </button>
                         );
                       })}
+                    </div>
+
+                    {/* Active Care Level details & features */}
+                    <div className="p-4 border-l-4 border-l-mint border-y border-r border-slate-200/60 bg-white/30 backdrop-blur-sm rounded-2xl space-y-3 shadow-sm hover:border-slate-300 transition-all duration-300">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg">{activeDetails.icon}</span>
+                          <h4 className="text-xs font-black text-[#1A2421] uppercase tracking-wider">{activeDetails.title} Details</h4>
+                          <span className="text-[8px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-mint/10 text-mint-dark border border-mint/25">
+                            {activeDetails.badge}
+                          </span>
+                        </div>
+                      </div>
+                      <p className="text-xs text-slate-500 font-semibold leading-relaxed">
+                        {activeDetails.description}
+                      </p>
+                      
+                      {/* Features mini grid */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2.5 border-t border-slate-900/5">
+                        {activeDetails.features.map((feature, idx) => (
+                          <div key={idx} className="flex items-start gap-2 text-[10px] font-extrabold uppercase tracking-tight text-slate-600">
+                            <span className="text-mint">✓</span>
+                            <span>{feature}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
 
@@ -1766,7 +1776,7 @@ export default function StorePage() {
                         <span className="text-[10px] font-bold text-mint uppercase tracking-widest block mb-1">Step 1.5</span>
                         <h2 className="text-xl font-bold text-[#1A2421]">Co-existing Conditions</h2>
                         <p className="text-xs text-slate-500 font-semibold mt-1">
-                          Do you have multiple co-existing mild/moderate conditions? Select to include dynamic coordination fee tracking.
+                          Do you have multiple co-existing mild/moderate conditions? Select to include coordination tracking.
                         </p>
                       </div>
                       <div className="w-10 h-10 bg-mint/5 border border-mint/10 text-mint rounded-2xl flex items-center justify-center flex-shrink-0">
@@ -1774,7 +1784,7 @@ export default function StorePage() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
                       {(() => {
                         const surchargesLookup = {
                           mild: { unitWeekly: 360, unitMonthly: 1200 },
@@ -1786,37 +1796,34 @@ export default function StorePage() {
                         };
                         const activeTierSurcharges = surchargesLookup[careLevel];
                         const items = [
-                          { count: 1, label: "1 Condition", surchargeText: "Standard plan", surchargeInfo: "No coordination fee" },
-                          { count: 2, label: "2 Conditions", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly} / wk` : `+₹${activeTierSurcharges.unitMonthly} / mo`, surchargeInfo: "Dual-condition coordination" },
-                          { count: 3, label: "3 Conditions", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly * 2} / wk` : `+₹${activeTierSurcharges.unitMonthly * 2} / mo`, surchargeInfo: "Triple-condition mapping" },
-                          { count: 4, label: "4 Conditions", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly * 3} / wk` : `+₹${activeTierSurcharges.unitMonthly * 3} / mo`, surchargeInfo: "Quad-condition tracking" },
-                          { count: 5, label: "5+ Conditions", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly * 4} / wk` : `+₹${activeTierSurcharges.unitMonthly * 4} / mo`, surchargeInfo: "Complex multi-system coordination" }
+                          { count: 1, label: "1 Condition", surchargeText: "Included", surchargeInfo: "Standard base plan" },
+                          { count: 2, label: "2 Conditions", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly}/wk` : `+₹${activeTierSurcharges.unitMonthly}/mo`, surchargeInfo: "Dual coordination" },
+                          { count: 3, label: "3 Conditions", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly * 2}/wk` : `+₹${activeTierSurcharges.unitMonthly * 2}/mo`, surchargeInfo: "Triple mapping" },
+                          { count: 4, label: "4 Conditions", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly * 3}/wk` : `+₹${activeTierSurcharges.unitMonthly * 3}/mo`, surchargeInfo: "Quad coordination" },
+                          { count: 5, label: "5+ Conditions", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly * 4}/wk` : `+₹${activeTierSurcharges.unitMonthly * 4}/mo`, surchargeInfo: "Complex multi-system" }
                         ];
 
                         return items.map((item) => {
                           const active = conditionsCount === item.count;
                           return (
-                            <div
+                            <button
+                              type="button"
                               key={item.count}
                               onClick={() => setConditionsCount(item.count)}
-                              className={`glass-panel p-4 rounded-2xl cursor-pointer transition-all duration-300 flex flex-col justify-between relative group ${
+                              className={`p-3 rounded-xl border text-center transition-all duration-300 flex flex-col justify-between cursor-pointer hover:-translate-y-0.5 active:scale-[0.98] ${
                                 active
-                                  ? "border-mint bg-mint/[0.04] ring-2 ring-mint/10"
-                                  : "border-slate-200/60 hover:border-slate-800 bg-white/30"
+                                  ? "border-mint bg-mint/[0.04] ring-1 ring-mint/20 font-bold"
+                                  : "border-slate-200/60 hover:border-slate-800 text-slate-700 bg-white/40 hover:bg-white"
                               }`}
                             >
                               <div>
-                                <div className="flex justify-between items-center mb-2">
-                                  <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">{item.label}</h4>
-                                  {active && <div className="w-1.5 h-1.5 rounded-full bg-mint breathe" />}
-                                </div>
-                                <p className="text-[10px] text-slate-500 font-semibold mb-3">{item.surchargeInfo}</p>
+                                <span className="text-[10px] font-black uppercase tracking-wider block">{item.label}</span>
+                                <span className="text-[8px] text-slate-400 font-semibold block mt-0.5 leading-none">{item.surchargeInfo}</span>
                               </div>
-                              <div className="pt-2 border-t border-slate-900/5">
-                                <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider block">Surcharge</span>
-                                <span className="text-xs font-black text-[#1A2421]">{item.surchargeText}</span>
-                              </div>
-                            </div>
+                              <span className="text-[9px] font-black block mt-2 pt-1 border-t border-slate-900/5 text-mint-dark font-sans">
+                                {item.surchargeText}
+                              </span>
+                            </button>
                           );
                         });
                       })()}
@@ -1838,17 +1845,18 @@ export default function StorePage() {
                       </div>
                     </div>
 
-                    <div className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
                       {/* Cycle Selector */}
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-slate-900/5 rounded-2xl border border-slate-200/50">
-                        <div>
-                          <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider">Billing Frequency</h4>
-                          <p className="text-[10px] text-slate-500 font-semibold">Choose weekly or monthly billing</p>
+                      <div className="md:col-span-4 p-4 bg-slate-900/5 rounded-2xl border border-slate-200/50 flex flex-col justify-center h-full">
+                        <div className="mb-2">
+                          <h4 className="text-[10px] font-black text-[#1A2421] uppercase tracking-wider">Billing Frequency</h4>
+                          <p className="text-[8px] text-slate-400 font-bold uppercase mt-0.5">Weekly vs Monthly</p>
                         </div>
-                        <div className="flex items-center gap-1.5 bg-white/60 p-1 rounded-full border border-slate-200/50">
+                        <div className="flex items-center gap-1 bg-white/60 p-0.5 rounded-full border border-slate-200/50 w-fit">
                           <button
+                            type="button"
                             onClick={() => handleCycleChange("weekly")}
-                            className={`px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
+                            className={`px-3 py-1 rounded-full text-[9px] font-extrabold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
                               billingCycle === "weekly"
                                 ? "bg-[#1A2421] text-white shadow-sm"
                                 : "text-slate-500 hover:text-[#1A2421]"
@@ -1857,95 +1865,65 @@ export default function StorePage() {
                             Weekly
                           </button>
                           <button
+                            type="button"
                             onClick={() => handleCycleChange("monthly")}
-                            className={`px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 cursor-pointer ${
+                            className={`px-3 py-1 rounded-full text-[9px] font-extrabold uppercase tracking-wider transition-all duration-300 flex items-center gap-1 cursor-pointer ${
                               billingCycle === "monthly"
                                 ? "bg-[#1A2421] text-white shadow-sm"
                                 : "text-slate-500 hover:text-[#1A2421]"
                             }`}
                           >
                             Monthly
-                            <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-emerald-500 text-white font-black tracking-normal">
-                              SAVE ~17%
+                            <span className="text-[7px] px-1 py-0.5 rounded-full bg-emerald-500 text-white font-black tracking-normal">
+                              SAVE 17%
                             </span>
                           </button>
                         </div>
                       </div>
 
-                      {/* Duration Buttons Selector */}
-                      <div className="space-y-3">
+                      {/* Duration selector */}
+                      <div className="md:col-span-8 space-y-2 h-full flex flex-col justify-center">
                         <div className="flex justify-between items-center">
-                          <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider">Duration of Commitment</h4>
-                          <span className="text-[10px] text-mint font-bold uppercase tracking-wider flex items-center gap-1">
-                            <Clock className="w-3.5 h-3.5" />
-                            Active Discount: {activePricing.discountPercent}% Off
+                          <h4 className="text-[10px] font-black text-[#1A2421] uppercase tracking-wider">Duration of Commitment</h4>
+                          <span className="text-[9px] text-mint font-bold uppercase tracking-wider flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            Discount: {activePricing.discountPercent}% Off
                           </span>
                         </div>
                         
-                        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-                          {billingCycle === "weekly" ? (
-                            // Weeks Options
-                            [
-                              { value: 1, label: "1 Week", desc: "No Discount" },
-                              { value: 2, label: "2 Weeks", desc: "5% Discount" },
-                              { value: 4, label: "4 Weeks", desc: "10% Discount" },
-                              { value: 8, label: "8 Weeks", desc: "15% Discount" },
-                              { value: 12, label: "12 Weeks", desc: "20% Discount" }
-                            ].map((opt) => (
-                              <button
-                                key={opt.value}
-                                onClick={() => setDurationValue(opt.value)}
-                                className={`p-3 rounded-xl border text-center transition-all duration-300 cursor-pointer ${
-                                  durationValue === opt.value
-                                    ? "border-mint bg-mint/[0.04] text-mint-dark font-bold"
-                                    : "border-slate-200/50 hover:border-slate-800 text-slate-700 bg-white/40 hover:bg-white"
-                                }`}
-                              >
-                                <span className="text-xs block font-bold">{opt.label}</span>
-                                <span className="text-[8px] text-slate-500 block mt-0.5 font-semibold">{opt.desc}</span>
-                              </button>
-                            ))
-                          ) : (
-                            // Months Options
-                            [
-                              { value: 1, label: "1 Month", desc: "10% Discount" },
-                              { value: 2, label: "2 Months", desc: "15% Discount" },
-                              { value: 3, label: "3 Months", desc: "20% Discount" },
-                              { value: 6, label: "6 Months", desc: "25% Discount" },
-                              { value: 12, label: "12 Months", desc: "30% Discount" }
-                            ].map((opt) => (
-                              <button
-                                key={opt.value}
-                                onClick={() => setDurationValue(opt.value)}
-                                className={`p-3 col-span-1 rounded-xl border text-center transition-all duration-300 cursor-pointer ${
-                                  durationValue === opt.value
-                                    ? "border-mint bg-mint/[0.04] text-mint-dark font-bold"
-                                    : "border-slate-200/50 hover:border-slate-800 text-slate-700 bg-white/40 hover:bg-white"
-                                }`}
-                              >
-                                <span className="text-xs block font-bold">{opt.label}</span>
-                                <span className="text-[8px] text-slate-500 block mt-0.5 font-semibold">{opt.desc}</span>
-                              </button>
-                            ))
-                          )}
+                        <div className="grid grid-cols-5 gap-1.5">
+                          {(billingCycle === "weekly"
+                            ? [
+                                { value: 1, label: "1 Wk", desc: "0%" },
+                                { value: 2, label: "2 Wks", desc: "5%" },
+                                { value: 4, label: "4 Wks", desc: "10%" },
+                                { value: 8, label: "8 Wks", desc: "15%" },
+                                { value: 12, label: "12 Wks", desc: "20%" }
+                              ]
+                            : [
+                                { value: 1, label: "1 Mo", desc: "10%" },
+                                { value: 2, label: "2 Mos", desc: "15%" },
+                                { value: 3, label: "3 Mos", desc: "20%" },
+                                { value: 6, label: "6 Mos", desc: "25%" },
+                                { value: 12, label: "12 Mos", desc: "30%" }
+                              ]
+                          ).map((opt) => (
+                            <button
+                              type="button"
+                              key={opt.value}
+                              onClick={() => setDurationValue(opt.value)}
+                              className={`py-2 px-1 rounded-xl border text-center transition-all duration-300 cursor-pointer ${
+                                durationValue === opt.value
+                                  ? "border-mint bg-mint/[0.04] text-mint-dark font-black"
+                                  : "border-slate-200/50 hover:border-slate-800 text-slate-700 bg-white/40 hover:bg-white"
+                              }`}
+                            >
+                              <span className="text-xs block font-bold leading-none">{opt.label}</span>
+                              <span className="text-[8px] text-slate-400 block mt-1 leading-none font-semibold font-sans">{opt.desc}</span>
+                            </button>
+                          ))}
                         </div>
                       </div>
-                    </div>
-                  </div>
-
-                  {/* Step 3: Detailed Included Features Checklist */}
-                  <div className="glass-panel border-white/60 bg-white/40 rounded-3xl p-6 md:p-8 space-y-6">
-                    <h3 className="text-base font-bold text-[#1A2421] border-b border-slate-900/5 pb-4 flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-mint" />
-                      Specialized Features Included in {activeDetails.title}
-                    </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {activeDetails.features.map((feature, idx) => (
-                        <div key={idx} className="flex items-start gap-3 p-3 rounded-xl bg-white/20 border border-white/40">
-                          <CheckCircle2 className="w-4 h-4 text-mint flex-shrink-0 mt-0.5" />
-                          <span className="text-xs text-slate-700 font-semibold leading-relaxed">{feature}</span>
-                        </div>
-                      ))}
                     </div>
                   </div>
                 </div>
@@ -2692,202 +2670,180 @@ export default function StorePage() {
                       </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {/* Name */}
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Patient Name *</label>
-                        <input
-                          type="text"
-                          required
-                          value={walkInName}
-                          onChange={(e) => setWalkInName(e.target.value)}
-                          placeholder="Full Name"
-                          className="w-full p-3 rounded-xl border border-slate-200/80 bg-white/40 backdrop-blur-sm text-sm focus:outline-none focus:border-[#1A2421] focus:ring-4 focus:ring-mint/[0.08] hover:border-slate-300 hover:bg-white/60 transition-all duration-300 shadow-inner shadow-slate-950/[0.01]"
-                        />
-                      </div>
+                    {/* 2-Column Grid Layout */}
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                      
+                      {/* Left Column (8 cols): Inputs */}
+                      <div className="lg:col-span-8 space-y-6 text-left">
+                        
+                        {/* Section A: Patient Personal Info */}
+                        <div className="glass-panel border-slate-200/50 bg-white/20 p-5 rounded-2xl space-y-4">
+                          <h4 className="text-xs font-black text-[#1A2421] uppercase tracking-wider border-b border-slate-900/5 pb-2">
+                            1. Patient Demographics & Intake
+                          </h4>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {/* Name */}
+                            <div className="space-y-1">
+                              <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Patient Name *</label>
+                              <input
+                                type="text"
+                                required
+                                value={walkInName}
+                                onChange={(e) => setWalkInName(e.target.value)}
+                                placeholder="Full Name"
+                                className="w-full p-3 rounded-xl border border-slate-200/80 bg-white/40 backdrop-blur-sm text-sm focus:outline-none focus:border-[#1A2421] focus:ring-4 focus:ring-mint/[0.08] hover:border-slate-300 hover:bg-white/60 transition-all duration-300 shadow-inner"
+                              />
+                            </div>
 
-                      {/* Phone */}
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">WhatsApp Number *</label>
-                        <input
-                          type="tel"
-                          required
-                          value={walkInPhone}
-                          onChange={(e) => setWalkInPhone(e.target.value)}
-                          placeholder="Phone / Mobile"
-                          className="w-full p-3 rounded-xl border border-slate-200/80 bg-white/40 backdrop-blur-sm text-sm focus:outline-none focus:border-[#1A2421] focus:ring-4 focus:ring-mint/[0.08] hover:border-slate-300 hover:bg-white/60 transition-all duration-300 shadow-inner shadow-slate-950/[0.01]"
-                        />
-                      </div>
+                            {/* Phone */}
+                            <div className="space-y-1">
+                              <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">WhatsApp Number *</label>
+                              <input
+                                type="tel"
+                                required
+                                value={walkInPhone}
+                                onChange={(e) => setWalkInPhone(e.target.value)}
+                                placeholder="Phone / Mobile"
+                                className="w-full p-3 rounded-xl border border-slate-200/80 bg-white/40 backdrop-blur-sm text-sm focus:outline-none focus:border-[#1A2421] focus:ring-4 focus:ring-mint/[0.08] hover:border-slate-300 hover:bg-white/60 transition-all duration-300 shadow-inner"
+                              />
+                            </div>
 
-                      {/* Email */}
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Email Address</label>
-                        <input
-                          type="email"
-                          value={walkInEmail}
-                          onChange={(e) => setWalkInEmail(e.target.value)}
-                          placeholder="email@example.com (Optional)"
-                          className="w-full p-3 rounded-xl border border-slate-200/80 bg-white/40 backdrop-blur-sm text-sm focus:outline-none focus:border-[#1A2421] focus:ring-4 focus:ring-mint/[0.08] hover:border-slate-300 hover:bg-white/60 transition-all duration-300 shadow-inner shadow-slate-950/[0.01]"
-                        />
-                      </div>
-                    </div>
+                            {/* Email */}
+                            <div className="space-y-1">
+                              <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Email Address</label>
+                              <input
+                                type="email"
+                                value={walkInEmail}
+                                onChange={(e) => setWalkInEmail(e.target.value)}
+                                placeholder="email@example.com (Optional)"
+                                className="w-full p-3 rounded-xl border border-slate-200/80 bg-white/40 backdrop-blur-sm text-sm focus:outline-none focus:border-[#1A2421] focus:ring-4 focus:ring-mint/[0.08] hover:border-slate-300 hover:bg-white/60 transition-all duration-300 shadow-inner"
+                              />
+                            </div>
+                          </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {/* Age */}
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Age *</label>
-                        <input
-                          type="number"
-                          required
-                          value={walkInAge}
-                          onChange={(e) => setWalkInAge(e.target.value)}
-                          placeholder="Age"
-                          min="0"
-                          max="120"
-                          className="w-full p-3 rounded-xl border border-slate-200/80 bg-white/40 backdrop-blur-sm text-sm focus:outline-none focus:border-[#1A2421] focus:ring-4 focus:ring-mint/[0.08] hover:border-slate-300 hover:bg-white/60 transition-all duration-300 shadow-inner shadow-slate-950/[0.01]"
-                        />
-                      </div>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {/* Age */}
+                            <div className="space-y-1">
+                              <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Age *</label>
+                              <input
+                                type="number"
+                                required
+                                value={walkInAge}
+                                onChange={(e) => setWalkInAge(e.target.value)}
+                                placeholder="Age"
+                                min="0"
+                                max="120"
+                                className="w-full p-3 rounded-xl border border-slate-200/80 bg-white/40 backdrop-blur-sm text-sm focus:outline-none focus:border-[#1A2421] focus:ring-4 focus:ring-mint/[0.08] hover:border-slate-300 hover:bg-white/60 transition-all duration-300 shadow-inner"
+                              />
+                            </div>
 
-                      {/* Gender */}
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Gender *</label>
-                        <select
-                          value={walkInGender}
-                          onChange={(e) => setWalkInGender(e.target.value)}
-                          className="w-full p-3 rounded-xl border border-slate-200/80 bg-white/40 backdrop-blur-sm text-sm focus:outline-none focus:border-[#1A2421] focus:ring-4 focus:ring-mint/[0.08] hover:border-slate-300 hover:bg-white/60 transition-all duration-300 shadow-inner shadow-slate-950/[0.01] cursor-pointer"
-                        >
-                          <option value="Male">Male</option>
-                          <option value="Female">Female</option>
-                          <option value="Other">Other</option>
-                        </select>
-                      </div>
-
-                      {/* Intake Type */}
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Appointment Type *</label>
-                        <select
-                          value={walkInType}
-                          onChange={(e) => setWalkInType(e.target.value)}
-                          className="w-full p-3 rounded-xl border border-slate-200/80 bg-white/40 backdrop-blur-sm text-sm focus:outline-none focus:border-[#1A2421] focus:ring-4 focus:ring-mint/[0.08] hover:border-slate-300 hover:bg-white/60 transition-all duration-300 shadow-inner shadow-slate-950/[0.01] cursor-pointer"
-                        >
-                          <option value="Walk-In Appointment">Walk-In Appointment</option>
-                          <option value="Let Doctor Design Plan">Let Doctor Design Plan</option>
-                          <option value="Tele-Health Consultation">Tele-Health Consultation</option>
-                          <option value="Shipping / Courier Delivery">Shipping / Courier Delivery</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    {/* Shipping Address field - appears conditionally */}
-                    {walkInType === "Shipping / Courier Delivery" && (
-                      <div className="space-y-1 animate-fadeIn text-left">
-                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">Courier Shipping Address *</label>
-                        <textarea
-                          required
-                          rows={3}
-                          value={walkInAddress}
-                          onChange={(e) => setWalkInAddress(e.target.value)}
-                          placeholder="Enter complete shipping address including City, State, ZIP/Pin Code and Country..."
-                          className="w-full p-3 rounded-xl border border-slate-200 bg-white/50 text-sm focus:outline-none focus:border-slate-800 transition-all resize-none animate-fadeIn"
-                        />
-                      </div>
-                    )}
-
-                    <div className="grid grid-cols-1 gap-4">
-                      {/* Care Complexity Tier Selector */}
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">Estimated Care Complexity Level *</label>
-                        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                          {Object.entries(careLevelsDetails).map(([key, details]) => {
-                            const tierTheme = {
-                              mild: {
-                                activeClass: "border-teal-400 bg-teal-500/[0.04] ring-1 ring-teal-300/30 text-teal-800 dark:text-teal-400 shadow-md",
-                                textClass: "text-teal-700 dark:text-teal-400",
-                                glow: "rgba(20,184,166,0.15)"
-                              },
-                              moderate: {
-                                activeClass: "border-purple-400 bg-purple-500/[0.04] ring-1 ring-purple-300/30 text-purple-800 dark:text-purple-400 shadow-md",
-                                textClass: "text-purple-700 dark:text-purple-400",
-                                glow: "rgba(168,85,247,0.15)"
-                              },
-                              focused: {
-                                activeClass: "border-sky-400 bg-sky-500/[0.04] ring-1 ring-sky-300/30 text-sky-800 dark:text-sky-400 shadow-md",
-                                textClass: "text-sky-700 dark:text-sky-400",
-                                glow: "rgba(14,165,233,0.15)"
-                              },
-                              organ: {
-                                activeClass: "border-emerald-400 bg-emerald-500/[0.04] ring-1 ring-emerald-300/30 text-emerald-800 dark:text-emerald-400 shadow-md",
-                                textClass: "text-emerald-700 dark:text-emerald-400",
-                                glow: "rgba(16,185,129,0.15)"
-                              },
-                              comprehensive: {
-                                activeClass: "border-rose-400 bg-rose-500/[0.04] ring-1 ring-rose-300/30 text-rose-800 dark:text-rose-400 shadow-md",
-                                textClass: "text-rose-700 dark:text-rose-400",
-                                glow: "rgba(244,63,94,0.15)"
-                              }
-                            }[key] || {
-                              activeClass: "border-mint bg-mint/[0.04] ring-1 ring-mint/20 text-slate-900 shadow-md",
-                              textClass: "text-slate-900",
-                              glow: "rgba(16,185,129,0.1)"
-                            };
-
-                            const isSelected = walkInTier === key;
-                            return (
-                              <button
-                                key={key}
-                                type="button"
-                                onClick={() => setWalkInTier(key)}
-                                style={{
-                                  boxShadow: isSelected ? `0 8px 24px -4px ${tierTheme.glow}, 0 4px 8px -4px ${tierTheme.glow}` : "none"
-                                }}
-                                className={`p-3 text-left border rounded-2xl transition-all duration-300 flex flex-col justify-between cursor-pointer hover:-translate-y-0.5 active:scale-[0.98] ${
-                                  isSelected
-                                    ? tierTheme.activeClass
-                                    : "border-slate-200/80 hover:border-slate-400 bg-white/40 hover:bg-white/60"
-                                }`}
+                            {/* Gender */}
+                            <div className="space-y-1">
+                              <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Gender *</label>
+                              <select
+                                value={walkInGender}
+                                onChange={(e) => setWalkInGender(e.target.value)}
+                                className="w-full p-3 rounded-xl border border-slate-200/80 bg-white/40 backdrop-blur-sm text-sm focus:outline-none focus:border-[#1A2421] focus:ring-4 focus:ring-mint/[0.08] hover:border-slate-300 hover:bg-white/60 transition-all duration-300 shadow-inner cursor-pointer"
                               >
-                                <div className="flex items-center justify-between w-full mb-1">
-                                  <span className="text-lg">{details.icon}</span>
-                                  <span className={`text-[8px] font-extrabold uppercase px-1.5 py-0.5 rounded-full transition-colors ${
-                                    isSelected ? "bg-slate-900/10 text-slate-800" : "bg-slate-900/5 text-slate-500"
-                                  }`}>
-                                    {key}
-                                  </span>
-                                </div>
-                                <div className="space-y-0.5">
-                                  <span className="text-[10px] font-black text-slate-900 leading-tight block">{details.title}</span>
-                                  <span className={`text-[9px] font-black block transition-colors ${
-                                    isSelected ? tierTheme.textClass : "text-mint-dark"
-                                  }`}>
-                                    ₹{(walkInBillingCycle === "weekly" ? details.weeklyPrice : details.monthlyPrice).toLocaleString("en-IN")}
-                                    /{walkInBillingCycle === "weekly" ? "wk" : "mo"}
-                                  </span>
-                                </div>
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                              </select>
+                            </div>
 
-                      {/* Pricing grid & Details & Calculations Wrapper */}
-                      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                        {/* Selector Controls Column (8 cols) */}
-                        <div className="lg:col-span-8 space-y-6">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {/* Billing Frequency Selector */}
-                            <div className="p-4 bg-white/40 backdrop-blur-sm rounded-2xl border border-white/60 space-y-3 shadow-sm hover:border-slate-300 transition-all duration-300">
+                            {/* Appointment Type */}
+                            <div className="space-y-1">
+                              <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Appointment Type *</label>
+                              <select
+                                value={walkInType}
+                                onChange={(e) => setWalkInType(e.target.value)}
+                                className="w-full p-3 rounded-xl border border-slate-200/80 bg-white/40 backdrop-blur-sm text-sm focus:outline-none focus:border-[#1A2421] focus:ring-4 focus:ring-mint/[0.08] hover:border-slate-300 hover:bg-white/60 transition-all duration-300 shadow-inner cursor-pointer"
+                              >
+                                <option value="Walk-In Appointment">Walk-In Appointment</option>
+                                <option value="Let Doctor Design Plan">Let Doctor Design Plan</option>
+                                <option value="Tele-Health Consultation">Tele-Health Consultation</option>
+                                <option value="Shipping / Courier Delivery">Shipping / Courier Delivery</option>
+                              </select>
+                            </div>
+                          </div>
+
+                          {/* Shipping Address */}
+                          {walkInType === "Shipping / Courier Delivery" && (
+                            <div className="space-y-1 animate-fadeIn text-left pt-2">
+                              <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">Courier Shipping Address *</label>
+                              <textarea
+                                required
+                                rows={3}
+                                value={walkInAddress}
+                                onChange={(e) => setWalkInAddress(e.target.value)}
+                                placeholder="Enter complete shipping address including City, State, ZIP/Pin Code and Country..."
+                                className="w-full p-3 rounded-xl border border-slate-200 bg-white/50 text-sm focus:outline-none focus:border-slate-800 transition-all resize-none"
+                              />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Section B: Complexity & Pricing Parameters */}
+                        <div className="glass-panel border-slate-200/50 bg-white/20 p-5 rounded-2xl space-y-4">
+                          <h4 className="text-xs font-black text-[#1A2421] uppercase tracking-wider border-b border-slate-900/5 pb-2">
+                            2. Clinical Complexity & Rates
+                          </h4>
+
+                          {/* Complexity level grid */}
+                          <div className="space-y-2 text-left">
+                            <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">Estimated Care Complexity Level *</label>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                              {Object.entries(careLevelsDetails).map(([key, details]) => {
+                                const activeClass = {
+                                  mild: "border-teal-400 bg-teal-500/[0.04] ring-1 ring-teal-300/30 text-teal-800 shadow-md",
+                                  moderate: "border-purple-400 bg-purple-500/[0.04] ring-1 ring-purple-300/30 text-purple-800 shadow-md",
+                                  focused: "border-sky-400 bg-sky-500/[0.04] ring-1 ring-sky-300/30 text-sky-800 shadow-md",
+                                  organ: "border-emerald-400 bg-emerald-500/[0.04] ring-1 ring-emerald-300/30 text-emerald-800 shadow-md",
+                                  comprehensive: "border-rose-400 bg-rose-500/[0.04] ring-1 ring-rose-300/30 text-rose-800 shadow-md",
+                                  acute_critical: "border-red-400 bg-red-500/[0.04] ring-1 ring-red-300/30 text-red-800 shadow-md"
+                                }[key] || "border-mint bg-mint/[0.04] text-slate-900 shadow-md";
+
+                                const isSelected = walkInTier === key;
+                                return (
+                                  <button
+                                    key={key}
+                                    type="button"
+                                    onClick={() => setWalkInTier(key)}
+                                    className={`p-2.5 text-left border rounded-xl transition-all duration-300 flex items-center gap-2.5 cursor-pointer hover:-translate-y-0.5 active:scale-[0.98] ${
+                                      isSelected
+                                        ? activeClass
+                                        : "border-slate-200/80 hover:border-slate-400 bg-white/40 hover:bg-white/60"
+                                    }`}
+                                  >
+                                    <span className="text-xl">{details.icon}</span>
+                                    <div className="min-w-0">
+                                      <span className="text-[10px] font-black text-slate-900 leading-tight truncate block">{details.title}</span>
+                                      <span className="text-[9px] font-bold text-slate-500">
+                                        ₹{(walkInBillingCycle === "weekly" ? details.weeklyPrice : details.monthlyPrice).toLocaleString("en-IN")}/{walkInBillingCycle === "weekly" ? "wk" : "mo"}
+                                      </span>
+                                    </div>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                            {/* Billing Frequency */}
+                            <div className="p-3 bg-white/40 rounded-xl border border-slate-200/60 space-y-2">
                               <div>
-                                <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider">Billing Frequency</h4>
-                                <p className="text-[10px] text-slate-500 font-semibold">Choose weekly or monthly billing</p>
+                                <h4 className="text-[10px] font-black text-[#1A2421] uppercase tracking-wider">Billing Frequency</h4>
+                                <p className="text-[8px] text-slate-400 font-bold uppercase">Weekly vs Monthly</p>
                               </div>
-                              <div className="flex items-center gap-1.5 bg-white/60 p-1 rounded-full border border-slate-200/50 w-fit">
+                              <div className="flex items-center gap-1 bg-white/60 p-0.5 rounded-full border border-slate-200/50 w-fit">
                                 <button
                                   type="button"
                                   onClick={() => {
                                     setWalkInBillingCycle("weekly");
                                     setWalkInDurationValue(1);
                                   }}
-                                  className={`px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
+                                  className={`px-3 py-1 rounded-full text-[9px] font-extrabold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
                                     walkInBillingCycle === "weekly"
                                       ? "bg-[#1A2421] text-white shadow-sm"
                                       : "text-slate-500 hover:text-[#1A2421]"
@@ -2901,103 +2857,95 @@ export default function StorePage() {
                                     setWalkInBillingCycle("monthly");
                                     setWalkInDurationValue(1);
                                   }}
-                                  className={`px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 cursor-pointer ${
+                                  className={`px-3 py-1 rounded-full text-[9px] font-extrabold uppercase tracking-wider transition-all duration-300 flex items-center gap-1 cursor-pointer ${
                                     walkInBillingCycle === "monthly"
                                       ? "bg-[#1A2421] text-white shadow-sm"
                                       : "text-slate-500 hover:text-[#1A2421]"
                                   }`}
                                 >
                                   Monthly
-                                  <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-emerald-500 text-white font-black tracking-normal">
-                                    SAVE ~17%
+                                  <span className="text-[7px] px-1 py-0.5 rounded-full bg-emerald-500 text-white font-black tracking-normal">
+                                    SAVE 17%
                                   </span>
                                 </button>
                               </div>
                             </div>
 
-                            {/* Conditions Selector */}
-                            <div className="p-4 bg-white/40 backdrop-blur-sm rounded-2xl border border-white/60 space-y-3 shadow-sm hover:border-slate-300 transition-all duration-300">
-                              <div className="flex items-start justify-between gap-2">
-                                <div>
-                                  <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider">Conditions Covered</h4>
-                                  <p className="text-[10px] text-slate-500 font-semibold">Active medical concerns to treat</p>
-                                </div>
+                            {/* Conditions Covered */}
+                            <div className="p-3 bg-white/40 rounded-xl border border-slate-200/60 space-y-2">
+                              <div>
+                                <h4 className="text-[10px] font-black text-[#1A2421] uppercase tracking-wider">Conditions Covered</h4>
+                                <p className="text-[8px] text-slate-400 font-bold uppercase">Active concerns to treat</p>
                               </div>
-                              <div className="grid grid-cols-5 gap-1.5">
-                                {[
-                                  { val: 1, label: "1", sub: "Single" },
-                                  { val: 2, label: "2", sub: "Dual" },
-                                  { val: 3, label: "3", sub: "Triple" },
-                                  { val: 4, label: "4", sub: "Quad" },
-                                  { val: 5, label: "5+", sub: "Multi" },
-                                ].map(({ val, label, sub }) => (
+                              <div className="grid grid-cols-5 gap-1">
+                                {[1, 2, 3, 4, 5].map((val) => (
                                   <button
                                     key={val}
                                     type="button"
                                     onClick={() => setWalkInConditionsCount(val)}
-                                    className={`py-2 rounded-xl text-center transition-all duration-300 cursor-pointer border ${
+                                    className={`py-1 rounded-lg text-center transition-all duration-300 cursor-pointer border text-xs font-black ${
                                       walkInConditionsCount === val
-                                        ? "bg-[#1A2421] text-white border-[#1A2421] shadow-sm"
+                                        ? "bg-[#1A2421] text-white border-transparent shadow-sm"
                                         : "bg-white/60 border-slate-200 text-slate-600 hover:border-slate-800 hover:bg-white"
                                     }`}
                                   >
-                                    <span className="block text-sm font-extrabold leading-none">{label}</span>
-                                    <span className={`block text-[8px] font-bold uppercase mt-0.5 ${
-                                      walkInConditionsCount === val ? "text-white/70" : "text-slate-400"
-                                    }`}>{sub}</span>
+                                    {val === 5 ? "5+" : val}
                                   </button>
                                 ))}
                               </div>
-                              <p className="text-[9px] text-slate-400 font-semibold">Not sure how many? <button type="button" onClick={() => { setTriageStep(1); setIsHelperOpen(true); }} className="text-mint font-bold underline cursor-pointer">Use the triage helper →</button></p>
                             </div>
                           </div>
 
-                          {/* Commitment Duration Selector */}
-                          <div className="space-y-2">
-                            <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider">Commitment Duration</h4>
-                            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                          {/* Commitment Duration */}
+                          <div className="space-y-2 pt-2">
+                            <h4 className="text-[10px] font-black text-[#1A2421] uppercase tracking-wider">Commitment Duration</h4>
+                            <div className="grid grid-cols-5 gap-1.5">
                               {(walkInBillingCycle === "weekly"
                                 ? [
-                                    { value: 1, label: "1 Week", desc: "No Discount" },
-                                    { value: 2, label: "2 Weeks", desc: "5% Discount" },
-                                    { value: 4, label: "4 Weeks", desc: "10% Discount" },
-                                    { value: 8, label: "8 Weeks", desc: "15% Discount" },
-                                    { value: 12, label: "12 Weeks", desc: "20% Discount" }
+                                    { value: 1, label: "1 Wk", desc: "0%" },
+                                    { value: 2, label: "2 Wks", desc: "5%" },
+                                    { value: 4, label: "4 Wks", desc: "10%" },
+                                    { value: 8, label: "8 Wks", desc: "15%" },
+                                    { value: 12, label: "12 Wks", desc: "20%" }
                                   ]
                                 : [
-                                    { value: 1, label: "1 Month", desc: "10% Discount" },
-                                    { value: 2, label: "2 Months", desc: "15% Discount" },
-                                    { value: 3, label: "3 Months", desc: "20% Discount" },
-                                    { value: 6, label: "6 Months", desc: "25% Discount" },
-                                    { value: 12, label: "12 Months", desc: "30% Discount" }
+                                    { value: 1, label: "1 Mo", desc: "10%" },
+                                    { value: 2, label: "2 Mos", desc: "15%" },
+                                    { value: 3, label: "3 Mos", desc: "20%" },
+                                    { value: 6, label: "6 Mos", desc: "25%" },
+                                    { value: 12, label: "12 Mos", desc: "30%" }
                                   ]
                               ).map((opt) => (
                                 <button
-                                  key={opt.value}
                                   type="button"
+                                  key={opt.value}
                                   onClick={() => setWalkInDurationValue(opt.value)}
-                                  className={`p-2.5 rounded-xl border text-center transition-all duration-300 cursor-pointer ${
+                                  className={`py-2 px-1 rounded-xl border text-center transition-all duration-300 cursor-pointer ${
                                     walkInDurationValue === opt.value
-                                      ? "border-mint bg-mint/[0.04] text-mint-dark font-bold ring-1 ring-mint/20"
+                                      ? "border-mint bg-mint/[0.04] text-mint-dark font-black ring-1 ring-mint/20"
                                       : "border-slate-200/60 hover:border-slate-800 text-slate-700 bg-white/40 hover:bg-white"
                                   }`}
                                 >
-                                  <span className="text-xs block font-bold">{opt.label}</span>
-                                  <span className="text-[8px] text-slate-500 block mt-0.5 font-semibold">{opt.desc}</span>
+                                  <span className="text-xs block font-bold leading-none">{opt.label}</span>
+                                  <span className="text-[8px] text-slate-400 block mt-1 leading-none font-semibold font-sans">{opt.desc}</span>
                                 </button>
                               ))}
                             </div>
                           </div>
+                        </div>
 
+                        {/* Section C: Concessions & Addons */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          
                           {/* Concession / Discount Override Panel */}
-                          <div className="p-4 bg-white/40 backdrop-blur-sm rounded-2xl border border-white/60 space-y-4 shadow-sm hover:border-slate-300 transition-all duration-300">
+                          <div className="p-4 bg-white/20 border border-slate-200/50 rounded-2xl space-y-4 hover:border-slate-300 transition-all duration-300 text-left">
                             <div className="flex justify-between items-center">
                               <div>
                                 <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider flex items-center gap-1">
                                   <Percent className="w-3.5 h-3.5 text-mint" />
                                   Concession / Discount
                                 </h4>
-                                <p className="text-[10px] text-slate-500 font-semibold">Apply senior, socio-economic, or custom discount</p>
+                                <p className="text-[10px] text-slate-500 font-semibold">Apply senior, socio-economic, or override</p>
                               </div>
                               <label className="relative inline-flex items-center cursor-pointer">
                                 <input
@@ -3021,7 +2969,7 @@ export default function StorePage() {
                                 >
                                   <div className="space-y-1">
                                     <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Concession Type</label>
-                                    <div className="flex gap-2">
+                                    <div className="flex flex-col gap-1.5">
                                       {[
                                         { type: "senior", label: "Senior (15%)" },
                                         { type: "compassionate", label: "Socio-Economic (30%)" },
@@ -3031,9 +2979,9 @@ export default function StorePage() {
                                           key={opt.type}
                                           type="button"
                                           onClick={() => setWalkInConcessionType(opt.type as any)}
-                                          className={`flex-1 py-2 text-center rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all duration-300 border cursor-pointer ${
+                                          className={`py-1.5 px-3 text-left rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all duration-300 border cursor-pointer ${
                                             walkInConcessionType === opt.type
-                                              ? "bg-[#1A2421] text-white border-transparent"
+                                              ? "bg-[#1A2421] text-white border-transparent shadow-sm"
                                               : "bg-white/60 text-slate-500 border-slate-200 hover:border-slate-400"
                                           }`}
                                         >
@@ -3070,14 +3018,14 @@ export default function StorePage() {
                           </div>
 
                           {/* Medicine Add-on Section */}
-                          <div className="p-4 bg-white/40 backdrop-blur-sm rounded-2xl border border-white/60 space-y-4 shadow-sm hover:border-slate-300 transition-all duration-300">
+                          <div className="p-4 bg-white/20 border border-slate-200/50 rounded-2xl space-y-4 hover:border-slate-300 transition-all duration-300 text-left">
                             <div className="flex justify-between items-center">
                               <div>
                                 <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider flex items-center gap-1">
                                   <PlusCircle className="w-3.5 h-3.5 text-mint" />
                                   Add-on for Medicines
                                 </h4>
-                                <p className="text-[10px] text-slate-500 font-semibold">Add extra amount for special remedies, tinctures, or oils</p>
+                                <p className="text-[10px] text-slate-500 font-semibold">Special remedies, tinctures, or oils</p>
                               </div>
                               <label className="relative inline-flex items-center cursor-pointer">
                                 <input
@@ -3101,8 +3049,8 @@ export default function StorePage() {
                                 >
                                   <div className="space-y-3">
                                     {walkInMedicineAddons.map((item, idx) => (
-                                      <div key={item.id} className="flex gap-2.5 items-end">
-                                        <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                      <div key={item.id} className="flex gap-2.5 items-end border-b border-slate-150 pb-2.5 last:border-b-0">
+                                        <div className="flex-1 space-y-2">
                                           <div className="space-y-1">
                                             <label className="text-[9px] font-black text-slate-700 uppercase tracking-wider block">Medicine Type</label>
                                             <select
@@ -3112,7 +3060,7 @@ export default function StorePage() {
                                                 list[idx].type = e.target.value;
                                                 setWalkInMedicineAddons(list);
                                               }}
-                                              className="w-full p-2 py-1.5 rounded-lg border border-slate-200 bg-white/50 text-xs focus:outline-none focus:border-slate-800 transition-all font-semibold"
+                                              className="w-full p-2 py-1.5 rounded-lg border border-slate-200 bg-white/50 text-xs focus:outline-none focus:border-slate-800 transition-all font-semibold cursor-pointer"
                                             >
                                               <option value="Dilution">Dilution (30C / 200C / 1M)</option>
                                               <option value="Mother Tincture">Mother Tincture (Q)</option>
@@ -3123,34 +3071,36 @@ export default function StorePage() {
                                               <option value="Custom/Other">Other Add-on / Custom</option>
                                             </select>
                                           </div>
-                                          <div className="space-y-1">
-                                            <label className="text-[9px] font-black text-slate-700 uppercase tracking-wider block">Specific Remedy / Details</label>
-                                            <input
-                                              type="text"
-                                              value={item.details}
-                                              onChange={(e) => {
-                                                const list = [...walkInMedicineAddons];
-                                                list[idx].details = e.target.value;
-                                                setWalkInMedicineAddons(list);
-                                              }}
-                                              placeholder="e.g. Thuja 200, Arnica Q"
-                                              className="w-full p-2 py-1.5 rounded-lg border border-slate-200 bg-white/50 text-xs focus:outline-none focus:border-slate-800 transition-all font-semibold"
-                                            />
-                                          </div>
-                                          <div className="space-y-1">
-                                            <label className="text-[9px] font-black text-slate-700 uppercase tracking-wider block">Add-on Amount (₹) *</label>
-                                            <input
-                                              type="number"
-                                              min="0"
-                                              value={item.amount}
-                                              onChange={(e) => {
-                                                const list = [...walkInMedicineAddons];
-                                                list[idx].amount = e.target.value;
-                                                setWalkInMedicineAddons(list);
-                                              }}
-                                              placeholder="e.g. 500"
-                                              className="w-full p-2 py-1.5 rounded-lg border border-slate-200 bg-white/50 text-xs focus:outline-none focus:border-slate-800 transition-all font-semibold"
-                                            />
+                                          <div className="grid grid-cols-2 gap-2">
+                                            <div className="space-y-1">
+                                              <label className="text-[9px] font-black text-slate-700 uppercase tracking-wider block">Remedy Name</label>
+                                              <input
+                                                type="text"
+                                                value={item.details}
+                                                onChange={(e) => {
+                                                  const list = [...walkInMedicineAddons];
+                                                  list[idx].details = e.target.value;
+                                                  setWalkInMedicineAddons(list);
+                                                }}
+                                                placeholder="Thuja 200, etc"
+                                                className="w-full p-2 py-1.5 rounded-lg border border-slate-200 bg-white/50 text-xs focus:outline-none focus:border-slate-800 transition-all font-semibold"
+                                              />
+                                            </div>
+                                            <div className="space-y-1">
+                                              <label className="text-[9px] font-black text-slate-700 uppercase tracking-wider block">Amount (₹) *</label>
+                                              <input
+                                                type="number"
+                                                min="0"
+                                                value={item.amount}
+                                                onChange={(e) => {
+                                                  const list = [...walkInMedicineAddons];
+                                                  list[idx].amount = e.target.value;
+                                                  setWalkInMedicineAddons(list);
+                                                }}
+                                                placeholder="500"
+                                                className="w-full p-2 py-1.5 rounded-lg border border-slate-200 bg-white/50 text-xs focus:outline-none focus:border-slate-800 transition-all font-semibold"
+                                              />
+                                            </div>
                                           </div>
                                         </div>
                                         {walkInMedicineAddons.length > 1 && (
@@ -3174,178 +3124,152 @@ export default function StorePage() {
                                       className="w-full py-1.5 text-center rounded-xl bg-slate-50 border border-slate-200 text-[10px] font-bold text-slate-700 flex items-center justify-center gap-1 cursor-pointer hover:bg-slate-100 hover:border-slate-300 transition-all"
                                     >
                                       <Plus className="w-3.5 h-3.5 animate-pulse" />
-                                      <span>Add Another Medicine Type</span>
+                                      <span>Add Another Medicine</span>
                                     </button>
                                   </div>
                                 </motion.div>
                               )}
                             </AnimatePresence>
                           </div>
-
-                          {/* Selected Care Level Detail Box */}
-                          {walkInTier && careLevelsDetails[walkInTier as keyof typeof careLevelsDetails] && (() => {
-                            const selectedDetails = careLevelsDetails[walkInTier as keyof typeof careLevelsDetails];
-                            return (
-                              <div className="p-4 border-l-4 border-l-mint border-y border-r border-slate-200/60 bg-white/40 backdrop-blur-sm rounded-2xl space-y-2.5 animate-fadeIn shadow-sm hover:border-slate-300 transition-all duration-300">
-                                <div className="flex items-center justify-between border-b border-mint/10 pb-2">
-                                  <h4 className="text-xs font-black text-[#1A2421] uppercase tracking-wider flex items-center gap-1.5">
-                                    <span>{selectedDetails.icon}</span>
-                                    <span>{selectedDetails.title} Details</span>
-                                  </h4>
-                                </div>
-                                <p className="text-[10px] text-slate-500 font-semibold leading-relaxed">
-                                  {selectedDetails.description}
-                                </p>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 pt-1.5 border-t border-slate-100">
-                                  {selectedDetails.features.map((feat, idx) => (
-                                    <div key={idx} className="flex items-start gap-1.5 text-[9px] font-extrabold uppercase tracking-tight text-slate-600">
-                                      <span className="text-mint">✓</span>
-                                      <span>{feat}</span>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            );
-                          })()}
                         </div>
 
-                        {/* Calculations summary column (4 cols) */}
-                        <div className="lg:col-span-4">
-                          {walkInTier && careLevelsDetails[walkInTier as keyof typeof careLevelsDetails] && (() => {
-                            const pricing = calculatePricing(
-                              walkInTier as keyof typeof careLevelsDetails,
-                              walkInBillingCycle,
-                              walkInDurationValue,
-                              walkInConditionsCount
-                            );
-                            
-                            const baseConcessionPrice = (() => {
-                              if (!walkInApplyConcession) return pricing.finalPrice;
-                              if (walkInConcessionType === "senior") return Math.round(pricing.finalPrice * 0.85);
-                              if (walkInConcessionType === "compassionate") return Math.round(pricing.finalPrice * 0.70);
-                              if (walkInConcessionType === "override") {
-                                const overrideVal = parseInt(walkInOverridePrice);
-                                return isNaN(overrideVal) ? pricing.finalPrice : Math.max(0, overrideVal);
-                              }
-                              return pricing.finalPrice;
-                            })();
-                            const concessionDiscount = pricing.finalPrice - baseConcessionPrice;
-                            
-                            const addonAmount = (() => {
-                              if (!walkInApplyMedicineAddon) return 0;
-                              return walkInMedicineAddons.reduce((sum, item) => {
-                                const amt = parseInt(item.amount);
-                                return sum + (isNaN(amt) || amt < 0 ? 0 : amt);
-                              }, 0);
-                            })();
-                            
-                            const finalPrice = baseConcessionPrice + addonAmount;
-
-                            return (
-                              <div className="p-6 border border-white/60 bg-white/60 backdrop-blur-md rounded-3xl space-y-4 shadow-md sticky top-6 hover:shadow-lg transition-all duration-300">
-                                <div>
-                                  <span className="text-[8px] font-black text-mint uppercase tracking-wider block">Live Estimate</span>
-                                  <h4 className="text-sm font-black text-slate-900 mt-0.5">Billing Calculation</h4>
-                                </div>
-
-                                <div className="space-y-2 text-xs font-semibold text-slate-700">
-                                  <div className="flex justify-between">
-                                    <span>Base Rate</span>
-                                    <span>₹{pricing.basePrice.toLocaleString("en-IN")} / {walkInBillingCycle === "weekly" ? "wk" : "mo"}</span>
-                                  </div>
-                                  {pricing.surcharge > 0 && (
-                                    <div className="flex justify-between text-amber-600">
-                                      <span>Surcharge</span>
-                                      <span>+₹{pricing.surcharge.toLocaleString("en-IN")} / {walkInBillingCycle === "weekly" ? "wk" : "mo"}</span>
-                                    </div>
-                                  )}
-                                  <div className="flex justify-between border-t border-slate-100 pt-1.5 font-bold text-slate-900">
-                                    <span>Adjusted Rate</span>
-                                    <span>₹{pricing.adjustedBasePrice.toLocaleString("en-IN")} / {walkInBillingCycle === "weekly" ? "wk" : "mo"}</span>
-                                  </div>
-                                  {pricing.discountPercent > 0 && (
-                                    <div className="flex justify-between text-emerald-600">
-                                      <span>Discount ({pricing.discountPercent}%)</span>
-                                      <span>-₹{Math.round(pricing.adjustedBasePrice * walkInDurationValue * (pricing.discountPercent / 100)).toLocaleString("en-IN")}</span>
-                                    </div>
-                                  )}
-                                  {walkInApplyConcession && concessionDiscount > 0 && (
-                                    <div className="flex justify-between text-[#9333ea] font-bold">
-                                      <span>
-                                        Concession ({walkInConcessionType === "senior" ? "Senior 15%" : walkInConcessionType === "compassionate" ? "Socio-Economic 30%" : "Override"})
-                                      </span>
-                                      <span>-₹{concessionDiscount.toLocaleString("en-IN")}</span>
-                                    </div>
-                                  )}
-                                  {walkInApplyConcession && walkInConcessionType === "override" && concessionDiscount < 0 && (
-                                    <div className="flex justify-between text-amber-600 font-bold">
-                                      <span>Override Increase</span>
-                                      <span>+₹{Math.abs(concessionDiscount).toLocaleString("en-IN")}</span>
-                                    </div>
-                                  )}
-                                  {walkInApplyMedicineAddon && walkInMedicineAddons.filter(item => {
-                                    const amt = parseInt(item.amount);
-                                    return !isNaN(amt) && amt > 0;
-                                  }).map((item) => (
-                                    <div key={item.id} className="flex justify-between text-emerald-600 font-bold">
-                                      <span>Add-on: {item.type}{item.details ? ` (${item.details})` : ""}</span>
-                                      <span>+₹{Number(item.amount).toLocaleString("en-IN")}</span>
-                                    </div>
-                                  ))}
-                                  <div className="flex justify-between border-t-2 border-slate-900/10 pt-2 text-sm font-black text-slate-900">
-                                    <span>Total Payable</span>
-                                    <span className="text-mint-dark">₹{finalPrice.toLocaleString("en-IN")}</span>
-                                  </div>
-                                </div>
-
-                                <div className="pt-2 border-t border-slate-100 text-[9px] text-slate-400 font-semibold leading-relaxed">
-                                  Includes initial case mapping, shipping, constitutional remedy supply, and priority clinical assistance.
-                                </div>
-                              </div>
-                            );
-                          })()}
+                        {/* Complaint History */}
+                        <div className="glass-panel border-slate-200/50 bg-white/20 p-5 rounded-2xl space-y-3">
+                          <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">Symptom Complaint & History *</label>
+                          <textarea
+                            required
+                            rows={4}
+                            value={walkInComplaint}
+                            onChange={(e) => setWalkInComplaint(e.target.value)}
+                            placeholder="Describe symptoms, medical history, duration, and any existing treatments..."
+                            className="w-full p-3 rounded-xl border border-slate-200 bg-white/50 text-sm focus:outline-none focus:border-slate-800 transition-all resize-none shadow-inner"
+                          />
                         </div>
                       </div>
 
-                      {/* Main Complaint */}
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Symptom Complaint & History *</label>
-                        <textarea
-                          required
-                          rows={4}
-                          value={walkInComplaint}
-                          onChange={(e) => setWalkInComplaint(e.target.value)}
-                          placeholder="Describe symptoms, medical history, duration, and any existing treatments..."
-                          className="w-full p-3 rounded-xl border border-slate-200 bg-white/50 text-sm focus:outline-none focus:border-slate-800 transition-all resize-none"
-                        />
-                      </div>
-                    </div>
+                      {/* Right Column (4 cols): Sticky Billing Calculation Card */}
+                      <div className="lg:col-span-4 lg:sticky lg:top-32 space-y-6">
+                        {walkInTier && careLevelsDetails[walkInTier as keyof typeof careLevelsDetails] && (() => {
+                          const pricing = calculatePricing(
+                            walkInTier as keyof typeof careLevelsDetails,
+                            walkInBillingCycle,
+                            walkInDurationValue,
+                            walkInConditionsCount
+                          );
+                          
+                          const baseConcessionPrice = (() => {
+                            if (!walkInApplyConcession) return pricing.finalPrice;
+                            if (walkInConcessionType === "senior") return Math.round(pricing.finalPrice * 0.85);
+                            if (walkInConcessionType === "compassionate") return Math.round(pricing.finalPrice * 0.70);
+                            if (walkInConcessionType === "override") {
+                              const overrideVal = parseInt(walkInOverridePrice);
+                              return isNaN(overrideVal) ? pricing.finalPrice : Math.max(0, overrideVal);
+                            }
+                            return pricing.finalPrice;
+                          })();
+                          const concessionDiscount = pricing.finalPrice - baseConcessionPrice;
+                          
+                          const addonAmount = (() => {
+                            if (!walkInApplyMedicineAddon) return 0;
+                            return walkInMedicineAddons.reduce((sum, item) => {
+                              const amt = parseInt(item.amount);
+                              return sum + (isNaN(amt) || amt < 0 ? 0 : amt);
+                            }, 0);
+                          })();
+                          
+                          const finalPrice = baseConcessionPrice + addonAmount;
 
-                    {walkInError && (
-                      <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-800 text-xs font-bold flex items-center gap-2 max-w-lg mx-auto">
-                        <AlertTriangle className="w-4 h-4 text-rose-600 flex-shrink-0" />
-                        <span>{walkInError}</span>
-                      </div>
-                    )}
+                          return (
+                            <div className="p-6 border border-white/60 bg-white/60 backdrop-blur-md rounded-3xl space-y-4 shadow-md hover:shadow-lg transition-all duration-300 text-left">
+                              <div>
+                                <span className="text-[8px] font-black text-mint uppercase tracking-wider block">Live Estimate</span>
+                                <h4 className="text-sm font-black text-slate-900 mt-0.5">Billing Calculation</h4>
+                              </div>
 
-                    <div className="flex justify-end pt-4 border-t border-slate-100">
-                      <button
-                        type="submit"
-                        disabled={isWalkInSubmitting}
-                        className="px-8 py-3.5 bg-mint hover:bg-mint-dark disabled:bg-mint/50 text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-2 cursor-pointer shadow-md"
-                      >
-                        {isWalkInSubmitting ? (
-                          <>
-                            <span className="animate-spin inline-block w-3 h-3 border-2 border-white border-t-transparent rounded-full" />
-                            Provisioning Workspace...
-                          </>
-                        ) : (
-                          <>
-                            <UserCheck className="w-4 h-4" />
-                            Register Patient Intake
-                          </>
+                              <div className="space-y-2 text-xs font-semibold text-slate-700">
+                                <div className="flex justify-between">
+                                  <span>Base Rate</span>
+                                  <span>₹{pricing.basePrice.toLocaleString("en-IN")} / {walkInBillingCycle === "weekly" ? "wk" : "mo"}</span>
+                                </div>
+                                {pricing.surcharge > 0 && (
+                                  <div className="flex justify-between text-amber-600">
+                                    <span>Surcharge</span>
+                                    <span>+₹{pricing.surcharge.toLocaleString("en-IN")} / {walkInBillingCycle === "weekly" ? "wk" : "mo"}</span>
+                                  </div>
+                                )}
+                                <div className="flex justify-between border-t border-slate-100 pt-1.5 font-bold text-slate-900">
+                                  <span>Adjusted Rate</span>
+                                  <span>₹{pricing.adjustedBasePrice.toLocaleString("en-IN")} / {walkInBillingCycle === "weekly" ? "wk" : "mo"}</span>
+                                </div>
+                                {pricing.discountPercent > 0 && (
+                                  <div className="flex justify-between text-emerald-600">
+                                    <span>Discount ({pricing.discountPercent}%)</span>
+                                    <span>-₹{Math.round(pricing.adjustedBasePrice * walkInDurationValue * (pricing.discountPercent / 100)).toLocaleString("en-IN")}</span>
+                                  </div>
+                                )}
+                                {walkInApplyConcession && concessionDiscount > 0 && (
+                                  <div className="flex justify-between text-[#9333ea] font-bold">
+                                    <span>
+                                      Concession ({walkInConcessionType === "senior" ? "Senior 15%" : walkInConcessionType === "compassionate" ? "Socio-Economic 30%" : "Override"})
+                                    </span>
+                                    <span>-₹{concessionDiscount.toLocaleString("en-IN")}</span>
+                                  </div>
+                                )}
+                                {walkInApplyConcession && walkInConcessionType === "override" && concessionDiscount < 0 && (
+                                  <div className="flex justify-between text-amber-600 font-bold">
+                                    <span>Override Increase</span>
+                                    <span>+₹{Math.abs(concessionDiscount).toLocaleString("en-IN")}</span>
+                                  </div>
+                                )}
+                                {walkInApplyMedicineAddon && walkInMedicineAddons.filter(item => {
+                                  const amt = parseInt(item.amount);
+                                  return !isNaN(amt) && amt > 0;
+                                }).map((item) => (
+                                  <div key={item.id} className="flex justify-between text-emerald-600 font-bold">
+                                    <span>Add-on: {item.type}{item.details ? ` (${item.details})` : ""}</span>
+                                    <span>+₹{Number(item.amount).toLocaleString("en-IN")}</span>
+                                  </div>
+                                ))}
+                                <div className="flex justify-between border-t-2 border-slate-900/10 pt-2 text-sm font-black text-slate-900">
+                                  <span>Total Payable</span>
+                                  <span className="text-mint-dark">₹{finalPrice.toLocaleString("en-IN")}</span>
+                                </div>
+                              </div>
+
+                              <div className="pt-2 border-t border-slate-100 text-[9px] text-slate-400 font-semibold leading-relaxed">
+                                Includes case mapping, shipping, remedies supply, and priority clinical assistance.
+                              </div>
+                            </div>
+                          );
+                        })()}
+
+                        {walkInError && (
+                          <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-800 text-xs font-bold flex items-center gap-2">
+                            <AlertTriangle className="w-4 h-4 text-rose-600 flex-shrink-0" />
+                            <span>{walkInError}</span>
+                          </div>
                         )}
-                      </button>
+
+                        {/* Submit Button inside sticky card container */}
+                        <button
+                          type="submit"
+                          disabled={isWalkInSubmitting}
+                          className="w-full py-4 bg-mint hover:bg-mint-dark disabled:bg-mint/50 text-white rounded-full font-bold uppercase tracking-wider text-xs shadow-md transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer"
+                        >
+                          {isWalkInSubmitting ? (
+                            <>
+                              <span className="animate-spin inline-block w-3 h-3 border-2 border-white border-t-transparent rounded-full" />
+                              Provisioning Workspace...
+                            </>
+                          ) : (
+                            <>
+                              <UserCheck className="w-4 h-4" />
+                              Register Patient Intake
+                            </>
+                          )}
+                        </button>
+                      </div>
+
                     </div>
                   </form>
                 )}

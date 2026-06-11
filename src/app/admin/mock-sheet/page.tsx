@@ -3908,10 +3908,10 @@ function MockSheetContent() {
                             onChange={handleFileUpload}
                             disabled={uploadingFile}
                             accept=".pdf,image/png,image/jpeg,image/jpg,text/plain"
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed z-10"
                           />
                           {uploadingFile ? (
-                            <div className="space-y-3 flex flex-col items-center">
+                            <div className="pointer-events-none space-y-3 flex flex-col items-center">
                               <Activity className="w-8 h-8 text-[#0F4C81] animate-spin" />
                               <div className="space-y-1">
                                 <p className="text-[11px] font-extrabold text-[#0F4C81] uppercase tracking-wider animate-pulse">Gemini AI is transcribing...</p>
@@ -3919,7 +3919,7 @@ function MockSheetContent() {
                               </div>
                             </div>
                           ) : (
-                            <div className="space-y-2 flex flex-col items-center group-hover:scale-[1.02] transition-transform">
+                            <div className="pointer-events-none space-y-2 flex flex-col items-center group-hover:scale-[1.02] transition-transform">
                               <div className="p-3 bg-slate-100 rounded-2xl text-slate-50 group-hover:bg-[#0F4C81]/10 group-hover:text-[#0F4C81] transition-colors">
                                 <Sparkles className="w-6 h-6" />
                               </div>
