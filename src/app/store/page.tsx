@@ -416,7 +416,7 @@ const careLevelsDetails = {
   mild: {
     title: "Acute & Wellness Care",
     weeklyPrice: 1200,
-    monthlyPrice: 4200,
+    monthlyPrice: 4800,
     badge: "Acute & General Support",
     icon: "🌱",
     description: "Ideal for general immunity, hair fall, seasonal acute complaints, or general wellness guidance.",
@@ -431,7 +431,7 @@ const careLevelsDetails = {
   moderate: {
     title: "Standard Chronic Care",
     weeklyPrice: 2400,
-    monthlyPrice: 9000,
+    monthlyPrice: 9600,
     badge: "Focused Chronic Management",
     icon: "⚡",
     description: "Designed for a single chronic condition (e.g. eczema, IBS, thyroid) requiring active tracking and bi-weekly checks.",
@@ -446,7 +446,7 @@ const careLevelsDetails = {
   focused: {
     title: "Deep Systemic Care",
     weeklyPrice: 4200,
-    monthlyPrice: 15000,
+    monthlyPrice: 16800,
     badge: "Complex Chronic Therapy",
     icon: "🎯",
     description: "Deep management of complex chronic or systemic health conditions (e.g. asthma, migraine, severe eczema).",
@@ -461,7 +461,7 @@ const careLevelsDetails = {
   organ: {
     title: "Advanced Pathological Care",
     weeklyPrice: 6000,
-    monthlyPrice: 22000,
+    monthlyPrice: 24000,
     badge: "Organ System Recovery",
     icon: "🫁",
     description: "Advanced recovery protocols for deep-seated pathology, including organ system rebalancing and biomarker reviews.",
@@ -476,7 +476,7 @@ const careLevelsDetails = {
   comprehensive: {
     title: "Multisystem Integrative Care",
     weeklyPrice: 8400,
-    monthlyPrice: 30000,
+    monthlyPrice: 33600,
     badge: "Multi-Organ Intensive Care",
     icon: "🔮",
     description: "For long-standing, multi-system chronic pathologies requiring intensive clinical supervision by Dr. Jethwani.",
@@ -490,8 +490,8 @@ const careLevelsDetails = {
   },
   acute_critical: {
     title: "Acute Critical Care",
-    weeklyPrice: 4800,
-    monthlyPrice: 16800,
+    weeklyPrice: 5000,
+    monthlyPrice: 20000,
     badge: "Intensive Daily Supervision",
     icon: "🚨",
     description: "For urgent, high-intensity acute cases requiring daily tracking, frequent remedy adjustments, and intensive physician study.",
@@ -818,7 +818,7 @@ const diseaseCategories: DiseaseCategory[] = [
 ];
 
 export default function StorePage() {
-  const [viewMode, setViewMode] = useState<"dashboard" | "catalog" | "doctorPlan" | "triage">("triage");
+  const [viewMode, setViewMode] = useState<"dashboard" | "catalog" | "doctorPlan" | "triage">("dashboard");
 
   // Calculator states
   const [careLevel, setCareLevel] = useState<"mild" | "moderate" | "focused" | "organ" | "comprehensive" | "acute_critical">("mild");
@@ -1007,14 +1007,14 @@ export default function StorePage() {
     const details = careLevelsDetails[level];
     const basePrice = cycle === "weekly" ? details.weeklyPrice : details.monthlyPrice;
     
-    // Dynamic coordination surcharges lookup based on care level and cycle
+    // Dynamic coordination surcharges lookup based on care level and cycle (perfectly aligned at 4x weekly)
     const surchargesLookup = {
-      mild: { unitWeekly: 360, unitMonthly: 1200 },
-      moderate: { unitWeekly: 600, unitMonthly: 1800 },
-      focused: { unitWeekly: 1000, unitMonthly: 3000 },
-      organ: { unitWeekly: 1500, unitMonthly: 4200 },
-      comprehensive: { unitWeekly: 1800, unitMonthly: 5400 },
-      acute_critical: { unitWeekly: 1200, unitMonthly: 3600 }
+      mild: { unitWeekly: 300, unitMonthly: 1200 },
+      moderate: { unitWeekly: 450, unitMonthly: 1800 },
+      focused: { unitWeekly: 750, unitMonthly: 3000 },
+      organ: { unitWeekly: 1050, unitMonthly: 4200 },
+      comprehensive: { unitWeekly: 1350, unitMonthly: 5400 },
+      acute_critical: { unitWeekly: 1000, unitMonthly: 4000 }
     };
 
     let surcharge = 0;
@@ -1032,19 +1032,19 @@ export default function StorePage() {
     
     let discountPercent = 0;
     if (equivalentWeeks >= 48) {
-      discountPercent = 30; // 12 Months (48 weeks) or more
+      discountPercent = 30; // 1 Year (12 Mos)
     } else if (equivalentWeeks >= 24) {
-      discountPercent = 25; // 6 Months (24 weeks)
+      discountPercent = 25; // 6 Months (24 Wks)
     } else if (equivalentWeeks >= 12) {
-      discountPercent = 20; // 3 Months (12 weeks)
+      discountPercent = 20; // 3 Months (12 Wks)
     } else if (equivalentWeeks >= 8) {
-      discountPercent = 15; // 2 Months (8 weeks)
+      discountPercent = 15; // 2 Months (8 Wks)
     } else if (equivalentWeeks >= 4) {
-      discountPercent = 10; // 1 Month (4 weeks)
+      discountPercent = 10; // 1 Month (4 Wks)
     } else if (equivalentWeeks >= 2) {
       discountPercent = 5; // 2 Weeks
     } else {
-      discountPercent = 0;
+      discountPercent = 0; // 1 Week
     }
     
     const discountAmount = Math.round((rawTotal * discountPercent) / 100);
@@ -1518,7 +1518,7 @@ export default function StorePage() {
               }`}
             >
               <Sparkles className="w-3.5 h-3.5" />
-              Help Me Decide
+              Help Me Plan
             </button>
             <button
               onClick={() => setViewMode("dashboard")}
@@ -1612,7 +1612,7 @@ export default function StorePage() {
                           }}
                           className="px-4 py-2 rounded-full bg-[#1A2421] hover:bg-[#2b3a36] text-white text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 cursor-pointer shadow-sm"
                         >
-                          🩺 Help Me Decide
+                          🩺 Help Me Plan
                         </button>
                         <button
                           onClick={() => setIsGuidelinesOpen(!isGuidelinesOpen)}
@@ -1803,12 +1803,12 @@ export default function StorePage() {
                         <div className="flex flex-col gap-2">
                           {(() => {
                             const surchargesLookup = {
-                              mild: { unitWeekly: 360, unitMonthly: 1200 },
-                              moderate: { unitWeekly: 600, unitMonthly: 1800 },
-                              focused: { unitWeekly: 1000, unitMonthly: 3000 },
-                              organ: { unitWeekly: 1500, unitMonthly: 4200 },
-                              comprehensive: { unitWeekly: 1800, unitMonthly: 5400 },
-                              acute_critical: { unitWeekly: 1200, unitMonthly: 3600 }
+                              mild: { unitWeekly: 300, unitMonthly: 1200 },
+                              moderate: { unitWeekly: 450, unitMonthly: 1800 },
+                              focused: { unitWeekly: 750, unitMonthly: 3000 },
+                              organ: { unitWeekly: 1050, unitMonthly: 4200 },
+                              comprehensive: { unitWeekly: 1350, unitMonthly: 5400 },
+                              acute_critical: { unitWeekly: 1000, unitMonthly: 4000 }
                             };
                             const activeTierSurcharges = surchargesLookup[careLevel];
                             const items = [
@@ -1913,37 +1913,121 @@ export default function StorePage() {
                               </span>
                             </div>
                             
-                            <div className="grid grid-cols-5 gap-2.5">
-                              {(billingCycle === "weekly"
-                                ? [
-                                    { value: 1, label: "1 Wk", desc: "0%" },
-                                    { value: 2, label: "2 Wks", desc: "5% Off" },
-                                    { value: 4, label: "4 Wks", desc: "10% Off" },
-                                    { value: 8, label: "8 Wks", desc: "15% Off" },
-                                    { value: 12, label: "12 Wks", desc: "20% Off" }
-                                  ]
-                                : [
-                                    { value: 1, label: "1 Mo", desc: "10% Off" },
-                                    { value: 2, label: "2 Mos", desc: "15% Off" },
-                                    { value: 3, label: "3 Mos", desc: "20% Off" },
-                                    { value: 6, label: "6 Mos", desc: "25% Off" },
-                                    { value: 12, label: "12 Mos", desc: "30% Off" }
-                                  ]
-                              ).map((opt) => (
-                                <button
-                                  type="button"
-                                  key={opt.value}
-                                  onClick={() => setDurationValue(opt.value)}
-                                  className={`py-3 px-2 rounded-2xl border text-center transition-all duration-300 cursor-pointer flex flex-col items-center justify-center hover:-translate-y-0.5 active:scale-[0.98] ${
-                                    durationValue === opt.value
-                                      ? "border-mint bg-mint/[0.04] text-mint-dark font-black ring-1 ring-mint/20"
-                                      : "border-slate-200/50 hover:border-slate-800 text-slate-700 bg-white/40 hover:bg-white"
-                                  }`}
-                                >
-                                  <span className="text-xs block font-bold leading-none">{opt.label}</span>
-                                  <span className="text-[8px] text-slate-400 block mt-1.5 leading-none font-black font-sans uppercase tracking-tight">{opt.desc}</span>
-                                </button>
-                              ))}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                              {(() => {
+                                const opts = billingCycle === "weekly"
+                                  ? [
+                                      { value: 1, label: "1 Week", desc: "Baseline acute care", discount: "0%" },
+                                      { value: 2, label: "2 Weeks", desc: "Short-term relief option", discount: "5%" },
+                                      { value: 4, label: "4 Weeks", desc: "1 Month equivalent stabilization", discount: "10%" },
+                                      { value: 8, label: "8 Weeks", desc: "Intermediate chronic therapy", discount: "15%" },
+                                      { value: 12, label: "12 Weeks", desc: "Complete systemic course", discount: "20%" }
+                                    ]
+                                  : [
+                                      { value: 1, label: "1 Month", desc: "Baseline chronic cycle", discount: "10%" },
+                                      { value: 2, label: "2 Months", desc: "Stabilization healing phase", discount: "15%" },
+                                      { value: 3, label: "3 Months", desc: "Constitutional systemic recovery", discount: "20%" },
+                                      { value: 6, label: "6 Months", desc: "Intensive chronic restoration", discount: "25%" },
+                                      { value: 12, label: "12 Months", desc: "Annual premium protection plan", discount: "30%" }
+                                    ];
+
+                                return opts.map((opt, idx) => {
+                                  const isSelected = durationValue === opt.value;
+                                  const optPricing = calculatePricing(careLevel, billingCycle, opt.value, conditionsCount);
+                                  const isLast = idx === opts.length - 1;
+
+                                  if (isLast) {
+                                    return (
+                                      <button
+                                        type="button"
+                                        key={opt.value}
+                                        onClick={() => setDurationValue(opt.value)}
+                                        className={`sm:col-span-2 p-5 rounded-2xl border transition-all duration-305 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer hover:-translate-y-1 hover:shadow-md active:scale-[0.99] relative overflow-hidden ${
+                                          isSelected
+                                            ? "border-mint bg-gradient-to-br from-mint/[0.08] to-teal-500/[0.02] ring-1 ring-mint/20 shadow-md shadow-mint/5"
+                                            : "border-slate-200 bg-white/40 hover:bg-white hover:border-slate-800"
+                                        }`}
+                                      >
+                                        {isSelected && (
+                                          <div className="absolute inset-0 bg-gradient-to-r from-mint/5 to-indigo-500/5 pointer-events-none opacity-50" />
+                                        )}
+                                        <div className="flex items-start gap-3.5 relative z-10">
+                                          <div className={`w-5 h-5 rounded-full border flex items-center justify-center mt-0.5 transition-all flex-shrink-0 ${
+                                            isSelected ? "border-mint bg-mint" : "border-slate-300 bg-white"
+                                          }`}>
+                                            {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
+                                          </div>
+                                          <div className="text-left">
+                                            <div className="flex flex-wrap items-center gap-2">
+                                              <span className="text-xs font-bold text-slate-850 leading-tight block">{opt.label}</span>
+                                              {opt.discount !== "0%" && (
+                                                <span className="text-[8.5px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-gradient-to-r from-emerald-550 to-teal-650 text-white shadow-sm shadow-emerald-500/10">
+                                                  {opt.discount} Off
+                                                </span>
+                                              )}
+                                              <span className="text-[8.5px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200">
+                                                ⭐ Best Value
+                                              </span>
+                                            </div>
+                                            <span className="text-[10px] text-slate-400 font-bold block mt-1.5 uppercase tracking-wider">{opt.desc}</span>
+                                          </div>
+                                        </div>
+                                        <div className="text-left sm:text-right relative z-10 flex sm:flex-col items-baseline sm:items-end justify-between border-t sm:border-t-0 border-slate-900/5 pt-2.5 sm:pt-0">
+                                          <div>
+                                            <span className="text-xs text-slate-400 font-bold uppercase tracking-wider block sm:inline mr-1.5 sm:mr-0">Total </span>
+                                            <span className="text-base font-black text-slate-900 font-sans">
+                                              ₹{optPricing.finalPrice.toLocaleString("en-IN")}
+                                            </span>
+                                          </div>
+                                          <span className="text-[9px] text-emerald-700 font-black uppercase tracking-wider mt-0.5 block">
+                                            ₹{Math.round(optPricing.finalPrice / (billingCycle === "weekly" ? opt.value : opt.value * 4))}/{billingCycle === "weekly" ? "wk" : "mo"} avg
+                                          </span>
+                                        </div>
+                                      </button>
+                                    );
+                                  }
+
+                                  return (
+                                    <button
+                                      type="button"
+                                      key={opt.value}
+                                      onClick={() => setDurationValue(opt.value)}
+                                      className={`p-4.5 rounded-2xl border transition-all duration-300 flex flex-col justify-between gap-3.5 cursor-pointer hover:-translate-y-1 hover:shadow-md active:scale-[0.98] relative overflow-hidden ${
+                                        isSelected
+                                          ? "border-mint bg-gradient-to-br from-mint/[0.06] to-teal-500/[0.01] ring-1 ring-mint/20 shadow-md shadow-mint/5"
+                                          : "border-slate-200 bg-white/40 hover:bg-white hover:border-slate-800"
+                                      }`}
+                                    >
+                                      <div className="flex items-start justify-between gap-2">
+                                        <div className="text-left">
+                                          <span className="text-xs font-bold text-slate-850 leading-tight block">{opt.label}</span>
+                                          <span className="text-[9.5px] text-slate-400 font-semibold block mt-1 leading-normal">{opt.desc}</span>
+                                        </div>
+                                        <div className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center transition-all flex-shrink-0 mt-0.5 ${
+                                          isSelected ? "border-mint bg-mint" : "border-slate-300 bg-white"
+                                        }`}>
+                                          {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                                        </div>
+                                      </div>
+                                      <div className="flex flex-col gap-1 text-left border-t border-slate-900/5 pt-2.5 mt-auto">
+                                        <div className="flex items-baseline justify-between gap-2">
+                                          <span className="text-base font-extrabold text-slate-900 font-sans">
+                                            ₹{optPricing.finalPrice.toLocaleString("en-IN")}
+                                          </span>
+                                          {opt.discount !== "0%" && (
+                                            <span className="text-[8.5px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100">
+                                              {opt.discount} Off
+                                            </span>
+                                          )}
+                                        </div>
+                                        <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">
+                                          ₹{Math.round(optPricing.finalPrice / (billingCycle === "weekly" ? opt.value : opt.value * 4))}/{billingCycle === "weekly" ? "wk" : "mo"}
+                                        </span>
+                                      </div>
+                                    </button>
+                                  );
+                                });
+                              })()}
                             </div>
                           </div>
                         </div>
@@ -2143,109 +2227,6 @@ export default function StorePage() {
                       Book Evaluation <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
                   </div>
-                </div>
-              </div>
-
-              {/* Quick Select by Diagnosis / Organ System */}
-              <div className="border-t border-slate-900/5 pt-16 space-y-8">
-                <div className="max-w-3xl">
-                  <h2 className="text-2xl font-bold text-[#1A2421] mb-2 flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-mint animate-pulse" />
-                    Quick Select by Diagnosis
-                  </h2>
-                  <p className="text-xs text-slate-500 font-semibold">
-                    Select your clinical concern or organ system below to automatically pre-configure the Treatment Planner above with the recommended care level and conditions setup.
-                  </p>
-                </div>
-
-                {/* Category tabs */}
-                <div className="flex flex-wrap gap-2 pb-2 overflow-x-auto scrollbar-none">
-                  {diseaseCategories.map((cat) => (
-                    <button
-                      key={cat.id}
-                      onClick={() => setActiveDiagnosisTab(cat.id)}
-                      className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-2 cursor-pointer ${
-                        activeDiagnosisTab === cat.id
-                          ? "bg-[#1A2421] text-white shadow-sm border border-slate-800"
-                          : "border border-slate-200 bg-white/40 hover:border-slate-800 text-slate-500 hover:text-slate-900"
-                      }`}
-                    >
-                      <span>{cat.icon}</span>
-                      {cat.label}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Disease cards grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {diseaseCategories
-                    .find((cat) => cat.id === activeDiagnosisTab)
-                    ?.conditions.map((cond, idx) => {
-                      const details = careLevelsDetails[cond.careLevel];
-                      const badgeClass =
-                        cond.careLevel === "mild"
-                          ? "bg-teal-50 text-teal-700 border-teal-100"
-                          : cond.careLevel === "moderate"
-                          ? "bg-purple-50 text-purple-700 border-purple-100"
-                          : cond.careLevel === "focused"
-                          ? "bg-sky-50 text-sky-700 border-sky-100"
-                          : cond.careLevel === "organ"
-                          ? "bg-emerald-50 text-emerald-700 border-emerald-100"
-                          : "bg-rose-50 text-rose-700 border-rose-100";
-
-                      return (
-                        <div
-                          key={idx}
-                          className="glass-panel border-white/60 bg-white/40 rounded-3xl p-5 flex flex-col justify-between hover:border-slate-800 transition-all duration-300 relative group/card"
-                        >
-                          <div className="space-y-4">
-                            <div>
-                              <h4 className="text-sm font-extrabold text-[#1A2421] leading-snug">{cond.name}</h4>
-                              <div className="flex flex-wrap gap-1.5 mt-2">
-                                <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-full border ${badgeClass}`}>
-                                  {details.title}
-                                </span>
-                                 <span className="text-[8px] font-bold uppercase px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200/50">
-                                   {cond.conditionsCount === 1 
-                                     ? "1 Condition" 
-                                     : cond.conditionsCount === 2 
-                                       ? "2 Conditions" 
-                                       : cond.conditionsCount === 3
-                                         ? "3 Conditions"
-                                         : cond.conditionsCount === 4
-                                           ? "4 Conditions"
-                                           : "5+ Conditions"}
-                                 </span>
-                              </div>
-                            </div>
-
-                            <p className="text-[10px] text-slate-500 font-semibold leading-relaxed">
-                              {cond.rationale}
-                            </p>
-                          </div>
-
-                          <div className="pt-4 mt-4 border-t border-slate-900/5">
-                            <button
-                              onClick={() => {
-                                setCareLevel(cond.careLevel);
-                                setConditionsCount(cond.conditionsCount);
-                                if (!patientComplaint || patientComplaint.startsWith("Constitutional care evaluation for")) {
-                                  setPatientComplaint(`Constitutional care evaluation for ${cond.name}.`);
-                                }
-                                const plannerElement = document.getElementById("planner-dashboard");
-                                if (plannerElement) {
-                                  plannerElement.scrollIntoView({ behavior: "smooth", block: "start" });
-                                }
-                              }}
-                              className="w-full py-2 bg-white/80 hover:bg-[#1A2421] text-slate-700 hover:text-white rounded-full text-[10px] font-extrabold uppercase tracking-wider border border-slate-200 hover:border-slate-800 transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
-                            >
-                              Apply to Planner
-                              <ArrowRight className="w-3 h-3 group-hover/card:translate-x-0.5 transition-transform" />
-                            </button>
-                          </div>
-                        </div>
-                      );
-                    })}
                 </div>
               </div>
 
@@ -2783,6 +2764,112 @@ export default function StorePage() {
                     </div>
                   );
                 })()}
+              </div>
+
+              {/* Quick Select by Diagnosis / Organ System */}
+              <div className="border-t border-slate-900/5 pt-8 space-y-8">
+                <div className="max-w-3xl">
+                  <h2 className="text-2xl font-bold text-[#1A2421] mb-2 flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-mint animate-pulse" />
+                    Quick Select by Diagnosis
+                  </h2>
+                  <p className="text-xs text-slate-500 font-semibold">
+                    Select your clinical concern or organ system below to automatically pre-configure the Treatment Planner with the recommended care level and conditions setup.
+                  </p>
+                </div>
+
+                {/* Category tabs */}
+                <div className="flex flex-wrap gap-2 pb-2 overflow-x-auto scrollbar-none">
+                  {diseaseCategories.map((cat) => (
+                    <button
+                      key={cat.id}
+                      onClick={() => setActiveDiagnosisTab(cat.id)}
+                      className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-2 cursor-pointer ${
+                        activeDiagnosisTab === cat.id
+                          ? "bg-[#1A2421] text-white shadow-sm border border-slate-800"
+                          : "border border-slate-200 bg-white/40 hover:border-slate-800 text-slate-500 hover:text-slate-900"
+                      }`}
+                    >
+                      <span>{cat.icon}</span>
+                      {cat.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Disease cards grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {diseaseCategories
+                    .find((cat) => cat.id === activeDiagnosisTab)
+                    ?.conditions.map((cond, idx) => {
+                      const details = careLevelsDetails[cond.careLevel];
+                      const badgeClass =
+                        cond.careLevel === "mild"
+                          ? "bg-teal-50 text-teal-700 border-teal-100"
+                          : cond.careLevel === "moderate"
+                          ? "bg-purple-50 text-purple-700 border-purple-100"
+                          : cond.careLevel === "focused"
+                          ? "bg-sky-50 text-sky-700 border-sky-100"
+                          : cond.careLevel === "organ"
+                          ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+                          : "bg-rose-50 text-rose-700 border-rose-100";
+
+                      return (
+                        <div
+                          key={idx}
+                          className="glass-panel border-white/60 bg-white/40 rounded-3xl p-5 flex flex-col justify-between hover:border-slate-800 transition-all duration-300 relative group/card"
+                        >
+                          <div className="space-y-4">
+                            <div>
+                              <h4 className="text-sm font-extrabold text-[#1A2421] leading-snug">{cond.name}</h4>
+                              <div className="flex flex-wrap gap-1.5 mt-2">
+                                <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-full border ${badgeClass}`}>
+                                  {details.title}
+                                </span>
+                                 <span className="text-[8px] font-bold uppercase px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200/50">
+                                   {cond.conditionsCount === 1 
+                                     ? "1 Condition" 
+                                     : cond.conditionsCount === 2 
+                                       ? "2 Conditions" 
+                                       : cond.conditionsCount === 3
+                                         ? "3 Conditions"
+                                         : cond.conditionsCount === 4
+                                           ? "4 Conditions"
+                                           : "5+ Conditions"}
+                                 </span>
+                              </div>
+                            </div>
+
+                            <p className="text-[10px] text-slate-500 font-semibold leading-relaxed">
+                              {cond.rationale}
+                            </p>
+                          </div>
+
+                          <div className="pt-4 mt-4 border-t border-slate-900/5">
+                            <button
+                              onClick={() => {
+                                setCareLevel(cond.careLevel);
+                                setConditionsCount(cond.conditionsCount);
+                                if (!patientComplaint || patientComplaint.startsWith("Constitutional care evaluation for")) {
+                                  setPatientComplaint(`Constitutional care evaluation for ${cond.name}.`);
+                                }
+                                setViewMode("dashboard");
+                                setTimeout(() => {
+                                  const plannerElement = document.getElementById("planner-dashboard");
+                                  if (plannerElement) {
+                                    plannerElement.scrollIntoView({ behavior: "smooth", block: "start" });
+                                  }
+                                }, 100);
+                              }}
+                              className="w-full py-2 bg-white/80 hover:bg-[#1A2421] text-slate-700 hover:text-white rounded-full text-[10px] font-extrabold uppercase tracking-wider border border-slate-200 hover:border-slate-800 transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
+                            >
+                              Apply to Planner
+                              <ArrowRight className="w-3 h-3 group-hover/card:translate-x-0.5 transition-transform" />
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
               </div>
             </motion.div>
           )}

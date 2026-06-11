@@ -454,26 +454,26 @@ export async function createPatientClinicalSheet(
 
         // Section 4 Mental Generals
         caseTakingValues[22][0] = "SECTION 4 – MENTAL GENERALS";
-        caseTakingValues[23][0] = "Temperament"; caseTakingValues[23][1] = "Irritable, anxious, fastidious [Psora]";
-        caseTakingValues[24][0] = "Fears & Phobias"; caseTakingValues[24][1] = "Fears dark, heights [Psora]";
-        caseTakingValues[25][0] = "Anxiety States"; caseTakingValues[25][1] = "High anticipatory anxiety [Psora]";
-        caseTakingValues[26][0] = "Anger & Reactions"; caseTakingValues[26][1] = "Suppressed anger, turns silent [Sycosis]";
-        caseTakingValues[27][0] = "Grief / Suppressions"; caseTakingValues[27][1] = "Long-term grief, does not weep [Sycosis]";
-        caseTakingValues[28][0] = "Personality Traits / Attributes"; caseTakingValues[28][1] = "Forgetful, loses thread [Psora]";
+        caseTakingValues[23][0] = "Temperament"; caseTakingValues[23][1] = "";
+        caseTakingValues[24][0] = "Fears & Phobias"; caseTakingValues[24][1] = "";
+        caseTakingValues[25][0] = "Anxiety States"; caseTakingValues[25][1] = "";
+        caseTakingValues[26][0] = "Anger & Reactions"; caseTakingValues[26][1] = "";
+        caseTakingValues[27][0] = "Grief / Suppressions"; caseTakingValues[27][1] = "";
+        caseTakingValues[28][0] = "Personality Traits / Attributes"; caseTakingValues[28][1] = "";
 
         // Section 5 Physical Generals
         caseTakingValues[29][0] = "SECTION 5 – PHYSICAL GENERALS";
-        caseTakingValues[30][0] = "Appetite / Hunger"; caseTakingValues[30][1] = "Good, eats fast";
-        caseTakingValues[31][0] = "Thirst Quality"; caseTakingValues[31][1] = "Thirsty for small quantities [Ars]";
-        caseTakingValues[32][0] = "Food Desires"; caseTakingValues[32][1] = "Sweets, spicy foods [Psora]";
-        caseTakingValues[33][0] = "Food Aversions"; caseTakingValues[33][1] = "Milk [Psora]";
-        caseTakingValues[34][0] = "Thermal State (Chilly / Hot)"; caseTakingValues[34][1] = "Very Chilly [Psora]";
-        caseTakingValues[35][0] = "Sleep Cycles & Dreams"; caseTakingValues[35][1] = "Restless sleep, dreams of falling [Psora]";
+        caseTakingValues[30][0] = "Appetite / Hunger"; caseTakingValues[30][1] = "";
+        caseTakingValues[31][0] = "Thirst Quality"; caseTakingValues[31][1] = "";
+        caseTakingValues[32][0] = "Food Desires"; caseTakingValues[32][1] = "";
+        caseTakingValues[33][0] = "Food Aversions"; caseTakingValues[33][1] = "";
+        caseTakingValues[34][0] = "Thermal State (Chilly / Hot)"; caseTakingValues[34][1] = "";
+        caseTakingValues[35][0] = "Sleep Cycles & Dreams"; caseTakingValues[35][1] = "";
 
         // Section 9 Clinical Diagnosis
         caseTakingValues[36][0] = "SECTION 9 – CLINICAL DIAGNOSIS";
-        caseTakingValues[37][0] = "Clinical Diagnosis"; caseTakingValues[37][1] = "Chronic GERD / Acidity";
-        caseTakingValues[38][0] = "Case Complexity"; caseTakingValues[38][1] = "Moderate";
+        caseTakingValues[37][0] = "Clinical Diagnosis"; caseTakingValues[37][1] = "";
+        caseTakingValues[38][0] = "Case Complexity"; caseTakingValues[38][1] = "";
 
         // Section 10 Miasmatic Assessment
         caseTakingValues[39][0] = "SECTION 10 – MIASMATIC ASSESSMENT (FORMULA DRIVEN)";
@@ -485,11 +485,11 @@ export async function createPatientClinicalSheet(
 
         // Section 12 Prescription
         caseTakingValues[45][0] = "SECTION 12 – CURRENT PRESCRIPTION & ADVICE";
-        caseTakingValues[46][0] = "Remedy Name"; caseTakingValues[46][1] = "Nux Vomica";
-        caseTakingValues[47][0] = "Potency / Scale"; caseTakingValues[47][1] = "30C";
-        caseTakingValues[48][0] = "Dosage & Frequency"; caseTakingValues[48][1] = "4 pills, twice daily";
-        caseTakingValues[49][0] = "Duration"; caseTakingValues[49][1] = "14 Days";
-        caseTakingValues[50][0] = "Dietary & lifestyle advice"; caseTakingValues[50][1] = "Avoid coffee and camphor";
+        caseTakingValues[46][0] = "Remedy Name"; caseTakingValues[46][1] = "";
+        caseTakingValues[47][0] = "Potency / Scale"; caseTakingValues[47][1] = "";
+        caseTakingValues[48][0] = "Dosage & Frequency"; caseTakingValues[48][1] = "";
+        caseTakingValues[49][0] = "Duration"; caseTakingValues[49][1] = "";
+        caseTakingValues[50][0] = "Dietary & lifestyle advice"; caseTakingValues[50][1] = "";
 
         // Section 13 AI Diagnostics (to be populated by portal)
         caseTakingValues[51][0] = "SECTION 13 – AI CLINICAL SYNTHESIS VERDICT";
@@ -502,7 +502,7 @@ export async function createPatientClinicalSheet(
           ["CLINICAL FOLLOW-UP TRACKER", "", "", "", "", "", ""],
           ["", "", "", "", "", "", ""],
           ["Date", "Symptoms & Patient Report (Db-Click)", "Improvement %", "Remedy (Click to edit)", "Potency / Dose", "Assessment / Notes (Db-Click)", "Next Follow-up"],
-          [today, "Case initialized. Demographics and baseline complaint registered.", 0, "Nux Vomica (DIL)", "30C (BD)", "Baseline status. Patient is very chilly with severe post-meal burning.", "2 weeks later"]
+          [today, "Case initialized. Demographics and baseline complaint registered.", 0, "", "", "Plan initialized.", ""]
         ];
 
         // values for Repertorization
@@ -510,11 +510,11 @@ export async function createPatientClinicalSheet(
           ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
           ["REPERTORY GRID & Dynamic ANALYSIS MATRIX", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
           ["Rubric Name", "Chapter / Location", "Source", "Importance Weight", "Nux-v", "Lyc", "Ars", "Puls", "Sulph", "Rhus-t", "Calc", "Sil", "Nat-m", "Ign", "Sep", "Totality Score"],
-          ["Acidity - eating, post", "Stomach", "Kent", 3, 3, 2, 3, 1, 2, 1, 1, 0, 0, 0, 0, "=IF(D4=\"\", \"\", D4*SUM(E4:O4))"],
-          ["Irritability - eating, post", "Mind", "Kent", 2, 2, 3, 1, 2, 2, 1, 0, 0, 0, 0, 0, "=IF(D5=\"\", \"\", D5*SUM(E5:O5))"],
-          ["Generalities - Chilly", "Generalities", "Kent", 3, 3, 1, 3, 0, 1, 3, 3, 2, 1, 0, 1, "=IF(D6=\"\", \"\", D6*SUM(E6:O6))"],
-          ["Clinical - Burnout / Adrenal Fatigue [Sycosis]", "Clinical", "Jethwani", 3, 3, 2, 2, 1, 2, 1, 3, 2, 2, 2, 2, "=IF(D7=\"\", \"\", D7*SUM(E7:O7))"],
-          ["Mind - Hurry - constant", "Mind", "Custom", 2, 2, 1, 3, 1, 1, 2, 1, 1, 2, 3, 1, "=IF(D8=\"\", \"\", D8*SUM(E8:O8))"],
+          ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "=IF(D4=\"\", \"\", D4*SUM(E4:O4))"],
+          ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "=IF(D5=\"\", \"\", D5*SUM(E5:O5))"],
+          ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "=IF(D6=\"\", \"\", D6*SUM(E6:O6))"],
+          ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "=IF(D7=\"\", \"\", D7*SUM(E7:O7))"],
+          ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "=IF(D8=\"\", \"\", D8*SUM(E8:O8))"],
           ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "=IF(D9=\"\", \"\", D9*SUM(E9:O9))"],
           ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "=IF(D10=\"\", \"\", D10*SUM(E10:O10))"],
           ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "=IF(D11=\"\", \"\", D11*SUM(E11:O11))"],
@@ -604,8 +604,8 @@ export async function createPatientClinicalSheet(
           ["", "", "", "", "", "", ""],
           ["PRICING BREAKDOWN", "", "", "", "", "", ""],
           ["Component", "Rate / Amount (₹)", "Calculation Description", "", "", "", ""],
-          ["Base Rate", `=IF(ISNUMBER(SEARCH("Critical", A4)), IF(B4="Weekly", 4800, 16800), IF(ISNUMBER(SEARCH("Wellness", A4)), IF(B4="Weekly", 1200, 4200), IF(ISNUMBER(SEARCH("Standard", A4)), IF(B4="Weekly", 2400, 9000), IF(ISNUMBER(SEARCH("Deep", A4)), IF(B4="Weekly", 4200, 15000), IF(ISNUMBER(SEARCH("Advanced", A4)), IF(B4="Weekly", 6000, 22000), IF(ISNUMBER(SEARCH("Multisystem", A4)), IF(B4="Weekly", 8400, 30000), 4200))))))`, "Base rate based on Care Level and Billing Cycle", "", "", ""],
-          ["Conditions Surcharge", `=IF(D4<=1, 0, (D4-1)*IF(ISNUMBER(SEARCH("Critical", A4)), IF(B4="Weekly", 1200, 3600), IF(ISNUMBER(SEARCH("Wellness", A4)), IF(B4="Weekly", 360, 1200), IF(ISNUMBER(SEARCH("Standard", A4)), IF(B4="Weekly", 600, 1800), IF(ISNUMBER(SEARCH("Deep", A4)), IF(B4="Weekly", 1000, 3000), IF(ISNUMBER(SEARCH("Advanced", A4)), IF(B4="Weekly", 1500, 4200), IF(ISNUMBER(SEARCH("Multisystem", A4)), IF(B4="Weekly", 1800, 5400), 0)))))))`, "Surcharge for co-existing chronic conditions", "", "", ""],
+          ["Base Rate", `=IF(ISNUMBER(SEARCH("Critical", A4)), IF(B4="Weekly", 5000, 20000), IF(ISNUMBER(SEARCH("Wellness", A4)), IF(B4="Weekly", 1200, 4800), IF(ISNUMBER(SEARCH("Standard", A4)), IF(B4="Weekly", 2400, 9600), IF(ISNUMBER(SEARCH("Deep", A4)), IF(B4="Weekly", 4200, 16800), IF(ISNUMBER(SEARCH("Advanced", A4)), IF(B4="Weekly", 6000, 24000), IF(ISNUMBER(SEARCH("Multisystem", A4)), IF(B4="Weekly", 8400, 33600), 4800))))))`, "Base rate based on Care Level and Billing Cycle", "", "", ""],
+          ["Conditions Surcharge", `=IF(D4<=1, 0, (D4-1)*IF(ISNUMBER(SEARCH("Critical", A4)), IF(B4="Weekly", 1000, 4000), IF(ISNUMBER(SEARCH("Wellness", A4)), IF(B4="Weekly", 300, 1200), IF(ISNUMBER(SEARCH("Standard", A4)), IF(B4="Weekly", 450, 1800), IF(ISNUMBER(SEARCH("Deep", A4)), IF(B4="Weekly", 750, 3000), IF(ISNUMBER(SEARCH("Advanced", A4)), IF(B4="Weekly", 1050, 4200), IF(ISNUMBER(SEARCH("Multisystem", A4)), IF(B4="Weekly", 1350, 5400), 0)))))))`, "Surcharge for co-existing chronic conditions", "", "", ""],
           ["Gross Subtotal", "=(B8+B9)*C4", "Adjusted base rate multiplied by duration", "", "", "", ""],
           ["Duration Discount %", `=IF(IF(B4="Weekly", C4, C4*4)>=48, 0.30, IF(IF(B4="Weekly", C4, C4*4)>=24, 0.25, IF(IF(B4="Weekly", C4, C4*4)>=12, 0.20, IF(IF(B4="Weekly", C4, C4*4)>=8, 0.15, IF(IF(B4="Weekly", C4, C4*4)>=4, 0.10, IF(IF(B4="Weekly", C4, C4*4)>=2, 0.05, 0))))))`, "Duration loyalty discount percentage", "", "", "", ""],
           ["Duration Discount Amount", "=B10*B11", "Total savings from duration discount", "", "", "", ""],
@@ -656,8 +656,8 @@ export async function createPatientClinicalSheet(
           ["INVESTIGATION REPORTS & CLINICAL FILE ATTACHMENTS", "", "", ""],
           ["", "", "", ""],
           ["Report Date", "Report Category", "Investigation Target", "Report Hyperlink"],
-          [today, "Clinical Photo", "Epigastric Bloating Snapshot", `https://drive.google.com/drive/folders/${folderId}`],
-          ["05-06-2026", "Blood Test", "Complete Blood Count & Liver Panel", `https://drive.google.com/drive/folders/${folderId}`]
+          ["", "", "", ""],
+          ["", "", "", ""]
         ];
 
         // values for Config DB
