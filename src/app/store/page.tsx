@@ -2555,7 +2555,7 @@ export default function StorePage() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="space-y-8 max-w-4xl mx-auto relative mb-16"
+              className="space-y-8 w-full relative mb-16"
             >
               {/* Floating ambient glow orbs for high-end aesthetics */}
               <div className="absolute inset-0 -z-20 overflow-hidden rounded-[36px] pointer-events-none">
@@ -2563,7 +2563,10 @@ export default function StorePage() {
                 <div className="absolute -bottom-40 -right-40 w-96 h-96 rounded-full bg-gradient-to-br from-purple-500/10 to-indigo-500/0 blur-[80px] animate-pulse" style={{ animationDuration: "10s" }} />
               </div>
 
-              <div className="glass-panel border-white/70 bg-white/30 backdrop-blur-md rounded-[32px] p-6 md:p-8 space-y-6 shadow-xl shadow-slate-900/[0.02]">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+                {/* Left: Question Steps */}
+                <div className="lg:col-span-7 glass-panel border-white/70 bg-white/30 backdrop-blur-md rounded-[32px] p-6 md:p-8 space-y-6 shadow-xl shadow-slate-900/[0.02]">
                 {/* Progress bar */}
                 {triageStep !== "result" && (
                   <div className="w-full bg-slate-100 h-1.5 rounded-full mb-6">
@@ -2952,11 +2955,48 @@ export default function StorePage() {
                     </div>
                   );
                 })()}
+                </div>
+
+                {/* Right: Sticky Care Level Reference Panel */}
+                <div className="lg:col-span-5 lg:sticky lg:top-32 space-y-4">
+                  <div className="glass-panel border-white/70 bg-white/40 backdrop-blur-md rounded-[32px] p-6 shadow-xl shadow-slate-900/[0.02]">
+                    <div className="mb-4">
+                      <span className="text-[9px] font-extrabold uppercase tracking-widest text-mint block mb-1">Care Level Reference</span>
+                      <h4 className="text-base font-bold text-[#1A2421]">All Plan Tiers &amp; Rates</h4>
+                      <p className="text-[10px] text-slate-500 font-semibold mt-0.5">Your answers will auto-select the right tier below.</p>
+                    </div>
+                    <div className="space-y-2.5">
+                      {(Object.keys(careLevelsDetails) as (keyof typeof careLevelsDetails)[]).map((level) => {
+                        const d = careLevelsDetails[level];
+                        return (
+                          <div key={level} className="p-3.5 rounded-2xl border border-slate-100 bg-white/60 flex items-center justify-between gap-3 hover:border-mint/40 hover:bg-mint/[0.02] transition-all duration-200">
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <span className="text-xl shrink-0">{d.icon}</span>
+                              <div className="min-w-0">
+                                <span className="text-[10px] font-black text-[#1A2421] block leading-tight truncate">{d.title}</span>
+                                <span className="text-[9px] text-slate-400 font-semibold block mt-0.5 truncate">{d.badge}</span>
+                              </div>
+                            </div>
+                            <div className="text-right shrink-0">
+                              <span className="text-xs font-black text-[#1A2421] block">₹{d.monthlyPrice.toLocaleString("en-IN")}<span className="text-[9px] font-semibold text-slate-400">/mo</span></span>
+                              <span className="text-[9px] font-semibold text-slate-400 block">₹{d.weeklyPrice.toLocaleString("en-IN")}/wk</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <div className="mt-4 pt-4 border-t border-slate-100">
+                      <p className="text-[9px] text-slate-400 font-semibold leading-relaxed">
+                        💡 Commitment discounts apply: <span className="text-emerald-600 font-bold">10% off 1 month → 30% off 12 months.</span> Per extra condition: +₹300–₹1,350/wk depending on tier.
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Quick Select by Diagnosis / Organ System */}
               <div className="border-t border-slate-900/5 pt-8 space-y-8">
-                <div className="max-w-3xl">
+                <div>
                   <h2 className="text-2xl font-bold text-[#1A2421] mb-2 flex items-center gap-2">
                     <Sparkles className="w-5 h-5 text-mint animate-pulse" />
                     Quick Select by Diagnosis
