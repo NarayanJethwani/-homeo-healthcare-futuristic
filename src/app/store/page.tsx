@@ -2036,10 +2036,10 @@ export default function StorePage() {
                       <div className="space-y-3 pt-2">
                         <Magnetic>
                           <button
-                            onClick={() => setViewMode("doctorPlan")}
+                            onClick={handleSelectCalculatedPlan}
                             className="w-full py-4 bg-mint hover:bg-mint-dark text-white rounded-full font-bold uppercase tracking-wider text-xs shadow-[0_8px_30px_rgba(20,184,166,0.15)] hover:shadow-[0_8px_30px_rgba(20,184,166,0.25)] transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer"
                           >
-                            Register Patient Intake
+                            Order & Proceed to Payment
                             <ArrowRight className="w-4 h-4" />
                           </button>
                         </Magnetic>
