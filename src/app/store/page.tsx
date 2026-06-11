@@ -1782,159 +1782,163 @@ export default function StorePage() {
                     </div>
                   </div>
 
-                  {/* Step 1.5: Co-existing Conditions Selector */}
-                  <div className="glass-panel border-white/60 bg-white/40 rounded-3xl p-6 md:p-8 space-y-6">
-                    <div className="flex justify-between items-start gap-4">
-                      <div>
-                        <span className="text-[10px] font-bold text-mint uppercase tracking-widest block mb-1">Step 1.5</span>
-                        <h2 className="text-xl font-bold text-[#1A2421]">Co-existing Conditions</h2>
-                        <p className="text-xs text-slate-500 font-semibold mt-1">
-                          Do you have multiple co-existing mild/moderate conditions? Select to include coordination tracking.
-                        </p>
-                      </div>
-                      <div className="w-10 h-10 bg-mint/5 border border-mint/10 text-mint rounded-2xl flex items-center justify-center flex-shrink-0">
-                        <Layers className="w-5 h-5" />
+                  {/* Steps 1.5 & 2 Side-by-Side Wrapper */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Step 1.5: Co-existing Conditions Selector */}
+                    <div className="glass-panel border-white/60 bg-white/40 rounded-3xl p-6 md:p-8 space-y-6 flex flex-col justify-between">
+                      <div className="space-y-6">
+                        <div className="flex justify-between items-start gap-4">
+                          <div>
+                            <span className="text-[10px] font-bold text-mint uppercase tracking-widest block mb-1">Step 1.5</span>
+                            <h2 className="text-xl font-bold text-[#1A2421]">Co-existing Conditions</h2>
+                            <p className="text-xs text-slate-500 font-semibold mt-1">
+                              Do you have multiple co-existing mild/moderate conditions? Select to include coordination tracking.
+                            </p>
+                          </div>
+                          <div className="w-10 h-10 bg-mint/5 border border-mint/10 text-mint rounded-2xl flex items-center justify-center flex-shrink-0">
+                            <Layers className="w-5 h-5" />
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
+                          {(() => {
+                            const surchargesLookup = {
+                              mild: { unitWeekly: 360, unitMonthly: 1200 },
+                              moderate: { unitWeekly: 600, unitMonthly: 1800 },
+                              focused: { unitWeekly: 1000, unitMonthly: 3000 },
+                              organ: { unitWeekly: 1500, unitMonthly: 4200 },
+                              comprehensive: { unitWeekly: 1800, unitMonthly: 5400 },
+                              acute_critical: { unitWeekly: 1200, unitMonthly: 3600 }
+                            };
+                            const activeTierSurcharges = surchargesLookup[careLevel];
+                            const items = [
+                              { count: 1, label: "1 Cond.", surchargeText: "Included", surchargeInfo: "Base plan" },
+                              { count: 2, label: "2 Cond.", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly}/wk` : `+₹${activeTierSurcharges.unitMonthly}/mo`, surchargeInfo: "Dual coord." },
+                              { count: 3, label: "3 Cond.", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly * 2}/wk` : `+₹${activeTierSurcharges.unitMonthly * 2}/mo`, surchargeInfo: "Triple map" },
+                              { count: 4, label: "4 Cond.", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly * 3}/wk` : `+₹${activeTierSurcharges.unitMonthly * 3}/mo`, surchargeInfo: "Quad coord." },
+                              { count: 5, label: "5+ Cond.", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly * 4}/wk` : `+₹${activeTierSurcharges.unitMonthly * 4}/mo`, surchargeInfo: "Multisystem" }
+                            ];
+
+                            return items.map((item) => {
+                              const active = conditionsCount === item.count;
+                              return (
+                                <button
+                                  type="button"
+                                  key={item.count}
+                                  onClick={() => setConditionsCount(item.count)}
+                                  className={`p-3 rounded-xl border text-center transition-all duration-300 flex flex-col justify-between cursor-pointer hover:-translate-y-0.5 active:scale-[0.98] ${
+                                    active
+                                      ? "border-mint bg-mint/[0.04] ring-1 ring-mint/20 font-bold"
+                                      : "border-slate-200/60 hover:border-slate-800 text-slate-700 bg-white/40 hover:bg-white"
+                                  }`}
+                                >
+                                  <div>
+                                    <span className="text-[10px] font-black uppercase tracking-wider block">{item.label}</span>
+                                    <span className="text-[8px] text-slate-400 font-semibold block mt-0.5 leading-none">{item.surchargeInfo}</span>
+                                  </div>
+                                  <span className="text-[9px] font-black block mt-2 pt-1 border-t border-slate-900/5 text-mint-dark font-sans">
+                                    {item.surchargeText}
+                                  </span>
+                                </button>
+                              );
+                            });
+                          })()}
+                        </div>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-                      {(() => {
-                        const surchargesLookup = {
-                          mild: { unitWeekly: 360, unitMonthly: 1200 },
-                          moderate: { unitWeekly: 600, unitMonthly: 1800 },
-                          focused: { unitWeekly: 1000, unitMonthly: 3000 },
-                          organ: { unitWeekly: 1500, unitMonthly: 4200 },
-                          comprehensive: { unitWeekly: 1800, unitMonthly: 5400 },
-                          acute_critical: { unitWeekly: 1200, unitMonthly: 3600 }
-                        };
-                        const activeTierSurcharges = surchargesLookup[careLevel];
-                        const items = [
-                          { count: 1, label: "1 Condition", surchargeText: "Included", surchargeInfo: "Standard base plan" },
-                          { count: 2, label: "2 Conditions", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly}/wk` : `+₹${activeTierSurcharges.unitMonthly}/mo`, surchargeInfo: "Dual coordination" },
-                          { count: 3, label: "3 Conditions", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly * 2}/wk` : `+₹${activeTierSurcharges.unitMonthly * 2}/mo`, surchargeInfo: "Triple mapping" },
-                          { count: 4, label: "4 Conditions", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly * 3}/wk` : `+₹${activeTierSurcharges.unitMonthly * 3}/mo`, surchargeInfo: "Quad coordination" },
-                          { count: 5, label: "5+ Conditions", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly * 4}/wk` : `+₹${activeTierSurcharges.unitMonthly * 4}/mo`, surchargeInfo: "Complex multi-system" }
-                        ];
+                    {/* Step 2: Duration & Billing Controls */}
+                    <div className="glass-panel border-white/60 bg-white/40 rounded-3xl p-6 md:p-8 space-y-6 flex flex-col justify-between">
+                      <div className="space-y-6">
+                        <div className="flex justify-between items-start gap-4">
+                          <div>
+                            <span className="text-[10px] font-bold text-mint uppercase tracking-widest block mb-1">Step 2</span>
+                            <h2 className="text-xl font-bold text-[#1A2421]">Billing & Duration Options</h2>
+                            <p className="text-xs text-slate-500 font-semibold mt-1">
+                              Select your cycle and timeline. Long-term commitment helps optimize constitutional healing and activates duration discounts.
+                            </p>
+                          </div>
+                          <div className="w-10 h-10 bg-mint/5 border border-mint/10 text-mint rounded-2xl flex items-center justify-center flex-shrink-0">
+                            <Percent className="w-5 h-5" />
+                          </div>
+                        </div>
 
-                        return items.map((item) => {
-                          const active = conditionsCount === item.count;
-                          return (
-                            <button
-                              type="button"
-                              key={item.count}
-                              onClick={() => setConditionsCount(item.count)}
-                              className={`p-3 rounded-xl border text-center transition-all duration-300 flex flex-col justify-between cursor-pointer hover:-translate-y-0.5 active:scale-[0.98] ${
-                                active
-                                  ? "border-mint bg-mint/[0.04] ring-1 ring-mint/20 font-bold"
-                                  : "border-slate-200/60 hover:border-slate-800 text-slate-700 bg-white/40 hover:bg-white"
-                              }`}
-                            >
-                              <div>
-                                <span className="text-[10px] font-black uppercase tracking-wider block">{item.label}</span>
-                                <span className="text-[8px] text-slate-400 font-semibold block mt-0.5 leading-none">{item.surchargeInfo}</span>
-                              </div>
-                              <span className="text-[9px] font-black block mt-2 pt-1 border-t border-slate-900/5 text-mint-dark font-sans">
-                                {item.surchargeText}
+                        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-center">
+                          {/* Cycle Selector */}
+                          <div className="xl:col-span-4 p-4 bg-slate-900/5 rounded-2xl border border-slate-200/50 flex flex-col justify-center h-full">
+                            <div className="mb-2">
+                              <h4 className="text-[10px] font-black text-[#1A2421] uppercase tracking-wider">Billing Frequency</h4>
+                              <p className="text-[8px] text-slate-400 font-bold uppercase mt-0.5">Weekly vs Monthly</p>
+                            </div>
+                            <div className="flex items-center gap-1 bg-white/60 p-0.5 rounded-full border border-slate-200/50 w-fit">
+                              <button
+                                type="button"
+                                onClick={() => handleCycleChange("weekly")}
+                                className={`px-3 py-1 rounded-full text-[9px] font-extrabold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
+                                  billingCycle === "weekly"
+                                    ? "bg-[#1A2421] text-white shadow-sm"
+                                    : "text-slate-500 hover:text-[#1A2421]"
+                                }`}
+                              >
+                                Weekly
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleCycleChange("monthly")}
+                                className={`px-3 py-1 rounded-full text-[9px] font-extrabold uppercase tracking-wider transition-all duration-300 flex items-center gap-1 cursor-pointer ${
+                                  billingCycle === "monthly"
+                                    ? "bg-[#1A2421] text-white shadow-sm"
+                                    : "text-slate-500 hover:text-[#1A2421]"
+                                }`}
+                              >
+                                Monthly
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Duration selector */}
+                          <div className="xl:col-span-8 space-y-2 h-full flex flex-col justify-center">
+                            <div className="flex justify-between items-center">
+                              <h4 className="text-[10px] font-black text-[#1A2421] uppercase tracking-wider">Duration of Commitment</h4>
+                              <span className="text-[9px] text-mint font-bold uppercase tracking-wider flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                Discount: {activePricing.discountPercent}% Off
                               </span>
-                            </button>
-                          );
-                        });
-                      })()}
-                    </div>
-                  </div>
-
-                  {/* Step 2: Duration & Billing Controls */}
-                  <div className="glass-panel border-white/60 bg-white/40 rounded-3xl p-6 md:p-8 space-y-6">
-                    <div className="flex justify-between items-start gap-4">
-                      <div>
-                        <span className="text-[10px] font-bold text-mint uppercase tracking-widest block mb-1">Step 2</span>
-                        <h2 className="text-xl font-bold text-[#1A2421]">Define Billing & Duration Options</h2>
-                        <p className="text-xs text-slate-500 font-semibold mt-1">
-                          Select your cycle and timeline. Long-term commitment helps optimize constitutional healing and activates duration discounts.
-                        </p>
-                      </div>
-                      <div className="w-10 h-10 bg-mint/5 border border-mint/10 text-mint rounded-2xl flex items-center justify-center flex-shrink-0">
-                        <Percent className="w-5 h-5" />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-                      {/* Cycle Selector */}
-                      <div className="md:col-span-4 p-4 bg-slate-900/5 rounded-2xl border border-slate-200/50 flex flex-col justify-center h-full">
-                        <div className="mb-2">
-                          <h4 className="text-[10px] font-black text-[#1A2421] uppercase tracking-wider">Billing Frequency</h4>
-                          <p className="text-[8px] text-slate-400 font-bold uppercase mt-0.5">Weekly vs Monthly</p>
-                        </div>
-                        <div className="flex items-center gap-1 bg-white/60 p-0.5 rounded-full border border-slate-200/50 w-fit">
-                          <button
-                            type="button"
-                            onClick={() => handleCycleChange("weekly")}
-                            className={`px-3 py-1 rounded-full text-[9px] font-extrabold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
-                              billingCycle === "weekly"
-                                ? "bg-[#1A2421] text-white shadow-sm"
-                                : "text-slate-500 hover:text-[#1A2421]"
-                            }`}
-                          >
-                            Weekly
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleCycleChange("monthly")}
-                            className={`px-3 py-1 rounded-full text-[9px] font-extrabold uppercase tracking-wider transition-all duration-300 flex items-center gap-1 cursor-pointer ${
-                              billingCycle === "monthly"
-                                ? "bg-[#1A2421] text-white shadow-sm"
-                                : "text-slate-500 hover:text-[#1A2421]"
-                            }`}
-                          >
-                            Monthly
-                            <span className="text-[7px] px-1 py-0.5 rounded-full bg-emerald-500 text-white font-black tracking-normal">
-                              SAVE 17%
-                            </span>
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Duration selector */}
-                      <div className="md:col-span-8 space-y-2 h-full flex flex-col justify-center">
-                        <div className="flex justify-between items-center">
-                          <h4 className="text-[10px] font-black text-[#1A2421] uppercase tracking-wider">Duration of Commitment</h4>
-                          <span className="text-[9px] text-mint font-bold uppercase tracking-wider flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
-                            Discount: {activePricing.discountPercent}% Off
-                          </span>
-                        </div>
-                        
-                        <div className="grid grid-cols-5 gap-1.5">
-                          {(billingCycle === "weekly"
-                            ? [
-                                { value: 1, label: "1 Wk", desc: "0%" },
-                                { value: 2, label: "2 Wks", desc: "5%" },
-                                { value: 4, label: "4 Wks", desc: "10%" },
-                                { value: 8, label: "8 Wks", desc: "15%" },
-                                { value: 12, label: "12 Wks", desc: "20%" }
-                              ]
-                            : [
-                                { value: 1, label: "1 Mo", desc: "10%" },
-                                { value: 2, label: "2 Mos", desc: "15%" },
-                                { value: 3, label: "3 Mos", desc: "20%" },
-                                { value: 6, label: "6 Mos", desc: "25%" },
-                                { value: 12, label: "12 Mos", desc: "30%" }
-                              ]
-                          ).map((opt) => (
-                            <button
-                              type="button"
-                              key={opt.value}
-                              onClick={() => setDurationValue(opt.value)}
-                              className={`py-2 px-1 rounded-xl border text-center transition-all duration-300 cursor-pointer ${
-                                durationValue === opt.value
-                                  ? "border-mint bg-mint/[0.04] text-mint-dark font-black"
-                                  : "border-slate-200/50 hover:border-slate-800 text-slate-700 bg-white/40 hover:bg-white"
-                              }`}
-                            >
-                              <span className="text-xs block font-bold leading-none">{opt.label}</span>
-                              <span className="text-[8px] text-slate-400 block mt-1 leading-none font-semibold font-sans">{opt.desc}</span>
-                            </button>
-                          ))}
+                            </div>
+                            
+                            <div className="grid grid-cols-5 gap-1.5">
+                              {(billingCycle === "weekly"
+                                ? [
+                                    { value: 1, label: "1 Wk", desc: "0%" },
+                                    { value: 2, label: "2 Wks", desc: "5%" },
+                                    { value: 4, label: "4 Wks", desc: "10%" },
+                                    { value: 8, label: "8 Wks", desc: "15%" },
+                                    { value: 12, label: "12 Wks", desc: "20%" }
+                                  ]
+                                : [
+                                    { value: 1, label: "1 Mo", desc: "10%" },
+                                    { value: 2, label: "2 Mos", desc: "15%" },
+                                    { value: 3, label: "3 Mos", desc: "20%" },
+                                    { value: 6, label: "6 Mos", desc: "25%" },
+                                    { value: 12, label: "12 Mos", desc: "30%" }
+                                  ]
+                              ).map((opt) => (
+                                <button
+                                  type="button"
+                                  key={opt.value}
+                                  onClick={() => setDurationValue(opt.value)}
+                                  className={`py-2 px-1 rounded-xl border text-center transition-all duration-300 cursor-pointer ${
+                                    durationValue === opt.value
+                                      ? "border-mint bg-mint/[0.04] text-mint-dark font-black"
+                                      : "border-slate-200/50 hover:border-slate-800 text-slate-700 bg-white/40 hover:bg-white"
+                                  }`}
+                                >
+                                  <span className="text-xs block font-bold leading-none">{opt.label}</span>
+                                  <span className="text-[8px] text-slate-400 block mt-1 leading-none font-semibold font-sans">{opt.desc}</span>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
