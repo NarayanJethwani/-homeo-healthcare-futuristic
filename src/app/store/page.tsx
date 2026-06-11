@@ -2026,132 +2026,15 @@ export default function StorePage() {
                                       </div>
                                     </button>
                                   );
-                                });
-                              })()}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Quick Adjuster Grid Component */}
-                    <div className="glass-panel border-white/60 bg-white/40 rounded-3xl p-6 md:p-8 space-y-6">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        {/* Billing Frequency Card */}
-                        <div className="p-5 bg-white/70 border border-slate-100 rounded-2xl flex flex-col justify-between gap-4">
-                          <div>
-                            <h4 className="text-[10px] font-black text-slate-800 uppercase tracking-wider">Billing Frequency</h4>
-                            <p className="text-[9px] text-slate-400 font-bold uppercase mt-0.5">Weekly vs Monthly</p>
-                          </div>
-                          <div className="flex items-center gap-1.5 bg-slate-900/5 p-1 rounded-full border border-slate-200/50 w-fit relative">
-                            <button
-                              type="button"
-                              onClick={() => handleCycleChange("weekly")}
-                              className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all duration-300 cursor-pointer ${
-                                billingCycle === "weekly"
-                                  ? "bg-[#1A2421] text-white shadow-sm"
-                                  : "text-slate-500 hover:text-[#1A2421]"
-                              }`}
-                            >
-                              Weekly
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleCycleChange("monthly")}
-                              className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all duration-300 flex items-center gap-1 cursor-pointer ${
-                                billingCycle === "monthly"
-                                  ? "bg-[#1A2421] text-white shadow-sm"
-                                  : "text-slate-500 hover:text-[#1A2421]"
-                              }`}
-                            >
-                              Monthly
-                            </button>
-                            
-                            {/* Save Tag */}
-                            <span className="absolute -top-3.5 -right-6 px-1.5 py-0.5 rounded-full bg-emerald-500 text-white text-[8px] font-black uppercase tracking-wider animate-bounce" style={{ animationDuration: "3s" }}>
-                              Save 10%
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Conditions Covered Card */}
-                        <div className="p-5 bg-white/70 border border-slate-100 rounded-2xl flex flex-col justify-between gap-4">
-                          <div>
-                            <h4 className="text-[10px] font-black text-slate-800 uppercase tracking-wider">Conditions Covered</h4>
-                            <p className="text-[9px] text-slate-400 font-bold uppercase mt-0.5">Active Concerns to Treat</p>
-                          </div>
-                          <div className="flex items-center gap-1.5">
-                            {[1, 2, 3, 4, 5].map((count) => {
-                              const label = count === 5 ? "5+" : `${count}`;
-                              const active = conditionsCount === count;
-                              return (
-                                <button
-                                  type="button"
-                                  key={count}
-                                  onClick={() => setConditionsCount(count)}
-                                  className={`w-9 h-9 rounded-xl border text-xs font-bold transition-all duration-205 cursor-pointer flex items-center justify-center ${
-                                    active
-                                      ? "bg-[#1A2421] text-white border-slate-800 shadow-sm"
-                                      : "border-slate-200 text-slate-700 bg-white/80 hover:border-slate-800"
-                                  }`}
-                                >
-                                  {label}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Commitment Duration Row */}
-                      <div className="pt-4 border-t border-slate-900/5 space-y-3">
-                        <h4 className="text-[10px] font-black text-slate-800 uppercase tracking-wider">Commitment Duration</h4>
-                        <div className="grid grid-cols-5 gap-2">
-                          {(() => {
-                            const opts = billingCycle === "weekly"
-                              ? [
-                                  { value: 1, label: "1 Wk", discount: "0%" },
-                                  { value: 2, label: "2 Wks", discount: "5%" },
-                                  { value: 4, label: "4 Wks", discount: "10%" },
-                                  { value: 8, label: "8 Wks", discount: "15%" },
-                                  { value: 12, label: "12 Wks", discount: "20%" }
-                                ]
-                              : [
-                                  { value: 1, label: "1 Mo", discount: "10%" },
-                                  { value: 2, label: "2 Mos", discount: "15%" },
-                                  { value: 3, label: "3 Mos", discount: "20%" },
-                                  { value: 6, label: "6 Mos", discount: "25%" },
-                                  { value: 12, label: "12 Mos", discount: "30%" }
-                                ];
-
-                            return opts.map((opt) => {
-                              const isSelected = durationValue === opt.value;
-                              return (
-                                <button
-                                  type="button"
-                                  key={opt.value}
-                                  onClick={() => setDurationValue(opt.value)}
-                                  className={`py-2 px-1 rounded-2xl border text-center transition-all duration-200 cursor-pointer hover:shadow-xs ${
-                                    isSelected
-                                      ? "border-mint text-mint bg-mint/[0.03] ring-1 ring-mint/10 font-bold"
-                                      : "border-slate-200 text-slate-750 bg-white/70 hover:border-slate-800"
-                                  }`}
-                                >
-                                  <span className="block text-xs font-extrabold">{opt.label}</span>
-                                  <span className={`block text-[8.5px] font-black uppercase mt-0.5 ${
-                                    isSelected ? "text-mint-dark" : "text-slate-400"
-                                  }`}>
-                                    {opt.discount}
-                                  </span>
-                                </button>
-                              );
                             });
                           })()}
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
+                </div>
+              </div>
 
                 {/* Dashboard Right Summary Card (4 cols) */}
                 <div className="lg:col-span-4 lg:sticky lg:top-32 space-y-6">
@@ -2226,6 +2109,122 @@ export default function StorePage() {
                               ₹{activePricing.finalPrice.toLocaleString("en-IN")}
                             </span>
                             <span className="text-[9px] text-slate-500 font-semibold block uppercase">Excludes shipping (India ₹300 | Intl at dispatch)</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Quick Adjuster Grid Component */}
+                      <div className="p-4 bg-white/60 border border-slate-100 rounded-2xl space-y-4 shadow-[0_2px_12px_rgba(0,0,0,0.01)]">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          {/* Billing Frequency Card */}
+                          <div className="flex flex-col justify-between gap-2">
+                            <div>
+                              <h4 className="text-[9px] font-black text-slate-800 uppercase tracking-wider">Billing Frequency</h4>
+                              <p className="text-[7.5px] text-slate-400 font-bold uppercase mt-0.5">Weekly vs Monthly</p>
+                            </div>
+                            <div className="flex items-center gap-1 bg-slate-900/5 p-0.5 rounded-full border border-slate-200/50 w-fit relative scale-[0.9] origin-left">
+                              <button
+                                type="button"
+                                onClick={() => handleCycleChange("weekly")}
+                                className={`px-2.5 py-1 rounded-full text-[8.5px] font-black uppercase tracking-wider transition-all duration-305 cursor-pointer ${
+                                  billingCycle === "weekly"
+                                    ? "bg-[#1A2421] text-white shadow-sm"
+                                    : "text-slate-500 hover:text-[#1A2421]"
+                                }`}
+                              >
+                                Weekly
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleCycleChange("monthly")}
+                                className={`px-2.5 py-1 rounded-full text-[8.5px] font-black uppercase tracking-wider transition-all duration-305 cursor-pointer ${
+                                  billingCycle === "monthly"
+                                    ? "bg-[#1A2421] text-white shadow-sm"
+                                    : "text-slate-500 hover:text-[#1A2421]"
+                                }`}
+                              >
+                                Monthly
+                              </button>
+                              
+                              <span className="absolute -top-3.5 -right-3 px-1 py-0.5 rounded-full bg-emerald-500 text-white text-[7px] font-black uppercase tracking-wider">
+                                Save 10%
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Conditions Covered Card */}
+                          <div className="flex flex-col justify-between gap-2">
+                            <div>
+                              <h4 className="text-[9px] font-black text-slate-800 uppercase tracking-wider">Conditions Covered</h4>
+                              <p className="text-[7.5px] text-slate-400 font-bold uppercase mt-0.5">Active Concerns to Treat</p>
+                            </div>
+                            <div className="flex items-center gap-1 scale-[0.95] origin-left">
+                              {[1, 2, 3, 4, 5].map((count) => {
+                                const label = count === 5 ? "5+" : `${count}`;
+                                const active = conditionsCount === count;
+                                return (
+                                  <button
+                                    type="button"
+                                    key={count}
+                                    onClick={() => setConditionsCount(count)}
+                                    className={`w-6.5 h-6.5 rounded-lg border text-[10px] font-bold transition-all duration-200 cursor-pointer flex items-center justify-center ${
+                                      active
+                                        ? "bg-[#1A2421] text-white border-slate-800 shadow-sm"
+                                        : "border-slate-200 text-slate-700 bg-white/80 hover:border-slate-800"
+                                    }`}
+                                  >
+                                    {label}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Commitment Duration Row */}
+                        <div className="pt-3 border-t border-slate-900/5 space-y-2">
+                          <h4 className="text-[9px] font-black text-slate-800 uppercase tracking-wider">Commitment Duration</h4>
+                          <div className="grid grid-cols-5 gap-1.5">
+                            {(() => {
+                              const opts = billingCycle === "weekly"
+                                ? [
+                                    { value: 1, label: "1 Wk", discount: "0%" },
+                                    { value: 2, label: "2 Wks", discount: "5%" },
+                                    { value: 4, label: "4 Wks", discount: "10%" },
+                                    { value: 8, label: "8 Wks", discount: "15%" },
+                                    { value: 12, label: "12 Wks", discount: "20%" }
+                                  ]
+                                : [
+                                    { value: 1, label: "1 Mo", discount: "10%" },
+                                    { value: 2, label: "2 Mos", discount: "15%" },
+                                    { value: 3, label: "3 Mos", discount: "20%" },
+                                    { value: 6, label: "6 Mos", discount: "25%" },
+                                    { value: 12, label: "12 Mos", discount: "30%" }
+                                  ];
+
+                              return opts.map((opt) => {
+                                const isSelected = durationValue === opt.value;
+                                return (
+                                  <button
+                                    type="button"
+                                    key={opt.value}
+                                    onClick={() => setDurationValue(opt.value)}
+                                    className={`py-1.5 px-0.5 rounded-xl border text-center transition-all duration-200 cursor-pointer ${
+                                      isSelected
+                                        ? "border-mint text-mint bg-mint/[0.03] ring-1 ring-mint/10 font-bold"
+                                        : "border-slate-200 text-slate-700 bg-white/70 hover:border-slate-800"
+                                    }`}
+                                  >
+                                    <span className="block text-[10px] font-black leading-tight">{opt.label}</span>
+                                    <span className={`block text-[7.5px] font-black uppercase mt-0.5 ${
+                                      isSelected ? "text-mint-dark" : "text-slate-400"
+                                    }`}>
+                                      {opt.discount}
+                                    </span>
+                                  </button>
+                                );
+                              });
+                            })()}
                           </div>
                         </div>
                       </div>
