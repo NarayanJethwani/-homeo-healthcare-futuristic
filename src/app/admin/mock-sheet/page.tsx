@@ -14,8 +14,9 @@ import { JETHWANI_REPERTORY_DATA, setRepertoryData } from "@/lib/repertoryData";
 
 type TabType = "Dashboard" | "Case Taking" | "Follow-up Tracker" | "Repertorization" | "Treatment Planner" | "Finance" | "AI Repertory Lab" | "Reports & Attachments" | "Config DB";
 
-const mapCareLevel = (levelStr: string): "mild" | "moderate" | "focused" | "organ" | "comprehensive" => {
+const mapCareLevel = (levelStr: string): "mild" | "moderate" | "focused" | "acute_critical" | "organ" | "comprehensive" => {
   const l = levelStr.toLowerCase();
+  if (l.includes("critical") || l.includes("emergency") || l.includes("acute critical")) return "acute_critical";
   if (l.includes("acute") || l.includes("wellness") || l.includes("general") || l.includes("consult")) return "mild";
   if (l.includes("standard") || l.includes("chronic") || l.includes("moderate")) return "moderate";
   if (l.includes("deep") || l.includes("systemic") || l.includes("focused")) return "focused";
@@ -1477,23 +1478,25 @@ function MockSheetContent() {
 
   // 3. Treatment planner calculations and prices
   const careLevelsDetails = {
-    mild: { title: "Acute & Wellness Care", weeklyPrice: 1000, monthlyPrice: 3500 },
-    moderate: { title: "Standard Chronic Care", weeklyPrice: 2000, monthlyPrice: 7500 },
-    focused: { title: "Deep Systemic Care", weeklyPrice: 3500, monthlyPrice: 12500 },
-    organ: { title: "Advanced Pathological Care", weeklyPrice: 5000, monthlyPrice: 18500 },
-    comprehensive: { title: "Multisystem Integrative Care", weeklyPrice: 7000, monthlyPrice: 25000 },
+    mild: { title: "Acute & Wellness Care", weeklyPrice: 1200, monthlyPrice: 4200 },
+    moderate: { title: "Standard Chronic Care", weeklyPrice: 2400, monthlyPrice: 9000 },
+    focused: { title: "Deep Systemic Care", weeklyPrice: 4200, monthlyPrice: 15000 },
+    acute_critical: { title: "Acute Critical Care", weeklyPrice: 4800, monthlyPrice: 16800 },
+    organ: { title: "Advanced Pathological Care", weeklyPrice: 6000, monthlyPrice: 22000 },
+    comprehensive: { title: "Multisystem Integrative Care", weeklyPrice: 8400, monthlyPrice: 30000 },
   };
 
   const surchargesLookup = {
-    mild: { weekly2: 300, weekly3: 600, monthly2: 1000, monthly3: 2000 },
-    moderate: { weekly2: 500, weekly3: 1000, monthly2: 1500, monthly3: 3000 },
-    focused: { weekly2: 800, weekly3: 1600, monthly2: 2500, monthly3: 5000 },
-    organ: { weekly2: 1200, weekly3: 2400, monthly2: 3500, monthly3: 7000 },
-    comprehensive: { weekly2: 1500, weekly3: 3000, monthly2: 4500, monthly3: 9000 },
+    mild: { unitWeekly: 360, unitMonthly: 1200 },
+    moderate: { unitWeekly: 600, unitMonthly: 1800 },
+    focused: { unitWeekly: 1000, unitMonthly: 3000 },
+    acute_critical: { unitWeekly: 1200, unitMonthly: 3600 },
+    organ: { unitWeekly: 1500, unitMonthly: 4200 },
+    comprehensive: { unitWeekly: 1800, unitMonthly: 5400 }
   };
 
   const calculatePricing = (
-    level: "mild" | "moderate" | "focused" | "organ" | "comprehensive",
+    level: keyof typeof careLevelsDetails,
     cycle: "weekly" | "monthly",
     duration: number,
     conditions: number
@@ -1502,11 +1505,10 @@ function MockSheetContent() {
     const basePrice = cycle === "weekly" ? details.weeklyPrice : details.monthlyPrice;
     
     let surcharge = 0;
-    const tierSurcharges = surchargesLookup[level];
-    if (conditions === 2) {
-      surcharge = cycle === "weekly" ? tierSurcharges.weekly2 : tierSurcharges.monthly2;
-    } else if (conditions >= 3) {
-      surcharge = cycle === "weekly" ? tierSurcharges.weekly3 : tierSurcharges.monthly3;
+    if (conditions > 1) {
+      const tierSurcharges = surchargesLookup[level];
+      const unit = cycle === "weekly" ? tierSurcharges.unitWeekly : tierSurcharges.unitMonthly;
+      surcharge = (conditions - 1) * unit;
     }
 
     const adjustedBasePrice = basePrice + surcharge;
@@ -3428,6 +3430,7 @@ function MockSheetContent() {
                           <option value="mild">Acute & Wellness Care</option>
                           <option value="moderate">Standard Chronic Care</option>
                           <option value="focused">Deep Systemic Care</option>
+                          <option value="acute_critical">Acute Critical Care</option>
                           <option value="organ">Advanced Pathological Care</option>
                           <option value="comprehensive">Multisystem Integrative Care</option>
                         </select>
@@ -3506,7 +3509,9 @@ function MockSheetContent() {
                         >
                           <option value={1}>1 Condition (Standard)</option>
                           <option value={2}>2 Conditions (+ Surcharge)</option>
-                          <option value={3}>3+ Conditions (+ Max Surcharge)</option>
+                          <option value={3}>3 Conditions (+ Surcharge)</option>
+                          <option value={4}>4 Conditions (+ Surcharge)</option>
+                          <option value={5}>5+ Conditions (+ Surcharge)</option>
                         </select>
                       </div>
 

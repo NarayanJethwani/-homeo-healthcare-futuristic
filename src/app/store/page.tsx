@@ -1414,7 +1414,7 @@ export default function StorePage() {
         </div>
 
         {/* Mode Switcher Toggle */}
-        <div className="flex justify-center md:justify-start mb-12">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-12">
           <div className="inline-flex items-center gap-1.5 bg-slate-900/5 p-1.5 rounded-full border border-slate-200/50 backdrop-blur-md">
             <button
               onClick={() => setViewMode("dashboard")}
@@ -1450,6 +1450,14 @@ export default function StorePage() {
               Let Doctor Plan
             </button>
           </div>
+          <Magnetic>
+            <Link
+              href="/store/plans"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-mint/20 hover:border-mint/60 bg-mint/5 hover:bg-mint/10 text-mint-dark hover:text-[#0c6b5e] text-xs font-extrabold uppercase tracking-wider transition-all duration-300 shadow-sm cursor-pointer"
+            >
+              📊 Compare Tiers & Savings
+            </Link>
+          </Magnetic>
         </div>
 
         {/* Views Content wrapper */}
@@ -2793,18 +2801,18 @@ export default function StorePage() {
                                 <p className="text-[10px] text-slate-500 font-semibold">Active medical concerns to treat</p>
                               </div>
                               <div className="flex items-center gap-1.5 bg-white/60 p-1 rounded-full border border-slate-200/50 w-fit">
-                                {[1, 2, 3].map((count) => (
+                                {[1, 2, 3, 4, 5].map((count) => (
                                   <button
                                     key={count}
                                     type="button"
                                     onClick={() => setWalkInConditionsCount(count)}
-                                    className={`px-3.5 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
+                                    className={`px-3 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
                                       walkInConditionsCount === count
                                         ? "bg-[#1A2421] text-white shadow-sm"
                                         : "text-slate-500 hover:text-[#1A2421]"
                                     }`}
                                   >
-                                    {count === 3 ? "3+" : count} {count === 1 ? "Cond." : "Conds."}
+                                    {count === 5 ? "5+" : count} {count === 1 ? "Cond." : "Conds."}
                                   </button>
                                 ))}
                               </div>

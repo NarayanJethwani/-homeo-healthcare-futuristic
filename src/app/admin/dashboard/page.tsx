@@ -3428,21 +3428,23 @@ Homeo Healthcare`;
   };
 
   const getCareLevelMonthlyRate = (level: string) => {
-    let rate = 3500;
-    if (level === "⚡ Standard Chronic Care") rate = 7500;
-    if (level === "🎯 Deep Systemic Care") rate = 12500;
-    if (level === "🫁 Advanced Pathological Care") rate = 18500;
-    if (level === "🔮 Multisystem Integrative Care") rate = 25000;
+    let rate = 4200;
+    if (level === "⚡ Standard Chronic Care") rate = 9000;
+    if (level === "🎯 Deep Systemic Care") rate = 15000;
+    if (level === "🚨 Acute Critical Care") rate = 16800;
+    if (level === "🫁 Advanced Pathological Care") rate = 22000;
+    if (level === "🔮 Multisystem Integrative Care") rate = 30000;
     return rate;
   };
 
   const getCareLevelRate = (level: string, cycle: string) => {
     const isWeekly = cycle === "Weekly";
-    if (level.includes("Standard")) return isWeekly ? 2000 : 7500;
-    if (level.includes("Deep")) return isWeekly ? 3500 : 12500;
-    if (level.includes("Advanced")) return isWeekly ? 5000 : 18500;
-    if (level.includes("Multisystem")) return isWeekly ? 7000 : 25000;
-    return isWeekly ? 1000 : 3500; // Acute & Wellness
+    if (level.includes("Standard")) return isWeekly ? 2400 : 9000;
+    if (level.includes("Deep")) return isWeekly ? 4200 : 15000;
+    if (level.includes("Advanced")) return isWeekly ? 6000 : 22000;
+    if (level.includes("Multisystem")) return isWeekly ? 8400 : 30000;
+    if (level.includes("Critical") || level.includes("🚨")) return isWeekly ? 4800 : 16800;
+    return isWeekly ? 1200 : 4200; // Acute & Wellness
   };
 
   const getOptionLabel = (baseLabel: string, monthlyPrice: number) => {
@@ -22553,11 +22555,12 @@ Exported on: ${new Date().toLocaleDateString()}
                           onChange={(e) => handleCareLevelChange(e.target.value)}
                           className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-semibold text-[#1A2421]"
                         >
-                          <option value="🌱 Acute & Wellness Care">{getOptionLabel("🌱 Acute & Wellness Care", 3500)}</option>
-                          <option value="⚡ Standard Chronic Care">{getOptionLabel("⚡ Standard Chronic Care", 7500)}</option>
-                          <option value="🎯 Deep Systemic Care">{getOptionLabel("🎯 Deep Systemic Care", 12500)}</option>
-                          <option value="🫁 Advanced Pathological Care">{getOptionLabel("🫁 Advanced Pathological Care", 18500)}</option>
-                          <option value="🔮 Multisystem Integrative Care">{getOptionLabel("🔮 Multisystem Integrative Care", 25000)}</option>
+                          <option value="🌱 Acute & Wellness Care">{getOptionLabel("🌱 Acute & Wellness Care", 4200)}</option>
+                          <option value="⚡ Standard Chronic Care">{getOptionLabel("⚡ Standard Chronic Care", 9000)}</option>
+                          <option value="🎯 Deep Systemic Care">{getOptionLabel("🎯 Deep Systemic Care", 15000)}</option>
+                          <option value="🚨 Acute Critical Care">{getOptionLabel("🚨 Acute Critical Care", 16800)}</option>
+                          <option value="🫁 Advanced Pathological Care">{getOptionLabel("🫁 Advanced Pathological Care", 22000)}</option>
+                          <option value="🔮 Multisystem Integrative Care">{getOptionLabel("🔮 Multisystem Integrative Care", 30000)}</option>
                         </select>
                       </div>
 
