@@ -1619,50 +1619,80 @@ export default function StorePage() {
                               Hide
                             </button>
                           </div>
-                          
-                          <div className="space-y-3.5 text-xs">
+
+                          <div className="space-y-4 text-xs">
                             <p className="text-[11px] text-slate-600 font-semibold leading-relaxed">
-                              Find below how common chronic and acute conditions map to our clinical complexity packages. If you are treating multiple conditions, choose the care level for your most severe symptom, and select the total count in Step 1.5.
+                              The table below maps common chronic and acute conditions to our clinical care tiers. If treating multiple conditions, choose the tier for your <strong>most complex</strong> complaint, then select the total condition count in the planner. Each surcharge per additional condition is ₹600/mo.
                             </p>
-                            
+
+                            {/* Conditions count guide */}
+                            <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 grid grid-cols-2 md:grid-cols-5 gap-2">
+                              {[
+                                { count: "1", label: "Single", desc: "One active complaint", color: "bg-slate-100 text-slate-700" },
+                                { count: "2", label: "Dual", desc: "e.g. Thyroid + Skin", color: "bg-blue-50 text-blue-700" },
+                                { count: "3", label: "Triple", desc: "e.g. DM + HTN + Skin", color: "bg-amber-50 text-amber-700" },
+                                { count: "4", label: "Quad", desc: "e.g. 4 co-morbidities", color: "bg-orange-50 text-orange-700" },
+                                { count: "5+", label: "Multi", desc: "Complex poly-morbid", color: "bg-rose-50 text-rose-700" },
+                              ].map(({ count, label, desc, color }) => (
+                                <div key={count} className={`rounded-xl p-2.5 text-center ${color}`}>
+                                  <span className="block text-xl font-black">{count}</span>
+                                  <span className="block text-[9px] font-bold uppercase">{label}</span>
+                                  <span className="block text-[8px] font-semibold opacity-80 mt-0.5">{desc}</span>
+                                </div>
+                              ))}
+                            </div>
+
                             <div className="overflow-x-auto">
                               <table className="w-full text-left border-collapse">
                                 <thead>
                                   <tr className="border-b border-slate-200 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                                    <th className="py-2 pr-4">Care Level</th>
+                                    <th className="py-2 pr-4 whitespace-nowrap">Care Level</th>
                                     <th className="py-2 px-4">Common Mapped Conditions</th>
-                                    <th className="py-2 pl-4">Included Clinical Protocol</th>
+                                    <th className="py-2 px-4 whitespace-nowrap">Monthly Rate</th>
+                                    <th className="py-2 pl-4">Included Protocol</th>
                                   </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-100 font-semibold text-slate-700 text-[11px]">
-                                   <tr>
-                                     <td className="py-3 pr-4 font-black text-slate-900">🌱 Acute & Wellness Care</td>
-                                     <td className="py-3 px-4">Acute cold/cough, seasonal allergies, simple hair fall, localized dandruff, minor indigestion, mild acute flares.</td>
-                                     <td className="py-3 pl-4">Constitutional micro-dose remedies, basic nutritional/diet sheet, bi-weekly status checks.</td>
-                                   </tr>
-                                   <tr>
-                                     <td className="py-3 pr-4 font-black text-[#1A2421]">⚡ Standard Chronic Care</td>
-                                     <td className="py-3 px-4">Established localized eczema, chronic dry skin/acne, mild thyroid imbalance, single joint pain, basic IBS/gas issues.</td>
-                                     <td className="py-3 pl-4">Deeper disease mapping, targeted remedy preparations, detailed dietary guides, fortnightly updates.</td>
-                                   </tr>
-                                   <tr>
-                                     <td className="py-3 pr-4 font-black text-mint-dark">🎯 Deep Systemic Care</td>
-                                     <td className="py-3 px-4">Bronchial asthma, chronic allergic bronchitis, severe psoriasis, alopecia areata, chronic hormonal acne with PCOS, vascular migraines.</td>
-                                     <td className="py-3 pl-4">Deep target system pathology rebalancing, high-potency constitutional dilution sets, biomarker and lab report evaluations.</td>
-                                   </tr>
-                                   <tr>
-                                     <td className="py-3 pr-4 font-black text-indigo-700">🫁 Advanced Pathological Care</td>
-                                     <td className="py-3 px-4">Early-stage Chronic Kidney Disease (CKD), elevated liver enzymes/fatty liver, multi-joint chronic arthritis, autoimmune rebalancing.</td>
-                                     <td className="py-3 pl-4">Multi-remedy inter-system support, routine blood report comparison timelines, detailed dietitian review integration.</td>
-                                   </tr>
-                                   <tr>
-                                     <td className="py-3 pr-4 font-black text-rose-600">🔮 Multisystem Integrative Care</td>
-                                     <td className="py-3 px-4">Treating 3+ co-existing chronic conditions (e.g. Diabetes + CKD + Arthritis) or advanced multi-system chronic autoimmune pathology.</td>
-                                     <td className="py-3 pl-4">Direct medical supervision by Dr. Jethwani, high-frequency dosage adjustments, emergency acute flare-up protocols.</td>
+                                  <tr>
+                                    <td className="py-3 pr-4 font-black text-slate-900 whitespace-nowrap">🌱 Acute &amp; Wellness</td>
+                                    <td className="py-3 px-4">Acute cold/cough, seasonal allergies, simple hair fall, minor indigestion, mild flares.</td>
+                                    <td className="py-3 px-4 font-black text-slate-900 whitespace-nowrap">₹4,200/mo</td>
+                                    <td className="py-3 pl-4">Constitutional micro-dose remedies, basic diet sheet, bi-weekly check-ins.</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-3 pr-4 font-black text-[#1A2421] whitespace-nowrap">⚡ Standard Chronic</td>
+                                    <td className="py-3 px-4">Chronic eczema, dry skin/acne, mild thyroid, single joint pain, IBS/gas.</td>
+                                    <td className="py-3 px-4 font-black text-[#1A2421] whitespace-nowrap">₹9,000/mo</td>
+                                    <td className="py-3 pl-4">Disease mapping, targeted remedies, detailed dietary guide, fortnightly reports.</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-3 pr-4 font-black text-mint-dark whitespace-nowrap">🎯 Deep Systemic</td>
+                                    <td className="py-3 px-4">Bronchial asthma, severe psoriasis, alopecia areata, PCOS-acne, vascular migraines.</td>
+                                    <td className="py-3 px-4 font-black text-mint-dark whitespace-nowrap">₹15,000/mo</td>
+                                    <td className="py-3 pl-4">Deep organ-level pathology protocol, high-potency dilutions, lab report evaluation.</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-3 pr-4 font-black text-indigo-700 whitespace-nowrap">🫁 Advanced Pathological</td>
+                                    <td className="py-3 px-4">Early CKD, fatty liver/elevated enzymes, multi-joint chronic arthritis, autoimmune rebalancing.</td>
+                                    <td className="py-3 px-4 font-black text-indigo-700 whitespace-nowrap">₹22,000/mo</td>
+                                    <td className="py-3 pl-4">Multi-remedy inter-system support, periodic blood report comparison, dietitian integration.</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-3 pr-4 font-black text-rose-600 whitespace-nowrap">🔮 Multisystem Integrative</td>
+                                    <td className="py-3 px-4">3+ co-existing conditions (e.g. DM + CKD + RA), advanced poly-chronic autoimmune cases.</td>
+                                    <td className="py-3 px-4 font-black text-rose-600 whitespace-nowrap">₹30,000/mo</td>
+                                    <td className="py-3 pl-4">Direct Dr. Jethwani supervision, high-frequency dosage adjustments, acute flare protocols.</td>
+                                  </tr>
+                                  <tr className="bg-red-50/50">
+                                    <td className="py-3 pr-4 font-black text-red-700 whitespace-nowrap">🚨 Acute Critical Care</td>
+                                    <td className="py-3 px-4">Urgent acute illness — high fever, acute asthma attacks, acute renal crisis, emergency post-surgical support.</td>
+                                    <td className="py-3 px-4 font-black text-red-700 whitespace-nowrap">₹16,800/mo</td>
+                                    <td className="py-3 pl-4">Daily clinical monitoring, frequent remedy titration, priority WhatsApp supervision by Dr. Jethwani.</td>
                                   </tr>
                                 </tbody>
                               </table>
                             </div>
+                            <p className="text-[10px] text-slate-400 font-semibold">* Surcharge of ₹600/mo per additional condition beyond 1. Weekly billing available at approx. ×0.26 of monthly rate.</p>
                           </div>
                         </motion.div>
                       )}
@@ -2875,26 +2905,38 @@ export default function StorePage() {
 
                             {/* Conditions Selector */}
                             <div className="p-4 bg-white/40 backdrop-blur-sm rounded-2xl border border-white/60 space-y-3 shadow-sm hover:border-slate-300 transition-all duration-300">
-                              <div>
-                                <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider">Conditions Covered</h4>
-                                <p className="text-[10px] text-slate-500 font-semibold">Active medical concerns to treat</p>
+                              <div className="flex items-start justify-between gap-2">
+                                <div>
+                                  <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider">Conditions Covered</h4>
+                                  <p className="text-[10px] text-slate-500 font-semibold">Active medical concerns to treat</p>
+                                </div>
                               </div>
-                              <div className="flex items-center gap-1 bg-white/60 p-1 rounded-full border border-slate-200/50 w-full justify-between">
-                                {[1, 2, 3, 4, 5].map((count) => (
+                              <div className="grid grid-cols-5 gap-1.5">
+                                {[
+                                  { val: 1, label: "1", sub: "Single" },
+                                  { val: 2, label: "2", sub: "Dual" },
+                                  { val: 3, label: "3", sub: "Triple" },
+                                  { val: 4, label: "4", sub: "Quad" },
+                                  { val: 5, label: "5+", sub: "Multi" },
+                                ].map(({ val, label, sub }) => (
                                   <button
-                                    key={count}
+                                    key={val}
                                     type="button"
-                                    onClick={() => setWalkInConditionsCount(count)}
-                                    className={`w-9 h-9 rounded-full text-[10px] font-extrabold transition-all duration-300 cursor-pointer flex items-center justify-center ${
-                                      walkInConditionsCount === count
-                                        ? "bg-[#1A2421] text-white shadow-sm"
-                                        : "text-slate-500 hover:text-[#1A2421]"
+                                    onClick={() => setWalkInConditionsCount(val)}
+                                    className={`py-2 rounded-xl text-center transition-all duration-300 cursor-pointer border ${
+                                      walkInConditionsCount === val
+                                        ? "bg-[#1A2421] text-white border-[#1A2421] shadow-sm"
+                                        : "bg-white/60 border-slate-200 text-slate-600 hover:border-slate-800 hover:bg-white"
                                     }`}
                                   >
-                                    {count === 5 ? "5+" : count}
+                                    <span className="block text-sm font-extrabold leading-none">{label}</span>
+                                    <span className={`block text-[8px] font-bold uppercase mt-0.5 ${
+                                      walkInConditionsCount === val ? "text-white/70" : "text-slate-400"
+                                    }`}>{sub}</span>
                                   </button>
                                 ))}
                               </div>
+                              <p className="text-[9px] text-slate-400 font-semibold">Not sure how many? <button type="button" onClick={() => { setTriageStep(1); setIsHelperOpen(true); }} className="text-mint font-bold underline cursor-pointer">Use the triage helper →</button></p>
                             </div>
                           </div>
 
@@ -3380,42 +3422,99 @@ export default function StorePage() {
 
                 {/* Step Content */}
                 {triageStep === 1 && (
-                  <div className="space-y-6">
+                  <div className="space-y-5">
                     <div>
-                      <span className="text-[10px] font-bold text-mint uppercase tracking-widest block mb-1">Step 1 of 3</span>
-                      <h3 className="text-xl font-bold text-slate-900">Symptom Severity & Complexity</h3>
+                      <span className="text-[10px] font-bold text-mint uppercase tracking-widest block mb-1">Step 1 of 3 · Complexity</span>
+                      <h3 className="text-xl font-bold text-slate-900">How complex is your primary complaint?</h3>
                       <p className="text-xs text-slate-500 font-semibold mt-1">
-                        Select the statement that best describes your primary medical complaint.
+                        Select the option that best matches your main health concern. This determines the base care tier.
                       </p>
                     </div>
 
-                    <div className="space-y-3">
+                    <div className="space-y-2.5">
                       {[
-                        { key: "mild", label: "Acute or Mild Complaints", desc: "Short-term/mild issues like acute seasonal colds, mild acne, general hair fall, or minor indigestion." },
-                        { key: "moderate", label: "Single Chronic Condition", desc: "A persistent long-standing issue localized to one organ/system, e.g. chronic sinusitis, mild thyroid dysfunction, localized eczema." },
-                        { key: "focused", label: "Deep Constitutional / Organ System Pathology", desc: "Requires targeted management of a complex system, e.g. bronchial asthma, severe psoriasis, hormonal acne with PCOS, chronic vascular migraines." },
-                        { key: "organ", label: "Severe Systemic Pathology", desc: "Advanced or multi-organ chronic complaints, e.g. Chronic Kidney Disease (CKD), liver cirrhosis, advanced rheumatoid arthritis." },
-                        { key: "acute_critical", label: "Urgent / Critical Acute Condition", desc: "Urgent acute illness requiring daily check-ins, frequent remedy titrations, and high-priority supervision." }
+                        {
+                          key: "mild",
+                          icon: "🌱",
+                          label: "Acute or Mild Complaints",
+                          desc: "Short-term/mild issues that flare and resolve.",
+                          examples: "Seasonal cold, mild acne, general hair fall, minor indigestion, skin allergy flare.",
+                          tier: "→ Acute & Wellness Care",
+                          tierColor: "text-slate-600"
+                        },
+                        {
+                          key: "moderate",
+                          icon: "⚡",
+                          label: "Single Chronic Condition",
+                          desc: "A persistent long-standing issue confined to one organ/system.",
+                          examples: "Chronic sinusitis, localized eczema, mild hypothyroidism, IBS, single joint arthritis.",
+                          tier: "→ Standard Chronic Care",
+                          tierColor: "text-slate-700"
+                        },
+                        {
+                          key: "focused",
+                          icon: "🎯",
+                          label: "Deep Organ System Pathology",
+                          desc: "Complex systemic condition requiring targeted constitutional management.",
+                          examples: "Bronchial asthma, severe psoriasis, PCOS, vascular migraines, hormonal acne.",
+                          tier: "→ Deep Systemic Care",
+                          tierColor: "text-mint-dark"
+                        },
+                        {
+                          key: "organ",
+                          icon: "🫁",
+                          label: "Severe / Multi-Organ Pathology",
+                          desc: "Advanced chronic disease affecting multiple systems or with serious biomarkers.",
+                          examples: "Early CKD, fatty liver, RA, ankylosing spondylitis, autoimmune conditions.",
+                          tier: "→ Advanced Pathological Care",
+                          tierColor: "text-indigo-600"
+                        },
+                        {
+                          key: "acute_critical",
+                          icon: "🚨",
+                          label: "Urgent / Critical Acute Condition",
+                          desc: "Acute urgent illness requiring daily monitoring and priority intervention.",
+                          examples: "Acute asthma attack, high uncontrolled fever, post-surgical recovery, acute renal flare.",
+                          tier: "→ Acute Critical Care",
+                          tierColor: "text-red-600"
+                        }
                       ].map((item) => (
                         <div
                           key={item.key}
                           onClick={() => setTriageAnswers({ ...triageAnswers, symptomsComplexity: item.key })}
-                          className={`p-4 rounded-2xl border cursor-pointer transition-all duration-200 ${
+                          className={`p-3.5 rounded-2xl border cursor-pointer transition-all duration-200 ${
                             triageAnswers.symptomsComplexity === item.key
                               ? "border-mint bg-mint/[0.04] ring-1 ring-mint/20"
-                              : "border-slate-200 hover:border-slate-800 bg-white/40"
+                              : "border-slate-200 hover:border-slate-300 bg-white/40"
                           }`}
                         >
-                          <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">{item.label}</h4>
-                          <p className="text-[10px] text-slate-500 font-semibold mt-1">{item.desc}</p>
+                          <div className="flex items-start gap-3">
+                            <span className="text-xl mt-0.5 shrink-0">{item.icon}</span>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between gap-2 flex-wrap">
+                                <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">{item.label}</h4>
+                                <span className={`text-[9px] font-bold ${item.tierColor} whitespace-nowrap`}>{item.tier}</span>
+                              </div>
+                              <p className="text-[10px] text-slate-600 font-semibold mt-0.5">{item.desc}</p>
+                              <p className="text-[9px] text-slate-400 font-semibold mt-1 italic">e.g. {item.examples}</p>
+                            </div>
+                            {triageAnswers.symptomsComplexity === item.key && (
+                              <div className="w-4 h-4 rounded-full bg-mint flex items-center justify-center shrink-0 mt-0.5">
+                                <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       ))}
                     </div>
 
-                    <div className="flex justify-end pt-4">
+                    <div className="flex justify-end pt-2">
                       <button
                         onClick={() => setTriageStep(2)}
-                        className="px-6 py-2.5 bg-[#1A2421] text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-1.5 cursor-pointer"
+                        disabled={!triageAnswers.symptomsComplexity}
+                        className="px-6 py-2.5 bg-[#1A2421] text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-1.5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                       >
                         Next Step
                         <ArrowRight className="w-3.5 h-3.5" />
@@ -3425,39 +3524,95 @@ export default function StorePage() {
                 )}
 
                 {triageStep === 2 && (
-                  <div className="space-y-6">
+                  <div className="space-y-5">
                     <div>
-                      <span className="text-[10px] font-bold text-mint uppercase tracking-widest block mb-1">Step 2 of 3</span>
-                      <h3 className="text-xl font-bold text-slate-900">Treating complaints simultaneously</h3>
+                      <span className="text-[10px] font-bold text-mint uppercase tracking-widest block mb-1">Step 2 of 3 · Conditions Count</span>
+                      <h3 className="text-xl font-bold text-slate-900">How many conditions are you treating?</h3>
                       <p className="text-xs text-slate-500 font-semibold mt-1">
-                        How many conditions or active chronic concerns are you seeking support for?
+                        Count each distinct active chronic complaint you want addressed simultaneously. Each adds ₹600/mo to the base plan.
                       </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 gap-2.5">
                       {[
-                        { val: 1, label: "1 Condition", desc: "Focusing treatment on a single health complaint." },
-                        { val: 2, label: "2 Conditions", desc: "Treating two co-existing issues simultaneously (e.g. skin + gut)." },
-                        { val: 3, label: "3+ Conditions", desc: "Treating three or more overlapping complaints." }
+                        {
+                          val: 1,
+                          label: "1 Condition",
+                          icon: "①",
+                          desc: "Single focused complaint.",
+                          examples: "Only eczema. Only thyroid. Only sinusitis. Only PCOS.",
+                          surcharge: "No surcharge",
+                          color: "text-slate-600"
+                        },
+                        {
+                          val: 2,
+                          label: "2 Conditions",
+                          icon: "②",
+                          desc: "Two co-existing conditions being treated simultaneously.",
+                          examples: "Thyroid + Skin. PCOS + Acne. Diabetes + Joint Pain. Sinusitis + Asthma.",
+                          surcharge: "+₹600/mo",
+                          color: "text-blue-600"
+                        },
+                        {
+                          val: 3,
+                          label: "3 Conditions",
+                          icon: "③",
+                          desc: "Three concurrent complaints requiring coordinated management.",
+                          examples: "DM + HTN + Skin. Thyroid + PCOS + Hair. Asthma + Eczema + IBS.",
+                          surcharge: "+₹1,200/mo",
+                          color: "text-amber-600"
+                        },
+                        {
+                          val: 4,
+                          label: "4 Conditions",
+                          icon: "④",
+                          desc: "Four overlapping health concerns managed together.",
+                          examples: "DM + CKD + HTN + Skin. PCOS + Thyroid + Gut + Migraines.",
+                          surcharge: "+₹1,800/mo",
+                          color: "text-orange-600"
+                        },
+                        {
+                          val: 5,
+                          label: "5+ Conditions",
+                          icon: "⑤",
+                          desc: "Complex poly-morbid case with 5 or more active complaints.",
+                          examples: "DM + CKD + RA + HTN + Skin/Gut. Advanced multisystem chronic presentations.",
+                          surcharge: "+₹2,400/mo",
+                          color: "text-rose-600"
+                        }
                       ].map((item) => (
                         <div
                           key={item.val}
                           onClick={() => setTriageAnswers({ ...triageAnswers, conditionsNumber: item.val })}
-                          className={`p-4 rounded-2xl border cursor-pointer flex flex-col justify-between transition-all duration-200 ${
+                          className={`p-3.5 rounded-2xl border cursor-pointer transition-all duration-200 ${
                             triageAnswers.conditionsNumber === item.val
                               ? "border-mint bg-mint/[0.04] ring-1 ring-mint/20"
-                              : "border-slate-200 hover:border-slate-800 bg-white/40"
+                              : "border-slate-200 hover:border-slate-300 bg-white/40"
                           }`}
                         >
-                          <div>
-                            <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">{item.label}</h4>
-                            <p className="text-[10px] text-slate-500 font-semibold mt-2">{item.desc}</p>
+                          <div className="flex items-center gap-3">
+                            <span className={`text-2xl font-black shrink-0 ${item.color}`}>{item.icon}</span>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between gap-2 flex-wrap">
+                                <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">{item.label}</h4>
+                                <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-100 ${item.color}`}>{item.surcharge}</span>
+                              </div>
+                              <p className="text-[10px] text-slate-600 font-semibold mt-0.5">{item.desc}</p>
+                              <p className="text-[9px] text-slate-400 font-semibold mt-1 italic">e.g. {item.examples}</p>
+                            </div>
+                            {triageAnswers.conditionsNumber === item.val && (
+                              <div className="w-4 h-4 rounded-full bg-mint flex items-center justify-center shrink-0">
+                                <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                              </div>
+                            )}
                           </div>
                         </div>
                       ))}
                     </div>
 
-                    <div className="flex justify-between pt-4">
+                    <div className="flex justify-between pt-2">
                       <button
                         onClick={() => setTriageStep(1)}
                         className="px-6 py-2.5 border border-slate-200 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer text-slate-700 bg-white/50"
@@ -3466,7 +3621,8 @@ export default function StorePage() {
                       </button>
                       <button
                         onClick={() => setTriageStep(3)}
-                        className="px-6 py-2.5 bg-[#1A2421] text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-1.5 cursor-pointer"
+                        disabled={!triageAnswers.conditionsNumber}
+                        className="px-6 py-2.5 bg-[#1A2421] text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-1.5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                       >
                         Next Step
                         <ArrowRight className="w-3.5 h-3.5" />
@@ -3476,37 +3632,77 @@ export default function StorePage() {
                 )}
 
                 {triageStep === 3 && (
-                  <div className="space-y-6">
+                  <div className="space-y-5">
                     <div>
-                      <span className="text-[10px] font-bold text-mint uppercase tracking-widest block mb-1">Step 3 of 3</span>
-                      <h3 className="text-xl font-bold text-slate-900">Clinical Supervision Level</h3>
+                      <span className="text-[10px] font-bold text-mint uppercase tracking-widest block mb-1">Step 3 of 3 · Supervision</span>
+                      <h3 className="text-xl font-bold text-slate-900">What level of medical oversight do you need?</h3>
                       <p className="text-xs text-slate-500 font-semibold mt-1">
-                        Do you need active biomarker monitoring, blood report reviews, or high-frequency supervision?
+                        This determines how actively Dr. Jethwani monitors, adjusts remedies, and reviews your lab reports during treatment.
                       </p>
                     </div>
 
-                    <div className="space-y-3">
+                    <div className="space-y-2.5">
                       {[
-                        { key: "standard", label: "Standard Clinical Management", desc: "Regular progress tracking checks every 2 to 4 weeks. No immediate need for laboratory analysis integrations." },
-                        { key: "high", label: "High Supervision & Medical Reviews", desc: "Requires regular blood/lab report review comparisons, multi-remedy coordination, or direct clinician oversight by Dr. Jethwani." },
-                        { key: "urgent", label: "Urgent / Daily Clinical Coordination", desc: "Requires daily clinical reviews, immediate dosage adjustments, and priority communications." }
+                        {
+                          key: "standard",
+                          icon: "📋",
+                          label: "Standard Clinical Management",
+                          desc: "Progress tracking every 2–4 weeks. No urgent lab reviews needed.",
+                          examples: "Most chronic wellness conditions. Stable eczema, IBS, hair fall, mild thyroid.",
+                          badge: "Most common",
+                          badgeColor: "bg-slate-100 text-slate-600"
+                        },
+                        {
+                          key: "high",
+                          icon: "🔬",
+                          label: "High Supervision & Medical Reviews",
+                          desc: "Requires regular blood/lab report reviews, multi-remedy coordination, or direct Dr. Jethwani oversight.",
+                          examples: "CKD, autoimmune RA, fatty liver with enzymes, post-surgical support, advanced hormonal cases.",
+                          badge: "Lab monitoring",
+                          badgeColor: "bg-blue-50 text-blue-700"
+                        },
+                        {
+                          key: "urgent",
+                          icon: "🚨",
+                          label: "Urgent / Daily Clinical Coordination",
+                          desc: "Daily clinical reviews, immediate dosage adjustments, and priority WhatsApp access to Dr. Jethwani.",
+                          examples: "Acute critical illness, high fever, acute asthma attacks, acute renal episodes, emergency flares.",
+                          badge: "Priority access",
+                          badgeColor: "bg-red-50 text-red-700"
+                        }
                       ].map((item) => (
                         <div
                           key={item.key}
                           onClick={() => setTriageAnswers({ ...triageAnswers, supervisionNeed: item.key })}
-                          className={`p-4 rounded-2xl border cursor-pointer transition-all duration-200 ${
+                          className={`p-3.5 rounded-2xl border cursor-pointer transition-all duration-200 ${
                             triageAnswers.supervisionNeed === item.key
                               ? "border-mint bg-mint/[0.04] ring-1 ring-mint/20"
-                              : "border-slate-200 hover:border-slate-800 bg-white/40"
+                              : "border-slate-200 hover:border-slate-300 bg-white/40"
                           }`}
                         >
-                          <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">{item.label}</h4>
-                          <p className="text-[10px] text-slate-500 font-semibold mt-1">{item.desc}</p>
+                          <div className="flex items-start gap-3">
+                            <span className="text-xl mt-0.5 shrink-0">{item.icon}</span>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between gap-2 flex-wrap">
+                                <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">{item.label}</h4>
+                                <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${item.badgeColor}`}>{item.badge}</span>
+                              </div>
+                              <p className="text-[10px] text-slate-600 font-semibold mt-0.5">{item.desc}</p>
+                              <p className="text-[9px] text-slate-400 font-semibold mt-1 italic">e.g. {item.examples}</p>
+                            </div>
+                            {triageAnswers.supervisionNeed === item.key && (
+                              <div className="w-4 h-4 rounded-full bg-mint flex items-center justify-center shrink-0 mt-0.5">
+                                <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       ))}
                     </div>
 
-                    <div className="flex justify-between pt-4">
+                    <div className="flex justify-between pt-2">
                       <button
                         onClick={() => setTriageStep(2)}
                         className="px-6 py-2.5 border border-slate-200 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer text-slate-700 bg-white/50"
@@ -3515,9 +3711,10 @@ export default function StorePage() {
                       </button>
                       <button
                         onClick={() => setTriageStep("result")}
-                        className="px-6 py-2.5 bg-mint hover:bg-mint-dark text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-1.5 cursor-pointer shadow-md"
+                        disabled={!triageAnswers.supervisionNeed}
+                        className="px-6 py-2.5 bg-mint hover:bg-mint-dark text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-1.5 cursor-pointer shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
                       >
-                        Calculate Recommendation
+                        Calculate My Recommendation
                         <Sparkles className="w-3.5 h-3.5" />
                       </button>
                     </div>
@@ -3534,40 +3731,67 @@ export default function StorePage() {
                         <h3 className="text-2xl font-black text-slate-900">Recommended Care Setup</h3>
                       </div>
 
-                      <div className="p-5 border border-mint/20 bg-mint/[0.03] rounded-2xl space-y-4">
-                        <div className="flex justify-between items-start border-b border-mint/10 pb-3">
+                      {/* Result Card */}
+                      <div className="border border-mint/20 bg-gradient-to-br from-mint/[0.04] to-transparent rounded-2xl overflow-hidden">
+                        {/* Header */}
+                        <div className="p-5 flex justify-between items-start border-b border-mint/10">
                           <div>
                             <span className="text-[9px] font-extrabold uppercase bg-mint/10 text-mint-dark border border-mint/20 px-2 py-0.5 rounded-full inline-block mb-1.5">
                               {recDetails.badge}
                             </span>
-                            <h4 className="text-lg font-black text-[#1A2421]">{recDetails.title}</h4>
+                            <h4 className="text-xl font-black text-[#1A2421]">{recDetails.title}</h4>
                             <span className="text-[10px] text-slate-500 font-bold uppercase block mt-0.5">
                               For {rec.conditionsCount === 1 ? "1 Condition" : rec.conditionsCount === 2 ? "2 Conditions" : rec.conditionsCount === 3 ? "3 Conditions" : rec.conditionsCount === 4 ? "4 Conditions" : "5+ Conditions"}
                             </span>
                           </div>
-                          <span className="text-3xl">{recDetails.icon}</span>
+                          <span className="text-4xl">{recDetails.icon}</span>
                         </div>
 
-                        <div className="space-y-1">
+                        {/* Pricing preview */}
+                        <div className="grid grid-cols-2 border-b border-mint/10">
+                          <div className="p-4 border-r border-mint/10">
+                            <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider block">Monthly Rate</span>
+                            <span className="text-xl font-black text-[#1A2421]">₹{recDetails.monthlyPrice.toLocaleString("en-IN")}</span>
+                            <span className="text-[9px] text-slate-500 font-semibold block">/month</span>
+                          </div>
+                          <div className="p-4">
+                            <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider block">Weekly Rate</span>
+                            <span className="text-xl font-black text-[#1A2421]">₹{recDetails.weeklyPrice.toLocaleString("en-IN")}</span>
+                            <span className="text-[9px] text-slate-500 font-semibold block">/week</span>
+                          </div>
+                        </div>
+
+                        {/* Rationale */}
+                        <div className="p-4 space-y-1">
                           <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider block">Clinical Rationale</span>
                           <p className="text-xs text-slate-700 font-semibold leading-relaxed">
                             {rec.explanation}
                           </p>
                         </div>
+
+                        {/* What's included chips */}
+                        <div className="px-4 pb-4">
+                          <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider block mb-2">Included In This Plan</span>
+                          <div className="flex flex-wrap gap-1.5">
+                            {recDetails.features.slice(0, 5).map((f: string, i: number) => (
+                              <span key={i} className="text-[9px] font-semibold bg-white border border-slate-200 text-slate-600 px-2 py-0.5 rounded-full">{f}</span>
+                            ))}
+                          </div>
+                        </div>
                       </div>
 
-                      <div className="flex justify-between gap-3 pt-4 border-t border-slate-100">
+                      <div className="flex justify-between gap-3 pt-2 border-t border-slate-100">
                         <button
                           onClick={() => setTriageStep(3)}
                           className="px-6 py-2.5 border border-slate-200 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer text-slate-700 bg-white/50"
                         >
-                          Back
+                          Adjust Answers
                         </button>
                         <button
                           onClick={() => handleApplyTriage(rec.careLevel, rec.conditionsCount)}
                           className="px-6 py-2.5 bg-mint hover:bg-mint-dark text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-1.5 cursor-pointer shadow-md"
                         >
-                          Apply Settings to Dashboard
+                          Apply This Plan
                           <ArrowRight className="w-3.5 h-3.5" />
                         </button>
                       </div>
