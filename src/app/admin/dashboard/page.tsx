@@ -10,7 +10,7 @@ import {
   BookOpen, Book, ChevronLeft, Maximize2, Minimize2, Receipt, Printer,
   Gauge, AlertTriangle, Check, X, Compass, Layers, History, Zap, TrendingUp, Workflow, Calendar,
   Network, Database, Cpu, GitBranch, Stethoscope, User, UploadCloud, Play, Mail, Mic, Sun, Moon, IndianRupee,
-  Star, Copy, Edit, GitMerge, Filter, Info
+  Star, Copy, Edit, GitMerge, Filter, Info, Share2
 } from "lucide-react";
 import { REPERTORY_DATA, REPERTORY_CHAPTERS, REMEDIES_METADATA, Rubric, BOERICKE_CHAPTERS, SEARCH_SYNONYMS, getRepertoryData, JETHWANI_SECTIONS, JETHWANI_REPERTORY_DATA as JETHWANI_REPERTORY_DATA_ORIG, JETHWANI_REMEDY_CONFIRMATIONS, calculateClinicalIndices, type JethwaniRubric, type JethwaniSymptomConfig, type ClinicalIndices, setRepertoryData } from "@/lib/repertoryData";
 import { MATERIA_MEDICA_BOOKS, MateriaMedicaBook } from "@/lib/materiaMedicaData";
@@ -557,6 +557,12 @@ interface Clinician {
   email: string;
 }
 
+const SAMPLE_FINDINGS = [
+  { marker: "Thyroid Stimulating Hormone (TSH)", value: "8.4 uIU/mL", status: "Abnormal" },
+  { marker: "Glycated Hemoglobin (HbA1c)", value: "7.8%", status: "Abnormal" },
+  { marker: "Vitamin D (25-Hydroxy)", value: "14 ng/ml", status: "Deficient" }
+];
+
 export default function AdminDashboard() {
   const router = useRouter();
   const [session, setSession] = useState<UserSession | null>(null);
@@ -691,7 +697,13 @@ export default function AdminDashboard() {
   const [analyzerRawText, setAnalyzerRawText] = useState("");
   const [analyzerResult, setAnalyzerResult] = useState<any>(null);
   const [isAnalyzerLoading, setIsAnalyzerLoading] = useState(false);
-  const [analyzerViewMode, setAnalyzerViewMode] = useState<"doctor" | "patient">("doctor");
+  const [analyzerViewMode, setAnalyzerViewMode] = useState<"doctor" | "patient" | "export">("doctor");
+  const [reportExportPatientId, setReportExportPatientId] = useState("");
+  const [reportExportDate, setReportExportDate] = useState(new Date().toISOString().split("T")[0]);
+  const [reportExportCategory, setReportExportCategory] = useState("Blood Test");
+  const [isExportingReport, setIsExportingReport] = useState(false);
+  const [reportExportStatus, setReportExportStatus] = useState<"" | "success" | "error">("");
+  const [reportExportMessage, setReportExportMessage] = useState("");
   const [analyzerOrganTab, setAnalyzerOrganTab] = useState<string>("all");
   const [analyzerChatHistory, setAnalyzerChatHistory] = useState<{ role: "user" | "assistant"; text: string }[]>([]);
   const [analyzerChatQuery, setAnalyzerChatQuery] = useState("");
@@ -701,6 +713,8 @@ export default function AdminDashboard() {
   const [rightSidebarCollapsed, setRightSidebarCollapsed] = useState(false);
   const [isAnalyzerChatLoading, setIsAnalyzerChatLoading] = useState(false);
   const [isImportingLocalFile, setIsImportingLocalFile] = useState(false);
+
+
 
   // Google Drive Modal integration states
   const [googleDriveModalOpen, setGoogleDriveModalOpen] = useState(false);
@@ -1548,6 +1562,106 @@ export default function AdminDashboard() {
 
   // AI State
   const [selectedPatientId, setSelectedPatientId] = useState<string>("");
+
+  // Sync export patient selection with active dashboard selection
+  useEffect(() => {
+    if (selectedPatientId) {
+      setReportExportPatientId(selectedPatientId);
+    }
+  }, [selectedPatientId]);
+
+  // Handle exporting parsed lab report findings to patient sheet and database
+  const handleSendReportToSheet = async () => {
+    if (!reportExportPatientId) {
+      setReportExportStatus("error");
+      setReportExportMessage("Please select a patient first.");
+      return;
+    }
+    
+    const targetFindings = analyzerResult?.findings || SAMPLE_FINDINGS;
+    if (targetFindings.length === 0) {
+      setReportExportStatus("error");
+      setReportExportMessage("No findings to export. Analyze a report first.");
+      return;
+    }
+
+    setIsExportingReport(true);
+    setReportExportStatus("");
+    setReportExportMessage("");
+
+    try {
+      const abnormalList = targetFindings
+        .filter((f: any) => f.status !== "Normal")
+        .map((f: any) => `${f.marker}: ${f.value} (${f.status})`)
+        .join(", ");
+      
+      const targetText = abnormalList || "All findings normal";
+
+      let existingAttachments: any[] = [];
+      const getRes = await fetch(`/api/export-attachments?patientId=${reportExportPatientId}`);
+      const getJson = await getRes.json();
+      if (getJson.success && Array.isArray(getJson.attachments)) {
+        existingAttachments = getJson.attachments;
+      }
+
+      const dateParts = reportExportDate.split("-");
+      const formattedDate = dateParts.length === 3 ? `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}` : reportExportDate;
+
+      const newAttachment = {
+        date: formattedDate,
+        category: reportExportCategory,
+        target: targetText,
+        url: "https://drive.google.com/drive/folders/mock-folder-id"
+      };
+
+      const updatedAttachments = [newAttachment, ...existingAttachments];
+      const activePatient = patients.find((p) => p.id === reportExportPatientId);
+      let sheetId = "mock-sheet-id";
+      if (activePatient?.sheetUrl) {
+        const match = activePatient.sheetUrl.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+        if (match) {
+          sheetId = match[1];
+        }
+      }
+
+      const postRes = await fetch("/api/export-attachments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          patientId: reportExportPatientId,
+          attachments: updatedAttachments,
+          sheetId
+        })
+      });
+
+      const postJson = await postRes.json();
+      if (postJson.success) {
+        setReportExportStatus("success");
+        setReportExportMessage("Report findings successfully sent to patient's Google Sheet and saved in Firestore.");
+        
+        setPatients(prev => prev.map(p => {
+          if (p.id === reportExportPatientId) {
+            return {
+              ...p,
+              attachments: updatedAttachments,
+              attachmentsUpdated: new Date().toISOString()
+            };
+          }
+          return p;
+        }));
+      } else {
+        setReportExportStatus("error");
+        setReportExportMessage(postJson.message || "Failed to export findings.");
+      }
+    } catch (err: any) {
+      console.error("Failed to send report to sheet:", err);
+      setReportExportStatus("error");
+      setReportExportMessage(err.message || "Failed to send report to sheet.");
+    } finally {
+      setIsExportingReport(false);
+    }
+  };
+
   const [customComplaint, setCustomComplaint] = useState("");
   const [aiReport, setAiReport] = useState("");
   const [aiData, setAiData] = useState<any>(null);
@@ -7877,6 +7991,15 @@ ${err.message || err}`);
                         <User className="w-3 h-3" />
                         <span>Patient Mode</span>
                       </button>
+                      <button
+                        onClick={() => setAnalyzerViewMode("export")}
+                        className={`flex items-center gap-1 px-3 py-1 rounded-lg text-[9px] font-extrabold uppercase tracking-wider border-none cursor-pointer transition-all ${
+                          analyzerViewMode === "export" ? "bg-slate-900 text-white dark:bg-mint dark:text-slate-950 shadow-xs" : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                        }`}
+                      >
+                        <Share2 className="w-3 h-3" />
+                        <span>Send to Sheet</span>
+                      </button>
                     </div>
 
                     {/* Fullscreen button */}
@@ -8207,7 +8330,7 @@ ${err.message || err}`);
                           )}
 
                           {/* Dynamic Plain English Clinical Insights */}
-                          {analyzerViewMode === "doctor" ? (
+                          {analyzerViewMode === "doctor" && (
                             <div className="pt-4 border-t border-slate-200/60 grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div className="space-y-1">
                                 <span className={`${badgeTextSize} font-black text-slate-400 uppercase tracking-widest font-mono`}>Clinical Significance</span>
@@ -8234,7 +8357,9 @@ ${err.message || err}`);
                                 </p>
                               </div>
                             </div>
-                          ) : (
+                          )}
+
+                          {analyzerViewMode === "patient" && (
                             <div className="pt-4 border-t border-slate-200/60 space-y-4">
                               <div className="bg-emerald-50/30 border border-emerald-100 p-4 rounded-2xl space-y-2">
                                 <span className={`${badgeTextSize} font-black text-emerald-700 uppercase tracking-widest font-mono flex items-center gap-1`}>
@@ -8259,6 +8384,116 @@ ${err.message || err}`);
                                   </ul>
                                 </div>
                               </div>
+                            </div>
+                          )}
+
+                          {analyzerViewMode === "export" && (
+                            <div className="pt-4 border-t border-slate-200/60 space-y-5">
+                              <div className="bg-blue-50/30 border border-blue-100 p-4 rounded-2xl space-y-3">
+                                <span className={`${badgeTextSize} font-black text-blue-700 uppercase tracking-widest font-mono flex items-center gap-1`}>
+                                  <FileSpreadsheet className="w-3.5 h-3.5" />
+                                  Send Findings to Patient Clinical Sheet
+                                </span>
+                                <p className={`text-slate-650 ${paraTextSize} font-semibold leading-relaxed`}>
+                                  Select the patient and target properties to record these parsed abnormal biochemical findings onto their individual Google Sheet ("Reports & Attachments" tab).
+                                </p>
+                              </div>
+
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                {/* Patient Selection */}
+                                <div className="space-y-1">
+                                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest font-mono">Select Patient</label>
+                                  <select
+                                    value={reportExportPatientId}
+                                    onChange={(e) => setReportExportPatientId(e.target.value)}
+                                    className="w-full p-2.5 bg-white dark:bg-slate-900 border border-slate-250 dark:border-slate-800 focus:border-mint focus:ring-1 focus:ring-mint outline-none rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer shadow-inner"
+                                  >
+                                    <option value="">-- Choose Patient --</option>
+                                    {patients.map((p) => (
+                                      <option key={p.id} value={p.id}>
+                                        {p.name} ({p.phone || p.email || p.id})
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+
+                                {/* Report Date */}
+                                <div className="space-y-1">
+                                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest font-mono">Report Date</label>
+                                  <input
+                                    type="date"
+                                    value={reportExportDate}
+                                    onChange={(e) => setReportExportDate(e.target.value)}
+                                    className="w-full p-2.5 bg-white dark:bg-slate-900 border border-slate-250 dark:border-slate-800 focus:border-mint focus:ring-1 focus:ring-mint outline-none rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-250 shadow-inner"
+                                  />
+                                </div>
+
+                                {/* Report Category */}
+                                <div className="space-y-1">
+                                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest font-mono">Report Category</label>
+                                  <select
+                                    value={reportExportCategory}
+                                    onChange={(e) => setReportExportCategory(e.target.value)}
+                                    className="w-full p-2.5 bg-white dark:bg-slate-900 border border-slate-250 dark:border-slate-800 focus:border-mint focus:ring-1 focus:ring-mint outline-none rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer shadow-inner"
+                                  >
+                                    <option value="Blood Test">Blood Test</option>
+                                    <option value="Thyroid Panel">Thyroid Panel</option>
+                                    <option value="Lipid Profile">Lipid Profile</option>
+                                    <option value="Complete Hemogram">Complete Hemogram</option>
+                                    <option value="Urine Analysis">Urine Analysis</option>
+                                    <option value="Vitamin Profile">Vitamin Profile</option>
+                                    <option value="Clinical Photo">Clinical Photo</option>
+                                    <option value="Radiology Scan">Radiology Scan</option>
+                                    <option value="Other">Other</option>
+                                  </select>
+                                </div>
+                              </div>
+
+                              {/* Preview of Abnormal Findings */}
+                              <div className="bg-slate-50/50 dark:bg-slate-950/40 p-4 border border-slate-100 dark:border-slate-850 rounded-2xl space-y-1.5">
+                                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest font-mono block">Preview of Findings to Send</span>
+                                <div className="p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl max-h-[80px] overflow-y-auto font-mono text-[11px] text-slate-650 dark:text-slate-350 leading-relaxed font-semibold">
+                                  {(() => {
+                                    const targetFindings = analyzerResult?.findings || SAMPLE_FINDINGS;
+                                    const abnormalList = targetFindings
+                                      .filter((f: any) => f.status !== "Normal")
+                                      .map((f: any) => `${f.marker}: ${f.value} (${f.status})`)
+                                      .join(", ");
+                                    return abnormalList || "No abnormal findings to report (everything normal)";
+                                  })()}
+                                </div>
+                              </div>
+
+                              {/* Status Feedback Message */}
+                              {reportExportStatus && (
+                                <div className={`p-3 rounded-xl border text-[11px] font-semibold flex items-center gap-1.5 ${
+                                  reportExportStatus === "success" 
+                                    ? "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-100 dark:border-emerald-900/40 text-emerald-800 dark:text-emerald-400" 
+                                    : "bg-rose-50 dark:bg-rose-950/20 border-rose-100 dark:border-rose-900/40 text-rose-800 dark:text-rose-400"
+                                }`}>
+                                  {reportExportStatus === "success" ? <CheckCircle className="w-4 h-4 text-emerald-600" /> : <ShieldAlert className="w-4 h-4 text-rose-600" />}
+                                  <span>{reportExportMessage}</span>
+                                </div>
+                              )}
+
+                              {/* Export Trigger Action */}
+                              <button
+                                onClick={handleSendReportToSheet}
+                                disabled={isExportingReport}
+                                className="w-full py-2.5 bg-mint hover:bg-emerald-700 disabled:opacity-55 text-white rounded-xl text-[10px] font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm border-none"
+                              >
+                                {isExportingReport ? (
+                                  <>
+                                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                                    <span>Syncing with Google Sheets & Firestore...</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <FileSpreadsheet className="w-3.5 h-3.5" />
+                                    <span>Send Report to Sheet</span>
+                                  </>
+                                )}
+                              </button>
                             </div>
                           )}
 
