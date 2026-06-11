@@ -1469,7 +1469,9 @@ export default function StorePage() {
         >
           <Magnetic>
             <Link
-              href="https://homeo.healthcare"
+              href="https://admin.homeo.healthcare"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-mint/20 hover:border-mint/60 bg-mint/5 hover:bg-mint/10 text-mint-dark hover:text-[#0c6b5e] text-xs font-bold uppercase tracking-wider transition-all duration-300 backdrop-blur-md cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
