@@ -1457,8 +1457,8 @@ export default function StorePage() {
   const activeDetails = careLevelsDetails[careLevel];
 
   return (
-    <div className="pt-32 pb-24 px-6 relative">
-      <div className="max-w-7xl mx-auto z-10 relative">
+    <div className="pt-28 pb-24 px-4 md:px-8 lg:px-12 relative">
+      <div className="w-full z-10 relative">
         
         {/* Back to Homepage Button */}
         <motion.div
@@ -1710,37 +1710,37 @@ export default function StorePage() {
                                   <tr>
                                     <td className="py-3 pr-4 font-black text-slate-900 whitespace-nowrap">🌱 Acute &amp; Wellness</td>
                                     <td className="py-3 px-4">Acute cold/cough, seasonal allergies, simple hair fall, minor indigestion, mild flares.</td>
-                                    <td className="py-3 px-4 font-black text-slate-900 whitespace-nowrap">₹4,200/mo</td>
+                                    <td className="py-3 px-4 font-black text-slate-900 whitespace-nowrap">₹4,800/mo</td>
                                     <td className="py-3 pl-4">Constitutional micro-dose remedies, basic diet sheet, bi-weekly check-ins.</td>
                                   </tr>
                                   <tr>
                                     <td className="py-3 pr-4 font-black text-[#1A2421] whitespace-nowrap">⚡ Standard Chronic</td>
                                     <td className="py-3 px-4">Chronic eczema, dry skin/acne, mild thyroid, single joint pain, IBS/gas.</td>
-                                    <td className="py-3 px-4 font-black text-[#1A2421] whitespace-nowrap">₹9,000/mo</td>
+                                    <td className="py-3 px-4 font-black text-[#1A2421] whitespace-nowrap">₹9,600/mo</td>
                                     <td className="py-3 pl-4">Disease mapping, targeted remedies, detailed dietary guide, fortnightly reports.</td>
                                   </tr>
                                   <tr>
                                     <td className="py-3 pr-4 font-black text-mint-dark whitespace-nowrap">🎯 Deep Systemic</td>
                                     <td className="py-3 px-4">Bronchial asthma, severe psoriasis, alopecia areata, PCOS-acne, vascular migraines.</td>
-                                    <td className="py-3 px-4 font-black text-mint-dark whitespace-nowrap">₹15,000/mo</td>
+                                    <td className="py-3 px-4 font-black text-mint-dark whitespace-nowrap">₹16,800/mo</td>
                                     <td className="py-3 pl-4">Deep organ-level pathology protocol, high-potency dilutions, lab report evaluation.</td>
                                   </tr>
                                   <tr>
                                     <td className="py-3 pr-4 font-black text-indigo-700 whitespace-nowrap">🫁 Advanced Pathological</td>
                                     <td className="py-3 px-4">Early CKD, fatty liver/elevated enzymes, multi-joint chronic arthritis, autoimmune rebalancing.</td>
-                                    <td className="py-3 px-4 font-black text-indigo-700 whitespace-nowrap">₹22,000/mo</td>
+                                    <td className="py-3 px-4 font-black text-indigo-700 whitespace-nowrap">₹24,000/mo</td>
                                     <td className="py-3 pl-4">Multi-remedy inter-system support, periodic blood report comparison, dietitian integration.</td>
                                   </tr>
                                   <tr>
                                     <td className="py-3 pr-4 font-black text-rose-600 whitespace-nowrap">🔮 Multisystem Integrative</td>
                                     <td className="py-3 px-4">3+ co-existing conditions (e.g. DM + CKD + RA), advanced poly-chronic autoimmune cases.</td>
-                                    <td className="py-3 px-4 font-black text-rose-600 whitespace-nowrap">₹30,000/mo</td>
+                                    <td className="py-3 px-4 font-black text-rose-600 whitespace-nowrap">₹33,600/mo</td>
                                     <td className="py-3 pl-4">Direct Dr. Jethwani supervision, high-frequency dosage adjustments, acute flare protocols.</td>
                                   </tr>
                                   <tr className="bg-red-50/50">
                                     <td className="py-3 pr-4 font-black text-red-700 whitespace-nowrap">🚨 Acute Critical Care</td>
                                     <td className="py-3 px-4">Urgent acute illness — high fever, acute asthma attacks, acute renal crisis, emergency post-surgical support.</td>
-                                    <td className="py-3 px-4 font-black text-red-700 whitespace-nowrap">₹16,800/mo</td>
+                                    <td className="py-3 px-4 font-black text-red-700 whitespace-nowrap">₹20,000/mo</td>
                                     <td className="py-3 pl-4">Daily clinical monitoring, frequent remedy titration, priority WhatsApp supervision by Dr. Jethwani.</td>
                                   </tr>
                                 </tbody>
