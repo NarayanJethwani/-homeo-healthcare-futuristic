@@ -1800,7 +1800,7 @@ export default function StorePage() {
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
+                        <div className="flex flex-col gap-2">
                           {(() => {
                             const surchargesLookup = {
                               mild: { unitWeekly: 360, unitMonthly: 1200 },
@@ -1812,11 +1812,11 @@ export default function StorePage() {
                             };
                             const activeTierSurcharges = surchargesLookup[careLevel];
                             const items = [
-                              { count: 1, label: "1 Cond.", surchargeText: "Included", surchargeInfo: "Base plan" },
-                              { count: 2, label: "2 Cond.", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly}/wk` : `+₹${activeTierSurcharges.unitMonthly}/mo`, surchargeInfo: "Dual coord." },
-                              { count: 3, label: "3 Cond.", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly * 2}/wk` : `+₹${activeTierSurcharges.unitMonthly * 2}/mo`, surchargeInfo: "Triple map" },
-                              { count: 4, label: "4 Cond.", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly * 3}/wk` : `+₹${activeTierSurcharges.unitMonthly * 3}/mo`, surchargeInfo: "Quad coord." },
-                              { count: 5, label: "5+ Cond.", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly * 4}/wk` : `+₹${activeTierSurcharges.unitMonthly * 4}/mo`, surchargeInfo: "Multisystem" }
+                              { count: 1, label: "1 Condition", surchargeText: "Included", surchargeInfo: "Base plan" },
+                              { count: 2, label: "2 Conditions", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly}/wk` : `+₹${activeTierSurcharges.unitMonthly}/mo`, surchargeInfo: "Dual coordination" },
+                              { count: 3, label: "3 Conditions", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly * 2}/wk` : `+₹${activeTierSurcharges.unitMonthly * 2}/mo`, surchargeInfo: "Triple mapping" },
+                              { count: 4, label: "4 Conditions", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly * 3}/wk` : `+₹${activeTierSurcharges.unitMonthly * 3}/mo`, surchargeInfo: "Quad coordination" },
+                              { count: 5, label: "5+ Conditions", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly * 4}/wk` : `+₹${activeTierSurcharges.unitMonthly * 4}/mo`, surchargeInfo: "Multisystem integration" }
                             ];
 
                             return items.map((item) => {
@@ -1826,17 +1826,24 @@ export default function StorePage() {
                                   type="button"
                                   key={item.count}
                                   onClick={() => setConditionsCount(item.count)}
-                                  className={`p-3 rounded-xl border text-center transition-all duration-300 flex flex-col justify-between cursor-pointer hover:-translate-y-0.5 active:scale-[0.98] ${
+                                  className={`px-4.5 py-3.5 rounded-2xl border transition-all duration-300 flex items-center justify-between cursor-pointer hover:-translate-y-0.5 active:scale-[0.98] ${
                                     active
                                       ? "border-mint bg-mint/[0.04] ring-1 ring-mint/20 font-bold"
                                       : "border-slate-200/60 hover:border-slate-800 text-slate-700 bg-white/40 hover:bg-white"
                                   }`}
                                 >
-                                  <div>
-                                    <span className="text-[10px] font-black uppercase tracking-wider block">{item.label}</span>
-                                    <span className="text-[8px] text-slate-400 font-semibold block mt-0.5 leading-none">{item.surchargeInfo}</span>
+                                  <div className="flex items-center gap-3">
+                                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all ${
+                                      active ? "border-mint bg-mint" : "border-slate-300 bg-white"
+                                    }`}>
+                                      {active && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                                    </div>
+                                    <div className="text-left">
+                                      <span className="text-xs font-bold text-slate-800 block leading-tight">{item.label}</span>
+                                      <span className="text-[9px] text-slate-400 font-bold block mt-0.5 uppercase tracking-widest">{item.surchargeInfo}</span>
+                                    </div>
                                   </div>
-                                  <span className="text-[9px] font-black block mt-2 pt-1 border-t border-slate-900/5 text-mint-dark font-sans">
+                                  <span className="text-xs font-black text-mint-dark font-sans">
                                     {item.surchargeText}
                                   </span>
                                 </button>
@@ -1863,18 +1870,18 @@ export default function StorePage() {
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-center">
+                        <div className="space-y-6">
                           {/* Cycle Selector */}
-                          <div className="xl:col-span-4 p-4 bg-slate-900/5 rounded-2xl border border-slate-200/50 flex flex-col justify-center h-full">
-                            <div className="mb-2">
+                          <div className="p-4.5 bg-slate-900/5 rounded-2xl border border-slate-200/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div>
                               <h4 className="text-[10px] font-black text-[#1A2421] uppercase tracking-wider">Billing Frequency</h4>
-                              <p className="text-[8px] text-slate-400 font-bold uppercase mt-0.5">Weekly vs Monthly</p>
+                              <p className="text-[8px] text-slate-400 font-bold uppercase mt-0.5">Weekly billing vs discounted monthly billing</p>
                             </div>
                             <div className="flex items-center gap-1 bg-white/60 p-0.5 rounded-full border border-slate-200/50 w-fit">
                               <button
                                 type="button"
                                 onClick={() => handleCycleChange("weekly")}
-                                className={`px-3 py-1 rounded-full text-[9px] font-extrabold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
+                                className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all duration-300 cursor-pointer ${
                                   billingCycle === "weekly"
                                     ? "bg-[#1A2421] text-white shadow-sm"
                                     : "text-slate-500 hover:text-[#1A2421]"
@@ -1885,7 +1892,7 @@ export default function StorePage() {
                               <button
                                 type="button"
                                 onClick={() => handleCycleChange("monthly")}
-                                className={`px-3 py-1 rounded-full text-[9px] font-extrabold uppercase tracking-wider transition-all duration-300 flex items-center gap-1 cursor-pointer ${
+                                className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all duration-300 flex items-center gap-1 cursor-pointer ${
                                   billingCycle === "monthly"
                                     ? "bg-[#1A2421] text-white shadow-sm"
                                     : "text-slate-500 hover:text-[#1A2421]"
@@ -1897,7 +1904,7 @@ export default function StorePage() {
                           </div>
 
                           {/* Duration selector */}
-                          <div className="xl:col-span-8 space-y-2 h-full flex flex-col justify-center">
+                          <div className="space-y-3">
                             <div className="flex justify-between items-center">
                               <h4 className="text-[10px] font-black text-[#1A2421] uppercase tracking-wider">Duration of Commitment</h4>
                               <span className="text-[9px] text-mint font-bold uppercase tracking-wider flex items-center gap-1">
@@ -1906,35 +1913,35 @@ export default function StorePage() {
                               </span>
                             </div>
                             
-                            <div className="grid grid-cols-5 gap-1.5">
+                            <div className="grid grid-cols-5 gap-2.5">
                               {(billingCycle === "weekly"
                                 ? [
                                     { value: 1, label: "1 Wk", desc: "0%" },
-                                    { value: 2, label: "2 Wks", desc: "5%" },
-                                    { value: 4, label: "4 Wks", desc: "10%" },
-                                    { value: 8, label: "8 Wks", desc: "15%" },
-                                    { value: 12, label: "12 Wks", desc: "20%" }
+                                    { value: 2, label: "2 Wks", desc: "5% Off" },
+                                    { value: 4, label: "4 Wks", desc: "10% Off" },
+                                    { value: 8, label: "8 Wks", desc: "15% Off" },
+                                    { value: 12, label: "12 Wks", desc: "20% Off" }
                                   ]
                                 : [
-                                    { value: 1, label: "1 Mo", desc: "10%" },
-                                    { value: 2, label: "2 Mos", desc: "15%" },
-                                    { value: 3, label: "3 Mos", desc: "20%" },
-                                    { value: 6, label: "6 Mos", desc: "25%" },
-                                    { value: 12, label: "12 Mos", desc: "30%" }
+                                    { value: 1, label: "1 Mo", desc: "10% Off" },
+                                    { value: 2, label: "2 Mos", desc: "15% Off" },
+                                    { value: 3, label: "3 Mos", desc: "20% Off" },
+                                    { value: 6, label: "6 Mos", desc: "25% Off" },
+                                    { value: 12, label: "12 Mos", desc: "30% Off" }
                                   ]
                               ).map((opt) => (
                                 <button
                                   type="button"
                                   key={opt.value}
                                   onClick={() => setDurationValue(opt.value)}
-                                  className={`py-2 px-1 rounded-xl border text-center transition-all duration-300 cursor-pointer ${
+                                  className={`py-3 px-2 rounded-2xl border text-center transition-all duration-300 cursor-pointer flex flex-col items-center justify-center hover:-translate-y-0.5 active:scale-[0.98] ${
                                     durationValue === opt.value
-                                      ? "border-mint bg-mint/[0.04] text-mint-dark font-black"
+                                      ? "border-mint bg-mint/[0.04] text-mint-dark font-black ring-1 ring-mint/20"
                                       : "border-slate-200/50 hover:border-slate-800 text-slate-700 bg-white/40 hover:bg-white"
                                   }`}
                                 >
                                   <span className="text-xs block font-bold leading-none">{opt.label}</span>
-                                  <span className="text-[8px] text-slate-400 block mt-1 leading-none font-semibold font-sans">{opt.desc}</span>
+                                  <span className="text-[8px] text-slate-400 block mt-1.5 leading-none font-black font-sans uppercase tracking-tight">{opt.desc}</span>
                                 </button>
                               ))}
                             </div>
