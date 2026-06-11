@@ -10565,9 +10565,27 @@ ${err.message || err}`);
 
                     {/* Selected rubrics tracker */}
                     <div className="flex-1 flex flex-col pt-4 min-h-[350px]">
-                      <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 font-mono">
-                        Selected Symptoms & Rubrics Weighting ({selectedRubrics.length})
-                      </h4>
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest font-mono">
+                          Selected Symptoms & Rubrics Weighting ({selectedRubrics.length})
+                        </h4>
+                        {selectedRubrics.length > 0 && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (confirm("Are you sure you want to clear all selected rubrics and restart case analysis?")) {
+                                setSelectedRubrics([]);
+                                setRemedyColumns(["Nux-v", "Lyc", "Ars", "Puls", "Sulph", "Rhus-t", "Calc", "Sil", "Nat-m", "Ign", "Sep"]);
+                              }
+                            }}
+                            className="text-[9px] font-black text-rose-500 hover:text-rose-700 uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1 bg-none border-none p-0"
+                            title="Clear all selected rubrics and reset remedies to restart new case analysis"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                            <span>Clear All</span>
+                          </button>
+                        )}
+                      </div>
 
                       <div 
                         data-lenis-prevent
@@ -10763,6 +10781,21 @@ ${err.message || err}`);
                             }`}
                           >
                             {groupByKingdom ? "Kingdom Grouped" : "Group Kingdom"}
+                          </button>
+                          {/* Clear Analysis */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (confirm("Are you sure you want to clear all selected rubrics and restart case analysis?")) {
+                                setSelectedRubrics([]);
+                                setRemedyColumns(["Nux-v", "Lyc", "Ars", "Puls", "Sulph", "Rhus-t", "Calc", "Sil", "Nat-m", "Ign", "Sep"]);
+                              }
+                            }}
+                            className="px-3 py-1.5 border border-rose-200 bg-rose-50/50 hover:bg-rose-50 text-rose-600 hover:text-rose-700 rounded-xl text-[10px] font-bold uppercase transition-all duration-200 cursor-pointer shadow-sm flex items-center gap-1"
+                            title="Clear all selected rubrics and reset remedies to restart new case analysis"
+                          >
+                            <Trash2 className="w-3.5 h-3.5 text-rose-500" />
+                            <span>Clear Grid</span>
                           </button>
                         </div>
                       )}
