@@ -446,7 +446,7 @@ Please confirm my appointment.`;
                     {/* Time Slot Picker */}
                     <div>
                       <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Available Slots</label>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[220px] overflow-y-auto pr-1">
+                      <div data-lenis-prevent className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[220px] overflow-y-auto pr-1">
                         {slots.map((s) => (
                           <button
                             key={s}
