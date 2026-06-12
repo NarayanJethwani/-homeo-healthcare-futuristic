@@ -3363,7 +3363,7 @@ export default function StorePage() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="space-y-8 max-w-4xl mx-auto relative"
+              className="space-y-8 w-full relative"
             >
               {/* Floating ambient glow orbs for high-end aesthetics */}
               <div className="absolute inset-0 -z-20 overflow-hidden pointer-events-none rounded-[36px]">
