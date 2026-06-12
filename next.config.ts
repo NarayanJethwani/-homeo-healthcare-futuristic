@@ -5,6 +5,30 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/api/repertory": ["./public/data/**/*.json"],
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "admin.homeo.healthcare",
+        pathname: "/**",
+      },
+      {
+        protocol: "http",
+        hostname: "admin.homeo.healthcare",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "*.wp.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "http",
+        hostname: "*.wp.com",
+        pathname: "/**",
+      },
+    ],
+  },
   async redirects() {
     return [
       {
