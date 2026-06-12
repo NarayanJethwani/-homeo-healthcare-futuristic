@@ -2,6 +2,29 @@ import BlogsClient, { Article } from "./BlogsClient";
 
 export const revalidate = 3600; // Revalidate every 1 hour (ISR)
 
+function decodeHtmlEntities(html: string): string {
+  if (!html) return "";
+  return html
+    .replace(/&#038;/g, "&")
+    .replace(/&amp;/g, "&")
+    .replace(/&#8217;/g, "'")
+    .replace(/&#8216;/g, "'")
+    .replace(/&rsquo;/g, "'")
+    .replace(/&lsquo;/g, "'")
+    .replace(/&#8220;/g, '"')
+    .replace(/&#8221;/g, '"')
+    .replace(/&ldquo;/g, '"')
+    .replace(/&rdquo;/g, '"')
+    .replace(/&#8211;/g, "–")
+    .replace(/&ndash;/g, "–")
+    .replace(/&#8212;/g, "—")
+    .replace(/&mdash;/g, "—")
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">");
+}
+
 async function getWordPressPosts(): Promise<Article[]> {
   try {
     const res = await fetch("https://admin.homeo.healthcare/wp-json/wp/v2/posts?_embed&per_page=20", {
@@ -16,10 +39,10 @@ async function getWordPressPosts(): Promise<Article[]> {
         post.content.rendered = post.content.rendered.replace(/\\n/g, "");
       }
       if (post.excerpt?.rendered) {
-        post.excerpt.rendered = post.excerpt.rendered.replace(/\\n/g, "");
+        post.excerpt.rendered = decodeHtmlEntities(post.excerpt.rendered.replace(/\\n/g, ""));
       }
       if (post.title?.rendered) {
-        post.title.rendered = post.title.rendered.replace(/\\n/g, "");
+        post.title.rendered = decodeHtmlEntities(post.title.rendered.replace(/\\n/g, ""));
       }
 
       // Extract category
