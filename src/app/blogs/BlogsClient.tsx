@@ -489,6 +489,7 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
   const [activeId, setActiveId] = useState<string>("");
   const [processedHtml, setProcessedHtml] = useState<string>("");
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const tocSidebarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!selectedArticle) {
@@ -592,6 +593,28 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
       document.body.style.overflow = "";
     };
   }, [selectedArticle]);
+
+  // Keep the active TOC link scrolled into view in the sidebar
+  useEffect(() => {
+    if (!activeId || !tocSidebarRef.current) return;
+    const container = tocSidebarRef.current;
+    const activeLink = container.querySelector(`a[href="#${activeId}"]`) as HTMLElement;
+    if (activeLink) {
+      const containerRect = container.getBoundingClientRect();
+      const elemRect = activeLink.getBoundingClientRect();
+      
+      const relativeTop = elemRect.top - containerRect.top;
+      const relativeBottom = relativeTop + activeLink.offsetHeight;
+      
+      if (relativeTop < 40) {
+        // Scroll up to bring the active item into view with top padding
+        container.scrollBy({ top: relativeTop - 40, behavior: "smooth" });
+      } else if (relativeBottom > containerRect.height - 40) {
+        // Scroll down to bring the active item into view with bottom padding
+        container.scrollBy({ top: relativeBottom - containerRect.height + 40, behavior: "smooth" });
+      }
+    }
+  }, [activeId]);
 
   const filteredArticles = liveArticles.filter((art) => {
     const matchesFilter = filter === "All" || art.category === filter;
@@ -895,7 +918,10 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
               <div className="flex-1 overflow-hidden flex">
                 {/* Table of Contents Sidebar (Fullscreen Mode only) */}
                 {isFullScreen && toc.length > 0 && (
-                  <div className="w-72 border-r border-slate-900/5 dark:border-slate-800/40 p-8 overflow-y-auto hidden md:block bg-[#F5F4F0]/40 backdrop-blur-sm shrink-0 select-none">
+                  <div 
+                    ref={tocSidebarRef}
+                    className="w-72 border-r border-slate-900/5 dark:border-slate-800/40 p-8 overflow-y-auto hidden md:block bg-[#F5F4F0]/40 backdrop-blur-sm shrink-0 select-none"
+                  >
                     <h4 className="font-serif text-xs font-bold text-slate-800 dark:text-slate-200 mb-6 uppercase tracking-widest border-b border-slate-200 pb-2">
                       Table of Contents
                     </h4>
