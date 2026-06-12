@@ -407,32 +407,73 @@ export default function PlansComparisonPage() {
                 Simulate different program durations to view loyalty discounts and daily cost breakdowns.
               </p>
             </div>
-
             {/* Select Care Level */}
             <div className="space-y-2">
               <label className="text-xs font-bold text-[#1A2421] uppercase tracking-wider block">1. Care Program Level</label>
               <select
                 value={calculatorLevel}
                 onChange={(e) => setCalculatorLevel(e.target.value as keyof typeof careLevelsDetails)}
-                className="w-full bg-white/80 border border-slate-200/60 p-3 rounded-2xl text-xs font-bold text-[#1A2421] focus:ring-1 focus:ring-mint outline-none transition-all duration-300"
+                className="w-full bg-white/80 border border-slate-200/60 p-3 rounded-2xl text-xs font-bold text-[#1A2421] focus:ring-1 focus:ring-mint outline-none transition-all duration-300 cursor-pointer"
               >
                 {Object.entries(careLevelsDetails).map(([key, details]) => (
                   <option key={key} value={key}>
-                    {details.icon} {details.title} (₹{details.monthlyPrice}/mo base)
+                    {details.icon} {details.title} (₹{billingCycle === "weekly" ? details.weeklyPrice : details.monthlyPrice}/{billingCycle === "weekly" ? "wk" : "mo"} base)
                   </option>
                 ))}
               </select>
             </div>
 
+            {/* Select Billing Frequency */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-[#1A2421] uppercase tracking-wider block">2. Billing Frequency</label>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setBillingCycle("weekly");
+                    setCalculatorDuration(1); // Reset duration to 1 Wk
+                  }}
+                  className={`flex-1 py-2 rounded-xl text-xs font-extrabold transition-all duration-300 border cursor-pointer ${
+                    billingCycle === "weekly"
+                      ? "bg-[#1A2421] text-white border-[#1A2421] shadow-sm"
+                      : "bg-white/60 text-slate-600 border-slate-200/50 hover:bg-white"
+                  }`}
+                >
+                  Weekly Pricing
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setBillingCycle("monthly");
+                    setCalculatorDuration(3); // Reset duration to 3 Mos
+                  }}
+                  className={`flex-1 py-2 rounded-xl text-xs font-extrabold transition-all duration-300 border flex items-center justify-center gap-1.5 cursor-pointer ${
+                    billingCycle === "monthly"
+                      ? "bg-[#1A2421] text-white border-[#1A2421] shadow-sm"
+                      : "bg-white/60 text-slate-600 border-slate-200/50 hover:bg-white"
+                  }`}
+                >
+                  Monthly Commits
+                  <span className={`text-[7px] px-1 py-0.5 rounded-full font-black ${
+                    billingCycle === "monthly"
+                      ? "bg-emerald-500 text-white"
+                      : "bg-emerald-500/15 text-emerald-700"
+                  }`}>
+                    SAVE 17%
+                  </span>
+                </button>
+              </div>
+            </div>
+
             {/* Select Conditions covered */}
             <div className="space-y-2">
-              <label className="text-xs font-bold text-[#1A2421] uppercase tracking-wider block">2. Conditions Covered</label>
+              <label className="text-xs font-bold text-[#1A2421] uppercase tracking-wider block">3. Conditions Covered</label>
               <div className="flex gap-2">
                 {[1, 2, 3, 4, 5].map((num) => (
                   <button
                     key={num}
                     onClick={() => setCalculatorConditions(num)}
-                    className={`flex-1 py-2 rounded-xl text-xs font-extrabold transition-all duration-300 border ${
+                    className={`flex-1 py-2 rounded-xl text-xs font-extrabold transition-all duration-300 border cursor-pointer ${
                       calculatorConditions === num
                         ? "bg-[#1A2421] text-white border-[#1A2421] shadow-sm"
                         : "bg-white/60 text-slate-600 border-slate-200/50 hover:bg-white"
@@ -447,14 +488,14 @@ export default function PlansComparisonPage() {
             {/* Select Duration */}
             <div className="space-y-2">
               <label className="text-xs font-bold text-[#1A2421] uppercase tracking-wider block">
-                3. Commitment Duration ({calculatorDuration} {billingCycle === "weekly" ? (calculatorDuration === 1 ? "Week" : "Weeks") : (calculatorDuration === 1 ? "Month" : "Months")})
+                4. Commitment Duration ({calculatorDuration} {billingCycle === "weekly" ? (calculatorDuration === 1 ? "Week" : "Weeks") : (calculatorDuration === 1 ? "Month" : "Months")})
               </label>
               <div className="flex gap-2">
                 {(billingCycle === "weekly" ? [1, 2, 4, 8, 12] : [1, 2, 3, 6, 12]).map((dur) => (
                   <button
                     key={dur}
                     onClick={() => setCalculatorDuration(dur)}
-                    className={`flex-1 py-2 rounded-xl text-xs font-extrabold transition-all duration-300 border ${
+                    className={`flex-1 py-2 rounded-xl text-xs font-extrabold transition-all duration-300 border cursor-pointer ${
                       calculatorDuration === dur
                         ? "bg-[#1A2421] text-white border-[#1A2421] shadow-sm"
                         : "bg-white/60 text-slate-600 border-slate-200/50 hover:bg-white"
