@@ -62,6 +62,20 @@ export default function PotencySimulator() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouseRef = useRef({ x: 0, y: 0, active: false, radius: 100 });
   const activePotency = potencies[activeIndex];
+  const [isDark, setIsDark] = useState(false);
+
+  // Monitor theme changes for background grid and trails
+  useEffect(() => {
+    setIsDark(document.documentElement.classList.contains("dark"));
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains("dark"));
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+    return () => observer.disconnect();
+  }, []);
 
   // Canvas particle engine
   useEffect(() => {
@@ -305,7 +319,7 @@ export default function PotencySimulator() {
       
       // Control trails/alpha clearing
       if (activeIndex === 2 || activeIndex === 3) {
-        ctx.fillStyle = "rgba(250, 249, 246, 0.12)"; // Long soft trails
+        ctx.fillStyle = isDark ? "rgba(15, 23, 42, 0.12)" : "rgba(250, 249, 246, 0.12)"; // Long soft trails
         ctx.fillRect(0, 0, width, height);
       } else {
         ctx.clearRect(0, 0, width, height);
@@ -356,15 +370,25 @@ export default function PotencySimulator() {
       canvas.removeEventListener("click", handleCanvasClick);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [activeIndex, activePotency]);
+  }, [activeIndex, activePotency, isDark]);
 
   return (
-    <div className="mt-28 glass-panel border-white/50 rounded-[32px] p-8 md:p-12 relative overflow-hidden shadow-[0_12px_40px_rgba(20,184,166,0.015)]">
-      {/* Absolute canvas background */}
-      <div className="absolute inset-0 z-0 bg-white/20">
+    <div className="mt-28 bg-white/95 dark:bg-[#0f172a]/95 border border-white/20 dark:border-slate-800 rounded-[32px] p-8 md:p-12 relative overflow-hidden shadow-[0_12px_40px_rgba(20,184,166,0.015)]">
+      {/* Absolute canvas background with solid masking and custom grid */}
+      <div 
+        style={{
+          backgroundColor: isDark ? "#0b0f19" : "#faf9f6",
+          backgroundImage: `
+            linear-gradient(to right, ${isDark ? "rgba(20, 184, 166, 0.08)" : "rgba(20, 184, 166, 0.04)"} 1px, transparent 1px),
+            linear-gradient(to bottom, ${isDark ? "rgba(20, 184, 166, 0.08)" : "rgba(20, 184, 166, 0.04)"} 1px, transparent 1px)
+          `,
+          backgroundSize: "30px 30px",
+        }}
+        className="absolute inset-0 z-0"
+      >
         <canvas
           ref={canvasRef}
-          className="w-full h-full block cursor-crosshair pointer-events-auto"
+          className="w-full h-full block cursor-crosshair pointer-events-auto opacity-90"
         />
       </div>
 
