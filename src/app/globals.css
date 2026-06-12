@@ -490,3 +490,339 @@ html.lenis, html.lenis body {
 .dark textarea {
   border-color: var(--color-slate-200) !important;
 }
+
+/* ==========================================================================
+   PREMIUM WORDPRESS CONTENT STYLES (.wp-content)
+   ========================================================================== */
+
+/* Base Content Layout */
+.wp-content {
+  font-family: var(--font-sans);
+  color: var(--foreground);
+  line-height: 1.8;
+  font-size: 0.95rem;
+}
+
+.wp-content h1, .wp-content h2, .wp-content h3, .wp-content h4 {
+  font-family: var(--font-serif);
+  color: #1A2421;
+  font-weight: 700;
+  margin-top: 2.5rem;
+  margin-bottom: 1.25rem;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+.dark .wp-content h1, .dark .wp-content h2, .dark .wp-content h3, .dark .wp-content h4 {
+  color: var(--foreground);
+}
+
+.wp-content h2 {
+  font-size: 1.75rem;
+  border-left: 4px solid var(--color-mint);
+  padding-left: 1rem;
+}
+
+.wp-content h3 {
+  font-size: 1.4rem;
+}
+
+.wp-content p {
+  margin-bottom: 1.5rem;
+  text-align: justify;
+}
+
+.wp-content blockquote {
+  border-left: 4px solid var(--color-lavender);
+  padding: 1rem 1.5rem;
+  margin: 2rem 0;
+  background: rgba(168, 85, 247, 0.05);
+  border-radius: 0 16px 16px 0;
+  font-style: italic;
+  font-size: 1.05rem;
+}
+
+.dark .wp-content blockquote {
+  background: rgba(168, 85, 247, 0.1);
+}
+
+/* Bento Layout */
+.wp-bento-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.25rem;
+  margin: 2rem 0;
+}
+
+@media (min-width: 768px) {
+  .wp-bento-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.wp-bento-card {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(20, 184, 166, 0.1);
+  border-radius: 24px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.01);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter: blur(8px);
+}
+
+.dark .wp-bento-card {
+  background: rgba(15, 23, 42, 0.5);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.wp-bento-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-mint);
+  box-shadow: 0 12px 30px rgba(20, 184, 166, 0.08);
+}
+
+.wp-bento-card-2col {
+  grid-column: span 1;
+}
+
+@media (min-width: 768px) {
+  .wp-bento-card-2col {
+    grid-column: span 2;
+  }
+}
+
+/* Symptom/Recovery Timelines */
+.wp-timeline {
+  position: relative;
+  border-left: 2px solid rgba(20, 184, 166, 0.2);
+  margin: 2.5rem 0 2.5rem 1rem;
+  padding-left: 1.5rem;
+}
+
+.wp-timeline-item {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.wp-timeline-item::before {
+  content: "";
+  position: absolute;
+  left: -2.05rem;
+  top: 0.25rem;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 9999px;
+  background: var(--color-mint);
+  border: 4px solid var(--background);
+  box-shadow: 0 0 10px rgba(20, 184, 166, 0.4);
+}
+
+.wp-timeline-step {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-mint-dark);
+}
+
+.wp-timeline-title {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #1A2421;
+  margin: 0.25rem 0 0.5rem 0;
+}
+
+.dark .wp-timeline-title {
+  color: var(--foreground);
+}
+
+/* Insight Blocks */
+.wp-insight-block {
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.05) 0%, rgba(6, 182, 212, 0.05) 100%);
+  border: 1px solid rgba(20, 184, 166, 0.15);
+  border-radius: 24px;
+  padding: 1.75rem;
+  margin: 2rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.dark .wp-insight-block {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.6) 0%, rgba(6, 182, 212, 0.1) 100%);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.wp-insight-block::before {
+  content: "⚡";
+  position: absolute;
+  right: 1.5rem;
+  top: 1.5rem;
+  font-size: 2rem;
+  opacity: 0.15;
+}
+
+.wp-clinical-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  background: rgba(20, 184, 166, 0.1);
+  color: var(--color-mint-dark);
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+
+/* Risk Assessment & Red Flag Warnings */
+.wp-risk-module {
+  background: rgba(239, 68, 68, 0.03);
+  border: 1px dashed rgba(239, 68, 68, 0.3);
+  border-radius: 24px;
+  padding: 1.75rem;
+  margin: 2rem 0;
+}
+
+.dark .wp-risk-module {
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.wp-risk-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+
+/* Responsive Table */
+.wp-table-container {
+  overflow-x: auto;
+  margin: 2rem 0;
+  border-radius: 20px;
+  border: 1px solid rgba(20, 184, 166, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.01);
+}
+
+.wp-comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.875rem;
+}
+
+.wp-comparison-table th {
+  background: linear-gradient(135deg, #0F766E 0%, #0D9488 100%);
+  color: #ffffff;
+  font-weight: 700;
+  padding: 1rem 1.25rem;
+  font-family: var(--font-serif);
+}
+
+.wp-comparison-table td {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.dark .wp-comparison-table td {
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+
+.wp-comparison-table tr:last-child td {
+  border-bottom: none;
+}
+
+.wp-comparison-table tr:nth-child(even) td {
+  background: rgba(20, 184, 166, 0.02);
+}
+
+/* FAQ Accordion */
+.wp-accordion-container {
+  margin: 2rem 0;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(20, 184, 166, 0.1);
+}
+
+.wp-accordion-item {
+  border-bottom: 1px solid rgba(20, 184, 166, 0.1);
+}
+
+.wp-accordion-item:last-child {
+  border-bottom: none;
+}
+
+.wp-accordion-item summary {
+  padding: 1.25rem 1.5rem;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  list-style: none;
+  font-size: 1rem;
+  color: #1A2421;
+  transition: all 0.3s ease;
+}
+
+.dark .wp-accordion-item summary {
+  color: var(--foreground);
+}
+
+.wp-accordion-item summary:hover {
+  background: rgba(20, 184, 166, 0.05);
+  color: var(--color-mint-dark);
+}
+
+.wp-accordion-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.wp-accordion-item summary::after {
+  content: "＋";
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: var(--color-mint-dark);
+  transition: transform 0.3s ease;
+}
+
+.wp-accordion-item[open] summary::after {
+  content: "－";
+}
+
+.wp-accordion-content {
+  padding: 0 1.5rem 1.5rem 1.5rem;
+  font-size: 0.9rem;
+  color: var(--foreground);
+  opacity: 0.9;
+  line-height: 1.7;
+}
+
+/* Rotating color branding systems */
+.wp-content.theme-teal h2, .wp-content.theme-teal .wp-timeline-step { color: #0f766e; }
+.wp-content.theme-teal h2 { border-left-color: #14b8a6; }
+.wp-content.theme-teal .wp-bento-card:hover { border-color: #14b8a6; box-shadow: 0 12px 30px rgba(20, 184, 166, 0.08); }
+
+.wp-content.theme-blue h2, .wp-content.theme-blue .wp-timeline-step { color: #0369a1; }
+.wp-content.theme-blue h2 { border-left-color: #0ea5e9; }
+.wp-content.theme-blue .wp-bento-card:hover { border-color: #0ea5e9; box-shadow: 0 12px 30px rgba(14, 165, 233, 0.08); }
+.wp-content.theme-blue .wp-comparison-table th { background: linear-gradient(135deg, #0369A1 0%, #0EA5E9 100%); }
+
+.wp-content.theme-purple h2, .wp-content.theme-purple .wp-timeline-step { color: #7e22ce; }
+.wp-content.theme-purple h2 { border-left-color: #a855f7; }
+.wp-content.theme-purple .wp-bento-card:hover { border-color: #a855f7; box-shadow: 0 12px 30px rgba(168, 85, 247, 0.08); }
+.wp-content.theme-purple .wp-comparison-table th { background: linear-gradient(135deg, #7E22CE 0%, #A855F7 100%); }
+
+.wp-content.theme-green h2, .wp-content.theme-green .wp-timeline-step { color: #15803d; }
+.wp-content.theme-green h2 { border-left-color: #22c55e; }
+.wp-content.theme-green .wp-bento-card:hover { border-color: #22c55e; box-shadow: 0 12px 30px rgba(34, 197, 94, 0.08); }
+.wp-content.theme-green .wp-comparison-table th { background: linear-gradient(135deg, #15803D 0%, #22C55E 100%); }
+

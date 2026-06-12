@@ -27,7 +27,7 @@ function decodeHtmlEntities(html: string): string {
 
 async function getWordPressPosts(): Promise<Article[]> {
   try {
-    const res = await fetch("https://admin.homeo.healthcare/wp-json/wp/v2/posts?_embed&per_page=20", {
+    const res = await fetch("https://admin.homeo.healthcare/wp-json/wp/v2/posts?_embed&per_page=120", {
       next: { revalidate: 3600 }
     });
     if (!res.ok) throw new Error("Failed to fetch posts");
