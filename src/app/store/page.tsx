@@ -1468,7 +1468,7 @@ export default function StorePage() {
           className="mb-8"
         >
           <Magnetic>
-            <Link
+            <a
               href="https://admin.homeo.healthcare"
               target="_blank"
               rel="noopener noreferrer"
@@ -1476,7 +1476,7 @@ export default function StorePage() {
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               Back to the Future
-            </Link>
+            </a>
           </Magnetic>
         </motion.div>
 
