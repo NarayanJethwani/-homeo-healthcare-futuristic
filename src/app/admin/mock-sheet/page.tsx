@@ -3,10 +3,9 @@
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect, Suspense } from "react";
 import { 
-  FileSpreadsheet, ArrowLeft, Info, AlertTriangle, Check, Grid, 
-  HelpCircle, Plus, Trash2, Calendar, IndianRupee, TrendingUp, 
-  Layers, Sparkles, Folder, Copy, ExternalLink, BarChart3, 
-  ChevronDown, ChevronRight, Activity, ShieldAlert, CheckCircle, 
+  FileSpreadsheet, ArrowLeft, Info, AlertTriangle, Check, 
+  Plus, Trash2, TrendingUp, Sparkles, Folder, Copy, ExternalLink, 
+  ChevronDown, ChevronRight, Activity, CheckCircle, 
   AlertCircle, Search, X
 } from "lucide-react";
 import Link from "next/link";
@@ -471,7 +470,6 @@ function MockSheetContent() {
 
 
   // New rubric form state
-  const [selectedLibraryRubric, setSelectedLibraryRubric] = useState<string>("");
   const [customRubricName, setCustomRubricName] = useState("");
   const [customRubricChapter, setCustomRubricChapter] = useState("Stomach");
   const [customRubricWeight, setCustomRubricWeight] = useState(2);
@@ -603,6 +601,7 @@ function MockSheetContent() {
     
     // Automatically switch to Repertorization tab
     setActiveTab("Repertorization");
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, isRepertoryLoaded, dbKent, dbBoericke]);
 
   // Treatment Planner State
@@ -1879,7 +1878,8 @@ function MockSheetContent() {
         <div className="bg-white rounded-3xl border border-slate-200 shadow-xl max-w-6xl w-full overflow-hidden flex flex-col">
           
           {/* SCREEN CONTAINER */}
-          <div className="overflow-auto w-full border-b border-slate-150 max-h-[70vh]">
+          <div className="relative group/scroll flex-grow w-full">
+            <div className="overflow-auto w-full border-b border-slate-150 max-h-[70vh]">
             
             {/* ---------------------------------------------------- */}
             {/* TAB 1: DASHBOARD */}
@@ -2003,8 +2003,7 @@ function MockSheetContent() {
                               { x: 50 + scale(miasmScores.Cancerinic) * Math.cos(-Math.PI/2 + (8*Math.PI)/5), y: 50 + scale(miasmScores.Cancerinic) * Math.sin(-Math.PI/2 + (8*Math.PI)/5) }
                             ];
 
-                            const pathStr = `M ${pts[0].x} ${pts[0].y} L ${pts[1].x} ${pts[1].y} L ${pts[2].x} ${pts[2].y} L ${pts[3].x} ${pts[3].y} L ${pts[4].x} ${pts[4].y} Z`;
-                            
+                             
                             return (
                               <>
                                 <polygon points={`${pts[0].x},${pts[0].y} ${pts[1].x},${pts[1].y} ${pts[2].x},${pts[2].y} ${pts[3].x},${pts[3].y} ${pts[4].x},${pts[4].y}`} fill="rgba(15, 76, 129, 0.2)" stroke="#0F4C81" strokeWidth="1.5" />
@@ -3108,7 +3107,7 @@ function MockSheetContent() {
                             </th>
                           );
                         })}
-                        <th className="p-3 border-r border-slate-200 text-center text-[#0F4C81] w-[110px] bg-[#F1F5F9] font-black">Totality Score</th>
+                        <th className="p-3 border-r border-slate-200 text-center text-emerald-800 dark:text-emerald-300 w-[110px] bg-emerald-50/70 font-black">Totality Score</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -3138,7 +3137,7 @@ function MockSheetContent() {
                                 </td>
                               );
                             })}
-                            <td className="p-3 border-r border-slate-200 text-center font-black text-[#0F4C81] bg-[#F1F5F9]">
+                            <td className="p-3 border-r border-slate-200 text-center font-black text-emerald-800 bg-emerald-50/50">
                               {totalityScore}
                             </td>
                           </tr>
@@ -3146,32 +3145,32 @@ function MockSheetContent() {
                       })}
                       
                       {/* Calculations rows */}
-                      <tr className="border-b border-slate-200 bg-slate-50/80 font-bold text-[10px] uppercase text-slate-500">
-                        <td colSpan={5} className="p-3 border-r border-slate-200">Symptom Coverage</td>
+                      <tr className="border-b border-slate-200 bg-slate-100/30 font-bold text-[10px] uppercase text-slate-500">
+                        <td colSpan={5} className="p-3 border-r border-slate-200 bg-slate-100/50">Symptom Coverage</td>
                         {remediesList.map(rem => (
-                          <td key={rem} className="p-3 border-r border-slate-200 text-center text-[#0F4C81]">
+                          <td key={rem} className="p-3 border-r border-slate-200 text-center text-[#0F4C81] bg-slate-100/20">
                             {(repertoryResults.coverage[rem] || 0).toFixed(1)}
                           </td>
                         ))}
                         <td className="p-3 border-r border-slate-200 text-center bg-slate-100/50"></td>
                       </tr>
-                      <tr className="border-b border-slate-200 bg-slate-50/80 font-bold text-[10px] uppercase text-slate-500">
-                        <td colSpan={5} className="p-3 border-r border-slate-200">Sum of Grades</td>
+                      <tr className="border-b border-slate-200 bg-slate-100/30 font-bold text-[10px] uppercase text-slate-500">
+                        <td colSpan={5} className="p-3 border-r border-slate-200 bg-slate-100/50">Sum of Grades</td>
                         {remediesList.map(rem => (
-                          <td key={rem} className="p-3 border-r border-slate-200 text-center text-slate-700">
+                          <td key={rem} className="p-3 border-r border-slate-200 text-center text-slate-700 bg-slate-100/20">
                             {repertoryResults.sumGrades[rem] || 0}
                           </td>
                         ))}
                         <td className="p-3 border-r border-slate-200 text-center bg-slate-100/50"></td>
                       </tr>
-                      <tr className="bg-blue-50/40 font-black text-[11px] uppercase border-b-2 border-slate-300">
-                        <td colSpan={5} className="p-3 border-r border-slate-200 text-[#0F4C81]">Totality Rank Score</td>
+                      <tr className="bg-emerald-50/35 font-black text-[11px] uppercase border-b-2 border-slate-300">
+                        <td colSpan={5} className="p-3 border-r border-slate-200 text-emerald-800 bg-emerald-50/50">Totality Rank Score</td>
                         {remediesList.map(rem => (
-                          <td key={rem} className="p-3 border-r border-slate-200 text-center text-emerald-700 bg-emerald-50/20 font-black">
+                          <td key={rem} className="p-3 border-r border-slate-200 text-center text-emerald-700 bg-emerald-100/30 font-black">
                             {Math.round(repertoryResults.rankScores[rem] || 0)}
                           </td>
                         ))}
-                        <td className="p-3 border-r border-slate-200 text-center bg-slate-100/50"></td>
+                        <td className="p-3 border-r border-slate-200 text-center bg-emerald-50/55"></td>
                       </tr>
                     </tbody>
                   </table>
@@ -4432,8 +4431,12 @@ function MockSheetContent() {
             )}
 
           </div>
+          {/* Scroll indicator fades */}
+          <div className="absolute left-0 top-0 bottom-0 w-8 pointer-events-none bg-gradient-to-r from-white/75 to-transparent opacity-0 group-hover/scroll:opacity-100 transition-opacity z-10" />
+          <div className="absolute right-0 top-0 bottom-0 w-8 pointer-events-none bg-gradient-to-l from-white/75 to-transparent opacity-0 group-hover/scroll:opacity-100 transition-opacity z-10" />
+        </div>
 
-          {/* Sheets Bottom Tab Bar */}
+        {/* Sheets Bottom Tab Bar */}
           <div className="bg-slate-100 border-t border-slate-200 px-4 py-2 flex items-center justify-between flex-wrap gap-2 text-xs font-bold text-slate-600 z-10">
             {/* Tabs List */}
             <div className="flex flex-wrap gap-1">

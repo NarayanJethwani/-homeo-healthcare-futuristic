@@ -62,7 +62,7 @@ async function getWordPressPosts(): Promise<Article[]> {
             category = "Homeopathy";
           }
         }
-      } catch (e) {}
+      } catch {}
 
       // Determine glowColor
       const glowColors: Record<Article["category"], string> = {
@@ -92,7 +92,7 @@ async function getWordPressPosts(): Promise<Article[]> {
         if (media?.source_url) {
           image = media.source_url;
         }
-      } catch (e) {}
+      } catch {}
 
       // Get excerpt
       const excerpt = post.excerpt?.rendered 

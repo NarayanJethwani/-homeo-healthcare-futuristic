@@ -2,8 +2,8 @@
 
 import { motion } from "framer-motion";
 import { 
-  Award, BookOpen, Star, CheckCircle, ShieldCheck, Heart, 
-  MapPin, MessageSquare, Phone, Mail, ArrowRight, ArrowLeft, Activity 
+  Award, BookOpen, CheckCircle, ShieldCheck, Heart, 
+  MapPin, ArrowRight, ArrowLeft, Activity 
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";

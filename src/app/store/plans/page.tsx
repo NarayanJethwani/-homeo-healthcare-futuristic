@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { 
-  ArrowLeft, CheckCircle2, Info, Activity, Sparkles, 
-  HelpCircle, Percent, Clock, Phone, AlertCircle, TrendingUp
+  ArrowLeft, CheckCircle2, Info, 
+  Percent, Clock
 } from "lucide-react";
 import Link from "next/link";
 import Magnetic from "@/components/Magnetic";

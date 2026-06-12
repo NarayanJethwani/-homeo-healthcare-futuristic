@@ -3,13 +3,14 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  ShoppingBag, Search, Sparkles, Filter, CheckCircle2, 
-  ArrowRight, ArrowLeft, Phone, MessageSquare, ShieldCheck, Truck, Clock,
+  ShoppingBag, Search, Sparkles, CheckCircle2, 
+  ArrowRight, ArrowLeft, MessageSquare, ShieldCheck, Truck, Clock,
   Sliders, Plus, Trash2, Share2, Copy, Save, LayoutGrid, Layers, Activity,
-  Info, Percent, HelpCircle, UserCheck, Folder, FileSpreadsheet, AlertTriangle,
+  Info, Percent, HelpCircle, UserCheck, AlertTriangle,
   PlusCircle
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import Magnetic from "@/components/Magnetic";
 import Portal from "@/components/Portal";
 
@@ -872,7 +873,6 @@ export default function StorePage() {
   const [walkInTier, setWalkInTier] = useState("moderate");
   const [isWalkInSubmitting, setIsWalkInSubmitting] = useState(false);
   const [walkInAddress, setWalkInAddress] = useState("");
-  const [walkInResult, setWalkInResult] = useState<{ folderUrl: string; sheetUrl: string; isMock?: boolean } | null>(null);
   const [walkInSuccess, setWalkInSuccess] = useState(false);
   const [walkInError, setWalkInError] = useState<string | null>(null);
   const [walkInBillingCycle, setWalkInBillingCycle] = useState<"weekly" | "monthly">("monthly");
@@ -1216,11 +1216,6 @@ export default function StorePage() {
       });
       const data = await response.json();
       if (data.success) {
-        setWalkInResult({
-          folderUrl: "",
-          sheetUrl: "",
-          isMock: false
-        });
         setWalkInSuccess(true);
       } else {
         throw new Error(data.message);
@@ -3443,7 +3438,6 @@ export default function StorePage() {
                         type="button"
                         onClick={() => {
                           setWalkInSuccess(false);
-                          setWalkInResult(null);
                           setWalkInError(null);
                           setWalkInName("");
                           setWalkInAge("");
@@ -5124,11 +5118,12 @@ export default function StorePage() {
                           <div className="space-y-4">
                             <div className="flex flex-col sm:flex-row items-center gap-6 p-4 border border-mint/20 bg-mint/[0.02] rounded-2xl">
                               <div className="bg-white p-2.5 rounded-xl border border-slate-200/60 shadow-sm flex-shrink-0">
-                                <img
+                                <Image
                                   src={qrCodeSrc}
                                   alt="UPI Payment QR Code"
                                   width={140}
                                   height={140}
+                                  unoptimized
                                   className="w-32 h-32"
                                   />
                               </div>
@@ -5217,11 +5212,14 @@ export default function StorePage() {
                           {paymentScreenshot ? (
                             <div className="flex items-center justify-between p-2 rounded-xl border border-mint/25 bg-mint/[0.02] text-xs font-semibold text-slate-700 h-[46px] relative overflow-hidden">
                               <div className="flex items-center gap-1.5 min-w-0">
-                                <div className="w-8 h-8 rounded bg-white border border-slate-100 overflow-hidden flex-shrink-0 flex items-center justify-center">
-                                  <img
+                                <div className="w-8 h-8 rounded bg-white border border-slate-100 overflow-hidden flex-shrink-0 flex items-center justify-center relative">
+                                  <Image
                                     src={URL.createObjectURL(paymentScreenshot)}
                                     alt="Payment Screenshot Preview"
-                                    className="w-full h-full object-cover"
+                                    fill
+                                    sizes="32px"
+                                    unoptimized
+                                    className="object-cover"
                                   />
                                 </div>
                                 <span className="truncate max-w-[120px] font-extrabold text-slate-800">{paymentScreenshot.name}</span>

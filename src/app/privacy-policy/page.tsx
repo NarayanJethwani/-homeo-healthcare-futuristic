@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   ShieldCheck, FileText, HeartHandshake, Lock, Globe, 
   Truck, CreditCard, AlertTriangle, Calendar, CheckCircle2,
-  Mail, Phone, ShieldAlert, ArrowRight, ArrowLeft, BookOpen
+  ShieldAlert, ArrowRight, ArrowLeft, BookOpen
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";

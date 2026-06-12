@@ -56,7 +56,13 @@ export default function BookingSection() {
     "Other",
   ];
 
-  const slots = ["09:00 AM", "11:30 AM", "02:00 PM", "04:30 PM", "06:00 PM"];
+  const slots = [
+    "09:00 AM", "09:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM",
+    "12:00 PM", "12:30 PM", "01:00 PM", "01:30 PM", "02:00 PM", "02:30 PM",
+    "03:00 PM", "03:30 PM", "04:00 PM", "04:30 PM", "05:00 PM", "05:30 PM",
+    "06:00 PM", "06:30 PM", "07:00 PM", "07:30 PM", "08:00 PM", "08:30 PM",
+    "09:00 PM"
+  ];
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -96,7 +102,9 @@ export default function BookingSection() {
           careLevel: formData.category,
           conditionsCount: 1,
           durationText: `Consultation on ${formData.date} at ${formData.slot}`,
-          finalPrice: 300
+          finalPrice: 300,
+          date: formData.date,
+          slot: formData.slot
         })
       });
       const data = await response.json();
@@ -396,6 +404,27 @@ Please confirm my appointment.`;
                   className="space-y-6"
                 >
                   <h3 className="text-lg font-bold text-[#1A2421] mb-6">Select Date and Consultation Slot</h3>
+
+                  {/* WhatsApp/Call Confirmation Callout */}
+                  <div className="glass-panel border-mint/20 bg-mint/5 p-4 rounded-2xl flex items-start gap-3.5 mb-6">
+                    <div className="p-2 rounded-xl bg-mint/10 text-mint shrink-0">
+                      <Phone className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider mb-1">Instant Activation Required</h4>
+                      <p className="text-xs text-slate-700 font-medium leading-relaxed">
+                        To guarantee and lock your slot, please confirm via{" "}
+                        <a href="https://wa.me/918446056789" target="_blank" rel="noopener noreferrer" className="font-extrabold text-[#0F766E] hover:underline">
+                          WhatsApp
+                        </a>{" "}
+                        or call directly at{" "}
+                        <a href="tel:+918446056789" className="font-extrabold text-[#0F766E] hover:underline whitespace-nowrap">
+                          +91 84460 56789
+                        </a>{" "}
+                        immediately after booking.
+                      </p>
+                    </div>
+                  </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {/* Datepicker */}
@@ -413,11 +442,11 @@ Please confirm my appointment.`;
                         <CalendarIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-mint transition-colors" />
                       </div>
                     </div>
-
+ 
                     {/* Time Slot Picker */}
                     <div>
                       <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Available Slots</label>
-                      <div className="grid grid-cols-2 gap-3">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[220px] overflow-y-auto pr-1">
                         {slots.map((s) => (
                           <button
                             key={s}

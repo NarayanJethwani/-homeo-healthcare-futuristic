@@ -31,7 +31,9 @@ const getGoogleAuth = () => {
       key: privateKey,
       scopes: [
         "https://www.googleapis.com/auth/drive",
-        "https://www.googleapis.com/auth/spreadsheets"
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/calendar",
+        "https://www.googleapis.com/auth/calendar.events"
       ]
     });
   } catch (error: any) {
@@ -69,6 +71,105 @@ export interface PatientIntakeData {
   concessionApplied?: string;
   overridePrice?: number;
   medicineAddons?: number;
+  date?: string;
+  slot?: string;
+}
+
+/**
+ * Creates an event in Google Calendar for the consultation
+ */
+export async function addCalendarEvent(data: PatientIntakeData): Promise<{ eventId?: string; eventLink?: string; success: boolean }> {
+  const auth = getGoogleAuth();
+  if (!auth) {
+    console.log("No Google auth available, skipping calendar event creation (mock mode)");
+    return { success: false };
+  }
+
+  const calendar = google.calendar({ version: "v3", auth });
+  
+  try {
+    const dateStr = data.date;
+    const slotStr = data.slot;
+    
+    if (!dateStr || !slotStr) {
+      console.warn("Could not retrieve date or slot from patient intake data for calendar creation:", data);
+      return { success: false };
+    }
+    
+    const [year, month, day] = dateStr.split("-").map(Number);
+    const match = slotStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
+    if (!match) {
+      console.warn("Could not parse time format in slotStr:", slotStr);
+      return { success: false };
+    }
+    
+    let hours = Number(match[1]);
+    const minutes = Number(match[2]);
+    const ampm = match[3].toUpperCase();
+    if (ampm === "PM" && hours < 12) hours += 12;
+    if (ampm === "AM" && hours === 12) hours = 0;
+    
+    const startDate = new Date(year, month - 1, day, hours, minutes);
+    const endDate = new Date(startDate.getTime() + 30 * 60 * 1000); // 30 minutes consultation slot
+    
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const startIso = `${year}-${pad(month)}-${pad(day)}T${pad(hours)}:${pad(minutes)}:00`;
+    const endIso = `${endDate.getFullYear()}-${pad(endDate.getMonth() + 1)}-${pad(endDate.getDate())}T${pad(endDate.getHours())}:${pad(endDate.getMinutes())}:00`;
+    
+    const calendarId = process.env.GOOGLE_CALENDAR_ID || "primary";
+    
+    const event = {
+      summary: `Homeopathic Consultation - ${data.name}`,
+      description: `Patient Details:
+- Name: ${data.name}
+- Phone: ${data.phone}
+- Email: ${data.email || 'N/A'}
+- Chief Complaint: ${data.complaint}
+- Category: ${data.careLevel}
+- Patient ID: ${data.id}
+
+Instructions: Patient to confirm on WhatsApp or call +91 84460 56789 to be added.`,
+      start: {
+        dateTime: startIso,
+        timeZone: "Asia/Kolkata",
+      },
+      end: {
+        dateTime: endIso,
+        timeZone: "Asia/Kolkata",
+      },
+      attendees: [
+        { email: "narayan.jethwani@gmail.com" },
+        { email: "narayan.jethwani@homeo.healthcare" }
+      ],
+      reminders: {
+        useDefault: false,
+        overrides: [
+          { method: "email", minutes: 24 * 60 },
+          { method: "popup", minutes: 30 },
+        ],
+      },
+    };
+    
+    if (data.email) {
+      event.attendees.push({ email: data.email });
+    }
+    
+    const response = await calendar.events.insert({
+      calendarId,
+      requestBody: event,
+      sendUpdates: "all",
+    });
+    
+    console.log("Google Calendar event created successfully:", response.data.id);
+    return {
+      eventId: response.data.id || undefined,
+      eventLink: response.data.htmlLink || undefined,
+      success: true
+    };
+  } catch (error) {
+    console.error("Error creating Google Calendar event:", error);
+    return { success: false };
+  }
 }
 
 /**

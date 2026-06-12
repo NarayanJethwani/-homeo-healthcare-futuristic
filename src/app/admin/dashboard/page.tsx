@@ -6,33 +6,31 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   Users, Activity, Sparkles, Folder, FileSpreadsheet, ExternalLink, 
   Search, Sliders, Brain, RefreshCw, Send, Plus, Trash2, CheckCircle, 
-  Settings, LogOut, ShieldAlert, Award, FileText, ChevronRight, UserPlus, Upload,
+  LogOut, ShieldAlert, Award, FileText, ChevronRight, UserPlus, Upload,
   BookOpen, Book, ChevronLeft, Maximize2, Minimize2, Receipt, Printer,
   Gauge, AlertTriangle, Check, X, Compass, Layers, History, Zap, TrendingUp, Workflow, Calendar,
   Network, Database, Cpu, GitBranch, Stethoscope, User, UploadCloud, Play, Mail, Mic, MicOff, Sun, Moon, IndianRupee,
-  Star, Copy, Edit, GitMerge, Filter, Info, Share2
+  Star, Copy, Edit, Info, Share2
 } from "lucide-react";
-import { REPERTORY_DATA, REPERTORY_CHAPTERS, REMEDIES_METADATA, Rubric, BOERICKE_CHAPTERS, SEARCH_SYNONYMS, getRepertoryData, JETHWANI_SECTIONS, JETHWANI_REPERTORY_DATA as JETHWANI_REPERTORY_DATA_ORIG, JETHWANI_REMEDY_CONFIRMATIONS, calculateClinicalIndices, type JethwaniRubric, type JethwaniSymptomConfig, type ClinicalIndices, setRepertoryData } from "@/lib/repertoryData";
+import { REPERTORY_CHAPTERS, REMEDIES_METADATA, Rubric, BOERICKE_CHAPTERS, SEARCH_SYNONYMS, getRepertoryData, JETHWANI_SECTIONS, JETHWANI_REPERTORY_DATA as JETHWANI_REPERTORY_DATA_ORIG, JETHWANI_REMEDY_CONFIRMATIONS, calculateClinicalIndices, type JethwaniRubric, type JethwaniSymptomConfig, type ClinicalIndices, setRepertoryData } from "@/lib/repertoryData";
 import { MATERIA_MEDICA_BOOKS, MateriaMedicaBook } from "@/lib/materiaMedicaData";
 import { ORGANON_EDITIONS, ORGANON_KNOWLEDGE_TREE, ORGANON_APHORISMS, ORGANON_CASES, ACTIVE_RECALL_EXERCISES, TIMELINE_STEPS } from "@/lib/organonData";
 import { db } from "@/lib/firebase";
 import { collection, onSnapshot, query, orderBy, doc, updateDoc, setDoc, where, getDoc, getDocs } from "firebase/firestore";
-import { getKnowledgeGraph, getRemedyProfile } from "@/lib/knowledgeGraph";
+import { getKnowledgeGraph } from "@/lib/knowledgeGraph";
 import { runIngestionSimulation, INGESTION_SOURCES } from "@/lib/ingestionPipeline";
 import { parseNaturalLanguageQuery } from "@/lib/searchEngine";
 import { REMEDY_LEARNING_DB, parseLearningTutorQuery, searchRemedies, compareFamilies, compareKingdoms, compareMiasms, MASTER_REMEDY_DB, CLINICAL_BOARD_QUESTIONS } from "@/lib/searchAndCompare";
 import { simulateMateriaMedicaIngestion, CLASSICAL_SOURCES } from "@/lib/materiaMedicaIngestion";
 import { GENOME_REMEDY_DB } from "@/lib/remedyGenomeSchema";
-import { reconcileSymptom, generateUnifiedRemedyProfile } from "@/lib/reconciliationEngine";
-import { calculateSM2, updateStudentMastery, initDefaultMastery, initDefaultSM2 } from "@/lib/adaptiveLearning";
-import { getIcdDiagnosis, getClinicalCoverageScore, CURATED_DIAGNOSES, ORGAN_SYSTEMS, type DiagnosisProfile, getAll15000Diagnoses, SEARCH_SYNONYMS as DIAGNOSIS_SEARCH_SYNONYMS } from "@/lib/clinicalDiagnosisLibrary";
+import { calculateSM2, updateStudentMastery } from "@/lib/adaptiveLearning";
+import { getClinicalCoverageScore, CURATED_DIAGNOSES, ORGAN_SYSTEMS, type DiagnosisProfile, getAll15000Diagnoses, SEARCH_SYNONYMS as DIAGNOSIS_SEARCH_SYNONYMS } from "@/lib/clinicalDiagnosisLibrary";
 import { VIRTUAL_PATIENTS, evaluateCaseSubmission } from "@/lib/caseSimulationLab";
 import { calculateClinicalDecisionSupport } from "@/lib/clinicalDecisionSupport";
-import { parseNaturalLanguageQuery as parseNLQueryAdvanced, searchRemediesAdvanced } from "@/lib/advancedSearch";
 import Portal from "@/components/Portal";
 
 
-let GLOBAL_JETHWANI_DATA: JethwaniRubric[] = [...JETHWANI_REPERTORY_DATA_ORIG];
+const GLOBAL_JETHWANI_DATA: JethwaniRubric[] = [...JETHWANI_REPERTORY_DATA_ORIG];
 
 const JETHWANI_REPERTORY_DATA: JethwaniRubric[] = new Proxy(GLOBAL_JETHWANI_DATA, {
   get(target, prop, receiver) {

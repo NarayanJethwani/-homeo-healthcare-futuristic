@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Lock, Mail, Activity, Eye, EyeOff, Sparkles, AlertCircle } from "lucide-react";
+import { Lock, Mail, Activity, Eye, EyeOff, Sparkles, AlertCircle, Sun, Moon } from "lucide-react";
 import { auth, db } from "@/lib/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
@@ -16,6 +16,26 @@ export default function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    const isDark = document.documentElement.classList.contains("dark");
+    setTheme(isDark ? "dark" : "light");
+  }, []);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === "light" ? "dark" : "light";
+    setTheme(nextTheme);
+    if (nextTheme === "dark") {
+      document.documentElement.classList.add("dark");
+      document.documentElement.style.colorScheme = "dark";
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      document.documentElement.style.colorScheme = "light";
+      localStorage.setItem("theme", "light");
+    }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -118,6 +138,18 @@ export default function AdminLogin() {
 
   return (
     <div className="min-h-screen relative flex items-center justify-center px-6 py-20 bg-transparent">
+      {/* Theme Toggle Button */}
+      <div className="absolute top-6 right-6 z-50">
+        <button
+          onClick={toggleTheme}
+          type="button"
+          className="p-3 rounded-full bg-white/40 dark:bg-slate-900/40 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 text-[#1A2421] dark:text-slate-100 hover:scale-105 transition-all shadow-sm hover:shadow-md cursor-pointer flex items-center justify-center"
+          aria-label="Toggle Theme"
+        >
+          {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+        </button>
+      </div>
+
       {/* Decorative gradient backdrops */}
       <div className="absolute w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-mint/10 via-aqua/5 to-transparent opacity-40 blur-[100px] top-[10%] left-[10%] pointer-events-none" />
       <div className="absolute w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-lavender/5 to-transparent opacity-30 blur-[80px] bottom-[10%] right-[10%] pointer-events-none" />
@@ -125,11 +157,11 @@ export default function AdminLogin() {
       <div className="w-full max-w-md z-10 relative">
         {/* Brand Header */}
         <div className="text-center mb-10">
-          <div className="relative inline-flex items-center justify-center w-14 h-14 rounded-full bg-white border border-slate-200/60 shadow-md mb-4 breathe">
+          <div className="relative inline-flex items-center justify-center w-14 h-14 rounded-full bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800/65 shadow-md mb-4 breathe">
             <Activity className="w-6 h-6 text-mint animate-pulse" />
           </div>
-          <h2 className="font-serif text-3xl font-bold tracking-tight text-[#1A2421]">Clinical Hub Login</h2>
-          <p className="text-xs text-slate-700 font-semibold mt-2">Dr. Jethwani&apos;s Professional Portal</p>
+          <h2 className="font-serif text-3xl font-bold tracking-tight text-[#1A2421] dark:text-slate-100">Clinical Hub Login</h2>
+          <p className="text-xs text-slate-700 dark:text-slate-400 font-semibold mt-2">Dr. Jethwani&apos;s Professional Portal</p>
         </div>
 
         {/* Login Glass Panel */}
@@ -149,7 +181,7 @@ export default function AdminLogin() {
           <form onSubmit={handleLogin} className="space-y-5">
             {/* Email Input */}
             <div className="relative group">
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
                 Clinical Email
               </label>
               <div className="relative">
@@ -158,7 +190,8 @@ export default function AdminLogin() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="doctor@homeo.healthcare"
-                  className="w-full pl-11 pr-4 py-3.5 rounded-2xl border border-slate-200 focus:border-mint focus:ring-1 focus:ring-mint outline-none bg-white/40 backdrop-blur-sm transition-all duration-300 font-medium text-sm text-[#1A2421]"
+                  autoComplete="email"
+                  className="w-full pl-11 pr-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 focus:border-mint focus:ring-1 focus:ring-mint dark:focus:border-mint dark:focus:ring-mint outline-none bg-white/40 dark:bg-slate-950/40 backdrop-blur-sm transition-all duration-300 font-medium text-sm text-[#1A2421] dark:text-slate-100 focus:shadow-[0_0_15px_rgba(20,184,166,0.1)] dark:focus:shadow-[0_0_15px_rgba(20,184,166,0.2)]"
                   required
                 />
                 <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-mint transition-colors" />
@@ -167,7 +200,7 @@ export default function AdminLogin() {
 
             {/* Password Input */}
             <div className="relative group">
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
                 Secure Password
               </label>
               <div className="relative">
@@ -176,14 +209,15 @@ export default function AdminLogin() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-11 pr-12 py-3.5 rounded-2xl border border-slate-200 focus:border-mint focus:ring-1 focus:ring-mint outline-none bg-white/40 backdrop-blur-sm transition-all duration-300 font-medium text-sm text-[#1A2421]"
+                  autoComplete="current-password"
+                  className="w-full pl-11 pr-12 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 focus:border-mint focus:ring-1 focus:ring-mint dark:focus:border-mint dark:focus:ring-mint outline-none bg-white/40 dark:bg-slate-950/40 backdrop-blur-sm transition-all duration-300 font-medium text-sm text-[#1A2421] dark:text-slate-100 focus:shadow-[0_0_15px_rgba(20,184,166,0.1)] dark:focus:shadow-[0_0_15px_rgba(20,184,166,0.2)]"
                   required
                 />
                 <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-mint transition-colors" />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors"
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -207,27 +241,27 @@ export default function AdminLogin() {
 
           {/* Quick-Access Demo Accounts Section */}
           {process.env.NODE_ENV === "development" && (
-            <div className="mt-8 border-t border-slate-900/5 pt-6 text-center">
-              <span className="text-[10px] text-slate-700 font-bold uppercase tracking-wider block mb-4">
+            <div className="mt-8 border-t border-slate-900/5 dark:border-slate-800/60 pt-6 text-center">
+              <span className="text-[10px] text-slate-700 dark:text-slate-400 font-bold uppercase tracking-wider block mb-4">
                 Demo Access / Developer Mode
               </span>
               <div className="flex gap-3">
                 <button
                   type="button"
                   onClick={() => handleMockBypass("admin")}
-                  className="flex-1 py-2 px-3 border border-slate-200 hover:border-mint hover:bg-mint/5 rounded-xl text-[10px] font-bold text-slate-700 transition-all cursor-pointer"
+                  className="flex-1 py-2 px-3 border border-slate-200 dark:border-slate-800 hover:border-mint hover:bg-mint/5 dark:hover:bg-mint/10 rounded-xl text-[10px] font-bold text-slate-700 dark:text-slate-300 transition-all cursor-pointer"
                 >
                   Log as Admin (Jethwani)
                 </button>
                 <button
                   type="button"
                   onClick={() => handleMockBypass("doctor")}
-                  className="flex-1 py-2 px-3 border border-slate-200 hover:border-mint hover:bg-mint/5 rounded-xl text-[10px] font-bold text-slate-700 transition-all cursor-pointer"
+                  className="flex-1 py-2 px-3 border border-slate-200 dark:border-slate-800 hover:border-mint hover:bg-mint/5 dark:hover:bg-mint/10 rounded-xl text-[10px] font-bold text-slate-700 dark:text-slate-300 transition-all cursor-pointer"
                 >
                   Log as Junior Doctor
                 </button>
               </div>
-              <p className="text-[9px] text-slate-400 font-medium mt-3 leading-normal">
+              <p className="text-[9px] text-slate-400 dark:text-slate-500 font-medium mt-3 leading-normal">
                 Bypasses real OAuth validation when credentials match standard email and password format.
               </p>
             </div>

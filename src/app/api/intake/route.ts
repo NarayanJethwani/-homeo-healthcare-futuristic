@@ -4,6 +4,7 @@ import {
   createPatientFolder, 
   createPatientClinicalSheet, 
   appendPatientToMasterRecord,
+  addCalendarEvent,
   PatientIntakeData 
 } from "@/lib/googleDrive";
 
@@ -35,7 +36,9 @@ export async function POST(request: Request) {
       durationValue: body.durationValue !== undefined ? Number(body.durationValue) : undefined,
       concessionApplied: body.concessionApplied,
       overridePrice: body.overridePrice !== undefined ? Number(body.overridePrice) : undefined,
-      medicineAddons: body.medicineAddons !== undefined ? Number(body.medicineAddons) : undefined
+      medicineAddons: body.medicineAddons !== undefined ? Number(body.medicineAddons) : undefined,
+      date: body.date,
+      slot: body.slot
     };
 
     console.log("Processing intake automation for patient:", patientData.name);
@@ -92,6 +95,13 @@ export async function POST(request: Request) {
             await appendPatientToMasterRecord(patientData, folderUrl, sheetUrl);
           } catch (mErr) {
             console.warn("Could not sync dynamically provisioned patient to Master Record Sheet:", mErr);
+          }
+
+          // 4. Create Google Calendar event
+          try {
+            await addCalendarEvent(patientData);
+          } catch (calErr) {
+            console.warn("Could not create Google Calendar event:", calErr);
           }
         } catch (gpErr) {
           console.error("Failed to provision Google Drive files:", gpErr);

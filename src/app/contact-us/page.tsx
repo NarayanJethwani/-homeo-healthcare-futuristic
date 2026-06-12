@@ -4,9 +4,8 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Phone, Mail, MessageSquare, MapPin, Clock, 
-  Video, Globe, Send, ShieldCheck, CheckCircle2, Navigation, ArrowLeft
+  Video, Send, CheckCircle2, Navigation, ArrowLeft
 } from "lucide-react";
-import Link from "next/link";
 import Magnetic from "@/components/Magnetic";
 
 export default function ContactUsPage() {

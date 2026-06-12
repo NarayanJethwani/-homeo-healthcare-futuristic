@@ -4,10 +4,11 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   BookOpen, Search, Clock, ArrowRight, ArrowLeft, X, Calendar, 
-  User, Sparkles
+  User
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import Magnetic from "@/components/Magnetic";
 import Portal from "@/components/Portal";
 
@@ -486,7 +487,7 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
   const [liveArticles] = useState<Article[]>(
     initialArticles.length > 0 ? initialArticles : localStaticArticles
   );
-  const [loading, setLoading] = useState(false);
+  const loading = false;
 
   // Sync scroll lock with drawer open/close
   useEffect(() => {
@@ -678,11 +679,12 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
                   <div className="space-y-4">
                     {/* Article Banner Image */}
                     <div className="w-full aspect-[2/1] rounded-2xl overflow-hidden relative border border-slate-900/5 bg-slate-100">
-                      <img 
+                      <Image 
                         src={art.image} 
                         alt={art.title} 
-                        className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700 ease-out"
-                        loading="lazy"
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover group-hover:scale-[1.03] transition-transform duration-700 ease-out"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent pointer-events-none" />
                     </div>
@@ -776,10 +778,12 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
               >
                 {/* Large Banner Image */}
                 <div className="w-full aspect-video rounded-2xl overflow-hidden relative border border-slate-900/5 bg-slate-100 mb-6">
-                  <img 
+                  <Image 
                     src={selectedArticle.image} 
                     alt={selectedArticle.title} 
-                    className="w-full h-full object-cover"
+                    fill
+                    sizes="(max-width: 600px) 100vw, 600px"
+                    className="object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent pointer-events-none" />
                 </div>

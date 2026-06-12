@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { adminDb } from "@/lib/firebaseAdmin";
+import { JETHWANI_REPERTORY_DATA } from "@/lib/repertoryData";
 
 export async function GET() {
   try {
@@ -56,7 +58,6 @@ export async function GET() {
     // Load Jethwani clinical rubrics from Firestore with fallback
     let jethwaniData: any[] = [];
     try {
-      const { adminDb } = require("@/lib/firebaseAdmin");
       const rubricsSnap = await adminDb.collection("rubrics").where("status", "==", "active").get();
       rubricsSnap.forEach((doc: any) => {
         jethwaniData.push(doc.data());
@@ -64,19 +65,13 @@ export async function GET() {
       
       if (jethwaniData.length === 0) {
         console.warn("Jethwani rubrics collection is empty. Loading fallback data.");
-        const { JETHWANI_REPERTORY_DATA } = require("@/lib/repertoryData");
         jethwaniData = JETHWANI_REPERTORY_DATA;
       } else {
         console.log(`Loaded ${jethwaniData.length} Jethwani rubrics from Firestore.`);
       }
     } catch (e) {
       console.warn("Failed to load Jethwani rubrics from Firestore. Using local fallback:", e);
-      try {
-        const { JETHWANI_REPERTORY_DATA } = require("@/lib/repertoryData");
-        jethwaniData = JETHWANI_REPERTORY_DATA;
-      } catch (err) {
-        console.error("Local fallback load failed:", err);
-      }
+      jethwaniData = JETHWANI_REPERTORY_DATA;
     }
 
     return NextResponse.json({
