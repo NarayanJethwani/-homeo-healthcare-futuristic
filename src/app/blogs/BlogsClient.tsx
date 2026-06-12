@@ -486,6 +486,7 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [scrollPercent, setScrollPercent] = useState(0);
   const [toc, setToc] = useState<{ id: string; text: string }[]>([]);
+  const [activeId, setActiveId] = useState<string>("");
   const [processedHtml, setProcessedHtml] = useState<string>("");
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -495,6 +496,7 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
       setProcessedHtml("");
       setIsFullScreen(false);
       setScrollPercent(0);
+      setActiveId("");
       return;
     }
 
@@ -522,6 +524,9 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
       });
 
       setToc(extracted);
+      if (extracted.length > 0) {
+        setActiveId(extracted[0].id);
+      }
       setProcessedHtml(doc.body.innerHTML);
     } catch (err) {
       console.error("Error parsing article HTML for TOC:", err);
@@ -532,10 +537,43 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
   const handleScroll = () => {
     const container = scrollContainerRef.current;
     if (!container) return;
+    
+    // 1. Calculate reading progress
     const { scrollTop, scrollHeight, clientHeight } = container;
     const totalScroll = scrollHeight - clientHeight;
     const percentage = totalScroll > 0 ? (scrollTop / totalScroll) * 100 : 0;
     setScrollPercent(percentage);
+
+    // 2. Track active heading in viewport
+    const containerRect = container.getBoundingClientRect();
+    let currentActiveId = toc.length > 0 ? toc[0].id : "";
+    
+    // If scrolled down, look for the active heading
+    if (scrollTop > 100) {
+      for (const item of toc) {
+        const el = document.getElementById(item.id);
+        if (el) {
+          const elRect = el.getBoundingClientRect();
+          const relativeTop = elRect.top - containerRect.top;
+          if (relativeTop <= 120) {
+            currentActiveId = item.id;
+          } else {
+            break; // Headings are sequential, stop checking
+          }
+        }
+      }
+    }
+    
+    // If reached the absolute bottom, activate the last heading
+    if (scrollTop + clientHeight >= scrollHeight - 15) {
+      if (toc.length > 0) {
+        currentActiveId = toc[toc.length - 1].id;
+      }
+    }
+    
+    if (currentActiveId && currentActiveId !== activeId) {
+      setActiveId(currentActiveId);
+    }
   };
   
   const [liveArticles] = useState<Article[]>(
@@ -861,26 +899,34 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
                     <h4 className="font-serif text-xs font-bold text-slate-800 dark:text-slate-200 mb-6 uppercase tracking-widest border-b border-slate-200 pb-2">
                       Table of Contents
                     </h4>
-                    <nav className="space-y-3.5">
-                      {toc.map((item) => (
-                        <a
-                          key={item.id}
-                          href={`#${item.id}`}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            const el = document.getElementById(item.id);
-                            if (el && scrollContainerRef.current) {
-                              const container = scrollContainerRef.current;
-                              // Scroll container to elements offset minus some padding
-                              const offset = el.offsetTop - 30;
-                              container.scrollTo({ top: offset, behavior: "smooth" });
-                            }
-                          }}
-                          className="block text-[11px] font-bold text-slate-600 hover:text-mint dark:text-slate-400 dark:hover:text-mint transition-colors leading-relaxed"
-                        >
-                          {item.text}
-                        </a>
-                      ))}
+                    <nav className="space-y-3.5 border-l border-slate-200/60 dark:border-slate-800/40 relative">
+                      {toc.map((item) => {
+                        const isActive = activeId === item.id;
+                        return (
+                          <a
+                            key={item.id}
+                            href={`#${item.id}`}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              const el = document.getElementById(item.id);
+                              if (el && scrollContainerRef.current) {
+                                const container = scrollContainerRef.current;
+                                const containerRect = container.getBoundingClientRect();
+                                const elRect = el.getBoundingClientRect();
+                                const offset = container.scrollTop + (elRect.top - containerRect.top) - 30;
+                                container.scrollTo({ top: offset, behavior: "smooth" });
+                              }
+                            }}
+                            className={`block text-[11px] font-bold transition-all duration-300 leading-relaxed border-l-2 pl-3 -ml-[1.5px] ${
+                              isActive
+                                ? "text-mint border-mint"
+                                : "text-slate-500 border-transparent hover:text-slate-800 hover:border-slate-300 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:border-slate-700"
+                            }`}
+                          >
+                            {item.text}
+                          </a>
+                        );
+                      })}
                     </nav>
                   </div>
                 )}
