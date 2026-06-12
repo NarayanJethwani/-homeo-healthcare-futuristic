@@ -243,7 +243,7 @@ export default function PlansComparisonPage() {
             >
               Monthly Commits
               <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-emerald-500 text-white font-black tracking-normal">
-                SAVE ~17%
+                SAVE 10–30%
               </span>
             </button>
           </div>
@@ -459,7 +459,7 @@ export default function PlansComparisonPage() {
                       ? "bg-emerald-500 text-white"
                       : "bg-emerald-500/15 text-emerald-700"
                   }`}>
-                    SAVE 17%
+                    SAVE 10–30%
                   </span>
                 </button>
               </div>

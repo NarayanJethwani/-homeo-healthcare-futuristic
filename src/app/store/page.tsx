@@ -2221,7 +2221,7 @@ export default function StorePage() {
                               </button>
                               
                               <span className="absolute -top-3.5 -right-3 px-1 py-0.5 rounded-full bg-emerald-500 text-white text-[7px] font-black uppercase tracking-wider">
-                                Save 10%
+                                SAVE 10–30%
                               </span>
                             </div>
                           </div>
@@ -3719,12 +3719,12 @@ export default function StorePage() {
                                   Monthly
                                   {walkInBillingCycle !== "monthly" && (
                                     <span className="text-[7px] px-1 py-0.5 rounded-full bg-emerald-500 text-white font-black tracking-normal">
-                                      SAVE 17%
+                                      SAVE 10–30%
                                     </span>
                                   )}
                                   {walkInBillingCycle === "monthly" && (
                                     <span className="text-[7px] px-1 py-0.5 rounded-full bg-white text-emerald-600 font-black tracking-normal">
-                                      SAVE 17%
+                                      SAVE 10–30%
                                     </span>
                                   )}
                                 </button>
