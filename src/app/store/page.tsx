@@ -1481,7 +1481,7 @@ export default function StorePage() {
         </motion.div>
 
         {/* Page Hero Header */}
-        <div className="max-w-3xl mb-8">
+        <div className="mb-8">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
