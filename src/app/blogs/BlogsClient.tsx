@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   BookOpen, Search, Clock, ArrowRight, ArrowLeft, X, Calendar, 
-  User
+  User, Maximize2, Minimize2
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -483,6 +483,60 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
   >("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
+  const [isFullScreen, setIsFullScreen] = useState(false);
+  const [scrollPercent, setScrollPercent] = useState(0);
+  const [toc, setToc] = useState<{ id: string; text: string }[]>([]);
+  const [processedHtml, setProcessedHtml] = useState<string>("");
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!selectedArticle) {
+      setToc([]);
+      setProcessedHtml("");
+      setIsFullScreen(false);
+      setScrollPercent(0);
+      return;
+    }
+
+    const contentHtml = typeof selectedArticle.content === "string"
+      ? selectedArticle.content
+      : selectedArticle.content.map(p => `<p>${p}</p>`).join("\n");
+
+    try {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(contentHtml, "text/html");
+      const headings = doc.querySelectorAll("h2");
+      
+      const extracted: { id: string; text: string }[] = [];
+      headings.forEach((h, index) => {
+        const slug = h.textContent
+          ? h.textContent
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, "-")
+              .replace(/(^-|-$)/g, "")
+          : `heading-${index}`;
+        
+        const id = slug || `heading-${index}`;
+        h.id = id;
+        extracted.push({ id, text: h.textContent || `Section ${index + 1}` });
+      });
+
+      setToc(extracted);
+      setProcessedHtml(doc.body.innerHTML);
+    } catch (err) {
+      console.error("Error parsing article HTML for TOC:", err);
+      setProcessedHtml(contentHtml);
+    }
+  }, [selectedArticle]);
+
+  const handleScroll = () => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    const { scrollTop, scrollHeight, clientHeight } = container;
+    const totalScroll = scrollHeight - clientHeight;
+    const percentage = totalScroll > 0 ? (scrollTop / totalScroll) * 100 : 0;
+    setScrollPercent(percentage);
+  };
   
   const [liveArticles] = useState<Article[]>(
     initialArticles.length > 0 ? initialArticles : localStaticArticles
@@ -750,10 +804,12 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 260 }}
-              className="fixed right-0 top-0 bottom-0 w-full sm:w-[600px] bg-[#FAF9F6]/95 dark:bg-slate-900/95 border-l border-white/50 dark:border-slate-800 z-[51] shadow-2xl flex flex-col pointer-events-auto overflow-hidden"
+              className={`fixed right-0 top-0 bottom-0 bg-[#FAF9F6]/95 dark:bg-slate-900/95 border-l border-white/50 dark:border-slate-800 z-[51] shadow-2xl flex flex-col pointer-events-auto overflow-hidden transition-all duration-500 ease-in-out ${
+                isFullScreen ? "w-full" : "w-full sm:w-[600px]"
+              }`}
             >
               {/* Drawer Header */}
-              <div className="p-6 md:p-8 border-b border-slate-900/5 dark:border-slate-800/40 flex items-center justify-between bg-white/70 backdrop-blur-sm">
+              <div className="p-6 md:p-8 border-b border-slate-900/5 dark:border-slate-800/40 flex items-center justify-between bg-white/70 backdrop-blur-sm relative">
                 <div className="flex items-center gap-3">
                   <div className="flex items-center justify-center w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-sm text-mint">
                     <BookOpen className="w-5 h-5" />
@@ -763,57 +819,115 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
                     <h3 className="text-sm font-bold text-slate-800 leading-none">{selectedArticle.category}</h3>
                   </div>
                 </div>
-                <button
-                  onClick={() => setSelectedArticle(null)}
-                  className="w-10 h-10 rounded-full border border-slate-200 hover:border-slate-800 flex items-center justify-center transition-colors group cursor-pointer"
-                >
-                  <X className="w-4 h-4 text-slate-500 group-hover:text-slate-800" />
-                </button>
+                
+                {/* Header Actions */}
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setIsFullScreen(!isFullScreen)}
+                    className="w-10 h-10 rounded-full border border-slate-200 hover:border-slate-800 flex items-center justify-center transition-colors group cursor-pointer"
+                    title={isFullScreen ? "Exit Fullscreen" : "Fullscreen Read Mode"}
+                  >
+                    {isFullScreen ? (
+                      <Minimize2 className="w-4 h-4 text-slate-500 group-hover:text-slate-800" />
+                    ) : (
+                      <Maximize2 className="w-4 h-4 text-slate-500 group-hover:text-slate-800" />
+                    )}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelectedArticle(null);
+                      setIsFullScreen(false);
+                    }}
+                    className="w-10 h-10 rounded-full border border-slate-200 hover:border-slate-800 flex items-center justify-center transition-colors group cursor-pointer"
+                  >
+                    <X className="w-4 h-4 text-slate-500 group-hover:text-slate-800" />
+                  </button>
+                </div>
+
+                {/* Reading Progress Indicator */}
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-slate-100 dark:bg-slate-800">
+                  <div 
+                    className="h-full bg-mint transition-all duration-75 animate-pulse"
+                    style={{ width: `${scrollPercent}%` }}
+                  />
+                </div>
               </div>
 
-              {/* Drawer Scrollable Content */}
-              <div 
-                data-lenis-prevent
-                className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 select-text"
-              >
-                {/* Large Banner Image */}
-                <div className="w-full aspect-video rounded-2xl overflow-hidden relative border border-slate-900/5 bg-slate-100 mb-6">
-                  <Image 
-                    src={selectedArticle.image} 
-                    alt={selectedArticle.title} 
-                    fill
-                    sizes="(max-width: 600px) 100vw, 600px"
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent pointer-events-none" />
-                </div>
+              {/* Drawer Scrollable Content Wrapper */}
+              <div className="flex-1 overflow-hidden flex">
+                {/* Table of Contents Sidebar (Fullscreen Mode only) */}
+                {isFullScreen && toc.length > 0 && (
+                  <div className="w-72 border-r border-slate-900/5 dark:border-slate-800/40 p-8 overflow-y-auto hidden md:block bg-[#F5F4F0]/40 backdrop-blur-sm shrink-0 select-none">
+                    <h4 className="font-serif text-xs font-bold text-slate-800 dark:text-slate-200 mb-6 uppercase tracking-widest border-b border-slate-200 pb-2">
+                      Table of Contents
+                    </h4>
+                    <nav className="space-y-3.5">
+                      {toc.map((item) => (
+                        <a
+                          key={item.id}
+                          href={`#${item.id}`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            const el = document.getElementById(item.id);
+                            if (el && scrollContainerRef.current) {
+                              const container = scrollContainerRef.current;
+                              // Scroll container to elements offset minus some padding
+                              const offset = el.offsetTop - 30;
+                              container.scrollTo({ top: offset, behavior: "smooth" });
+                            }
+                          }}
+                          className="block text-[11px] font-bold text-slate-600 hover:text-mint dark:text-slate-400 dark:hover:text-mint transition-colors leading-relaxed"
+                        >
+                          {item.text}
+                        </a>
+                      ))}
+                    </nav>
+                  </div>
+                )}
 
-                <div className="flex items-center gap-3 text-[10px] text-slate-700 font-bold uppercase tracking-wider">
-                  <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5 text-slate-500" /> {selectedArticle.date}</span>
-                  <span className="w-1 h-1 rounded-full bg-slate-400" />
-                  <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5 text-slate-500" /> {selectedArticle.readTime}</span>
-                </div>
+                {/* Article Main Text Column */}
+                <div 
+                  ref={scrollContainerRef}
+                  onScroll={handleScroll}
+                  data-lenis-prevent
+                  className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 select-text scroll-smooth"
+                >
+                  <div className={isFullScreen ? "max-w-3xl mx-auto py-4" : "w-full"}>
+                    {/* Large Banner Image */}
+                    <div className="w-full aspect-video rounded-2xl overflow-hidden relative border border-slate-900/5 bg-slate-100 mb-6">
+                      <Image 
+                        src={selectedArticle.image} 
+                        alt={selectedArticle.title} 
+                        fill
+                        sizes={isFullScreen ? "(max-width: 1200px) 100vw, 800px" : "(max-width: 600px) 100vw, 600px"}
+                        className="object-cover"
+                        priority
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent pointer-events-none" />
+                    </div>
 
-                <h1 className="font-serif text-2xl md:text-3xl font-semibold tracking-tight text-[#1A2421] leading-tight">
-                  {selectedArticle.title}
-                </h1>
+                    <div className="flex items-center gap-3 text-[10px] text-slate-700 font-bold uppercase tracking-wider mb-4">
+                      <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5 text-slate-500" /> {selectedArticle.date}</span>
+                      <span className="w-1 h-1 rounded-full bg-slate-400" />
+                      <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5 text-slate-500" /> {selectedArticle.readTime}</span>
+                    </div>
 
-                <div className="flex items-center gap-2 text-xs font-bold text-slate-900 bg-slate-900/5 px-4 py-2.5 rounded-2xl w-fit">
-                  <User className="w-4 h-4 text-slate-500" />
-                  <span>Written by {selectedArticle.author} · MD (Hom.)</span>
-                </div>
+                    <h1 className="font-serif text-2xl md:text-3xl font-semibold tracking-tight text-[#1A2421] leading-tight mb-6">
+                      {selectedArticle.title}
+                    </h1>
 
-                <hr className="border-slate-100" />
+                    <div className="flex items-center gap-2 text-xs font-bold text-slate-900 bg-slate-900/5 px-4 py-2.5 rounded-2xl w-fit mb-8">
+                      <User className="w-4 h-4 text-slate-500" />
+                      <span>Written by {selectedArticle.author} · MD (Hom.)</span>
+                    </div>
 
-                {/* Article body content */}
-                <div className="space-y-6 text-sm text-slate-700 font-semibold leading-relaxed wp-content">
-                  {typeof selectedArticle.content === "string" ? (
-                    <div dangerouslySetInnerHTML={{ __html: selectedArticle.content }} />
-                  ) : (
-                    selectedArticle.content.map((paragraph, idx) => (
-                      <p key={idx}>{paragraph}</p>
-                    ))
-                  )}
+                    <hr className="border-slate-100 mb-8" />
+
+                    {/* Article body content */}
+                    <div className="space-y-6 text-sm text-slate-700 font-semibold leading-relaxed wp-content">
+                      <div dangerouslySetInnerHTML={{ __html: processedHtml }} />
+                    </div>
+                  </div>
                 </div>
               </div>
 

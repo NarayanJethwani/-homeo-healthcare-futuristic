@@ -27,13 +27,37 @@ function decodeHtmlEntities(html: string): string {
 
 async function getWordPressPosts(): Promise<Article[]> {
   try {
-    const res = await fetch("https://admin.homeo.healthcare/wp-json/wp/v2/posts?_embed&per_page=120", {
-      next: { revalidate: 3600 }
-    });
-    if (!res.ok) throw new Error("Failed to fetch posts");
-    const posts = await res.json();
+    let allPosts: any[] = [];
+    let page = 1;
+    let hasMore = true;
     
-    const mapped: Article[] = posts.map((post: any) => {
+    while (hasMore && page <= 5) {
+      const res = await fetch(`https://admin.homeo.healthcare/wp-json/wp/v2/posts?_embed&per_page=100&page=${page}`, {
+        next: { revalidate: 3600 }
+      });
+      if (!res.ok) {
+        hasMore = false;
+        break;
+      }
+      const posts = await res.json();
+      if (!Array.isArray(posts) || posts.length === 0) {
+        hasMore = false;
+      } else {
+        allPosts = [...allPosts, ...posts];
+        if (posts.length < 100) {
+          hasMore = false;
+        } else {
+          page++;
+        }
+      }
+    }
+
+    if (allPosts.length === 0) {
+      console.warn("No posts fetched from WordPress API");
+      return [];
+    }
+    
+    const mapped: Article[] = allPosts.map((post: any) => {
       // Clean up literal \n strings from content, excerpt, and title if present
       if (post.content?.rendered) {
         post.content.rendered = post.content.rendered.replace(/\\n/g, "");
