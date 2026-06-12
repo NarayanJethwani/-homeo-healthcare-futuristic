@@ -11,6 +11,17 @@ async function getWordPressPosts(): Promise<Article[]> {
     const posts = await res.json();
     
     const mapped: Article[] = posts.map((post: any) => {
+      // Clean up literal \n strings from content, excerpt, and title if present
+      if (post.content?.rendered) {
+        post.content.rendered = post.content.rendered.replace(/\\n/g, "");
+      }
+      if (post.excerpt?.rendered) {
+        post.excerpt.rendered = post.excerpt.rendered.replace(/\\n/g, "");
+      }
+      if (post.title?.rendered) {
+        post.title.rendered = post.title.rendered.replace(/\\n/g, "");
+      }
+
       // Extract category
       let category: Article["category"] = "Research";
       try {
