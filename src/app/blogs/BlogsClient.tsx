@@ -953,6 +953,7 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
                 {isFullScreen && toc.length > 0 && (
                   <div 
                     ref={tocSidebarRef}
+                    data-lenis-prevent
                     className="w-72 border-r border-slate-900/5 dark:border-slate-800/40 p-8 overflow-y-auto hidden md:block bg-[#F5F4F0]/40 backdrop-blur-sm shrink-0 select-none"
                   >
                     {/* Readability Settings Panel */}
