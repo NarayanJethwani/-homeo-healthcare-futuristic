@@ -491,6 +491,33 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const tocSidebarRef = useRef<HTMLDivElement>(null);
 
+  const [fontSize, setFontSize] = useState<"sm" | "base" | "lg" | "xl">("base");
+  const [themeMode, setThemeMode] = useState<"light" | "sepia" | "dark">("light");
+
+  // Load preferences from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedSize = localStorage.getItem("readability-font-size");
+      const savedTheme = localStorage.getItem("readability-theme-mode");
+      if (savedSize && ["sm", "base", "lg", "xl"].includes(savedSize)) {
+        setFontSize(savedSize as any);
+      }
+      if (savedTheme && ["light", "sepia", "dark"].includes(savedTheme)) {
+        setThemeMode(savedTheme as any);
+      }
+    }
+  }, []);
+
+  const handleFontSizeChange = (size: "sm" | "base" | "lg" | "xl") => {
+    setFontSize(size);
+    localStorage.setItem("readability-font-size", size);
+  };
+
+  const handleThemeModeChange = (theme: "light" | "sepia" | "dark") => {
+    setThemeMode(theme);
+    localStorage.setItem("readability-theme-mode", theme);
+  };
+
   useEffect(() => {
     if (!selectedArticle) {
       setToc([]);
@@ -865,7 +892,13 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 260 }}
-              className={`fixed right-0 top-0 bottom-0 bg-[#FAF9F6]/95 dark:bg-slate-900/95 border-l border-white/50 dark:border-slate-800 z-[51] shadow-2xl flex flex-col pointer-events-auto overflow-hidden transition-all duration-500 ease-in-out ${
+              className={`fixed right-0 top-0 bottom-0 border-l z-[51] shadow-2xl flex flex-col pointer-events-auto overflow-hidden transition-all duration-500 ease-in-out ${
+                themeMode === "sepia"
+                  ? "readability-theme-sepia bg-[#F4ECD8] border-[#ECDDB3]/30"
+                  : themeMode === "dark"
+                    ? "readability-theme-dark bg-[#12181A] border-white/5"
+                    : "bg-[#FAF9F6]/95 dark:bg-slate-900/95 border-white/50 dark:border-slate-800"
+              } ${
                 isFullScreen ? "w-full" : "w-full sm:w-[600px]"
               }`}
             >
@@ -922,6 +955,75 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
                     ref={tocSidebarRef}
                     className="w-72 border-r border-slate-900/5 dark:border-slate-800/40 p-8 overflow-y-auto hidden md:block bg-[#F5F4F0]/40 backdrop-blur-sm shrink-0 select-none"
                   >
+                    {/* Readability Settings Panel */}
+                    <div className="mb-8 pb-6 border-b border-slate-200 dark:border-slate-800/40 space-y-5">
+                      <h4 className="font-serif text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-widest">
+                        Readability Settings
+                      </h4>
+                      
+                      {/* Text Sizing Buttons */}
+                      <div className="space-y-2">
+                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Text Size</span>
+                        <div className="grid grid-cols-4 gap-1 p-1 bg-slate-900/5 dark:bg-white/5 rounded-xl border border-slate-900/5">
+                          {(["sm", "base", "lg", "xl"] as const).map((size) => {
+                            const label = size === "sm" ? "A-" : size === "base" ? "A" : size === "lg" ? "A+" : "A++";
+                            const isActive = fontSize === size;
+                            return (
+                              <button
+                                key={size}
+                                onClick={() => handleFontSizeChange(size)}
+                                className={`py-1.5 rounded-lg text-xs font-bold transition-all duration-200 cursor-pointer ${
+                                  isActive
+                                    ? "bg-white text-mint shadow-sm dark:bg-slate-800 dark:text-mint"
+                                    : "text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
+                                }`}
+                              >
+                                {label}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Theme Colors */}
+                      <div className="space-y-2">
+                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Theme Mode</span>
+                        <div className="flex gap-2">
+                          {(["light", "sepia", "dark"] as const).map((theme) => {
+                            const isActive = themeMode === theme;
+                            let themeLabel = "Light";
+                            let pillStyle = "bg-[#FAF9F6] border-slate-200 text-slate-800";
+                            
+                            if (theme === "sepia") {
+                              themeLabel = "Sepia";
+                              pillStyle = "bg-[#F4ECD8] border-[#ECDDB3] text-[#4F3F2F]";
+                            } else if (theme === "dark") {
+                              themeLabel = "Dark";
+                              pillStyle = "bg-[#12181A] border-slate-800 text-slate-300";
+                            }
+                            
+                            return (
+                              <button
+                                key={theme}
+                                onClick={() => handleThemeModeChange(theme)}
+                                className={`flex-1 py-1.5 px-2 rounded-lg text-[10px] font-bold border transition-all duration-200 cursor-pointer flex items-center justify-center gap-1 ${pillStyle} ${
+                                  isActive
+                                    ? "ring-2 ring-mint ring-offset-2 dark:ring-offset-slate-900"
+                                    : "opacity-80 hover:opacity-100"
+                                }`}
+                              >
+                                <span className={`w-2.5 h-2.5 rounded-full ${
+                                  theme === "light" ? "bg-white border border-slate-300" :
+                                  theme === "sepia" ? "bg-[#ECDDB3]" : "bg-slate-700"
+                                }`} />
+                                {themeLabel}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+
                     <h4 className="font-serif text-xs font-bold text-slate-800 dark:text-slate-200 mb-6 uppercase tracking-widest border-b border-slate-200 pb-2">
                       Table of Contents
                     </h4>
@@ -996,7 +1098,15 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
                     <hr className="border-slate-100 mb-8" />
 
                     {/* Article body content */}
-                    <div className="space-y-6 text-sm text-slate-700 font-semibold leading-relaxed wp-content">
+                    <div className={`space-y-6 text-slate-700 font-semibold leading-relaxed wp-content ${
+                      fontSize === "sm"
+                        ? "readability-size-sm"
+                        : fontSize === "base"
+                          ? "readability-size-base"
+                          : fontSize === "lg"
+                            ? "readability-size-lg"
+                            : "readability-size-xl"
+                    }`}>
                       <div dangerouslySetInnerHTML={{ __html: processedHtml }} />
                     </div>
                   </div>

@@ -256,14 +256,22 @@ html.lenis, html.lenis body {
 .lenis.lenis-smooth {
   scroll-behavior: auto !important;
 }
-.lenis.lenis-smooth [data-lenis-prevent] {
+[data-lenis-prevent] {
   overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 .lenis.lenis-stopped {
   overflow: hidden;
 }
 .lenis.lenis-scrolling iframe {
   pointer-events: none;
+}
+
+/* Fix mobile scroll flicker on touch devices */
+@media (pointer: coarse) {
+  html {
+    scroll-behavior: auto !important;
+  }
 }
 
 /* Particle and floating gradients */
@@ -925,6 +933,168 @@ html.lenis, html.lenis body {
 }
 .dark .wp-references-title {
   color: var(--foreground);
+}
+
+/* ==========================================================================
+   READABILITY TYPOGRAPHY SCALES
+   ========================================================================== */
+.wp-content.readability-size-sm {
+  font-size: 0.85rem !important;
+}
+.wp-content.readability-size-sm p {
+  font-size: 0.85rem !important;
+}
+.wp-content.readability-size-sm h2 {
+  font-size: 1.5rem !important;
+}
+.wp-content.readability-size-sm h3 {
+  font-size: 1.2rem !important;
+}
+
+.wp-content.readability-size-base {
+  font-size: 0.95rem !important;
+}
+.wp-content.readability-size-base p {
+  font-size: 0.95rem !important;
+}
+.wp-content.readability-size-base h2 {
+  font-size: 1.75rem !important;
+}
+.wp-content.readability-size-base h3 {
+  font-size: 1.4rem !important;
+}
+
+.wp-content.readability-size-lg {
+  font-size: 1.1rem !important;
+}
+.wp-content.readability-size-lg p {
+  font-size: 1.1rem !important;
+}
+.wp-content.readability-size-lg h2 {
+  font-size: 2rem !important;
+}
+.wp-content.readability-size-lg h3 {
+  font-size: 1.6rem !important;
+}
+
+.wp-content.readability-size-xl {
+  font-size: 1.25rem !important;
+}
+.wp-content.readability-size-xl p {
+  font-size: 1.25rem !important;
+}
+.wp-content.readability-size-xl h2 {
+  font-size: 2.25rem !important;
+}
+.wp-content.readability-size-xl h3 {
+  font-size: 1.8rem !important;
+}
+
+/* ==========================================================================
+   READABILITY THEME OVERRIDES
+   ========================================================================== */
+
+/* Sepia Theme */
+.readability-theme-sepia {
+  background-color: #F4ECD8 !important;
+  color: #4F3F2F !important;
+}
+.readability-theme-sepia .bg-white\/70,
+.readability-theme-sepia .bg-white\/60,
+.readability-theme-sepia .bg-white\/80 {
+  background-color: rgba(235, 220, 178, 0.7) !important;
+}
+.readability-theme-sepia .wp-content {
+  color: #4F3F2F !important;
+}
+.readability-theme-sepia .wp-content h1,
+.readability-theme-sepia .wp-content h2,
+.readability-theme-sepia .wp-content h3,
+.readability-theme-sepia .wp-content h4,
+.readability-theme-sepia h1,
+.readability-theme-sepia h2,
+.readability-theme-sepia h3 {
+  color: #2B1D0E !important;
+}
+.readability-theme-sepia .text-slate-800,
+.readability-theme-sepia .text-slate-700,
+.readability-theme-sepia .text-slate-600,
+.readability-theme-sepia .text-slate-500,
+.readability-theme-sepia .text-slate-900 {
+  color: #6B5743 !important;
+}
+.readability-theme-sepia .bg-\[\#F5F4F0\]\/40 {
+  background-color: rgba(235, 220, 178, 0.4) !important;
+}
+.readability-theme-sepia .border-slate-900\/5,
+.readability-theme-sepia .border-slate-200,
+.readability-theme-sepia .border-slate-100,
+.readability-theme-sepia hr {
+  border-color: rgba(43, 29, 14, 0.1) !important;
+}
+.readability-theme-sepia .bg-slate-900\/5 {
+  background-color: rgba(43, 29, 14, 0.05) !important;
+}
+.readability-theme-sepia .text-mint {
+  color: #107b6e !important;
+}
+.readability-theme-sepia .border-mint {
+  border-color: #14b8a6 !important;
+}
+
+/* Dark Theme */
+.readability-theme-dark {
+  background-color: #12181A !important;
+  color: #A9B7B5 !important;
+}
+.readability-theme-dark .bg-white\/70,
+.readability-theme-dark .bg-white\/60,
+.readability-theme-dark .bg-white\/80 {
+  background-color: rgba(22, 29, 32, 0.7) !important;
+}
+.readability-theme-dark .wp-content {
+  color: #A9B7B5 !important;
+}
+.readability-theme-dark .wp-content h1,
+.readability-theme-dark .wp-content h2,
+.readability-theme-dark .wp-content h3,
+.readability-theme-dark .wp-content h4,
+.readability-theme-dark h1,
+.readability-theme-dark h2,
+.readability-theme-dark h3 {
+  color: #ECEFF0 !important;
+}
+.readability-theme-dark .text-slate-800,
+.readability-theme-dark .text-slate-700,
+.readability-theme-dark .text-slate-600,
+.readability-theme-dark .text-slate-500,
+.readability-theme-dark .text-slate-900 {
+  color: #8A9D9B !important;
+}
+.readability-theme-dark .bg-\[\#F5F4F0\]\/40 {
+  background-color: rgba(13, 18, 19, 0.4) !important;
+}
+.readability-theme-dark .border-slate-900\/5,
+.readability-theme-dark .border-slate-200,
+.readability-theme-dark .border-slate-100,
+.readability-theme-dark hr {
+  border-color: rgba(255, 255, 255, 0.06) !important;
+}
+.readability-theme-dark .bg-slate-900\/5 {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+.readability-theme-dark .text-mint {
+  color: #14b8a6 !important;
+}
+.readability-theme-dark .border-mint {
+  border-color: #14b8a6 !important;
+}
+.readability-theme-dark .bg-white {
+  background-color: #161D20 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+.readability-theme-dark .border-slate-100 {
+  border-color: rgba(255, 255, 255, 0.06) !important;
 }
 
 
