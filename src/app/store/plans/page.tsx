@@ -13,12 +13,12 @@ const careLevelsDetails = {
   mild: {
     title: "Acute & Wellness Care",
     weeklyPrice: 1200,
-    monthlyPrice: 4200,
+    monthlyPrice: 4800,
     badge: "Acute & General Support",
     icon: "🌱",
     colorClass: "text-teal-600 border-teal-200/50 bg-teal-50/50 dark:bg-teal-950/20 dark:text-teal-400",
     glowColor: "rgba(20,184,166,0.15)",
-    surchargeWeekly: 360,
+    surchargeWeekly: 300,
     surchargeMonthly: 1200,
     description: "Ideal for general immunity, hair fall, seasonal acute complaints, or general wellness guidance.",
     features: [
@@ -31,12 +31,12 @@ const careLevelsDetails = {
   moderate: {
     title: "Standard Chronic Care",
     weeklyPrice: 2400,
-    monthlyPrice: 9000,
+    monthlyPrice: 9600,
     badge: "Focused Chronic Management",
     icon: "⚡",
     colorClass: "text-purple-600 border-purple-200/50 bg-purple-50/50 dark:bg-purple-950/20 dark:text-purple-400",
     glowColor: "rgba(168,85,247,0.15)",
-    surchargeWeekly: 600,
+    surchargeWeekly: 450,
     surchargeMonthly: 1800,
     description: "Designed for a single chronic condition (e.g. eczema, IBS, thyroid) requiring active tracking and bi-weekly checks.",
     features: [
@@ -49,12 +49,12 @@ const careLevelsDetails = {
   focused: {
     title: "Deep Systemic Care",
     weeklyPrice: 4200,
-    monthlyPrice: 15000,
+    monthlyPrice: 16800,
     badge: "Complex Chronic Therapy",
     icon: "🎯",
     colorClass: "text-sky-600 border-sky-200/50 bg-sky-50/50 dark:bg-sky-950/20 dark:text-sky-400",
     glowColor: "rgba(14,165,233,0.15)",
-    surchargeWeekly: 1000,
+    surchargeWeekly: 750,
     surchargeMonthly: 3000,
     description: "Deep management of complex chronic or systemic health conditions (e.g. asthma, migraine, severe eczema).",
     features: [
@@ -64,33 +64,15 @@ const careLevelsDetails = {
       "Priority clinical checkins over WhatsApp"
     ]
   },
-  acute_critical: {
-    title: "Acute Critical Care",
-    weeklyPrice: 4800,
-    monthlyPrice: 16800,
-    badge: "Intensive Daily Supervision",
-    icon: "🚨",
-    colorClass: "text-rose-600 border-rose-200/50 bg-rose-50/50 dark:bg-rose-950/20 dark:text-rose-400",
-    glowColor: "rgba(239,68,68,0.15)",
-    surchargeWeekly: 1200,
-    surchargeMonthly: 3600,
-    description: "For urgent, high-intensity acute cases requiring daily tracking, frequent remedy adjustments, and intensive physician study.",
-    features: [
-      "Daily doctor clinical review and check-ins",
-      "Intensive daily remedy titration and support",
-      "Emergency/priority WhatsApp communication channel",
-      "Detailed case study and Organon-guided repertorization"
-    ]
-  },
   organ: {
     title: "Advanced Pathological Care",
     weeklyPrice: 6000,
-    monthlyPrice: 22000,
+    monthlyPrice: 24000,
     badge: "Organ System Recovery",
     icon: "🫁",
     colorClass: "text-emerald-600 border-emerald-200/50 bg-emerald-50/50 dark:bg-emerald-950/20 dark:text-emerald-400",
     glowColor: "rgba(16,185,129,0.15)",
-    surchargeWeekly: 1500,
+    surchargeWeekly: 1050,
     surchargeMonthly: 4200,
     description: "Advanced recovery protocols for deep-seated pathology, including organ system rebalancing and biomarker reviews.",
     features: [
@@ -103,12 +85,12 @@ const careLevelsDetails = {
   comprehensive: {
     title: "Multisystem Integrative Care",
     weeklyPrice: 8400,
-    monthlyPrice: 30000,
+    monthlyPrice: 33600,
     badge: "Multi-Organ Intensive Care",
     icon: "🔮",
     colorClass: "text-indigo-600 border-indigo-200/50 bg-indigo-50/50 dark:bg-indigo-950/20 dark:text-indigo-400",
     glowColor: "rgba(99,102,241,0.15)",
-    surchargeWeekly: 1800,
+    surchargeWeekly: 1350,
     surchargeMonthly: 5400,
     description: "For long-standing, multi-system chronic pathologies requiring intensive clinical supervision by Dr. Jethwani.",
     features: [
@@ -116,6 +98,24 @@ const careLevelsDetails = {
       "Direct clinical supervision by Dr. Jethwani",
       "High-frequency dosage titrations & reviews",
       "Direct priority clinical assistance channel"
+    ]
+  },
+  acute_critical: {
+    title: "Acute Critical Care",
+    weeklyPrice: 5000,
+    monthlyPrice: 20000,
+    badge: "Intensive Daily Supervision",
+    icon: "🚨",
+    colorClass: "text-rose-600 border-rose-200/50 bg-rose-50/50 dark:bg-rose-950/20 dark:text-rose-400",
+    glowColor: "rgba(239,68,68,0.15)",
+    surchargeWeekly: 1000,
+    surchargeMonthly: 4000,
+    description: "For urgent, high-intensity acute cases requiring daily tracking, frequent remedy adjustments, and intensive physician study.",
+    features: [
+      "Daily doctor clinical review and check-ins",
+      "Intensive daily remedy titration and support",
+      "Emergency/priority WhatsApp communication channel",
+      "Detailed case study and Organon-guided repertorization"
     ]
   }
 };
