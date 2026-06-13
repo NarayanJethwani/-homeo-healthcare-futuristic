@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Menu, X, ArrowUpRight, Sun, Moon, Stethoscope, ClipboardList, User, ShoppingBag, BookOpen, Mail, ChevronRight } from "lucide-react";
+import { Sparkles, Menu, X, ArrowUpRight, Sun, Moon } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import Magnetic from "./Magnetic";
@@ -42,12 +42,12 @@ export default function Navbar() {
   };
 
   const menuItems = [
-    { name: "Conditions", href: "/services", icon: Stethoscope, color: "bg-teal-500/10 text-teal-600 dark:text-teal-400" },
-    { name: "Protocol", href: "/evidence-based-homeopathy", icon: ClipboardList, color: "bg-purple-500/10 text-purple-600 dark:text-purple-400" },
-    { name: "Dr Jethwani", href: "/dr-narayan-jethwani", icon: User, color: "bg-blue-500/10 text-blue-600 dark:text-blue-400" },
-    { name: "Treatments", href: "/store", icon: ShoppingBag, color: "bg-amber-500/10 text-amber-600 dark:text-amber-400" },
-    { name: "Blog", href: "/blogs", icon: BookOpen, color: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400" },
-    { name: "Contact", href: "/contact-us", icon: Mail, color: "bg-rose-500/10 text-rose-600 dark:text-rose-400" },
+    { name: "Conditions", href: "/services" },
+    { name: "Protocol", href: "/evidence-based-homeopathy" },
+    { name: "Dr Jethwani", href: "/dr-narayan-jethwani" },
+    { name: "Treatments", href: "/store" },
+    { name: "Blog", href: "/blogs" },
+    { name: "Contact", href: "/contact-us" },
   ];
 
   if (pathname?.startsWith("/admin")) {
@@ -116,7 +116,7 @@ export default function Navbar() {
 
               <Magnetic>
                 <a
-                  href="https://portal.homeo.healthcare/admin/login"
+                  href="https://portal.homeo.healthcare/admin"
                   data-cursor="explore"
                   className="glass-panel border-[#0F766E]/20 hover:border-mint/50 bg-[#0F766E]/5 hover:bg-mint/10 text-slate-700 dark:text-zinc-200 hover:text-mint dark:hover:text-mint px-4 py-2 rounded-full text-[11px] font-bold tracking-wider uppercase transition-all duration-500 flex items-center gap-1 cursor-pointer"
                 >
@@ -167,55 +167,44 @@ export default function Navbar() {
             transition={{ duration: 0.3 }}
             className="fixed inset-x-0 top-24 z-30 mx-6 lg:hidden"
           >
-            <div className="bg-white/80 dark:bg-[#0B0F19]/85 backdrop-blur-2xl border border-white/40 dark:border-slate-800/40 rounded-3xl p-5 shadow-[0_20px_50px_rgba(20,184,166,0.15)]">
-              <div className="flex flex-col gap-4">
+            <div className="glass-panel rounded-3xl p-6 border-white/30 shadow-lg">
+              <div className="flex flex-col gap-5">
                 {menuItems.map((item, idx) => (
                   <motion.div
-                    initial={{ opacity: 0, x: -20 }}
+                    initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 24, delay: idx * 0.05 }}
+                    transition={{ delay: idx * 0.05 }}
                     key={item.name}
                   >
                     <Link
                       href={item.href}
                       onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center justify-between p-3 rounded-2xl bg-slate-500/5 dark:bg-white/5 hover:bg-mint/10 dark:hover:bg-mint/15 transition-all duration-300 group cursor-pointer border border-transparent hover:border-mint/20"
+                      className="text-lg font-bold text-slate-800 hover:text-mint py-1 block"
                     >
-                      <div className="flex items-center gap-3">
-                        <div className={`p-2.5 rounded-xl ${item.color} flex items-center justify-center flex-shrink-0`}>
-                          <item.icon className="w-5 h-5" />
-                        </div>
-                        <span className="text-base font-bold text-slate-800 dark:text-zinc-100 group-hover:text-mint transition-colors">
-                          {item.name}
-                        </span>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-mint group-hover:translate-x-1 transition-all" />
+                      {item.name}
                     </Link>
                   </motion.div>
                 ))}
-                
-                <div className="h-px bg-slate-100 dark:bg-slate-800/60 my-2" />
-                
+                <hr className="border-slate-150" />
                 <a
-                  href="https://portal.homeo.healthcare/admin/login"
+                  href="https://portal.homeo.healthcare/admin"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full text-center border border-[#0F766E]/20 text-[#0F766E] dark:text-mint bg-[#0F766E]/5 hover:bg-[#0F766E]/10 py-3 rounded-2xl text-xs font-bold tracking-wider uppercase transition-colors duration-300 flex items-center justify-center gap-2"
+                  className="w-full text-center border border-[#0F766E]/20 text-[#0F766E] dark:text-mint bg-[#0F766E]/5 py-3 rounded-full text-sm font-semibold flex items-center justify-center gap-2 uppercase tracking-wider font-bold"
                 >
                   Clinical Workspace
                 </a>
                 <Link
                   href="https://homeo.healthcare/#booking"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full text-center bg-mint hover:bg-mint-dark text-white py-3 rounded-2xl text-xs font-bold tracking-wider uppercase shadow-md shadow-mint/10 hover:shadow-mint/20 transition-all duration-300 flex items-center justify-center gap-2"
+                  className="w-full text-center bg-mint text-white py-3 rounded-full text-sm font-semibold flex items-center justify-center gap-2"
                 >
                   Book Consultation
                   <ArrowUpRight className="w-4 h-4" />
                 </Link>
-                
                 <div className="flex gap-3 pt-1">
                   <a
                     href="mailto:narayan.jethwani@gmail.com"
-                    className="flex-1 text-center border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-zinc-300 py-3 rounded-2xl text-xs font-bold hover:border-mint hover:text-mint dark:hover:text-mint transition-colors"
+                    className="flex-1 text-center border border-slate-200 text-slate-800 py-2.5 rounded-full text-xs font-bold hover:border-mint hover:text-mint transition-colors"
                   >
                     Email Dr. Narayan
                   </a>
@@ -223,7 +212,7 @@ export default function Navbar() {
                     href="https://wa.me/918446056789"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 text-center border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 bg-emerald-500/5 hover:bg-emerald-500/10 py-3 rounded-2xl text-xs font-bold transition-colors"
+                    className="flex-1 text-center border border-[#0F766E]/20 text-[#0F766E] bg-[#0F766E]/5 py-2.5 rounded-full text-xs font-bold hover:bg-[#0F766E]/10 transition-colors"
                   >
                     WhatsApp Chat
                   </a>
