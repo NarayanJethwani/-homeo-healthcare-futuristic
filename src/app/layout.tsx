@@ -92,6 +92,21 @@ export default function RootLayout({
             `
           }}
         />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                  navigator.serviceWorker.register('/sw.js').then(function(reg) {
+                    console.log('Homeo Healthcare ServiceWorker registered on scope: ', reg.scope);
+                  }).catch(function(err) {
+                    console.error('ServiceWorker registration failed: ', err);
+                  });
+                });
+              }
+            `
+          }}
+        />
       </head>
       <body className="min-h-full flex flex-col font-sans bg-pearl text-[#1A2421]">
         <ScrollProvider>
