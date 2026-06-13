@@ -1067,7 +1067,7 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
                   data-lenis-prevent
                   className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 select-text scroll-smooth"
                 >
-                  <div className={isFullScreen ? "max-w-3xl mx-auto py-4" : "w-full"}>
+                  <div className="w-full py-4">
                     {/* Large Banner Image */}
                     <div className="w-full aspect-video rounded-2xl overflow-hidden relative border border-slate-900/5 bg-slate-100 mb-6">
                       <Image 
