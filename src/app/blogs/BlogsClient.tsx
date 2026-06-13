@@ -774,7 +774,7 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
                 >
                   <div className="space-y-4 w-full">
                     {/* Image Skeleton */}
-                    <div className="w-full aspect-[2/1] rounded-2xl bg-slate-200/50 border border-slate-900/5" />
+                    <div className="w-full aspect-square rounded-2xl bg-slate-200/50 border border-slate-900/5" />
                     {/* Meta Skeleton */}
                     <div className="flex items-center gap-3">
                       <div className="h-3 w-16 bg-slate-200/50 rounded-full" />
@@ -820,7 +820,7 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
 
                   <div className="space-y-4">
                     {/* Article Banner Image */}
-                    <div className="w-full aspect-[2/1] rounded-2xl overflow-hidden relative border border-slate-900/5 bg-slate-100">
+                    <div className="w-full aspect-square rounded-2xl overflow-hidden relative border border-slate-900/5 bg-slate-100">
                       <Image 
                         src={art.image} 
                         alt={art.title} 
@@ -1079,7 +1079,7 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
                 >
                   <div className="w-full py-4">
                     {/* Large Banner Image */}
-                    <div className="w-full aspect-video rounded-2xl overflow-hidden relative border border-slate-900/5 bg-slate-100 mb-6">
+                    <div className="w-full max-w-2xl mx-auto aspect-square rounded-2xl overflow-hidden relative border border-slate-900/5 bg-slate-100 mb-6">
                       <Image 
                         src={selectedArticle.image} 
                         alt={selectedArticle.title} 

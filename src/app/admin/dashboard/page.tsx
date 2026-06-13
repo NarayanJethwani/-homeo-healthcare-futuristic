@@ -715,6 +715,8 @@ export default function AdminDashboard() {
   const [rightSidebarCollapsed, setRightSidebarCollapsed] = useState(false);
   const [isAnalyzerChatLoading, setIsAnalyzerChatLoading] = useState(false);
   const [isImportingLocalFile, setIsImportingLocalFile] = useState(false);
+  const [isWhatsAppPanelOpen, setIsWhatsAppPanelOpen] = useState(false);
+  const [whatsappManualPhone, setWhatsappManualPhone] = useState("");
 
 
 
@@ -1749,6 +1751,488 @@ export default function AdminDashboard() {
     } finally {
       setIsExportingReport(false);
     }
+  };
+
+  // Sync WhatsApp number with selected patient changes
+  useEffect(() => {
+    const activePatient = patients.find(p => p.id === (reportExportPatientId || selectedPatientId));
+    if (activePatient?.phone) {
+      setWhatsappManualPhone(activePatient.phone);
+    } else {
+      setWhatsappManualPhone("");
+    }
+  }, [reportExportPatientId, selectedPatientId, patients]);
+
+  // Branded client-side PDF Report generator
+  const handleGeneratePDF = () => {
+    if (!analyzerResult) {
+      alert("No active report analyzed yet.");
+      return;
+    }
+
+    const activePatient = patients.find(p => p.id === (reportExportPatientId || selectedPatientId)) || {
+      name: "Constitutional Case",
+      age: "N/A",
+      gender: "N/A",
+      phone: "N/A",
+      email: "N/A"
+    };
+
+    const displayData = analyzerResult;
+
+    // Create a printable iframe
+    const iframeId = "report-print-iframe";
+    let iframe = document.getElementById(iframeId) as HTMLIFrameElement;
+    if (iframe) {
+      document.body.removeChild(iframe);
+    }
+    iframe = document.createElement("iframe") as HTMLIFrameElement;
+    iframe.id = iframeId;
+    iframe.style.position = "fixed";
+    iframe.style.right = "0";
+    iframe.style.bottom = "0";
+    iframe.style.width = "0";
+    iframe.style.height = "0";
+    iframe.style.border = "none";
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentDocument || iframe.contentWindow?.document;
+    if (!doc) {
+      alert("Could not initialize print document.");
+      return;
+    }
+
+    // Build Structured Findings HTML Rows
+    const findingsRows = (displayData.findings || []).map((f: any) => {
+      const isAbnormal = f.status !== "Normal";
+      const statusClass = f.status === "Normal" 
+        ? "status-normal" 
+        : f.severity === "red" ? "status-high" : "status-moderate";
+      
+      return `
+        <tr>
+          <td style="font-weight: bold; color: #1e293b;">${f.marker}</td>
+          <td style="font-weight: bold; text-align: center;">${f.value}</td>
+          <td style="text-align: center; color: #475569;">${f.ref_range || "N/A"}</td>
+          <td style="text-align: center;">
+            <span class="status-badge ${statusClass}">${f.status}</span>
+          </td>
+          <td style="color: #64748b;">${f.homeopathic_correlation || "N/A"}</td>
+        </tr>
+      `;
+    }).join("");
+
+    // Build Differential Remedies HTML Rows
+    const diffRemediesRows = (displayData.homeopathic_intelligence?.differential_remedies || []).map((rem: any) => `
+      <div class="remedy-card">
+        <strong>${rem.name}</strong>
+        <p>${rem.reason}</p>
+      </div>
+    `).join("");
+
+    // Build Questions list
+    const questionsList = (displayData.patient_education?.questions || []).map((q: string) => `
+      <li>${q}</li>
+    `).join("");
+
+    // Build HTML Content
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Homeo Healthcare - Lab Report Analysis</title>
+        <meta charset="utf-8">
+        <style>
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #334155;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 40px;
+            font-size: 13px;
+            line-height: 1.5;
+          }
+          
+          /* Header Styling */
+          .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #10b981;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+          }
+          .clinic-brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+          }
+          .clinic-logo {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+          }
+          .clinic-title h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -0.5px;
+          }
+          .clinic-title p {
+            margin: 2px 0 0 0;
+            font-size: 11px;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+          }
+          .clinic-meta {
+            text-align: right;
+            font-size: 11px;
+            color: #475569;
+          }
+          .clinic-meta strong {
+            color: #0f172a;
+            font-size: 12px;
+          }
+
+          /* Patient Block */
+          .patient-box {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 25px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+          }
+          .patient-box div {
+            display: flex;
+            flex-direction: column;
+          }
+          .patient-box span {
+            font-size: 9px;
+            color: #64748b;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            margin-bottom: 2px;
+          }
+          .patient-box strong {
+            font-size: 12px;
+            color: #1e293b;
+          }
+
+          /* Section titles */
+          .section-title {
+            font-size: 13px;
+            font-weight: 800;
+            color: #0f172a;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 6px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          }
+
+          /* Clinical Risk Assessment */
+          .risk-badge {
+            font-size: 11px;
+            font-weight: 850;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid transparent;
+          }
+          .risk-badge.low {
+            background-color: #ecfdf5;
+            color: #047857;
+            border-color: #a7f3d0;
+          }
+          .risk-badge.moderate {
+            background-color: #fffbeb;
+            color: #b45309;
+            border-color: #fde68a;
+          }
+          .risk-badge.high {
+            background-color: #fef2f2;
+            color: #b91c1c;
+            border-color: #fca5a5;
+          }
+          .risk-badge.urgent {
+            background-color: #fff1f2;
+            color: #be123c;
+            border-color: #fecdd3;
+          }
+
+          /* Findings Table */
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+          }
+          th {
+            background-color: #f1f5f9;
+            color: #475569;
+            font-weight: 700;
+            text-align: left;
+            padding: 8px 12px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #cbd5e1;
+          }
+          td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f1f5f9;
+          }
+          
+          /* Status Badges */
+          .status-badge {
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 2.5px 7px;
+            border-radius: 4px;
+            display: inline-block;
+          }
+          .status-badge.status-normal {
+            background-color: #ecfdf5;
+            color: #065f46;
+          }
+          .status-badge.status-moderate {
+            background-color: #fffbeb;
+            color: #92400e;
+          }
+          .status-badge.status-high {
+            background-color: #fef2f2;
+            color: #991b1b;
+          }
+
+          /* Clinical Recommendation Grids */
+          .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+          }
+          .recommendation-card {
+            background-color: #fdfdfd;
+            border: 1px solid #f1f5f9;
+            border-left: 3.5px solid #6366f1;
+            border-radius: 8px;
+            padding: 12px;
+          }
+          .recommendation-card strong {
+            font-size: 10px;
+            color: #4f46e5;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+          }
+          .recommendation-card p {
+            margin: 0;
+            font-size: 12px;
+            color: #334155;
+            font-weight: 600;
+          }
+
+          .remedy-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+          }
+          .remedy-card {
+            background-color: #fafafa;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px;
+          }
+          .remedy-card strong {
+            font-size: 12px;
+            color: #0f172a;
+            display: block;
+            margin-bottom: 2px;
+          }
+          .remedy-card p {
+            margin: 0;
+            font-size: 11px;
+            color: #475569;
+          }
+
+          /* Footer disclaimer */
+          .footer-container {
+            margin-top: 50px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 15px;
+            text-align: center;
+            font-size: 10px;
+            color: #94a3b8;
+          }
+
+          /* Print controls spacing */
+          @media print {
+            body {
+              padding: 0;
+            }
+            .no-print {
+              display: none;
+            }
+            .page-break {
+              page-break-before: always;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <!-- Header -->
+        <div class="header-container">
+          <div class="clinic-brand">
+            <img class="clinic-logo" src="/images/logo.png" alt="Homeo Healthcare">
+            <div class="clinic-title">
+              <h1>Homeo Healthcare</h1>
+              <p>Futuristic Constitutional Biology</p>
+            </div>
+          </div>
+          <div class="clinic-meta">
+            <strong>Dr. Narayan Jethwani</strong><br>
+            contact@homeo.healthcare<br>
+            www.homeo.healthcare
+          </div>
+        </div>
+
+        <!-- Patient Info -->
+        <div class="patient-box">
+          <div>
+            <span>Patient Name</span>
+            <strong>${activePatient.name}</strong>
+          </div>
+          <div>
+            <span>Demographics</span>
+            <strong>${activePatient.age || "N/A"} / ${activePatient.gender || "N/A"}</strong>
+          </div>
+          <div>
+            <span>Report Date / Category</span>
+            <strong>${reportExportDate} - ${reportExportCategory}</strong>
+          </div>
+        </div>
+
+        <!-- Risk Level -->
+        <div class="section-title">
+          <span>Clinical Metabolic Risk Assessment</span>
+          <span class="risk-badge ${(displayData.risk_level || "low").toLowerCase()}">${displayData.risk_level || "Low"}</span>
+        </div>
+        <p style="margin-top: 5px; font-size: 12px; font-weight: 500; line-height: 1.6; color: #475569;">
+          ${displayData.significance || "Patient displays metabolic adjustments requiring Constitutional support."}
+        </p>
+
+        <!-- Biochemical Findings -->
+        <div class="section-title">Parsed Biochemical Findings</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Biomarker / Pathological Coordinate</th>
+              <th style="text-align: center;">Patient Value</th>
+              <th style="text-align: center;">Reference Range</th>
+              <th style="text-align: center;">Status</th>
+              <th>Homeopathic Correlation</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${findingsRows || '<tr><td colspan="5" style="text-align: center;">No abnormal findings parsed.</td></tr>'}
+          </tbody>
+        </table>
+
+        <div class="page-break"></div>
+
+        <!-- Homeopathic Intelligence Plan -->
+        <div class="section-title">Homeopathic Constitutional Support Recommendations</div>
+        
+        <div class="grid-container">
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div class="recommendation-card" style="border-left-color: #6366f1;">
+              <strong>Constitutional Considerations</strong>
+              <p>${displayData.homeopathic_intelligence?.constitutional || "N/A"}</p>
+            </div>
+            <div class="recommendation-card" style="border-left-color: #3b82f6;">
+              <strong>Miasmatic Indicators</strong>
+              <p>${displayData.homeopathic_intelligence?.miasmatic || "N/A"}</p>
+            </div>
+            <div class="recommendation-card" style="border-left-color: #10b981;">
+              <strong>Auxiliary Drainage</strong>
+              <p>${displayData.homeopathic_intelligence?.drainage || "N/A"}</p>
+            </div>
+            <div class="recommendation-card" style="border-left-color: #f59e0b;">
+              <strong>Biochemic Tissue Salts</strong>
+              <p>${displayData.homeopathic_intelligence?.tissue_salts || "N/A"}</p>
+            </div>
+            <div class="recommendation-card" style="border-left-color: #ec4899;">
+              <strong>Target Nutritional Elements</strong>
+              <p>${displayData.homeopathic_intelligence?.nutrition || "N/A"}</p>
+            </div>
+          </div>
+          
+          <div>
+            <strong style="font-size: 10px; color: #64748b; text-transform: uppercase; display: block; margin-bottom: 8px; font-weight: 700; letter-spacing: 0.5px;">Differential Remedy Matrix</strong>
+            <div class="remedy-list">
+              ${diffRemediesRows || '<div class="remedy-card"><p>No specific remedies differentiated.</p></div>'}
+            </div>
+          </div>
+        </div>
+
+        <!-- Patient Self-Care & Dietary Guidance -->
+        <div class="section-title">Patient Self-Care & Support Guidance</div>
+        <div class="grid-container">
+          <div class="recommendation-card" style="border-left-color: #10b981;">
+            <strong>Dietary Instructions</strong>
+            <p>${displayData.patient_education?.friendly_explanation || displayData.output_communication?.diet_plan || "Healthy balanced diet recommended."}</p>
+          </div>
+          <div class="recommendation-card" style="border-left-color: #8b5cf6;">
+            <strong>Lifestyle Guidelines</strong>
+            <p>${displayData.patient_education?.lifestyle || displayData.output_communication?.lifestyle_plan || "Standard recovery guidelines active."}</p>
+          </div>
+        </div>
+
+        ${questionsList ? `
+          <div class="section-title">Questions For Next Review</div>
+          <ul style="padding-left: 20px; font-size: 12px; color: #475569; font-weight: 550; line-height: 1.6;">
+            ${questionsList}
+          </ul>
+        ` : ''}
+
+        <!-- Internal Clinician Notes -->
+        ${displayData.output_communication?.doctor_notes ? `
+          <div class="section-title">Internal Clinician Notes</div>
+          <p style="font-size: 11px; background-color: #fafafa; border: 1px solid #f1f5f9; padding: 10px; border-radius: 8px; font-family: monospace; color: #475569;">
+            ${displayData.output_communication.doctor_notes}
+          </p>
+        ` : ''}
+
+        <!-- Footer Disclaimer -->
+        <div class="footer-container">
+          This document is a clinical report digest generated by the Homeo Healthcare Clinical Intelligence Center.<br>
+          It is intended solely for clinical case synthesis and homeopathic repertory management. Patients should consult their practitioner before starting or changing medications.
+        </div>
+      </body>
+      </html>
+    `;
+
+    doc.open();
+    doc.write(htmlContent);
+    doc.close();
+
+    // Trigger Print after styling loads
+    iframe.contentWindow?.focus();
+    setTimeout(() => {
+      iframe.contentWindow?.print();
+    }, 500);
   };
 
   const [customComplaint, setCustomComplaint] = useState("");
@@ -8832,6 +9316,54 @@ ${err.message || err}`);
 
                     {!leftSidebarCollapsed && (
                       <div className="space-y-4 animate-fadeIn">
+                        {/* Target Patient Profile Dropdown Selector */}
+                        <div className="bg-slate-50/50 dark:bg-slate-950/20 p-3 rounded-2xl border border-slate-200/50 dark:border-slate-800/50 space-y-2">
+                          <label className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest font-mono block">Target Patient Profile</label>
+                          <select
+                            value={selectedPatientId || ""}
+                            onChange={(e) => {
+                              const pid = e.target.value;
+                              setSelectedPatientId(pid);
+                              setReportExportPatientId(pid);
+                            }}
+                            className="w-full p-2 bg-white dark:bg-slate-900 border border-slate-250 dark:border-slate-800 focus:border-mint focus:ring-1 focus:ring-mint outline-none rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-250 cursor-pointer shadow-2xs"
+                          >
+                            <option value="">-- Select Patient Profile --</option>
+                            {patients.map((p) => (
+                              <option key={p.id} value={p.id}>
+                                {p.name} ({p.phone || p.email || p.id})
+                              </option>
+                            ))}
+                          </select>
+                          {selectedPatientId && (() => {
+                            const activePatient = patients.find(p => p.id === selectedPatientId);
+                            if (!activePatient) return null;
+                            return (
+                              <div className="text-[10px] space-y-1 text-slate-500 dark:text-slate-400 font-semibold border-t border-slate-100 dark:border-slate-800/80 pt-2">
+                                <div className="flex justify-between">
+                                  <span>Age / Gender:</span>
+                                  <span className="text-slate-700 dark:text-slate-350">{activePatient.age} / {activePatient.gender}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span>Phone:</span>
+                                  <span className="text-slate-700 dark:text-slate-350">{activePatient.phone || "N/A"}</span>
+                                </div>
+                                {activePatient.sheetUrl && (
+                                  <a
+                                    href={activePatient.sheetUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="text-mint hover:underline text-[9px] font-black uppercase tracking-wider flex items-center gap-1 mt-1 cursor-pointer"
+                                  >
+                                    <FileSpreadsheet className="w-3 h-3" />
+                                    Open Google Sheet
+                                  </a>
+                                )}
+                              </div>
+                            );
+                          })()}
+                        </div>
+
                         {/* Drag & Drop or Browse upload zone */}
                         <div 
                           className="border-2 border-dashed border-slate-200 hover:border-mint/60 bg-slate-50/50 hover:bg-slate-50 rounded-2xl p-4 flex flex-col items-center justify-center text-center cursor-pointer transition-all relative min-h-[120px]"
@@ -9408,16 +9940,19 @@ ${err.message || err}`);
                         </div>
 
                         {/* Ready to send templates */}
-                        <div className="space-y-2 border-t border-slate-100 pt-3">
-                          <span className={`${labelTextSize} font-black text-slate-400 uppercase tracking-widest font-mono block`}>Homeo.Healthcare Output</span>
+                        <div className="space-y-2 border-t border-slate-100 dark:border-slate-800/80 pt-3">
+                          <span className={`${labelTextSize} font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest font-mono block`}>Homeo.Healthcare Output</span>
                           
                           <div className={`grid grid-cols-2 gap-2 ${detailsTextSize}`}>
                             <button
                               onClick={() => {
-                                navigator.clipboard.writeText(displayData.output_communication?.whatsapp || "");
-                                alert("WhatsApp summary copied to clipboard!");
+                                setIsWhatsAppPanelOpen(!isWhatsAppPanelOpen);
                               }}
-                              className="px-2 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-250 rounded-xl flex items-center justify-center gap-1 cursor-pointer border-none font-bold uppercase tracking-wider"
+                              className={`px-2 py-1.5 border border-emerald-250 dark:border-emerald-900 rounded-xl flex items-center justify-center gap-1 cursor-pointer font-bold uppercase tracking-wider transition-all ${
+                                isWhatsAppPanelOpen 
+                                  ? "bg-emerald-600 hover:bg-emerald-700 text-white border-transparent shadow-inner" 
+                                  : "bg-emerald-50 hover:bg-emerald-100/80 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400"
+                              }`}
                             >
                               <Send className="w-3 h-3" />
                               WhatsApp
@@ -9427,16 +9962,14 @@ ${err.message || err}`);
                                 navigator.clipboard.writeText(displayData.output_communication?.email || "");
                                 alert("Email template copied to clipboard!");
                               }}
-                              className="px-2 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-250 rounded-xl flex items-center justify-center gap-1 cursor-pointer border-none font-bold uppercase tracking-wider"
+                              className="px-2 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-250 dark:bg-blue-950/20 dark:text-blue-400 dark:border-blue-900 rounded-xl flex items-center justify-center gap-1 cursor-pointer border-none font-bold uppercase tracking-wider"
                             >
                               <Mail className="w-3 h-3" />
                               Email Summary
                             </button>
                             <button
-                              onClick={() => {
-                                alert("Generating PDF Report download...");
-                              }}
-                              className="px-2 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-250 rounded-xl flex items-center justify-center gap-1 cursor-pointer border-none font-bold uppercase tracking-wider"
+                              onClick={handleGeneratePDF}
+                              className="px-2 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-250 dark:bg-rose-950/20 dark:text-rose-400 dark:border-rose-900 rounded-xl flex items-center justify-center gap-1 cursor-pointer border-none font-bold uppercase tracking-wider"
                             >
                               <FileText className="w-3 h-3" />
                               PDF Report
@@ -9446,12 +9979,104 @@ ${err.message || err}`);
                                 navigator.clipboard.writeText(displayData.output_communication?.doctor_notes || "");
                                 alert("Clinician notes copied!");
                               }}
-                              className="px-2 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-250 rounded-xl flex items-center justify-center gap-1 cursor-pointer border-none font-bold uppercase tracking-wider"
+                              className="px-2 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-250 dark:bg-slate-800 dark:text-slate-350 dark:border-slate-750 rounded-xl flex items-center justify-center gap-1 cursor-pointer border-none font-bold uppercase tracking-wider"
                             >
                               <FileText className="w-3 h-3" />
                               Doctor Notes
                             </button>
                           </div>
+
+                          {/* WhatsApp interactive Form Panel */}
+                          {isWhatsAppPanelOpen && (() => {
+                            const activePatientForExport = patients.find(p => p.id === (reportExportPatientId || selectedPatientId));
+                            return (
+                              <div className="bg-emerald-50/25 dark:bg-emerald-950/10 border border-emerald-250/70 dark:border-emerald-900/40 p-3 rounded-2xl space-y-3 animate-fadeIn mt-2 text-[11px] font-semibold text-slate-700 dark:text-slate-300">
+                                <div className="flex items-center justify-between border-b border-emerald-100 dark:border-emerald-900/30 pb-1.5">
+                                  <span className="text-[9px] font-black text-emerald-800 dark:text-emerald-400 uppercase tracking-widest font-mono flex items-center gap-1">
+                                    <Send className="w-3.5 h-3.5" />
+                                    Send via WhatsApp
+                                  </span>
+                                  <button
+                                    onClick={() => setIsWhatsAppPanelOpen(false)}
+                                    className="text-[9px] font-black uppercase text-slate-400 hover:text-slate-600 border-none bg-transparent cursor-pointer"
+                                  >
+                                    Close
+                                  </button>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest font-mono block">Recipient Phone Number</label>
+                                  <div className="flex flex-col gap-1.5">
+                                    {activePatientForExport?.phone && (
+                                      <label className="flex items-center gap-1.5 text-xs text-slate-700 dark:text-slate-300 cursor-pointer font-semibold">
+                                        <input
+                                          type="radio"
+                                          name="whatsapp_dest"
+                                          defaultChecked={true}
+                                          onChange={() => setWhatsappManualPhone(activePatientForExport.phone)}
+                                          className="accent-mint"
+                                        />
+                                        Patient's Phone: <strong className="text-slate-900 dark:text-white">{activePatientForExport.phone}</strong>
+                                      </label>
+                                    )}
+                                    <label className="flex items-center gap-1.5 text-xs text-slate-700 dark:text-slate-300 cursor-pointer font-semibold">
+                                      <input
+                                        type="radio"
+                                        name="whatsapp_dest"
+                                        defaultChecked={!activePatientForExport?.phone}
+                                        onChange={() => setWhatsappManualPhone("")}
+                                        className="accent-mint"
+                                      />
+                                      Enter Manual Number
+                                    </label>
+                                    <input
+                                      type="text"
+                                      placeholder="e.g. +919876543210 or 9876543210"
+                                      value={whatsappManualPhone}
+                                      onChange={(e) => setWhatsappManualPhone(e.target.value)}
+                                      className="w-full p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-250 outline-none focus:border-mint focus:ring-1 focus:ring-mint shadow-inner"
+                                    />
+                                  </div>
+                                </div>
+
+                                <div className="space-y-1">
+                                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest font-mono block">Message Recommendation Preview</label>
+                                  <textarea
+                                    value={displayData.output_communication?.whatsapp || ""}
+                                    onChange={(e) => {
+                                      const newVal = e.target.value;
+                                      setAnalyzerResult((prev: any) => ({
+                                        ...prev,
+                                        output_communication: {
+                                          ...prev.output_communication,
+                                          whatsapp: newVal
+                                        }
+                                      }));
+                                    }}
+                                    className="w-full p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold text-slate-650 dark:text-slate-300 min-h-[90px] outline-none focus:border-mint focus:ring-1 focus:ring-mint shadow-inner"
+                                  />
+                                </div>
+
+                                <button
+                                  onClick={() => {
+                                    const phoneNum = whatsappManualPhone || activePatientForExport?.phone;
+                                    if (!phoneNum) {
+                                      alert("Please specify a recipient phone number.");
+                                      return;
+                                    }
+                                    const cleanPhone = phoneNum.replace(/[^\d]/g, ""); // clean to digit only string
+                                    const text = displayData.output_communication?.whatsapp || "";
+                                    const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`;
+                                    window.open(waUrl, "_blank");
+                                  }}
+                                  className="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer border-none shadow-sm transition-all"
+                                >
+                                  <Send className="w-3.5 h-3.5" />
+                                  Launch WhatsApp Web/App
+                                </button>
+                              </div>
+                            );
+                          })()}
                         </div>
 
                         {/* Collapsible Chat widget */}
