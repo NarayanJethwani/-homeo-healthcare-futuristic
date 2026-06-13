@@ -16,7 +16,7 @@ import { REPERTORY_CHAPTERS, REMEDIES_METADATA, Rubric, BOERICKE_CHAPTERS, SEARC
 import { MATERIA_MEDICA_BOOKS, MateriaMedicaBook } from "@/lib/materiaMedicaData";
 import { ORGANON_EDITIONS, ORGANON_KNOWLEDGE_TREE, ORGANON_APHORISMS, ORGANON_CASES, ACTIVE_RECALL_EXERCISES, TIMELINE_STEPS } from "@/lib/organonData";
 import { db } from "@/lib/firebase";
-import { collection, onSnapshot, query, orderBy, doc, updateDoc, setDoc, where, getDoc, getDocs } from "firebase/firestore";
+import { collection, onSnapshot, query, orderBy, doc, updateDoc, setDoc, where, getDoc, getDocs, deleteDoc } from "firebase/firestore";
 import { getKnowledgeGraph } from "@/lib/knowledgeGraph";
 import { runIngestionSimulation, INGESTION_SOURCES } from "@/lib/ingestionPipeline";
 import { parseNaturalLanguageQuery } from "@/lib/searchEngine";
@@ -1393,20 +1393,20 @@ export default function AdminDashboard() {
       "mistral": true,
       "deepseek": true
     },
-    routingMode: "auto",
+    routingMode: "manual",
     manualModel: "gemini-2.5-flash",
     monthlyCostLimit: 50.0,
     dailyTokenLimit: 5000000,
     specialists: {
-      clinical_reasoning: "gemini-2.5-pro",
+      clinical_reasoning: "gemini-2.5-flash",
       homeopathic_intelligence: "qwen-2.5-72b",
       differential_diagnosis: "deepseek-r1",
       patient_communication: "llama-3.3-70b",
       fast_nlp: "gemini-2.5-flash",
-      research: "gemini-2.5-pro"
+      research: "gemini-2.5-flash"
     },
     consensusEnabled: false,
-    consensusModels: ["gemini-2.5-pro", "deepseek-r1", "qwen-2.5-72b"],
+    consensusModels: ["gemini-2.5-flash", "deepseek-r1", "qwen-2.5-72b"],
     smartCostOptimized: true,
     clinicalSafetyLayer: {
       knowledgeGraph: true,
@@ -1532,20 +1532,20 @@ export default function AdminDashboard() {
             "mistral": true,
             "deepseek": true
           },
-          routingMode: "auto",
+          routingMode: "manual",
           manualModel: "gemini-2.5-flash",
           monthlyCostLimit: 50.0,
           dailyTokenLimit: 5000000,
           specialists: {
-            clinical_reasoning: "gemini-2.5-pro",
+            clinical_reasoning: "gemini-2.5-flash",
             homeopathic_intelligence: "qwen-2.5-72b",
             differential_diagnosis: "deepseek-r1",
             patient_communication: "llama-3.3-70b",
             fast_nlp: "gemini-2.5-flash",
-            research: "gemini-2.5-pro"
+            research: "gemini-2.5-flash"
           },
           consensusEnabled: false,
-          consensusModels: ["gemini-2.5-pro", "deepseek-r1", "qwen-2.5-72b"],
+          consensusModels: ["gemini-2.5-flash", "deepseek-r1", "qwen-2.5-72b"],
           smartCostOptimized: true,
           clinicalSafetyLayer: {
             knowledgeGraph: true,
@@ -4056,90 +4056,8 @@ Homeo Healthcare`;
     
     const unsubscribe = onSnapshot(q, async (snapshot) => {
       if (snapshot.empty) {
-        // If Firestore patients collection is empty, seed it with high-quality mock data for testing
-        console.log("Firestore patients collection is empty. Seeding initial patients...");
-        try {
-          const initialPatients: Patient[] = [
-            {
-              id: "P-100234",
-              name: "Aarav Mehta",
-              age: "42",
-              gender: "Male",
-              phone: "+91 98200 12345",
-              email: "aarav.mehta@gmail.com",
-              location: "Mumbai, Maharashtra, India",
-              complaint: "Chronic severe acidity, GERD, and abdominal bloating immediately after eating. Irritability, very chilly, worse cold drinks.",
-              careLevel: "Advanced Chronic Tier",
-              durationText: "6-Month Treatment Plan",
-              finalPrice: 8500,
-              folderUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link",
-              sheetUrl: `/admin/mock-sheet?name=Aarav%20Mehta&id=P-100234&age=42&gender=Male&phone=%2B91%2098200%2012345&email=aarav.mehta%40gmail.com&complaint=Chronic%20severe%20acidity%2C%20GERD%2C%20and%20abdominal%20bloating%20immediately%20after%20eating.%20Irritability%2C%20very%20chilly%2C%20worse%20cold%20drinks.&careLevel=Advanced%20Chronic%20Tier&durationText=6-Month%20Treatment%20Plan&finalPrice=8500`,
-              assignedDoctor: "doctor-bypass-id",
-              status: "active",
-              createdAt: "2026-05-20T10:00:00Z"
-            },
-            {
-              id: "P-200567",
-              name: "Priyanka Sen",
-              age: "29",
-              gender: "Female",
-              phone: "+91 91100 54321",
-              email: "priyanka.sen@outlook.com",
-              location: "Kolkata, West Bengal, India",
-              complaint: "Dry eczematous patches on elbows and neck. Intense itching at night, worse warmth of bed. Desires cold air.",
-              careLevel: "Standard Consultation",
-              durationText: "1-Month Consultation",
-              finalPrice: 2200,
-              folderUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link",
-              sheetUrl: `/admin/mock-sheet?name=Priyanka%20Sen&id=P-200567&age=29&gender=Female&phone=%2B91%2091100%2054321&email=priyanka.sen%40outlook.com&complaint=Dry%20eczematous%20patches%20on%20elbows%20and%20neck.%20Intense%20itching%20at%20night%2C%20worse%20warmth%20of%20bed.%20Desires%20cold%20air.&careLevel=Standard%20Consultation&durationText=1-Month%20Consultation&finalPrice=2200`,
-              assignedDoctor: "doctor-bypass-id",
-              status: "active",
-              createdAt: "2026-05-22T14:30:00Z"
-            },
-            {
-              id: "P-339281",
-              name: "Suresh Sharma",
-              age: "67",
-              gender: "Male",
-              phone: "+91 88799 11223",
-              email: "suresh67@yahoo.com",
-              location: "Delhi, NCR, India",
-              complaint: "Severe morning joint stiffness in knees and back. Pain worse beginning of motion, improves with continuous walking. Aggravated by cold damp weather.",
-              careLevel: "Advanced Chronic Tier",
-              durationText: "12-Month Support Plan",
-              finalPrice: 15000,
-              folderUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link",
-              sheetUrl: `/admin/mock-sheet?name=Suresh%20Sharma&id=P-339281&age=67&gender=Male&phone=%2B91%2088799%2011223&email=suresh67%40yahoo.com&complaint=Severe%20morning%20joint%20stiffness%20in%20knees%20and%20back.%20Pain%20worse%20beginning%20of%20motion%2C%20improves%20with%20continuous%20walking.%20Aggravated%20by%20cold%20damp%20weather.&careLevel=Advanced%20Chronic%20Tier&durationText=12-Month%20Support%20Plan&finalPrice=15000`,
-              assignedDoctor: "unassigned",
-              status: "awaiting-consult",
-              createdAt: "2026-05-25T09:15:00Z"
-            },
-            {
-              id: "P-882910",
-              name: "Rishi (Golden Retriever)",
-              age: "4",
-              gender: "Male",
-              phone: "+91 98800 99887",
-              email: "amit.verma@gmail.com",
-              location: "Pune, Maharashtra, India",
-              complaint: "Severe separation anxiety, whines and scratches door when owner leaves. Extremely fearful of thunder and firecrackers. Desires cool open air.",
-              careLevel: "Veterinary Consultation",
-              durationText: "3-Month Plan",
-              finalPrice: 4500,
-              folderUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link",
-              sheetUrl: `/admin/mock-sheet?name=Rishi%20%28Golden%20Retriever%29&id=P-882910&age=4&gender=Male&phone=%2B91%2098800%2099887&email=amit.verma%40gmail.com&complaint=Severe%20separation%20anxiety%2C%20whines%20and%20scratches%20door%20when%20owner%20leaves.%20Extremely%20fearful%20of%20thunder%20and%20firecrackers.%20Desires%20cool%20open%20air.&careLevel=Veterinary%20Consultation&durationText=3-Month%20Plan&finalPrice=4500`,
-              assignedDoctor: "unassigned",
-              status: "active",
-              createdAt: "2026-05-26T11:45:00Z"
-            }
-          ];
-
-          for (const pat of initialPatients) {
-            await setDoc(doc(db, "patients", pat.id), pat);
-          }
-        } catch (err) {
-          console.error("Error seeding initial patients in Firestore:", err);
-        }
+        console.log("Firestore patients collection is empty.");
+        setPatients([]);
       } else {
         const list: Patient[] = [];
         snapshot.forEach((doc) => {
@@ -4850,6 +4768,25 @@ Homeo Healthcare`;
       }
     };
     reader.readAsText(file);
+  };
+
+  const handleClearAllPatients = async () => {
+    if (!confirm("WARNING: Are you sure you want to permanently clear all patient records from Firestore to start fresh? This action cannot be undone!")) {
+      return;
+    }
+    try {
+      const q = query(collection(db, "patients"));
+      const querySnapshot = await getDocs(q);
+      const deletePromises: Promise<any>[] = [];
+      querySnapshot.forEach((docSnap) => {
+        deletePromises.push(deleteDoc(doc(db, "patients", docSnap.id)));
+      });
+      await Promise.all(deletePromises);
+      alert("All patient records successfully cleared from the database!");
+    } catch (err: any) {
+      console.error("Error clearing patient records:", err);
+      alert("Failed to clear patient records: " + (err.message || err));
+    }
   };
 
   const handleGoogleSheetImport = async () => {
@@ -9560,15 +9497,6 @@ ${err.message || err}`);
                           </h3>
                           <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
                             Paste raw laboratory results text on the left or upload report files to execute structured clinical analysis. Homeopathic affinity coordinates will map here in real-time.
-                          </p>
-                        </div>
-                        <div className="pt-2">
-                          <button
-                            onClick={() => setAnalyzerResult(sampleData)}
-                            className="px-5 py-2.5 bg-slate-900 dark:bg-mint dark:text-slate-950 hover:bg-slate-800 dark:hover:bg-emerald-400 text-white rounded-xl text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer shadow-sm border-none"
-                          >
-                            Load Demo Panel Data
-                          </button>
                         </div>
                       </div>
                     ) : (
@@ -11609,6 +11537,14 @@ ${err.message || err}`);
                   >
                     <Upload className="w-4 h-4 text-slate-500" />
                     <span>Import Patients (XLSX / Google Sheet)</span>
+                  </button>
+
+                  <button
+                    onClick={handleClearAllPatients}
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4.5 py-2.5 rounded-full border border-rose-200 hover:border-rose-600 hover:bg-rose-50 text-rose-600 text-xs font-bold uppercase tracking-wider transition-all bg-white shadow-sm cursor-pointer"
+                  >
+                    <Trash2 className="w-4 h-4 text-rose-500" />
+                    <span>Clear All Patient Data</span>
                   </button>
 
                   {/* Sheet Opening Mode Toggle */}

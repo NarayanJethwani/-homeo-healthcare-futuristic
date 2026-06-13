@@ -1429,7 +1429,7 @@ export async function POST(request: Request) {
         "gemini-1.5-pro": true,
         "gemini-1.5-flash": true
       } as Record<string, boolean>,
-      routingMode: "auto" as "auto" | "manual",
+      routingMode: "manual" as "auto" | "manual",
       manualModel: "gemini-2.5-flash",
       monthlyCostLimit: 50.0,
       dailyTokenLimit: 5000000,
@@ -1442,7 +1442,7 @@ export async function POST(request: Request) {
         research: "gemini-2.5-flash"
       } as Record<string, string>,
       consensusEnabled: false,
-      consensusModels: ["gemini-2.5-pro", "deepseek-r1", "qwen-2.5-72b"] as string[],
+      consensusModels: ["gemini-2.5-flash", "deepseek-r1", "qwen-2.5-72b"] as string[],
       smartCostOptimized: true,
       clinicalSafetyLayer: {
         knowledgeGraph: true,
