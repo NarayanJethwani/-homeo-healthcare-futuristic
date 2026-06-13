@@ -617,11 +617,14 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
   useEffect(() => {
     if (selectedArticle) {
       document.body.style.overflow = "hidden";
+      document.body.style.overscrollBehavior = "none";
     } else {
       document.body.style.overflow = "";
+      document.body.style.overscrollBehavior = "";
     }
     return () => {
       document.body.style.overflow = "";
+      document.body.style.overscrollBehavior = "";
     };
   }, [selectedArticle]);
 
@@ -887,7 +890,7 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedArticle(null)}
-              className="fixed inset-0 bg-slate-900/25 md:backdrop-blur-sm z-50 pointer-events-auto"
+              className="fixed inset-0 bg-slate-900/25 md:backdrop-blur-sm z-50 pointer-events-auto touch-none"
             />
 
             {/* Sliding Drawer Container */}
@@ -1080,7 +1083,7 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
                   ref={scrollContainerRef}
                   onScroll={handleScroll}
                   data-lenis-prevent
-                  className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 select-text scroll-smooth"
+                  className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 select-text"
                 >
                   <div className="w-full py-4">
                     {/* Large Banner Image */}
