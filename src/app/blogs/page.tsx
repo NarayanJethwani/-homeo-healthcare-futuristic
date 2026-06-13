@@ -1,3 +1,5 @@
+import fs from "fs";
+import path from "path";
 import BlogsClient, { Article } from "./BlogsClient";
 
 export const revalidate = 3600; // Revalidate every 1 hour (ISR)
@@ -143,14 +145,47 @@ async function getWordPressPosts(): Promise<Article[]> {
         "Lifestyle & Wellness": "rgba(99,102,241,0.15)"
       };
 
-      // Get featured image
+      // Get featured image: prefer local unwatermarked image, fallback to WordPress featured media URL
       let image = "/images/epigenetics_gene.png";
-      try {
-        const media = post._embedded?.['wp:featuredmedia']?.[0];
-        if (media?.source_url) {
-          image = media.source_url;
-        }
-      } catch {}
+      
+      const localSlugsWithFeaturedImage = new Set([
+        "complete-thyroid-guide",
+        "hashimotos-thyroiditis",
+        "hyperthyroidism-graves",
+        "chronic-respiratory-guide",
+        "allergic-rhinitis-sinusitis",
+        "asthma-bronchospasms",
+        "gut-brain-skin-axis",
+        "ibs-gut-motility",
+        "gerd-acid-reflux",
+        "chronic-skin-pathology",
+        "eczema-barrier-repair",
+        "vitiligo-repigmentation",
+        "joint-bone-health",
+        "osteoarthritis-degradation",
+        "sciatica-spine-care",
+        "neurobiology-stress-anxiety",
+        "insomnia-sleep-rhythms",
+        "female-endocrine-blueprint",
+        "pcos-pcod-reversal",
+        "insulin-resistance-diabetes",
+        "fatty-liver-regeneration",
+        "cardiovascular-hypertension-lipids",
+        "pediatric-immunity-tonsils",
+        "recurrent-childhood-fevers",
+        "constitutional-immunotherapy-cancer"
+      ]);
+
+      if (localSlugsWithFeaturedImage.has(post.slug)) {
+        image = `/images/${post.slug}-featured.png`;
+      } else {
+        try {
+          const media = post._embedded?.['wp:featuredmedia']?.[0];
+          if (media?.source_url) {
+            image = media.source_url;
+          }
+        } catch {}
+      }
 
       // Get excerpt
       const excerpt = post.excerpt?.rendered 
