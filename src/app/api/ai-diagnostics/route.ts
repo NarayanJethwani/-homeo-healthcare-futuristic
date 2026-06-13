@@ -1419,24 +1419,22 @@ export async function POST(request: Request) {
       primaryProvider: "google",
       fallbackChain: ["deepseek-r1", "qwen-2.5-72b", "llama-3.3-70b", "mistral-large", "deepseek", "qwen", "llama", "mistral"],
       enabledModels: {
-        "gemini-3.5-pro": true,
-        "gemini-3.5-flash": true,
         "gemini-2.5-pro": true,
         "gemini-2.5-flash": true,
         "gemini-1.5-pro": true,
         "gemini-1.5-flash": true
       } as Record<string, boolean>,
       routingMode: "auto" as "auto" | "manual",
-      manualModel: "gemini-3.5-flash",
+      manualModel: "gemini-2.5-flash",
       monthlyCostLimit: 50.0,
       dailyTokenLimit: 5000000,
       specialists: {
-        clinical_reasoning: "gemini-3.5-flash",
+        clinical_reasoning: "gemini-2.5-flash",
         homeopathic_intelligence: "qwen-2.5-72b",
         differential_diagnosis: "deepseek-r1",
         patient_communication: "llama-3.3-70b",
-        fast_nlp: "gemini-3.5-flash",
-        research: "gemini-3.5-flash"
+        fast_nlp: "gemini-2.5-flash",
+        research: "gemini-2.5-flash"
       } as Record<string, string>,
       consensusEnabled: false,
       consensusModels: ["gemini-2.5-pro", "deepseek-r1", "qwen-2.5-72b"] as string[],
@@ -1552,23 +1550,23 @@ export async function POST(request: Request) {
       
       // Always ensure we have some defaults as backup if list is empty
       if (modelsToTry.length === 0) {
-        modelsToTry = ["gemini-3.5-flash", "gemini-2.5-flash"];
+        modelsToTry = ["gemini-2.5-flash", "gemini-1.5-flash"];
       }
     }
 
     const apiModelsToTry: { raw: string, api: string }[] = [];
     for (const rawModelName of modelsToTry) {
       let apiModelName = rawModelName;
-      if (rawModelName === "gemini-3.5-pro" || rawModelName === "gemini-1.5-pro" || rawModelName === "gemini-2.5-pro") {
-        apiModelName = "gemini-3.5-flash"; // Quota workaround for pro models
+      if (rawModelName === "gemini-3.5-pro" || rawModelName === "gemini-2.5-pro" || rawModelName === "gemini-1.5-pro") {
+        apiModelName = "gemini-2.5-flash"; // Quota workaround for pro models
       } else if (rawModelName === "gemini-1.5-flash" || rawModelName === "gemini-flash-latest" || rawModelName === "gemini-pro-latest") {
-        apiModelName = "gemini-3.5-flash"; // Map to 3.5-flash as default
-      } else if (rawModelName === "gemini-2.5-flash" || rawModelName === "gemini-2.5-flash-lite" || rawModelName === "gemini-3.5-flash" || rawModelName === "gemini-2.0-flash") {
+        apiModelName = "gemini-2.5-flash"; // Map to 2.5-flash as default
+      } else if (rawModelName === "gemini-2.5-flash" || rawModelName === "gemini-2.5-flash-lite" || rawModelName === "gemini-2.0-flash") {
         apiModelName = rawModelName;
       } else if (rawModelName.includes("qwen") || rawModelName.includes("deepseek") || rawModelName.includes("llama") || rawModelName.includes("mistral")) {
-        apiModelName = "gemini-3.5-flash"; // Map open-source model requests to gemini-3.5-flash
+        apiModelName = "gemini-2.5-flash"; // Map open-source model requests to gemini-2.5-flash
       } else {
-        apiModelName = "gemini-3.5-flash";
+        apiModelName = "gemini-2.5-flash";
       }
 
       if (!apiModelsToTry.some(m => m.api === apiModelName)) {
@@ -1576,21 +1574,18 @@ export async function POST(request: Request) {
       }
     }
 
-    // Always ensure gemini-3.5-flash is tried FIRST by prepending it if not already at the front
-    const index35 = apiModelsToTry.findIndex(m => m.api === "gemini-3.5-flash");
-    if (index35 > 0) {
-      const item = apiModelsToTry.splice(index35, 1)[0];
+    // Always ensure gemini-2.5-flash is tried FIRST by prepending it if not already at the front
+    const index25 = apiModelsToTry.findIndex(m => m.api === "gemini-2.5-flash");
+    if (index25 > 0) {
+      const item = apiModelsToTry.splice(index25, 1)[0];
       apiModelsToTry.unshift(item);
-    } else if (index35 === -1) {
-      apiModelsToTry.unshift({ raw: "gemini-3.5-flash-backup", api: "gemini-3.5-flash" });
+    } else if (index25 === -1) {
+      apiModelsToTry.unshift({ raw: "gemini-2.5-flash-backup", api: "gemini-2.5-flash" });
     }
 
-    // Always append gemini-2.5-flash, gemini-2.5-flash-lite as safe backups if not present
-    if (!apiModelsToTry.some(m => m.api === "gemini-2.5-flash")) {
-      apiModelsToTry.push({ raw: "gemini-2.5-flash-backup", api: "gemini-2.5-flash" });
-    }
-    if (!apiModelsToTry.some(m => m.api === "gemini-2.5-flash-lite")) {
-      apiModelsToTry.push({ raw: "gemini-2.5-flash-lite-backup", api: "gemini-2.5-flash-lite" });
+    // Always append gemini-1.5-flash as a safe backup if not present
+    if (!apiModelsToTry.some(m => m.api === "gemini-1.5-flash")) {
+      apiModelsToTry.push({ raw: "gemini-1.5-flash-backup", api: "gemini-1.5-flash" });
     }
 
     const ai = new GoogleGenerativeAI(apiKey);
