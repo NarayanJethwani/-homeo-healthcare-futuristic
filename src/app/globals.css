@@ -570,17 +570,39 @@ html.lenis, html.lenis body {
 
 .wp-bento-card {
   background: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(20, 184, 166, 0.1);
+  border: 1px solid rgba(20, 184, 166, 0.15);
   border-radius: 24px;
   padding: 1.5rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.01);
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   backdrop-filter: blur(8px);
+  color: #1a2421;
+}
+
+.wp-bento-card h4 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #0f766e !important;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.wp-bento-card p {
+  color: #334155;
 }
 
 .dark .wp-bento-card {
-  background: rgba(15, 23, 42, 0.5);
+  background: rgba(15, 23, 42, 0.65);
   border-color: rgba(255, 255, 255, 0.08);
+  color: #f1f5f9;
+}
+
+.dark .wp-bento-card h4 {
+  color: #2dd4bf !important;
+}
+
+.dark .wp-bento-card p {
+  color: #cbd5e1;
 }
 
 .wp-bento-card:hover {
@@ -625,12 +647,24 @@ html.lenis, html.lenis body {
   box-shadow: 0 0 10px rgba(20, 184, 166, 0.4);
 }
 
+.wp-timeline-item p {
+  color: #334155;
+}
+
+.dark .wp-timeline-item p {
+  color: #cbd5e1;
+}
+
 .wp-timeline-step {
   font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--color-mint-dark);
+}
+
+.dark .wp-timeline-step {
+  color: #2dd4bf;
 }
 
 .wp-timeline-title {
@@ -681,6 +715,11 @@ html.lenis, html.lenis body {
   border-radius: 9999px;
   text-transform: uppercase;
   margin-bottom: 0.75rem;
+}
+
+.dark .wp-clinical-badge {
+  background: rgba(20, 184, 166, 0.15);
+  color: #2dd4bf;
 }
 
 /* Risk Assessment & Red Flag Warnings */
@@ -737,10 +776,12 @@ html.lenis, html.lenis body {
 .wp-comparison-table td {
   padding: 1rem 1.25rem;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  color: #334155;
 }
 
 .dark .wp-comparison-table td {
   border-bottom-color: rgba(255, 255, 255, 0.05);
+  color: #cbd5e1;
 }
 
 .wp-comparison-table tr:last-child td {
@@ -790,6 +831,10 @@ html.lenis, html.lenis body {
   color: var(--color-mint-dark);
 }
 
+.dark .wp-accordion-item summary:hover {
+  color: #2dd4bf;
+}
+
 .wp-accordion-item summary::-webkit-details-marker {
   display: none;
 }
@@ -800,6 +845,10 @@ html.lenis, html.lenis body {
   font-weight: 400;
   color: var(--color-mint-dark);
   transition: transform 0.3s ease;
+}
+
+.dark .wp-accordion-item summary::after {
+  color: #2dd4bf;
 }
 
 .wp-accordion-item[open] summary::after {
