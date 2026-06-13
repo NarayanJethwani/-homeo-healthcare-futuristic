@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Sparkles, Mail, MapPin } from "lucide-react";
 import Link from "next/link";
@@ -8,7 +9,15 @@ import Magnetic from "./Magnetic";
 
 export default function Footer() {
   const pathname = usePathname();
-  if (pathname?.startsWith("/admin")) return null;
+  const [isPortalHost, setIsPortalHost] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsPortalHost(window.location.hostname.includes("portal.homeo.healthcare"));
+    }
+  }, []);
+
+  if (pathname?.startsWith("/admin") || isPortalHost) return null;
   const links = {
     clinical: [
       { name: "Conditions We Treat", href: "/services" },

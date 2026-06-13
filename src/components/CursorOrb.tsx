@@ -2,10 +2,21 @@
 
 import { useEffect, useState } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
+import { usePathname } from "next/navigation";
 
 export default function CursorOrb() {
+  const pathname = usePathname();
   const [isVisible, setIsVisible] = useState(false);
   const [isDark, setIsDark] = useState(false);
+  const [isPortalHost, setIsPortalHost] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsPortalHost(window.location.hostname.includes("portal.homeo.healthcare"));
+    }
+  }, []);
+
+  if (pathname?.startsWith("/admin") || isPortalHost) return null;
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);

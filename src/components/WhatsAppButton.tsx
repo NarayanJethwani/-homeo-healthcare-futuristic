@@ -1,10 +1,21 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 export default function WhatsAppButton() {
+  const pathname = usePathname();
   const [isHovered, setIsHovered] = useState(false);
+  const [isPortalHost, setIsPortalHost] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsPortalHost(window.location.hostname.includes("portal.homeo.healthcare"));
+    }
+  }, []);
+
+  if (pathname?.startsWith("/admin") || isPortalHost) return null;
 
   const phoneNumber = "918446056789";
   const defaultMessage = encodeURIComponent(

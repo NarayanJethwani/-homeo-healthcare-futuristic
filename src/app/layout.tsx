@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Inter, Playfair_Display } from "next/font/google";
+import { headers } from "next/headers";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ScrollProvider from "@/components/ScrollProvider";
@@ -64,11 +65,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headersList = await headers();
+  const host = headersList.get("host") || "";
+  const isPortal = host.includes("portal.homeo.healthcare");
   return (
     <html
       lang="en"
@@ -118,10 +122,10 @@ export default function RootLayout({
             <ClientCanvasWrapper />
 
             {/* Custom Physics Cursor & Ambient Glowing Orb */}
-            <CursorOrb />
+            {!isPortal && <CursorOrb />}
 
             {/* Navigation Bar */}
-            <Navbar />
+            {!isPortal && <Navbar />}
 
             {/* Main Content Area */}
             <main className="relative z-10 w-full flex-grow">
@@ -129,10 +133,10 @@ export default function RootLayout({
             </main>
 
             {/* Futuristic Minimal Footer */}
-            <Footer />
+            {!isPortal && <Footer />}
 
             {/* Floating WhatsApp Quick-Chat Action */}
-            <WhatsAppButton />
+            {!isPortal && <WhatsAppButton />}
           </div>
         </ScrollProvider>
       </body>
