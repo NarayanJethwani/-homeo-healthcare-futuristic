@@ -1079,14 +1079,11 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
                 >
                   <div className="w-full py-4">
                     {/* Large Banner Image */}
-                    <div className="w-full aspect-square rounded-2xl overflow-hidden relative border border-slate-900/5 bg-slate-100 mb-6">
-                      <Image 
+                    <div className="w-full rounded-2xl overflow-hidden border border-slate-900/5 bg-slate-100 mb-6 relative">
+                      <img 
                         src={selectedArticle.image} 
                         alt={selectedArticle.title} 
-                        fill
-                        sizes="100vw"
-                        className="object-contain"
-                        priority
+                        className="w-full h-auto object-contain"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent pointer-events-none" />
                     </div>
