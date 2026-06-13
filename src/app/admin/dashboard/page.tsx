@@ -9413,30 +9413,50 @@ ${err.message || err}`);
                           />
                         </div>
 
-                        {/* Analyze Trigger */}
-                        <button
-                          onClick={async () => {
-                            if (!analyzerRawText.trim()) return;
-                            setIsAnalyzerLoading(true);
-                            try {
-                              const data = await fetchAIDiagnostics("analyzer", {
-                                rawText: analyzerRawText
-                              });
-                              if (data.success) {
-                                setAnalyzerResult(JSON.parse(data.analysis));
+                        {/* Analyze Trigger & Clear */}
+                        <div className="flex gap-2 w-full">
+                          <button
+                            onClick={async () => {
+                              if (!analyzerRawText.trim()) return;
+                              setIsAnalyzerLoading(true);
+                              try {
+                                const data = await fetchAIDiagnostics("analyzer", {
+                                  rawText: analyzerRawText
+                                });
+                                if (data.success) {
+                                  setAnalyzerResult(JSON.parse(data.analysis));
+                                }
+                              } catch (err) {
+                                console.error(err);
+                              } finally {
+                                setIsAnalyzerLoading(false);
                               }
-                            } catch (err) {
-                              console.error(err);
-                            } finally {
-                              setIsAnalyzerLoading(false);
-                            }
-                          }}
-                          disabled={isAnalyzerLoading || !analyzerRawText.trim()}
-                          className="w-full py-2.5 bg-mint hover:bg-emerald-700 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-2 shadow-xs disabled:opacity-50"
-                        >
-                          {isAnalyzerLoading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5" />}
-                          <span>{isAnalyzerLoading ? "Analyzing..." : "Analyze Report"}</span>
-                        </button>
+                            }}
+                            disabled={isAnalyzerLoading || !analyzerRawText.trim()}
+                            className="flex-1 py-2.5 bg-mint hover:bg-emerald-700 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-2 shadow-xs disabled:opacity-50 border-none outline-none"
+                          >
+                            {isAnalyzerLoading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5" />}
+                            <span>{isAnalyzerLoading ? "Analyzing..." : "Analyze Report"}</span>
+                          </button>
+
+                          {(analyzerRawText || analyzerResult) && (
+                            <button
+                              onClick={() => {
+                                setAnalyzerRawText("");
+                                setAnalyzerResult(null);
+                                setAnalyzerFiles([]);
+                                setReportExportStatus("");
+                                setReportExportMessage("");
+                                setIsWhatsAppPanelOpen(false);
+                              }}
+                              disabled={isAnalyzerLoading}
+                              className="px-4 py-2.5 bg-slate-100 hover:bg-rose-50 text-slate-650 hover:text-rose-600 border border-slate-200/60 dark:border-slate-800/80 hover:border-rose-200 dark:bg-slate-900 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                              <span>Clear</span>
+                            </button>
+                          )}
+                        </div>
 
                         {/* Supported panels suggestions list */}
                         <div>

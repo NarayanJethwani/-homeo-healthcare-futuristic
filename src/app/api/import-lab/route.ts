@@ -28,7 +28,7 @@ Return the extracted text in a clean, readable format, preserving all numeric va
       const rawText = Buffer.from(fileData, "base64").toString("utf-8");
       responseText = rawText;
     } else {
-      const models = ["gemini-2.5-flash", "gemini-2.5-flash-lite"];
+      const models = ["gemini-2.5-flash", "gemini-3.5-flash", "gemini-2.5-pro", "gemini-2.0-flash"];
       for (const modelName of models) {
         try {
           console.log(`Querying Gemini model ${modelName} for lab file transcription...`);
