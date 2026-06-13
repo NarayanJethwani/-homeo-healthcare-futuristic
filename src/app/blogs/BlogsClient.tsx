@@ -1079,13 +1079,13 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
                 >
                   <div className="w-full py-4">
                     {/* Large Banner Image */}
-                    <div className="w-full max-w-2xl mx-auto aspect-square rounded-2xl overflow-hidden relative border border-slate-900/5 bg-slate-100 mb-6">
+                    <div className="w-full aspect-square rounded-2xl overflow-hidden relative border border-slate-900/5 bg-slate-100 mb-6">
                       <Image 
                         src={selectedArticle.image} 
                         alt={selectedArticle.title} 
                         fill
-                        sizes={isFullScreen ? "(max-width: 1200px) 100vw, 800px" : "(max-width: 600px) 100vw, 600px"}
-                        className="object-cover"
+                        sizes="100vw"
+                        className="object-contain"
                         priority
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent pointer-events-none" />
