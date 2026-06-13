@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
 // 1D Value Noise for smooth cursor drift
@@ -181,6 +181,7 @@ const GLSL_SIMPLEX_NOISE = `
 `;
 
 export default function AntigravityBackground() {
+  const [isMobile, setIsMobile] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -189,7 +190,18 @@ export default function AntigravityBackground() {
   const mouseIsOverRef = useRef(false);
 
   useEffect(() => {
-    if (!canvasRef.current || !containerRef.current) return;
+    const checkMobile = () => {
+      const touchDevice = window.matchMedia("(pointer: coarse)").matches;
+      const isSmallScreen = window.innerWidth < 1024;
+      setIsMobile(touchDevice || isSmallScreen);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  useEffect(() => {
+    if (isMobile || !canvasRef.current || !containerRef.current) return;
 
     const container = containerRef.current;
     const canvas = canvasRef.current;
@@ -702,6 +714,10 @@ export default function AntigravityBackground() {
       renderer.dispose();
     };
   }, []);
+
+  if (isMobile) {
+    return null;
+  }
 
   return (
     <div

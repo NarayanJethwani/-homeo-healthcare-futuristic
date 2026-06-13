@@ -484,12 +484,12 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [isFullScreen, setIsFullScreen] = useState(false);
-  const [scrollPercent, setScrollPercent] = useState(0);
   const [toc, setToc] = useState<{ id: string; text: string }[]>([]);
   const [activeId, setActiveId] = useState<string>("");
   const [processedHtml, setProcessedHtml] = useState<string>("");
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const tocSidebarRef = useRef<HTMLDivElement>(null);
+  const progressRef = useRef<HTMLDivElement>(null);
 
   const [fontSize, setFontSize] = useState<"sm" | "base" | "lg" | "xl">("base");
   const [themeMode, setThemeMode] = useState<"light" | "sepia" | "dark">("light");
@@ -523,7 +523,9 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
       setToc([]);
       setProcessedHtml("");
       setIsFullScreen(false);
-      setScrollPercent(0);
+      if (progressRef.current) {
+        progressRef.current.style.width = "0%";
+      }
       setActiveId("");
       return;
     }
@@ -570,7 +572,9 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
     const { scrollTop, scrollHeight, clientHeight } = container;
     const totalScroll = scrollHeight - clientHeight;
     const percentage = totalScroll > 0 ? (scrollTop / totalScroll) * 100 : 0;
-    setScrollPercent(percentage);
+    if (progressRef.current) {
+      progressRef.current.style.width = `${percentage}%`;
+    }
 
     // 2. Track active heading in viewport
     const containerRect = container.getBoundingClientRect();
@@ -883,7 +887,7 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedArticle(null)}
-              className="fixed inset-0 bg-slate-900/10 backdrop-blur-md z-50 pointer-events-auto"
+              className="fixed inset-0 bg-slate-900/25 md:backdrop-blur-sm z-50 pointer-events-auto"
             />
 
             {/* Sliding Drawer Container */}
@@ -892,7 +896,7 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 260 }}
-              className={`fixed right-0 top-0 bottom-0 border-l z-[51] shadow-2xl flex flex-col pointer-events-auto overflow-hidden transition-all duration-500 ease-in-out ${
+              className={`fixed right-0 top-0 bottom-0 border-l z-[51] shadow-2xl flex flex-col pointer-events-auto overflow-hidden transition-colors duration-300 ${
                 themeMode === "sepia"
                   ? "readability-theme-sepia bg-[#F4ECD8] border-[#ECDDB3]/30"
                   : themeMode === "dark"
@@ -951,8 +955,9 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
                 {/* Reading Progress Indicator */}
                 <div className="absolute bottom-0 left-0 right-0 h-1 bg-slate-100 dark:bg-slate-800">
                   <div 
+                    ref={progressRef}
                     className="h-full bg-mint transition-all duration-75 animate-pulse"
-                    style={{ width: `${scrollPercent}%` }}
+                    style={{ width: "0%" }}
                   />
                 </div>
               </div>
