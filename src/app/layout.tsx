@@ -47,9 +47,12 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Dr. Narayan Jethwani" }],
   icons: {
-    icon: "/favicon.ico?v=2",
-    shortcut: "/favicon.ico?v=2",
-    apple: "/favicon.ico?v=2",
+    icon: [
+      { url: "/favicon.ico?v=3", type: "image/x-icon" },
+      { url: "/icon.png?v=3", type: "image/png", sizes: "32x32" }
+    ],
+    shortcut: "/favicon.ico?v=3",
+    apple: "/icon.png?v=3",
   },
   openGraph: {
     title: "Homeo Healthcare | Advanced Homeopathic Care for Modern Life",
