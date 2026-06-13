@@ -1148,6 +1148,11 @@ You MUST return a JSON object with this EXACT schema:
 
   if (taskType === "analyzer") {
     const systemPrompt = `You are the Medical Report Analyzer (v2.0). Your goal is to inspect raw text from laboratory blood panels or radiology scans, research standard clinical reference/normal ranges, extract values, assign severity levels, and map findings to potential homeopathic drainage/assimilation remedies.
+CRITICAL FOR LATENCY: Be extremely concise to prevent API timeouts.
+- Keep all finding fields (clinical_significance, why_abnormal, possible_causes, associated_symptoms, recommended_action, homeopathic_correlation) to a maximum of 1 brief sentence (under 120 characters).
+- Keep all communication templates (whatsapp, email, pdf_preview, doctor_notes, diet_plan, lifestyle_plan) to a maximum of 1-2 brief sentences or 3 short bullet points (under 150 characters per template/plan).
+- Keep patient_education (friendly_explanation, what_means, diet, lifestyle) to a maximum of 1 sentence each.
+- Keep homeopathic_intelligence fields (constitutional, miasmatic, lifestyle, drainage, tissue_salts, nutrition) to short phrases or single remedy names.
 You MUST return a JSON object with this EXACT schema:
 {
   "risk_level": "string ('Low' | 'Moderate' | 'High' | 'Urgent')",
