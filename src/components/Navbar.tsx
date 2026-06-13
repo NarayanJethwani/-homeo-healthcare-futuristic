@@ -116,7 +116,7 @@ export default function Navbar() {
 
               <Magnetic>
                 <a
-                  href="https://portal.homeo.healthcare/admin"
+                  href="https://portal.homeo.healthcare/admin/login"
                   data-cursor="explore"
                   className="glass-panel border-[#0F766E]/20 hover:border-mint/50 bg-[#0F766E]/5 hover:bg-mint/10 text-slate-700 dark:text-zinc-200 hover:text-mint dark:hover:text-mint px-4 py-2 rounded-full text-[11px] font-bold tracking-wider uppercase transition-all duration-500 flex items-center gap-1 cursor-pointer"
                 >
@@ -197,7 +197,7 @@ export default function Navbar() {
                 <div className="h-px bg-slate-100 dark:bg-slate-800/60 my-2" />
                 
                 <a
-                  href="https://portal.homeo.healthcare/admin"
+                  href="https://portal.homeo.healthcare/admin/login"
                   onClick={() => setMobileMenuOpen(false)}
                   className="w-full text-center border border-[#0F766E]/20 text-[#0F766E] dark:text-mint bg-[#0F766E]/5 hover:bg-[#0F766E]/10 py-3 rounded-2xl text-xs font-bold tracking-wider uppercase transition-colors duration-300 flex items-center justify-center gap-2"
                 >
