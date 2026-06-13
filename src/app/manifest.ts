@@ -24,7 +24,7 @@ export default async function manifest(): Promise<MetadataRoute.Manifest> {
           src: "/icon.png",
           sizes: "512x512",
           type: "image/png",
-          purpose: "any maskable"
+          purpose: "maskable"
         }
       ]
     };
@@ -46,7 +46,7 @@ export default async function manifest(): Promise<MetadataRoute.Manifest> {
         src: "/icon.png",
         sizes: "512x512",
         type: "image/png",
-        purpose: "any maskable"
+        purpose: "maskable"
       }
     ]
   };

@@ -8568,7 +8568,7 @@ ${err.message || err}`);
             const displayData = analyzerResult;
 
             // Filter findings by active organ tab
-            const filteredFindings = displayData.findings?.filter((f: any) => {
+            const filteredFindings = displayData?.findings?.filter((f: any) => {
               if (analyzerOrganTab === "all") return true;
               return f.organs?.includes(analyzerOrganTab);
             }) || [];
