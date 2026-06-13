@@ -916,6 +916,16 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
                 
                 {/* Header Actions */}
                 <div className="flex items-center gap-2">
+                  <Magnetic>
+                    <button
+                      onClick={handleBookConsultation}
+                      className="px-4 py-2 bg-mint hover:bg-mint-dark text-white rounded-full font-bold uppercase tracking-wider text-[9px] md:text-[10px] shadow-sm hover:shadow transition-all duration-300 flex items-center gap-1.5 cursor-pointer mr-1 shrink-0"
+                    >
+                      <Calendar className="w-3 h-3 md:w-3.5 md:h-3.5" />
+                      <span className="hidden sm:inline">Book Consultation</span>
+                    </button>
+                  </Magnetic>
+                  
                   <button
                     onClick={() => setIsFullScreen(!isFullScreen)}
                     className="w-10 h-10 rounded-full border border-slate-200 hover:border-slate-800 flex items-center justify-center transition-colors group cursor-pointer"
@@ -1110,26 +1120,27 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
                     }`}>
                       <div dangerouslySetInnerHTML={{ __html: processedHtml }} />
                     </div>
-                  </div>
-                </div>
-              </div>
 
-              {/* Drawer Footer CTA */}
-              <div className="p-6 md:p-8 bg-white/70 backdrop-blur-sm border-t border-slate-900/5 dark:border-slate-800/40 flex flex-col items-center">
-                <div className="w-full text-center space-y-4">
-                  <h4 className="text-sm font-bold text-[#1A2421]">Interested in constitutional treatment?</h4>
-                  <p className="text-xs text-slate-700 font-semibold">
-                    Schedule a clinical or telehealth video call setup directly with Dr. Jethwani.
-                  </p>
-                  <Magnetic>
-                    <button
-                      onClick={handleBookConsultation}
-                      className="w-full py-4 bg-mint hover:bg-mint-dark text-white rounded-full font-bold uppercase tracking-wider text-xs shadow-[0_8px_30px_rgba(20,184,166,0.2)] transition-all duration-300 flex items-center justify-center gap-2 group cursor-pointer"
-                    >
-                      Book Consultation with Dr. Jethwani
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </button>
-                  </Magnetic>
+                    {/* Drawer Footer CTA (Inline at the end of content) */}
+                    <div className="mt-16 p-8 bg-white/20 dark:bg-white/5 backdrop-blur-md border border-slate-900/5 dark:border-slate-800/20 rounded-3xl flex flex-col items-center max-w-3xl mx-auto shadow-sm">
+                      <div className="w-full text-center space-y-4">
+                        <h4 className="text-sm font-bold text-[#1A2421]">Interested in constitutional treatment?</h4>
+                        <p className="text-xs text-slate-700 font-semibold">
+                          Schedule a clinical or telehealth video call setup directly with Dr. Jethwani.
+                        </p>
+                        <Magnetic>
+                          <button
+                            onClick={handleBookConsultation}
+                            className="w-full py-4 bg-mint hover:bg-mint-dark text-white rounded-full font-bold uppercase tracking-wider text-xs shadow-[0_8px_30px_rgba(20,184,166,0.2)] transition-all duration-300 flex items-center justify-center gap-2 group cursor-pointer"
+                          >
+                            Book Consultation with Dr. Jethwani
+                            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                          </button>
+                        </Magnetic>
+                      </div>
+                    </div>
+
+                  </div>
                 </div>
               </div>
 
