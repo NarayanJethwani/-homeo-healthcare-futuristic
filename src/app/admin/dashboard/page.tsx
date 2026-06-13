@@ -649,6 +649,7 @@ export default function AdminDashboard() {
 
   const chatEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     if (chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -1019,6 +1020,21 @@ export default function AdminDashboard() {
       setAnalyzerRawText("Liver Function Test:\n- SGOT (AST): 54 U/L (HIGH)\n- SGPT (ALT): 62 U/L (HIGH)\n- Bilirubin Total: 0.9 mg/dL\n- Alkaline Phosphatase: 110 U/L");
     } else if (type === "KFT") {
       setAnalyzerRawText("Kidney Function Test:\n- Serum Creatinine: 1.2 mg/dL (HIGH)\n- Blood Urea Nitrogen: 24 mg/dL (HIGH)\n- eGFR: 58 mL/min (Mild Decline)");
+    }
+  };
+
+  const handleClearAnalyzer = () => {
+    setAnalyzerRawText("");
+    setAnalyzerResult(null);
+    setAnalyzerFiles([]);
+    setAnalyzerChatHistory([]);
+    setAnalyzerChatQuery("");
+    setReportExportStatus("");
+    setReportExportMessage("");
+    setIsWhatsAppPanelOpen(false);
+    setLeftSidebarCollapsed(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
   };
 
@@ -3660,10 +3676,10 @@ export default function AdminDashboard() {
     billingCycle: "Monthly",
     concessionType: "None",
     durationText: "1-Month Consultation",
-    basePrice: 3500,
+    basePrice: 4200,
     discountOverride: 0,
-    finalPrice: 3500,
-    receivedAmount: 3500,
+    finalPrice: 3780,
+    receivedAmount: 3780,
     remainingBalance: 0
   });
   const [isCreatingCase, setIsCreatingCase] = useState(false);
@@ -3772,8 +3788,8 @@ export default function AdminDashboard() {
       {
         description: `General Consultation & Treatment Plan (${patient.durationText || "1-Month"})`,
         qty: 1,
-        unitPrice: patient.finalPrice || 3500,
-        amount: patient.finalPrice || 3500
+        unitPrice: patient.finalPrice || 4200,
+        amount: patient.finalPrice || 4200
       }
     ]);
     setInvoiceDiscount(0);
@@ -4182,25 +4198,48 @@ Homeo Healthcare`;
     return 1;
   };
 
-  const getCareLevelMonthlyRate = (level: string) => {
-    let rate = 4200;
-    if (level === "⚡ Standard Chronic Care") rate = 9000;
-    if (level === "🎯 Deep Systemic Care") rate = 15000;
-    if (level === "🚨 Acute Critical Care") rate = 16800;
-    if (level === "🫁 Advanced Pathological Care") rate = 22000;
-    if (level === "🔮 Multisystem Integrative Care") rate = 30000;
-    return rate;
+  const careLevelsDetails = {
+    mild: { title: "Acute & Wellness Care", weeklyPrice: 1200, monthlyPrice: 4200 },
+    moderate: { title: "Standard Chronic Care", weeklyPrice: 2400, monthlyPrice: 9000 },
+    focused: { title: "Deep Systemic Care", weeklyPrice: 4200, monthlyPrice: 15000 },
+    acute_critical: { title: "Acute Critical Care", weeklyPrice: 4800, monthlyPrice: 16800 },
+    organ: { title: "Advanced Pathological Care", weeklyPrice: 6000, monthlyPrice: 22000 },
+    comprehensive: { title: "Multisystem Integrative Care", weeklyPrice: 8400, monthlyPrice: 30000 },
+  };
+
+  const surchargesLookup = {
+    mild: { unitWeekly: 360, unitMonthly: 1200 },
+    moderate: { unitWeekly: 600, unitMonthly: 1800 },
+    focused: { unitWeekly: 1000, unitMonthly: 3000 },
+    acute_critical: { unitWeekly: 1200, unitMonthly: 3600 },
+    organ: { unitWeekly: 1500, unitMonthly: 4200 },
+    comprehensive: { unitWeekly: 1800, unitMonthly: 5400 }
+  };
+
+  const getCareLevelKey = (level: string) => {
+    if (level.includes("Standard")) return "moderate";
+    if (level.includes("Deep")) return "focused";
+    if (level.includes("Advanced")) return "organ";
+    if (level.includes("Multisystem")) return "comprehensive";
+    if (level.includes("Critical") || level.includes("🚨")) return "acute_critical";
+    return "mild";
   };
 
   const getCareLevelRate = (level: string, cycle: string) => {
+    const key = getCareLevelKey(level);
     const isWeekly = cycle === "Weekly";
-    if (level.includes("Standard")) return isWeekly ? 2400 : 9000;
-    if (level.includes("Deep")) return isWeekly ? 4200 : 15000;
-    if (level.includes("Advanced")) return isWeekly ? 6000 : 22000;
-    if (level.includes("Multisystem")) return isWeekly ? 8400 : 30000;
-    if (level.includes("Critical") || level.includes("🚨")) return isWeekly ? 4800 : 16800;
-    return isWeekly ? 1200 : 4200; // Acute & Wellness
+    const basePrice = isWeekly ? careLevelsDetails[key].weeklyPrice : careLevelsDetails[key].monthlyPrice;
+    
+    const conditions = level.includes("Multisystem") ? 2 : 1;
+    let surcharge = 0;
+    if (conditions > 1) {
+      const tierSurcharges = surchargesLookup[key];
+      const unit = isWeekly ? tierSurcharges.unitWeekly : tierSurcharges.unitMonthly;
+      surcharge = (conditions - 1) * unit;
+    }
+    return basePrice + surcharge;
   };
+
 
   const getOptionLabel = (baseLabel: string, monthlyPrice: number) => {
     const isWeekly = newCaseForm.billingCycle === "Weekly";
@@ -4521,10 +4560,10 @@ Homeo Healthcare`;
           billingCycle: "Monthly",
           concessionType: "None",
           durationText: "1-Month Consultation",
-          basePrice: 3500,
+          basePrice: 4200,
           discountOverride: 0,
-          finalPrice: 3500,
-          receivedAmount: 3500,
+          finalPrice: 3780,
+          receivedAmount: 3780,
           remainingBalance: 0
         });
       } else {
@@ -4641,6 +4680,14 @@ Homeo Healthcare`;
       }
     }
 
+    const ageVal = patient.age || "30";
+    const ageNum = parseInt(ageVal) || 0;
+    const concession = ageNum >= 60 ? "Senior" : "None";
+    const careLevel = "🌱 Acute & Wellness Care";
+    const duration = "1-Month Consultation";
+    const cycle = "Monthly";
+    const pricing = calculateCaseFormPricing(careLevel, duration, ageVal, 0, cycle, concession);
+
     setNewCaseForm({
       name: patient.name,
       age: patient.age,
@@ -4651,14 +4698,14 @@ Homeo Healthcare`;
       state,
       country,
       complaint: patient.complaint || "",
-      careLevel: "🌱 Acute & Wellness Care",
-      billingCycle: "Monthly",
-      concessionType: "None",
-      durationText: "1-Month Consultation",
-      basePrice: 3500,
+      careLevel: careLevel,
+      billingCycle: cycle,
+      concessionType: concession,
+      durationText: duration,
+      basePrice: pricing.basePrice,
       discountOverride: 0,
-      finalPrice: 3500,
-      receivedAmount: 3500,
+      finalPrice: pricing.finalPrice,
+      receivedAmount: pricing.finalPrice,
       remainingBalance: 0
     });
     
@@ -9150,6 +9197,17 @@ ${err.message || err}`);
                   
                   {/* Controls */}
                   <div className="flex flex-wrap items-center gap-3.5">
+                    {/* Clear Button */}
+                    {(analyzerRawText || analyzerResult || analyzerFiles.length > 0) && (
+                      <button
+                        onClick={handleClearAnalyzer}
+                        disabled={isAnalyzerLoading}
+                        className="px-3.5 py-1.5 bg-rose-50 hover:bg-rose-100 dark:bg-rose-955/20 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-450 border border-rose-200/50 dark:border-rose-900/50 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 shadow-xs border-none"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>Clear Analysis</span>
+                      </button>
+                    )}
                     {/* Font controls */}
                     <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-950 border border-slate-200/65 dark:border-slate-850 rounded-xl p-1">
                       <span className="text-[8px] font-black text-slate-400 px-1 font-mono uppercase">Font:</span>
@@ -9377,6 +9435,7 @@ ${err.message || err}`);
                           ) : (
                             <>
                               <input
+                                ref={fileInputRef}
                                 id="laptop-file-picker"
                                 type="file"
                                 accept=".pdf,.png,.jpg,.jpeg,.txt"
@@ -9439,16 +9498,9 @@ ${err.message || err}`);
                             <span>{isAnalyzerLoading ? "Analyzing..." : "Analyze Report"}</span>
                           </button>
 
-                          {(analyzerRawText || analyzerResult) && (
+                          {(analyzerRawText || analyzerResult || analyzerFiles.length > 0) && (
                             <button
-                              onClick={() => {
-                                setAnalyzerRawText("");
-                                setAnalyzerResult(null);
-                                setAnalyzerFiles([]);
-                                setReportExportStatus("");
-                                setReportExportMessage("");
-                                setIsWhatsAppPanelOpen(false);
-                              }}
+                              onClick={handleClearAnalyzer}
                               disabled={isAnalyzerLoading}
                               className="px-4 py-2.5 bg-slate-100 hover:bg-rose-50 text-slate-650 hover:text-rose-600 border border-slate-200/60 dark:border-slate-800/80 hover:border-rose-200 dark:bg-slate-900 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-1.5"
                             >
