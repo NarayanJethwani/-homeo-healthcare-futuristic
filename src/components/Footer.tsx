@@ -94,8 +94,56 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-2.5 text-xs text-slate-700 font-medium">
                 <MapPin className="w-4 h-4 text-mint/60" />
-                <span>Baner, Pune · ramkrishnahomeopathy.com</span>
+                <span>Baner, Pune · homeo.healthcare</span>
               </div>
+            </div>
+            
+            {/* Social Media Links */}
+            <div className="flex items-center gap-3 pt-3">
+              <Magnetic>
+                <a
+                  href="https://www.facebook.com/DrNarayanJethwani/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Facebook"
+                  className="w-8 h-8 rounded-full border border-slate-200/50 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex items-center justify-center text-slate-600 dark:text-zinc-400 hover:text-white hover:bg-[#1877F2] hover:border-[#1877F2] dark:hover:bg-[#1877F2] dark:hover:border-[#1877F2] transition-all duration-300 shadow-sm cursor-pointer"
+                >
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1V12h3v3h-3v6.95c4.56-.93 8-4.96 8-9.75z"/></svg>
+                </a>
+              </Magnetic>
+              <Magnetic>
+                <a
+                  href="https://www.instagram.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram"
+                  className="w-8 h-8 rounded-full border border-slate-200/50 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex items-center justify-center text-slate-600 dark:text-zinc-400 hover:text-white hover:bg-gradient-to-tr hover:from-[#f09433] hover:to-[#bc1888] hover:border-[#bc1888] dark:hover:bg-gradient-to-tr dark:hover:from-[#f09433] dark:hover:to-[#bc1888] dark:hover:border-[#bc1888] transition-all duration-300 shadow-sm cursor-pointer"
+                >
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                </a>
+              </Magnetic>
+              <Magnetic>
+                <a
+                  href="https://www.youtube.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="YouTube"
+                  className="w-8 h-8 rounded-full border border-slate-200/50 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex items-center justify-center text-slate-600 dark:text-zinc-400 hover:text-white hover:bg-[#FF0000] hover:border-[#FF0000] dark:hover:bg-[#FF0000] dark:hover:border-[#FF0000] transition-all duration-300 shadow-sm cursor-pointer"
+                >
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg>
+                </a>
+              </Magnetic>
+              <Magnetic>
+                <a
+                  href="https://www.linkedin.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="LinkedIn"
+                  className="w-8 h-8 rounded-full border border-slate-200/50 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex items-center justify-center text-slate-600 dark:text-zinc-400 hover:text-white hover:bg-[#0077B5] hover:border-[#0077B5] dark:hover:bg-[#0077B5] dark:hover:border-[#0077B5] transition-all duration-300 shadow-sm cursor-pointer"
+                >
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                </a>
+              </Magnetic>
             </div>
           </div>
 

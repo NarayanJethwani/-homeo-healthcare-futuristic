@@ -62,7 +62,9 @@ async function getWordPressPosts(): Promise<Article[]> {
     const mapped: Article[] = allPosts.map((post: any) => {
       // Clean up literal \n strings from content, excerpt, and title if present
       if (post.content?.rendered) {
-        post.content.rendered = post.content.rendered.replace(/\\n/g, "");
+        post.content.rendered = post.content.rendered
+          .replace(/<style[^>]*>([\s\S]*?)<\/style>/gi, "")
+          .replace(/\\n/g, "");
       }
       if (post.excerpt?.rendered) {
         post.excerpt.rendered = decodeHtmlEntities(post.excerpt.rendered.replace(/\\n/g, ""));

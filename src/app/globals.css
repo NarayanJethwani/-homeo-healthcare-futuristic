@@ -1146,4 +1146,63 @@ html.lenis, html.lenis body {
   border-color: rgba(255, 255, 255, 0.06) !important;
 }
 
+/* Custom WordPress Blog Article Elements overrides for Readability Themes */
+.wp-insight-block, .wp-takeaways-block, .wp-bento-card, .wp-risk-module, .wp-table-container {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Light Theme overrides (default in reader modal) */
+.wp-content .wp-insight-block,
+.wp-content .wp-takeaways-block,
+.wp-content .wp-bento-card,
+.wp-content .wp-risk-module,
+.wp-content .wp-table-container {
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  color: #1a2421 !important;
+}
+.wp-content .wp-insight-block *,
+.wp-content .wp-takeaways-block *,
+.wp-content .wp-bento-card *,
+.wp-content .wp-risk-module *,
+.wp-content .wp-table-container * {
+  color: inherit !important;
+}
+
+/* Dark Theme overrides */
+.readability-theme-dark .wp-insight-block,
+.readability-theme-dark .wp-takeaways-block,
+.readability-theme-dark .wp-bento-card,
+.readability-theme-dark .wp-risk-module,
+.readability-theme-dark .wp-table-container {
+  background-color: #161D20 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #ECEFF0 !important;
+}
+.readability-theme-dark .wp-insight-block *,
+.readability-theme-dark .wp-takeaways-block *,
+.readability-theme-dark .wp-bento-card *,
+.readability-theme-dark .wp-risk-module *,
+.readability-theme-dark .wp-table-container * {
+  color: inherit !important;
+}
+
+/* Sepia Theme overrides */
+.readability-theme-sepia .wp-insight-block,
+.readability-theme-sepia .wp-takeaways-block,
+.readability-theme-sepia .wp-bento-card,
+.readability-theme-sepia .wp-risk-module,
+.readability-theme-sepia .wp-table-container {
+  background-color: rgba(235, 220, 178, 0.5) !important;
+  border-color: rgba(43, 29, 14, 0.1) !important;
+  color: #4F3F2F !important;
+}
+.readability-theme-sepia .wp-insight-block *,
+.readability-theme-sepia .wp-takeaways-block *,
+.readability-theme-sepia .wp-bento-card *,
+.readability-theme-sepia .wp-risk-module *,
+.readability-theme-sepia .wp-table-container * {
+  color: inherit !important;
+}
+
 
