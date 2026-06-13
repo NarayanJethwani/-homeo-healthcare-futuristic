@@ -1,12 +1,19 @@
-"use client";
-
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import Hero from "@/components/Hero";
 import Conditions from "@/components/Conditions";
 import TheExperience from "@/components/TheExperience";
 import DoctorProfile from "@/components/DoctorProfile";
 import BookingSection from "@/components/BookingSection";
 
-export default function Home() {
+export default async function Home() {
+  const headersList = await headers();
+  const host = headersList.get("host") || "";
+  
+  if (host.includes("portal.homeo.healthcare")) {
+    redirect("/admin");
+  }
+
   return (
     <>
       {/* Section 1: Hero */}
