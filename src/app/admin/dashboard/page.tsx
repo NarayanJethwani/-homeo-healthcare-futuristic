@@ -3676,10 +3676,10 @@ export default function AdminDashboard() {
     billingCycle: "Monthly",
     concessionType: "None",
     durationText: "1-Month Consultation",
-    basePrice: 4200,
+    basePrice: 4800,
     discountOverride: 0,
-    finalPrice: 3780,
-    receivedAmount: 3780,
+    finalPrice: 4320,
+    receivedAmount: 4320,
     remainingBalance: 0
   });
   const [isCreatingCase, setIsCreatingCase] = useState(false);
@@ -3788,8 +3788,8 @@ export default function AdminDashboard() {
       {
         description: `General Consultation & Treatment Plan (${patient.durationText || "1-Month"})`,
         qty: 1,
-        unitPrice: patient.finalPrice || 4200,
-        amount: patient.finalPrice || 4200
+        unitPrice: patient.finalPrice || 4800,
+        amount: patient.finalPrice || 4800
       }
     ]);
     setInvoiceDiscount(0);
@@ -4117,21 +4117,21 @@ Homeo Healthcare`;
   };
 
   const careLevelsDetails = {
-    mild: { title: "Acute & Wellness Care", weeklyPrice: 1200, monthlyPrice: 4200 },
-    moderate: { title: "Standard Chronic Care", weeklyPrice: 2400, monthlyPrice: 9000 },
-    focused: { title: "Deep Systemic Care", weeklyPrice: 4200, monthlyPrice: 15000 },
-    acute_critical: { title: "Acute Critical Care", weeklyPrice: 4800, monthlyPrice: 16800 },
-    organ: { title: "Advanced Pathological Care", weeklyPrice: 6000, monthlyPrice: 22000 },
-    comprehensive: { title: "Multisystem Integrative Care", weeklyPrice: 8400, monthlyPrice: 30000 },
+    mild: { title: "Acute & Wellness Care", weeklyPrice: 1200, monthlyPrice: 4800 },
+    moderate: { title: "Standard Chronic Care", weeklyPrice: 2400, monthlyPrice: 9600 },
+    focused: { title: "Deep Systemic Care", weeklyPrice: 4200, monthlyPrice: 16800 },
+    acute_critical: { title: "Acute Critical Care", weeklyPrice: 5000, monthlyPrice: 20000 },
+    organ: { title: "Advanced Pathological Care", weeklyPrice: 6000, monthlyPrice: 24000 },
+    comprehensive: { title: "Multisystem Integrative Care", weeklyPrice: 8400, monthlyPrice: 33600 },
   };
 
   const surchargesLookup = {
-    mild: { unitWeekly: 360, unitMonthly: 1200 },
-    moderate: { unitWeekly: 600, unitMonthly: 1800 },
-    focused: { unitWeekly: 1000, unitMonthly: 3000 },
-    acute_critical: { unitWeekly: 1200, unitMonthly: 3600 },
-    organ: { unitWeekly: 1500, unitMonthly: 4200 },
-    comprehensive: { unitWeekly: 1800, unitMonthly: 5400 }
+    mild: { unitWeekly: 300, unitMonthly: 1200 },
+    moderate: { unitWeekly: 450, unitMonthly: 1800 },
+    focused: { unitWeekly: 750, unitMonthly: 3000 },
+    acute_critical: { unitWeekly: 1000, unitMonthly: 4000 },
+    organ: { unitWeekly: 1050, unitMonthly: 4200 },
+    comprehensive: { unitWeekly: 1350, unitMonthly: 5400 }
   };
 
   const getCareLevelKey = (level: string) => {
@@ -4478,10 +4478,10 @@ Homeo Healthcare`;
           billingCycle: "Monthly",
           concessionType: "None",
           durationText: "1-Month Consultation",
-          basePrice: 4200,
+          basePrice: 4800,
           discountOverride: 0,
-          finalPrice: 3780,
-          receivedAmount: 3780,
+          finalPrice: 4320,
+          receivedAmount: 4320,
           remainingBalance: 0
         });
       } else {
@@ -9497,6 +9497,7 @@ ${err.message || err}`);
                           </h3>
                           <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
                             Paste raw laboratory results text on the left or upload report files to execute structured clinical analysis. Homeopathic affinity coordinates will map here in real-time.
+                          </p>
                         </div>
                       </div>
                     ) : (
@@ -24826,12 +24827,12 @@ Exported on: ${new Date().toLocaleDateString()}
                           onChange={(e) => handleCareLevelChange(e.target.value)}
                           className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-semibold text-[#1A2421]"
                         >
-                          <option value="🌱 Acute & Wellness Care">{getOptionLabel("🌱 Acute & Wellness Care", 4200)}</option>
-                          <option value="⚡ Standard Chronic Care">{getOptionLabel("⚡ Standard Chronic Care", 9000)}</option>
-                          <option value="🎯 Deep Systemic Care">{getOptionLabel("🎯 Deep Systemic Care", 15000)}</option>
-                          <option value="🚨 Acute Critical Care">{getOptionLabel("🚨 Acute Critical Care", 16800)}</option>
-                          <option value="🫁 Advanced Pathological Care">{getOptionLabel("🫁 Advanced Pathological Care", 22000)}</option>
-                          <option value="🔮 Multisystem Integrative Care">{getOptionLabel("🔮 Multisystem Integrative Care", 30000)}</option>
+                          <option value="🌱 Acute & Wellness Care">{getOptionLabel("🌱 Acute & Wellness Care", 4800)}</option>
+                          <option value="⚡ Standard Chronic Care">{getOptionLabel("⚡ Standard Chronic Care", 9600)}</option>
+                          <option value="🎯 Deep Systemic Care">{getOptionLabel("🎯 Deep Systemic Care", 16800)}</option>
+                          <option value="🚨 Acute Critical Care">{getOptionLabel("🚨 Acute Critical Care", 20000)}</option>
+                          <option value="🫁 Advanced Pathological Care">{getOptionLabel("🫁 Advanced Pathological Care", 24000)}</option>
+                          <option value="🔮 Multisystem Integrative Care">{getOptionLabel("🔮 Multisystem Integrative Care", 33600)}</option>
                         </select>
                       </div>
 

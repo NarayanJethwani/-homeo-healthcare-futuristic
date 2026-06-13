@@ -1477,21 +1477,21 @@ function MockSheetContent() {
 
   // 3. Treatment planner calculations and prices
   const careLevelsDetails = {
-    mild: { title: "Acute & Wellness Care", weeklyPrice: 1200, monthlyPrice: 4200 },
-    moderate: { title: "Standard Chronic Care", weeklyPrice: 2400, monthlyPrice: 9000 },
-    focused: { title: "Deep Systemic Care", weeklyPrice: 4200, monthlyPrice: 15000 },
-    acute_critical: { title: "Acute Critical Care", weeklyPrice: 4800, monthlyPrice: 16800 },
-    organ: { title: "Advanced Pathological Care", weeklyPrice: 6000, monthlyPrice: 22000 },
-    comprehensive: { title: "Multisystem Integrative Care", weeklyPrice: 8400, monthlyPrice: 30000 },
+    mild: { title: "Acute & Wellness Care", weeklyPrice: 1200, monthlyPrice: 4800 },
+    moderate: { title: "Standard Chronic Care", weeklyPrice: 2400, monthlyPrice: 9600 },
+    focused: { title: "Deep Systemic Care", weeklyPrice: 4200, monthlyPrice: 16800 },
+    acute_critical: { title: "Acute Critical Care", weeklyPrice: 5000, monthlyPrice: 20000 },
+    organ: { title: "Advanced Pathological Care", weeklyPrice: 6000, monthlyPrice: 24000 },
+    comprehensive: { title: "Multisystem Integrative Care", weeklyPrice: 8400, monthlyPrice: 33600 },
   };
 
   const surchargesLookup = {
-    mild: { unitWeekly: 360, unitMonthly: 1200 },
-    moderate: { unitWeekly: 600, unitMonthly: 1800 },
-    focused: { unitWeekly: 1000, unitMonthly: 3000 },
-    acute_critical: { unitWeekly: 1200, unitMonthly: 3600 },
-    organ: { unitWeekly: 1500, unitMonthly: 4200 },
-    comprehensive: { unitWeekly: 1800, unitMonthly: 5400 }
+    mild: { unitWeekly: 300, unitMonthly: 1200 },
+    moderate: { unitWeekly: 450, unitMonthly: 1800 },
+    focused: { unitWeekly: 750, unitMonthly: 3000 },
+    acute_critical: { unitWeekly: 1000, unitMonthly: 4000 },
+    organ: { unitWeekly: 1050, unitMonthly: 4200 },
+    comprehensive: { unitWeekly: 1350, unitMonthly: 5400 }
   };
 
   const calculatePricing = (
