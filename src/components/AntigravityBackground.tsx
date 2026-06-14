@@ -713,7 +713,7 @@ export default function AntigravityBackground() {
       (raycastPlane.material as THREE.Material).dispose();
       renderer.dispose();
     };
-  }, []);
+  }, [isMobile]);
 
   if (isMobile) {
     return null;
