@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Play, Pause, Heart, Volume2, VolumeX, AlertTriangle, Activity, Sliders, Layout } from "lucide-react";
+import { Play, Pause, Heart, Volume2, VolumeX, AlertTriangle, Activity, Sliders, Layout, ChevronUp, Check, BookOpen } from "lucide-react";
 
 // Standard clinical EKG lead configurations with relative wave amplitudes
 interface LeadConfig {
@@ -76,6 +76,73 @@ const THEMES: { [key: string]: ThemeConfig } = {
   }
 };
 
+interface ArrhythmiaInfo {
+  name: string;
+  criteria: string;
+  causes: string;
+  action: string;
+  defaultBpm: number;
+}
+
+const ARRHYTHMIAS: { [key: string]: ArrhythmiaInfo } = {
+  normal: {
+    name: "Normal Sinus Rhythm (NSR)",
+    criteria: "Regular rhythm, HR 60-100 BPM. Normal P-QRS-T complexes. Constant PR interval.",
+    causes: "Normal pacemaker activity originating from the Sinoatrial (SA) node.",
+    action: "Normal clinical state. Standard vital sign monitoring.",
+    defaultBpm: 72
+  },
+  afib: {
+    name: "Atrial Fibrillation (A-Fib)",
+    criteria: "Irregularly irregular R-R intervals. Absence of P-waves (chaotic baseline f-waves).",
+    causes: "Multiple micro-reentrant electrical loops in the atria. Common in heart disease/hypertension.",
+    action: "Rate control (beta-blockers), rhythm control (cardioversion), and anticoagulation therapy.",
+    defaultBpm: 110
+  },
+  stemi: {
+    name: "ST-Elevation Infarction (STEMI)",
+    criteria: "Elevation of the ST-segment above the baseline in localized chest/limb leads.",
+    causes: "Acute, complete occlusion of a coronary artery leading to heart muscle infarction.",
+    action: "Medical emergency! Call catheterization lab immediately for coronary intervention (PCI).",
+    defaultBpm: 85
+  },
+  pvc: {
+    name: "Premature Ectopic Beats (PVC)",
+    criteria: "Occasional wide, distorted QRS complexes firing early, followed by compensatory pause.",
+    causes: "Ectopic ventricular focus. Can be triggered by hypoxia, stress, caffeine, or ischemia.",
+    action: "Monitor frequency. Correct electrolyte imbalances, treat ischemia, or apply beta-blockers.",
+    defaultBpm: 75
+  },
+  block1: {
+    name: "First-Degree AV Block",
+    criteria: "Regular sinus rhythm. Prolonged, constant PR interval (>0.20 seconds / >32px on grid).",
+    causes: "Delayed electrical conduction through the Atrioventricular (AV) node.",
+    action: "Usually benign and asymptomatic. Monitor parameters. Review AV-blocking medications.",
+    defaultBpm: 60
+  },
+  block3: {
+    name: "Third-Degree (Complete) Block",
+    criteria: "Total AV dissociation. Atrial P-waves and escape QRS complexes fire independently.",
+    causes: "Complete block of conduction at the AV junction. Severe ischemia or nodal fibrosis.",
+    action: "Urgent emergency! Dual-chamber pacemaker placement. Temporary pacing or atropine support.",
+    defaultBpm: 35
+  },
+  vtach: {
+    name: "Ventricular Tachycardia (V-Tach)",
+    criteria: "Rapid HR (120-220 BPM) with consecutive wide, monomorphic QRS complexes. No P-waves.",
+    causes: "Ventricular re-entry circuit. Life-threatening rhythm; high risk of degeneration to V-Fib.",
+    action: "Pulse present: Amiodarone / cardioversion. Pulseless: Immediate defibrillation and CPR.",
+    defaultBpm: 150
+  },
+  vfib: {
+    name: "Ventricular Fibrillation (V-Fib)",
+    criteria: "Chaotic, irregular trembling baseline waves. No recognizable QRS complexes (cardiac arrest).",
+    causes: "Disorganized ventricular electrical quivering. Zero cardiac output.",
+    action: "Lethal! Call emergency code. Start immediate high-quality CPR and defibrillation.",
+    defaultBpm: 120
+  }
+};
+
 export default function EcgGraph() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
@@ -88,11 +155,13 @@ export default function EcgGraph() {
   const [selectedRhythmLead, setSelectedRhythmLead] = useState<string>("II");
   
   const [flatline, setFlatline] = useState<boolean>(false);
+  const [rhythmMode, setRhythmMode] = useState<string>("normal");
   const [audioEnabled, setAudioEnabled] = useState<boolean>(false);
   const [noiseEnabled, setNoiseEnabled] = useState<boolean>(true);
   const [wanderEnabled, setWanderEnabled] = useState<boolean>(true);
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [heartFlash, setHeartFlash] = useState<boolean>(false);
+  const [controlsVisible, setControlsVisible] = useState<boolean>(true);
   const [isDark, setIsDark] = useState<boolean>(false);
 
   // Animation Refs
@@ -101,6 +170,16 @@ export default function EcgGraph() {
   const prevSweepXRef = useRef<number>(0);
   const yHistoryRef = useRef<{ [leadId: string]: number[] }>({});
   
+  // PVC Arrhythmia refs
+  const beatCountRef = useRef<number>(0);
+  const isPvcRef = useRef<boolean>(false);
+  const currentBeatPeriodRef = useRef<number>(60 / bpm);
+
+  // 3rd Degree Block Dissociation refs
+  const atrialPhaseRef = useRef<number>(0);
+  const ventPhaseRef = useRef<number>(0);
+  const lastVentPhaseRef = useRef<number>(0);
+
   // Audio Refs
   const audioContextRef = useRef<AudioContext | null>(null);
   const flatlineOscRef = useRef<OscillatorNode | null>(null);
@@ -121,6 +200,11 @@ export default function EcgGraph() {
     });
     return () => observer.disconnect();
   }, []);
+
+  // Update current beat period on BPM adjustments
+  useEffect(() => {
+    currentBeatPeriodRef.current = 60 / bpm;
+  }, [bpm]);
 
   // Heartbeat beep synth using Web Audio API
   const playBeep = (frequency = 480, duration = 0.07) => {
@@ -152,9 +236,10 @@ export default function EcgGraph() {
     }
   };
 
-  // Continuous flatline alarm synth
+  // Continuous flatline / V-Fib alarm synth
   useEffect(() => {
-    if (flatline && audioEnabled) {
+    const alarmActive = flatline || rhythmMode === "vfib";
+    if (alarmActive && audioEnabled) {
       try {
         if (!audioContextRef.current) {
           audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -164,22 +249,24 @@ export default function EcgGraph() {
           ctx.resume();
         }
         
-        const osc = ctx.createOscillator();
-        const gainNode = ctx.createGain();
-        
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(450, ctx.currentTime);
-        
-        // Continuous, irritating steady tone typical of EKG flatline alarm
-        gainNode.gain.setValueAtTime(0.035, ctx.currentTime);
-        
-        osc.connect(gainNode);
-        gainNode.connect(ctx.destination);
-        
-        osc.start();
-        
-        flatlineOscRef.current = osc;
-        flatlineGainRef.current = gainNode;
+        if (!flatlineOscRef.current) {
+          const osc = ctx.createOscillator();
+          const gainNode = ctx.createGain();
+          
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(450, ctx.currentTime);
+          
+          // Continuous warning tone typical of ICU monitors
+          gainNode.gain.setValueAtTime(0.035, ctx.currentTime);
+          
+          osc.connect(gainNode);
+          gainNode.connect(ctx.destination);
+          
+          osc.start();
+          
+          flatlineOscRef.current = osc;
+          flatlineGainRef.current = gainNode;
+        }
       } catch (e) {
         console.error("Flatline audio alarm failed:", e);
       }
@@ -206,7 +293,7 @@ export default function EcgGraph() {
         } catch (e) {}
       }
     };
-  }, [flatline, audioEnabled]);
+  }, [flatline, rhythmMode, audioEnabled]);
 
   // Determine active leads based on current layout selector
   const getActiveLeads = (currentLayout: string): string[] => {
@@ -257,52 +344,94 @@ export default function EcgGraph() {
     }
   };
 
-  // Generate EKG value for a specific lead config and phase
-  const getLeadEcgValue = (leadId: string, phase: number): number => {
+  // 1. P Wave generator segment
+  const getPWave = (leadId: string, phase: number): number => {
     const config = LEAD_CONFIGS[leadId] || LEAD_CONFIGS.II;
-    
-    // Wave segments within the 0.0 -> 1.0 heartbeat cycle
-    if (phase < 0.1) return 0; // baseline
-    
-    // 1. P Wave (atria depolarization)
-    if (phase < 0.18) {
+    if (phase >= 0.1 && phase < 0.18) {
       const pPhase = (phase - 0.1) / 0.08;
       return Math.sin(pPhase * Math.PI) * config.p;
     }
-    if (phase < 0.22) return 0; // PR segment
+    return 0;
+  };
+
+  // 2. QRS Complex and T Wave generator segment
+  const getQrsTWave = (leadId: string, phase: number, stElevation = 0): number => {
+    const config = LEAD_CONFIGS[leadId] || LEAD_CONFIGS.II;
     
-    // 2. Q Wave (initial septal dip)
-    if (phase < 0.24) {
+    // Q Wave (initial dip)
+    if (phase >= 0.22 && phase < 0.24) {
       const qPhase = (phase - 0.22) / 0.02;
       return qPhase * config.q;
     }
     
-    // 3. R Wave (primary ventricular peak)
-    if (phase < 0.27) {
+    // R Wave (primary peak)
+    if (phase >= 0.24 && phase < 0.27) {
       const rPhase = (phase - 0.24) / 0.03;
       return config.q + rPhase * (config.r - config.q);
     }
     
-    // 4. S Wave (ventricular plunge)
-    if (phase < 0.30) {
+    // S Wave (plunge dip)
+    if (phase >= 0.27 && phase < 0.30) {
       const sPhase = (phase - 0.27) / 0.03;
       return config.r - sPhase * (config.r - config.s);
     }
     
-    // 5. Ventricular return to baseline
-    if (phase < 0.33) {
+    // Return to baseline (or elevated STEMI level)
+    if (phase >= 0.30 && phase < 0.33) {
       const retPhase = (phase - 0.30) / 0.03;
-      return config.s + retPhase * (0 - config.s);
+      return config.s + retPhase * (stElevation - config.s);
     }
-    if (phase < 0.42) return 0; // ST segment
     
-    // 6. T Wave (ventricular repolarization)
-    if (phase < 0.58) {
+    // ST Segment (elevation flat block)
+    if (phase >= 0.33 && phase < 0.42) {
+      return stElevation;
+    }
+    
+    // T Wave (ventricular repolarization dome)
+    if (phase >= 0.42 && phase < 0.58) {
       const tPhase = (phase - 0.42) / 0.16;
-      return Math.sin(tPhase * Math.PI) * config.t;
+      return stElevation + Math.sin(tPhase * Math.PI) * config.t;
     }
     
-    return 0; // resting diastole baseline
+    return 0;
+  };
+
+  // 3. Wide Bizarre PVC wave segment
+  const getPvcWave = (leadId: string, phase: number): number => {
+    const config = LEAD_CONFIGS[leadId] || LEAD_CONFIGS.II;
+    const ampMultiplier = -1.35 * Math.abs(config.r); // widened and inverted
+    
+    // Wide ectopic QRS complex
+    if (phase >= 0.15 && phase < 0.35) {
+      const qrsPhase = (phase - 0.15) / 0.20;
+      return Math.sin(qrsPhase * Math.PI) * ampMultiplier;
+    }
+    // Opposite direction T-wave
+    if (phase >= 0.35 && phase < 0.60) {
+      const tPhase = (phase - 0.35) / 0.25;
+      return Math.sin(tPhase * Math.PI) * 0.38 * Math.abs(config.r);
+    }
+    return 0;
+  };
+
+  // 4. Ventricular Tachycardia continuous wide QRS waves
+  const getVTachWave = (leadId: string, phase: number): number => {
+    const config = LEAD_CONFIGS[leadId] || LEAD_CONFIGS.II;
+    const rVal = Math.abs(config.r);
+    // Mimics continuous monomorphic sine sawtooth loops
+    return Math.sin(phase * 2 * Math.PI) * 0.85 * rVal;
+  };
+
+  // 5. Ventricular Fibrillation chaotic micro-vibrations
+  const getVFibWave = (leadId: string, time: number): number => {
+    const config = LEAD_CONFIGS[leadId] || LEAD_CONFIGS.II;
+    const rVal = Math.abs(config.r);
+    return (
+      Math.sin(time / 1000 * 2 * Math.PI * 4.3) * 0.26 * rVal +
+      Math.sin(time / 1000 * 2 * Math.PI * 8.9) * 0.16 * rVal +
+      Math.sin(time / 1000 * 2 * Math.PI * 13.5) * 0.11 * rVal +
+      (Math.random() - 0.5) * 0.25 * rVal
+    );
   };
 
   // Determine dynamic container height for different EKG configurations
@@ -356,7 +485,6 @@ export default function EcgGraph() {
     const theme = THEMES[selectedTheme] || THEMES.teal;
     const gridSquare = 6.2; // ~6px represents 1mm grid square
     const speedInPixelsPerSec = paperSpeed * gridSquare;
-    const beatPeriod = 60 / bpm;
 
     const animate = (time: number) => {
       if (!ctx || !canvas) return;
@@ -433,22 +561,73 @@ export default function EcgGraph() {
 
       // 2. Advance Heartbeat Phase and Sweep Line
       if (isPlaying) {
-        // Continuous, phase accumulation ensures smooth BPM changes
-        beatPhaseRef.current = (beatPhaseRef.current + dt / beatPeriod) % 1.0;
-        
-        const currentPhase = beatPhaseRef.current;
-        const prevPhase = lastPhaseRef.current;
-        
-        // Trigger heartbeat beep precisely at R-wave peak crossing (phase 0.25)
-        if (!flatline && (
-          (prevPhase < 0.255 && currentPhase >= 0.255) || 
-          (prevPhase > currentPhase && currentPhase >= 0.255)
-        )) {
-          setHeartFlash(true);
-          setTimeout(() => setHeartFlash(false), 120);
-          playBeep(450, 0.085);
+        if (rhythmMode === "block3") {
+          // Dissociated complete heart block rhythm math
+          const atrialPeriod = 60 / 85; // SA fires at 85 BPM
+          const ventPeriod = 60 / 38;   // Junctional escape fires at 38 BPM
+          
+          atrialPhaseRef.current = (atrialPhaseRef.current + dt / atrialPeriod) % 1.0;
+          ventPhaseRef.current = (ventPhaseRef.current + dt / ventPeriod) % 1.0;
+          
+          const currentVentPhase = ventPhaseRef.current;
+          const prevVentPhase = lastVentPhaseRef.current;
+          
+          // Beep synced with ventricular escape pulse
+          if (!flatline && (
+            (prevVentPhase < 0.255 && currentVentPhase >= 0.255) || 
+            (prevVentPhase > currentVentPhase && currentVentPhase >= 0.255)
+          )) {
+            setHeartFlash(true);
+            setTimeout(() => setHeartFlash(false), 120);
+            playBeep(450, 0.085);
+          }
+          lastVentPhaseRef.current = currentVentPhase;
+        } else if (rhythmMode === "vfib") {
+          // V-Fib quivers continuously without standard cardiac cycles (no beeps)
+        } else {
+          // Normal, AFib, Block1, PVC, STEMI, or VTach rhythms
+          const oldPhase = beatPhaseRef.current;
+          const newPhase = (oldPhase + dt / currentBeatPeriodRef.current) % 1.0;
+
+          // Phase boundary wrap-around check for EKG cycle progression
+          if (newPhase < oldPhase) {
+            if (rhythmMode === "pvc") {
+              beatCountRef.current = (beatCountRef.current + 1) % 4;
+              const nextIsPvc = (beatCountRef.current === 0);
+              isPvcRef.current = nextIsPvc;
+
+              // Compensatory pause logic following premature ectopic beats
+              if (nextIsPvc) {
+                currentBeatPeriodRef.current = (60 / bpm) * 0.55; 
+              } else if (isPvcRef.current) {
+                currentBeatPeriodRef.current = (60 / bpm) * 1.45; 
+              } else {
+                currentBeatPeriodRef.current = (60 / bpm);
+              }
+            } else if (rhythmMode === "afib") {
+              // Irregularly irregular pacing intervals
+              currentBeatPeriodRef.current = (60 / bpm) * (0.65 + Math.random() * 0.7);
+            } else {
+              currentBeatPeriodRef.current = 60 / bpm;
+            }
+          }
+
+          beatPhaseRef.current = newPhase;
+
+          const currentPhase = beatPhaseRef.current;
+          const prevPhase = lastPhaseRef.current;
+
+          // Trigger beep precisely at QRS peak crossing (phase 0.255)
+          if (!flatline && (
+            (prevPhase < 0.255 && currentPhase >= 0.255) || 
+            (prevPhase > currentPhase && currentPhase >= 0.255)
+          )) {
+            setHeartFlash(true);
+            setTimeout(() => setHeartFlash(false), 120);
+            playBeep(450, 0.085);
+          }
+          lastPhaseRef.current = currentPhase;
         }
-        lastPhaseRef.current = currentPhase;
       }
 
       // Compute sweep width size for active layout configuration
@@ -480,10 +659,38 @@ export default function EcgGraph() {
           const noise = noiseEnabled ? (Math.random() - 0.5) * 0.035 : 0;
           const wander = wanderEnabled ? Math.sin(time / 1000 * 2 * Math.PI * 0.12) * 0.08 : 0;
           
-          const rawSignal = flatline ? 0 : getLeadEcgValue(leadId, beatPhaseRef.current);
+          let rawSignal = 0;
+          if (flatline) {
+            rawSignal = 0;
+          } else if (rhythmMode === "vfib") {
+            rawSignal = getVFibWave(leadId, time);
+          } else if (rhythmMode === "vtach") {
+            rawSignal = getVTachWave(leadId, beatPhaseRef.current);
+          } else if (rhythmMode === "block3") {
+            // Composite signal of SA P-waves + ventricular escape beats
+            rawSignal = getPWave(leadId, atrialPhaseRef.current) + getQrsTWave(leadId, ventPhaseRef.current);
+          } else if (rhythmMode === "afib") {
+            // Atrial fibrillatory ripple (absence of P-waves)
+            const fWave = Math.sin(time / 1000 * 2 * Math.PI * (14 + Math.sin(time / 400) * 3)) * 0.06;
+            rawSignal = getQrsTWave(leadId, beatPhaseRef.current) + fWave;
+          } else if (rhythmMode === "pvc") {
+            rawSignal = isPvcRef.current ? getPvcWave(leadId, beatPhaseRef.current) : (getPWave(leadId, beatPhaseRef.current) + getQrsTWave(leadId, beatPhaseRef.current));
+          } else if (rhythmMode === "block1") {
+            // Delayed AV conduction: shift QRS phase by 0.06
+            const delayedQrsPhase = (beatPhaseRef.current - 0.06 + 1.0) % 1.0;
+            rawSignal = getPWave(leadId, beatPhaseRef.current) + getQrsTWave(leadId, delayedQrsPhase);
+          } else if (rhythmMode === "stemi") {
+            // ST segment elevation (+0.32) in clinical infarct leads
+            const isAffected = ["II", "aVF", "V2", "V3", "V4", "V5"].includes(leadId);
+            rawSignal = getPWave(leadId, beatPhaseRef.current) + getQrsTWave(leadId, beatPhaseRef.current, isAffected ? 0.32 : 0);
+          } else {
+            // Normal Sinus Rhythm (NSR)
+            rawSignal = getPWave(leadId, beatPhaseRef.current) + getQrsTWave(leadId, beatPhaseRef.current);
+          }
+
           const totalSignal = rawSignal + noise + wander;
 
-          // Fill interpolation between frames (prevents gap artifacts under low framerates)
+          // Fill interpolation between frames (prevents gaps under frame drops)
           const px = Math.floor(prevSweepX);
           const cx = Math.floor(sweepX);
 
@@ -585,7 +792,7 @@ export default function EcgGraph() {
       window.removeEventListener("resize", handleResize);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [bpm, layout, paperSpeed, gain, selectedTheme, selectedRhythmLead, flatline, noiseEnabled, wanderEnabled, isPlaying, audioEnabled]);
+  }, [bpm, layout, paperSpeed, gain, selectedTheme, selectedRhythmLead, flatline, rhythmMode, noiseEnabled, wanderEnabled, isPlaying, audioEnabled]);
 
   return (
     <div className="w-full flex flex-col rounded-2xl border border-mint/20 bg-pearl dark:bg-[#070b13] overflow-hidden shadow-2xl backdrop-blur-md">
@@ -601,25 +808,27 @@ export default function EcgGraph() {
         <div className="absolute inset-0 z-10 pointer-events-none flex justify-between items-start p-4 text-[10px] font-mono tracking-widest font-bold text-mint-dark/70 dark:text-mint/60 uppercase">
           <div className="flex flex-col gap-1 bg-pearl/70 dark:bg-[#070b13]/70 p-2 rounded-lg border border-mint/10 backdrop-blur-sm">
             <span className="flex items-center gap-2 text-mint-dark dark:text-mint">
-              <span className={`w-2 h-2 rounded-full ${flatline ? "bg-red-500 animate-ping" : "bg-mint animate-pulse"}`} />
-              {flatline ? "EKG MONITOR: WARNING" : "EKG MONITORING ACTIVE"}
+              <span className={`w-2 h-2 rounded-full ${flatline || rhythmMode === "vfib" || rhythmMode === "vtach" ? "bg-red-500 animate-ping" : "bg-mint animate-pulse"}`} />
+              {flatline || rhythmMode === "vfib" || rhythmMode === "vtach" 
+                ? `EKG ALARM: ${flatline ? "ASYSTOLE" : rhythmMode.toUpperCase()}` 
+                : "EKG MONITORING ACTIVE"}
             </span>
             <span className="text-[8px] opacity-75">
-              LEAD FORMAT: {layout.replace("-", " ").toUpperCase()}
+              RHYTHM: {ARRHYTHMIAS[rhythmMode]?.name.split(" (")[0]}
             </span>
           </div>
           
           <div className="flex gap-4 items-center bg-pearl/70 dark:bg-[#070b13]/70 p-2 rounded-lg border border-mint/10 backdrop-blur-sm">
-            {flatline ? (
+            {flatline || rhythmMode === "vfib" ? (
               <div className="flex items-center gap-2 text-red-500 font-extrabold animate-pulse">
                 <AlertTriangle className="w-4 h-4" />
-                <span>ALARM: ASYSTOLE</span>
+                <span>ALARM: {flatline ? "ASYSTOLE" : "VENTRICULAR FIBRILLATION"}</span>
               </div>
             ) : (
               <>
                 <div className="flex flex-col items-end border-r border-mint/10 pr-4">
                   <span className="text-[7px] opacity-70">HR (BPM)</span>
-                  <span className="flex items-center gap-1 text-sm font-bold text-mint-dark dark:text-mint">
+                  <span className={`flex items-center gap-1 text-sm font-bold ${rhythmMode === "vtach" ? "text-red-500 animate-pulse" : "text-mint-dark dark:text-mint"}`}>
                     <Heart className={`w-3.5 h-3.5 fill-current transition-all duration-100 ${heartFlash ? "text-red-500 scale-125 glow-lg" : "text-mint dark:text-mint"}`} />
                     {bpm}
                   </span>
@@ -630,222 +839,339 @@ export default function EcgGraph() {
                 </div>
                 <div className="flex flex-col items-end">
                   <span className="text-[7px] opacity-70">SpO2 (%)</span>
-                  <span className="text-xs font-bold text-teal-600 dark:text-teal-400">99%</span>
+                  <span className={`text-xs font-bold ${rhythmMode === "vfib" ? "text-red-500 animate-pulse" : "text-teal-600 dark:text-teal-400"}`}>
+                    {rhythmMode === "vfib" ? "0%" : "99%"}
+                  </span>
                 </div>
               </>
             )}
           </div>
         </div>
+
+        {/* Floating Settings Trigger when panel is minimized */}
+        {!controlsVisible && (
+          <div className="absolute bottom-4 right-4 z-20 pointer-events-auto">
+            <button
+              onClick={() => setControlsVisible(true)}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-full border border-mint/35 hover:border-mint bg-pearl/90 dark:bg-[#070b13]/90 text-[10px] font-extrabold text-mint-dark dark:text-mint-light shadow-xl hover:shadow-mint/10 hover:scale-105 cursor-pointer transition-all duration-300 uppercase tracking-widest backdrop-blur-md"
+            >
+              <Sliders className="w-3.5 h-3.5 text-mint animate-pulse" />
+              Show Controls
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* Control panel workspace */}
-      <div className="w-full p-5 bg-pearl/30 dark:bg-[#0c111e]/40 flex flex-col gap-4 text-xs font-medium text-slate-700 dark:text-slate-300">
-        
-        {/* Core Quick Controls & Layouts */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-center">
+      {/* Control panel workspace (collapsible) */}
+      <div 
+        className={`w-full transition-all duration-500 ease-in-out overflow-hidden bg-pearl/30 dark:bg-[#0c111e]/40 border-slate-200 dark:border-slate-800 ${
+          controlsVisible 
+            ? "max-h-[1200px] opacity-100 p-5 border-t border-mint/10" 
+            : "max-h-0 opacity-0 p-0 border-t-0"
+        }`}
+      >
+        {/* Main Dashboard: Settings and Pathologies side-by-side */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           
-          {/* Action Row */}
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setIsPlaying(!isPlaying)}
-              className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-mint/20 hover:border-mint/50 bg-mint/5 hover:bg-mint/10 font-bold tracking-wider transition-all duration-300 cursor-pointer flex-1"
-            >
-              {isPlaying ? (
-                <>
-                  <Pause className="w-3.5 h-3.5 text-mint" />
-                  FREEZE
-                </>
-              ) : (
-                <>
-                  <Play className="w-3.5 h-3.5 text-mint" />
-                  RUN EKG
-                </>
-              )}
-            </button>
-
-            <button
-              onClick={() => setAudioEnabled(!audioEnabled)}
-              className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg border transition-all duration-300 cursor-pointer ${
-                audioEnabled 
-                  ? "bg-mint/10 border-mint text-mint-dark dark:text-mint-light" 
-                  : "bg-transparent border-slate-300 dark:border-slate-800 text-slate-500"
-              }`}
-              title="Toggle Audio Beeps"
-            >
-              {audioEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
-              <span className="text-[10px] font-bold">BEEP</span>
-            </button>
-          </div>
-
-          {/* BPM Slider */}
-          <div className="flex flex-col gap-1.5 flex-1">
-            <div className="flex justify-between items-center px-1">
-              <span className="text-[10px] font-mono tracking-wider uppercase opacity-85 flex items-center gap-1">
-                <Sliders className="w-3 h-3 text-mint" />
-                HEART RATE:
+          {/* EKG Settings Panel */}
+          <div className="lg:col-span-3 flex flex-col gap-4">
+            
+            {/* Header with Minimize Button */}
+            <div className="flex justify-between items-center pb-2 border-b border-slate-200 dark:border-slate-800">
+              <span className="text-[10px] font-extrabold font-mono tracking-widest text-mint dark:text-mint-light uppercase flex items-center gap-1.5">
+                <Sliders className="w-3.5 h-3.5" />
+                EKG Parameters
               </span>
-              <span className="font-bold text-mint-dark dark:text-mint-light font-mono text-[11px]">{bpm} BPM</span>
-            </div>
-            <input
-              type="range"
-              min="40"
-              max="180"
-              value={bpm}
-              disabled={flatline}
-              onChange={(e) => setBpm(parseInt(e.target.value))}
-              className="w-full h-1 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-mint disabled:opacity-30 disabled:cursor-not-allowed"
-            />
-          </div>
-
-          {/* Layout Selector */}
-          <div className="flex flex-col gap-1.5">
-            <span className="text-[10px] font-mono tracking-wider uppercase opacity-85 flex items-center gap-1 px-1">
-              <Layout className="w-3 h-3 text-mint" />
-              DISPLAY FORMAT:
-            </span>
-            <div className="relative">
-              <select
-                value={layout}
-                onChange={(e) => setLayout(e.target.value)}
-                className="w-full px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-800 bg-pearl dark:bg-[#070b13] text-xs font-bold outline-none cursor-pointer focus:border-mint transition-all"
-              >
-                <option value="12-grid">12-Lead EKG Report (3x4 Grid)</option>
-                <option value="12-stacked">12-Channel Stacked (Full Width)</option>
-                <option value="6-stacked">6-Channel Stacked (I, II, III, V1, V3, V5)</option>
-                <option value="3-stacked">3-Channel Stacked (I, II, III)</option>
-                <option value="single">Single Lead Rhythm Strip</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Rhythm Lead (if single active) */}
-          <div className="flex flex-col gap-1.5">
-            <span className="text-[10px] font-mono tracking-wider uppercase opacity-85 flex items-center gap-1 px-1">
-              <Activity className="w-3 h-3 text-mint" />
-              FOCUS LEAD:
-            </span>
-            <select
-              value={selectedRhythmLead}
-              disabled={layout !== "single"}
-              onChange={(e) => setSelectedRhythmLead(e.target.value)}
-              className="w-full px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-800 bg-pearl dark:bg-[#070b13] text-xs font-bold outline-none cursor-pointer focus:border-mint transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              {Object.keys(LEAD_CONFIGS).map((lead) => (
-                <option key={lead} value={lead}>
-                  Lead {lead} {lead === "II" ? "(Rhythm Reference)" : ""}
-                </option>
-              ))}
-            </select>
-          </div>
-
-        </div>
-
-        {/* Diagnostic Details & Advanced Toggles */}
-        <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-slate-200 dark:border-slate-800/80">
-          
-          {/* Diagnostic Stats */}
-          <div className="flex flex-wrap items-center gap-3">
-            
-            {/* Speed Toggle */}
-            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800/60 p-1 rounded-lg border border-slate-200 dark:border-slate-800">
-              <span className="text-[9px] font-bold px-1.5 text-slate-500 uppercase">SPEED:</span>
               <button
-                onClick={() => setPaperSpeed(25)}
-                className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer ${
-                  paperSpeed === 25 
-                    ? "bg-mint text-white" 
-                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-                }`}
+                onClick={() => setControlsVisible(false)}
+                className="flex items-center gap-1 px-2 py-1 rounded-md border border-slate-300 dark:border-slate-800 hover:bg-slate-200 dark:hover:bg-slate-800 text-[9px] font-bold text-slate-500 cursor-pointer transition-all uppercase tracking-wider"
+                title="Collapse Panel"
               >
-                25 mm/s
-              </button>
-              <button
-                onClick={() => setPaperSpeed(50)}
-                className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer ${
-                  paperSpeed === 50 
-                    ? "bg-mint text-white" 
-                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-                }`}
-              >
-                50 mm/s
+                <ChevronUp className="w-3 h-3 text-slate-400" />
+                Hide Panel
               </button>
             </div>
 
-            {/* Gain Toggle */}
-            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800/60 p-1 rounded-lg border border-slate-200 dark:border-slate-800">
-              <span className="text-[9px] font-bold px-1.5 text-slate-500 uppercase">GAIN:</span>
-              {[0.5, 1.0, 2.0].map((val) => (
+            {/* Core Controls Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              
+              {/* Play/Pause & Audio */}
+              <div className="flex flex-col gap-1.5">
+                <span className="text-[10px] font-mono tracking-wider uppercase opacity-85 px-1">EKG Power & Sound:</span>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setIsPlaying(!isPlaying)}
+                    className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-mint/20 hover:border-mint/50 bg-mint/5 hover:bg-mint/10 font-bold tracking-wider transition-all duration-300 cursor-pointer flex-1 text-xs"
+                  >
+                    {isPlaying ? (
+                      <>
+                        <Pause className="w-3.5 h-3.5 text-mint" />
+                        FREEZE
+                      </>
+                    ) : (
+                      <>
+                        <Play className="w-3.5 h-3.5 text-mint" />
+                        RUN EKG
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    onClick={() => setAudioEnabled(!audioEnabled)}
+                    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg border transition-all duration-300 cursor-pointer ${
+                      audioEnabled 
+                        ? "bg-mint/10 border-mint text-mint-dark dark:text-mint-light" 
+                        : "bg-transparent border-slate-300 dark:border-slate-800 text-slate-500"
+                    }`}
+                    title="Toggle Heartbeat audio"
+                  >
+                    {audioEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+                    <span className="text-[10px] font-bold">BEEP</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Heart Rate Slider */}
+              <div className="flex flex-col gap-1.5">
+                <div className="flex justify-between items-center px-1">
+                  <span className="text-[10px] font-mono tracking-wider uppercase opacity-85">Base Heart Rate:</span>
+                  <span className="font-bold text-mint-dark dark:text-mint-light font-mono text-[11px]">{bpm} BPM</span>
+                </div>
+                <input
+                  type="range"
+                  min="40"
+                  max="180"
+                  value={bpm}
+                  disabled={flatline || rhythmMode === "block3" || rhythmMode === "vfib" || rhythmMode === "vtach"}
+                  onChange={(e) => setBpm(parseInt(e.target.value))}
+                  className="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-mint disabled:opacity-35 disabled:cursor-not-allowed"
+                />
+              </div>
+
+              {/* Layout Selector */}
+              <div className="flex flex-col gap-1.5">
+                <span className="text-[10px] font-mono tracking-wider uppercase opacity-85 flex items-center gap-1 px-1">
+                  <Layout className="w-3 h-3 text-mint" />
+                  Display Layout:
+                </span>
+                <select
+                  value={layout}
+                  onChange={(e) => setLayout(e.target.value)}
+                  className="w-full px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-800 bg-pearl dark:bg-[#070b13] text-xs font-bold outline-none cursor-pointer focus:border-mint transition-all"
+                >
+                  <option value="12-grid">12-Lead EKG Report (3x4 Grid)</option>
+                  <option value="12-stacked">12-Channel Stacked (Full Width)</option>
+                  <option value="6-stacked">6-Channel Stacked (I, II, III, V1, V3, V5)</option>
+                  <option value="3-stacked">3-Channel Stacked (I, II, III)</option>
+                  <option value="single">Single Lead Rhythm Strip</option>
+                </select>
+              </div>
+
+              {/* Rhythm Focus lead */}
+              <div className="flex flex-col gap-1.5">
+                <span className="text-[10px] font-mono tracking-wider uppercase opacity-85 flex items-center gap-1 px-1">
+                  <Activity className="w-3 h-3 text-mint" />
+                  Rhythm Focus Lead:
+                </span>
+                <select
+                  value={selectedRhythmLead}
+                  disabled={layout !== "single"}
+                  onChange={(e) => setSelectedRhythmLead(e.target.value)}
+                  className="w-full px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-800 bg-pearl dark:bg-[#070b13] text-xs font-bold outline-none cursor-pointer focus:border-mint transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  {Object.keys(LEAD_CONFIGS).map((lead) => (
+                    <option key={lead} value={lead}>
+                      Lead {lead} {lead === "II" ? "(Rhythm Reference)" : ""}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+            </div>
+
+            {/* Diagnostic Toggles */}
+            <div className="flex flex-wrap items-center gap-3 pt-2">
+              
+              {/* Paper speed */}
+              <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800/60 p-1 rounded-lg border border-slate-200 dark:border-slate-800">
+                <span className="text-[8px] font-bold px-1.5 text-slate-500 uppercase">SPEED:</span>
                 <button
-                  key={val}
-                  onClick={() => setGain(val)}
+                  onClick={() => setPaperSpeed(25)}
                   className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer ${
-                    gain === val 
-                      ? "bg-mint text-white" 
+                    paperSpeed === 25 
+                      ? "bg-mint text-white font-extrabold shadow-sm" 
                       : "text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
                   }`}
                 >
-                  {val}x
+                  25 mm/s
                 </button>
-              ))}
+                <button
+                  onClick={() => setPaperSpeed(50)}
+                  className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer ${
+                    paperSpeed === 50 
+                      ? "bg-mint text-white font-extrabold shadow-sm" 
+                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
+                  }`}
+                >
+                  50 mm/s
+                </button>
+              </div>
+
+              {/* Signal gain */}
+              <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800/60 p-1 rounded-lg border border-slate-200 dark:border-slate-800">
+                <span className="text-[8px] font-bold px-1.5 text-slate-500 uppercase">GAIN:</span>
+                {[0.5, 1.0, 2.0].map((val) => (
+                  <button
+                    key={val}
+                    onClick={() => setGain(val)}
+                    className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer ${
+                      gain === val 
+                        ? "bg-mint text-white font-extrabold shadow-sm" 
+                        : "text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
+                    }`}
+                  >
+                    {val}x
+                  </button>
+                ))}
+              </div>
+
+              {/* Themes */}
+              <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800/60 p-1 rounded-lg border border-slate-200 dark:border-slate-800">
+                <span className="text-[8px] font-bold px-1.5 text-slate-500 uppercase">PAPER:</span>
+                {Object.keys(THEMES).map((themeName) => (
+                  <button
+                    key={themeName}
+                    onClick={() => setSelectedTheme(themeName)}
+                    className={`px-2 py-0.5 rounded text-[9px] font-bold transition-all capitalize cursor-pointer ${
+                      selectedTheme === themeName 
+                        ? "bg-mint text-white font-extrabold shadow-sm" 
+                        : "text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
+                    }`}
+                  >
+                    {themeName === "salmon" ? "Clinical Pink" : themeName}
+                  </button>
+                ))}
+              </div>
+
             </div>
 
-            {/* Color Themes */}
-            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800/60 p-1 rounded-lg border border-slate-200 dark:border-slate-800">
-              <span className="text-[9px] font-bold px-1.5 text-slate-500 uppercase">PAPER:</span>
-              {Object.keys(THEMES).map((themeName) => (
-                <button
-                  key={themeName}
-                  onClick={() => setSelectedTheme(themeName)}
-                  className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all capitalize cursor-pointer ${
-                    selectedTheme === themeName 
-                      ? "bg-mint text-white" 
-                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-                  }`}
-                >
-                  {themeName === "salmon" ? "Clinical Pink" : themeName}
-                </button>
-              ))}
+            {/* Artifact Toggles and Emergency flatline */}
+            <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-slate-200 dark:border-slate-800/80">
+              <div className="flex items-center gap-3">
+                <label className="flex items-center gap-1.5 select-none cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={noiseEnabled}
+                    onChange={(e) => setNoiseEnabled(e.target.checked)}
+                    className="rounded text-mint border-slate-300 dark:border-slate-800 focus:ring-mint w-3.5 h-3.5 cursor-pointer"
+                  />
+                  <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Muscle Noise</span>
+                </label>
+
+                <label className="flex items-center gap-1.5 select-none cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={wanderEnabled}
+                    onChange={(e) => setWanderEnabled(e.target.checked)}
+                    className="rounded text-mint border-slate-300 dark:border-slate-800 focus:ring-mint w-3.5 h-3.5 cursor-pointer"
+                  />
+                  <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Baseline Wander</span>
+                </label>
+              </div>
+
+              <button
+                onClick={() => {
+                  setFlatline(!flatline);
+                  if (!flatline) {
+                    setAudioEnabled(true);
+                  }
+                }}
+                className={`px-3 py-1.5 rounded-lg border font-bold text-[9px] tracking-wider transition-all duration-300 cursor-pointer ${
+                  flatline 
+                    ? "bg-red-500 hover:bg-red-600 text-white border-red-500 animate-pulse" 
+                    : "bg-transparent border-red-500/20 text-red-500 hover:bg-red-500/10"
+                }`}
+              >
+                EMERGENCY FLATLINE
+              </button>
             </div>
 
           </div>
 
-          {/* Realism Artifact Checkboxes & Flatline emergency */}
-          <div className="flex items-center gap-4">
+          {/* Arrhythmia Reference & Simulator Database */}
+          <div className="lg:col-span-2 flex flex-col gap-3 border-t lg:border-t-0 lg:border-l border-slate-200 dark:border-slate-800 lg:pl-6 pt-4 lg:pt-0">
             
-            {/* Artifact filters */}
-            <div className="flex items-center gap-3">
-              <label className="flex items-center gap-1.5 select-none cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={noiseEnabled}
-                  onChange={(e) => setNoiseEnabled(e.target.checked)}
-                  className="rounded text-mint border-slate-300 dark:border-slate-800 focus:ring-mint w-3.5 h-3.5 cursor-pointer"
-                />
-                <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">Muscle Noise</span>
-              </label>
-
-              <label className="flex items-center gap-1.5 select-none cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={wanderEnabled}
-                  onChange={(e) => setWanderEnabled(e.target.checked)}
-                  className="rounded text-mint border-slate-300 dark:border-slate-800 focus:ring-mint w-3.5 h-3.5 cursor-pointer"
-                />
-                <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">Baseline Wander</span>
-              </label>
+            <div className="flex items-center gap-1.5 pb-2 border-b border-slate-200 dark:border-slate-800">
+              <BookOpen className="w-4 h-4 text-mint" />
+              <span className="text-[10px] font-extrabold font-mono tracking-widest text-mint dark:text-mint-light uppercase">
+                Clinical Pathology Simulator
+              </span>
             </div>
 
-            {/* Flatline Emergency Toggle */}
-            <button
-              onClick={() => setFlatline(!flatline)}
-              className={`px-3 py-1.5 rounded-lg border font-bold text-[10px] tracking-wider transition-all duration-300 cursor-pointer ${
-                flatline 
-                  ? "bg-red-500 hover:bg-red-600 text-white border-red-500 animate-pulse" 
-                  : "bg-transparent border-red-500/20 text-red-500 hover:bg-red-500/10"
-              }`}
-            >
-              EMERGENCY FLATLINE
-            </button>
+            {/* Pathology List */}
+            <div className="grid grid-cols-2 gap-1.5">
+              {Object.keys(ARRHYTHMIAS).map((key) => {
+                const active = rhythmMode === key;
+                return (
+                  <button
+                    key={key}
+                    onClick={() => {
+                      setFlatline(false);
+                      setRhythmMode(key);
+                      setBpm(ARRHYTHMIAS[key].defaultBpm);
+                      // Auto-enable audio alarm context on critical cardiac abnormalities
+                      if (key === "vtach" || key === "vfib" || key === "block3") {
+                        setAudioEnabled(true);
+                      }
+                    }}
+                    className={`px-2 py-1.5 rounded-lg border text-[10px] font-extrabold text-left transition-all duration-200 cursor-pointer flex justify-between items-center ${
+                      active 
+                        ? "bg-mint text-white border-mint shadow-md" 
+                        : "border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300"
+                    }`}
+                  >
+                    <span>{ARRHYTHMIAS[key].name.split(" (")[0]}</span>
+                    {active && <Check className="w-3 h-3 text-white" />}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Diagnostic Clinical Card */}
+            <div className="flex-1 bg-slate-100/70 dark:bg-slate-900/60 p-3 rounded-lg border border-slate-200 dark:border-slate-800/80 flex flex-col gap-2 mt-1 min-h-[140px] justify-between">
+              <div>
+                <div className="font-extrabold text-mint-dark dark:text-mint text-[10px] uppercase tracking-widest border-b border-mint/10 pb-1 mb-2 flex justify-between items-center">
+                  <span>{ARRHYTHMIAS[rhythmMode]?.name}</span>
+                  {rhythmMode !== "normal" && (
+                    <span className="text-[7px] bg-red-500 text-white font-extrabold px-1.5 py-0.5 rounded uppercase animate-pulse">
+                      {rhythmMode === "block1" ? "MONITOR" : "CRITICAL"}
+                    </span>
+                  )}
+                </div>
+                
+                <div className="flex flex-col gap-1.5 text-[10px] leading-relaxed">
+                  <div>
+                    <strong className="text-slate-500 dark:text-slate-400">ECG Criteria:</strong>{" "}
+                    <span className="font-mono text-slate-800 dark:text-slate-200 font-medium">
+                      {ARRHYTHMIAS[rhythmMode]?.criteria}
+                    </span>
+                  </div>
+                  <div>
+                    <strong className="text-slate-500 dark:text-slate-400">Etiology:</strong>{" "}
+                    <span className="text-slate-800 dark:text-slate-200">
+                      {ARRHYTHMIAS[rhythmMode]?.causes}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-slate-200 dark:border-slate-800/50 text-[10px] leading-relaxed">
+                <strong className="text-slate-500 dark:text-slate-400">Clinical Intervention:</strong>{" "}
+                <span className="text-slate-800 dark:text-slate-200">
+                  {ARRHYTHMIAS[rhythmMode]?.action}
+                </span>
+              </div>
+            </div>
 
           </div>
 
