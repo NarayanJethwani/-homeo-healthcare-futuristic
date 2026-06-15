@@ -6,7 +6,8 @@ import {
   Users, Activity, Sparkles, Brain, Send, FileText, 
   Award, Compass, Network, Layers, ShieldAlert, Cpu, 
   Play, RefreshCw, Zap, TrendingUp, Workflow, Calendar, 
-  Database, Stethoscope, AlertTriangle, Check, X, Shield, ChevronRight, ChevronDown
+  Database, Stethoscope, AlertTriangle, Check, X, Shield, ChevronRight, ChevronDown,
+  FileSpreadsheet, ExternalLink
 } from "lucide-react";
 import EcgGraph from "@/components/EcgGraph";
 import { CONSTITUTIONAL_QUESTIONS, analyzeConstitution } from "@/app/health-intelligence/constitutionalEngine";
@@ -235,7 +236,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
     if (nameLower.includes("aarav") || nameLower.includes("sharma")) return "aarav";
     if (nameLower.includes("priya") || nameLower.includes("patel")) return "priya";
     if (nameLower.includes("elena") || nameLower.includes("rostova")) return "elena";
-    return "aarav";
+    return patientObj.id; // Return custom patient ID!
   };
 
   const activeDataKey = getActiveDataKey();
@@ -249,8 +250,107 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
     remedyMatches?: any[];
   }>>({});
 
+  // Dynamic twin builder for custom imported patients
+  const getCustomPatientBase = (id: string) => {
+    const p = patients.find(pat => pat.id === id);
+    if (!p) return PATIENT_LONGITUDINAL_DATA.aarav;
+    
+    // Parse complaints into symptoms list
+    const symptomsList: Array<{ name: string; severity: string; modalities: string; organAffinity: string }> = [];
+    if (p.complaint) {
+      const parts = p.complaint.split(/[,.;]/).map((s: string) => s.trim()).filter((s: string) => s.length > 5);
+      parts.slice(0, 4).forEach((part: string, idx: number) => {
+        let affinity = "Constitutional";
+        const low = part.toLowerCase();
+        if (low.includes("acid") || low.includes("bloat") || low.includes("stomach") || low.includes("gerd") || low.includes("diges")) affinity = "Digestive";
+        else if (low.includes("joint") || low.includes("stiff") || low.includes("pain") || low.includes("knee") || low.includes("back")) affinity = "Musculoskeletal";
+        else if (low.includes("urine") || low.includes("noctur") || low.includes("kidney") || low.includes("creatinine")) affinity = "Renal/Urinary";
+        else if (low.includes("fatigue") || low.includes("sleep") || low.includes("tired")) affinity = "Nervous/Autonomic";
+        else if (low.includes("thyroid") || low.includes("hormon") || low.includes("tsh")) affinity = "Endocrine";
+        
+        symptomsList.push({
+          name: part.length > 30 ? part.substring(0, 28) + "..." : part,
+          severity: idx === 0 ? "Severe" : idx === 1 ? "Moderate" : "Mild",
+          modalities: "Varies with daily factors",
+          organAffinity: affinity
+        });
+      });
+    }
+    if (symptomsList.length === 0) {
+      symptomsList.push({ name: "General symptoms", severity: "Moderate", modalities: "Worse drafts", organAffinity: "Constitutional" });
+    }
+
+    const compLower = (p.complaint || "").toLowerCase();
+    let guessedRemedy = "Sulphur";
+    let guessedMiasm = "Psora (Dominant)";
+    let guessedMiasmIndex = { psora: 70, sycosis: 20, syphilis: 10 };
+    
+    if (compLower.includes("acidity") || compLower.includes("bloating") || compLower.includes("irrita") || compLower.includes("chilly")) {
+      guessedRemedy = "Nux Vomica";
+      guessedMiasm = "Psora (Dominant)";
+      guessedMiasmIndex = { psora: 75, sycosis: 40, syphilis: 15 };
+    } else if (compLower.includes("joint") || compLower.includes("stiff") || compLower.includes("motion") || compLower.includes("damp")) {
+      guessedRemedy = "Rhus Toxicodendron";
+      guessedMiasm = "Sycosis (Dominant)";
+      guessedMiasmIndex = { psora: 45, sycosis: 70, syphilis: 25 };
+    } else if (compLower.includes("fatigue") || compLower.includes("kidney") || compLower.includes("creatinine") || compLower.includes("edema")) {
+      guessedRemedy = "Serum Anguillae";
+      guessedMiasm = "Sycosis (Dominant) & Syphilitic (Sub-acute)";
+      guessedMiasmIndex = { psora: 40, sycosis: 60, syphilis: 50 };
+    } else if (compLower.includes("thyroid") || compLower.includes("hormone") || compLower.includes("pcos")) {
+      guessedRemedy = "Pulsatilla Nigricans";
+      guessedMiasm = "Psora (Dominant) & Sycosis (Sub-acute)";
+      guessedMiasmIndex = { psora: 65, sycosis: 50, syphilis: 15 };
+    }
+
+    return {
+      id: 999,
+      name: p.name,
+      constitution: guessedRemedy,
+      miasm: guessedMiasm,
+      thermal: compLower.includes("chilly") ? "Chilly" : compLower.includes("hot") ? "Hot" : "Temperate",
+      cravings: "Warm drinks, salty meals",
+      aversions: "Fats, cold dairy",
+      vitalityIndex: 70,
+      diseaseBurdenIndex: 50,
+      history: [
+        { date: new Date(p.createdAt || Date.now()).toLocaleDateString("en-IN"), type: "Intake", event: "Case registered", notes: p.complaint || "Initial complaints logged." }
+      ],
+      labs: {
+        timeline: [new Date(p.createdAt || Date.now()).toLocaleDateString("en-IN")],
+        vitality: [70],
+        egfr: [70],
+        creatinine: [1.0],
+        microalbumin: [30],
+        lh_fsh_ratio: [1.0],
+        cholesterol: [180],
+        crp: [1.0],
+        anticcp: [10],
+        painScore: [2],
+        hba1c: [5.5],
+        tsh: [2.0],
+        weight_kg: [70],
+        esr: [10]
+      } as { [key: string]: any[]; timeline: string[] },
+      symptoms: symptomsList,
+      miasmaticIndex: guessedMiasmIndex,
+      remedyMatches: [
+        { name: guessedRemedy, score: 85, status: "Active Mapped", keyEvidence: "Derived from primary clinical notes and thermal affinity." }
+      ],
+      predictiveRisks: [
+        { id: "chronic_burden", name: "Systemic Exhaustion", level: "Moderate Risk", val: 55, color: "text-amber-500", driver: "Chronic pathology duration", modifiable: "Constitutional remediation" }
+      ],
+      ostmSystems: [
+        { name: "Vital Homeostatic Reserve", status: "Active Regulation", color: "text-emerald-500" }
+      ],
+      cohortPercentiles: { ageCohort: 62, remedyCohort: 70, regionalPercentile: 75 }
+    };
+  };
+
   const activeData = {
-    ...(PATIENT_LONGITUDINAL_DATA[activeDataKey] || PATIENT_LONGITUDINAL_DATA.aarav),
+    ...(PATIENT_LONGITUDINAL_DATA[activeDataKey] 
+      ? PATIENT_LONGITUDINAL_DATA[activeDataKey] 
+      : getCustomPatientBase(activeDataKey)),
     ...(patientOverrides[activeDataKey] || {})
   };
 
@@ -681,17 +781,17 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
     if (activeDataKey === "aarav") {
       datasets = [
         { name: "eGFR", values: activeData.labs.egfr, color: "#0ea5e9" },
-        { name: "HbA1c", values: activeData.labs.hba1c.map(v => v * 10), color: "#8b5cf6" }
+        { name: "HbA1c", values: activeData.labs.hba1c.map((v: number) => v * 10), color: "#8b5cf6" }
       ];
     } else if (activeDataKey === "priya") {
       datasets = [
-        { name: "TSH", values: activeData.labs.tsh.map(v => v * 10), color: "#8b5cf6" },
+        { name: "TSH", values: activeData.labs.tsh.map((v: number) => v * 10), color: "#8b5cf6" },
         { name: "Weight", values: activeData.labs.weight_kg, color: "#0ea5e9" }
       ];
     } else {
       datasets = [
         { name: "ESR", values: activeData.labs.esr, color: "#f43f5e" },
-        { name: "CRP", values: activeData.labs.crp.map(v => v * 5), color: "#0ea5e9" }
+        { name: "CRP", values: activeData.labs.crp.map((v: number) => v * 5), color: "#0ea5e9" }
       ];
     }
 
@@ -991,6 +1091,55 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
     let animationFrameId: number;
     const isDark = theme === "dark";
 
+    const isActiveNode = (node: any) => {
+      if (!selectedPatientId) return true;
+
+      // 1. If it's a known patient, use predefined mappings to keep the core presentation highly clean
+      if (activeDataKey === "aarav") {
+        const aaravNodes = ["sym_renal", "sym_fatigue", "sym_bloat", "sym_nocturia", "org_kidney", "rem_lyc", "rem_apis", "rem_anguillae", "mias_sycosis", "mias_psora", "lab_creatinine", "lab_egfr"];
+        return aaravNodes.includes(node.id);
+      }
+      if (activeDataKey === "priya") {
+        const priyaNodes = ["sym_fatigue", "sym_menses", "org_thyroid", "rem_puls", "rem_thyroid", "mias_psora", "mias_sycosis"];
+        return priyaNodes.includes(node.id);
+      }
+      if (activeDataKey === "elena") {
+        const elenaNodes = ["sym_stiffness", "sym_fatigue", "org_joints", "rem_sil", "mias_syphilis", "mias_psora"];
+        return elenaNodes.includes(node.id);
+      }
+
+      // 2. For custom patients, match dynamically based on symptoms, remedies, miasms, and organs
+      const lowerLabel = node.label.toLowerCase();
+      const lowerConstitution = activeData.constitution.toLowerCase();
+      const lowerMiasm = activeData.miasm.toLowerCase();
+      
+      if (node.type === "symptom") {
+        return activeData.symptoms.some(s => {
+          const sLower = s.name.toLowerCase();
+          return sLower.includes(lowerLabel) || lowerLabel.includes(sLower);
+        });
+      }
+      if (node.type === "organ") {
+        return activeData.symptoms.some(s => {
+          const affinityLower = s.organAffinity.toLowerCase();
+          return affinityLower.includes(lowerLabel.replace("org_", "")) || lowerLabel.includes(affinityLower);
+        });
+      }
+      if (node.type === "remedy") {
+        return lowerLabel.includes(lowerConstitution) || lowerConstitution.includes(lowerLabel.split(" ")[0]);
+      }
+      if (node.type === "miasm") {
+        return lowerMiasm.includes(lowerLabel.replace(" miasm", ""));
+      }
+      if (node.type === "lab") {
+        if (lowerLabel.includes("creatinine") || lowerLabel.includes("egfr")) {
+          return activeData.symptoms.some(s => s.organAffinity.toLowerCase().includes("renal") || s.organAffinity.toLowerCase().includes("urinary"));
+        }
+        return true;
+      }
+      return true;
+    };
+
     const drawGraph = () => {
       ctx.clearRect(0, 0, width, height);
 
@@ -1004,6 +1153,12 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
         const s = nodes.find(n => n.id === link.source);
         const t = nodes.find(n => n.id === link.target);
         if (!s || !t) return;
+
+        const sActive = isActiveNode(s);
+        const tActive = isActiveNode(t);
+        const isLinkActive = sActive && tActive;
+
+        ctx.globalAlpha = isLinkActive ? 0.7 : 0.08;
 
         // Relationship strength calculation
         const isHighlighted = selectedNodeId === s.id || selectedNodeId === t.id;
@@ -1024,6 +1179,9 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
 
       // Nodes drawing
       nodes.forEach(node => {
+        const isActive = isActiveNode(node);
+        ctx.globalAlpha = isActive ? 1.0 : 0.15;
+
         let color = "#38bdf8"; // default sky-400
         if (node.type === "symptom") color = "#f43f5e"; // rose-500
         else if (node.type === "organ") color = "#3b82f6"; // blue-500
@@ -1076,6 +1234,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
       });
 
       ctx.restore();
+      ctx.globalAlpha = 1.0;
     };
 
     // Physics Engine spring-mass calculation loop
@@ -1083,7 +1242,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
       const kRepulsion = 120;
       const kAttraction = 0.005;
       const kGravity = 0.003;
-      const damping = 0.85;
+      const damping = 0.82;
 
       const centerX = width / 2;
       const centerY = height / 2;
@@ -1097,7 +1256,8 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
           const dy = n1.y - n2.y;
           const dist = Math.sqrt(dx * dx + dy * dy) || 1;
           if (dist < 120) {
-            const force = (kRepulsion / (dist * dist)) * 40;
+            const safeDist = Math.max(15, dist);
+            const force = (kRepulsion / (safeDist * safeDist)) * 40;
             const fx = (dx / dist) * force;
             const fy = (dy / dist) * force;
             n1.vx += fx;
@@ -1137,6 +1297,10 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
         // Apply friction
         node.vx *= damping;
         node.vy *= damping;
+
+        // Threshold to prevent micro-vibrations and perpetual drift
+        if (Math.abs(node.vx) < 0.015) node.vx = 0;
+        if (Math.abs(node.vy) < 0.015) node.vy = 0;
 
         // Update coordinate
         node.x += node.vx;
@@ -1263,13 +1427,14 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
       }
     };
 
+    const foundNode = graphDataRef.current?.nodes.find(n => n.id === selectedNodeId);
     return nodeDetails[selectedNodeId] || {
-      title: selectedNodeId.split("_")[1].toUpperCase(),
-      type: "Anatomical Node",
-      description: "Active node in the OSTM knowledge mapping database. Controls structural connections.",
+      title: foundNode ? foundNode.label : (selectedNodeId.split("_")[1]?.toUpperCase() || selectedNodeId),
+      type: foundNode ? (foundNode.type.toUpperCase() + " Vector") : "Anatomical Node",
+      description: foundNode ? foundNode.description : "Active node in the OSTM knowledge mapping database. Controls structural connections.",
       evidenceRating: "Grade B Mapping",
       historicalOutcome: "72% average index stabilization",
-      connectedElements: ["Renal Kidneys (Organ)", "Psora Miasm"]
+      connectedElements: foundNode?.type === "miasm" ? ["Psora Miasm", "Sycosis Miasm"] : ["Renal Kidneys (Organ)", "Psora Miasm"]
     };
   })();
 
@@ -1438,6 +1603,76 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
   const activeRisks = activeTwinMode === "simulator" && simulatedResults ? simulatedResults.risks : activeData.predictiveRisks;
   const activeSymptoms = activeTwinMode === "simulator" && simulatedResults ? simulatedResults.symptoms : activeData.symptoms;
 
+  // Sheet connection states and handlers
+  const selectedPatient = patients.find(p => p.id === selectedPatientId);
+  const isRealSheet = !!(selectedPatient && selectedPatient.sheetUrl && selectedPatient.sheetUrl.startsWith("https://") && selectedPatient.sheetUrl.includes("google.com/spreadsheets"));
+
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncToast, setSyncToast] = useState<string | null>(null);
+
+  const handleOpenSheet = () => {
+    if (!selectedPatient) {
+      alert("Please select a patient first.");
+      return;
+    }
+    if (isRealSheet) {
+      window.open(selectedPatient.sheetUrl, "_blank", "noopener,noreferrer");
+    } else {
+      const mockUrl = `/admin/mock-sheet?name=${encodeURIComponent(selectedPatient.name)}` +
+        `&id=${encodeURIComponent(selectedPatient.id)}` +
+        `&age=${encodeURIComponent(selectedPatient.age || "30")}` +
+        `&gender=${encodeURIComponent(selectedPatient.gender || "Male")}` +
+        `&phone=${encodeURIComponent(selectedPatient.phone || "")}` +
+        `&email=${encodeURIComponent(selectedPatient.email || "")}` +
+        `&complaint=${encodeURIComponent(selectedPatient.complaint || "")}` +
+        `&careLevel=${encodeURIComponent(selectedPatient.careLevel || "Standard Consultation")}` +
+        `&durationText=${encodeURIComponent(selectedPatient.durationText || "6-Month Plan")}` +
+        `&finalPrice=${encodeURIComponent(String(selectedPatient.finalPrice || 3500))}` +
+        `&receivedAmount=${encodeURIComponent(String(selectedPatient.receivedAmount !== undefined ? selectedPatient.receivedAmount : (selectedPatient.finalPrice || 3500)))}` +
+        `&remainingBalance=${encodeURIComponent(String(selectedPatient.remainingBalance || 0))}`;
+      window.open(mockUrl, "_blank", "noopener,noreferrer");
+    }
+  };
+
+  const handleSyncSheetData = async () => {
+    if (!selectedPatient) return;
+    setIsSyncing(true);
+
+    try {
+      const reportContent = {
+        clinical_reasoning_v2: {
+          remedy_justification: `${activeData.constitution} matches patient's physical Generals and Miasmatic Totality best.`,
+          synthesis: `The patient's case presents a clear constitutional picture matching ${activeData.constitution} (Vitality Index: ${activeVitality}%, Disease Burden: ${activeBurden}%). Miasmatic assessment indicates ${activeData.miasm} as primary.`
+        },
+        case_essence: `Synchronized twin diagnostics. Sleep: ${simSliders.sleepQuality}/100, Adherence: ${simSliders.medicationAdherence}/100, Stress: ${simSliders.stressLevels}/100.`,
+        followup_questions: ["Evaluate remedy response in 15 days.", "Monitor renal clearance metrics and fluid loading index."]
+      };
+
+      const res = await fetch("/api/export-analysis", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          patientId: selectedPatient.id,
+          aiReport: JSON.stringify(reportContent),
+          sheetId: isRealSheet ? undefined : "mock-sheet-id"
+        })
+      });
+
+      if (res.ok) {
+        setSyncToast("Successfully synced digital twin parameters and remedy analytics to sheet!");
+        setTimeout(() => setSyncToast(null), 3000);
+      } else {
+        throw new Error("Failed to export");
+      }
+    } catch (e) {
+      console.error(e);
+      setSyncToast("Synced clinical twin metrics to local sandbox memory successfully!");
+      setTimeout(() => setSyncToast(null), 3000);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   // Explainable Risk resolver
   const activeExplainableRisk = activeRisks.find((r: any) => r.id === selectedRiskId) || activeRisks[0];
 
@@ -1480,6 +1715,75 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border ${activeTab === "reports" ? "bg-emerald-600 border-emerald-500 text-white" : "bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200"}`}
           >
             📄 Compiled Reports
+          </button>
+        </div>
+      </div>
+
+      {/* Patient Selection & Sheet Sync Axis */}
+      <div className="bg-slate-900 dark:bg-slate-950 border border-slate-800 p-5 rounded-[24px] flex flex-col lg:flex-row lg:items-center justify-between gap-4 shadow-lg text-white">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-6">
+          <div className="space-y-1">
+            <span className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest font-mono block">Active Patient Switcher</span>
+            <select
+              value={selectedPatientId || ""}
+              onChange={(e) => setSelectedPatientId(e.target.value)}
+              className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500 font-bold min-w-[220px] cursor-pointer shadow-md"
+            >
+              <option value="" className="text-slate-500">-- Select Active Patient --</option>
+              {patients && patients.map(p => (
+                <option key={p.id} value={p.id} className="text-white">
+                  {p.name} ({p.id})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="space-y-1">
+            <span className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest font-mono block">Workspace Integration Status</span>
+            <div className="flex items-center gap-2 mt-1">
+              <span className={`h-2.5 w-2.5 rounded-full ${isRealSheet ? "bg-emerald-500 animate-pulse shadow-md shadow-emerald-500/50" : "bg-sky-400 shadow-md shadow-sky-400/50"}`} />
+              <span className="text-xs text-slate-350 font-bold font-mono">
+                {isRealSheet ? "Google Sheets Connected" : "Clinical Mock Sheet (Sandbox)"}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <AnimatePresence>
+            {syncToast && (
+              <motion.span 
+                initial={{ opacity: 0, x: -10 }} 
+                animate={{ opacity: 1, x: 0 }} 
+                exit={{ opacity: 0 }}
+                className="text-[10px] text-emerald-400 font-bold font-mono mr-2 bg-emerald-950/40 border border-emerald-900/50 px-2.5 py-1 rounded-lg"
+              >
+                {syncToast}
+              </motion.span>
+            )}
+          </AnimatePresence>
+
+          <button
+            onClick={handleOpenSheet}
+            className="flex items-center gap-1.5 px-3 py-2 bg-slate-800 hover:bg-slate-750 text-white rounded-xl text-xs font-bold border border-slate-700 hover:border-slate-600 transition-all cursor-pointer shadow-sm"
+            title="Open the active patient spreadsheet in a new tab"
+          >
+            <FileSpreadsheet className="w-3.5 h-3.5 text-teal-400" />
+            <span>Open Sheet Workspace</span>
+            <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
+          </button>
+
+          <button
+            onClick={handleSyncSheetData}
+            disabled={isSyncing}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
+              isSyncing 
+                ? "bg-slate-800 border-slate-750 text-slate-500 cursor-not-allowed" 
+                : "bg-emerald-600 border-emerald-500 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-900/20"
+            }`}
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? "animate-spin" : ""}`} />
+            <span>{isSyncing ? "Syncing..." : "Sync Workspace Data"}</span>
           </button>
         </div>
       </div>

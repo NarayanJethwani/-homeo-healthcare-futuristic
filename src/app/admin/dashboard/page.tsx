@@ -1768,6 +1768,26 @@ export default function AdminDashboard() {
     }
   }, [selectedPatientId]);
 
+  // Load patientId and tab from URL search parameters on mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const patientParam = params.get("patientId");
+      if (patientParam) {
+        setSelectedPatientId(patientParam);
+      }
+      const tabParam = params.get("tab");
+      const validTabs = [
+        "dashboard", "intake", "patients", "diagnostics", "analyzer", 
+        "diet-lifestyle", "nexus-atlas", "learning-hub", "communication", 
+        "ai-router", "health-intelligence", "cie"
+      ];
+      if (tabParam && validTabs.includes(tabParam)) {
+        setActiveTab(tabParam as any);
+      }
+    }
+  }, [patients]);
+
   // Handle exporting parsed lab report findings to patient sheet and database
   const handleSendReportToSheet = async () => {
     if (!reportExportPatientId) {
