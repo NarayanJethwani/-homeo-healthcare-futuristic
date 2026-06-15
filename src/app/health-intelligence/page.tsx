@@ -28,12 +28,10 @@ import {
   WearableSyncData
 } from "./types";
 import { analyzeDigitalTwin, getRelatedContent, RelatedContent } from "./clinicalRulesEngine";
-import { CONSTITUTIONAL_QUESTIONS, analyzeConstitution } from "./constitutionalEngine";
 import { parseLabReport, LabAnalysisResult } from "./labOcrEngine";
 import RadarChart from "./radarChart";
 import SchemaMarkup from "./schemaMarkup";
 import HealthAssistant from "./HealthAssistant";
-import EcgGraph from "@/components/EcgGraph";
 
 const DEFAULT_TWIN: HealthDigitalTwin = {
   overallScore: 100,
@@ -84,7 +82,7 @@ const DEFAULT_TWIN: HealthDigitalTwin = {
 
 export default function HealthIntelligencePage() {
   const [digitalTwin, setDigitalTwin] = useState<HealthDigitalTwin>(DEFAULT_TWIN);
-  const [activeView, setActiveView] = useState<"dashboard" | "assessment" | "constitutional" | "lab_upload" | "report">("dashboard");
+  const [activeView, setActiveView] = useState<"dashboard" | "assessment" | "lab_upload" | "report">("dashboard");
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
   const [expandedCategory, setExpandedCategory] = useState<string | null>("metabolic");
   
@@ -96,19 +94,11 @@ export default function HealthIntelligencePage() {
   const [activeReport, setActiveReport] = useState<IntelligenceReport | null>(null);
   const [activeReportCategory, setActiveReportCategory] = useState<string>("metabolic");
 
-  // Constitutional Assessment States
-  const [constitutionalAnswers, setConstitutionalAnswers] = useState<Record<string, string>>({});
-  const [constStep, setConstStep] = useState<number>(0);
-  const [constIsCalculating, setConstIsCalculating] = useState(false);
-
   // Lab Report States
   const [labRawText, setLabRawText] = useState("");
   const [labParsing, setLabParsing] = useState(false);
   const [labResult, setLabResult] = useState<LabAnalysisResult | null>(null);
   const [dragActive, setDragActive] = useState(false);
-
-  // ECG Expanded State
-  const [isEcgExpanded, setIsEcgExpanded] = useState(false);
 
   // Theme State
   const [theme, setTheme] = useState<"light" | "dark">("light");
@@ -648,34 +638,6 @@ export default function HealthIntelligencePage() {
     };
   };
 
-  // Constitutional Assessment Helpers
-  const handleStartConstitutional = () => {
-    setConstitutionalAnswers({});
-    setConstStep(0);
-    setActiveView("constitutional");
-  };
-
-  const handleConstitutionalAnswer = (qId: string, option: string) => {
-    const nextAnswers = { ...constitutionalAnswers, [qId]: option };
-    setConstitutionalAnswers(nextAnswers);
-    
-    if (constStep < CONSTITUTIONAL_QUESTIONS.length - 1) {
-      setConstStep(constStep + 1);
-    } else {
-      setConstIsCalculating(true);
-      setTimeout(() => {
-        const profile = analyzeConstitution(nextAnswers);
-        const updatedTwin: HealthDigitalTwin = {
-          ...digitalTwin,
-          constitutional: profile
-        };
-        saveDigitalTwin(updatedTwin);
-        setConstIsCalculating(false);
-        setActiveView("dashboard");
-      }, 1500);
-    }
-  };
-
   // Lab Upload Helpers
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -693,24 +655,55 @@ export default function HealthIntelligencePage() {
     setDragActive(false);
     
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      processLabFile(e.dataTransfer.files[0].name);
+      processLabFile(e.dataTransfer.files[0]);
     }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      processLabFile(e.target.files[0].name);
+      processLabFile(e.target.files[0]);
     }
   };
 
-  const processLabFile = (fileName: string) => {
+  const processLabFile = (file: File) => {
     setLabParsing(true);
-    setTimeout(() => {
-      const result = parseLabReport(fileName, labRawText);
-      setLabResult(result);
-      setLabParsing(false);
-      setActiveView("lab_upload");
-    }, 1800);
+    const reader = new FileReader();
+    reader.onload = async (eEvent) => {
+      try {
+        const base64Data = eEvent.target?.result as string;
+        const base64Content = base64Data.split(",")[1];
+        
+        const response = await fetch("/api/import-lab", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            fileData: base64Content,
+            mimeType: file.type || "application/pdf",
+            fileName: file.name
+          })
+        });
+        
+        const data = await response.json();
+        if (data.success && data.text) {
+          const result = parseLabReport(file.name, data.text);
+          setLabResult(result);
+          setLabRawText(data.text);
+        } else {
+          const result = parseLabReport(file.name, "");
+          setLabResult(result);
+        }
+      } catch (err) {
+        console.error("Error calling import-lab API:", err);
+        const result = parseLabReport(file.name, "");
+        setLabResult(result);
+      } finally {
+        setLabParsing(false);
+        setActiveView("lab_upload");
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleLoadSampleLab = (name: string) => {
@@ -855,46 +848,6 @@ export default function HealthIntelligencePage() {
               Reset Digital Twin
             </button>
           )}
-        </div>
-
-        {/* ECG Monitor Section (Collapsible) */}
-        <div className="mb-8 print:hidden">
-          <div className="glass-panel border border-slate-200/60 dark:border-slate-850 bg-white/70 dark:bg-slate-900/65 rounded-[28px] overflow-hidden shadow-sm">
-            <button
-              onClick={() => setIsEcgExpanded(!isEcgExpanded)}
-              className="w-full flex items-center justify-between p-5 text-left font-bold text-slate-800 dark:text-zinc-150 hover:bg-slate-50/50 dark:hover:bg-slate-950/20 transition-all border-none bg-transparent cursor-pointer"
-            >
-              <div className="flex items-center gap-2">
-                <Activity className="w-5 h-5 text-mint animate-pulse" />
-                <span className="font-serif text-base font-bold text-slate-950 dark:text-white">ECG Monitor</span>
-                <span className="text-[10px] font-extrabold text-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 px-2 py-0.5 rounded-full uppercase tracking-wider">
-                  Live
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-slate-400 font-semibold">
-                  {isEcgExpanded ? "Collapse Monitor" : "Expand Monitor"}
-                </span>
-                <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform duration-300 ${isEcgExpanded ? "rotate-90" : ""}`} />
-              </div>
-            </button>
-
-            <AnimatePresence initial={false}>
-              {isEcgExpanded && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
-                  className="border-t border-slate-100 dark:border-slate-800/80 overflow-hidden"
-                >
-                  <div className="p-2 md:p-4 bg-slate-50/20 dark:bg-slate-950/10">
-                    <EcgGraph />
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
         </div>
 
         {/* ========================================================= */}
@@ -1107,76 +1060,7 @@ export default function HealthIntelligencePage() {
                   ))}
                 </div>
               </div>
-            )}
-
-            {/* Miasmatic Profile Accumulation */}
-            {Object.keys(digitalTwin.completedAssessments).length > 0 && (
-              <div className="glass-panel border border-slate-200/60 dark:border-slate-850 bg-white/70 dark:bg-slate-900/65 rounded-[28px] p-5 shadow-sm space-y-3">
-                <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block">
-                  Miasmatic Burden Distribution
-                </span>
-                <div className="space-y-2.5">
-                  <div>
-                    <div className="flex justify-between items-center text-xs font-semibold mb-1">
-                      <span className="text-slate-500">Psora (Sensory Hyper-reactivity)</span>
-                      <span className="text-amber-500 font-mono font-bold">
-                        {Math.round(100 - digitalTwin.overallScore * 0.4)}%
-                      </span>
-                    </div>
-                    <div className="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                      <div className="bg-amber-500 h-full" style={{ width: `${Math.round(100 - digitalTwin.overallScore * 0.4)}%` }}></div>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex justify-between items-center text-xs font-semibold mb-1">
-                      <span className="text-slate-500">Sycosis (Metabolic Sluggishness)</span>
-                      <span className="text-teal-500 font-mono font-bold">
-                        {Math.round(digitalTwin.organLoad.pancreas * 0.8 + 15)}%
-                      </span>
-                    </div>
-                    <div className="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                      <div className="bg-teal-50 h-full" style={{ width: `${Math.round(digitalTwin.organLoad.pancreas * 0.8 + 15)}%` }}></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Constitutional Profile Match Details */}
-            {digitalTwin.constitutional ? (
-              <div className="glass-panel border border-violet-200/50 dark:border-violet-900/20 bg-violet-50/10 dark:bg-violet-950/5 rounded-[28px] p-5 shadow-sm space-y-3">
-                <div className="flex justify-between items-start">
-                  <div className="flex items-center gap-2 text-violet-600 dark:text-violet-400">
-                    <User className="w-4.5 h-4.5" />
-                    <span className="text-xs font-extrabold uppercase tracking-wider">Constitutional Match</span>
-                  </div>
-                  <span className="px-2 py-0.5 rounded-full bg-violet-100 dark:bg-violet-950 text-violet-700 dark:text-violet-400 text-[8.5px] font-bold uppercase tracking-wider">Mapped</span>
-                </div>
-                <div className="p-3 bg-violet-100/30 dark:bg-violet-950/20 border border-violet-100/50 dark:border-violet-900/10 rounded-xl space-y-1.5">
-                  <div className="text-xs font-bold text-slate-800 dark:text-zinc-200 flex justify-between">
-                    <span className="text-slate-400 font-normal">Remedy Group:</span>
-                    {digitalTwin.constitutional.remedyMatch}
-                  </div>
-                  <div className="text-xs font-bold text-slate-800 dark:text-zinc-200 flex justify-between">
-                    <span className="text-slate-400 font-normal">System Focus:</span>
-                    {digitalTwin.constitutional.systemDominance}
-                  </div>
-                  <div className="text-xs text-slate-500 leading-normal border-t border-violet-200/20 pt-1.5">
-                    {digitalTwin.constitutional.adaptivePattern}
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="glass-panel border border-dashed border-slate-200 dark:border-slate-800 bg-white/40 dark:bg-slate-900/20 rounded-[28px] p-5 shadow-sm text-center space-y-3">
-                <p className="text-xs text-slate-500">Constitutional homeopathic mapping not initialized yet.</p>
-                <button
-                  onClick={handleStartConstitutional}
-                  className="w-full py-2.5 bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider cursor-pointer transition-colors border-none shadow-sm"
-                >
-                  Map Constitution
-                </button>
-              </div>
-            )}
+              )}
 
             {/* FUTURE-READY: HEALTH OS & SYNC INTEGRATIONS */}
             <div className="glass-panel border border-slate-200/60 dark:border-slate-850 bg-white/70 dark:bg-slate-900/65 rounded-[28px] p-5 shadow-sm space-y-4">
@@ -1351,14 +1235,6 @@ export default function HealthIntelligencePage() {
                       >
                         <UploadCloud className="w-4 h-4 text-mint" />
                         Upload Lab Report
-                      </button>
-                      
-                      <button
-                        onClick={handleStartConstitutional}
-                        className="py-3 px-5 bg-mint hover:bg-teal-600 text-white font-bold rounded-2xl text-xs uppercase tracking-wider cursor-pointer shadow-md shadow-teal-500/10 transition-all border-none flex items-center justify-center gap-1.5"
-                      >
-                        <Layers className="w-4 h-4" />
-                        Map Constitutional Miasms
                       </button>
                     </div>
                   </div>
@@ -1756,81 +1632,7 @@ export default function HealthIntelligencePage() {
                 </motion.div>
               )}
 
-              {/* VIEW: CONSTITUTIONAL PARAMETERS WIZARD */}
-              {activeView === "constitutional" && (
-                <motion.div
-                  key="constitutional"
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -15 }}
-                  className="glass-panel border border-slate-200/60 dark:border-slate-850 bg-white/75 dark:bg-slate-900/65 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6 max-w-xl mx-auto"
-                >
-                  <div className="space-y-1">
-                    <span className="text-[9px] font-extrabold uppercase tracking-widest text-violet-500 bg-violet-50 dark:bg-violet-950/20 px-2.5 py-1 rounded-full">
-                      Step {constStep + 1} of {CONSTITUTIONAL_QUESTIONS.length}
-                    </span>
-                    <h3 className="font-serif text-lg md:text-xl font-bold text-slate-900 dark:text-white leading-tight flex items-center gap-1.5">
-                      <Layers className="w-5 h-5 text-violet-500" />
-                      Constitutional Intelligence Module
-                    </h3>
-                  </div>
 
-                  <div className="w-full h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                    <div 
-                      className="bg-violet-600 h-full transition-all duration-300"
-                      style={{ width: `${((constStep + 1) / CONSTITUTIONAL_QUESTIONS.length) * 100}%` }}
-                    ></div>
-                  </div>
-
-                  {constIsCalculating ? (
-                    <div className="text-center py-8 space-y-4">
-                      <RefreshCw className="w-8 h-8 text-violet-500 animate-spin mx-auto" />
-                      <p className="text-xs text-slate-500">Processing constitutional modalities & remedy matching...</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-5">
-                      {(() => {
-                        const q = CONSTITUTIONAL_QUESTIONS[constStep];
-                        return (
-                          <div className="space-y-4">
-                            <h4 className="text-xs md:text-sm font-bold text-slate-800 dark:text-zinc-150 leading-relaxed">
-                              {q.label}
-                            </h4>
-                            <div className="space-y-3">
-                              {q.options.map((opt, i) => (
-                                <button
-                                  key={i}
-                                  onClick={() => handleConstitutionalAnswer(q.id, opt)}
-                                  className="w-full text-left p-4 rounded-2xl border text-xs font-semibold cursor-pointer hover:bg-violet-50/50 dark:hover:bg-violet-950/20 border-slate-200/60 dark:border-slate-850 text-slate-650 dark:text-zinc-400 transition-all"
-                                >
-                                  {opt}
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-                        );
-                      })()}
-
-                      <div className="flex gap-4 pt-4">
-                        {constStep > 0 && (
-                          <button
-                            onClick={() => setConstStep(constStep - 1)}
-                            className="py-3 px-5 border border-slate-250 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-650 dark:text-zinc-400 font-bold rounded-2xl text-xs uppercase tracking-wider cursor-pointer transition-colors"
-                          >
-                            Back
-                          </button>
-                        )}
-                        <button
-                          onClick={() => setActiveView("dashboard")}
-                          className="py-3 px-5 border border-transparent text-slate-400 hover:text-slate-600 font-bold rounded-2xl text-xs uppercase tracking-wider cursor-pointer transition-colors border-none bg-transparent"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </motion.div>
-              )}
 
               {/* VIEW: LAB REPORT OCR ANALYSIS RESULTS */}
               {activeView === "lab_upload" && labResult && (

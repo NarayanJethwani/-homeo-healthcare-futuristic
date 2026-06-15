@@ -6,8 +6,10 @@ import {
   Users, Activity, Sparkles, Brain, Send, FileText, 
   Award, Compass, Network, Layers, ShieldAlert, Cpu, 
   Play, RefreshCw, Zap, TrendingUp, Workflow, Calendar, 
-  Database, Stethoscope, AlertTriangle, Check, X, Shield 
+  Database, Stethoscope, AlertTriangle, Check, X, Shield, ChevronRight, ChevronDown
 } from "lucide-react";
+import EcgGraph from "@/components/EcgGraph";
+import { CONSTITUTIONAL_QUESTIONS, analyzeConstitution } from "@/app/health-intelligence/constitutionalEngine";
 
 interface CIEWorkspaceProps {
   patients: any[];
@@ -237,13 +239,36 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
   };
 
   const activeDataKey = getActiveDataKey();
-  const activeData = PATIENT_LONGITUDINAL_DATA[activeDataKey] || PATIENT_LONGITUDINAL_DATA.aarav;
-  // Navigation Tabs: Unified Cockpit, Raw note parser intake, Compiled print reports
-  const [activeTab, setActiveTab] = useState<"cockpit" | "intake" | "reports">("cockpit");
+
+  // Overrides for dynamic updating of patient records (remedies, miasms, etc.)
+  const [patientOverrides, setPatientOverrides] = useState<Record<string, {
+    miasmaticIndex?: { psora: number; sycosis: number; syphilis: number };
+    constitutional?: any;
+    miasm?: string;
+    constitution?: string;
+    remedyMatches?: any[];
+  }>>({});
+
+  const activeData = {
+    ...(PATIENT_LONGITUDINAL_DATA[activeDataKey] || PATIENT_LONGITUDINAL_DATA.aarav),
+    ...(patientOverrides[activeDataKey] || {})
+  };
+
+  // Navigation Tabs: Unified Cockpit, Raw note parser intake, Miasms & Constitution, Compiled print reports
+  const [activeTab, setActiveTab] = useState<"cockpit" | "intake" | "miasms" | "reports">("cockpit");
   const [activeTwinMode, setActiveTwinMode] = useState<"playback" | "simulator">("playback");
   const [twinIndex, setTwinIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [timelineZoom, setTimelineZoom] = useState(365); // 1 year default
+
+  // ECG Expanded State
+  const [isEcgExpanded, setIsEcgExpanded] = useState(false);
+
+  // Constitutional Assessment Wizard States
+  const [constitutionalAnswers, setConstitutionalAnswers] = useState<Record<string, string>>({});
+  const [constStep, setConstStep] = useState<number>(0);
+  const [constIsCalculating, setConstIsCalculating] = useState(false);
+  const [isWizardActive, setIsWizardActive] = useState(false);
   
   // What-if simulator state
   const [simDays, setSimDays] = useState<number>(30);
@@ -1355,6 +1380,58 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
     setParsedIntakeOutput(JSON.stringify(result, null, 2));
   };
 
+  // Constitutional Assessment Wizard Helpers
+  const handleStartConstitutional = () => {
+    setConstitutionalAnswers({});
+    setConstStep(0);
+    setIsWizardActive(true);
+  };
+
+  const handleConstitutionalAnswer = (qId: string, option: string) => {
+    const nextAnswers = { ...constitutionalAnswers, [qId]: option };
+    setConstitutionalAnswers(nextAnswers);
+    
+    if (constStep < CONSTITUTIONAL_QUESTIONS.length - 1) {
+      setConstStep(constStep + 1);
+    } else {
+      setConstIsCalculating(true);
+      setTimeout(() => {
+        const profile = analyzeConstitution(nextAnswers);
+        
+        // Define mapping from constitutional remedy to miasms
+        const miasmLoads: Record<string, { psora: number; sycosis: number; syphilis: number; label: string }> = {
+          "Lycopodium Clavatum": { psora: 50, sycosis: 70, syphilis: 25, label: "Sycosis (Dominant) & Psora (Sub-acute)" },
+          "Pulsatilla Nigricans": { psora: 75, sycosis: 50, syphilis: 15, label: "Psora (Dominant) & Sycosis (Sub-acute)" },
+          "Arsenicum Album": { psora: 60, sycosis: 35, syphilis: 60, label: "Syphilis (Dominant) & Psora (Sub-acute)" },
+          "Calcarea Carbonica": { psora: 80, sycosis: 40, syphilis: 15, label: "Psora (Dominant)" },
+          "Sepia Officinalis": { psora: 45, sycosis: 65, syphilis: 45, label: "Sycosis (Dominant) & Syphilis (Sub-acute)" },
+          "Nux Vomica": { psora: 75, sycosis: 40, syphilis: 20, label: "Psora (Dominant)" },
+          "Rhus Toxicodendron": { psora: 50, sycosis: 65, syphilis: 25, label: "Sycosis (Dominant)" },
+          "Sulphur": { psora: 85, sycosis: 25, syphilis: 15, label: "Psora (Dominant)" }
+        };
+
+        const match = miasmLoads[profile.remedyMatch] || { psora: 60, sycosis: 40, syphilis: 30, label: "Psora (Dominant)" };
+
+        setPatientOverrides(prev => ({
+          ...prev,
+          [activeDataKey]: {
+            constitution: profile.remedyMatch,
+            miasm: match.label,
+            miasmaticIndex: { psora: match.psora, sycosis: match.sycosis, syphilis: match.syphilis },
+            constitutional: profile,
+            remedyMatches: [
+              { name: profile.remedyMatch, score: 95, status: "Active Constitutional", keyEvidence: `Mapped via wizard. System Focus: ${profile.systemDominance}. Adaptive Pattern: ${profile.adaptivePattern}.` },
+              ...activeData.remedyMatches.filter(r => r.name !== profile.remedyMatch).slice(0, 2)
+            ]
+          }
+        }));
+
+        setConstIsCalculating(false);
+        setIsWizardActive(false);
+      }, 1500);
+    }
+  };
+
   // Resolve simulation values
   const activeVitality = activeTwinMode === "simulator" && simulatedResults ? simulatedResults.vitality : activeData.vitalityIndex;
   const activeBurden = activeTwinMode === "simulator" && simulatedResults ? simulatedResults.burden : activeData.diseaseBurdenIndex;
@@ -1391,6 +1468,12 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border ${activeTab === "intake" ? "bg-emerald-600 border-emerald-500 text-white" : "bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200"}`}
           >
             📝 Intake Notes Parser
+          </button>
+          <button 
+            onClick={() => setActiveTab("miasms")}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border ${activeTab === "miasms" ? "bg-emerald-600 border-emerald-500 text-white" : "bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200"}`}
+          >
+            🧬 Miasms & Constitution
           </button>
           <button 
             onClick={() => setActiveTab("reports")}
@@ -1544,6 +1627,51 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
                 </div>
 
               </div>
+            </div>
+
+            {/* ECG Monitor Section (Collapsible) */}
+            <div className="bg-slate-900 dark:bg-slate-950 border border-slate-800 rounded-[28px] overflow-hidden shadow-xl text-white">
+              <button
+                onClick={() => setIsEcgExpanded(!isEcgExpanded)}
+                className="w-full flex items-center justify-between p-5 text-left font-bold hover:bg-slate-800/40 transition-all border-none bg-transparent cursor-pointer"
+              >
+                <div className="flex items-center gap-2">
+                  <Activity className="w-5 h-5 text-emerald-400 animate-pulse" />
+                  <span className="font-serif text-base font-bold text-white">Live ECG Telemetry Monitor</span>
+                  <span className="text-[9px] font-extrabold text-emerald-400 bg-emerald-950/40 border border-emerald-900/60 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                    Live Telemetry
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-slate-400 font-semibold">
+                    {isEcgExpanded ? "Collapse Monitor" : "Expand Monitor"}
+                  </span>
+                  <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform duration-300 ${isEcgExpanded ? "rotate-90" : ""}`} />
+                </div>
+              </button>
+
+              <AnimatePresence initial={false}>
+                {isEcgExpanded && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                    className="border-t border-slate-800 overflow-hidden"
+                  >
+                    <div className="p-4 bg-slate-950/20 font-mono text-emerald-400 flex flex-col gap-2">
+                      <div className="flex justify-between items-center text-xs border-b border-slate-800 pb-2">
+                        <div className="flex items-center gap-2">
+                          <Activity className="w-4 h-4 text-emerald-500 animate-pulse" />
+                          <span>Telemetry Source: Wearable Sensor Net</span>
+                        </div>
+                        <span>Status: Operational (Sinus Rhythm)</span>
+                      </div>
+                      <EcgGraph />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* 2. DIGITAL TWIN SIMULATOR 2.0 (PRIORITY 4) */}
@@ -2406,6 +2534,218 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
                 {parsedIntakeOutput || "Logs output will appear here after parsing..."}
               </pre>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ==================== VIEW 4: MIASMS & CONSTITUTIONAL MAPPING ==================== */}
+      {activeTab === "miasms" && (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start animate-fadeIn">
+          {/* LEFT COLUMN: MIASMATIC BURDEN & CONSTITUTION DETAILS (7 COLS) */}
+          <div className="lg:col-span-7 space-y-6">
+            
+            {/* 1. Miasmatic Burden Distribution Card */}
+            <div className="bg-slate-900 dark:bg-slate-950 border border-slate-800 rounded-[28px] p-6 shadow-xl text-white space-y-5">
+              <div>
+                <h3 className="font-serif text-base font-bold flex items-center gap-2">
+                  <Activity className="w-5 h-5 text-emerald-400 animate-pulse" /> Homeopathic Miasmatic Burden
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">Active chronic diathesis load computed from symptom affinities and modalities.</p>
+              </div>
+
+              <div className="space-y-4">
+                {/* Psora */}
+                <div className="p-4 bg-slate-950/40 border border-slate-850 rounded-2xl space-y-2">
+                  <div className="flex justify-between items-center text-xs font-bold">
+                    <span className="text-slate-300">Psora Miasm (Functional Hypersensitivity)</span>
+                    <span className="text-amber-400 font-mono">{activeData.miasmaticIndex.psora}%</span>
+                  </div>
+                  <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                    <div className="bg-amber-500 h-full rounded-full transition-all duration-500" style={{ width: `${activeData.miasmaticIndex.psora}%` }} />
+                  </div>
+                  <p className="text-[10px] text-slate-400 leading-relaxed">
+                    Functional defense, inflammatory states, hypersensitive nerve response, skin eruptions, and fatigue.
+                  </p>
+                </div>
+
+                {/* Sycosis */}
+                <div className="p-4 bg-slate-950/40 border border-slate-850 rounded-2xl space-y-2">
+                  <div className="flex justify-between items-center text-xs font-bold">
+                    <span className="text-slate-300">Sycosis Miasm (Metabolic Sluggishness / Proliferation)</span>
+                    <span className="text-teal-455 font-mono">{activeData.miasmaticIndex.sycosis}%</span>
+                  </div>
+                  <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                    <div className="bg-teal-500 h-full rounded-full transition-all duration-500" style={{ width: `${activeData.miasmaticIndex.sycosis}%` }} />
+                  </div>
+                  <p className="text-[10px] text-slate-400 leading-relaxed">
+                    Metabolic sluggishness, chronic water retention, fibrotic growths, overproduction, and pelvic organ affinity.
+                  </p>
+                </div>
+
+                {/* Syphilis */}
+                <div className="p-4 bg-slate-950/40 border border-slate-850 rounded-2xl space-y-2">
+                  <div className="flex justify-between items-center text-xs font-bold">
+                    <span className="text-slate-300">Syphilis Miasm (Destruction / Degeneration)</span>
+                    <span className="text-rose-455 font-mono">{activeData.miasmaticIndex.syphilis}%</span>
+                  </div>
+                  <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                    <div className="bg-rose-500 h-full rounded-full transition-all duration-500" style={{ width: `${activeData.miasmaticIndex.syphilis}%` }} />
+                  </div>
+                  <p className="text-[10px] text-slate-400 leading-relaxed">
+                    Tissue degeneration, ulceration, structural breakdown, bone pain, vascular damage, and deep mental depression.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* 2. Active Constitutional Details */}
+            <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm space-y-4">
+              <div>
+                <h3 className="font-serif text-base font-bold flex items-center gap-2">
+                  <Layers className="w-5 h-5 text-violet-500" /> Constitutional Miasmatic Profile
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">Individual homeostatic baseline and active remedy affinities.</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-850 rounded-2xl space-y-2">
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Active Constitutional Remedy</span>
+                  <span className="text-base font-bold text-slate-800 dark:text-zinc-100 flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-violet-500 shrink-0" />
+                    {activeData.constitution}
+                  </span>
+                  <p className="text-[10.5px] text-slate-550 dark:text-slate-400 leading-relaxed">
+                    Dynamic remedy covering the core mental-general and physical-general characteristics of the patient twin.
+                  </p>
+                </div>
+
+                <div className="p-4 bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-850 rounded-2xl space-y-2">
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Active Miasmatic Layer</span>
+                  <span className="text-base font-bold text-slate-805 dark:text-zinc-100 flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-teal-500 shrink-0" />
+                    {activeData.miasm}
+                  </span>
+                  <p className="text-[10.5px] text-slate-550 dark:text-slate-400 leading-relaxed">
+                    Dominant chronic layer requiring deep intercurrent remedy sequencing to clear cellular blocks.
+                  </p>
+                </div>
+              </div>
+
+              {activeData.constitutional && (
+                <div className="p-4 bg-violet-50/20 dark:bg-violet-950/10 border border-violet-150 dark:border-violet-850 rounded-2xl space-y-2">
+                  <span className="text-[9px] font-bold text-violet-500 uppercase tracking-wider block">Modalities & Modality Adaptations</span>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-slate-700 dark:text-zinc-300">
+                    <div>
+                      <strong className="text-slate-400 font-semibold block text-[10px]">Thermal Reaction:</strong>
+                      {activeData.constitutional.thermal}
+                    </div>
+                    <div>
+                      <strong className="text-slate-400 font-semibold block text-[10px]">Appetite / Cravings:</strong>
+                      {activeData.constitutional.appetite}
+                    </div>
+                    <div>
+                      <strong className="text-slate-400 font-semibold block text-[10px]">Sleep Profile:</strong>
+                      {activeData.constitutional.sleep}
+                    </div>
+                    <div>
+                      <strong className="text-slate-400 font-semibold block text-[10px]">Temperament:</strong>
+                      {activeData.constitutional.temperament}
+                    </div>
+                  </div>
+                  <div className="text-[11px] leading-relaxed text-slate-550 dark:text-zinc-350 border-t border-violet-200/25 pt-2 mt-2">
+                    <span className="font-bold text-violet-500">Adaptive Vector:</span> {activeData.constitutional.adaptivePattern} (Focus: {activeData.constitutional.systemDominance})
+                  </div>
+                </div>
+              )}
+            </div>
+
+          </div>
+
+          {/* RIGHT COLUMN: INTERACTIVE CONSTITUTIONAL WIZARD (5 COLS) */}
+          <div className="lg:col-span-5 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm space-y-5">
+            <div>
+              <h3 className="font-serif text-base font-bold flex items-center gap-2">
+                <Brain className="w-5 h-5 text-emerald-500" /> Constitutional Diagnostic Wizard
+              </h3>
+              <p className="text-xs text-slate-400 mt-0.5">Map modalities and thermal reactions to determine remedies and miasms.</p>
+            </div>
+
+            {isWizardActive ? (
+              <div className="space-y-4">
+                <div className="flex justify-between items-center text-xs border-b border-slate-200 dark:border-slate-800 pb-2">
+                  <span className="font-bold text-violet-600 dark:text-violet-400 uppercase tracking-wider">
+                    Question {constStep + 1} of {CONSTITUTIONAL_QUESTIONS.length}
+                  </span>
+                  <span className="text-slate-400 font-mono">
+                    {Math.round(((constStep + 1) / CONSTITUTIONAL_QUESTIONS.length) * 100)}%
+                  </span>
+                </div>
+
+                <div className="w-full h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                  <div 
+                    className="bg-violet-600 h-full transition-all duration-300"
+                    style={{ width: `${((constStep + 1) / CONSTITUTIONAL_QUESTIONS.length) * 100}%` }}
+                  ></div>
+                </div>
+
+                {constIsCalculating ? (
+                  <div className="text-center py-8 space-y-4">
+                    <RefreshCw className="w-8 h-8 text-violet-500 animate-spin mx-auto" />
+                    <p className="text-xs text-slate-500">Recalculating patient core twin miasms & matching remedy...</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4 animate-fadeIn">
+                    <h4 className="text-xs md:text-sm font-bold text-slate-800 dark:text-zinc-150 leading-relaxed bg-slate-50 dark:bg-slate-950 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800">
+                      {CONSTITUTIONAL_QUESTIONS[constStep].label}
+                    </h4>
+                    <div className="space-y-2.5">
+                      {CONSTITUTIONAL_QUESTIONS[constStep].options.map((opt, i) => (
+                        <button
+                          key={i}
+                          onClick={() => handleConstitutionalAnswer(CONSTITUTIONAL_QUESTIONS[constStep].id, opt)}
+                          className="w-full text-left p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs font-semibold cursor-pointer hover:bg-violet-50/50 dark:hover:bg-violet-955/20 text-slate-600 dark:text-zinc-400 hover:text-violet-600 dark:hover:text-violet-400 transition-all bg-white dark:bg-slate-900"
+                        >
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="flex gap-2 pt-2 border-t border-slate-100 dark:border-slate-850">
+                      {constStep > 0 && (
+                        <button
+                          onClick={() => setConstStep(constStep - 1)}
+                          className="py-2.5 px-4 border border-slate-250 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-600 dark:text-zinc-400 font-bold rounded-xl text-xs uppercase tracking-wider cursor-pointer transition-colors"
+                        >
+                          Back
+                        </button>
+                      )}
+                      <button
+                        onClick={() => setIsWizardActive(false)}
+                        className="py-2.5 px-4 border border-transparent text-slate-400 hover:text-slate-600 font-bold rounded-xl text-xs uppercase tracking-wider cursor-pointer transition-colors border-none bg-transparent"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="p-6 bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-850 rounded-2xl text-center space-y-4 animate-fadeIn">
+                <Brain className="w-10 h-10 text-violet-500/80 mx-auto animate-pulse" />
+                <div className="space-y-1">
+                  <h4 className="text-xs font-bold text-slate-800 dark:text-zinc-150">Re-examine Constitutional Modalities</h4>
+                  <p className="text-[11px] text-slate-400 leading-normal max-w-xs mx-auto">
+                    Take the patient through the 5-point assessment of thermal reactions, cravings, and modalities to re-calculate their primary homeostatic remedy and active miasms.
+                  </p>
+                </div>
+                <button
+                  onClick={handleStartConstitutional}
+                  className="w-full py-3 bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider cursor-pointer transition-colors border-none shadow-sm"
+                >
+                  Start Questionnaire Wizard
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
