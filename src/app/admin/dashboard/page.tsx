@@ -562,6 +562,67 @@ const SAMPLE_FINDINGS = [
   { marker: "Thyroid Stimulating Hormone (TSH)", value: "8.4 uIU/mL", status: "Abnormal" },
   { marker: "Glycated Hemoglobin (HbA1c)", value: "7.8%", status: "Abnormal" },
   { marker: "Vitamin D (25-Hydroxy)", value: "14 ng/ml", status: "Deficient" }
+];const SUBTABS_CONFIG: Record<string, Array<{ id: string; label: string }>> = {
+  dashboard: [
+    { id: "dashboard-metrics", label: "Metrics & Status" },
+    { id: "dashboard-queue", label: "Patient Queue" },
+    { id: "dashboard-alerts", label: "Clinical Alerts" }
+  ],
+  intake: [
+    { id: "intake-builder", label: "Guided Interview" },
+    { id: "live-synthesis", label: "Constitutional Synthesis" }
+  ],
+  patients: [
+    { id: "patients-directory", label: "Search & Registry" },
+    { id: "patients-list", label: "Clinical Database" }
+  ],
+  diagnostics: [
+    { id: "diagnostics-search", label: "Search Nexus" },
+    { id: "diagnostics-list", label: "Conditions Database" },
+    { id: "diagnostics-details", label: "Homeopathic Affinity" }
+  ],
+  analyzer: [
+    { id: "analyzer-ingestion", label: "Upload & Ingest" },
+    { id: "analyzer-results", label: "AI Analysis" }
+  ],
+  "diet-lifestyle": [
+    { id: "diet-constraints", label: "Diet Constraints" },
+    { id: "diet-prescriptions", label: "Meal & Routines" }
+  ],
+  "nexus-atlas": [
+    { id: "remedy-materia-medica", label: "Remedies Map" },
+    { id: "constitutional-mindmap", label: "Constitutional Mind Map" },
+    { id: "specialists-routing", label: "Specialists Router" }
+  ],
+  "learning-hub": [
+    { id: "learning-monograph", label: "Remedy Monograph" },
+    { id: "learning-differential", label: "Differential Comparison" },
+    { id: "learning-tutor", label: "AI Tutor" }
+  ],
+  communication: [
+    { id: "comm-inputs", label: "Outreach Inputs" },
+    { id: "comm-templates", label: "Outreach Templates" }
+  ],
+  "ai-router": [
+    { id: "router-routing-matrix", label: "Routing Settings Matrix" },
+    { id: "router-benchmarks", label: "Model Benchmarks" },
+    { id: "router-consensus", label: "Consensus Console" },
+    { id: "router-sandbox", label: "Live Test Sandbox" },
+    { id: "router-telemetry-logs", label: "Telemetry Live Logs" }
+  ]
+};
+
+const TABS_DEFINITION = [
+  { id: "dashboard", label: "Dashboard", icon: Gauge, gradient: "from-teal-500 to-emerald-500", shadow: "shadow-[0_4px_12px_rgba(20,184,166,0.3)]", inactiveText: "text-slate-650 hover:text-teal-650 hover:bg-teal-50 bg-transparent" },
+  { id: "intake", label: "AI Intake", icon: Sparkles, gradient: "from-amber-500 to-orange-500", shadow: "shadow-[0_4px_12px_rgba(245,158,11,0.3)]", inactiveText: "text-slate-650 hover:text-amber-600 hover:bg-amber-50 bg-transparent" },
+  { id: "patients", label: "Patients", icon: Users, gradient: "from-sky-500 to-blue-500", shadow: "shadow-[0_4px_12px_rgba(14,165,233,0.3)]", inactiveText: "text-slate-650 hover:text-sky-600 hover:bg-sky-50 bg-transparent" },
+  { id: "diagnostics", label: "Diagnostics", icon: Compass, gradient: "from-emerald-600 to-green-500", shadow: "shadow-[0_4px_12px_rgba(16,185,129,0.3)]", inactiveText: "text-slate-650 hover:text-emerald-600 hover:bg-emerald-50 bg-transparent" },
+  { id: "analyzer", label: "Report Analyzer", icon: FileText, gradient: "from-indigo-500 to-violet-500", shadow: "shadow-[0_4px_12px_rgba(99,102,241,0.3)]", inactiveText: "text-slate-650 hover:text-indigo-600 hover:bg-indigo-50 bg-transparent" },
+  { id: "diet-lifestyle", label: "Diet & Lifestyle", icon: Layers, gradient: "from-rose-500 to-pink-500", shadow: "shadow-[0_4px_12px_rgba(244,63,94,0.3)]", inactiveText: "text-slate-650 hover:text-rose-600 hover:bg-rose-50 bg-transparent" },
+  { id: "nexus-atlas", label: "Nexus Atlas", icon: Network, gradient: "from-violet-600 to-fuchsia-600", shadow: "shadow-[0_4px_12px_rgba(139,92,246,0.3)]", inactiveText: "text-slate-650 hover:text-violet-600 hover:bg-violet-50 bg-transparent" },
+  { id: "learning-hub", label: "Learning Hub", icon: Award, gradient: "from-fuchsia-500 to-purple-600", shadow: "shadow-[0_4px_12px_rgba(217,70,239,0.3)]", inactiveText: "text-slate-650 hover:text-fuchsia-600 hover:bg-fuchsia-50 bg-transparent" },
+  { id: "communication", label: "Communications", icon: Send, gradient: "from-cyan-500 to-teal-500", shadow: "shadow-[0_4px_12px_rgba(6,182,212,0.3)]", inactiveText: "text-slate-650 hover:text-cyan-600 hover:bg-cyan-50 bg-transparent" },
+  { id: "ai-router", label: "AI Router Settings", icon: Cpu, gradient: "from-slate-700 to-slate-800", shadow: "shadow-[0_4px_12px_rgba(71,85,105,0.3)]", inactiveText: "text-slate-650 hover:text-slate-800 hover:bg-slate-100 bg-transparent" }
 ];
 
 export default function AdminDashboard() {
@@ -4098,6 +4159,25 @@ Homeo Healthcare`;
     router.push("/admin/login");
   };
 
+  // Helper to handle mouse hover subtabs navigation
+  const handleSubTabClick = (
+    tabId: "dashboard" | "intake" | "patients" | "diagnostics" | "analyzer" | "diet-lifestyle" | "nexus-atlas" | "learning-hub" | "communication" | "ai-router",
+    subSectionId: string,
+    action?: () => void
+  ) => {
+    setActiveTab(tabId);
+    if (action) {
+      action();
+    }
+    setTimeout(() => {
+      const element = document.getElementById(subSectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 150);
+  };
+
+
   const getDurationMonths = (duration: string) => {
     if (duration.includes("3-Month")) return 3;
     if (duration.includes("6-Month")) return 6;
@@ -7043,126 +7123,48 @@ ${err.message || err}`);
       >
         
         {/* Navigation Tabs */}
-        <div className="flex flex-wrap bg-white/80 backdrop-blur-xl border border-slate-200/80 p-1.5 rounded-3xl gap-1.5 shadow-[0_8px_32px_0_rgba(15,23,42,0.06)] max-w-fit mb-6 transition-all duration-300">
-          <button
-            onClick={() => setActiveTab("dashboard")}
-            className={`px-4 py-2.5 rounded-2xl text-[10.5px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer border-none hover:scale-102 active:scale-98 duration-200 ${
-              activeTab === "dashboard"
-                ? "bg-gradient-to-r from-teal-500 to-emerald-500 text-white shadow-[0_4px_12px_rgba(20,184,166,0.3)]"
-                : "text-slate-600 hover:text-teal-600 hover:bg-teal-50 bg-transparent"
-            }`}
-          >
-            <Gauge className="w-3.5 h-3.5" />
-            Dashboard
-          </button>
+        <div className="flex flex-wrap bg-white/80 backdrop-blur-xl border border-slate-200/80 p-1.5 rounded-3xl gap-1.5 shadow-[0_8px_32px_0_rgba(15,23,42,0.06)] max-w-fit mb-6 transition-all duration-300 relative z-40">
+          {TABS_DEFINITION.map((tab) => {
+            const Icon = tab.icon;
+            const isTabActive = activeTab === tab.id;
+            const subtabs = SUBTABS_CONFIG[tab.id] || [];
 
-          <button
-            onClick={() => setActiveTab("intake")}
-            className={`px-4 py-2.5 rounded-2xl text-[10.5px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer border-none hover:scale-102 active:scale-98 duration-200 ${
-              activeTab === "intake"
-                ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-[0_4px_12px_rgba(245,158,11,0.3)]"
-                : "text-slate-600 hover:text-amber-600 hover:bg-amber-50 bg-transparent"
-            }`}
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            AI Intake
-          </button>
+            return (
+              <div key={tab.id} className="relative group">
+                <button
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`px-4 py-2.5 rounded-2xl text-[10.5px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer border-none hover:scale-102 active:scale-98 duration-200 ${
+                    isTabActive
+                      ? `bg-gradient-to-r ${tab.gradient} text-white ${tab.shadow}`
+                      : `${tab.inactiveText}`
+                  }`}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                  <span>{tab.label}</span>
+                </button>
 
-          <button
-            onClick={() => setActiveTab("patients")}
-            className={`px-4 py-2.5 rounded-2xl text-[10.5px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer border-none hover:scale-102 active:scale-98 duration-200 ${
-              activeTab === "patients"
-                ? "bg-gradient-to-r from-sky-500 to-blue-500 text-white shadow-[0_4px_12px_rgba(14,165,233,0.3)]"
-                : "text-slate-600 hover:text-sky-600 hover:bg-sky-50 bg-transparent"
-            }`}
-          >
-            <Users className="w-3.5 h-3.5" />
-            Patients
-          </button>
-
-          <button
-            onClick={() => setActiveTab("diagnostics")}
-            className={`px-4 py-2.5 rounded-2xl text-[10.5px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer border-none hover:scale-102 active:scale-98 duration-200 ${
-              activeTab === "diagnostics"
-                ? "bg-gradient-to-r from-emerald-600 to-green-500 text-white shadow-[0_4px_12px_rgba(16,185,129,0.3)]"
-                : "text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 bg-transparent"
-            }`}
-          >
-            <Compass className="w-3.5 h-3.5" />
-            Diagnostics
-          </button>
-
-          <button
-            onClick={() => setActiveTab("analyzer")}
-            className={`px-4 py-2.5 rounded-2xl text-[10.5px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer border-none hover:scale-102 active:scale-98 duration-200 ${
-              activeTab === "analyzer"
-                ? "bg-gradient-to-r from-indigo-500 to-violet-500 text-white shadow-[0_4px_12px_rgba(99,102,241,0.3)]"
-                : "text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 bg-transparent"
-            }`}
-          >
-            <FileText className="w-3.5 h-3.5" />
-            Report Analyzer
-          </button>
-
-          <button
-            onClick={() => setActiveTab("diet-lifestyle")}
-            className={`px-4 py-2.5 rounded-2xl text-[10.5px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer border-none hover:scale-102 active:scale-98 duration-200 ${
-              activeTab === "diet-lifestyle"
-                ? "bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-[0_4px_12px_rgba(244,63,94,0.3)]"
-                : "text-slate-600 hover:text-rose-600 hover:bg-rose-50 bg-transparent"
-            }`}
-          >
-            <Layers className="w-3.5 h-3.5" />
-            Diet & Lifestyle
-          </button>
-
-          <button
-            onClick={() => setActiveTab("nexus-atlas")}
-            className={`px-4 py-2.5 rounded-2xl text-[10.5px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer border-none hover:scale-102 active:scale-98 duration-200 ${
-              activeTab === "nexus-atlas"
-                ? "bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-[0_4px_12px_rgba(139,92,246,0.3)]"
-                : "text-slate-600 hover:text-violet-600 hover:bg-violet-50 bg-transparent"
-            }`}
-          >
-            <Network className="w-3.5 h-3.5" />
-            Nexus Atlas
-          </button>
-
-          <button
-            onClick={() => setActiveTab("learning-hub")}
-            className={`px-4 py-2.5 rounded-2xl text-[10.5px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer border-none hover:scale-102 active:scale-98 duration-200 ${
-              activeTab === "learning-hub"
-                ? "bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white shadow-[0_4px_12px_rgba(217,70,239,0.3)]"
-                : "text-slate-600 hover:text-fuchsia-600 hover:bg-fuchsia-50 bg-transparent"
-            }`}
-          >
-            <Award className="w-3.5 h-3.5" />
-            Learning Hub
-          </button>
-
-          <button
-            onClick={() => setActiveTab("communication")}
-            className={`px-4 py-2.5 rounded-2xl text-[10.5px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer border-none hover:scale-102 active:scale-98 duration-200 ${
-              activeTab === "communication"
-                ? "bg-gradient-to-r from-cyan-500 to-teal-500 text-white shadow-[0_4px_12px_rgba(6,182,212,0.3)]"
-                : "text-slate-600 hover:text-cyan-600 hover:bg-cyan-50 bg-transparent"
-            }`}
-          >
-            <Send className="w-3.5 h-3.5" />
-            Communications
-          </button>
-
-          <button
-            onClick={() => setActiveTab("ai-router")}
-            className={`px-4 py-2.5 rounded-2xl text-[10.5px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer border-none hover:scale-102 active:scale-98 duration-200 ${
-              activeTab === "ai-router"
-                ? "bg-gradient-to-r from-slate-700 to-slate-800 text-white shadow-[0_4px_12px_rgba(71,85,105,0.3)]"
-                : "text-slate-600 hover:text-slate-800 hover:bg-slate-100 bg-transparent"
-            }`}
-          >
-            <Cpu className="w-3.5 h-3.5" />
-            AI Router Settings
-          </button>
+                {subtabs.length > 0 && (
+                  <div className="absolute top-full left-0 pt-2 hidden group-hover:block z-[60] min-w-[210px] animate-fadeIn">
+                    <div className="bg-white/95 border border-slate-200/80 p-2 rounded-2xl shadow-[0_10px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)] flex flex-col gap-1">
+                      {subtabs.map((sub) => (
+                        <button
+                          key={sub.id}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleSubTabClick(tab.id as any, sub.id);
+                          }}
+                          className="w-full text-left px-3 py-1.5 rounded-xl text-[10px] font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all cursor-pointer border-none bg-transparent flex items-center gap-2"
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full bg-slate-300 transition-colors duration-200 hover:bg-mint" />
+                          {sub.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
 
         {/* Tab Views */}
@@ -7296,7 +7298,7 @@ ${err.message || err}`);
                 </div>
 
                 {/* Metrics Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div id="dashboard-metrics" className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between hover:scale-[1.01] transition-all">
                     <div>
                       <span className="text-[10px] uppercase font-extrabold tracking-wider text-slate-400">Total Consultation Cases</span>
@@ -7322,7 +7324,7 @@ ${err.message || err}`);
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* Active Patient Queue */}
-                  <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
+                  <div id="dashboard-queue" className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
                     <h4 className="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2">Patient Intake & Action Queue</h4>
                     <div className="space-y-3">
                       {displayQueue.map((pat, idx) => (
@@ -7341,7 +7343,7 @@ ${err.message || err}`);
                   </div>
 
                   {/* Realtime Clinical Alerts */}
-                  <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
+                  <div id="dashboard-alerts" className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
                     <h4 className="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2">Real-Time Clinical Alerts</h4>
                     <div className="space-y-3">
                       {displayAlerts.map((alert, idx) => (
@@ -7433,7 +7435,7 @@ ${err.message || err}`);
                 } as React.CSSProperties}
               >
                 {/* Left Panel: Patient Intake Builder (40%) */}
-                <div className={`lg:col-span-4 flex flex-col h-full bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden`}>
+                <div id="intake-builder" className={`lg:col-span-4 flex flex-col h-full bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden`}>
                   {/* Dictation Waveform Overlay */}
                   {isDictating && (
                     <div 
@@ -7908,7 +7910,7 @@ ${err.message || err}`);
                 </div>
 
                 {/* Right Panel: Live Constitutional Synthesis (60%) */}
-                <div className="lg:col-span-6 flex flex-col h-full bg-slate-950 p-6 rounded-3xl text-white relative overflow-hidden">
+                <div id="live-synthesis" className="lg:col-span-6 flex flex-col h-full bg-slate-950 p-6 rounded-3xl text-white relative overflow-hidden">
                   {/* Title Bar */}
                   <div className="flex items-center justify-between border-b border-slate-800 pb-2 mb-4 flex-shrink-0">
                     <div className="flex items-center space-x-1.5">
@@ -8468,7 +8470,7 @@ ${err.message || err}`);
                   {/* Left Column: Search & Match List */}
                   <div className="lg:col-span-5 space-y-4">
                     {/* Glassmorphic Search Nexus Container */}
-                    <div className="glass-panel p-5 rounded-3xl bg-white/40 backdrop-blur-md border border-white/30 shadow-lg space-y-3">
+                    <div id="diagnostics-search" className="glass-panel p-5 rounded-3xl bg-white/40 backdrop-blur-md border border-white/30 shadow-lg space-y-3">
                       <div className="flex items-center justify-between border-b border-slate-100/50 pb-2">
                         <span className="text-[10px] uppercase tracking-wider text-slate-500 font-extrabold font-mono">Clinical Search Nexus</span>
                         <div className="flex items-center gap-1">
@@ -8572,7 +8574,7 @@ ${err.message || err}`);
                     </div>
 
                     {/* Conditions List */}
-                    <div className="space-y-3 max-h-[500px] overflow-y-auto pr-1">
+                    <div id="diagnostics-list" className="space-y-3 max-h-[500px] overflow-y-auto pr-1">
                       {filteredList.length > 0 ? (
                         filteredList.slice(0, 100).map((cond, idx) => (
                           <div 
@@ -8623,7 +8625,7 @@ ${err.message || err}`);
                   </div>
 
                   {/* Right Column: Detailed Diagnostic Profile & Homeopathic layer */}
-                  <div className="lg:col-span-7 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm min-h-[500px]">
+                  <div id="diagnostics-details" className="lg:col-span-7 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm min-h-[500px]">
                     {selectedDiagCondition ? (
                       <div className="space-y-6 select-text">
                         {/* Title block */}
@@ -9293,7 +9295,7 @@ ${err.message || err}`);
                 >
                   
                   {/* LEFT PANEL: Report Input Center (25%) */}
-                  <div className={`${leftSidebarCollapsed ? "lg:col-span-1" : "lg:col-span-3"} transition-all duration-300 flex flex-col gap-4 bg-white/60 border border-slate-200/45 p-4 rounded-3xl`}>
+                  <div id="analyzer-ingestion" className={`${leftSidebarCollapsed ? "lg:col-span-1" : "lg:col-span-3"} transition-all duration-300 flex flex-col gap-4 bg-white/60 border border-slate-200/45 p-4 rounded-3xl`}>
                     <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                       {!leftSidebarCollapsed && (
                         <h4 className="text-[10px] font-black text-[#1A2421] uppercase tracking-widest font-mono flex items-center gap-1.5">
@@ -9481,7 +9483,7 @@ ${err.message || err}`);
                   </div>
 
                   {/* CENTER PANEL: AI Clinical Analysis (50%) */}
-                  <div className={`${
+                  <div id="analyzer-results" className={`${
                     leftSidebarCollapsed && rightSidebarCollapsed ? "lg:col-span-10" :
                     leftSidebarCollapsed || rightSidebarCollapsed ? "lg:col-span-8" : "lg:col-span-6"
                   } flex flex-col gap-5`}>
@@ -10172,7 +10174,7 @@ ${err.message || err}`);
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-                <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
+                <div id="diet-constraints" className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
                   <h3 className="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2">Diet Constraints</h3>
                   <div className="space-y-3">
                     <div className="flex flex-col gap-1">
@@ -10268,7 +10270,7 @@ ${err.message || err}`);
                   </div>
                 </div>
 
-                <div className="lg:col-span-2 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm min-h-[400px]">
+                <div id="diet-prescriptions" className="lg:col-span-2 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm min-h-[400px]">
                   <h3 className="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2 flex items-center gap-2">
                     <Layers className="w-4 h-4 text-mint" />
                     Meal Charts & Lifestyle Routines
@@ -10473,7 +10475,7 @@ ${err.message || err}`);
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-                <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
+                <div id="comm-inputs" className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
                   <h3 className="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2">Prescription Inputs</h3>
                   <div className="space-y-3">
                     <div className="flex flex-col gap-1">
@@ -10534,7 +10536,7 @@ ${err.message || err}`);
                   </div>
                 </div>
 
-                <div className="lg:col-span-2 space-y-4">
+                <div id="comm-templates" className="lg:col-span-2 space-y-4">
                   {isEduLoading && (
                     <div className="flex flex-col items-center justify-center py-28 bg-white rounded-3xl border border-slate-100 shadow-sm gap-3">
                       <div className="w-8 h-8 rounded-full border-2 border-slate-200 border-t-mint animate-spin" />
@@ -10713,7 +10715,7 @@ ${err.message || err}`);
                 <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
                   
                   {/* Left Column Settings Controls */}
-                  <div className="xl:col-span-4 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-6">
+                  <div id="router-routing-matrix" className="xl:col-span-4 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-6">
                     <h3 className="text-xs font-extrabold text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2 flex items-center gap-2">
                       <Sliders className="w-4 h-4 text-teal-650" />
                       Routing Settings Matrix
@@ -11165,7 +11167,7 @@ ${err.message || err}`);
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       
                       {/* AI Model Benchmarks */}
-                      <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm space-y-3.5">
+                      <div id="router-benchmarks" className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm space-y-3.5">
                         <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                           <h4 className="text-xs font-extrabold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
                             <Gauge className="w-4 h-4 text-teal-650" /> AI Model Benchmarks
@@ -11230,7 +11232,7 @@ ${err.message || err}`);
                       </div>
 
                       {/* Consensus Engine Console */}
-                      <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm space-y-3.5">
+                      <div id="router-consensus" className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm space-y-3.5">
                         <h4 className="text-xs font-extrabold text-slate-700 uppercase tracking-wider border-b border-slate-100 pb-2 flex items-center gap-1.5">
                           <Brain className="w-4 h-4 text-indigo-500" /> Consensus Engine Console
                         </h4>
@@ -11266,7 +11268,7 @@ ${err.message || err}`);
                     </div>
 
                     {/* Live Test Sandbox */}
-                    <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
+                    <div id="router-sandbox" className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
                       <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                         <h4 className="text-xs font-extrabold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
                           <Play className="w-4 h-4 text-teal-650" /> Live Sandbox testing
@@ -11369,7 +11371,7 @@ ${err.message || err}`);
                     </div>
 
                     {/* Operational Telemetry Logs Explorer */}
-                    <div className="bg-slate-900 text-slate-205 p-5 rounded-3xl border border-slate-850 shadow-lg space-y-4">
+                    <div id="router-telemetry-logs" className="bg-slate-900 text-slate-205 p-5 rounded-3xl border border-slate-850 shadow-lg space-y-4">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
                         <span className="text-[10px] uppercase tracking-wider font-extrabold text-teal-450 font-mono flex items-center gap-1.5">
                           <span className="w-2 h-2 bg-teal-400 rounded-full animate-ping"></span>
@@ -11503,7 +11505,7 @@ ${err.message || err}`);
             <div className="space-y-6">
               
               {/* Search & Action Buttons Header */}
-              <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div id="patients-directory" className="flex flex-col md:flex-row items-center justify-between gap-4">
                 <div className="relative w-full md:max-w-md">
                   <input
                     type="text"
@@ -11584,7 +11586,7 @@ ${err.message || err}`);
               </div>
 
               {/* Patients Grid */}
-              <div className="grid grid-cols-1 gap-4">
+              <div id="patients-list" className="grid grid-cols-1 gap-4">
                 {filteredPatients.length === 0 ? (
                   <div className="glass-panel p-12 text-center rounded-[28px] border-white/60">
                     <Users className="w-12 h-12 text-slate-300 mx-auto mb-3" />
@@ -17563,7 +17565,7 @@ ${err.message || err}`);
                       </div>
 
                       {/* Clinical Research Mode Card */}
-                      <div className="bg-slate-900/50 border border-slate-900 rounded-[32px] p-6 shadow-md relative overflow-hidden">
+                      <div id="research-search" className="bg-slate-900/50 border border-slate-900 rounded-[32px] p-6 shadow-md relative overflow-hidden">
                         <div className="flex items-center justify-between border-b border-slate-900 pb-4 mb-4">
                           <div className="flex items-center gap-2">
                             <Cpu className="w-4 h-4 text-emerald-400" />
@@ -17621,7 +17623,7 @@ ${err.message || err}`);
                           </button>
 
                           {researchDigest && (
-                            <div className="bg-slate-950 border border-slate-900 p-4 rounded-2xl text-left space-y-3 shadow-inner">
+                            <div id="research-findings" className="bg-slate-950 border border-slate-900 p-4 rounded-2xl text-left space-y-3 shadow-inner">
                               <span className="text-[8px] uppercase tracking-widest font-extrabold text-emerald-400">Research Digest Summary</span>
                               <div 
                                 className="text-[10px] text-slate-300 leading-relaxed font-semibold space-y-2 select-text font-sans"
@@ -18786,7 +18788,7 @@ ${err.message || err}`);
 
               {/* 3. ADVANCED COMPARISON SUBTAB */}
               {learningSubTab === "compare" && (
-                <div className="bg-slate-900/50 border border-slate-900 rounded-[32px] p-6 shadow-md space-y-6">
+                <div id="learning-differential" className="bg-slate-900/50 border border-slate-900 rounded-[32px] p-6 shadow-md space-y-6">
                   <div className="border-b border-slate-900 pb-3 mb-1">
                     <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-200">Advanced Comparative Engine</h3>
                     <p className="text-[9px] text-slate-500 font-semibold leading-relaxed">Side-by-side differential analysis of remedy keynotes, botanical families, kingdoms, and miasms.</p>
@@ -19099,7 +19101,7 @@ ${err.message || err}`);
 
               {/* 4. CONVERSATIONAL TUTOR SUBTAB */}
               {learningSubTab === "tutor" && (
-                <div className="bg-slate-900/50 border border-slate-900 rounded-[32px] p-6 shadow-md relative overflow-hidden flex flex-col">
+                <div id="learning-tutor" className="bg-slate-900/50 border border-slate-900 rounded-[32px] p-6 shadow-md relative overflow-hidden flex flex-col">
                   <div className="flex items-center justify-between border-b border-slate-900 pb-4 mb-4">
                     <div className="flex items-center gap-2">
                       <Brain className="w-4 h-4 text-emerald-400" />
@@ -20127,7 +20129,7 @@ ${err.message || err}`);
 
               {/* 9. COMPLETE DRUG PICTURE SUBTAB */}
               {learningSubTab === "drugPicture" && (
-                <div className="space-y-6 select-none">
+                <div id="learning-monograph" className="space-y-6 select-none">
                   {(() => {
                     const rem = MASTER_REMEDY_DB.find(r => r.id === learningRemedyId) || MASTER_REMEDY_DB[0];
                     if (!rem) return null;
