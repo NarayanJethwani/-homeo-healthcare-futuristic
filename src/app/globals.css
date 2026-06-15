@@ -1233,5 +1233,126 @@ html.lenis, html.lenis body {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
+/* ── PREMIUM INTERACTIVE ANIMATIONS & COLOR SYSTEMS ── */
+
+/* Scroll-Driven Entrance Transitions */
+.animate-on-scroll {
+  opacity: 0 !important;
+  transform: translateY(24px) scale(0.985);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), 
+              transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.3s ease, 
+              box-shadow 0.3s ease, 
+              background-color 0.3s ease !important;
+  will-change: transform, opacity;
+}
+
+.animate-on-scroll.is-visible {
+  opacity: 1 !important;
+  transform: translateY(0) scale(1) !important;
+}
+
+/* Card & Interactive Element Base Transitions */
+.wp-bento-card, 
+.wp-bento-card-2col, 
+.wp-remedy-profile, 
+.wp-takeaways-block, 
+.wp-insight-block,
+.wp-risk-module {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  transform-origin: center center;
+}
+
+.wp-bento-card:hover, 
+.wp-bento-card-2col:hover,
+.wp-remedy-profile:hover {
+  transform: translateY(-5px) scale(1.01) !important;
+}
+
+/* Theme Specific Neon Glows & Highlight Interactions */
+
+/* Theme Teal (Respiratory/Skin/Homeopathy) */
+.wp-content.theme-teal .wp-bento-card:hover,
+.wp-content.theme-teal .wp-bento-card-2col:hover,
+.wp-content.theme-teal .wp-remedy-profile:hover {
+  border-color: rgba(20, 184, 166, 0.4) !important;
+  box-shadow: 0 12px 32px rgba(20, 184, 166, 0.12), 0 0 12px rgba(20, 184, 166, 0.04) !important;
+  background-color: rgba(20, 184, 166, 0.02) !important;
+}
+.wp-content.theme-teal .wp-timeline-item:hover .wp-timeline-step {
+  transform: scale(1.15);
+  box-shadow: 0 0 14px #14b8a6;
+  background-color: #14b8a6 !important;
+  color: #0f766e !important;
+}
+
+/* Theme Blue (Renal/Kidney/Neurology) */
+.wp-content.theme-blue .wp-bento-card:hover,
+.wp-content.theme-blue .wp-bento-card-2col:hover,
+.wp-content.theme-blue .wp-remedy-profile:hover {
+  border-color: rgba(14, 165, 233, 0.4) !important;
+  box-shadow: 0 12px 32px rgba(14, 165, 233, 0.12), 0 0 12px rgba(14, 165, 233, 0.04) !important;
+  background-color: rgba(14, 165, 233, 0.02) !important;
+}
+.wp-content.theme-blue .wp-timeline-item:hover .wp-timeline-step {
+  transform: scale(1.15);
+  box-shadow: 0 0 14px #0ea5e9;
+  background-color: #0ea5e9 !important;
+  color: #0369a1 !important;
+}
+
+/* Theme Green (Metabolic/Infectious/Immunity) */
+.wp-content.theme-green .wp-bento-card:hover,
+.wp-content.theme-green .wp-bento-card-2col:hover,
+.wp-content.theme-green .wp-remedy-profile:hover {
+  border-color: rgba(16, 185, 129, 0.4) !important;
+  box-shadow: 0 12px 32px rgba(16, 185, 129, 0.12), 0 0 12px rgba(16, 185, 129, 0.04) !important;
+  background-color: rgba(16, 185, 129, 0.02) !important;
+}
+.wp-content.theme-green .wp-timeline-item:hover .wp-timeline-step {
+  transform: scale(1.15);
+  box-shadow: 0 0 14px #10b981;
+  background-color: #10b981 !important;
+  color: #15803d !important;
+}
+
+/* Theme Purple (Autoimmune/Endocrine/Thyroid) */
+.wp-content.theme-purple .wp-bento-card:hover,
+.wp-content.theme-purple .wp-bento-card-2col:hover,
+.wp-content.theme-purple .wp-remedy-profile:hover {
+  border-color: rgba(168, 85, 247, 0.4) !important;
+  box-shadow: 0 12px 32px rgba(168, 85, 247, 0.12), 0 0 12px rgba(168, 85, 247, 0.04) !important;
+  background-color: rgba(168, 85, 247, 0.02) !important;
+}
+.wp-content.theme-purple .wp-timeline-item:hover .wp-timeline-step {
+  transform: scale(1.15);
+  box-shadow: 0 0 14px #a855f7;
+  background-color: #a855f7 !important;
+  color: #7e22ce !important;
+}
+
+/* Pulsing Badge & Accent Animations */
+@keyframes pulseGlowBadge {
+  0%, 100% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.03);
+  }
+}
+
+.wp-clinical-badge {
+  animation: pulseGlowBadge 3s infinite ease-in-out;
+  display: inline-block;
+  box-shadow: 0 0 8px rgba(var(--theme-color-rgb), 0.15);
+}
+
+.wp-timeline-step {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+
 
 

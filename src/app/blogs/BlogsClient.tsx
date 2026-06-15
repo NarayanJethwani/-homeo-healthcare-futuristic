@@ -564,6 +564,40 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
     }
   }, [selectedArticle]);
 
+  useEffect(() => {
+    if (!processedHtml) return;
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const targets = container.querySelectorAll(
+      ".article-section, .section-title, .wp-article-body-image, .wp-bento-card, .wp-bento-card-2col, .wp-timeline-item, .wp-insight-block, .wp-risk-module, .wp-table-container, .wp-remedy-profile, .wp-takeaways-block"
+    );
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+          }
+        });
+      },
+      {
+        root: container,
+        threshold: 0.05,
+        rootMargin: "0px 0px -40px 0px",
+      }
+    );
+
+    targets.forEach((t) => {
+      t.classList.add("animate-on-scroll");
+      observer.observe(t);
+    });
+
+    return () => {
+      targets.forEach((t) => observer.unobserve(t));
+    };
+  }, [processedHtml]);
+
   const handleScroll = () => {
     const container = scrollContainerRef.current;
     if (!container) return;

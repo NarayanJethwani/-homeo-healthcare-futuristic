@@ -49,6 +49,23 @@ export interface ConstitutionalProfile {
   adaptivePattern: string;
 }
 
+export interface HealthHistoryEntry {
+  id: string;
+  profileId: string;
+  date: string;
+  score: number;
+  answers: Record<string, any>;
+  symptoms: string[];
+}
+
+export interface BiologicalAgeMetrics {
+  chronologicalAge: number;
+  bioAge: number;
+  longevityScore: number;
+  lifestyleRiskIndex: "Low" | "Moderate" | "High";
+  wellnessIndex: number;
+}
+
 export interface HealthDigitalTwin {
   overallScore: number;
   systemScores: SystemScores;
@@ -58,9 +75,11 @@ export interface HealthDigitalTwin {
     answers: Record<string, any>;
     symptoms: string[];
   }>;
+  history: HealthHistoryEntry[];
   organLoad: Record<string, number>;
   riskLevel: Record<string, { level: "Low" | "Moderate" | "High"; pct: number }>;
   constitutional?: ConstitutionalProfile;
+  biologicalAge?: BiologicalAgeMetrics;
   activeRulesFlags: string[];
   priorityGoals: string[];
 }

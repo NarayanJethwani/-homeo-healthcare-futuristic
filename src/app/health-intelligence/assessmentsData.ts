@@ -953,6 +953,28 @@ export const ASSESSMENT_PROFILES: AssessmentProfile[] = [
       "Spells of anger or obstinacy when corrected or consoled",
       "Sleep fragmentation, grinding teeth at night"
     ]
+  },
+  {
+    id: "biological_age",
+    name: "Biological Age & Longevity Calculator",
+    category: "metabolic",
+    gradient: "from-teal-500/10 to-emerald-500/10 border-teal-500/20 hover:border-teal-500/50",
+    textClass: "text-teal-600 dark:text-teal-400",
+    badgeBg: "bg-teal-50 dark:bg-teal-950/30 text-teal-700 dark:text-teal-400",
+    description: "Calculates your epigenetic age acceleration, longevity score, and compiles a lifestyle risk index.",
+    questions: [
+      { id: "chronological_age", label: "What is your chronological age range?", type: "select", options: ["Under 25", "25 - 34", "35 - 44", "45 - 54", "55 - 64", "65 or older"] },
+      { id: "dietary_oxidants", label: "Oxidative food baseline & glycemic load", type: "select", options: ["Whole organic diet, high antioxidants", "Average home-cooked diet", "High processed carb intake", "Inflammatory refined foods, low greens"] },
+      { id: "cardio_reserve", label: "Zone 2 cardiorespiratory conditioning", type: "range", min: 1, max: 10, labelMin: "Sedentary", labelMax: "Daily conditioning" },
+      { id: "circadian_repair", label: "Circadian sleep duration & quality", type: "select", options: ["Restorative 7.5-8.5 hours", "Compensated 6-7 hours", "Fragmented 5-6 hours", "Severe insomnia / under 5 hours"] },
+      { id: "mitochondrial_strain", label: "Allostatic stress & mitochondrial strain index", type: "range", min: 1, max: 10, labelMin: "Calm", labelMax: "High Burnout" }
+    ],
+    symptomsList: [
+      "Chronic morning joint stiffness or sluggish movement",
+      "Noticeable skin elasticity decline and early grey hair",
+      "Shortness of breath on walking up two flights of stairs",
+      "Memory recalls feel noticeably slower than 5 years ago"
+    ]
   }
 ];
 

@@ -227,3 +227,223 @@ export function analyzeDigitalTwin(twin: HealthDigitalTwin): {
     miasmaticProfile: { psora, sycosis, syphilis }
   };
 }
+
+export interface RelatedContentItem {
+  name: string;
+  url: string;
+}
+
+export interface RelatedContent {
+  conditions: RelatedContentItem[];
+  treatments: RelatedContentItem[];
+  blogs: RelatedContentItem[];
+  protocols: RelatedContentItem[];
+}
+
+export function getRelatedContent(category: string): RelatedContent {
+  const cat = category.toLowerCase();
+  
+  if (cat.includes("endocrine")) {
+    return {
+      conditions: [
+        { name: "Hypothyroidism & Slow Metabolism", url: "/services" },
+        { name: "Hashimoto's Thyroiditis", url: "/services" },
+        { name: "Polycystic Ovary Syndrome (PCOS)", url: "/services" },
+        { name: "Adrenal Fatigue & HPA Strain", url: "/services" }
+      ],
+      treatments: [
+        { name: "Endocrine Axis Rebalancing Program", url: "/store/plans" },
+        { name: "Hormonal Constitutional Therapy", url: "/services" }
+      ],
+      blogs: [
+        { name: "Understanding Thyroid Biomarkers (TSH & Free T3)", url: "/blogs" },
+        { name: "Homeopathic Regulation of Adrenal Burnout", url: "/blogs" }
+      ],
+      protocols: [
+        { name: "Thyroid-Endocrine Restore Protocol", url: "/evidence-based-homeopathy" }
+      ]
+    };
+  }
+
+  if (cat.includes("metabolic")) {
+    return {
+      conditions: [
+        { name: "Insulin Resistance & Glycemic Spikes", url: "/services" },
+        { name: "Metabolic Syndrome & Visceral Adipose", url: "/services" },
+        { name: "Nutritional Deficiency States", url: "/services" }
+      ],
+      treatments: [
+        { name: "Metabolic Pathway Activation Program", url: "/store/plans" },
+        { name: "Cellular Nutrition Therapy", url: "/services" }
+      ],
+      blogs: [
+        { name: "Reverse Insulin Resistance Naturally", url: "/blogs" },
+        { name: "EPIGENETICS: Understanding Your Biological Age", url: "/blogs" }
+      ],
+      protocols: [
+        { name: "Metabolic Pathway Toning Protocol", url: "/evidence-based-homeopathy" }
+      ]
+    };
+  }
+
+  if (cat.includes("cardio")) {
+    return {
+      conditions: [
+        { name: "Essential Hypertension", url: "/services" },
+        { name: "Coronary Arterial Stress & Dyslipidemia", url: "/services" },
+        { name: "Vascular Aging & Arterial Stiffness", url: "/services" }
+      ],
+      treatments: [
+        { name: "Cardiovascular Stamina Optimization", url: "/store/plans" },
+        { name: "Vaso-toning Micro-dilutions", url: "/services" }
+      ],
+      blogs: [
+        { name: "High Blood Pressure: Homeopathy & Vagal Tone", url: "/blogs" },
+        { name: "Methanol & Lipid Transports Explained", url: "/blogs" }
+      ],
+      protocols: [
+        { name: "Vascular & Arterial Restoration Protocol", url: "/evidence-based-homeopathy" }
+      ]
+    };
+  }
+
+  if (cat.includes("respiratory")) {
+    return {
+      conditions: [
+        { name: "Allergic Bronchial Asthma", url: "/services" },
+        { name: "Chronic Sinusitis & Rhinitis", url: "/services" },
+        { name: "Airway Hypersensitivity & Allergies", url: "/services" }
+      ],
+      treatments: [
+        { name: "Respiratory Desensitization Program", url: "/store/plans" },
+        { name: "Immune Regulation Therapy", url: "/services" }
+      ],
+      blogs: [
+        { name: "Breathe Free: Homeopathic Lung Support", url: "/blogs" },
+        { name: "Histamine Loops: Silencing the IgE Trigger", url: "/blogs" }
+      ],
+      protocols: [
+        { name: "Allergen-Respiratory Desensitization", url: "/evidence-based-homeopathy" }
+      ]
+    };
+  }
+
+  if (cat.includes("digestive")) {
+    return {
+      conditions: [
+        { name: "Irritable Bowel Syndrome (IBS)", url: "/services" },
+        { name: "Gut Dysbiosis & Leaky Mucosa", url: "/services" },
+        { name: "GERD, Reflux & Chronic Gastritis", url: "/services" }
+      ],
+      treatments: [
+        { name: "Gut Mucosal Restructuring Program", url: "/store/plans" },
+        { name: "Portal Circulation Decongestion", url: "/services" }
+      ],
+      blogs: [
+        { name: "Vagus Nerve, Anxiety, and IBS Connection", url: "/blogs" },
+        { name: "Understanding Hepatic Detoxification", url: "/blogs" }
+      ],
+      protocols: [
+        { name: "Gastrointestinal Microbiome Stabilization", url: "/evidence-based-homeopathy" }
+      ]
+    };
+  }
+
+  if (cat.includes("skin")) {
+    return {
+      conditions: [
+        { name: "Atopic Eczema & Dermal Pruritus", url: "/services" },
+        { name: "Psoriasis Severity & Scaling Eruptions", url: "/services" },
+        { name: "Hormonal Acne & Skin Barrier Breakdown", url: "/services" }
+      ],
+      treatments: [
+        { name: "Dermal Epithelial Clearance Therapy", url: "/services" },
+        { name: "Epidermal Barrier Restoration Program", url: "/store/plans" }
+      ],
+      blogs: [
+        { name: "Skin Eruptions: The Miasmatic Exit Pathway", url: "/blogs" },
+        { name: "Why Ceramide Ointments Alone Aren't Enough", url: "/blogs" }
+      ],
+      protocols: [
+        { name: "Dermal Barrier Restructuring Protocol", url: "/evidence-based-homeopathy" }
+      ]
+    };
+  }
+
+  if (cat.includes("mental") || cat.includes("neuro")) {
+    return {
+      conditions: [
+        { name: "Generalized Anxiety & Panic Tendencies", url: "/services" },
+        { name: "Chronic Burnout & Adrenal Fatigue", url: "/services" },
+        { name: "Cognitive Performance & Memory Lags", url: "/services" }
+      ],
+      treatments: [
+        { name: "HPA-Axis Neuroendocrine Decompression", url: "/store/plans" },
+        { name: "Cognitive Focus Therapy", url: "/services" }
+      ],
+      blogs: [
+        { name: "Autonomic Rest: Calming a Racing Mind", url: "/blogs" },
+        { name: "How Stress Blocks Thyroid Conversion (T4 to T3)", url: "/blogs" }
+      ],
+      protocols: [
+        { name: "HPA-Axis Neuroendocrine Decompression", url: "/evidence-based-homeopathy" }
+      ]
+    };
+  }
+
+  if (cat.includes("womens")) {
+    return {
+      conditions: [
+        { name: "PCOS, Androgen Excess & Cysts", url: "/services" },
+        { name: "Menstrual Cycle Regularity & Dysmenorrhea", url: "/services" },
+        { name: "Menopause Hot Flashes & Restless Sleep", url: "/services" }
+      ],
+      treatments: [
+        { name: "Ovarian Cycle Stabilization Program", url: "/store/plans" },
+        { name: "Utero-ovarian Circulation Toning", url: "/services" }
+      ],
+      blogs: [
+        { name: "Homeopathic Remedies for Menstrual Cramps", url: "/blogs" },
+        { name: "The Natural Path to Fertility and Conception", url: "/blogs" }
+      ],
+      protocols: [
+        { name: "Cyclical Hormonal Stabilization Protocol", url: "/evidence-based-homeopathy" }
+      ]
+    };
+  }
+
+  if (cat.includes("childrens")) {
+    return {
+      conditions: [
+        { name: "Recurrent Childhood Infections & Low Immunity", url: "/services" },
+        { name: "Learning & Attention Lags (ADHD Indicators)", url: "/services" }
+      ],
+      treatments: [
+        { name: "Pediatric Constitutional Stabilization", url: "/services" }
+      ],
+      blogs: [
+        { name: "Supporting Child Development with Calcarea Remedies", url: "/blogs" },
+        { name: "Grinding Teeth, Pinworms, and Restless Sleep", url: "/blogs" }
+      ],
+      protocols: [
+        { name: "Pediatric Growth & Immune Pathway Toning", url: "/evidence-based-homeopathy" }
+      ]
+    };
+  }
+
+  // Default fallback
+  return {
+    conditions: [
+      { name: "Homeostatic Rhythm Imbalance", url: "/services" }
+    ],
+    treatments: [
+      { name: "Clinical Constitutional Evaluation", url: "/services" }
+    ],
+    blogs: [
+      { name: "What is Constitutional Homeostatic Mapping?", url: "/blogs" }
+    ],
+    protocols: [
+      { name: "Homeostatic Pathway Synchronization Protocol", url: "/evidence-based-homeopathy" }
+    ]
+  };
+}
