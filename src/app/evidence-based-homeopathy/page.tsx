@@ -8,7 +8,6 @@ import {
   X
 } from "lucide-react";
 import PotencySimulator from "@/components/PotencySimulator";
-import EcgGraph from "@/components/EcgGraph";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Magnetic from "@/components/Magnetic";
@@ -182,10 +181,7 @@ export default function EvidenceBasedHomeopathyPage() {
   return (
     <div className="pt-32 pb-24 px-0 relative">
       
-      {/* Live ECG sweep - full screen width at top of page */}
-      <div className="w-full mb-12">
-        <EcgGraph />
-      </div>
+
 
       <div className="max-w-7xl mx-auto z-10 relative px-6">
         
