@@ -5,7 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   Activity, Sparkles, Heart, Sliders, ChevronRight, Play, Check, 
   ArrowLeft, RefreshCw, AlertTriangle, ArrowRight, ShieldCheck, HelpCircle, FileText, Calendar,
-  UploadCloud, Info, Trash2, Printer, Plus, Award, User, Layers, BookOpen, MessageSquare
+  UploadCloud, Info, Trash2, Printer, Plus, Award, User, Layers, BookOpen, MessageSquare,
+  TrendingUp, Clock, Flame, ShieldAlert, HeartPulse, ChevronDown
 } from "lucide-react";
 import Link from "next/link";
 
@@ -20,9 +21,11 @@ import {
   IntelligenceReport, 
   SystemScores, 
   MiasmaticProfile,
-  ConstitutionalProfile
+  ConstitutionalProfile,
+  HealthHistoryEntry,
+  BiologicalAgeMetrics
 } from "./types";
-import { analyzeDigitalTwin } from "./clinicalRulesEngine";
+import { analyzeDigitalTwin, getRelatedContent, RelatedContent } from "./clinicalRulesEngine";
 import { CONSTITUTIONAL_QUESTIONS, analyzeConstitution } from "./constitutionalEngine";
 import { parseLabReport, LabAnalysisResult } from "./labOcrEngine";
 import RadarChart from "./radarChart";
@@ -43,6 +46,7 @@ const DEFAULT_TWIN: HealthDigitalTwin = {
     mentalHealth: 100
   },
   completedAssessments: {},
+  history: [],
   organLoad: {
     pancreas: 10,
     thyroid: 10,
@@ -73,8 +77,7 @@ export default function HealthIntelligencePage() {
   const [digitalTwin, setDigitalTwin] = useState<HealthDigitalTwin>(DEFAULT_TWIN);
   const [activeView, setActiveView] = useState<"dashboard" | "assessment" | "constitutional" | "lab_upload" | "report">("dashboard");
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
-  const [activeCategory, setActiveCategory] = useState<string>("metabolic");
-  const [isEcgExpanded, setIsEcgExpanded] = useState(false);
+  const [expandedCategory, setExpandedCategory] = useState<string | null>("metabolic");
   
   // Questionnaire States
   const [answers, setAnswers] = useState<Record<string, any>>({});
@@ -82,6 +85,7 @@ export default function HealthIntelligencePage() {
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [isCalculating, setIsCalculating] = useState(false);
   const [activeReport, setActiveReport] = useState<IntelligenceReport | null>(null);
+  const [activeReportCategory, setActiveReportCategory] = useState<string>("metabolic");
 
   // Constitutional Assessment States
   const [constitutionalAnswers, setConstitutionalAnswers] = useState<Record<string, string>>({});
@@ -94,12 +98,15 @@ export default function HealthIntelligencePage() {
   const [labResult, setLabResult] = useState<LabAnalysisResult | null>(null);
   const [dragActive, setDragActive] = useState(false);
 
+  // ECG Expanded State
+  const [isEcgExpanded, setIsEcgExpanded] = useState(false);
+
   // Theme State
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
   // Load digital twin state from localStorage
   useEffect(() => {
-    const saved = localStorage.getItem("homeo_health_digital_twin_2026");
+    const saved = localStorage.getItem("homeo_health_digital_twin_2026_v2");
     if (saved) {
       try {
         setDigitalTwin(JSON.parse(saved));
@@ -124,14 +131,14 @@ export default function HealthIntelligencePage() {
   // Save digital twin helper
   const saveDigitalTwin = (updated: HealthDigitalTwin) => {
     setDigitalTwin(updated);
-    localStorage.setItem("homeo_health_digital_twin_2026", JSON.stringify(updated));
+    localStorage.setItem("homeo_health_digital_twin_2026_v2", JSON.stringify(updated));
   };
 
   // Reset digital twin helper
   const handleResetTwin = () => {
-    if (window.confirm("Are you sure you want to clear your Health Digital Twin profile? This will reset all scores and completed assessments history.")) {
+    if (window.confirm("Are you sure you want to clear your Health Digital Twin profile? This will reset all scores, biological age index, and completed assessments timeline.")) {
       setDigitalTwin(DEFAULT_TWIN);
-      localStorage.removeItem("homeo_health_digital_twin_2026");
+      localStorage.removeItem("homeo_health_digital_twin_2026_v2");
       setActiveView("dashboard");
       setLabResult(null);
       setActiveReport(null);
@@ -162,7 +169,7 @@ export default function HealthIntelligencePage() {
     );
   };
 
-  // Score generator
+  // Score & Report calculation
   const handleCalculateAssessment = () => {
     if (!selectedProfileId) return;
     setIsCalculating(true);
@@ -171,6 +178,98 @@ export default function HealthIntelligencePage() {
       const profile = ASSESSMENT_PROFILES.find(p => p.id === selectedProfileId);
       if (!profile) return;
 
+      let score = 85;
+
+      // Handle Biological Age Calculation specifically
+      if (selectedProfileId === "biological_age") {
+        // Chronological age index mapping
+        const chronRange = answers.chronological_age;
+        let chronAge = 35;
+        if (chronRange === "Under 25") chronAge = 21;
+        else if (chronRange === "25 - 34") chronAge = 29;
+        else if (chronRange === "35 - 44") chronAge = 39;
+        else if (chronRange === "45 - 54") chronAge = 49;
+        else if (chronRange === "55 - 64") chronAge = 59;
+        else if (chronRange === "65 or older") chronAge = 72;
+
+        // Biological shifts calculation
+        let epigeneticAcceleration = 0;
+        const dietVal = answers.dietary_oxidants;
+        if (dietVal.includes("Whole organic")) epigeneticAcceleration -= 3;
+        else if (dietVal.includes("processed carb")) epigeneticAcceleration += 3;
+        else if (dietVal.includes("Inflammatory")) epigeneticAcceleration += 6;
+
+        const sleepVal = answers.circadian_repair;
+        if (sleepVal.includes("Restorative")) epigeneticAcceleration -= 3;
+        else if (sleepVal.includes("Fragmented")) epigeneticAcceleration += 3;
+        else if (sleepVal.includes("Severe insomnia")) epigeneticAcceleration += 6;
+
+        const cardioVal = Number(answers.cardio_reserve || 5);
+        if (cardioVal >= 8) epigeneticAcceleration -= 4;
+        else if (cardioVal <= 3) epigeneticAcceleration += 4;
+
+        const stressVal = Number(answers.mitochondrial_strain || 5);
+        if (stressVal >= 8) epigeneticAcceleration += 4;
+        else if (stressVal <= 3) epigeneticAcceleration -= 2;
+
+        // Symptoms add penalty years
+        epigeneticAcceleration += selectedSymptoms.length * 1.5;
+
+        // Cap values
+        const bioAge = Math.round(chronAge + epigeneticAcceleration);
+        const longevityScore = Math.max(38, Math.min(99, Math.round(95 - epigeneticAcceleration * 2.2)));
+        const wellnessIndex = Math.max(30, Math.min(100, Math.round(100 - (epigeneticAcceleration + 10) * 1.8)));
+        const lifestyleRiskIndex: "Low" | "Moderate" | "High" = longevityScore > 80 ? "Low" : longevityScore > 55 ? "Moderate" : "High";
+
+        score = wellnessIndex;
+
+        const bioMetrics: BiologicalAgeMetrics = {
+          chronologicalAge: chronAge,
+          bioAge,
+          longevityScore,
+          lifestyleRiskIndex,
+          wellnessIndex
+        };
+
+        const completedAssessments = { ...digitalTwin.completedAssessments };
+        const attemptId = "att_" + Date.now();
+        const newHistoryEntry: HealthHistoryEntry = {
+          id: attemptId,
+          profileId: selectedProfileId,
+          date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+          score,
+          answers: { ...answers },
+          symptoms: [...selectedSymptoms]
+        };
+
+        completedAssessments[selectedProfileId] = {
+          date: newHistoryEntry.date,
+          score,
+          answers: { ...answers },
+          symptoms: [...selectedSymptoms]
+        };
+
+        const updatedHistory = [newHistoryEntry, ...(digitalTwin.history || [])];
+
+        const updatedTwin: HealthDigitalTwin = {
+          ...digitalTwin,
+          biologicalAge: bioMetrics,
+          completedAssessments,
+          history: updatedHistory
+        };
+
+        saveDigitalTwin(updatedTwin);
+        
+        // Generate Report
+        const report = generateReport(selectedProfileId, score, answers, selectedSymptoms);
+        setActiveReport(report);
+        setActiveReportCategory(profile.category);
+        setIsCalculating(false);
+        setActiveView("report");
+        return;
+      }
+
+      // General assessment scoring
       let totalBurden = 0;
       profile.questions.forEach(q => {
         const val = answers[q.id];
@@ -183,7 +282,6 @@ export default function HealthIntelligencePage() {
           const min = q.min || 1;
           const max = q.max || 10;
           const v = Number(val) || min;
-          // Reverse if it's a positive health marker
           const positiveMarkers = ["activity_level", "daily_steps", "energy_stability", "cardio_stamina", "sleep_duration"];
           if (positiveMarkers.includes(q.id)) {
             qBurden = ((max - v) / (max - min)) * 100;
@@ -197,53 +295,63 @@ export default function HealthIntelligencePage() {
       const avgQuestionBurden = totalBurden / profile.questions.length;
       const symptomsBurden = Math.min(100, selectedSymptoms.length * 15);
       const finalBurden = Math.min(100, avgQuestionBurden * 0.7 + symptomsBurden * 0.3);
-      const score = Math.round(100 - finalBurden);
+      score = Math.round(100 - finalBurden);
 
-      // Create new completed assessments copy
-      const completedAssessments = { ...digitalTwin.completedAssessments };
-      completedAssessments[selectedProfileId] = {
+      // Save Attempt to history
+      const attemptId = "att_" + Date.now();
+      const newHistoryEntry: HealthHistoryEntry = {
+        id: attemptId,
+        profileId: selectedProfileId,
         date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
         score,
         answers: { ...answers },
         symptoms: [...selectedSymptoms]
       };
 
-      // Form intermediate twin to execute clinical engine rules
+      const completedAssessments = { ...digitalTwin.completedAssessments };
+      completedAssessments[selectedProfileId] = {
+        date: newHistoryEntry.date,
+        score,
+        answers: { ...answers },
+        symptoms: [...selectedSymptoms]
+      };
+
+      const updatedHistory = [newHistoryEntry, ...(digitalTwin.history || [])];
+
       const intermediateTwin: HealthDigitalTwin = {
         ...digitalTwin,
-        completedAssessments
+        completedAssessments,
+        history: updatedHistory
       };
 
       const analysis = analyzeDigitalTwin(intermediateTwin);
-
-      // Average the active system scores to compile overall health score
       const systemScoresValues = Object.values(analysis.systemScores);
       const overallScore = Math.round(systemScoresValues.reduce((a, b) => a + b, 0) / systemScoresValues.length);
 
-      // Build updated Digital Twin state
       const updatedTwin: HealthDigitalTwin = {
         ...digitalTwin,
         overallScore,
         systemScores: analysis.systemScores,
         completedAssessments,
+        history: updatedHistory,
         organLoad: analysis.organLoad,
         riskLevel: analysis.riskLevel,
         activeRulesFlags: analysis.activeFlags,
         priorityGoals: analysis.priorityGoals
       };
 
-      // Generate report object
       const report = generateReport(selectedProfileId, score, answers, selectedSymptoms);
-      report.miasmaticProfile = analysis.miasmaticProfile; // sync with rules calculations
-      
+      report.miasmaticProfile = analysis.miasmaticProfile;
+
       saveDigitalTwin(updatedTwin);
       setActiveReport(report);
+      setActiveReportCategory(profile.category);
       setIsCalculating(false);
       setActiveView("report");
     }, 1800);
   };
 
-  // Report Generator Logic
+  // Report details generator
   const generateReport = (profileId: string, score: number, answers: Record<string, any>, symptoms: string[]): IntelligenceReport => {
     const profile = ASSESSMENT_PROFILES.find(p => p.id === profileId);
     const category = profile?.category || "metabolic";
@@ -254,23 +362,24 @@ export default function HealthIntelligencePage() {
 
     const priorityAreas: string[] = [];
     if (score < 55) {
-      priorityAreas.push("Immediate clinical review of target system markers is advised.");
-      priorityAreas.push("Incorporate anti-inflammatory dietary resets.");
+      priorityAreas.push("Immediate clinical review of target biomarkers is suggested.");
+      priorityAreas.push("Incorporate cell anti-inflammatory diet resets.");
     } else if (score < 85) {
-      priorityAreas.push("Establish regular lifestyle cycles and rest boundaries.");
-      priorityAreas.push("Target localized system congestion points.");
+      priorityAreas.push("Stabilize circadian timing and cortisol feedback loops.");
+      priorityAreas.push("Decongest localized endocrine system reserves.");
     } else {
-      priorityAreas.push("Maintain current homeostatic balance.");
-      priorityAreas.push("Optimize biological age profiles.");
-    }
-    
-    if (symptoms.length > 0) {
-      priorityAreas.push(`Resolve symptoms: ${symptoms.slice(0, 2).join(", ")}`);
+      priorityAreas.push("Maintain current systemic vitality.");
+      priorityAreas.push("Target anti-aging antioxidant behaviors.");
     }
 
+    if (symptoms.length > 0) {
+      priorityAreas.push(`Symptom alerts: ${symptoms.slice(0, 2).join(", ")}`);
+    }
+
+    // Default factors
     let contributingFactors = {
-      lifestyle: "Sedentary intervals, irregular activity patterns.",
-      nutrition: "Suboptimal fiber consumption, mineral assimilation lag.",
+      lifestyle: "Irregular exercise levels, elevated workstation fatigue.",
+      nutrition: "Suboptimal fiber consumption, mineral loading delay.",
       stress: "Elevated mental strain promoting sympathetic nervous states.",
       sleep: "Circadian rhythm mismatch and fragmented recovery windows.",
       genetics: "Inherent cell metabolic predispositions."
@@ -287,26 +396,43 @@ export default function HealthIntelligencePage() {
     
     let homeopathicInsights = "General constitutional profiling suggests functional vitality strain. Homeopathic remedies like Sulphur or Pulsatilla may support homeostasis based on modalities.";
 
-    if (category === "metabolic") {
+    if (profileId === "biological_age") {
+      contributingFactors = {
+        lifestyle: "Epigenetic rate accelerated by low daily compound physical conditioning.",
+        nutrition: "Oxidative food baseline increases cellular glycation loads.",
+        stress: "Allostatic load suppresses mitochondrial ATP energy synthesis.",
+        sleep: "Fragmented sleep compromises overnight cellular autophagy.",
+        genetics: "Familial longevity markers and telomere length indicators."
+      };
+      suggestedLabs = ["Fasting Insulin (HOMA-IR)", "hs-CRP (Inflammation)", "DHEA-S", "Homocysteine"];
+      recommendations = {
+        diet: "Incorporate antioxidant polyphenol-rich foods (berries, green tea) and cruciferous greens.",
+        exercise: "Engage in compounds and resistance strength training 3x/week plus Zone 2 cardio.",
+        sleep: "Restore deep sleep architecture; aim for 7.5-8.5 hours in total darkness.",
+        stress: "Autonomic vagus nerve toning to downregulate chronic cortisol release.",
+        preventive: "Check markers of cellular oxidation, lipid fractions, and systemic inflammation."
+      };
+      homeopathicInsights = "Longevity and cellular vitality profile indicates psoric stress depletion. constitutional remedies such as Arsenicum Album or Calcarea Carbonica help regulate cellular reserves.";
+    } else if (category === "metabolic") {
       contributingFactors = {
         lifestyle: "Irregular nutritional windows, minimal daily movement index.",
         nutrition: "Frequent simple starch spikes, low prebiotic fiber intake.",
-        stress: "Cortisol-driven adipose storage on the waistline.",
+        stress: "Elevated cortisol promoting abdominal fat deposition.",
         sleep: "Sleep duration deficits increasing morning insulin resistance.",
         genetics: "Familial history of sluggish metabolic conversions."
       };
       suggestedLabs = ["HbA1c", "Fasting Blood Sugar", "Fasting Insulin (HOMA-IR)", "Lipid Panel"];
       recommendations = {
         diet: "Eat low-glycemic foods, increase fiber (35g/day), restrict late-night eating.",
-        exercise: "Zone 2 aerobic exercise combined with mild weight resistance training.",
+        exercise: "Zone 2 aerobic exercise combined with compound resistance training.",
         sleep: "Target 8 hours of sleep; minimize blue light exposure before bed.",
-        stress: "Nature walking, diaphragmatic breathing to offset nervous system triggers.",
+        stress: "Adrenal decompressing exercises, daily walk in nature.",
         preventive: "Measure waist-to-height ratio quarterly; check fasting glucose semi-annually."
       };
       homeopathicInsights = "Sluggish digestive or energy conversions match a sycotic pattern. Remedies like Lycopodium Clavatum are indicated when symptoms worsen late afternoon (4-8 PM).";
     } else if (category === "endocrine") {
       contributingFactors = {
-        lifestyle: "High toxic overload (environmental plasticizers), irregular sleep schedule.",
+        lifestyle: "Exposure to endocrine disruptors (BPA, parabens), high screen activity.",
         nutrition: "Deficient selenium, zinc, or iodine blocking glandular conversions.",
         stress: "HPA axis overload suppressing thyroid-stimulating pathways.",
         sleep: "Fragmented sleep pattern lowering pituitary release cycles.",
@@ -320,7 +446,7 @@ export default function HealthIntelligencePage() {
         stress: "Mindfulness meditation (MBSR) to regulate adrenal-pituitary-ovarian loops.",
         preventive: "Perform basal body temperature mapping; annual thyroid ultrasounds if nodular."
       };
-      homeopathicInsights = "Constitutional profile flags endocrine-thyroid axis strain (Psoric deficit). Remedies such as Calcarea Carbonica or Pulsatilla are traditionally indicated.";
+      homeopathicInsights = "Endocrine Axis Wellness profile reveals a psoric-sycotic axis strain (Psoric deficit). Constitutional remedies such as Calcarea Carbonica or Pulsatilla are traditionally indicated.";
     } else if (category === "cardiovascular") {
       contributingFactors = {
         lifestyle: "Sedentary workstation posture, chronic job-related anxiety.",
@@ -341,7 +467,7 @@ export default function HealthIntelligencePage() {
     } else if (category === "respiratory") {
       contributingFactors = {
         lifestyle: "Indoor allergen load, low relative humidity, poor aeration.",
-        nutrition: "Low intake of antioxidants, high consumption of mucus-forming dairy.",
+        nutrition: "Lack of antioxidant vitamin C/E and anti-inflammatory essential fats.",
         stress: "Bronchial hypersensitivity stimulated by autonomic anxiety.",
         sleep: "Mouth breathing leading to cold, unhumidified air loading the throat.",
         genetics: "Inherited atopic traits (asthma, eczema, rhinitis)."
@@ -408,7 +534,7 @@ export default function HealthIntelligencePage() {
       homeopathicInsights = "Mental-emotional symptoms are the highest guide to remedy selection. Constitutional matches like Ignatia Amara or Kali Phosphoricum can support nervous system resilience.";
     } else if (category === "womens") {
       contributingFactors = {
-        lifestyle: "Exposure to endocrine disruptors, lack of pelvic movement.",
+        lifestyle: "Exposure to xenoestrogenic plastics, lack of pelvic movement.",
         nutrition: "Inadequate soluble fiber to excrete estrogen, excessive simple sugars.",
         stress: "High cortisol inhibiting hypothalamic-pituitary-ovarian communication.",
         sleep: "Inadequate sleep lowering nocturnal LH and melatonin secretion.",
@@ -446,7 +572,7 @@ export default function HealthIntelligencePage() {
       healthScore: score,
       riskClass,
       priorityAreas,
-      miasmaticProfile: { psora: 33, sycosis: 33, syphilis: 34 }, // will be updated by caller
+      miasmaticProfile: { psora: 33, sycosis: 33, syphilis: 34 },
       organLoad: score === 100 ? 10 : Math.round(100 - score * 0.95),
       contributingFactors,
       suggestedLabs,
@@ -455,7 +581,7 @@ export default function HealthIntelligencePage() {
     };
   };
 
-  // Constitutional Wizard Helpers
+  // Constitutional Assessment Helpers
   const handleStartConstitutional = () => {
     setConstitutionalAnswers({});
     setConstStep(0);
@@ -472,12 +598,10 @@ export default function HealthIntelligencePage() {
       setConstIsCalculating(true);
       setTimeout(() => {
         const profile = analyzeConstitution(nextAnswers);
-        
         const updatedTwin: HealthDigitalTwin = {
           ...digitalTwin,
           constitutional: profile
         };
-        
         saveDigitalTwin(updatedTwin);
         setConstIsCalculating(false);
         setActiveView("dashboard");
@@ -532,9 +656,68 @@ export default function HealthIntelligencePage() {
     }, 1500);
   };
 
-  // UI Active Navigation Category Filter
-  const activeAssessmentsList = ASSESSMENT_PROFILES.filter(p => p.category === activeCategory);
+  // Calculation of progress/improvements for Priority 5 Timeline
+  const getTimelineHistory = () => {
+    if (!digitalTwin.history || digitalTwin.history.length === 0) return [];
+    
+    // Sort chronological: oldest first to calculate progress sequentially
+    const sorted = [...digitalTwin.history].reverse();
+    const latestAttempts: Record<string, number> = {};
+    
+    const timelineData = sorted.map(entry => {
+      const prof = ASSESSMENT_PROFILES.find(p => p.id === entry.profileId);
+      const prevScore = latestAttempts[entry.profileId];
+      let improvementText = "";
+      
+      if (prevScore !== undefined) {
+        const diff = entry.score - prevScore;
+        const pct = Math.round((Math.abs(diff) / prevScore) * 100);
+        // If it's a wellness score, a higher value is better
+        if (diff > 0) {
+          improvementText = `Improvement: +${pct}%`;
+        } else if (diff < 0) {
+          improvementText = `Regression: -${pct}%`;
+        } else {
+          improvementText = "Stable";
+        }
+      }
+      
+      latestAttempts[entry.profileId] = entry.score;
+      
+      let status: "Compensated" | "Sluggish" | "Depleted" = "Compensated";
+      if (entry.score < 55) status = "Depleted";
+      else if (entry.score < 80) status = "Sluggish";
+
+      return {
+        id: entry.id,
+        date: entry.date,
+        name: prof?.name || "Longevity Index",
+        score: entry.score,
+        trend: improvementText,
+        status
+      };
+    });
+    
+    return timelineData.reverse(); // Return newest first for timeline view
+  };
+
   const selectedProfile = ASSESSMENT_PROFILES.find(p => p.id === selectedProfileId);
+
+  // Suggested next assessments logic
+  const getSuggestedNextAssessments = () => {
+    const uncompleted = ASSESSMENT_PROFILES.filter(
+      p => !digitalTwin.completedAssessments[p.id]
+    );
+    if (uncompleted.length > 0) return uncompleted.slice(0, 3);
+    
+    // If all completed, return a few default vital ones
+    return ASSESSMENT_PROFILES.filter(p => ["metabolic_profile", "diabetes_risk", "thyroid_assessment"].includes(p.id)).slice(0, 3);
+  };
+
+  // Get Related Content links for Priority 8
+  const relatedContent: RelatedContent = activeReport 
+    ? getRelatedContent(activeReportCategory)
+    : { conditions: [], treatments: [], blogs: [], protocols: [] };
 
   // Strength and Vulnerability analysis from system scores
   const strengths: string[] = [];
@@ -545,10 +728,6 @@ export default function HealthIntelligencePage() {
     if (val >= 90) strengths.push(`Excellent ${systemName} efficiency`);
     else if (val <= 75) vulnerabilities.push(`${systemName} reserve depleted`);
   });
-
-  const nextAssessments = ASSESSMENT_PROFILES.filter(
-    p => !digitalTwin.completedAssessments[p.id]
-  ).slice(0, 3);
 
   return (
     <div className="pt-24 pb-16 min-h-screen bg-pearl dark:bg-[#070b13] text-slate-800 dark:text-zinc-150 font-sans transition-colors duration-500">
@@ -563,7 +742,7 @@ export default function HealthIntelligencePage() {
       <div className="max-w-7xl mx-auto px-4 md:px-6 relative z-10">
         
         {/* Dynamic Nav Breadcrumbs (print:hidden) */}
-        <div className="flex justify-between items-center mb-8 print:hidden">
+        <div className="flex justify-between items-center mb-6 print:hidden">
           {activeView !== "dashboard" ? (
             <button 
               onClick={() => { setActiveView("dashboard"); setSelectedProfileId(null); setAnswers({}); }}
@@ -578,7 +757,6 @@ export default function HealthIntelligencePage() {
             </div>
           )}
 
-          {/* Reset profile state */}
           {Object.keys(digitalTwin.completedAssessments).length > 0 && (
             <button
               onClick={handleResetTwin}
@@ -630,6 +808,184 @@ export default function HealthIntelligencePage() {
           </div>
         </div>
 
+        {/* ========================================================= */}
+        {/* PRIORITY 1: MY HEALTH INTELLIGENCE DASHBOARD (HERO BLOCK)  */}
+        {/* ========================================================= */}
+        {activeView === "dashboard" && (
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8 print:hidden"
+          >
+            <div className="glass-panel border border-slate-200/50 dark:border-slate-850 bg-white/80 dark:bg-slate-900/60 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6">
+              
+              {/* Header Title */}
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <h1 className="font-serif text-2xl md:text-3xl font-black text-slate-900 dark:text-white leading-tight">
+                    My Health Intelligence Dashboard
+                  </h1>
+                  <p className="text-xs text-slate-500 dark:text-zinc-400">
+                    Personalized precision medicine portal & epigenetic health tracker.
+                  </p>
+                </div>
+                
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => handleLoadSampleLab("comprehensive_metabolic.pdf")}
+                    className="py-2.5 px-4 bg-white dark:bg-slate-950 border border-slate-200/70 dark:border-slate-800 hover:border-mint text-[11px] font-bold uppercase tracking-wider text-slate-650 dark:text-zinc-350 rounded-xl cursor-pointer transition-all flex items-center gap-1.5"
+                  >
+                    <UploadCloud className="w-4 h-4 text-mint" />
+                    Upload Lab
+                  </button>
+                  <button
+                    onClick={() => handleSelectProfile("biological_age")}
+                    className="py-2.5 px-4 bg-mint hover:bg-teal-600 text-white font-bold rounded-xl text-[11px] uppercase tracking-wider cursor-pointer border-none transition-all flex items-center gap-1.5"
+                  >
+                    <Flame className="w-4 h-4 text-amber-300" />
+                    Bio-Age Check
+                  </button>
+                </div>
+              </div>
+
+              {/* Four Column Dashboard Widgets Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-4 border-t border-slate-100 dark:border-slate-800/80">
+                
+                {/* Gauge 1: Overall Vitality Score */}
+                <div className="glass-panel bg-white/40 dark:bg-slate-950/10 border border-slate-150 dark:border-slate-850 p-5 rounded-2xl flex flex-col items-center justify-center text-center relative overflow-hidden">
+                  <span className="text-[9px] font-extrabold uppercase tracking-widest text-slate-400 mb-2">Overall Vitality</span>
+                  <div className="relative w-24 h-24 flex items-center justify-center">
+                    <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                      <circle cx="50" cy="50" r="42" className="stroke-slate-100 dark:stroke-slate-800 fill-none" strokeWidth="6" />
+                      <circle 
+                        cx="50" cy="50" r="42" 
+                        className="stroke-mint fill-none" 
+                        strokeWidth="6"
+                        strokeDasharray={263.8}
+                        strokeDashoffset={263.8 - (263.8 * digitalTwin.overallScore) / 100}
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <span className="text-xl font-black text-slate-900 dark:text-white font-mono">{digitalTwin.overallScore}%</span>
+                      <span className="text-[7.5px] font-bold text-slate-400 uppercase tracking-widest">Score</span>
+                    </div>
+                  </div>
+                  <div className="mt-2 flex items-center gap-1 text-[10px] text-emerald-500 font-bold">
+                    <TrendingUp className="w-3.5 h-3.5" />
+                    <span>Up +3% this month</span>
+                  </div>
+                </div>
+
+                {/* Gauge 2: Intersecting SVG Health Rings */}
+                <div className="glass-panel bg-white/40 dark:bg-slate-950/10 border border-slate-150 dark:border-slate-850 p-5 rounded-2xl flex flex-col items-center justify-center text-center">
+                  <span className="text-[9px] font-extrabold uppercase tracking-widest text-slate-400 mb-2">System Reserves</span>
+                  
+                  {/* Glowing 3 Concentric Rings */}
+                  <div className="relative w-24 h-24 flex items-center justify-center">
+                    <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                      {/* Outer Ring: Metabolic (Radius 36) */}
+                      <circle cx="50" cy="50" r="36" className="stroke-slate-100/50 dark:stroke-slate-800/40 fill-none" strokeWidth="5" />
+                      <circle 
+                        cx="50" cy="50" r="36" 
+                        className="stroke-teal-500 fill-none" 
+                        strokeWidth="5"
+                        strokeDasharray={226.2}
+                        strokeDashoffset={226.2 - (226.2 * (digitalTwin.systemScores.endocrine * 0.9 + 10)) / 100}
+                        strokeLinecap="round"
+                      />
+                      {/* Middle Ring: Endocrine (Radius 27) */}
+                      <circle cx="50" cy="50" r="27" className="stroke-slate-100/50 dark:stroke-slate-800/40 fill-none" strokeWidth="5" />
+                      <circle 
+                        cx="50" cy="50" r="27" 
+                        className="stroke-violet-500 fill-none" 
+                        strokeWidth="5"
+                        strokeDasharray={169.6}
+                        strokeDashoffset={169.6 - (169.6 * digitalTwin.systemScores.endocrine) / 100}
+                        strokeLinecap="round"
+                      />
+                      {/* Inner Ring: Digestive (Radius 18) */}
+                      <circle cx="50" cy="50" r="18" className="stroke-slate-100/50 dark:stroke-slate-800/40 fill-none" strokeWidth="5" />
+                      <circle 
+                        cx="50" cy="50" r="18" 
+                        className="stroke-emerald-500 fill-none" 
+                        strokeWidth="5"
+                        strokeDasharray={113.1}
+                        strokeDashoffset={113.1 - (113.1 * digitalTwin.systemScores.digestive) / 100}
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <HeartPulse className="w-5 h-5 text-mint" />
+                    </div>
+                  </div>
+                  <div className="mt-2.5 flex gap-2.5 text-[8.5px] font-bold text-slate-400 justify-center">
+                    <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-teal-500"></span>Met</span>
+                    <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-violet-500"></span>Endo</span>
+                    <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Dig</span>
+                  </div>
+                </div>
+
+                {/* Gauge 3: Epigenetic Longevity Index */}
+                <div className="glass-panel bg-white/40 dark:bg-slate-950/10 border border-slate-150 dark:border-slate-850 p-5 rounded-2xl flex flex-col justify-between">
+                  <span className="text-[9px] font-extrabold uppercase tracking-widest text-slate-400 text-center block mb-2">Epigenetic longevity</span>
+                  
+                  {digitalTwin.biologicalAge ? (
+                    <div className="space-y-2.5 text-center">
+                      <div className="flex items-baseline justify-center gap-1">
+                        <span className="text-2xl font-black text-slate-900 dark:text-white font-mono">{digitalTwin.biologicalAge.bioAge}</span>
+                        <span className="text-[10px] text-slate-400 font-semibold">yrs bio-age</span>
+                      </div>
+                      <div className="flex justify-between text-[10px] font-semibold border-t border-slate-100 dark:border-slate-800/80 pt-2 text-slate-650 dark:text-zinc-350">
+                        <span>Chron Age: {digitalTwin.biologicalAge.chronologicalAge}</span>
+                        <span className="text-emerald-500 font-bold">-{digitalTwin.biologicalAge.chronologicalAge - digitalTwin.biologicalAge.bioAge} yrs</span>
+                      </div>
+                      <div className="text-[9px] bg-mint/5 border border-mint/20 rounded-md p-1 font-bold text-mint uppercase tracking-wider">
+                        Risk: {digitalTwin.biologicalAge.lifestyleRiskIndex} Risk Index
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-2 space-y-2 flex-grow flex flex-col justify-center items-center">
+                      <p className="text-[10px] text-slate-500">Epigenetic clock not calibrated.</p>
+                      <button
+                        onClick={() => handleSelectProfile("biological_age")}
+                        className="py-1.5 px-3 bg-violet-500 hover:bg-violet-600 text-white font-bold rounded-lg text-[9px] uppercase tracking-wider cursor-pointer border-none transition-colors"
+                      >
+                        Calibrate Age
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Gauge 4: Public Health Index (Priority 11) */}
+                <div className="glass-panel bg-white/40 dark:bg-slate-950/10 border border-slate-150 dark:border-slate-850 p-5 rounded-2xl flex flex-col justify-between">
+                  <span className="text-[9px] font-extrabold uppercase tracking-widest text-slate-400 text-center block mb-2">Public Health Index™</span>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center text-[10px] font-semibold">
+                      <span className="text-slate-500">Stress Burden Index</span>
+                      <span className="font-mono font-bold text-amber-500">64%</span>
+                    </div>
+                    <div className="flex justify-between items-center text-[10px] font-semibold">
+                      <span className="text-slate-500">Sleep Quality Index</span>
+                      <span className="font-mono font-bold text-emerald-500">68/100</span>
+                    </div>
+                    <div className="flex justify-between items-center text-[10px] font-semibold">
+                      <span className="text-slate-500">Metabolic Risks</span>
+                      <span className="font-mono font-bold text-rose-500">38%</span>
+                    </div>
+                    <div className="flex justify-between items-center text-[10px] font-semibold">
+                      <span className="text-slate-500">Thyroid Wellness</span>
+                      <span className="font-mono font-bold text-teal-500">76%</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          </motion.div>
+        )}
+
         {/* Outer Workspace Split Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
@@ -638,54 +994,6 @@ export default function HealthIntelligencePage() {
           {/* ========================================================= */}
           <div className="lg:col-span-4 space-y-6 print:hidden">
             
-            {/* Digital Twin Overall Vitality Gauge */}
-            <div className="glass-panel border border-slate-200/60 dark:border-slate-850 bg-white/70 dark:bg-slate-900/65 rounded-[28px] p-6 shadow-sm flex flex-col items-center justify-center text-center">
-              <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 mb-4 block">
-                Homeostatic Digital Twin OS™
-              </span>
-
-              {/* Large Ring Gauge */}
-              <div className="relative w-40 h-40 flex items-center justify-center mb-4">
-                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                  <circle cx="50" cy="50" r="42" className="stroke-slate-100 dark:stroke-slate-800/80 fill-none" strokeWidth="6" />
-                  <motion.circle 
-                    cx="50" cy="50" r="42" 
-                    className="stroke-mint fill-none" 
-                    strokeWidth="6"
-                    strokeDasharray={263.8}
-                    initial={{ strokeDashoffset: 263.8 }}
-                    animate={{ strokeDashoffset: 263.8 - (263.8 * digitalTwin.overallScore) / 100 }}
-                    transition={{ duration: 1.5, ease: "easeOut" }}
-                    strokeLinecap="round"
-                  />
-                </svg>
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-4xl font-serif font-black text-slate-900 dark:text-white leading-none">
-                    {digitalTwin.overallScore}%
-                  </span>
-                  <span className="text-[9px] font-extrabold text-emerald-500 uppercase tracking-widest mt-1.5">
-                    Overall Health
-                  </span>
-                </div>
-              </div>
-
-              {/* Digital Twin mini statistics */}
-              <div className="w-full grid grid-cols-2 gap-4 border-t border-slate-100 dark:border-slate-800/80 pt-4 text-xs font-semibold">
-                <div className="text-center">
-                  <span className="text-[8.5px] text-slate-400 uppercase tracking-wider block font-extrabold mb-0.5">Completed</span>
-                  <span className="text-slate-800 dark:text-white font-mono">
-                    {Object.keys(digitalTwin.completedAssessments).length} Modules
-                  </span>
-                </div>
-                <div className="text-center border-l border-slate-100 dark:border-slate-800/80">
-                  <span className="text-[8.5px] text-slate-400 uppercase tracking-wider block font-extrabold mb-0.5">Active Flags</span>
-                  <span className={`font-mono ${digitalTwin.activeRulesFlags.length > 0 ? "text-amber-500 font-bold" : "text-slate-500"}`}>
-                    {digitalTwin.activeRulesFlags.length} Systemic
-                  </span>
-                </div>
-              </div>
-            </div>
-
             {/* Radar System Health Wheel Chart */}
             <div className="glass-panel border border-slate-200/60 dark:border-slate-850 bg-white/70 dark:bg-slate-900/65 rounded-[28px] p-5 shadow-sm">
               <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 mb-2 block">
@@ -718,7 +1026,6 @@ export default function HealthIntelligencePage() {
                 <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block">
                   Miasmatic Burden Distribution
                 </span>
-                {/* Dynamically get miasmatic percentages from last report or run engine check */}
                 <div className="space-y-2.5">
                   <div>
                     <div className="flex justify-between items-center text-xs font-semibold mb-1">
@@ -739,7 +1046,7 @@ export default function HealthIntelligencePage() {
                       </span>
                     </div>
                     <div className="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                      <div className="bg-teal-500 h-full" style={{ width: `${Math.round(digitalTwin.organLoad.pancreas * 0.8 + 15)}%` }}></div>
+                      <div className="bg-teal-50 h-full" style={{ width: `${Math.round(digitalTwin.organLoad.pancreas * 0.8 + 15)}%` }}></div>
                     </div>
                   </div>
                 </div>
@@ -782,28 +1089,52 @@ export default function HealthIntelligencePage() {
               </div>
             )}
 
-            {/* History timeline of completed assessments */}
-            {Object.keys(digitalTwin.completedAssessments).length > 0 && (
-              <div className="glass-panel border border-slate-200/60 dark:border-slate-850 bg-white/70 dark:bg-slate-900/65 rounded-[28px] p-5 shadow-sm space-y-3">
-                <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block">
-                  Completed Evaluations
+            {/* PRIORITY 5: LONGITUDINAL HEALTH TIMELINE */}
+            {digitalTwin.history && digitalTwin.history.length > 0 && (
+              <div className="glass-panel border border-slate-200/60 dark:border-slate-850 bg-white/70 dark:bg-slate-900/65 rounded-[28px] p-5 shadow-sm space-y-4">
+                <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
+                  <Clock className="w-4 h-4 text-mint animate-pulse" />
+                  Health Progress Timeline
                 </span>
-                <div className="space-y-3.5">
-                  {Object.keys(digitalTwin.completedAssessments).map(key => {
-                    const item = digitalTwin.completedAssessments[key];
-                    const prof = ASSESSMENT_PROFILES.find(p => p.id === key);
-                    return (
-                      <div key={key} className="flex justify-between items-center text-xs">
-                        <div className="space-y-0.5">
-                          <h5 className="font-bold text-slate-800 dark:text-zinc-200">{prof?.name}</h5>
-                          <span className="text-[10px] text-slate-400 font-semibold">{item.date}</span>
-                        </div>
-                        <span className="font-mono font-bold text-mint bg-mint/5 px-2 py-0.5 rounded-md text-[11px]">
-                          {item.score}%
+                
+                <div className="space-y-4 max-h-[300px] overflow-y-auto scrollbar-thin pr-1">
+                  {getTimelineHistory().map((item, idx) => (
+                    <div key={item.id} className="relative pl-4 border-l border-slate-100 dark:border-slate-800/80 last:border-none pb-2 space-y-1">
+                      {/* Timeline dot */}
+                      <div className="absolute left-[-4.5px] top-1 w-2.5 h-2.5 rounded-full bg-mint" />
+                      
+                      <div className="flex justify-between items-start text-xs font-semibold">
+                        <span className="text-slate-800 dark:text-zinc-200 leading-tight block max-w-[70%]">{item.name}</span>
+                        <span className="font-mono font-bold text-mint">{item.score}%</span>
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[10px] text-slate-400 font-semibold">
+                        <span>{item.date}</span>
+                        <span className={`px-2 py-0.5 rounded ${
+                          item.status === "Compensated" 
+                            ? "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-450" 
+                            : item.status === "Sluggish" 
+                              ? "bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-450" 
+                              : "bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-450"
+                        }`}>
+                          {item.status}
                         </span>
                       </div>
-                    );
-                  })}
+                      
+                      {item.trend && (
+                        <div className={`text-[9.5px] font-bold flex items-center gap-1 ${
+                          item.trend.includes("Improvement") 
+                            ? "text-emerald-500" 
+                            : item.trend.includes("Regression") 
+                              ? "text-rose-500" 
+                              : "text-slate-450"
+                        }`}>
+                          {item.trend.includes("Improvement") && <TrendingUp className="w-3.5 h-3.5" />}
+                          <span>{item.trend}</span>
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
@@ -815,7 +1146,7 @@ export default function HealthIntelligencePage() {
           <div className="lg:col-span-8 space-y-6">
             <AnimatePresence mode="wait">
               
-              {/* VIEW: MAIN DASHBOARD AND CATEGORIES SELECTOR */}
+              {/* VIEW: MAIN DASHBOARD AND ACCORDIONS CATEGORIES SELECTOR */}
               {activeView === "dashboard" && (
                 <motion.div
                   key="dashboard"
@@ -842,7 +1173,6 @@ export default function HealthIntelligencePage() {
                       </p>
                     </div>
 
-                    {/* Quick navigation CTAs */}
                     <div className="flex flex-col gap-3.5 w-full md:w-auto shrink-0">
                       <button
                         onClick={() => handleLoadSampleLab("TSH: 8.4 (Thyroid Panel)")}
@@ -933,12 +1263,12 @@ export default function HealthIntelligencePage() {
                     >
                       <input 
                         type="file" 
-                        id="lab-upload-input" 
+                        id="lab-upload-input-2" 
                         className="hidden" 
                         onChange={handleFileChange} 
                         accept="image/*,application/pdf"
                       />
-                      <label htmlFor="lab-upload-input" className="cursor-pointer space-y-3 block">
+                      <label htmlFor="lab-upload-input-2" className="cursor-pointer space-y-3 block">
                         {labParsing ? (
                           <div className="flex flex-col items-center gap-2 py-4">
                             <RefreshCw className="w-8 h-8 text-mint animate-spin" />
@@ -956,7 +1286,6 @@ export default function HealthIntelligencePage() {
                       </label>
                     </div>
 
-                    {/* Pre-configured clinical samples for easy user evaluation */}
                     <div className="space-y-2">
                       <span className="text-[9.5px] font-extrabold uppercase tracking-widest text-slate-400 block">
                         Select a Sample Lab Report to Analyze:
@@ -990,66 +1319,95 @@ export default function HealthIntelligencePage() {
                     </div>
                   </div>
 
-                  {/* Horizontal Scrollable Category Selector */}
+                  {/* ========================================================= */}
+                  {/* PRIORITY 2: EXPANDABLE ACCORDION CATEGORY SELECTOR         */}
+                  {/* ========================================================= */}
                   <div className="space-y-4">
                     <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block">
-                      Select System Intelligence Category
+                      Clinical Intelligence Accordion Domains
                     </span>
-                    
-                    {/* Category tabs */}
-                    <div className="flex gap-2 pb-1 overflow-x-auto scrollbar-none snap-x snap-mandatory">
-                      {ASSESSMENT_CATEGORIES.map(cat => {
-                        const isActive = cat.id === activeCategory;
-                        return (
-                          <button
-                            key={cat.id}
-                            onClick={() => setActiveCategory(cat.id)}
-                            className={`px-4.5 py-3 rounded-2xl text-[11px] font-bold uppercase tracking-wider shrink-0 transition-all cursor-pointer snap-start ${
-                              isActive 
-                                ? "bg-mint text-white shadow-sm shadow-teal-500/10" 
-                                : "bg-white/80 dark:bg-slate-900/70 border border-slate-200/50 dark:border-slate-850 hover:bg-slate-50 dark:hover:bg-slate-850 text-slate-500 dark:text-zinc-400"
-                            }`}
-                          >
-                            {cat.name.split(" ")[0]}
-                          </button>
-                        );
-                      })}
-                    </div>
 
-                    {/* Grid of assessments in active category */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {activeAssessmentsList.map(profile => {
-                        const isCompleted = !!digitalTwin.completedAssessments[profile.id];
-                        const lastScore = digitalTwin.completedAssessments[profile.id]?.score;
+                    <div className="space-y-3.5">
+                      {ASSESSMENT_CATEGORIES.map(category => {
+                        const isExpanded = expandedCategory === category.id;
+                        const subAssessments = ASSESSMENT_PROFILES.filter(p => p.category === category.id);
+                        
                         return (
-                          <div
-                            key={profile.id}
-                            onClick={() => handleSelectProfile(profile.id)}
-                            className={`glass-panel border rounded-[24px] p-5 flex flex-col justify-between h-[180px] hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 cursor-pointer bg-white dark:bg-slate-900/60 ${profile.gradient}`}
+                          <div 
+                            key={category.id} 
+                            className="glass-panel border border-slate-200/60 dark:border-slate-850 bg-white/80 dark:bg-slate-900/70 rounded-3xl overflow-hidden shadow-sm transition-all"
                           >
-                            <div className="space-y-2">
-                              <div className="flex justify-between items-start">
-                                <span className={`text-[8px] font-extrabold uppercase tracking-widest px-2.5 py-1 rounded-full ${profile.badgeBg}`}>
-                                  Assessment
+                            {/* Accordion trigger */}
+                            <button
+                              onClick={() => setExpandedCategory(isExpanded ? null : category.id)}
+                              className="w-full flex items-center justify-between p-5 text-left font-bold text-slate-800 dark:text-zinc-100 hover:bg-slate-50/50 dark:hover:bg-slate-950/20 transition-all border-none bg-transparent cursor-pointer"
+                            >
+                              <div className="flex items-center gap-3">
+                                <span className="p-2 bg-mint/10 rounded-xl text-mint">
+                                  <Sliders className="w-4 h-4" />
                                 </span>
-                                {isCompleted && (
-                                  <span className="font-mono text-[9px] font-bold text-mint bg-mint/5 px-2 py-0.5 rounded">
-                                    Score: {lastScore}%
+                                <div>
+                                  <span className="font-serif text-sm md:text-base font-bold text-slate-900 dark:text-white block">
+                                    {category.name}
                                   </span>
-                                )}
+                                  <span className="text-[9.5px] text-slate-400 font-semibold uppercase tracking-wider block">
+                                    {subAssessments.length} assessments
+                                  </span>
+                                </div>
                               </div>
-                              <h4 className="text-xs md:text-sm font-bold text-slate-900 dark:text-white leading-snug">
-                                {profile.name}
-                              </h4>
-                              <p className="text-[11px] text-slate-500 dark:text-zinc-400 leading-normal line-clamp-2">
-                                {profile.description}
-                              </p>
-                            </div>
+                              <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`} />
+                            </button>
 
-                            <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-mint group">
-                              {isCompleted ? "Re-evaluate Module" : "Begin assessment"}
-                              <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                            </div>
+                            {/* Accordion content grid */}
+                            <AnimatePresence initial={false}>
+                              {isExpanded && (
+                                <motion.div
+                                  initial={{ height: 0, opacity: 0 }}
+                                  animate={{ height: "auto", opacity: 1 }}
+                                  exit={{ height: 0, opacity: 0 }}
+                                  transition={{ duration: 0.3 }}
+                                  className="border-t border-slate-100 dark:border-slate-850/80 overflow-hidden"
+                                >
+                                  <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50/30 dark:bg-slate-950/10">
+                                    {subAssessments.map(profile => {
+                                      const isCompleted = !!digitalTwin.completedAssessments[profile.id];
+                                      const lastScore = digitalTwin.completedAssessments[profile.id]?.score;
+                                      
+                                      return (
+                                        <div
+                                          key={profile.id}
+                                          onClick={() => handleSelectProfile(profile.id)}
+                                          className={`border border-slate-150 dark:border-slate-850/80 p-4.5 rounded-2xl flex flex-col justify-between h-[155px] bg-white dark:bg-slate-900/60 hover:-translate-y-0.5 hover:shadow transition-all duration-300 cursor-pointer ${profile.gradient}`}
+                                        >
+                                          <div className="space-y-1.5">
+                                            <div className="flex justify-between items-center">
+                                              <span className={`text-[8px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded ${profile.badgeBg}`}>
+                                                Evaluation
+                                              </span>
+                                              {isCompleted && (
+                                                <span className="font-mono text-[9px] font-bold text-mint bg-mint/5 px-2 py-0.5 rounded">
+                                                  Score: {lastScore}%
+                                                </span>
+                                              )}
+                                            </div>
+                                            <h5 className="text-xs md:text-sm font-bold text-slate-800 dark:text-zinc-100 leading-tight">
+                                              {profile.name}
+                                            </h5>
+                                            <p className="text-[10px] text-slate-500 dark:text-zinc-400 leading-relaxed line-clamp-2">
+                                              {profile.description}
+                                            </p>
+                                          </div>
+                                          <div className="flex items-center gap-1 text-[9.5px] font-bold uppercase tracking-wider text-mint group">
+                                            {isCompleted ? "Re-evaluate" : "Run assessment"}
+                                            <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                                          </div>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
                           </div>
                         );
                       })}
@@ -1068,8 +1426,6 @@ export default function HealthIntelligencePage() {
                   exit={{ opacity: 0, y: -15 }}
                   className="glass-panel border border-slate-200/60 dark:border-slate-850 bg-white/75 dark:bg-slate-900/65 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6 max-w-xl mx-auto"
                 >
-                  
-                  {/* Category Pill and Title */}
                   <div className="space-y-1">
                     <span className="text-[9px] font-extrabold uppercase tracking-widest text-mint bg-mint/5 px-2.5 py-1 rounded-full">
                       Step {currentStep + 1} of {selectedProfile.questions.length + 1}
@@ -1079,7 +1435,6 @@ export default function HealthIntelligencePage() {
                     </h3>
                   </div>
 
-                  {/* Progress Line Bar */}
                   <div className="w-full h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                     <div 
                       className="bg-mint h-full transition-all duration-300"
@@ -1087,10 +1442,7 @@ export default function HealthIntelligencePage() {
                     ></div>
                   </div>
 
-                  {/* Wizard View Controller */}
                   {currentStep < selectedProfile.questions.length ? (
-                    
-                    // QUESTION STEPS
                     <div className="space-y-6 py-4">
                       {(() => {
                         const q = selectedProfile.questions[currentStep];
@@ -1110,7 +1462,6 @@ export default function HealthIntelligencePage() {
                                       key={i}
                                       onClick={() => {
                                         handleInputChange(q.id, opt);
-                                        // Auto-advance for select questions
                                         setTimeout(() => {
                                           setCurrentStep(currentStep + 1);
                                         }, 200);
@@ -1156,10 +1507,7 @@ export default function HealthIntelligencePage() {
                         );
                       })()}
                     </div>
-
                   ) : (
-                    
-                    // SYMPTOMS CHECKLIST STEP
                     <div className="space-y-6 py-4">
                       <div className="space-y-1">
                         <h4 className="text-xs md:text-sm font-bold text-slate-800 dark:text-zinc-100">Verify Constitutional Modalities</h4>
@@ -1218,7 +1566,6 @@ export default function HealthIntelligencePage() {
                     </div>
                   )}
 
-                  {/* Wizard navigation indicators */}
                   {currentStep < selectedProfile.questions.length && (
                     <div className="flex justify-between items-center text-[10px] font-bold text-slate-400 pt-4 border-t border-slate-100 dark:border-slate-800">
                       {currentStep > 0 ? (
@@ -1297,7 +1644,7 @@ export default function HealthIntelligencePage() {
                         {constStep > 0 && (
                           <button
                             onClick={() => setConstStep(constStep - 1)}
-                            className="py-3 px-5 border border-slate-250 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-600 dark:text-zinc-400 font-bold rounded-2xl text-xs uppercase tracking-wider cursor-pointer transition-colors"
+                            className="py-3 px-5 border border-slate-250 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-650 dark:text-zinc-400 font-bold rounded-2xl text-xs uppercase tracking-wider cursor-pointer transition-colors"
                           >
                             Back
                           </button>
@@ -1361,10 +1708,10 @@ export default function HealthIntelligencePage() {
                               <h5 className="text-xs font-bold text-slate-800 dark:text-white">{data.marker}</h5>
                               <span className={`text-[8.5px] font-extrabold uppercase tracking-wide px-2 py-0.5 rounded-full ${
                                 data.status === "Normal" 
-                                  ? "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400" 
+                                  ? "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-450" 
                                   : data.status === "Elevated" 
-                                    ? "bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400" 
-                                    : "bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-400"
+                                    ? "bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-450" 
+                                    : "bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-450"
                               }`}>
                                 {data.status}
                               </span>
@@ -1398,7 +1745,7 @@ export default function HealthIntelligencePage() {
 
                     <div className="space-y-2.5">
                       <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block">
-                        Recommended Follow-ups:
+                        Recommended Follow-ups & Related Assessments:
                       </span>
                       <div className="space-y-2">
                         {labResult.followUp.map((f, idx) => (
@@ -1450,7 +1797,6 @@ export default function HealthIntelligencePage() {
                     </div>
 
                     <div className="flex gap-4 items-center shrink-0 w-full md:w-auto justify-between">
-                      {/* Metric Score Dial */}
                       <div className="text-right">
                         <span className="text-[8.5px] text-slate-400 uppercase tracking-widest block font-extrabold mb-0.5">Homeostatic Index</span>
                         <span className="text-3xl font-serif font-black text-slate-900 dark:text-white">{activeReport.healthScore}%</span>
@@ -1486,9 +1832,7 @@ export default function HealthIntelligencePage() {
                         </ul>
                       </div>
                       
-                      {/* Gauge Indicators */}
                       <div className="space-y-4">
-                        {/* Target organ load indicator */}
                         <div className="space-y-1.5">
                           <div className="flex justify-between items-center text-xs font-semibold">
                             <span className="text-slate-500 uppercase tracking-widest text-[9.5px]">Computed Organ stress load</span>
@@ -1502,7 +1846,6 @@ export default function HealthIntelligencePage() {
                           </div>
                         </div>
 
-                        {/* Miasmatic balance details */}
                         <div className="grid grid-cols-3 gap-3 text-center pt-2">
                           <div className="p-2 bg-slate-50/50 dark:bg-slate-950/20 border border-slate-150 dark:border-slate-800/80 rounded-xl">
                             <span className="text-[8px] text-slate-400 uppercase tracking-wider block font-extrabold mb-1">Psora</span>
@@ -1596,6 +1939,102 @@ export default function HealthIntelligencePage() {
                       <div className="py-3.5 flex flex-col md:flex-row md:items-start gap-4">
                         <span className="text-[9.5px] font-extrabold text-slate-400 uppercase tracking-wider w-36 shrink-0 mt-0.5">Preventative Care</span>
                         <p className="text-xs text-slate-650 dark:text-zinc-350 leading-relaxed font-semibold">{activeReport.recommendations.preventive}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* ========================================================= */}
+                  {/* PRIORITY 8: CONDITION & TREATMENT LINKING (INTERNAL LINKS) */}
+                  {/* ========================================================= */}
+                  <div className="glass-panel border border-slate-200/60 dark:border-slate-850 bg-white/70 dark:bg-slate-900/65 rounded-[32px] p-6 md:p-8 shadow-sm space-y-4">
+                    <h3 className="text-sm font-extrabold uppercase tracking-widest text-slate-450 border-b border-slate-100 dark:border-slate-800 pb-2 mb-4 flex items-center gap-1.5">
+                      <ShieldCheck className="w-5 h-5 text-mint" />
+                      Clinically Related Resources
+                    </h3>
+                    <p className="text-xs text-slate-400 leading-normal">
+                      Explore our evidence-based clinical articles, treatment pathways, and blog posts matching your stress pattern indicators.
+                    </p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Related Conditions */}
+                      <div className="space-y-2">
+                        <span className="text-[9.5px] font-extrabold uppercase tracking-widest text-slate-450 block">Related Conditions:</span>
+                        <div className="space-y-1.5">
+                          {relatedContent.conditions.map((item, i) => (
+                            <Link 
+                              key={i} 
+                              href={item.url}
+                              className="text-xs font-bold text-mint hover:text-teal-600 block transition-all hover:translate-x-0.5"
+                            >
+                              • {item.name}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Related Treatments */}
+                      <div className="space-y-2">
+                        <span className="text-[9.5px] font-extrabold uppercase tracking-widest text-slate-450 block">Related Treatments:</span>
+                        <div className="space-y-1.5">
+                          {relatedContent.treatments.map((item, i) => (
+                            <Link 
+                              key={i} 
+                              href={item.url}
+                              className="text-xs font-bold text-mint hover:text-teal-600 block transition-all hover:translate-x-0.5"
+                            >
+                              • {item.name}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Related Blogs */}
+                      <div className="space-y-2">
+                        <span className="text-[9.5px] font-extrabold uppercase tracking-widest text-slate-450 block">Related Medical Blogs:</span>
+                        <div className="space-y-1.5">
+                          {relatedContent.blogs.map((item, i) => (
+                            <Link 
+                              key={i} 
+                              href={item.url}
+                              className="text-xs font-bold text-mint hover:text-teal-600 block transition-all hover:translate-x-0.5"
+                            >
+                              • {item.name}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Related Protocols */}
+                      <div className="space-y-2">
+                        <span className="text-[9.5px] font-extrabold uppercase tracking-widest text-slate-450 block">Clinical Protocols:</span>
+                        <div className="space-y-1.5">
+                          {relatedContent.protocols.map((item, i) => (
+                            <Link 
+                              key={i} 
+                              href={item.url}
+                              className="text-xs font-bold text-mint hover:text-teal-600 block transition-all hover:translate-x-0.5"
+                            >
+                              • {item.name}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Related assessments recommendations */}
+                    <div className="border-t border-slate-100 dark:border-slate-800/80 pt-4.5 space-y-2.5">
+                      <span className="text-[9.5px] font-extrabold uppercase tracking-widest text-slate-400 block">Recommended Next Assessments:</span>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {getSuggestedNextAssessments().map(nextProf => (
+                          <button
+                            key={nextProf.id}
+                            onClick={() => handleSelectProfile(nextProf.id)}
+                            className="p-3 border border-slate-150 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60 hover:border-mint hover:bg-mint/5 rounded-xl text-[11px] font-bold text-slate-650 dark:text-zinc-350 cursor-pointer transition-all flex items-center justify-between text-left"
+                          >
+                            <span>{nextProf.name}</span>
+                            <ChevronRight className="w-3.5 h-3.5 text-mint" />
+                          </button>
+                        ))}
                       </div>
                     </div>
                   </div>
