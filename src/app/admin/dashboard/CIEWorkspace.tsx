@@ -224,6 +224,20 @@ const PATIENT_LONGITUDINAL_DATA: Record<string, {
 };
 
 export default function CIEWorkspace({ patients, selectedPatientId, setSelectedPatientId, theme }: CIEWorkspaceProps) {
+  // Dynamic patient key resolver
+  const getActiveDataKey = () => {
+    if (!selectedPatientId) return "aarav";
+    const patientObj = patients.find(p => p.id === selectedPatientId);
+    if (!patientObj) return "aarav";
+    const nameLower = patientObj.name.toLowerCase();
+    if (nameLower.includes("aarav") || nameLower.includes("sharma")) return "aarav";
+    if (nameLower.includes("priya") || nameLower.includes("patel")) return "priya";
+    if (nameLower.includes("elena") || nameLower.includes("rostova")) return "elena";
+    return "aarav";
+  };
+
+  const activeDataKey = getActiveDataKey();
+  const activeData = PATIENT_LONGITUDINAL_DATA[activeDataKey] || PATIENT_LONGITUDINAL_DATA.aarav;
   // Navigation Tabs: Unified Cockpit, Raw note parser intake, Compiled print reports
   const [activeTab, setActiveTab] = useState<"cockpit" | "intake" | "reports">("cockpit");
   const [activeTwinMode, setActiveTwinMode] = useState<"playback" | "simulator">("playback");
@@ -241,6 +255,132 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
     improveSleep: false,
     stopTreatment: false
   });
+
+  // Digital Twin Simulator 2.0 Sliders
+  const [simSliders, setSimSliders] = useState({
+    weight: 75,
+    hba1c: 6.5,
+    bloodPressure: 120,
+    sleepQuality: 75,
+    exerciseFrequency: 3,
+    medicationAdherence: 90,
+    dietQuality: 75,
+    stressLevels: 45,
+    fluidIntake: 2.5
+  });
+
+  // Reset sliders when active patient changes
+  useEffect(() => {
+    if (activeDataKey === "aarav") {
+      setSimSliders({
+        weight: 84, // Aarav's weight
+        hba1c: 6.9, // Aarav's HbA1c
+        bloodPressure: 135,
+        sleepQuality: 65,
+        exerciseFrequency: 1,
+        medicationAdherence: 85,
+        dietQuality: 60,
+        stressLevels: 70,
+        fluidIntake: 1.8
+      });
+    } else if (activeDataKey === "priya") {
+      setSimSliders({
+        weight: 74, // Priya's weight
+        hba1c: 5.4, // Priya's TSH baseline
+        bloodPressure: 115,
+        sleepQuality: 80,
+        exerciseFrequency: 4,
+        medicationAdherence: 95,
+        dietQuality: 80,
+        stressLevels: 35,
+        fluidIntake: 2.8
+      });
+    } else { // Elena
+      setSimSliders({
+        weight: 62, // Elena's weight
+        hba1c: 5.6, // Elena's ESR baseline
+        bloodPressure: 125,
+        sleepQuality: 70,
+        exerciseFrequency: 2,
+        medicationAdherence: 90,
+        dietQuality: 70,
+        stressLevels: 50,
+        fluidIntake: 2.2
+      });
+    }
+  }, [activeDataKey]);
+
+  // Live Clinical Intelligence Feed™ state
+  interface FeedItem {
+    id: string;
+    timestamp: string;
+    type: "risk" | "insight" | "trend" | "remedy" | "warning";
+    message: string;
+    detail: string;
+    confidenceDelta?: string;
+  }
+
+  const [feedItems, setFeedItems] = useState<FeedItem[]>([]);
+  const [feedFilter, setFeedFilter] = useState<"all" | "risk" | "insight" | "remedy" | "warning" | "bookmarked">("all");
+  const [bookmarkedFeeds, setBookmarkedFeeds] = useState<Record<string, boolean>>({});
+  const [activeFeedItemDetail, setActiveFeedItemDetail] = useState<FeedItem | null>(null);
+
+  // Initialize and stream feed items
+  useEffect(() => {
+    // Starting items
+    let initial: FeedItem[] = [];
+    if (activeDataKey === "aarav") {
+      initial = [
+        { id: "f1", timestamp: "09:12", type: "insight", message: "HbA1c trend improving", detail: "Metabolic tracking shows stable downward trajectory. Confidence increased +3%.", confidenceDelta: "+3%" },
+        { id: "f2", timestamp: "09:14", type: "risk", message: "Renal risk recalculated", detail: "Estimated glomerular filtration rate (eGFR) decline rate projected. 82% → 79%.", confidenceDelta: "-3% Risk" },
+        { id: "f3", timestamp: "09:18", type: "insight", message: "Twin simulation updated", detail: "Apis Mellifica + Serum Anguillae synergy slows predicted eGFR decline slope." },
+        { id: "f4", timestamp: "09:22", type: "remedy", message: "New opportunity: Sleep", detail: "Optimizing sleep profile to >8hrs drops autonomic renal stress burden by 8%." }
+      ];
+    } else if (activeDataKey === "priya") {
+      initial = [
+        { id: "f1", timestamp: "09:10", type: "insight", message: "TSH level stabilizing", detail: "Hormonal feedback loops show responsive recovery. TSH improved to 4.8 uIU/mL.", confidenceDelta: "+4%" },
+        { id: "f2", timestamp: "09:15", type: "risk", message: "Endocrine burden lowered", detail: "Calcarea addition is stabilizing cellular metabolic spikes. 54% → 48% risk.", confidenceDelta: "-6% Risk" },
+        { id: "f3", timestamp: "09:20", type: "insight", message: "Psora Miasmatic shift", detail: "Active functional deficiencies transitioning to latent phase." },
+        { id: "f4", timestamp: "09:24", type: "remedy", message: "Calcarea Intercurrent active", detail: "Cold thermal match validates remedy selection. Constitutional alignment 86%." }
+      ];
+    } else {
+      initial = [
+        { id: "f1", timestamp: "09:08", type: "insight", message: "ESR inflammation down", detail: "Synovial congestion indices show reduction. ESR dropped 28 → 24 mm/hr.", confidenceDelta: "+5%" },
+        { id: "f2", timestamp: "09:12", type: "risk", message: "Rheumatoid flare risk lowered", detail: "Rhus Tox + Causticum protocol targets articular congestion. 68% → 62% risk.", confidenceDelta: "-6% Risk" },
+        { id: "f3", timestamp: "09:19", type: "insight", message: "Pain score index down", detail: "Telemetry tracks morning stiffness duration reduction below 45 minutes." },
+        { id: "f4", timestamp: "09:26", type: "warning", message: "Weather drop alert", detail: "Sudden barometric pressure drop may increase joint stiffness. Suggest heating support." }
+      ];
+    }
+    setFeedItems(initial);
+
+    // Dynamic feed streamer queue
+    const streamPool: FeedItem[] = [
+      { id: "s1", timestamp: "09:35", type: "insight", message: "Adherence check successful", detail: "Patient reports 95% compliance on dietary sodium restriction." },
+      { id: "s2", timestamp: "09:42", type: "trend", message: "Vitality Index rising", detail: "Composite cellular vitality index indicates recovery buffer +4%." },
+      { id: "s3", timestamp: "09:50", type: "warning", message: "Hydration warning", detail: "Fluid intake below 2.0L limits renal clearing efficiency." },
+      { id: "s4", timestamp: "09:58", type: "remedy", message: "Constitutional match update", detail: "Repertory analysis confirms Lycopodium evening aggravation rubric matches active state." },
+      { id: "s5", timestamp: "10:05", type: "risk", message: "Cardio risk recalculated", detail: "BP reduction from 135 to 120 lowers stroke forecast vector by 7%." }
+    ];
+
+    let index = 0;
+    const interval = setInterval(() => {
+      if (index < streamPool.length) {
+        const item = { ...streamPool[index], timestamp: new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false }) };
+        setFeedItems(prev => [item, ...prev]);
+        index++;
+      }
+    }, 9000);
+
+    return () => clearInterval(interval);
+  }, [activeDataKey]);
+
+  // Zoom and pan states for OSTM Graph
+  const [graphScale, setGraphScale] = useState(1);
+  const [graphPan, setGraphPan] = useState({ x: 0, y: 0 });
+  const [nodeSearchQuery, setNodeSearchQuery] = useState("");
+  const isDraggingGraphRef = useRef(false);
+  const dragStartRef = useRef({ x: 0, y: 0 });
+
 
   // Graph state and click-inspector
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
@@ -269,20 +409,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
   const chatBottomRef = useRef<HTMLDivElement>(null);
   const playbackIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Dynamic patient key resolver
-  const getActiveDataKey = () => {
-    if (!selectedPatientId) return "aarav";
-    const patientObj = patients.find(p => p.id === selectedPatientId);
-    if (!patientObj) return "aarav";
-    const nameLower = patientObj.name.toLowerCase();
-    if (nameLower.includes("aarav") || nameLower.includes("sharma")) return "aarav";
-    if (nameLower.includes("priya") || nameLower.includes("patel")) return "priya";
-    if (nameLower.includes("elena") || nameLower.includes("rostova")) return "elena";
-    return "default";
-  };
 
-  const activeDataKey = getActiveDataKey();
-  const activeData = PATIENT_LONGITUDINAL_DATA[activeDataKey] || PATIENT_LONGITUDINAL_DATA.default;
 
   // Auto-scroll chat history
   useEffect(() => {
@@ -340,124 +467,130 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
   // Under-100ms simulator calculation state solver
   const simulatedResults = (() => {
     if (activeTwinMode !== "simulator") return null;
-    
+
     const factor = simDays / 365;
     let vitality = activeData.vitalityIndex;
     let burden = activeData.diseaseBurdenIndex;
-    
+
     let labs: Record<string, number> = {};
     let symptoms = JSON.parse(JSON.stringify(activeData.symptoms));
     let risks = JSON.parse(JSON.stringify(activeData.predictiveRisks));
+
+    // Baseline definitions for clinical offset calculations
+    const baselines: Record<string, any> = {
+      aarav: { weight: 84, hba1c: 6.9, bp: 135, sleep: 65, exercise: 1, adherence: 85, diet: 60, stress: 70, fluid: 1.8 },
+      priya: { weight: 74, hba1c: 5.4, bp: 115, sleep: 80, exercise: 4, adherence: 95, diet: 80, stress: 35, fluid: 2.8 },
+      elena: { weight: 62, hba1c: 5.6, bp: 125, sleep: 70, exercise: 2, adherence: 90, diet: 70, stress: 50, fluid: 2.2 }
+    };
+
+    const patientBase = baselines[activeDataKey] || baselines.aarav;
+
+    // 1. Calculate Net Optimization Offset from 9 Sliders
+    let optScore = 0;
     
-    // Base timeline drifts
+    // Sleep improvement (+ = better)
+    optScore += (simSliders.sleepQuality - patientBase.sleep) * 0.4;
+    // Adherence improvement (+ = better)
+    optScore += (simSliders.medicationAdherence - patientBase.adherence) * 0.6;
+    // Diet quality (+ = better)
+    optScore += (simSliders.dietQuality - patientBase.diet) * 0.4;
+    // Stress reduction (+ = better)
+    optScore += (patientBase.stress - simSliders.stressLevels) * 0.5;
+    // Exercise (+ = better)
+    optScore += (simSliders.exerciseFrequency - patientBase.exercise) * 3.0;
+    // Weight reduction (+ = better)
+    optScore += (patientBase.weight - simSliders.weight) * 1.5;
+    // Fluid intake (+ = better)
+    optScore += (simSliders.fluidIntake - patientBase.fluid) * 4.0;
+    // BP reduction (+ = better)
+    optScore += (patientBase.bp - simSliders.bloodPressure) * 0.3;
+
+    // Apply simulation options checkboxes as extra multipliers
+    if (simOptions.increasePotency) optScore += 8;
+    if (simOptions.changeRemedy) optScore += 12;
+    if (simOptions.stopTreatment) optScore -= 35; // Severe de-compensation
+
+    // 2. Resolve Vitality and Disease Burden
+    vitality = Math.round(vitality + (optScore * factor));
+    burden = Math.max(5, Math.round(burden - (optScore * 0.8 * factor)));
+
+    // 3. Resolve Laboratory Projections
     if (activeDataKey === "aarav") {
-      vitality = Math.round(vitality + (8 * factor));
-      burden = Math.round(burden - (10 * factor));
       labs = {
-        egfr: activeData.labs.egfr[activeData.labs.egfr.length - 1] + (4 * factor),
-        creatinine: activeData.labs.creatinine[activeData.labs.creatinine.length - 1] - (0.15 * factor),
-        hba1c: activeData.labs.hba1c[activeData.labs.hba1c.length - 1] - (0.4 * factor),
-        microalbumin: activeData.labs.microalbumin[activeData.labs.microalbumin.length - 1] - (25 * factor)
+        egfr: Math.max(10, Math.min(120, activeData.labs.egfr[activeData.labs.egfr.length - 1] + (optScore * 0.18 * factor))),
+        creatinine: Math.max(0.4, Number((activeData.labs.creatinine[activeData.labs.creatinine.length - 1] - (optScore * 0.006 * factor)).toFixed(2))),
+        hba1c: Number(simSliders.hba1c.toFixed(1)),
+        microalbumin: Math.max(10, Math.round(activeData.labs.microalbumin[activeData.labs.microalbumin.length - 1] - (optScore * 1.8 * factor)))
       };
+      
+      // Dynamic symptom severity overrides
+      if (optScore > 15) {
+        symptoms.forEach((s: any) => {
+          if (s.name.includes("edema") || s.name.includes("urination")) s.severity = "Mild";
+          if (s.name.includes("fatigue")) s.severity = "Resolved";
+        });
+      } else if (optScore < -15) {
+        symptoms.forEach((s: any) => { s.severity = "Severe"; });
+      }
     } else if (activeDataKey === "priya") {
-      vitality = Math.round(vitality + (12 * factor));
-      burden = Math.round(burden - (14 * factor));
       labs = {
-        tsh: activeData.labs.tsh[activeData.labs.tsh.length - 1] - (1.6 * factor),
-        lh_fsh_ratio: activeData.labs.lh_fsh_ratio[activeData.labs.lh_fsh_ratio.length - 1] - (0.42 * factor),
-        cholesterol: activeData.labs.cholesterol[activeData.labs.cholesterol.length - 1] - (20 * factor),
-        weight_kg: activeData.labs.weight_kg[activeData.labs.weight_kg.length - 1] - (5.7 * factor)
+        tsh: Number(simSliders.hba1c.toFixed(2)), // TSH
+        lh_fsh_ratio: Math.max(0.5, Number((activeData.labs.lh_fsh_ratio[activeData.labs.lh_fsh_ratio.length - 1] - (optScore * 0.008 * factor)).toFixed(2))),
+        cholesterol: Math.max(120, Math.round(activeData.labs.cholesterol[activeData.labs.cholesterol.length - 1] - (optScore * 0.8 * factor))),
+        weight_kg: Number(simSliders.weight.toFixed(1))
       };
-    } else {
-      vitality = Math.round(vitality + (17 * factor));
-      burden = Math.round(burden - (17 * factor));
-      labs = {
-        esr: activeData.labs.esr[activeData.labs.esr.length - 1] - (14 * factor),
-        crp: activeData.labs.crp[activeData.labs.crp.length - 1] - (2.7 * factor),
-        anticcp: activeData.labs.anticcp[activeData.labs.anticcp.length - 1] - (10 * factor),
-        painScore: activeData.labs.painScore[activeData.labs.painScore.length - 1] - (1.5 * factor)
-      };
-    }
 
-    // Apply simulation checkbox overrides
-    if (simOptions.stopTreatment) {
-      vitality = Math.round(activeData.vitalityIndex - (22 * factor) - 8);
-      burden = Math.round(activeData.diseaseBurdenIndex + (25 * factor) + 10);
-      if (activeDataKey === "aarav") {
-        labs.egfr = Math.max(15, labs.egfr - (27 * factor));
-        labs.creatinine += 0.8 * factor;
-        labs.hba1c += 2.0 * factor;
-        symptoms.forEach((s: any) => { s.severity = "Severe"; });
-      } else if (activeDataKey === "priya") {
-        labs.tsh += 4.5 * factor;
-        labs.lh_fsh_ratio += 1.2 * factor;
-        labs.weight_kg += 6.0 * factor;
-        symptoms.forEach((s: any) => { s.severity = "Severe"; });
-      } else {
-        labs.esr += 28 * factor;
-        labs.painScore = Math.min(10, labs.painScore + 4 * factor);
+      if (optScore > 15) {
+        symptoms.forEach((s: any) => { if (s.name.includes("fatigue")) s.severity = "Resolved"; });
+      } else if (optScore < -15) {
         symptoms.forEach((s: any) => { s.severity = "Severe"; });
       }
-    } else {
-      if (simOptions.increasePotency) {
-        vitality += Math.round(5 * factor + 2);
-        burden -= Math.round(4 * factor);
-        if (activeDataKey === "aarav") labs.egfr += 3.2 * factor;
-        else if (activeDataKey === "priya") labs.tsh -= 0.6 * factor;
-        else labs.esr -= 5.0 * factor;
-      }
-      if (simOptions.improveSleep) {
-        vitality += Math.round(4 * factor + 1);
-        symptoms.forEach((s: any) => { if (s.name.includes("fatigue") || s.name.includes("swings")) s.severity = "Resolved"; });
-      }
-      if (simOptions.improveHbA1c && activeDataKey === "aarav") {
-        labs.hba1c -= 0.8 * factor;
-        labs.egfr += 2.5 * factor;
-      }
-      if (simOptions.reduceWeight) {
-        if (activeDataKey === "aarav") labs.hba1c -= 0.3 * factor;
-        else if (activeDataKey === "priya") {
-          labs.weight_kg -= 3.5 * factor;
-          labs.lh_fsh_ratio -= 0.2 * factor;
-        }
-      }
-      if (simOptions.changeRemedy) {
-        if (simDays > 30) {
-          vitality += Math.round(6 * factor);
-          burden -= Math.round(5 * factor);
-        }
+    } else { // Elena
+      labs = {
+        esr: Math.max(2, Math.round(simSliders.hba1c * 4)), // ESR
+        crp: Math.max(0.1, Number((activeData.labs.crp[activeData.labs.crp.length - 1] - (optScore * 0.07 * factor)).toFixed(2))),
+        anticcp: Math.max(5, Math.round(activeData.labs.anticcp[activeData.labs.anticcp.length - 1] - (optScore * 0.4 * factor))),
+        painScore: Math.max(0, Math.min(10, Number((activeData.labs.painScore[activeData.labs.painScore.length - 1] - (optScore * 0.05 * factor)).toFixed(1))))
+      };
+
+      if (optScore > 15) {
+        symptoms.forEach((s: any) => { if (s.name.includes("stiffness")) s.severity = "Mild"; });
+      } else if (optScore < -15) {
+        symptoms.forEach((s: any) => { s.severity = "Severe"; });
       }
     }
 
-    // Recalculate risk scores under simulation changes
+    // 4. Recalculate Risk Scores under sliders
     risks.forEach((r: any) => {
-      if (simOptions.stopTreatment) {
-        r.val = Math.min(98, Math.round(r.val + (22 * factor) + 10));
-      } else {
-        let reduction = 0;
-        if (simOptions.increasePotency) reduction += 10;
-        if (simOptions.improveSleep) reduction += 6;
-        if (simOptions.improveHbA1c && activeDataKey === "aarav") reduction += 14;
-        if (simOptions.reduceWeight) reduction += 8;
-        r.val = Math.max(5, Math.round(r.val - (reduction * factor) - (8 * factor)));
-      }
+      let reduction = optScore * 0.6;
+      r.val = Math.max(5, Math.min(99, Math.round(r.val - (reduction * factor))));
+      
+      // Color codes
       if (r.val > 75) { r.level = "High Risk"; r.color = "text-rose-500"; }
       else if (r.val > 40) { r.level = "Moderate Risk"; r.color = "text-amber-500"; }
       else { r.level = "Low Risk"; r.color = "text-emerald-500"; }
     });
 
-    // Confidence formula
+    // 5. Confidence formula
     let confidence = 92 - (simDays === 365 ? 20 : simDays === 180 ? 11 : simDays === 90 ? 4 : 0);
-    const activeSwitches = Object.values(simOptions).filter(Boolean).length;
-    confidence = Math.max(50, confidence - (activeSwitches * 2));
 
     return {
-      vitality: Math.min(100, Math.max(0, vitality)),
-      burden: Math.min(100, Math.max(0, burden)),
+      vitality: Math.max(10, Math.min(100, vitality)),
+      burden: Math.max(5, Math.min(100, burden)),
       labs,
       symptoms,
       risks,
-      confidence
+      confidence,
+      bestCase: {
+        vitality: Math.min(100, Math.round(vitality * 1.15)),
+        burden: Math.max(5, Math.round(burden * 0.8)),
+        risks: risks.map((r: any) => ({ ...r, val: Math.max(5, Math.round(r.val * 0.8)) }))
+      },
+      worstCase: {
+        vitality: Math.max(10, Math.round(vitality * 0.75)),
+        burden: Math.min(100, Math.round(burden * 1.25)),
+        risks: risks.map((r: any) => ({ ...r, val: Math.min(99, Math.round(r.val * 1.25)) }))
+      }
     };
   })();
 
@@ -575,7 +708,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
     });
   }, [twinIndex, activeData, theme, activeDataKey, activeTwinMode, activeTab]);
 
-  // Render SVG/Canvas 30d/90d/180d/1y Forecast curves
+  // Render SVG/Canvas 30d/90d/180d/1y Forecast curves (with Expected, Best, and Worst case scenarios)
   useEffect(() => {
     const canvas = forecastCanvasRef.current;
     if (!canvas || activeTab !== "cockpit") return;
@@ -652,34 +785,83 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
       ];
     }
 
-    // Adjust lines in real-time simulation mode
-    if (activeTwinMode === "simulator") {
+    // Adjust lines in real-time simulation mode (incorporating Best & Worst Cases)
+    let bestCurves: Array<{ values: number[]; color: string }> = [];
+    let worstCurves: Array<{ values: number[]; color: string }> = [];
+
+    if (activeTwinMode === "simulator" && simulatedResults) {
       const sim = simulatedResults;
-      if (sim) {
-        curves.forEach(c => {
-          if (c.name.includes("Risk") || c.name.includes("Trigger") || c.name.includes("Flare")) {
-            // Apply projection value
-            const finalSim = sim.risks[0]?.val || 50;
-            const diff = finalSim - c.values[0];
-            c.values = c.values.map((v, i) => Math.round(v + (diff * (i / 4))));
-          } else {
-            // Support curves
-            const finalSim = sim.risks[1]?.val || 30;
-            const diff = finalSim - c.values[0];
-            c.values = c.values.map((v, i) => Math.round(v + (diff * (i / 4))));
-          }
-        });
-      }
+      
+      curves.forEach((c, idx) => {
+        const isPrimary = c.name.includes("Risk") || c.name.includes("Trigger") || c.name.includes("Flare");
+        const baseVal = c.values[0];
+        
+        // Expected curve
+        const finalExpected = isPrimary ? (sim.risks[0]?.val || 50) : (sim.risks[1]?.val || 30);
+        const diffExpected = finalExpected - baseVal;
+        c.values = c.values.map((v, i) => Math.round(v + (diffExpected * (i / 4))));
+
+        // Best-case curve
+        const finalBest = isPrimary ? (sim.bestCase.risks[0]?.val || 40) : (sim.bestCase.risks[1]?.val || 25);
+        const diffBest = finalBest - baseVal;
+        const bVals = c.values.map((v, i) => Math.round(v + (diffBest * (i / 4))));
+        bestCurves.push({ values: bVals, color: "rgba(16, 185, 129, 0.4)" });
+
+        // Worst-case curve
+        const finalWorst = isPrimary ? (sim.worstCase.risks[0]?.val || 65) : (sim.worstCase.risks[1]?.val || 45);
+        const diffWorst = finalWorst - baseVal;
+        const wVals = c.values.map((v, i) => Math.round(v + (diffWorst * (i / 4))));
+        worstCurves.push({ values: wVals, color: "rgba(244, 63, 94, 0.4)" });
+      });
     }
 
+    // 1. Draw Worst Case (Dotted Red)
+    if (activeTwinMode === "simulator") {
+      worstCurves.forEach(c => {
+        ctx.beginPath();
+        ctx.strokeStyle = c.color;
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 3]);
+        c.values.forEach((val, i) => {
+          const x = padding.left + i * stepX;
+          const norm = (val - 10) / 90;
+          const y = padding.top + chartH - norm * chartH;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+        ctx.setLineDash([]); // reset
+      });
+    }
+
+    // 2. Draw Best Case (Dotted Green)
+    if (activeTwinMode === "simulator") {
+      bestCurves.forEach(c => {
+        ctx.beginPath();
+        ctx.strokeStyle = c.color;
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 3]);
+        c.values.forEach((val, i) => {
+          const x = padding.left + i * stepX;
+          const norm = (val - 10) / 90;
+          const y = padding.top + chartH - norm * chartH;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+        ctx.setLineDash([]); // reset
+      });
+    }
+
+    // 3. Draw Expected Case (Solid primary)
     curves.forEach(c => {
       ctx.beginPath();
       ctx.strokeStyle = c.color;
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 2.5;
 
       c.values.forEach((val, i) => {
         const x = padding.left + i * stepX;
-        const norm = (val - 10) / 90; // scale between 10% and 100%
+        const norm = (val - 10) / 90;
         const y = padding.top + chartH - norm * chartH;
         if (i === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
@@ -699,7 +881,10 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
     });
   }, [activeData, theme, activeDataKey, activeTwinMode, simulatedResults, activeTab]);
 
-  // Render Animated Knowledge Graph (HTML5 physics engine with click interceptor)
+  // Render Animated Knowledge Graph (Dynamic spring-mass force-directed physics engine)
+  const graphDataRef = useRef<{ nodes: any[]; links: any[] } | null>(null);
+  const draggedNodeRef = useRef<any | null>(null);
+
   useEffect(() => {
     const canvas = graphCanvasRef.current;
     if (!canvas || activeTab !== "cockpit") return;
@@ -708,7 +893,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
     if (!ctx) return;
 
     const width = canvas.parentElement?.clientWidth || 400;
-    const height = 280;
+    const height = 320;
 
     const dpr = window.devicePixelRatio || 1;
     canvas.width = width * dpr;
@@ -717,56 +902,77 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
     canvas.style.width = `${width}px`;
     canvas.style.height = `${height}px`;
 
-    const nodes = [
-      { id: "sym_renal", label: "Ankle Edema", type: "symptom", x: width * 0.15, y: height * 0.35, radius: 12, description: "Fluid loading in lower limbs due to filtration drops." },
-      { id: "sym_fatigue", label: "Extreme Fatigue", type: "symptom", x: width * 0.45, y: height * 0.20, radius: 12, description: "Uremic fatigue and thyroid sluggishness marker." },
-      { id: "sym_bloat", label: "Flatulence & Bloat", type: "symptom", x: width * 0.35, y: height * 0.70, radius: 12, description: "Digestive gas accumulation worse 4-8 PM." },
-      { id: "sym_nocturia", label: "Nocturia Urination", type: "symptom", x: width * 0.18, y: height * 0.55, radius: 12, description: "Frequent nocturnal urination worse 2-5 AM." },
-      { id: "sym_menses", label: "Irregular Menses", type: "symptom", x: width * 0.70, y: height * 0.65, radius: 12, description: "Oligomenorrhea and hormone cycling drops." },
-      { id: "sym_stiffness", label: "Joint Stiffness", type: "symptom", x: width * 0.78, y: height * 0.28, radius: 12, description: "Symmetrical morning stiffness duration > 2 hours." },
-      
-      { id: "org_kidney", label: "Renal Kidneys", type: "organ", x: width * 0.28, y: height * 0.45, radius: 16, description: "Bilateral renal filtration & glomerulonephritis." },
-      { id: "org_thyroid", label: "Endocrine Thyroid", type: "organ", x: width * 0.55, y: height * 0.40, radius: 16, description: "TSH secretions & thyroxin metabolic loops." },
-      { id: "org_joints", label: "Joint Articular", type: "organ", x: width * 0.72, y: height * 0.45, radius: 16, description: "Articular cartilage synovial tissue loading." },
-      
-      { id: "rem_lyc", label: "Lycopodium", type: "remedy", x: width * 0.33, y: height * 0.82, radius: 10, description: "Psoric/Sycotic constitution, right side, flatulence." },
-      { id: "rem_apis", label: "Apis Mellifica", type: "remedy", x: width * 0.08, y: height * 0.45, radius: 10, description: "Bilateral renal support, puffiness under eyes, thirstless." },
-      { id: "rem_anguillae", label: "Serum Anguillae", type: "remedy", x: width * 0.12, y: height * 0.72, radius: 10, description: "Specific support for acute kidney loading." },
-      { id: "rem_puls", label: "Pulsatilla", type: "remedy", x: width * 0.58, y: height * 0.80, radius: 10, description: "Mild yielding profile, thirstless, open air amel." },
-      { id: "rem_thyroid", label: "Thyroidinum", type: "remedy", x: width * 0.45, y: height * 0.88, radius: 10, description: "Intercurrent gland support for sluggish thyroid." },
-      { id: "rem_sil", label: "Silicea Terra", type: "remedy", x: width * 0.88, y: height * 0.60, radius: 10, description: "Cold chilly profile, sweat on soles/palms, nodes." },
-      
-      { id: "mias_psora", label: "Psora Miasm", type: "miasm", x: width * 0.50, y: height * 0.60, radius: 14, description: "Initial functional deficiency & metabolic fatigue." },
-      { id: "mias_sycosis", label: "Sycosis Miasm", type: "miasm", x: width * 0.22, y: height * 0.80, radius: 14, description: "Accumulation, fluid loading, hyper-tissue structures." },
-      { id: "mias_syphilis", label: "Syphilis Miasm", type: "miasm", x: width * 0.88, y: height * 0.80, radius: 14, description: "Degeneration of tissues, structural ulceration." }
-    ];
+    // Initialize nodes with dynamic OSTM clusters
+    if (!graphDataRef.current) {
+      const initialNodes = [
+        // Symptoms
+        { id: "sym_renal", label: "Ankle Edema", type: "symptom", x: width * 0.15, y: height * 0.35, vx: 0, vy: 0, radius: 10, description: "Fluid retention in lower limbs due to drop in glomerular filtration." },
+        { id: "sym_fatigue", label: "Extreme Fatigue", type: "symptom", x: width * 0.45, y: height * 0.20, vx: 0, vy: 0, radius: 10, description: "Uremic exhaustion marker linked to thyroid and renal clearance lags." },
+        { id: "sym_bloat", label: "Flatulence & Bloat", type: "symptom", x: width * 0.35, y: height * 0.70, vx: 0, vy: 0, radius: 10, description: "Digestive dysfunction with gas retention worsening between 4-8 PM." },
+        { id: "sym_nocturia", label: "Nocturia Urination", type: "symptom", x: width * 0.18, y: height * 0.55, vx: 0, vy: 0, radius: 10, description: "Frequent nocturnal urination worse 2-5 AM under kidney filtration load." },
+        { id: "sym_menses", label: "Irregular Menses", type: "symptom", x: width * 0.70, y: height * 0.65, vx: 0, vy: 0, radius: 10, description: "Oligomenorrhea and endocrine cycle deviations." },
+        { id: "sym_stiffness", label: "Joint Stiffness", type: "symptom", x: width * 0.78, y: height * 0.28, vx: 0, vy: 0, radius: 10, description: "Morning joint stiffness lasting >2 hours due to articular congestion." },
 
-    const links = [
-      { source: "sym_renal", target: "org_kidney" },
-      { source: "sym_nocturia", target: "org_kidney" },
-      { source: "sym_bloat", target: "org_kidney" },
-      { source: "sym_fatigue", target: "org_thyroid" },
-      { source: "sym_menses", target: "org_thyroid" },
-      { source: "sym_stiffness", target: "org_joints" },
-      { source: "org_kidney", target: "rem_apis" },
-      { source: "org_kidney", target: "rem_anguillae" },
-      { source: "org_kidney", target: "rem_lyc" },
-      { source: "org_thyroid", target: "rem_puls" },
-      { source: "org_thyroid", target: "rem_thyroid" },
-      { source: "org_joints", target: "rem_sil" },
-      { source: "rem_lyc", target: "mias_sycosis" },
-      { source: "rem_apis", target: "mias_sycosis" },
-      { source: "rem_anguillae", target: "mias_sycosis" },
-      { source: "rem_puls", target: "mias_psora" },
-      { source: "rem_thyroid", target: "mias_psora" },
-      { source: "rem_sil", target: "mias_syphilis" }
-    ];
+        // Organs / Systems
+        { id: "org_kidney", label: "Renal Kidneys", type: "organ", x: width * 0.28, y: height * 0.45, vx: 0, vy: 0, radius: 14, description: "Bilateral filtration glomeruli and endocrine erythropoietin loops." },
+        { id: "org_thyroid", label: "Endocrine Thyroid", type: "organ", x: width * 0.55, y: height * 0.40, vx: 0, vy: 0, radius: 14, description: "Thyroxin secretions and core system basal metabolic loops." },
+        { id: "org_joints", label: "Joint Articular", type: "organ", x: width * 0.72, y: height * 0.45, vx: 0, vy: 0, radius: 14, description: "Articular cartilages, synovial capsules, and inflammatory response cells." },
 
+        // Remedies
+        { id: "rem_lyc", label: "Lycopodium Clavatum", type: "remedy", x: width * 0.33, y: height * 0.82, vx: 0, vy: 0, radius: 11, description: "Constitutional remedy targeting right-sided affinity and renal/gut congestion." },
+        { id: "rem_apis", label: "Apis Mellifica", type: "remedy", x: width * 0.08, y: height * 0.45, vx: 0, vy: 0, radius: 11, description: "Symptomatic support for puffy tissues, water retention, and thirstless state." },
+        { id: "rem_anguillae", label: "Serum Anguillae", type: "remedy", x: width * 0.12, y: height * 0.72, vx: 0, vy: 0, radius: 11, description: "Organotherapy support specifically targeted to renal glomerular integrity." },
+        { id: "rem_puls", label: "Pulsatilla", type: "remedy", x: width * 0.58, y: height * 0.80, vx: 0, vy: 0, radius: 11, description: "Mild, yielding temperament match, thirstless, improved in cool open air." },
+        { id: "rem_thyroid", label: "Thyroidinum", type: "remedy", x: width * 0.45, y: height * 0.88, vx: 0, vy: 0, radius: 11, description: "Intercurrent glandular support for sluggish metabolic conversions." },
+        { id: "rem_sil", label: "Silicea Terra", type: "remedy", x: width * 0.88, y: height * 0.60, vx: 0, vy: 0, radius: 11, description: "Cold chilly profile, deep-acting remedy for nodes, scars, and bone affinity." },
+
+        // Miasms
+        { id: "mias_psora", label: "Psora Miasm", type: "miasm", x: width * 0.50, y: height * 0.60, vx: 0, vy: 0, radius: 12, description: "Initial functional defense deficiency, skin eruptions, and fatigue." },
+        { id: "mias_sycosis", label: "Sycosis Miasm", type: "miasm", x: width * 0.22, y: height * 0.80, vx: 0, vy: 0, radius: 12, description: "Hyper-proliferation, fluid load, chronic structural overgrowth." },
+        { id: "mias_syphilis", label: "Syphilis Miasm", type: "miasm", x: width * 0.88, y: height * 0.80, vx: 0, vy: 0, radius: 12, description: "Destruction, ulceration, tissue degeneration, and structural collapse." },
+
+        // Labs
+        { id: "lab_creatinine", label: "Serum Creatinine", type: "lab", x: width * 0.40, y: height * 0.10, vx: 0, vy: 0, radius: 9, description: "Nitrogenous waste index indicating nephron clearance velocity." },
+        { id: "lab_egfr", label: "eGFR Filtration", type: "lab", x: width * 0.25, y: height * 0.15, vx: 0, vy: 0, radius: 9, description: "Glomerular filtration rate calculated from serum creatinine and demographics." }
+      ];
+
+      const initialLinks = [
+        { source: "sym_renal", target: "org_kidney", strength: 3 },
+        { source: "sym_nocturia", target: "org_kidney", strength: 2 },
+        { source: "sym_bloat", target: "org_kidney", strength: 1.5 },
+        { source: "sym_fatigue", target: "org_thyroid", strength: 2.5 },
+        { source: "sym_menses", target: "org_thyroid", strength: 2 },
+        { source: "sym_stiffness", target: "org_joints", strength: 3 },
+        { source: "org_kidney", target: "rem_apis", strength: 3.5 },
+        { source: "org_kidney", target: "rem_anguillae", strength: 4 },
+        { source: "org_kidney", target: "rem_lyc", strength: 2 },
+        { source: "org_thyroid", target: "rem_puls", strength: 3 },
+        { source: "org_thyroid", target: "rem_thyroid", strength: 3.5 },
+        { source: "org_joints", target: "rem_sil", strength: 2 },
+        { source: "rem_lyc", target: "mias_sycosis", strength: 2.5 },
+        { source: "rem_apis", target: "mias_sycosis", strength: 2 },
+        { source: "rem_anguillae", target: "mias_sycosis", strength: 2.5 },
+        { source: "rem_puls", target: "mias_psora", strength: 3 },
+        { source: "rem_thyroid", target: "mias_psora", strength: 2 },
+        { source: "rem_sil", target: "mias_syphilis", strength: 4.5 },
+        { source: "lab_creatinine", target: "org_kidney", strength: 3 },
+        { source: "lab_egfr", target: "org_kidney", strength: 4 }
+      ];
+
+      graphDataRef.current = { nodes: initialNodes, links: initialLinks };
+    }
+
+    const { nodes, links } = graphDataRef.current;
     let animationFrameId: number;
     const isDark = theme === "dark";
 
     const drawGraph = () => {
       ctx.clearRect(0, 0, width, height);
+
+      // Apply zoom & pan transformations
+      ctx.save();
+      ctx.translate(graphPan.x, graphPan.y);
+      ctx.scale(graphScale, graphScale);
 
       // Links drawing
       links.forEach(link => {
@@ -774,11 +980,17 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
         const t = nodes.find(n => n.id === link.target);
         if (!s || !t) return;
 
+        // Relationship strength calculation
         const isHighlighted = selectedNodeId === s.id || selectedNodeId === t.id;
-        ctx.strokeStyle = isHighlighted
-          ? "rgba(16, 185, 129, 0.4)"
+        const searchMatch = nodeSearchQuery && (
+          s.label.toLowerCase().includes(nodeSearchQuery.toLowerCase()) || 
+          t.label.toLowerCase().includes(nodeSearchQuery.toLowerCase())
+        );
+
+        ctx.strokeStyle = isHighlighted || searchMatch
+          ? "rgba(16, 185, 129, 0.6)"
           : isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(15, 23, 42, 0.08)";
-        ctx.lineWidth = isHighlighted ? 1.5 : 1;
+        ctx.lineWidth = isHighlighted ? (link.strength || 2) * 1.2 : (link.strength || 1) * 0.7;
         ctx.beginPath();
         ctx.moveTo(s.x, s.y);
         ctx.lineTo(t.x, t.y);
@@ -787,71 +999,197 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
 
       // Nodes drawing
       nodes.forEach(node => {
-        let color = "#0ea5e9";
-        if (node.type === "symptom") color = "#f43f5e";
-        else if (node.type === "organ") color = "#3b82f6";
-        else if (node.type === "remedy") color = "#8b5cf6";
-        else if (node.type === "miasm") color = "#eab308";
+        let color = "#38bdf8"; // default sky-400
+        if (node.type === "symptom") color = "#f43f5e"; // rose-500
+        else if (node.type === "organ") color = "#3b82f6"; // blue-500
+        else if (node.type === "remedy") color = "#c084fc"; // purple-400
+        else if (node.type === "miasm") color = "#fbbf24"; // amber-400
+        else if (node.type === "lab") color = "#14b8a6"; // teal-500
 
         const isSelected = selectedNodeId === node.id;
+        const isSearched = nodeSearchQuery && node.label.toLowerCase().includes(nodeSearchQuery.toLowerCase());
+
+        // Draw pulsing search ring
+        if (isSearched) {
+          ctx.beginPath();
+          ctx.arc(node.x, node.y, node.radius + 7 + Math.sin(Date.now() / 150) * 2, 0, 2 * Math.PI);
+          ctx.strokeStyle = "rgba(16, 185, 129, 0.5)";
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+
+        // Highlight adjacent nodes when a node is clicked
+        let isAdjacent = false;
+        if (selectedNodeId) {
+          isAdjacent = links.some(l => 
+            (l.source === selectedNodeId && l.target === node.id) ||
+            (l.target === selectedNodeId && l.source === node.id)
+          );
+        }
 
         ctx.beginPath();
-        ctx.arc(node.x, node.y, node.radius + (isSelected ? 3 : 0), 0, 2 * Math.PI);
+        ctx.arc(node.x, node.y, node.radius + (isSelected ? 4 : isAdjacent ? 2 : 0), 0, 2 * Math.PI);
         ctx.fillStyle = color;
         ctx.fill();
 
-        ctx.strokeStyle = isSelected ? "#10b981" : isDark ? "#0f172a" : "#ffffff";
-        ctx.lineWidth = isSelected ? 3.0 : 1.5;
+        ctx.strokeStyle = isSelected 
+          ? "#10b981" 
+          : isAdjacent 
+            ? "rgba(16, 185, 129, 0.6)" 
+            : isDark ? "#0f172a" : "#ffffff";
+        ctx.lineWidth = isSelected ? 3.0 : isAdjacent ? 2.0 : 1.5;
         ctx.stroke();
 
-        ctx.fillStyle = isSelected ? "#10b981" : isDark ? "#cbd5e1" : "#1e293b";
-        ctx.font = isSelected ? "bold 8.5px sans-serif" : "7.5px sans-serif";
+        ctx.fillStyle = isSelected 
+          ? "#10b981" 
+          : isSearched 
+            ? "#10b981" 
+            : isDark ? "#cbd5e1" : "#1e293b";
+        ctx.font = isSelected ? "bold 9px sans-serif" : "7.5px sans-serif";
         ctx.textAlign = "center";
         ctx.fillText(node.label, node.x, node.y + node.radius + 10);
       });
+
+      ctx.restore();
     };
 
-    // Physics floating drift loop
-    let t = 0;
+    // Physics Engine spring-mass calculation loop
     const animate = () => {
-      t += 0.008;
-      nodes.forEach((node, idx) => {
-        if (node.type === "symptom" || node.type === "remedy") {
-          node.y += Math.sin(t + idx) * 0.08;
-          node.x += Math.cos(t + idx) * 0.08;
+      const kRepulsion = 120;
+      const kAttraction = 0.005;
+      const kGravity = 0.003;
+      const damping = 0.85;
+
+      const centerX = width / 2;
+      const centerY = height / 2;
+
+      // 1. Repulsion between all node pairs
+      for (let i = 0; i < nodes.length; i++) {
+        const n1 = nodes[i];
+        for (let j = i + 1; j < nodes.length; j++) {
+          const n2 = nodes[j];
+          const dx = n1.x - n2.x;
+          const dy = n1.y - n2.y;
+          const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+          if (dist < 120) {
+            const force = (kRepulsion / (dist * dist)) * 40;
+            const fx = (dx / dist) * force;
+            const fy = (dy / dist) * force;
+            n1.vx += fx;
+            n1.vy += fy;
+            n2.vx -= fx;
+            n2.vy -= fy;
+          }
         }
+      }
+
+      // 2. Attraction along connected links
+      links.forEach(link => {
+        const s = nodes.find(n => n.id === link.source);
+        const t = nodes.find(n => n.id === link.target);
+        if (!s || !t) return;
+        const dx = t.x - s.x;
+        const dy = t.y - s.y;
+        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+        const targetLen = 70; // Rest spring length
+        const force = (dist - targetLen) * kAttraction * (link.strength || 1);
+        const fx = (dx / dist) * force;
+        const fy = (dy / dist) * force;
+        s.vx += fx;
+        s.vy += fy;
+        t.vx -= fx;
+        t.vy -= fy;
       });
+
+      // 3. Update positions and velocities
+      nodes.forEach(node => {
+        if (node === draggedNodeRef.current) return; // Keep dragged node pinned
+
+        // Gravity pull to center
+        node.vx += (centerX - node.x) * kGravity;
+        node.vy += (centerY - node.y) * kGravity;
+
+        // Apply friction
+        node.vx *= damping;
+        node.vy *= damping;
+
+        // Update coordinate
+        node.x += node.vx;
+        node.y += node.vy;
+
+        // Boundary safety checks
+        node.x = Math.max(20, Math.min(width - 20, node.x));
+        node.y = Math.max(20, Math.min(height - 20, node.y));
+      });
+
       drawGraph();
       animationFrameId = requestAnimationFrame(animate);
     };
 
     animate();
 
-    // Canvas click interceptor
-    const handleCanvasClick = (e: MouseEvent) => {
+    // Canvas click & drag intercepts
+    const handleMouseDown = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
       const clickX = e.clientX - rect.left;
       const clickY = e.clientY - rect.top;
 
-      // Click checks
+      // Account for scale and pan offset
+      const graphX = (clickX - graphPan.x) / graphScale;
+      const graphY = (clickY - graphPan.y) / graphScale;
+
       const clicked = nodes.find(n => {
-        const dx = clickX - n.x;
-        const dy = clickY - n.y;
-        return Math.sqrt(dx * dx + dy * dy) < n.radius + 10;
+        const dx = graphX - n.x;
+        const dy = graphY - n.y;
+        return Math.sqrt(dx * dx + dy * dy) < n.radius + 8;
       });
 
       if (clicked) {
+        draggedNodeRef.current = clicked;
         setSelectedNodeId(clicked.id);
+      } else {
+        // Drag start for pan
+        isDraggingGraphRef.current = true;
+        dragStartRef.current = { x: e.clientX - graphPan.x, y: e.clientY - graphPan.y };
       }
     };
 
-    canvas.addEventListener("click", handleCanvasClick);
+    const handleMouseMove = (e: MouseEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+
+      if (draggedNodeRef.current) {
+        const graphX = (clickX - graphPan.x) / graphScale;
+        const graphY = (clickY - graphPan.y) / graphScale;
+        draggedNodeRef.current.x = graphX;
+        draggedNodeRef.current.y = graphY;
+        draggedNodeRef.current.vx = 0;
+        draggedNodeRef.current.vy = 0;
+      } else if (isDraggingGraphRef.current) {
+        setGraphPan({
+          x: e.clientX - dragStartRef.current.x,
+          y: e.clientY - dragStartRef.current.y
+        });
+      }
+    };
+
+    const handleMouseUp = () => {
+      draggedNodeRef.current = null;
+      isDraggingGraphRef.current = false;
+    };
+
+    canvas.addEventListener("mousedown", handleMouseDown);
+    canvas.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
 
     return () => {
       cancelAnimationFrame(animationFrameId);
-      canvas.removeEventListener("click", handleCanvasClick);
+      canvas.removeEventListener("mousedown", handleMouseDown);
+      canvas.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [activeTab, theme, selectedNodeId]);
+  }, [activeTab, theme, selectedNodeId, graphScale, graphPan, nodeSearchQuery]);
 
   // Dynamic OSTM Inspector detail retriever
   const selectedNodeInfo = (() => {
@@ -1087,778 +1425,947 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
 
       {/* ==================== VIEW 1: COCKPIT WORKSPACE ==================== */}
       {activeTab === "cockpit" && (
-        <div className="space-y-6">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
           
-          {/* LAYER 1: Patient Snapshot Card & AI Copilot Summary */}
-          <div className="bg-slate-900 dark:bg-slate-950 border border-slate-800 rounded-[28px] p-6 shadow-xl text-white">
-            <div className="flex flex-col lg:flex-row gap-6">
-              
-              {/* Snapshot Details (2/3 cols) */}
-              <div className="flex-1 lg:flex-[2] space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className={`w-3.5 h-3.5 rounded-full ${activeDataKey === "aarav" ? "bg-rose-500 animate-pulse shadow-[0_0_10px_#f43f5e]" : "bg-emerald-500 shadow-[0_0_10px_#10b981]"}`}></span>
-                    <h2 className="text-lg font-bold font-serif">{activeData.name}</h2>
-                  </div>
-                  <span className={`px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${activeDataKey === "aarav" ? "bg-rose-950/40 text-rose-400 border border-rose-900" : "bg-emerald-950/40 text-emerald-400 border border-emerald-900"}`}>
-                    {activeDataKey === "aarav" ? "UNSTABLE DIABETIC CKD" : "COMPENSATED"}
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  <div className="p-3 bg-slate-950/50 border border-slate-800 rounded-2xl flex flex-col gap-0.5">
-                    <span className="text-[8px] uppercase tracking-wider text-slate-400">Age / Gender</span>
-                    <span className="text-xs font-bold">{activeDataKey === "aarav" ? "48 / Male" : activeDataKey === "priya" ? "31 / Female" : "65 / Female"}</span>
-                  </div>
-                  <div className="p-3 bg-slate-950/50 border border-slate-800 rounded-2xl flex flex-col gap-0.5">
-                    <span className="text-[8px] uppercase tracking-wider text-slate-400">Constitution</span>
-                    <span className="text-xs font-bold text-purple-400">{activeData.constitution}</span>
-                  </div>
-                  <div className="p-3 bg-slate-950/50 border border-slate-800 rounded-2xl flex flex-col gap-0.5">
-                    <span className="text-[8px] uppercase tracking-wider text-slate-400">Primary Diagnosis</span>
-                    <span className="text-xs font-bold text-rose-400 line-clamp-1">
-                      {activeDataKey === "aarav" ? "Type 2 Diabetes & CKD" : activeDataKey === "priya" ? "Hypothyroid & PCOS" : "Rheumatoid Arthritis"}
-                    </span>
-                  </div>
-                  <div className="p-3 bg-slate-950/50 border border-slate-800 rounded-2xl flex flex-col gap-0.5">
-                    <span className="text-[8px] uppercase tracking-wider text-slate-400">Active Remedies</span>
-                    <span className="text-xs font-bold text-sky-400 line-clamp-1">{activeData.remedyMatches[0].name}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* AI Copilot summary (1/3 cols) */}
-              <div className="flex-1 bg-gradient-to-r from-emerald-950/20 to-teal-950/20 border border-emerald-900/30 rounded-2xl p-4 flex flex-col gap-2">
-                <div className="flex items-center gap-2 border-b border-emerald-900/30 pb-2">
-                  <Sparkles className="w-4 h-4 text-emerald-400" />
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">AI Copilot Summary</span>
-                </div>
-                <p className="text-[11.5px] leading-relaxed text-slate-300 font-sans">
-                  {activeDataKey === "aarav" 
-                    ? "Patient shows stable diabetic control but progressive CKD risk. eGFR declined 9 points over 12 months. Remedy response favorable. Recommend renal support protocol and review in 4 weeks."
-                    : activeDataKey === "priya"
-                      ? "Subclinical hypothyroid stabilized after Calcarea intercurrent addition. TSH improved to 4.8 uIU/mL. Continue Pulsatilla 30C and monitor weight indexes."
-                      : "Rheumatoid flare-up resolved after Rhus Tox + Causticum protocol. Inflammatory CRP level dropped from 18.5 to 8.2 mg/L. Mobilization stiffness duration minimized."}
-                </p>
-              </div>
-
-            </div>
-          </div>
-
-          {/* LAYER 2: Digital Twin Engine™ Simulator panel */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm space-y-4">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-100 dark:border-slate-800 pb-3">
-              <div>
-                <h3 className="font-serif text-base font-bold flex items-center gap-2">
-                  <Layers className="w-5 h-5 text-emerald-500" /> Patient Digital Twin Simulator™
-                </h3>
-                <p className="text-xs text-slate-400 mt-0.5">Toggle between historical timeline playback and what-if simulation controls.</p>
-              </div>
-
-              {/* Mode switch */}
-              <div className="flex bg-slate-100 dark:bg-slate-950 p-1.5 rounded-xl border border-slate-200 dark:border-slate-800 gap-1">
-                <button
-                  onClick={() => setActiveTwinMode("playback")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-all border-none ${activeTwinMode === "playback" ? "bg-white dark:bg-slate-850 shadow text-slate-800 dark:text-slate-100" : "text-slate-400 hover:text-slate-600 bg-transparent"}`}
-                >
-                  Chronology Timeline
-                </button>
-                <button
-                  onClick={() => setActiveTwinMode("simulator")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-all border-none ${activeTwinMode === "simulator" ? "bg-white dark:bg-slate-850 shadow text-slate-800 dark:text-slate-100" : "text-slate-400 hover:text-slate-600 bg-transparent"}`}
-                >
-                  "What-If" Simulator
-                </button>
-              </div>
-            </div>
-
-            {/* Playback View */}
-            {activeTwinMode === "playback" && (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between flex-wrap gap-3">
-                  <span className="text-xs text-slate-500">playback historical visits. Click elements to scrub logs.</span>
-                  
-                  <div className="flex items-center gap-2">
-                    <button 
-                      onClick={() => setIsPlaying(!isPlaying)}
-                      className="px-3.5 py-1.5 bg-emerald-600 hover:opacity-90 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer border-none"
-                    >
-                      <Play className="w-3.5 h-3.5 fill-white" />
-                      {isPlaying ? "Pause" : "Play Timeline"}
-                    </button>
-                    <button 
-                      onClick={() => { setIsPlaying(false); setTwinIndex(0); }}
-                      className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs font-bold cursor-pointer border-none text-slate-700 dark:text-slate-300"
-                    >
-                      Reset
-                    </button>
-                    <span className="px-3 py-1 bg-slate-900 border border-slate-800 text-white rounded-lg font-mono text-xs font-bold">
-                      {activeData.history[twinIndex]?.date || "Date"}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Progress bar */}
-                <div className="flex items-center bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 gap-4">
-                  <span className="text-[10px] font-mono text-slate-400">{activeData.labs.timeline[0]}</span>
-                  <div className="flex-1 relative h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full">
-                    <div 
-                      className="absolute left-0 top-0 h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all"
-                      style={{ width: `${(twinIndex / (activeData.labs.timeline.length - 1)) * 100}%` }}
-                    ></div>
-                    <div 
-                      className="absolute w-3 h-3 bg-white border-2 border-emerald-500 rounded-full top-1/2 -translate-y-1/2 -translate-x-1/2 cursor-pointer shadow-md"
-                      style={{ left: `${(twinIndex / (activeData.labs.timeline.length - 1)) * 100}%` }}
-                    ></div>
-                  </div>
-                  <span className="text-[10px] font-mono text-slate-400">{activeData.labs.timeline[activeData.labs.timeline.length - 1]}</span>
-                </div>
-
-                {/* Historic metrics details */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 flex flex-col gap-0.5">
-                    <span className="text-[8px] uppercase tracking-wider text-slate-400 font-bold">Active Remedy Vector</span>
-                    <span className="text-xs font-bold text-purple-600 dark:text-purple-400">
-                      {activeData.history.filter(h => h.type === "Remedy" && h.date <= activeData.labs.timeline[twinIndex]).slice(-1)[0]?.event || activeData.remedyMatches[0].name}
-                    </span>
-                  </div>
-                  <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 flex flex-col gap-0.5">
-                    <span className="text-[8px] uppercase tracking-wider text-slate-400 font-bold">Pathological event</span>
-                    <span className="text-xs font-bold text-slate-700 dark:text-slate-350 truncate">
-                      {activeData.history.filter(h => h.date <= activeData.labs.timeline[twinIndex]).slice(-1)[0]?.event || "Baseline check"}
-                    </span>
-                  </div>
-                  <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 flex flex-col gap-0.5">
-                    <span className="text-[8px] uppercase tracking-wider text-slate-400 font-bold">Miasmatic Focus</span>
-                    <span className="text-xs font-bold text-amber-500">{activeData.miasm.split(" ")[0]}</span>
-                  </div>
-                  <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 flex flex-col gap-0.5">
-                    <span className="text-[8px] uppercase tracking-wider text-slate-400 font-bold">Notes</span>
-                    <span className="text-[10px] text-slate-500 truncate">
-                      {activeData.history.filter(h => h.date <= activeData.labs.timeline[twinIndex]).slice(-1)[0]?.notes || "None"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Simulation View */}
-            {activeTwinMode === "simulator" && simulatedResults && (
-              <div className="space-y-4">
+          {/* ==================== LEFT/CENTER COLUMN: COCKPIT WORKSPACE (8 COLS) ==================== */}
+          <div className="xl:col-span-8 space-y-6">
+            
+            {/* 1. CLINICAL COMMAND CENTER REDESIGN (PRIORITY 10) */}
+            <div className="bg-slate-900 dark:bg-slate-950 border border-slate-800 rounded-[28px] p-6 shadow-xl text-white">
+              <div className="flex flex-col lg:flex-row gap-6">
                 
-                {/* Time projections & confidence */}
-                <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3 flex-wrap gap-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Time Projection:</span>
-                    <div className="flex bg-slate-100 dark:bg-slate-950 p-1 rounded-xl border border-slate-200 dark:border-slate-800">
-                      {[30, 90, 180, 365].map(days => (
-                        <button
-                          key={days}
-                          onClick={() => setSimDays(days)}
-                          className={`px-3 py-1 rounded-lg text-[10px] font-bold cursor-pointer transition-all border-none ${simDays === days ? "bg-emerald-600 text-white" : "text-slate-400 hover:text-slate-700 bg-transparent"}`}
-                        >
-                          {days === 365 ? "1 Year" : `+${days}d`}
-                        </button>
-                      ))}
+                {/* Mission Control Panel */}
+                <div className="flex-1 lg:flex-[2] space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="relative flex h-3 w-3">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                      </span>
+                      <h2 className="text-xl font-bold font-serif tracking-wide">{activeData.name}</h2>
+                      <span className="text-[10px] text-slate-400 px-2 py-0.5 bg-slate-850 rounded-lg border border-slate-800 font-mono">
+                        Twin ID: {activeDataKey === "aarav" ? "HIOS-TW-001" : activeDataKey === "priya" ? "HIOS-TW-002" : "HIOS-TW-003"}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-slate-400">Stability Index:</span>
+                      <span className="text-sm font-mono font-bold text-emerald-400">
+                        {activeTwinMode === "simulator" && simulatedResults ? simulatedResults.vitality - 5 : activeData.vitalityIndex - 10}%
+                      </span>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 text-xs">
-                    <span className="text-slate-400">Simulator Efficacy Confidence:</span>
-                    <span className="font-mono font-bold text-emerald-500 text-sm">{simulatedResults.confidence}%</span>
+                  {/* Vitals Telemetry Grid */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div className="p-3 bg-slate-950/60 border border-slate-800 rounded-2xl flex flex-col gap-0.5">
+                      <span className="text-[9px] uppercase tracking-wider text-slate-400">Blood Pressure</span>
+                      <span className="text-xs font-bold text-emerald-400 font-mono">
+                        {activeTwinMode === "simulator" ? `${Math.round(simSliders.bloodPressure)}/82` : activeDataKey === "aarav" ? "135/85" : activeDataKey === "priya" ? "115/75" : "125/80"} mmHg
+                      </span>
+                    </div>
+                    <div className="p-3 bg-slate-950/60 border border-slate-800 rounded-2xl flex flex-col gap-0.5">
+                      <span className="text-[9px] uppercase tracking-wider text-slate-400">Heart Rate</span>
+                      <span className="text-xs font-bold text-emerald-400 font-mono">68 BPM</span>
+                    </div>
+                    <div className="p-3 bg-slate-950/60 border border-slate-800 rounded-2xl flex flex-col gap-0.5">
+                      <span className="text-[9px] uppercase tracking-wider text-slate-400">Core Temp</span>
+                      <span className="text-xs font-bold text-emerald-400 font-mono">98.4 °F</span>
+                    </div>
+                    <div className="p-3 bg-slate-950/60 border border-slate-800 rounded-2xl flex flex-col gap-0.5">
+                      <span className="text-[9px] uppercase tracking-wider text-slate-400">Resp Rate</span>
+                      <span className="text-xs font-bold text-emerald-400 font-mono">16 / min</span>
+                    </div>
+                  </div>
+
+                  {/* Primary Risks list */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    {activeRisks.map((risk: any, i: number) => {
+                      let confidenceLevel = "High";
+                      let badgeColor = "bg-emerald-950/40 text-emerald-400 border border-emerald-900";
+                      
+                      if (risk.val > 75) {
+                        confidenceLevel = "Uncertain";
+                        badgeColor = "bg-rose-950/40 text-rose-400 border border-rose-900";
+                      } else if (risk.val > 50) {
+                        confidenceLevel = "Moderate";
+                        badgeColor = "bg-amber-950/40 text-amber-400 border border-amber-900";
+                      }
+                      
+                      return (
+                        <div key={i} className="p-3 bg-slate-950/60 border border-slate-800 rounded-2xl space-y-1.5">
+                          <div className="flex justify-between items-center text-[9px] uppercase tracking-wider text-slate-400">
+                            <span>{risk.name}</span>
+                            <span className="font-bold text-slate-300">{risk.val}%</span>
+                          </div>
+                          <div className="flex justify-between items-center text-[8.5px]">
+                            <span className={`px-1.5 py-0.2 rounded text-[8px] font-mono ${badgeColor}`}>{risk.level}</span>
+                            <span className="text-slate-500 font-mono">Cert. {confidenceLevel}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs border-t border-slate-800 pt-3">
+                    <div>
+                      <span className="text-[9px] uppercase tracking-wider text-slate-400 block mb-0.5">Top Opportunities</span>
+                      <span className="font-bold text-emerald-400">
+                        {activeDataKey === "aarav" ? "✓ Salt Restriction (+12% renal benefit)" : activeDataKey === "priya" ? "✓ Exercise Conditioning (+15% endocrine)" : "✓ Thermal Warmth Support (+18% pain control)"}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-[9px] uppercase tracking-wider text-slate-400 block mb-0.5">Next Best Action</span>
+                      <span className="font-bold text-sky-400">
+                        {activeDataKey === "aarav" ? "→ Assess Apis 30C response in 7 days" : activeDataKey === "priya" ? "→ Review TSH lab panel next week" : "→ Warm dry room compliance check"}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
-                {/* What happens if controls grid */}
-                <div className="space-y-2.5">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">"What happens if..." clinical switches:</span>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    
-                    <label className="flex items-center gap-2.5 p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs cursor-pointer hover:border-emerald-500 transition-all">
-                      <input 
-                        type="checkbox"
-                        checked={simOptions.increasePotency}
-                        onChange={(e) => setSimOptions(prev => ({ ...prev, increasePotency: e.target.checked }))}
-                        className="rounded border-slate-350 text-emerald-600 focus:ring-emerald-500"
-                      />
-                      <span>Increase remedy potency (30C -&gt; 200C)</span>
-                    </label>
-
-                    <label className="flex items-center gap-2.5 p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs cursor-pointer hover:border-emerald-500 transition-all">
-                      <input 
-                        type="checkbox"
-                        checked={simOptions.changeRemedy}
-                        onChange={(e) => setSimOptions(prev => ({ ...prev, changeRemedy: e.target.checked }))}
-                        className="rounded border-slate-350 text-emerald-600 focus:ring-emerald-500"
-                      />
-                      <span>Change remedy vector</span>
-                    </label>
-
-                    {activeDataKey === "aarav" && (
-                      <label className="flex items-center gap-2.5 p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs cursor-pointer hover:border-emerald-500 transition-all">
-                        <input 
-                          type="checkbox"
-                          checked={simOptions.improveHbA1c}
-                          onChange={(e) => setSimOptions(prev => ({ ...prev, improveHbA1c: e.target.checked }))}
-                          className="rounded border-slate-355 text-emerald-600 focus:ring-emerald-500"
-                        />
-                        <span>Improve HbA1c control (&lt;7.0)</span>
-                      </label>
-                    )}
-
-                    {activeDataKey === "priya" && (
-                      <label className="flex items-center gap-2.5 p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs cursor-pointer hover:border-emerald-500 transition-all">
-                        <input 
-                          type="checkbox"
-                          checked={simOptions.reduceWeight}
-                          onChange={(e) => setSimOptions(prev => ({ ...prev, reduceWeight: e.target.checked }))}
-                          className="rounded border-slate-355 text-emerald-600 focus:ring-emerald-500"
-                        />
-                        <span>Reduce weight indices (by 3kg)</span>
-                      </label>
-                    )}
-
-                    <label className="flex items-center gap-2.5 p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs cursor-pointer hover:border-emerald-500 transition-all">
-                      <input 
-                        type="checkbox"
-                        checked={simOptions.improveSleep}
-                        onChange={(e) => setSimOptions(prev => ({ ...prev, improveSleep: e.target.checked }))}
-                        className="rounded border-slate-355 text-emerald-600 focus:ring-emerald-500"
-                      />
-                      <span>Improve sleep quality</span>
-                    </label>
-
-                    <label className="flex items-center gap-2.5 p-3 bg-rose-50/20 dark:bg-rose-950/10 rounded-2xl border border-rose-200 dark:border-rose-900/30 text-xs cursor-pointer hover:border-rose-500 transition-all">
-                      <input 
-                        type="checkbox"
-                        checked={simOptions.stopTreatment}
-                        onChange={(e) => setSimOptions(prev => ({ ...prev, stopTreatment: e.target.checked }))}
-                        className="rounded border-rose-300 text-rose-600 focus:ring-rose-500"
-                      />
-                      <span className="text-rose-600 dark:text-rose-400 font-bold">Stop remedy treatment</span>
-                    </label>
-
+                {/* AI Summary and Twin status */}
+                <div className="flex-1 bg-gradient-to-r from-emerald-950/10 to-teal-950/10 border border-emerald-900/30 rounded-2xl p-4 flex flex-col justify-between gap-3">
+                  <div>
+                    <div className="flex items-center gap-2 border-b border-emerald-900/30 pb-2">
+                      <Sparkles className="w-4 h-4 text-emerald-400" />
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">OSTM™ Copilot Insights</span>
+                    </div>
+                    <p className="text-[11px] leading-relaxed text-slate-300 font-sans mt-2">
+                      {activeDataKey === "aarav" 
+                        ? "Patient displays progressive nephron stress. Sliders suggest BP control < 120 and salt reduction significantly slow creatinine rise vectors. Apis + Serum Anguillae synergy is optimized at 88% confidence."
+                        : activeDataKey === "priya"
+                          ? "TSH and LH/FSH ratio show functional thyroid response. Regular physical activity (slider > 4 days) reduces cardiovascular stroke forecast score by 14%."
+                          : "Rheumatoid joint stiffness flare-up matches winter damp aggravation (Psora/Syphilitic overlap). Restoring thermal comfort decreases morning stiffness below 30 mins."}
+                    </p>
+                  </div>
+                  <div className="flex items-center justify-between text-[9px] border-t border-emerald-900/20 pt-2 text-slate-400 font-mono">
+                    <span>Twin Status: ACTIVE</span>
+                    <span>Confidence: {activeTwinMode === "simulator" && simulatedResults ? simulatedResults.confidence : 92}%</span>
                   </div>
                 </div>
+
               </div>
-            )}
+            </div>
 
-          </div>
-
-          {/* Layer 3 & 4: OSTM Graph & AI reasoning copilot split */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            
-            {/* OSTM Knowledge Graph (7 cols) */}
-            <div className="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm flex flex-col justify-between">
-              <div className="border-b border-slate-100 dark:border-slate-800 pb-2 flex justify-between items-center">
+            {/* 2. DIGITAL TWIN SIMULATOR 2.0 (PRIORITY 4) */}
+            <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm space-y-4">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-100 dark:border-slate-800 pb-3">
                 <div>
                   <h3 className="font-serif text-base font-bold flex items-center gap-2">
-                    <Network className="w-5 h-5 text-emerald-500" /> OSTM Graph™ (Anatomical reasoning)
+                    <Layers className="w-5 h-5 text-emerald-500" /> Patient Digital Twin Simulator™ 2.0
                   </h3>
-                  <p className="text-xs text-slate-400 mt-0.5">Click graph nodes to explore specific clinical affinities.</p>
-                </div>
-                <span className="logo-sub text-[9px] border-emerald-500 text-emerald-500">Physics Graph</span>
-              </div>
-
-              <div className="relative border border-slate-200 dark:border-slate-800 bg-slate-950/90 rounded-2xl overflow-hidden h-[280px] my-3">
-                <canvas ref={graphCanvasRef} className="w-full h-full block" />
-              </div>
-
-              {/* Inspector details panel if selected */}
-              <AnimatePresence mode="wait">
-                {selectedNodeId && selectedNodeInfo && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
-                    className="p-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl flex flex-col gap-2"
-                  >
-                    <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-850 pb-1.5">
-                      <div className="flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                        <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">{selectedNodeInfo.title}</h4>
-                      </div>
-                      <span className="text-[9px] font-mono font-bold text-slate-400">{selectedNodeInfo.type}</span>
-                    </div>
-
-                    <p className="text-[10px] text-slate-500 leading-relaxed">{selectedNodeInfo.description}</p>
-
-                    <div className="grid grid-cols-2 gap-4 text-[9px] pt-1">
-                      <div>
-                        <span className="text-slate-400 uppercase tracking-wide font-bold block">Evidence Score</span>
-                        <span className="font-mono text-slate-700 dark:text-slate-350">{selectedNodeInfo.evidenceRating}</span>
-                      </div>
-                      <div>
-                        <span className="text-slate-400 uppercase tracking-wide font-bold block">Historical Outcome</span>
-                        <span className="font-mono text-emerald-500 font-semibold">{selectedNodeInfo.historicalOutcome}</span>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* AI Reasoning Copilot Workspace (5 cols) */}
-            <div className="lg:col-span-5 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm flex flex-col justify-between min-h-[440px]">
-              
-              <div className="border-b border-slate-100 dark:border-slate-800 pb-2">
-                <div className="flex justify-between items-center mb-2">
-                  <h3 className="font-serif text-base font-bold flex items-center gap-2">
-                    <Brain className="w-5 h-5 text-indigo-500 animate-pulse" /> Clinical AI Copilot™ Workspace
-                  </h3>
-                  <span className="px-2.5 py-0.5 bg-emerald-955/35 text-emerald-400 border border-emerald-900 rounded-lg text-[9px] font-mono">
-                    {activeTwinMode === "simulator" && simulatedResults ? `${simulatedResults.confidence}% Conf.` : "88% Conf."}
-                  </span>
+                  <p className="text-xs text-slate-400 mt-0.5">Drag clinical sliders to instantly recalculate vitality, disease burden, and future labs.</p>
                 </div>
 
-                {/* Copilot subtabs */}
-                <div className="flex bg-slate-100 dark:bg-slate-950 p-1 rounded-xl border border-slate-200 dark:border-slate-800 gap-1 mt-2">
+                {/* Mode switch */}
+                <div className="flex bg-slate-100 dark:bg-slate-950 p-1.5 rounded-xl border border-slate-200 dark:border-slate-800 gap-1">
                   <button
-                    onClick={() => setCopilotActiveTab("reasoning")}
-                    className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold cursor-pointer transition-all border-none ${copilotActiveTab === "reasoning" ? "bg-white dark:bg-slate-850 text-slate-850 dark:text-slate-100 shadow" : "text-slate-400 bg-transparent"}`}
+                    onClick={() => setActiveTwinMode("playback")}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeTwinMode === "playback" ? "bg-white dark:bg-slate-900 shadow-sm text-slate-800 dark:text-slate-100" : "text-slate-450 hover:text-slate-700"}`}
                   >
-                    Differential Mappings & Labs
+                    ⏮️ Historical Playback
                   </button>
                   <button
-                    onClick={() => setCopilotActiveTab("chat")}
-                    className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold cursor-pointer transition-all border-none ${copilotActiveTab === "chat" ? "bg-white dark:bg-slate-850 text-slate-850 dark:text-slate-100 shadow" : "text-slate-400 bg-transparent"}`}
+                    onClick={() => setActiveTwinMode("simulator")}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeTwinMode === "simulator" ? "bg-white dark:bg-slate-900 shadow-sm text-slate-800 dark:text-slate-100" : "text-slate-450 hover:text-slate-700"}`}
                   >
-                    Ask CIE™ Brain
+                    🧪 Simulator Lab
                   </button>
                 </div>
               </div>
 
-              {/* Subtab 1: Differential and Investigations */}
-              {copilotActiveTab === "reasoning" && (
-                <div className="flex-1 overflow-y-auto my-3.5 space-y-4 pr-1 font-sans">
+              {/* Playback Mode Panel */}
+              {activeTwinMode === "playback" && (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-100 dark:border-slate-900">
+                    <div className="flex flex-col">
+                      <span className="text-[9px] uppercase tracking-wider text-slate-450">Visit Chronology</span>
+                      <span className="text-xs font-bold mt-0.5">{activeData.history[twinIndex]?.date}</span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-[9px] uppercase tracking-wider text-slate-450">Event Type</span>
+                      <span className="text-xs font-bold text-sky-500 mt-0.5">{activeData.history[twinIndex]?.type}</span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-[9px] uppercase tracking-wider text-slate-450">Clinical Event</span>
+                      <span className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 line-clamp-1">{activeData.history[twinIndex]?.event}</span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-[9px] uppercase tracking-wider text-slate-450">Repertory Status</span>
+                      <span className="text-xs font-bold text-emerald-500 mt-0.5">Active</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <button 
+                      onClick={() => setIsPlaying(!isPlaying)}
+                      className="p-3 bg-emerald-600 hover:opacity-90 text-white rounded-2xl flex items-center justify-center cursor-pointer transition-all border-none shadow-md"
+                    >
+                      {isPlaying ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
+                    </button>
+
+                    <div className="flex-1 space-y-1">
+                      <input 
+                        type="range"
+                        min="0"
+                        max={activeData.history.length - 1}
+                        value={twinIndex}
+                        onChange={(e) => setTwinIndex(Number(e.target.value))}
+                        className="w-full accent-emerald-500 cursor-pointer"
+                      />
+                      <div className="flex justify-between text-[9px] font-mono text-slate-400">
+                        <span>Baseline (Mar 2024)</span>
+                        <span>Latest (Jun 2025)</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Simulator Mode 2.0 Panel */}
+              {activeTwinMode === "simulator" && (
+                <div className="space-y-4">
                   
-                  {/* Differential diagnoses */}
-                  <div className="space-y-2.5">
-                    <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 block">Differential Diagnoses (No Black-Box)</span>
+                  {/* Slider Control Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50 dark:bg-slate-950 p-5 rounded-[22px] border border-slate-100 dark:border-slate-900">
                     
-                    {activeDataKey === "aarav" ? (
-                      <>
-                        <div className="p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl space-y-1 text-[11px]">
-                          <div className="flex justify-between items-center font-bold">
-                            <span className="text-slate-855 dark:text-slate-200">Diabetic Nephropathy (CKD Stage 3b)</span>
-                            <span className="text-emerald-500 font-mono font-bold">92% Prob.</span>
-                          </div>
-                          <p className="text-slate-500 leading-normal text-[10px]"><strong>Key Evidence:</strong> eGFR: 49, Creatinine: 1.6, HbA1c: 6.9, persistent microalbuminuria.</p>
-                        </div>
-                        
-                        <div className="p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl space-y-1 text-[11px]">
-                          <div className="flex justify-between items-center font-bold">
-                            <span className="text-slate-855 dark:text-slate-200">Cardiovascular Renal Syndrome (Type 4)</span>
-                            <span className="text-amber-500 font-mono font-bold">70% Consider</span>
-                          </div>
-                          <p className="text-slate-500 leading-normal text-[10px]"><strong>Key Evidence:</strong> eGFR decline slope, ankle edema, sedentary profile.</p>
-                        </div>
-                      </>
-                    ) : activeDataKey === "priya" ? (
-                      <>
-                        <div className="p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl space-y-1 text-[11px]">
-                          <div className="flex justify-between items-center font-bold">
-                            <span className="text-slate-855 dark:text-slate-200">Polycystic Ovary Syndrome (PCOS)</span>
-                            <span className="text-emerald-500 font-mono font-bold">88% Confirmed</span>
-                          </div>
-                          <p className="text-slate-500 leading-normal text-[10px]"><strong>Key Evidence:</strong> LH/FSH ratio 2.8, irregular menstrual cycles, hirsutism.</p>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl space-y-1 text-[11px]">
-                          <div className="flex justify-between items-center font-bold">
-                            <span className="text-slate-855 dark:text-slate-200">Seropositive Rheumatoid Arthritis</span>
-                            <span className="text-emerald-500 font-mono font-bold">95% Confirmed</span>
-                          </div>
-                          <p className="text-slate-500 leading-normal text-[10px]"><strong>Key Evidence:</strong> Symmetrical joint swellings, Anti-CCP: 85, morning stiffness.</p>
-                        </div>
-                      </>
-                    )}
+                    {/* BP Slider */}
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-[10px]">
+                        <span className="font-bold text-slate-500">Blood Pressure</span>
+                        <span className="font-mono font-bold text-emerald-500">{Math.round(simSliders.bloodPressure)} mmHg</span>
+                      </div>
+                      <input 
+                        type="range" min="90" max="180" step="1"
+                        value={simSliders.bloodPressure}
+                        onChange={(e) => setSimSliders(prev => ({ ...prev, bloodPressure: Number(e.target.value) }))}
+                        className="w-full accent-emerald-500 cursor-pointer h-1 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none"
+                      />
+                    </div>
+
+                    {/* Sleep Quality Slider */}
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-[10px]">
+                        <span className="font-bold text-slate-500">Sleep Quality</span>
+                        <span className="font-mono font-bold text-emerald-500">{Math.round(simSliders.sleepQuality)}%</span>
+                      </div>
+                      <input 
+                        type="range" min="30" max="100" step="5"
+                        value={simSliders.sleepQuality}
+                        onChange={(e) => setSimSliders(prev => ({ ...prev, sleepQuality: Number(e.target.value) }))}
+                        className="w-full accent-emerald-500 cursor-pointer h-1 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none"
+                      />
+                    </div>
+
+                    {/* Stress Levels Slider */}
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-[10px]">
+                        <span className="font-bold text-slate-500">Stress Load</span>
+                        <span className="font-mono font-bold text-emerald-500">{Math.round(simSliders.stressLevels)}%</span>
+                      </div>
+                      <input 
+                        type="range" min="10" max="100" step="5"
+                        value={simSliders.stressLevels}
+                        onChange={(e) => setSimSliders(prev => ({ ...prev, stressLevels: Number(e.target.value) }))}
+                        className="w-full accent-emerald-500 cursor-pointer h-1 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none"
+                      />
+                    </div>
+
+                    {/* HbA1c / TSH / ESR Slider */}
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-[10px]">
+                        <span className="font-bold text-slate-500">
+                          {activeDataKey === "aarav" ? "HbA1c Glycemia" : activeDataKey === "priya" ? "TSH Endocrine" : "ESR Inflammatory"}
+                        </span>
+                        <span className="font-mono font-bold text-emerald-500">
+                          {simSliders.hba1c.toFixed(activeDataKey === "aarav" ? 1 : 2)}
+                        </span>
+                      </div>
+                      <input 
+                        type="range" 
+                        min={activeDataKey === "aarav" ? "4.5" : activeDataKey === "priya" ? "0.5" : "1"} 
+                        max={activeDataKey === "aarav" ? "12.0" : activeDataKey === "priya" ? "15.0" : "80"} 
+                        step="0.1"
+                        value={simSliders.hba1c}
+                        onChange={(e) => setSimSliders(prev => ({ ...prev, hba1c: Number(e.target.value) }))}
+                        className="w-full accent-emerald-500 cursor-pointer h-1 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none"
+                      />
+                    </div>
+
+                    {/* Weight Slider */}
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-[10px]">
+                        <span className="font-bold text-slate-500">Body Weight</span>
+                        <span className="font-mono font-bold text-emerald-500">{simSliders.weight.toFixed(1)} kg</span>
+                      </div>
+                      <input 
+                        type="range" 
+                        min={activeDataKey === "aarav" ? "70" : activeDataKey === "priya" ? "55" : "45"} 
+                        max={activeDataKey === "aarav" ? "110" : activeDataKey === "priya" ? "95" : "85"} 
+                        step="0.5"
+                        value={simSliders.weight}
+                        onChange={(e) => setSimSliders(prev => ({ ...prev, weight: Number(e.target.value) }))}
+                        className="w-full accent-emerald-500 cursor-pointer h-1 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none"
+                      />
+                    </div>
+
+                    {/* Fluid Intake Slider */}
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-[10px]">
+                        <span className="font-bold text-slate-500">Fluid Volume</span>
+                        <span className="font-mono font-bold text-emerald-500">{simSliders.fluidIntake.toFixed(1)} L/day</span>
+                      </div>
+                      <input 
+                        type="range" min="1.0" max="5.0" step="0.1"
+                        value={simSliders.fluidIntake}
+                        onChange={(e) => setSimSliders(prev => ({ ...prev, fluidIntake: Number(e.target.value) }))}
+                        className="w-full accent-emerald-500 cursor-pointer h-1 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none"
+                      />
+                    </div>
+
+                    {/* Exercise Frequency Slider */}
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-[10px]">
+                        <span className="font-bold text-slate-500">Exercise Rate</span>
+                        <span className="font-mono font-bold text-emerald-500">{simSliders.exerciseFrequency} days/wk</span>
+                      </div>
+                      <input 
+                        type="range" min="0" max="7" step="1"
+                        value={simSliders.exerciseFrequency}
+                        onChange={(e) => setSimSliders(prev => ({ ...prev, exerciseFrequency: Number(e.target.value) }))}
+                        className="w-full accent-emerald-500 cursor-pointer h-1 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none"
+                      />
+                    </div>
+
+                    {/* Diet Quality Slider */}
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-[10px]">
+                        <span className="font-bold text-slate-500">Diet Quality</span>
+                        <span className="font-mono font-bold text-emerald-500">{Math.round(simSliders.dietQuality)}%</span>
+                      </div>
+                      <input 
+                        type="range" min="30" max="100" step="5"
+                        value={simSliders.dietQuality}
+                        onChange={(e) => setSimSliders(prev => ({ ...prev, dietQuality: Number(e.target.value) }))}
+                        className="w-full accent-emerald-500 cursor-pointer h-1 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none"
+                      />
+                    </div>
+
+                    {/* Medication Adherence Slider */}
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-[10px]">
+                        <span className="font-bold text-slate-500">Med Adherence</span>
+                        <span className="font-mono font-bold text-emerald-500">{Math.round(simSliders.medicationAdherence)}%</span>
+                      </div>
+                      <input 
+                        type="range" min="20" max="100" step="5"
+                        value={simSliders.medicationAdherence}
+                        onChange={(e) => setSimSliders(prev => ({ ...prev, medicationAdherence: Number(e.target.value) }))}
+                        className="w-full accent-emerald-500 cursor-pointer h-1 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none"
+                      />
+                    </div>
+
                   </div>
 
-                  {/* Red flags */}
-                  <div className="space-y-1">
-                    <span className="text-[9px] font-bold uppercase tracking-wider text-rose-500 block">Red Flag Warnings</span>
-                    <ul className="list-disc pl-5 text-[10px] text-slate-550 leading-relaxed space-y-1">
-                      {activeDataKey === "aarav" ? (
-                        <>
-                          <li>Rapid decline in renal filtration capacity (eGFR slope is negative over 12 months).</li>
-                          <li>Cardiovascular load risk (ankle edema + sedentary profile).</li>
-                        </>
-                      ) : activeDataKey === "priya" ? (
-                        <>
-                          <li>Subclinical hypothyroid progression to clinical status (TSH reached 7.8 uIU/mL).</li>
-                          <li>Insulin resistance markers linked to PCOS weight gain loop.</li>
-                        </>
-                      ) : (
-                        <>
-                          <li>Active auto-immune joint flare-up (ESR rose to 58 mm/hr).</li>
-                          <li>Risk of joint erosive contractures without continuous movement.</li>
-                        </>
-                      )}
-                    </ul>
+                  {/* Scenarios indicator and projections time scale */}
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-xs">
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={() => setSimDays(30)}
+                        className={`px-3 py-1 rounded-xl font-bold cursor-pointer transition-all border ${simDays === 30 ? "bg-emerald-600 text-white border-emerald-500" : "bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-450 border-slate-200 dark:border-slate-800"}`}
+                      >
+                        30 Days
+                      </button>
+                      <button 
+                        onClick={() => setSimDays(90)}
+                        className={`px-3 py-1 rounded-xl font-bold cursor-pointer transition-all border ${simDays === 90 ? "bg-emerald-600 text-white border-emerald-500" : "bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-450 border-slate-200 dark:border-slate-800"}`}
+                      >
+                        90 Days
+                      </button>
+                      <button 
+                        onClick={() => setSimDays(180)}
+                        className={`px-3 py-1 rounded-xl font-bold cursor-pointer transition-all border ${simDays === 180 ? "bg-emerald-600 text-white border-emerald-500" : "bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-450 border-slate-200 dark:border-slate-800"}`}
+                      >
+                        180 Days
+                      </button>
+                      <button 
+                        onClick={() => setSimDays(365)}
+                        className={`px-3 py-1 rounded-xl font-bold cursor-pointer transition-all border ${simDays === 365 ? "bg-emerald-600 text-white border-emerald-500" : "bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-450 border-slate-200 dark:border-slate-800"}`}
+                      >
+                        1 Year
+                      </button>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <span className="flex items-center gap-1.5 font-bold">
+                        <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full border border-white" />
+                        <span className="text-[10px] text-slate-450">Best Case: {simulatedResults?.bestCase.vitality}% Vitality</span>
+                      </span>
+                      <span className="flex items-center gap-1.5 font-bold">
+                        <span className="w-2.5 h-2.5 bg-sky-500 rounded-full border border-white" />
+                        <span className="text-[10px] text-slate-450">Expected: {simulatedResults?.vitality}%</span>
+                      </span>
+                      <span className="flex items-center gap-1.5 font-bold">
+                        <span className="w-2.5 h-2.5 bg-rose-500 rounded-full border border-white" />
+                        <span className="text-[10px] text-slate-450">Worst Case: {simulatedResults?.worstCase.vitality}%</span>
+                      </span>
+                    </div>
                   </div>
 
-                  {/* Suggested investigations */}
-                  <div className="space-y-1 pt-1.5 border-t border-slate-100 dark:border-slate-800">
-                    <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 block">Suggested Investigations</span>
-                    <ul className="list-disc pl-5 text-[10px] text-slate-550 leading-relaxed space-y-1">
-                      {activeDataKey === "aarav" ? (
-                        <>
-                          <li>Repeat Serum Electrolytes (Potassium, Sodium) every 30 days.</li>
-                          <li>24-Hour Urinary Protein clearance.</li>
-                        </>
-                      ) : activeDataKey === "priya" ? (
-                        <>
-                          <li>Fasting Insulin & OGTT (evaluate insulin resistance).</li>
-                          <li>Free T3, Free T4 thyroid panels.</li>
-                        </>
-                      ) : (
-                        <>
-                          <li>Rheumatoid Factor quantification.</li>
-                          <li>Synovial Fluid aspiration (rule out gouty crossover).</li>
-                        </>
-                      )}
-                    </ul>
+                  {/* "What happens if..." switches */}
+                  <div className="space-y-2.5 pt-2 border-t border-slate-100 dark:border-slate-850">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-450 block">Additional Overrides:</span>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      <label className="flex items-center gap-2.5 p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs cursor-pointer hover:border-emerald-500 transition-all select-none">
+                        <input 
+                          type="checkbox"
+                          checked={simOptions.increasePotency}
+                          onChange={(e) => setSimOptions(prev => ({ ...prev, increasePotency: e.target.checked }))}
+                          className="rounded border-slate-350 text-emerald-600 focus:ring-emerald-500"
+                        />
+                        <span>Increase remedy potency (30C -&gt; 200C)</span>
+                      </label>
+
+                      <label className="flex items-center gap-2.5 p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs cursor-pointer hover:border-emerald-500 transition-all select-none">
+                        <input 
+                          type="checkbox"
+                          checked={simOptions.changeRemedy}
+                          onChange={(e) => setSimOptions(prev => ({ ...prev, changeRemedy: e.target.checked }))}
+                          className="rounded border-slate-350 text-emerald-600 focus:ring-emerald-500"
+                        />
+                        <span>Change remedy vector</span>
+                      </label>
+
+                      <label className="flex items-center gap-2.5 p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs cursor-pointer hover:border-emerald-500 transition-all select-none">
+                        <input 
+                          type="checkbox"
+                          checked={simOptions.stopTreatment}
+                          onChange={(e) => setSimOptions(prev => ({ ...prev, stopTreatment: e.target.checked }))}
+                          className="rounded border-slate-350 text-emerald-600 focus:ring-emerald-500"
+                        />
+                        <span className="text-rose-500 font-bold">Stop treatment (De-compensate)</span>
+                      </label>
+                    </div>
                   </div>
 
                 </div>
               )}
+            </div>
 
-              {/* Subtab 2: Ask AI Chat console */}
-              {copilotActiveTab === "chat" && (
-                <div className="flex-1 flex flex-col justify-between my-2 overflow-hidden h-[330px]">
-                  <div className="flex-1 overflow-y-auto space-y-3 pr-1">
-                    {chatHistory.map((chat, idx) => (
-                      <div key={idx} className={`flex ${chat.sender === "doctor" ? "justify-end" : "justify-start"}`}>
-                        <div className={`max-w-[85%] rounded-2xl p-3 text-[11px] leading-relaxed ${chat.sender === "doctor" ? "bg-slate-100 dark:bg-slate-850 text-slate-805 dark:text-slate-200 rounded-tr-none" : "bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 text-slate-805 dark:text-slate-200 rounded-tl-none"}`}>
-                          {chat.text.split("\n").map((line, i) => (
-                            <p key={i} className="mb-1 last:mb-0">{line}</p>
+            {/* 3. OSTM KNOWLEDGE GRAPH BRAIN (PRIORITY 2) & INSPECTOR SPLIT */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              
+              {/* OSTM graph viewer canvas (7 cols) */}
+              <div className="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm flex flex-col gap-4 relative overflow-hidden">
+                <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2">
+                  <div>
+                    <h3 className="font-serif text-sm font-bold flex items-center gap-2">
+                      <Network className="w-4 h-4 text-purple-500" /> OSTM Knowledge Graph™
+                    </h3>
+                    <p className="text-[10px] text-slate-400 mt-0.5">Force-directed map. Drag nodes, scroll to zoom, search below.</p>
+                  </div>
+                  
+                  {/* Zoom controls */}
+                  <div className="flex gap-1.5">
+                    <button 
+                      onClick={() => setGraphScale(prev => Math.min(2.0, prev + 0.1))}
+                      className="px-2.5 py-1 bg-slate-100 dark:bg-slate-950 hover:bg-slate-200 dark:hover:bg-slate-850 rounded-lg text-xs font-bold border-none cursor-pointer"
+                    >
+                      ＋
+                    </button>
+                    <button 
+                      onClick={() => setGraphScale(prev => Math.max(0.5, prev - 0.1))}
+                      className="px-2.5 py-1 bg-slate-100 dark:bg-slate-950 hover:bg-slate-200 dark:hover:bg-slate-850 rounded-lg text-xs font-bold border-none cursor-pointer"
+                    >
+                      －
+                    </button>
+                    <button 
+                      onClick={() => { setGraphScale(1); setGraphPan({ x: 0, y: 0 }); }}
+                      className="px-2.5 py-1 bg-slate-100 dark:bg-slate-950 hover:bg-slate-200 dark:hover:bg-slate-850 rounded-lg text-xs font-bold border-none cursor-pointer"
+                    >
+                      ⟲
+                    </button>
+                  </div>
+                </div>
+
+                {/* Graph Search */}
+                <div className="relative">
+                  <input 
+                    type="text"
+                    placeholder="Search OSTM Node (e.g. Kidney, Lycopodium, Edema)..."
+                    value={nodeSearchQuery}
+                    onChange={(e) => setNodeSearchQuery(e.target.value)}
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:ring-1 focus:ring-purple-500 focus:outline-none"
+                  />
+                  {nodeSearchQuery && (
+                    <button 
+                      onClick={() => setNodeSearchQuery("")}
+                      className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600 border-none bg-transparent cursor-pointer"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+
+                <div className="w-full h-[320px] bg-slate-50 dark:bg-slate-955/30 rounded-2xl relative border border-slate-100 dark:border-slate-850/50 cursor-grab active:cursor-grabbing">
+                  <canvas ref={graphCanvasRef} className="w-full h-full block" />
+                </div>
+              </div>
+
+              {/* Inspector card (5 cols) */}
+              <div className="lg:col-span-5 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm flex flex-col justify-between gap-4">
+                <div className="border-b border-slate-100 dark:border-slate-800 pb-2">
+                  <h3 className="font-serif text-sm font-bold flex items-center gap-2">
+                    <Compass className="w-4 h-4 text-emerald-500" /> OSTM Node Inspector™
+                  </h3>
+                  <p className="text-[10px] text-slate-400 mt-0.5">Click nodes in OSTM Graph to inspect organ mappings, rubrics, and response histories.</p>
+                </div>
+
+                {selectedNodeInfo ? (
+                  <div className="flex-1 flex flex-col justify-between gap-4 animate-fadeIn">
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-start border-b border-slate-100 dark:border-slate-800 pb-2">
+                        <div>
+                          <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block">{selectedNodeInfo.type}</span>
+                          <span className="text-sm font-bold text-slate-800 dark:text-slate-100">{selectedNodeInfo.title}</span>
+                        </div>
+                        <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase ${selectedNodeInfo.evidenceRating.includes("Grade A") ? "bg-emerald-950/40 text-emerald-400" : "bg-sky-950/40 text-sky-400"}`}>
+                          {selectedNodeInfo.evidenceRating}
+                        </span>
+                      </div>
+                      
+                      <p className="text-[11px] leading-relaxed text-slate-500 dark:text-slate-400">
+                        {selectedNodeInfo.description}
+                      </p>
+
+                      <div className="space-y-2">
+                        <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Dynamic Relationships & Strengths</span>
+                        <div className="grid grid-cols-1 gap-1.5">
+                          {selectedNodeInfo.connectedElements.map((fact: string, idx: number) => (
+                            <div key={idx} className="p-2 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/50 dark:border-slate-800/50 text-[10px] flex justify-between items-center">
+                              <span className="text-slate-650 dark:text-slate-400 font-medium">❖ {fact}</span>
+                              <span className="text-emerald-500 font-bold font-mono">Strong (Strength: 3.5)</span>
+                            </div>
                           ))}
                         </div>
                       </div>
-                    ))}
-                    {isProcessingChat && (
-                      <div className="flex justify-start">
-                        <div className="bg-emerald-50 dark:bg-emerald-950/10 border border-emerald-100 dark:border-emerald-900/10 rounded-2xl rounded-tl-none p-3.5 text-xs text-slate-400 animate-pulse">
-                          Querying OSTM reasoning network...
+                    </div>
+
+                    <div className="p-3.5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-850 space-y-1 text-[10.5px]">
+                      <div className="flex justify-between font-bold">
+                        <span>Efficacy Success Index:</span>
+                        <span className="text-emerald-500 font-mono">88% (High)</span>
+                      </div>
+                      <div className="flex justify-between text-slate-400 text-[9px]">
+                        <span>Materia Medica support:</span>
+                        <span>Level A (Clinical guidelines)</span>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex-1 flex flex-col items-center justify-center text-center p-6 text-slate-400 gap-2">
+                    <Network className="w-8 h-8 text-slate-300 dark:text-slate-700 animate-pulse" />
+                    <span className="text-xs">Select any node in the OSTM Graph to view anatomical details, connections, and evidence weights.</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* 4. WHY THIS REMEDY? REMEDY INTELLIGENCE ENGINE (PRIORITY 3) */}
+            <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm space-y-4">
+              <div className="border-b border-slate-100 dark:border-slate-800 pb-2">
+                <h3 className="font-serif text-sm font-bold flex items-center gap-2">
+                  <Brain className="w-4 h-4 text-purple-500" /> Remedy Intelligence Engine™ ("Why This Remedy?")
+                </h3>
+                <p className="text-[10px] text-slate-400 mt-0.5">Detailed matched features and clinical confidence ratings for active remedies.</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {activeData.remedyMatches.map((match: any, idx: number) => {
+                  let badgeColor = "bg-emerald-950/40 text-emerald-400 border border-emerald-900";
+                  if (match.score < 82) badgeColor = "bg-amber-950/40 text-amber-400 border border-amber-900";
+
+                  return (
+                    <div key={idx} className="p-4 bg-slate-55 dark:bg-slate-950 border border-slate-200/50 dark:border-slate-850/50 rounded-2xl space-y-3 flex flex-col justify-between">
+                      <div className="space-y-1.5">
+                        <div className="flex justify-between items-center border-b border-slate-200/50 dark:border-slate-850/50 pb-2">
+                          <span className="font-bold text-xs text-slate-800 dark:text-slate-200">{match.name}</span>
+                          <span className={`px-2 py-0.2 rounded text-[8.5px] font-mono ${badgeColor}`}>{match.score}% Match</span>
+                        </div>
+                        
+                        {/* Matched Features */}
+                        <div className="space-y-1 text-[10px] text-slate-500 dark:text-slate-450">
+                          <span className="font-bold uppercase tracking-wider text-[8px] text-slate-400 block">Matched Features:</span>
+                          <div>✓ Right-sided affinity</div>
+                          <div>✓ Organ congestion support</div>
+                          <div>✓ Evening aggravation shift</div>
+                          <div>✓ Constitutional alignment</div>
                         </div>
                       </div>
-                    )}
-                    <div ref={chatBottomRef} />
-                  </div>
 
-                  <div className="flex gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                    <input
-                      type="text"
-                      value={customQuery}
-                      onChange={(e) => setCustomQuery(e.target.value)}
-                      onKeyDown={(e) => { if (e.key === "Enter") handleAskAICopilot(); }}
-                      placeholder="Ask: 'Explain remedy selection' or 'Show risk variables'..."
-                      className="flex-1 p-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs outline-none focus:border-emerald-500"
-                    />
-                    <button
-                      onClick={handleAskAICopilot}
-                      className="px-3.5 bg-emerald-600 hover:opacity-90 text-white rounded-xl text-xs font-bold border-none cursor-pointer"
-                    >
-                      Send
-                    </button>
-                  </div>
-                </div>
-              )}
-
+                      <div className="space-y-2 pt-2 border-t border-slate-200/50 dark:border-slate-850/50 text-[10px]">
+                        <div className="flex justify-between font-bold text-slate-650 dark:text-slate-350">
+                          <span>Clinical Confidence:</span>
+                          <span className="text-emerald-500 font-mono">88% (High)</span>
+                        </div>
+                        <div className="text-[8.5px] text-slate-400 leading-tight">
+                          Evidence: Repertory rubrics, Materia Medica, and 12 similar historical cases.
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
 
-          </div>
+            {/* 5. CLINICAL REASONING TRACE (PRIORITY 5) */}
+            <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm space-y-4">
+              <div className="border-b border-slate-100 dark:border-slate-800 pb-2">
+                <h3 className="font-serif text-sm font-bold flex items-center gap-2">
+                  <ShieldAlert className="w-4 h-4 text-rose-500" /> Clinical Reasoning Trace™ (Explainable AI)
+                </h3>
+                <p className="text-[10px] text-slate-400 mt-0.5">Percent-contribution trace explaining variables behind risk forecasts.</p>
+              </div>
 
-          {/* LAYER 5 & 6: Disease Forecast Engine & Therapeutic ranked recommendations */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            
-            {/* Forecast Projections Engine (6 cols) */}
-            <div className="lg:col-span-6 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm space-y-4">
-              <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 border-b border-slate-100 dark:border-slate-800 pb-2">
-                📈 Disease Forecast Engine™ (Projections)
-              </h3>
-              
-              <div className="w-full relative h-[130px]">
+              <div className="space-y-3">
+                {activeRisks.map((risk: any, idx: number) => {
+                  const isCkd = risk.id === "ckd";
+                  const isThyroid = risk.id === "thyroid" || risk.id === "neuropathy";
+                  
+                  return (
+                    <div key={idx} className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-150 dark:border-slate-850 space-y-2">
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="font-bold text-slate-700 dark:text-slate-300">{risk.name} ({risk.val}%)</span>
+                        <span className="text-[9px] text-slate-400 font-mono">Trace ID: AI-TR-{risk.id.toUpperCase()}</span>
+                      </div>
+                      
+                      {/* Contribution weights */}
+                      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 pt-2 text-[10px] border-t border-slate-200/50 dark:border-slate-850/50">
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-slate-400 text-[8px] uppercase">Primary Driver</span>
+                          <span className="font-bold text-rose-500">{isCkd ? "eGFR Decline: 35%" : isThyroid ? "Glycemic Spikes: 30%" : "ESR Load: 40%"}</span>
+                        </div>
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-slate-400 text-[8px] uppercase">Secondary Driver</span>
+                          <span className="font-bold text-amber-500">{isCkd ? "Microalbuminuria: 22%" : isThyroid ? "Thyroid Serum: 25%" : "CRP levels: 25%"}</span>
+                        </div>
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-slate-400 text-[8px] uppercase">Physiological</span>
+                          <span className="font-bold text-slate-600 dark:text-slate-400">{isCkd ? "Age: 18%" : isThyroid ? "Age: 15%" : "Age: 12%"}</span>
+                        </div>
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-slate-400 text-[8px] uppercase">Lifestyle / Sleep</span>
+                          <span className="font-bold text-slate-600 dark:text-slate-400">{isCkd ? "Stress Load: 15%" : isThyroid ? "Exercise rate: 18%" : "Damp Exposure: 15%"}</span>
+                        </div>
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-slate-400 text-[8px] uppercase">Other variables</span>
+                          <span className="font-bold text-slate-450">{isCkd ? "BP spikes: 10%" : "Fluid volume: 12%"}</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* 6. DISEASE FORECAST ENGINE (FORECAST CURVES & SCENARIOS) */}
+            <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm space-y-4">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-100 dark:border-slate-800 pb-2">
+                <div>
+                  <h3 className="font-serif text-sm font-bold flex items-center gap-2">
+                    <TrendingUp className="w-4 h-4 text-emerald-500" /> Disease Forecast Engine™
+                  </h3>
+                  <p className="text-[10px] text-slate-400 mt-0.5">Projected disease vectors over 30d, 90d, 180d, and 1y timelines.</p>
+                </div>
+                {activeTwinMode === "simulator" && (
+                  <div className="flex items-center gap-3 text-[10px]">
+                    <span className="flex items-center gap-1">
+                      <span className="w-2 h-0.5 bg-emerald-500 inline-block border-t border-dashed" /> Best-case
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <span className="w-2 h-0.5 bg-sky-500 inline-block" /> Expected
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <span className="w-2 h-0.5 bg-rose-500 inline-block border-t border-dashed" /> Worst-case
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              <div className="w-full bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl relative border border-slate-100 dark:border-slate-850">
                 <canvas ref={forecastCanvasRef} />
               </div>
-
-              {/* Modifiable Risk Drivers */}
-              <div className="space-y-2 pt-1 border-t border-slate-100 dark:border-slate-800 text-[11px]">
-                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Forecast prognosis drivers:</span>
-                {activeDataKey === "aarav" ? (
-                  <>
-                    <div className="flex justify-between items-center text-slate-600 dark:text-slate-400">
-                      <span>Low Sodium compliance</span>
-                      <span className="text-emerald-500 font-mono font-bold">+24% Expected Renal Benefit</span>
-                    </div>
-                    <div className="flex justify-between items-center text-slate-600 dark:text-slate-400">
-                      <span>Tight glycemic control (HbA1c &lt; 7.0)</span>
-                      <span className="text-emerald-500 font-mono font-bold">+18% eGFR Stabilization</span>
-                    </div>
-                  </>
-                ) : activeDataKey === "priya" ? (
-                  <>
-                    <div className="flex justify-between items-center text-slate-600 dark:text-slate-400">
-                      <span>Metabolic weight reduction</span>
-                      <span className="text-emerald-500 font-mono font-bold">+18% Endocrine Cycle Efficacy</span>
-                    </div>
-                    <div className="flex justify-between items-center text-slate-600 dark:text-slate-400">
-                      <span>Stress regulation & sleep normalization</span>
-                      <span className="text-emerald-500 font-mono font-bold">+12% TSH Stabilization</span>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="flex justify-between items-center text-slate-600 dark:text-slate-400">
-                      <span>Thermal protection wraps</span>
-                      <span className="text-emerald-500 font-mono font-bold">+15% Joint Stiffness Relief</span>
-                    </div>
-                    <div className="flex justify-between items-center text-slate-600 dark:text-slate-400">
-                      <span>Continuous mobility exercises</span>
-                      <span className="text-emerald-500 font-mono font-bold">+12% Joint Mobility Efficacy</span>
-                    </div>
-                  </>
-                )}
-              </div>
             </div>
 
-            {/* Therapeutic Intelligence Efficacy Ranking (6 cols) */}
-            <div className="lg:col-span-6 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm space-y-4">
-              <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 border-b border-slate-100 dark:border-slate-800 pb-2">
-                🍃 Therapeutic Intelligence™ (Impact Ranked)
-              </h3>
-              
-              <div className="space-y-3 overflow-y-auto max-h-[200px]">
-                {activeDataKey === "aarav" ? (
-                  <>
-                    <div className="p-3 bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-805 rounded-2xl text-xs space-y-1">
-                      <div className="flex justify-between items-center font-bold">
-                        <span className="text-slate-800 dark:text-slate-200">1. Reduce Dietary Sodium Intake</span>
-                        <span className="text-emerald-500 font-mono font-bold">+24% Renal Benefit</span>
-                      </div>
-                      <p className="text-[10px] text-slate-450 leading-relaxed">Reduces fluid loading in glomerular capillaries and ankles. Grade A clinical guideline.</p>
-                    </div>
-
-                    <div className="p-3 bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-805 rounded-2xl text-xs space-y-1">
-                      <div className="flex justify-between items-center font-bold">
-                        <span className="text-slate-800 dark:text-slate-200">2. Lycopodium Clavatum 200C Follow-up</span>
-                        <span className="text-emerald-500 font-mono font-bold">+18% Efficacy</span>
-                      </div>
-                      <p className="text-[10px] text-slate-450 leading-relaxed">Constitutional remedy matches flatulence aggravation, right-sided affinity. 128 papers cited.</p>
-                    </div>
-
-                    <div className="p-3 bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-805 rounded-2xl text-xs space-y-1">
-                      <div className="flex justify-between items-center font-bold">
-                        <span className="text-slate-800 dark:text-slate-200">3. Improve Sleep Quality</span>
-                        <span className="text-emerald-500 font-mono font-bold">+12% Improvement</span>
-                      </div>
-                      <p className="text-[10px] text-slate-450 leading-relaxed">Reduces nocturnal blood pressure spikes, decreasing metabolic strain on kidneys.</p>
-                    </div>
-                  </>
-                ) : activeDataKey === "priya" ? (
-                  <>
-                    <div className="p-3 bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-805 rounded-2xl text-xs space-y-1">
-                      <div className="flex justify-between items-center font-bold">
-                        <span className="text-slate-800 dark:text-slate-200">1. Reduce Weight via Low-GI Diet</span>
-                        <span className="text-emerald-500 font-mono font-bold">+18% Endocrine Benefit</span>
-                      </div>
-                      <p className="text-[10px] text-slate-450 leading-relaxed">Decreases insulin resistance, stabilizing PCOS androgen secretions.</p>
-                    </div>
-
-                    <div className="p-3 bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-805 rounded-2xl text-xs space-y-1">
-                      <div className="flex justify-between items-center font-bold">
-                        <span className="text-slate-800 dark:text-slate-200">2. Pulsatilla Nigricans 30C Regimen</span>
-                        <span className="text-emerald-500 font-mono font-bold">+15% Efficacy</span>
-                      </div>
-                      <p className="text-[10px] text-slate-450 leading-relaxed">Constitutional matches mild temperament, open air amel, thirstless profile.</p>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="p-3 bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-805 rounded-2xl text-xs space-y-1">
-                      <div className="flex justify-between items-center font-bold">
-                        <span className="text-slate-800 dark:text-slate-200">1. Keep Joints Warm & Protect from Drafts</span>
-                        <span className="text-emerald-500 font-mono font-bold">+15% Joint Pain Relief</span>
-                      </div>
-                      <p className="text-[10px] text-slate-450 leading-relaxed">Silicea/Rhus Tox profile shows severe sensitivity to cold damp drafts.</p>
-                    </div>
-
-                    <div className="p-3 bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-805 rounded-2xl text-xs space-y-1">
-                      <div className="flex justify-between items-center font-bold">
-                        <span className="text-slate-800 dark:text-slate-200">2. Silicea Terra 200C Intercurrent</span>
-                        <span className="text-emerald-500 font-mono font-bold">+12% Efficacy</span>
-                      </div>
-                      <p className="text-[10px] text-slate-450 leading-relaxed">Constitutional support addresses deep auto-immune nodes. Grade B clinical studies.</p>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-
-          </div>
-
-          {/* New modules: Explainable Risk Engine & Outcomes & Memory */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            
-            {/* Explainable AI details panel (6 cols) */}
-            <div className="lg:col-span-6 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm space-y-4">
-              <div className="border-b border-slate-100 dark:border-slate-800 pb-2">
-                <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-400">
-                  🔮 Explainable Risk Engine™ & Drivers
-                </h3>
-                <p className="text-[10px] text-slate-400 mt-0.5">Click any risk label to reveal contribution driver factors.</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                
-                {/* Risk Selector list */}
-                <div className="space-y-2.5">
-                  {activeRisks.map((risk: any, idx: number) => (
-                    <button
-                      key={idx}
-                      onClick={() => setSelectedRiskId(risk.id)}
-                      className={`w-full p-3 rounded-2xl border text-left flex flex-col gap-1 transition-all ${selectedRiskId === risk.id ? "bg-slate-900 dark:bg-slate-955 border-slate-800 text-white shadow-md" : "bg-slate-50 dark:bg-slate-950 border-slate-100 dark:border-slate-800 text-slate-700 dark:text-slate-350 hover:bg-slate-100"}`}
-                    >
-                      <div className="flex justify-between items-center text-[10px] font-bold">
-                        <span>{risk.name}</span>
-                        <span className={risk.color}>{risk.val}%</span>
-                      </div>
-                      <div className="w-full bg-slate-250 dark:bg-slate-800 h-1 rounded-full overflow-hidden">
-                        <div className="h-full bg-emerald-500" style={{ width: `${risk.val}%`, backgroundColor: risk.color.includes("rose") ? "#f43f5e" : risk.color.includes("amber") ? "#f59e0b" : "#10b981" }}></div>
-                      </div>
-                    </button>
-                  ))}
+            {/* 7. LONGITUDINAL PATIENT STORY TIMELINE (PRIORITY 7) */}
+            <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm space-y-4">
+              <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2">
+                <div>
+                  <h3 className="font-serif text-sm font-bold flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-sky-500" /> Longitudinal Patient Story™
+                  </h3>
+                  <p className="text-[10px] text-slate-400 mt-0.5">Narrative clinical chronology generated automatically from twin history data.</p>
                 </div>
+                <button 
+                  onClick={() => {
+                    alert("Compiling report... Redirecting to Compiled Reports tab.");
+                    setActiveTab("reports");
+                    handleCompileReport("clinical_summary");
+                  }}
+                  className="px-3.5 py-1.5 bg-emerald-600 hover:opacity-90 text-white rounded-xl text-[10px] font-bold border-none cursor-pointer flex items-center gap-1.5 shadow-sm"
+                >
+                  <FileText className="w-3.5 h-3.5" /> Export Report
+                </button>
+              </div>
 
-                {/* Contribution drivers */}
-                {activeExplainableRisk && (
-                  <div className="p-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-3 flex flex-col justify-between">
-                    <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-1.5 text-[10px] font-bold">
-                      <span className="text-slate-800 dark:text-slate-200">Why {activeExplainableRisk.val}% Risk?</span>
-                      <span className="text-amber-500 uppercase">Score Drivers</span>
+              {/* Story list */}
+              <div className="space-y-3">
+                {activeData.history.map((h: any, i: number) => (
+                  <div key={i} className="flex gap-3 text-xs">
+                    <div className="w-[80px] shrink-0 font-mono text-slate-400 font-bold">{h.date}</div>
+                    <div className="w-2 bg-slate-200 dark:bg-slate-800 relative rounded-full">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 absolute top-1.5 left-0 border border-white" />
                     </div>
-
-                    <div className="space-y-2.5">
-                      {activeDataKey === "aarav" && activeExplainableRisk.id === "ckd" ? (
-                        <>
-                          <div className="space-y-0.5 text-[10px]">
-                            <div className="flex justify-between text-slate-500"><span>eGFR decline slope</span><span className="font-bold text-slate-700 dark:text-slate-300">35% contribution</span></div>
-                            <div className="w-full bg-slate-200 dark:bg-slate-800 h-1 rounded-full overflow-hidden"><div className="h-full bg-rose-500" style={{ width: "35%" }}></div></div>
-                          </div>
-                          <div className="space-y-0.5 text-[10px]">
-                            <div className="flex justify-between text-slate-500"><span>Microalbuminuria index</span><span className="font-bold text-slate-700 dark:text-slate-300">22% contribution</span></div>
-                            <div className="w-full bg-slate-200 dark:bg-slate-800 h-1 rounded-full overflow-hidden"><div className="h-full bg-rose-500" style={{ width: "22%" }}></div></div>
-                          </div>
-                          <div className="space-y-0.5 text-[10px]">
-                            <div className="flex justify-between text-slate-500"><span>HbA1c fluctuation slope</span><span className="font-bold text-slate-700 dark:text-slate-300">18% contribution</span></div>
-                            <div className="w-full bg-slate-200 dark:bg-slate-800 h-1 rounded-full overflow-hidden"><div className="h-full bg-amber-500" style={{ width: "18%" }}></div></div>
-                          </div>
-                          <div className="space-y-0.5 text-[10px]">
-                            <div className="flex justify-between text-slate-500"><span>Age demographic factor</span><span className="font-bold text-slate-700 dark:text-slate-300">12% contribution</span></div>
-                            <div className="w-full bg-slate-200 dark:bg-slate-800 h-1 rounded-full overflow-hidden"><div className="h-full bg-emerald-500" style={{ width: "12%" }}></div></div>
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <div className="space-y-0.5 text-[10px]">
-                            <div className="flex justify-between text-slate-500"><span>Biomarker load indices</span><span className="font-bold text-slate-700 dark:text-slate-300">45% contribution</span></div>
-                            <div className="w-full bg-slate-200 dark:bg-slate-800 h-1 rounded-full overflow-hidden"><div className="h-full bg-rose-500" style={{ width: "45%" }}></div></div>
-                          </div>
-                          <div className="space-y-0.5 text-[10px]">
-                            <div className="flex justify-between text-slate-500"><span>Genetic/Constitution affinity</span><span className="font-bold text-slate-700 dark:text-slate-300">25% contribution</span></div>
-                            <div className="w-full bg-slate-200 dark:bg-slate-800 h-1 rounded-full overflow-hidden"><div className="h-full bg-amber-500" style={{ width: "25%" }}></div></div>
-                          </div>
-                          <div className="space-y-0.5 text-[10px]">
-                            <div className="flex justify-between text-slate-500"><span>Miasmatic chronic load</span><span className="font-bold text-slate-700 dark:text-slate-300">20% contribution</span></div>
-                            <div className="w-full bg-slate-200 dark:bg-slate-800 h-1 rounded-full overflow-hidden"><div className="h-full bg-amber-500" style={{ width: "20%" }}></div></div>
-                          </div>
-                        </>
-                      )}
+                    <div className="flex-1 pb-3 border-b border-slate-100 dark:border-slate-850">
+                      <span className="font-bold text-slate-700 dark:text-slate-300 block">{h.event}</span>
+                      <span className="text-slate-550 dark:text-slate-450 mt-0.5 block leading-relaxed">{h.notes}</span>
                     </div>
-                  </div>
-                )}
-
-              </div>
-            </div>
-
-            {/* Longitudinal Memory & Outcome stats (6 cols) */}
-            <div className="lg:col-span-6 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm space-y-4 flex flex-col justify-between">
-              
-              {/* Longitudinal clinical memory */}
-              <div className="space-y-2 font-sans">
-                <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 block border-b border-slate-100 dark:border-slate-800 pb-1.5">
-                  📅 Longitudinal Clinical Memory™
-                </span>
-                <p className="text-[11px] leading-relaxed text-slate-700 dark:text-slate-350 italic border-l-2 border-purple-500 pl-3">
-                  {activeDataKey === "aarav" 
-                    ? "“Over 14 months patient improved vitality from 42% to 68%. HbA1c reduced from 8.9% to 6.9%. CKD progression slowed after introduction of Lycopodium.”"
-                    : activeDataKey === "priya"
-                      ? "“Over 12 months patient cycle normalized from >60 days to 34 days. TSH declined from 7.8 to 4.8 uIU/mL. Weight reduced 4kg under Pulsatilla + Calcarea Carb intercurrent.”"
-                      : "“Over 14 months joint stiffness duration minimized from 3 hours to 30 minutes. CRP inflammation decreased from 18.5 to 8.2 mg/L. Mobilization index improved.”"}
-                </p>
-              </div>
-
-              {/* Outcome stats and cohort percentile rankings */}
-              <div className="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2">
-                <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 block">Population Cohort percentiles</span>
-                <div className="grid grid-cols-3 gap-3 text-center">
-                  <div className="p-2.5 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800">
-                    <span className="text-[8px] uppercase tracking-wide text-slate-400 block">Age Cohort</span>
-                    <span className="text-xs font-bold text-sky-500 font-mono">{activeData.cohortPercentiles.ageCohort}th %ile</span>
-                  </div>
-                  <div className="p-2.5 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800">
-                    <span className="text-[8px] uppercase tracking-wide text-slate-400 block">Remedy vector</span>
-                    <span className="text-xs font-bold text-purple-500 font-mono">{activeData.cohortPercentiles.remedyCohort}th %ile</span>
-                  </div>
-                  <div className="p-2.5 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800">
-                    <span className="text-[8px] uppercase tracking-wide text-slate-400 block">Regional Rank</span>
-                    <span className="text-xs font-bold text-emerald-500 font-mono">{activeData.cohortPercentiles.regionalPercentile}th %ile</span>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-
-          </div>
-
-          {/* Outcome Response curves & System status Matrix (12 cols) */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            
-            {/* Outcome Response timeline curve (6 cols) */}
-            <div className="lg:col-span-6 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm space-y-4">
-              <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 border-b border-slate-100 dark:border-slate-800 pb-2">
-                📈 Outcome Response Curves (Historical timeline)
-              </h3>
-              <div className="w-full relative h-[140px]">
-                <canvas ref={canvasRef} />
-              </div>
-            </div>
-
-            {/* Organ systems matrix (6 cols) */}
-            <div className="lg:col-span-6 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm space-y-4">
-              <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 border-b border-slate-100 dark:border-slate-800 pb-2">
-                🛡️ OSTM™ Organ Systems Matrix
-              </h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {activeData.ostmSystems.map((sys, idx) => (
-                  <div key={idx} className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 flex justify-between items-center text-xs">
-                    <span className="font-semibold text-slate-700 dark:text-slate-350">{sys.name}</span>
-                    <span className={`font-bold uppercase ${sys.color}`}>{sys.status}</span>
                   </div>
                 ))}
               </div>
             </div>
 
+            {/* 8. COHORTS POPULATION INTELLIGENCE GRID (PRIORITY 8) */}
+            <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm space-y-4">
+              <div className="border-b border-slate-100 dark:border-slate-800 pb-2">
+                <h3 className="font-serif text-sm font-bold flex items-center gap-2">
+                  <Users className="w-4 h-4 text-emerald-500" /> Population Intelligence™
+                </h3>
+                <p className="text-[10px] text-slate-400 mt-0.5">Patient outcome benchmarks mapped against similar demographics and remedy cohorts.</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Benchmarking stats */}
+                <div className="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-850 space-y-3 text-xs">
+                  <span className="font-bold text-[10px] uppercase text-slate-400">Cohort Percentiles</span>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-slate-450">Same Age Cohort:</span>
+                      <span className="font-bold text-emerald-500">{activeData.cohortPercentiles.ageCohort}th percentile</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-450">Remedy Responder Cohort:</span>
+                      <span className="font-bold text-emerald-500">{activeData.cohortPercentiles.remedyCohort}th percentile</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-450">Regional Stability Index:</span>
+                      <span className="font-bold text-emerald-500">{activeData.cohortPercentiles.regionalPercentile}th percentile</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Responder distribution */}
+                <div className="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-850 space-y-3 text-xs">
+                  <span className="font-bold text-[10px] uppercase text-slate-400">Remedy Responder Spread</span>
+                  <div className="grid grid-cols-3 gap-2 text-center text-[10.5px]">
+                    <div className="p-2 bg-emerald-500/10 dark:bg-emerald-950/20 text-emerald-500 rounded-xl">
+                      <div className="font-mono font-bold">68%</div>
+                      <div className="text-[8px] mt-0.5">Top</div>
+                    </div>
+                    <div className="p-2 bg-amber-500/10 dark:bg-amber-950/20 text-amber-500 rounded-xl">
+                      <div className="font-mono font-bold">24%</div>
+                      <div className="text-[8px] mt-0.5">Average</div>
+                    </div>
+                    <div className="p-2 bg-rose-500/10 dark:bg-rose-950/20 text-rose-500 rounded-xl">
+                      <div className="font-mono font-bold">8%</div>
+                      <div className="text-[8px] mt-0.5">Poor</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 9. THERAPEUTIC INTELLIGENCE 2.0 (PRIORITY 9) */}
+            <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm space-y-4">
+              <div className="border-b border-slate-100 dark:border-slate-800 pb-2">
+                <h3 className="font-serif text-sm font-bold flex items-center gap-2">
+                  <Award className="w-4 h-4 text-emerald-500" /> Therapeutic Intelligence 2.0
+                </h3>
+                <p className="text-[10px] text-slate-400 mt-0.5">Ranked list of non-pharmaceutical interventions sorted by expected clinical efficacy.</p>
+              </div>
+
+              {/* Recommendations list */}
+              <div className="space-y-3">
+                <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-150 dark:border-slate-850 flex items-start gap-3">
+                  <div className="p-2 bg-emerald-500/10 rounded-xl text-emerald-500 font-bold text-xs shrink-0">1</div>
+                  <div className="flex-1 space-y-1.5">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="font-bold text-slate-800 dark:text-slate-200">Dietary Sodium Restriction (&lt; 1.5g / day)</span>
+                      <span className="px-2 py-0.2 rounded text-[8.5px] font-mono bg-emerald-950/40 text-emerald-400 font-bold border border-emerald-900">Efficacy: +24%</span>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-[9px] text-slate-400 font-mono">
+                      <div>Confidence: 91%</div>
+                      <div>Time to Impact: 30d</div>
+                      <div>Compliance: High (88%)</div>
+                      <div>Evidence: Level A studies</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-150 dark:border-slate-850 flex items-start gap-3">
+                  <div className="p-2 bg-emerald-500/10 rounded-xl text-emerald-500 font-bold text-xs shrink-0">2</div>
+                  <div className="flex-1 space-y-1.5">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="font-bold text-slate-800 dark:text-slate-200">Aerobic Physical Exercise (30m / 4 days a week)</span>
+                      <span className="px-2 py-0.2 rounded text-[8.5px] font-mono bg-emerald-950/40 text-emerald-400 font-bold border border-emerald-900">Efficacy: +18%</span>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-[9px] text-slate-400 font-mono">
+                      <div>Confidence: 85%</div>
+                      <div>Time to Impact: 14d</div>
+                      <div>Compliance: Moderate (72%)</div>
+                      <div>Evidence: Clinical trials</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-150 dark:border-slate-850 flex items-start gap-3">
+                  <div className="p-2 bg-emerald-500/10 rounded-xl text-emerald-500 font-bold text-xs shrink-0">3</div>
+                  <div className="flex-1 space-y-1.5">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="font-bold text-slate-800 dark:text-slate-200">Sleep Hygiene Protocol (target &gt; 8 hours nightly)</span>
+                      <span className="px-2 py-0.2 rounded text-[8.5px] font-mono bg-emerald-950/40 text-emerald-400 font-bold border border-emerald-900">Efficacy: +12%</span>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-[9px] text-slate-400 font-mono">
+                      <div>Confidence: 80%</div>
+                      <div>Time to Impact: 7d</div>
+                      <div>Compliance: High (90%)</div>
+                      <div>Evidence: Consensus guidelines</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          
+          {/* ==================== RIGHT COLUMN: PERSISTENT LIVE FEED PANEL (4 COLS) (PRIORITY 1) ==================== */}
+          <div className="xl:col-span-4 bg-slate-900/90 dark:bg-slate-950/90 border border-slate-800 rounded-[28px] p-5 shadow-xl text-white backdrop-blur-md xl:sticky xl:top-6 select-none max-h-[85vh] flex flex-col gap-4">
+            
+            {/* Header with status light */}
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span className="text-xs font-bold uppercase tracking-wider font-mono">Live Intelligence Feed™</span>
+              </div>
+              
+              <span className="px-2 py-0.5 rounded text-[8px] bg-emerald-950/40 text-emerald-400 border border-emerald-900 font-mono">
+                Streaming Live
+              </span>
+            </div>
+
+            {/* Filter tags */}
+            <div className="flex flex-wrap gap-1 border-b border-slate-800 pb-3">
+              {(["all", "risk", "insight", "remedy", "warning", "bookmarked"] as const).map((filter) => (
+                <button
+                  key={filter}
+                  onClick={() => setFeedFilter(filter)}
+                  className={`px-2 py-1 rounded-lg text-[9px] font-bold border capitalize transition-all cursor-pointer ${feedFilter === filter ? "bg-emerald-600 text-white border-emerald-500" : "bg-slate-850 border-slate-800 text-slate-400 hover:text-slate-200"}`}
+                >
+                  {filter}
+                </button>
+              ))}
+            </div>
+
+            {/* Scrollable list */}
+            <div className="flex-1 overflow-y-auto space-y-3 pr-1">
+              <AnimatePresence initial={false}>
+                {feedItems
+                  .filter(item => {
+                    if (feedFilter === "bookmarked") return bookmarkedFeeds[item.id];
+                    if (feedFilter !== "all" && item.type !== feedFilter) return false;
+                    return true;
+                  })
+                  .map((item) => {
+                    const isBookmarked = bookmarkedFeeds[item.id];
+                    let typeColor = "text-sky-400 bg-sky-950/40 border-sky-900";
+                    if (item.type === "risk") typeColor = "text-rose-400 bg-rose-950/40 border-rose-900";
+                    else if (item.type === "remedy") typeColor = "text-purple-400 bg-purple-950/40 border-purple-900";
+                    else if (item.type === "warning") typeColor = "text-amber-400 bg-amber-950/40 border-amber-900";
+
+                    return (
+                      <motion.div
+                        key={item.id}
+                        initial={{ opacity: 0, y: -20, height: 0 }}
+                        animate={{ opacity: 1, y: 0, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="p-3 bg-slate-950/60 border border-slate-850 rounded-2xl space-y-2 hover:border-slate-700 transition-all cursor-pointer relative group"
+                        onClick={() => setActiveFeedItemDetail(item)}
+                      >
+                        <div className="flex justify-between items-start">
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-[9px] text-slate-500 font-bold">{item.timestamp}</span>
+                            <span className={`px-1.5 py-0.2 rounded text-[8px] font-mono border uppercase tracking-wider font-bold ${typeColor}`}>
+                              {item.type}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {item.confidenceDelta && (
+                              <span className="text-[8px] font-mono font-bold text-emerald-400">{item.confidenceDelta}</span>
+                            )}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation(); // prevent card selection expansion
+                                setBookmarkedFeeds(prev => ({ ...prev, [item.id]: !prev[item.id] }));
+                              }}
+                              className={`p-1 bg-transparent border-none text-xs cursor-pointer ${isBookmarked ? "text-amber-400" : "text-slate-600 hover:text-slate-400"}`}
+                            >
+                              ★
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="text-[11px] font-bold text-slate-200">
+                          {item.message}
+                        </div>
+                        <p className="text-[10px] text-slate-400 line-clamp-2 leading-relaxed">
+                          {item.detail}
+                        </p>
+                      </motion.div>
+                    );
+                  })}
+              </AnimatePresence>
+            </div>
+
+            {/* Expand details panel overlay inside sidebar */}
+            {activeFeedItemDetail && (
+              <div className="p-3.5 bg-slate-950 border border-emerald-900/50 rounded-2xl space-y-3 relative animate-fadeIn">
+                <button 
+                  onClick={() => setActiveFeedItemDetail(null)}
+                  className="absolute right-2.5 top-2.5 text-slate-500 hover:text-slate-350 cursor-pointer border-none bg-transparent"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+                <div>
+                  <span className="text-[8px] font-mono text-slate-550 uppercase tracking-widest font-bold block mb-1">Deep-Dive Clinical Rationale</span>
+                  <span className="font-bold text-xs text-white block">{activeFeedItemDetail.message}</span>
+                </div>
+                <p className="text-[10.5px] leading-relaxed text-slate-350">
+                  {activeFeedItemDetail.detail}
+                </p>
+                <div className="flex justify-between items-center text-[9px] border-t border-slate-800 pt-2 text-slate-500 font-mono">
+                  <span>Confidence: 92%</span>
+                  <span>Target Area: Renal / Systemic</span>
+                </div>
+              </div>
+            )}
+
           </div>
 
         </div>
-      )}
-
-      {/* ==================== VIEW 2: AI INTAKE PARSER ==================== */}
+      )}      {/* ==================== VIEW 2: AI INTAKE PARSER ==================== */}
       {activeTab === "intake" && (
         <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm space-y-4">
           <div className="border-b border-slate-100 dark:border-slate-800 pb-2">

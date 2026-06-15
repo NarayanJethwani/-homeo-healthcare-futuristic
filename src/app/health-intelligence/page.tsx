@@ -802,6 +802,28 @@ export default function HealthIntelligencePage() {
       {/* Dynamic SEO JSON-LD Injected Schema */}
       <SchemaMarkup profileId={selectedProfileId || ""} />
 
+      {/* Global Lab Parsing Overlay */}
+      <AnimatePresence>
+        {labParsing && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-md z-[9999] flex flex-col items-center justify-center space-y-4 print:hidden"
+          >
+            <div className="glass-panel border border-slate-200/40 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 rounded-3xl p-8 max-w-sm text-center shadow-2xl flex flex-col items-center space-y-4">
+              <RefreshCw className="w-10 h-10 text-mint animate-spin" />
+              <div className="space-y-1.5">
+                <h4 className="font-serif text-sm font-bold text-slate-900 dark:text-white">Analyzing Lab Biomarkers</h4>
+                <p className="text-[11px] text-slate-500 leading-normal">
+                  Our clinical OCR engine is scanning files, verifying reference ranges, and formulating medical diagnostic guidelines...
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Ambient Blur Elements */}
       <div className="absolute top-1/4 left-10 w-96 h-96 rounded-full bg-mint/5 dark:bg-mint/3 blur-[120px] pointer-events-none" />
       <div className="absolute bottom-1/3 right-10 w-[450px] h-[450px] rounded-full bg-indigo-500/5 dark:bg-indigo-500/3 blur-[150px] pointer-events-none" />
@@ -899,7 +921,7 @@ export default function HealthIntelligencePage() {
                 
                 <div className="flex gap-3">
                   <button
-                    onClick={() => handleLoadSampleLab("comprehensive_metabolic.pdf")}
+                    onClick={() => document.getElementById("lab-upload-input-2")?.click()}
                     className="py-2.5 px-4 bg-white dark:bg-slate-950 border border-slate-200/70 dark:border-slate-800 hover:border-mint text-[11px] font-bold uppercase tracking-wider text-slate-650 dark:text-zinc-350 rounded-xl cursor-pointer transition-all flex items-center gap-1.5"
                   >
                     <UploadCloud className="w-4 h-4 text-mint" />
@@ -1324,7 +1346,7 @@ export default function HealthIntelligencePage() {
 
                     <div className="flex flex-col gap-3.5 w-full md:w-auto shrink-0">
                       <button
-                        onClick={() => handleLoadSampleLab("TSH: 8.4 (Thyroid Panel)")}
+                        onClick={() => document.getElementById("lab-upload-input-2")?.click()}
                         className="py-3 px-5 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-mint text-slate-700 dark:text-zinc-200 font-bold rounded-2xl text-xs uppercase tracking-wider cursor-pointer shadow-sm transition-all flex items-center justify-center gap-1.5"
                       >
                         <UploadCloud className="w-4 h-4 text-mint" />
