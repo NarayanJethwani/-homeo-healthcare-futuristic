@@ -15,6 +15,9 @@ export default function Navbar() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [isPortalHost, setIsPortalHost] = useState(false);
 
+  const [portalUrl, setPortalUrl] = useState("https://portal.homeo.healthcare/admin");
+  const [adminUrl, setAdminUrl] = useState("https://admin.homeo.healthcare/");
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
@@ -27,7 +30,14 @@ export default function Navbar() {
     const isDark = document.documentElement.classList.contains("dark");
     setTheme(isDark ? "dark" : "light");
     if (typeof window !== "undefined") {
-      setIsPortalHost(window.location.hostname.includes("portal.homeo.healthcare"));
+      const isPortal = window.location.hostname.includes("portal.homeo.healthcare");
+      setIsPortalHost(isPortal);
+      
+      const host = window.location.hostname;
+      if (host === "localhost" || host === "127.0.0.1" || host.includes("192.168.")) {
+        setPortalUrl("/admin/dashboard");
+        setAdminUrl("/admin/dashboard");
+      }
     }
   }, []);
 
@@ -59,6 +69,7 @@ export default function Navbar() {
   const menuItems = [
     { name: "Conditions", href: "/services", icon: Stethoscope, color: "bg-teal-500/10 text-teal-600 dark:text-teal-400" },
     { name: "Protocol", href: "/evidence-based-homeopathy", icon: ClipboardList, color: "bg-purple-500/10 text-purple-600 dark:text-purple-400" },
+    { name: "Intelligence", href: "/health-intelligence", icon: ClipboardList, color: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" },
     { name: "Dr Jethwani", href: "/dr-narayan-jethwani", icon: User, color: "bg-blue-500/10 text-blue-600 dark:text-blue-400" },
     { name: "Treatments", href: "/store", icon: ShoppingBag, color: "bg-amber-500/10 text-amber-600 dark:text-amber-400" },
     { name: "Blog", href: "/blogs", icon: BookOpen, color: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400" },
@@ -103,13 +114,13 @@ export default function Navbar() {
             </Magnetic>
 
             {/* Desktop Navigation Links */}
-            <div className="hidden lg:flex items-center gap-6">
+            <div className="hidden lg:flex items-center gap-4">
               {menuItems.map((item) => (
                 <Link
                   key={item.name}
                   href={item.href}
                   data-cursor="explore"
-                  className="text-sm font-semibold text-slate-700 hover:text-mint transition-colors duration-300 relative py-1 cursor-pointer group"
+                  className="text-sm font-semibold text-slate-700 hover:text-mint transition-colors duration-300 relative py-1 cursor-pointer group whitespace-nowrap"
                 >
                   {item.name}
                   <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-mint transition-all duration-300 group-hover:w-full group-hover:left-0" />
@@ -131,7 +142,7 @@ export default function Navbar() {
 
               <Magnetic>
                 <a
-                  href="https://portal.homeo.healthcare/admin"
+                  href={portalUrl}
                   data-cursor="explore"
                   className="glass-panel border-[#0F766E]/20 hover:border-mint/50 bg-[#0F766E]/5 hover:bg-mint/10 text-slate-700 dark:text-zinc-200 hover:text-mint dark:hover:text-mint px-4 py-2 rounded-full text-[11px] font-bold tracking-wider uppercase transition-all duration-500 flex items-center gap-1 cursor-pointer"
                 >
@@ -212,7 +223,7 @@ export default function Navbar() {
                 <div className="h-px bg-slate-100 dark:bg-slate-800/60 my-2" />
                 
                 <a
-                  href="https://portal.homeo.healthcare/admin"
+                  href={portalUrl}
                   onClick={() => setMobileMenuOpen(false)}
                   className="w-full text-center border border-[#0F766E]/20 text-[#0F766E] dark:text-mint bg-[#0F766E]/5 hover:bg-[#0F766E]/10 py-3 rounded-2xl text-xs font-bold tracking-wider uppercase transition-colors duration-300 flex items-center justify-center gap-2"
                 >

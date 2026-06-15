@@ -12,6 +12,7 @@ import {
   Network, Database, Cpu, GitBranch, Stethoscope, User, UploadCloud, Play, Mail, Mic, MicOff, Sun, Moon, IndianRupee,
   Star, Copy, Edit, Info, Share2
 } from "lucide-react";
+import CIEWorkspace from "./CIEWorkspace";
 import { REPERTORY_CHAPTERS, REMEDIES_METADATA, Rubric, BOERICKE_CHAPTERS, SEARCH_SYNONYMS, getRepertoryData, JETHWANI_SECTIONS, JETHWANI_REPERTORY_DATA as JETHWANI_REPERTORY_DATA_ORIG, JETHWANI_REMEDY_CONFIRMATIONS, calculateClinicalIndices, type JethwaniRubric, type JethwaniSymptomConfig, type ClinicalIndices, setRepertoryData } from "@/lib/repertoryData";
 import { MATERIA_MEDICA_BOOKS, MateriaMedicaBook } from "@/lib/materiaMedicaData";
 import { ORGANON_EDITIONS, ORGANON_KNOWLEDGE_TREE, ORGANON_APHORISMS, ORGANON_CASES, ACTIVE_RECALL_EXERCISES, TIMELINE_STEPS } from "@/lib/organonData";
@@ -617,9 +618,11 @@ const TABS_DEFINITION = [
   { id: "intake", label: "AI Intake", icon: Sparkles, gradient: "from-amber-500 to-orange-500", shadow: "shadow-[0_4px_12px_rgba(245,158,11,0.3)]", inactiveText: "text-slate-650 hover:text-amber-600 hover:bg-amber-50 bg-transparent" },
   { id: "patients", label: "Patients", icon: Users, gradient: "from-sky-500 to-blue-500", shadow: "shadow-[0_4px_12px_rgba(14,165,233,0.3)]", inactiveText: "text-slate-650 hover:text-sky-600 hover:bg-sky-50 bg-transparent" },
   { id: "diagnostics", label: "Diagnostics", icon: Compass, gradient: "from-emerald-600 to-green-500", shadow: "shadow-[0_4px_12px_rgba(16,185,129,0.3)]", inactiveText: "text-slate-650 hover:text-emerald-600 hover:bg-emerald-50 bg-transparent" },
+  { id: "health-intelligence", label: "Health Intelligence", icon: Activity, gradient: "from-teal-600 to-cyan-600", shadow: "shadow-[0_4px_12px_rgba(13,148,136,0.3)]", inactiveText: "text-slate-650 hover:text-teal-650 hover:bg-teal-50 bg-transparent" },
   { id: "analyzer", label: "Report Analyzer", icon: FileText, gradient: "from-indigo-500 to-violet-500", shadow: "shadow-[0_4px_12px_rgba(99,102,241,0.3)]", inactiveText: "text-slate-650 hover:text-indigo-600 hover:bg-indigo-50 bg-transparent" },
   { id: "diet-lifestyle", label: "Diet & Lifestyle", icon: Layers, gradient: "from-rose-500 to-pink-500", shadow: "shadow-[0_4px_12px_rgba(244,63,94,0.3)]", inactiveText: "text-slate-650 hover:text-rose-600 hover:bg-rose-50 bg-transparent" },
   { id: "nexus-atlas", label: "Nexus Atlas", icon: Network, gradient: "from-violet-600 to-fuchsia-600", shadow: "shadow-[0_4px_12px_rgba(139,92,246,0.3)]", inactiveText: "text-slate-650 hover:text-violet-600 hover:bg-violet-50 bg-transparent" },
+  { id: "cie", label: "Clinical Intelligence Engine", icon: Activity, gradient: "from-emerald-500 to-teal-500", shadow: "shadow-[0_4px_12px_rgba(16,185,129,0.3)]", inactiveText: "text-slate-650 hover:text-emerald-600 hover:bg-emerald-50 bg-transparent" },
   { id: "learning-hub", label: "Learning Hub", icon: Award, gradient: "from-fuchsia-500 to-purple-600", shadow: "shadow-[0_4px_12px_rgba(217,70,239,0.3)]", inactiveText: "text-slate-650 hover:text-fuchsia-600 hover:bg-fuchsia-50 bg-transparent" },
   { id: "communication", label: "Communications", icon: Send, gradient: "from-cyan-500 to-teal-500", shadow: "shadow-[0_4px_12px_rgba(6,182,212,0.3)]", inactiveText: "text-slate-650 hover:text-cyan-600 hover:bg-cyan-50 bg-transparent" },
   { id: "ai-router", label: "AI Router Settings", icon: Cpu, gradient: "from-slate-700 to-slate-800", shadow: "shadow-[0_4px_12px_rgba(71,85,105,0.3)]", inactiveText: "text-slate-650 hover:text-slate-800 hover:bg-slate-100 bg-transparent" }
@@ -628,7 +631,7 @@ const TABS_DEFINITION = [
 export default function AdminDashboard() {
   const router = useRouter();
   const [session, setSession] = useState<UserSession | null>(null);
-  const [activeTab, setActiveTab] = useState<"dashboard" | "intake" | "patients" | "diagnostics" | "analyzer" | "diet-lifestyle" | "nexus-atlas" | "learning-hub" | "communication" | "ai-router">("dashboard");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "intake" | "patients" | "diagnostics" | "analyzer" | "diet-lifestyle" | "nexus-atlas" | "learning-hub" | "communication" | "ai-router" | "health-intelligence" | "cie">("dashboard");
   const [nexusSubTab, setNexusSubTab] = useState<"repertory" | "mind-map" | "materia-medica">("repertory");
 
   // Global Accessibility Controls
@@ -646,6 +649,33 @@ export default function AdminDashboard() {
   useEffect(() => {
     const isDark = document.documentElement.classList.contains("dark");
     setTheme(isDark ? "dark" : "light");
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const checkUrlTab = () => {
+        const params = new URLSearchParams(window.location.search);
+        const tabParam = params.get("tab");
+        const validTabs = [
+          "dashboard", "intake", "patients", "diagnostics", "analyzer", 
+          "diet-lifestyle", "nexus-atlas", "learning-hub", "communication", 
+          "ai-router", "health-intelligence", "cie"
+        ];
+        
+        if (tabParam && validTabs.includes(tabParam)) {
+          setActiveTab(tabParam as any);
+        } else {
+          const hash = window.location.hash.replace("#", "");
+          if (hash && validTabs.includes(hash)) {
+            setActiveTab(hash as any);
+          }
+        }
+      };
+      
+      checkUrlTab();
+      window.addEventListener("hashchange", checkUrlTab);
+      return () => window.removeEventListener("hashchange", checkUrlTab);
+    }
   }, []);
 
   useEffect(() => {
@@ -689,7 +719,7 @@ export default function AdminDashboard() {
   };
 
   // Fullscreen view mode tracking
-  const [fullscreenTab, setFullscreenTab] = useState<"dashboard" | "intake" | "patients" | "diagnostics" | "analyzer" | "diet-lifestyle" | "nexus-atlas" | "learning-hub" | "communication" | "ai-router" | null>(null);
+  const [fullscreenTab, setFullscreenTab] = useState<"dashboard" | "intake" | "patients" | "diagnostics" | "analyzer" | "diet-lifestyle" | "nexus-atlas" | "learning-hub" | "communication" | "ai-router" | "health-intelligence" | null>(null);
 
   // AI Intake States
   const [intakeComplaint, setIntakeComplaint] = useState("");
@@ -4161,7 +4191,7 @@ Homeo Healthcare`;
 
   // Helper to handle mouse hover subtabs navigation
   const handleSubTabClick = (
-    tabId: "dashboard" | "intake" | "patients" | "diagnostics" | "analyzer" | "diet-lifestyle" | "nexus-atlas" | "learning-hub" | "communication" | "ai-router",
+    tabId: "dashboard" | "intake" | "patients" | "diagnostics" | "analyzer" | "diet-lifestyle" | "nexus-atlas" | "learning-hub" | "communication" | "ai-router" | "health-intelligence",
     subSectionId: string,
     action?: () => void
   ) => {
@@ -7133,14 +7163,23 @@ ${err.message || err}`);
               <div key={tab.id} className="relative group">
                 <button
                   onClick={() => setActiveTab(tab.id as any)}
-                  className={`px-4 py-2.5 rounded-2xl text-[10.5px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer border-none hover:scale-102 active:scale-98 duration-200 ${
+                  className={`px-4 py-2.5 rounded-2xl text-[10.5px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer border-none hover:scale-102 active:scale-98 duration-200 relative ${
                     isTabActive
-                      ? `bg-gradient-to-r ${tab.gradient} text-white ${tab.shadow}`
-                      : `${tab.inactiveText}`
+                      ? "text-white"
+                      : "text-slate-650 hover:text-slate-800 hover:bg-slate-50/50"
                   }`}
                 >
-                  <Icon className="w-3.5 h-3.5" />
-                  <span>{tab.label}</span>
+                  {isTabActive && (
+                    <motion.div
+                      layoutId="activeTabIndicator"
+                      className={`absolute inset-0 bg-gradient-to-r ${tab.gradient} ${tab.shadow} rounded-2xl z-0`}
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                  <span className="relative z-10 flex items-center gap-1.5">
+                    <Icon className="w-3.5 h-3.5" />
+                    <span>{tab.label}</span>
+                  </span>
                 </button>
 
                 {subtabs.length > 0 && (
@@ -7370,6 +7409,205 @@ ${err.message || err}`);
               </div>
             );
           })()}
+
+          {activeTab === "health-intelligence" && (
+            <div className="space-y-6 animate-fadeIn text-slate-800 select-text overflow-y-auto h-[calc(100vh-230px)] pr-2">
+              {/* Header */}
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-100 pb-6">
+                <div>
+                  <h2 className="font-serif text-2xl font-bold bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">Public Health Intelligence Center™</h2>
+                  <p className="text-xs font-semibold text-slate-500 max-w-2xl leading-relaxed mt-1">
+                    Manage patient self-assessments, run interactive simulation workflows, and import diagnostic profiles directly into the clinical intake workspace.
+                  </p>
+                </div>
+                
+                <div className="grid grid-cols-3 gap-3 text-center bg-white border border-slate-200/80 px-4 py-2 rounded-xl shadow-sm">
+                  <div>
+                    <div className="text-xs font-bold text-teal-600">1,280</div>
+                    <div className="text-[7.5px] uppercase tracking-widest text-slate-400 font-extrabold font-sans">Assessments</div>
+                  </div>
+                  <div className="border-x border-slate-200 px-3">
+                    <div className="text-xs font-bold text-cyan-600">38%</div>
+                    <div className="text-[7.5px] uppercase tracking-widest text-slate-400 font-extrabold font-sans">Thyroid (Top)</div>
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-emerald-600">24.5%</div>
+                    <div className="text-[7.5px] uppercase tracking-widest text-slate-400 font-extrabold font-sans">Conversion</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                {/* Left Column - Public Assessments Config & Preview (7 cols) */}
+                <div className="lg:col-span-7 space-y-6">
+                  <div className="bg-white/80 backdrop-blur-xl border border-slate-200/80 rounded-[32px] p-6 shadow-[0_8px_30px_rgb(15,23,42,0.04)]">
+                    <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+                      <Sliders className="w-4 h-4 text-teal-600" />
+                      Active Engagement Portals
+                    </h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {[
+                        { name: "Metabolic Health Profile", key: "metabolic", color: "from-teal-50 to-emerald-50", text: "text-teal-700", desc: "BMI index, clinical weight status, waist-to-height ratio." },
+                        { name: "Diabetes Risk Evaluation", key: "diabetes", color: "from-amber-50 to-orange-50", text: "text-amber-700", desc: "Glucose dysregulation, heredity markers, activity indexes." },
+                        { name: "Thyroid Axis Wellness", key: "thyroid", color: "from-sky-50 to-blue-50", text: "text-sky-700", desc: "Basal metabolic rate, endocrine symptoms, temperature tracks." },
+                        { name: "Stress & Autonomic Fatigue", key: "stress", color: "from-indigo-50 to-violet-50", text: "text-indigo-700", desc: "HPA axis strain, sleep quality, cognitive fatigue." },
+                        { name: "Sleep Quality & Recovery", key: "sleep", color: "from-rose-50 to-pink-50", text: "text-rose-700", desc: "Sleep onset latency, sleep architecture, circadian rhythm." },
+                        { name: "Women's Hormonal Balance", key: "womens", color: "from-purple-50 to-fuchsia-50", text: "text-purple-700", desc: "PCOS indicators, irregular cycles, vasomotor symptoms." }
+                      ].map((item) => (
+                        <div key={item.key} className="p-4 rounded-2xl border border-slate-100 bg-white hover:shadow-md transition-all duration-300 flex flex-col justify-between gap-3">
+                          <div>
+                            <div className="flex items-center justify-between">
+                              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full bg-gradient-to-r ${item.color} ${item.text}`}>
+                                {item.name}
+                              </span>
+                              <span className="text-[9px] text-slate-400 font-bold uppercase">Active</span>
+                            </div>
+                            <p className="text-[11px] text-slate-500 mt-2 leading-relaxed">{item.desc}</p>
+                          </div>
+                          
+                          <button
+                            onClick={() => {
+                              // Simulate importing a sample Metabolic profile
+                              if (item.key === "metabolic") {
+                                setIntakeComplaint("Metabolic overload, weight gain, high waist-to-height ratio.");
+                                setConstMentalState("Slightly irritable, sleep onset delay under metabolic strain.");
+                                setConstThermalState("Chilly");
+                                setDiagLabs("Fasting Blood Sugar: 126 mg/dL (HIGH), HbA1c: 7.8% (HIGH), Fasting Insulin: 18.2 uIU/mL (HIGH - Insulin Resistance)");
+                                setDiagDiagnosis("Insulin Resistance / Metabolic Strain");
+                                setActiveTab("intake");
+                                setIntakeStep(1);
+                                alert("Sample Metabolic assessment data successfully imported into AI Intake workspace!");
+                              } else if (item.key === "diabetes") {
+                                setIntakeComplaint("Polydipsia, polyuria, family history of type 2 diabetes.");
+                                setConstMentalState("Fatigued after meals, sluggish metabolism.");
+                                setConstThermalState("Mixed");
+                                setDiagLabs("Fasting Blood Sugar: 142 mg/dL (HIGH), HbA1c: 8.1% (HIGH)");
+                                setDiagDiagnosis("Type 2 Diabetes mellitus");
+                                setActiveTab("intake");
+                                setIntakeStep(1);
+                                alert("Sample Diabetes assessment data successfully imported into AI Intake workspace!");
+                              } else {
+                                alert("Simulation data prepared. Click 'Import' in the queue to load into intake.");
+                              }
+                            }}
+                            className="w-full text-center py-2 bg-slate-50 border border-slate-100 hover:bg-teal-50 hover:border-teal-100 rounded-xl text-[10px] font-bold text-slate-600 hover:text-teal-700 transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                          >
+                            <Play className="w-3 h-3" />
+                            Run Simulator Test
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Column - Recent Submissions Queue (5 cols) */}
+                <div className="lg:col-span-5 space-y-6">
+                  <div className="bg-white/80 backdrop-blur-xl border border-slate-200/80 rounded-[32px] p-6 shadow-[0_8px_30px_rgb(15,23,42,0.04)]">
+                    <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center justify-between">
+                      <span className="flex items-center gap-2">
+                        <History className="w-4 h-4 text-teal-600" />
+                        Patient Intake Queue
+                      </span>
+                      <span className="text-[9px] bg-teal-500/10 text-teal-600 px-2 py-0.5 rounded-full font-bold">3 Pending</span>
+                    </h3>
+                    
+                    <div className="flex flex-col gap-3">
+                      {[
+                        {
+                          name: "Amit Sharma",
+                          time: "10 mins ago",
+                          type: "Diabetes Risk Assessment",
+                          score: 78,
+                          status: "High Risk",
+                          badge: "bg-rose-50 border-rose-100 text-rose-700",
+                          data: {
+                            complaint: "Family history of glycemic dysregulation, fatigue, post-prandial somnolence.",
+                            mental: "Anxious, hurried, sleeps poorly due to frequent urination.",
+                            thermal: "Hot" as const,
+                            labs: "HbA1c: 7.8% (HIGH), Fasting Blood Sugar: 126 mg/dL (HIGH)",
+                            diag: "Type 2 Diabetes Risk / Insulin Resistance"
+                          }
+                        },
+                        {
+                          name: "Priya Patel",
+                          time: "45 mins ago",
+                          type: "Thyroid Wellness Assessment",
+                          score: 54,
+                          status: "Moderate Risk",
+                          badge: "bg-amber-50 border-amber-100 text-amber-700",
+                          data: {
+                            complaint: "Unexplained weight gain, cold extremities, dry skin, severe hair fall.",
+                            mental: "Sluggish, depressed, forgetful, lacks motivation.",
+                            thermal: "Chilly" as const,
+                            labs: "TSH: 8.4 uIU/mL (HIGH), Free T4: 0.9 ng/dL (Normal)",
+                            diag: "Subclinical Hypothyroidism Axis Strain"
+                          }
+                        },
+                        {
+                          name: "Rajesh Kumar",
+                          time: "2 hours ago",
+                          type: "Metabolic Health Assessment",
+                          score: 35,
+                          status: "Healthy/Optimal",
+                          badge: "bg-emerald-50 border-emerald-100 text-emerald-700",
+                          data: {
+                            complaint: "Sought preventive assessment. Minimal chronic strain.",
+                            mental: "Balanced, focused, occasionally stressed at work.",
+                            thermal: "Mixed" as const,
+                            labs: "BMI: 24.2 (Optimal), Waist-to-Height Ratio: 0.48 (Low Risk)",
+                            diag: "Metabolic Homeostasis"
+                          }
+                        }
+                      ].map((sub, idx) => (
+                        <div key={idx} className="p-4 rounded-2xl border border-slate-100 bg-white shadow-sm flex flex-col gap-3">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <span className="font-bold text-xs text-slate-800">{sub.name}</span>
+                              <div className="text-[10px] text-slate-400 font-semibold mt-0.5">{sub.type} ({sub.time})</div>
+                            </div>
+                            <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${sub.badge}`}>
+                              Score: {sub.score} ({sub.status})
+                            </span>
+                          </div>
+                          
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => {
+                                setIntakeComplaint(sub.data.complaint);
+                                setConstMentalState(sub.data.mental);
+                                setConstThermalState(sub.data.thermal);
+                                setDiagLabs(sub.data.labs);
+                                setDiagDiagnosis(sub.data.diag);
+                                setActiveTab("intake");
+                                setIntakeStep(1);
+                                alert(`Patient "${sub.name}" assessment data successfully imported into AI Intake workspace!`);
+                              }}
+                              className="flex-1 text-center py-2 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 rounded-xl text-[10px] font-bold text-white transition-all cursor-pointer shadow-sm flex items-center justify-center gap-1"
+                            >
+                              <Plus className="w-3 h-3" />
+                              Import to AI Intake
+                            </button>
+                            <button
+                              onClick={() => {
+                                setAnalyzerRawText(`Patient Name: ${sub.name}\nAssessment: ${sub.type}\nScore: ${sub.score} (${sub.status})\nSymptoms:\n- ${sub.data.complaint}\n- ${sub.data.mental}\n- Thermal: ${sub.data.thermal}\nFindings: ${sub.data.labs}`);
+                                setActiveTab("analyzer");
+                                alert(`Raw report content for "${sub.name}" loaded into Report Analyzer workspace!`);
+                              }}
+                              className="px-3 py-2 bg-slate-50 border border-slate-150 hover:bg-slate-100 rounded-xl text-[10px] font-bold text-slate-600 hover:text-slate-800 transition-all cursor-pointer"
+                            >
+                              Analyze Labs
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {activeTab === "intake" && (
             <div className={`transition-all duration-300 ${fullscreenTab === "intake" ? "fixed inset-0 z-[50] h-screen bg-pearl flex flex-col p-6" : "relative flex flex-col space-y-4 h-[calc(100vh-230px)] min-h-[620px] overflow-hidden"}`}>
@@ -11499,6 +11737,16 @@ ${err.message || err}`);
               </div>
             );
           })()}
+
+          {/* TAB: Clinical Intelligence Engine */}
+          {activeTab === "cie" && (
+            <CIEWorkspace 
+              patients={patients} 
+              selectedPatientId={selectedPatientId} 
+              setSelectedPatientId={setSelectedPatientId} 
+              theme={theme} 
+            />
+          )}
 
           {/* TAB 1: Patients List */}
           {activeTab === "patients" && (

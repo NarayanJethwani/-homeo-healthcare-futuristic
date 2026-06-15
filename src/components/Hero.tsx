@@ -1,12 +1,23 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Sparkles, ShieldCheck, HeartPulse, Video, ArrowRight, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import Magnetic from "./Magnetic";
 
 export default function Hero() {
+  const [adminUrl, setAdminUrl] = useState("https://admin.homeo.healthcare/");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const host = window.location.hostname;
+      if (host === "localhost" || host === "127.0.0.1" || host.includes("192.168.")) {
+        setAdminUrl("/admin/dashboard");
+      }
+    }
+  }, []);
+
   const sectionRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -92,7 +103,7 @@ export default function Hero() {
           >
             <Magnetic>
               <Link
-                href="https://admin.homeo.healthcare/"
+                href={adminUrl}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-mint/20 hover:border-mint/60 bg-mint/5 hover:bg-mint/10 text-mint-dark hover:text-[#0c6b5e] text-xs font-bold uppercase tracking-wider transition-all duration-300 backdrop-blur-md cursor-pointer"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
