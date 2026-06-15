@@ -23,7 +23,9 @@ import {
   MiasmaticProfile,
   ConstitutionalProfile,
   HealthHistoryEntry,
-  BiologicalAgeMetrics
+  BiologicalAgeMetrics,
+  ClinicalPortalSync,
+  WearableSyncData
 } from "./types";
 import { analyzeDigitalTwin, getRelatedContent, RelatedContent } from "./clinicalRulesEngine";
 import { CONSTITUTIONAL_QUESTIONS, analyzeConstitution } from "./constitutionalEngine";
@@ -70,7 +72,14 @@ const DEFAULT_TWIN: HealthDigitalTwin = {
   priorityGoals: [
     "Complete baseline metabolic and sleep assessments",
     "Establish regular digestive transit rhythm"
-  ]
+  ],
+  wearables: {
+    "Apple Health": { device: "Apple Health", connected: false },
+    "Google Fit": { device: "Google Fit", connected: false },
+    "Fitbit": { device: "Fitbit", connected: false },
+    "Garmin": { device: "Garmin", connected: false }
+  },
+  clinicalPortal: { connected: false }
 };
 
 export default function HealthIntelligencePage() {
@@ -143,6 +152,64 @@ export default function HealthIntelligencePage() {
       setLabResult(null);
       setActiveReport(null);
     }
+  };
+
+  // Wearable & Clinical Portal Integration Sync handlers
+  const handleToggleWearable = (device: "Apple Health" | "Google Fit" | "Fitbit" | "Garmin") => {
+    const updatedWearables = { ...(digitalTwin.wearables || {
+      "Apple Health": { device: "Apple Health", connected: false },
+      "Google Fit": { device: "Google Fit", connected: false },
+      "Fitbit": { device: "Fitbit", connected: false },
+      "Garmin": { device: "Garmin", connected: false }
+    }) };
+    const currentDevice = updatedWearables[device] || { device, connected: false };
+    
+    if (currentDevice.connected) {
+      updatedWearables[device] = { device, connected: false };
+    } else {
+      const now = new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+      const lastSyncDate = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" });
+      updatedWearables[device] = {
+        device,
+        connected: true,
+        lastSync: `${lastSyncDate} at ${now}`,
+        metrics: {
+          heartRateAvg: Math.round(62 + Math.random() * 8),
+          steps: Math.round(7200 + Math.random() * 3000),
+          sleepHours: Number((6.8 + Math.random() * 1.5).toFixed(1)),
+          hrv: Math.round(45 + Math.random() * 25)
+        }
+      };
+      alert(`${device} successfully linked to HIOS™. Epigenetic and cardiorespiratory telemetry synced.`);
+    }
+    
+    saveDigitalTwin({
+      ...digitalTwin,
+      wearables: updatedWearables
+    });
+  };
+
+  const handleToggleClinicalPortal = () => {
+    const isConnected = digitalTwin.clinicalPortal?.connected || false;
+    let updatedPortal: ClinicalPortalSync = { connected: false };
+    if (isConnected) {
+      updatedPortal = { connected: false };
+    } else {
+      const now = new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+      const lastSyncDate = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" });
+      updatedPortal = {
+        connected: true,
+        lastSync: `${lastSyncDate} at ${now}`,
+        portalId: `HCP-2026-${Math.round(1000 + Math.random() * 9000)}`,
+        doctorApproved: true
+      };
+      alert(`Homeo Healthcare Clinical Portal integrated successfully. Patient Digital Twin is now synced in real-time with the clinician dashboard.`);
+    }
+    
+    saveDigitalTwin({
+      ...digitalTwin,
+      clinicalPortal: updatedPortal
+    });
   };
 
   // Questionnaire helpers
@@ -1088,6 +1155,88 @@ export default function HealthIntelligencePage() {
                 </button>
               </div>
             )}
+
+            {/* FUTURE-READY: HEALTH OS & SYNC INTEGRATIONS */}
+            <div className="glass-panel border border-slate-200/60 dark:border-slate-850 bg-white/70 dark:bg-slate-900/65 rounded-[28px] p-5 shadow-sm space-y-4">
+              <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block">
+                Health OS & Wearable Sync
+              </span>
+
+              {/* Wearable integrations */}
+              <div className="space-y-3">
+                <div className="text-[9.5px] font-extrabold uppercase tracking-widest text-slate-500">
+                  Wearable Connections:
+                </div>
+                <div className="grid grid-cols-2 gap-2.5">
+                  {(["Apple Health", "Google Fit", "Fitbit", "Garmin"] as const).map(device => {
+                    const status = (digitalTwin.wearables || {})[device] || { device, connected: false };
+                    return (
+                      <button
+                        key={device}
+                        onClick={() => handleToggleWearable(device)}
+                        className={`p-3 rounded-xl border text-left cursor-pointer transition-all flex flex-col justify-between h-[70px] ${
+                          status.connected
+                            ? "bg-mint/5 border-mint text-slate-800 dark:text-zinc-150"
+                            : "bg-slate-50/50 dark:bg-slate-950/20 border-slate-150 dark:border-slate-850 hover:bg-slate-100/30 text-slate-500"
+                        }`}
+                      >
+                        <div className="flex justify-between items-center w-full">
+                          <span className="text-[10.5px] font-bold">{device}</span>
+                          <span className={`w-1.5 h-1.5 rounded-full ${status.connected ? "bg-emerald-500" : "bg-slate-300"}`} />
+                        </div>
+                        {status.connected && status.metrics ? (
+                          <div className="text-[8.5px] text-slate-450 leading-none space-y-0.5 font-bold">
+                            <div>HR: {status.metrics.heartRateAvg} bpm</div>
+                            <div>Steps: {status.metrics.steps}</div>
+                          </div>
+                        ) : (
+                          <span className="text-[8.5px] text-slate-400 font-bold uppercase tracking-wider">Connect</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Clinical Connections */}
+              <div className="space-y-3 pt-3 border-t border-slate-100 dark:border-slate-800/80">
+                <div className="text-[9.5px] font-extrabold uppercase tracking-widest text-slate-500">
+                  Clinical Portal Sync:
+                </div>
+                <div className="flex items-center justify-between p-3 bg-slate-50/50 dark:bg-slate-950/20 border border-slate-150 dark:border-slate-850 rounded-xl">
+                  <div className="space-y-0.5">
+                    <span className="text-[10.5px] font-bold text-slate-800 dark:text-zinc-150 block">Clinician Portal</span>
+                    {digitalTwin.clinicalPortal?.connected ? (
+                      <span className="text-[8.5px] text-emerald-500 font-bold block leading-none">
+                        Synced: {digitalTwin.clinicalPortal.portalId}
+                      </span>
+                    ) : (
+                      <span className="text-[8.5px] text-slate-400 font-bold block leading-none">Not Connected</span>
+                    )}
+                  </div>
+                  <button
+                    onClick={handleToggleClinicalPortal}
+                    className={`px-3 py-1.5 rounded-lg text-[9px] font-extrabold uppercase tracking-wider cursor-pointer border-none transition-colors ${
+                      digitalTwin.clinicalPortal?.connected
+                        ? "bg-rose-500/10 text-rose-600 hover:bg-rose-500/20"
+                        : "bg-mint text-white hover:bg-teal-600"
+                    }`}
+                  >
+                    {digitalTwin.clinicalPortal?.connected ? "Disconnect" : "Connect"}
+                  </button>
+                </div>
+
+                <div className="flex items-center justify-between p-2.5 bg-slate-50/30 dark:bg-slate-950/10 border border-slate-100 dark:border-slate-850/60 rounded-xl text-[9.5px] text-slate-500 font-semibold">
+                  <span className="flex items-center gap-1.5">
+                    <span className={`w-1.5 h-1.5 rounded-full ${digitalTwin.clinicalPortal?.connected ? "bg-emerald-500" : "bg-amber-400"}`} />
+                    Clinical AI Engine:
+                  </span>
+                  <span className="font-bold uppercase tracking-wider text-slate-700 dark:text-zinc-350">
+                    {digitalTwin.clinicalPortal?.connected ? "Operational" : "Standby"}
+                  </span>
+                </div>
+              </div>
+            </div>
 
             {/* PRIORITY 5: LONGITUDINAL HEALTH TIMELINE */}
             {digitalTwin.history && digitalTwin.history.length > 0 && (

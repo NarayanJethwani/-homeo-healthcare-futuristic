@@ -66,6 +66,25 @@ export interface BiologicalAgeMetrics {
   wellnessIndex: number;
 }
 
+export interface WearableSyncData {
+  device: "Apple Health" | "Google Fit" | "Fitbit" | "Garmin";
+  connected: boolean;
+  lastSync?: string;
+  metrics?: {
+    heartRateAvg?: number;
+    steps?: number;
+    sleepHours?: number;
+    hrv?: number;
+  };
+}
+
+export interface ClinicalPortalSync {
+  connected: boolean;
+  lastSync?: string;
+  portalId?: string;
+  doctorApproved?: boolean;
+}
+
 export interface HealthDigitalTwin {
   overallScore: number;
   systemScores: SystemScores;
@@ -82,6 +101,8 @@ export interface HealthDigitalTwin {
   biologicalAge?: BiologicalAgeMetrics;
   activeRulesFlags: string[];
   priorityGoals: string[];
+  wearables?: Record<string, WearableSyncData>;
+  clinicalPortal?: ClinicalPortalSync;
 }
 
 export interface IntelligenceReport {
