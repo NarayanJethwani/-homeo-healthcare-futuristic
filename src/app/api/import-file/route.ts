@@ -14,19 +14,19 @@ export async function POST(request: Request) {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       console.warn("GEMINI_API_KEY not configured. Operating in mock mode for file extraction.");
-      // Return mock extracted patient details for development/demo purposes
+      // Return empty details template with name from filename
       return NextResponse.json({
         success: true,
         patient: {
-          name: fileName ? fileName.replace(/\.[^/.]+$/, "") : "Devendra Sharma",
-          age: "48",
+          name: fileName ? fileName.replace(/\.[^/.]+$/, "") : "",
+          age: "",
           gender: "Male",
-          email: "devendra.sharma@outlook.com",
-          phone: "+91 94420 33812",
-          city: "Baner, Pune",
-          state: "Maharashtra",
-          complaint: "Chronic asthma and respiratory congestion, worse during cold winds. Has dry skin patches on knees with mild itching.",
-          rubrics: "Asthma (3); Cough (2); Skin itching (2)"
+          email: "",
+          phone: "",
+          city: "",
+          state: "",
+          complaint: "",
+          rubrics: ""
         }
       });
     }
@@ -105,15 +105,15 @@ Extract values accurately from the file. If certain fields are not found, leave 
       success: true,
       isFallback: true,
       patient: {
-        name: fileName ? fileName.replace(/\.[^/.]+$/, "") : "Devendra Sharma",
-        age: "48",
+        name: fileName ? fileName.replace(/\.[^/.]+$/, "") : "",
+        age: "",
         gender: "Male",
-        email: "devendra.sharma@outlook.com",
-        phone: "+91 94420 33812",
-        city: "Baner, Pune",
-        state: "Maharashtra",
-        complaint: "Chronic asthma and respiratory congestion, worse during cold winds. Has dry skin patches on knees with mild itching.",
-        rubrics: "Asthma (3); Cough (2); Skin itching (2)"
+        email: "",
+        phone: "",
+        city: "",
+        state: "",
+        complaint: "",
+        rubrics: ""
       }
     });
   }

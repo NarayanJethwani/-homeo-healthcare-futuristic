@@ -4710,6 +4710,9 @@ Homeo Healthcare`;
     );
   });
 
+  // Filter pending intakes for queue display
+  const pendingIntakes = patients.filter((p) => p.status === "pending" || p.status === "pending_plan");
+
   // Handle Log Out
   const handleLogout = () => {
     localStorage.removeItem("admin_session");
@@ -8043,98 +8046,61 @@ ${err.message || err}`);
                         <History className="w-4 h-4 text-teal-600" />
                         Patient Intake Queue
                       </span>
-                      <span className="text-[9px] bg-teal-500/10 text-teal-600 px-2 py-0.5 rounded-full font-bold">3 Pending</span>
+                      <span className="text-[9px] bg-teal-500/10 text-teal-600 px-2 py-0.5 rounded-full font-bold">{pendingIntakes.length} Pending</span>
                     </h3>
                     
                     <div className="flex flex-col gap-3">
-                      {[
-                        {
-                          name: "Amit Sharma",
-                          time: "10 mins ago",
-                          type: "Diabetes Risk Assessment",
-                          score: 78,
-                          status: "High Risk",
-                          badge: "bg-rose-50 border-rose-100 text-rose-700",
-                          data: {
-                            complaint: "Family history of glycemic dysregulation, fatigue, post-prandial somnolence.",
-                            mental: "Anxious, hurried, sleeps poorly due to frequent urination.",
-                            thermal: "Hot" as const,
-                            labs: "HbA1c: 7.8% (HIGH), Fasting Blood Sugar: 126 mg/dL (HIGH)",
-                            diag: "Type 2 Diabetes Risk / Insulin Resistance"
-                          }
-                        },
-                        {
-                          name: "Priya Patel",
-                          time: "45 mins ago",
-                          type: "Thyroid Wellness Assessment",
-                          score: 54,
-                          status: "Moderate Risk",
-                          badge: "bg-amber-50 border-amber-100 text-amber-700",
-                          data: {
-                            complaint: "Unexplained weight gain, cold extremities, dry skin, severe hair fall.",
-                            mental: "Sluggish, depressed, forgetful, lacks motivation.",
-                            thermal: "Chilly" as const,
-                            labs: "TSH: 8.4 uIU/mL (HIGH), Free T4: 0.9 ng/dL (Normal)",
-                            diag: "Subclinical Hypothyroidism Axis Strain"
-                          }
-                        },
-                        {
-                          name: "Rajesh Kumar",
-                          time: "2 hours ago",
-                          type: "Metabolic Health Assessment",
-                          score: 35,
-                          status: "Healthy/Optimal",
-                          badge: "bg-emerald-50 border-emerald-100 text-emerald-700",
-                          data: {
-                            complaint: "Sought preventive assessment. Minimal chronic strain.",
-                            mental: "Balanced, focused, occasionally stressed at work.",
-                            thermal: "Mixed" as const,
-                            labs: "BMI: 24.2 (Optimal), Waist-to-Height Ratio: 0.48 (Low Risk)",
-                            diag: "Metabolic Homeostasis"
-                          }
-                        }
-                      ].map((sub, idx) => (
-                        <div key={idx} className="p-4 rounded-2xl border border-slate-100 bg-white shadow-sm flex flex-col gap-3">
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <span className="font-bold text-xs text-slate-800">{sub.name}</span>
-                              <div className="text-[10px] text-slate-400 font-semibold mt-0.5">{sub.type} ({sub.time})</div>
-                            </div>
-                            <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${sub.badge}`}>
-                              Score: {sub.score} ({sub.status})
-                            </span>
-                          </div>
-                          
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => {
-                                setIntakeComplaint(sub.data.complaint);
-                                setConstMentalState(sub.data.mental);
-                                setConstThermalState(sub.data.thermal);
-                                setDiagLabs(sub.data.labs);
-                                setDiagDiagnosis(sub.data.diag);
-                                setActiveTab("intake");
-                                setIntakeStep(1);
-                                alert(`Patient "${sub.name}" assessment data successfully imported into AI Intake workspace!`);
-                              }}
-                              className="flex-1 text-center py-2 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 rounded-xl text-[10px] font-bold text-white transition-all cursor-pointer shadow-sm flex items-center justify-center gap-1"
-                            >
-                              <Plus className="w-3 h-3" />
-                              Import to AI Intake
-                            </button>
-                            <button
-                              onClick={() => {
-                                setAnalyzerRawText(`Patient Name: ${sub.name}\nAssessment: ${sub.type}\nScore: ${sub.score} (${sub.status})\nSymptoms:\n- ${sub.data.complaint}\n- ${sub.data.mental}\n- Thermal: ${sub.data.thermal}\nFindings: ${sub.data.labs}`);
-                                setActiveTab("analyzer");
-                                alert(`Raw report content for "${sub.name}" loaded into Report Analyzer workspace!`);
-                              }}
-                              className="px-3 py-2 bg-slate-50 border border-slate-150 hover:bg-slate-100 rounded-xl text-[10px] font-bold text-slate-600 hover:text-slate-800 transition-all cursor-pointer"
-                            >
-                              Analyze Labs
-                            </button>
-                          </div>
+                      {pendingIntakes.length === 0 ? (
+                        <div className="text-center py-8 text-slate-400 text-xs font-semibold bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
+                          No pending public intakes.
                         </div>
-                      ))}
+                      ) : (
+                        pendingIntakes.map((p) => (
+                          <div key={p.id} className="p-4 rounded-2xl border border-slate-100 bg-white shadow-sm flex flex-col gap-3">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <span className="font-bold text-xs text-slate-800">{p.name}</span>
+                                <div className="text-[10px] text-slate-400 font-semibold mt-0.5">
+                                  {p.careLevel || "Public Self-Assessment"} ({p.createdAt ? new Date(p.createdAt).toLocaleDateString("en-IN") : "Recent"})
+                                </div>
+                              </div>
+                              <span className="text-[9px] font-bold px-2 py-0.5 rounded-full border bg-amber-50 border-amber-100 text-amber-700">
+                                Pending
+                              </span>
+                            </div>
+                            
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => {
+                                  setIntakeComplaint(p.complaint);
+                                  setConstMentalState("");
+                                  setConstThermalState("Mixed");
+                                  setDiagLabs("");
+                                  setDiagDiagnosis("");
+                                  setSelectedPatientId(p.id);
+                                  setActiveTab("intake");
+                                  setIntakeStep(1);
+                                  alert(`Patient "${p.name}" assessment data successfully imported into AI Intake workspace!`);
+                                }}
+                                className="flex-1 text-center py-2 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 rounded-xl text-[10px] font-bold text-white transition-all cursor-pointer shadow-sm flex items-center justify-center gap-1"
+                              >
+                                <Plus className="w-3 h-3" />
+                                Import to AI Intake
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setAnalyzerRawText(`Patient Name: ${p.name}\nComplaint / Assessment:\n${p.complaint}`);
+                                  setActiveTab("analyzer");
+                                  alert(`Raw report content for "${p.name}" loaded into Report Analyzer workspace!`);
+                                }}
+                                className="px-3 py-2 bg-slate-50 border border-slate-150 hover:bg-slate-100 rounded-xl text-[10px] font-bold text-slate-600 hover:text-slate-800 transition-all cursor-pointer"
+                              >
+                                Analyze Labs
+                              </button>
+                            </div>
+                          </div>
+                        ))
+                      )}
                     </div>
                   </div>
                 </div>
@@ -12304,6 +12270,26 @@ ${err.message || err}`);
                     onClick={() => {
                       setCaseCreationSuccess(false);
                       setCaseCreationError("");
+                      setNewCaseForm({
+                        name: "",
+                        age: "",
+                        gender: "Male",
+                        phone: "",
+                        email: "",
+                        city: "",
+                        state: "",
+                        country: "India",
+                        complaint: "",
+                        careLevel: "🌱 Acute & Wellness Care",
+                        billingCycle: "Monthly",
+                        concessionType: "None",
+                        durationText: "1-Month Consultation",
+                        basePrice: 4800,
+                        discountOverride: 0,
+                        finalPrice: 4320,
+                        receivedAmount: 4320,
+                        remainingBalance: 0
+                      });
                       setIsNewCaseModalOpen(true);
                     }}
                     className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4.5 py-2.5 rounded-full bg-mint text-white text-xs font-bold uppercase tracking-wider transition-all hover:bg-mint-dark shadow-sm cursor-pointer"
@@ -25518,7 +25504,7 @@ Exported on: ${new Date().toLocaleDateString()}
                           type="text"
                           value={newCaseForm.name}
                           onChange={(e) => setNewCaseForm({ ...newCaseForm, name: e.target.value })}
-                          placeholder="Rajesh Kumar"
+                          placeholder="Patient's Full Name"
                           className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-medium text-[#1A2421]"
                           required
                         />
@@ -25532,7 +25518,7 @@ Exported on: ${new Date().toLocaleDateString()}
                             type="number"
                             value={newCaseForm.age}
                             onChange={(e) => handleAgeChange(e.target.value)}
-                            placeholder="45"
+                            placeholder="Age (e.g. 35)"
                             className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-medium text-[#1A2421]"
                             required
                           />
@@ -25558,7 +25544,7 @@ Exported on: ${new Date().toLocaleDateString()}
                           type="tel"
                           value={newCaseForm.phone}
                           onChange={(e) => setNewCaseForm({ ...newCaseForm, phone: e.target.value })}
-                          placeholder="+91 98765 43210"
+                          placeholder="Contact Phone Number"
                           className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-medium text-[#1A2421]"
                           required
                         />
@@ -25571,7 +25557,7 @@ Exported on: ${new Date().toLocaleDateString()}
                           type="email"
                           value={newCaseForm.email}
                           onChange={(e) => setNewCaseForm({ ...newCaseForm, email: e.target.value })}
-                          placeholder="rajesh@gmail.com"
+                          placeholder="Email Address"
                           className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-medium text-[#1A2421]"
                           required
                         />
@@ -25585,7 +25571,7 @@ Exported on: ${new Date().toLocaleDateString()}
                             type="text"
                             value={newCaseForm.city}
                             onChange={(e) => setNewCaseForm({ ...newCaseForm, city: e.target.value })}
-                            placeholder="Mumbai"
+                            placeholder="City"
                             className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-medium text-[#1A2421]"
                             required
                           />
@@ -25596,7 +25582,7 @@ Exported on: ${new Date().toLocaleDateString()}
                             type="text"
                             value={newCaseForm.state}
                             onChange={(e) => setNewCaseForm({ ...newCaseForm, state: e.target.value })}
-                            placeholder="Maharashtra"
+                            placeholder="State"
                             className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-medium text-[#1A2421]"
                             required
                           />

@@ -409,15 +409,40 @@ export async function createPatientClinicalSheet(
                   ]
                 },
                 {
+                  range: "'Treatment Planner'!A8:C15",
+                  values: [
+                    ["Base Rate", `=IF(ISNUMBER(SEARCH("Critical", A4)), IF(B4="Weekly", 5000, 20000), IF(ISNUMBER(SEARCH("Wellness", A4)), IF(B4="Weekly", 1200, 4800), IF(ISNUMBER(SEARCH("Standard", A4)), IF(B4="Weekly", 2400, 9600), IF(ISNUMBER(SEARCH("Deep", A4)), IF(B4="Weekly", 4200, 16800), IF(ISNUMBER(SEARCH("Advanced", A4)), IF(B4="Weekly", 6000, 24000), IF(ISNUMBER(SEARCH("Multisystem", A4)), IF(B4="Weekly", 8400, 33600), 4800))))))`, "Base rate based on Care Level and Billing Cycle"],
+                    ["Conditions Surcharge", `=IF(D4<=1, 0, (D4-1)*IF(ISNUMBER(SEARCH("Critical", A4)), IF(B4="Weekly", 1000, 4000), IF(ISNUMBER(SEARCH("Wellness", A4)), IF(B4="Weekly", 300, 1200), IF(ISNUMBER(SEARCH("Standard", A4)), IF(B4="Weekly", 450, 1800), IF(ISNUMBER(SEARCH("Deep", A4)), IF(B4="Weekly", 750, 3000), IF(ISNUMBER(SEARCH("Advanced", A4)), IF(B4="Weekly", 1050, 4200), IF(ISNUMBER(SEARCH("Multisystem", A4)), IF(B4="Weekly", 1350, 5400), 0)))))))`, "Surcharge for co-existing chronic conditions"],
+                    ["Gross Subtotal", "=(B8+B9)*C4", "Adjusted base rate multiplied by duration"],
+                    ["Duration Discount %", `=IF(IF(B4="Weekly", C4, C4*4)>=48, 0.30, IF(IF(B4="Weekly", C4, C4*4)>=24, 0.25, IF(IF(B4="Weekly", C4, C4*4)>=12, 0.20, IF(IF(B4="Weekly", C4, C4*4)>=8, 0.15, IF(IF(B4="Weekly", C4, C4*4)>=4, 0.10, IF(IF(B4="Weekly", C4, C4*4)>=2, 0.05, 0))))))`, "Duration loyalty discount percentage"],
+                    ["Duration Discount Amount", "=B10*B11", "Total savings from duration discount"],
+                    ["Concession Discount Amount", `=IF(ISNUMBER(SEARCH("Senior", E4)), (B10-B12)*0.15, IF(ISNUMBER(SEARCH("Socio", E4)), (B10-B12)*0.30, IF(ISNUMBER(SEARCH("Override", E4)), MAX(0, (B10-B12) - F4), 0)))`, "Compassionate, Senior, or Override concession"],
+                    ["Medicine Add-ons", "=G4", "Medicine charges and dynamic add-on scripts"],
+                    ["Total Program Cost", "=B10-B12-B13+B14", "Final package cost taking all factors into consideration"]
+                  ]
+                },
+                {
                   range: "'Treatment Planner'!B16",
                   values: [
                     [data.receivedAmount !== undefined ? data.receivedAmount : data.finalPrice]
                   ]
                 },
                 {
-                  range: "'Finance'!A9:C9",
+                  range: "'Treatment Planner'!A17:C17",
                   values: [
-                    [today, `${resolvedCareLevel} - Initial Package Setup`, `Tx-Plan-${data.id}`]
+                    ["Balance Due", "=B15-B16", "Outstanding dues for this treatment plan"]
+                  ]
+                },
+                {
+                  range: "'Treatment Planner'!A19:B19",
+                  values: [
+                    ["WhatsApp Invoice Message", `="Dear " & 'Case Taking'!B4 & ", thank you for consulting Homeo Healthcare. Your treatment package is: " & A4 & " (" & IF(D4=1, "1 condition", D4 & " conditions") & ", " & C4 & " " & IF(B4="Weekly", IF(C4=1, "week", "weeks"), IF(C4=1, "month", "months")) & IF(E4="None", "", " [" & E4 & "]") & "). Total Cost: ₹" & TEXT(B15, "#,##0") & ". Balance Due: ₹" & TEXT(B17, "#,##0") & ". Please pay using Gpay: 8446056789. Clinic Branch: Homeo Healthcare."`]
+                  ]
+                },
+                {
+                  range: "'Finance'!A9:H9",
+                  values: [
+                    [today, `${resolvedCareLevel} - Initial Package Setup`, `Tx-Plan-${data.id}`, "='Treatment Planner'!B15", "='Treatment Planner'!B16", "=D9-E9", "UPI", `=IF(F9<=0, "PAID", IF(E9>0, "PARTIALLY PAID", "UNPAID"))`]
                   ]
                 },
                 {
@@ -425,6 +450,115 @@ export async function createPatientClinicalSheet(
                   values: [
                     [`https://drive.google.com/drive/folders/${folderId}`],
                     [`https://drive.google.com/drive/folders/${folderId}`]
+                  ]
+                },
+                {
+                  range: "'Case Taking'!B24:B29",
+                  values: [
+                    [""],
+                    [""],
+                    [""],
+                    [""],
+                    [""],
+                    [""]
+                  ]
+                },
+                {
+                  range: "'Case Taking'!B31:B36",
+                  values: [
+                    [""],
+                    [""],
+                    [""],
+                    [""],
+                    [""],
+                    [""]
+                  ]
+                },
+                {
+                  range: "'Case Taking'!B38:B39",
+                  values: [
+                    [""],
+                    [""]
+                  ]
+                },
+                {
+                  range: "'Case Taking'!B47:B51",
+                  values: [
+                    [""],
+                    [""],
+                    [""],
+                    [""],
+                    [""]
+                  ]
+                },
+                {
+                  range: "'Repertorization'!A4:O12",
+                  values: Array(9).fill(null).map(() => Array(15).fill(""))
+                },
+                {
+                  range: "'Repertorization'!P4:P12",
+                  values: [
+                    ["=IF(D4=\"\", \"\", D4*SUM(E4:O4))"],
+                    ["=IF(D5=\"\", \"\", D5*SUM(E5:O5))"],
+                    ["=IF(D6=\"\", \"\", D6*SUM(E6:O6))"],
+                    ["=IF(D7=\"\", \"\", D7*SUM(E7:O7))"],
+                    ["=IF(D8=\"\", \"\", D8*SUM(E8:O8))"],
+                    ["=IF(D9=\"\", \"\", D9*SUM(E9:O9))"],
+                    ["=IF(D10=\"\", \"\", D10*SUM(E10:O10))"],
+                    ["=IF(D11=\"\", \"\", D11*SUM(E11:O11))"],
+                    ["=IF(D12=\"\", \"\", D12*SUM(E12:O12))"]
+                  ]
+                },
+                {
+                  range: "'Repertorization'!E16:O18",
+                  values: [
+                    [
+                      "=COUNTIFS(E4:E12, \">0\") / MAX(1, COUNTA($D$4:$D$12))",
+                      "=COUNTIFS(F4:F12, \">0\") / MAX(1, COUNTA($D$4:$D$12))",
+                      "=COUNTIFS(G4:G12, \">0\") / MAX(1, COUNTA($D$4:$D$12))",
+                      "=COUNTIFS(H4:H12, \">0\") / MAX(1, COUNTA($D$4:$D$12))",
+                      "=COUNTIFS(I4:I12, \">0\") / MAX(1, COUNTA($D$4:$D$12))",
+                      "=COUNTIFS(J4:J12, \">0\") / MAX(1, COUNTA($D$4:$D$12))",
+                      "=COUNTIFS(K4:K12, \">0\") / MAX(1, COUNTA($D$4:$D$12))",
+                      "=COUNTIFS(L4:L12, \">0\") / MAX(1, COUNTA($D$4:$D$12))",
+                      "=COUNTIFS(M4:M12, \">0\") / MAX(1, COUNTA($D$4:$D$12))",
+                      "=COUNTIFS(N4:N12, \">0\") / MAX(1, COUNTA($D$4:$D$12))",
+                      "=COUNTIFS(O4:O12, \">0\") / MAX(1, COUNTA($D$4:$D$12))"
+                    ],
+                    [
+                      "=SUMPRODUCT(E4:E12, $D$4:$D$12)",
+                      "=SUMPRODUCT(F4:F12, $D$4:$D$12)",
+                      "=SUMPRODUCT(G4:G12, $D$4:$D$12)",
+                      "=SUMPRODUCT(H4:H12, $D$4:$D$12)",
+                      "=SUMPRODUCT(I4:I12, $D$4:$D$12)",
+                      "=SUMPRODUCT(J4:J12, $D$4:$D$12)",
+                      "=SUMPRODUCT(K4:K12, $D$4:$D$12)",
+                      "=SUMPRODUCT(L4:L12, $D$4:$D$12)",
+                      "=SUMPRODUCT(M4:M12, $D$4:$D$12)",
+                      "=SUMPRODUCT(N4:N12, $D$4:$D$12)",
+                      "=SUMPRODUCT(O4:O12, $D$4:$D$12)"
+                    ],
+                    [
+                      "=(E16*100) + E17",
+                      "=(F16*100) + F17",
+                      "=(G16*100) + G17",
+                      "=(H16*100) + H17",
+                      "=(I16*100) + I17",
+                      "=(J16*100) + J17",
+                      "=(K16*100) + K17",
+                      "=(L16*100) + L17",
+                      "=(M16*100) + M17",
+                      "=(N16*100) + N17",
+                      "=(O16*100) + O17"
+                    ]
+                  ]
+                },
+                {
+                  range: "'Repertorization'!A16:D18",
+                  values: [
+                    ["Rank 1", `=IF(D16>0, INDEX($E$3:$O$3, MATCH(D16, E18:O18, 0)), "N/A")`, "Score", "=MAX(E18:O18)"],
+                    ["Rank 2", `=IF(D17>0, INDEX($E$3:$O$3, MATCH(D17, E18:O18, 0)), "N/A")`, "Score", "=IFERROR(LARGE(E18:O18, 2), 0)"],
+                    ["Rank 3", `=IF(D18>0, INDEX($E$3:$O$3, MATCH(D18, E18:O18, 0)), "N/A")`, "Score", "=IFERROR(LARGE(E18:O18, 3), 0)"]
                   ]
                 }
               ]
@@ -661,9 +795,9 @@ export async function createPatientClinicalSheet(
             "=(O16*100) + O17", ""],
           ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
           ["Top Remedy Ranking", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
-          ["Rank 1", "=INDEX($E$3:$O$3, MATCH(MAX(E18:O18), E18:O18, 0))", "Score", "=MAX(E18:O18)", "", "", "", "", "", "", "", "", "", "", "", ""],
-          ["Rank 2", "=INDEX($E$3:$O$3, MATCH(LARGE(E18:O18, 2), E18:O18, 0))", "Score", "=LARGE(E18:O18, 2)", "", "", "", "", "", "", "", "", "", "", "", ""],
-          ["Rank 3", "=INDEX($E$3:$O$3, MATCH(LARGE(E18:O18, 3), E18:O18, 0))", "Score", "=LARGE(E18:O18, 3)", "", "", "", "", "", "", "", "", "", "", "", ""]
+          ["Rank 1", `=IF(D21>0, INDEX($E$3:$O$3, MATCH(D21, E18:O18, 0)), "N/A")`, "Score", "=MAX(E18:O18)", "", "", "", "", "", "", "", "", "", "", "", ""],
+          ["Rank 2", `=IF(D22>0, INDEX($E$3:$O$3, MATCH(D22, E18:O18, 0)), "N/A")`, "Score", "=IFERROR(LARGE(E18:O18, 2), 0)", "", "", "", "", "", "", "", "", "", "", "", ""],
+          ["Rank 3", `=IF(D23>0, INDEX($E$3:$O$3, MATCH(D23, E18:O18, 0)), "N/A")`, "Score", "=IFERROR(LARGE(E18:O18, 3), 0)", "", "", "", "", "", "", "", "", "", "", "", ""]
         ];
 
         // Normalize and map inputs to align with mock and premium options
@@ -716,7 +850,7 @@ export async function createPatientClinicalSheet(
           ["Amount Received", data.receivedAmount !== undefined ? data.receivedAmount : data.finalPrice, "Amount collected from patient for this plan", "", "", "", ""],
           ["Balance Due", "=B15-B16", "Outstanding dues for this treatment plan", "", "", "", ""],
           ["", "", "", "", "", "", ""],
-          ["WhatsApp Invoice Message", `="Dear " & 'Case Taking'!B4 & ", thank you for consulting Homeo Healthcare. Your treatment package is: " & A4 & " (" & IF(D4=1, "1 condition", D4 & " conditions") & ", " & C4 & " " & IF(B4="Weekly", IF(C4=1, "week", "weeks"), IF(C4=1, "month", "months")) & IF(E4="None", "", " [" & E4 & "]") & "). Total Cost: ₹" & TEXT(B15, "#,##0") & ". Balance Due: ₹" & TEXT(B17, "#,##0") & ". Please pay using UPI: narayan.jethwani@homeo.healthcare. Clinic Branch: Baner, Pune."`, "", "", "", "", ""]
+          ["WhatsApp Invoice Message", `="Dear " & 'Case Taking'!B4 & ", thank you for consulting Homeo Healthcare. Your treatment package is: " & A4 & " (" & IF(D4=1, "1 condition", D4 & " conditions") & ", " & C4 & " " & IF(B4="Weekly", IF(C4=1, "week", "weeks"), IF(C4=1, "month", "months")) & IF(E4="None", "", " [" & E4 & "]") & "). Total Cost: ₹" & TEXT(B15, "#,##0") & ". Balance Due: ₹" & TEXT(B17, "#,##0") & ". Please pay using Gpay: 8446056789. Clinic Branch: Homeo Healthcare."`, "", "", "", "", ""]
         ];
 
         // values for Finance
