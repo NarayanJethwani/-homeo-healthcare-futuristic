@@ -791,9 +791,47 @@ export default function HealthIntelligencePage() {
     if (!textToSend.trim()) return;
 
     const userMsg = { sender: "user" as const, text: textToSend };
+    setTopInput("");
+
+    // Check if it's a WhatsApp action
+    const isWhatsAppAction = 
+      textToSend.startsWith("Remind Me") ||
+      textToSend.startsWith("Track ") ||
+      textToSend.startsWith("Send ") ||
+      textToSend.startsWith("Request ") ||
+      textToSend === "Book Consultation";
+
+    if (isWhatsAppAction) {
+      let waMessage = `Hello Dr. Jethwani, I am checking in from the Homeo Healthcare Health Intelligence Portal.\n\n`;
+      waMessage += `Action Request: *${textToSend}*\n\n`;
+      waMessage += `My Health Profile Summary:\n`;
+      waMessage += `- Overall Health Score: ${digitalTwin.overallScore}%\n`;
+      if (digitalTwin.biologicalAge) {
+        waMessage += `- Biological Age: ${digitalTwin.biologicalAge.bioAge} years (Chronological: ${digitalTwin.biologicalAge.chronologicalAge})\n`;
+      }
+      
+      const lastAssessments = Object.keys(digitalTwin.completedAssessments || {});
+      if (lastAssessments.length > 0) {
+        waMessage += `- Active Assessments: ${lastAssessments.join(", ")}\n`;
+      }
+      
+      const waLink = `https://wa.me/918446056789?text=${encodeURIComponent(waMessage)}`;
+      window.open(waLink, "_blank");
+      
+      setTopMessages(prev => [
+        ...prev, 
+        userMsg, 
+        { 
+          sender: "assistant" as const, 
+          text: `📱 **WhatsApp Continuity Triggered:**\nI've prepared your request for *"${textToSend}"* and opened a secure WhatsApp chat with Dr. Jethwani. You can continue our conversation directly on WhatsApp now! 🍃` 
+        }
+      ]);
+      setIsTopTyping(false);
+      return;
+    }
+
     const newMsgs = [...topMessages, userMsg];
     setTopMessages(newMsgs);
-    setTopInput("");
     setIsTopTyping(true);
 
     try {
