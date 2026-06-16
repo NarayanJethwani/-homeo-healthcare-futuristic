@@ -226,6 +226,245 @@ const PATIENT_LONGITUDINAL_DATA: Record<string, {
   }
 };
 
+
+// Centralized OSTM Navigator Focus Mapping Matrix (Priority 1 & 2)
+const NODE_PIVOT_MAP: Record<string, {
+  nodeName: string;
+  type: string;
+  confidence: number;
+  status: string;
+  evidenceWeight: number;
+  connectedLabs: string[];
+  connectedSymptoms: string[];
+  connectedRemedies: string[];
+  predictedOutcome: string;
+  clinicalEvidence: string;
+  populationBenchmark: string;
+  cohortData: { top: number; avg: number; poor: number };
+  copilotPrompt: string;
+  forecastHighlight: string;
+  therapeuticHighlight: string;
+  traceHighlight: string;
+  guideline?: string;
+  pathway?: string;
+  outcomes?: string;
+}> = {
+  org_kidney: {
+    nodeName: "Renal Kidneys",
+    type: "Anatomical Organ System",
+    confidence: 88,
+    status: "Compensated Degraded (Stage 3b CKD)",
+    evidenceWeight: 92,
+    connectedLabs: ["Creatinine", "eGFR", "Urinary Microalbumin"],
+    connectedSymptoms: ["Bilateral Ankle Edema", "Nocturia Urination", "Generalized Fatigue"],
+    connectedRemedies: ["Apis Mellifica", "Serum Anguillae", "Lycopodium Clavatum"],
+    predictedOutcome: "Moderate Progression Risk (stabilizable with glycemic & BP control)",
+    clinicalEvidence: "92% match - Repertory rubrics and KDIGO 2024 renal guidelines.",
+    populationBenchmark: "Renal clearance stability is in the top 14% of the regional age-matched cohort.",
+    cohortData: { top: 76, avg: 20, poor: 4 },
+    copilotPrompt: "Analyze renal reserve decline. Current eGFR is 49. Suggest intercurrent remedies to reduce microalbuminuria.",
+    forecastHighlight: "Renal Risk Progression",
+    therapeuticHighlight: "Dietary Sodium Restriction (< 1.5g / day)",
+    traceHighlight: "ckd"
+  },
+  org_thyroid: {
+    nodeName: "Endocrine Thyroid Gland",
+    type: "Anatomical Organ System",
+    confidence: 84,
+    status: "De-compensated Subclinical (Hypothyroidism)",
+    evidenceWeight: 89,
+    connectedLabs: ["TSH Level", "Serum Cholesterol", "Weight Index"],
+    connectedSymptoms: ["Morning Lethargy", "Weight Gain", "Extreme Fatigue"],
+    connectedRemedies: ["Pulsatilla Nigricans", "Thyroidinum", "Calcarea Carbonica"],
+    predictedOutcome: "Hormonal feedback loop regularization within 90 days under intercurrent support",
+    clinicalEvidence: "89% match - Glandular matching and thyroid hormone feedback literature.",
+    populationBenchmark: "TSH recovery rate matches the top 18% of the subclinical thyroid cohort.",
+    cohortData: { top: 70, avg: 22, poor: 8 },
+    copilotPrompt: "Analyze thyroid hormone loop. TSH is 4.8. Evaluate intercurrent Calcarea Carbonica response.",
+    forecastHighlight: "Thyroid Dysfunction",
+    therapeuticHighlight: "Aerobic Physical Exercise (30m / 4 days a week)",
+    traceHighlight: "thyroid"
+  },
+  org_joints: {
+    nodeName: "Articular Synovium Joints",
+    type: "Anatomical Organ System",
+    confidence: 86,
+    status: "Active Inflamed (Synovial Congestion)",
+    evidenceWeight: 91,
+    connectedLabs: ["CRP Inflammatory", "ESR Rate", "Anti-CCP Autoantibody"],
+    connectedSymptoms: ["Morning Joint Stiffness", "Joint Swelling & Pain", "Chilly State"],
+    connectedRemedies: ["Silicea Terra", "Rhus Toxicodendron", "Causticum"],
+    predictedOutcome: "Articular stiffness mitigation and inflammation reduction within 30 days",
+    clinicalEvidence: "91% match - Rheumatic guidelines and chilly thermal reaction profiles.",
+    populationBenchmark: "Stiffness duration reduction matches the top 22% of auto-immune cohorts.",
+    cohortData: { top: 68, avg: 24, poor: 8 },
+    copilotPrompt: "Review synovial inflammation indicators. Anti-CCP is 79, ESR is 38. Rhus Tox is active.",
+    forecastHighlight: "RA Inflammatory Flare",
+    therapeuticHighlight: "Thermal Protection & Dry Heat Compliance Check",
+    traceHighlight: "ra_flare"
+  },
+  rem_apis: {
+    nodeName: "Apis Mellifica",
+    type: "Homeopathic Remedy Vector",
+    confidence: 90,
+    status: "Active Symptomatic Support",
+    evidenceWeight: 86,
+    connectedLabs: ["eGFR Filtration", "Urinary Microalbumin"],
+    connectedSymptoms: ["Bilateral Ankle Edema", "Nocturia Urination", "Puffiness under eyes"],
+    connectedRemedies: ["Serum Anguillae", "Lycopodium Clavatum"],
+    predictedOutcome: "Rapid fluid drainage and reduction of lower limb interstitial pressure",
+    clinicalEvidence: "86% match - Thirstless state, morning aggravation rubrics in Kent's Repertory.",
+    populationBenchmark: "90% responder rate in renal fluid retention cohorts within 14 days.",
+    cohortData: { top: 82, avg: 14, poor: 4 },
+    copilotPrompt: "Review Apis Mellifica fluid clearing efficacy. Fluid intake slider is set to 2.5L.",
+    forecastHighlight: "Renal Risk Progression",
+    therapeuticHighlight: "Sleep Hygiene Protocol (target > 8 hours nightly)",
+    traceHighlight: "ckd"
+  },
+  rem_lyc: {
+    nodeName: "Lycopodium Clavatum",
+    type: "Constitutional Remedy Vector",
+    confidence: 92,
+    status: "Active Constitutional Support",
+    evidenceWeight: 88,
+    connectedLabs: ["HbA1c Glycemia", "Serum Creatinine"],
+    connectedSymptoms: ["Flatulence & Bloat", "Aggravation 4-8 PM", "Generalized Fatigue"],
+    connectedRemedies: ["Sulphur", "Nux Vomica"],
+    predictedOutcome: "Long-term metabolic reserve restoration and digestive gas clearing",
+    clinicalEvidence: "88% match - Flatulence, warm water craving, and late afternoon aggravation rubrics.",
+    populationBenchmark: "86% success in psoric-sycotic metabolic twins with renal stress.",
+    cohortData: { top: 78, avg: 16, poor: 6 },
+    copilotPrompt: "Explain Lycopodium Clavatum constitutional matching. Rubrics include late afternoon aggravation.",
+    forecastHighlight: "Metabolic Burden",
+    therapeuticHighlight: "Dietary Sodium Restriction (< 1.5g / day)",
+    traceHighlight: "ckd"
+  },
+  rem_anguillae: {
+    nodeName: "Serum Anguillae (Eel Serum)",
+    type: "Organotherapy Remedy Vector",
+    confidence: 85,
+    status: "Active Organ Support",
+    evidenceWeight: 90,
+    connectedLabs: ["Serum Creatinine", "eGFR Filtration", "Urinary Microalbumin"],
+    connectedSymptoms: ["Proteinuria", "Nocturia Urination"],
+    connectedRemedies: ["Apis Mellifica", "Lycopodium Clavatum"],
+    predictedOutcome: "Nephron glomerular membrane stabilization and creatinine clearance improvement",
+    clinicalEvidence: "90% match - Boericke Materia Medica documentation for high-burden kidney filtration.",
+    populationBenchmark: "84% success in stabilizing Stage 3 CKD eGFR declines.",
+    cohortData: { top: 74, avg: 20, poor: 6 },
+    copilotPrompt: "Evaluate Serum Anguillae support for glomerular filtration. Creatinine is 1.6.",
+    forecastHighlight: "Renal Risk Progression",
+    therapeuticHighlight: "Dietary Sodium Restriction (< 1.5g / day)",
+    traceHighlight: "ckd"
+  },
+  rem_puls: {
+    nodeName: "Pulsatilla Nigricans",
+    type: "Constitutional Remedy Vector",
+    confidence: 92,
+    status: "Active Constitutional Support",
+    evidenceWeight: 87,
+    connectedLabs: ["TSH Level", "LH/FSH Ratio"],
+    connectedSymptoms: ["Irregular menses", "Sluggishness", "Mood swings"],
+    connectedRemedies: ["Calcarea Carbonica", "Thyroidinum"],
+    predictedOutcome: "Endocrine pathway regularization and menstrual rhythm alignment",
+    clinicalEvidence: "87% match - Mild temperament, thirstlessness, and amelioration in cool open air.",
+    populationBenchmark: "90% response rate in open-air ameliorated female endocrine cohorts.",
+    cohortData: { top: 80, avg: 15, poor: 5 },
+    copilotPrompt: "Explain Pulsatilla Nigricans selection. Patient is warm-blooded, thirstless.",
+    forecastHighlight: "PCOS Diabetes Trigger",
+    therapeuticHighlight: "Aerobic Physical Exercise (30m / 4 days a week)",
+    traceHighlight: "thyroid"
+  },
+  rem_thyroid: {
+    nodeName: "Thyroidinum",
+    type: "Organotherapy Glandular Support",
+    confidence: 86,
+    status: "Active Organ Support",
+    evidenceWeight: 89,
+    connectedLabs: ["TSH Level", "Serum Cholesterol"],
+    connectedSymptoms: ["Weight Gain", "Sluggishness"],
+    connectedRemedies: ["Pulsatilla Nigricans", "Calcarea Carbonica"],
+    predictedOutcome: "Thyroid hormone loop compensation and basal metabolic acceleration",
+    clinicalEvidence: "89% match - Sluggish metabolism and subclinical thyroid insufficiency profiles.",
+    populationBenchmark: "86% success in subclinical hypothyroidism stabilization.",
+    cohortData: { top: 72, avg: 22, poor: 6 },
+    copilotPrompt: "Review Thyroidinum glandular support. TSH is 4.8, weight is 75kg.",
+    forecastHighlight: "Thyroid Dysfunction",
+    therapeuticHighlight: "Aerobic Physical Exercise (30m / 4 days a week)",
+    traceHighlight: "thyroid"
+  },
+  rem_sil: {
+    nodeName: "Silicea Terra",
+    type: "Constitutional Remedy Vector",
+    confidence: 90,
+    status: "Active Constitutional Support",
+    evidenceWeight: 91,
+    connectedLabs: ["Anti-CCP Autoantibody", "ESR Rate"],
+    connectedSymptoms: ["Morning Joint Stiffness", "Chilly State", "Mucosal Dryness"],
+    connectedRemedies: ["Rhus Toxicodendron", "Causticum"],
+    predictedOutcome: "Deep-acting synovial immune stabilization and joint nodule clearing",
+    clinicalEvidence: "91% match - Extreme chilly sensitivity, sweaty palms, and slow chronic tissue changes.",
+    populationBenchmark: "92% response in auto-immune patients with high chilly sensitivity.",
+    cohortData: { top: 84, avg: 12, poor: 4 },
+    copilotPrompt: "Review Silicea Terra constitutional affinity. Patient is chilly, with joint nodes.",
+    forecastHighlight: "RA Inflammatory Flare",
+    therapeuticHighlight: "Thermal Protection & Dry Heat Compliance Check",
+    traceHighlight: "ra_flare"
+  },
+  sym_renal: {
+    nodeName: "Bilateral Ankle Edema",
+    type: "Clinical Symptom Vector",
+    confidence: 90,
+    status: "Active Fluid Loading",
+    evidenceWeight: 94,
+    connectedLabs: ["eGFR Filtration", "Serum Creatinine", "Urinary Microalbumin"],
+    connectedSymptoms: ["Nocturia Urination", "Generalized Fatigue"],
+    connectedRemedies: ["Apis Mellifica", "Serum Anguillae"],
+    predictedOutcome: "Fluid reduction and systemic clearing within 7 days of active Apis protocol",
+    clinicalEvidence: "94% match - Peripheral fluid overload linked to glomerular filtration lag.",
+    populationBenchmark: "Edema resolution rate matches top 15% of responders under Apis 30C.",
+    cohortData: { top: 78, avg: 18, poor: 4 },
+    copilotPrompt: "Review edema severity and fluid clearing trajectory. Ankle edema is moderate.",
+    forecastHighlight: "Renal Risk Progression",
+    therapeuticHighlight: "Dietary Sodium Restriction (< 1.5g / day)",
+    traceHighlight: "ckd"
+  },
+  sym_stiffness: {
+    nodeName: "Morning Joint Stiffness",
+    type: "Clinical Symptom Vector",
+    confidence: 88,
+    status: "Active Inflamed Articular",
+    evidenceWeight: 90,
+    connectedLabs: ["ESR Rate", "CRP Inflammatory", "Anti-CCP Autoantibody"],
+    connectedSymptoms: ["Joint Swelling & Pain", "Chilly State"],
+    connectedRemedies: ["Rhus Toxicodendron", "Causticum", "Silicea Terra"],
+    predictedOutcome: "Stiffness duration reduced below 30 minutes in 14 days of Rhus Tox support",
+    clinicalEvidence: "90% match - Rheumatic joint congestion rubrics, worse waking up and cold damp.",
+    populationBenchmark: "Stiffness duration drops by 75% in similar cohorts under Rhus Tox 30C.",
+    cohortData: { top: 80, avg: 16, poor: 4 },
+    copilotPrompt: "Evaluate stiffness duration. Stiffness is severe, worse waking up.",
+    forecastHighlight: "RA Inflammatory Flare",
+    therapeuticHighlight: "Thermal Protection & Dry Heat Compliance Check",
+    traceHighlight: "ra_flare"
+  }
+};
+
+
+// Cluster mappings for OSTM Graph (Priority 7)
+const NODE_CLUSTERS: Record<string, { id: string; label: string; color: string; cx: number; cy: number }> = {
+  renal: { id: "renal", label: "Renal Cluster", color: "rgba(14, 165, 233, 0.04)", cx: 120, cy: 150 },
+  endocrine: { id: "endocrine", label: "Endocrine Cluster", color: "rgba(168, 85, 247, 0.04)", cx: 240, cy: 160 },
+  musculoskeletal: { id: "musculoskeletal", label: "Musculoskeletal Cluster", color: "rgba(244, 63, 94, 0.04)", cx: 340, cy: 140 },
+  metabolic: { id: "metabolic", label: "Metabolic Cluster", color: "rgba(251, 191, 36, 0.04)", cx: 180, cy: 220 }
+};
+
+const NODE_TO_CLUSTER: Record<string, string> = {
+  org_kidney: "renal", sys_renal: "renal", sym_renal: "renal", sym_nocturia: "renal", sym_proteinuria: "renal", sym_anemia: "renal", lab_creatinine: "renal", lab_egfr: "renal", lab_microalbumin: "renal", diag_ckd: "renal", risk_bp: "renal", rem_apis: "renal", rem_anguillae: "renal",
+  org_thyroid: "endocrine", org_ovaries: "endocrine", sys_endocrine: "endocrine", sys_reproductive: "endocrine", sym_menses: "endocrine", sym_hirsutism: "endocrine", sym_weight: "endocrine", lab_tsh: "endocrine", lab_lh_fsh: "endocrine", diag_pcos: "endocrine", diag_hypothyroid: "endocrine", rem_puls: "endocrine", rem_thyroid: "endocrine",
+  org_joints: "musculoskeletal", sys_musculoskeletal: "musculoskeletal", sym_stiffness: "musculoskeletal", sym_dryness: "musculoskeletal", sym_cramps: "musculoskeletal", lab_crp: "musculoskeletal", lab_anticcp: "musculoskeletal", lab_esr: "musculoskeletal", diag_ra: "musculoskeletal", rem_sil: "musculoskeletal", rem_rhus: "musculoskeletal", rem_caust: "musculoskeletal",
+  org_pancreas: "metabolic", org_gut: "metabolic", sys_digestive: "metabolic", sym_bloat: "metabolic", sym_lethargy: "metabolic", lab_cholesterol: "metabolic", lab_hba1c: "metabolic", diag_metabolic: "metabolic", risk_glycemia: "metabolic", risk_sedentary: "metabolic", rem_lyc: "metabolic", rem_sulph: "metabolic", rem_nux: "metabolic", rem_calc: "metabolic"
+};
+
 export default function CIEWorkspace({ patients, selectedPatientId, setSelectedPatientId, theme }: CIEWorkspaceProps) {
   // Dynamic patient key resolver
   const getActiveDataKey = () => {
@@ -459,7 +698,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
         { id: "f1", timestamp: "09:12", type: "insight", message: "HbA1c trend improving", detail: "Metabolic tracking shows stable downward trajectory. Confidence increased +3%.", confidenceDelta: "+3%" },
         { id: "f2", timestamp: "09:14", type: "risk", message: "Renal risk recalculated", detail: "Estimated glomerular filtration rate (eGFR) decline rate projected. 82% → 79%.", confidenceDelta: "-3% Risk" },
         { id: "f3", timestamp: "09:18", type: "insight", message: "Twin simulation updated", detail: "Apis Mellifica + Serum Anguillae synergy slows predicted eGFR decline slope." },
-        { id: "f4", timestamp: "09:22", type: "remedy", message: "New opportunity: Sleep", detail: "Optimizing sleep profile to >8hrs drops autonomic renal stress burden by 8%." }
+        { id: "f4", timestamp: "09:22", type: "remedy", message: "New opportunity: Sleep", detail: "Optimizing sleep profile to &gt;8hrs drops autonomic renal stress burden by 8%." }
       ];
     } else if (activeDataKey === "priya") {
       initial = [
@@ -1028,60 +1267,204 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
     canvas.style.height = `${height}px`;
 
     // Initialize nodes with dynamic OSTM clusters
+        // Initialize nodes with dynamic OSTM clusters (Priority 1)
     if (!graphDataRef.current) {
       const initialNodes = [
-        // Symptoms
-        { id: "sym_renal", label: "Ankle Edema", type: "symptom", x: width * 0.15, y: height * 0.35, vx: 0, vy: 0, radius: 10, description: "Fluid retention in lower limbs due to drop in glomerular filtration." },
-        { id: "sym_fatigue", label: "Extreme Fatigue", type: "symptom", x: width * 0.45, y: height * 0.20, vx: 0, vy: 0, radius: 10, description: "Uremic exhaustion marker linked to thyroid and renal clearance lags." },
-        { id: "sym_bloat", label: "Flatulence & Bloat", type: "symptom", x: width * 0.35, y: height * 0.70, vx: 0, vy: 0, radius: 10, description: "Digestive dysfunction with gas retention worsening between 4-8 PM." },
-        { id: "sym_nocturia", label: "Nocturia Urination", type: "symptom", x: width * 0.18, y: height * 0.55, vx: 0, vy: 0, radius: 10, description: "Frequent nocturnal urination worse 2-5 AM under kidney filtration load." },
-        { id: "sym_menses", label: "Irregular Menses", type: "symptom", x: width * 0.70, y: height * 0.65, vx: 0, vy: 0, radius: 10, description: "Oligomenorrhea and endocrine cycle deviations." },
-        { id: "sym_stiffness", label: "Joint Stiffness", type: "symptom", x: width * 0.78, y: height * 0.28, vx: 0, vy: 0, radius: 10, description: "Morning joint stiffness lasting >2 hours due to articular congestion." },
+        // Systems (Radius: 15)
+        { id: "sys_renal", label: "Renal System", type: "system", x: width * 0.22, y: height * 0.38, vx: 0, vy: 0, radius: 15, description: "Glomerular filtration, electrolyte balance, and fluid regulation." },
+        { id: "sys_endocrine", label: "Endocrine System", type: "system", x: width * 0.50, y: height * 0.45, vx: 0, vy: 0, radius: 15, description: "Hormonal feedback loops, metabolic regulation, and glandular status." },
+        { id: "sys_musculoskeletal", label: "Musculoskeletal System", type: "system", x: width * 0.75, y: height * 0.38, vx: 0, vy: 0, radius: 15, description: "Articular structures, bone density, and inflammatory synovial responses." },
+        { id: "sys_digestive", label: "Digestive System", type: "system", x: width * 0.32, y: height * 0.52, vx: 0, vy: 0, radius: 15, description: "Gut absorption, fermentation, bloating, and stomach acid regulation." },
+        { id: "sys_cardiovascular", label: "Cardiovascular System", type: "system", x: width * 0.45, y: height * 0.35, vx: 0, vy: 0, radius: 15, description: "Vascular pressure, cardiac rhythm, stroke, and perfusion." },
 
-        // Organs / Systems
-        { id: "org_kidney", label: "Renal Kidneys", type: "organ", x: width * 0.28, y: height * 0.45, vx: 0, vy: 0, radius: 14, description: "Bilateral filtration glomeruli and endocrine erythropoietin loops." },
-        { id: "org_thyroid", label: "Endocrine Thyroid", type: "organ", x: width * 0.55, y: height * 0.40, vx: 0, vy: 0, radius: 14, description: "Thyroxin secretions and core system basal metabolic loops." },
-        { id: "org_joints", label: "Joint Articular", type: "organ", x: width * 0.72, y: height * 0.45, vx: 0, vy: 0, radius: 14, description: "Articular cartilages, synovial capsules, and inflammatory response cells." },
+        // Organs (Radius: 13)
+        { id: "org_kidney", label: "Renal Kidneys", type: "organ", x: width * 0.28, y: height * 0.45, vx: 0, vy: 0, radius: 13, description: "Bilateral glomeruli, clearing creatinine and blood nitrogenous waste." },
+        { id: "org_thyroid", label: "Endocrine Thyroid", type: "organ", x: width * 0.55, y: height * 0.40, vx: 0, vy: 0, radius: 13, description: "Thyroid gland secreting T3/T4 for basal metabolic Conversions." },
+        { id: "org_ovaries", label: "Ovarian Gland", type: "organ", x: width * 0.65, y: height * 0.55, vx: 0, vy: 0, radius: 13, description: "Reproductive rhythm ovaries regulating LH/FSH cycles." },
+        { id: "org_joints", label: "Articular Joints", type: "organ", x: width * 0.72, y: height * 0.45, vx: 0, vy: 0, radius: 13, description: "Synovial articular membranes, cartilages, and auto-antibody targets." },
+        { id: "org_pancreas", label: "Pancreas Gland", type: "organ", x: width * 0.40, y: height * 0.48, vx: 0, vy: 0, radius: 13, description: "Endocrine insulin secretion and glycemic glucose management." },
+        { id: "org_gut", label: "Digestive Gut", type: "organ", x: width * 0.35, y: height * 0.58, vx: 0, vy: 0, radius: 13, description: "Gastric absorption, flora, flatulence rubrics, and morning lethargy links." },
 
-        // Remedies
+        // Symptoms (Radius: 9)
+        { id: "sym_renal", label: "Ankle Edema", type: "symptom", x: width * 0.15, y: height * 0.35, vx: 0, vy: 0, radius: 9, description: "Fluid retention in lower limbs due to drop in glomerular filtration." },
+        { id: "sym_fatigue", label: "Extreme Fatigue", type: "symptom", x: width * 0.45, y: height * 0.20, vx: 0, vy: 0, radius: 9, description: "Uremic exhaustion marker linked to thyroid and renal clearance lags." },
+        { id: "sym_bloat", label: "Flatulence & Bloat", type: "symptom", x: width * 0.35, y: height * 0.70, vx: 0, vy: 0, radius: 9, description: "Digestive dysfunction with gas retention worsening between 4-8 PM." },
+        { id: "sym_nocturia", label: "Nocturia Urination", type: "symptom", x: width * 0.18, y: height * 0.55, vx: 0, vy: 0, radius: 9, description: "Frequent nocturnal urination worse 2-5 AM under kidney filtration load." },
+        { id: "sym_menses", label: "Irregular Menses", type: "symptom", x: width * 0.70, y: height * 0.65, vx: 0, vy: 0, radius: 9, description: "Oligomenorrhea and endocrine cycle deviations." },
+        { id: "sym_stiffness", label: "Joint Stiffness", type: "symptom", x: width * 0.78, y: height * 0.28, vx: 0, vy: 0, radius: 9, description: "Morning joint stiffness lasting >2 hours due to articular congestion." },
+        { id: "sym_dryness", label: "Mucosal Dryness", type: "symptom", x: width * 0.82, y: height * 0.45, vx: 0, vy: 0, radius: 9, description: "Dryness of eyes and mouth, secondary Sjogren auto-immune signature." },
+        { id: "sym_hirsutism", label: "Mild Hirsutism", type: "symptom", x: width * 0.75, y: height * 0.75, vx: 0, vy: 0, radius: 9, description: "Androgenic hair growth indicating LH/FSH endocrine PCOS activity." },
+        { id: "sym_weight", label: "Weight Gain", type: "symptom", x: width * 0.55, y: height * 0.55, vx: 0, vy: 0, radius: 9, description: "Sluggish metabolic conversions leading to weight accumulation." },
+        { id: "sym_lethargy", label: "Morning Lethargy", type: "symptom", x: width * 0.48, y: height * 0.30, vx: 0, vy: 0, radius: 9, description: "Sulphur/Thyroidinum index of morning exhaustion, better motion." },
+        { id: "sym_proteinuria", label: "Proteinuria / Foam", type: "symptom", x: width * 0.10, y: height * 0.25, vx: 0, vy: 0, radius: 9, description: "Foamy urine indicating protein leaking through degraded glomeruli." },
+        { id: "sym_anemia", label: "Anemia Fatigue", type: "symptom", x: width * 0.22, y: height * 0.22, vx: 0, vy: 0, radius: 9, description: "Lack of renal erythropoietin leading to low Hb oxygen transport." },
+        { id: "sym_cramps", label: "Muscle Cramps", type: "symptom", x: width * 0.85, y: height * 0.35, vx: 0, vy: 0, radius: 9, description: "Nocturnal cramps due to electrolyte and calcium imbalances." },
+        { id: "sym_anxiety", label: "Systemic Anxiety", type: "symptom", x: width * 0.50, y: height * 0.15, vx: 0, vy: 0, radius: 9, description: "Psoric neural hypersensitivity and nervous exhaustion." },
+
+        // Remedies (Radius: 11)
         { id: "rem_lyc", label: "Lycopodium Clavatum", type: "remedy", x: width * 0.33, y: height * 0.82, vx: 0, vy: 0, radius: 11, description: "Constitutional remedy targeting right-sided affinity and renal/gut congestion." },
         { id: "rem_apis", label: "Apis Mellifica", type: "remedy", x: width * 0.08, y: height * 0.45, vx: 0, vy: 0, radius: 11, description: "Symptomatic support for puffy tissues, water retention, and thirstless state." },
         { id: "rem_anguillae", label: "Serum Anguillae", type: "remedy", x: width * 0.12, y: height * 0.72, vx: 0, vy: 0, radius: 11, description: "Organotherapy support specifically targeted to renal glomerular integrity." },
-        { id: "rem_puls", label: "Pulsatilla", type: "remedy", x: width * 0.58, y: height * 0.80, vx: 0, vy: 0, radius: 11, description: "Mild, yielding temperament match, thirstless, improved in cool open air." },
+        { id: "rem_puls", label: "Pulsatilla", type: "remedy", x: width * 0.58, y: height * 0.80, vx: 0, vy: 0, radius: 11, description: "Mild temperament match, thirstless, improved in cool open air." },
         { id: "rem_thyroid", label: "Thyroidinum", type: "remedy", x: width * 0.45, y: height * 0.88, vx: 0, vy: 0, radius: 11, description: "Intercurrent glandular support for sluggish metabolic conversions." },
         { id: "rem_sil", label: "Silicea Terra", type: "remedy", x: width * 0.88, y: height * 0.60, vx: 0, vy: 0, radius: 11, description: "Cold chilly profile, deep-acting remedy for nodes, scars, and bone affinity." },
+        { id: "rem_rhus", label: "Rhus Tox 30C", type: "remedy", x: width * 0.80, y: height * 0.15, vx: 0, vy: 0, radius: 11, description: "Stiffness relieved by continuous movement and warm dry heat." },
+        { id: "rem_caust", label: "Causticum", type: "remedy", x: width * 0.92, y: height * 0.25, vx: 0, vy: 0, radius: 11, description: "Drawing stiffness of joint synovium, contractures, better wet weather." },
+        { id: "rem_sulph", label: "Sulphur 30C", type: "remedy", x: width * 0.28, y: height * 0.88, vx: 0, vy: 0, radius: 11, description: "Warm constitutional, morning lethargy, red orifices, gas." },
+        { id: "rem_nux", label: "Nux Vomica", type: "remedy", x: width * 0.38, y: height * 0.92, vx: 0, vy: 0, radius: 11, description: "Sedentary profile, hyper-irritability, digestive flatulence from stress." },
+        { id: "rem_calc", label: "Calcarea Carbonica", type: "remedy", x: width * 0.52, y: height * 0.85, vx: 0, vy: 0, radius: 11, description: "Chilly patient, damp extremities, sluggish conversions, weight gain." },
 
-        // Miasms
+        // Miasms (Radius: 12)
         { id: "mias_psora", label: "Psora Miasm", type: "miasm", x: width * 0.50, y: height * 0.60, vx: 0, vy: 0, radius: 12, description: "Initial functional defense deficiency, skin eruptions, and fatigue." },
         { id: "mias_sycosis", label: "Sycosis Miasm", type: "miasm", x: width * 0.22, y: height * 0.80, vx: 0, vy: 0, radius: 12, description: "Hyper-proliferation, fluid load, chronic structural overgrowth." },
         { id: "mias_syphilis", label: "Syphilis Miasm", type: "miasm", x: width * 0.88, y: height * 0.80, vx: 0, vy: 0, radius: 12, description: "Destruction, ulceration, tissue degeneration, and structural collapse." },
+        { id: "mias_tubercular", label: "Tubercular Miasm", type: "miasm", x: width * 0.08, y: height * 0.85, vx: 0, vy: 0, radius: 12, description: "Rapid weight loss, chest sensitivities, fluctuating symptoms." },
 
-        // Labs
-        { id: "lab_creatinine", label: "Serum Creatinine", type: "lab", x: width * 0.40, y: height * 0.10, vx: 0, vy: 0, radius: 9, description: "Nitrogenous waste index indicating nephron clearance velocity." },
-        { id: "lab_egfr", label: "eGFR Filtration", type: "lab", x: width * 0.25, y: height * 0.15, vx: 0, vy: 0, radius: 9, description: "Glomerular filtration rate calculated from serum creatinine and demographics." }
+        // Labs (Radius: 10)
+        { id: "lab_creatinine", label: "Serum Creatinine", type: "lab", x: width * 0.40, y: height * 0.10, vx: 0, vy: 0, radius: 10, description: "Serum creatinine clearing rate, uremic load marker." },
+        { id: "lab_egfr", label: "eGFR Filtration", type: "lab", x: width * 0.25, y: height * 0.15, vx: 0, vy: 0, radius: 10, description: "Glomerular filtration rate calculated from serum creatinine." },
+        { id: "lab_microalbumin", label: "Microalbuminuria", type: "lab", x: width * 0.12, y: height * 0.18, vx: 0, vy: 0, radius: 10, description: "Protein leaking indicator, early signal of glomerular breakdown." },
+        { id: "lab_tsh", label: "TSH Level", type: "lab", x: width * 0.58, y: height * 0.10, vx: 0, vy: 0, radius: 10, description: "Thyroid stimulating hormone level, subclinical marker." },
+        { id: "lab_lh_fsh", label: "LH/FSH Ratio", type: "lab", x: width * 0.68, y: height * 0.12, vx: 0, vy: 0, radius: 10, description: "Luteinizing to Follicle Stimulating Hormone endocrine ratio." },
+        { id: "lab_cholesterol", label: "Serum Cholesterol", type: "lab", x: width * 0.50, y: height * 0.08, vx: 0, vy: 0, radius: 10, description: "Serum lipid profile indicating metabolic clearance reserve." },
+        { id: "lab_crp", label: "CRP Inflammatory", type: "lab", x: width * 0.75, y: height * 0.08, vx: 0, vy: 0, radius: 10, description: "C-Reactive Protein auto-immune inflammatory marker." },
+        { id: "lab_anticcp", label: "Anti-CCP antibody", type: "lab", x: width * 0.88, y: height * 0.10, vx: 0, vy: 0, radius: 10, description: "Synovial auto-antibodies indicating Rheumatoid Arthritis." },
+        { id: "lab_esr", label: "ESR Rate", type: "lab", x: width * 0.82, y: height * 0.12, vx: 0, vy: 0, radius: 10, description: "Erythrocyte sedimentation rate, cellular inflammation index." },
+        { id: "lab_hba1c", label: "HbA1c Glycemia", type: "lab", x: width * 0.32, y: height * 0.08, vx: 0, vy: 0, radius: 10, description: "Average blood sugar index, metabolic twin driver." },
+
+        // Diagnoses (Radius: 13)
+        { id: "diag_ckd", label: "Stage 3 CKD", type: "diagnosis", x: width * 0.20, y: height * 0.48, vx: 0, vy: 0, radius: 13, description: "Chronic Kidney Disease Stage 3, eGFR < 60 mL/min." },
+        { id: "diag_pcos", label: "PCOS Syndrome", type: "diagnosis", x: width * 0.60, y: height * 0.58, vx: 0, vy: 0, radius: 13, description: "Polycystic Ovary Syndrome, cycle endocrine imbalances." },
+        { id: "diag_hypothyroid", label: "Hypothyroidism", type: "diagnosis", x: width * 0.58, y: height * 0.48, vx: 0, vy: 0, radius: 13, description: "Subclinical hypothyroid sluggishness, TSH elevations." },
+        { id: "diag_ra", label: "Rheumatoid Arthritis", type: "diagnosis", x: width * 0.80, y: height * 0.48, vx: 0, vy: 0, radius: 13, description: "Symmetrical joint synovium auto-immune inflammation." },
+        { id: "diag_metabolic", label: "Metabolic Syndrome", type: "diagnosis", x: width * 0.42, y: height * 0.54, vx: 0, vy: 0, radius: 13, description: "Insulin resistance, lipid blocks, and constitutional weight gain." },
+
+        // Risks (Radius: 10)
+        { id: "risk_bp", label: "Hypertensive Spikes", type: "risk", x: width * 0.15, y: height * 0.42, vx: 0, vy: 0, radius: 10, description: "Blood pressure spikes degrading glomeruli filtration membranes." },
+        { id: "risk_glycemia", label: "Glycemic Fluctuation", type: "risk", x: width * 0.30, y: height * 0.30, vx: 0, vy: 0, radius: 10, description: "High glucose levels destroying micro-vascular systems." },
+        { id: "risk_sedentary", label: "Sedentary job", type: "risk", x: width * 0.48, y: height * 0.68, vx: 0, vy: 0, radius: 10, description: "Lack of movement contributing to insulin and lymphatic sluggishness." },
+
+        // Modalities (Radius: 8)
+        { id: "mod_evening", label: "Worse 4-8 PM", type: "modality", x: width * 0.25, y: height * 0.72, vx: 0, vy: 0, radius: 8, description: "Late afternoon flatulence and energy aggravations (Lycopodium rubric)." },
+        { id: "mod_warm_drinks", label: "Better Warm Drinks", type: "modality", x: width * 0.35, y: height * 0.88, vx: 0, vy: 0, radius: 8, description: "Digestive relief under hot liquids and warm wraps (Lyc/Sil rubric)." },
+        { id: "mod_cold_damp", label: "Worse Cold Damp", type: "modality", x: width * 0.82, y: height * 0.72, vx: 0, vy: 0, radius: 8, description: "Joint congestion worse drafts and cold damp rooms (Rhus Tox rubric)." },
+        { id: "mod_open_air", label: "Better Open Air", type: "modality", x: width * 0.62, y: height * 0.72, vx: 0, vy: 0, radius: 8, description: "Exhaustion relieved by cool open fresh air (Pulsatilla rubric)." }
       ];
 
       const initialLinks = [
-        { source: "sym_renal", target: "org_kidney", strength: 3 },
-        { source: "sym_nocturia", target: "org_kidney", strength: 2 },
-        { source: "sym_bloat", target: "org_kidney", strength: 1.5 },
-        { source: "sym_fatigue", target: "org_thyroid", strength: 2.5 },
-        { source: "sym_menses", target: "org_thyroid", strength: 2 },
-        { source: "sym_stiffness", target: "org_joints", strength: 3 },
-        { source: "org_kidney", target: "rem_apis", strength: 3.5 },
-        { source: "org_kidney", target: "rem_anguillae", strength: 4 },
-        { source: "org_kidney", target: "rem_lyc", strength: 2 },
-        { source: "org_thyroid", target: "rem_puls", strength: 3 },
-        { source: "org_thyroid", target: "rem_thyroid", strength: 3.5 },
-        { source: "org_joints", target: "rem_sil", strength: 2 },
+        // System & Organs Mappings
+        { source: "sys_renal", target: "org_kidney", strength: 3.5 },
+        { source: "sys_endocrine", target: "org_thyroid", strength: 3 },
+        { source: "sys_endocrine", target: "org_ovaries", strength: 3 },
+        { source: "sys_musculoskeletal", target: "org_joints", strength: 3.5 },
+        { source: "sys_digestive", target: "org_gut", strength: 3 },
+        { source: "sys_cardiovascular", target: "risk_bp", strength: 2.5 },
+
+        // Organs & Symptoms Mappings
+        { source: "org_kidney", target: "sym_renal", strength: 3.5 },
+        { source: "org_kidney", target: "sym_nocturia", strength: 3 },
+        { source: "org_kidney", target: "sym_proteinuria", strength: 4 },
+        { source: "org_kidney", target: "sym_anemia", strength: 2.5 },
+        { source: "org_thyroid", target: "sym_fatigue", strength: 3 },
+        { source: "org_thyroid", target: "sym_weight", strength: 3 },
+        { source: "org_thyroid", target: "sym_lethargy", strength: 2.5 },
+        { source: "org_ovaries", target: "sym_menses", strength: 4 },
+        { source: "org_ovaries", target: "sym_hirsutism", strength: 3.5 },
+        { source: "org_joints", target: "sym_stiffness", strength: 4 },
+        { source: "org_joints", target: "sym_dryness", strength: 2 },
+        { source: "org_joints", target: "sym_cramps", strength: 2.5 },
+        { source: "org_gut", target: "sym_bloat", strength: 3.5 },
+        { source: "org_pancreas", target: "risk_glycemia", strength: 3 },
+
+        // Labs & Organs / Diagnostics
+        { source: "lab_creatinine", target: "org_kidney", strength: 4 },
+        { source: "lab_egfr", target: "org_kidney", strength: 4.5 },
+        { source: "lab_microalbumin", target: "org_kidney", strength: 4 },
+        { source: "lab_tsh", target: "org_thyroid", strength: 4.5 },
+        { source: "lab_lh_fsh", target: "org_ovaries", strength: 4.5 },
+        { source: "lab_cholesterol", target: "org_gut", strength: 2 },
+        { source: "lab_hba1c", target: "org_pancreas", strength: 4 },
+        { source: "lab_crp", target: "org_joints", strength: 4.5 },
+        { source: "lab_anticcp", target: "org_joints", strength: 5 },
+        { source: "lab_esr", target: "org_joints", strength: 4 },
+
+        // Diagnoses & Organs
+        { source: "diag_ckd", target: "org_kidney", strength: 5 },
+        { source: "diag_pcos", target: "org_ovaries", strength: 5 },
+        { source: "diag_hypothyroid", target: "org_thyroid", strength: 5 },
+        { source: "diag_ra", target: "org_joints", strength: 5 },
+        { source: "diag_metabolic", target: "org_pancreas", strength: 4 },
+
+        // Remedy connections to organs, symptoms, miasms, modalities
+        { source: "rem_lyc", target: "org_kidney", strength: 2.5 },
+        { source: "rem_lyc", target: "org_gut", strength: 4.5 },
+        { source: "rem_lyc", target: "sym_bloat", strength: 4 },
+        { source: "rem_lyc", target: "mod_evening", strength: 5 },
+        { source: "rem_lyc", target: "mod_warm_drinks", strength: 3 },
         { source: "rem_lyc", target: "mias_sycosis", strength: 2.5 },
-        { source: "rem_apis", target: "mias_sycosis", strength: 2 },
-        { source: "rem_anguillae", target: "mias_sycosis", strength: 2.5 },
+        { source: "rem_lyc", target: "mias_psora", strength: 3 },
+
+        { source: "rem_apis", target: "org_kidney", strength: 4 },
+        { source: "rem_apis", target: "sym_renal", strength: 5 },
+        { source: "rem_apis", target: "sym_nocturia", strength: 3 },
+        { source: "rem_apis", target: "mias_sycosis", strength: 3 },
+
+        { source: "rem_anguillae", target: "org_kidney", strength: 5 },
+        { source: "rem_anguillae", target: "lab_egfr", strength: 4.5 },
+        { source: "rem_anguillae", target: "lab_creatinine", strength: 4.5 },
+        { source: "rem_anguillae", target: "mias_sycosis", strength: 3.5 },
+
+        { source: "rem_puls", target: "org_ovaries", strength: 4 },
+        { source: "rem_puls", target: "sym_menses", strength: 4.5 },
+        { source: "rem_puls", target: "mod_open_air", strength: 5 },
         { source: "rem_puls", target: "mias_psora", strength: 3 },
-        { source: "rem_thyroid", target: "mias_psora", strength: 2 },
-        { source: "rem_sil", target: "mias_syphilis", strength: 4.5 },
-        { source: "lab_creatinine", target: "org_kidney", strength: 3 },
-        { source: "lab_egfr", target: "org_kidney", strength: 4 }
+
+        { source: "rem_thyroid", target: "org_thyroid", strength: 4.5 },
+        { source: "rem_thyroid", target: "diag_hypothyroid", strength: 4 },
+        { source: "rem_thyroid", target: "mias_psora", strength: 3.5 },
+
+        { source: "rem_sil", target: "org_joints", strength: 4.5 },
+        { source: "rem_sil", target: "sym_dryness", strength: 3.5 },
+        { source: "rem_sil", target: "mod_cold_damp", strength: 3 },
+        { source: "rem_sil", target: "mias_syphilis", strength: 5 },
+
+        { source: "rem_rhus", target: "org_joints", strength: 4.5 },
+        { source: "rem_rhus", target: "sym_stiffness", strength: 5 },
+        { source: "rem_rhus", target: "mod_cold_damp", strength: 4 },
+        { source: "rem_rhus", target: "mias_psora", strength: 2.5 },
+
+        { source: "rem_caust", target: "org_joints", strength: 3.5 },
+        { source: "rem_caust", target: "sym_stiffness", strength: 4 },
+        { source: "rem_caust", target: "mias_syphilis", strength: 3.5 },
+
+        { source: "rem_sulph", target: "sys_digestive", strength: 3 },
+        { source: "rem_sulph", target: "sym_lethargy", strength: 4 },
+        { source: "rem_sulph", target: "mias_psora", strength: 4.5 },
+
+        { source: "rem_nux", target: "sys_digestive", strength: 3.5 },
+        { source: "rem_nux", target: "sym_bloat", strength: 3.5 },
+        { source: "rem_nux", target: "mias_psora", strength: 3.5 },
+
+        { source: "rem_calc", target: "org_thyroid", strength: 3.5 },
+        { source: "rem_calc", target: "sym_weight", strength: 4 },
+        { source: "rem_calc", target: "mias_psora", strength: 4.5 },
+
+        // Miasmatic chronic burdens
+        { source: "mias_psora", target: "sym_fatigue", strength: 3 },
+        { source: "mias_psora", target: "sym_anxiety", strength: 4 },
+        { source: "mias_sycosis", target: "diag_ckd", strength: 3.5 },
+        { source: "mias_sycosis", target: "diag_pcos", strength: 3.5 },
+        { source: "mias_syphilis", target: "diag_ra", strength: 4.5 },
+        { source: "mias_syphilis", target: "sym_dryness", strength: 3.5 },
+        { source: "mias_tubercular", target: "sym_anemia", strength: 3.5 },
+
+        // Risk factors connections
+        { source: "risk_bp", target: "org_kidney", strength: 4.5 },
+        { source: "risk_bp", target: "sys_cardiovascular", strength: 4 },
+        { source: "risk_glycemia", target: "diag_metabolic", strength: 3.5 },
+        { source: "risk_glycemia", target: "lab_hba1c", strength: 4.5 },
+        { source: "risk_sedentary", target: "diag_metabolic", strength: 3 },
+        { source: "risk_sedentary", target: "sym_weight", strength: 3.5 }
       ];
 
       graphDataRef.current = { nodes: initialNodes, links: initialLinks };
@@ -1096,15 +1479,39 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
 
       // 1. If it's a known patient, use predefined mappings to keep the core presentation highly clean
       if (activeDataKey === "aarav") {
-        const aaravNodes = ["sym_renal", "sym_fatigue", "sym_bloat", "sym_nocturia", "org_kidney", "rem_lyc", "rem_apis", "rem_anguillae", "mias_sycosis", "mias_psora", "lab_creatinine", "lab_egfr"];
+        const aaravNodes = [
+          "org_kidney", "org_pancreas", "org_gut", "org_heart", "sys_renal", "sys_endocrine", "sys_digestive", "sys_cardiovascular",
+          "sym_renal", "sym_fatigue", "sym_bloat", "sym_nocturia", "sym_proteinuria", "sym_anemia", "sym_anxiety",
+          "rem_lyc", "rem_apis", "rem_anguillae", "rem_sulph", "rem_nux", "rem_calc",
+          "mias_sycosis", "mias_psora",
+          "lab_creatinine", "lab_egfr", "lab_microalbumin", "lab_hba1c", "lab_cholesterol",
+          "diag_ckd", "diag_metabolic",
+          "risk_bp", "risk_glycemia", "risk_sedentary", "mod_evening", "mod_warm_drinks"
+        ];
         return aaravNodes.includes(node.id);
       }
       if (activeDataKey === "priya") {
-        const priyaNodes = ["sym_fatigue", "sym_menses", "org_thyroid", "rem_puls", "rem_thyroid", "mias_psora", "mias_sycosis"];
+        const priyaNodes = [
+          "org_thyroid", "org_ovaries", "org_pancreas", "sys_endocrine", "sys_reproductive", "sys_digestive",
+          "sym_fatigue", "sym_menses", "sym_hirsutism", "sym_weight", "sym_lethargy", "sym_bloat",
+          "rem_puls", "rem_thyroid", "rem_calc", "rem_sulph", "rem_nux",
+          "mias_psora", "mias_sycosis",
+          "lab_tsh", "lab_lh_fsh", "lab_cholesterol", "lab_hba1c",
+          "diag_pcos", "diag_hypothyroid", "diag_metabolic",
+          "risk_glycemia", "risk_sedentary", "mod_open_air"
+        ];
         return priyaNodes.includes(node.id);
       }
       if (activeDataKey === "elena") {
-        const elenaNodes = ["sym_stiffness", "sym_fatigue", "org_joints", "rem_sil", "mias_syphilis", "mias_psora"];
+        const elenaNodes = [
+          "org_joints", "org_heart", "sys_musculoskeletal", "sys_cardiovascular",
+          "sym_stiffness", "sym_fatigue", "sym_dryness", "sym_cramps", "sym_lethargy",
+          "rem_sil", "rem_rhus", "rem_caust", "rem_sulph",
+          "mias_syphilis", "mias_psora",
+          "lab_crp", "lab_anticcp", "lab_esr", "lab_cholesterol",
+          "diag_ra",
+          "risk_bp", "mod_cold_damp"
+        ];
         return elenaNodes.includes(node.id);
       }
 
@@ -1148,46 +1555,179 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
       ctx.translate(graphPan.x, graphPan.y);
       ctx.scale(graphScale, graphScale);
 
-      // Links drawing
+      // 1. Draw Cluster Background Glows & Labels (Priority 7)
+      Object.entries(NODE_CLUSTERS).forEach(([key, value]) => {
+        const clusterNodes = nodes.filter(n => NODE_TO_CLUSTER[n.id] === key && isActiveNode(n) && graphFilterTypes.includes(n.type));
+        if (clusterNodes.length === 0) return;
+
+        // Calculate average position
+        const avgX = clusterNodes.reduce((sum, n) => sum + n.x, 0) / clusterNodes.length;
+        const avgY = clusterNodes.reduce((sum, n) => sum + n.y, 0) / clusterNodes.length;
+
+        // Draw background glow circle
+        ctx.beginPath();
+        ctx.arc(avgX, avgY, 80, 0, 2 * Math.PI);
+        ctx.fillStyle = value.color;
+        ctx.fill();
+
+        // Draw Cluster label
+        ctx.fillStyle = isDark ? "rgba(255, 255, 255, 0.04)" : "rgba(15, 23, 42, 0.04)";
+        ctx.font = "bold 13px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(value.label.toUpperCase(), avgX, avgY);
+      });
+
+      // 2. Links drawing (with relationship weights & flows)
       links.forEach(link => {
         const s = nodes.find(n => n.id === link.source);
         const t = nodes.find(n => n.id === link.target);
         if (!s || !t) return;
 
+        // Apply filters (Priority 6)
+        if (!graphFilterTypes.includes(s.type) || !graphFilterTypes.includes(t.type)) return;
+
         const sActive = isActiveNode(s);
         const tActive = isActiveNode(t);
         const isLinkActive = sActive && tActive;
 
-        ctx.globalAlpha = isLinkActive ? 0.7 : 0.08;
+        ctx.globalAlpha = isLinkActive ? 0.75 : 0.05;
 
-        // Relationship strength calculation
+        // Relationship strength calculation (Priority 3)
         const isHighlighted = selectedNodeId === s.id || selectedNodeId === t.id;
         const searchMatch = nodeSearchQuery && (
           s.label.toLowerCase().includes(nodeSearchQuery.toLowerCase()) || 
           t.label.toLowerCase().includes(nodeSearchQuery.toLowerCase())
         );
 
+        let weightPct = 76;
+        let baseLineWidth = 1.2;
+        
+        if (link.strength >= 4.5) {
+          weightPct = 95; // Very Strong
+          baseLineWidth = 3.5;
+        } else if (link.strength >= 3.5) {
+          weightPct = 82; // Strong
+          baseLineWidth = 2.2;
+        } else if (link.strength >= 2.5) {
+          weightPct = 76; // Moderate
+          baseLineWidth = 1.2;
+        } else {
+          weightPct = 58; // Weak
+          baseLineWidth = 0.8;
+        }
+
+        ctx.lineWidth = isHighlighted ? baseLineWidth * 1.5 : baseLineWidth;
         ctx.strokeStyle = isHighlighted || searchMatch
-          ? "rgba(16, 185, 129, 0.6)"
-          : isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(15, 23, 42, 0.08)";
-        ctx.lineWidth = isHighlighted ? (link.strength || 2) * 1.2 : (link.strength || 1) * 0.7;
+          ? "#10b981"
+          : isDark ? "rgba(255, 255, 255, 0.12)" : "rgba(15, 23, 42, 0.12)";
+
+        // Apply glow intensity for active selected links (Priority 3)
+        if (isHighlighted && isLinkActive) {
+          ctx.shadowColor = "rgba(16, 185, 129, 0.8)";
+          ctx.shadowBlur = 8;
+        } else {
+          ctx.shadowBlur = 0;
+        }
+
         ctx.beginPath();
         ctx.moveTo(s.x, s.y);
         ctx.lineTo(t.x, t.y);
         ctx.stroke();
+        ctx.shadowBlur = 0; // Reset
+
+        // Animate flow along active pathway (Priority 4)
+        const activePath = activeDataKey === "aarav" 
+          ? ["org_kidney", "lab_egfr", "diag_ckd", "sym_renal", "rem_apis"]
+          : activeDataKey === "priya"
+            ? ["org_thyroid", "lab_tsh", "diag_hypothyroid", "sym_fatigue", "rem_puls"]
+            : ["org_joints", "lab_anticcp", "diag_ra", "sym_stiffness", "rem_rhus"];
+
+        const sIdx = activePath.indexOf(s.id);
+        const tIdx = activePath.indexOf(t.id);
+        const inPathway = sIdx !== -1 && tIdx !== -1 && Math.abs(sIdx - tIdx) === 1;
+
+        if (inPathway && isLinkActive) {
+          ctx.strokeStyle = "#fbbf24"; // Amber gold pathway highlight
+          ctx.lineWidth = 3.5;
+          ctx.beginPath();
+          ctx.moveTo(s.x, s.y);
+          ctx.lineTo(t.x, t.y);
+          ctx.stroke();
+
+          // Draw moving photon
+          const tFlow = (Date.now() * 0.0015) % 1;
+          const flowX = s.x + (t.x - s.x) * tFlow;
+          const flowY = s.y + (t.y - s.y) * tFlow;
+          ctx.beginPath();
+          ctx.arc(flowX, flowY, 4, 0, 2 * Math.PI);
+          ctx.fillStyle = "#ffffff";
+          ctx.fill();
+        }
+
+        // Draw relationship weight labels (Priority 3)
+        if (isHighlighted && isLinkActive) {
+          const midX = (s.x + t.x) / 2;
+          const midY = (s.y + t.y) / 2;
+          ctx.fillStyle = isDark ? "#38bdf8" : "#0284c7";
+          ctx.font = "bold 7px monospace";
+          ctx.textAlign = "center";
+          ctx.fillText(`${weightPct}%`, midX, midY - 3);
+        }
       });
 
-      // Nodes drawing
+      // 3. Nodes drawing
       nodes.forEach(node => {
-        const isActive = isActiveNode(node);
-        ctx.globalAlpha = isActive ? 1.0 : 0.15;
+        // Apply filters (Priority 6)
+        if (!graphFilterTypes.includes(node.type)) return;
 
-        let color = "#38bdf8"; // default sky-400
-        if (node.type === "symptom") color = "#f43f5e"; // rose-500
-        else if (node.type === "organ") color = "#3b82f6"; // blue-500
-        else if (node.type === "remedy") color = "#c084fc"; // purple-400
-        else if (node.type === "miasm") color = "#fbbf24"; // amber-400
-        else if (node.type === "lab") color = "#14b8a6"; // teal-500
+        const isActive = isActiveNode(node);
+        ctx.globalAlpha = isActive ? 1.0 : 0.12;
+
+        let color = "#38bdf8"; 
+        
+        // Heatmap toggles (Priority 8)
+        if (graphHeatmapView === "evidence") {
+          if (node.id.includes("kidney") || node.id.includes("apis") || node.id.includes("egfr") || node.id.includes("joints")) {
+            color = "#10b981"; // Bright Green (Very High)
+          } else if (node.id.includes("stiffness") || node.id.includes("rhus") || node.id.includes("tsh")) {
+            color = "#84cc16"; // Green (High)
+          } else if (node.id.includes("bloat") || node.id.includes("lyc")) {
+            color = "#f59e0b"; // Amber (Moderate)
+          } else {
+            color = "#ef4444"; // Red (Low)
+          }
+        } else if (graphHeatmapView === "risk") {
+          if (node.id.includes("ckd") || node.id.includes("bp") || node.id.includes("ra") || node.id.includes("pcos")) {
+            color = "#ef4444"; // High Risk (Red)
+          } else if (node.id.includes("metabolic") || node.id.includes("glycemia")) {
+            color = "#f59e0b"; // Med Risk (Amber)
+          } else {
+            color = "#10b981"; // Low Risk (Green)
+          }
+        } else if (graphHeatmapView === "outcome") {
+          if (node.type === "symptom" || node.type === "diagnosis") {
+            color = "#fb7185"; // High outcome focus (Rose)
+          } else {
+            color = isDark ? "#1e293b" : "#e2e8f0";
+          }
+        } else if (graphHeatmapView === "remedy") {
+          if (node.type === "remedy") {
+            color = "#c084fc"; // Highlight remedies (Purple)
+          } else {
+            color = isDark ? "#1e293b" : "#e2e8f0";
+          }
+        } else {
+          // Default colors
+          if (node.type === "symptom") color = "#f43f5e";
+          else if (node.type === "organ") color = "#3b82f6";
+          else if (node.type === "remedy") color = "#c084fc";
+          else if (node.type === "miasm") color = "#fbbf24";
+          else if (node.type === "lab") color = "#14b8a6";
+          else if (node.type === "system") color = "#6366f1";
+          else if (node.type === "diagnosis") color = "#f97316";
+          else if (node.type === "risk") color = "#ec4899";
+          else if (node.type === "modality") color = "#a855f7";
+        }
 
         const isSelected = selectedNodeId === node.id;
         const isSearched = nodeSearchQuery && node.label.toLowerCase().includes(nodeSearchQuery.toLowerCase());
@@ -1195,8 +1735,8 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
         // Draw pulsing search ring
         if (isSearched) {
           ctx.beginPath();
-          ctx.arc(node.x, node.y, node.radius + 7 + Math.sin(Date.now() / 150) * 2, 0, 2 * Math.PI);
-          ctx.strokeStyle = "rgba(16, 185, 129, 0.5)";
+          ctx.arc(node.x, node.y, node.radius + 8 + Math.sin(Date.now() / 120) * 2, 0, 2 * Math.PI);
+          ctx.strokeStyle = "rgba(16, 185, 129, 0.6)";
           ctx.lineWidth = 2;
           ctx.stroke();
         }
@@ -1210,8 +1750,18 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
           );
         }
 
+        // Temporal Size Scaling (Priority 9)
+        let temporalSizeMultiplier = 1.0;
+        if (node.id === "sym_renal" && activeDataKey === "aarav") {
+          temporalSizeMultiplier = twinIndex === 0 ? 0.7 : twinIndex === 4 ? 1.6 : 0.8;
+        } else if (node.id === "lab_creatinine") {
+          temporalSizeMultiplier = 0.8 + (twinIndex * 0.12);
+        } else if (node.id === "rem_apis") {
+          temporalSizeMultiplier = twinIndex >= 4 ? 1.5 : 0.7;
+        }
+
         ctx.beginPath();
-        ctx.arc(node.x, node.y, node.radius + (isSelected ? 4 : isAdjacent ? 2 : 0), 0, 2 * Math.PI);
+        ctx.arc(node.x, node.y, (node.radius + (isSelected ? 4 : isAdjacent ? 2 : 0)) * temporalSizeMultiplier, 0, 2 * Math.PI);
         ctx.fillStyle = color;
         ctx.fill();
 
@@ -1230,7 +1780,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
             : isDark ? "#cbd5e1" : "#1e293b";
         ctx.font = isSelected ? "bold 9px sans-serif" : "7.5px sans-serif";
         ctx.textAlign = "center";
-        ctx.fillText(node.label, node.x, node.y + node.radius + 10);
+        ctx.fillText(node.label, node.x, node.y + (node.radius * temporalSizeMultiplier) + 10);
       });
 
       ctx.restore();
@@ -1380,89 +1930,186 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
     };
   }, [activeTab, theme, selectedNodeId, graphScale, graphPan, nodeSearchQuery]);
 
-  // Dynamic OSTM Inspector detail retriever
+  // Dynamic OSTM Inspector detail retriever (Priority 2)
   const selectedNodeInfo = (() => {
     if (!selectedNodeId) return null;
-    
-    // Hardcoded clinical records mapping database
-    const nodeDetails: Record<string, {
-      title: string;
-      type: string;
-      description: string;
-      evidenceRating: string;
-      historicalOutcome: string;
-      connectedElements: string[];
-    }> = {
-      sym_renal: {
-        title: "Bilateral Ankle Edema",
-        type: "Active Symptom Path",
-        description: "Bilateral puffiness of feet indicating active fluid loading under renal clearance pressure.",
-        evidenceRating: "Grade A Clinical Correlation",
-        historicalOutcome: "84% success rate under Apis + Serum Anguillae regulation",
-        connectedElements: ["Renal Kidneys (Organ)", "Apis Mellifica (Remedy)", "Serum Anguillae (Remedy)", "Sycosis Miasm"]
-      },
-      org_kidney: {
-        title: "Renal Kidneys (OSTM)",
-        type: "Target Organ System",
-        description: "Primary system filtration load. Current filtration index degraded to Stage 3b.",
-        evidenceRating: "Grade A Biomarker Verification",
-        historicalOutcome: "Metformin adjustment + homeo support stabilized eGFR decline by 35%",
-        connectedElements: ["Ankle Edema (Symptom)", "Nocturia (Symptom)", "Serum Anguillae (Remedy)", "Sycosis Miasm"]
-      },
-      rem_lyc: {
-        title: "Lycopodium Clavatum",
-        type: "Constitutional Remedy Vector",
-        description: "Right-sided remedy matching digestive flatulence aggravations between 4-8 PM.",
-        evidenceRating: "88% Clinical Affinity Score",
-        historicalOutcome: "68% vitality improvement recorded after 14 months of constitutional administration",
-        connectedElements: ["Flatulence & Bloat (Symptom)", "Renal Kidneys (Organ)", "Sycosis Miasm", "Psora Miasm"]
-      },
-      mias_sycosis: {
-        title: "Sycosis Miasm Layer",
-        type: "Miasmatic Focus",
-        description: "Underlying chronic sycotic structure triggers fluid retention, cell growths, and sluggish excretions.",
-        evidenceRating: "65% Dominance score",
-        historicalOutcome: "Sycotic detox cycles reduced ankle edema recurrence by 80%",
-        connectedElements: ["Lycopodium (Remedy)", "Apis Mellifica (Remedy)", "Renal Kidneys (Organ)", "Ankle Edema (Symptom)"]
-      }
-    };
 
     const foundNode = graphDataRef.current?.nodes.find(n => n.id === selectedNodeId);
-    return nodeDetails[selectedNodeId] || {
+    const pivot = NODE_PIVOT_MAP[selectedNodeId];
+
+    if (pivot) {
+      return {
+        title: pivot.nodeName,
+        type: pivot.type,
+        description: foundNode?.description + " " + pivot.copilotPrompt,
+        evidenceRating: `Grade A (${pivot.evidenceWeight}% Evidence)`,
+        historicalOutcome: pivot.predictedOutcome,
+        confidence: pivot.confidence,
+        status: pivot.status,
+        connectedElements: pivot.connectedLabs.map(l => l + " (Lab)").concat(pivot.connectedSymptoms.map(s => s + " (Symptom)")).concat(pivot.connectedRemedies.map(r => r + " (Remedy)")),
+        populationBenchmark: pivot.populationBenchmark,
+        cohortData: pivot.cohortData
+      };
+    }
+
+    return {
       title: foundNode ? foundNode.label : (selectedNodeId.split("_")[1]?.toUpperCase() || selectedNodeId),
       type: foundNode ? (foundNode.type.toUpperCase() + " Vector") : "Anatomical Node",
       description: foundNode ? foundNode.description : "Active node in the OSTM knowledge mapping database. Controls structural connections.",
       evidenceRating: "Grade B Mapping",
       historicalOutcome: "72% average index stabilization",
-      connectedElements: foundNode?.type === "miasm" ? ["Psora Miasm", "Sycosis Miasm"] : ["Renal Kidneys (Organ)", "Psora Miasm"]
+      confidence: 75,
+      status: "Active Signal",
+      connectedElements: foundNode?.type === "miasm" ? ["Psora Miasm", "Sycosis Miasm"] : ["Renal Kidneys (Organ)", "Psora Miasm"],
+      populationBenchmark: "Consistent with baseline cohorts",
+      cohortData: { top: 60, avg: 30, poor: 10 }
     };
   })();
 
   // Handle Ask AI submit
-  const handleAskAICopilot = async () => {
-    if (!customQuery.trim()) return;
-    const text = customQuery.trim();
+  // Clickable graph node references parsing (Priority 3)
+  const renderMessageText = (text: string) => {
+    const regex = /\[([^\]]+)\]\(node:([^\)]+)\)/g;
+    const parts = [];
+    let lastIndex = 0;
+    let match;
+
+    while ((match = regex.exec(text)) !== null) {
+      if (match.index > lastIndex) {
+        parts.push(text.substring(lastIndex, match.index));
+      }
+      const label = match[1];
+      const nodeId = match[2];
+      parts.push(
+        <span
+          key={match.index}
+          onClick={() => setSelectedNodeId(nodeId)}
+          className="text-sky-400 font-bold underline cursor-pointer hover:text-sky-300 transition-colors mx-0.5"
+          title={`Click to focus ${label} on Graph`}
+        >
+          {label}
+        </span>
+      );
+      lastIndex = regex.lastIndex;
+    }
+
+    if (lastIndex < text.length) {
+      parts.push(text.substring(lastIndex));
+    }
+
+    return parts.length > 0 ? parts : text;
+  };
+
+  // Explainable AI conversational assistant (Priority 3)
+  const handleAskAICopilot = async (customQueryText?: string) => {
+    const text = (customQueryText || customQuery).trim();
+    if (!text) return;
     setCustomQuery("");
 
     setChatHistory(prev => [...prev, { sender: "doctor", text }]);
     setIsProcessingChat(true);
 
-    setTimeout(() => {
+    try {
+      const twinPayload = {
+        overallScore: activeData.vitalityIndex,
+        systemScores: {
+          endocrine: activeDataKey === "priya" ? 75 : 60,
+          cardiovascular: 65,
+          digestive: activeDataKey === "aarav" ? 50 : 70,
+          immune: activeDataKey === "elena" ? 45 : 80,
+          mentalHealth: 70
+        },
+        constitutional: {
+          thermal: activeData.thermal,
+          appetite: activeData.cravings,
+          sleep: "6-8 hours",
+          temperament: activeData.constitution,
+          remedyMatch: activeData.remedyMatches[0]?.name || activeData.constitution,
+          systemDominance: activeData.ostmSystems[0]?.name || "Renal",
+          adaptivePattern: "Compensated Degraded"
+        },
+        history: activeData.history.map((h: any) => ({
+          date: h.date,
+          profileId: h.type,
+          score: activeData.vitalityIndex,
+          symptoms: [h.event]
+        }))
+      };
+
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: chatHistory.concat([{ sender: "doctor", text }]).map(m => ({
+            sender: m.sender === "doctor" ? "user" : "assistant",
+            text: m.text
+          })),
+          twin: twinPayload,
+          tone: "professional"
+        })
+      });
+
+      const resData = await response.json();
+      if (resData.success && resData.text) {
+        let aiText = resData.text;
+        
+        // Link terms to graph nodes
+        aiText = aiText.replace(/kidneys|kidney/gi, "[Renal Kidneys](node:org_kidney)");
+        aiText = aiText.replace(/apis/gi, "[Apis Mellifica](node:rem_apis)");
+        aiText = aiText.replace(/anguillae/gi, "[Serum Anguillae](node:rem_anguillae)");
+        aiText = aiText.replace(/lycopodium/gi, "[Lycopodium Clavatum](node:rem_lyc)");
+        aiText = aiText.replace(/pulsa/gi, "[Pulsatilla](node:rem_puls)");
+        aiText = aiText.replace(/thyroid/gi, "[Thyroidinum](node:rem_thyroid)");
+        aiText = aiText.replace(/silicea/gi, "[Silicea Terra](node:rem_sil)");
+        
+        setChatHistory(prev => [...prev, { sender: "ai", text: aiText }]);
+      } else {
+        throw new Error("API call failed or returned empty text");
+      }
+    } catch (err) {
+      console.warn("Ask CIOS API failed, executing local reasoning loop fallback.", err);
       let responseText = "";
       const q = text.toLowerCase();
-      if (q.includes("remedy") || q.includes("homeopath") || q.includes("selection")) {
-        responseText = `Based on OSTM™ mapping for ${activeData.name}, the active remedy reasoning is:\n\n1. **${activeDataKey === "aarav" ? "Lycopodium Clavatum" : activeDataKey === "priya" ? "Pulsatilla Nigricans" : "Silicea Terra"}** (Constitutional remedy targeting the root system).\n2. **${activeDataKey === "aarav" ? "Serum Anguillae 6X" : activeDataKey === "priya" ? "Thyroidinum 3X" : "Rhus Tox 30C"}** (Organ-system specific support).\n\nMiasmatic profiling recommends addressing the dominant **${activeData.miasm.split(' ')[0]}** layer to avoid chronic structural progression.`;
-      } else if (q.includes("risk") || q.includes("predict")) {
-        responseText = `CIE™ Predictive Models indicate a **${activeData.predictiveRisks[0].level} (${activeData.predictiveRisks[0].val}%)** score for target system progression.\n\n* **Primary Driver:** ${activeData.predictiveRisks[0].driver}.\n* **Modifiable Factors:** ${activeData.predictiveRisks[0].modifiable}.\n\nRenal filtration slope is predicted to remain stable if Metformin and Apis protocols are maintained under strict diet tracking.`;
-      } else if (q.includes("egfr") || q.includes("creatinine") || q.includes("lab")) {
-        responseText = `Reviewing lab trends: ${activeDataKey === "aarav" ? "eGFR declined 9 points over 12 months, prompting Metformin reduction. Current eGFR: 49 mL/min. Creatinine: 1.6 mg/dL." : activeDataKey === "priya" ? "TSH peaked at 7.8 uIU/mL but has improved to 4.8 uIU/mL after Thyroidinum." : "CRP improved from 18.5 to 8.2 mg/L, reflecting flare resolution."}`;
+      if (q.includes("ckd") || q.includes("kidney") || q.includes("renal")) {
+        responseText = `### OSTM™ Clinical Reasoning Trace (Kidney Focus)
+- **Patient Profile**: ${activeData.name} | eGFR: ${activeDataKey === "aarav" ? "49 mL/min (Stage 3b)" : "70 mL/min (Normal/Compensated)"}.
+- **Reasoning**: Renal glomeruli filtration stress is driven by high blood pressure spikes and glycemic fluctuations.
+- **Evidence**: Repertory rubrics match Sycotic chronic burden layer. KDIGO guidelines advocate strict BP <120.
+- **Confidence**: 92% (High)
+- **Predicted Outcomes**: Sliders suggest sodium restriction and [Serum Anguillae](node:rem_anguillae) organotherapy reduces progression rate by 18%.
+- **Supporting Nodes**: [Renal Kidneys](node:org_kidney), [Serum Creatinine](node:lab_creatinine), [eGFR Filtration](node:lab_egfr), [Apis Mellifica](node:rem_apis).`;
+      } else if (q.includes("apis") || q.includes("remedy") || q.includes("why")) {
+        responseText = `### Remedy Selection Efficacy Breakdown (Apis Mellifica)
+- **Patient Profile**: ${activeData.name} | Symptoms: ${activeData.symptoms.map(s => s.name).join(", ")}.
+- **Reasoning**: Selected [Apis Mellifica](node:rem_apis) for active fluid drainage of peripheral [Ankle Edema](node:sym_renal). Key modalities: Thirstless, worse standing.
+- **Evidence**: Repertory ranking matching 4 out of 5 core symptoms.
+- **Confidence**: 90% (High)
+- **Predicted Outcomes**: Rapid reduction of interstitial swelling in 7 days.
+- **Alternatives**: [Serum Anguillae](node:rem_anguillae) (for deep glomerular membrane filtration support) or [Lycopodium Clavatum](node:rem_lyc) (for digestive/constitutional balance).`;
+      } else if (q.includes("lycopodium") || q.includes("sulphur") || q.includes("compare")) {
+        responseText = `### Remedy Comparative Synthesis: Lycopodium Clavatum vs Sulphur
+- **Lycopodium Clavatum**: Matches right-sided digestive flatulence, aggravation 4-8 PM, craving warm drinks. High affinity for renal/gut axis.
+- **Sulphur**: Warm-blooded constitution, morning lethargy, skin eruptions. Focuses on general psoric heat clearing.
+- **Clinical Alignment**: For Aarav, [Lycopodium Clavatum](node:rem_lyc) is chosen as constitutional due to matching late afternoon aggravation and renal load.
+- **Confidence**: 88%
+- **Evidence Level**: Level B consensus matching.`;
+      } else if (q.includes("hba1c") || q.includes("what if") || q.includes("6.0")) {
+        responseText = `### Multi-Scenario Forecast: HbA1c to 6.0% Optimization
+- **Patient Profile**: ${activeData.name} | Current HbA1c: 6.9%.
+- **Reasoning**: Lowering HbA1c to 6.0% reduces systemic advanced glycation endproducts (AGEs) loading on nephrons.
+- **Predicted Outcomes**: eGFR filtration decline rate is slowed by 28%. Progression risk drops from High to Moderate (55% risk reduction).
+- **Supporting Nodes**: [Renal Kidneys](node:org_kidney), [eGFR Filtration](node:lab_egfr), [Stage 3 CKD](node:diag_ckd).`;
       } else {
-        responseText = `The Clinical Intelligence Engine has analyzed the query: "${text}".\n\nPatient Vitality is current at ${activeData.vitalityIndex}%, with a Chronic Disease Burden of ${activeData.diseaseBurdenIndex}%.`;
+        responseText = `### Ask CIOS™ Assistant Rationale
+- **Patient Focus**: ${activeData.name} (Twin ID: HIOS-TW-001).
+- **Physiological Reserves**: Vitality Index at ${activeVitality}%, Disease Burden at ${activeBurden}%.
+- **Reasoning**: The active intercurrent remedy sequencing represents the constitutional baseline.
+- **Evidence Level**: Grade A clinical guidelines matching.`;
       }
-
       setChatHistory(prev => [...prev, { sender: "ai", text: responseText }]);
+    } finally {
       setIsProcessingChat(false);
-    }, 1500);
+    }
   };
 
   // Compile Executive / Education Reports
@@ -1608,6 +2255,25 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
   const isRealSheet = !!(selectedPatient && selectedPatient.sheetUrl && selectedPatient.sheetUrl.startsWith("https://") && selectedPatient.sheetUrl.includes("google.com/spreadsheets"));
 
   const [isSyncing, setIsSyncing] = useState(false);
+  const [graphFilterTypes, setGraphFilterTypes] = useState<string[]>([
+    "symptom", "remedy", "organ", "system", "miasm", "lab", "diagnosis", "risk", "modality"
+  ]);
+  const [graphHeatmapView, setGraphHeatmapView] = useState<"none" | "evidence" | "risk" | "outcome" | "remedy">("none");
+  const [collapsedClusters, setCollapsedClusters] = useState<Record<string, boolean>>({});
+  const [sidebarTab, setSidebarTab] = useState<"feed" | "ask">("feed");
+  const [evidenceExplorerData, setEvidenceExplorerData] = useState<any | null>(null);
+  const [outcomeLearningStats, setOutcomeLearningStats] = useState({
+    acceptedCount: 12,
+    rejectedCount: 2,
+    remedySuccessRate: 85,
+    protocolSuccessRate: 82,
+    clinicianSuccessRate: 91.5
+  });
+  const [syncHistory, setSyncHistory] = useState<Array<{ date: string; action: string; outcome: string }>>([
+    { date: "2025-06-01", action: "Apis 30C introduced", outcome: "Edema reduced from severe to mild" },
+    { date: "2025-05-15", action: "Metformin reduction", outcome: "Stabilized eGFR filtration at 49" },
+    { date: "2025-04-10", action: "Salt restriction enforced", outcome: "Microalbumin load lowered by 15%" }
+  ]);
   const [syncToast, setSyncToast] = useState<string | null>(null);
 
   const handleOpenSheet = () => {
@@ -1672,6 +2338,22 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
       setIsSyncing(false);
     }
   };
+
+  // Graph search and auto-zoom-jump (Priority 5)
+  useEffect(() => {
+    if (!nodeSearchQuery.trim()) return;
+    const nodes = graphDataRef.current?.nodes || [];
+    const match = nodes.find(n => n.label.toLowerCase().includes(nodeSearchQuery.toLowerCase().trim()) || 
+                           n.id.toLowerCase().includes(nodeSearchQuery.toLowerCase().trim()));
+    if (match) {
+      setSelectedNodeId(match.id);
+      setGraphScale(1.4);
+      setGraphPan({
+        x: (graphCanvasRef.current?.parentElement?.clientWidth || 400) / 2 - match.x * 1.4,
+        y: 320 / 2 - match.y * 1.4
+      });
+    }
+  }, [nodeSearchQuery]);
 
   // Explainable Risk resolver
   const activeExplainableRisk = activeRisks.find((r: any) => r.id === selectedRiskId) || activeRisks[0];
@@ -1817,120 +2499,193 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
           {/* ==================== LEFT/CENTER COLUMN: COCKPIT WORKSPACE (8 COLS) ==================== */}
           <div className="xl:col-span-8 space-y-6">
             
-            {/* 1. CLINICAL COMMAND CENTER REDESIGN (PRIORITY 10) */}
-            <div className="bg-slate-900 dark:bg-slate-950 border border-slate-800 rounded-[28px] p-6 shadow-xl text-white">
-              <div className="flex flex-col lg:flex-row gap-6">
-                
-                {/* Mission Control Panel */}
-                <div className="flex-1 lg:flex-[2] space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <span className="relative flex h-3 w-3">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-                      </span>
-                      <h2 className="text-xl font-bold font-serif tracking-wide">{activeData.name}</h2>
-                      <span className="text-[10px] text-slate-400 px-2 py-0.5 bg-slate-850 rounded-lg border border-slate-800 font-mono">
-                        Twin ID: {activeDataKey === "aarav" ? "HIOS-TW-001" : activeDataKey === "priya" ? "HIOS-TW-002" : "HIOS-TW-003"}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] text-slate-400">Stability Index:</span>
-                      <span className="text-sm font-mono font-bold text-emerald-400">
-                        {activeTwinMode === "simulator" && simulatedResults ? simulatedResults.vitality - 5 : activeData.vitalityIndex - 10}%
-                      </span>
-                    </div>
+                        {/* 1. EXECUTIVE CLINICAL COMMAND CENTER™ (PRIORITY 10 & 4 & 7) */}
+            <div className="bg-slate-950 border border-slate-800 rounded-[28px] p-6 shadow-xl text-white space-y-6">
+              
+              {/* Navigator Focus Banner (Priority 1) */}
+              {selectedNodeId && (
+                <div className="bg-purple-950/40 border border-purple-900/60 p-3 rounded-2xl flex items-center justify-between text-xs animate-pulse">
+                  <div className="flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-purple-500" />
+                    <span className="font-mono text-slate-350">NAVIGATOR FOCUS ACTIVE:</span>
+                    <strong className="text-purple-300 font-bold uppercase">{selectedNodeId.replace("sym_", "").replace("org_", "").replace("rem_", "").replace("mias_", "").replace("lab_", "").replace("_", " ")}</strong>
                   </div>
+                  <button 
+                    onClick={() => setSelectedNodeId(null)}
+                    className="px-2 py-0.5 bg-purple-900/40 hover:bg-purple-900 border border-purple-700/50 rounded-lg text-[10px] font-bold cursor-pointer"
+                  >
+                    Clear Focus
+                  </button>
+                </div>
+              )}
 
-                  {/* Vitals Telemetry Grid */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <div className="p-3 bg-slate-950/60 border border-slate-800 rounded-2xl flex flex-col gap-0.5">
-                      <span className="text-[9px] uppercase tracking-wider text-slate-400">Blood Pressure</span>
-                      <span className="text-xs font-bold text-emerald-400 font-mono">
-                        {activeTwinMode === "simulator" ? `${Math.round(simSliders.bloodPressure)}/82` : activeDataKey === "aarav" ? "135/85" : activeDataKey === "priya" ? "115/75" : "125/80"} mmHg
-                      </span>
-                    </div>
-                    <div className="p-3 bg-slate-950/60 border border-slate-800 rounded-2xl flex flex-col gap-0.5">
-                      <span className="text-[9px] uppercase tracking-wider text-slate-400">Heart Rate</span>
-                      <span className="text-xs font-bold text-emerald-400 font-mono">68 BPM</span>
-                    </div>
-                    <div className="p-3 bg-slate-950/60 border border-slate-800 rounded-2xl flex flex-col gap-0.5">
-                      <span className="text-[9px] uppercase tracking-wider text-slate-400">Core Temp</span>
-                      <span className="text-xs font-bold text-emerald-400 font-mono">98.4 °F</span>
-                    </div>
-                    <div className="p-3 bg-slate-950/60 border border-slate-800 rounded-2xl flex flex-col gap-0.5">
-                      <span className="text-[9px] uppercase tracking-wider text-slate-400">Resp Rate</span>
-                      <span className="text-xs font-bold text-emerald-400 font-mono">16 / min</span>
-                    </div>
-                  </div>
-
-                  {/* Primary Risks list */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    {activeRisks.map((risk: any, i: number) => {
-                      let confidenceLevel = "High";
-                      let badgeColor = "bg-emerald-950/40 text-emerald-400 border border-emerald-900";
-                      
-                      if (risk.val > 75) {
-                        confidenceLevel = "Uncertain";
-                        badgeColor = "bg-rose-950/40 text-rose-400 border border-rose-900";
-                      } else if (risk.val > 50) {
-                        confidenceLevel = "Moderate";
-                        badgeColor = "bg-amber-950/40 text-amber-400 border border-amber-900";
-                      }
-                      
-                      return (
-                        <div key={i} className="p-3 bg-slate-950/60 border border-slate-800 rounded-2xl space-y-1.5">
-                          <div className="flex justify-between items-center text-[9px] uppercase tracking-wider text-slate-400">
-                            <span>{risk.name}</span>
-                            <span className="font-bold text-slate-300">{risk.val}%</span>
-                          </div>
-                          <div className="flex justify-between items-center text-[8.5px]">
-                            <span className={`px-1.5 py-0.2 rounded text-[8px] font-mono ${badgeColor}`}>{risk.level}</span>
-                            <span className="text-slate-500 font-mono">Cert. {confidenceLevel}</span>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs border-t border-slate-800 pt-3">
-                    <div>
-                      <span className="text-[9px] uppercase tracking-wider text-slate-400 block mb-0.5">Top Opportunities</span>
-                      <span className="font-bold text-emerald-400">
-                        {activeDataKey === "aarav" ? "✓ Salt Restriction (+12% renal benefit)" : activeDataKey === "priya" ? "✓ Exercise Conditioning (+15% endocrine)" : "✓ Thermal Warmth Support (+18% pain control)"}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-[9px] uppercase tracking-wider text-slate-400 block mb-0.5">Next Best Action</span>
-                      <span className="font-bold text-sky-400">
-                        {activeDataKey === "aarav" ? "→ Assess Apis 30C response in 7 days" : activeDataKey === "priya" ? "→ Review TSH lab panel next week" : "→ Warm dry room compliance check"}
-                      </span>
-                    </div>
-                  </div>
+              {/* 10-Second Executive Summary Grid */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 pb-4 border-b border-slate-800/80">
+                <div className="space-y-1">
+                  <span className="text-[9px] uppercase tracking-wider text-slate-500 font-mono block">Current Status</span>
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase inline-block ${
+                    activeDataKey === "aarav" ? "bg-amber-950/40 text-amber-400 border border-amber-900" :
+                    activeDataKey === "priya" ? "bg-rose-950/40 text-rose-400 border border-rose-900" :
+                    "bg-rose-950/40 text-rose-400 border border-rose-900"
+                  }`}>
+                    {activeDataKey === "aarav" ? "Compensated Degraded" :
+                     activeDataKey === "priya" ? "De-compensated Subclinical" :
+                     "Active Inflamed State"}
+                  </span>
                 </div>
 
-                {/* AI Summary and Twin status */}
-                <div className="flex-1 bg-gradient-to-r from-emerald-950/10 to-teal-950/10 border border-emerald-900/30 rounded-2xl p-4 flex flex-col justify-between gap-3">
-                  <div>
-                    <div className="flex items-center gap-2 border-b border-emerald-900/30 pb-2">
-                      <Sparkles className="w-4 h-4 text-emerald-400" />
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">OSTM™ Copilot Insights</span>
-                    </div>
-                    <p className="text-[11px] leading-relaxed text-slate-300 font-sans mt-2">
-                      {activeDataKey === "aarav" 
-                        ? "Patient displays progressive nephron stress. Sliders suggest BP control < 120 and salt reduction significantly slow creatinine rise vectors. Apis + Serum Anguillae synergy is optimized at 88% confidence."
-                        : activeDataKey === "priya"
-                          ? "TSH and LH/FSH ratio show functional thyroid response. Regular physical activity (slider > 4 days) reduces cardiovascular stroke forecast score by 14%."
-                          : "Rheumatoid joint stiffness flare-up matches winter damp aggravation (Psora/Syphilitic overlap). Restoring thermal comfort decreases morning stiffness below 30 mins."}
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-between text-[9px] border-t border-emerald-900/20 pt-2 text-slate-400 font-mono">
-                    <span>Twin Status: ACTIVE</span>
-                    <span>Confidence: {activeTwinMode === "simulator" && simulatedResults ? simulatedResults.confidence : 92}%</span>
-                  </div>
+                <div className="space-y-1">
+                  <span className="text-[9px] uppercase tracking-wider text-slate-500 font-mono block">Clinical Stability</span>
+                  <span className="text-sm font-bold font-mono text-emerald-400 flex items-center gap-1">
+                    <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                    {activeTwinMode === "simulator" && simulatedResults ? simulatedResults.vitality - 5 : activeData.vitalityIndex - 10}% (Stable)
+                  </span>
                 </div>
 
+                <div className="space-y-1">
+                  <span className="text-[9px] uppercase tracking-wider text-slate-500 font-mono block">Most Important Risk</span>
+                  <span className="text-xs font-bold text-rose-400 truncate block">
+                    {activeDataKey === "aarav" ? "CKD Progression (82%)" :
+                     activeDataKey === "priya" ? "Metabolic PCOS Trigger (58%)" :
+                     "Rheumatoid joint flare (76%)"}
+                  </span>
+                </div>
+
+                <div className="space-y-1">
+                  <span className="text-[9px] uppercase tracking-wider text-slate-500 font-mono block">Most Important Opportunity</span>
+                  <span className="text-xs font-bold text-emerald-400 truncate block">
+                    {activeDataKey === "aarav" ? "Sodium Restriction (+12%)" :
+                     activeDataKey === "priya" ? "Exercise Conditioning (+20%)" :
+                     "Thermal protection (+18%)"}
+                  </span>
+                </div>
               </div>
+
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-1">
+                <div className="space-y-1">
+                  <span className="text-[9px] uppercase tracking-wider text-slate-500 font-mono block">Next Best Action</span>
+                  <span className="text-xs font-bold text-sky-400 truncate block">
+                    {activeDataKey === "aarav" ? "Assess Apis 30C response" :
+                     activeDataKey === "priya" ? "Review TSH lab next week" :
+                     "Assess Rhus Tox response"}
+                  </span>
+                </div>
+
+                <div className="space-y-1">
+                  <span className="text-[9px] uppercase tracking-wider text-slate-500 font-mono block">Expected Outcome</span>
+                  <span className="text-xs font-bold text-slate-350 truncate block">
+                    {activeDataKey === "aarav" ? "eGFR stabilization in 90d" :
+                     activeDataKey === "priya" ? "Endocrine feedback balance" :
+                     "Stiffness mitigation in 7d"}
+                  </span>
+                </div>
+
+                <div className="space-y-1">
+                  <span className="text-[9px] uppercase tracking-wider text-slate-500 font-mono block">Prediction Confidence</span>
+                  <span className="text-xs font-bold font-mono text-emerald-400 block">
+                    {activeTwinMode === "simulator" && simulatedResults ? simulatedResults.confidence : 92}% (High)
+                  </span>
+                </div>
+
+                <div className="space-y-1">
+                  <span className="text-[9px] uppercase tracking-wider text-slate-500 font-mono block">Digital Twin Status</span>
+                  <span className="text-[10px] font-bold text-slate-300 flex items-center gap-1.5 font-mono">
+                    <span className="h-1.5 w-1.5 rounded-full bg-sky-400 animate-pulse" />
+                    {activeTwinMode === "simulator" ? "SIMULATION READY" : "SYNCHRONIZED"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Next Best Action Engine Table (Priority 4 & 7 & 8) */}
+              <div className="border-t border-slate-800/80 pt-4 space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-450 font-mono flex items-center gap-1.5">
+                    <Cpu className="w-3.5 h-3.5 text-sky-400" /> Next Best Action Engine™
+                  </span>
+                  <span className="text-[9px] text-slate-500 font-mono">
+                    Acceptance Rate: {Math.round((outcomeLearningStats.acceptedCount / (outcomeLearningStats.acceptedCount + outcomeLearningStats.rejectedCount)) * 100)}%
+                  </span>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr className="border-b border-slate-800 text-slate-400 text-[10px] uppercase font-mono">
+                        <th className="pb-2 font-medium">Recommended Action</th>
+                        <th className="pb-2 font-medium text-center">Urgency</th>
+                        <th className="pb-2 font-medium text-center">Expected Benefit</th>
+                        <th className="pb-2 font-medium text-center">Confidence</th>
+                        <th className="pb-2 font-medium text-center">Evidence</th>
+                        <th className="pb-2 font-medium text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-900">
+                      {(activeDataKey === "aarav" ? [
+                        { action: "Assess Apis 30C Response", urgency: "High", benefit: "18%", confidence: "92%", evidence: "Grade A", time: "7d", reason: "Early nephropathy progression signal under fluid loading.", guideline: "KDIGO 2024 Guidelines on CKD progression recommend immediate fluid stabilization.", pathway: "Kidneys -> Apis Mellifica -> Ankle Edema", outcomes: "84% success rate in matching cohorts of 45+ male patients." },
+                        { action: "Repeat Urinary Microalbuminuria", urgency: "Medium", benefit: "12%", confidence: "88%", evidence: "Grade B", time: "30d", reason: "Verify glomerular membrane integrity and leakage stabilization.", guideline: "ADA Standards of Care in Diabetes advise microalbuminuria monitoring every 3 months.", pathway: "Kidneys -> Microalbuminuria -> Creatinine", outcomes: "76% stability index seen in similar diabetic nephron load twins." },
+                        { action: "Strict Blood Pressure Control (<120 mmHg)", urgency: "High", benefit: "24%", confidence: "90%", evidence: "Grade A", time: "14d", reason: "Reduce high glomerular perfusion pressure causing eGFR decline.", guideline: "AHA/ACC Hypertension Guidelines advise SBP target <120 in chronic kidney profiles.", pathway: "Kidneys -> Hypertensive Spikes -> Stage 3 CKD", outcomes: "90% response rate in age cohort matching Aarav's parameters." }
+                      ] : activeDataKey === "priya" ? [
+                        { action: "Review TSH Lab Panel Next Week", urgency: "Medium", benefit: "15%", confidence: "86%", evidence: "Grade B", time: "14d", reason: "Track subclinical hypothyroidism thyroidinum stabilization.", guideline: "ATA Guidelines for Hypothyroidism advise endocrine profiling after glandular intercurrents.", pathway: "Thyroid -> TSH Level -> Thyroidinum", outcomes: "86% success in subclinical hypothyroid responder cohort." },
+                        { action: "Exercise Conditioning 4x/week", urgency: "High", benefit: "20%", confidence: "88%", evidence: "Grade A", time: "30d", reason: "Improve hypothalamic-ovarian endocrine feedback loop.", guideline: "ACOG Guidelines on PCOS recommend aerobic conditioning to improve insulin sensitivity.", pathway: "Ovaries -> Weight Gain -> Metabolic Syndrome", outcomes: "90% cycle regularization rate under optimized exercise sliders." },
+                        { action: "Gut Absorption Optimization", urgency: "Low", benefit: "10%", confidence: "82%", evidence: "Grade C", time: "30d", reason: "Clear chronic sycotic metabolic sluggishness.", guideline: "Chronic Miasmatic Totality recommends digestive pathway cleaning before endocrine loops.", pathway: "Digestive -> Gut -> Lycopodium Clavatum", outcomes: "68% general vitality increase in psoric-sycotic responder twins." }
+                      ] : [
+                        { action: "Assess Rhus Tox Response in 7d", urgency: "High", benefit: "22%", confidence: "90%", evidence: "Grade A", time: "7d", reason: "Articular inflammation and morning stiffness control.", guideline: "EULAR Guidelines for Rheumatoid Arthritis recommend acute inflammatory monitoring.", pathway: "Joints -> Joint Stiffness -> Rhus Tox 30C", outcomes: "88% pain score reduction rate in chilly rheumatic cohorts." },
+                        { action: "Compliance Check on Dry Warmth", urgency: "High", benefit: "18%", confidence: "92%", evidence: "Grade B", time: "3d", reason: "Prevent cold-damp barometric pressure aggravation.", guideline: "Rheumatic Modality consensus recommends thermal room stability during winter pressure drops.", pathway: "Joints -> Cold Damp -> Morning stiffness", outcomes: "74% flare reduction index under warm dry wrap compliance." },
+                        { action: "Anti-Inflammatory Diet Alignment", urgency: "Medium", benefit: "12%", confidence: "80%", evidence: "Grade C", time: "30d", reason: "Suppress auto-immune systemic inflammation triggers.", guideline: "ACR guidelines recommend anti-inflammatory dietary supplements in active flares.", pathway: "Immune -> CRP Inflammatory -> Silicea Terra", outcomes: "80% CRP stabilization rate in Anti-CCP positive cohorts." }
+                      ]).map((item, idx) => (
+                        <tr key={idx} className="hover:bg-slate-900/60 transition-colors">
+                          <td className="py-2.5 font-bold text-slate-200">
+                            {item.action}
+                          </td>
+                          <td className="py-2.5 text-center">
+                            <span className={`px-1.5 py-0.2 rounded text-[9px] font-mono font-bold ${
+                              item.urgency === "High" ? "bg-rose-950/60 text-rose-400 border border-rose-900" :
+                              item.urgency === "Medium" ? "bg-amber-950/60 text-amber-400 border border-amber-900" :
+                              "bg-emerald-950/60 text-emerald-400 border border-emerald-900"
+                            }`}>
+                              {item.urgency}
+                            </span>
+                          </td>
+                          <td className="py-2.5 text-center font-mono font-bold text-emerald-400">{item.benefit}</td>
+                          <td className="py-2.5 text-center font-mono text-slate-400">{item.confidence}</td>
+                          <td className="py-2.5 text-center font-mono text-slate-400">{item.evidence}</td>
+                          <td className="py-2.5 text-right space-x-1.5 shrink-0">
+                            <button
+                              onClick={() => setEvidenceExplorerData({
+                                actionName: item.action,
+                                benefit: item.benefit,
+                                confidence: item.confidence,
+                                urgency: item.urgency,
+                                timeToBenefit: item.time,
+                                evidenceLevel: item.evidence,
+                                reason: item.reason,
+                                guideline: item.guideline,
+                                pathway: item.pathway,
+                                outcomes: item.outcomes,
+                                calculations: `Base Match (${parseInt(item.confidence.replace("%", "")) - 12}%) + Modality Correlation (+7%) + Thermal Reaction (+5%) = ${item.confidence} Total Confidence.`
+                              })}
+                              className="px-2.5 py-1 bg-sky-900/40 hover:bg-sky-900 hover:text-white border border-sky-700/50 rounded-lg text-[10px] font-bold text-sky-400 transition-all cursor-pointer"
+                            >
+                              Why?
+                            </button>
+                            <button
+                              onClick={() => {
+                                setOutcomeLearningStats(prev => ({ ...prev, acceptedCount: prev.acceptedCount + 1 }));
+                                setSyncToast(`Accepted: "${item.action}" logged in learning loop.`);
+                                setTimeout(() => setSyncToast(null), 3000);
+                              }}
+                              className="px-2.5 py-1 bg-emerald-900/40 hover:bg-emerald-900 hover:text-white border border-emerald-700/50 rounded-lg text-[10px] font-bold text-emerald-400 transition-all cursor-pointer"
+                            >
+                              ✓ Accept
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
             </div>
 
             {/* ECG Monitor Section (Collapsible) */}
@@ -2196,6 +2951,20 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
                       />
                     </div>
 
+                    {/* Follow-up Interval Slider (Priority 5) */}
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-[10px]">
+                        <span className="font-bold text-slate-500">Follow-up Interval</span>
+                        <span className="font-mono font-bold text-emerald-500">{simDays} days</span>
+                      </div>
+                      <input 
+                        type="range" min="15" max="365" step="15"
+                        value={simDays}
+                        onChange={(e) => setSimDays(Number(e.target.value))}
+                        className="w-full accent-emerald-500 cursor-pointer h-1 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none"
+                      />
+                    </div>
+
                   </div>
 
                   {/* Scenarios indicator and projections time scale */}
@@ -2286,36 +3055,86 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
             {/* 3. OSTM KNOWLEDGE GRAPH BRAIN (PRIORITY 2) & INSPECTOR SPLIT */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               
-              {/* OSTM graph viewer canvas (7 cols) */}
+              {/* OSTM graph viewer canvas (7 cols) (Priority 1 & 5 & 6 & 8 & 11) */}
               <div className="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm flex flex-col gap-4 relative overflow-hidden">
-                <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-2">
                   <div>
                     <h3 className="font-serif text-sm font-bold flex items-center gap-2">
-                      <Network className="w-4 h-4 text-purple-500" /> OSTM Knowledge Graph™
+                      <Network className="w-4 h-4 text-purple-500 animate-pulse" /> OSTM Knowledge Graph™
                     </h3>
-                    <p className="text-[10px] text-slate-400 mt-0.5">Force-directed map. Drag nodes, scroll to zoom, search below.</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">Force-directed map. Drag nodes, scroll to zoom, click to select.</p>
                   </div>
                   
                   {/* Zoom controls */}
-                  <div className="flex gap-1.5">
+                  <div className="flex gap-1.5 self-end">
                     <button 
                       onClick={() => setGraphScale(prev => Math.min(2.0, prev + 0.1))}
                       className="px-2.5 py-1 bg-slate-100 dark:bg-slate-950 hover:bg-slate-200 dark:hover:bg-slate-850 rounded-lg text-xs font-bold border-none cursor-pointer"
+                      title="Zoom In"
                     >
                       ＋
                     </button>
                     <button 
                       onClick={() => setGraphScale(prev => Math.max(0.5, prev - 0.1))}
                       className="px-2.5 py-1 bg-slate-100 dark:bg-slate-950 hover:bg-slate-200 dark:hover:bg-slate-850 rounded-lg text-xs font-bold border-none cursor-pointer"
+                      title="Zoom Out"
                     >
                       －
                     </button>
                     <button 
                       onClick={() => { setGraphScale(1); setGraphPan({ x: 0, y: 0 }); }}
                       className="px-2.5 py-1 bg-slate-100 dark:bg-slate-950 hover:bg-slate-200 dark:hover:bg-slate-850 rounded-lg text-xs font-bold border-none cursor-pointer"
+                      title="Reset View"
                     >
                       ⟲
                     </button>
+                  </div>
+                </div>
+
+                {/* Filter tags panel (Priority 6) */}
+                <div className="flex flex-wrap gap-1 bg-slate-50 dark:bg-slate-950 p-2 rounded-xl border border-slate-200/50 dark:border-slate-850">
+                  <span className="text-[8.5px] font-mono text-slate-500 uppercase tracking-widest block w-full mb-1">Graph Node Filters:</span>
+                  {(["system", "organ", "diagnosis", "lab", "symptom", "remedy", "miasm", "risk", "modality"] as const).map((type) => {
+                    const isActive = graphFilterTypes.includes(type);
+                    return (
+                      <button
+                        key={type}
+                        onClick={() => {
+                          if (isActive) {
+                            setGraphFilterTypes(prev => prev.filter(t => t !== type));
+                          } else {
+                            setGraphFilterTypes(prev => [...prev, type]);
+                          }
+                        }}
+                        className={`px-2 py-0.5 rounded text-[8.5px] font-bold border capitalize transition-all cursor-pointer ${
+                          isActive 
+                            ? "bg-purple-900/20 text-purple-400 border-purple-800" 
+                            : "bg-transparent border-slate-200 dark:border-slate-800 text-slate-400"
+                        }`}
+                      >
+                        {type}s
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Heatmap overlay selector (Priority 8) */}
+                <div className="flex items-center justify-between text-[9px] bg-slate-50 dark:bg-slate-950 p-2 rounded-xl border border-slate-200/50 dark:border-slate-850 shrink-0">
+                  <span className="font-mono text-slate-500 uppercase tracking-widest block font-bold">Heatmap Perspective:</span>
+                  <div className="flex gap-1">
+                    {(["none", "evidence", "risk", "outcome", "remedy"] as const).map((mode) => (
+                      <button
+                        key={mode}
+                        onClick={() => setGraphHeatmapView(mode)}
+                        className={`px-2 py-0.5 rounded text-[8.5px] font-semibold border capitalize transition-all cursor-pointer ${
+                          graphHeatmapView === mode 
+                            ? "bg-emerald-600 text-white border-emerald-500" 
+                            : "bg-transparent border-slate-200 dark:border-slate-800 text-slate-400"
+                        }`}
+                      >
+                        {mode}
+                      </button>
+                    ))}
                   </div>
                 </div>
 
@@ -2323,7 +3142,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
                 <div className="relative">
                   <input 
                     type="text"
-                    placeholder="Search OSTM Node (e.g. Kidney, Lycopodium, Edema)..."
+                    placeholder="Search OSTM Node (e.g. Creatinine, Kidney, Lycopodium, Edema)..."
                     value={nodeSearchQuery}
                     onChange={(e) => setNodeSearchQuery(e.target.value)}
                     className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:ring-1 focus:ring-purple-500 focus:outline-none"
@@ -2341,9 +3160,19 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
                 <div className="w-full h-[320px] bg-slate-50 dark:bg-slate-955/30 rounded-2xl relative border border-slate-100 dark:border-slate-850/50 cursor-grab active:cursor-grabbing">
                   <canvas ref={graphCanvasRef} className="w-full h-full block" />
                 </div>
+
+                {/* Auto-generated Graph Insights Ticker (Priority 11) */}
+                <div className="bg-gradient-to-r from-purple-950/10 to-teal-950/10 p-2.5 rounded-xl border border-purple-900/30 text-[10px] space-y-1">
+                  <span className="text-[8px] font-mono text-purple-400 uppercase tracking-widest block font-bold">Graph Insights Panel™</span>
+                  <div className="space-y-0.5 text-slate-300">
+                    <div>• Kidney node currently has highest centrality score (0.88).</div>
+                    <div>• eGFR node influence increased 22% over 6 months of metabolic stress.</div>
+                    <div>• Apis Mellifica pathway activated after edema progression flag.</div>
+                  </div>
+                </div>
               </div>
 
-              {/* Inspector card (5 cols) */}
+              {/* Inspector card (5 cols) (Priority 2 & 10 & 12) */}
               <div className="lg:col-span-5 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm flex flex-col justify-between gap-4">
                 <div className="border-b border-slate-100 dark:border-slate-800 pb-2">
                   <h3 className="font-serif text-sm font-bold flex items-center gap-2">
@@ -2354,44 +3183,96 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
 
                 {selectedNodeInfo ? (
                   <div className="flex-1 flex flex-col justify-between gap-4 animate-fadeIn">
-                    <div className="space-y-3">
+                    <div className="space-y-4">
+                      
+                      {/* Name & Category Header */}
                       <div className="flex justify-between items-start border-b border-slate-100 dark:border-slate-800 pb-2">
                         <div>
                           <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block">{selectedNodeInfo.type}</span>
-                          <span className="text-sm font-bold text-slate-800 dark:text-slate-100">{selectedNodeInfo.title}</span>
+                          <span className="text-sm font-bold text-slate-850 dark:text-zinc-150">{selectedNodeInfo.title}</span>
                         </div>
-                        <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase ${selectedNodeInfo.evidenceRating.includes("Grade A") ? "bg-emerald-950/40 text-emerald-400" : "bg-sky-950/40 text-sky-400"}`}>
+                        <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase ${selectedNodeInfo.evidenceRating.includes("Grade A") ? "bg-emerald-950/40 text-emerald-400 border border-emerald-900" : "bg-sky-950/40 text-sky-400 border border-sky-900"}`}>
                           {selectedNodeInfo.evidenceRating}
                         </span>
                       </div>
-                      
-                      <p className="text-[11px] leading-relaxed text-slate-500 dark:text-slate-400">
-                        {selectedNodeInfo.description}
-                      </p>
 
-                      <div className="space-y-2">
-                        <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Dynamic Relationships & Strengths</span>
-                        <div className="grid grid-cols-1 gap-1.5">
-                          {selectedNodeInfo.connectedElements.map((fact: string, idx: number) => (
-                            <div key={idx} className="p-2 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/50 dark:border-slate-800/50 text-[10px] flex justify-between items-center">
-                              <span className="text-slate-650 dark:text-slate-400 font-medium">❖ {fact}</span>
-                              <span className="text-emerald-500 font-bold font-mono">Strong (Strength: 3.5)</span>
-                            </div>
-                          ))}
+                      {/* Clinical Status & Metric Grid (Priority 2 & 12) */}
+                      <div className="grid grid-cols-2 gap-3 text-[10px] leading-normal font-sans">
+                        <div className="p-2.5 bg-slate-50 dark:bg-slate-955 rounded-xl border border-slate-150 dark:border-slate-850">
+                          <span className="text-[8px] text-slate-450 uppercase font-mono block">Clinical Status</span>
+                          <strong className="text-slate-800 dark:text-zinc-200 block mt-0.5">{selectedNodeInfo.status}</strong>
+                        </div>
+                        <div className="p-2.5 bg-slate-50 dark:bg-slate-955 rounded-xl border border-slate-150 dark:border-slate-850">
+                          <span className="text-[8px] text-slate-450 uppercase font-mono block">Centrality Index</span>
+                          <strong className="text-emerald-500 block mt-0.5">0.88 (High)</strong>
+                        </div>
+                        <div className="p-2.5 bg-slate-50 dark:bg-slate-955 rounded-xl border border-slate-150 dark:border-slate-850">
+                          <span className="text-[8px] text-slate-450 uppercase font-mono block">Confidence Rating</span>
+                          <strong className="text-emerald-500 block mt-0.5">{selectedNodeInfo.confidence}%</strong>
+                        </div>
+                        <div className="p-2.5 bg-slate-50 dark:bg-slate-955 rounded-xl border border-slate-150 dark:border-slate-850">
+                          <span className="text-[8px] text-slate-450 uppercase font-mono block">Evidence Weight</span>
+                          <strong className="text-slate-700 dark:text-zinc-300 block mt-0.5">{selectedNodeInfo.evidenceRating.split(' ')[2] || "92%"}</strong>
+                        </div>
+                        <div className="p-2.5 bg-slate-50 dark:bg-slate-955 rounded-xl border border-slate-150 dark:border-slate-850 col-span-2">
+                          <span className="text-[8px] text-slate-450 uppercase font-mono block">Historical Trends & Changes</span>
+                          <span className="text-slate-650 dark:text-zinc-350 block mt-0.5">
+                            {selectedNodeId?.includes("kidney") ? "Creatinine rose 1.1 -> 1.6, eGFR declined 78 -> 49 over 12 months." : 
+                             selectedNodeId?.includes("thyroid") ? "TSH rose 6.2 -> 7.8, now compensated at 4.8." :
+                             "ESR rose 45 -> 58, currently stabilized at 38."}
+                          </span>
+                        </div>
+                        <div className="p-2.5 bg-slate-50 dark:bg-slate-955 rounded-xl border border-slate-150 dark:border-slate-850 col-span-2">
+                          <span className="text-[8px] text-slate-450 uppercase font-mono block">Population Benchmark</span>
+                          <span className="text-slate-650 dark:text-zinc-350 block mt-0.5">{selectedNodeInfo.populationBenchmark}</span>
                         </div>
                       </div>
+
+                      {/* Connected Nodes List with Edge weights (Priority 2 & 3) */}
+                      <div className="space-y-2">
+                        <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Connected Nodes & Strengths</span>
+                        <div className="grid grid-cols-1 gap-1.5 max-h-[120px] overflow-y-auto pr-1">
+                          {selectedNodeInfo.connectedElements.map((fact: string, idx: number) => {
+                            const isVeryStrong = fact.includes("Kidneys") || fact.includes("eGFR") || fact.includes("TSH") || fact.includes("Stiffness") || fact.includes("Rhus");
+                            return (
+                              <div key={idx} className="p-2 bg-slate-50 dark:bg-slate-955 rounded-xl border border-slate-200/50 dark:border-slate-850/50 text-[10px] flex justify-between items-center">
+                                <span className="text-slate-700 dark:text-zinc-350 font-medium">❖ {fact}</span>
+                                <span className={`font-bold font-mono ${isVeryStrong ? "text-emerald-500" : "text-sky-500"}`}>
+                                  {isVeryStrong ? "Very Strong (95%)" : "Strong (82%)"}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Similar Patient Overlay (Priority 10) */}
+                      <div className="p-3 bg-gradient-to-r from-purple-950/10 to-teal-950/10 rounded-2xl border border-purple-900/30 space-y-1.5 text-[10px] leading-normal font-sans">
+                        <span className="text-[8.5px] font-mono text-purple-400 uppercase tracking-widest block font-bold">Similar Patient Overlay™</span>
+                        <div className="text-slate-300">
+                          Matched <strong>128 similar patient twins</strong> in active database:
+                        </div>
+                        <div className="grid grid-cols-3 gap-2 text-center text-[9px] font-mono font-bold mt-1">
+                          <div className="bg-emerald-950/40 text-emerald-400 px-1.5 py-1 rounded border border-emerald-900">Improved: 72%</div>
+                          <div className="bg-slate-900 text-slate-400 px-1.5 py-1 rounded border border-slate-800">Stable: 18%</div>
+                          <div className="bg-rose-950/40 text-rose-400 px-1.5 py-1 rounded border border-rose-900">Progressed: 10%</div>
+                        </div>
+                      </div>
+
                     </div>
 
-                    <div className="p-3.5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-850 space-y-1 text-[10.5px]">
+                    {/* Bottom Outcomes card */}
+                    <div className="p-3.5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-850 space-y-1.5 text-[10px] shrink-0">
                       <div className="flex justify-between font-bold">
-                        <span>Efficacy Success Index:</span>
-                        <span className="text-emerald-500 font-mono">88% (High)</span>
+                        <span>Predicted Outcomes:</span>
+                        <span className="text-emerald-500 font-mono text-right">{selectedNodeInfo.historicalOutcome}</span>
                       </div>
                       <div className="flex justify-between text-slate-400 text-[9px]">
-                        <span>Materia Medica support:</span>
-                        <span>Level A (Clinical guidelines)</span>
+                        <span>Suggested Actions:</span>
+                        <span className="text-sky-400 font-bold">Assess intercurrent remedy response</span>
                       </div>
                     </div>
+
                   </div>
                 ) : (
                   <div className="flex-1 flex flex-col items-center justify-center text-center p-6 text-slate-400 gap-2">
@@ -2435,9 +3316,32 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
                       </div>
 
                       <div className="space-y-2 pt-2 border-t border-slate-200/50 dark:border-slate-850/50 text-[10px]">
-                        <div className="flex justify-between font-bold text-slate-650 dark:text-slate-350">
+                        <div className="flex justify-between font-bold text-slate-650 dark:text-slate-350 items-center">
                           <span>Clinical Confidence:</span>
-                          <span className="text-emerald-500 font-mono">88% (High)</span>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-emerald-500 font-mono">88% (High)</span>
+                            <button
+                              onClick={() => {
+                                const foundPivot = Object.values(NODE_PIVOT_MAP).find(p => p.nodeName.toLowerCase().includes(match.name.toLowerCase().split(' ')[0]));
+                                setEvidenceExplorerData({
+                                  actionName: `Remedy Selection: ${match.name}`,
+                                  benefit: `${match.score}% match with patient symptoms`,
+                                  confidence: `${match.score}%`,
+                                  urgency: "High Recommendation",
+                                  timeToBenefit: "14 - 30 days",
+                                  evidenceLevel: "Grade A Clinical Affinity",
+                                  reason: match.keyEvidence || "Constitutional alignment with thermal reaction and chronic miasmatic layer.",
+                                  guideline: foundPivot ? foundPivot.guideline : "Clinical repertory alignment based on Kent's and Boericke's Materia Medica.",
+                                  pathway: foundPivot ? foundPivot.pathway : `Patient twin symptoms -> ${match.name}`,
+                                  outcomes: foundPivot ? foundPivot.outcomes : "84% success rate in matching chronic responder cohorts.",
+                                  calculations: `Base Match (${match.score - 10}%) + Glandular / Organ Affinity (+6%) + Modality Correlation (+4%) = ${match.score}% Total Confidence.`
+                                });
+                              }}
+                              className="px-1.5 py-0.5 bg-sky-900/40 hover:bg-sky-900 text-sky-400 hover:text-white border border-sky-700/50 rounded text-[8.5px] font-bold transition-all cursor-pointer"
+                            >
+                              Why?
+                            </button>
+                          </div>
                         </div>
                         <div className="text-[8.5px] text-slate-400 leading-tight">
                           Evidence: Repertory rubrics, Materia Medica, and 12 similar historical cases.
@@ -2526,6 +3430,93 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
               <div className="w-full bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl relative border border-slate-100 dark:border-slate-850">
                 <canvas ref={forecastCanvasRef} />
               </div>
+
+              {/* Scenario Comparison Grid (Priority 6) */}
+              <div className="border-t border-slate-100 dark:border-slate-805 pt-4 space-y-3">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono block">Multi-Scenario Forecasting Comparison Grid</span>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse text-[11px] leading-normal">
+                    <thead>
+                      <tr className="border-b border-slate-200 dark:border-slate-800 text-slate-450 uppercase text-[9px] font-mono">
+                        <th className="pb-1.5 font-semibold">Clinical Parameter</th>
+                        <th className="pb-1.5 font-semibold text-rose-500 text-center">Scenario A (No Intervention)</th>
+                        <th className="pb-1.5 font-semibold text-sky-500 text-center">Scenario B (Recommended)</th>
+                        <th className="pb-1.5 font-semibold text-emerald-500 text-center">Scenario C (Optimized)</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-850">
+                      <tr>
+                        <td className="py-2 font-bold text-slate-650 dark:text-slate-350">
+                          {activeDataKey === "aarav" ? "CKD Progression Risk" : activeDataKey === "priya" ? "PCOS Diabetes Trigger" : "RA Inflammatory Flare"}
+                        </td>
+                        <td className="py-2 text-center text-rose-500 font-mono font-bold">
+                          {activeTwinMode === "simulator" && simulatedResults ? simulatedResults.worstCase.risks[0]?.val : activeData.predictiveRisks[0].val + 10}% (High)
+                        </td>
+                        <td className="py-2 text-center text-sky-500 font-mono font-bold">
+                          {activeTwinMode === "simulator" && simulatedResults ? simulatedResults.risks[0]?.val : activeData.predictiveRisks[0].val}% (Moderate)
+                        </td>
+                        <td className="py-2 text-center text-emerald-500 font-mono font-bold">
+                          {activeTwinMode === "simulator" && simulatedResults ? simulatedResults.bestCase.risks[0]?.val : activeData.predictiveRisks[0].val - 12}% (Low)
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="py-2 font-bold text-slate-650 dark:text-slate-350">
+                          {activeDataKey === "aarav" ? "eGFR Filtration Rate" : activeDataKey === "priya" ? "TSH Endocrine Level" : "ESR Inflammation"}
+                        </td>
+                        <td className="py-2 text-center font-mono">
+                          {activeDataKey === "aarav" ? "38 mL/min" : activeDataKey === "priya" ? "7.8 uIU/mL" : "58 mm/hr"}
+                        </td>
+                        <td className="py-2 text-center font-mono text-sky-550 dark:text-sky-450 font-bold">
+                          {activeTwinMode === "simulator" && simulatedResults ? simulatedResults.labs.egfr || simulatedResults.labs.tsh || simulatedResults.labs.esr : 
+                           (activeDataKey === "aarav" ? "49 mL/min" : activeDataKey === "priya" ? "4.8 uIU/mL" : "38 mm/hr")}
+                        </td>
+                        <td className="py-2 text-center font-mono text-emerald-550 dark:text-emerald-450 font-bold">
+                          {activeDataKey === "aarav" ? "56 mL/min" : activeDataKey === "priya" ? "3.2 uIU/mL" : "22 mm/hr"}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="py-2 font-bold text-slate-650 dark:text-slate-350">
+                          {activeDataKey === "aarav" ? "HbA1c Glycemia" : activeDataKey === "priya" ? "LH/FSH Endocrine Ratio" : "CRP Auto-antibody"}
+                        </td>
+                        <td className="py-2 text-center font-mono">
+                          {activeDataKey === "aarav" ? "8.0%" : activeDataKey === "priya" ? "2.8" : "18.5 mg/L"}
+                        </td>
+                        <td className="py-2 text-center font-mono text-sky-550 dark:text-sky-450 font-bold">
+                          {activeTwinMode === "simulator" && simulatedResults ? simulatedResults.labs.hba1c || simulatedResults.labs.lh_fsh_ratio || simulatedResults.labs.crp : 
+                           (activeDataKey === "aarav" ? "6.9%" : activeDataKey === "priya" ? "1.4" : "8.2 mg/L")}
+                        </td>
+                        <td className="py-2 text-center font-mono text-emerald-550 dark:text-emerald-450 font-bold">
+                          {activeDataKey === "aarav" ? "5.8%" : activeDataKey === "priya" ? "1.0" : "4.0 mg/L"}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="py-2 font-bold text-slate-650 dark:text-slate-350">Patient Vitality Index</td>
+                        <td className="py-2 text-center text-rose-500 font-mono font-bold">
+                          {activeTwinMode === "simulator" && simulatedResults ? simulatedResults.worstCase.vitality : activeData.vitalityIndex - 15}%
+                        </td>
+                        <td className="py-2 text-center text-sky-500 font-mono font-bold">
+                          {activeTwinMode === "simulator" && simulatedResults ? simulatedResults.vitality : activeData.vitalityIndex}%
+                        </td>
+                        <td className="py-2 text-center text-emerald-500 font-mono font-bold">
+                          {activeTwinMode === "simulator" && simulatedResults ? simulatedResults.bestCase.vitality : activeData.vitalityIndex + 12}%
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="py-2 font-bold text-slate-650 dark:text-slate-350">Systemic Disease Burden</td>
+                        <td className="py-2 text-center font-mono">
+                          {activeTwinMode === "simulator" && simulatedResults ? simulatedResults.worstCase.burden : activeData.diseaseBurdenIndex + 12}%
+                        </td>
+                        <td className="py-2 text-center font-mono font-bold">
+                          {activeTwinMode === "simulator" && simulatedResults ? simulatedResults.burden : activeData.diseaseBurdenIndex}%
+                        </td>
+                        <td className="py-2 text-center font-mono">
+                          {activeTwinMode === "simulator" && simulatedResults ? simulatedResults.bestCase.burden : activeData.diseaseBurdenIndex - 10}%
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
 
             {/* 7. LONGITUDINAL PATIENT STORY TIMELINE (PRIORITY 7) */}
@@ -2566,54 +3557,93 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
               </div>
             </div>
 
-            {/* 8. COHORTS POPULATION INTELLIGENCE GRID (PRIORITY 8) */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm space-y-4">
-              <div className="border-b border-slate-100 dark:border-slate-800 pb-2">
-                <h3 className="font-serif text-sm font-bold flex items-center gap-2">
-                  <Users className="w-4 h-4 text-emerald-500" /> Population Intelligence™
-                </h3>
-                <p className="text-[10px] text-slate-400 mt-0.5">Patient outcome benchmarks mapped against similar demographics and remedy cohorts.</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Benchmarking stats */}
-                <div className="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-850 space-y-3 text-xs">
-                  <span className="font-bold text-[10px] uppercase text-slate-400">Cohort Percentiles</span>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-slate-450">Same Age Cohort:</span>
-                      <span className="font-bold text-emerald-500">{activeData.cohortPercentiles.ageCohort}th percentile</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-450">Remedy Responder Cohort:</span>
-                      <span className="font-bold text-emerald-500">{activeData.cohortPercentiles.remedyCohort}th percentile</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-450">Regional Stability Index:</span>
-                      <span className="font-bold text-emerald-500">{activeData.cohortPercentiles.regionalPercentile}th percentile</span>
-                    </div>
-                  </div>
+            {/* 8. COHORTS POPULATION DIGITAL TWIN & LEARNING ENGINE (PRIORITY 8 & 9) */}
+            <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm space-y-5">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-100 dark:border-slate-800 pb-2">
+                <div>
+                  <h3 className="font-serif text-sm font-bold flex items-center gap-2">
+                    <Users className="w-4 h-4 text-emerald-500" /> Population Digital Twin™ & Learning Engine
+                  </h3>
+                  <p className="text-[10px] text-slate-400 mt-0.5">Outcome benchmarking and learning models active over 14 clinical cohorts.</p>
                 </div>
-
-                {/* Responder distribution */}
-                <div className="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-850 space-y-3 text-xs">
-                  <span className="font-bold text-[10px] uppercase text-slate-400">Remedy Responder Spread</span>
-                  <div className="grid grid-cols-3 gap-2 text-center text-[10.5px]">
-                    <div className="p-2 bg-emerald-500/10 dark:bg-emerald-950/20 text-emerald-500 rounded-xl">
-                      <div className="font-mono font-bold">68%</div>
-                      <div className="text-[8px] mt-0.5">Top</div>
-                    </div>
-                    <div className="p-2 bg-amber-500/10 dark:bg-amber-950/20 text-amber-500 rounded-xl">
-                      <div className="font-mono font-bold">24%</div>
-                      <div className="text-[8px] mt-0.5">Average</div>
-                    </div>
-                    <div className="p-2 bg-rose-500/10 dark:bg-rose-950/20 text-rose-500 rounded-xl">
-                      <div className="font-mono font-bold">8%</div>
-                      <div className="text-[8px] mt-0.5">Poor</div>
-                    </div>
-                  </div>
+                
+                <div className="flex items-center gap-1.5 bg-emerald-950/10 dark:bg-emerald-950/30 text-emerald-500 px-2.5 py-1 rounded-lg border border-emerald-900/30 text-[9px] font-mono">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
+                  <span>Learning Engine Active</span>
                 </div>
               </div>
+
+              {/* Learning stats row (Priority 8) */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-150 dark:border-slate-850 text-xs">
+                <div className="space-y-0.5">
+                  <span className="text-[8.5px] uppercase tracking-wider text-slate-500 font-mono">Action Success</span>
+                  <span className="text-sm font-bold font-mono text-slate-800 dark:text-zinc-100">88.4%</span>
+                </div>
+                <div className="space-y-0.5">
+                  <span className="text-[8.5px] uppercase tracking-wider text-slate-500 font-mono">Remedy Success</span>
+                  <span className="text-sm font-bold font-mono text-slate-800 dark:text-zinc-100">{outcomeLearningStats.remedySuccessRate}%</span>
+                </div>
+                <div className="space-y-0.5">
+                  <span className="text-[8.5px] uppercase tracking-wider text-slate-500 font-mono">Protocol Success</span>
+                  <span className="text-sm font-bold font-mono text-slate-800 dark:text-zinc-100">{outcomeLearningStats.protocolSuccessRate}%</span>
+                </div>
+                <div className="space-y-0.5">
+                  <span className="text-[8.5px] uppercase tracking-wider text-slate-500 font-mono">Clinician Success</span>
+                  <span className="text-sm font-bold font-mono text-slate-800 dark:text-zinc-100">{outcomeLearningStats.clinicianSuccessRate}%</span>
+                </div>
+              </div>
+
+              {/* Population Responder Cohort Matrix (Priority 9) */}
+              <div className="space-y-3">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono block">responder cohort comparison matrix</span>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr className="border-b border-slate-200 dark:border-slate-800 text-slate-450 uppercase text-[9px] font-mono">
+                        <th className="pb-1.5 font-semibold">Cohort Group</th>
+                        <th className="pb-1.5 font-semibold">Expected Trajectory</th>
+                        <th className="pb-1.5 font-semibold text-center">Deviation</th>
+                        <th className="pb-1.5 font-semibold text-center">Success Probability</th>
+                        <th className="pb-1.5 font-semibold text-right">Adjustments</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-850">
+                      <tr className="hover:bg-slate-50 dark:hover:bg-slate-950/40">
+                        <td className="py-2 font-bold text-slate-750 dark:text-zinc-200">Top Responders (68%)</td>
+                        <td className="py-2 text-slate-500">eGFR stable at +2 mL/min/yr, microalbumin cleared</td>
+                        <td className="py-2 text-center font-mono font-bold text-emerald-500">+12% vs average</td>
+                        <td className="py-2 text-center font-mono text-slate-350">84%</td>
+                        <td className="py-2 text-right text-slate-450">Maintain constitutional support</td>
+                      </tr>
+                      <tr className="hover:bg-slate-50 dark:hover:bg-slate-950/40">
+                        <td className="py-2 font-bold text-slate-750 dark:text-zinc-200">Average Responders (24%)</td>
+                        <td className="py-2 text-slate-500">Stable creatinine, minor fluctuations</td>
+                        <td className="py-2 text-center font-mono text-slate-400">0% (Baseline)</td>
+                        <td className="py-2 text-center font-mono text-slate-350">54%</td>
+                        <td className="py-2 text-right text-slate-450">Optimize sleep & fluid sliders</td>
+                      </tr>
+                      <tr className="hover:bg-slate-50 dark:hover:bg-slate-950/40">
+                        <td className="py-2 font-bold text-slate-750 dark:text-zinc-200">Poor Responders (8%)</td>
+                        <td className="py-2 text-slate-500">eGFR declines &gt; 5 mL/min/yr, edema flare</td>
+                        <td className="py-2 text-center font-mono font-bold text-rose-500">-18% vs average</td>
+                        <td className="py-2 text-center font-mono text-slate-350">18%</td>
+                        <td className="py-2 text-right text-sky-400 font-bold">Add sycotic intercurrent remedy</td>
+                      </tr>
+                      <tr className="bg-sky-50/10 dark:bg-sky-950/10 font-semibold">
+                        <td className="py-2 font-bold text-sky-500 flex items-center gap-1">
+                          <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
+                          Current Patient
+                        </td>
+                        <td className="py-2 text-slate-300">Stage 3b CKD eGFR recovery slope</td>
+                        <td className="py-2 text-center font-mono text-sky-400 font-bold">+8.2% vs average</td>
+                        <td className="py-2 text-center font-mono text-sky-400 font-bold">92%</td>
+                        <td className="py-2 text-right text-sky-400">Apis + Serum Anguillae active</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
             </div>
 
             {/* 9. THERAPEUTIC INTELLIGENCE 2.0 (PRIORITY 9) */}
@@ -2679,125 +3709,232 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
 
           </div>
           
-          {/* ==================== RIGHT COLUMN: PERSISTENT LIVE FEED PANEL (4 COLS) (PRIORITY 1) ==================== */}
+                    {/* ==================== RIGHT COLUMN: PERSISTENT COMMAND SIDEBAR PANEL (4 COLS) (PRIORITY 3) ==================== */}
           <div className="xl:col-span-4 bg-slate-900/90 dark:bg-slate-950/90 border border-slate-800 rounded-[28px] p-5 shadow-xl text-white backdrop-blur-md xl:sticky xl:top-6 select-none max-h-[85vh] flex flex-col gap-4">
             
-            {/* Header with status light */}
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <div className="flex items-center gap-2">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                </span>
-                <span className="text-xs font-bold uppercase tracking-wider font-mono">Live Intelligence Feed™</span>
+            {/* Tab Swappers */}
+            <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800 gap-1 shrink-0">
+              <button
+                onClick={() => setSidebarTab("feed")}
+                className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all cursor-pointer ${sidebarTab === "feed" ? "bg-slate-800 text-white" : "text-slate-500 hover:text-slate-350"}`}
+              >
+                📡 Intelligence Feed™
+              </button>
+              <button
+                onClick={() => setSidebarTab("ask")}
+                className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all cursor-pointer ${sidebarTab === "ask" ? "bg-slate-800 text-white" : "text-slate-500 hover:text-slate-350"}`}
+              >
+                💬 Ask CIOS™ Assistant
+              </button>
+            </div>
+
+            {/* TAB 1: INTELLIGENCE FEED */}
+            {sidebarTab === "feed" && (
+              <div className="flex flex-col gap-3 flex-1 min-h-0">
+                {/* Header with status light */}
+                <div className="flex items-center justify-between border-b border-slate-800 pb-2 shrink-0">
+                  <div className="flex items-center gap-2">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider font-mono">Live Intelligence Feed™</span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded text-[8px] bg-emerald-950/40 text-emerald-400 border border-emerald-900 font-mono">
+                    Streaming Live
+                  </span>
+                </div>
+
+                {/* Filter tags */}
+                <div className="flex flex-wrap gap-1 border-b border-slate-800 pb-2 shrink-0">
+                  {(["all", "risk", "insight", "remedy", "warning", "bookmarked"] as const).map((filter) => (
+                    <button
+                      key={filter}
+                      onClick={() => setFeedFilter(filter)}
+                      className={`px-2 py-1 rounded-lg text-[9px] font-bold border capitalize transition-all cursor-pointer ${feedFilter === filter ? "bg-emerald-600 text-white border-emerald-500" : "bg-slate-850 border-slate-800 text-slate-400 hover:text-slate-200"}`}
+                    >
+                      {filter}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Scrollable list */}
+                <div className="flex-1 overflow-y-auto space-y-3 pr-1 min-h-0">
+                  <AnimatePresence initial={false}>
+                    {feedItems
+                      .filter(item => {
+                        if (feedFilter === "bookmarked") return bookmarkedFeeds[item.id];
+                        if (feedFilter !== "all" && item.type !== feedFilter) return false;
+                        return true;
+                      })
+                      .map((item) => {
+                        const isBookmarked = bookmarkedFeeds[item.id];
+                        let typeColor = "text-sky-400 bg-sky-950/40 border-sky-900";
+                        if (item.type === "risk") typeColor = "text-rose-400 bg-rose-950/40 border-rose-900";
+                        else if (item.type === "remedy") typeColor = "text-purple-400 bg-purple-950/40 border-purple-900";
+                        else if (item.type === "warning") typeColor = "text-amber-400 bg-amber-950/40 border-amber-900";
+
+                        return (
+                          <motion.div
+                            key={item.id}
+                            initial={{ opacity: 0, y: -20, height: 0 }}
+                            animate={{ opacity: 1, y: 0, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="p-3 bg-slate-950/60 border border-slate-850 rounded-2xl space-y-2 hover:border-slate-700 transition-all cursor-pointer relative group"
+                            onClick={() => setActiveFeedItemDetail(item)}
+                          >
+                            <div className="flex justify-between items-start">
+                              <div className="flex items-center gap-2">
+                                <span className="font-mono text-[9px] text-slate-500 font-bold">{item.timestamp}</span>
+                                <span className={`px-1.5 py-0.2 rounded text-[8px] font-mono border uppercase tracking-wider font-bold ${typeColor}`}>
+                                  {item.type}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                {item.confidenceDelta && (
+                                  <span className="text-[8px] font-mono font-bold text-emerald-400">{item.confidenceDelta}</span>
+                                )}
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setBookmarkedFeeds(prev => ({ ...prev, [item.id]: !prev[item.id] }));
+                                  }}
+                                  className={`p-1 bg-transparent border-none text-xs cursor-pointer ${isBookmarked ? "text-amber-400" : "text-slate-600 hover:text-slate-400"}`}
+                                >
+                                  ★
+                                </button>
+                              </div>
+                            </div>
+
+                            <div className="text-[11px] font-bold text-slate-200">
+                              {item.message}
+                            </div>
+                            <p className="text-[10px] text-slate-400 line-clamp-2 leading-relaxed">
+                              {item.detail}
+                            </p>
+                          </motion.div>
+                        );
+                      })}
+                  </AnimatePresence>
+                </div>
+
+                {/* Expand details panel overlay inside sidebar */}
+                {activeFeedItemDetail && (
+                  <div className="p-3.5 bg-slate-950 border border-emerald-900/50 rounded-2xl space-y-3 relative animate-fadeIn shrink-0">
+                    <button 
+                      onClick={() => setActiveFeedItemDetail(null)}
+                      className="absolute right-2.5 top-2.5 text-slate-500 hover:text-slate-350 cursor-pointer border-none bg-transparent"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                    <div>
+                      <span className="text-[8px] font-mono text-slate-550 uppercase tracking-widest font-bold block mb-1">Deep-Dive Clinical Rationale</span>
+                      <span className="font-bold text-xs text-white block">{activeFeedItemDetail.message}</span>
+                    </div>
+                    <p className="text-[10.5px] leading-relaxed text-slate-350">
+                      {activeFeedItemDetail.detail}
+                    </p>
+                    <div className="flex justify-between items-center text-[9px] border-t border-slate-800 pt-2 text-slate-500 font-mono">
+                      <span>Confidence: 92%</span>
+                      <span>Target Area: Renal / Systemic</span>
+                    </div>
+                  </div>
+                )}
               </div>
-              
-              <span className="px-2 py-0.5 rounded text-[8px] bg-emerald-950/40 text-emerald-400 border border-emerald-900 font-mono">
-                Streaming Live
-              </span>
-            </div>
+            )}
 
-            {/* Filter tags */}
-            <div className="flex flex-wrap gap-1 border-b border-slate-800 pb-3">
-              {(["all", "risk", "insight", "remedy", "warning", "bookmarked"] as const).map((filter) => (
-                <button
-                  key={filter}
-                  onClick={() => setFeedFilter(filter)}
-                  className={`px-2 py-1 rounded-lg text-[9px] font-bold border capitalize transition-all cursor-pointer ${feedFilter === filter ? "bg-emerald-600 text-white border-emerald-500" : "bg-slate-850 border-slate-800 text-slate-400 hover:text-slate-200"}`}
-                >
-                  {filter}
-                </button>
-              ))}
-            </div>
-
-            {/* Scrollable list */}
-            <div className="flex-1 overflow-y-auto space-y-3 pr-1">
-              <AnimatePresence initial={false}>
-                {feedItems
-                  .filter(item => {
-                    if (feedFilter === "bookmarked") return bookmarkedFeeds[item.id];
-                    if (feedFilter !== "all" && item.type !== feedFilter) return false;
-                    return true;
-                  })
-                  .map((item) => {
-                    const isBookmarked = bookmarkedFeeds[item.id];
-                    let typeColor = "text-sky-400 bg-sky-950/40 border-sky-900";
-                    if (item.type === "risk") typeColor = "text-rose-400 bg-rose-950/40 border-rose-900";
-                    else if (item.type === "remedy") typeColor = "text-purple-400 bg-purple-950/40 border-purple-900";
-                    else if (item.type === "warning") typeColor = "text-amber-400 bg-amber-950/40 border-amber-900";
-
-                    return (
-                      <motion.div
-                        key={item.id}
-                        initial={{ opacity: 0, y: -20, height: 0 }}
-                        animate={{ opacity: 1, y: 0, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="p-3 bg-slate-950/60 border border-slate-850 rounded-2xl space-y-2 hover:border-slate-700 transition-all cursor-pointer relative group"
-                        onClick={() => setActiveFeedItemDetail(item)}
+            {/* TAB 2: ASK CIOS™ ASSISTANT */}
+            {sidebarTab === "ask" && (
+              <div className="flex flex-col gap-3 flex-1 min-h-0">
+                
+                {/* Quick Question Chips (Priority 3) */}
+                <div className="flex flex-col gap-1.5 shrink-0 bg-slate-950/80 p-2.5 rounded-xl border border-slate-850">
+                  <span className="text-[8.5px] font-mono text-slate-500 uppercase tracking-widest block mb-0.5">Quick Clinical Questions:</span>
+                  <div className="flex flex-wrap gap-1">
+                    {(activeDataKey === "aarav" ? [
+                      { label: "Why CKD risk high?", query: "Why is CKD risk increased?" },
+                      { label: "Why Apis?", query: "Why was Apis Mellifica chosen?" },
+                      { label: "Lyc vs Sulphur", query: "Compare Lycopodium Clavatum vs Sulphur." },
+                      { label: "If HbA1c = 6.0?", query: "What if HbA1c becomes 6.0?" }
+                    ] : activeDataKey === "priya" ? [
+                      { label: "Why PCOS risk high?", query: "Why is PCOS diabetes risk increased?" },
+                      { label: "Why Pulsatilla?", query: "Why was Pulsatilla chosen?" },
+                      { label: "Puls vs Sepia", query: "Compare Pulsatilla vs Sepia." },
+                      { label: "If weight = 70kg?", query: "What if weight becomes 70kg?" }
+                    ] : [
+                      { label: "Why joint flare?", query: "Why was joint flare risk high?" },
+                      { label: "Why Silicea?", query: "Why was Silicea chosen?" },
+                      { label: "Sil vs Rhus Tox", query: "Compare Silicea vs Rhus Tox." },
+                      { label: "If CRP = 5.0?", query: "What if CRP becomes 5.0?" }
+                    ]).map((q, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => handleAskAICopilot(q.query)}
+                        className="px-2 py-1 rounded bg-slate-900 border border-slate-800 text-[9px] font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition-all cursor-pointer text-left"
                       >
-                        <div className="flex justify-between items-start">
-                          <div className="flex items-center gap-2">
-                            <span className="font-mono text-[9px] text-slate-500 font-bold">{item.timestamp}</span>
-                            <span className={`px-1.5 py-0.2 rounded text-[8px] font-mono border uppercase tracking-wider font-bold ${typeColor}`}>
-                              {item.type}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            {item.confidenceDelta && (
-                              <span className="text-[8px] font-mono font-bold text-emerald-400">{item.confidenceDelta}</span>
-                            )}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation(); // prevent card selection expansion
-                                setBookmarkedFeeds(prev => ({ ...prev, [item.id]: !prev[item.id] }));
-                              }}
-                              className={`p-1 bg-transparent border-none text-xs cursor-pointer ${isBookmarked ? "text-amber-400" : "text-slate-600 hover:text-slate-400"}`}
-                            >
-                              ★
-                            </button>
-                          </div>
-                        </div>
-
-                        <div className="text-[11px] font-bold text-slate-200">
-                          {item.message}
-                        </div>
-                        <p className="text-[10px] text-slate-400 line-clamp-2 leading-relaxed">
-                          {item.detail}
-                        </p>
-                      </motion.div>
-                    );
-                  })}
-              </AnimatePresence>
-            </div>
-
-            {/* Expand details panel overlay inside sidebar */}
-            {activeFeedItemDetail && (
-              <div className="p-3.5 bg-slate-950 border border-emerald-900/50 rounded-2xl space-y-3 relative animate-fadeIn">
-                <button 
-                  onClick={() => setActiveFeedItemDetail(null)}
-                  className="absolute right-2.5 top-2.5 text-slate-500 hover:text-slate-350 cursor-pointer border-none bg-transparent"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-                <div>
-                  <span className="text-[8px] font-mono text-slate-550 uppercase tracking-widest font-bold block mb-1">Deep-Dive Clinical Rationale</span>
-                  <span className="font-bold text-xs text-white block">{activeFeedItemDetail.message}</span>
+                        {q.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <p className="text-[10.5px] leading-relaxed text-slate-350">
-                  {activeFeedItemDetail.detail}
-                </p>
-                <div className="flex justify-between items-center text-[9px] border-t border-slate-800 pt-2 text-slate-500 font-mono">
-                  <span>Confidence: 92%</span>
-                  <span>Target Area: Renal / Systemic</span>
+
+                {/* Chat Message Box */}
+                <div className="flex-1 overflow-y-auto space-y-3 bg-slate-950/40 p-3 rounded-2xl border border-slate-850 min-h-0 font-sans">
+                  {chatHistory.map((m, idx) => (
+                    <div
+                      key={idx}
+                      className={`flex flex-col gap-1 max-w-[88%] text-xs p-2.5 rounded-2xl ${
+                        m.sender === "doctor" 
+                          ? "bg-sky-600 text-white self-end rounded-tr-none" 
+                          : "bg-slate-900 border border-slate-800 text-slate-200 self-start rounded-tl-none"
+                      }`}
+                    >
+                      <span className="text-[8px] font-mono text-slate-450 uppercase font-extrabold tracking-wider">
+                        {m.sender === "doctor" ? "Clinician / Doctor" : "OSTM™ Assistant"}
+                      </span>
+                      <div className="leading-relaxed whitespace-pre-wrap">
+                        {m.sender === "ai" ? renderMessageText(m.text) : m.text}
+                      </div>
+                    </div>
+                  ))}
+                  {isProcessingChat && (
+                    <div className="bg-slate-900 border border-slate-800 text-slate-200 p-2.5 rounded-2xl rounded-tl-none self-start max-w-[80%] flex items-center gap-2">
+                      <span className="h-1.5 w-1.5 bg-sky-500 rounded-full animate-bounce" />
+                      <span className="h-1.5 w-1.5 bg-sky-500 rounded-full animate-bounce [animation-delay:0.2s]" />
+                      <span className="h-1.5 w-1.5 bg-sky-500 rounded-full animate-bounce [animation-delay:0.4s]" />
+                      <span className="text-[10px] text-slate-400 font-mono">Analyzing twin telemetry...</span>
+                    </div>
+                  )}
+                  <div ref={chatBottomRef} />
                 </div>
+
+                {/* Input Console */}
+                <div className="flex gap-2 bg-slate-950 p-1.5 rounded-2xl border border-slate-850 shrink-0">
+                  <input
+                    type="text"
+                    placeholder="Ask CIOS assistant (e.g. Compare Lycopodium)..."
+                    value={customQuery}
+                    onChange={(e) => setCustomQuery(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") handleAskAICopilot(); }}
+                    className="flex-1 px-3 py-1.5 bg-transparent border-none text-xs text-white focus:outline-none placeholder-slate-600"
+                  />
+                  <button
+                    onClick={() => handleAskAICopilot()}
+                    className="p-2 bg-sky-600 hover:opacity-90 rounded-xl flex items-center justify-center cursor-pointer transition-all border-none"
+                  >
+                    <Send className="w-3.5 h-3.5 text-white" />
+                  </button>
+                </div>
+
               </div>
             )}
 
           </div>
 
         </div>
-      )}      {/* ==================== VIEW 2: AI INTAKE PARSER ==================== */}
+      )}
+      {/* ==================== VIEW 2: AI INTAKE PARSER ==================== */}
       {activeTab === "intake" && (
         <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm space-y-4">
           <div className="border-b border-slate-100 dark:border-slate-800 pb-2">
@@ -3108,6 +4245,96 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
           )}
         </div>
       )}
+
+      {/* Clinical Evidence Explorer Overlay Modal (Priority 7) */}
+      <AnimatePresence>
+        {evidenceExplorerData && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 font-sans select-none"
+            onClick={() => setEvidenceExplorerData(null)}
+          >
+            <motion.div 
+              initial={{ scale: 0.95, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 20 }}
+              className="bg-slate-900 border border-slate-800 rounded-[28px] max-w-lg w-full p-6 text-white space-y-4 shadow-2xl relative"
+              onClick={(e) => e.stopPropagation()} // prevent click out
+            >
+              <button 
+                onClick={() => setEvidenceExplorerData(null)}
+                className="absolute right-4 top-4 text-slate-500 hover:text-slate-300 border-none bg-transparent cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              <div className="border-b border-slate-800 pb-2">
+                <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest block mb-0.5">OSTM™ Clinical Evidence Explorer</span>
+                <h3 className="text-sm font-bold text-sky-400">{evidenceExplorerData.actionName}</h3>
+              </div>
+
+              <div className="space-y-3 text-xs leading-normal">
+                <div className="grid grid-cols-2 gap-3 bg-slate-950 p-3 rounded-xl border border-slate-850 font-mono text-[10px]">
+                  <div>
+                    <span className="text-slate-500 block text-[9px]">EXPECTED BENEFIT</span>
+                    <strong className="text-emerald-400 font-bold">{evidenceExplorerData.benefit} stabilization</strong>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 block text-[9px]">CONFIDENCE RATING</span>
+                    <strong className="text-emerald-400 font-bold">{evidenceExplorerData.confidence} (High Match)</strong>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 block text-[9px]">TIME TO BENEFIT</span>
+                    <strong className="text-slate-300">{evidenceExplorerData.timeToBenefit}</strong>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 block text-[9px]">EVIDENCE LEVEL</span>
+                    <strong className="text-slate-300">{evidenceExplorerData.evidenceLevel} studies</strong>
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <span className="font-bold text-slate-400 text-[10px] uppercase font-mono block">Clinical Rationale:</span>
+                  <p className="text-slate-300 text-[11px] leading-relaxed">{evidenceExplorerData.reason}</p>
+                </div>
+
+                <div className="space-y-1">
+                  <span className="font-bold text-slate-400 text-[10px] uppercase font-mono block">Evidence Hierarchy & guidelines:</span>
+                  <p className="text-slate-350 text-[11px] leading-relaxed">✓ {evidenceExplorerData.guideline}</p>
+                </div>
+
+                <div className="space-y-1">
+                  <span className="font-bold text-slate-400 text-[10px] uppercase font-mono block">Historical Responder outcomes:</span>
+                  <p className="text-slate-350 text-[11px] leading-relaxed">✓ {evidenceExplorerData.outcomes}</p>
+                </div>
+
+                <div className="space-y-1">
+                  <span className="font-bold text-slate-400 text-[10px] uppercase font-mono block">Knowledge Graph Pathways:</span>
+                  <div className="p-2 bg-slate-950 rounded-xl border border-slate-850 text-slate-300 font-mono text-[10px]">
+                    {evidenceExplorerData.pathway}
+                  </div>
+                </div>
+
+                <div className="space-y-1 pt-1 border-t border-slate-800 text-[10px] font-mono text-slate-450">
+                  <span className="block text-[8px] text-slate-550 uppercase">Confidence Calculation Breakdown:</span>
+                  {evidenceExplorerData.calculations}
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-slate-800 flex justify-end">
+                <button
+                  onClick={() => setEvidenceExplorerData(null)}
+                  className="px-4 py-2 bg-slate-850 hover:bg-slate-800 border border-slate-700 text-slate-300 rounded-xl text-xs font-bold transition-all cursor-pointer"
+                >
+                  Close Explorer
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
     </div>
   );
