@@ -73,7 +73,7 @@ export default function MarkdownRenderer({ text, onActionClick }: MarkdownRender
           <button
             key={index}
             onClick={() => onActionClick?.(label)}
-            className="mx-1 my-1 px-3 py-1.5 bg-teal-500/10 dark:bg-teal-400/20 hover:bg-teal-600 dark:hover:bg-teal-500 hover:text-white border border-teal-500/30 text-teal-700 dark:text-teal-300 rounded-xl text-[10px] font-black tracking-wide transition-all cursor-pointer shadow-sm active:scale-95 inline-flex items-center gap-1 leading-none"
+            className="mx-1 my-1 px-3 py-1.5 bg-teal-500/10 dark:bg-teal-400/20 hover:bg-teal-600 dark:hover:bg-teal-500 hover:text-white border border-teal-500/30 text-teal-700 dark:text-teal-300 rounded-xl text-[0.8em] font-black tracking-wide transition-all cursor-pointer shadow-sm active:scale-95 inline-flex items-center gap-1 leading-none"
           >
             {label}
           </button>
@@ -110,7 +110,7 @@ export default function MarkdownRenderer({ text, onActionClick }: MarkdownRender
       // Bullets
       if (line.startsWith("- ") || line.startsWith("* ")) {
         listItems.push(
-          <li key={`li-${idx}`} className="text-[11.5px] leading-relaxed">
+          <li key={`li-${idx}`} className="text-[1em] leading-relaxed">
             {parseInline(line.substring(2))}
           </li>
         );
@@ -121,7 +121,7 @@ export default function MarkdownRenderer({ text, onActionClick }: MarkdownRender
         const match = line.match(/^(\d+)\.\s(.*)/);
         if (match) {
           elements.push(
-            <div key={`ol-${idx}`} className="flex gap-2 text-[11.5px] leading-relaxed my-1.5 pl-1">
+            <div key={`ol-${idx}`} className="flex gap-2 text-[1em] leading-relaxed my-1.5 pl-1">
               <span className="font-bold text-teal-600 dark:text-teal-455">{match[1]}.</span>
               <span className="text-slate-700 dark:text-zinc-300">{parseInline(match[2])}</span>
             </div>
@@ -132,7 +132,7 @@ export default function MarkdownRenderer({ text, onActionClick }: MarkdownRender
       else if (line.includes("🟢") || line.includes("🟡") || line.includes("🔴") || line.includes("⚪") || line.includes("✓") || line.includes("⚠")) {
         flushList();
         elements.push(
-          <div key={`status-${idx}`} className="flex items-start gap-2 text-[11px] leading-relaxed my-1.5 bg-white/40 dark:bg-slate-900/40 p-2 rounded-xl border border-slate-100/50 dark:border-slate-800/30">
+          <div key={`status-${idx}`} className="flex items-start gap-2 text-[0.95em] leading-relaxed my-1.5 bg-white/40 dark:bg-slate-900/40 p-2 rounded-xl border border-slate-100/50 dark:border-slate-800/30">
             <span className="text-slate-750 dark:text-zinc-300">{parseInline(line)}</span>
           </div>
         );
@@ -141,7 +141,7 @@ export default function MarkdownRenderer({ text, onActionClick }: MarkdownRender
       else {
         flushList();
         elements.push(
-          <p key={`p-${idx}`} className="text-[11.5px] leading-relaxed mb-2 text-slate-750 dark:text-zinc-300 last:mb-0">
+          <p key={`p-${idx}`} className="text-[1em] leading-relaxed mb-2 text-slate-750 dark:text-zinc-300 last:mb-0">
             {parseInline(line)}
           </p>
         );
@@ -160,7 +160,7 @@ export default function MarkdownRenderer({ text, onActionClick }: MarkdownRender
           return (
             <div key={sIdx} className="space-y-2">
               {section.title && (
-                <h4 className="font-extrabold text-[12.5px] text-slate-800 dark:text-zinc-250 mt-3 mb-1.5 font-sans tracking-wide">
+                <h4 className="font-extrabold text-[1.1em] text-slate-800 dark:text-zinc-250 mt-3 mb-1.5 font-sans tracking-wide">
                   {parseInline(section.title)}
                 </h4>
               )}
@@ -203,7 +203,7 @@ export default function MarkdownRenderer({ text, onActionClick }: MarkdownRender
           >
             {section.title && (
               <div className="flex items-center gap-1.5 pb-1.5 border-b border-slate-200/40 dark:border-slate-800/40">
-                <span className={`text-[11px] font-black uppercase tracking-wider ${headerColor}`}>
+                <span className={`text-[0.9em] font-black uppercase tracking-wider ${headerColor}`}>
                   {section.type === "clinical" && "👨⚕️ "}
                   {section.type === "constitutional" && "✨ "}
                   {section.type === "signals" && "📊 "}
