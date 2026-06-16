@@ -57,14 +57,14 @@ export default function HealthAssistant({ twin, theme, onSelectProfile }: Health
         } else {
           reply = `Your overall Health Score stands at **${twin.overallScore}%** based on ${completedCount} completed evaluations. \n\nActive system stress flags: **${twin.activeRulesFlags.join(", ") || "None"}**. \n\nI recommend taking the **Constitutional Assessment** next to compile your custom remedy indicators.`;
         }
-      } else if (textLower.includes("remedy") || textLower.includes("constitutional") || textLower.includes("homeopath")) {
+       } else if (textLower.includes("remedy") || textLower.includes("constitutional") || textLower.includes("homeopath")) {
         if (twin.constitutional) {
           reply = `Your constitutional assessment matches the **${twin.constitutional.remedyMatch}** profile, showing primary **${twin.constitutional.systemDominance}** dominance. This matches an adaptive pattern of **${twin.constitutional.adaptivePattern}**.`;
         } else {
           reply = "Constitutional analysis matches your thermal response, cravings, sleep, and emotional patterns to custom homeopathic remedies. Click the **Constitutional Profile** button in the dashboard to map yours!";
         }
-      } else if (textLower.includes("book") || textLower.includes("consult") || textLower.includes("doctor") || textLower.includes("jethwani")) {
-        reply = "You can schedule a clinical review with Dr. Narayan Jethwani directly. Click **Book Consultation** to open the calendar scheduling module. Pushing your self-assessment notes during booking is highly recommended.";
+      } else if (textLower.includes("book") || textLower.includes("consult") || textLower.includes("doctor") || textLower.includes("jethwani") || textLower.includes("whatsapp")) {
+        reply = "You can schedule a clinical review with Dr. Narayan Jethwani directly. \n\nClick the 'Chat on WA' button in the banner at the top of this chat to instantly share your digital twin data and book directly via WhatsApp, or schedule via the web scheduler here: https://homeo.healthcare/#booking";
       } else {
         reply = "I've analyzed your question. As your Health Assistant, I advise monitoring your daily hydration, maintaining sleep rhythm, and completing the remaining body system assessments. You can also ask me specific terms like 'What is Psora?' or 'Explain my results'.";
       }
@@ -72,6 +72,23 @@ export default function HealthAssistant({ twin, theme, onSelectProfile }: Health
       setMessages(prev => [...prev, { sender: "assistant", text: reply }]);
       setIsTyping(false);
     }, 1200);
+  };
+
+  const getWhatsAppLink = () => {
+    let message = "Hello Dr. Jethwani, I completed my Health Intelligence assessment and would like to book a consultation.\n\n";
+    message += `Overall Health Score: ${twin.overallScore}%\n`;
+    if (twin.biologicalAge) {
+      message += `Biological Age: ${twin.biologicalAge.bioAge} years (Chronological: ${twin.biologicalAge.chronologicalAge})\n`;
+    }
+    const completedKeys = Object.keys(twin.completedAssessments || {});
+    if (completedKeys.length > 0) {
+      message += "\nCompleted Assessments:\n";
+      completedKeys.forEach(cat => {
+        const item = twin.completedAssessments[cat];
+        message += `- ${cat.toUpperCase()}: Score ${item.score}%\n`;
+      });
+    }
+    return `https://wa.me/918446056789?text=${encodeURIComponent(message)}`;
   };
 
   const handleQuickQuestion = (q: string) => {
@@ -91,7 +108,7 @@ export default function HealthAssistant({ twin, theme, onSelectProfile }: Health
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
-            className={`w-[340px] md:w-[380px] h-[500px] rounded-[28px] border shadow-2xl flex flex-col justify-between overflow-hidden mb-4 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-slate-200/80 dark:border-slate-800`}
+            className={`w-[340px] md:w-[380px] h-[520px] rounded-[28px] border shadow-2xl flex flex-col justify-between overflow-hidden mb-4 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-slate-200/80 dark:border-slate-800`}
           >
             {/* Header */}
             <div className="p-4 bg-gradient-to-r from-teal-600 to-emerald-600 text-white flex justify-between items-center shadow-md">
@@ -108,6 +125,21 @@ export default function HealthAssistant({ twin, theme, onSelectProfile }: Health
               >
                 <X className="w-4.5 h-4.5" />
               </button>
+            </div>
+
+            {/* WhatsApp Doctor CTA Banner */}
+            <div className="bg-emerald-500/10 border-b border-emerald-500/20 px-4 py-2.5 flex justify-between items-center gap-2">
+              <span className="text-[9.5px] text-emerald-800 dark:text-emerald-350 font-bold leading-normal">
+                Want Dr. Jethwani to review your digital health twin?
+              </span>
+              <a 
+                href={getWhatsAppLink()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="py-1 px-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-lg text-[9px] uppercase tracking-wider transition-all no-underline shrink-0 text-center shadow-sm active:scale-95"
+              >
+                Chat on WA
+              </a>
             </div>
 
             {/* Chat Body */}

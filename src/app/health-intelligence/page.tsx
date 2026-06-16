@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  Activity, Sparkles, Heart, Sliders, ChevronRight, Play, Check, 
+  Activity, Sparkles, Heart, Sliders, ChevronRight, Play, Check, X,
   ArrowLeft, RefreshCw, AlertTriangle, ArrowRight, ShieldCheck, HelpCircle, FileText, Calendar,
   UploadCloud, Info, Trash2, Printer, Plus, Award, User, Layers, BookOpen, MessageSquare,
   TrendingUp, Clock, Flame, ShieldAlert, HeartPulse, ChevronDown
@@ -84,6 +84,21 @@ export default function HealthIntelligencePage() {
   const [digitalTwin, setDigitalTwin] = useState<HealthDigitalTwin>(DEFAULT_TWIN);
   const [activeView, setActiveView] = useState<"dashboard" | "assessment" | "lab_upload" | "report">("dashboard");
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
+  const [dashboardTab, setDashboardTab] = useState<"overview" | "labs" | "bioage" | "directory">("overview");
+  
+  // Clinical Portal Connection Modal States
+  const [isConnectModalOpen, setIsConnectModalOpen] = useState(false);
+  const [connectForm, setConnectForm] = useState({
+    name: "",
+    age: "30",
+    gender: "Male",
+    phone: "",
+    email: "",
+    city: "Pune",
+    branch: "Baner Clinic, Pune"
+  });
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [connectionSuccess, setConnectionSuccess] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>("metabolic");
   
   // Questionnaire States
@@ -99,6 +114,22 @@ export default function HealthIntelligencePage() {
   const [labParsing, setLabParsing] = useState(false);
   const [labResult, setLabResult] = useState<LabAnalysisResult | null>(null);
   const [dragActive, setDragActive] = useState(false);
+  const labUploadCardRef = useRef<HTMLDivElement>(null);
+  const labResultsRef = useRef<HTMLDivElement>(null);
+
+  // Scroll helper
+  const scrollToUpload = () => {
+    labUploadCardRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+
+  // Scroll to results when view changes to lab_upload
+  useEffect(() => {
+    if (activeView === "lab_upload" && labResult) {
+      setTimeout(() => {
+        labResultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 150);
+    }
+  }, [activeView, labResult]);
 
   // Theme State
   const [theme, setTheme] = useState<"light" | "dark">("light");
@@ -108,7 +139,11 @@ export default function HealthIntelligencePage() {
     const saved = localStorage.getItem("homeo_health_digital_twin_2026_v2");
     if (saved) {
       try {
-        setDigitalTwin(JSON.parse(saved));
+        const twin = JSON.parse(saved);
+        setDigitalTwin(twin);
+        if (twin.labResult) {
+          setLabResult(twin.labResult);
+        }
       } catch (e) {
         console.error("Error loading health digital twin:", e);
       }
@@ -181,25 +216,146 @@ export default function HealthIntelligencePage() {
 
   const handleToggleClinicalPortal = () => {
     const isConnected = digitalTwin.clinicalPortal?.connected || false;
-    let updatedPortal: ClinicalPortalSync = { connected: false };
     if (isConnected) {
-      updatedPortal = { connected: false };
+      if (window.confirm("Are you sure you want to disconnect from the Clinician Portal? Real-time synchronizations will be paused.")) {
+        saveDigitalTwin({
+          ...digitalTwin,
+          clinicalPortal: { connected: false }
+        });
+      }
     } else {
+      setIsConnectModalOpen(true);
+      setConnectionSuccess(false);
+    }
+  };
+
+  const handleSubmitClinicalPortal = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!connectForm.name || !connectForm.phone) {
+      alert("Please fill in your Name and Phone Number.");
+      return;
+    }
+    setIsConnecting(true);
+
+    try {
+      const portalId = `HCP-2026-${Math.round(1000 + Math.random() * 9000)}`;
+      
+      // Compile completed self-assessments
+      let selfAssessmentDetails = "Patient self-assessment intake summary:\n";
+      const completedKeys = Object.keys(digitalTwin.completedAssessments || {});
+      if (completedKeys.length > 0) {
+        completedKeys.forEach(cat => {
+          const item = digitalTwin.completedAssessments[cat];
+          selfAssessmentDetails += `- ${cat.toUpperCase()} assessment: Score: ${item.score}/100 on ${item.date}\n`;
+        });
+      } else {
+        selfAssessmentDetails += "- Digital twin initialized. No specific self-assessments completed yet.\n";
+      }
+
+      // Add recent history symptoms
+      if (digitalTwin.history && digitalTwin.history.length > 0) {
+        const recentSymptoms = digitalTwin.history[0].symptoms || [];
+        if (recentSymptoms.length > 0) {
+          selfAssessmentDetails += `Symptoms reported: ${recentSymptoms.join(", ")}\n`;
+        }
+      }
+
+      // Add parsed lab results if present
+      if (labResult && labResult.extractedData && labResult.extractedData.length > 0) {
+        selfAssessmentDetails += `\nExtracted Lab Biomarkers:\n`;
+        labResult.extractedData.forEach(marker => {
+          selfAssessmentDetails += `- ${marker.marker}: ${marker.value} (Range: ${marker.range}, Status: ${marker.status})\n`;
+        });
+        if (labResult.summary) {
+          selfAssessmentDetails += `Lab Summary: ${labResult.summary}\n`;
+        }
+      }
+
+      // Send to Firestore/Mock drive via /api/intake
+      const response = await fetch("/api/intake", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: portalId,
+          name: connectForm.name,
+          age: connectForm.age,
+          gender: connectForm.gender,
+          phone: connectForm.phone,
+          email: connectForm.email,
+          city: connectForm.city,
+          complaint: selfAssessmentDetails,
+          careLevel: "Digital Twin Intake",
+          status: "pending"
+        })
+      });
+
+      const data = await response.json();
+
       const now = new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
       const lastSyncDate = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" });
-      updatedPortal = {
-        connected: true,
-        lastSync: `${lastSyncDate} at ${now}`,
-        portalId: `HCP-2026-${Math.round(1000 + Math.random() * 9000)}`,
-        doctorApproved: true
-      };
-      alert(`Homeo Healthcare Clinical Portal integrated successfully. Patient Digital Twin is now synced in real-time with the clinician dashboard.`);
+
+      saveDigitalTwin({
+        ...digitalTwin,
+        clinicalPortal: {
+          connected: true,
+          lastSync: `${lastSyncDate} at ${now}`,
+          portalId: data.patientId || portalId,
+          doctorApproved: true
+        }
+      });
+
+      setConnectionSuccess(true);
+      setTimeout(() => {
+        setIsConnectModalOpen(false);
+      }, 1500);
+
+    } catch (err) {
+      console.error("Clinical sync registration failed:", err);
+      alert("Database connection failed. Digital Twin synced in sandbox fallback mode.");
+      
+      const portalId = `HCP-2026-${Math.round(1000 + Math.random() * 9000)}`;
+      const now = new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+      const lastSyncDate = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" });
+      
+      saveDigitalTwin({
+        ...digitalTwin,
+        clinicalPortal: {
+          connected: true,
+          lastSync: `${lastSyncDate} at ${now}`,
+          portalId,
+          doctorApproved: true
+        }
+      });
+      setIsConnectModalOpen(false);
+    } finally {
+      setIsConnecting(false);
     }
-    
-    saveDigitalTwin({
-      ...digitalTwin,
-      clinicalPortal: updatedPortal
-    });
+  };
+
+  const getWhatsAppConsultationLink = () => {
+    let message = "Hello Dr. Jethwani, I completed my Health Intelligence assessment and would like to book a consultation.\n\n";
+    message += `Overall Health Score: ${digitalTwin.overallScore}%\n`;
+    if (digitalTwin.biologicalAge) {
+      message += `Biological Age: ${digitalTwin.biologicalAge.bioAge} years (Chronological: ${digitalTwin.biologicalAge.chronologicalAge})\n`;
+    }
+    const completedKeys = Object.keys(digitalTwin.completedAssessments || {});
+    if (completedKeys.length > 0) {
+      message += "\nCompleted Assessments:\n";
+      completedKeys.forEach(cat => {
+        const item = digitalTwin.completedAssessments[cat];
+        message += `- ${cat.toUpperCase()}: Score ${item.score}%\n`;
+      });
+    }
+    if (labResult) {
+      message += `\nLab Summary: ${labResult.summary}\n`;
+      if (labResult.extractedData && labResult.extractedData.length > 0) {
+        message += "Biomarkers parsed:\n";
+        labResult.extractedData.slice(0, 3).forEach(marker => {
+          message += `- ${marker.marker}: ${marker.value} (${marker.status})\n`;
+        });
+      }
+    }
+    return `https://wa.me/918446056789?text=${encodeURIComponent(message)}`;
   };
 
   // Questionnaire helpers
@@ -431,6 +587,12 @@ export default function HealthIntelligencePage() {
 
     if (symptoms.length > 0) {
       priorityAreas.push(`Symptom alerts: ${symptoms.slice(0, 2).join(", ")}`);
+    }
+
+    if (profileId === "metabolic_profile" && answers.bmi) {
+      const bmiVal = Number(answers.bmi);
+      const bmiCategory = bmiVal >= 30 ? "Obese" : bmiVal >= 25 ? "Overweight" : bmiVal >= 18.5 ? "Optimal Weight" : "Underweight";
+      priorityAreas.push(`Calculated BMI is ${bmiVal} (${bmiCategory}).`);
     }
 
     // Default factors
@@ -665,6 +827,16 @@ export default function HealthIntelligencePage() {
     }
   };
 
+  const updateLabResultStateAndTwin = (result: LabAnalysisResult) => {
+    setLabResult(result);
+    // Use functional state update to ensure we don't get stale closures
+    setDigitalTwin((prev) => {
+      const updated = { ...prev, labResult: result };
+      localStorage.setItem("homeo_health_digital_twin_2026_v2", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
   const processLabFile = (file: File) => {
     setLabParsing(true);
     const reader = new FileReader();
@@ -686,18 +858,21 @@ export default function HealthIntelligencePage() {
         });
         
         const data = await response.json();
-        if (data.success && data.text) {
+        if (data.success && data.result) {
+          updateLabResultStateAndTwin(data.result);
+          setLabRawText(data.rawText || JSON.stringify(data.result, null, 2));
+        } else if (data.success && data.text) {
           const result = parseLabReport(file.name, data.text);
-          setLabResult(result);
+          updateLabResultStateAndTwin(result);
           setLabRawText(data.text);
         } else {
           const result = parseLabReport(file.name, "");
-          setLabResult(result);
+          updateLabResultStateAndTwin(result);
         }
       } catch (err) {
         console.error("Error calling import-lab API:", err);
         const result = parseLabReport(file.name, "");
-        setLabResult(result);
+        updateLabResultStateAndTwin(result);
       } finally {
         setLabParsing(false);
         setActiveView("lab_upload");
@@ -710,7 +885,7 @@ export default function HealthIntelligencePage() {
     setLabParsing(true);
     setTimeout(() => {
       const result = parseLabReport(name, "");
-      setLabResult(result);
+      updateLabResultStateAndTwin(result);
       setLabParsing(false);
       setActiveView("lab_upload");
     }, 1500);
@@ -765,13 +940,69 @@ export default function HealthIntelligencePage() {
 
   // Suggested next assessments logic
   const getSuggestedNextAssessments = () => {
-    const uncompleted = ASSESSMENT_PROFILES.filter(
-      p => !digitalTwin.completedAssessments[p.id]
-    );
-    if (uncompleted.length > 0) return uncompleted.slice(0, 3);
-    
-    // If all completed, return a few default vital ones
-    return ASSESSMENT_PROFILES.filter(p => ["metabolic_profile", "diabetes_risk", "thyroid_assessment"].includes(p.id)).slice(0, 3);
+    const activeFlags = digitalTwin.activeRulesFlags || [];
+    const completed = digitalTwin.completedAssessments || {};
+    const uncompleted = ASSESSMENT_PROFILES.filter(p => !completed[p.id]);
+
+    const suggestions: typeof ASSESSMENT_PROFILES = [];
+
+    // Rule 1: Check active axis flags and suggest matching assessments
+    if (activeFlags.includes("Endocrine-Stress Axis Strain")) {
+      const targetIds = ["adrenal_fatigue", "thyroid_assessment", "sleep"];
+      targetIds.forEach(id => {
+        const found = uncompleted.find(p => p.id === id);
+        if (found && !suggestions.find(s => s.id === id)) suggestions.push(found);
+      });
+    }
+    if (activeFlags.includes("Visceral-Glycemic Syndrome Profile")) {
+      const targetIds = ["insulin_resistance", "obesity_risk", "metabolic_profile", "diabetes_risk"];
+      targetIds.forEach(id => {
+        const found = uncompleted.find(p => p.id === id);
+        if (found && !suggestions.find(s => s.id === id)) suggestions.push(found);
+      });
+    }
+    if (activeFlags.includes("Autonomic Brain-Gut Dysregulation")) {
+      const targetIds = ["ibs_assessment", "gut_health", "anxiety_assessment", "burnout_assessment"];
+      targetIds.forEach(id => {
+        const found = uncompleted.find(p => p.id === id);
+        if (found && !suggestions.find(s => s.id === id)) suggestions.push(found);
+      });
+    }
+    if (activeFlags.includes("Atopic Dermal-Respiratory Axis")) {
+      const targetIds = ["skin_barrier", "eczema_assessment", "allergy_profile", "asthma_control"];
+      targetIds.forEach(id => {
+        const found = uncompleted.find(p => p.id === id);
+        if (found && !suggestions.find(s => s.id === id)) suggestions.push(found);
+      });
+    }
+
+    // Rule 2: If we still need suggestions, find profiles in vulnerable systems (score <= 75)
+    Object.keys(digitalTwin.systemScores).forEach(sysKey => {
+      const score = digitalTwin.systemScores[sysKey as keyof SystemScores] || 100;
+      if (score <= 75) {
+        // Find uncompleted assessments matching this category
+        const matching = uncompleted.filter(p => p.category === sysKey);
+        matching.forEach(p => {
+          if (suggestions.length < 4 && !suggestions.find(s => s.id === p.id)) {
+            suggestions.push(p);
+          }
+        });
+      }
+    });
+
+    // Rule 3: Fill up with standard uncompleted assessments
+    uncompleted.forEach(p => {
+      if (suggestions.length < 3 && !suggestions.find(s => s.id === p.id) && p.id !== "biological_age") {
+        suggestions.push(p);
+      }
+    });
+
+    // Fallback: default baseline set
+    if (suggestions.length === 0) {
+      return ASSESSMENT_PROFILES.filter(p => ["metabolic_profile", "diabetes_risk", "thyroid_assessment"].includes(p.id)).slice(0, 3);
+    }
+
+    return suggestions.slice(0, 3);
   };
 
   // Get Related Content links for Priority 8
@@ -874,8 +1105,13 @@ export default function HealthIntelligencePage() {
                 
                 <div className="flex gap-3">
                   <button
-                    onClick={() => document.getElementById("lab-upload-input-2")?.click()}
-                    className="py-2.5 px-4 bg-white dark:bg-slate-950 border border-slate-200/70 dark:border-slate-800 hover:border-mint text-[11px] font-bold uppercase tracking-wider text-slate-650 dark:text-zinc-350 rounded-xl cursor-pointer transition-all flex items-center gap-1.5"
+                    onClick={() => {
+                      scrollToUpload();
+                      setTimeout(() => {
+                        document.getElementById("lab-upload-input-2")?.click();
+                      }, 200);
+                    }}
+                    className="py-2.5 px-4 bg-white dark:bg-slate-950 border border-slate-200/70 dark:border-slate-850 hover:border-mint text-[11px] font-bold uppercase tracking-wider text-slate-650 dark:text-zinc-350 rounded-xl cursor-pointer transition-all flex items-center gap-1.5"
                   >
                     <UploadCloud className="w-4 h-4 text-mint" />
                     Upload Lab
@@ -1200,8 +1436,7 @@ export default function HealthIntelligencePage() {
           {/* ========================================================= */}
           <div className="lg:col-span-8 space-y-6">
             <AnimatePresence mode="wait">
-              
-              {/* VIEW: MAIN DASHBOARD AND ACCORDIONS CATEGORIES SELECTOR */}
+                         {/* VIEW: MAIN DASHBOARD AND ACCORDIONS CATEGORIES SELECTOR */}
               {activeView === "dashboard" && (
                 <motion.div
                   key="dashboard"
@@ -1211,255 +1446,767 @@ export default function HealthIntelligencePage() {
                   className="space-y-8"
                 >
                   
-                  {/* Digital Twin Welcome Banner */}
-                  <div className="glass-panel border border-slate-200/60 dark:border-slate-850 bg-gradient-to-br from-teal-500/10 via-emerald-500/5 to-transparent rounded-[32px] p-6 md:p-8 flex flex-col md:flex-row gap-6 justify-between items-center shadow-sm">
-                    <div className="space-y-3 text-center md:text-left">
-                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-mint/15 dark:bg-mint/5 text-[9.5px] font-bold uppercase tracking-wider text-mint shadow-sm">
-                        <Sparkles className="w-3.5 h-3.5 animate-pulse" />
-                        <span>Clinical Intelligence Active</span>
-                      </div>
-                      <h2 className="font-serif text-2xl md:text-3xl font-bold text-slate-900 dark:text-white leading-tight">
-                        Personal Health Digital Twin
-                      </h2>
-                      <p className="text-xs text-slate-500 dark:text-zinc-400 max-w-md leading-relaxed">
-                        {Object.keys(digitalTwin.completedAssessments).length > 0
-                          ? "Your clinical digital twin computes multi-system organ risks, active diathesis states, and suggests preventative medical screenings."
-                          : "Configure your biological twin. Select any health intelligence module below to complete self-assessments and calculate your homeostatic indices."}
-                      </p>
-                    </div>
-
-                    <div className="flex flex-col gap-3.5 w-full md:w-auto shrink-0">
-                      <button
-                        onClick={() => document.getElementById("lab-upload-input-2")?.click()}
-                        className="py-3 px-5 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-mint text-slate-700 dark:text-zinc-200 font-bold rounded-2xl text-xs uppercase tracking-wider cursor-pointer shadow-sm transition-all flex items-center justify-center gap-1.5"
-                      >
-                        <UploadCloud className="w-4 h-4 text-mint" />
-                        Upload Lab Report
-                      </button>
-                    </div>
+                  {/* Health OS Tab Navigation Bar */}
+                  <div className="flex border-b border-slate-200 dark:border-slate-800/80 gap-1 md:gap-4 overflow-x-auto pb-1 scrollbar-thin print:hidden">
+                    {[
+                      { id: "overview", label: "Health OS Overview", icon: Layers },
+                      { id: "labs", label: "AI Lab Intelligence", icon: FileText },
+                      { id: "bioage", label: "Biological Age Clock", icon: Flame },
+                      { id: "directory", label: "Assessments Directory", icon: BookOpen }
+                    ].map(tab => {
+                      const Icon = tab.icon;
+                      const isActive = dashboardTab === tab.id;
+                      return (
+                        <button
+                          key={tab.id}
+                          onClick={() => setDashboardTab(tab.id as any)}
+                          className={`py-3 px-4 border-b-2 text-[10px] md:text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer bg-transparent border-none ${
+                            isActive 
+                              ? "border-mint text-mint" 
+                              : "border-transparent text-slate-455 hover:text-slate-655 dark:hover:text-zinc-200"
+                          }`}
+                        >
+                          <Icon className="w-4 h-4" />
+                          {tab.label}
+                        </button>
+                      );
+                    })}
                   </div>
 
-                  {/* Digital Twin Strengths / Vulnerabilities summary */}
-                  {Object.keys(digitalTwin.completedAssessments).length > 0 && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      
-                      {/* Strength Areas */}
-                      <div className="glass-panel border border-slate-200/60 dark:border-slate-850 bg-white/75 dark:bg-slate-900/65 rounded-[28px] p-5 space-y-3">
-                        <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                          <Award className="w-4 h-4 text-emerald-500" />
-                          Biological Strengths
-                        </h4>
-                        <ul className="space-y-2 text-xs font-semibold text-slate-700 dark:text-zinc-350">
-                          {strengths.length > 0 ? (
-                            strengths.slice(0, 3).map((st, i) => (
-                              <li key={i} className="flex items-center gap-2 p-1">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
-                                {st}
-                              </li>
-                            ))
-                          ) : (
-                            <li className="text-slate-400 font-normal">Complete further assessments to map strength indicators.</li>
-                          )}
-                        </ul>
+                  {/* TAB CONTENT: OVERVIEW */}
+                  {dashboardTab === "overview" && (
+                    <div className="space-y-8">
+                      {/* Welcome Banner */}
+                      <div className="glass-panel border border-slate-200/60 dark:border-slate-850 bg-gradient-to-br from-teal-500/10 via-emerald-500/5 to-transparent rounded-[24px] p-6 flex flex-col md:flex-row gap-6 justify-between items-center shadow-sm">
+                        <div className="space-y-2 text-center md:text-left">
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-mint/15 dark:bg-mint/5 text-[9.5px] font-bold uppercase tracking-wider text-mint shadow-sm">
+                            <Sparkles className="w-3.5 h-3.5 animate-pulse" />
+                            <span>Clinical OS Active</span>
+                          </div>
+                          <h2 className="font-serif text-xl md:text-2xl font-bold text-slate-900 dark:text-white leading-tight">
+                            Personal Health Digital Twin
+                          </h2>
+                          <p className="text-xs text-slate-500 dark:text-zinc-400 max-w-md leading-relaxed">
+                            {Object.keys(digitalTwin.completedAssessments).length > 0
+                              ? "Your clinical digital twin computes multi-system organ risks, active diathesis states, and suggests preventative medical screenings."
+                              : "Configure your biological twin. Complete self-assessments or upload laboratory reports to calibrate your homeostatic telemetry."}
+                          </p>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row md:flex-col gap-2.5 w-full md:w-auto shrink-0">
+                          <a
+                            href={getWhatsAppConsultationLink()}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="py-2.5 px-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl text-xs uppercase tracking-wider cursor-pointer shadow-sm transition-all text-center no-underline flex items-center justify-center gap-1.5 active:scale-98"
+                          >
+                            <MessageSquare className="w-4 h-4" />
+                            WhatsApp Consultation
+                          </a>
+                          <button
+                            onClick={handleToggleClinicalPortal}
+                            className={`py-2.5 px-4 font-bold rounded-xl text-xs uppercase tracking-wider cursor-pointer transition-all border shadow-sm flex items-center justify-center gap-1.5 active:scale-98 ${
+                              digitalTwin.clinicalPortal?.connected
+                                ? "bg-rose-50 dark:bg-rose-950/20 border-rose-200 text-rose-600 hover:bg-rose-100/30"
+                                : "bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-zinc-200 hover:border-mint"
+                            }`}
+                          >
+                            <ShieldCheck className="w-4 h-4 text-mint" />
+                            {digitalTwin.clinicalPortal?.connected ? "Disconnect Portal" : "Connect Portal"}
+                          </button>
+                        </div>
                       </div>
 
-                      {/* Vulnerability Areas */}
-                      <div className="glass-panel border border-slate-200/60 dark:border-slate-850 bg-white/75 dark:bg-slate-900/65 rounded-[28px] p-5 space-y-3">
-                        <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                          <AlertTriangle className="w-4 h-4 text-rose-500" />
-                          Priority Vulnerabilities
-                        </h4>
-                        <ul className="space-y-2 text-xs font-semibold text-slate-700 dark:text-zinc-350">
-                          {vulnerabilities.length > 0 ? (
-                            vulnerabilities.slice(0, 3).map((vl, i) => (
-                              <li key={i} className="flex items-center gap-2 p-1 text-rose-600 dark:text-rose-400">
-                                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0"></span>
-                                {vl}
-                              </li>
-                            ))
-                          ) : (
-                            <li className="text-slate-400 font-normal">No major vulnerabilities currently flagged. Take more tests to monitor.</li>
-                          )}
-                        </ul>
+                      {/* System Reserves Grid */}
+                      <div className="space-y-4">
+                        <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block">
+                          System Reserves Assessment Dashboard
+                        </span>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          {Object.keys(digitalTwin.systemScores).map(key => {
+                            const score = digitalTwin.systemScores[key as keyof SystemScores] || 100;
+                            const label = key.charAt(0).toUpperCase() + key.slice(1);
+                            
+                            // Determine status
+                            let status = "Optimal";
+                            let statusColor = "text-emerald-500 bg-emerald-50 dark:bg-emerald-950/20 border-emerald-100/20";
+                            let ringColor = "stroke-emerald-500";
+                            
+                            if (score < 55) {
+                              status = "Depleted";
+                              statusColor = "text-rose-500 bg-rose-50 dark:bg-rose-950/20 border-rose-100/20";
+                              ringColor = "stroke-rose-500";
+                            } else if (score < 75) {
+                              status = "Sluggish";
+                              statusColor = "text-amber-500 bg-amber-50 dark:bg-amber-950/20 border-amber-100/20";
+                              ringColor = "stroke-amber-500";
+                            } else if (score < 90) {
+                              status = "Compensated";
+                              statusColor = "text-teal-500 bg-teal-50 dark:bg-teal-950/20 border-teal-100/20";
+                              ringColor = "stroke-teal-500";
+                            }
+
+                            return (
+                              <div 
+                                key={key} 
+                                className="glass-panel bg-white/40 dark:bg-slate-950/10 border border-slate-150 dark:border-slate-850 p-4.5 rounded-2xl flex flex-col items-center text-center justify-between h-[150px] transition-all hover:border-slate-350 dark:hover:border-slate-750"
+                              >
+                                <span className="text-[9px] font-extrabold uppercase tracking-widest text-slate-400">{label}</span>
+                                
+                                <div className="relative w-16 h-16 flex items-center justify-center my-1.5">
+                                  <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                                    <circle cx="50" cy="50" r="42" className="stroke-slate-100 dark:stroke-slate-800 fill-none" strokeWidth="8" />
+                                    <circle 
+                                      cx="50" cy="50" r="42" 
+                                      className={`${ringColor} fill-none`} 
+                                      strokeWidth="8"
+                                      strokeDasharray={263.8}
+                                      strokeDashoffset={263.8 - (263.8 * score) / 100}
+                                      strokeLinecap="round"
+                                    />
+                                  </svg>
+                                  <div className="absolute inset-0 flex items-center justify-center">
+                                    <span className="text-sm font-black text-slate-800 dark:text-white font-mono">{score}%</span>
+                                  </div>
+                                </div>
+
+                                <span className={`text-[8px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded border ${statusColor}`}>
+                                  {status}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
+
+                      {/* Organ Loads & Miasmatic Burden */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Organ Loads */}
+                        <div className="glass-panel border border-slate-200/60 dark:border-slate-850 bg-white/70 dark:bg-slate-900/65 rounded-[28px] p-5 space-y-4">
+                          <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block">
+                            Computed Organ Stress Loads
+                          </span>
+                          <div className="space-y-3">
+                            {Object.keys(digitalTwin.organLoad).slice(0, 5).map(organ => {
+                              const load = digitalTwin.organLoad[organ] || 10;
+                              return (
+                                <div key={organ} className="space-y-1">
+                                  <div className="flex justify-between items-center text-[10px] font-bold">
+                                    <span className="text-slate-650 dark:text-zinc-350 capitalize">{organ}</span>
+                                    <span className={`font-mono ${load > 60 ? "text-rose-500" : load > 30 ? "text-amber-500" : "text-emerald-500"}`}>{load}%</span>
+                                  </div>
+                                  <div className="w-full bg-slate-100 dark:bg-slate-800/80 h-1.5 rounded-full overflow-hidden">
+                                    <div 
+                                      className={`h-full rounded-full transition-all duration-500 ${
+                                        load > 60 ? "bg-rose-500" : load > 30 ? "bg-amber-500" : "bg-emerald-500"
+                                      }`}
+                                      style={{ width: `${load}%` }}
+                                    />
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        {/* Miasmatic Burden */}
+                        <div className="glass-panel border border-slate-200/60 dark:border-slate-850 bg-white/70 dark:bg-slate-900/65 rounded-[28px] p-5 space-y-4">
+                          <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block">
+                            Miasmatic Burden Profile
+                          </span>
+                          
+                          <div className="space-y-4">
+                            {/* Psora */}
+                            <div className="space-y-1">
+                              <div className="flex justify-between items-center text-[10.5px] font-bold">
+                                <span className="text-amber-500 uppercase tracking-wider">Psora (Functional Strain)</span>
+                                <span className="font-mono text-amber-500">{digitalTwin.miasmaticProfile?.psora || 30}%</span>
+                              </div>
+                              <p className="text-[9.5px] text-slate-400 leading-normal">Governs basic dry skin, transient allergies, nervous irritation, and hyper-sensitivities.</p>
+                              <div className="w-full bg-slate-100 dark:bg-slate-800/80 h-2 rounded-full overflow-hidden">
+                                <div className="bg-amber-500 h-full rounded-full" style={{ width: `${digitalTwin.miasmaticProfile?.psora || 30}%` }} />
+                              </div>
+                            </div>
+                            
+                            {/* Sycosis */}
+                            <div className="space-y-1">
+                              <div className="flex justify-between items-center text-[10.5px] font-bold">
+                                <span className="text-teal-500 uppercase tracking-wider">Sycosis (Excess / Adiposity)</span>
+                                <span className="font-mono text-teal-500">{digitalTwin.miasmaticProfile?.sycosis || 20}%</span>
+                              </div>
+                              <p className="text-[9.5px] text-slate-400 leading-normal">Governs water retention, fat deposition, cyst growths, skin tags, and slow sluggish metabolism.</p>
+                              <div className="w-full bg-slate-100 dark:bg-slate-800/80 h-2 rounded-full overflow-hidden">
+                                <div className="bg-teal-500 h-full rounded-full" style={{ width: `${digitalTwin.miasmaticProfile?.sycosis || 20}%` }} />
+                              </div>
+                            </div>
+
+                            {/* Syphilis */}
+                            <div className="space-y-1">
+                              <div className="flex justify-between items-center text-[10.5px] font-bold">
+                                <span className="text-rose-500 uppercase tracking-wider">Syphilis (Destructive / Organic)</span>
+                                <span className="font-mono text-rose-500">{digitalTwin.miasmaticProfile?.syphilis || 10}%</span>
+                              </div>
+                              <p className="text-[9.5px] text-slate-400 leading-normal">Governs cracks, ulcers, memory decays, vascular stiffness, and organic degeneration trends.</p>
+                              <div className="w-full bg-slate-100 dark:bg-slate-800/80 h-2 rounded-full overflow-hidden">
+                                <div className="bg-rose-500 h-full rounded-full" style={{ width: `${digitalTwin.miasmaticProfile?.syphilis || 10}%` }} />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Cross-System Axis Map */}
+                      <div className="space-y-4">
+                        <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block">
+                          Cross-System Axis Intelligence & Alerts
+                        </span>
+                        
+                        {/* Axis Alerts if active */}
+                        {digitalTwin.activeRulesFlags.length > 0 && (
+                          <div className="p-4 bg-amber-50/10 dark:bg-amber-950/5 border border-amber-250 dark:border-amber-900/30 rounded-2xl space-y-2.5">
+                            <div className="flex items-center gap-1.5 text-amber-600 dark:text-amber-450 text-xs font-extrabold uppercase tracking-wider">
+                              <AlertTriangle className="w-4 h-4 shrink-0 animate-bounce" />
+                              <span>Active Clinical Axis Alerts</span>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              {digitalTwin.activeRulesFlags.map((flag, idx) => (
+                                <div key={idx} className="p-3 bg-white dark:bg-slate-900/60 border border-amber-200/50 dark:border-amber-900/20 rounded-xl space-y-1.5">
+                                  <span className="text-xs font-bold text-slate-800 dark:text-zinc-150 block">{flag}</span>
+                                  <p className="text-[10px] text-slate-500 dark:text-zinc-400 leading-normal">
+                                    {flag === "Endocrine-Stress Axis Strain" && "Thyroid gland conversion speed is lowered due to chronic HPA axis stress/cortisol activation."}
+                                    {flag === "Visceral-Glycemic Syndrome Profile" && "Clustering metabolic load from abdominal fat storage and insulin resistance cues."}
+                                    {flag === "Autonomic Brain-Gut Dysregulation" && "Enteric nervous signaling dysregulated by high mental/stress burden, causing spastic gut symptoms."}
+                                    {flag === "Atopic Dermal-Respiratory Axis" && "Hyper-reactive IgE loops correlating skin barrier splits and respiratory mucosal hypersensitivity."}
+                                  </p>
+                                  <a 
+                                    href={getWhatsAppConsultationLink()} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="text-[9px] text-emerald-500 hover:text-emerald-600 font-extrabold uppercase tracking-wider flex items-center gap-0.5 no-underline mt-1 cursor-pointer"
+                                  >
+                                    Consult Dr. Jethwani on WhatsApp <ArrowRight className="w-3 h-3" />
+                                  </a>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Visual Health Axes Map */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {[
+                            {
+                              name: "Endocrine-Metabolic Axis",
+                              description: "Interaction between adrenal cortisol release, thyroid speed, and pancreatic insulin sensitivity.",
+                              isVulnerable: digitalTwin.activeRulesFlags.includes("Endocrine-Stress Axis Strain") || digitalTwin.activeRulesFlags.includes("Visceral-Glycemic Syndrome Profile") || digitalTwin.systemScores.endocrine <= 75,
+                              insight: "Thyroid conversion requires healthy cortisol baseline; excess sugar spikes deplete thyroid reserves.",
+                              icon: Sliders
+                            },
+                            {
+                              name: "Gut-Brain Autonomic Axis",
+                              description: "Vagal nerve bidirectional signaling between gut flora, peristalsis, and central stress levels.",
+                              isVulnerable: digitalTwin.activeRulesFlags.includes("Autonomic Brain-Gut Dysregulation") || digitalTwin.systemScores.digestive <= 75 || digitalTwin.systemScores.mentalHealth <= 75,
+                              insight: "Elevated stress triggers sympathetic tone, downregulating gastric acids and causing IBS spasm.",
+                              icon: Heart
+                            },
+                            {
+                              name: "Sleep-Cardiovascular Loop",
+                              description: "Circadian sleep phases impacting blood pressure dipping, vascular elasticity, and heart rate variability.",
+                              isVulnerable: digitalTwin.systemScores.cardiovascular <= 75,
+                              insight: "Fragmented sleep blocks overnight cellular cleanup, increasing systemic vascular tension.",
+                              icon: Activity
+                            },
+                            {
+                              name: "Dermal-Immune (Atopic) Axis",
+                              description: "The feedback loop linking epidermal lipid barrier splits to mucosal allergen sensitivities.",
+                              isVulnerable: digitalTwin.activeRulesFlags.includes("Atopic Dermal-Respiratory Axis") || digitalTwin.systemScores.skin <= 75 || digitalTwin.systemScores.immune <= 75,
+                              insight: "Leaky skin layers correlate with respiratory mucosal hypersensitivity and chronic eczema.",
+                              icon: ShieldAlert
+                            }
+                          ].map((axis, i) => {
+                            const Icon = axis.icon;
+                            return (
+                              <div 
+                                key={i} 
+                                className={`p-4 bg-white/40 dark:bg-slate-950/10 border rounded-2xl space-y-2 transition-all hover:border-slate-350 dark:hover:border-slate-750 ${
+                                  axis.isVulnerable 
+                                    ? "border-rose-250 dark:border-rose-900/30 bg-rose-50/5 dark:bg-rose-950/5" 
+                                    : "border-slate-150 dark:border-slate-850"
+                                }`}
+                              >
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-2">
+                                    <span className={`p-1.5 rounded-lg ${axis.isVulnerable ? "bg-rose-100/50 dark:bg-rose-950/30 text-rose-500" : "bg-mint/10 text-mint"}`}>
+                                      <Icon className="w-4.5 h-4.5" />
+                                    </span>
+                                    <span className="text-xs font-bold text-slate-850 dark:text-zinc-150">{axis.name}</span>
+                                  </div>
+                                  <span className={`text-[8.5px] font-extrabold uppercase tracking-wide px-2 py-0.5 rounded-full ${
+                                    axis.isVulnerable 
+                                      ? "bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-450 border border-rose-100/20" 
+                                      : "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-450 border border-emerald-100/20"
+                                  }`}>
+                                    {axis.isVulnerable ? "Axis Strain" : "Stable"}
+                                  </span>
+                                </div>
+                                <p className="text-[10.5px] text-slate-505 dark:text-zinc-400 leading-normal">{axis.description}</p>
+                                <div className="text-[9.5px] bg-slate-50/80 dark:bg-slate-900/40 p-2 rounded-xl text-slate-650 dark:text-zinc-300 border border-slate-100 dark:border-slate-800/80">
+                                  <strong className="text-mint">OS Insight:</strong> {axis.insight}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Smart Recommendations */}
+                      <div className="glass-panel border border-slate-200/60 dark:border-slate-850 bg-white/70 dark:bg-slate-900/65 rounded-[28px] p-6 space-y-4">
+                        <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block">
+                          HIOS™ Smart Recommendations
+                        </span>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          {getSuggestedNextAssessments().map(prof => (
+                            <div 
+                              key={prof.id} 
+                              className="p-4 bg-white/50 dark:bg-slate-950/20 border border-slate-150 dark:border-slate-850 hover:border-mint rounded-2xl flex flex-col justify-between h-[140px] transition-all duration-300"
+                            >
+                              <div className="space-y-1">
+                                <span className="text-[8px] font-extrabold text-mint uppercase tracking-wider">Recommended Next Step</span>
+                                <h5 className="text-xs font-bold text-slate-850 dark:text-zinc-105 leading-snug">{prof.name}</h5>
+                                <p className="text-[9.5px] text-slate-450 dark:text-zinc-400 line-clamp-2 leading-relaxed">{prof.description}</p>
+                              </div>
+                              <button 
+                                onClick={() => handleSelectProfile(prof.id)}
+                                className="text-[9.5px] font-bold text-mint hover:text-teal-600 flex items-center gap-0.5 uppercase tracking-wider border-none bg-transparent cursor-pointer mt-2 w-full text-left"
+                              >
+                                Run Assessment <ChevronRight className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Timeline History */}
+                      {getTimelineHistory().length > 0 && (
+                        <div className="glass-panel border border-slate-200/60 dark:border-slate-850 bg-white/70 dark:bg-slate-900/65 rounded-[28px] p-6 space-y-4">
+                          <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block">
+                            Longitudinal Assessment Timeline History
+                          </span>
+                          <div className="divide-y divide-slate-100 dark:divide-slate-850/80">
+                            {getTimelineHistory().map(entry => (
+                              <div key={entry.id} className="py-3.5 flex justify-between items-center text-xs">
+                                <div className="space-y-1">
+                                  <span className="font-bold text-slate-800 dark:text-zinc-100">{entry.name}</span>
+                                  <div className="flex gap-2.5 text-[9.5px] text-slate-400 font-semibold">
+                                    <span>{entry.date}</span>
+                                    <span>•</span>
+                                    <span className={`px-1.5 py-0.5 rounded-md ${
+                                      entry.status === "Compensated" 
+                                        ? "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-450" 
+                                        : entry.status === "Sluggish" 
+                                          ? "bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-450" 
+                                          : "bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-450"
+                                    }`}>
+                                      {entry.status}
+                                    </span>
+                                  </div>
+                                </div>
+                                
+                                <div className="flex items-center gap-4">
+                                  <div className="text-right shrink-0">
+                                    <span className="text-[8.5px] text-slate-450 uppercase tracking-widest block font-extrabold">Index</span>
+                                    <span className="font-mono font-bold text-mint text-sm">{entry.score}%</span>
+                                  </div>
+                                  
+                                  <button 
+                                    onClick={() => {
+                                      const report = generateReport(entry.profileId, entry.score, entry.answers, entry.symptoms);
+                                      const analysis = analyzeDigitalTwin({
+                                        ...digitalTwin,
+                                        completedAssessments: {
+                                          ...digitalTwin.completedAssessments,
+                                          [entry.profileId]: { score: entry.score, date: entry.date, answers: entry.answers, symptoms: entry.symptoms }
+                                        }
+                                      });
+                                      report.miasmaticProfile = analysis.miasmaticProfile;
+                                      setActiveReport(report);
+                                      setSelectedProfileId(entry.profileId);
+                                      setActiveReportCategory(ASSESSMENT_PROFILES.find(p => p.id === entry.profileId)?.category || "metabolic");
+                                      setActiveView("report");
+                                    }}
+                                    className="py-1.5 px-3 border border-slate-200 dark:border-slate-800 hover:border-mint hover:bg-mint/5 rounded-xl text-[10px] font-bold text-slate-650 dark:text-zinc-350 cursor-pointer transition-colors"
+                                  >
+                                    Report
+                                  </button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
 
-                  {/* Laboratory Report Upload & Parser Segment */}
-                  <div className="glass-panel border border-slate-200/60 dark:border-slate-850 bg-white/70 dark:bg-slate-900/65 rounded-[32px] p-6 shadow-sm space-y-4">
-                    <div>
-                      <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                        <FileText className="w-4.5 h-4.5 text-mint" />
-                        AI Lab Report Intelligence™
-                      </h3>
-                      <p className="text-xs text-slate-400 mt-1">
-                        Upload a biomarker diagnostic report (PDF/JPG) or run a simulated screening parser.
-                      </p>
-                    </div>
-
-                    <div 
-                      onDragEnter={handleDrag}
-                      onDragOver={handleDrag}
-                      onDragLeave={handleDrag}
-                      onDrop={handleDrop}
-                      className={`border-2 border-dashed rounded-2xl p-6 text-center transition-colors cursor-pointer ${
-                        dragActive 
-                          ? "border-mint bg-mint/5" 
-                          : "border-slate-200 dark:border-slate-800 hover:border-slate-350 dark:hover:border-slate-750 bg-slate-50/50 dark:bg-slate-950/20"
-                      }`}
-                    >
-                      <input 
-                        type="file" 
-                        id="lab-upload-input-2" 
-                        className="hidden" 
-                        onChange={handleFileChange} 
-                        accept="image/*,application/pdf"
-                      />
-                      <label htmlFor="lab-upload-input-2" className="cursor-pointer space-y-3 block">
-                        {labParsing ? (
-                          <div className="flex flex-col items-center gap-2 py-4">
-                            <RefreshCw className="w-8 h-8 text-mint animate-spin" />
-                            <span className="text-xs font-bold text-slate-700 dark:text-zinc-200">Processing OCR extraction & biomarker ranges...</span>
-                          </div>
-                        ) : (
-                          <>
-                            <UploadCloud className="w-10 h-10 text-slate-350 dark:text-slate-700 mx-auto" />
-                            <div>
-                              <p className="text-xs font-bold text-slate-700 dark:text-zinc-200">Drag and drop file here, or click to upload</p>
-                              <p className="text-[10px] text-slate-400 mt-1">PDF or image formats accepted</p>
+                  {/* TAB CONTENT: AI LAB INTELLIGENCE */}
+                  {dashboardTab === "labs" && (
+                    <div className="space-y-8">
+                      {labResult ? (
+                        <div className="space-y-6">
+                          <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-850/80 pb-4">
+                            <div className="space-y-1">
+                              <span className="text-[9px] font-extrabold uppercase tracking-widest text-mint bg-mint/5 px-2.5 py-1 rounded-full">
+                                Lab Telemetry Calibrated
+                              </span>
+                              <h3 className="font-serif text-lg md:text-xl font-bold text-slate-900 dark:text-white leading-tight">
+                                Extracted Biomarkers Overview
+                              </h3>
                             </div>
-                          </>
-                        )}
-                      </label>
-                    </div>
-
-                    <div className="space-y-2">
-                      <span className="text-[9.5px] font-extrabold uppercase tracking-widest text-slate-400 block">
-                        Select a Sample Lab Report to Analyze:
-                      </span>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
-                        <button
-                          onClick={() => handleLoadSampleLab("thyroid_test.pdf")}
-                          className="py-2.5 px-3 border border-slate-150 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60 hover:border-mint hover:bg-mint/5 rounded-xl text-[10px] font-bold text-slate-600 dark:text-zinc-350 cursor-pointer transition-colors"
-                        >
-                          🧪 Thyroid Panel
-                        </button>
-                        <button
-                          onClick={() => handleLoadSampleLab("glycemic_hba1c.pdf")}
-                          className="py-2.5 px-3 border border-slate-150 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60 hover:border-mint hover:bg-mint/5 rounded-xl text-[10px] font-bold text-slate-600 dark:text-zinc-350 cursor-pointer transition-colors"
-                        >
-                          🩸 Glycemic Panel
-                        </button>
-                        <button
-                          onClick={() => handleLoadSampleLab("renal_filtration.pdf")}
-                          className="py-2.5 px-3 border border-slate-150 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60 hover:border-mint hover:bg-mint/5 rounded-xl text-[10px] font-bold text-slate-600 dark:text-zinc-350 cursor-pointer transition-colors"
-                        >
-                          腎 Renal filtration
-                        </button>
-                        <button
-                          onClick={() => handleLoadSampleLab("vitamin_deficiencies.pdf")}
-                          className="py-2.5 px-3 border border-slate-150 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60 hover:border-mint hover:bg-mint/5 rounded-xl text-[10px] font-bold text-slate-600 dark:text-zinc-350 cursor-pointer transition-colors"
-                        >
-                          💊 Vitamin Panel
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* ========================================================= */}
-                  {/* PRIORITY 2: EXPANDABLE ACCORDION CATEGORY SELECTOR         */}
-                  {/* ========================================================= */}
-                  <div className="space-y-4">
-                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block">
-                      Clinical Intelligence Accordion Domains
-                    </span>
-
-                    <div className="space-y-3.5">
-                      {ASSESSMENT_CATEGORIES.map(category => {
-                        const isExpanded = expandedCategory === category.id;
-                        const subAssessments = ASSESSMENT_PROFILES.filter(p => p.category === category.id);
-                        
-                        return (
-                          <div 
-                            key={category.id} 
-                            className="glass-panel border border-slate-200/60 dark:border-slate-850 bg-white/80 dark:bg-slate-900/70 rounded-3xl overflow-hidden shadow-sm transition-all"
-                          >
-                            {/* Accordion trigger */}
                             <button
-                              onClick={() => setExpandedCategory(isExpanded ? null : category.id)}
-                              className="w-full flex items-center justify-between p-5 text-left font-bold text-slate-800 dark:text-zinc-100 hover:bg-slate-50/50 dark:hover:bg-slate-950/20 transition-all border-none bg-transparent cursor-pointer"
+                              onClick={() => {
+                                setLabResult(null);
+                                const updated = { ...digitalTwin, labResult: undefined };
+                                saveDigitalTwin(updated);
+                              }}
+                              className="py-2 px-3 border border-rose-200 dark:border-rose-900/30 text-rose-500 hover:bg-rose-500/10 rounded-xl text-[10px] font-bold uppercase tracking-wider cursor-pointer transition-colors"
                             >
-                              <div className="flex items-center gap-3">
-                                <span className="p-2 bg-mint/10 rounded-xl text-mint">
-                                  <Sliders className="w-4 h-4" />
-                                </span>
-                                <div>
-                                  <span className="font-serif text-sm md:text-base font-bold text-slate-900 dark:text-white block">
-                                    {category.name}
-                                  </span>
-                                  <span className="text-[9.5px] text-slate-400 font-semibold uppercase tracking-wider block">
-                                    {subAssessments.length} assessments
-                                  </span>
+                              Reset & Upload New
+                            </button>
+                          </div>
+
+                          {/* Summary message */}
+                          <div className="p-4 bg-mint/5 dark:bg-mint/5 rounded-2xl border border-mint/20 text-xs leading-relaxed text-slate-755 dark:text-zinc-300 font-medium flex gap-2">
+                            <Info className="w-5 h-5 text-mint shrink-0 mt-0.5" />
+                            <span>{labResult.summary}</span>
+                          </div>
+
+                          {/* Biomarkers Table */}
+                          <div className="border border-slate-150 dark:border-slate-800/80 rounded-2xl overflow-hidden divide-y divide-slate-150 dark:divide-slate-800/80">
+                            {labResult.extractedData.map((data, idx) => (
+                              <div key={idx} className="p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white/30 dark:bg-slate-950/10">
+                                <div className="space-y-1 md:max-w-[65%]">
+                                  <div className="flex items-center gap-2">
+                                    <h5 className="text-xs font-bold text-slate-800 dark:text-white">{data.marker}</h5>
+                                    <span className={`text-[8.5px] font-extrabold uppercase tracking-wide px-2 py-0.5 rounded-full ${
+                                      data.status === "Normal" 
+                                        ? "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-450 border border-emerald-100/10" 
+                                        : data.status === "Elevated" 
+                                          ? "bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-450 border border-rose-100/10" 
+                                          : "bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-450 border border-amber-100/10"
+                                    }`}>
+                                      {data.status}
+                                    </span>
+                                  </div>
+                                  <p className="text-[11px] text-slate-505 dark:text-zinc-400 leading-normal">{data.significance}</p>
+                                </div>
+                                
+                                <div className="flex md:flex-col justify-between items-end shrink-0">
+                                  <span className="text-sm font-black text-slate-900 dark:text-white font-mono">{data.value}</span>
+                                  <span className="text-[10px] text-slate-405 font-mono mt-0.5">Ref: {data.range}</span>
                                 </div>
                               </div>
-                              <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`} />
-                            </button>
-
-                            {/* Accordion content grid */}
-                            <AnimatePresence initial={false}>
-                              {isExpanded && (
-                                <motion.div
-                                  initial={{ height: 0, opacity: 0 }}
-                                  animate={{ height: "auto", opacity: 1 }}
-                                  exit={{ height: 0, opacity: 0 }}
-                                  transition={{ duration: 0.3 }}
-                                  className="border-t border-slate-100 dark:border-slate-850/80 overflow-hidden"
-                                >
-                                  <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50/30 dark:bg-slate-950/10">
-                                    {subAssessments.map(profile => {
-                                      const isCompleted = !!digitalTwin.completedAssessments[profile.id];
-                                      const lastScore = digitalTwin.completedAssessments[profile.id]?.score;
-                                      
-                                      return (
-                                        <div
-                                          key={profile.id}
-                                          onClick={() => handleSelectProfile(profile.id)}
-                                          className={`border border-slate-150 dark:border-slate-850/80 p-4.5 rounded-2xl flex flex-col justify-between h-[155px] bg-white dark:bg-slate-900/60 hover:-translate-y-0.5 hover:shadow transition-all duration-300 cursor-pointer ${profile.gradient}`}
-                                        >
-                                          <div className="space-y-1.5">
-                                            <div className="flex justify-between items-center">
-                                              <span className={`text-[8px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded ${profile.badgeBg}`}>
-                                                Evaluation
-                                              </span>
-                                              {isCompleted && (
-                                                <span className="font-mono text-[9px] font-bold text-mint bg-mint/5 px-2 py-0.5 rounded">
-                                                  Score: {lastScore}%
-                                                </span>
-                                              )}
-                                            </div>
-                                            <h5 className="text-xs md:text-sm font-bold text-slate-800 dark:text-zinc-100 leading-tight">
-                                              {profile.name}
-                                            </h5>
-                                            <p className="text-[10px] text-slate-500 dark:text-zinc-400 leading-relaxed line-clamp-2">
-                                              {profile.description}
-                                            </p>
-                                          </div>
-                                          <div className="flex items-center gap-1 text-[9.5px] font-bold uppercase tracking-wider text-mint group">
-                                            {isCompleted ? "Re-evaluate" : "Run assessment"}
-                                            <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                                          </div>
-                                        </div>
-                                      );
-                                    })}
-                                  </div>
-                                </motion.div>
-                              )}
-                            </AnimatePresence>
+                            ))}
                           </div>
-                        );
-                      })}
+
+                          {/* Direct Consultation Link */}
+                          <div className="p-5 bg-gradient-to-br from-teal-500/10 via-emerald-500/5 to-transparent border border-slate-200/60 dark:border-slate-850 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-4">
+                            <div className="space-y-1 text-center sm:text-left">
+                              <span className="text-[9px] font-extrabold uppercase tracking-widest text-mint">Biomarker Consultation</span>
+                              <p className="text-xs text-slate-655 dark:text-zinc-300 leading-relaxed font-semibold">
+                                Share these extracted biomarkers directly with Dr. Jethwani on WhatsApp to map constitutional homeopathic therapeutics.
+                              </p>
+                            </div>
+                            <a
+                              href={getWhatsAppConsultationLink()}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="py-2.5 px-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl text-xs uppercase tracking-wider cursor-pointer shadow-sm transition-all text-center no-underline flex items-center justify-center gap-1.5 shrink-0"
+                            >
+                              <MessageSquare className="w-4 h-4" />
+                              WhatsApp Dr. Jethwani
+                            </a>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-6">
+                          {/* Laboratory Report Upload & Parser Segment */}
+                          <div ref={labUploadCardRef} className="glass-panel border border-slate-200/60 dark:border-slate-850 bg-white/70 dark:bg-slate-900/65 rounded-[32px] p-6 shadow-sm space-y-4">
+                            <div>
+                              <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                <FileText className="w-4.5 h-4.5 text-mint" />
+                                AI Lab Report Intelligence™
+                              </h3>
+                              <p className="text-xs text-slate-400 mt-1">
+                                Upload a biomarker diagnostic report (PDF/JPG) or run a simulated screening parser.
+                              </p>
+                            </div>
+
+                            <div 
+                              onDragEnter={handleDrag}
+                              onDragOver={handleDrag}
+                              onDragLeave={handleDrag}
+                              onDrop={handleDrop}
+                              className={`border-2 border-dashed rounded-2xl p-6 text-center transition-colors cursor-pointer ${
+                                dragActive 
+                                  ? "border-mint bg-mint/5" 
+                                  : "border-slate-200 dark:border-slate-800 hover:border-slate-350 dark:hover:border-slate-750 bg-slate-50/50 dark:bg-slate-950/20"
+                              }`}
+                            >
+                              <input 
+                                type="file" 
+                                id="lab-upload-input-2" 
+                                className="hidden" 
+                                onChange={handleFileChange} 
+                                accept="image/*,application/pdf"
+                              />
+                              <label htmlFor="lab-upload-input-2" className="cursor-pointer space-y-3 block">
+                                {labParsing ? (
+                                  <div className="flex flex-col items-center gap-2 py-4">
+                                    <RefreshCw className="w-8 h-8 text-mint animate-spin" />
+                                    <span className="text-xs font-bold text-slate-700 dark:text-zinc-200">Processing OCR extraction & biomarker ranges...</span>
+                                  </div>
+                                ) : (
+                                  <>
+                                    <UploadCloud className="w-10 h-10 text-slate-350 dark:text-slate-700 mx-auto" />
+                                    <div>
+                                      <p className="text-xs font-bold text-slate-700 dark:text-zinc-200">Drag and drop file here, or click to upload</p>
+                                      <p className="text-[10px] text-slate-400 mt-1">PDF or image formats accepted</p>
+                                    </div>
+                                  </>
+                                )}
+                              </label>
+                            </div>
+
+                            <div className="space-y-2">
+                              <span className="text-[9.5px] font-extrabold uppercase tracking-widest text-slate-400 block">
+                                Select a Sample Lab Report to Analyze:
+                              </span>
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
+                                <button
+                                  onClick={() => handleLoadSampleLab("thyroid_test.pdf")}
+                                  className="py-2.5 px-3 border border-slate-150 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60 hover:border-mint hover:bg-mint/5 rounded-xl text-[10px] font-bold text-slate-600 dark:text-zinc-350 cursor-pointer transition-colors"
+                                >
+                                  🧪 Thyroid Panel
+                                </button>
+                                <button
+                                  onClick={() => handleLoadSampleLab("glycemic_hba1c.pdf")}
+                                  className="py-2.5 px-3 border border-slate-150 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60 hover:border-mint hover:bg-mint/5 rounded-xl text-[10px] font-bold text-slate-600 dark:text-zinc-350 cursor-pointer transition-colors"
+                                >
+                                  🩸 Glycemic Panel
+                                </button>
+                                <button
+                                  onClick={() => handleLoadSampleLab("renal_filtration.pdf")}
+                                  className="py-2.5 px-3 border border-slate-150 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60 hover:border-mint hover:bg-mint/5 rounded-xl text-[10px] font-bold text-slate-600 dark:text-zinc-350 cursor-pointer transition-colors"
+                                >
+                                  腎 Renal filtration
+                                </button>
+                                <button
+                                  onClick={() => handleLoadSampleLab("vitamin_deficiencies.pdf")}
+                                  className="py-2.5 px-3 border border-slate-150 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60 hover:border-mint hover:bg-mint/5 rounded-xl text-[10px] font-bold text-slate-600 dark:text-zinc-350 cursor-pointer transition-colors"
+                                >
+                                  💊 Vitamin Panel
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  </div>
+                  )}
+
+                  {/* TAB CONTENT: BIOLOGICAL AGE CLOCK */}
+                  {dashboardTab === "bioage" && (
+                    <div className="space-y-8">
+                      {digitalTwin.biologicalAge ? (
+                        <div className="glass-panel border border-slate-200/60 dark:border-slate-850 bg-white/70 dark:bg-slate-900/65 rounded-[32px] p-6 md:p-8 space-y-6">
+                          <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-850/80 pb-4">
+                            <div className="space-y-1">
+                              <span className="text-[9px] font-extrabold uppercase tracking-widest text-mint bg-mint/5 px-2.5 py-1 rounded-full">
+                                Longevity Clock Calibrated
+                              </span>
+                              <h3 className="font-serif text-lg md:text-xl font-bold text-slate-900 dark:text-white leading-tight">
+                                Epigenetic Age Diagnostics
+                              </h3>
+                            </div>
+                            <button 
+                              onClick={() => handleSelectProfile("biological_age")}
+                              className="py-2 px-3 border border-violet-250 dark:border-violet-900/30 text-violet-500 hover:bg-violet-500/10 rounded-xl text-[10px] font-bold uppercase tracking-wider cursor-pointer transition-colors"
+                            >
+                              Recalibrate Clock
+                            </button>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                            {/* Dial gauge comparing Chronological Age and Biological Age */}
+                            <div className="flex flex-col items-center text-center justify-center p-4 bg-slate-50/40 dark:bg-slate-950/10 border border-slate-150 dark:border-slate-850 rounded-2xl">
+                              <div className="relative w-40 h-40 flex items-center justify-center">
+                                {/* Simple visual age gauge circles */}
+                                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                                  <circle cx="50" cy="50" r="40" className="stroke-slate-100 dark:stroke-slate-800 fill-none" strokeWidth="6" />
+                                  <circle 
+                                    cx="50" cy="50" r="40" 
+                                    className="stroke-violet-500 fill-none" 
+                                    strokeWidth="6"
+                                    strokeDasharray={251.2}
+                                    strokeDashoffset={251.2 - (251.2 * (digitalTwin.biologicalAge.wellnessIndex)) / 100}
+                                    strokeLinecap="round"
+                                  />
+                                </svg>
+                                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                  <span className="text-4xl font-serif font-black text-slate-900 dark:text-white font-mono">{digitalTwin.biologicalAge.bioAge}</span>
+                                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Bio Age Yrs</span>
+                                </div>
+                              </div>
+                              
+                              <div className="mt-4 flex gap-6 text-xs font-bold text-slate-500">
+                                <div>Chronological: <span className="text-slate-800 dark:text-zinc-200 font-mono">{digitalTwin.biologicalAge.chronologicalAge} yrs</span></div>
+                                <div>Offset: <span className="text-emerald-500 font-mono">-{digitalTwin.biologicalAge.chronologicalAge - digitalTwin.biologicalAge.bioAge} yrs</span></div>
+                              </div>
+                            </div>
+
+                            <div className="space-y-4">
+                              <div className="p-4 bg-violet-50/10 dark:bg-violet-950/5 border border-violet-200/20 rounded-2xl space-y-2">
+                                <span className="text-[9px] font-extrabold uppercase tracking-widest text-violet-500 block">Longevity Insights</span>
+                                <p className="text-xs text-slate-655 dark:text-zinc-300 leading-relaxed font-semibold">
+                                  Your cell oxidation rate indicates a <strong>{digitalTwin.biologicalAge.longevityScore}% Longevity Score</strong> and a <strong>{digitalTwin.biologicalAge.lifestyleRiskIndex} Risk Index</strong>. Cellular senescence matches a younger profile, reflecting slow biological aging.
+                                </p>
+                              </div>
+
+                              <div className="p-4 bg-emerald-50/15 dark:bg-emerald-950/5 border border-emerald-200/20 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-3">
+                                <p className="text-[10.5px] text-slate-500 leading-normal">
+                                  Consult Dr. Jethwani on WhatsApp to map constitutional homeopathic therapeutics designed to maintain or improve cell reserve index.
+                                </p>
+                                <a 
+                                  href={getWhatsAppConsultationLink()}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="py-2.5 px-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs uppercase tracking-wider rounded-xl cursor-pointer shadow-sm text-center transition-all no-underline flex items-center gap-1.5 shrink-0"
+                                >
+                                  <MessageSquare className="w-4 h-4" />
+                                  Discuss Clock
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="glass-panel border border-slate-200/60 dark:border-slate-850 bg-white/70 dark:bg-slate-900/65 rounded-[32px] p-6 md:p-8 text-center space-y-5 max-w-lg mx-auto">
+                          <div className="w-16 h-16 bg-violet-500/10 text-violet-500 rounded-full flex items-center justify-center mx-auto">
+                            <Flame className="w-8 h-8 animate-pulse text-violet-500" />
+                          </div>
+                          <div className="space-y-2">
+                            <h3 className="font-serif text-lg md:text-xl font-bold text-slate-900 dark:text-white leading-tight">
+                              Epigenetic Longevity Clock
+                            </h3>
+                            <p className="text-xs text-slate-500 dark:text-zinc-400 leading-relaxed max-w-md mx-auto">
+                              Calculate your cellular age compared to chronological age. The algorithm maps hand skin elasticity return speed, breath hold capacities, cardiovascular recovery, and nutritional oxidation loads.
+                            </p>
+                          </div>
+                          <button 
+                            onClick={() => handleSelectProfile("biological_age")}
+                            className="py-3 px-6 bg-violet-500 hover:bg-violet-650 text-white font-bold rounded-2xl text-xs uppercase tracking-wider cursor-pointer border-none transition-all shadow-sm flex items-center justify-center gap-1.5 mx-auto active:scale-98"
+                          >
+                            <Play className="w-4 h-4" />
+                            Calibrate Biological Age Clock
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* TAB CONTENT: ASSESSMENTS DIRECTORY */}
+                  {dashboardTab === "directory" && (
+                    <div className="space-y-4">
+                      <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block">
+                        Clinical Intelligence Accordion Domains
+                      </span>
+
+                      <div className="space-y-3.5">
+                        {ASSESSMENT_CATEGORIES.map(category => {
+                          const isExpanded = expandedCategory === category.id;
+                          const subAssessments = ASSESSMENT_PROFILES.filter(p => p.category === category.id);
+                          
+                          return (
+                            <div 
+                              key={category.id} 
+                              className="glass-panel border border-slate-200/60 dark:border-slate-850 bg-white/80 dark:bg-slate-900/70 rounded-3xl overflow-hidden shadow-sm transition-all"
+                            >
+                              {/* Accordion trigger */}
+                              <button
+                                onClick={() => setExpandedCategory(isExpanded ? null : category.id)}
+                                className="w-full flex items-center justify-between p-5 text-left font-bold text-slate-800 dark:text-zinc-100 hover:bg-slate-50/50 dark:hover:bg-slate-950/20 transition-all border-none bg-transparent cursor-pointer"
+                              >
+                                <div className="flex items-center gap-3">
+                                  <span className="p-2 bg-mint/10 rounded-xl text-mint">
+                                    <Sliders className="w-4 h-4" />
+                                  </span>
+                                  <div>
+                                    <span className="font-serif text-sm md:text-base font-bold text-slate-900 dark:text-white block">
+                                      {category.name}
+                                    </span>
+                                    <span className="text-[9.5px] text-slate-400 font-semibold uppercase tracking-wider block">
+                                      {subAssessments.length} assessments
+                                    </span>
+                                  </div>
+                                </div>
+                                <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`} />
+                              </button>
+
+                              {/* Accordion content grid */}
+                              <AnimatePresence initial={false}>
+                                {isExpanded && (
+                                  <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: "auto", opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    transition={{ duration: 0.3 }}
+                                    className="border-t border-slate-100 dark:border-slate-850/80 overflow-hidden"
+                                  >
+                                    <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50/30 dark:bg-slate-950/10">
+                                      {subAssessments.map(profile => {
+                                        const isCompleted = !!digitalTwin.completedAssessments[profile.id];
+                                        const lastScore = digitalTwin.completedAssessments[profile.id]?.score;
+                                        
+                                        return (
+                                          <div
+                                            key={profile.id}
+                                            onClick={() => handleSelectProfile(profile.id)}
+                                            className={`border border-slate-150 dark:border-slate-850/80 p-4.5 rounded-2xl flex flex-col justify-between h-[155px] bg-white dark:bg-slate-900/60 hover:-translate-y-0.5 hover:shadow transition-all duration-300 cursor-pointer ${profile.gradient}`}
+                                          >
+                                            <div className="space-y-1.5">
+                                              <div className="flex justify-between items-center">
+                                                <span className={`text-[8px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded ${profile.badgeBg}`}>
+                                                  Evaluation
+                                                </span>
+                                                {isCompleted && (
+                                                  <span className="font-mono text-[9px] font-bold text-mint bg-mint/5 px-2 py-0.5 rounded">
+                                                    Score: {lastScore}%
+                                                  </span>
+                                                )}
+                                              </div>
+                                              <h5 className="text-xs md:text-sm font-bold text-slate-800 dark:text-zinc-100 leading-tight">
+                                                {profile.name}
+                                              </h5>
+                                              <p className="text-[10px] text-slate-500 dark:text-zinc-400 leading-relaxed line-clamp-2">
+                                                {profile.description}
+                                              </p>
+                                            </div>
+                                            <div className="flex items-center gap-1 text-[9.5px] font-bold uppercase tracking-wider text-mint group">
+                                              {isCompleted ? "Re-evaluate" : "Run assessment"}
+                                              <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                                            </div>
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
 
                 </motion.div>
               )}
@@ -1473,162 +2220,336 @@ export default function HealthIntelligencePage() {
                   exit={{ opacity: 0, y: -15 }}
                   className="glass-panel border border-slate-200/60 dark:border-slate-850 bg-white/75 dark:bg-slate-900/65 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6 max-w-xl mx-auto"
                 >
-                  <div className="space-y-1">
-                    <span className="text-[9px] font-extrabold uppercase tracking-widest text-mint bg-mint/5 px-2.5 py-1 rounded-full">
-                      Step {currentStep + 1} of {selectedProfile.questions.length + 1}
-                    </span>
-                    <h3 className="font-serif text-lg md:text-xl font-bold text-slate-900 dark:text-white leading-tight">
-                      {selectedProfile.name}
-                    </h3>
-                  </div>
+                  {(() => {
+                    const hasBmiStep = selectedProfile.id === "metabolic_profile";
+                    const totalStepsForProgress = selectedProfile.questions.length + (hasBmiStep ? 2 : 1);
+                    const isQuestionsPhase = currentStep < selectedProfile.questions.length;
+                    const isBmiStep = hasBmiStep && currentStep === selectedProfile.questions.length;
+                    const isSymptomsPhase = hasBmiStep 
+                      ? currentStep === selectedProfile.questions.length + 1 
+                      : currentStep === selectedProfile.questions.length;
 
-                  <div className="w-full h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                    <div 
-                      className="bg-mint h-full transition-all duration-300"
-                      style={{ width: `${((currentStep) / (selectedProfile.questions.length + 1)) * 100}%` }}
-                    ></div>
-                  </div>
+                    // Compute BMI values (metric format)
+                    const height = answers.height !== undefined ? Number(answers.height) : 170;
+                    const weight = answers.weight !== undefined ? Number(answers.weight) : 70;
+                    const bmi = Number((weight / ((height / 100) ** 2)).toFixed(1));
 
-                  {currentStep < selectedProfile.questions.length ? (
-                    <div className="space-y-6 py-4">
-                      {(() => {
-                        const q = selectedProfile.questions[currentStep];
-                        return (
-                          <div className="space-y-4">
-                            <h4 className="text-xs md:text-sm font-bold text-slate-800 dark:text-zinc-100 flex items-start gap-2 leading-relaxed">
-                              <HelpCircle className="w-4 h-4 text-mint shrink-0 mt-0.5" />
-                              {q.label}
-                            </h4>
+                    return (
+                      <>
+                        <div className="space-y-1">
+                          <span className="text-[9px] font-extrabold uppercase tracking-widest text-mint bg-mint/5 px-2.5 py-1 rounded-full">
+                            Step {currentStep + 1} of {totalStepsForProgress}
+                          </span>
+                          <h3 className="font-serif text-lg md:text-xl font-bold text-slate-900 dark:text-white leading-tight">
+                            {selectedProfile.name}
+                          </h3>
+                        </div>
 
-                            {q.type === "select" && (
+                        <div className="w-full h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                          <div 
+                            className="bg-mint h-full transition-all duration-300"
+                            style={{ width: `${((currentStep) / totalStepsForProgress) * 100}%` }}
+                          ></div>
+                        </div>
+
+                        {isQuestionsPhase && (
+                          <div className="space-y-6 py-4">
+                            {(() => {
+                              const q = selectedProfile.questions[currentStep];
+                              return (
+                                <div className="space-y-4">
+                                  <h4 className="text-xs md:text-sm font-bold text-slate-800 dark:text-zinc-100 flex items-start gap-2 leading-relaxed">
+                                    <HelpCircle className="w-4 h-4 text-mint shrink-0 mt-0.5" />
+                                    {q.label}
+                                  </h4>
+
+                                  {q.type === "select" && (
+                                    <div className="space-y-3">
+                                      {q.options?.map((opt, i) => {
+                                        const isSelected = answers[q.id] === opt;
+                                        return (
+                                          <button
+                                            key={i}
+                                            onClick={() => {
+                                              handleInputChange(q.id, opt);
+                                              setTimeout(() => {
+                                                setCurrentStep(currentStep + 1);
+                                              }, 200);
+                                            }}
+                                            className={`w-full text-left p-4 rounded-2xl border text-xs font-semibold cursor-pointer transition-all ${
+                                              isSelected 
+                                                ? "bg-mint/5 border-mint text-mint-dark dark:text-mint" 
+                                                : "bg-slate-50/50 dark:bg-slate-950/20 border-slate-200/60 dark:border-slate-850 hover:bg-slate-100/30 text-slate-650 dark:text-zinc-400"
+                                            }`}
+                                          >
+                                            {opt}
+                                          </button>
+                                        );
+                                      })}
+                                    </div>
+                                  )}
+
+                                  {q.type === "range" && (
+                                    <div className="space-y-5 py-4">
+                                      <div className="flex justify-between items-center px-1">
+                                        <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">{q.labelMin}</span>
+                                        <span className="font-serif text-3xl font-black text-mint font-mono">{answers[q.id]}</span>
+                                        <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">{q.labelMax}</span>
+                                      </div>
+                                      <input 
+                                        type="range"
+                                        min={q.min}
+                                        max={q.max}
+                                        value={answers[q.id] || 5}
+                                        onChange={(e) => handleInputChange(q.id, Number(e.target.value))}
+                                        className="w-full accent-mint"
+                                      />
+                                      <button
+                                        onClick={() => setCurrentStep(currentStep + 1)}
+                                        className="w-full py-3.5 bg-mint hover:bg-teal-600 text-white font-bold rounded-2xl text-xs uppercase tracking-wider cursor-pointer border-none shadow-sm flex items-center justify-center gap-1.5"
+                                      >
+                                        Next Question
+                                        <ArrowRight className="w-4 h-4" />
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })()}
+                          </div>
+                        )}
+
+                        {isBmiStep && (
+                          <div className="space-y-6 py-4 animate-fadeIn">
+                            <div className="space-y-1">
+                              <h4 className="text-xs md:text-sm font-bold text-slate-800 dark:text-zinc-100 flex items-center gap-2">
+                                <Activity className="w-4 h-4 text-mint" />
+                                Body Mass Index (BMI) Calculator
+                              </h4>
+                              <p className="text-[11px] text-slate-400 leading-normal">
+                                Input your height and weight to calculate your BMI and determine clinical weight status.
+                              </p>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-5 bg-slate-50/50 dark:bg-slate-950/20 border border-slate-200/60 dark:border-slate-850 rounded-2xl">
+                              {/* Height Input */}
                               <div className="space-y-3">
-                                {q.options?.map((opt, i) => {
-                                  const isSelected = answers[q.id] === opt;
-                                  return (
-                                    <button
-                                      key={i}
-                                      onClick={() => {
-                                        handleInputChange(q.id, opt);
-                                        setTimeout(() => {
-                                          setCurrentStep(currentStep + 1);
-                                        }, 200);
-                                      }}
-                                      className={`w-full text-left p-4 rounded-2xl border text-xs font-semibold cursor-pointer transition-all ${
-                                        isSelected 
-                                          ? "bg-mint/5 border-mint text-mint-dark dark:text-mint" 
-                                          : "bg-slate-50/50 dark:bg-slate-950/20 border-slate-200/60 dark:border-slate-850 hover:bg-slate-100/30 text-slate-650 dark:text-zinc-400"
-                                      }`}
-                                    >
-                                      {opt}
-                                    </button>
-                                  );
-                                })}
-                              </div>
-                            )}
-
-                            {q.type === "range" && (
-                              <div className="space-y-5 py-4">
-                                <div className="flex justify-between items-center px-1">
-                                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">{q.labelMin}</span>
-                                  <span className="font-serif text-3xl font-black text-mint font-mono">{answers[q.id]}</span>
-                                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">{q.labelMax}</span>
+                                <div className="flex justify-between items-center">
+                                  <label className="text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Height</label>
+                                  <span className="font-mono text-xs font-bold text-mint bg-mint/5 px-2 py-0.5 rounded">{height} cm</span>
                                 </div>
                                 <input 
                                   type="range"
-                                  min={q.min}
-                                  max={q.max}
-                                  value={answers[q.id] || 5}
-                                  onChange={(e) => handleInputChange(q.id, Number(e.target.value))}
+                                  min="100"
+                                  max="220"
+                                  value={height}
+                                  onChange={(e) => handleInputChange("height", Number(e.target.value))}
                                   className="w-full accent-mint"
                                 />
-                                <button
-                                  onClick={() => setCurrentStep(currentStep + 1)}
-                                  className="w-full py-3.5 bg-mint hover:bg-teal-600 text-white font-bold rounded-2xl text-xs uppercase tracking-wider cursor-pointer border-none shadow-sm flex items-center justify-center gap-1.5"
-                                >
-                                  Next Question
-                                  <ArrowRight className="w-4 h-4" />
-                                </button>
+                                <div className="flex justify-between text-[8px] text-slate-400 font-bold uppercase tracking-wider">
+                                  <span>100 cm</span>
+                                  <span>220 cm</span>
+                                </div>
                               </div>
-                            )}
-                          </div>
-                        );
-                      })()}
-                    </div>
-                  ) : (
-                    <div className="space-y-6 py-4">
-                      <div className="space-y-1">
-                        <h4 className="text-xs md:text-sm font-bold text-slate-800 dark:text-zinc-100">Verify Constitutional Modalities</h4>
-                        <p className="text-[11px] text-slate-400 leading-normal">Select any specific active symptoms to calculate homeopathic miasmatic loads.</p>
-                      </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {selectedProfile.symptomsList.map(sym => {
-                          const isChecked = selectedSymptoms.includes(sym);
-                          return (
-                            <div
-                              key={sym}
-                              onClick={() => toggleSymptom(sym)}
-                              className={`p-3.5 rounded-2xl border text-xs cursor-pointer flex items-start gap-2.5 transition-all duration-200 ${
-                                isChecked 
-                                  ? "bg-mint/5 border-mint text-mint-dark dark:text-mint" 
-                                  : "bg-slate-50/50 dark:bg-slate-950/20 border-slate-200/60 dark:border-slate-850 hover:bg-slate-100/30 text-slate-650 dark:text-zinc-400"
-                              }`}
-                            >
-                              <div className={`w-4.5 h-4.5 rounded border flex items-center justify-center shrink-0 mt-0.5 transition-all ${
-                                isChecked ? "bg-mint border-mint text-white" : "border-slate-350 dark:border-slate-850 bg-white dark:bg-slate-900"
-                              }`}>
-                                {isChecked && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                              {/* Weight Input */}
+                              <div className="space-y-3">
+                                <div className="flex justify-between items-center">
+                                  <label className="text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Weight</label>
+                                  <span className="font-mono text-xs font-bold text-mint bg-mint/5 px-2 py-0.5 rounded">{weight} kg</span>
+                                </div>
+                                <input 
+                                  type="range"
+                                  min="30"
+                                  max="180"
+                                  value={weight}
+                                  onChange={(e) => handleInputChange("weight", Number(e.target.value))}
+                                  className="w-full accent-mint"
+                                />
+                                <div className="flex justify-between text-[8px] text-slate-400 font-bold uppercase tracking-wider">
+                                  <span>30 kg</span>
+                                  <span>180 kg</span>
+                                </div>
                               </div>
-                              <span className="leading-snug">{sym}</span>
                             </div>
-                          );
-                        })}
-                      </div>
 
-                      <div className="flex gap-4 pt-4">
-                        <button
-                          onClick={() => setCurrentStep(currentStep - 1)}
-                          className="py-3 px-5 border border-slate-250 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-600 dark:text-zinc-400 font-bold rounded-2xl text-xs uppercase tracking-wider cursor-pointer transition-colors"
-                        >
-                          Back
-                        </button>
-                        <button
-                          onClick={handleCalculateAssessment}
-                          disabled={isCalculating}
-                          className="flex-1 py-3.5 bg-mint hover:bg-teal-600 text-white font-bold rounded-2xl text-xs uppercase tracking-wider cursor-pointer border-none shadow-md shadow-teal-500/10 flex items-center justify-center gap-1.5"
-                        >
-                          {isCalculating ? (
-                            <>
-                              <RefreshCw className="w-4 h-4 animate-spin" />
-                              Compiling report...
-                            </>
-                          ) : (
-                            <>
-                              <Activity className="w-4 h-4" />
-                              Compile Intelligence Report
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                  )}
+                            {/* BMI Output Card */}
+                            {(() => {
+                              let statusColor = "text-emerald-500 dark:text-emerald-400";
+                              let statusBg = "bg-emerald-500/10 border-emerald-500/20";
+                              let statusLabel = "Optimal Weight";
+                              let statusDesc = "Your weight falls in the healthy, optimal range. This minimizes cardiovascular load and metabolic strain.";
+                              let gaugeOffset = 0;
 
-                  {currentStep < selectedProfile.questions.length && (
-                    <div className="flex justify-between items-center text-[10px] font-bold text-slate-400 pt-4 border-t border-slate-100 dark:border-slate-800">
-                      {currentStep > 0 ? (
-                        <button 
-                          onClick={() => setCurrentStep(currentStep - 1)}
-                          className="text-slate-450 hover:text-slate-600 border-none bg-transparent cursor-pointer"
-                        >
-                          Previous Question
-                        </button>
-                      ) : (
-                        <div />
-                      )}
-                      <span>Step {currentStep + 1} of {selectedProfile.questions.length + 1}</span>
-                    </div>
-                  )}
+                              if (bmi < 18.5) {
+                                statusColor = "text-amber-500 dark:text-amber-400";
+                                statusBg = "bg-amber-500/10 border-amber-500/20";
+                                statusLabel = "Underweight";
+                                statusDesc = "Your weight is below the standard healthy range. This may suggest nutritional assimilation deficits.";
+                                gaugeOffset = Math.max(0, Math.min(25, ((bmi - 10) / 8.5) * 25));
+                              } else if (bmi <= 24.9) {
+                                statusLabel = "Optimal Weight";
+                                statusColor = "text-emerald-500 dark:text-emerald-400";
+                                statusBg = "bg-emerald-500/10 border-emerald-500/20";
+                                statusDesc = "Your weight falls in the healthy, optimal range. This minimizes cardiovascular load and metabolic strain.";
+                                gaugeOffset = 25 + ((bmi - 18.5) / 6.4) * 25;
+                              } else if (bmi <= 29.9) {
+                                statusLabel = "Overweight";
+                                statusColor = "text-orange-500 dark:text-orange-400";
+                                statusBg = "bg-orange-500/10 border-orange-500/20";
+                                statusDesc = "Your weight is slightly elevated. Consider lifestyle adjustments to reduce metabolic congestion.";
+                                gaugeOffset = 50 + ((bmi - 25) / 4.9) * 25;
+                              } else {
+                                statusLabel = "Obese";
+                                statusColor = "text-rose-500 dark:text-rose-450";
+                                statusBg = "bg-rose-500/10 border-rose-500/20";
+                                statusDesc = "Your weight is significantly elevated, pointing to metabolic stress and increased visceral organ loading.";
+                                gaugeOffset = 75 + Math.min(25, ((bmi - 30) / 15) * 25);
+                              }
 
+                              return (
+                                <div className="space-y-4 p-5 border border-slate-200/60 dark:border-slate-850 rounded-2xl bg-white dark:bg-slate-900/60 shadow-inner">
+                                  <div className="flex justify-between items-center">
+                                    <div>
+                                      <span className="text-[9px] font-extrabold uppercase tracking-widest text-slate-400 block mb-0.5">Calculated BMI</span>
+                                      <span className="font-serif text-3xl font-black text-slate-900 dark:text-white">{bmi}</span>
+                                    </div>
+                                    <span className={`px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg border ${statusBg} ${statusColor}`}>
+                                      {statusLabel}
+                                    </span>
+                                  </div>
+
+                                  {/* Gauge Bar */}
+                                  <div className="space-y-1.5 pt-2">
+                                    <div className="relative w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-visible flex">
+                                      <div className="h-full w-[25%] bg-amber-450/30 rounded-l-full border-r border-slate-200/30" />
+                                      <div className="h-full w-[25%] bg-emerald-450/30 border-r border-slate-200/30" />
+                                      <div className="h-full w-[25%] bg-orange-450/30 border-r border-slate-200/30" />
+                                      <div className="h-full w-[25%] bg-rose-450/30 rounded-r-full" />
+
+                                      {/* Indicator pointer */}
+                                      <div 
+                                        className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4.5 h-4.5 bg-white border-[2.5px] border-mint rounded-full shadow transition-all duration-300 flex items-center justify-center"
+                                        style={{ left: `${gaugeOffset}%` }}
+                                      >
+                                        <div className="w-1.5 h-1.5 bg-mint rounded-full" />
+                                      </div>
+                                    </div>
+                                    <div className="flex justify-between text-[8px] text-slate-450 font-bold uppercase tracking-wider px-0.5">
+                                      <span>Under</span>
+                                      <span>Optimal</span>
+                                      <span>Over</span>
+                                      <span>Obese</span>
+                                    </div>
+                                  </div>
+
+                                  <p className="text-[10.5px] text-slate-500 dark:text-zinc-400 leading-relaxed pt-1">
+                                    {statusDesc}
+                                  </p>
+                                </div>
+                              );
+                            })()}
+
+                            <div className="flex gap-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                              <button
+                                onClick={() => setCurrentStep(currentStep - 1)}
+                                className="py-3 px-5 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-650 dark:text-zinc-400 font-bold rounded-2xl text-xs uppercase tracking-wider cursor-pointer transition-colors"
+                              >
+                                Back
+                              </button>
+                              <button
+                                onClick={() => {
+                                  handleInputChange("height", height);
+                                  handleInputChange("weight", weight);
+                                  handleInputChange("bmi", bmi);
+                                  setCurrentStep(currentStep + 1);
+                                }}
+                                className="flex-1 py-3.5 bg-mint hover:bg-teal-600 text-white font-bold rounded-2xl text-xs uppercase tracking-wider cursor-pointer border-none shadow-sm flex items-center justify-center gap-1.5"
+                              >
+                                Save & Proceed
+                                <ArrowRight className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </div>
+                        )}
+
+                        {isSymptomsPhase && (
+                          <div className="space-y-6 py-4 animate-fadeIn">
+                            <div className="space-y-1">
+                              <h4 className="text-xs md:text-sm font-bold text-slate-800 dark:text-zinc-100">Verify Constitutional Modalities</h4>
+                              <p className="text-[11px] text-slate-400 leading-normal">Select any specific active symptoms to calculate homeopathic miasmatic loads.</p>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              {selectedProfile.symptomsList.map(sym => {
+                                const isChecked = selectedSymptoms.includes(sym);
+                                return (
+                                  <div
+                                    key={sym}
+                                    onClick={() => toggleSymptom(sym)}
+                                    className={`p-3.5 rounded-2xl border text-xs cursor-pointer flex items-start gap-2.5 transition-all duration-200 ${
+                                      isChecked 
+                                        ? "bg-mint/5 border-mint text-mint-dark dark:text-mint" 
+                                        : "bg-slate-50/50 dark:bg-slate-950/20 border-slate-200/60 dark:border-slate-850 hover:bg-slate-100/30 text-slate-650 dark:text-zinc-400"
+                                    }`}
+                                  >
+                                    <div className={`w-4.5 h-4.5 rounded border flex items-center justify-center shrink-0 mt-0.5 transition-all ${
+                                      isChecked ? "bg-mint border-mint text-white" : "border-slate-350 dark:border-slate-850 bg-white dark:bg-slate-900"
+                                    }`}>
+                                      {isChecked && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                                    </div>
+                                    <span className="leading-snug">{sym}</span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+
+                            <div className="flex gap-4 pt-4">
+                              <button
+                                onClick={() => setCurrentStep(currentStep - 1)}
+                                className="py-3 px-5 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-600 dark:text-zinc-400 font-bold rounded-2xl text-xs uppercase tracking-wider cursor-pointer transition-colors"
+                              >
+                                Back
+                              </button>
+                              <button
+                                onClick={handleCalculateAssessment}
+                                disabled={isCalculating}
+                                className="flex-1 py-3.5 bg-mint hover:bg-teal-600 text-white font-bold rounded-2xl text-xs uppercase tracking-wider cursor-pointer border-none shadow-md shadow-teal-500/10 flex items-center justify-center gap-1.5"
+                              >
+                                {isCalculating ? (
+                                  <>
+                                    <RefreshCw className="w-4 h-4 animate-spin" />
+                                    Compiling report...
+                                  </>
+                                ) : (
+                                  <>
+                                    <Activity className="w-4 h-4" />
+                                    Compile Intelligence Report
+                                  </>
+                                )}
+                              </button>
+                            </div>
+                          </div>
+                        )}
+
+                        {isQuestionsPhase && (
+                          <div className="flex justify-between items-center text-[10px] font-bold text-slate-400 pt-4 border-t border-slate-100 dark:border-slate-800">
+                            {currentStep > 0 ? (
+                              <button 
+                                onClick={() => setCurrentStep(currentStep - 1)}
+                                className="text-slate-450 hover:text-slate-600 border-none bg-transparent cursor-pointer"
+                              >
+                                Previous Question
+                              </button>
+                            ) : (
+                              <div />
+                            )}
+                            <span>Step {currentStep + 1} of {totalStepsForProgress}</span>
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
                 </motion.div>
               )}
 
@@ -1637,6 +2558,7 @@ export default function HealthIntelligencePage() {
               {/* VIEW: LAB REPORT OCR ANALYSIS RESULTS */}
               {activeView === "lab_upload" && labResult && (
                 <motion.div
+                  ref={labResultsRef}
                   key="lab_upload"
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -1732,16 +2654,26 @@ export default function HealthIntelligencePage() {
                   </div>
 
                   {/* Lab booking CTA */}
-                  <div className="p-5 bg-gradient-to-r from-teal-600 to-emerald-600 text-white rounded-2xl flex flex-col md:flex-row justify-between items-center gap-4">
+                  <div className="p-6 bg-gradient-to-r from-teal-600 to-emerald-600 text-white rounded-2xl flex flex-col md:flex-row justify-between items-center gap-5">
                     <p className="text-xs text-teal-100 max-w-md">
-                      These biomarkers suggest subclinical pathways. A comprehensive homeopathic diagnostic session will map constitutional remedies to restore normal ranges.
+                      These biomarkers suggest subclinical pathways. A comprehensive homeopathic diagnostic session with Dr. Jethwani will map constitutional remedies to restore normal ranges.
                     </p>
-                    <Link
-                      href="https://homeo.healthcare/#booking"
-                      className="py-3 px-5 bg-white text-teal-700 hover:bg-teal-50 font-bold text-xs uppercase tracking-wider rounded-xl cursor-pointer shadow-sm text-center shrink-0 transition-transform active:scale-98"
-                    >
-                      Book Consultation
-                    </Link>
+                    <div className="flex flex-col sm:flex-row gap-3 shrink-0 w-full md:w-auto">
+                      <a
+                        href={getWhatsAppConsultationLink()}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="py-3 px-5 bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-xs uppercase tracking-wider rounded-xl cursor-pointer shadow-sm text-center transition-all no-underline flex items-center justify-center gap-1.5"
+                      >
+                        WhatsApp Dr. Jethwani
+                      </a>
+                      <Link
+                        href="https://homeo.healthcare/#booking"
+                        className="py-3 px-5 bg-white text-teal-700 hover:bg-teal-50 font-bold text-xs uppercase tracking-wider rounded-xl cursor-pointer shadow-sm text-center transition-all flex items-center justify-center"
+                      >
+                        Book Calendar
+                      </Link>
+                    </div>
                   </div>
 
                 </motion.div>
@@ -2038,19 +2970,28 @@ export default function HealthIntelligencePage() {
                       Print Health Report
                     </button>
 
-                    <div className="flex gap-3 w-full sm:w-auto justify-end">
+                    <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto justify-end">
                       <button
                         onClick={() => { setActiveView("dashboard"); setSelectedProfileId(null); setAnswers({}); }}
-                        className="py-3 px-5 text-slate-500 hover:text-slate-700 font-bold rounded-2xl text-xs uppercase tracking-wider cursor-pointer border-none bg-transparent"
+                        className="py-3 px-5 text-slate-500 hover:text-slate-750 font-bold rounded-2xl text-xs uppercase tracking-wider cursor-pointer border-none bg-transparent"
                       >
                         Dashboard
                       </button>
                       
+                      <a
+                        href={getWhatsAppConsultationLink()}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="py-3 px-5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-2xl text-xs uppercase tracking-wider cursor-pointer shadow-sm text-center transition-all no-underline flex items-center justify-center gap-1 active:scale-98"
+                      >
+                        WhatsApp Review
+                      </a>
+
                       <Link
                         href="https://homeo.healthcare/#booking"
                         className="py-3 px-6 bg-mint hover:bg-teal-600 text-white font-bold rounded-2xl text-xs uppercase tracking-wider cursor-pointer shadow-sm text-center transition-all flex items-center gap-1 active:scale-98"
                       >
-                        Request Professional Review
+                        Book Consultation
                         <ChevronRight className="w-4 h-4" />
                       </Link>
                     </div>

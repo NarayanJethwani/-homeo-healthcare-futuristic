@@ -103,6 +103,7 @@ export interface HealthDigitalTwin {
   priorityGoals: string[];
   wearables?: Record<string, WearableSyncData>;
   clinicalPortal?: ClinicalPortalSync;
+  labResult?: any;
 }
 
 export interface IntelligenceReport {
