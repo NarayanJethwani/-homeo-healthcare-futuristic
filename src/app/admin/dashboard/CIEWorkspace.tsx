@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Users, Activity, Sparkles, Brain, Send, FileText, 
   Award, Compass, Network, Layers, ShieldAlert, Cpu, 
   Play, RefreshCw, Zap, TrendingUp, Workflow, Calendar, 
   Database, Stethoscope, AlertTriangle, Check, X, Shield, ChevronRight, ChevronDown,
-  FileSpreadsheet, ExternalLink
+  FileSpreadsheet, ExternalLink, Maximize2, Minimize2
 } from "lucide-react";
 import EcgGraph from "@/components/EcgGraph";
 import { CONSTITUTIONAL_QUESTIONS, analyzeConstitution } from "@/app/health-intelligence/constitutionalEngine";
@@ -17,6 +18,7 @@ interface CIEWorkspaceProps {
   selectedPatientId: string;
   setSelectedPatientId: (id: string) => void;
   theme: "light" | "dark";
+  activeTabOverride?: "cockpit" | "intake" | "miasms" | "reports";
 }
 
 // Mapped symptoms, miasms, labs and remedies longitudinal database
@@ -446,6 +448,258 @@ const NODE_PIVOT_MAP: Record<string, {
     forecastHighlight: "RA Inflammatory Flare",
     therapeuticHighlight: "Thermal Protection & Dry Heat Compliance Check",
     traceHighlight: "ra_flare"
+  },
+  org_heart: {
+    nodeName: "Cardiovascular Heart",
+    type: "Anatomical Organ System",
+    confidence: 88,
+    status: "Compensated Normal / Subclinical Strain",
+    evidenceWeight: 85,
+    connectedLabs: ["ECG Rhythm Stability", "Serum Cholesterol", "Blood Pressure"],
+    connectedSymptoms: ["Chest Palpitations", "Dyspnea Breathlessness"],
+    connectedRemedies: ["Crataegus Oxyacantha", "Cactus Grandiflorus"],
+    predictedOutcome: "Cardiovascular tone and rhythm normalization under crataegus protocol",
+    clinicalEvidence: "85% match - Cardiovascular guidelines and myocardial tone rubrics.",
+    populationBenchmark: "Cardiac index efficiency matches the top 20% of the active cohort.",
+    cohortData: { top: 74, avg: 20, poor: 6 },
+    copilotPrompt: "Evaluate myocardial status. Rhythm is stable, BP spikes to 142/90. Suggest support.",
+    forecastHighlight: "Cardiovascular Burden",
+    therapeuticHighlight: "Aerobic Conditioning & Stress Management",
+    traceHighlight: "cvd"
+  },
+  org_brain: {
+    nodeName: "Cognitive Brain",
+    type: "Anatomical Organ System",
+    confidence: 90,
+    status: "Active Sluggish (Neural Tension)",
+    evidenceWeight: 88,
+    connectedLabs: ["Sleep Quality Index", "Adrenal Cortisol Output"],
+    connectedSymptoms: ["Cognitive Brain Fog", "Insomnia Sleep Loss", "Systemic Anxiety"],
+    connectedRemedies: ["Kali Phosphoricum 6X", "Gelsemium Sempervirens"],
+    predictedOutcome: "Resolution of cognitive lag and sleep latency reduction within 14 days",
+    clinicalEvidence: "88% match - Kent's Repertory brain fog and nervous fatigue rubrics.",
+    populationBenchmark: "Sleep restoration index matches the top 15% of the active cohort.",
+    cohortData: { top: 82, avg: 14, poor: 4 },
+    copilotPrompt: "Analyze brain fog and sleep continuity. Suggest remedies for neural fatigue.",
+    forecastHighlight: "Neurological Load",
+    therapeuticHighlight: "Sleep Hygiene Protocol (target > 8 hours nightly)",
+    traceHighlight: "neuropathy"
+  },
+  org_liver: {
+    nodeName: "Metabolic Liver",
+    type: "Anatomical Organ System",
+    confidence: 86,
+    status: "Compensated Sluggish (Hepatic Congestion)",
+    evidenceWeight: 84,
+    connectedLabs: ["ALT/AST Enzymes", "Serum Cholesterol"],
+    connectedSymptoms: ["Bilious Jaundice", "Flatulence & Bloat"],
+    connectedRemedies: ["Chelidonium Majus", "Carduus Marianus", "Lycopodium Clavatum"],
+    predictedOutcome: "ALT/AST enzyme normalization and bile clearance within 30 days",
+    clinicalEvidence: "84% match - Boericke Materia Medica hepatic sluggishness and right-sided rubrics.",
+    populationBenchmark: "Liver clearance reserve is in the top 25% of the metabolic cohort.",
+    cohortData: { top: 72, avg: 22, poor: 6 },
+    copilotPrompt: "Assess liver enzymes AST/ALT. Suggest right-sided hepatic support remedies.",
+    forecastHighlight: "Metabolic Burden",
+    therapeuticHighlight: "Fat intake restriction and warm-water therapy",
+    traceHighlight: "metabolic"
+  },
+  org_lungs: {
+    nodeName: "Pulmonary Lungs",
+    type: "Anatomical Organ System",
+    confidence: 85,
+    status: "Reactive Bronze (Bronchial Congestion)",
+    evidenceWeight: 89,
+    connectedLabs: ["Oxygen Saturation SpO2", "FEV1 Lung Volume"],
+    connectedSymptoms: ["Chronic Dry Cough", "Asthmatic Wheezing", "Dyspnea Breathlessness"],
+    connectedRemedies: ["Antimonium Tartaricum", "Arsenicum Album"],
+    predictedOutcome: "Expiratory wheeze resolution and oxygenation stability in 10 days",
+    clinicalEvidence: "89% match - Rattling mucus in bronchial tree rubrics from Kent's Repertory.",
+    populationBenchmark: "FEV1 lung volume is in the top 18% of the respiratory cohort.",
+    cohortData: { top: 76, avg: 18, poor: 6 },
+    copilotPrompt: "Review expellable mucus indicators. Suggest bronchial spasm remedies.",
+    forecastHighlight: "Respiratory Load",
+    therapeuticHighlight: "Air quality check and warm steam inhalations",
+    traceHighlight: "respiratory"
+  },
+  org_skin: {
+    nodeName: "Dermatic Skin",
+    type: "Anatomical Organ System",
+    confidence: 91,
+    status: "Active Eruptive (Cutaneous Leakage)",
+    evidenceWeight: 87,
+    connectedLabs: ["IgE Allergy Index"],
+    connectedSymptoms: ["Dermatic Eczema", "Mucosal Dryness"],
+    connectedRemedies: ["Graphites 30C", "Sulphur 30C"],
+    predictedOutcome: "Eczema surface area reduction and dryness healing within 21 days",
+    clinicalEvidence: "87% match - Honey-like sticky discharge and skin folds eczema rubrics.",
+    populationBenchmark: "Cutaneous barrier recovery rate is in the top 12% of dermatic cohorts.",
+    cohortData: { top: 80, avg: 15, poor: 5 },
+    copilotPrompt: "Review skin eczema discharge and itch rubrics. Suggest dermatic remedies.",
+    forecastHighlight: "Dermatic Load",
+    therapeuticHighlight: "Allergen elimination and natural topical moisturizers",
+    traceHighlight: "sjogren"
+  },
+  org_adrenals: {
+    nodeName: "Adrenal Glands",
+    type: "Anatomical Organ System",
+    confidence: 84,
+    status: "De-compensated (Hypoadrenia / Exhaustion)",
+    evidenceWeight: 86,
+    connectedLabs: ["Adrenal Cortisol Output"],
+    connectedSymptoms: ["Generalized Fatigue", "Morning Lethargy"],
+    connectedRemedies: ["Phosphoricum Acidum", "Gelsemium Sempervirens"],
+    predictedOutcome: "Diurnal cortisol curve stabilization and energy reserve restoration in 45 days",
+    clinicalEvidence: "86% match - Exhaustion from emotional or mental strain rubrics.",
+    populationBenchmark: "Adrenal stress recovery matches the top 22% of fatigue cohorts.",
+    cohortData: { top: 68, avg: 24, poor: 8 },
+    copilotPrompt: "Review cortisol curve. Salivary cortisol is low at 8 AM. Suggest adrenal support.",
+    forecastHighlight: "Endocrine Strain",
+    therapeuticHighlight: "Stress management, adaptogenic diet, and sleep hygiene",
+    traceHighlight: "thyroid"
+  },
+  org_bladder: {
+    nodeName: "Urinary Bladder",
+    type: "Anatomical Organ System",
+    confidence: 89,
+    status: "Active Irritated (Urinary Congestion)",
+    evidenceWeight: 90,
+    connectedLabs: ["Urine Leukocyte Index", "Urinary Microalbumin"],
+    connectedSymptoms: ["Frequent nocturnal urination", "Painful Dysuria"],
+    connectedRemedies: ["Cantharis 30C", "Pulsatilla Nigricans"],
+    predictedOutcome: "Painful urination clearing and nocturnal frequency reduction in 5 days",
+    clinicalEvidence: "90% match - Kent's Repertory scalding urine and constant urging rubrics.",
+    populationBenchmark: "Bladder irritation clearance matches the top 15% of urinary cohorts.",
+    cohortData: { top: 82, avg: 14, poor: 4 },
+    copilotPrompt: "Review bladder urging and dysuria metrics. Urinalysis shows trace leukocytes.",
+    forecastHighlight: "Renal Risk Progression",
+    therapeuticHighlight: "Increased alkaline fluid intake (> 2.5L / day)",
+    traceHighlight: "ckd"
+  },
+  rem_kali_phos: {
+    nodeName: "Kali Phosphoricum 6X",
+    type: "Homeopathic Remedy Vector",
+    confidence: 90,
+    status: "Active Tissue Salt Support",
+    evidenceWeight: 88,
+    connectedLabs: ["Sleep Quality Index"],
+    connectedSymptoms: ["Cognitive Brain Fog", "Insomnia Sleep Loss"],
+    connectedRemedies: ["Silicea Terra", "Phosphoricum Acidum"],
+    predictedOutcome: "Nervous exhaustion relief and cognitive sharpness restoration",
+    clinicalEvidence: "88% match - Schuessler tissue salts documentation for nervous debility.",
+    populationBenchmark: "88% responder rate in brain fog and sleep lag cohorts in 14 days.",
+    cohortData: { top: 82, avg: 14, poor: 4 },
+    copilotPrompt: "Explain Kali Phos selection. Nerve nutrient rubrics matched.",
+    forecastHighlight: "Neurological Load",
+    therapeuticHighlight: "Sleep Hygiene Protocol (target > 8 hours nightly)",
+    traceHighlight: "neuropathy"
+  },
+  rem_crataegus: {
+    nodeName: "Crataegus Oxyacantha",
+    type: "Homeopathic Remedy Vector",
+    confidence: 87,
+    status: "Active Cardiotonic Support",
+    evidenceWeight: 84,
+    connectedLabs: ["ECG Rhythm Stability"],
+    connectedSymptoms: ["Chest Palpitations", "Dyspnea Breathlessness"],
+    connectedRemedies: ["Apis Mellifica", "Serum Anguillae"],
+    predictedOutcome: "Stabilization of cardiovascular rhythm and pulse pressure index",
+    clinicalEvidence: "84% match - Boericke Materia Medica cardiotonic and myocardial support.",
+    populationBenchmark: "82% success in improving pulse pressure indices.",
+    cohortData: { top: 74, avg: 20, poor: 6 },
+    copilotPrompt: "Review Crataegus Oxyacantha cardiotonic indicators.",
+    forecastHighlight: "Cardiovascular Burden",
+    therapeuticHighlight: "Dietary Sodium Restriction (< 1.5g / day)",
+    traceHighlight: "cvd"
+  },
+  rem_chelidonium: {
+    nodeName: "Chelidonium Majus",
+    type: "Homeopathic Remedy Vector",
+    confidence: 88,
+    status: "Active Hepatic Support",
+    evidenceWeight: 85,
+    connectedLabs: ["ALT/AST Enzymes"],
+    connectedSymptoms: ["Bilious Jaundice", "Flatulence & Bloat"],
+    connectedRemedies: ["Lycopodium Clavatum", "Nux Vomica"],
+    predictedOutcome: "Biliary flow acceleration and liver enzyme stabilization",
+    clinicalEvidence: "85% match - Right-sided pain, yellowing of skin and eyes, desire for hot drinks.",
+    populationBenchmark: "85% responder success rate in bilious digestive cohorts.",
+    cohortData: { top: 78, avg: 16, poor: 6 },
+    copilotPrompt: "Review Chelidonium hepatic affinity. Rubrics include right-sided pain.",
+    forecastHighlight: "Metabolic Burden",
+    therapeuticHighlight: "Fat intake restriction and warm-water therapy",
+    traceHighlight: "metabolic"
+  },
+  rem_ant_tart: {
+    nodeName: "Antimonium Tartaricum",
+    type: "Homeopathic Remedy Vector",
+    confidence: 86,
+    status: "Active Bronchial Support",
+    evidenceWeight: 88,
+    connectedLabs: ["Oxygen Saturation SpO2"],
+    connectedSymptoms: ["Chronic Dry Cough", "Asthmatic Wheezing"],
+    connectedRemedies: ["Arsenicum Album"],
+    predictedOutcome: "Bronchial mucus clearance and breathing volume optimization",
+    clinicalEvidence: "88% match - Coarse rattling in chest, suffocative coughing, better sitting up.",
+    populationBenchmark: "86% success in resolving bronchial mucus loads.",
+    cohortData: { top: 72, avg: 22, poor: 6 },
+    copilotPrompt: "Assess Antimonium Tartaricum rattling chest mucus matching.",
+    forecastHighlight: "Respiratory Load",
+    therapeuticHighlight: "Air quality check and warm steam inhalations",
+    traceHighlight: "respiratory"
+  },
+  rem_graphites: {
+    nodeName: "Graphites 30C",
+    type: "Homeopathic Remedy Vector",
+    confidence: 91,
+    status: "Active Cutaneous Support",
+    evidenceWeight: 87,
+    connectedLabs: ["IgE Allergy Index"],
+    connectedSymptoms: ["Dermatic Eczema", "Mucosal Dryness"],
+    connectedRemedies: ["Sulphur 30C", "Silicea Terra"],
+    predictedOutcome: "Eczema clearance and cutaneous moisture restoration",
+    clinicalEvidence: "87% match - Rough dry skin, sticky honey-like discharge, worse in folds.",
+    populationBenchmark: "90% response in chronic eczematous dermatopathic cohorts.",
+    cohortData: { top: 80, avg: 15, poor: 5 },
+    copilotPrompt: "Evaluate Graphites 30C dermatic barrier support.",
+    forecastHighlight: "Dermatic Load",
+    therapeuticHighlight: "Allergen elimination and natural topical moisturizers",
+    traceHighlight: "sjogren"
+  },
+  rem_phos_acid: {
+    nodeName: "Phosphoricum Acidum",
+    type: "Homeopathic Remedy Vector",
+    confidence: 86,
+    status: "Active Adrenal Support",
+    evidenceWeight: 85,
+    connectedLabs: ["Adrenal Cortisol Output"],
+    connectedSymptoms: ["Generalized Fatigue", "Morning Lethargy"],
+    connectedRemedies: ["Kali Phosphoricum 6X", "Calcarea Carbonica"],
+    predictedOutcome: "Adrenal stress recovery and physical vitality restoration",
+    clinicalEvidence: "85% match - Apathy, mental debility, physical weakness from fluid loss or stress.",
+    populationBenchmark: "84% success in resolving subclinical fatigue and cortisol lags.",
+    cohortData: { top: 74, avg: 20, poor: 6 },
+    copilotPrompt: "Review Phos Acid support for adrenal exhaustion.",
+    forecastHighlight: "Endocrine Strain",
+    therapeuticHighlight: "Stress management, adaptogenic diet, and sleep hygiene",
+    traceHighlight: "thyroid"
+  },
+  rem_cantharis: {
+    nodeName: "Cantharis 30C",
+    type: "Homeopathic Remedy Vector",
+    confidence: 92,
+    status: "Active Bladder Support",
+    evidenceWeight: 90,
+    connectedLabs: ["Urine Leukocyte Index"],
+    connectedSymptoms: ["Frequent nocturnal urination", "Painful Dysuria"],
+    connectedRemedies: ["Apis Mellifica", "Pulsatilla Nigricans"],
+    predictedOutcome: "Urinary tract irritation relief and dysuria clearing",
+    clinicalEvidence: "90% match - Intense burning and cutting pain, constant urging to urinate.",
+    populationBenchmark: "92% responder rate in acute bladder irritation within 48 hours.",
+    cohortData: { top: 84, avg: 12, poor: 4 },
+    copilotPrompt: "Evaluate Cantharis 30C for painful bladder urging.",
+    forecastHighlight: "Renal Risk Progression",
+    therapeuticHighlight: "Increased alkaline fluid intake (> 2.5L / day)",
+    traceHighlight: "ckd"
   }
 };
 
@@ -455,20 +709,32 @@ const NODE_CLUSTERS: Record<string, { id: string; label: string; color: string; 
   renal: { id: "renal", label: "Renal Cluster", color: "rgba(14, 165, 233, 0.04)", cx: 120, cy: 150 },
   endocrine: { id: "endocrine", label: "Endocrine Cluster", color: "rgba(168, 85, 247, 0.04)", cx: 240, cy: 160 },
   musculoskeletal: { id: "musculoskeletal", label: "Musculoskeletal Cluster", color: "rgba(244, 63, 94, 0.04)", cx: 340, cy: 140 },
-  metabolic: { id: "metabolic", label: "Metabolic Cluster", color: "rgba(251, 191, 36, 0.04)", cx: 180, cy: 220 }
+  metabolic: { id: "metabolic", label: "Metabolic Cluster", color: "rgba(251, 191, 36, 0.04)", cx: 180, cy: 220 },
+  nervous: { id: "nervous", label: "Nervous Cluster", color: "rgba(99, 102, 241, 0.04)", cx: 400, cy: 300 },
+  cardiorespiratory: { id: "cardiorespiratory", label: "Cardiorespiratory Cluster", color: "rgba(239, 68, 68, 0.04)", cx: 300, cy: 400 },
+  integumentary: { id: "integumentary", label: "Dermatic & Immune Cluster", color: "rgba(16, 185, 129, 0.04)", cx: 100, cy: 300 }
 };
 
 const NODE_TO_CLUSTER: Record<string, string> = {
   org_kidney: "renal", sys_renal: "renal", sym_renal: "renal", sym_nocturia: "renal", sym_proteinuria: "renal", sym_anemia: "renal", lab_creatinine: "renal", lab_egfr: "renal", lab_microalbumin: "renal", diag_ckd: "renal", risk_bp: "renal", rem_apis: "renal", rem_anguillae: "renal",
   org_thyroid: "endocrine", org_ovaries: "endocrine", sys_endocrine: "endocrine", sys_reproductive: "endocrine", sym_menses: "endocrine", sym_hirsutism: "endocrine", sym_weight: "endocrine", lab_tsh: "endocrine", lab_lh_fsh: "endocrine", diag_pcos: "endocrine", diag_hypothyroid: "endocrine", rem_puls: "endocrine", rem_thyroid: "endocrine",
   org_joints: "musculoskeletal", sys_musculoskeletal: "musculoskeletal", sym_stiffness: "musculoskeletal", sym_dryness: "musculoskeletal", sym_cramps: "musculoskeletal", lab_crp: "musculoskeletal", lab_anticcp: "musculoskeletal", lab_esr: "musculoskeletal", diag_ra: "musculoskeletal", rem_sil: "musculoskeletal", rem_rhus: "musculoskeletal", rem_caust: "musculoskeletal",
-  org_pancreas: "metabolic", org_gut: "metabolic", sys_digestive: "metabolic", sym_bloat: "metabolic", sym_lethargy: "metabolic", lab_cholesterol: "metabolic", lab_hba1c: "metabolic", diag_metabolic: "metabolic", risk_glycemia: "metabolic", risk_sedentary: "metabolic", rem_lyc: "metabolic", rem_sulph: "metabolic", rem_nux: "metabolic", rem_calc: "metabolic"
+  org_pancreas: "metabolic", org_gut: "metabolic", sys_digestive: "metabolic", sym_bloat: "metabolic", sym_lethargy: "metabolic", lab_cholesterol: "metabolic", lab_hba1c: "metabolic", diag_metabolic: "metabolic", risk_glycemia: "metabolic", risk_sedentary: "metabolic", rem_lyc: "metabolic", rem_sulph: "metabolic", rem_nux: "metabolic", rem_calc: "metabolic",
+  sys_nervous: "nervous", org_brain: "nervous", sym_brain_fog: "nervous", sym_insomnia: "nervous", lab_sleep_index: "nervous", rem_kali_phos: "nervous",
+  sys_respiratory: "cardiorespiratory", org_heart: "cardiorespiratory", org_lungs: "cardiorespiratory", sym_palpitations: "cardiorespiratory", sym_dyspnea: "cardiorespiratory", sym_cough: "cardiorespiratory", sym_wheezing: "cardiorespiratory", lab_ecg: "cardiorespiratory", lab_sp02: "cardiorespiratory", rem_crataegus: "cardiorespiratory", rem_ant_tart: "cardiorespiratory",
+  sys_immune: "integumentary", sys_integumentary: "integumentary", org_skin: "integumentary", sym_eczema: "integumentary", lab_ige: "integumentary", rem_graphites: "integumentary",
+  org_liver: "metabolic", sym_jaundice: "metabolic", lab_liver_enzymes: "metabolic", rem_chelidonium: "metabolic",
+  org_adrenals: "endocrine", lab_cortisol: "endocrine", rem_phos_acid: "endocrine",
+  org_bladder: "renal", sym_dysuria: "renal", lab_urinalysis: "renal", rem_cantharis: "renal"
 };
 
-export default function CIEWorkspace({ patients, selectedPatientId, setSelectedPatientId, theme }: CIEWorkspaceProps) {
+export default function CIEWorkspace({ patients, selectedPatientId, setSelectedPatientId, theme, activeTabOverride }: CIEWorkspaceProps) {
   // Dynamic patient key resolver
   const getActiveDataKey = () => {
     if (!selectedPatientId) return "aarav";
+    if (selectedPatientId === "aarav" || selectedPatientId === "priya" || selectedPatientId === "elena") {
+      return selectedPatientId;
+    }
     const patientObj = patients.find(p => p.id === selectedPatientId);
     if (!patientObj) return "aarav";
     const nameLower = patientObj.name.toLowerCase();
@@ -595,6 +861,12 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
 
   // Navigation Tabs: Unified Cockpit, Raw note parser intake, Miasms & Constitution, Compiled print reports
   const [activeTab, setActiveTab] = useState<"cockpit" | "intake" | "miasms" | "reports">("cockpit");
+
+  useEffect(() => {
+    if (activeTabOverride) {
+      setActiveTab(activeTabOverride);
+    }
+  }, [activeTabOverride]);
   const [activeTwinMode, setActiveTwinMode] = useState<"playback" | "simulator">("playback");
   const [twinIndex, setTwinIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -742,6 +1014,34 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
   const [graphScale, setGraphScale] = useState(1);
   const [graphPan, setGraphPan] = useState({ x: 0, y: 0 });
   const [nodeSearchQuery, setNodeSearchQuery] = useState("");
+  const [isGraphFullscreen, setIsGraphFullscreen] = useState(false);
+  const [graphTextSize, setGraphTextSize] = useState(9); // Default size 9px
+  const [isMounted, setIsMounted] = useState(false);
+  const [graphDimensions, setGraphDimensions] = useState({ width: 0, height: 0 });
+  const prevDimensionsRef = useRef<{ width: number; height: number } | null>(null);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const canvas = graphCanvasRef.current;
+    if (!canvas) return;
+    const parent = canvas.parentElement;
+    if (!parent) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        const { clientWidth, clientHeight } = entry.target as HTMLElement;
+        setGraphDimensions({ width: clientWidth, height: clientHeight });
+      }
+    });
+
+    resizeObserver.observe(parent);
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [isGraphFullscreen, isMounted]);
   const isDraggingGraphRef = useRef(false);
   const dragStartRef = useRef({ x: 0, y: 0 });
 
@@ -1256,8 +1556,8 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const width = canvas.parentElement?.clientWidth || 400;
-    const height = 320;
+    const width = graphDimensions.width || canvas.parentElement?.clientWidth || 400;
+    const height = graphDimensions.height || canvas.parentElement?.clientHeight || 500;
 
     const dpr = window.devicePixelRatio || 1;
     canvas.width = width * dpr;
@@ -1267,7 +1567,6 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
     canvas.style.height = `${height}px`;
 
     // Initialize nodes with dynamic OSTM clusters
-        // Initialize nodes with dynamic OSTM clusters (Priority 1)
     if (!graphDataRef.current) {
       const initialNodes = [
         // Systems (Radius: 15)
@@ -1276,6 +1575,10 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
         { id: "sys_musculoskeletal", label: "Musculoskeletal System", type: "system", x: width * 0.75, y: height * 0.38, vx: 0, vy: 0, radius: 15, description: "Articular structures, bone density, and inflammatory synovial responses." },
         { id: "sys_digestive", label: "Digestive System", type: "system", x: width * 0.32, y: height * 0.52, vx: 0, vy: 0, radius: 15, description: "Gut absorption, fermentation, bloating, and stomach acid regulation." },
         { id: "sys_cardiovascular", label: "Cardiovascular System", type: "system", x: width * 0.45, y: height * 0.35, vx: 0, vy: 0, radius: 15, description: "Vascular pressure, cardiac rhythm, stroke, and perfusion." },
+        { id: "sys_nervous", label: "Nervous System", type: "system", x: width * 0.75, y: height * 0.65, vx: 0, vy: 0, radius: 15, description: "Neurological pathways, stress responses, sleep-wake cycles, and cognitive reserve." },
+        { id: "sys_respiratory", label: "Respiratory System", type: "system", x: width * 0.15, y: height * 0.65, vx: 0, vy: 0, radius: 15, description: "Pulmonary ventilation, gas exchange, airway hyper-reactivity, and oxygenation." },
+        { id: "sys_immune", label: "Immune System", type: "system", x: width * 0.85, y: height * 0.35, vx: 0, vy: 0, radius: 15, description: "Auto-immune feedback, inflammatory mediators, cellular defense, and antibody load." },
+        { id: "sys_integumentary", label: "Integumentary System", type: "system", x: width * 0.10, y: height * 0.45, vx: 0, vy: 0, radius: 15, description: "Dermatological structures, protective barriers, sweat/perspiration, and skin eruptions." },
 
         // Organs (Radius: 13)
         { id: "org_kidney", label: "Renal Kidneys", type: "organ", x: width * 0.28, y: height * 0.45, vx: 0, vy: 0, radius: 13, description: "Bilateral glomeruli, clearing creatinine and blood nitrogenous waste." },
@@ -1284,6 +1587,13 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
         { id: "org_joints", label: "Articular Joints", type: "organ", x: width * 0.72, y: height * 0.45, vx: 0, vy: 0, radius: 13, description: "Synovial articular membranes, cartilages, and auto-antibody targets." },
         { id: "org_pancreas", label: "Pancreas Gland", type: "organ", x: width * 0.40, y: height * 0.48, vx: 0, vy: 0, radius: 13, description: "Endocrine insulin secretion and glycemic glucose management." },
         { id: "org_gut", label: "Digestive Gut", type: "organ", x: width * 0.35, y: height * 0.58, vx: 0, vy: 0, radius: 13, description: "Gastric absorption, flora, flatulence rubrics, and morning lethargy links." },
+        { id: "org_heart", label: "Cardiovascular Heart", type: "organ", x: width * 0.45, y: height * 0.28, vx: 0, vy: 0, radius: 13, description: "Cardiac muscle driving systemic arterial perfusion, pulse rhythm, and output." },
+        { id: "org_brain", label: "Cognitive Brain", type: "organ", x: width * 0.68, y: height * 0.62, vx: 0, vy: 0, radius: 13, description: "Central nervous system managing neural signals, sensory data, and sleep pathways." },
+        { id: "org_liver", label: "Metabolic Liver", type: "organ", x: width * 0.30, y: height * 0.60, vx: 0, vy: 0, radius: 13, description: "Hepatic detoxification, glycogen storage, lipid metabolism, and bile synthesis." },
+        { id: "org_lungs", label: "Pulmonary Lungs", type: "organ", x: width * 0.20, y: height * 0.60, vx: 0, vy: 0, radius: 13, description: "Alveolar membrane gas exchange, respiratory rate, and airway reactivity." },
+        { id: "org_skin", label: "Dermatic Skin", type: "organ", x: width * 0.12, y: height * 0.48, vx: 0, vy: 0, radius: 13, description: "Primary cutaneous barrier, perspiration regulation, and dermatopathic eruptions." },
+        { id: "org_adrenals", label: "Adrenal Glands", type: "organ", x: width * 0.48, y: height * 0.52, vx: 0, vy: 0, radius: 13, description: "Suprarenal endocrine glands regulating cortisol, adrenaline, and stress adaptations." },
+        { id: "org_bladder", label: "Urinary Bladder", type: "organ", x: width * 0.20, y: height * 0.48, vx: 0, vy: 0, radius: 13, description: "Uvesical reservoir, detrusor contraction control, and urinary clearance." },
 
         // Symptoms (Radius: 9)
         { id: "sym_renal", label: "Ankle Edema", type: "symptom", x: width * 0.15, y: height * 0.35, vx: 0, vy: 0, radius: 9, description: "Fluid retention in lower limbs due to drop in glomerular filtration." },
@@ -1300,6 +1610,15 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
         { id: "sym_anemia", label: "Anemia Fatigue", type: "symptom", x: width * 0.22, y: height * 0.22, vx: 0, vy: 0, radius: 9, description: "Lack of renal erythropoietin leading to low Hb oxygen transport." },
         { id: "sym_cramps", label: "Muscle Cramps", type: "symptom", x: width * 0.85, y: height * 0.35, vx: 0, vy: 0, radius: 9, description: "Nocturnal cramps due to electrolyte and calcium imbalances." },
         { id: "sym_anxiety", label: "Systemic Anxiety", type: "symptom", x: width * 0.50, y: height * 0.15, vx: 0, vy: 0, radius: 9, description: "Psoric neural hypersensitivity and nervous exhaustion." },
+        { id: "sym_palpitations", label: "Chest Palpitations", type: "symptom", x: width * 0.52, y: height * 0.22, vx: 0, vy: 0, radius: 9, description: "Awareness of rapid, pounding, or irregular heartbeat under stress." },
+        { id: "sym_dyspnea", label: "Dyspnea Breathlessness", type: "symptom", x: width * 0.38, y: height * 0.25, vx: 0, vy: 0, radius: 9, description: "Shortness of breath or air hunger, worse on exertion or lying flat." },
+        { id: "sym_brain_fog", label: "Cognitive Brain Fog", type: "symptom", x: width * 0.62, y: height * 0.70, vx: 0, vy: 0, radius: 9, description: "Sluggish mental conversions, poor memory, and concentration lags." },
+        { id: "sym_insomnia", label: "Insomnia Sleep Loss", type: "symptom", x: width * 0.78, y: height * 0.70, vx: 0, vy: 0, radius: 9, description: "Inability to fall or remain asleep, worse 2-4 AM due to neural tension." },
+        { id: "sym_jaundice", label: "Bilious Jaundice", type: "symptom", x: width * 0.25, y: height * 0.65, vx: 0, vy: 0, radius: 9, description: "Scleral/cutaneous yellowing from hepatic clearance and bile retention." },
+        { id: "sym_cough", label: "Chronic Dry Cough", type: "symptom", x: width * 0.15, y: height * 0.70, vx: 0, vy: 0, radius: 9, description: "Irritative dry bronchial tickling worse in cold air (Antimonium Tart rubric)." },
+        { id: "sym_wheezing", label: "Asthmatic Wheezing", type: "symptom", x: width * 0.22, y: height * 0.72, vx: 0, vy: 0, radius: 9, description: "Expiratory musical constriction of bronchial tree under allergic load." },
+        { id: "sym_eczema", label: "Dermatic Eczema", type: "symptom", x: width * 0.08, y: height * 0.52, vx: 0, vy: 0, radius: 9, description: "Cutaneous eruptions leaking sticky honey-like eczema discharge." },
+        { id: "sym_dysuria", label: "Painful Dysuria", type: "symptom", x: width * 0.18, y: height * 0.52, vx: 0, vy: 0, radius: 9, description: "Scalding, burning pain during urination (Cantharis rubric)." },
 
         // Remedies (Radius: 11)
         { id: "rem_lyc", label: "Lycopodium Clavatum", type: "remedy", x: width * 0.33, y: height * 0.82, vx: 0, vy: 0, radius: 11, description: "Constitutional remedy targeting right-sided affinity and renal/gut congestion." },
@@ -1313,6 +1632,13 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
         { id: "rem_sulph", label: "Sulphur 30C", type: "remedy", x: width * 0.28, y: height * 0.88, vx: 0, vy: 0, radius: 11, description: "Warm constitutional, morning lethargy, red orifices, gas." },
         { id: "rem_nux", label: "Nux Vomica", type: "remedy", x: width * 0.38, y: height * 0.92, vx: 0, vy: 0, radius: 11, description: "Sedentary profile, hyper-irritability, digestive flatulence from stress." },
         { id: "rem_calc", label: "Calcarea Carbonica", type: "remedy", x: width * 0.52, y: height * 0.85, vx: 0, vy: 0, radius: 11, description: "Chilly patient, damp extremities, sluggish conversions, weight gain." },
+        { id: "rem_crataegus", label: "Crataegus Oxyacantha", type: "remedy", x: width * 0.62, y: height * 0.88, vx: 0, vy: 0, radius: 11, description: "Cardiotonic support targeted to myocardial tone and vascular pressure." },
+        { id: "rem_kali_phos", label: "Kali Phosphoricum 6X", type: "remedy", x: width * 0.72, y: height * 0.88, vx: 0, vy: 0, radius: 11, description: "Nerve nutrient for brain fog, mental exhaustion, and neural strain." },
+        { id: "rem_chelidonium", label: "Chelidonium Majus", type: "remedy", x: width * 0.18, y: height * 0.88, vx: 0, vy: 0, radius: 11, description: "Right-sided hepatic organotherapy remedy for bilious conditions and liver sluggishness." },
+        { id: "rem_ant_tart", label: "Antimonium Tartaricum", type: "remedy", x: width * 0.10, y: height * 0.88, vx: 0, vy: 0, radius: 11, description: "Bronchial mucus clearing support for rattling, difficult expectoration." },
+        { id: "rem_graphites", label: "Graphites 30C", type: "remedy", x: width * 0.05, y: height * 0.88, vx: 0, vy: 0, radius: 11, description: "Cutaneous remedy for rough, dry skin and sticky honey-like eczema." },
+        { id: "rem_phos_acid", label: "Phosphoricum Acidum", type: "remedy", x: width * 0.40, y: height * 0.88, vx: 0, vy: 0, radius: 11, description: "Constitutional support for deep mental and physical adrenal exhaustion." },
+        { id: "rem_cantharis", label: "Cantharis 30C", type: "remedy", x: width * 0.08, y: height * 0.78, vx: 0, vy: 0, radius: 11, description: "Rapid support for scalding, burning urinary bladder tract irritations." },
 
         // Miasms (Radius: 12)
         { id: "mias_psora", label: "Psora Miasm", type: "miasm", x: width * 0.50, y: height * 0.60, vx: 0, vy: 0, radius: 12, description: "Initial functional defense deficiency, skin eruptions, and fatigue." },
@@ -1331,6 +1657,13 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
         { id: "lab_anticcp", label: "Anti-CCP antibody", type: "lab", x: width * 0.88, y: height * 0.10, vx: 0, vy: 0, radius: 10, description: "Synovial auto-antibodies indicating Rheumatoid Arthritis." },
         { id: "lab_esr", label: "ESR Rate", type: "lab", x: width * 0.82, y: height * 0.12, vx: 0, vy: 0, radius: 10, description: "Erythrocyte sedimentation rate, cellular inflammation index." },
         { id: "lab_hba1c", label: "HbA1c Glycemia", type: "lab", x: width * 0.32, y: height * 0.08, vx: 0, vy: 0, radius: 10, description: "Average blood sugar index, metabolic twin driver." },
+        { id: "lab_ecg", label: "ECG Rhythm Stability", type: "lab", x: width * 0.62, y: height * 0.08, vx: 0, vy: 0, radius: 10, description: "ECG lead metrics, checking for PR/QT intervals and rhythm variances." },
+        { id: "lab_sleep_index", label: "Sleep Quality Index", type: "lab", x: width * 0.78, y: height * 0.82, vx: 0, vy: 0, radius: 10, description: "Longitudinal tracking of REM/deep sleep continuity index." },
+        { id: "lab_liver_enzymes", label: "ALT/AST Enzymes", type: "lab", x: width * 0.28, y: height * 0.78, vx: 0, vy: 0, radius: 10, description: "Hepatic cell integrity marker, tracking transaminases AST and ALT." },
+        { id: "lab_sp02", label: "Oxygen Saturation SpO2", type: "lab", x: width * 0.12, y: height * 0.80, vx: 0, vy: 0, radius: 10, description: "Pulse oximetric oxygenation level in arterial blood." },
+        { id: "lab_ige", label: "IgE Allergy Index", type: "lab", x: width * 0.88, y: height * 0.20, vx: 0, vy: 0, radius: 10, description: "Serum Immunoglobulin E tracking systemic allergic load." },
+        { id: "lab_cortisol", label: "Adrenal Cortisol Output", type: "lab", x: width * 0.48, y: height * 0.78, vx: 0, vy: 0, radius: 10, description: "Diurnal salivary cortisol curve tracking endocrine fatigue." },
+        { id: "lab_urinalysis", label: "Urine Leukocyte Index", type: "lab", x: width * 0.18, y: height * 0.82, vx: 0, vy: 0, radius: 10, description: "Urinalysis measuring pH, leukocytes, and epithelial cells." },
 
         // Diagnoses (Radius: 13)
         { id: "diag_ckd", label: "Stage 3 CKD", type: "diagnosis", x: width * 0.20, y: height * 0.48, vx: 0, vy: 0, radius: 13, description: "Chronic Kidney Disease Stage 3, eGFR < 60 mL/min." },
@@ -1359,8 +1692,20 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
         { source: "sys_musculoskeletal", target: "org_joints", strength: 3.5 },
         { source: "sys_digestive", target: "org_gut", strength: 3 },
         { source: "sys_cardiovascular", target: "risk_bp", strength: 2.5 },
+        { source: "sys_nervous", target: "org_brain", strength: 3.5 },
+        { source: "sys_respiratory", target: "org_lungs", strength: 3.5 },
+        { source: "sys_immune", target: "org_joints", strength: 3 },
+        { source: "sys_integumentary", target: "org_skin", strength: 3.5 },
 
-        // Organs & Symptoms Mappings
+        // Organs & Systems
+        { source: "org_heart", target: "sys_cardiovascular", strength: 4 },
+        { source: "org_liver", target: "sys_digestive", strength: 3.5 },
+        { source: "org_lungs", target: "sys_respiratory", strength: 4 },
+        { source: "org_skin", target: "sys_integumentary", strength: 4 },
+        { source: "org_adrenals", target: "sys_endocrine", strength: 3.5 },
+        { source: "org_bladder", target: "sys_renal", strength: 3.5 },
+
+        // Organs & Symptoms / Labs
         { source: "org_kidney", target: "sym_renal", strength: 3.5 },
         { source: "org_kidney", target: "sym_nocturia", strength: 3 },
         { source: "org_kidney", target: "sym_proteinuria", strength: 4 },
@@ -1375,6 +1720,34 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
         { source: "org_joints", target: "sym_cramps", strength: 2.5 },
         { source: "org_gut", target: "sym_bloat", strength: 3.5 },
         { source: "org_pancreas", target: "risk_glycemia", strength: 3 },
+
+        { source: "org_heart", target: "sym_palpitations", strength: 4 },
+        { source: "org_heart", target: "sym_dyspnea", strength: 3.5 },
+        { source: "org_heart", target: "lab_ecg", strength: 4 },
+
+        { source: "org_brain", target: "sym_brain_fog", strength: 4 },
+        { source: "org_brain", target: "sym_insomnia", strength: 4.5 },
+        { source: "org_brain", target: "lab_sleep_index", strength: 4 },
+
+        { source: "org_liver", target: "sym_jaundice", strength: 4.5 },
+        { source: "org_liver", target: "sym_bloat", strength: 3 },
+        { source: "org_liver", target: "lab_liver_enzymes", strength: 4.5 },
+
+        { source: "org_lungs", target: "sym_cough", strength: 4.5 },
+        { source: "org_lungs", target: "sym_wheezing", strength: 4 },
+        { source: "org_lungs", target: "lab_sp02", strength: 4 },
+
+        { source: "org_skin", target: "sym_eczema", strength: 4.5 },
+        { source: "org_skin", target: "sym_dryness", strength: 3 },
+        { source: "org_skin", target: "lab_ige", strength: 4 },
+
+        { source: "org_adrenals", target: "sym_fatigue", strength: 4 },
+        { source: "org_adrenals", target: "sym_lethargy", strength: 3.5 },
+        { source: "org_adrenals", target: "lab_cortisol", strength: 4.5 },
+
+        { source: "org_bladder", target: "sym_nocturia", strength: 3.5 },
+        { source: "org_bladder", target: "sym_dysuria", strength: 4.5 },
+        { source: "org_bladder", target: "lab_urinalysis", strength: 4.5 },
 
         // Labs & Organs / Diagnostics
         { source: "lab_creatinine", target: "org_kidney", strength: 4 },
@@ -1449,6 +1822,30 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
         { source: "rem_calc", target: "sym_weight", strength: 4 },
         { source: "rem_calc", target: "mias_psora", strength: 4.5 },
 
+        // New Remedies Mappings
+        { source: "rem_crataegus", target: "org_heart", strength: 4 },
+        { source: "rem_crataegus", target: "sym_palpitations", strength: 3.5 },
+        { source: "rem_crataegus", target: "lab_ecg", strength: 3 },
+
+        { source: "rem_kali_phos", target: "org_brain", strength: 4.5 },
+        { source: "rem_kali_phos", target: "sym_brain_fog", strength: 4 },
+        { source: "rem_kali_phos", target: "sym_insomnia", strength: 4.5 },
+
+        { source: "rem_chelidonium", target: "org_liver", strength: 4.5 },
+        { source: "rem_chelidonium", target: "sym_jaundice", strength: 4 },
+
+        { source: "rem_ant_tart", target: "org_lungs", strength: 4.5 },
+        { source: "rem_ant_tart", target: "sym_cough", strength: 4.5 },
+
+        { source: "rem_graphites", target: "org_skin", strength: 4.5 },
+        { source: "rem_graphites", target: "sym_eczema", strength: 4.5 },
+
+        { source: "rem_phos_acid", target: "org_adrenals", strength: 4.5 },
+        { source: "rem_phos_acid", target: "sym_fatigue", strength: 4.5 },
+
+        { source: "rem_cantharis", target: "org_bladder", strength: 5 },
+        { source: "rem_cantharis", target: "sym_dysuria", strength: 5 },
+
         // Miasmatic chronic burdens
         { source: "mias_psora", target: "sym_fatigue", strength: 3 },
         { source: "mias_psora", target: "sym_anxiety", strength: 4 },
@@ -1468,7 +1865,25 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
       ];
 
       graphDataRef.current = { nodes: initialNodes, links: initialLinks };
+    } else {
+      const prevDim = prevDimensionsRef.current;
+      if (prevDim && (prevDim.width !== width || prevDim.height !== height) && prevDim.width > 0 && prevDim.height > 0) {
+        const scaleX = width / prevDim.width;
+        const scaleY = height / prevDim.height;
+        const oldCenterX = prevDim.width / 2;
+        const oldCenterY = prevDim.height / 2;
+        const newCenterX = width / 2;
+        const newCenterY = height / 2;
+
+        graphDataRef.current.nodes.forEach(node => {
+          node.x = newCenterX + (node.x - oldCenterX) * scaleX;
+          node.y = newCenterY + (node.y - oldCenterY) * scaleY;
+          node.vx = 0;
+          node.vy = 0;
+        });
+      }
     }
+    prevDimensionsRef.current = { width, height };
 
     const { nodes, links } = graphDataRef.current;
     let animationFrameId: number;
@@ -1486,7 +1901,8 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
           "mias_sycosis", "mias_psora",
           "lab_creatinine", "lab_egfr", "lab_microalbumin", "lab_hba1c", "lab_cholesterol",
           "diag_ckd", "diag_metabolic",
-          "risk_bp", "risk_glycemia", "risk_sedentary", "mod_evening", "mod_warm_drinks"
+          "risk_bp", "risk_glycemia", "risk_sedentary", "mod_evening", "mod_warm_drinks",
+          "org_bladder", "org_adrenals", "sym_dysuria", "lab_urinalysis", "lab_cortisol", "rem_cantharis", "rem_phos_acid"
         ];
         return aaravNodes.includes(node.id);
       }
@@ -1498,7 +1914,8 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
           "mias_psora", "mias_sycosis",
           "lab_tsh", "lab_lh_fsh", "lab_cholesterol", "lab_hba1c",
           "diag_pcos", "diag_hypothyroid", "diag_metabolic",
-          "risk_glycemia", "risk_sedentary", "mod_open_air"
+          "risk_glycemia", "risk_sedentary", "mod_open_air",
+          "org_brain", "sym_brain_fog", "sym_insomnia", "lab_sleep_index", "rem_kali_phos", "sys_nervous", "org_adrenals", "lab_cortisol"
         ];
         return priyaNodes.includes(node.id);
       }
@@ -1510,7 +1927,8 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
           "mias_syphilis", "mias_psora",
           "lab_crp", "lab_anticcp", "lab_esr", "lab_cholesterol",
           "diag_ra",
-          "risk_bp", "mod_cold_damp"
+          "risk_bp", "mod_cold_damp",
+          "sys_immune", "sys_integumentary", "org_skin", "sym_eczema", "lab_ige", "rem_graphites", "sym_palpitations", "lab_ecg", "rem_crataegus"
         ];
         return elenaNodes.includes(node.id);
       }
@@ -1566,13 +1984,13 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
 
         // Draw background glow circle
         ctx.beginPath();
-        ctx.arc(avgX, avgY, 80, 0, 2 * Math.PI);
+        ctx.arc(avgX, avgY, isGraphFullscreen ? 180 : 80, 0, 2 * Math.PI);
         ctx.fillStyle = value.color;
         ctx.fill();
 
         // Draw Cluster label
         ctx.fillStyle = isDark ? "rgba(255, 255, 255, 0.04)" : "rgba(15, 23, 42, 0.04)";
-        ctx.font = "bold 13px sans-serif";
+        ctx.font = isGraphFullscreen ? "bold 24px sans-serif" : "bold 13px sans-serif";
         ctx.textAlign = "center";
         ctx.fillText(value.label.toUpperCase(), avgX, avgY);
       });
@@ -1773,14 +2191,24 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
         ctx.lineWidth = isSelected ? 3.0 : isAdjacent ? 2.0 : 1.5;
         ctx.stroke();
 
+        const textY = node.y + (node.radius * temporalSizeMultiplier) + graphTextSize + 1.5;
+        ctx.font = isSelected ? `bold ${graphTextSize + 1.5}px sans-serif` : `${graphTextSize}px sans-serif`;
+        ctx.textAlign = "center";
+
+        // 1. Draw dark/light outline for extreme contrast
+        ctx.strokeStyle = isGraphFullscreen || isDark ? "rgba(15, 23, 42, 0.85)" : "rgba(255, 255, 255, 0.85)";
+        ctx.lineWidth = 3.5;
+        ctx.strokeText(node.label, node.x, textY);
+
+        // 2. Draw filled text
         ctx.fillStyle = isSelected 
           ? "#10b981" 
           : isSearched 
             ? "#10b981" 
-            : isDark ? "#cbd5e1" : "#1e293b";
-        ctx.font = isSelected ? "bold 9px sans-serif" : "7.5px sans-serif";
-        ctx.textAlign = "center";
-        ctx.fillText(node.label, node.x, node.y + (node.radius * temporalSizeMultiplier) + 10);
+            : isGraphFullscreen 
+              ? "#ffffff" 
+              : isDark ? "#cbd5e1" : "#1e293b";
+        ctx.fillText(node.label, node.x, textY);
       });
 
       ctx.restore();
@@ -1789,15 +2217,17 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
 
     // Physics Engine spring-mass calculation loop
     const animate = () => {
-      const kRepulsion = 120;
-      const kAttraction = 0.005;
-      const kGravity = 0.003;
+      const isFullscreen = isGraphFullscreen;
+      const kRepulsion = isFullscreen ? 240 : 120;
+      const kAttraction = isFullscreen ? 0.003 : 0.005; // Slightly weaker attraction in fullscreen to let them spread
+      const kGravity = isFullscreen ? 0.0006 : 0.003; // Much weaker gravity in fullscreen
       const damping = 0.82;
 
       const centerX = width / 2;
       const centerY = height / 2;
 
       // 1. Repulsion between all node pairs
+      const repulsionDist = isFullscreen ? 260 : 120;
       for (let i = 0; i < nodes.length; i++) {
         const n1 = nodes[i];
         for (let j = i + 1; j < nodes.length; j++) {
@@ -1805,7 +2235,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
           const dx = n1.x - n2.x;
           const dy = n1.y - n2.y;
           const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-          if (dist < 120) {
+          if (dist < repulsionDist) {
             const safeDist = Math.max(15, dist);
             const force = (kRepulsion / (safeDist * safeDist)) * 40;
             const fx = (dx / dist) * force;
@@ -1826,7 +2256,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
         const dx = t.x - s.x;
         const dy = t.y - s.y;
         const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-        const targetLen = 70; // Rest spring length
+        const targetLen = isFullscreen ? 170 : 70; // Expanded spring rest length!
         const force = (dist - targetLen) * kAttraction * (link.strength || 1);
         const fx = (dx / dist) * force;
         const fy = (dy / dist) * force;
@@ -1918,17 +2348,30 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
       isDraggingGraphRef.current = false;
     };
 
+    const handleResize = () => {
+      if (!canvas) return;
+      const w = canvas.parentElement?.clientWidth || 400;
+      const h = canvas.parentElement?.clientHeight || 500;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      ctx.scale(dpr, dpr);
+      canvas.style.width = `${w}px`;
+      canvas.style.height = `${h}px`;
+    };
+
     canvas.addEventListener("mousedown", handleMouseDown);
     canvas.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("mouseup", handleMouseUp);
+    window.addEventListener("resize", handleResize);
 
     return () => {
       cancelAnimationFrame(animationFrameId);
       canvas.removeEventListener("mousedown", handleMouseDown);
       canvas.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("resize", handleResize);
     };
-  }, [activeTab, theme, selectedNodeId, graphScale, graphPan, nodeSearchQuery]);
+  }, [activeTab, theme, selectedNodeId, graphScale, graphPan, nodeSearchQuery, isGraphFullscreen, graphTextSize, graphDimensions]);
 
   // Dynamic OSTM Inspector detail retriever (Priority 2)
   const selectedNodeInfo = (() => {
@@ -2251,7 +2694,18 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
   const activeSymptoms = activeTwinMode === "simulator" && simulatedResults ? simulatedResults.symptoms : activeData.symptoms;
 
   // Sheet connection states and handlers
-  const selectedPatient = patients.find(p => p.id === selectedPatientId);
+  const selectedPatient = patients.find(p => p.id === selectedPatientId) || (() => {
+    if (selectedPatientId === "aarav") {
+      return { id: "aarav", name: "Aarav Sharma", age: "28", gender: "Male", phone: "9876543210", email: "aarav@homeo.healthcare", complaint: "Stage 3b CKD, Edema, flatulence", careLevel: "Multisystem Chronic Care", durationText: "12-Month Plan", finalPrice: 7500, sheetUrl: "" };
+    }
+    if (selectedPatientId === "priya") {
+      return { id: "priya", name: "Priya Patel", age: "32", gender: "Female", phone: "9876543211", email: "priya@homeo.healthcare", complaint: "PCOS, metabolic loading, irregular cycles", careLevel: "Endocrine Management", durationText: "6-Month Plan", finalPrice: 4500, sheetUrl: "" };
+    }
+    if (selectedPatientId === "elena") {
+      return { id: "elena", name: "Elena Rostova", age: "45", gender: "Female", phone: "9876543212", email: "elena@homeo.healthcare", complaint: "Hypothyroidism, TSH elevation, morning lethargy", careLevel: "Constitutional Support", durationText: "6-Month Plan", finalPrice: 4000, sheetUrl: "" };
+    }
+    return null;
+  })();
   const isRealSheet = !!(selectedPatient && selectedPatient.sheetUrl && selectedPatient.sheetUrl.startsWith("https://") && selectedPatient.sheetUrl.includes("google.com/spreadsheets"));
 
   const [isSyncing, setIsSyncing] = useState(false);
@@ -2350,10 +2804,406 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
       setGraphScale(1.4);
       setGraphPan({
         x: (graphCanvasRef.current?.parentElement?.clientWidth || 400) / 2 - match.x * 1.4,
-        y: 320 / 2 - match.y * 1.4
+        y: (graphCanvasRef.current?.parentElement?.clientHeight || 500) / 2 - match.y * 1.4
       });
     }
   }, [nodeSearchQuery]);
+
+  const renderGraphCardContent = (isFullscreen: boolean) => {
+    if (isFullscreen) {
+      return (
+        <div className="relative w-full h-full bg-slate-900 overflow-hidden select-none">
+          {/* Edge-to-edge canvas */}
+          <canvas ref={graphCanvasRef} className="absolute inset-0 w-full h-full block" />
+
+          {/* Floating Top Left Panel: Title & Search */}
+          <div className="absolute top-6 left-6 z-10 w-96 backdrop-blur-md bg-slate-950/75 dark:bg-slate-950/75 border border-slate-800 rounded-2xl p-4 shadow-2xl space-y-3">
+            <div>
+              <h3 className="font-serif text-sm font-bold flex items-center gap-2 text-white">
+                <Network className="w-4 h-4 text-purple-400 animate-pulse" /> OSTM Knowledge Graph™
+              </h3>
+              <p className="text-[9px] text-slate-400 mt-0.5">Edge-to-edge Navigator. Drag nodes to move, scroll to zoom.</p>
+            </div>
+            {/* Search Input */}
+            <div className="relative">
+              <input 
+                type="text"
+                placeholder="Search OSTM Node (e.g. Creatinine, Kidney, Lycopodium)..."
+                value={nodeSearchQuery}
+                onChange={(e) => setNodeSearchQuery(e.target.value)}
+                className="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-xs focus:ring-1 focus:ring-purple-500 focus:outline-none text-white placeholder-slate-500"
+              />
+              {nodeSearchQuery && (
+                <button 
+                  onClick={() => setNodeSearchQuery("")}
+                  className="absolute right-2.5 top-2 text-slate-400 hover:text-slate-200 border-none bg-transparent cursor-pointer"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Floating Top Right Panel: Zoom & View Controls */}
+          <div className="absolute top-6 right-6 z-10 flex gap-2 backdrop-blur-md bg-slate-950/75 dark:bg-slate-950/75 border border-slate-800 rounded-2xl p-2 shadow-2xl">
+            <button 
+              onClick={() => setGraphScale(prev => Math.min(2.0, prev + 0.1))}
+              className="w-8 h-8 flex items-center justify-center bg-slate-900 hover:bg-slate-800 rounded-lg text-white font-bold border-none cursor-pointer"
+              title="Zoom In"
+            >
+              ＋
+            </button>
+            <button 
+              onClick={() => setGraphScale(prev => Math.max(0.5, prev - 0.1))}
+              className="w-8 h-8 flex items-center justify-center bg-slate-900 hover:bg-slate-800 rounded-lg text-white font-bold border-none cursor-pointer"
+              title="Zoom Out"
+            >
+              －
+            </button>
+            <button 
+              onClick={() => { setGraphScale(1); setGraphPan({ x: 0, y: 0 }); }}
+              className="w-8 h-8 flex items-center justify-center bg-slate-900 hover:bg-slate-800 rounded-lg text-white font-bold border-none cursor-pointer"
+              title="Reset View"
+            >
+              ⟲
+            </button>
+            <span className="w-px h-6 bg-slate-800 self-center mx-1" />
+            <button 
+              onClick={() => setGraphTextSize(prev => Math.min(18, prev + 1))}
+              className="w-8 h-8 flex items-center justify-center bg-slate-900 hover:bg-slate-800 rounded-lg text-xs font-bold border-none cursor-pointer text-slate-300"
+              title="Increase Label Size (+A)"
+            >
+              ＋A
+            </button>
+            <button 
+              onClick={() => setGraphTextSize(prev => Math.max(6, prev - 1))}
+              className="w-8 h-8 flex items-center justify-center bg-slate-900 hover:bg-slate-800 rounded-lg text-xs font-bold border-none cursor-pointer text-slate-300"
+              title="Decrease Label Size (-A)"
+            >
+              －A
+            </button>
+            <span className="w-px h-6 bg-slate-800 self-center mx-1" />
+            <button 
+              onClick={() => setIsGraphFullscreen(false)}
+              className="w-8 h-8 flex items-center justify-center bg-rose-950/50 hover:bg-rose-900/60 rounded-lg text-rose-400 font-bold border-none cursor-pointer"
+              title="Exit Fullscreen"
+            >
+              <Minimize2 className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Floating Bottom Left Panel: Filters & Heatmap Perspective */}
+          <div className="absolute bottom-6 left-6 z-10 w-[420px] backdrop-blur-md bg-slate-950/75 dark:bg-slate-950/75 border border-slate-800 rounded-2xl p-4 shadow-2xl space-y-3">
+            {/* Filter Tags */}
+            <div className="space-y-1.5">
+              <span className="text-[8.5px] font-mono text-slate-500 uppercase tracking-widest block w-full mb-1 font-bold">Graph Node Filters:</span>
+              <div className="flex flex-wrap gap-1">
+                {(["system", "organ", "diagnosis", "lab", "symptom", "remedy", "miasm", "risk", "modality"] as const).map((type) => {
+                  const isActive = graphFilterTypes.includes(type);
+                  return (
+                    <button
+                      key={type}
+                      onClick={() => {
+                        if (isActive) {
+                          setGraphFilterTypes(prev => prev.filter(t => t !== type));
+                        } else {
+                          setGraphFilterTypes(prev => [...prev, type]);
+                        }
+                      }}
+                      className={`px-2 py-0.5 rounded text-[8.5px] font-bold border capitalize transition-all cursor-pointer ${
+                        isActive 
+                          ? "bg-purple-900/40 text-purple-300 border-purple-800" 
+                          : "bg-transparent border-slate-800 text-slate-500 hover:text-slate-300"
+                      }`}
+                    >
+                      {type}s
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Heatmap Perspective */}
+            <div className="flex items-center justify-between text-[9px] pt-2 border-t border-slate-800/60">
+              <span className="font-mono text-slate-500 uppercase tracking-widest font-bold">Heatmap Perspective:</span>
+              <div className="flex gap-1">
+                {(["none", "evidence", "risk", "outcome", "remedy"] as const).map((mode) => (
+                  <button
+                    key={mode}
+                    onClick={() => setGraphHeatmapView(mode)}
+                    className={`px-2 py-0.5 rounded text-[8.5px] font-semibold border capitalize transition-all cursor-pointer ${
+                      graphHeatmapView === mode 
+                        ? "bg-emerald-600 text-white border-emerald-500" 
+                        : "bg-transparent border-slate-800 text-slate-500 hover:text-slate-300"
+                    }`}
+                  >
+                    {mode}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Floating Bottom Right Panel: Node Inspector (if selected) */}
+          {selectedNodeInfo && (
+            <div className="absolute bottom-6 right-6 z-10 w-96 backdrop-blur-md bg-slate-950/90 dark:bg-slate-950/90 border border-slate-800 rounded-2xl p-4 shadow-2xl text-white space-y-3 max-h-[420px] overflow-y-auto animate-fadeIn">
+              <div className="flex justify-between items-start border-b border-slate-800 pb-2">
+                <div>
+                  <span className="text-[8px] font-mono text-purple-400 uppercase tracking-wider block">{selectedNodeInfo.type}</span>
+                  <h4 className="text-xs font-bold text-slate-200">{selectedNodeInfo.title}</h4>
+                </div>
+                <span className="text-[8px] px-1.5 py-0.5 bg-sky-950 border border-sky-800 text-sky-400 font-bold rounded uppercase shrink-0">
+                  {selectedNodeInfo.evidenceRating}
+                </span>
+              </div>
+              <div className="text-[10px] space-y-2.5 leading-relaxed font-sans">
+                <div className="grid grid-cols-2 gap-2 font-mono text-[9px] bg-slate-900/50 p-2 rounded-lg border border-slate-850">
+                  <div>
+                    <span className="text-slate-500 block text-[8px]">CLINICAL STATUS</span>
+                    <strong className="text-slate-200">{selectedNodeInfo.status}</strong>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 block text-[8px]">CONFIDENCE</span>
+                    <strong className="text-emerald-400">{selectedNodeInfo.confidence}%</strong>
+                  </div>
+                </div>
+                <div>
+                  <span className="text-[8.5px] text-purple-400 block uppercase font-mono tracking-wider font-semibold">Anatomical / Remedial Description</span>
+                  <p className="text-slate-300 text-[9.5px]">
+                    {selectedNodeInfo.description}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-[8.5px] text-sky-400 block uppercase font-mono tracking-wider font-semibold">Historical Trends & Changes</span>
+                  <p className="text-slate-300 text-[9.5px]">
+                    {selectedNodeId?.includes("kidney") ? "Creatinine rose 1.1 -> 1.6, eGFR declined 78 -> 49 over 12 months." : 
+                     selectedNodeId?.includes("thyroid") ? "TSH rose 6.2 -> 7.8, now compensated at 4.8." :
+                     selectedNodeId?.includes("joints") ? "ESR rose 45 -> 58, currently stabilized at 38." :
+                     selectedNodeId?.includes("liver") ? "ALT/AST rose 38 -> 64, bilirubin stabilized at 0.9." :
+                     selectedNodeId?.includes("lungs") ? "FEV1 stabilized at 82%, SpO2 96-98%." :
+                     "Baseline metric stabilized under remedy matched course."}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-[8.5px] text-amber-400 block uppercase font-mono tracking-wider font-semibold">Suggested Actions / Predicted Outcomes</span>
+                  <p className="text-emerald-400 text-[9.5px] font-medium">✓ {selectedNodeInfo.historicalOutcome}</p>
+                </div>
+                <div>
+                  <span className="text-[8.5px] text-slate-500 block uppercase font-mono tracking-wider">Connected Elements</span>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {selectedNodeInfo.connectedElements.map((elem, idx) => (
+                      <span key={idx} className="px-1.5 py-0.5 bg-slate-900 border border-slate-800 text-[8px] rounded-md text-slate-400">
+                        {elem}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Floating Bottom Center Panel: Graph Insights Panel */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 w-[450px] backdrop-blur-md bg-slate-950/75 dark:bg-slate-950/75 border border-slate-800 rounded-xl px-4 py-2.5 shadow-2xl text-slate-300 text-[9.5px] font-sans flex justify-between items-center gap-3">
+            <div className="flex items-center gap-1.5">
+              <Zap className="w-3.5 h-3.5 text-amber-400 animate-pulse shrink-0" />
+              <div className="truncate">
+                <span className="font-bold text-amber-300">LIVE FEED:</span>{" "}
+                {selectedNodeId ? `Focused on ${selectedNodeInfo?.title || selectedNodeId}. Viewing connected pathways.` : "Select any node in the graph to begin active clinician-focused system inspection."}
+              </div>
+            </div>
+            <button 
+              onClick={() => setSelectedNodeId(null)}
+              className="px-2 py-0.5 bg-slate-900 hover:bg-slate-800 text-[8.5px] border border-slate-800 rounded text-slate-400 cursor-pointer shrink-0"
+            >
+              Reset Selection
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-2">
+          <div>
+            <h3 className="font-serif text-sm font-bold flex items-center gap-2">
+              <Network className="w-4 h-4 text-purple-500 animate-pulse" /> OSTM Knowledge Graph™
+            </h3>
+            <p className="text-[10px] text-slate-400 mt-0.5">Force-directed map. Drag nodes, scroll to zoom, click to select.</p>
+          </div>
+          
+          {/* Zoom controls */}
+          <div className="flex gap-1.5 self-end items-center">
+            <button 
+              onClick={() => setGraphScale(prev => Math.min(2.0, prev + 0.1))}
+              className="px-2.5 py-1 bg-slate-100 dark:bg-slate-955 hover:bg-slate-200 dark:hover:bg-slate-850 rounded-lg text-xs font-bold border-none cursor-pointer"
+              title="Zoom In"
+            >
+              ＋
+            </button>
+            <button 
+              onClick={() => setGraphScale(prev => Math.max(0.5, prev - 0.1))}
+              className="px-2.5 py-1 bg-slate-100 dark:bg-slate-955 hover:bg-slate-200 dark:hover:bg-slate-850 rounded-lg text-xs font-bold border-none cursor-pointer"
+              title="Zoom Out"
+            >
+              －
+            </button>
+            <button 
+              onClick={() => { setGraphScale(1); setGraphPan({ x: 0, y: 0 }); }}
+              className="px-2.5 py-1 bg-slate-100 dark:bg-slate-955 hover:bg-slate-200 dark:hover:bg-slate-850 rounded-lg text-xs font-bold border-none cursor-pointer"
+              title="Reset View"
+            >
+              ⟲
+            </button>
+            <span className="w-px h-4 bg-slate-200 dark:bg-slate-800 mx-1" />
+            {/* Dynamic Label Font Size Controls */}
+            <button 
+              onClick={() => setGraphTextSize(prev => Math.min(18, prev + 1))}
+              className="px-2.5 py-1 bg-slate-100 dark:bg-slate-955 hover:bg-slate-200 dark:hover:bg-slate-850 rounded-lg text-[10px] font-bold border-none cursor-pointer text-slate-700 dark:text-slate-350"
+              title="Increase Label Size (+A)"
+            >
+              ＋A
+            </button>
+            <button 
+              onClick={() => setGraphTextSize(prev => Math.max(6, prev - 1))}
+              className="px-2.5 py-1 bg-slate-100 dark:bg-slate-955 hover:bg-slate-200 dark:hover:bg-slate-850 rounded-lg text-[10px] font-bold border-none cursor-pointer text-slate-700 dark:text-slate-350"
+              title="Decrease Label Size (-A)"
+            >
+              －A
+            </button>
+            <span className="w-px h-4 bg-slate-200 dark:bg-slate-800 mx-1" />
+            {/* Fullscreen Toggle */}
+            <button 
+              onClick={() => setIsGraphFullscreen(prev => !prev)}
+              className="px-2 py-1 bg-slate-100 dark:bg-slate-955 hover:bg-slate-200 dark:hover:bg-slate-850 rounded-lg text-xs font-bold border-none cursor-pointer flex items-center justify-center text-slate-700 dark:text-slate-350"
+              title={isFullscreen ? "Exit Fullscreen" : "Fullscreen View"}
+            >
+              {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+            </button>
+          </div>
+        </div>
+
+        {/* Filter tags panel (Priority 6) */}
+        <div className="flex flex-wrap gap-1 bg-slate-50 dark:bg-slate-955/50 p-2 rounded-xl border border-slate-200/50 dark:border-slate-850">
+          <span className="text-[8.5px] font-mono text-slate-500 uppercase tracking-widest block w-full mb-1">Graph Node Filters:</span>
+          {(["system", "organ", "diagnosis", "lab", "symptom", "remedy", "miasm", "risk", "modality"] as const).map((type) => {
+            const isActive = graphFilterTypes.includes(type);
+            return (
+              <button
+                key={type}
+                onClick={() => {
+                  if (isActive) {
+                    setGraphFilterTypes(prev => prev.filter(t => t !== type));
+                  } else {
+                    setGraphFilterTypes(prev => [...prev, type]);
+                  }
+                }}
+                className={`px-2 py-0.5 rounded text-[8.5px] font-bold border capitalize transition-all cursor-pointer ${
+                  isActive 
+                    ? "bg-purple-900/20 text-purple-400 border-purple-800" 
+                    : "bg-transparent border-slate-200 dark:border-slate-800 text-slate-400"
+                }`}
+              >
+                {type}s
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Heatmap overlay selector (Priority 8) */}
+        <div className="flex items-center justify-between text-[9px] bg-slate-50 dark:bg-slate-955/50 p-2 rounded-xl border border-slate-200/50 dark:border-slate-850 shrink-0">
+          <span className="font-mono text-slate-500 uppercase tracking-widest block font-bold">Heatmap Perspective:</span>
+          <div className="flex gap-1">
+            {(["none", "evidence", "risk", "outcome", "remedy"] as const).map((mode) => (
+              <button
+                key={mode}
+                onClick={() => setGraphHeatmapView(mode)}
+                className={`px-2 py-0.5 rounded text-[8.5px] font-semibold border capitalize transition-all cursor-pointer ${
+                  graphHeatmapView === mode 
+                    ? "bg-emerald-600 text-white border-emerald-500" 
+                    : "bg-transparent border-slate-200 dark:border-slate-800 text-slate-400"
+                }`}
+              >
+                {mode}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Graph Search */}
+        <div className="relative">
+          <input 
+            type="text"
+            placeholder="Search OSTM Node (e.g. Creatinine, Kidney, Lycopodium, Edema)..."
+            value={nodeSearchQuery}
+            onChange={(e) => setNodeSearchQuery(e.target.value)}
+            className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-955 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:ring-1 focus:ring-purple-500 focus:outline-none text-slate-800 dark:text-white"
+          />
+          {nodeSearchQuery && (
+            <button 
+              onClick={() => setNodeSearchQuery("")}
+              className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600 border-none bg-transparent cursor-pointer"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+
+        <div className={`w-full bg-slate-50 dark:bg-slate-955/30 rounded-2xl relative border border-slate-100 dark:border-slate-850/50 cursor-grab active:cursor-grabbing transition-all ${isFullscreen ? 'flex-1 min-h-[400px]' : 'h-[520px]'}`}>
+          <canvas ref={graphCanvasRef} className="w-full h-full block" />
+          
+          {/* Floating inspector in fullscreen mode (Priority 2 details) */}
+          {isFullscreen && selectedNodeInfo && (
+            <div className="absolute bottom-6 right-6 w-80 bg-slate-950/95 backdrop-blur-md border border-slate-800 rounded-2xl p-4 shadow-2xl text-white space-y-3 z-10 max-h-[350px] overflow-y-auto animate-fadeIn">
+              <div className="flex justify-between items-start border-b border-slate-800 pb-1.5">
+                <div>
+                  <span className="text-[8px] font-mono text-purple-400 uppercase tracking-wider block">{selectedNodeInfo.type}</span>
+                  <h4 className="text-xs font-bold text-slate-200">{selectedNodeInfo.title}</h4>
+                </div>
+                <span className="text-[8px] px-1.5 py-0.5 bg-sky-950 border border-sky-800 text-sky-400 font-bold rounded uppercase">
+                  {selectedNodeInfo.evidenceRating}
+                </span>
+              </div>
+              <div className="text-[10px] space-y-2 leading-relaxed font-sans">
+                <div className="grid grid-cols-2 gap-2 font-mono text-[9px] bg-slate-900/50 p-2 rounded-lg border border-slate-850">
+                  <div>
+                    <span className="text-slate-500 block text-[8px]">CLINICAL STATUS</span>
+                    <strong className="text-slate-200">{selectedNodeInfo.status}</strong>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 block text-[8px]">CONFIDENCE</span>
+                    <strong className="text-emerald-400">{selectedNodeInfo.confidence}%</strong>
+                  </div>
+                </div>
+                <div>
+                  <span className="text-[8px] text-slate-555 block uppercase font-mono">Historical Trends & Changes</span>
+                  <p className="text-slate-300 text-[9px]">
+                    {selectedNodeId?.includes("kidney") ? "Creatinine rose 1.1 -> 1.6, eGFR declined 78 -> 49 over 12 months." : 
+                     selectedNodeId?.includes("thyroid") ? "TSH rose 6.2 -> 7.8, now compensated at 4.8." :
+                     "ESR rose 45 -> 58, currently stabilized at 38."}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-[8px] text-slate-555 block uppercase font-mono">Suggested Actions / Predicted Outcomes</span>
+                  <p className="text-emerald-400 text-[9px] font-medium">✓ {selectedNodeInfo.historicalOutcome}</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Auto-generated Graph Insights Ticker (Priority 11) */}
+        <div className="bg-gradient-to-r from-purple-950/10 to-teal-950/10 p-2.5 rounded-xl border border-purple-900/30 text-[10px] space-y-1">
+          <span className="text-[8px] font-mono text-purple-400 uppercase tracking-widest block font-bold">Graph Insights Panel™</span>
+          <div className="space-y-0.5 text-slate-300">
+            <div>• Kidney node currently has highest centrality score (0.88).</div>
+            <div>• eGFR node influence increased 22% over 6 months of metabolic stress.</div>
+            <div>• Apis Mellifica pathway activated after edema progression flag.</div>
+          </div>
+        </div>
+      </>
+    );
+  };
 
   // Explainable Risk resolver
   const activeExplainableRisk = activeRisks.find((r: any) => r.id === selectedRiskId) || activeRisks[0];
@@ -2412,11 +3262,24 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
               className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500 font-bold min-w-[220px] cursor-pointer shadow-md"
             >
               <option value="" className="text-slate-500">-- Select Active Patient --</option>
-              {patients && patients.map(p => (
-                <option key={p.id} value={p.id} className="text-white">
-                  {p.name} ({p.id})
-                </option>
-              ))}
+              
+              {/* Virtual / Sandbox Cases (Always Available) */}
+              <optgroup label="Sandbox / Mock Patients" className="text-slate-400 font-mono text-[10px] bg-slate-900">
+                <option value="aarav" className="text-white">Aarav Sharma (aarav)</option>
+                <option value="priya" className="text-white">Priya Patel (priya)</option>
+                <option value="elena" className="text-white">Elena Rostova (elena)</option>
+              </optgroup>
+
+              {/* Firestore / Sheets Patients */}
+              {patients && patients.length > 0 && (
+                <optgroup label="Live / Connected Patients" className="text-slate-400 font-mono text-[10px] bg-slate-900">
+                  {patients.filter(p => p.id !== "aarav" && p.id !== "priya" && p.id !== "elena").map(p => (
+                    <option key={p.id} value={p.id} className="text-white">
+                      {p.name} ({p.id})
+                    </option>
+                  ))}
+                </optgroup>
+              )}
             </select>
           </div>
 
@@ -3056,121 +3919,28 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               
               {/* OSTM graph viewer canvas (7 cols) (Priority 1 & 5 & 6 & 8 & 11) */}
-              <div className="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm flex flex-col gap-4 relative overflow-hidden">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-2">
-                  <div>
-                    <h3 className="font-serif text-sm font-bold flex items-center gap-2">
-                      <Network className="w-4 h-4 text-purple-500 animate-pulse" /> OSTM Knowledge Graph™
-                    </h3>
-                    <p className="text-[10px] text-slate-400 mt-0.5">Force-directed map. Drag nodes, scroll to zoom, click to select.</p>
-                  </div>
-                  
-                  {/* Zoom controls */}
-                  <div className="flex gap-1.5 self-end">
-                    <button 
-                      onClick={() => setGraphScale(prev => Math.min(2.0, prev + 0.1))}
-                      className="px-2.5 py-1 bg-slate-100 dark:bg-slate-950 hover:bg-slate-200 dark:hover:bg-slate-850 rounded-lg text-xs font-bold border-none cursor-pointer"
-                      title="Zoom In"
-                    >
-                      ＋
-                    </button>
-                    <button 
-                      onClick={() => setGraphScale(prev => Math.max(0.5, prev - 0.1))}
-                      className="px-2.5 py-1 bg-slate-100 dark:bg-slate-950 hover:bg-slate-200 dark:hover:bg-slate-850 rounded-lg text-xs font-bold border-none cursor-pointer"
-                      title="Zoom Out"
-                    >
-                      －
-                    </button>
-                    <button 
-                      onClick={() => { setGraphScale(1); setGraphPan({ x: 0, y: 0 }); }}
-                      className="px-2.5 py-1 bg-slate-100 dark:bg-slate-950 hover:bg-slate-200 dark:hover:bg-slate-850 rounded-lg text-xs font-bold border-none cursor-pointer"
-                      title="Reset View"
-                    >
-                      ⟲
-                    </button>
-                  </div>
+              {isGraphFullscreen && isMounted ? createPortal(
+                <div 
+                  style={{
+                    position: "fixed",
+                    top: "0px",
+                    left: "0px",
+                    right: "0px",
+                    bottom: "0px",
+                    width: "100vw",
+                    height: "100vh",
+                    zIndex: 1000
+                  }}
+                  className="bg-slate-905 overflow-hidden text-slate-800 dark:text-white animate-fadeIn"
+                >
+                  {renderGraphCardContent(true)}
+                </div>,
+                document.body
+              ) : (
+                <div className="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm flex flex-col gap-4 relative overflow-hidden">
+                  {renderGraphCardContent(false)}
                 </div>
-
-                {/* Filter tags panel (Priority 6) */}
-                <div className="flex flex-wrap gap-1 bg-slate-50 dark:bg-slate-950 p-2 rounded-xl border border-slate-200/50 dark:border-slate-850">
-                  <span className="text-[8.5px] font-mono text-slate-500 uppercase tracking-widest block w-full mb-1">Graph Node Filters:</span>
-                  {(["system", "organ", "diagnosis", "lab", "symptom", "remedy", "miasm", "risk", "modality"] as const).map((type) => {
-                    const isActive = graphFilterTypes.includes(type);
-                    return (
-                      <button
-                        key={type}
-                        onClick={() => {
-                          if (isActive) {
-                            setGraphFilterTypes(prev => prev.filter(t => t !== type));
-                          } else {
-                            setGraphFilterTypes(prev => [...prev, type]);
-                          }
-                        }}
-                        className={`px-2 py-0.5 rounded text-[8.5px] font-bold border capitalize transition-all cursor-pointer ${
-                          isActive 
-                            ? "bg-purple-900/20 text-purple-400 border-purple-800" 
-                            : "bg-transparent border-slate-200 dark:border-slate-800 text-slate-400"
-                        }`}
-                      >
-                        {type}s
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* Heatmap overlay selector (Priority 8) */}
-                <div className="flex items-center justify-between text-[9px] bg-slate-50 dark:bg-slate-950 p-2 rounded-xl border border-slate-200/50 dark:border-slate-850 shrink-0">
-                  <span className="font-mono text-slate-500 uppercase tracking-widest block font-bold">Heatmap Perspective:</span>
-                  <div className="flex gap-1">
-                    {(["none", "evidence", "risk", "outcome", "remedy"] as const).map((mode) => (
-                      <button
-                        key={mode}
-                        onClick={() => setGraphHeatmapView(mode)}
-                        className={`px-2 py-0.5 rounded text-[8.5px] font-semibold border capitalize transition-all cursor-pointer ${
-                          graphHeatmapView === mode 
-                            ? "bg-emerald-600 text-white border-emerald-500" 
-                            : "bg-transparent border-slate-200 dark:border-slate-800 text-slate-400"
-                        }`}
-                      >
-                        {mode}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Graph Search */}
-                <div className="relative">
-                  <input 
-                    type="text"
-                    placeholder="Search OSTM Node (e.g. Creatinine, Kidney, Lycopodium, Edema)..."
-                    value={nodeSearchQuery}
-                    onChange={(e) => setNodeSearchQuery(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:ring-1 focus:ring-purple-500 focus:outline-none"
-                  />
-                  {nodeSearchQuery && (
-                    <button 
-                      onClick={() => setNodeSearchQuery("")}
-                      className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600 border-none bg-transparent cursor-pointer"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  )}
-                </div>
-
-                <div className="w-full h-[320px] bg-slate-50 dark:bg-slate-955/30 rounded-2xl relative border border-slate-100 dark:border-slate-850/50 cursor-grab active:cursor-grabbing">
-                  <canvas ref={graphCanvasRef} className="w-full h-full block" />
-                </div>
-
-                {/* Auto-generated Graph Insights Ticker (Priority 11) */}
-                <div className="bg-gradient-to-r from-purple-950/10 to-teal-950/10 p-2.5 rounded-xl border border-purple-900/30 text-[10px] space-y-1">
-                  <span className="text-[8px] font-mono text-purple-400 uppercase tracking-widest block font-bold">Graph Insights Panel™</span>
-                  <div className="space-y-0.5 text-slate-300">
-                    <div>• Kidney node currently has highest centrality score (0.88).</div>
-                    <div>• eGFR node influence increased 22% over 6 months of metabolic stress.</div>
-                    <div>• Apis Mellifica pathway activated after edema progression flag.</div>
-                  </div>
-                </div>
-              </div>
+              )}
 
               {/* Inspector card (5 cols) (Priority 2 & 10 & 12) */}
               <div className="lg:col-span-5 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm flex flex-col justify-between gap-4">

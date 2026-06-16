@@ -18,7 +18,7 @@ import { MATERIA_MEDICA_BOOKS, MateriaMedicaBook } from "@/lib/materiaMedicaData
 import { ORGANON_EDITIONS, ORGANON_KNOWLEDGE_TREE, ORGANON_APHORISMS, ORGANON_CASES, ACTIVE_RECALL_EXERCISES, TIMELINE_STEPS } from "@/lib/organonData";
 import { db } from "@/lib/firebase";
 import { collection, onSnapshot, query, orderBy, doc, updateDoc, setDoc, where, getDoc, getDocs, deleteDoc } from "firebase/firestore";
-import { getKnowledgeGraph } from "@/lib/knowledgeGraph";
+import { getKnowledgeGraph, GraphNode } from "@/lib/knowledgeGraph";
 import { runIngestionSimulation, INGESTION_SOURCES } from "@/lib/ingestionPipeline";
 import { parseNaturalLanguageQuery } from "@/lib/searchEngine";
 import { REMEDY_LEARNING_DB, parseLearningTutorQuery, searchRemedies, compareFamilies, compareKingdoms, compareMiasms, MASTER_REMEDY_DB, CLINICAL_BOARD_QUESTIONS } from "@/lib/searchAndCompare";
@@ -610,6 +610,16 @@ const SAMPLE_FINDINGS = [
     { id: "router-consensus", label: "Consensus Console" },
     { id: "router-sandbox", label: "Live Test Sandbox" },
     { id: "router-telemetry-logs", label: "Telemetry Live Logs" }
+  ],
+  "health-intelligence": [
+    { id: "portal-engagement", label: "Engagement Portals" },
+    { id: "intake-queue", label: "Intake Queue" }
+  ],
+  cie: [
+    { id: "cie-cockpit", label: "Clinical Cockpit" },
+    { id: "cie-intake", label: "Guided Case Intake" },
+    { id: "cie-miasms", label: "Miasmatic Analysis" },
+    { id: "cie-reports", label: "Clinical Reports" }
   ]
 };
 
@@ -633,6 +643,7 @@ export default function AdminDashboard() {
   const [session, setSession] = useState<UserSession | null>(null);
   const [activeTab, setActiveTab] = useState<"dashboard" | "intake" | "patients" | "diagnostics" | "analyzer" | "diet-lifestyle" | "nexus-atlas" | "learning-hub" | "communication" | "ai-router" | "health-intelligence" | "cie">("dashboard");
   const [nexusSubTab, setNexusSubTab] = useState<"repertory" | "mind-map" | "materia-medica">("repertory");
+  const [cieSubTab, setCieSubTab] = useState<"cockpit" | "intake" | "miasms" | "reports">("cockpit");
 
   // Global Accessibility Controls
   const [globalFontSize, setGlobalFontSize] = useState<"S" | "M" | "L" | "XL">("M");
@@ -2415,9 +2426,25 @@ export default function AdminDashboard() {
     modality: false,
     rubric: false,
   });
-  const [graphPan, setGraphPan] = useState({ x: 0, y: 0 });
-  const [graphZoom, setGraphZoom] = useState(1);
+  const graphPanRef = useRef({ x: 0, y: 0 });
+  const graphZoomRef = useRef(1);
   const [graphFontSize, setGraphFontSize] = useState(11);
+
+  // Workout & Interactive Mind Map Highlight States
+  const [visualizerDimensions, setVisualizerDimensions] = useState({ width: 1600, height: 1000 });
+  const [activeWorkoutTab, setActiveWorkoutTab] = useState<"keynotes" | "relations" | "quiz">("keynotes");
+  const [quizRevealAnswer, setQuizRevealAnswer] = useState(false);
+  const [highlightedRelationType, setHighlightedRelationType] = useState<"complementary" | "inimical" | "follows_well" | null>(null);
+  const [isInspectorVisible, setIsInspectorVisible] = useState(true);
+  const [canvasElement, setCanvasElement] = useState<HTMLCanvasElement | null>(null);
+  const visualizerContainerRef = useRef<HTMLDivElement>(null);
+  
+  // physics engine refs
+  const simulationNodesRef = useRef<any[]>([]);
+  const simulationLinksRef = useRef<any[]>([]);
+  const draggedNodeRef = useRef<any>(null);
+  const isDraggingGraphRef = useRef(false);
+  const dragStartRef = useRef({ x: 0, y: 0 });
   const [isDraggingGraph, setIsDraggingGraph] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [mindMapSearch, setMindMapSearch] = useState("");
@@ -2525,6 +2552,26 @@ export default function AdminDashboard() {
       setCdsSelectedPatientId(selectedPatientId);
     }
   }, [selectedPatientId]);
+
+  // ResizeObserver for Homeopathic Graph visualizer dimensions
+  useEffect(() => {
+    const parent = visualizerContainerRef.current;
+    if (!parent) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        const { clientWidth, clientHeight } = entry.target as HTMLElement;
+        if (clientWidth > 0 && clientHeight > 0) {
+          setVisualizerDimensions({ width: clientWidth, height: clientHeight });
+        }
+      }
+    });
+
+    resizeObserver.observe(parent);
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [graphViewMode]);
 
   // Autofill patient details and extract somatic symptoms into the CDS engine
   const handleCdsAutofill = () => {
@@ -2698,233 +2745,568 @@ export default function AdminDashboard() {
   const [historicalSearchQuery, setHistoricalSearchQuery] = useState("");
   const [historicalViewMode, setHistoricalViewMode] = useState<"profiles" | "timeline" | "quotes">("profiles");
 
+  // Live Force-Directed Canvas Simulation for Homeopathic Nexus Atlas
+  useEffect(() => {
+    const canvas = canvasElement;
+    if (!canvas) {
+      console.log("Nexus Atlas Canvas effect: Canvas is not mounted yet.");
+      return;
+    }
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      console.error("Nexus Atlas Canvas effect: Failed to get 2D context.");
+      return;
+    }
+
+    console.log("Nexus Atlas Canvas effect: Initializing simulation. Dimensions:", visualizerDimensions);
+
+    let animationFrameId: number;
+    const dpr = window.devicePixelRatio || 1;
+
+    // Fetch and initialize the nodes and links
+    const graph = getKnowledgeGraph();
+    
+    // We want to dynamically rebuild simulation nodes/links as filters change
+    const rebuildSimulationData = () => {
+      // Find the focused node
+      const centerNode = graph.nodes.find(n => n.id === selectedGraphNodeId);
+      if (!centerNode) {
+        console.error(`rebuildSimulationData: Center node ${selectedGraphNodeId} not found.`);
+        return;
+      }
+
+      // Find direct neighbors of the center node
+      const connectedEdges = graph.edges.filter(edge => {
+        return edge.source === selectedGraphNodeId || edge.target === selectedGraphNodeId;
+      });
+
+      // Group neighbor IDs by node type to limit density per type and avoid clutter
+      const neighborIdMap = new Map<string, string[]>(); // type -> list of node IDs
+      
+      connectedEdges.forEach(edge => {
+        const otherId = edge.source === selectedGraphNodeId ? edge.target : edge.source;
+        const otherNode = graph.nodes.find(n => n.id === otherId);
+        if (otherNode) {
+          if (!neighborIdMap.has(otherNode.type)) {
+            neighborIdMap.set(otherNode.type, []);
+          }
+          neighborIdMap.get(otherNode.type)!.push(otherNode.id);
+        }
+      });
+
+      const neighborIds = new Set<string>();
+      // Make sure center node itself is included
+      neighborIds.add(selectedGraphNodeId);
+
+      // Add neighbor IDs, capping each type to a maximum of 12 nodes to prevent clutter
+      neighborIdMap.forEach((ids, type) => {
+        const cap = 12;
+        const selectedIds = ids.slice(0, cap);
+        selectedIds.forEach(id => neighborIds.add(id));
+      });
+
+      // Collect all neighbor nodes + center node
+      const activeNodes = graph.nodes.filter(node => {
+        // Must be connected to the center node
+        if (!neighborIds.has(node.id)) return false;
+        // Filter based on toggles (except for the center node itself, which should always be visible!)
+        if (node.id === selectedGraphNodeId) return true;
+        return graphTypeFilters[node.type] ?? true;
+      });
+
+      const activeNodeIds = new Set(activeNodes.map(n => n.id));
+
+      // Collect edges between active nodes
+      const activeEdges = graph.edges.filter(edge => {
+        return activeNodeIds.has(edge.source) && activeNodeIds.has(edge.target);
+      });
+
+      console.log(`Rebuilding constellation data: ${activeNodes.length} active nodes, ${activeEdges.length} active edges around ${selectedGraphNodeId}.`);
+
+      const existingNodesMap = new Map(simulationNodesRef.current.map(n => [n.id, n]));
+      
+      const newSimNodes = activeNodes.map(node => {
+        const existing = existingNodesMap.get(node.id);
+        if (existing) {
+          // If coordinates are NaN, reset them
+          if (isNaN(existing.x) || isNaN(existing.y)) {
+            const angle = Math.random() * Math.PI * 2;
+            const radius = 50 + Math.random() * 200;
+            const w = visualizerDimensions.width || 1600;
+            const h = visualizerDimensions.height || 1000;
+            existing.x = w / 2 + Math.cos(angle) * radius;
+            existing.y = h / 2 + Math.sin(angle) * radius;
+            existing.vx = 0;
+            existing.vy = 0;
+          }
+          // Highlight center node radius dynamically
+          existing.radius = node.id === selectedGraphNodeId
+            ? 22
+            : node.type === 'remedy' ? 16 : node.type === 'miasm' ? 14 : 10;
+          return existing;
+        } else {
+          // Initialize randomly around the center
+          const angle = Math.random() * Math.PI * 2;
+          const radius = 80 + Math.random() * 185;
+          const w = visualizerDimensions.width || 1600;
+          const h = visualizerDimensions.height || 1000;
+          
+          // If the center node is already in the simulation, center the new node around its current position
+          const centerInSim = existingNodesMap.get(selectedGraphNodeId);
+          const cx = centerInSim ? centerInSim.x : w / 2;
+          const cy = centerInSim ? centerInSim.y : h / 2;
+
+          return {
+            ...node,
+            x: cx + Math.cos(angle) * radius,
+            y: cy + Math.sin(angle) * radius,
+            vx: 0,
+            vy: 0,
+            radius: node.id === selectedGraphNodeId
+              ? 22
+              : node.type === 'remedy' ? 16 : node.type === 'miasm' ? 14 : 10
+          };
+        }
+      });
+
+      simulationNodesRef.current = newSimNodes;
+
+      simulationLinksRef.current = activeEdges.map(edge => ({
+        id: edge.id,
+        source: edge.source,
+        target: edge.target,
+        type: edge.type,
+        strength: edge.weight || 1.5
+      }));
+    };
+
+    rebuildSimulationData();
+
+    // Scale canvas to match screen resolution (DPR)
+    const handleResize = () => {
+      const w = visualizerDimensions.width || canvas.parentElement?.clientWidth || 800;
+      const h = visualizerDimensions.height || canvas.parentElement?.clientHeight || 650;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      ctx.scale(dpr, dpr);
+      canvas.style.width = `${w}px`;
+      canvas.style.height = `${h}px`;
+      console.log(`Canvas resized: ${w}x${h} (styled), ${canvas.width}x${canvas.height} (buffer)`);
+    };
+
+    handleResize();
+
+    // Physics parameters
+    const damping = 0.85;
+
+    const animate = () => {
+      const isFullscreen = graphViewMode === "fullscreen";
+      const kRepulsion = isFullscreen ? 180 : 100;
+      const kAttraction = isFullscreen ? 0.004 : 0.006;
+      const kGravity = isFullscreen ? 0.001 : 0.0025;
+      const repulsionDist = isFullscreen ? 220 : 120;
+      const springRestLength = isFullscreen ? 140 : 80;
+
+      const w = canvas.width / dpr;
+      const h = canvas.height / dpr;
+      
+      // Fallback center if width/height are 0
+      const centerX = (w > 0 ? w : visualizerDimensions.width || 800) / 2;
+      const centerY = (h > 0 ? h : visualizerDimensions.height || 650) / 2;
+
+      const nodes = simulationNodesRef.current;
+      const links = simulationLinksRef.current;
+
+      // 1. Repulsion between all node pairs - using safeDist to avoid underflow
+      for (let i = 0; i < nodes.length; i++) {
+        const n1 = nodes[i];
+        for (let j = i + 1; j < nodes.length; j++) {
+          const n2 = nodes[j];
+          const dx = n1.x - n2.x;
+          const dy = n1.y - n2.y;
+          const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+          if (dist < repulsionDist) {
+            const safeDist = Math.max(15, dist);
+            const force = (kRepulsion / (safeDist * safeDist)) * 30;
+            const fx = (dx / dist) * force;
+            const fy = (dy / dist) * force;
+            n1.vx += fx;
+            n1.vy += fy;
+            n2.vx -= fx;
+            n2.vy -= fy;
+          }
+        }
+      }
+
+      // 2. Attraction along connected links
+      links.forEach(link => {
+        const s = nodes.find(n => n.id === link.source);
+        const t = nodes.find(n => n.id === link.target);
+        if (!s || !t) return;
+        const dx = t.x - s.x;
+        const dy = t.y - s.y;
+        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+        const force = (dist - springRestLength) * kAttraction * link.strength;
+        const safeDist = Math.max(1, dist);
+        const fx = (dx / safeDist) * force;
+        const fy = (dy / safeDist) * force;
+        s.vx += fx;
+        s.vy += fy;
+        t.vx -= fx;
+        t.vy -= fy;
+      });
+
+      // 3. Update positions, apply gravity, boundaries
+      nodes.forEach(node => {
+        if (node === draggedNodeRef.current) return; // Keep dragged node pinned
+
+        // Gravity pull to center - pull selected center node strongly to keep constellation centered
+        const isCenter = node.id === selectedGraphNodeId;
+        const nodeGravity = isCenter ? kGravity * 6 : kGravity;
+        node.vx += (centerX - node.x) * nodeGravity;
+        node.vy += (centerY - node.y) * nodeGravity;
+
+        // Apply friction/damping
+        node.vx *= damping;
+        node.vy *= damping;
+
+        // Update coordinates
+        node.x += node.vx;
+        node.y += node.vy;
+
+        // Keep within bounds
+        const boundaryW = w > 0 ? w : 800;
+        const boundaryH = h > 0 ? h : 650;
+        node.x = Math.max(30, Math.min(boundaryW - 30, node.x));
+        node.y = Math.max(30, Math.min(boundaryH - 30, node.y));
+      });
+
+      // Draw loop
+      ctx.clearRect(0, 0, w, h);
+
+      ctx.save();
+      // Apply pan & zoom from refs for butter-smooth 60fps performance
+      ctx.translate(graphPanRef.current.x, graphPanRef.current.y);
+      ctx.scale(graphZoomRef.current, graphZoomRef.current);
+
+      // A. Draw Coordinate Grid Background (Whiteboard layout)
+      ctx.strokeStyle = "rgba(30, 41, 59, 0.25)";
+      ctx.lineWidth = 0.5;
+      const gridSize = 30;
+      for (let x = -2000; x < 4000; x += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, -2000);
+        ctx.lineTo(x, 3000);
+        ctx.stroke();
+      }
+      for (let y = -2000; y < 3000; y += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(-2000, y);
+        ctx.lineTo(4000, y);
+        ctx.stroke();
+      }
+
+      // Draw Concentric Coordinate Rings
+      ctx.strokeStyle = "rgba(30, 41, 59, 0.15)";
+      ctx.setLineDash([4, 4]);
+      [200, 450, 750].forEach(r => {
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, r, 0, 2 * Math.PI);
+        ctx.stroke();
+      });
+      ctx.setLineDash([]); // Reset
+
+      // B. Draw Links
+      links.forEach(link => {
+        const s = nodes.find(n => n.id === link.source);
+        const t = nodes.find(n => n.id === link.target);
+        if (!s || !t) return;
+
+        // Check if highlighting is active
+        const isHighlightActive = highlightedRelationType !== null;
+        const sMatch = selectedGraphNodeId === s.id || selectedGraphNodeId === t.id;
+        const relationMatch = highlightedRelationType && link.type === highlightedRelationType && sMatch;
+
+        ctx.save();
+
+        if (isHighlightActive) {
+          ctx.globalAlpha = relationMatch ? 1.0 : 0.12;
+          ctx.lineWidth = relationMatch ? 3.0 : 1.0;
+        } else {
+          const isSelectedPath = selectedGraphNodeId === s.id || selectedGraphNodeId === t.id;
+          ctx.globalAlpha = isSelectedPath ? 0.8 : 0.25;
+          ctx.lineWidth = isSelectedPath ? 2.0 : 1.2;
+        }
+
+        // Link style based on type
+        if (link.type === "complementary") {
+          ctx.strokeStyle = "#10b981"; // Emerald green
+        } else if (link.type === "inimical") {
+          ctx.strokeStyle = "#f43f5e"; // Rose red
+          ctx.setLineDash([3, 3]);
+        } else if (link.type === "follows_well") {
+          ctx.strokeStyle = "#14b8a6"; // Teal
+        } else {
+          ctx.strokeStyle = "rgba(71, 85, 105, 0.5)"; // Slate gray
+        }
+
+        // Apply path glow for highlighted relations
+        if (relationMatch) {
+          ctx.shadowColor = link.type === "inimical" ? "#f43f5e" : "#10b981";
+          ctx.shadowBlur = 10;
+        }
+
+        ctx.beginPath();
+        ctx.moveTo(s.x, s.y);
+        ctx.lineTo(t.x, t.y);
+        ctx.stroke();
+        ctx.restore();
+
+        // Draw animated photons along highlighted relation paths or direct selections
+        const drawPhoton = relationMatch || (!isHighlightActive && sMatch);
+        if (drawPhoton) {
+          const tFlow = (Date.now() * 0.0012) % 1;
+          const flowX = s.x + (t.x - s.x) * tFlow;
+          const flowY = s.y + (t.y - s.y) * tFlow;
+          ctx.beginPath();
+          ctx.arc(flowX, flowY, 3.5, 0, 2 * Math.PI);
+          ctx.fillStyle = "#ffffff";
+          ctx.shadowColor = "#ffffff";
+          ctx.shadowBlur = 6;
+          ctx.fill();
+          ctx.shadowBlur = 0; // Reset
+        }
+      });
+
+      // C. Draw Nodes
+      nodes.forEach(node => {
+        const isSelected = selectedGraphNodeId === node.id;
+        const isHighlightActive = highlightedRelationType !== null;
+        
+        // Determine highlighting match
+        let isMatch = false;
+        if (isHighlightActive) {
+          if (isSelected) {
+            isMatch = true;
+          } else {
+            const edge = links.find(l => 
+              l.type === highlightedRelationType && 
+              ((l.source === selectedGraphNodeId && l.target === node.id) || 
+               (l.target === selectedGraphNodeId && l.source === node.id))
+            );
+            isMatch = !!edge;
+          }
+        }
+
+        ctx.save();
+        if (isHighlightActive) {
+          ctx.globalAlpha = isMatch ? 1.0 : 0.15;
+        } else {
+          ctx.globalAlpha = 1.0;
+        }
+
+        // Base node color based on type
+        let nodeColor = "#38bdf8";
+        let ringColor = "#0284c7";
+        if (node.type === "remedy") { nodeColor = "#10b981"; ringColor = "#34d399"; }
+        else if (node.type === "miasm") { nodeColor = "#ef4444"; ringColor = "#f87171"; }
+        else if (node.type === "kingdom") { nodeColor = "#06b6d4"; ringColor = "#22d3ee"; }
+        else if (node.type === "family") { nodeColor = "#8b5cf6"; ringColor = "#a78bfa"; }
+        else if (node.type === "condition") { nodeColor = "#f43f5e"; ringColor = "#fb7185"; }
+        else if (node.type === "modality") { nodeColor = "#f59e0b"; ringColor = "#fbbf24"; }
+        else if (node.type === "rubric") { nodeColor = "#6366f1"; ringColor = "#818cf8"; }
+
+        // Glow selected node
+        if (isSelected) {
+          ctx.shadowColor = ringColor;
+          ctx.shadowBlur = 15;
+        }
+
+        // Draw node circle
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, isSelected ? node.radius * 1.3 : node.radius, 0, 2 * Math.PI);
+        ctx.fillStyle = isSelected ? ringColor : nodeColor;
+        ctx.fill();
+
+        // Draw node outline
+        ctx.lineWidth = isSelected ? 3.0 : 1.5;
+        ctx.strokeStyle = isSelected ? "#ffffff" : "rgba(9, 13, 22, 0.8)";
+        ctx.stroke();
+        ctx.restore();
+
+        // D. Draw labels (With High-Contrast Outline)
+        ctx.save();
+        if (isHighlightActive) {
+          ctx.globalAlpha = isMatch ? 1.0 : 0.15;
+        }
+
+        ctx.font = isSelected 
+          ? `bold ${graphFontSize + 2}px sans-serif`
+          : `bold ${graphFontSize}px sans-serif`;
+        ctx.textAlign = "center";
+        
+        // Dark Outline background
+        ctx.strokeStyle = "#090d16";
+        ctx.lineWidth = 4;
+        ctx.lineJoin = "round";
+        ctx.strokeText(node.label, node.x, node.y - node.radius - 8);
+
+        // Text Fill
+        ctx.fillStyle = isSelected ? "#34d399" : "#f1f5f9";
+        ctx.fillText(node.label, node.x, node.y - node.radius - 8);
+        ctx.restore();
+      });
+
+      ctx.restore();
+
+      animationFrameId = requestAnimationFrame(animate);
+    };
+
+    // Canvas click & drag handlers
+    const onMouseDown = (e: MouseEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+
+      // Pan & Zoom adjusted click coordinates
+      const currentPan = graphPanRef.current;
+      const currentZoom = graphZoomRef.current;
+      const graphX = (clickX - currentPan.x) / currentZoom;
+      const graphY = (clickY - currentPan.y) / currentZoom;
+
+      const nodes = simulationNodesRef.current;
+      const clicked = nodes.find(n => {
+        const dx = graphX - n.x;
+        const dy = graphY - n.y;
+        return Math.sqrt(dx * dx + dy * dy) < n.radius + 12;
+      });
+
+      if (clicked) {
+        draggedNodeRef.current = clicked;
+        setSelectedGraphNodeId(clicked.id);
+      } else {
+        isDraggingGraphRef.current = true;
+        dragStartRef.current = { x: e.clientX - currentPan.x, y: e.clientY - currentPan.y };
+      }
+    };
+
+    const onMouseMove = (e: MouseEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+
+      const currentPan = graphPanRef.current;
+      const currentZoom = graphZoomRef.current;
+
+      if (draggedNodeRef.current) {
+        const graphX = (clickX - currentPan.x) / currentZoom;
+        const graphY = (clickY - currentPan.y) / currentZoom;
+        draggedNodeRef.current.x = graphX;
+        draggedNodeRef.current.y = graphY;
+        draggedNodeRef.current.vx = 0;
+        draggedNodeRef.current.vy = 0;
+      } else if (isDraggingGraphRef.current) {
+        graphPanRef.current = {
+          x: e.clientX - dragStartRef.current.x,
+          y: e.clientY - dragStartRef.current.y
+        };
+      }
+    };
+
+    const onMouseUp = () => {
+      draggedNodeRef.current = null;
+      isDraggingGraphRef.current = false;
+    };
+
+    // Scroll-to-zoom mouse wheel handler
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const zoomFactor = e.deltaY < 0 ? 1.05 : 0.95;
+      graphZoomRef.current = Math.max(0.15, Math.min(4, graphZoomRef.current * zoomFactor));
+    };
+
+    canvas.addEventListener("mousedown", onMouseDown);
+    canvas.addEventListener("mousemove", onMouseMove);
+    canvas.addEventListener("wheel", onWheel, { passive: false });
+    window.addEventListener("mouseup", onMouseUp);
+    window.addEventListener("resize", handleResize);
+
+    animate();
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      canvas.removeEventListener("mousedown", onMouseDown);
+      canvas.removeEventListener("mousemove", onMouseMove);
+      canvas.removeEventListener("wheel", onWheel);
+      window.removeEventListener("mouseup", onMouseUp);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [
+    activeTab, 
+    nexusSubTab,
+    graphTypeFilters, 
+    selectedGraphNodeId, 
+    graphFontSize, 
+    highlightedRelationType, 
+    graphViewMode,
+    visualizerDimensions,
+    canvasElement
+  ]);
+
   const renderGraphVisualizerCard = (isFullscreen: boolean) => {
     const graph = getKnowledgeGraph();
     const centerNode = graph.nodes.find(n => n.id === selectedGraphNodeId) || graph.nodes[0];
     
-    // Find all nodes connected to selected center node
-    const directEdges = graph.edges.filter(e => e.source === centerNode.id || e.target === centerNode.id);
-    const allNeighbors = directEdges.map(e => {
-      const otherId = e.source === centerNode.id ? e.target : e.source;
-      return {
-        node: graph.nodes.find(n => n.id === otherId)!,
-        edge: e
-      };
-    }).filter(x => x.node !== undefined);
-
-    // Filter neighbors based on the dynamic type filters
-    const filteredNeighbors = allNeighbors.filter(n => {
-      const type = n.node.type;
-      return graphTypeFilters[type] ?? true;
-    });
-
-    // De-duplicate neighbors based on node.id to prevent key issues and layout overlaps
-    const uniqueNeighborsMap = new Map<string, typeof filteredNeighbors[0]>();
-    filteredNeighbors.forEach(n => {
-      if (!uniqueNeighborsMap.has(n.node.id)) {
-        uniqueNeighborsMap.set(n.node.id, n);
-      }
-    });
-    const neighbors = Array.from(uniqueNeighborsMap.values());
-
-    // Define left-radiating and right-radiating node groups
-    const classificationNodes = neighbors.filter(n => n.node.type === 'kingdom' || n.node.type === 'family');
-    const miasmNodes = neighbors.filter(n => n.node.type === 'miasm');
-    const modalityNodes = neighbors.filter(n => n.node.type === 'modality');
-    const remedyNodes = neighbors.filter(n => n.node.type === 'remedy');
-    const conditionNodes = neighbors.filter(n => n.node.type === 'condition');
-    const rubricNodes = neighbors.filter(n => n.node.type === 'rubric');
-
-    // Mind Map Layout Parameters - whiteboard view
-    const cx = 800;
-    const cy = 500;
-    const leafGap = 36;
-    const categoryGap = 60;
-
-    // Left Categories
-    const leftCategories = [
-      { id: 'classification', label: 'Classification', nodes: classificationNodes },
-      { id: 'miasmatic_load', label: 'Miasmatic Load', nodes: miasmNodes },
-      { id: 'modalities', label: 'Modalities', nodes: modalityNodes },
-    ].filter(cat => cat.nodes.length > 0);
-
-    // Right Categories
-    const rightCategories = [
-      { id: 'relationships', label: 'Relationships', nodes: remedyNodes },
-      { id: 'clinical_uses', label: 'Clinical Uses', nodes: conditionNodes },
-      { id: 'core_rubrics', label: 'Core Rubrics', nodes: rubricNodes },
-    ].filter(cat => cat.nodes.length > 0);
-
-    // Calculate dynamic vertical bounds to ensure zero label overlaps
-    let leftTotalHeight = 0;
-    const leftCatsWithHeights = leftCategories.map(cat => {
-      const height = Math.max(1, cat.nodes.length) * leafGap;
-      leftTotalHeight += height;
-      return { ...cat, height };
-    });
-    leftTotalHeight += (leftCategories.length - 1) * categoryGap;
-
-    let rightTotalHeight = 0;
-    const rightCatsWithHeights = rightCategories.map(cat => {
-      const height = Math.max(1, cat.nodes.length) * leafGap;
-      rightTotalHeight += height;
-      return { ...cat, height };
-    });
-    rightTotalHeight += (rightCategories.length - 1) * categoryGap;
-
-    // Left Layout Positions
-    let currentLeftY = cy - leftTotalHeight / 2;
-    const leftLayout = leftCatsWithHeights.map(cat => {
-      const catY = currentLeftY + cat.height / 2;
-      const leaves = cat.nodes.map((n, idx) => {
-        const leafY = currentLeftY + (idx + 0.5) * leafGap;
-        return {
-          node: n.node,
-          edge: n.edge,
-          y: leafY,
-          x: 120
-        };
-      });
-      const result = {
-        ...cat,
-        y: catY,
-        x: 450,
-        leaves
-      };
-      currentLeftY += cat.height + categoryGap;
-      return result;
-    });
-
-    // Right Layout Positions
-    let currentRightY = cy - rightTotalHeight / 2;
-    const rightLayout = rightCatsWithHeights.map(cat => {
-      const catY = currentRightY + cat.height / 2;
-      const leaves = cat.nodes.map((n, idx) => {
-        const leafY = currentRightY + (idx + 0.5) * leafGap;
-        return {
-          node: n.node,
-          edge: n.edge,
-          y: leafY,
-          x: 1480
-        };
-      });
-      const result = {
-        ...cat,
-        y: catY,
-        x: 1150,
-        leaves
-      };
-      currentRightY += cat.height + categoryGap;
-      return result;
-    });
-
-    // Styling Helpers
-    const getCategoryColors = (id: string) => {
-      switch (id) {
-        case 'relationships': return { bg: 'fill-emerald-950/60', stroke: 'stroke-emerald-500/60', text: 'fill-emerald-400', glow: 'emerald-500/10' };
-        case 'clinical_uses': return { bg: 'fill-red-950/60', stroke: 'stroke-red-500/60', text: 'fill-red-400', glow: 'red-500/10' };
-        case 'core_rubrics': return { bg: 'fill-indigo-950/60', stroke: 'stroke-indigo-500/60', text: 'fill-indigo-400', glow: 'indigo-500/10' };
-        case 'classification': return { bg: 'fill-teal-950/60', stroke: 'stroke-teal-500/60', text: 'fill-teal-400', glow: 'teal-500/10' };
-        case 'miasmatic_load': return { bg: 'fill-rose-950/60', stroke: 'stroke-rose-500/60', text: 'fill-rose-400', glow: 'rose-500/10' };
-        case 'modalities': return { bg: 'fill-amber-950/60', stroke: 'stroke-amber-500/60', text: 'fill-amber-400', glow: 'amber-500/10' };
-        default: return { bg: 'fill-slate-900/60', stroke: 'stroke-slate-500/60', text: 'fill-slate-400', glow: 'slate-500/10' };
-      }
-    };
-
-    const getNodeColor = (type: string) => {
-      switch (type) {
-        case 'remedy': return 'fill-emerald-500 stroke-emerald-400';
-        case 'miasm': return 'fill-rose-500 stroke-rose-400';
-        case 'kingdom': return 'fill-teal-500 stroke-teal-400';
-        case 'family': return 'fill-violet-500 stroke-violet-400';
-        case 'condition': return 'fill-red-500 stroke-red-400';
-        case 'modality': return 'fill-amber-500 stroke-amber-400';
-        case 'rubric': return 'fill-indigo-500 stroke-indigo-400';
-        default: return 'fill-slate-500 stroke-slate-400';
-      }
-    };
-
-    const getEdgeStyle = (edge: any, categoryStrokeClass: string) => {
-      if (edge.type === 'complementary') return { stroke: 'stroke-emerald-500/50', dash: undefined };
-      if (edge.type === 'inimical') return { stroke: 'stroke-rose-500/60', dash: '3,3' };
-      if (edge.type === 'follows_well') return { stroke: 'stroke-teal-500/50', dash: undefined };
-      return { stroke: categoryStrokeClass.replace('/60', '/40').replace('/50', '/40'), dash: undefined };
-    };
-
-    // Drag and Zoom handlers
-    const handleMouseDown = (e: React.MouseEvent<SVGSVGElement>) => {
-      const target = e.target as SVGElement;
-      if (target.closest('.interactive-node') || target.closest('.interactive-btn')) {
-        return;
-      }
-      setIsDraggingGraph(true);
-      setDragStart({ x: e.clientX - graphPan.x, y: e.clientY - graphPan.y });
-    };
-
-    const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
-      if (!isDraggingGraph) return;
-      setGraphPan({
-        x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y
-      });
-    };
-
-    const handleMouseUpOrLeave = () => {
-      setIsDraggingGraph(false);
-    };
-
-    const handleWheel = (e: React.WheelEvent<SVGSVGElement>) => {
-      e.preventDefault();
-      const zoomFactor = 1.05;
-      if (e.deltaY < 0) {
-        setGraphZoom(prev => Math.min(4, prev * zoomFactor));
-      } else {
-        setGraphZoom(prev => Math.max(0.15, prev / zoomFactor));
-      }
-    };
-
+    // Drag/Zoom handlers for buttons (since they update graphPan/graphZoom refs)
     const handleZoom = (factor: number) => {
-      setGraphZoom(prev => Math.max(0.15, Math.min(4, prev * factor)));
+      graphZoomRef.current = Math.max(0.15, Math.min(4, graphZoomRef.current * factor));
     };
 
     const handleReset = () => {
-      setGraphPan({ x: 0, y: 0 });
-      setGraphZoom(1);
+      graphPanRef.current = { x: 0, y: 0 };
+      graphZoomRef.current = 1;
     };
 
     return (
-      <div className={`always-dark bg-slate-900/30 relative overflow-hidden flex flex-col ${
-        isFullscreen 
-          ? "flex-grow flex-1 min-h-0 h-full w-full rounded-none border-none p-4" 
-          : "border border-slate-900 rounded-[32px] p-6 shadow-md min-h-[600px]"
-      }`}>
-        <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
+      <div 
+        ref={visualizerContainerRef}
+        className={`always-dark bg-slate-950 relative overflow-hidden flex flex-col ${
+          isFullscreen 
+            ? "w-full h-full p-0 border-none rounded-none animate-fadeIn" 
+            : "border border-slate-900 rounded-[32px] p-0 shadow-2xl min-h-[650px] h-[650px] animate-fadeIn"
+        }`}
+      >
+        {/* Background glow effects */}
+        <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none z-0" />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-500/5 rounded-full blur-3xl pointer-events-none z-0" />
         
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-900 pb-4 mb-4 z-20 relative">
+        {/* Floating Top Left Panel: Title & Search */}
+        <div className="absolute top-6 left-6 z-10 w-[340px] backdrop-blur-md bg-slate-950/75 border border-slate-900 rounded-2xl p-4 shadow-2xl space-y-3">
           <div className="flex items-center gap-2">
-            <Compass className="w-4 h-4 text-emerald-400 font-bold" />
+            <Compass className="w-4 h-4 text-emerald-400 animate-pulse" />
             <div>
-              <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-200">Therapeutic Nexus Atlas</h3>
-              <p className="text-[10px] text-slate-500 font-medium">Whiteboard workstation. Drag to pan • Scroll to zoom • Click nodes to pivot</p>
+              <h3 className="text-xs font-black uppercase tracking-wider text-slate-100">Therapeutic Nexus Atlas</h3>
+              <p className="text-[9px] text-slate-500 font-bold">Live force-directed connection network</p>
             </div>
           </div>
           
-          <div className="flex items-center gap-3 self-start sm:self-auto z-30">
-            {/* Quick Search Autocomplete Box */}
-            <div className="relative min-w-[220px] interactive-btn">
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-950 border border-slate-850 focus-within:border-emerald-500/50 rounded-lg transition-all">
+          <div className="flex gap-2">
+            {/* Search Input */}
+            <div className="relative flex-1">
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 border border-slate-800 focus-within:border-emerald-500/50 rounded-xl transition-all">
                 <Search className="w-3.5 h-3.5 text-slate-500" />
                 <input
                   type="text"
-                  placeholder="Quick search remedies, rubrics..."
+                  placeholder="Search remedies, conditions, rubrics..."
                   value={mindMapSearch}
                   onChange={(e) => setMindMapSearch(e.target.value)}
-                  className="bg-transparent border-none outline-none text-[10.5px] text-slate-300 placeholder-slate-600 w-full font-sans font-medium"
+                  className="bg-transparent border-none outline-none text-[10px] text-slate-200 placeholder-slate-600 w-full font-sans font-semibold"
                 />
                 {mindMapSearch && (
                   <button
                     onClick={() => setMindMapSearch("")}
-                    className="text-slate-500 hover:text-white font-bold text-[10px] cursor-pointer"
+                    className="text-slate-500 hover:text-white font-bold text-[9px] cursor-pointer bg-transparent border-none"
                   >
                     ✕
                   </button>
@@ -2936,12 +3318,12 @@ export default function AdminDashboard() {
                 const query = mindMapSearch.toLowerCase().trim();
                 const matches = getKnowledgeGraph().nodes
                   .filter(n => n.label.toLowerCase().includes(query) || n.id.toLowerCase().includes(query))
-                  .slice(0, 8);
+                  .slice(0, 6);
 
                 return (
-                  <div className="absolute top-full mt-2 left-0 right-0 bg-slate-900/95 border border-slate-800 rounded-xl shadow-2xl overflow-hidden z-[80] max-h-60 overflow-y-auto backdrop-blur-md">
+                  <div className="absolute top-full mt-2 left-0 right-0 bg-slate-950 border border-slate-900 rounded-xl shadow-2xl overflow-hidden z-[80] max-h-60 overflow-y-auto backdrop-blur-md">
                     {matches.length === 0 ? (
-                      <div className="p-3 text-[10px] text-slate-500 font-semibold text-center">No matches found</div>
+                      <div className="p-3 text-[9px] text-slate-500 font-bold text-center">No matches found</div>
                     ) : (
                       matches.map((node) => (
                         <button
@@ -2950,13 +3332,13 @@ export default function AdminDashboard() {
                             setSelectedGraphNodeId(node.id);
                             setMindMapSearch("");
                           }}
-                          className="w-full px-3 py-2 text-left hover:bg-slate-800 border-b border-slate-800/40 last:border-b-0 flex items-center justify-between text-[10px] font-sans font-medium transition-colors cursor-pointer group/searchitem"
+                          className="w-full px-3 py-2 text-left hover:bg-slate-900 border-b border-slate-900/40 last:border-b-0 flex items-center justify-between text-[9px] font-sans font-medium transition-colors cursor-pointer group/searchitem bg-transparent"
                         >
                           <span className="text-slate-300 group-hover/searchitem:text-white transition-colors">{node.label}</span>
                           <span className={`px-1.5 py-0.5 rounded text-[8px] uppercase tracking-widest font-black ${
                             node.type === 'remedy' ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-500/20' :
                             node.type === 'miasm' ? 'bg-rose-950/60 text-rose-400 border border-rose-500/20' :
-                            node.type === 'kingdom' ? 'bg-teal-950/60 text-teal-400 border border-emerald-500/20' :
+                            node.type === 'kingdom' ? 'bg-teal-950/60 text-teal-400 border border-teal-500/20' :
                             node.type === 'family' ? 'bg-violet-950/60 text-violet-400 border border-violet-500/20' :
                             node.type === 'condition' ? 'bg-red-950/60 text-red-400 border border-red-500/20' :
                             node.type === 'modality' ? 'bg-amber-950/60 text-amber-400 border border-amber-500/20' :
@@ -2974,439 +3356,564 @@ export default function AdminDashboard() {
 
             <button
               onClick={() => setSelectedGraphNodeId('rem_sulphur')}
-              className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-lg text-[10px] font-bold uppercase tracking-wider text-slate-300 transition-colors cursor-pointer interactive-btn"
+              className="px-2.5 py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-[9px] font-black uppercase tracking-wider text-slate-300 transition-colors cursor-pointer"
             >
               Reset Sulphur
             </button>
           </div>
         </div>
 
-        {/* Quick Filter Pill Controls */}
-        <div className="flex flex-wrap gap-1.5 mb-4 bg-slate-950/60 p-2 rounded-2xl border border-slate-900/80 z-10 relative">
-          <span className="text-[9px] uppercase tracking-widest font-extrabold text-slate-500 flex items-center px-2">Constellation Toggles:</span>
-          {[
-            { type: 'remedy', label: 'Remedies' },
-            { type: 'miasm', label: 'Miasms' },
-            { type: 'kingdom', label: 'Kingdoms' },
-            { type: 'family', label: 'Families' },
-            { type: 'condition', label: 'Conditions' },
-            { type: 'modality', label: 'Modalities' },
-            { type: 'rubric', label: 'Rubrics' },
-          ].map((item) => {
-            const isEnabled = graphTypeFilters[item.type];
-            return (
-              <button
-                key={item.type}
-                onClick={() => setGraphTypeFilters(prev => ({ ...prev, [item.type]: !prev[item.type] }))}
-                className={`px-2.5 py-1 rounded-lg text-[9px] uppercase font-bold tracking-widest border transition-all cursor-pointer flex items-center gap-1.5 interactive-btn ${
-                  isEnabled
-                    ? `bg-slate-900 border-white/10 text-white shadow-inner`
-                    : `opacity-30 hover:opacity-50 text-slate-500 border-transparent bg-transparent`
-                }`}
-              >
-                <span className={`inline-block w-1.5 h-1.5 rounded-full ${
-                  item.type === 'remedy' ? 'bg-emerald-500' :
-                  item.type === 'miasm' ? 'bg-rose-500' :
-                  item.type === 'kingdom' ? 'bg-teal-500' :
-                  item.type === 'family' ? 'bg-violet-500' :
-                  item.type === 'condition' ? 'bg-red-500' :
-                  item.type === 'modality' ? 'bg-amber-500' : 'bg-indigo-500'
-                }`} />
-                {item.label}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Whiteboard Controls Panel */}
-        <div className="absolute top-24 right-6 bg-slate-900/90 border border-slate-800 p-3 rounded-2xl flex flex-col gap-3 shadow-lg z-10 backdrop-blur-md">
-          {/* Zoom Section */}
-          <div className="flex flex-col gap-1">
-            <span className="text-[8px] font-extrabold text-slate-500 uppercase tracking-widest">Whiteboard Zoom</span>
-            <div className="flex items-center gap-1.5">
-              <button
-                onClick={() => handleZoom(1.2)}
-                className="w-7 h-7 bg-slate-950 hover:bg-slate-850 border border-slate-800 rounded-lg flex items-center justify-center text-xs text-slate-300 font-bold hover:text-white transition-colors cursor-pointer interactive-btn"
-                title="Zoom In"
-              >
-                +
-              </button>
-              <button
-                onClick={() => handleZoom(0.8)}
-                className="w-7 h-7 bg-slate-950 hover:bg-slate-850 border border-slate-800 rounded-lg flex items-center justify-center text-xs text-slate-300 font-bold hover:text-white transition-colors cursor-pointer interactive-btn"
-                title="Zoom Out"
-              >
-                -
-              </button>
-              <button
-                onClick={handleReset}
-                className="px-2 h-7 bg-slate-950 hover:bg-slate-855 border border-slate-800 rounded-lg flex items-center justify-center text-[10px] text-slate-300 font-bold hover:text-white transition-colors cursor-pointer interactive-btn"
-                title="Reset View"
-              >
-                1:1
-              </button>
-            </div>
-          </div>
-
-          {/* Font Size Section */}
-          <div className="flex flex-col gap-1">
-            <span className="text-[8px] font-extrabold text-slate-500 uppercase tracking-widest">Label Font Size</span>
-            <div className="flex items-center gap-1.5">
-              <button
-                onClick={() => setGraphFontSize(prev => Math.max(8, prev - 1))}
-                className="w-7 h-7 bg-slate-950 hover:bg-slate-855 border border-slate-800 rounded-lg flex items-center justify-center text-[10px] text-slate-300 font-bold hover:text-white transition-colors cursor-pointer interactive-btn"
-                title="Smaller Labels"
-              >
-                A-
-              </button>
-              <span className="text-[10px] text-slate-300 font-bold min-w-[36px] text-center bg-slate-950/80 px-1 py-1 rounded border border-slate-800/50">
-                {graphFontSize}px
-              </span>
-              <button
-                onClick={() => setGraphFontSize(prev => Math.min(20, prev + 1))}
-                className="w-7 h-7 bg-slate-950 hover:bg-slate-855 border border-slate-800 rounded-lg flex items-center justify-center text-[10px] text-slate-300 font-bold hover:text-white transition-colors cursor-pointer interactive-btn"
-                title="Larger Labels"
-              >
-                A+
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* SVG MIND MAP WHITEBOARD RENDER */}
-        <div className={`flex-grow flex-1 min-h-0 bg-slate-950/90 rounded-2xl relative border border-slate-900/60 overflow-hidden select-none flex items-center justify-center ${
-          isFullscreen ? "h-full" : "min-h-[500px]"
-        }`}>
-          {/* Grid background effect */}
-          <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1.5px,transparent_1.5px)] [background-size:32px_32px] opacity-25 pointer-events-none" />
-          
-          <svg 
-            className={`w-full h-full ${isDraggingGraph ? "cursor-grabbing" : "cursor-grab"}`} 
-            viewBox="0 0 1600 1000"
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUpOrLeave}
-            onMouseLeave={handleMouseUpOrLeave}
-            onDoubleClick={handleReset}
-            onWheel={handleWheel}
+        {/* Floating Top Right Panel: Zoom & View Controls */}
+        <div className="absolute top-6 right-6 z-10 flex gap-2 backdrop-blur-md bg-slate-950/75 border border-slate-900 rounded-2xl p-2 shadow-2xl">
+          <button 
+            onClick={() => handleZoom(1.2)}
+            className="w-8 h-8 flex items-center justify-center bg-slate-900 hover:bg-slate-800 rounded-lg text-white font-bold border-none cursor-pointer"
+            title="Zoom In"
           >
-            {/* Whiteboard Workspace Root Group (Scales and Pans dynamically) */}
-            <g transform={`translate(${graphPan.x}, ${graphPan.y}) scale(${graphZoom})`}>
-              
-              {/* Concentric Coordinate Rings */}
-              <circle cx={cx} cy={cy} r={180} className="fill-none stroke-slate-800/20 stroke-1 stroke-dashed pointer-events-none" />
-              <circle cx={cx} cy={cy} r={400} className="fill-none stroke-slate-800/20 stroke-1 stroke-dashed pointer-events-none" />
-              <circle cx={cx} cy={cy} r={700} className="fill-none stroke-slate-800/10 stroke-1 stroke-dashed pointer-events-none" />
-
-              {/* Grid axes */}
-              <line x1={cx} y1={-1000} x2={cx} y2={2000} className="stroke-slate-900/50 stroke-[0.75] pointer-events-none" />
-              <line x1={-1000} y1={cy} x2={2600} y2={cy} className="stroke-slate-900/50 stroke-[0.75] pointer-events-none" />
-
-              {/* CURVED CONNECTIONS - CENTER TO CATEGORY */}
-              {leftLayout.map(cat => {
-                const pathD = `M ${cx - 110} ${cy} C ${cx - 200} ${cy}, ${cat.x + 150} ${cat.y}, ${cat.x + 70} ${cat.y}`;
-                const colors = getCategoryColors(cat.id);
-                return (
-                  <path
-                    key={`center-to-${cat.id}`}
-                    d={pathD}
-                    className={`fill-none ${colors.stroke} stroke-[1.75] opacity-50`}
-                  />
-                );
-              })}
-              
-              {rightLayout.map(cat => {
-                const pathD = `M ${cx + 110} ${cy} C ${cx + 200} ${cy}, ${cat.x - 150} ${cat.y}, ${cat.x - 70} ${cat.y}`;
-                const colors = getCategoryColors(cat.id);
-                return (
-                  <path
-                    key={`center-to-${cat.id}`}
-                    d={pathD}
-                    className={`fill-none ${colors.stroke} stroke-[1.75] opacity-50`}
-                  />
-                );
-              })}
-
-              {/* CURVED CONNECTIONS - CATEGORY TO LEAF */}
-              {leftLayout.map(cat => {
-                const colors = getCategoryColors(cat.id);
-                return cat.leaves.map(leaf => {
-                  const pathD = `M ${cat.x - 70} ${cat.y} C ${cat.x - 150} ${cat.y}, ${leaf.x + 100} ${leaf.y}, ${leaf.x} ${leaf.y}`;
-                  const edgeStyle = getEdgeStyle(leaf.edge, colors.stroke);
-                  return (
-                    <motion.path
-                      key={`edge-${leaf.edge.id || leaf.node.id}`}
-                      d={pathD}
-                      className={`fill-none ${edgeStyle.stroke} transition-all duration-300`}
-                      strokeWidth={leaf.edge.weight ? leaf.edge.weight * 1.5 : 1.5}
-                      strokeDasharray={edgeStyle.dash}
-                    />
-                  );
-                });
-              })}
-
-              {rightLayout.map(cat => {
-                const colors = getCategoryColors(cat.id);
-                return cat.leaves.map(leaf => {
-                  const pathD = `M ${cat.x + 70} ${cat.y} C ${cat.x + 150} ${cat.y}, ${leaf.x - 100} ${leaf.y}, ${leaf.x} ${leaf.y}`;
-                  const edgeStyle = getEdgeStyle(leaf.edge, colors.stroke);
-                  return (
-                    <motion.path
-                      key={`edge-${leaf.edge.id || leaf.node.id}`}
-                      d={pathD}
-                      className={`fill-none ${edgeStyle.stroke} transition-all duration-300`}
-                      strokeWidth={leaf.edge.weight ? leaf.edge.weight * 1.5 : 1.5}
-                      strokeDasharray={edgeStyle.dash}
-                    />
-                  );
-                });
-              })}
-
-              {/* LEAF NODES (Interactive group) */}
-              {leftLayout.map(cat => 
-                cat.leaves.map(leaf => (
-                  <g
-                    key={`node-${leaf.node.id}`}
-                    onClick={() => setSelectedGraphNodeId(leaf.node.id)}
-                    className="cursor-pointer group/leaf interactive-node"
-                  >
-                    <title>{leaf.node.metadata?.description || `${leaf.node.label} (${leaf.node.type})`}</title>
-                    {/* Hover hitbox */}
-                    <rect
-                      x={leaf.x - 220}
-                      y={leaf.y - 14}
-                      width={240}
-                      height={28}
-                      className="fill-transparent"
-                    />
-                    {/* End node dot */}
-                    <circle
-                      cx={leaf.x}
-                      cy={leaf.y}
-                      r={4.5}
-                      className={`fill-slate-950 ${getCategoryColors(cat.id).stroke} stroke-2 group-hover/leaf:fill-white group-hover/leaf:r-6 transition-all duration-200`}
-                    />
-                    {/* Label */}
-                    <text
-                      x={leaf.x - 14}
-                      y={leaf.y + 4}
-                      textAnchor="end"
-                      style={{ fontSize: `${graphFontSize}px` }}
-                      className="fill-slate-300 font-sans font-medium tracking-wide select-none group-hover/leaf:fill-emerald-400 group-hover/leaf:font-semibold transition-all duration-200"
-                    >
-                      {leaf.node.label}
-                    </text>
-                  </g>
-                ))
-              )}
-
-              {rightLayout.map(cat => 
-                cat.leaves.map(leaf => (
-                  <g
-                    key={`node-${leaf.node.id}`}
-                    onClick={() => setSelectedGraphNodeId(leaf.node.id)}
-                    className="cursor-pointer group/leaf interactive-node"
-                  >
-                    <title>{leaf.node.metadata?.description || `${leaf.node.label} (${leaf.node.type})`}</title>
-                    {/* Hover hitbox */}
-                    <rect
-                      x={leaf.x - 20}
-                      y={leaf.y - 14}
-                      width={240}
-                      height={28}
-                      className="fill-transparent"
-                    />
-                    {/* End node dot */}
-                    <circle
-                      cx={leaf.x}
-                      cy={leaf.y}
-                      r={4.5}
-                      className={`fill-slate-950 ${getCategoryColors(cat.id).stroke} stroke-2 group-hover/leaf:fill-white group-hover/leaf:r-6 transition-all duration-200`}
-                    />
-                    {/* Label */}
-                    <text
-                      x={leaf.x + 14}
-                      y={leaf.y + 4}
-                      textAnchor="start"
-                      style={{ fontSize: `${graphFontSize}px` }}
-                      className="fill-slate-300 font-sans font-medium tracking-wide select-none group-hover/leaf:fill-emerald-400 group-hover/leaf:font-semibold transition-all duration-200"
-                    >
-                      {leaf.node.label}
-                    </text>
-                  </g>
-                ))
-              )}
-
-              {/* CATEGORY NODES */}
-              {leftLayout.map(cat => {
-                const colors = getCategoryColors(cat.id);
-                return (
-                  <g key={`cat-${cat.id}`}>
-                    <rect
-                      x={cat.x - 75}
-                      y={cat.y - 20}
-                      width={150}
-                      height={40}
-                      rx={20}
-                      className={`fill-none ${colors.stroke} stroke-1 opacity-25`}
-                    />
-                    <rect
-                      x={cat.x - 70}
-                      y={cat.y - 17}
-                      width={140}
-                      height={34}
-                      rx={17}
-                      className={`${colors.bg} ${colors.stroke} stroke-2 backdrop-blur-sm shadow-lg`}
-                    />
-                    <text
-                      x={cat.x}
-                      y={cat.y + 5}
-                      textAnchor="middle"
-                      className={`${colors.text} font-sans font-bold text-[10px] uppercase tracking-wider select-none pointer-events-none`}
-                    >
-                      {cat.label}
-                    </text>
-                  </g>
-                );
-              })}
-
-              {rightLayout.map(cat => {
-                const colors = getCategoryColors(cat.id);
-                return (
-                  <g key={`cat-${cat.id}`}>
-                    <rect
-                      x={cat.x - 75}
-                      y={cat.y - 20}
-                      width={150}
-                      height={40}
-                      rx={20}
-                      className={`fill-none ${colors.stroke} stroke-1 opacity-25`}
-                    />
-                    <rect
-                      x={cat.x - 70}
-                      y={cat.y - 17}
-                      width={140}
-                      height={34}
-                      rx={17}
-                      className={`${colors.bg} ${colors.stroke} stroke-2 backdrop-blur-sm shadow-lg`}
-                    />
-                    <text
-                      x={cat.x}
-                      y={cat.y + 5}
-                      textAnchor="middle"
-                      className={`${colors.text} font-sans font-bold text-[10px] uppercase tracking-wider select-none pointer-events-none`}
-                    >
-                      {cat.label}
-                    </text>
-                  </g>
-                );
-              })}
-
-              {/* CENTER NODE */}
-              <g 
-                className="group/center cursor-pointer interactive-node" 
-                onClick={() => {
-                  if (centerNode.type === 'remedy') {
-                    setMindMapDrugPictureId(centerNode.id);
-                  }
-                }}
+            ＋
+          </button>
+          <button 
+            onClick={() => handleZoom(0.8)}
+            className="w-8 h-8 flex items-center justify-center bg-slate-900 hover:bg-slate-800 rounded-lg text-white font-bold border-none cursor-pointer"
+            title="Zoom Out"
+          >
+            －
+          </button>
+          <button 
+            onClick={handleReset}
+            className="w-8 h-8 flex items-center justify-center bg-slate-900 hover:bg-slate-800 rounded-lg text-xs font-bold border-none cursor-pointer text-slate-300"
+            title="Reset View"
+          >
+            1:1
+          </button>
+          <span className="w-px h-6 bg-slate-800 self-center mx-1" />
+          <button 
+            onClick={() => setGraphFontSize(prev => Math.min(20, prev + 1))}
+            className="w-8 h-8 flex items-center justify-center bg-slate-900 hover:bg-slate-800 rounded-lg text-xs font-bold border-none cursor-pointer text-slate-300"
+            title="Increase Label Size (+A)"
+          >
+            ＋A
+          </button>
+          <button 
+            onClick={() => setGraphFontSize(prev => Math.max(8, prev - 1))}
+            className="w-8 h-8 flex items-center justify-center bg-slate-900 hover:bg-slate-800 rounded-lg text-xs font-bold border-none cursor-pointer text-slate-300"
+            title="Decrease Label Size (-A)"
+          >
+            －A
+          </button>
+          <span className="w-px h-6 bg-slate-800 self-center mx-1" />
+          {/* Toggle Sidebar Button */}
+          <button 
+            onClick={() => setIsInspectorVisible(!isInspectorVisible)}
+            className={`w-8 h-8 flex items-center justify-center rounded-lg text-xs font-bold border-none cursor-pointer transition-colors ${
+              isInspectorVisible ? "bg-slate-900 text-emerald-450" : "bg-slate-900/40 text-slate-500 hover:text-white"
+            }`}
+            title={isInspectorVisible ? "Hide Remedy Details" : "Show Remedy Details"}
+          >
+            <Info className="w-4 h-4" />
+          </button>
+          {isFullscreen && (
+            <>
+              <span className="w-px h-6 bg-slate-800 self-center mx-1" />
+              <button 
+                onClick={() => setGraphViewMode("dashboard")}
+                className="w-8 h-8 flex items-center justify-center bg-rose-950/50 hover:bg-rose-900/60 rounded-lg text-rose-400 font-bold border-none cursor-pointer"
+                title="Exit Fullscreen"
               >
-                <title>Click to read full drug picture for {centerNode.label}</title>
-                <rect
-                  x={cx - 115}
-                  y={cy - 33}
-                  width={230}
-                  height={66}
-                  rx={33}
-                  className="fill-emerald-500/5 stroke-emerald-500/10 stroke-1 animate-pulse"
-                />
-                <rect
-                  x={cx - 110}
-                  y={cy - 30}
-                  width={220}
-                  height={60}
-                  rx={30}
-                  className="fill-slate-900/90 stroke-emerald-400 stroke-2 shadow-2xl hover:stroke-emerald-300 transition-all duration-300"
-                />
-                <text
-                  x={cx}
-                  y={cy - 2}
-                  textAnchor="middle"
-                  className="fill-white font-serif font-black text-[13px] tracking-wider uppercase"
-                >
-                  {centerNode.label}
-                </text>
-                <text
-                  x={cx}
-                  y={cy + 15}
-                  textAnchor="middle"
-                  className="fill-emerald-400 font-sans font-black text-[8px] uppercase tracking-widest animate-pulse"
-                >
-                  {centerNode.type} (Center)
-                </text>
-              </g>
-
-              {/* Fallback Text if empty */}
-              {neighbors.length === 0 && (
-                <g>
-                  <text x={cx} y={cy + 70} textAnchor="middle" className="fill-slate-500 font-sans text-xs">
-                    No active categories or connections matching toggles.
-                  </text>
-                </g>
-              )}
-            </g>
-          </svg>
-
-          {/* Floating Instructions Tag */}
-          <div className="absolute bottom-4 right-4 bg-slate-900/60 border border-slate-800/80 px-3 py-1.5 rounded-xl text-[9px] font-bold uppercase tracking-wider text-slate-500 pointer-events-none backdrop-blur-sm select-none">
-            💡 Drag Canvas to Pan • Scroll to Zoom • Double-Click to Reset
-          </div>
-
-          {/* Floating node info overlay */}
-          <div className="absolute bottom-4 left-4 bg-slate-900/90 border border-slate-800 p-4 rounded-xl max-w-xs text-left shadow-lg pointer-events-auto backdrop-blur-md z-20">
-            <span className="text-[8px] font-extrabold text-emerald-400 uppercase tracking-widest">{centerNode.type} Information</span>
-            <h4 className="text-xs font-serif font-bold text-white mt-0.5">{centerNode.label}</h4>
-            <p className="text-[10px] text-slate-400 leading-normal font-semibold mt-1">
-              {centerNode.metadata?.description || "No description loaded."}
-            </p>
-            {centerNode.type === "remedy" && (
-              <button
-                onClick={() => setMindMapDrugPictureId(centerNode.id)}
-                className="mt-3 w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[9px] uppercase font-bold tracking-widest transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer shadow-md border-none"
-              >
-                <BookOpen className="w-3.5 h-3.5" />
-                Read Full Drug Picture
+                <Minimize2 className="w-4 h-4" />
               </button>
-            )}
+            </>
+          )}
+        </div>
+
+        {/* Floating Bottom Left Panel: Constellation Filters */}
+        <div className="absolute bottom-6 left-6 z-10 w-[340px] backdrop-blur-md bg-slate-950/75 border border-slate-900 rounded-2xl p-4 shadow-2xl space-y-2">
+          <span className="text-[8.5px] font-mono text-slate-500 uppercase tracking-widest block font-bold">Constellation Toggles:</span>
+          <div className="flex flex-wrap gap-1.5">
+            {[
+              { type: 'remedy', label: 'Remedies' },
+              { type: 'miasm', label: 'Miasms' },
+              { type: 'kingdom', label: 'Kingdoms' },
+              { type: 'family', label: 'Families' },
+              { type: 'condition', label: 'Conditions' },
+              { type: 'modality', label: 'Modalities' },
+              { type: 'rubric', label: 'Rubrics' },
+            ].map((item) => {
+              const isEnabled = graphTypeFilters[item.type];
+              return (
+                <button
+                  key={item.type}
+                  onClick={() => setGraphTypeFilters(prev => ({ ...prev, [item.type]: !prev[item.type] }))}
+                  className={`px-2.5 py-1 rounded-lg text-[8.5px] font-bold border capitalize transition-all cursor-pointer flex items-center gap-1.5 ${
+                    isEnabled
+                      ? `bg-slate-900 border-white/10 text-white shadow-inner`
+                      : `opacity-30 hover:opacity-50 text-slate-500 border-transparent bg-transparent`
+                  }`}
+                >
+                  <span className={`inline-block w-1.5 h-1.5 rounded-full ${
+                    item.type === 'remedy' ? 'bg-emerald-500' :
+                    item.type === 'miasm' ? 'bg-rose-500' :
+                    item.type === 'kingdom' ? 'bg-teal-500' :
+                    item.type === 'family' ? 'bg-violet-500' :
+                    item.type === 'condition' ? 'bg-red-500' :
+                    item.type === 'modality' ? 'bg-amber-500' : 'bg-indigo-500'
+                  }`} />
+                  {item.label}
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        {/* Graph Legend */}
-        <div className="mt-4 pt-4 border-t border-slate-900 grid grid-cols-2 sm:grid-cols-4 gap-3 text-[10px] text-slate-400 z-10 font-semibold">
-          <div className="flex flex-col gap-1">
-            <span className="text-[8px] uppercase tracking-widest font-extrabold text-slate-500 mb-1">Node Types</span>
-            <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500" /> Remedy</div>
-            <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-rose-500" /> Miasm</div>
-            <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-indigo-500" /> Rubric</div>
+        {/* Floating Bottom Center Panel: Legend */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 backdrop-blur-md bg-slate-950/75 border border-slate-900 rounded-2xl px-4 py-2.5 shadow-2xl flex items-center gap-6 text-[8.5px] text-slate-400 font-semibold select-none">
+          <div className="flex items-center gap-3">
+            <span className="text-[7.5px] font-mono text-slate-500 uppercase tracking-widest font-bold">Node Types</span>
+            <div className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Remedy</div>
+            <div className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-rose-500" /> Miasm</div>
+            <div className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-indigo-500" /> Rubric</div>
+            <div className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-cyan-500" /> Kingdom</div>
+            <div className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-purple-500" /> Family</div>
+            <div className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-pink-500" /> Condition</div>
+            <div className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-amber-500" /> Modality</div>
           </div>
-          <div className="flex flex-col gap-1 justify-end">
-            <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-teal-500" /> Kingdom</div>
-            <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-violet-500" /> Family</div>
-            <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-red-500" /> Condition</div>
+          <span className="w-px h-4 bg-slate-800" />
+          <div className="flex items-center gap-3">
+            <span className="text-[7.5px] font-mono text-slate-500 uppercase tracking-widest font-bold">Edges</span>
+            <div className="flex items-center gap-1"><span className="w-3.5 h-0.5 font-bold" style={{ backgroundColor: "#10b981" }} /> Complementary</div>
+            <div className="flex items-center gap-1"><span className="w-3.5 h-0.5 border-t border-dashed border-rose-500/50" /> Inimical</div>
+            <div className="flex items-center gap-1"><span className="w-3.5 h-0.5 bg-slate-700" /> Other</div>
           </div>
-          <div className="flex flex-col gap-1 justify-end">
-            <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-amber-500" /> Modality</div>
+        </div>
+
+        {/* Floating Right Panel: Node Workout Inspector */}
+        {isInspectorVisible && (
+          <div className="absolute top-20 bottom-6 right-6 z-10 w-[380px] backdrop-blur-md bg-slate-950/90 border border-slate-900 rounded-3xl p-5 shadow-2xl flex flex-col justify-between gap-4 text-white overflow-hidden pointer-events-auto">
+            {/* Header */}
+            <div className="border-b border-slate-900 pb-3 flex-shrink-0">
+              <div className="flex justify-between items-start">
+                <div>
+                  <span className="text-[8px] font-mono text-emerald-400 uppercase tracking-wider block font-bold">{centerNode.type} Information</span>
+                  <h4 className="text-sm font-serif font-bold text-white mt-0.5">{centerNode.label}</h4>
+                </div>
+                <span className={`px-2 py-0.5 rounded text-[8px] uppercase tracking-widest font-black ${
+                  centerNode.type === 'remedy' ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-500/20' :
+                  centerNode.type === 'miasm' ? 'bg-rose-950/60 text-rose-400 border border-rose-500/20' :
+                  centerNode.type === 'kingdom' ? 'bg-teal-950/60 text-teal-400 border border-teal-500/20' :
+                  centerNode.type === 'family' ? 'bg-violet-950/60 text-violet-400 border border-violet-500/20' :
+                  centerNode.type === 'condition' ? 'bg-red-950/60 text-red-400 border border-red-500/20' :
+                  centerNode.type === 'modality' ? 'bg-amber-950/60 text-amber-400 border border-amber-500/20' :
+                  'bg-indigo-950/60 text-indigo-400 border border-indigo-500/20'
+                }`}>
+                  {centerNode.type}
+                </span>
+              </div>
+              <p className="text-[10px] text-slate-400 leading-normal font-semibold mt-1 line-clamp-2">
+                {centerNode.metadata?.description || "No description loaded."}
+              </p>
+              {centerNode.type === "remedy" && (
+                <button
+                  onClick={() => setMindMapDrugPictureId(centerNode.id)}
+                  className="mt-2.5 w-full py-1.5 bg-emerald-600/90 hover:bg-emerald-700 text-white rounded-xl text-[9px] uppercase font-bold tracking-widest transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer shadow-md border-none z-50"
+                >
+                  <BookOpen className="w-3.5 h-3.5" />
+                  Read Full Monograph
+                </button>
+              )}
+            </div>
+
+            {/* Body content based on entity type */}
+            {centerNode.type === "remedy" ? (
+              <div className="flex-1 flex flex-col min-h-0">
+                {/* Tabs */}
+                <div className="flex bg-slate-900/60 p-1 border border-slate-800 rounded-xl flex-shrink-0 mb-3">
+                  {[
+                    { id: "keynotes", label: "Keynotes" },
+                    { id: "relations", label: "Relations" },
+                    { id: "quiz", label: "Workout" }
+                  ].map(t => (
+                    <button
+                      key={t.id}
+                      onClick={() => {
+                        setActiveWorkoutTab(t.id as any);
+                        if (t.id === "quiz") setQuizRevealAnswer(false);
+                      }}
+                      className={`flex-1 text-center py-1 rounded-lg text-[9px] uppercase font-bold tracking-wider transition-colors bg-transparent border-none cursor-pointer ${
+                        activeWorkoutTab === t.id ? "bg-slate-800 text-white font-black" : "text-slate-450 hover:text-white"
+                      }`}
+                    >
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Scrollable Container */}
+                <div className="flex-grow flex-1 overflow-y-auto pr-1 text-[10px] leading-relaxed space-y-3 font-semibold text-slate-350">
+                  {activeWorkoutTab === "keynotes" && centerNode.metadata?.profile && (() => {
+                    const p = centerNode.metadata.profile;
+                    return (
+                      <>
+                        <div>
+                          <span className="text-[8px] text-emerald-400 block uppercase font-mono tracking-wider">Thermal Axis & Essence</span>
+                          <p className="text-white text-[9.5px] mt-0.5">{p.thermals}</p>
+                          <p className="text-slate-400 italic text-[9px] leading-snug mt-1">{p.essence}</p>
+                        </div>
+                        
+                        {p.mentalThemes && p.mentalThemes.length > 0 && (
+                          <div>
+                            <span className="text-[8px] text-teal-400 block uppercase font-mono tracking-wider">Key Mental Themes</span>
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              {p.mentalThemes.map((theme, idx) => (
+                                <span key={idx} className="bg-slate-900 border border-slate-850 px-2 py-0.5 rounded text-[8.5px] text-slate-300">
+                                  {theme}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {p.keynotes && p.keynotes.length > 0 && (
+                          <div>
+                            <span className="text-[8px] text-purple-400 block uppercase font-mono tracking-wider">Clinical Keynotes</span>
+                            <ul className="list-disc pl-4 space-y-0.5 mt-1 text-slate-300">
+                              {p.keynotes.slice(0, 4).map((kn, idx) => (
+                                <li key={idx}>{kn}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        <div className="grid grid-cols-2 gap-2.5 pt-1">
+                          <div>
+                            <span className="text-[8px] text-amber-450 block uppercase font-mono tracking-wider">Cravings</span>
+                            <p className="text-slate-300 text-[9px]">{p.cravings?.join(", ") || "None"}</p>
+                          </div>
+                          <div>
+                            <span className="text-[8px] text-rose-455 block uppercase font-mono tracking-wider">Aversions</span>
+                            <p className="text-slate-300 text-[9px]">{p.aversions?.join(", ") || "None"}</p>
+                          </div>
+                        </div>
+                      </>
+                    );
+                  })()}
+
+                  {activeWorkoutTab === "relations" && centerNode.metadata?.profile && (() => {
+                    const p = centerNode.metadata.profile;
+                    const rels = p.relationships;
+                    return (
+                      <div className="space-y-4">
+                        {/* Complementary */}
+                        <div className="space-y-1.5">
+                          <div className="flex justify-between items-center">
+                            <span className="text-[8px] text-emerald-455 block uppercase font-mono tracking-wider">Complementary remedies</span>
+                            <button
+                              onClick={() => setHighlightedRelationType(highlightedRelationType === 'complementary' ? null : 'complementary')}
+                              className={`px-2 py-0.5 rounded text-[8px] uppercase tracking-wider font-extrabold cursor-pointer border ${
+                                highlightedRelationType === 'complementary' ? 'bg-emerald-600 text-white border-emerald-500' : 'bg-emerald-955/20 text-emerald-400 border-emerald-900/40 hover:bg-emerald-950/40'
+                              }`}
+                            >
+                              {highlightedRelationType === 'complementary' ? 'Highlighting...' : 'Highlight'}
+                            </button>
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {rels.complementaries && rels.complementaries.length > 0 ? (
+                              rels.complementaries.map((name, idx) => {
+                                const matchNode = getKnowledgeGraph().nodes.find(n => n.label === name);
+                                return (
+                                  <button
+                                    key={idx}
+                                    onClick={() => matchNode && setSelectedGraphNodeId(matchNode.id)}
+                                    className="bg-emerald-955/20 border border-emerald-900/40 hover:border-emerald-500 px-2 py-0.5 rounded text-[8.5px] text-emerald-300 text-left transition-colors cursor-pointer bg-transparent"
+                                    title="Click to pivot"
+                                  >
+                                    {name}
+                                  </button>
+                                );
+                              })
+                            ) : (
+                              <span className="text-slate-500 italic text-[9px]">None recorded</span>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Inimical */}
+                        <div className="space-y-1.5">
+                          <div className="flex justify-between items-center">
+                            <span className="text-[8px] text-rose-455 block uppercase font-mono tracking-wider">Inimical (Incompatible)</span>
+                            <button
+                              onClick={() => setHighlightedRelationType(highlightedRelationType === 'inimical' ? null : 'inimical')}
+                              className={`px-2 py-0.5 rounded text-[8px] uppercase tracking-wider font-extrabold cursor-pointer border ${
+                                highlightedRelationType === 'inimical' ? 'bg-rose-600 text-white border-rose-500' : 'bg-rose-955/20 text-rose-400 border-rose-900/40 hover:bg-rose-955/40'
+                              }`}
+                            >
+                              {highlightedRelationType === 'inimical' ? 'Highlighting...' : 'Highlight'}
+                            </button>
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {rels.inimicals && rels.inimicals.length > 0 ? (
+                              rels.inimicals.map((name, idx) => {
+                                const matchNode = getKnowledgeGraph().nodes.find(n => n.label === name);
+                                return (
+                                  <button
+                                    key={idx}
+                                    onClick={() => matchNode && setSelectedGraphNodeId(matchNode.id)}
+                                    className="bg-rose-950/20 border border-rose-900/40 hover:border-rose-500 px-2 py-0.5 rounded text-[8.5px] text-rose-350 text-left transition-colors cursor-pointer bg-transparent"
+                                    title="Click to pivot"
+                                  >
+                                    {name}
+                                  </button>
+                                );
+                              })
+                            ) : (
+                              <span className="text-slate-500 italic text-[9px]">None recorded</span>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Follows Well */}
+                        <div className="space-y-1.5">
+                          <div className="flex justify-between items-center">
+                            <span className="text-[8px] text-teal-400 block uppercase font-mono tracking-wider">Follows Well / Compatible</span>
+                            <button
+                              onClick={() => setHighlightedRelationType(highlightedRelationType === 'follows_well' ? null : 'follows_well')}
+                              className={`px-2 py-0.5 rounded text-[8px] uppercase tracking-wider font-extrabold cursor-pointer border ${
+                                highlightedRelationType === 'follows_well' ? 'bg-teal-600 text-white border-teal-500' : 'bg-teal-955/20 text-teal-400 border-teal-900/40 hover:bg-teal-950/40'
+                              }`}
+                            >
+                              {highlightedRelationType === 'follows_well' ? 'Highlighting...' : 'Highlight'}
+                            </button>
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {rels.followWell && rels.followWell.length > 0 ? (
+                              rels.followWell.map((name, idx) => {
+                                const matchNode = getKnowledgeGraph().nodes.find(n => n.label === name);
+                                return (
+                                  <button
+                                    key={idx}
+                                    onClick={() => matchNode && setSelectedGraphNodeId(matchNode.id)}
+                                    className="bg-teal-955/20 border border-teal-900/40 hover:border-teal-500 px-2 py-0.5 rounded text-[8.5px] text-teal-350 text-left transition-colors cursor-pointer bg-transparent"
+                                    title="Click to pivot"
+                                  >
+                                    {name}
+                                  </button>
+                                );
+                              })
+                            ) : (
+                              <span className="text-slate-500 italic text-[9px]">None recorded</span>
+                            )}
+                          </div>
+                        </div>
+
+                        {highlightedRelationType && (
+                          <button
+                            onClick={() => setHighlightedRelationType(null)}
+                            className="mt-2 w-full py-1.5 bg-slate-900 hover:bg-slate-800 text-slate-350 rounded-xl text-[9px] uppercase tracking-widest font-black transition-colors cursor-pointer border border-slate-800"
+                          >
+                            Clear Active Pathway Highlight
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })()}
+
+                  {activeWorkoutTab === "quiz" && centerNode.metadata?.profile && (() => {
+                    const p = centerNode.metadata.profile;
+                    const psoraLoad = p.miasms.includes("Psora") ? 75 : 20;
+                    const sycosisLoad = p.miasms.includes("Sycosis") ? 65 : 15;
+                    const syphilisLoad = p.miasms.includes("Syphilis") ? 55 : 10;
+
+                    return (
+                      <div className="space-y-4">
+                        {/* Active Recall Card */}
+                        <div className="bg-slate-900/50 border border-slate-800 p-3 rounded-2xl space-y-2.5">
+                          <div className="flex items-center gap-1.5">
+                            <Brain className="w-3.5 h-3.5 text-purple-400" />
+                            <span className="text-[9px] uppercase font-mono tracking-wider text-purple-400">Active Recall: Keynotes Review</span>
+                          </div>
+                          <p className="text-[9px] text-slate-400 italic leading-snug">Can you name the top clinical keynotes of {centerNode.label}? Look at the list below and try to recall before revealing.</p>
+                          
+                          <div className="space-y-1.5 pt-1">
+                            {p.keynotes?.slice(0, 3).map((kn, idx) => (
+                              <div key={idx} className="flex gap-2 items-start">
+                                <span className="text-purple-500">★</span>
+                                <span 
+                                  style={{ filter: quizRevealAnswer ? 'none' : 'blur(4.5px)', transition: 'filter 0.3s ease' }}
+                                  className="text-slate-200 text-[9.5px] leading-snug"
+                                >
+                                  {kn}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+
+                          <button
+                            onClick={() => setQuizRevealAnswer(!quizRevealAnswer)}
+                            className="w-full mt-2 py-1.5 bg-slate-950 hover:bg-slate-850 text-slate-355 rounded-xl text-[9px] uppercase tracking-widest font-black transition-all cursor-pointer border border-slate-800"
+                          >
+                            {quizRevealAnswer ? "Blur Keynotes (Test)" : "Reveal Keynotes"}
+                          </button>
+                        </div>
+
+                        {/* Miasmatic Alignment Index */}
+                        <div className="space-y-2">
+                          <span className="text-[8px] text-slate-500 block uppercase font-mono tracking-wider font-bold">Miasmatic Alignment profile</span>
+                          
+                          {/* Psora */}
+                          <div className="space-y-1">
+                            <div className="flex justify-between text-[8.5px]">
+                              <span>Psoric Load (Functional Reaction)</span>
+                              <span className="text-rose-455 font-mono font-bold">{psoraLoad}%</span>
+                            </div>
+                            <div className="h-1.5 bg-slate-900 rounded-full overflow-hidden border border-slate-850/60">
+                              <div className="h-full bg-rose-500 transition-all duration-500" style={{ width: `${psoraLoad}%` }} />
+                            </div>
+                          </div>
+
+                          {/* Sycosis */}
+                          <div className="space-y-1">
+                            <div className="flex justify-between text-[8.5px]">
+                              <span>Sycotic Load (Structural Excess)</span>
+                              <span className="text-emerald-450 font-mono font-bold">{sycosisLoad}%</span>
+                            </div>
+                            <div className="h-1.5 bg-slate-900 rounded-full overflow-hidden border border-slate-850/60">
+                              <div className="h-full bg-emerald-555 transition-all duration-500" style={{ width: `${sycosisLoad}%` }} />
+                            </div>
+                          </div>
+
+                          {/* Syphilis */}
+                          <div className="space-y-1">
+                            <div className="flex justify-between text-[8.5px]">
+                              <span>Syphilitic Load (Destruction / Decay)</span>
+                              <span className="text-indigo-400 font-mono font-bold">{syphilisLoad}%</span>
+                            </div>
+                            <div className="h-1.5 bg-slate-900 rounded-full overflow-hidden border border-slate-850/60">
+                              <div className="h-full bg-indigo-500 transition-all duration-500" style={{ width: `${syphilisLoad}%` }} />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+              </div>
+            ) : (
+              /* Other Entity Types details */
+              <div className="flex-grow overflow-y-auto pr-1 text-[10px] space-y-3 font-semibold text-slate-350 flex flex-col justify-between">
+                <div className="space-y-3">
+                  {centerNode.type === "miasm" && (
+                    <div>
+                      <span className="text-[8px] text-rose-455 block uppercase font-mono tracking-wider">Miasmatic Expression</span>
+                      <p className="text-slate-200 mt-1">{centerNode.metadata?.miasmaticExpression || "No expression data loaded."}</p>
+                    </div>
+                  )}
+
+                  {centerNode.type === "kingdom" && (
+                    <div>
+                      <span className="text-[8px] text-teal-400 block uppercase font-mono tracking-wider">Kingdom Characteristics</span>
+                      <p className="text-slate-200 mt-1">{centerNode.metadata?.origin || "No origin details."}</p>
+                    </div>
+                  )}
+
+                  {centerNode.type === "family" && (
+                    <div>
+                      <span className="text-[8px] text-violet-400 block uppercase font-mono tracking-wider">Botanical / Chemical Origin</span>
+                      <p className="text-slate-200 mt-1">{centerNode.metadata?.origin || "No origin details."}</p>
+                    </div>
+                  )}
+
+                  {centerNode.type === "condition" && (
+                    <div>
+                      <span className="text-[8px] text-red-400 block uppercase font-mono tracking-wider">Clinical Pathology</span>
+                      <p className="text-slate-200 mt-1">{centerNode.metadata?.pathology || "No pathological notes."}</p>
+                    </div>
+                  )}
+
+                  {centerNode.type === "rubric" && (
+                    <div>
+                      <span className="text-[8px] text-indigo-400 block uppercase font-mono tracking-wider">Repertorial Code</span>
+                      <p className="text-slate-200 mt-1 font-mono">{centerNode.metadata?.rubricCode || "General rubric."}</p>
+                    </div>
+                  )}
+
+                  {centerNode.type === "modality" && (
+                    <div>
+                      <span className="text-[8px] text-amber-400 block uppercase font-mono tracking-wider">Aggravation Factors</span>
+                      <p className="text-slate-200 mt-1">{centerNode.metadata?.aggFactors?.join(", ") || "No specific factors."}</p>
+                    </div>
+                  )}
+
+                  {/* Connected remedies list */}
+                  {(() => {
+                    const relatedRemedies = getKnowledgeGraph().edges
+                      .filter(e => e.source === centerNode.id || e.target === centerNode.id)
+                      .map(e => {
+                        const otherId = e.source === centerNode.id ? e.target : e.source;
+                        return getKnowledgeGraph().nodes.find(n => n.id === otherId && n.type === 'remedy');
+                      })
+                      .filter((n): n is GraphNode => n !== undefined);
+
+                    if (relatedRemedies.length === 0) return null;
+
+                    const displayRemedies = relatedRemedies.slice(0, 15);
+                    const remainingCount = relatedRemedies.length - 15;
+
+                    return (
+                      <div className="pt-2 border-t border-slate-900 space-y-1.5">
+                        <div className="flex justify-between items-center">
+                          <span className="text-[8px] text-slate-500 block uppercase font-mono tracking-wider font-bold">
+                            Connected remedies ({relatedRemedies.length})
+                          </span>
+                          {remainingCount > 0 && (
+                            <span className="text-[8.5px] text-slate-500 font-bold">
+                              + {remainingCount} more
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex flex-wrap gap-1">
+                          {displayRemedies.map((rem, idx) => (
+                            <button
+                              key={idx}
+                              onClick={() => setSelectedGraphNodeId(rem.id)}
+                              className="bg-emerald-955/25 border border-emerald-900/50 hover:border-emerald-500 px-2 py-0.5 rounded text-[8.5px] text-emerald-300 transition-colors cursor-pointer bg-transparent"
+                              title="Click to pivot"
+                            >
+                              {rem.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+
+                {/* Instructions footer */}
+                <div className="p-3 bg-slate-900/30 border border-slate-850 rounded-2xl text-[8.5px] text-slate-450 leading-relaxed font-sans mt-auto">
+                  💡 Drag nodes to throw them, scroll to zoom, and drag empty canvas to pan. Single-click a node to select and view its active workout alignment index.
+                </div>
+              </div>
+            )}
+
+            {/* Action button at bottom */}
+            <div className="border-t border-slate-900 pt-3 flex-shrink-0">
+              <button
+                onClick={() => {
+                  alert(`Added ${centerNode.label} to active clinical prescription workspace.`);
+                }}
+                className="w-full py-2 bg-slate-900 hover:bg-slate-800 text-slate-200 rounded-xl text-[9px] uppercase font-bold tracking-widest transition-all cursor-pointer border border-slate-800"
+              >
+                Add to Active Prescription
+              </button>
+            </div>
           </div>
-          <div className="flex flex-col gap-1">
-            <span className="text-[8px] uppercase tracking-widest font-extrabold text-slate-500 mb-1">Relationship Lines</span>
-            <div className="flex items-center gap-1.5"><span className="w-4 h-0.5 bg-emerald-500/50" /> Complementary</div>
-            <div className="flex items-center gap-1.5"><span className="w-4 h-0.5 border-t border-dashed border-rose-500/50" /> Inimical</div>
-            <div className="flex items-center gap-1.5"><span className="w-4 h-0.5 bg-slate-800" /> Other edge</div>
-          </div>
+        )}
+
+        {/* HTML5 Canvas force-directed container */}
+        <div className="absolute inset-0 w-full h-full select-none z-0">
+          <canvas ref={setCanvasElement} className="w-full h-full block" />
         </div>
       </div>
     );
-  };
+  };;
 
   const handleTutorSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -4211,11 +4718,17 @@ Homeo Healthcare`;
 
   // Helper to handle mouse hover subtabs navigation
   const handleSubTabClick = (
-    tabId: "dashboard" | "intake" | "patients" | "diagnostics" | "analyzer" | "diet-lifestyle" | "nexus-atlas" | "learning-hub" | "communication" | "ai-router" | "health-intelligence",
+    tabId: "dashboard" | "intake" | "patients" | "diagnostics" | "analyzer" | "diet-lifestyle" | "nexus-atlas" | "learning-hub" | "communication" | "ai-router" | "health-intelligence" | "cie",
     subSectionId: string,
     action?: () => void
   ) => {
     setActiveTab(tabId);
+    if (tabId === "cie") {
+      if (subSectionId === "cie-cockpit") setCieSubTab("cockpit");
+      else if (subSectionId === "cie-intake") setCieSubTab("intake");
+      else if (subSectionId === "cie-miasms") setCieSubTab("miasms");
+      else if (subSectionId === "cie-reports") setCieSubTab("reports");
+    }
     if (action) {
       action();
     }
@@ -7460,7 +7973,7 @@ ${err.message || err}`);
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 {/* Left Column - Public Assessments Config & Preview (7 cols) */}
                 <div className="lg:col-span-7 space-y-6">
-                  <div className="bg-white/80 backdrop-blur-xl border border-slate-200/80 rounded-[32px] p-6 shadow-[0_8px_30px_rgb(15,23,42,0.04)]">
+                  <div id="portal-engagement" className="bg-white/80 backdrop-blur-xl border border-slate-200/80 rounded-[32px] p-6 shadow-[0_8px_30px_rgb(15,23,42,0.04)]">
                     <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
                       <Sliders className="w-4 h-4 text-teal-600" />
                       Active Engagement Portals
@@ -7524,7 +8037,7 @@ ${err.message || err}`);
 
                 {/* Right Column - Recent Submissions Queue (5 cols) */}
                 <div className="lg:col-span-5 space-y-6">
-                  <div className="bg-white/80 backdrop-blur-xl border border-slate-200/80 rounded-[32px] p-6 shadow-[0_8px_30px_rgb(15,23,42,0.04)]">
+                  <div id="intake-queue" className="bg-white/80 backdrop-blur-xl border border-slate-200/80 rounded-[32px] p-6 shadow-[0_8px_30px_rgb(15,23,42,0.04)]">
                     <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center justify-between">
                       <span className="flex items-center gap-2">
                         <History className="w-4 h-4 text-teal-600" />
@@ -11765,6 +12278,7 @@ ${err.message || err}`);
               selectedPatientId={selectedPatientId} 
               setSelectedPatientId={setSelectedPatientId} 
               theme={theme} 
+              activeTabOverride={cieSubTab}
             />
           )}
 
