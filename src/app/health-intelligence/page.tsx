@@ -790,10 +790,7 @@ export default function HealthIntelligencePage() {
   const handleTopSend = async (textToSend: string) => {
     if (!textToSend.trim()) return;
 
-    const userMsg = { sender: "user" as const, text: textToSend };
-    setTopInput("");
-
-    // Check if it's a WhatsApp action
+    // Check if it's a WhatsApp action first (ensures synchronous call for popup blockers)
     const isWhatsAppAction = 
       textToSend.startsWith("Remind Me") ||
       textToSend.startsWith("Track ") ||
@@ -816,8 +813,15 @@ export default function HealthIntelligencePage() {
       }
       
       const waLink = `https://wa.me/918446056789?text=${encodeURIComponent(waMessage)}`;
-      window.open(waLink, "_blank");
       
+      // Open immediately in user interaction stack
+      const newWin = window.open(waLink, "_blank");
+      if (!newWin || newWin.closed || typeof newWin.closed === "undefined") {
+        window.location.href = waLink;
+      }
+      
+      const userMsg = { sender: "user" as const, text: textToSend };
+      setTopInput("");
       setTopMessages(prev => [
         ...prev, 
         userMsg, 
@@ -830,6 +834,8 @@ export default function HealthIntelligencePage() {
       return;
     }
 
+    const userMsg = { sender: "user" as const, text: textToSend };
+    setTopInput("");
     const newMsgs = [...topMessages, userMsg];
     setTopMessages(newMsgs);
     setIsTopTyping(true);

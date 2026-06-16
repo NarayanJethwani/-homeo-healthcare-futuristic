@@ -642,10 +642,7 @@ export default function HealthAssistant({ twin, theme, onSelectProfile }: Health
   const handleSend = async (textToSend: string) => {
     if (!textToSend.trim()) return;
 
-    const userMsg: ChatMessage = { sender: "user", text: textToSend };
-    setInput("");
-
-    // Check if it's a WhatsApp action
+    // Check if it's a WhatsApp action first (ensures synchronous call for popup blockers)
     const isWhatsAppAction = 
       textToSend.startsWith("Remind Me") ||
       textToSend.startsWith("Track ") ||
@@ -668,8 +665,15 @@ export default function HealthAssistant({ twin, theme, onSelectProfile }: Health
       }
       
       const waLink = `https://wa.me/918446056789?text=${encodeURIComponent(waMessage)}`;
-      window.open(waLink, "_blank");
       
+      // Open immediately in user interaction stack
+      const newWin = window.open(waLink, "_blank");
+      if (!newWin || newWin.closed || typeof newWin.closed === "undefined") {
+        window.location.href = waLink;
+      }
+      
+      const userMsg: ChatMessage = { sender: "user", text: textToSend };
+      setInput("");
       setMessages(prev => [
         ...prev, 
         userMsg, 
@@ -682,6 +686,8 @@ export default function HealthAssistant({ twin, theme, onSelectProfile }: Health
       return;
     }
 
+    const userMsg: ChatMessage = { sender: "user", text: textToSend };
+    setInput("");
     const newMsgs = [...messages, userMsg];
     setMessages(newMsgs);
     setIsTyping(true);
