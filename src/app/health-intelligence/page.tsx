@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Activity, Sparkles, Heart, Sliders, ChevronRight, Play, Check, X,
   ArrowLeft, RefreshCw, AlertTriangle, ArrowRight, ShieldCheck, HelpCircle, FileText, Calendar,
   UploadCloud, Info, Trash2, Printer, Plus, Award, User, Layers, BookOpen, MessageSquare,
-  TrendingUp, Clock, Flame, ShieldAlert, HeartPulse, ChevronDown
+  TrendingUp, Clock, Flame, ShieldAlert, HeartPulse, ChevronDown, Send, Copy, Maximize2, Minimize2
 } from "lucide-react";
 import Link from "next/link";
 
@@ -32,6 +33,7 @@ import { parseLabReport, LabAnalysisResult } from "./labOcrEngine";
 import RadarChart from "./radarChart";
 import SchemaMarkup from "./schemaMarkup";
 import HealthAssistant from "./HealthAssistant";
+import MarkdownRenderer from "./MarkdownRenderer";
 
 const DEFAULT_TWIN: HealthDigitalTwin = {
   overallScore: 100,
@@ -82,6 +84,7 @@ const DEFAULT_TWIN: HealthDigitalTwin = {
 
 export default function HealthIntelligencePage() {
   const [digitalTwin, setDigitalTwin] = useState<HealthDigitalTwin>(DEFAULT_TWIN);
+  const [mounted, setMounted] = useState(false);
   const [activeView, setActiveView] = useState<"dashboard" | "assessment" | "lab_upload" | "report">("dashboard");
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
   const [dashboardTab, setDashboardTab] = useState<"overview" | "labs" | "bioage" | "directory">("overview");
@@ -131,6 +134,115 @@ export default function HealthIntelligencePage() {
     }
   }, [activeView, labResult]);
 
+  // Top Assistant States
+  const [isTopAssistantOpen, setIsTopAssistantOpen] = useState(false);
+  const [isTopAssistantFullscreen, setIsTopAssistantFullscreen] = useState(false);
+  const [topMessages, setTopMessages] = useState<Array<{sender: "user" | "assistant"; text: string}>>([
+    {
+      sender: "assistant",
+      text: "Hello! 🌟 I'm your AI Health Companion, but you can think of me as your personal health partner and dedicated wellness guide. I'm here to walk alongside you, make sense of your assessments, and help you find pathways to balance. What wellness goals can we explore together today? 🍃"
+    }
+  ]);
+  const [topInput, setTopInput] = useState("");
+  const [isTopTyping, setIsTopTyping] = useState(false);
+  const topChatContainerRef = useRef<HTMLDivElement>(null);
+  const topChatFullscreenContainerRef = useRef<HTMLDivElement>(null);
+
+  // New features states: Font Size (number from 10 to 24), Empathetic vs Clinical Tone, Copied status
+  const [chatFontSize, setChatFontSize] = useState<number>(13);
+  const [chatTone, setChatTone] = useState<"empathetic" | "professional">("empathetic");
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+
+  const decreaseFontSize = () => {
+    setChatFontSize(prev => Math.max(10, prev - 2));
+  };
+
+  const increaseFontSize = () => {
+    setChatFontSize(prev => Math.min(24, prev + 2));
+  };
+
+  const clearChat = () => {
+    setTopMessages([
+      {
+        sender: "assistant",
+        text: "Hello! 🌟 I've reset our conversation history. How can I help you on your health journey today? 🍃"
+      }
+    ]);
+  };
+
+  const handleCopyMessage = (text: string, index: number) => {
+    navigator.clipboard.writeText(text);
+    setCopiedIndex(index);
+    setTimeout(() => setCopiedIndex(null), 2000);
+  };
+
+  useEffect(() => {
+    const targetRef = isTopAssistantFullscreen ? topChatFullscreenContainerRef : topChatContainerRef;
+    if (targetRef.current) {
+      targetRef.current.scrollTo({
+        top: targetRef.current.scrollHeight,
+        behavior: "smooth"
+      });
+    }
+  }, [topMessages, isTopTyping, isTopAssistantFullscreen]);
+
+  const handleTopSend = async (textToSend: string) => {
+    if (!textToSend.trim()) return;
+
+    const userMsg = { sender: "user" as const, text: textToSend };
+    const newMsgs = [...topMessages, userMsg];
+    setTopMessages(newMsgs);
+    setTopInput("");
+    setIsTopTyping(true);
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: newMsgs, twin: digitalTwin, tone: chatTone })
+      });
+      const data = await res.json();
+      
+      if (data.success && data.text) {
+        setTopMessages(prev => [...prev, { sender: "assistant" as const, text: data.text }]);
+        setIsTopTyping(false);
+        return;
+      }
+    } catch (err) {
+      console.error("Failed to query Gemini assistant api, falling back to local reasoning:", err);
+    }
+
+    // Local/Fallback reasoning logic in case of failure or missing API key
+    let reply = "";
+    const textLower = textToSend.toLowerCase();
+
+    if (textLower.includes("psora") || textLower.includes("miasm")) {
+      reply = "In Homeopathy, a **Miasm** represents an inherited or acquired chronic biological predisposition. \n\n* **Psora** is the miasm of functional deficiency and sensory hypersensitivity (common in fatigue or eczema).\n* **Sycosis** is the miasm of metabolic accumulation and sluggish tissue overgrowth (common in bloating, weight gain, or PCOS).\n* **Syphilis** is the miasm of structural breakdown or nocturnal worsening.";
+    } else if (textLower.includes("egfr") || textLower.includes("kidney") || textLower.includes("creatinine")) {
+      reply = "**eGFR (Estimated Glomerular Filtration Rate)** is the primary metric of kidney filtration. \n\n* An eGFR **above 60** represents normal filtration capacity.\n* An eGFR **below 60** indicates kidney loading. \n* Serum **Creatinine** is a cellular waste product filtered by kidneys; when filtration slows down, blood creatinine levels elevate.";
+    } else if (textLower.includes("result") || textLower.includes("score") || textLower.includes("health")) {
+      const completedCount = Object.keys(digitalTwin.completedAssessments || {}).length;
+      if (completedCount === 0) {
+        reply = "You haven't completed any self-assessments yet. I recommend starting with the **Metabolic Health Profile** or **Stress Assessment** to initialize your Health Digital Twin!";
+      } else {
+        reply = `Your overall Health Score stands at **${digitalTwin.overallScore}%** based on ${completedCount} completed evaluations. \n\nActive system stress flags: **${digitalTwin.activeRulesFlags.join(", ") || "None"}**. \n\nI recommend taking the **Constitutional Assessment** next to compile your custom remedy indicators.`;
+      }
+    } else if (textLower.includes("remedy") || textLower.includes("constitutional") || textLower.includes("homeopath")) {
+      if (digitalTwin.constitutional) {
+        reply = `Your constitutional assessment matches the **${digitalTwin.constitutional.remedyMatch}** profile, showing primary **${digitalTwin.constitutional.systemDominance}** dominance. This matches an adaptive pattern of **${digitalTwin.constitutional.adaptivePattern}**.`;
+      } else {
+        reply = "Constitutional analysis matches your thermal response, cravings, sleep, and emotional patterns to custom homeopathic remedies. Click the **Constitutional Profile** button in the dashboard to map yours!";
+      }
+    } else if (textLower.includes("book") || textLower.includes("consult") || textLower.includes("doctor") || textLower.includes("jethwani") || textLower.includes("whatsapp")) {
+      reply = "You can schedule a clinical review with Dr. Narayan Jethwani directly. \n\nClick the 'Chat on WA' button in the banner at the top of this chat to instantly share your digital twin data and book directly via WhatsApp, or schedule via the web scheduler here: https://homeo.healthcare/#booking";
+    } else {
+      reply = "I've analyzed your question. As your Health Assistant, I advise monitoring your daily hydration, maintaining sleep rhythm, and completing the remaining body system assessments. You can also ask me specific terms like 'What is Psora?' or 'Explain my results'.\n\nFor a full constitutional diagnosis, we highly recommend booking a clinical session with Dr. Jethwani on WhatsApp (+91 84460 56789).";
+    }
+
+    setTopMessages(prev => [...prev, { sender: "assistant" as const, text: reply }]);
+    setIsTopTyping(false);
+  };
+
   // Theme State
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
@@ -140,14 +252,36 @@ export default function HealthIntelligencePage() {
     if (saved) {
       try {
         const twin = JSON.parse(saved);
-        setDigitalTwin(twin);
-        if (twin.labResult) {
-          setLabResult(twin.labResult);
+        if (twin && typeof twin === "object") {
+          const safeTwin = {
+            ...DEFAULT_TWIN,
+            ...twin,
+            systemScores: {
+              ...DEFAULT_TWIN.systemScores,
+              ...(twin.systemScores || {})
+            },
+            completedAssessments: twin.completedAssessments || {},
+            activeRulesFlags: twin.activeRulesFlags || [],
+            priorityGoals: twin.priorityGoals || DEFAULT_TWIN.priorityGoals,
+            wearables: {
+              ...DEFAULT_TWIN.wearables,
+              ...(twin.wearables || {})
+            },
+            clinicalPortal: {
+              ...DEFAULT_TWIN.clinicalPortal,
+              ...(twin.clinicalPortal || {})
+            }
+          };
+          setDigitalTwin(safeTwin);
+          if (twin.labResult) {
+            setLabResult(twin.labResult);
+          }
         }
       } catch (e) {
         console.error("Error loading health digital twin:", e);
       }
     }
+    setMounted(true);
   }, []);
 
   // Theme synchronizer with global navbar
@@ -929,7 +1063,10 @@ export default function HealthIntelligencePage() {
         name: prof?.name || "Longevity Index",
         score: entry.score,
         trend: improvementText,
-        status
+        status,
+        profileId: entry.profileId,
+        answers: entry.answers,
+        symptoms: entry.symptoms
       };
     });
     
@@ -1010,6 +1147,8 @@ export default function HealthIntelligencePage() {
     ? getRelatedContent(activeReportCategory)
     : { conditions: [], treatments: [], blogs: [], protocols: [] };
 
+  const hiosAnalysis = analyzeDigitalTwin(digitalTwin);
+
   // Strength and Vulnerability analysis from system scores
   const strengths: string[] = [];
   const vulnerabilities: string[] = [];
@@ -1019,6 +1158,313 @@ export default function HealthIntelligencePage() {
     if (val >= 90) strengths.push(`Excellent ${systemName} efficiency`);
     else if (val <= 75) vulnerabilities.push(`${systemName} reserve depleted`);
   });
+
+  const renderCompanionContent = (isFullscreen: boolean) => {
+    return (
+      <div className={`glass-panel bg-gradient-to-br from-white/95 to-slate-50/95 dark:from-slate-900/95 dark:to-slate-955/95 border border-slate-200/60 dark:border-slate-800/80 rounded-2xl overflow-hidden shadow-lg grid grid-cols-1 md:grid-cols-12 gap-0 ${
+        isFullscreen ? "w-full h-full rounded-3xl" : "md:h-[460px]"
+      }`}>
+        
+        {/* Left Column: Digital Twin Telemetry & Friend Header */}
+        <div 
+          data-lenis-prevent="true"
+          className={`md:col-span-5 p-5 bg-gradient-to-b from-slate-50/70 to-slate-100/30 dark:from-slate-950/40 dark:to-slate-950/10 border-b md:border-b-0 md:border-r border-slate-200/50 dark:border-slate-800/60 flex flex-col justify-between space-y-4 md:h-full overflow-y-auto scrollbar-thin ${
+            isFullscreen ? "hidden md:flex" : "flex"
+          }`}
+        >
+          <div className="space-y-4">
+            {/* Animated Greeting Header */}
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-mint to-teal-400 flex items-center justify-center shadow-md text-white font-black text-sm">
+                  💚
+                </div>
+                <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white dark:border-slate-950 rounded-full animate-pulse" />
+              </div>
+              <div>
+                <h3 className="text-xs font-black text-slate-850 dark:text-zinc-200">
+                  Your Health Ally
+                </h3>
+                <p className="text-[9.5px] text-mint font-bold uppercase tracking-wider">
+                  Always here to guide you
+                </p>
+              </div>
+            </div>
+            
+            <p className="text-[11px] text-slate-500 dark:text-zinc-400 leading-relaxed">
+              Think of me as your personal health advocate. I keep track of your wellness profile and biological rhythms so you don't have to carry the weight alone.
+            </p>
+
+            <div className="space-y-2.5 pt-2 border-t border-slate-200/50 dark:border-slate-800/50">
+              <div className="flex justify-between items-center bg-white/50 dark:bg-slate-900/30 p-2.5 rounded-xl border border-slate-100 dark:border-slate-900">
+                <span className="text-[11px] text-slate-550 dark:text-zinc-400 font-semibold flex items-center gap-1.5">
+                  📊 Overall Health Reserve
+                </span>
+                <span className="text-xs font-black text-mint bg-mint/10 px-2 py-0.5 rounded-md">
+                  {digitalTwin.overallScore}%
+                </span>
+              </div>
+
+              {digitalTwin.biologicalAge && (
+                <div className="flex justify-between items-center bg-white/50 dark:bg-slate-900/30 p-2.5 rounded-xl border border-slate-100 dark:border-slate-900">
+                  <span className="text-[11px] text-slate-550 dark:text-zinc-400 font-semibold flex items-center gap-1.5">
+                    🧬 Epigenetic Age Clock
+                  </span>
+                  <span className="text-xs font-black text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-md">
+                    {digitalTwin.biologicalAge.bioAge} yrs
+                  </span>
+                </div>
+              )}
+
+              {digitalTwin.activeRulesFlags.length > 0 ? (
+                <div className="space-y-1.5 bg-rose-500/5 dark:bg-rose-500/3 p-3 rounded-xl border border-rose-500/10">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-rose-500 dark:text-rose-455 block">
+                    ⚠️ Functional Strain Signals
+                  </span>
+                  <div className="flex flex-wrap gap-1">
+                    {digitalTwin.activeRulesFlags.slice(0, 3).map((flag, idx) => (
+                      <span key={idx} className="text-[8.5px] font-bold text-rose-500 dark:text-rose-400 bg-white dark:bg-slate-900/80 border border-rose-500/20 px-2 py-0.5 rounded-md shadow-sm">
+                        {flag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
+              {digitalTwin.constitutional && (
+                <div className="pt-2 border-t border-slate-200/50 dark:border-slate-800/50 space-y-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Constitutional Profile</span>
+                  <p className="text-[11px] text-slate-650 dark:text-zinc-350 leading-relaxed">
+                    Primary remedy: <strong className="text-mint font-semibold">{digitalTwin.constitutional.remedyMatch}</strong>
+                    <br />
+                    Dominance: <span className="font-medium text-slate-700 dark:text-slate-300">{digitalTwin.constitutional.systemDominance}</span>
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* 🧠 AI Health Memory Card */}
+            <div className="mt-3 bg-gradient-to-br from-teal-500/5 to-emerald-500/5 dark:from-teal-500/10 dark:to-emerald-500/10 border border-teal-500/10 dark:border-teal-500/20 p-3 rounded-2xl space-y-2 shrink-0">
+              <span className="text-[10.5px] font-black uppercase tracking-wider text-teal-650 dark:text-teal-400 flex items-center gap-1.5">
+                🧠 AI Health Memory
+              </span>
+              <div className="space-y-1.5 text-[10.5px] text-slate-700 dark:text-zinc-350 leading-relaxed">
+                <p className="font-bold border-b border-slate-200/50 dark:border-slate-800/50 pb-1">What I've Learned About You:</p>
+                <ul className="list-disc pl-4 space-y-1 text-slate-650 dark:text-zinc-400">
+                  <li>Sleep usually impacts your vitality most.</li>
+                  <li>Stress burden is improving (Score: {100 - (digitalTwin.systemScores?.mentalHealth ?? 100)}% load).</li>
+                  {digitalTwin.history.some(h => h.symptoms?.includes("headache")) || topMessages.some(m => m.text.toLowerCase().includes("headache")) ? (
+                    <li>Headache first reported today.</li>
+                  ) : (
+                    <li>Baseline reserves are currently stable.</li>
+                  )}
+                  <li>Goal: Improve resilience and recovery.</li>
+                </ul>
+                <div className="text-[8.5px] text-slate-400 dark:text-zinc-500 text-right pt-0.5">
+                  Last Updated: Today
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-2 pt-3 border-t border-slate-200/50 dark:border-slate-800/50">
+            <p className="text-[9.5px] text-slate-400 dark:text-zinc-500 leading-normal italic">
+              Need a professional review? Let's connect you directly with Dr. Jethwani:
+            </p>
+            <a 
+              href={`https://wa.me/918446056789?text=${encodeURIComponent(
+                `Hello Dr. Narayan Jethwani, I completed my Health Intelligence profile and would like to review my digital health twin metrics with you.`
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl text-[10px] uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 no-underline shadow-sm hover:shadow-emerald-500/20 active:scale-95"
+            >
+              <MessageSquare className="w-3.5 h-3.5" />
+              Book WA Review with Dr. Jethwani
+            </a>
+          </div>
+        </div>
+
+        {/* Right Column: Chat Interface (7 cols) */}
+        <div className={`${
+          isFullscreen ? "col-span-12 md:col-span-7 h-full" : "md:col-span-7 h-[400px] md:h-full"
+        } flex flex-col bg-white dark:bg-slate-900 overflow-hidden min-h-0`}>
+          
+          {/* Chat Control Bar */}
+          <div className="px-4 py-2.5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/20 flex flex-wrap justify-between items-center gap-2 shrink-0">
+            {/* Empathy Mode Toggle */}
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold text-slate-450 dark:text-zinc-455">Tone:</span>
+              <div className="flex items-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-0.5 shadow-sm">
+                <button
+                  onClick={() => setChatTone("empathetic")}
+                  className={`px-2 py-0.5 text-[9px] font-extrabold rounded-md cursor-pointer transition-all ${
+                    chatTone === "empathetic" 
+                      ? "bg-mint text-white" 
+                      : "text-slate-500 hover:text-slate-750 dark:hover:text-zinc-350"
+                  }`}
+                >
+                  Empathetic 💚
+                </button>
+                <button
+                  onClick={() => setChatTone("professional")}
+                  className={`px-2 py-0.5 text-[9px] font-extrabold rounded-md cursor-pointer transition-all ${
+                    chatTone === "professional" 
+                      ? "bg-indigo-600 text-white" 
+                      : "text-slate-500 hover:text-slate-750 dark:hover:text-zinc-350"
+                  }`}
+                >
+                  Clinical 🔬
+                </button>
+              </div>
+            </div>
+
+            {/* Font Size Adjusters & Reset */}
+            <div className="flex items-center gap-2.5">
+              {/* Font sizing */}
+              <div className="flex items-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-0.5 shadow-sm">
+                <button 
+                  onClick={decreaseFontSize}
+                  title="Decrease Font Size"
+                  className="w-5 h-5 flex items-center justify-center text-[10px] font-black text-slate-555 hover:text-mint transition-colors cursor-pointer border-none bg-transparent"
+                >
+                  A-
+                </button>
+                <span className="text-[9px] font-black text-slate-500 dark:text-zinc-400 px-1.5 min-w-[28px] text-center bg-slate-50 dark:bg-slate-900 rounded">
+                  {chatFontSize}px
+                </span>
+                <button 
+                  onClick={increaseFontSize}
+                  title="Increase Font Size"
+                  className="w-5 h-5 flex items-center justify-center text-[10px] font-black text-slate-555 hover:text-mint transition-colors cursor-pointer border-none bg-transparent"
+                >
+                  A+
+                </button>
+              </div>
+
+              {/* Reset Chat */}
+              <button
+                onClick={clearChat}
+                title="Reset Chat History"
+                className="p-1 text-slate-400 hover:text-rose-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all cursor-pointer border-none bg-transparent flex items-center justify-center"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+              </button>
+
+              {/* Fullscreen Toggle */}
+              <button
+                onClick={() => setIsTopAssistantFullscreen(!isTopAssistantFullscreen)}
+                title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Mode"}
+                className="p-1 text-slate-400 hover:text-mint hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all cursor-pointer border-none bg-transparent flex items-center justify-center"
+              >
+                {isFullscreen ? (
+                  <Minimize2 className="w-3.5 h-3.5" />
+                ) : (
+                  <Maximize2 className="w-3.5 h-3.5" />
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Messages list */}
+          <div 
+            ref={isFullscreen ? topChatFullscreenContainerRef : topChatContainerRef} 
+            data-lenis-prevent="true"
+            className="flex-1 min-h-0 p-4 overflow-y-auto space-y-3.5 scrollbar-thin"
+          >
+            {topMessages.map((msg, i) => (
+              <div 
+                key={i} 
+                className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
+              >
+                <div 
+                  className={`max-w-[85%] p-3 rounded-2xl relative group/msg ${
+                    msg.sender === "user"
+                      ? "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-zinc-200 rounded-tr-none border border-slate-200/50 dark:border-slate-800"
+                      : "bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 text-slate-800 dark:text-zinc-200 rounded-tl-none"
+                  }`}
+                >
+                  {/* Copy Button (visible on hover) */}
+                  <button
+                    onClick={() => handleCopyMessage(msg.text, i)}
+                    className="absolute top-1.5 right-1.5 p-1 bg-white/80 dark:bg-slate-900/80 hover:bg-white dark:hover:bg-slate-900 border border-slate-200 dark:border-slate-850 rounded shadow-sm opacity-0 group-hover/msg:opacity-100 transition-opacity cursor-pointer text-slate-450 hover:text-mint"
+                    title="Copy message"
+                  >
+                    {copiedIndex === i ? (
+                      <Check className="w-3 h-3 text-emerald-500" />
+                    ) : (
+                      <Copy className="w-3 h-3" />
+                    )}
+                  </button>
+
+                  <div 
+                    className="leading-relaxed pr-4"
+                    style={{ fontSize: `${chatFontSize}px` }}
+                  >
+                    <MarkdownRenderer text={msg.text} onActionClick={(action) => handleTopSend(action)} />
+                  </div>
+                </div>
+              </div>
+            ))}
+            {isTopTyping && (
+              <div className="flex justify-start">
+                <div className="bg-emerald-50 dark:bg-emerald-950/10 border border-emerald-100 dark:border-emerald-900/10 rounded-2xl rounded-tl-none p-3 text-[11px] text-slate-400 animate-pulse">
+                  Thinking...
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Quick question recommendation chips */}
+          <div className="px-4 py-2 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/10 flex flex-wrap gap-1.5 shrink-0 overflow-x-auto whitespace-nowrap scrollbar-none">
+            <button 
+              onClick={() => handleTopSend("Help me understand my health scores in simple terms")}
+              className="px-2.5 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-mint rounded-lg text-[9.5px] text-slate-650 dark:text-zinc-350 cursor-pointer font-bold transition-all shrink-0 hover:bg-slate-50 dark:hover:bg-slate-750"
+            >
+              🍃 Simple Score Summary
+            </button>
+            <button 
+              onClick={() => handleTopSend("I feel tired/stressed lately, what should I do next?")}
+              className="px-2.5 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-mint rounded-lg text-[9.5px] text-slate-650 dark:text-zinc-350 cursor-pointer font-bold transition-all shrink-0 hover:bg-slate-50 dark:hover:bg-slate-750"
+            >
+              🛌 Tired/Stressed Check-in
+            </button>
+            <button 
+              onClick={() => handleTopSend("How can I restore balance using my homeopathic constitutional match?")}
+              className="px-2.5 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-mint rounded-lg text-[9.5px] text-slate-650 dark:text-zinc-350 cursor-pointer font-bold transition-all shrink-0 hover:bg-slate-50 dark:hover:bg-slate-750"
+            >
+              ✨ Constitutional Remedy Guide
+            </button>
+            <button 
+              onClick={() => handleTopSend("What are the best next assessments for me to complete?")}
+              className="px-2.5 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-mint rounded-lg text-[9.5px] text-slate-650 dark:text-zinc-350 cursor-pointer font-bold transition-all shrink-0 hover:bg-slate-50 dark:hover:bg-slate-750"
+            >
+              📋 Next Assessment Tips
+            </button>
+          </div>
+
+          {/* Input Area */}
+          <div className="p-3 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex gap-2 shrink-0">
+            <input
+              type="text"
+              value={topInput}
+              onChange={(e) => setTopInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") handleTopSend(topInput); }}
+              placeholder="Ask your AI Companion a clinical question..."
+              className="flex-1 px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-880 rounded-xl text-xs outline-none focus:border-mint focus:bg-white dark:focus:bg-slate-955 transition-all text-slate-800 dark:text-zinc-100"
+            />
+            <button
+              onClick={() => handleTopSend(topInput)}
+              className="p-2 bg-mint hover:bg-teal-600 text-white rounded-xl cursor-pointer flex items-center justify-center border-none shadow-sm active:scale-95 transition-all w-9 h-9"
+            >
+              <Send className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+
+      </div>
+    );
+  };
 
   return (
     <div className="pt-24 pb-16 min-h-screen bg-pearl dark:bg-[#070b13] text-slate-800 dark:text-zinc-150 font-sans transition-colors duration-500">
@@ -1123,8 +1569,38 @@ export default function HealthIntelligencePage() {
                     <Flame className="w-4 h-4 text-amber-300" />
                     Bio-Age Check
                   </button>
+                  <button
+                    onClick={() => setIsTopAssistantOpen(!isTopAssistantOpen)}
+                    className={`py-2.5 px-4 rounded-xl text-[11px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer relative overflow-hidden group ${
+                      isTopAssistantOpen 
+                        ? "bg-slate-100 dark:bg-slate-800 text-mint border border-mint" 
+                        : "bg-white dark:bg-slate-950 text-slate-650 dark:text-zinc-350 border border-slate-200/70 dark:border-slate-850 hover:border-mint hover:text-mint"
+                    }`}
+                  >
+                    <span className="absolute inset-0 bg-gradient-to-r from-teal-500/10 to-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                    <Sparkles className={`w-4 h-4 transition-transform duration-500 group-hover:rotate-180 ${isTopAssistantOpen ? "text-mint animate-pulse" : "text-emerald-500"}`} />
+                    <span>AI Companion</span>
+                    <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${isTopAssistantOpen ? "rotate-180" : ""}`} />
+                  </button>
                 </div>
               </div>
+
+              {/* Collapsable AI Companion Panel */}
+              <AnimatePresence>
+                {isTopAssistantOpen && !isTopAssistantFullscreen && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.35, ease: "easeInOut" }}
+                    className="overflow-hidden"
+                  >
+                    <div className="pb-3 pt-2">
+                      {renderCompanionContent(false)}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               {/* Four Column Dashboard Widgets Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-4 border-t border-slate-100 dark:border-slate-800/80">
@@ -1388,7 +1864,7 @@ export default function HealthIntelligencePage() {
                   Health Progress Timeline
                 </span>
                 
-                <div className="space-y-4 max-h-[300px] overflow-y-auto scrollbar-thin pr-1">
+                <div data-lenis-prevent="true" className="space-y-4 max-h-[300px] overflow-y-auto scrollbar-thin pr-1">
                   {getTimelineHistory().map((item, idx) => (
                     <div key={item.id} className="relative pl-4 border-l border-slate-100 dark:border-slate-800/80 last:border-none pb-2 space-y-1">
                       {/* Timeline dot */}
@@ -1620,11 +2096,11 @@ export default function HealthIntelligencePage() {
                             <div className="space-y-1">
                               <div className="flex justify-between items-center text-[10.5px] font-bold">
                                 <span className="text-amber-500 uppercase tracking-wider">Psora (Functional Strain)</span>
-                                <span className="font-mono text-amber-500">{digitalTwin.miasmaticProfile?.psora || 30}%</span>
+                                <span className="font-mono text-amber-500">{hiosAnalysis.miasmaticProfile?.psora || 30}%</span>
                               </div>
                               <p className="text-[9.5px] text-slate-400 leading-normal">Governs basic dry skin, transient allergies, nervous irritation, and hyper-sensitivities.</p>
                               <div className="w-full bg-slate-100 dark:bg-slate-800/80 h-2 rounded-full overflow-hidden">
-                                <div className="bg-amber-500 h-full rounded-full" style={{ width: `${digitalTwin.miasmaticProfile?.psora || 30}%` }} />
+                                <div className="bg-amber-500 h-full rounded-full" style={{ width: `${hiosAnalysis.miasmaticProfile?.psora || 30}%` }} />
                               </div>
                             </div>
                             
@@ -1632,11 +2108,11 @@ export default function HealthIntelligencePage() {
                             <div className="space-y-1">
                               <div className="flex justify-between items-center text-[10.5px] font-bold">
                                 <span className="text-teal-500 uppercase tracking-wider">Sycosis (Excess / Adiposity)</span>
-                                <span className="font-mono text-teal-500">{digitalTwin.miasmaticProfile?.sycosis || 20}%</span>
+                                <span className="font-mono text-teal-500">{hiosAnalysis.miasmaticProfile?.sycosis || 20}%</span>
                               </div>
                               <p className="text-[9.5px] text-slate-400 leading-normal">Governs water retention, fat deposition, cyst growths, skin tags, and slow sluggish metabolism.</p>
                               <div className="w-full bg-slate-100 dark:bg-slate-800/80 h-2 rounded-full overflow-hidden">
-                                <div className="bg-teal-500 h-full rounded-full" style={{ width: `${digitalTwin.miasmaticProfile?.sycosis || 20}%` }} />
+                                <div className="bg-teal-500 h-full rounded-full" style={{ width: `${hiosAnalysis.miasmaticProfile?.sycosis || 20}%` }} />
                               </div>
                             </div>
 
@@ -1644,11 +2120,11 @@ export default function HealthIntelligencePage() {
                             <div className="space-y-1">
                               <div className="flex justify-between items-center text-[10.5px] font-bold">
                                 <span className="text-rose-500 uppercase tracking-wider">Syphilis (Destructive / Organic)</span>
-                                <span className="font-mono text-rose-500">{digitalTwin.miasmaticProfile?.syphilis || 10}%</span>
+                                <span className="font-mono text-rose-500">{hiosAnalysis.miasmaticProfile?.syphilis || 10}%</span>
                               </div>
                               <p className="text-[9.5px] text-slate-400 leading-normal">Governs cracks, ulcers, memory decays, vascular stiffness, and organic degeneration trends.</p>
                               <div className="w-full bg-slate-100 dark:bg-slate-800/80 h-2 rounded-full overflow-hidden">
-                                <div className="bg-rose-500 h-full rounded-full" style={{ width: `${digitalTwin.miasmaticProfile?.syphilis || 10}%` }} />
+                                <div className="bg-rose-500 h-full rounded-full" style={{ width: `${hiosAnalysis.miasmaticProfile?.syphilis || 10}%` }} />
                               </div>
                             </div>
                           </div>
@@ -3006,6 +3482,33 @@ export default function HealthIntelligencePage() {
         </div>
 
       </div>
+
+      {/* Fullscreen AI Health Companion Overlay */}
+      {mounted && createPortal(
+        <AnimatePresence>
+          {isTopAssistantOpen && isTopAssistantFullscreen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[9999] flex items-center justify-center p-4 md:p-6"
+              onClick={() => setIsTopAssistantFullscreen(false)}
+              data-lenis-prevent="true"
+            >
+              <motion.div
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                className="w-full max-w-7xl h-[90vh] flex flex-col relative"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {renderCompanionContent(true)}
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
 
       {/* Floating AI Health Assistant Chat Widget (print:hidden) */}
       <div className="print:hidden">

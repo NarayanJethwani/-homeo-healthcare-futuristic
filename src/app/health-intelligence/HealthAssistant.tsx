@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { MessageSquare, X, Send, Sparkles, Brain, HelpCircle, Calendar, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { HealthDigitalTwin } from "./types";
+import MarkdownRenderer from "./MarkdownRenderer";
 
 interface HealthAssistantProps {
   twin: HealthDigitalTwin;
@@ -21,57 +22,77 @@ export default function HealthAssistant({ twin, theme, onSelectProfile }: Health
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       sender: "assistant",
-      text: "Hello! I am your AI Health Assistant. Ask me anything about your assessments, medical terms, or how to map your constitutional profile."
+      text: "Hello! 🌟 I'm your AI Health Companion, but you can think of me as your personal health partner and dedicated wellness guide. I'm here to walk alongside you, make sense of your assessments, and help you find pathways to balance. What wellness goals can we explore together today? 🍃"
     }
   ]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const chatEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: "smooth"
+      });
     }
   }, [messages, isTyping]);
 
-  const handleSend = (textToSend: string) => {
+  const handleSend = async (textToSend: string) => {
     if (!textToSend.trim()) return;
 
-    const newMsgs = [...messages, { sender: "user", text: textToSend } as ChatMessage];
+    const userMsg: ChatMessage = { sender: "user", text: textToSend };
+    const newMsgs = [...messages, userMsg];
     setMessages(newMsgs);
     setInput("");
     setIsTyping(true);
 
-    setTimeout(() => {
-      let reply = "";
-      const textLower = textToSend.toLowerCase();
-
-      if (textLower.includes("psora") || textLower.includes("miasm")) {
-        reply = "In Homeopathy, a **Miasm** represents an inherited or acquired chronic biological predisposition. \n\n* **Psora** is the miasm of functional deficiency and sensory hypersensitivity (common in fatigue or eczema).\n* **Sycosis** is the miasm of metabolic accumulation and sluggish tissue overgrowth (common in bloating, weight gain, or PCOS).\n* **Syphilis** is the miasm of structural breakdown or nocturnal worsening.";
-      } else if (textLower.includes("egfr") || textLower.includes("kidney") || textLower.includes("creatinine")) {
-        reply = "**eGFR (Estimated Glomerular Filtration Rate)** is the primary metric of kidney filtration. \n\n* An eGFR **above 60** represents normal filtration capacity.\n* An eGFR **below 60** indicates kidney loading. \n* Serum **Creatinine** is a cellular waste product filtered by kidneys; when filtration slows down, blood creatinine levels elevate.";
-      } else if (textLower.includes("result") || textLower.includes("score") || textLower.includes("health")) {
-        const completedCount = Object.keys(twin.completedAssessments || {}).length;
-        if (completedCount === 0) {
-          reply = "You haven't completed any self-assessments yet. I recommend starting with the **Metabolic Health Profile** or **Stress Assessment** to initialize your Health Digital Twin!";
-        } else {
-          reply = `Your overall Health Score stands at **${twin.overallScore}%** based on ${completedCount} completed evaluations. \n\nActive system stress flags: **${twin.activeRulesFlags.join(", ") || "None"}**. \n\nI recommend taking the **Constitutional Assessment** next to compile your custom remedy indicators.`;
-        }
-       } else if (textLower.includes("remedy") || textLower.includes("constitutional") || textLower.includes("homeopath")) {
-        if (twin.constitutional) {
-          reply = `Your constitutional assessment matches the **${twin.constitutional.remedyMatch}** profile, showing primary **${twin.constitutional.systemDominance}** dominance. This matches an adaptive pattern of **${twin.constitutional.adaptivePattern}**.`;
-        } else {
-          reply = "Constitutional analysis matches your thermal response, cravings, sleep, and emotional patterns to custom homeopathic remedies. Click the **Constitutional Profile** button in the dashboard to map yours!";
-        }
-      } else if (textLower.includes("book") || textLower.includes("consult") || textLower.includes("doctor") || textLower.includes("jethwani") || textLower.includes("whatsapp")) {
-        reply = "You can schedule a clinical review with Dr. Narayan Jethwani directly. \n\nClick the 'Chat on WA' button in the banner at the top of this chat to instantly share your digital twin data and book directly via WhatsApp, or schedule via the web scheduler here: https://homeo.healthcare/#booking";
-      } else {
-        reply = "I've analyzed your question. As your Health Assistant, I advise monitoring your daily hydration, maintaining sleep rhythm, and completing the remaining body system assessments. You can also ask me specific terms like 'What is Psora?' or 'Explain my results'.";
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: newMsgs, twin })
+      });
+      const data = await res.json();
+      
+      if (data.success && data.text) {
+        setMessages(prev => [...prev, { sender: "assistant", text: data.text }]);
+        setIsTyping(false);
+        return;
       }
+    } catch (err) {
+      console.error("Failed to query Gemini assistant api, falling back to local reasoning:", err);
+    }
 
-      setMessages(prev => [...prev, { sender: "assistant", text: reply }]);
-      setIsTyping(false);
-    }, 1200);
+    // Local/Fallback reasoning logic in case of failure or missing API key
+    let reply = "";
+    const textLower = textToSend.toLowerCase();
+
+    if (textLower.includes("psora") || textLower.includes("miasm")) {
+      reply = "In Homeopathy, a **Miasm** represents an inherited or acquired chronic biological predisposition. \n\n* **Psora** is the miasm of functional deficiency and sensory hypersensitivity (common in fatigue or eczema).\n* **Sycosis** is the miasm of metabolic accumulation and sluggish tissue overgrowth (common in bloating, weight gain, or PCOS).\n* **Syphilis** is the miasm of structural breakdown or nocturnal worsening.";
+    } else if (textLower.includes("egfr") || textLower.includes("kidney") || textLower.includes("creatinine")) {
+      reply = "**eGFR (Estimated Glomerular Filtration Rate)** is the primary metric of kidney filtration. \n\n* An eGFR **above 60** represents normal filtration capacity.\n* An eGFR **below 60** indicates kidney loading. \n* Serum **Creatinine** is a cellular waste product filtered by kidneys; when filtration slows down, blood creatinine levels elevate.";
+    } else if (textLower.includes("result") || textLower.includes("score") || textLower.includes("health")) {
+      const completedCount = Object.keys(twin.completedAssessments || {}).length;
+      if (completedCount === 0) {
+        reply = "You haven't completed any self-assessments yet. I recommend starting with the **Metabolic Health Profile** or **Stress Assessment** to initialize your Health Digital Twin!";
+      } else {
+        reply = `Your overall Health Score stands at **${twin.overallScore}%** based on ${completedCount} completed evaluations. \n\nActive system stress flags: **${twin.activeRulesFlags.join(", ") || "None"}**. \n\nI recommend taking the **Constitutional Assessment** next to compile your custom remedy indicators.`;
+      }
+    } else if (textLower.includes("remedy") || textLower.includes("constitutional") || textLower.includes("homeopath")) {
+      if (twin.constitutional) {
+        reply = `Your constitutional assessment matches the **${twin.constitutional.remedyMatch}** profile, showing primary **${twin.constitutional.systemDominance}** dominance. This matches an adaptive pattern of **${twin.constitutional.adaptivePattern}**.`;
+      } else {
+        reply = "Constitutional analysis matches your thermal response, cravings, sleep, and emotional patterns to custom homeopathic remedies. Click the **Constitutional Profile** button in the dashboard to map yours!";
+      }
+    } else if (textLower.includes("book") || textLower.includes("consult") || textLower.includes("doctor") || textLower.includes("jethwani") || textLower.includes("whatsapp")) {
+      reply = "You can schedule a clinical review with Dr. Narayan Jethwani directly. \n\nClick the 'Chat on WA' button in the banner at the top of this chat to instantly share your digital twin data and book directly via WhatsApp, or schedule via the web scheduler here: https://homeo.healthcare/#booking";
+    } else {
+      reply = "I've analyzed your question. As your Health Assistant, I advise monitoring your daily hydration, maintaining sleep rhythm, and completing the remaining body system assessments. You can also ask me specific terms like 'What is Psora?' or 'Explain my results'.\n\nFor a full constitutional diagnosis, we highly recommend booking a clinical session with Dr. Jethwani on WhatsApp (+91 84460 56789).";
+    }
+
+    setMessages(prev => [...prev, { sender: "assistant", text: reply }]);
+    setIsTyping(false);
   };
 
   const getWhatsAppLink = () => {
@@ -143,7 +164,11 @@ export default function HealthAssistant({ twin, theme, onSelectProfile }: Health
             </div>
 
             {/* Chat Body */}
-            <div className="flex-grow p-4 overflow-y-auto space-y-4 scrollbar-thin">
+            <div 
+              ref={chatContainerRef} 
+              data-lenis-prevent="true"
+              className="flex-grow p-4 overflow-y-auto space-y-4 scrollbar-thin"
+            >
               {messages.map((msg, i) => (
                 <div 
                   key={i} 
@@ -156,9 +181,7 @@ export default function HealthAssistant({ twin, theme, onSelectProfile }: Health
                         : "bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 text-slate-800 dark:text-zinc-200 rounded-tl-none"
                     }`}
                   >
-                    {msg.text.split("\n").map((line, idx) => (
-                      <p key={idx} className="mb-1.5 last:mb-0">{line}</p>
-                    ))}
+                    <MarkdownRenderer text={msg.text} onActionClick={(action) => handleSend(action)} />
                   </div>
                 </div>
               ))}
@@ -169,28 +192,27 @@ export default function HealthAssistant({ twin, theme, onSelectProfile }: Health
                   </div>
                 </div>
               )}
-              <div ref={chatEndRef} />
             </div>
 
             {/* Quick Prompts */}
             <div className="px-4 py-2 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/20 flex flex-wrap gap-1.5 shrink-0">
               <button 
-                onClick={() => handleQuickQuestion("Explain my results")}
-                className="px-2.5 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-mint rounded-lg text-[10px] text-slate-600 dark:text-zinc-350 cursor-pointer font-semibold transition-all"
+                onClick={() => handleQuickQuestion("Help me understand my health scores in simple terms")}
+                className="px-2.5 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-mint rounded-lg text-[9.5px] text-slate-650 dark:text-zinc-350 cursor-pointer font-bold transition-all"
               >
-                📊 Score Summary
+                📊 Simple Score Summary
               </button>
               <button 
-                onClick={() => handleQuickQuestion("What is Psora?")}
-                className="px-2.5 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-mint rounded-lg text-[10px] text-slate-600 dark:text-zinc-350 cursor-pointer font-semibold transition-all"
+                onClick={() => handleQuickQuestion("I feel tired/stressed lately, what should I do next?")}
+                className="px-2.5 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-mint rounded-lg text-[9.5px] text-slate-650 dark:text-zinc-350 cursor-pointer font-bold transition-all"
               >
-                🔬 Explain Miasms
+                🛌 Tired/Stressed Check-in
               </button>
               <button 
-                onClick={() => handleQuickQuestion("What does eGFR mean?")}
-                className="px-2.5 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-mint rounded-lg text-[10px] text-slate-600 dark:text-zinc-350 cursor-pointer font-semibold transition-all"
+                onClick={() => handleQuickQuestion("How can I restore balance using my homeopathic constitutional match?")}
+                className="px-2.5 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-mint rounded-lg text-[9.5px] text-slate-650 dark:text-zinc-350 cursor-pointer font-bold transition-all"
               >
-                🩺 What is eGFR?
+                ✨ Constitutional Remedy Guide
               </button>
             </div>
 
