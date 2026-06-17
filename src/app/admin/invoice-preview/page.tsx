@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Printer, ArrowLeft, Check, Copy } from "lucide-react";
+import { Printer, ArrowLeft, Check, Copy, Download, Send, Link } from "lucide-react";
 import Image from "next/image";
 
 interface InvoiceItem {
@@ -16,6 +16,11 @@ function InvoiceContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [copied, setCopied] = useState<string | null>(null);
+  const [logoUrl, setLogoUrl] = useState("/images/logo.png");
+
+  useEffect(() => {
+    setLogoUrl(window.location.origin + "/images/logo.png");
+  }, []);
 
   // Extract invoice parameters from query string
   const invoiceNo = searchParams.get("invoiceNo") || "INV-TEMP-999";
@@ -53,30 +58,129 @@ function InvoiceContent() {
     setTimeout(() => setCopied(null), 2000);
   };
 
+  const handleDownloadPDF = () => {
+    const element = document.getElementById("invoice-sheet");
+    if (!element) return;
+
+    const opt = {
+      margin:       [0.4, 0.4, 0.4, 0.4],
+      filename:     `Invoice-${invoiceNo}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2.5, useCORS: true, logging: false },
+      jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+
+    const runHtml2Pdf = () => {
+      // @ts-ignore
+      window.html2pdf().from(element).set(opt).save();
+    };
+
+    // @ts-ignore
+    if (window.html2pdf) {
+      runHtml2Pdf();
+    } else {
+      const script = document.createElement("script");
+      script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+      script.onload = runHtml2Pdf;
+      document.body.appendChild(script);
+    }
+  };
+
+  const handleWhatsAppShare = () => {
+    const message = `Dear ${patientName},
+    
+Hope you are doing well. Please find below the invoice summary from *Homeo Healthcare*:
+
+*Invoice No:* ${invoiceNo}
+*Date:* ${date}
+*Grand Total:* ₹${grandTotal.toLocaleString("en-IN")}
+*Status:* ${status}
+
+*Clinic Bank Details (HDFC Bank):*
+Account Name: Dr. Narayan Jethwani
+Current Account No: 50200039742057
+IFSC Code: HDFC0004793
+Branch: PAN Card Club Road Baner, Pune
+Instant UPI ID: narayan.jethwani-3@okaxis
+(Please include your Patient ID or Invoice No in theRemarks)
+
+*View / Download Invoice PDF:*
+${window.location.href}
+
+Wishing you good health.
+
+Warm regards,
+Dr. Narayan Jethwani, MD (Hom.)
+Homeo Healthcare`;
+
+    const encodedText = encodeURIComponent(message);
+    const rawPhone = patientPhone || "";
+    const phone = rawPhone.replace(/\D/g, "");
+    const targetPhone = phone.length === 10 ? `91${phone}` : phone;
+    
+    window.open(`https://wa.me/${targetPhone}?text=${encodedText}`, "_blank");
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-10 px-4 print:bg-white print:py-0 print:px-0">
       
       {/* Control Bar (hidden during printing) */}
-      <div className="max-w-4xl mx-auto mb-6 flex items-center justify-between gap-4 print:hidden">
+      <div className="max-w-4xl mx-auto mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 print:hidden">
         <button
           onClick={() => router.push("/admin/dashboard")}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm cursor-pointer"
+          className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm cursor-pointer w-full sm:w-auto"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Portal</span>
         </button>
 
-        <button
-          onClick={() => window.print()}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#0f766e] text-white text-xs font-bold uppercase tracking-wider hover:bg-[#0d645d] transition-colors shadow-md cursor-pointer"
-        >
-          <Printer className="w-4 h-4" />
-          <span>Print / Save PDF</span>
-        </button>
+        <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2 w-full sm:w-auto">
+          {/* Copy Link */}
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText(window.location.href);
+              alert("Invoice link copied to clipboard!");
+            }}
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-800 dark:hover:border-slate-350 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all shadow-sm cursor-pointer"
+            title="Copy digital invoice link"
+          >
+            <Link className="w-3.5 h-3.5" />
+            <span>Copy Link</span>
+          </button>
+
+          {/* Share on WhatsApp */}
+          <button
+            onClick={handleWhatsAppShare}
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
+            title="Share digital invoice on WhatsApp"
+          >
+            <Send className="w-3.5 h-3.5" />
+            <span>Send Invoice</span>
+          </button>
+
+          {/* Download PDF */}
+          <button
+            onClick={handleDownloadPDF}
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
+            title="Download PDF directly"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span>Download PDF</span>
+          </button>
+
+          {/* Print */}
+          <button
+            onClick={() => window.print()}
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-[#0f766e] hover:bg-[#0d645d] text-white text-xs font-bold transition-all shadow-md cursor-pointer"
+          >
+            <Printer className="w-3.5 h-3.5" />
+            <span>Print</span>
+          </button>
+        </div>
       </div>
 
       {/* Invoice Sheet */}
-      <div className="max-w-4xl mx-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[24px] p-8 md:p-12 shadow-md print:shadow-none print:border-none print:bg-white print:text-slate-900 print:p-0 print:rounded-none">
+      <div id="invoice-sheet" className="max-w-4xl mx-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[24px] p-8 md:p-12 shadow-md print:shadow-none print:border-none print:bg-white print:text-slate-900 print:p-0 print:rounded-none">
         
         {/* Invoice Header (Clinic Info & Title) */}
         <div className="flex flex-col md:flex-row md:justify-between items-start gap-6 border-b border-slate-100 dark:border-slate-800 print:border-slate-100 pb-8">
@@ -84,7 +188,7 @@ function InvoiceContent() {
             <div className="flex items-center gap-2.5">
               <div className="w-9 h-9 rounded-full bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800 overflow-hidden shadow-sm flex items-center justify-center flex-shrink-0">
                 <Image
-                  src="/images/logo.png"
+                  src={logoUrl}
                   alt="Homeo Healthcare Logo"
                   width={32}
                   height={32}
@@ -254,9 +358,9 @@ function InvoiceContent() {
               <span className="text-[9px] text-slate-400 dark:text-slate-500 print:text-slate-400 font-bold uppercase tracking-wider block">UPI / QR Transfer Address</span>
               <div className="text-slate-900 dark:text-slate-100 print:text-slate-900 font-extrabold">Instant UPI Transfer</div>
               <div className="flex items-center justify-between bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800 print:bg-white print:border-slate-100 p-1.5 px-2.5 rounded-lg mt-1">
-                <span className="font-black text-slate-900 dark:text-slate-100 print:text-slate-900 select-all">8446056789@hdfc</span>
+                <span className="font-black text-slate-900 dark:text-slate-100 print:text-slate-900 select-all">narayan.jethwani-3@okaxis</span>
                 <button 
-                  onClick={() => handleCopyText("8446056789@hdfc", "upi")}
+                  onClick={() => handleCopyText("narayan.jethwani-3@okaxis", "upi")}
                   className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-400 dark:text-slate-500 cursor-pointer"
                 >
                   {copied === "upi" ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}

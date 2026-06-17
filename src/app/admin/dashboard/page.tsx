@@ -4821,7 +4821,7 @@ Account Name: Dr. Narayan Jethwani
 Current Account No: 50200039742057
 IFSC Code: HDFC0004793
 Branch: PAN Card Club Road Baner, Pune
-Instant UPI ID: 8446056789@hdfc
+Instant UPI ID: narayan.jethwani-3@okaxis
 (Please include your Patient ID or Invoice No in the transfer remarks)
 
 *View Digital Invoice:*
@@ -11439,7 +11439,7 @@ ${err.message || err}`);
               `*Total Program Cost: ₹${calculatedPrices.finalPrice.toLocaleString("en-IN")}*\n` +
               `*Amount Received Today: ₹${plannerReceived.toLocaleString("en-IN")}*\n` +
               `*Outstanding Balance Due: ₹${calculatedPrices.balanceDue.toLocaleString("en-IN")}*\n\n` +
-              `Please transfer using GPay: *8446056789* (or UPI: *drnarayan@okaxis*).\n` +
+              `Please transfer using GPay: *8446056789* (or UPI: *narayan.jethwani-3@okaxis*).\n` +
               `Kindly share the transaction screenshot once completed.`;
 
             return (
