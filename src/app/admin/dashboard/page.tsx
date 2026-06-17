@@ -5647,6 +5647,18 @@ Homeo Healthcare`;
     }
   };
 
+  const deletePatient = async (patientId: string) => {
+    if (!confirm("Are you sure you want to permanently delete this patient record from Firestore? This action will not delete Google Drive files.")) {
+      return;
+    }
+    try {
+      await deleteDoc(doc(db, "patients", patientId));
+    } catch (err: any) {
+      console.error("Error deleting patient record:", err);
+      alert("Failed to delete patient record: " + (err.message || err));
+    }
+  };
+
   const handleGoogleSheetImport = async () => {
     if (!googleSheetUrl) {
       setImportError("Please enter a Google Sheet/Folder URL or ID.");
@@ -13129,6 +13141,15 @@ ${err.message || err}`);
                         </button>
                           </>
                         )}
+
+                        {/* Delete Patient Action */}
+                        <button
+                          onClick={() => deletePatient(patient.id)}
+                          className="w-10 h-10 rounded-full border border-rose-200 hover:border-rose-650 hover:bg-rose-50/50 text-rose-600 flex items-center justify-center transition-all bg-white dark:bg-slate-950 shadow-sm cursor-pointer"
+                          title="Delete Patient Record from Database"
+                        >
+                          <Trash2 className="w-4 h-4 text-rose-500" />
+                        </button>
                       </div>
                     </motion.div>
                   ))
