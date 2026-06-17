@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -143,6 +143,11 @@ interface Patient {
   lastSeen?: string;
   attachments?: any[];
   attachmentsUpdated?: string;
+  billingCycle?: "monthly" | "weekly";
+  concessionApplied?: string;
+  conditionsCount?: number;
+  durationValue?: number;
+  medicineAddons?: { id: string; type: string; details: string; amount: number }[];
 }
 
 const INVOICE_TEMPLATES = [
@@ -590,6 +595,10 @@ const SAMPLE_FINDINGS = [
     { id: "diet-constraints", label: "Diet Constraints" },
     { id: "diet-prescriptions", label: "Meal & Routines" }
   ],
+  "treatment-planner": [
+    { id: "planner-config", label: "Plan Configuration" },
+    { id: "planner-breakdown", label: "Pricing Breakdown" }
+  ],
   "nexus-atlas": [
     { id: "remedy-materia-medica", label: "Remedies Map" },
     { id: "constitutional-mindmap", label: "Constitutional Mind Map" },
@@ -623,6 +632,110 @@ const SAMPLE_FINDINGS = [
   ]
 };
 
+const getDurationMonths = (duration: string) => {
+  if (duration.includes("3-Month")) return 3;
+  if (duration.includes("6-Month")) return 6;
+  if (duration.includes("12-Month")) return 12;
+  return 1;
+};
+
+const getDurationValue = (duration: string) => {
+  if (duration.includes("3-Month")) return 3;
+  if (duration.includes("6-Month")) return 6;
+  if (duration.includes("12-Month")) return 12;
+  if (duration.includes("2-Week")) return 2;
+  if (duration.includes("4-Week")) return 4;
+  if (duration.includes("8-Week")) return 8;
+  if (duration.includes("12-Week")) return 12;
+  return 1;
+};
+
+const careLevelsDetails = {
+  mild: { title: "Acute & Wellness Care", weeklyPrice: 1200, monthlyPrice: 4800 },
+  moderate: { title: "Standard Chronic Care", weeklyPrice: 2400, monthlyPrice: 9600 },
+  focused: { title: "Deep Systemic Care", weeklyPrice: 4200, monthlyPrice: 16800 },
+  acute_critical: { title: "Acute Critical Care", weeklyPrice: 5000, monthlyPrice: 20000 },
+  organ: { title: "Advanced Pathological Care", weeklyPrice: 6000, monthlyPrice: 24000 },
+  comprehensive: { title: "Multisystem Integrative Care", weeklyPrice: 8400, monthlyPrice: 33600 },
+};
+
+const surchargesLookup = {
+  mild: { unitWeekly: 300, unitMonthly: 1200 },
+  moderate: { unitWeekly: 450, unitMonthly: 1800 },
+  focused: { unitWeekly: 750, unitMonthly: 3000 },
+  acute_critical: { unitWeekly: 1000, unitMonthly: 4000 },
+  organ: { unitWeekly: 1050, unitMonthly: 4200 },
+  comprehensive: { unitWeekly: 1350, unitMonthly: 5400 }
+};
+
+const getCareLevelKey = (level: string) => {
+  if (level.includes("Standard")) return "moderate";
+  if (level.includes("Deep")) return "focused";
+  if (level.includes("Advanced")) return "organ";
+  if (level.includes("Multisystem")) return "comprehensive";
+  if (level.includes("Critical") || level.includes("🚨")) return "acute_critical";
+  return "mild";
+};
+
+const getCareLevelRate = (level: string, cycle: string) => {
+  const key = getCareLevelKey(level);
+  const isWeekly = cycle === "Weekly";
+  const basePrice = isWeekly ? careLevelsDetails[key].weeklyPrice : careLevelsDetails[key].monthlyPrice;
+  
+  const conditions = level.includes("Multisystem") ? 2 : 1;
+  let surcharge = 0;
+  if (conditions > 1) {
+    const tierSurcharges = surchargesLookup[key];
+    const unit = isWeekly ? tierSurcharges.unitWeekly : tierSurcharges.unitMonthly;
+    surcharge = (conditions - 1) * unit;
+  }
+  return basePrice + surcharge;
+};
+
+const calculatePlannerPricing = (
+  level: string,
+  cycle: "monthly" | "weekly",
+  duration: number,
+  conditions: number
+) => {
+  const details = careLevelsDetails[level as keyof typeof careLevelsDetails] || careLevelsDetails.focused;
+  const basePrice = cycle === "weekly" ? details.weeklyPrice : details.monthlyPrice;
+  
+  let surcharge = 0;
+  if (conditions > 1) {
+    const tierSurcharges = surchargesLookup[level as keyof typeof surchargesLookup] || surchargesLookup.focused;
+    const unit = cycle === "weekly" ? tierSurcharges.unitWeekly : tierSurcharges.unitMonthly;
+    surcharge = (conditions - 1) * unit;
+  }
+
+  const adjustedBasePrice = basePrice + surcharge;
+  const rawTotal = adjustedBasePrice * duration;
+  
+  // Equivalent weeks
+  const equivalentWeeks = cycle === "weekly" ? duration : duration * 4;
+  
+  let discountPercent = 0;
+  if (equivalentWeeks >= 48) discountPercent = 30;
+  else if (equivalentWeeks >= 24) discountPercent = 25;
+  else if (equivalentWeeks >= 12) discountPercent = 20;
+  else if (equivalentWeeks >= 8) discountPercent = 15;
+  else if (equivalentWeeks >= 4) discountPercent = 10;
+  else if (equivalentWeeks >= 2) discountPercent = 5;
+  
+  const discountAmount = Math.round((rawTotal * discountPercent) / 100);
+  const finalPriceBeforeConcession = rawTotal - discountAmount;
+  
+  return {
+    basePrice,
+    surcharge,
+    adjustedBasePrice,
+    rawTotal,
+    discountPercent,
+    discountAmount,
+    finalPriceBeforeConcession
+  };
+};
+
 const TABS_DEFINITION = [
   { id: "dashboard", label: "Dashboard", icon: Gauge, gradient: "from-teal-500 to-emerald-500", shadow: "shadow-[0_4px_12px_rgba(20,184,166,0.3)]", inactiveText: "text-slate-650 hover:text-teal-650 hover:bg-teal-50 bg-transparent" },
   { id: "intake", label: "AI Intake", icon: Sparkles, gradient: "from-amber-500 to-orange-500", shadow: "shadow-[0_4px_12px_rgba(245,158,11,0.3)]", inactiveText: "text-slate-650 hover:text-amber-600 hover:bg-amber-50 bg-transparent" },
@@ -631,6 +744,7 @@ const TABS_DEFINITION = [
   { id: "health-intelligence", label: "Public Intake", icon: Activity, gradient: "from-teal-600 to-cyan-600", shadow: "shadow-[0_4px_12px_rgba(13,148,136,0.3)]", inactiveText: "text-slate-650 hover:text-teal-650 hover:bg-teal-50 bg-transparent" },
   { id: "analyzer", label: "Report Analyzer", icon: FileText, gradient: "from-indigo-500 to-violet-500", shadow: "shadow-[0_4px_12px_rgba(99,102,241,0.3)]", inactiveText: "text-slate-650 hover:text-indigo-600 hover:bg-indigo-50 bg-transparent" },
   { id: "diet-lifestyle", label: "Diet & Lifestyle", icon: Layers, gradient: "from-rose-500 to-pink-500", shadow: "shadow-[0_4px_12px_rgba(244,63,94,0.3)]", inactiveText: "text-slate-650 hover:text-rose-600 hover:bg-rose-50 bg-transparent" },
+  { id: "treatment-planner", label: "Treatment Planner", icon: IndianRupee, gradient: "from-emerald-600 to-teal-500", shadow: "shadow-[0_4px_12px_rgba(16,185,129,0.3)]", inactiveText: "text-slate-650 hover:text-emerald-600 hover:bg-emerald-50 bg-transparent" },
   { id: "nexus-atlas", label: "Nexus Atlas", icon: Network, gradient: "from-violet-600 to-fuchsia-600", shadow: "shadow-[0_4px_12px_rgba(139,92,246,0.3)]", inactiveText: "text-slate-650 hover:text-violet-600 hover:bg-violet-50 bg-transparent" },
   { id: "cie", label: "Clinical OS", icon: Activity, gradient: "from-emerald-500 to-teal-500", shadow: "shadow-[0_4px_12px_rgba(16,185,129,0.3)]", inactiveText: "text-slate-650 hover:text-emerald-600 hover:bg-emerald-50 bg-transparent" },
   { id: "learning-hub", label: "Learning Hub", icon: Award, gradient: "from-fuchsia-500 to-purple-600", shadow: "shadow-[0_4px_12px_rgba(217,70,239,0.3)]", inactiveText: "text-slate-650 hover:text-fuchsia-600 hover:bg-fuchsia-50 bg-transparent" },
@@ -641,7 +755,7 @@ const TABS_DEFINITION = [
 export default function AdminDashboard() {
   const router = useRouter();
   const [session, setSession] = useState<UserSession | null>(null);
-  const [activeTab, setActiveTab] = useState<"dashboard" | "intake" | "patients" | "diagnostics" | "analyzer" | "diet-lifestyle" | "nexus-atlas" | "learning-hub" | "communication" | "ai-router" | "health-intelligence" | "cie">("dashboard");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "intake" | "patients" | "diagnostics" | "analyzer" | "diet-lifestyle" | "treatment-planner" | "nexus-atlas" | "learning-hub" | "communication" | "ai-router" | "health-intelligence" | "cie">("dashboard");
   const [nexusSubTab, setNexusSubTab] = useState<"repertory" | "mind-map" | "materia-medica">("repertory");
   const [cieSubTab, setCieSubTab] = useState<"cockpit" | "intake" | "miasms" | "reports">("cockpit");
 
@@ -669,7 +783,7 @@ export default function AdminDashboard() {
         const tabParam = params.get("tab");
         const validTabs = [
           "dashboard", "intake", "patients", "diagnostics", "analyzer", 
-          "diet-lifestyle", "nexus-atlas", "learning-hub", "communication", 
+          "diet-lifestyle", "treatment-planner", "nexus-atlas", "learning-hub", "communication", 
           "ai-router", "health-intelligence", "cie"
         ];
         
@@ -730,7 +844,7 @@ export default function AdminDashboard() {
   };
 
   // Fullscreen view mode tracking
-  const [fullscreenTab, setFullscreenTab] = useState<"dashboard" | "intake" | "patients" | "diagnostics" | "analyzer" | "diet-lifestyle" | "nexus-atlas" | "learning-hub" | "communication" | "ai-router" | "health-intelligence" | null>(null);
+  const [fullscreenTab, setFullscreenTab] = useState<"dashboard" | "intake" | "patients" | "diagnostics" | "analyzer" | "diet-lifestyle" | "treatment-planner" | "nexus-atlas" | "learning-hub" | "communication" | "ai-router" | "health-intelligence" | null>(null);
 
   // AI Intake States
   const [intakeComplaint, setIntakeComplaint] = useState("");
@@ -1790,7 +1904,7 @@ export default function AdminDashboard() {
       const tabParam = params.get("tab");
       const validTabs = [
         "dashboard", "intake", "patients", "diagnostics", "analyzer", 
-        "diet-lifestyle", "nexus-atlas", "learning-hub", "communication", 
+        "diet-lifestyle", "treatment-planner", "nexus-atlas", "learning-hub", "communication", 
         "ai-router", "health-intelligence", "cie"
       ];
       if (tabParam && validTabs.includes(tabParam)) {
@@ -2744,6 +2858,163 @@ export default function AdminDashboard() {
   const [selectedHistoricalMasterId, setSelectedHistoricalMasterId] = useState<string>("hahnemann");
   const [historicalSearchQuery, setHistoricalSearchQuery] = useState("");
   const [historicalViewMode, setHistoricalViewMode] = useState<"profiles" | "timeline" | "quotes">("profiles");
+
+  // ------------------------------------------------------------
+  // TREATMENT PLANNER STATES & LOGIC
+  // ------------------------------------------------------------
+  const [plannerCareLevel, setPlannerCareLevel] = useState<string>("focused");
+  const [plannerBillingCycle, setPlannerBillingCycle] = useState<"monthly" | "weekly">("monthly");
+  const [plannerDurationValue, setPlannerDurationValue] = useState<number>(3);
+  const [plannerConditionsCount, setPlannerConditionsCount] = useState<number>(1);
+  const [plannerConcessionType, setPlannerConcessionType] = useState<string>("None");
+  const [plannerOverridePrice, setPlannerOverridePrice] = useState<number>(16800);
+  const [plannerReceived, setPlannerReceived] = useState<number>(0);
+  const [plannerMedicineAddons, setPlannerMedicineAddons] = useState<{ id: string; type: string; details: string; amount: number }[]>([]);
+  const [addonType, setAddonType] = useState<string>("Dilution");
+  const [addonDetails, setAddonDetails] = useState<string>("");
+  const [addonAmount, setAddonAmount] = useState<number>(150);
+
+  // Dynamic Pricing Calculation for Treatment Planner (using useMemo to prevent compiler inlining issue/TDZ on Vercel)
+  const calculatedPrices = useMemo(() => {
+    const basePricing = calculatePlannerPricing(
+      plannerCareLevel,
+      plannerBillingCycle,
+      plannerDurationValue,
+      plannerConditionsCount
+    );
+    
+    let concessionAmount = 0;
+    if (plannerConcessionType === "Senior") {
+      concessionAmount = Math.round(basePricing.finalPriceBeforeConcession * 0.15);
+    } else if (plannerConcessionType === "Socio") {
+      concessionAmount = Math.round(basePricing.finalPriceBeforeConcession * 0.30);
+    } else if (plannerConcessionType === "Override") {
+      concessionAmount = Math.max(0, basePricing.finalPriceBeforeConcession - plannerOverridePrice);
+    }
+    
+    const addonsSum = plannerMedicineAddons.reduce((sum, item) => sum + item.amount, 0);
+    
+    const finalPrice = basePricing.finalPriceBeforeConcession - concessionAmount + addonsSum;
+    const computedBalanceDue = finalPrice - plannerReceived;
+    
+    return {
+      ...basePricing,
+      concessionAmount,
+      addonsSum,
+      finalPrice,
+      balanceDue: computedBalanceDue
+    };
+  }, [
+    plannerCareLevel,
+    plannerBillingCycle,
+    plannerDurationValue,
+    plannerConditionsCount,
+    plannerConcessionType,
+    plannerOverridePrice,
+    plannerReceived,
+    plannerMedicineAddons
+  ]);
+
+  // Synchronize Treatment Planner state with selected patient
+  const lastLoadedPatientId = useRef<string | null>(null);
+  useEffect(() => {
+    if (selectedPatientId && selectedPatientId !== lastLoadedPatientId.current) {
+      const activePatient = patients.find(p => p.id === selectedPatientId);
+      if (activePatient) {
+        lastLoadedPatientId.current = selectedPatientId;
+        // If patient already has a plan saved, use those values
+        if (activePatient.careLevel) {
+          const levelKey = getCareLevelKey(activePatient.careLevel);
+          setPlannerCareLevel(levelKey);
+        }
+        if (activePatient.billingCycle) {
+          setPlannerBillingCycle(activePatient.billingCycle);
+        }
+        if (activePatient.durationValue) {
+          setPlannerDurationValue(activePatient.durationValue);
+        } else if (activePatient.durationText) {
+          setPlannerDurationValue(getDurationMonths(activePatient.durationText));
+        }
+        if (activePatient.conditionsCount) {
+          setPlannerConditionsCount(activePatient.conditionsCount);
+        }
+        if (activePatient.concessionApplied) {
+          setPlannerConcessionType(activePatient.concessionApplied);
+        }
+        if (activePatient.receivedAmount !== undefined) {
+          setPlannerReceived(activePatient.receivedAmount);
+        }
+        if (activePatient.medicineAddons) {
+          setPlannerMedicineAddons(activePatient.medicineAddons);
+        } else {
+          setPlannerMedicineAddons([]);
+        }
+        if (activePatient.finalPrice) {
+          if (activePatient.concessionApplied === "Override") {
+            setPlannerOverridePrice(activePatient.finalPrice);
+          }
+        }
+      }
+    } else if (!selectedPatientId) {
+      lastLoadedPatientId.current = null;
+    }
+  }, [selectedPatientId, patients]);
+
+  const handleSavePlannerToPatient = async () => {
+    if (!selectedPatientId) {
+      alert("Please select a patient first.");
+      return;
+    }
+    const isMockProject = !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID === "mock-project-id";
+    
+    let durationText = `${plannerDurationValue}-Month Treatment Plan`;
+    if (plannerBillingCycle === "weekly") {
+      durationText = `${plannerDurationValue}-Week Treatment Plan`;
+    }
+    
+    const updatedFields = {
+      careLevel: careLevelsDetails[plannerCareLevel as keyof typeof careLevelsDetails].title,
+      durationText: durationText,
+      finalPrice: calculatedPrices.finalPrice,
+      receivedAmount: plannerReceived,
+      remainingBalance: calculatedPrices.balanceDue,
+      billingCycle: plannerBillingCycle,
+      concessionApplied: plannerConcessionType,
+      conditionsCount: plannerConditionsCount,
+      durationValue: plannerDurationValue,
+      medicineAddons: plannerMedicineAddons
+    };
+
+    try {
+      if (!isMockProject) {
+        const patientRef = doc(db, "patients", selectedPatientId);
+        await updateDoc(patientRef, updatedFields);
+      } else {
+        setPatients(prev => prev.map(p => {
+          if (p.id === selectedPatientId) {
+            return {
+              ...p,
+              ...updatedFields
+            } as any;
+          }
+          return p;
+        }));
+      }
+      alert("Plan saved successfully to patient file!");
+    } catch (err) {
+      console.error("Failed to update patient billing plan in Firestore:", err);
+      setPatients(prev => prev.map(p => {
+        if (p.id === selectedPatientId) {
+          return {
+            ...p,
+            ...updatedFields
+          } as any;
+        }
+        return p;
+      }));
+      alert("Plan updated locally (offline mode).");
+    }
+  };
 
   // Live Force-Directed Canvas Simulation for Homeopathic Nexus Atlas
   useEffect(() => {
@@ -4721,11 +4992,11 @@ Homeo Healthcare`;
 
   // Helper to handle mouse hover subtabs navigation
   const handleSubTabClick = (
-    tabId: "dashboard" | "intake" | "patients" | "diagnostics" | "analyzer" | "diet-lifestyle" | "nexus-atlas" | "learning-hub" | "communication" | "ai-router" | "health-intelligence" | "cie",
+    tabId: "dashboard" | "intake" | "patients" | "diagnostics" | "analyzer" | "diet-lifestyle" | "treatment-planner" | "nexus-atlas" | "learning-hub" | "communication" | "ai-router" | "health-intelligence" | "cie",
     subSectionId: string,
     action?: () => void
   ) => {
-    setActiveTab(tabId);
+    setActiveTab(tabId as any);
     if (tabId === "cie") {
       if (subSectionId === "cie-cockpit") setCieSubTab("cockpit");
       else if (subSectionId === "cie-intake") setCieSubTab("intake");
@@ -4744,65 +5015,6 @@ Homeo Healthcare`;
   };
 
 
-  const getDurationMonths = (duration: string) => {
-    if (duration.includes("3-Month")) return 3;
-    if (duration.includes("6-Month")) return 6;
-    if (duration.includes("12-Month")) return 12;
-    return 1;
-  };
-
-  const getDurationValue = (duration: string) => {
-    if (duration.includes("3-Month")) return 3;
-    if (duration.includes("6-Month")) return 6;
-    if (duration.includes("12-Month")) return 12;
-    if (duration.includes("2-Week")) return 2;
-    if (duration.includes("4-Week")) return 4;
-    if (duration.includes("8-Week")) return 8;
-    if (duration.includes("12-Week")) return 12;
-    return 1;
-  };
-
-  const careLevelsDetails = {
-    mild: { title: "Acute & Wellness Care", weeklyPrice: 1200, monthlyPrice: 4800 },
-    moderate: { title: "Standard Chronic Care", weeklyPrice: 2400, monthlyPrice: 9600 },
-    focused: { title: "Deep Systemic Care", weeklyPrice: 4200, monthlyPrice: 16800 },
-    acute_critical: { title: "Acute Critical Care", weeklyPrice: 5000, monthlyPrice: 20000 },
-    organ: { title: "Advanced Pathological Care", weeklyPrice: 6000, monthlyPrice: 24000 },
-    comprehensive: { title: "Multisystem Integrative Care", weeklyPrice: 8400, monthlyPrice: 33600 },
-  };
-
-  const surchargesLookup = {
-    mild: { unitWeekly: 300, unitMonthly: 1200 },
-    moderate: { unitWeekly: 450, unitMonthly: 1800 },
-    focused: { unitWeekly: 750, unitMonthly: 3000 },
-    acute_critical: { unitWeekly: 1000, unitMonthly: 4000 },
-    organ: { unitWeekly: 1050, unitMonthly: 4200 },
-    comprehensive: { unitWeekly: 1350, unitMonthly: 5400 }
-  };
-
-  const getCareLevelKey = (level: string) => {
-    if (level.includes("Standard")) return "moderate";
-    if (level.includes("Deep")) return "focused";
-    if (level.includes("Advanced")) return "organ";
-    if (level.includes("Multisystem")) return "comprehensive";
-    if (level.includes("Critical") || level.includes("🚨")) return "acute_critical";
-    return "mild";
-  };
-
-  const getCareLevelRate = (level: string, cycle: string) => {
-    const key = getCareLevelKey(level);
-    const isWeekly = cycle === "Weekly";
-    const basePrice = isWeekly ? careLevelsDetails[key].weeklyPrice : careLevelsDetails[key].monthlyPrice;
-    
-    const conditions = level.includes("Multisystem") ? 2 : 1;
-    let surcharge = 0;
-    if (conditions > 1) {
-      const tierSurcharges = surchargesLookup[key];
-      const unit = isWeekly ? tierSurcharges.unitWeekly : tierSurcharges.unitMonthly;
-      surcharge = (conditions - 1) * unit;
-    }
-    return basePrice + surcharge;
-  };
 
 
   const getOptionLabel = (baseLabel: string, monthlyPrice: number) => {
@@ -11193,6 +11405,435 @@ ${err.message || err}`);
               </div>
             </div>
           )}
+
+          {/* TAB: Treatment Planner */}
+          {activeTab === "treatment-planner" && (() => {
+            const activePatient = selectedPatientId ? patients.find(p => p.id === selectedPatientId) : null;
+            
+            // Format dynamic WhatsApp message text
+            const careText = careLevelsDetails[plannerCareLevel as keyof typeof careLevelsDetails]?.title || "Doctor-Led Custom Care";
+            const condText = plannerConditionsCount === 1 ? "1 Condition" : `${plannerConditionsCount} Conditions`;
+            const durText = plannerBillingCycle === "weekly"
+              ? `${plannerDurationValue} ${plannerDurationValue === 1 ? "Week" : "Weeks"}`
+              : `${plannerDurationValue} ${plannerDurationValue === 1 ? "Month" : "Months"}`;
+            const concessionText = plannerConcessionType !== "None" ? `, Concession: ${plannerConcessionType}` : "";
+            
+            const whatsappInvoiceText = `Dear ${activePatient?.name || "Valued Patient"},\n\nThank you for consulting Homeo Healthcare.\n\nYour treatment package is successfully configured:\n*Care Program:* ${careText}\n*Scope:* ${condText}\n*Duration:* ${durText}${concessionText}\n\n*Pricing Breakdown Summary:*\n- Base Care Rate: ₹${calculatedPrices.basePrice.toLocaleString("en-IN")}\n` +
+              (calculatedPrices.surcharge > 0 ? `- Co-existing Surcharge: +₹${calculatedPrices.surcharge.toLocaleString("en-IN")}\n` : "") +
+              (calculatedPrices.discountAmount > 0 ? `- Duration Discount: -₹${calculatedPrices.discountAmount.toLocaleString("en-IN")}\n` : "") +
+              (calculatedPrices.concessionAmount > 0 ? `- Concession Applied: -₹${calculatedPrices.concessionAmount.toLocaleString("en-IN")}\n` : "") +
+              (calculatedPrices.addonsSum > 0 ? `- Medicine Add-ons: +₹${calculatedPrices.addonsSum.toLocaleString("en-IN")}\n` : "") +
+              `----------------------------------------\n` +
+              `*Total Program Cost: ₹${calculatedPrices.finalPrice.toLocaleString("en-IN")}*\n` +
+              `*Amount Received Today: ₹${plannerReceived.toLocaleString("en-IN")}*\n` +
+              `*Outstanding Balance Due: ₹${calculatedPrices.balanceDue.toLocaleString("en-IN")}*\n\n` +
+              `Please transfer using GPay: *8446056789* (or UPI: *drnarayan@okaxis*).\n` +
+              `Kindly share the transaction screenshot once completed.`;
+
+            return (
+              <div className={`space-y-6 transition-all duration-300 ${fullscreenTab === "treatment-planner" ? "fixed inset-0 z-[50] overflow-y-auto bg-pearl dark:bg-slate-950 p-8" : "relative"}`}>
+                <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+                  <div>
+                    <h2 className="text-xl font-serif font-bold text-slate-850 dark:text-slate-100">Multi-Clinic Treatment Planner & Fee Structure</h2>
+                    <p className="text-xs text-slate-400 font-sans mt-0.5">Calculate systemic care pricing, concessions, add-ons, outstanding balances, and generate invoice messages.</p>
+                  </div>
+                  <button
+                    onClick={() => setFullscreenTab(fullscreenTab === "treatment-planner" ? null : "treatment-planner")}
+                    className="px-3 py-1.5 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 transition-all flex items-center gap-1.5 cursor-pointer bg-white dark:bg-slate-955"
+                  >
+                    {fullscreenTab === "treatment-planner" ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+                    <span>{fullscreenTab === "treatment-planner" ? "Minimize" : "Full Screen"}</span>
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                  {/* Left Column: Configuration (lg:col-span-5) */}
+                  <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800/85 shadow-sm space-y-4 lg:col-span-5">
+                    <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 border-b border-slate-100 dark:border-slate-800 pb-2 flex items-center gap-2">
+                      <Sliders className="w-4 h-4 text-emerald-600" />
+                      Plan Configuration
+                    </h3>
+
+                    <div className="space-y-4 text-xs font-semibold">
+                      {/* Patient Dropdown Selector */}
+                      <div className="flex flex-col gap-1">
+                        <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-450 dark:text-slate-400">Select Active Patient</label>
+                        <select
+                          value={selectedPatientId || ""}
+                          onChange={(e) => setSelectedPatientId(e.target.value || "")}
+                          className="w-full p-3 border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 rounded-xl focus:outline-none text-xs font-bold text-slate-800 dark:text-slate-100 cursor-pointer"
+                        >
+                          <option value="">-- Standalone Billing Calculator --</option>
+                          {patients.map((pat) => (
+                            <option key={pat.id} value={pat.id}>
+                              {pat.name} ({pat.age}y, {pat.gender}) {pat.phone ? `• ${pat.phone}` : ""}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {activePatient && (
+                        <div className="p-3.5 bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800/80 rounded-2xl space-y-1 text-xs text-slate-600 dark:text-slate-400 animate-fadeIn">
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="text-[9px] uppercase tracking-wider font-extrabold text-slate-450">Selected Patient File</span>
+                            <span className="text-[9px] uppercase tracking-wider font-mono bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 px-1.5 py-0.5 rounded font-black">
+                              ID: {activePatient.id.substring(0, 8)}
+                            </span>
+                          </div>
+                          <div className="text-slate-900 dark:text-slate-100 font-bold text-xs mt-1">{activePatient.name}</div>
+                          <div>Complaint: <span className="text-slate-700 dark:text-slate-300 italic">{activePatient.complaint || "N/A"}</span></div>
+                          {activePatient.careLevel && (
+                            <div className="mt-1 flex items-center gap-1.5">
+                              <span className="text-[10px] bg-slate-200 dark:bg-slate-805 px-2 py-0.5 rounded font-semibold text-slate-700 dark:text-slate-300">
+                                Current: {activePatient.careLevel} ({activePatient.durationText})
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Care Level */}
+                      <div className="flex flex-col gap-1">
+                        <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-450 dark:text-slate-400">Care Level</label>
+                        <select
+                          className="w-full p-3 border border-slate-250 dark:border-slate-800 bg-white dark:bg-slate-950 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 text-xs font-semibold text-slate-800 dark:text-slate-100 cursor-pointer"
+                          value={plannerCareLevel}
+                          onChange={(e) => setPlannerCareLevel(e.target.value)}
+                        >
+                          <option value="mild">Acute & Wellness Care (₹4,800/mo)</option>
+                          <option value="moderate">Standard Chronic Care (₹9,600/mo)</option>
+                          <option value="focused">Deep Systemic Care (₹16,800/mo)</option>
+                          <option value="acute_critical">Acute Critical Care (₹20,000/mo)</option>
+                          <option value="organ">Advanced Pathological Care (₹24,000/mo)</option>
+                          <option value="comprehensive">Multisystem Integrative Care (₹33,600/mo)</option>
+                        </select>
+                      </div>
+
+                      {/* Billing Cycle */}
+                      <div className="flex flex-col gap-1">
+                        <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-450 dark:text-slate-400">Billing Cycle</label>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => {
+                              setPlannerBillingCycle("monthly");
+                              setPlannerDurationValue(3); // default 3 mo
+                            }}
+                            className={`flex-1 py-2 rounded-xl border text-center font-bold transition-all text-xs uppercase tracking-wider cursor-pointer ${
+                              plannerBillingCycle === "monthly"
+                                ? "bg-emerald-600 text-white border-emerald-600"
+                                : "bg-white dark:bg-slate-950 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-805 hover:bg-slate-50 dark:hover:bg-slate-900"
+                            }`}
+                          >
+                            Monthly Commit
+                          </button>
+                          <button
+                            onClick={() => {
+                              setPlannerBillingCycle("weekly");
+                              setPlannerDurationValue(12); // default 12 weeks
+                            }}
+                            className={`flex-1 py-2 rounded-xl border text-center font-bold transition-all text-xs uppercase tracking-wider cursor-pointer ${
+                              plannerBillingCycle === "weekly"
+                                ? "bg-emerald-600 text-white border-emerald-600"
+                                : "bg-white dark:bg-slate-955 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-805 hover:bg-slate-50 dark:hover:bg-slate-900"
+                            }`}
+                          >
+                            Weekly Settle
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Duration Value */}
+                      <div className="flex flex-col gap-1">
+                        <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-450 dark:text-slate-400">
+                          Duration ({plannerBillingCycle === "weekly" ? "Weeks" : "Months"})
+                        </label>
+                        <select
+                          className="w-full p-3 border border-slate-250 dark:border-slate-800 bg-white dark:bg-slate-950 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 text-xs font-semibold text-slate-800 dark:text-slate-100 cursor-pointer"
+                          value={plannerDurationValue}
+                          onChange={(e) => setPlannerDurationValue(Number(e.target.value))}
+                        >
+                          {plannerBillingCycle === "weekly" ? (
+                            <>
+                              <option value={1}>1 Week</option>
+                              <option value={2}>2 Weeks (5% discount)</option>
+                              <option value={4}>4 Weeks (10% discount)</option>
+                              <option value={8}>8 Weeks (15% discount)</option>
+                              <option value={12}>12 Weeks (20% discount)</option>
+                              <option value={24}>24 Weeks (25% discount)</option>
+                              <option value={48}>48 Weeks (30% discount)</option>
+                            </>
+                          ) : (
+                            <>
+                              <option value={1}>1 Month (10% discount)</option>
+                              <option value={2}>2 Months (15% discount)</option>
+                              <option value={3}>3 Months (20% discount)</option>
+                              <option value={6}>6 Months (25% discount)</option>
+                              <option value={12}>12 Months (30% discount)</option>
+                            </>
+                          )}
+                        </select>
+                      </div>
+
+                      {/* Conditions Count */}
+                      <div className="flex flex-col gap-1">
+                        <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-450 dark:text-slate-400">Co-existing Conditions</label>
+                        <select
+                          className="w-full p-3 border border-slate-255 dark:border-slate-800 bg-white dark:bg-slate-950 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 text-xs font-semibold text-slate-800 dark:text-slate-100 cursor-pointer"
+                          value={plannerConditionsCount}
+                          onChange={(e) => setPlannerConditionsCount(Number(e.target.value))}
+                        >
+                          <option value={1}>1 Condition (Standard)</option>
+                          <option value={2}>2 Conditions (+ Surcharge)</option>
+                          <option value={3}>3 Conditions (+ Surcharge)</option>
+                          <option value={4}>4 Conditions (+ Surcharge)</option>
+                          <option value={5}>5+ Conditions (+ Surcharge)</option>
+                        </select>
+                      </div>
+
+                      {/* Concession type */}
+                      <div className="flex flex-col gap-1">
+                        <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-450 dark:text-slate-450">Concession Applied</label>
+                        <select
+                          className="w-full p-3 border border-slate-250 dark:border-slate-800 bg-white dark:bg-slate-955 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 text-xs font-semibold text-slate-805 dark:text-slate-100 cursor-pointer"
+                          value={plannerConcessionType}
+                          onChange={(e) => setPlannerConcessionType(e.target.value)}
+                        >
+                          <option value="None">None</option>
+                          <option value="Senior">Senior Citizen (15% Concession)</option>
+                          <option value="Socio">Socio-Economic (30% Compassionate)</option>
+                          <option value="Override">Custom Override Price</option>
+                        </select>
+                      </div>
+
+                      {/* Custom Override Price */}
+                      {plannerConcessionType === "Override" && (
+                        <div className="flex flex-col gap-1 bg-amber-500/5 border border-amber-200 dark:border-amber-900/60 p-3.5 rounded-xl animate-fade-in">
+                          <label className="text-[10px] font-bold text-amber-800 dark:text-amber-400 uppercase tracking-wider">Custom Override Price (₹)</label>
+                          <input
+                            type="number"
+                            className="w-full p-2.5 border border-amber-300 dark:border-amber-800 bg-white dark:bg-slate-950 rounded-lg focus:outline-none text-xs font-bold text-slate-800 dark:text-slate-100 mt-1"
+                            value={plannerOverridePrice}
+                            onChange={(e) => setPlannerOverridePrice(Math.max(0, parseInt(e.target.value) || 0))}
+                          />
+                        </div>
+                      )}
+
+                      {/* Medicine Add-ons Section */}
+                      <div className="border-t border-slate-100 dark:border-slate-800 pt-3 space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-[10px] uppercase tracking-wider font-extrabold text-slate-450 dark:text-slate-450">Medicine Add-ons</span>
+                          <span className="text-[9px] text-slate-400 dark:text-slate-500 font-bold font-mono">₹{calculatedPrices.addonsSum.toLocaleString("en-IN")} Total</span>
+                        </div>
+
+                        <div className="bg-slate-50 dark:bg-slate-950/40 p-3 rounded-2xl border border-slate-150 dark:border-slate-800 space-y-3">
+                          <div className="grid grid-cols-3 gap-2">
+                            <div className="col-span-1">
+                              <select
+                                className="w-full p-2 border border-slate-205 dark:border-slate-800 bg-white dark:bg-slate-950 rounded-lg focus:outline-none text-[10px] font-semibold text-slate-705 dark:text-slate-200 cursor-pointer"
+                                value={addonType}
+                                onChange={(e) => setAddonType(e.target.value)}
+                              >
+                                <option value="Dilution">Dilution</option>
+                                <option value="Mother Tincture">Tincture</option>
+                                <option value="Biochemic">Biochemic</option>
+                                <option value="Trituration">Trituration</option>
+                                <option value="Diet Supplement">Supplement</option>
+                                <option value="Consumable">Consumable</option>
+                              </select>
+                            </div>
+                            <div className="col-span-1">
+                              <input
+                                type="text"
+                                placeholder="e.g. 30C, Q, 6X"
+                                className="w-full p-2 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 rounded-lg focus:outline-none text-[10px] font-semibold text-slate-705 dark:text-slate-200"
+                                value={addonDetails}
+                                onChange={(e) => setAddonDetails(e.target.value)}
+                              />
+                            </div>
+                            <div className="col-span-1 flex gap-1">
+                              <input
+                                type="number"
+                                placeholder="Price"
+                                className="w-full p-2 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-955 rounded-lg focus:outline-none text-[10px] font-semibold text-slate-705 dark:text-slate-200"
+                                value={addonAmount || ""}
+                                onChange={(e) => setAddonAmount(Math.max(0, parseInt(e.target.value) || 0))}
+                              />
+                              <button
+                                onClick={() => {
+                                  const newItem = {
+                                    id: Math.random().toString(),
+                                    type: addonType,
+                                    details: addonDetails || "Custom add-on",
+                                    amount: addonAmount
+                                  };
+                                  setPlannerMedicineAddons(prev => [...prev, newItem]);
+                                  setAddonDetails("");
+                                }}
+                                className="px-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg flex items-center justify-center cursor-pointer border-none font-bold"
+                              >
+                                <Plus className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+
+                          {plannerMedicineAddons.length > 0 && (
+                            <div className="space-y-1.5 max-h-[120px] overflow-y-auto pr-1 mt-1 border-t border-slate-100 dark:border-slate-800 pt-2">
+                              {plannerMedicineAddons.map((item) => (
+                                <div key={item.id} className="flex justify-between items-center bg-white dark:bg-slate-955 p-2 border border-slate-150 dark:border-slate-800 rounded-xl text-[10px]">
+                                  <div className="flex flex-col">
+                                    <span className="text-slate-750 dark:text-slate-350 font-bold">{item.type}</span>
+                                    <span className="text-slate-400 text-[8.5px]">{item.details}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-extrabold text-slate-850 dark:text-slate-200 font-mono">₹{item.amount}</span>
+                                    <button
+                                      onClick={() => {
+                                        setPlannerMedicineAddons(prev => prev.filter(x => x.id !== item.id));
+                                      }}
+                                      className="text-rose-500 hover:text-rose-700 cursor-pointer bg-transparent border-none p-0 flex items-center justify-center"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+
+                  {/* Right Column: Breakdown & Invoice (lg:col-span-7) */}
+                  <div className="lg:col-span-7 space-y-6">
+                    {/* Live Pricing Breakdown */}
+                    <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 space-y-4 shadow-sm">
+                      <h3 className="text-sm font-bold text-slate-850 dark:text-slate-200 border-b border-slate-100 dark:border-slate-800 pb-2 flex items-center gap-2">
+                        <IndianRupee className="w-4 h-4 text-emerald-600" />
+                        Live Pricing Breakdown
+                      </h3>
+
+                      <div className="space-y-2 text-xs font-semibold text-slate-650 dark:text-slate-400">
+                        <div className="flex justify-between items-center">
+                          <span>Base Care Rate:</span>
+                          <span className="font-bold text-slate-800 dark:text-slate-200 font-mono">₹{calculatedPrices.basePrice.toLocaleString("en-IN")} / {plannerBillingCycle === "weekly" ? "week" : "month"}</span>
+                        </div>
+                        {calculatedPrices.surcharge > 0 && (
+                          <div className="flex justify-between items-center text-amber-705 dark:text-amber-400 bg-amber-500/5 px-2.5 py-1.5 rounded-xl border border-amber-200 dark:border-amber-900/40">
+                            <span>Co-existing Conditions Surcharge:</span>
+                            <span className="font-bold font-mono">+₹{calculatedPrices.surcharge.toLocaleString("en-IN")}</span>
+                          </div>
+                        )}
+                        <div className="flex justify-between items-center border-t border-slate-100 dark:border-slate-800 pt-1.5">
+                          <span>Gross Adjusted Rate:</span>
+                          <span className="font-bold text-slate-800 dark:text-slate-200 font-mono">₹{calculatedPrices.adjustedBasePrice.toLocaleString("en-IN")}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span>Duration Multiplier:</span>
+                          <span className="font-bold text-slate-850 dark:text-slate-350">× {plannerDurationValue} {plannerBillingCycle === "weekly" ? (plannerDurationValue === 1 ? "week" : "weeks") : (plannerDurationValue === 1 ? "month" : "months")}</span>
+                        </div>
+                        <div className="flex justify-between items-center font-bold text-slate-800 dark:text-slate-200 bg-slate-50 dark:bg-slate-950 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
+                          <span>Gross Subtotal:</span>
+                          <span className="font-mono">₹{calculatedPrices.rawTotal.toLocaleString("en-IN")}</span>
+                        </div>
+                        {calculatedPrices.discountPercent > 0 && (
+                          <div className="flex justify-between items-center text-emerald-700 dark:text-emerald-400 bg-emerald-500/5 px-2 py-1 rounded-lg">
+                            <span>Duration Discount ({calculatedPrices.discountPercent}%):</span>
+                            <span className="font-mono">-₹{calculatedPrices.discountAmount.toLocaleString("en-IN")}</span>
+                          </div>
+                        )}
+                        {calculatedPrices.concessionAmount > 0 && (
+                          <div className="flex justify-between items-center text-indigo-700 dark:text-indigo-400 bg-indigo-500/5 px-2 py-1 rounded-lg">
+                            <span>Concession Applied ({plannerConcessionType === "Senior" ? "Senior 15%" : plannerConcessionType === "Socio" ? "Socio-Economic 30%" : "Custom Override"}):</span>
+                            <span className="font-mono">-₹{calculatedPrices.concessionAmount.toLocaleString("en-IN")}</span>
+                          </div>
+                        )}
+                        {calculatedPrices.addonsSum > 0 && (
+                          <div className="flex justify-between items-center text-slate-700 dark:text-slate-300">
+                            <span>Medicine Add-ons Sum:</span>
+                            <span className="font-bold font-mono">+₹{calculatedPrices.addonsSum.toLocaleString("en-IN")}</span>
+                          </div>
+                        )}
+                        
+                        <div className="flex justify-between items-center border-t border-slate-200 dark:border-slate-800 pt-2 text-xs font-black text-slate-850 dark:text-slate-100">
+                          <span className="text-sm">Total Program Cost:</span>
+                          <span className="text-emerald-600 text-base font-black font-mono">₹{calculatedPrices.finalPrice.toLocaleString("en-IN")}</span>
+                        </div>
+
+                        <div className="flex justify-between items-center border-t border-dashed border-slate-200 dark:border-slate-805 pt-2.5">
+                          <span className="text-slate-450">Amount Received Today (₹):</span>
+                          <input
+                            type="number"
+                            className="p-2 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 rounded-lg focus:outline-none text-xs font-bold text-slate-800 dark:text-slate-100 w-32 text-right font-mono"
+                            value={plannerReceived || ""}
+                            onChange={(e) => setPlannerReceived(Math.max(0, parseInt(e.target.value) || 0))}
+                          />
+                        </div>
+
+                        <div className="flex justify-between items-center border-t-2 border-slate-200 dark:border-slate-800 pt-2 text-xs font-black">
+                          <span className="text-slate-800 dark:text-slate-200">Outstanding Balance Due:</span>
+                          <span className={`text-base font-black font-mono ${calculatedPrices.balanceDue > 0 ? "text-rose-600 dark:text-rose-500" : "text-emerald-600 dark:text-emerald-400"}`}>
+                            ₹{calculatedPrices.balanceDue.toLocaleString("en-IN")}
+                          </span>
+                        </div>
+                      </div>
+
+                      {activePatient && (
+                        <div className="pt-2">
+                          <button
+                            onClick={handleSavePlannerToPatient}
+                            className="w-full flex items-center justify-center gap-2 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer border-none"
+                          >
+                            <Check className="w-4 h-4" />
+                            <span>Update Plan & Save to {activePatient.name}'s Case File</span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* WhatsApp Message Box */}
+                    <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 space-y-4 shadow-sm">
+                      <h3 className="text-sm font-bold text-slate-850 dark:text-slate-200 border-b border-slate-100 dark:border-slate-800 pb-2 flex items-center gap-2">
+                        <Copy className="w-4 h-4 text-slate-400 dark:text-slate-500" />
+                        WhatsApp Invoice Message
+                      </h3>
+
+                      <pre className="text-[10px] text-slate-650 dark:text-slate-350 font-semibold leading-relaxed bg-slate-50 dark:bg-slate-950/60 border border-slate-250 dark:border-slate-800 rounded-2xl p-4 select-all min-h-[120px] max-h-[250px] overflow-y-auto whitespace-pre-wrap font-mono font-bold">
+                        {whatsappInvoiceText}
+                      </pre>
+
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(whatsappInvoiceText);
+                            alert("Invoice message copied to clipboard!");
+                          }}
+                          className="flex-1 flex items-center justify-center gap-2 py-3 bg-slate-900 dark:bg-slate-950 hover:bg-slate-850 dark:hover:bg-slate-900 text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all shadow-sm cursor-pointer border border-slate-850 dark:border-slate-800"
+                        >
+                          <Copy className="w-4 h-4" />
+                          <span>Copy Message</span>
+                        </button>
+                        <button
+                          onClick={() => {
+                            const cleanPhone = activePatient?.phone?.replace(/\D/g, "") || "";
+                            const waPhone = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone;
+                            const textParam = encodeURIComponent(whatsappInvoiceText);
+                            window.open(`https://api.whatsapp.com/send?phone=${waPhone}&text=${textParam}`, "_blank");
+                          }}
+                          className="flex-1 flex items-center justify-center gap-2 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer border-none"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                          <span>Send via WhatsApp</span>
+                        </button>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
 
           {/* TAB: Communications */}
           {activeTab === "communication" && (

@@ -7,7 +7,7 @@ import {
   ArrowRight, ArrowLeft, MessageSquare, ShieldCheck, Truck, Clock,
   Sliders, Plus, Trash2, Share2, Copy, Save, LayoutGrid, Layers, Activity,
   Info, Percent, HelpCircle, UserCheck, AlertTriangle,
-  PlusCircle
+  PlusCircle, Calendar, Check
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -944,9 +944,15 @@ export default function StorePage() {
       const durationParam = params.get("duration");
       const conditionsParam = params.get("conditions");
       const modeParam = params.get("mode");
+      const sParam = params.get("s");
 
       if (modeParam === "catalog" || modeParam === "dashboard" || modeParam === "doctorPlan" || modeParam === "triage" || modeParam === "helper") {
         setViewMode(modeParam === "helper" ? "triage" : modeParam as any);
+      }
+      
+      if (sParam) {
+        setSearchQuery(sParam);
+        setViewMode("catalog");
       }
       
       if (levelParam && ["mild", "moderate", "focused", "organ", "comprehensive", "acute_critical"].includes(levelParam)) {
@@ -3106,6 +3112,173 @@ export default function StorePage() {
               transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
               className="space-y-12"
             >
+              {/* Redesigned Premium Quick Actions Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <motion.a
+                  href="/contact-us"
+                  whileHover={{ y: -4, scale: 1.01 }}
+                  className="glass-panel border-emerald-500/20 hover:border-emerald-500/50 bg-white dark:bg-slate-900/65 p-6 rounded-3xl flex items-center justify-between group shadow-sm hover:shadow-md transition-all cursor-pointer text-left"
+                >
+                  <div className="space-y-1 pr-4">
+                    <h3 className="text-sm font-bold text-slate-800 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 breathe" />
+                      Book a Free Consultation
+                    </h3>
+                    <p className="text-[11px] text-slate-500 font-semibold leading-relaxed">
+                      Schedule a 10-minute discovery call with our clinic coordinators.
+                    </p>
+                  </div>
+                  <div className="w-10 h-10 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                    <Calendar className="w-5 h-5" />
+                  </div>
+                </motion.a>
+
+                <motion.a
+                  href="https://wa.me/918446056789"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ y: -4, scale: 1.01 }}
+                  className="glass-panel border-teal-500/20 hover:border-teal-500/50 bg-emerald-500/[0.03] dark:bg-emerald-950/20 p-6 rounded-3xl flex items-center justify-between group shadow-sm hover:shadow-md transition-all cursor-pointer text-left"
+                >
+                  <div className="space-y-1 pr-4">
+                    <h3 className="text-sm font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                      WhatsApp Us
+                    </h3>
+                    <p className="text-[11px] text-slate-500 font-semibold leading-relaxed">
+                      Get instant replies regarding plans, pricing, or symptoms.
+                    </p>
+                  </div>
+                  <div className="w-10 h-10 rounded-full bg-emerald-600/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                    <MessageSquare className="w-5 h-5" />
+                  </div>
+                </motion.a>
+
+                <motion.button
+                  onClick={() => {
+                    const el = document.getElementById("catalog-section");
+                    if (el) el.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  whileHover={{ y: -4, scale: 1.01 }}
+                  className="glass-panel border-slate-200 dark:border-slate-800 hover:border-slate-500 bg-slate-900/[0.02] dark:bg-slate-950/40 p-6 rounded-3xl flex items-center justify-between group shadow-sm hover:shadow-md transition-all cursor-pointer text-left"
+                >
+                  <div className="space-y-1 pr-4">
+                    <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
+                      Browse All Plans
+                    </h3>
+                    <p className="text-[11px] text-slate-500 font-semibold leading-relaxed">
+                      Scroll to browse our full list of clinical care tiers.
+                    </p>
+                  </div>
+                  <div className="w-10 h-10 rounded-full bg-slate-900/10 dark:bg-slate-800 text-slate-700 dark:text-slate-350 flex items-center justify-center shrink-0 group-hover:bg-slate-900 dark:group-hover:bg-slate-200 dark:group-hover:text-slate-900 group-hover:text-white transition-all">
+                    <LayoutGrid className="w-5 h-5" />
+                  </div>
+                </motion.button>
+              </div>
+
+              {/* Trust & Safety Checklist Banner */}
+              <div className="relative overflow-hidden rounded-3xl bg-[#004D3C] border border-[#005c48] p-6 shadow-lg shadow-emerald-950/20">
+                {/* Background visual details */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-50/10 rounded-full blur-2xl pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-teal-50/10 rounded-full blur-xl pointer-events-none" />
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 relative z-10">
+                  {[
+                    "Safe, natural, non-toxic remedies",
+                    "No false cure claims — honest care",
+                    "Complements conventional treatment",
+                    "Report review before every prescription",
+                    "100% confidential consultations"
+                  ].map((text, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-center gap-3 bg-white/5 border border-white/10 hover:bg-white/10 px-4 py-3.5 rounded-2xl transition-colors duration-300"
+                    >
+                      <div className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center shrink-0 shadow-sm shadow-emerald-500/10">
+                        <Check className="w-3.5 h-3.5" />
+                      </div>
+                      <span className="text-[10px] md:text-[11px] font-black text-white uppercase tracking-wider leading-snug">
+                        {text}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* What Are You Looking to Treat? Redesigned Category Section */}
+              <div className="space-y-6 pt-2">
+                <div className="max-w-2xl">
+                  <h2 className="font-serif text-3xl font-bold tracking-tight text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+                    What Are You Looking to Treat?
+                  </h2>
+                  <p className="text-xs text-slate-500 font-semibold leading-relaxed">
+                    Select your health concern below to filter our specialized homeopathic treatment packages, or search for custom symptoms in the catalog.
+                  </p>
+                </div>
+
+                {/* Grid of condition pills */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 pt-2">
+                  {[
+                    { id: "diabetes", label: "Diabetes", query: "Diab", icon: "💉" },
+                    { id: "joints", label: "Joints & Arthritis", query: "Joint", icon: "🦴" },
+                    { id: "skin", label: "Skin & Hair", query: "Skin", icon: "🌱" },
+                    { id: "respiratory", label: "Respiratory & Asthma", query: "Lung", icon: "💨" },
+                    { id: "heart", label: "Heart & BP", query: "Heart", icon: "❤️" },
+                    { id: "digestive", label: "Digestive", query: "Digest", icon: "🥗" },
+                    { id: "neurological", label: "Neurological", query: "Neuro", icon: "🧠" },
+                    { id: "paediatric", label: "Paediatric", query: "Pediatric", icon: "🧸" },
+                    { id: "cancer", label: "Cancer Support", query: "Cancer", icon: "🎗️" },
+                    { id: "hair-fall", label: "Hair Fall", query: "Hair", icon: "💇‍♀️" },
+                    { id: "urological", label: "Urological", query: "Urinary", icon: "💧" },
+                    { id: "musculoskeletal", label: "Musculoskeletal", query: "Joint", icon: "💪" }
+                  ].map((pill) => {
+                    const isActive = searchQuery.toLowerCase() === pill.query.toLowerCase();
+                    return (
+                      <motion.button
+                        key={pill.id}
+                        onClick={() => {
+                          if (isActive) {
+                            setSearchQuery("");
+                          } else {
+                            setSearchQuery(pill.query);
+                          }
+                        }}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className={`px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-center gap-2.5 cursor-pointer border shadow-[0_2px_8px_rgba(0,0,0,0.01)] ${
+                          isActive
+                            ? "bg-gradient-to-r from-[#005944] to-[#008F6C] border-transparent text-white shadow-md shadow-emerald-500/15"
+                            : "bg-white/80 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-850 dark:text-slate-250 hover:border-emerald-500/50 hover:bg-white dark:hover:bg-slate-900"
+                        }`}
+                      >
+                        <span className="text-sm shrink-0">{pill.icon}</span>
+                        <span className="truncate leading-none">{pill.label}</span>
+                      </motion.button>
+                    );
+                  })}
+                  
+                  {/* Reset button pill */}
+                  <motion.button
+                    onClick={() => {
+                      setSearchQuery("");
+                      setFilter("all");
+                    }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className={`px-4 py-3 rounded-2xl text-xs font-black uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2.5 cursor-pointer border ${
+                      searchQuery === "" && filter === "all"
+                        ? "bg-gradient-to-r from-slate-800 to-slate-900 border-transparent text-white"
+                        : "bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-850 text-slate-650 dark:text-slate-350 hover:border-slate-500"
+                    }`}
+                  >
+                    <span>🎯</span>
+                    <span>All Plans</span>
+                  </motion.button>
+                </div>
+              </div>
+
+              {/* Anchor element for "Browse All Plans" scrolling */}
+              <div id="catalog-section" className="pt-2" />
+
               {/* Filters and Search Row */}
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 pb-8 border-b border-slate-900/5">
                 {/* Filters */}
