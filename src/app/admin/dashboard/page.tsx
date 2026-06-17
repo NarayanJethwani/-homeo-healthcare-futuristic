@@ -11500,12 +11500,12 @@ ${err.message || err}`);
                           value={plannerCareLevel}
                           onChange={(e) => setPlannerCareLevel(e.target.value)}
                         >
-                          <option value="mild">Acute & Wellness Care (₹4,800/mo)</option>
-                          <option value="moderate">Standard Chronic Care (₹9,600/mo)</option>
-                          <option value="focused">Deep Systemic Care (₹16,800/mo)</option>
-                          <option value="acute_critical">Acute Critical Care (₹20,000/mo)</option>
-                          <option value="organ">Advanced Pathological Care (₹24,000/mo)</option>
-                          <option value="comprehensive">Multisystem Integrative Care (₹33,600/mo)</option>
+                          <option value="mild">Acute & Wellness Care ({plannerBillingCycle === "weekly" ? "₹1,200/wk" : "₹4,800/mo"})</option>
+                          <option value="moderate">Standard Chronic Care ({plannerBillingCycle === "weekly" ? "₹2,400/wk" : "₹9,600/mo"})</option>
+                          <option value="focused">Deep Systemic Care ({plannerBillingCycle === "weekly" ? "₹4,200/wk" : "₹16,800/mo"})</option>
+                          <option value="acute_critical">Acute Critical Care ({plannerBillingCycle === "weekly" ? "₹5,000/wk" : "₹20,000/mo"})</option>
+                          <option value="organ">Advanced Pathological Care ({plannerBillingCycle === "weekly" ? "₹6,000/wk" : "₹24,000/mo"})</option>
+                          <option value="comprehensive">Multisystem Integrative Care ({plannerBillingCycle === "weekly" ? "₹8,400/wk" : "₹33,600/mo"})</option>
                         </select>
                       </div>
 
