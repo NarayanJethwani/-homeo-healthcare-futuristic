@@ -5282,7 +5282,7 @@ export default function StorePage() {
                       </div>
 
                       {paymentMethod === "upi" && (() => {
-                        const upiPayUrl = `upi://pay?pa=8446056789@okbizaxis&pn=Dr%20Narayan%20Jethwani&am=${finalPayable}&cu=INR&tn=${encodeURIComponent(`Plan - ${checkoutPlan.title}`)}`;
+                        const upiPayUrl = `upi://pay?pa=8446056789@hdfc&pn=Dr%20Narayan%20Jethwani&am=${finalPayable}&cu=INR&tn=${encodeURIComponent(`Plan - ${checkoutPlan.title}`)}`;
                         const qrCodeSrc = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(upiPayUrl)}`;
                         
                         return (
@@ -5306,7 +5306,7 @@ export default function StorePage() {
                                 <div className="pt-2 flex flex-wrap gap-2 justify-center sm:justify-start">
                                   <button
                                     onClick={() => {
-                                      navigator.clipboard.writeText("8446056789@okbizaxis");
+                                      navigator.clipboard.writeText("8446056789@hdfc");
                                     }}
                                     className="px-3 py-1.5 border border-slate-200 bg-white hover:border-slate-800 text-[9px] font-bold uppercase tracking-wider rounded-lg transition-colors cursor-pointer flex items-center gap-1.5"
                                   >

@@ -17,9 +17,11 @@ function InvoiceContent() {
   const router = useRouter();
   const [copied, setCopied] = useState<string | null>(null);
   const [logoUrl, setLogoUrl] = useState("/images/logo.png");
+  const [qrCodeUrl, setQrCodeUrl] = useState("/images/payment-qr.jpg");
 
   useEffect(() => {
     setLogoUrl(window.location.origin + "/images/logo.png");
+    setQrCodeUrl(window.location.origin + "/images/payment-qr.jpg");
   }, []);
 
   // Extract invoice parameters from query string
@@ -101,7 +103,7 @@ Account Name: Dr. Narayan Jethwani
 Current Account No: 50200039742057
 IFSC Code: HDFC0004793
 Branch: PAN Card Club Road Baner, Pune
-Instant UPI ID: narayan.jethwani-3@okaxis
+Instant UPI ID: 8446056789@hdfc
 (Please include your Patient ID or Invoice No in theRemarks)
 
 *View / Download Invoice PDF:*
@@ -356,15 +358,27 @@ Homeo Healthcare`;
             </div>
             <div className="space-y-1">
               <span className="text-[9px] text-slate-400 dark:text-slate-500 print:text-slate-400 font-bold uppercase tracking-wider block">UPI / QR Transfer Address</span>
-              <div className="text-slate-900 dark:text-slate-100 print:text-slate-900 font-extrabold">Instant UPI Transfer</div>
-              <div className="flex items-center justify-between bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800 print:bg-white print:border-slate-100 p-1.5 px-2.5 rounded-lg mt-1">
-                <span className="font-black text-slate-900 dark:text-slate-100 print:text-slate-900 select-all">narayan.jethwani-3@okaxis</span>
+              <div className="text-slate-900 dark:text-slate-100 print:text-slate-900 font-extrabold mb-1">Instant UPI Transfer</div>
+              <div className="flex items-center justify-between bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800 print:bg-white print:border-slate-100 p-1.5 px-2.5 rounded-lg">
+                <span className="font-black text-slate-900 dark:text-slate-100 print:text-slate-900 select-all">8446056789@hdfc</span>
                 <button 
-                  onClick={() => handleCopyText("narayan.jethwani-3@okaxis", "upi")}
+                  onClick={() => handleCopyText("8446056789@hdfc", "upi")}
                   className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-400 dark:text-slate-500 cursor-pointer"
                 >
                   {copied === "upi" ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                 </button>
+              </div>
+              <div className="pt-2 flex justify-center sm:justify-start">
+                <div className="bg-white p-1.5 rounded-xl border border-slate-100 print:border-slate-200 shadow-sm inline-block">
+                  <Image
+                    src={qrCodeUrl}
+                    alt="HDFC Payment QR Code"
+                    width={100}
+                    height={100}
+                    unoptimized
+                    className="w-24 h-24 object-contain"
+                  />
+                </div>
               </div>
               <div className="text-[10px] text-slate-400 dark:text-slate-500 mt-2 font-medium">
                 Note: Please mention <strong>Patient ID ({patientId})</strong> or <strong>Invoice No ({invoiceNo})</strong> inside transfer remarks.
