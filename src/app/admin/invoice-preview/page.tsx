@@ -72,12 +72,10 @@ function InvoiceContent() {
     };
 
     const runHtml2Pdf = () => {
-      // @ts-ignore
-      window.html2pdf().from(element).set(opt).save();
+      (window as any).html2pdf().from(element).set(opt).save();
     };
 
-    // @ts-ignore
-    if (window.html2pdf) {
+    if ((window as any).html2pdf) {
       runHtml2Pdf();
     } else {
       const script = document.createElement("script");

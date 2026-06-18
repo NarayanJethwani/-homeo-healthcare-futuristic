@@ -36,6 +36,21 @@ import SchemaMarkup from "./schemaMarkup";
 import HealthAssistant from "./HealthAssistant";
 import MarkdownRenderer from "./MarkdownRenderer";
 
+function generateWearableMetrics() {
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+  const dateStr = now.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  return {
+    lastSync: `${dateStr} at ${timeStr}`,
+    metrics: {
+      heartRateAvg: Math.round(62 + Math.random() * 8),
+      steps: Math.round(7200 + Math.random() * 3000),
+      sleepHours: Number((6.8 + Math.random() * 1.5).toFixed(1)),
+      hrv: Math.round(45 + Math.random() * 25)
+    }
+  };
+}
+
 function getLocalFallbackResponse(query: string, twin: HealthDigitalTwin): string {
   const textLower = query.toLowerCase();
 
@@ -1091,18 +1106,12 @@ export default function HealthIntelligencePage() {
     if (currentDevice.connected) {
       updatedWearables[device] = { device, connected: false };
     } else {
-      const now = new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
-      const lastSyncDate = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" });
+      const metricsData = generateWearableMetrics();
       updatedWearables[device] = {
         device,
         connected: true,
-        lastSync: `${lastSyncDate} at ${now}`,
-        metrics: {
-          heartRateAvg: Math.round(62 + Math.random() * 8),
-          steps: Math.round(7200 + Math.random() * 3000),
-          sleepHours: Number((6.8 + Math.random() * 1.5).toFixed(1)),
-          hrv: Math.round(45 + Math.random() * 25)
-        }
+        lastSync: metricsData.lastSync,
+        metrics: metricsData.metrics
       };
       alert(`${device} successfully linked to HIOS™. Epigenetic and cardiorespiratory telemetry synced.`);
     }

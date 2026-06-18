@@ -16,8 +16,6 @@ export default function CursorOrb() {
     }
   }, []);
 
-  if (pathname?.startsWith("/admin") || isPortalHost) return null;
-
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -26,7 +24,11 @@ export default function CursorOrb() {
   const glowX = useSpring(mouseX, glowSpringConfig);
   const glowY = useSpring(mouseY, glowSpringConfig);
 
+  const shouldDisable = pathname?.startsWith("/admin") || isPortalHost;
+
   useEffect(() => {
+    if (shouldDisable) return;
+
     // Detect theme class on html tag
     setIsDark(document.documentElement.classList.contains("dark"));
 
@@ -57,9 +59,9 @@ export default function CursorOrb() {
       window.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseleave", handleMouseLeave);
     };
-  }, [mouseX, mouseY, isVisible]);
+  }, [mouseX, mouseY, isVisible, shouldDisable]);
 
-  if (!isVisible) return null;
+  if (shouldDisable || !isVisible) return null;
 
   return (
     <motion.div

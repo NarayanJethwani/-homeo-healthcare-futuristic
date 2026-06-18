@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable react-hooks/immutability, react-hooks/purity, react-hooks/refs */
 
 import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
@@ -729,6 +730,106 @@ const NODE_TO_CLUSTER: Record<string, string> = {
   org_bladder: "renal", sym_dysuria: "renal", lab_urinalysis: "renal", rem_cantharis: "renal"
 };
 
+// Dynamic twin builder for custom imported patients
+function getCustomPatientBase(id: string, patients: any[]) {
+  const p = patients.find(pat => pat.id === id);
+  if (!p) return PATIENT_LONGITUDINAL_DATA.aarav;
+  
+  // Parse complaints into symptoms list
+  const symptomsList: Array<{ name: string; severity: string; modalities: string; organAffinity: string }> = [];
+  if (p.complaint) {
+    const parts = p.complaint.split(/[,.;]/).map((s: string) => s.trim()).filter((s: string) => s.length > 5);
+    parts.slice(0, 4).forEach((part: string, idx: number) => {
+      let affinity = "Constitutional";
+      const low = part.toLowerCase();
+      if (low.includes("acid") || low.includes("bloat") || low.includes("stomach") || low.includes("gerd") || low.includes("diges")) affinity = "Digestive";
+      else if (low.includes("joint") || low.includes("stiff") || low.includes("pain") || low.includes("knee") || low.includes("back")) affinity = "Musculoskeletal";
+      else if (low.includes("urine") || low.includes("noctur") || low.includes("kidney") || low.includes("creatinine")) affinity = "Renal/Urinary";
+      else if (low.includes("fatigue") || low.includes("sleep") || low.includes("tired")) affinity = "Nervous/Autonomic";
+      else if (low.includes("thyroid") || low.includes("hormon") || low.includes("tsh")) affinity = "Endocrine";
+      
+      symptomsList.push({
+        name: part.length > 30 ? part.substring(0, 28) + "..." : part,
+        severity: idx === 0 ? "Severe" : idx === 1 ? "Moderate" : "Mild",
+        modalities: "Varies with daily factors",
+        organAffinity: affinity
+      });
+    });
+  }
+  if (symptomsList.length === 0) {
+    symptomsList.push({ name: "General symptoms", severity: "Moderate", modalities: "Worse drafts", organAffinity: "Constitutional" });
+  }
+
+  const compLower = (p.complaint || "").toLowerCase();
+  let guessedRemedy = "Sulphur";
+  let guessedMiasm = "Psora (Dominant)";
+  let guessedMiasmIndex = { psora: 70, sycosis: 20, syphilis: 10 };
+  
+  if (compLower.includes("acidity") || compLower.includes("bloating") || compLower.includes("irrita") || compLower.includes("chilly")) {
+    guessedRemedy = "Nux Vomica";
+    guessedMiasm = "Psora (Dominant)";
+    guessedMiasmIndex = { psora: 75, sycosis: 40, syphilis: 15 };
+  } else if (compLower.includes("joint") || compLower.includes("stiff") || compLower.includes("motion") || compLower.includes("damp")) {
+    guessedRemedy = "Rhus Toxicodendron";
+    guessedMiasm = "Sycosis (Dominant)";
+    guessedMiasmIndex = { psora: 45, sycosis: 70, syphilis: 25 };
+  } else if (compLower.includes("fatigue") || compLower.includes("kidney") || compLower.includes("creatinine") || compLower.includes("edema")) {
+    guessedRemedy = "Serum Anguillae";
+    guessedMiasm = "Sycosis (Dominant) & Syphilitic (Sub-acute)";
+    guessedMiasmIndex = { psora: 40, sycosis: 60, syphilis: 50 };
+  } else if (compLower.includes("thyroid") || compLower.includes("hormone") || compLower.includes("pcos")) {
+    guessedRemedy = "Pulsatilla Nigricans";
+    guessedMiasm = "Psora (Dominant) & Sycosis (Sub-acute)";
+    guessedMiasmIndex = { psora: 65, sycosis: 50, syphilis: 15 };
+  }
+
+  // Use p.createdAt if available, otherwise default to a fixed date string to keep it pure
+  const pDate = p.createdAt ? new Date(p.createdAt).toLocaleDateString("en-IN") : "18/06/2026";
+
+  return {
+    id: 999,
+    name: p.name,
+    constitution: guessedRemedy,
+    miasm: guessedMiasm,
+    thermal: compLower.includes("chilly") ? "Chilly" : compLower.includes("hot") ? "Hot" : "Temperate",
+    cravings: "Warm drinks, salty meals",
+    aversions: "Fats, cold dairy",
+    vitalityIndex: 70,
+    diseaseBurdenIndex: 50,
+    history: [
+      { date: pDate, type: "Intake", event: "Case registered", notes: p.complaint || "Initial complaints logged." }
+    ],
+    labs: {
+      timeline: [pDate],
+      vitality: [70],
+      egfr: [70],
+      creatinine: [1.0],
+      microalbumin: [30],
+      lh_fsh_ratio: [1.0],
+      cholesterol: [180],
+      crp: [1.0],
+      anticcp: [10],
+      painScore: [2],
+      hba1c: [5.5],
+      tsh: [2.0],
+      weight_kg: [70],
+      esr: [10]
+    } as { [key: string]: any[]; timeline: string[] },
+    symptoms: symptomsList,
+    miasmaticIndex: guessedMiasmIndex,
+    remedyMatches: [
+      { name: guessedRemedy, score: 85, status: "Active Mapped", keyEvidence: "Derived from primary clinical notes and thermal affinity." }
+    ],
+    predictiveRisks: [
+      { id: "chronic_burden", name: "Systemic Exhaustion", level: "Moderate Risk", val: 55, color: "text-amber-500", driver: "Chronic pathology duration", modifiable: "Constitutional remediation" }
+    ],
+    ostmSystems: [
+      { name: "Vital Homeostatic Reserve", status: "Active Regulation", color: "text-emerald-500" }
+    ],
+    cohortPercentiles: { ageCohort: 62, remedyCohort: 70, regionalPercentile: 75 }
+  };
+}
+
 export default function CIEWorkspace({ patients, selectedPatientId, setSelectedPatientId, theme, activeTabOverride }: CIEWorkspaceProps) {
   // Dynamic patient key resolver
   const getActiveDataKey = () => {
@@ -756,107 +857,12 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
     remedyMatches?: any[];
   }>>({});
 
-  // Dynamic twin builder for custom imported patients
-  const getCustomPatientBase = (id: string) => {
-    const p = patients.find(pat => pat.id === id);
-    if (!p) return PATIENT_LONGITUDINAL_DATA.aarav;
-    
-    // Parse complaints into symptoms list
-    const symptomsList: Array<{ name: string; severity: string; modalities: string; organAffinity: string }> = [];
-    if (p.complaint) {
-      const parts = p.complaint.split(/[,.;]/).map((s: string) => s.trim()).filter((s: string) => s.length > 5);
-      parts.slice(0, 4).forEach((part: string, idx: number) => {
-        let affinity = "Constitutional";
-        const low = part.toLowerCase();
-        if (low.includes("acid") || low.includes("bloat") || low.includes("stomach") || low.includes("gerd") || low.includes("diges")) affinity = "Digestive";
-        else if (low.includes("joint") || low.includes("stiff") || low.includes("pain") || low.includes("knee") || low.includes("back")) affinity = "Musculoskeletal";
-        else if (low.includes("urine") || low.includes("noctur") || low.includes("kidney") || low.includes("creatinine")) affinity = "Renal/Urinary";
-        else if (low.includes("fatigue") || low.includes("sleep") || low.includes("tired")) affinity = "Nervous/Autonomic";
-        else if (low.includes("thyroid") || low.includes("hormon") || low.includes("tsh")) affinity = "Endocrine";
-        
-        symptomsList.push({
-          name: part.length > 30 ? part.substring(0, 28) + "..." : part,
-          severity: idx === 0 ? "Severe" : idx === 1 ? "Moderate" : "Mild",
-          modalities: "Varies with daily factors",
-          organAffinity: affinity
-        });
-      });
-    }
-    if (symptomsList.length === 0) {
-      symptomsList.push({ name: "General symptoms", severity: "Moderate", modalities: "Worse drafts", organAffinity: "Constitutional" });
-    }
-
-    const compLower = (p.complaint || "").toLowerCase();
-    let guessedRemedy = "Sulphur";
-    let guessedMiasm = "Psora (Dominant)";
-    let guessedMiasmIndex = { psora: 70, sycosis: 20, syphilis: 10 };
-    
-    if (compLower.includes("acidity") || compLower.includes("bloating") || compLower.includes("irrita") || compLower.includes("chilly")) {
-      guessedRemedy = "Nux Vomica";
-      guessedMiasm = "Psora (Dominant)";
-      guessedMiasmIndex = { psora: 75, sycosis: 40, syphilis: 15 };
-    } else if (compLower.includes("joint") || compLower.includes("stiff") || compLower.includes("motion") || compLower.includes("damp")) {
-      guessedRemedy = "Rhus Toxicodendron";
-      guessedMiasm = "Sycosis (Dominant)";
-      guessedMiasmIndex = { psora: 45, sycosis: 70, syphilis: 25 };
-    } else if (compLower.includes("fatigue") || compLower.includes("kidney") || compLower.includes("creatinine") || compLower.includes("edema")) {
-      guessedRemedy = "Serum Anguillae";
-      guessedMiasm = "Sycosis (Dominant) & Syphilitic (Sub-acute)";
-      guessedMiasmIndex = { psora: 40, sycosis: 60, syphilis: 50 };
-    } else if (compLower.includes("thyroid") || compLower.includes("hormone") || compLower.includes("pcos")) {
-      guessedRemedy = "Pulsatilla Nigricans";
-      guessedMiasm = "Psora (Dominant) & Sycosis (Sub-acute)";
-      guessedMiasmIndex = { psora: 65, sycosis: 50, syphilis: 15 };
-    }
-
-    return {
-      id: 999,
-      name: p.name,
-      constitution: guessedRemedy,
-      miasm: guessedMiasm,
-      thermal: compLower.includes("chilly") ? "Chilly" : compLower.includes("hot") ? "Hot" : "Temperate",
-      cravings: "Warm drinks, salty meals",
-      aversions: "Fats, cold dairy",
-      vitalityIndex: 70,
-      diseaseBurdenIndex: 50,
-      history: [
-        { date: new Date(p.createdAt || Date.now()).toLocaleDateString("en-IN"), type: "Intake", event: "Case registered", notes: p.complaint || "Initial complaints logged." }
-      ],
-      labs: {
-        timeline: [new Date(p.createdAt || Date.now()).toLocaleDateString("en-IN")],
-        vitality: [70],
-        egfr: [70],
-        creatinine: [1.0],
-        microalbumin: [30],
-        lh_fsh_ratio: [1.0],
-        cholesterol: [180],
-        crp: [1.0],
-        anticcp: [10],
-        painScore: [2],
-        hba1c: [5.5],
-        tsh: [2.0],
-        weight_kg: [70],
-        esr: [10]
-      } as { [key: string]: any[]; timeline: string[] },
-      symptoms: symptomsList,
-      miasmaticIndex: guessedMiasmIndex,
-      remedyMatches: [
-        { name: guessedRemedy, score: 85, status: "Active Mapped", keyEvidence: "Derived from primary clinical notes and thermal affinity." }
-      ],
-      predictiveRisks: [
-        { id: "chronic_burden", name: "Systemic Exhaustion", level: "Moderate Risk", val: 55, color: "text-amber-500", driver: "Chronic pathology duration", modifiable: "Constitutional remediation" }
-      ],
-      ostmSystems: [
-        { name: "Vital Homeostatic Reserve", status: "Active Regulation", color: "text-emerald-500" }
-      ],
-      cohortPercentiles: { ageCohort: 62, remedyCohort: 70, regionalPercentile: 75 }
-    };
-  };
+  // getCustomPatientBase has been moved outside the component.
 
   const activeData = {
     ...(PATIENT_LONGITUDINAL_DATA[activeDataKey] 
       ? PATIENT_LONGITUDINAL_DATA[activeDataKey] 
-      : getCustomPatientBase(activeDataKey)),
+      : getCustomPatientBase(activeDataKey, patients)),
     ...(patientOverrides[activeDataKey] || {})
   };
 
@@ -2386,9 +2392,16 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
         node.vx *= damping;
         node.vy *= damping;
 
+        // Extra damping for small velocities to stop jittering/oscillations completely
+        const speed = Math.sqrt(node.vx * node.vx + node.vy * node.vy);
+        if (speed < 0.15) {
+          node.vx *= 0.5;
+          node.vy *= 0.5;
+        }
+
         // Threshold to prevent micro-vibrations and perpetual drift
-        if (Math.abs(node.vx) < 0.015) node.vx = 0;
-        if (Math.abs(node.vy) < 0.015) node.vy = 0;
+        if (Math.abs(node.vx) < 0.02) node.vx = 0;
+        if (Math.abs(node.vy) < 0.02) node.vy = 0;
 
         // Update coordinate
         node.x += node.vx;

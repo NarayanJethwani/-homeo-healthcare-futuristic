@@ -7,6 +7,7 @@ import {
   Video, Send, CheckCircle2, Navigation, ArrowLeft
 } from "lucide-react";
 import Magnetic from "@/components/Magnetic";
+import Link from "next/link";
 
 export default function ContactUsPage() {
   const [formData, setFormData] = useState({
@@ -81,13 +82,13 @@ export default function ContactUsPage() {
           className="mb-8"
         >
           <Magnetic>
-            <a
+            <Link
               href="/"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-mint/20 hover:border-mint/60 bg-mint/5 hover:bg-mint/10 text-mint-dark hover:text-[#0c6b5e] text-xs font-bold uppercase tracking-wider transition-all duration-300 backdrop-blur-md cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               Back to Home
-            </a>
+            </Link>
           </Magnetic>
         </motion.div>
 
