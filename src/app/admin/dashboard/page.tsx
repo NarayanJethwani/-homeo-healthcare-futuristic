@@ -25,7 +25,7 @@ import { REMEDY_LEARNING_DB, parseLearningTutorQuery, searchRemedies, compareFam
 import { simulateMateriaMedicaIngestion, CLASSICAL_SOURCES } from "@/lib/materiaMedicaIngestion";
 import { GENOME_REMEDY_DB } from "@/lib/remedyGenomeSchema";
 import { calculateSM2, updateStudentMastery } from "@/lib/adaptiveLearning";
-import { getClinicalCoverageScore, CURATED_DIAGNOSES, ORGAN_SYSTEMS, type DiagnosisProfile, getAll15000Diagnoses, SEARCH_SYNONYMS as DIAGNOSIS_SEARCH_SYNONYMS } from "@/lib/clinicalDiagnosisLibrary";
+import { getClinicalCoverageScore, CURATED_DIAGNOSES, ORGAN_SYSTEMS, type DiagnosisProfile, getAll15000Diagnoses, SEARCH_SYNONYMS as DIAGNOSIS_SEARCH_SYNONYMS, getIcdDiagnosis } from "@/lib/clinicalDiagnosisLibrary";
 import { VIRTUAL_PATIENTS, evaluateCaseSubmission } from "@/lib/caseSimulationLab";
 import { calculateClinicalDecisionSupport } from "@/lib/clinicalDecisionSupport";
 import Portal from "@/components/Portal";
@@ -9670,13 +9670,7 @@ ${err.message || err}`);
                             <span className="text-[9px] uppercase tracking-wider text-slate-400 font-mono font-bold block mb-2">Medical Differentials</span>
                             <div className="flex flex-wrap gap-1.5 mt-1">
                               {selectedDiagCondition.differentialDiagnosis.map((d: string, idx: number) => {
-                                const matchedCond = getAll15000Diagnoses().find(c => 
-                                  c.name.toLowerCase() === d.toLowerCase() || 
-                                  c.id.toLowerCase() === d.toLowerCase() ||
-                                  Object.entries(DIAGNOSIS_SEARCH_SYNONYMS).some(([synKey, valId]) => 
-                                    synKey.toLowerCase() === d.toLowerCase() && valId === c.id
-                                  )
-                                );
+                                const matchedCond = getIcdDiagnosis(d);
                                 
                                 if (matchedCond) {
                                   return (
@@ -25299,13 +25293,20 @@ Exported on: ${new Date().toLocaleDateString()}
                 filtered = sourceRubrics.filter(r => r.chapter === repertorySelectedChapter);
               }
 
-              // Filter by search term
+              // Filter by search term with semantic synonym expansion
               if (repertorySearchTerm.trim()) {
-                const query = repertorySearchTerm.toLowerCase();
-                filtered = filtered.filter(r => 
-                  r.name.toLowerCase().includes(query) || 
-                  r.chapter.toLowerCase().includes(query)
-                );
+                const term = repertorySearchTerm.toLowerCase().trim();
+                let searchPatterns = [term];
+                const foundSynonyms = SEARCH_SYNONYMS[term];
+                if (foundSynonyms) {
+                  searchPatterns = Array.from(new Set([term, ...foundSynonyms]));
+                }
+                
+                filtered = filtered.filter(r => {
+                  const name = r.name.toLowerCase();
+                  const chapter = r.chapter.toLowerCase();
+                  return searchPatterns.some(pat => name.includes(pat) || chapter.includes(pat));
+                });
               }
 
               return filtered.slice(0, 30); // Cap list

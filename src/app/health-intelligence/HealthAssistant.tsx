@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { MessageSquare, X, Send, Sparkles, Brain, HelpCircle, Calendar, ArrowRight } from "lucide-react";
+import { MessageSquare, X, Send, Sparkles, Brain, HelpCircle, Calendar, ArrowRight, Mic, Volume2, VolumeX, Play, Pause } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { HealthDigitalTwin } from "./types";
 import MarkdownRenderer from "./MarkdownRenderer";
@@ -618,6 +618,26 @@ Dr. Jethwani advises focusing on core vitality reserves rather than treating sym
 [Remind Me in 4 Hours] [Track This Symptom] [Send General Guide]`;
 }
 
+function stripMarkdownForSpeech(text: string): string {
+  if (!text) return "";
+  return text
+    // Remove headers
+    .replace(/^#+\s+/gm, "")
+    // Remove bold/italic formatting
+    .replace(/[\*_]{1,3}([^*_]+)[\*_]{1,3}/g, "$1")
+    // Remove link text syntax [text](url) -> text
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    // Remove list markers
+    .replace(/^[\s\-\*]+\s+/gm, "")
+    .replace(/^\s*\d+\.\s+/gm, "")
+    // Remove code blocks
+    .replace(/```[\s\S]*?```/g, "")
+    .replace(/`([^`]+)`/g, "$1")
+    // Normalize spaces
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 export default function HealthAssistant({ twin, theme, onSelectProfile }: HealthAssistantProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -630,6 +650,12 @@ export default function HealthAssistant({ twin, theme, onSelectProfile }: Health
   const [isTyping, setIsTyping] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
+  // New Voice states
+  const [isListening, setIsListening] = useState(false);
+  const [voiceModeActive, setVoiceModeActive] = useState<boolean>(false);
+  const [speakingMessageIndex, setSpeakingMessageIndex] = useState<number | null>(null);
+  const recognitionRef = useRef<any>(null);
+
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTo({
@@ -639,8 +665,112 @@ export default function HealthAssistant({ twin, theme, onSelectProfile }: Health
     }
   }, [messages, isTyping]);
 
+  // Speech Recognition setup
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        const rec = new SpeechRecognition();
+        rec.continuous = false;
+        rec.interimResults = false;
+        rec.lang = "en-US";
+
+        rec.onstart = () => {
+          setIsListening(true);
+        };
+
+        rec.onresult = (event: any) => {
+          const transcript = event.results[0][0].transcript;
+          if (transcript) {
+            setInput(prev => prev ? `${prev} ${transcript}` : transcript);
+          }
+        };
+
+        rec.onerror = (event: any) => {
+          console.error("Speech recognition error:", event.error);
+          setIsListening(false);
+        };
+
+        rec.onend = () => {
+          setIsListening(false);
+        };
+
+        recognitionRef.current = rec;
+      }
+    }
+    return () => {
+      if (typeof window !== "undefined" && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
+
+  const toggleListening = () => {
+    if (!recognitionRef.current) {
+      alert("Speech recognition is not supported in your browser. Please try Chrome or Safari.");
+      return;
+    }
+
+    if (isListening) {
+      recognitionRef.current.stop();
+    } else {
+      stopSpeaking();
+      try {
+        recognitionRef.current.start();
+      } catch (err) {
+        console.error("Failed to start speech recognition:", err);
+      }
+    }
+  };
+
+  const stopSpeaking = () => {
+    if (typeof window !== "undefined" && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+    setSpeakingMessageIndex(null);
+  };
+
+  const speakText = (text: string, index: number | null = null) => {
+    if (typeof window === "undefined" || !window.speechSynthesis) {
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    if (index !== null && speakingMessageIndex === index) {
+      setSpeakingMessageIndex(null);
+      return;
+    }
+
+    const cleanText = stripMarkdownForSpeech(text);
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    
+    const voices = window.speechSynthesis.getVoices();
+    const selectedVoice = voices.find(v => v.lang.startsWith("en-") && (v.name.includes("Google") || v.name.includes("Natural") || v.name.includes("Samantha") || v.name.includes("Zira"))) || voices.find(v => v.lang.startsWith("en-"));
+    
+    if (selectedVoice) {
+      utterance.voice = selectedVoice;
+    }
+    
+    utterance.onstart = () => {
+      if (index !== null) setSpeakingMessageIndex(index);
+    };
+
+    utterance.onend = () => {
+      if (index !== null) setSpeakingMessageIndex(null);
+    };
+
+    utterance.onerror = () => {
+      if (index !== null) setSpeakingMessageIndex(null);
+    };
+
+    window.speechSynthesis.speak(utterance);
+  };
+
   const handleSend = async (textToSend: string) => {
     if (!textToSend.trim()) return;
+
+    stopSpeaking();
 
     // Check if it's a WhatsApp action first (ensures synchronous call for popup blockers)
     const isWhatsAppAction = 
@@ -701,7 +831,14 @@ export default function HealthAssistant({ twin, theme, onSelectProfile }: Health
       const data = await res.json();
       
       if (data.success && data.text) {
-        setMessages(prev => [...prev, { sender: "assistant", text: data.text }]);
+        const replyText = data.text;
+        setMessages(prev => {
+          const updated: ChatMessage[] = [...prev, { sender: "assistant" as const, text: replyText }];
+          if (voiceModeActive) {
+            setTimeout(() => speakText(replyText, updated.length - 1), 100);
+          }
+          return updated;
+        });
         setIsTyping(false);
         return;
       }
@@ -712,7 +849,13 @@ export default function HealthAssistant({ twin, theme, onSelectProfile }: Health
     // Local/Fallback reasoning logic in case of failure or missing API key
     const reply = getLocalFallbackResponse(textToSend, twin);
 
-    setMessages(prev => [...prev, { sender: "assistant", text: reply }]);
+    setMessages(prev => {
+      const updated: ChatMessage[] = [...prev, { sender: "assistant" as const, text: reply }];
+      if (voiceModeActive) {
+        setTimeout(() => speakText(reply, updated.length - 1), 100);
+      }
+      return updated;
+    });
     setIsTyping(false);
   };
 
@@ -761,12 +904,29 @@ export default function HealthAssistant({ twin, theme, onSelectProfile }: Health
                   <p className="text-[8.5px] text-teal-150 uppercase tracking-widest font-black leading-none">Homeo Healthcare</p>
                 </div>
               </div>
-              <button 
-                onClick={() => setIsOpen(false)}
-                className="p-1 rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-colors cursor-pointer border-none"
-              >
-                <X className="w-4.5 h-4.5" />
-              </button>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => {
+                    const newMode = !voiceModeActive;
+                    setVoiceModeActive(newMode);
+                    if (!newMode) stopSpeaking();
+                  }}
+                  className={`p-1.5 rounded-full transition-colors cursor-pointer border-none ${
+                    voiceModeActive 
+                      ? "bg-white/20 text-white" 
+                      : "bg-white/5 hover:bg-white/10 text-white/70 hover:text-white"
+                  }`}
+                  title={voiceModeActive ? "Mute voice replies" : "Enable voice replies"}
+                >
+                  {voiceModeActive ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+                </button>
+                <button 
+                  onClick={() => setIsOpen(false)}
+                  className="p-1 rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-colors cursor-pointer border-none bg-transparent"
+                >
+                  <X className="w-4.5 h-4.5" />
+                </button>
+              </div>
             </div>
 
             {/* WhatsApp Doctor CTA Banner */}
@@ -796,13 +956,30 @@ export default function HealthAssistant({ twin, theme, onSelectProfile }: Health
                   className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
                 >
                   <div 
-                    className={`max-w-[85%] p-3.5 rounded-2xl text-xs leading-relaxed ${
+                    className={`max-w-[85%] p-3.5 rounded-2xl text-xs leading-relaxed relative group/msg ${
                       msg.sender === "user"
                         ? "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-zinc-200 rounded-tr-none border border-slate-200/50 dark:border-slate-800"
                         : "bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 text-slate-800 dark:text-zinc-200 rounded-tl-none"
                     }`}
                   >
-                    <MarkdownRenderer text={msg.text} onActionClick={(action) => handleSend(action)} />
+                    {msg.sender === "assistant" && (
+                      <button
+                        onClick={() => speakText(msg.text, i)}
+                        className={`absolute top-1.5 right-1.5 p-1 bg-white/80 dark:bg-slate-900/80 hover:bg-white dark:hover:bg-slate-900 border border-slate-200 dark:border-slate-850 rounded shadow-sm opacity-0 group-hover/msg:opacity-100 transition-opacity cursor-pointer ${
+                          speakingMessageIndex === i ? "text-rose-500 bg-rose-50 dark:bg-rose-955" : "text-slate-400 hover:text-mint"
+                        }`}
+                        title={speakingMessageIndex === i ? "Stop speaking" : "Speak message"}
+                      >
+                        {speakingMessageIndex === i ? (
+                          <Volume2 className="w-3.5 h-3.5 animate-bounce" />
+                        ) : (
+                          <Play className="w-3 h-3" />
+                        )}
+                      </button>
+                    )}
+                    <div className={msg.sender === "assistant" ? "pr-4" : ""}>
+                      <MarkdownRenderer text={msg.text} onActionClick={(action) => handleSend(action)} />
+                    </div>
                   </div>
                 </div>
               ))}
@@ -838,15 +1015,29 @@ export default function HealthAssistant({ twin, theme, onSelectProfile }: Health
             </div>
 
             {/* Chat Input */}
-            <div className="p-3 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex gap-2">
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter") handleSend(input); }}
-                placeholder="Ask your clinical question here..."
-                className="flex-1 px-3 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs outline-none focus:border-mint focus:bg-white dark:focus:bg-slate-950 transition-all text-slate-800 dark:text-zinc-100"
-              />
+            <div className="p-3 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex gap-2 items-center">
+              <div className="flex-1 relative flex items-center">
+                <input
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") handleSend(input); }}
+                  placeholder="Ask your clinical question here..."
+                  className="w-full pl-3 pr-10 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs outline-none focus:border-mint focus:bg-white dark:focus:bg-slate-955 transition-all text-slate-800 dark:text-zinc-100"
+                />
+                <button
+                  type="button"
+                  onClick={toggleListening}
+                  className={`absolute right-2.5 p-1.5 rounded-lg transition-all border-none bg-transparent cursor-pointer ${
+                    isListening 
+                      ? "text-rose-500 animate-pulse bg-rose-50 dark:bg-rose-955/30" 
+                      : "text-slate-400 hover:text-mint"
+                  }`}
+                  title={isListening ? "Listening... click to stop" : "Speak to type (Dictation)"}
+                >
+                  <Mic className="w-4 h-4" />
+                </button>
+              </div>
               <button
                 onClick={() => handleSend(input)}
                 className="p-2.5 bg-mint hover:bg-mint-dark text-white rounded-xl cursor-pointer flex items-center justify-center border-none shadow-sm active:scale-95 transition-all"

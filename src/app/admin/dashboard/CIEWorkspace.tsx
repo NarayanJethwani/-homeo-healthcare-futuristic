@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import EcgGraph from "@/components/EcgGraph";
 import { CONSTITUTIONAL_QUESTIONS, analyzeConstitution } from "@/app/health-intelligence/constitutionalEngine";
+import { getIcdDiagnosis, CURATED_DIAGNOSES, type DiagnosisProfile } from "@/lib/clinicalDiagnosisLibrary";
 
 interface CIEWorkspaceProps {
   patients: any[];
@@ -1048,9 +1049,94 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
 
   // Graph state and click-inspector
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [inspectorTab, setInspectorTab] = useState<"mapping" | "reference">("mapping");
+  const [materiaMedicaData, setMateriaMedicaData] = useState<{ title: string; content: string } | null>(null);
+  const [materiaMedicaLoading, setMateriaMedicaLoading] = useState(false);
+  const [materiaMedicaError, setMateriaMedicaError] = useState<string | null>(null);
+
+  const resolveRemedyPath = (nodeId: string): string => {
+    const mappings: Record<string, string> = {
+      rem_lyc: "/en/materia-medica/james-tyler-kent/lycopodium",
+      rem_apis: "/en/materia-medica/william-boericke/apis-mellifica",
+      rem_anguillae: "/en/materia-medica/william-boericke/serum-anguillae",
+      rem_puls: "/en/materia-medica/james-tyler-kent/pulsatilla",
+      rem_thyroid: "/en/materia-medica/william-boericke/thyroidinum",
+      rem_sil: "/en/materia-medica/james-tyler-kent/silica",
+      rem_rhus: "/en/materia-medica/william-boericke/rhus-toxicodendron",
+      rem_caust: "/en/materia-medica/james-tyler-kent/causticum",
+      rem_sulph: "/en/materia-medica/william-boericke/sulphur",
+      rem_nux: "/en/materia-medica/william-boericke/nux-vomica",
+      rem_calc: "/en/materia-medica/william-boericke/calcarea-carbonica",
+      rem_crataegus: "/en/materia-medica/william-boericke/crataegus-oxyacantha",
+      rem_kali_phos: "/en/materia-medica/james-tyler-kent/kali-phosphoricum",
+      rem_chelidonium: "/en/materia-medica/james-tyler-kent/chelidonium",
+      rem_ant_tart: "/en/materia-medica/william-boericke/antimonium-tartaricum",
+      rem_graphites: "/en/materia-medica/william-boericke/graphites",
+      rem_phos_acid: "/en/materia-medica/james-tyler-kent/phosphoric-acid",
+      rem_cantharis: "/en/materia-medica/james-tyler-kent/cantharis",
+      rem_ars: "/en/materia-medica/william-boericke/arsenicum-album",
+      rem_phos: "/en/materia-medica/william-boericke/phosphorus",
+      rem_bry: "/en/materia-medica/james-tyler-kent/bryonia",
+    };
+
+    if (mappings[nodeId]) {
+      return mappings[nodeId];
+    }
+    const slug = nodeId.replace("rem_", "").replace("_", "-");
+    return `/en/materia-medica/william-boericke/${slug}`;
+  };
+
+  useEffect(() => {
+    if (!selectedNodeId || !selectedNodeId.startsWith("rem_")) {
+      setMateriaMedicaData(null);
+      setMateriaMedicaError(null);
+      setMateriaMedicaLoading(false);
+      return;
+    }
+
+    let isMounted = true;
+    const fetchMateriaMedica = async () => {
+      setMateriaMedicaLoading(true);
+      setMateriaMedicaError(null);
+      setMateriaMedicaData(null);
+      
+      const path = resolveRemedyPath(selectedNodeId);
+      try {
+        const res = await fetch(`/api/materia-medica?path=${encodeURIComponent(path)}`);
+        if (!res.ok) throw new Error(`Status ${res.status}`);
+        const data = await res.json();
+        if (isMounted) {
+          if (data.success) {
+            setMateriaMedicaData({ title: data.title, content: data.content });
+          } else {
+            throw new Error(data.message || "Failed to load remedy details.");
+          }
+        }
+      } catch (err: any) {
+        if (isMounted) {
+          setMateriaMedicaError(err.message || "Failed to fetch remedy content.");
+        }
+      } finally {
+        if (isMounted) {
+          setMateriaMedicaLoading(false);
+        }
+      }
+    };
+
+    fetchMateriaMedica();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [selectedNodeId]);
 
   // Explainable AI selected risk driver
   const [selectedRiskId, setSelectedRiskId] = useState<string>("ckd");
+
+  const [graphFilterTypes, setGraphFilterTypes] = useState<string[]>([
+    "symptom", "remedy", "organ", "system", "miasm", "lab", "diagnosis", "risk", "modality"
+  ]);
+  const [graphHeatmapView, setGraphHeatmapView] = useState<"none" | "evidence" | "risk" | "outcome" | "remedy">("none");
 
   // Chat Copilot console state
   const [copilotActiveTab, setCopilotActiveTab] = useState<"reasoning" | "chat">("reasoning");
@@ -1088,6 +1174,8 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
     setIsPlaying(false);
     setReportType(null);
     setSelectedNodeId(null);
+    setInspectorTab("mapping");
+    graphDataRef.current = null; // Clear cached graph layout coordinates so it resets for new patient
     
     // Set default risk tab per patient
     if (activeDataKey === "priya") setSelectedRiskId("diabetes");
@@ -1639,6 +1727,9 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
         { id: "rem_graphites", label: "Graphites 30C", type: "remedy", x: width * 0.05, y: height * 0.88, vx: 0, vy: 0, radius: 11, description: "Cutaneous remedy for rough, dry skin and sticky honey-like eczema." },
         { id: "rem_phos_acid", label: "Phosphoricum Acidum", type: "remedy", x: width * 0.40, y: height * 0.88, vx: 0, vy: 0, radius: 11, description: "Constitutional support for deep mental and physical adrenal exhaustion." },
         { id: "rem_cantharis", label: "Cantharis 30C", type: "remedy", x: width * 0.08, y: height * 0.78, vx: 0, vy: 0, radius: 11, description: "Rapid support for scalding, burning urinary bladder tract irritations." },
+        { id: "rem_ars", label: "Arsenicum Album", type: "remedy", x: width * 0.45, y: height * 0.82, vx: 0, vy: 0, radius: 11, description: "Burning gastric pain relieved by warm drinks, high anxiety, restlessness." },
+        { id: "rem_phos", label: "Phosphorus", type: "remedy", x: width * 0.48, y: height * 0.80, vx: 0, vy: 0, radius: 11, description: "Gastric irritation with vomiting of cold water as soon as it becomes warm in stomach." },
+        { id: "rem_bry", label: "Bryonia Alba", type: "remedy", x: width * 0.50, y: height * 0.78, vx: 0, vy: 0, radius: 11, description: "Gastric pain worse from least movement, intense thirst for large quantities of cold water." },
 
         // Miasms (Radius: 12)
         { id: "mias_psora", label: "Psora Miasm", type: "miasm", x: width * 0.50, y: height * 0.60, vx: 0, vy: 0, radius: 12, description: "Initial functional defense deficiency, skin eruptions, and fatigue." },
@@ -1671,6 +1762,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
         { id: "diag_hypothyroid", label: "Hypothyroidism", type: "diagnosis", x: width * 0.58, y: height * 0.48, vx: 0, vy: 0, radius: 13, description: "Subclinical hypothyroid sluggishness, TSH elevations." },
         { id: "diag_ra", label: "Rheumatoid Arthritis", type: "diagnosis", x: width * 0.80, y: height * 0.48, vx: 0, vy: 0, radius: 13, description: "Symmetrical joint synovium auto-immune inflammation." },
         { id: "diag_metabolic", label: "Metabolic Syndrome", type: "diagnosis", x: width * 0.42, y: height * 0.54, vx: 0, vy: 0, radius: 13, description: "Insulin resistance, lipid blocks, and constitutional weight gain." },
+        { id: "diag_gastritis", label: "Gastritis", type: "diagnosis", x: width * 0.35, y: height * 0.65, vx: 0, vy: 0, radius: 13, description: "Gastric mucosal inflammation, acute or chronic." },
 
         // Risks (Radius: 10)
         { id: "risk_bp", label: "Hypertensive Spikes", type: "risk", x: width * 0.15, y: height * 0.42, vx: 0, vy: 0, radius: 10, description: "Blood pressure spikes degrading glomeruli filtration membranes." },
@@ -1861,7 +1953,23 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
         { source: "risk_glycemia", target: "diag_metabolic", strength: 3.5 },
         { source: "risk_glycemia", target: "lab_hba1c", strength: 4.5 },
         { source: "risk_sedentary", target: "diag_metabolic", strength: 3 },
-        { source: "risk_sedentary", target: "sym_weight", strength: 3.5 }
+        { source: "risk_sedentary", target: "sym_weight", strength: 3.5 },
+
+        // Gastritis & Remedies connections
+        { source: "diag_gastritis", target: "org_gut", strength: 5 },
+        { source: "diag_gastritis", target: "sys_digestive", strength: 4 },
+        { source: "diag_gastritis", target: "sym_bloat", strength: 3.5 },
+        { source: "diag_gastritis", target: "rem_nux", strength: 4.5 },
+        { source: "diag_gastritis", target: "rem_ars", strength: 4.5 },
+        { source: "diag_gastritis", target: "rem_phos", strength: 4 },
+        { source: "diag_gastritis", target: "rem_bry", strength: 3.5 },
+        { source: "rem_ars", target: "mias_psora", strength: 3 },
+        { source: "rem_ars", target: "sym_anxiety", strength: 4.5 },
+        { source: "rem_ars", target: "mod_warm_drinks", strength: 4 },
+        { source: "rem_phos", target: "mias_tubercular", strength: 3.5 },
+        { source: "rem_phos", target: "sym_fatigue", strength: 3.5 },
+        { source: "rem_bry", target: "mias_psora", strength: 3 },
+        { source: "rem_bry", target: "sym_stiffness", strength: 4.5 }
       ];
 
       graphDataRef.current = { nodes: initialNodes, links: initialLinks };
@@ -1900,7 +2008,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
           "rem_lyc", "rem_apis", "rem_anguillae", "rem_sulph", "rem_nux", "rem_calc",
           "mias_sycosis", "mias_psora",
           "lab_creatinine", "lab_egfr", "lab_microalbumin", "lab_hba1c", "lab_cholesterol",
-          "diag_ckd", "diag_metabolic",
+          "diag_ckd", "diag_metabolic", "diag_gastritis", "rem_ars", "rem_phos", "rem_bry",
           "risk_bp", "risk_glycemia", "risk_sedentary", "mod_evening", "mod_warm_drinks",
           "org_bladder", "org_adrenals", "sym_dysuria", "lab_urinalysis", "lab_cortisol", "rem_cantharis", "rem_phos_acid"
         ];
@@ -1910,10 +2018,10 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
         const priyaNodes = [
           "org_thyroid", "org_ovaries", "org_pancreas", "sys_endocrine", "sys_reproductive", "sys_digestive",
           "sym_fatigue", "sym_menses", "sym_hirsutism", "sym_weight", "sym_lethargy", "sym_bloat",
-          "rem_puls", "rem_thyroid", "rem_calc", "rem_sulph", "rem_nux",
+          "rem_puls", "rem_thyroid", "rem_calc", "rem_sulph", "rem_nux", "rem_ars", "rem_phos", "rem_bry",
           "mias_psora", "mias_sycosis",
           "lab_tsh", "lab_lh_fsh", "lab_cholesterol", "lab_hba1c",
-          "diag_pcos", "diag_hypothyroid", "diag_metabolic",
+          "diag_pcos", "diag_hypothyroid", "diag_metabolic", "diag_gastritis",
           "risk_glycemia", "risk_sedentary", "mod_open_air",
           "org_brain", "sym_brain_fog", "sym_insomnia", "lab_sleep_index", "rem_kali_phos", "sys_nervous", "org_adrenals", "lab_cortisol"
         ];
@@ -1923,10 +2031,10 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
         const elenaNodes = [
           "org_joints", "org_heart", "sys_musculoskeletal", "sys_cardiovascular",
           "sym_stiffness", "sym_fatigue", "sym_dryness", "sym_cramps", "sym_lethargy",
-          "rem_sil", "rem_rhus", "rem_caust", "rem_sulph",
+          "rem_sil", "rem_rhus", "rem_caust", "rem_sulph", "rem_bry", "rem_ars", "rem_phos",
           "mias_syphilis", "mias_psora",
           "lab_crp", "lab_anticcp", "lab_esr", "lab_cholesterol",
-          "diag_ra",
+          "diag_ra", "diag_gastritis",
           "risk_bp", "mod_cold_damp",
           "sys_immune", "sys_integumentary", "org_skin", "sym_eczema", "lab_ige", "rem_graphites", "sym_palpitations", "lab_ecg", "rem_crataegus"
         ];
@@ -2302,10 +2410,13 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
       const rect = canvas.getBoundingClientRect();
       const clickX = e.clientX - rect.left;
       const clickY = e.clientY - rect.top;
+      
+      const normX = clickX * (width / (rect.width || width));
+      const normY = clickY * (height / (rect.height || height));
 
       // Account for scale and pan offset
-      const graphX = (clickX - graphPan.x) / graphScale;
-      const graphY = (clickY - graphPan.y) / graphScale;
+      const graphX = (normX - graphPan.x) / graphScale;
+      const graphY = (normY - graphPan.y) / graphScale;
 
       const clicked = nodes.find(n => {
         const dx = graphX - n.x;
@@ -2329,8 +2440,10 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
       const clickY = e.clientY - rect.top;
 
       if (draggedNodeRef.current) {
-        const graphX = (clickX - graphPan.x) / graphScale;
-        const graphY = (clickY - graphPan.y) / graphScale;
+        const normX = clickX * (width / (rect.width || width));
+        const normY = clickY * (height / (rect.height || height));
+        const graphX = (normX - graphPan.x) / graphScale;
+        const graphY = (normY - graphPan.y) / graphScale;
         draggedNodeRef.current.x = graphX;
         draggedNodeRef.current.y = graphY;
         draggedNodeRef.current.vx = 0;
@@ -2371,7 +2484,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
       window.removeEventListener("mouseup", handleMouseUp);
       window.removeEventListener("resize", handleResize);
     };
-  }, [activeTab, theme, selectedNodeId, graphScale, graphPan, nodeSearchQuery, isGraphFullscreen, graphTextSize, graphDimensions]);
+  }, [activeTab, theme, selectedNodeId, graphScale, graphPan, nodeSearchQuery, isGraphFullscreen, graphTextSize, graphDimensions, activeDataKey, selectedPatientId, graphFilterTypes, graphHeatmapView, activeData, twinIndex]);
 
   // Dynamic OSTM Inspector detail retriever (Priority 2)
   const selectedNodeInfo = (() => {
@@ -2408,6 +2521,377 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
       cohortData: { top: 60, avg: 30, poor: 10 }
     };
   })();
+
+  const renderInspectorDetails = (isFloating: boolean) => {
+    if (!selectedNodeInfo || !selectedNodeId) return null;
+
+    const isRemedy = selectedNodeId.startsWith("rem_");
+    const isDiagnosis = selectedNodeId.startsWith("diag_");
+    const isOrganOrSymptom = selectedNodeId.startsWith("org_") || selectedNodeId.startsWith("sym_");
+
+    return (
+      <div className="flex flex-col h-full justify-between gap-4">
+        {/* Tab Headers */}
+        <div className="flex border-b border-slate-100 dark:border-slate-800">
+          <button
+            onClick={() => setInspectorTab("mapping")}
+            className={`flex-1 py-2 text-[10px] font-mono uppercase tracking-wider font-bold transition-all cursor-pointer border-b-2 text-center ${
+              inspectorTab === "mapping"
+                ? "border-emerald-500 text-emerald-500 font-bold"
+                : "border-transparent text-slate-400 hover:text-slate-200"
+            }`}
+          >
+            System Mapping
+          </button>
+          <button
+            onClick={() => setInspectorTab("reference")}
+            className={`flex-1 py-2 text-[10px] font-mono uppercase tracking-wider font-bold transition-all cursor-pointer border-b-2 text-center ${
+              inspectorTab === "reference"
+                ? "border-emerald-500 text-emerald-500 font-bold"
+                : "border-transparent text-slate-400 hover:text-slate-200"
+            }`}
+          >
+            Clinical Reference
+          </button>
+        </div>
+
+        {/* Tab Contents */}
+        <div className="flex-1 overflow-y-auto min-h-[200px] max-h-[350px] pr-1 scrollbar-thin">
+          {inspectorTab === "mapping" ? (
+            <div className="space-y-4 animate-fadeIn">
+              {/* Default Mapping View */}
+              <div className="flex justify-between items-start border-b border-slate-100 dark:border-slate-800 pb-2">
+                <div>
+                  <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block">{selectedNodeInfo.type}</span>
+                  <span className={`text-sm font-bold ${isFloating ? "text-slate-200" : "text-slate-850 dark:text-zinc-150"}`}>
+                    {selectedNodeInfo.title}
+                  </span>
+                </div>
+                <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase shrink-0 ${
+                  selectedNodeInfo.evidenceRating.includes("Grade A") 
+                    ? "bg-emerald-950/40 text-emerald-400 border border-emerald-900" 
+                    : "bg-sky-950/40 text-sky-400 border border-sky-900"
+                }`}>
+                  {selectedNodeInfo.evidenceRating}
+                </span>
+              </div>
+
+              {/* Status / Centrality / Confidence / Weight Grid */}
+              <div className="grid grid-cols-2 gap-3 text-[10px] leading-normal font-sans">
+                <div className={`p-2.5 rounded-xl border ${isFloating ? "bg-slate-900 border-slate-800 text-white" : "bg-slate-50 dark:bg-slate-955 border-slate-150 dark:border-slate-850"}`}>
+                  <span className="text-[8px] text-slate-450 uppercase font-mono block">Clinical Status</span>
+                  <strong className={`${isFloating ? "text-slate-200" : "text-slate-800 dark:text-zinc-200"} block mt-0.5`}>
+                    {selectedNodeInfo.status}
+                  </strong>
+                </div>
+                <div className={`p-2.5 rounded-xl border ${isFloating ? "bg-slate-900 border-slate-800 text-white" : "bg-slate-50 dark:bg-slate-955 border-slate-150 dark:border-slate-850"}`}>
+                  <span className="text-[8px] text-slate-450 uppercase font-mono block">Centrality Index</span>
+                  <strong className="text-emerald-500 block mt-0.5">0.88 (High)</strong>
+                </div>
+                <div className={`p-2.5 rounded-xl border ${isFloating ? "bg-slate-900 border-slate-800 text-white" : "bg-slate-50 dark:bg-slate-955 border-slate-150 dark:border-slate-850"}`}>
+                  <span className="text-[8px] text-slate-450 uppercase font-mono block">Confidence Rating</span>
+                  <strong className="text-emerald-500 block mt-0.5">{selectedNodeInfo.confidence}%</strong>
+                </div>
+                <div className={`p-2.5 rounded-xl border ${isFloating ? "bg-slate-900 border-slate-800 text-white" : "bg-slate-50 dark:bg-slate-955 border-slate-150 dark:border-slate-850"}`}>
+                  <span className="text-[8px] text-slate-450 uppercase font-mono block">Evidence Weight</span>
+                  <strong className={`${isFloating ? "text-slate-300" : "text-slate-700 dark:text-zinc-300"} block mt-0.5`}>
+                    {selectedNodeInfo.evidenceRating.split(' ')[2] || "92%"}
+                  </strong>
+                </div>
+                
+                {/* Description */}
+                <div className={`p-2.5 rounded-xl border col-span-2 ${isFloating ? "bg-slate-900 border-slate-800 text-white" : "bg-slate-50 dark:bg-slate-955 border-slate-150 dark:border-slate-850"}`}>
+                  <span className="text-[8px] text-slate-450 uppercase font-mono block">Node Description</span>
+                  <span className={`${isFloating ? "text-slate-300" : "text-slate-650 dark:text-zinc-350"} block mt-0.5`}>
+                    {selectedNodeInfo.description}
+                  </span>
+                </div>
+
+                <div className={`p-2.5 rounded-xl border col-span-2 ${isFloating ? "bg-slate-900 border-slate-800 text-white" : "bg-slate-50 dark:bg-slate-955 border-slate-150 dark:border-slate-850"}`}>
+                  <span className="text-[8px] text-slate-450 uppercase font-mono block">Historical Trends & Changes</span>
+                  <span className={`${isFloating ? "text-slate-300" : "text-slate-650 dark:text-zinc-350"} block mt-0.5`}>
+                    {selectedNodeId?.includes("kidney") ? "Creatinine rose 1.1 -> 1.6, eGFR declined 78 -> 49 over 12 months." : 
+                     selectedNodeId?.includes("thyroid") ? "TSH rose 6.2 -> 7.8, now compensated at 4.8." :
+                     selectedNodeId?.includes("joints") ? "ESR rose 45 -> 58, currently stabilized at 38." :
+                     selectedNodeId?.includes("liver") ? "ALT/AST rose 38 -> 64, bilirubin stabilized at 0.9." :
+                     selectedNodeId?.includes("lungs") ? "FEV1 stabilized at 82%, SpO2 96-98%." :
+                     selectedNodeId?.includes("gastritis") ? "Gastric lining inflammation active; gastric pain worse from motion." :
+                     "Baseline metric stabilized under remedy matched course."}
+                  </span>
+                </div>
+                <div className={`p-2.5 rounded-xl border col-span-2 ${isFloating ? "bg-slate-900 border-slate-800 text-white" : "bg-slate-50 dark:bg-slate-955 border-slate-150 dark:border-slate-850"}`}>
+                  <span className="text-[8px] text-slate-450 uppercase font-mono block">Population Benchmark</span>
+                  <span className={`${isFloating ? "text-slate-300" : "text-slate-650 dark:text-zinc-350"} block mt-0.5`}>
+                    {selectedNodeInfo.populationBenchmark}
+                  </span>
+                </div>
+              </div>
+
+              {/* Connected Nodes List with Edge weights */}
+              <div className="space-y-2">
+                <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Connected Nodes & Strengths</span>
+                <div className="grid grid-cols-1 gap-1.5 max-h-[120px] overflow-y-auto pr-1">
+                  {selectedNodeInfo.connectedElements.map((fact: string, idx: number) => {
+                    const isVeryStrong = fact.includes("Kidneys") || fact.includes("eGFR") || fact.includes("TSH") || fact.includes("Stiffness") || fact.includes("Rhus") || fact.includes("Gastritis") || fact.includes("Gut");
+                    return (
+                      <div key={idx} className={`p-2 rounded-xl border text-[10px] flex justify-between items-center ${
+                        isFloating 
+                          ? "bg-slate-900 border-slate-800" 
+                          : "bg-slate-50 dark:bg-slate-955 border-slate-200/50 dark:border-slate-850/50"
+                      }`}>
+                        <span className={`${isFloating ? "text-slate-300" : "text-slate-700 dark:text-zinc-350"} font-medium`}>
+                          ❖ {fact}
+                        </span>
+                        <span className={`font-bold font-mono ${isVeryStrong ? "text-emerald-500" : "text-sky-500"}`}>
+                          {isVeryStrong ? "Very Strong (95%)" : "Strong (82%)"}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          ) : (
+            /* Reference Tab View */
+            <div className="space-y-4 animate-fadeIn text-[11px] leading-relaxed">
+              {isRemedy && (
+                <div className="space-y-3">
+                  <h4 className={`text-xs font-mono font-bold ${isFloating ? "text-purple-400" : "text-purple-600 dark:text-purple-400"}`}>
+                    Materia Medica Monograph
+                  </h4>
+                  {materiaMedicaLoading ? (
+                    <div className="space-y-2 py-4">
+                      <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded animate-pulse w-3/4" />
+                      <div className="h-3 bg-slate-200 dark:bg-slate-800 rounded animate-pulse w-5/6" />
+                      <div className="h-3 bg-slate-200 dark:bg-slate-800 rounded animate-pulse w-full" />
+                      <div className="h-3 bg-slate-200 dark:bg-slate-800 rounded animate-pulse w-2/3" />
+                    </div>
+                  ) : materiaMedicaError ? (
+                    <div className="p-3 bg-rose-950/20 border border-rose-900/40 rounded-xl text-rose-400 text-[10px]">
+                      {materiaMedicaError}
+                    </div>
+                  ) : materiaMedicaData ? (
+                    <div className="space-y-3 font-sans">
+                      <div className={`font-bold text-xs pb-1 border-b ${isFloating ? "border-slate-800 text-slate-200" : "border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200"}`}>
+                        {materiaMedicaData.title}
+                      </div>
+                      <div 
+                        className={`prose prose-xs max-h-[300px] overflow-y-auto text-[10px] pr-1 leading-normal ${
+                          isFloating ? "text-slate-300" : "text-slate-750 dark:text-slate-300"
+                        }`}
+                        dangerouslySetInnerHTML={{ __html: materiaMedicaData.content }}
+                      />
+                    </div>
+                  ) : (
+                    <div className="text-slate-400 text-xs py-4 text-center">No reference monograph loaded.</div>
+                  )}
+                </div>
+              )}
+
+              {isDiagnosis && (() => {
+                const diagProfile = getIcdDiagnosis(selectedNodeInfo.title || selectedNodeId.replace("diag_", "").replace("_", " "));
+                if (!diagProfile) return <div className="text-slate-400">Diagnosis profile not found.</div>;
+                
+                const miasms = diagProfile.homeopathicLayer?.miasms || { psora: 50, sycosis: 30, syphilis: 10, tubercular: 10 };
+                const totalMiasms = Object.values(miasms).reduce((a, b) => a + b, 0) || 100;
+
+                return (
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <h4 className={`text-xs font-mono font-bold ${isFloating ? "text-sky-400" : "text-sky-600 dark:text-sky-400"}`}>
+                        Clinical Profile Details
+                      </h4>
+                      <span className="text-[9px] font-mono bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-400 font-bold border border-slate-250 dark:border-slate-700">
+                        ICD-10: {diagProfile.icd10} | ICD-11: {diagProfile.icd11}
+                      </span>
+                    </div>
+
+                    <div className="space-y-2 font-sans text-[10px]">
+                      <div>
+                        <strong className={isFloating ? "text-slate-300" : "text-slate-800 dark:text-zinc-200"}>Pathophysiology:</strong>
+                        <p className={isFloating ? "text-slate-400" : "text-slate-650 dark:text-zinc-400"}>{diagProfile.pathophysiology}</p>
+                      </div>
+                      <div>
+                        <strong className={isFloating ? "text-slate-300" : "text-slate-800 dark:text-zinc-200"}>Etiology & Triggers:</strong>
+                        <p className={isFloating ? "text-slate-400" : "text-slate-650 dark:text-zinc-400"}>{diagProfile.etiology}</p>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-slate-100 dark:border-slate-800/80">
+                        <div>
+                          <strong className={isFloating ? "text-slate-300" : "text-slate-800 dark:text-zinc-200"}>Common Symptoms:</strong>
+                          <ul className={`list-disc list-inside mt-0.5 space-y-0.5 ${isFloating ? "text-slate-400" : "text-slate-650 dark:text-zinc-400"}`}>
+                            {diagProfile.symptoms.map((s, idx) => <li key={idx}>{s}</li>)}
+                          </ul>
+                        </div>
+                        <div>
+                          <strong className={isFloating ? "text-slate-300" : "text-slate-800 dark:text-zinc-200"}>Risk Factors:</strong>
+                          <ul className={`list-disc list-inside mt-0.5 space-y-0.5 ${isFloating ? "text-slate-400" : "text-slate-650 dark:text-zinc-400"}`}>
+                            {diagProfile.riskFactors.map((r, idx) => <li key={idx}>{r}</li>)}
+                          </ul>
+                        </div>
+                      </div>
+
+                      {/* Miasmatic distribution stacked bar chart */}
+                      <div className="space-y-1.5 pt-3 border-t border-slate-100 dark:border-slate-800/80">
+                        <div className="flex justify-between items-center">
+                          <strong className={isFloating ? "text-slate-300" : "text-slate-800 dark:text-zinc-200"}>Miasmatic Load Distribution:</strong>
+                          <span className="text-[9px] font-mono font-bold text-slate-400">Total: {totalMiasms}%</span>
+                        </div>
+                        <div className="w-full h-3 rounded-full flex overflow-hidden border border-slate-200 dark:border-slate-800">
+                          {miasms.psora > 0 && (
+                            <div 
+                              className="h-full bg-amber-550 bg-amber-500" 
+                              style={{ width: `${(miasms.psora / totalMiasms) * 100}%` }}
+                              title={`Psora: ${miasms.psora}%`}
+                            />
+                          )}
+                          {miasms.sycosis > 0 && (
+                            <div 
+                              className="h-full bg-emerald-500" 
+                              style={{ width: `${(miasms.sycosis / totalMiasms) * 100}%` }}
+                              title={`Sycosis: ${miasms.sycosis}%`}
+                            />
+                          )}
+                          {miasms.syphilis > 0 && (
+                            <div 
+                              className="h-full bg-rose-500" 
+                              style={{ width: `${(miasms.syphilis / totalMiasms) * 100}%` }}
+                              title={`Syphilis: ${miasms.syphilis}%`}
+                            />
+                          )}
+                          {miasms.tubercular > 0 && (
+                            <div 
+                              className="h-full bg-purple-500" 
+                              style={{ width: `${(miasms.tubercular / totalMiasms) * 100}%` }}
+                              title={`Tubercular: ${miasms.tubercular || 0}%`}
+                            />
+                          )}
+                        </div>
+                        <div className="grid grid-cols-4 gap-1 text-[8px] text-slate-450 font-mono text-center pt-0.5">
+                          <div className="flex items-center gap-0.5 justify-center">
+                            <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                            <span>Psora: {miasms.psora}%</span>
+                          </div>
+                          <div className="flex items-center gap-0.5 justify-center">
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                            <span>Syc: {miasms.sycosis}%</span>
+                          </div>
+                          <div className="flex items-center gap-0.5 justify-center">
+                            <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
+                            <span>Syph: {miasms.syphilis}%</span>
+                          </div>
+                          <div className="flex items-center gap-0.5 justify-center">
+                            <span className="h-1.5 w-1.5 rounded-full bg-purple-500" />
+                            <span>Tub: {miasms.tubercular || 0}%</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Homeopathic Layer remedies */}
+                      {diagProfile.homeopathicLayer && (
+                        <div className="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50 dark:bg-slate-950 p-2 rounded-xl border border-slate-100 dark:border-slate-850">
+                          <div>
+                            <span className="text-[8px] text-slate-450 uppercase block font-mono">Acute Remedies</span>
+                            <span className={`font-bold font-sans ${isFloating ? "text-slate-300" : "text-slate-800 dark:text-zinc-200"}`}>
+                              {diagProfile.homeopathicLayer.acuteRemedies.join(", ")}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-[8px] text-slate-450 uppercase block font-mono">Chronic Remedies</span>
+                            <span className={`font-bold font-sans ${isFloating ? "text-slate-300" : "text-slate-800 dark:text-zinc-200"}`}>
+                              {diagProfile.homeopathicLayer.chronicRemedies.join(", ")}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {isOrganOrSymptom && (() => {
+                const cleanedTerm = selectedNodeId.replace("org_", "").replace("sym_", "").replace("_", " ").toLowerCase();
+                const relatedDiags = CURATED_DIAGNOSES.filter(diag => {
+                  const nameMatch = diag.name.toLowerCase().includes(cleanedTerm);
+                  const sysMatch = diag.organSystem.toLowerCase().includes(cleanedTerm);
+                  const descMatch = diag.description.toLowerCase().includes(cleanedTerm);
+                  const symMatch = diag.symptoms.some(s => s.toLowerCase().includes(cleanedTerm));
+                  return nameMatch || sysMatch || descMatch || symMatch;
+                });
+
+                return (
+                  <div className="space-y-3">
+                    <h4 className={`text-xs font-mono font-bold ${isFloating ? "text-sky-400" : "text-sky-600 dark:text-sky-400"}`}>
+                      Related Diagnoses & Remedies
+                    </h4>
+                    {relatedDiags.length > 0 ? (
+                      <div className="space-y-2">
+                        {relatedDiags.map((diag, idx) => (
+                          <div 
+                            key={idx} 
+                            onClick={() => setSelectedNodeId(`diag_${diag.id}`)}
+                            className={`p-2.5 rounded-xl border text-[10px] cursor-pointer transition-all flex flex-col gap-1 ${
+                              isFloating 
+                                ? "bg-slate-905 bg-slate-900 hover:bg-slate-850 border-slate-800 hover:border-slate-700 text-slate-200" 
+                                : "bg-slate-50 hover:bg-slate-100 dark:bg-slate-955 dark:hover:bg-slate-900 border-slate-150 hover:border-slate-300 dark:border-slate-850 text-slate-850 dark:text-zinc-150"
+                            }`}
+                          >
+                            <div className="flex justify-between items-center font-bold">
+                              <span>❖ {diag.name}</span>
+                              <span className="text-[8.5px] uppercase font-mono text-slate-450">{diag.organSystem}</span>
+                            </div>
+                            <div className={`text-[9px] ${isFloating ? "text-slate-400" : "text-slate-555 text-slate-500"}`}>
+                              Acute: <strong>{diag.homeopathicLayer?.acuteRemedies.join(", ") || "N/A"}</strong> | Chronic: <strong>{diag.homeopathicLayer?.chronicRemedies.join(", ") || "N/A"}</strong>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-slate-450 py-4 text-center">No related clinical diagnoses curated for this node.</div>
+                    )}
+                  </div>
+                );
+              })()}
+            </div>
+          )}
+        </div>
+
+        {/* Similar Patient Overlay / Bottom Outcome card */}
+        {inspectorTab === "mapping" && (
+          <div className="space-y-3 shrink-0">
+            {/* Similar Patient Overlay */}
+            <div className={`p-3 rounded-2xl border space-y-1.5 text-[10px] leading-normal font-sans ${
+              isFloating ? "bg-slate-900/50 border-slate-800" : "bg-gradient-to-r from-purple-950/10 to-teal-950/10 border-purple-900/30"
+            }`}>
+              <span className="text-[8.5px] font-mono text-purple-400 uppercase tracking-widest block font-bold">Similar Patient Overlay™</span>
+              <div className={isFloating ? "text-slate-400" : "text-slate-300"}>
+                Matched <strong>128 similar patient twins</strong> in active database:
+              </div>
+              <div className="grid grid-cols-3 gap-2 text-center text-[9px] font-mono font-bold mt-1">
+                <div className="bg-emerald-950/40 text-emerald-400 px-1.5 py-1 rounded border border-emerald-900">Improved: 72%</div>
+                <div className="bg-slate-900 text-slate-400 px-1.5 py-1 rounded border border-slate-800">Stable: 18%</div>
+                <div className="bg-rose-950/40 text-rose-400 px-1.5 py-1 rounded border border-rose-900">Progressed: 10%</div>
+              </div>
+            </div>
+
+            {/* Bottom Outcomes card */}
+            <div className={`p-3.5 rounded-2xl border space-y-1.5 text-[10px] ${
+              isFloating ? "bg-slate-950 border-slate-800" : "bg-slate-50 dark:bg-slate-950 border-slate-100 dark:border-slate-850"
+            }`}>
+              <div className="flex justify-between font-bold">
+                <span>Predicted Outcomes:</span>
+                <span className="text-emerald-500 font-mono text-right">{selectedNodeInfo.historicalOutcome}</span>
+              </div>
+              <div className="flex justify-between text-slate-400 text-[9px]">
+                <span>Suggested Actions:</span>
+                <span className="text-sky-400 font-bold">Assess intercurrent remedy response</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   // Handle Ask AI submit
   // Clickable graph node references parsing (Priority 3)
@@ -2709,10 +3193,6 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
   const isRealSheet = !!(selectedPatient && selectedPatient.sheetUrl && selectedPatient.sheetUrl.startsWith("https://") && selectedPatient.sheetUrl.includes("google.com/spreadsheets"));
 
   const [isSyncing, setIsSyncing] = useState(false);
-  const [graphFilterTypes, setGraphFilterTypes] = useState<string[]>([
-    "symptom", "remedy", "organ", "system", "miasm", "lab", "diagnosis", "risk", "modality"
-  ]);
-  const [graphHeatmapView, setGraphHeatmapView] = useState<"none" | "evidence" | "risk" | "outcome" | "remedy">("none");
   const [collapsedClusters, setCollapsedClusters] = useState<Record<string, boolean>>({});
   const [sidebarTab, setSidebarTab] = useState<"feed" | "ask">("feed");
   const [evidenceExplorerData, setEvidenceExplorerData] = useState<any | null>(null);
@@ -2941,66 +3421,20 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
                   </button>
                 ))}
               </div>
-            </div>
-          </div>
-
-          {/* Floating Bottom Right Panel: Node Inspector (if selected) */}
+             {/* Floating Bottom Right Panel: Node Inspector (if selected) */}
           {selectedNodeInfo && (
-            <div className="absolute bottom-6 right-6 z-10 w-96 backdrop-blur-md bg-slate-950/90 dark:bg-slate-950/90 border border-slate-800 rounded-2xl p-4 shadow-2xl text-white space-y-3 max-h-[420px] overflow-y-auto animate-fadeIn">
-              <div className="flex justify-between items-start border-b border-slate-800 pb-2">
-                <div>
-                  <span className="text-[8px] font-mono text-purple-400 uppercase tracking-wider block">{selectedNodeInfo.type}</span>
-                  <h4 className="text-xs font-bold text-slate-200">{selectedNodeInfo.title}</h4>
-                </div>
-                <span className="text-[8px] px-1.5 py-0.5 bg-sky-950 border border-sky-800 text-sky-400 font-bold rounded uppercase shrink-0">
-                  {selectedNodeInfo.evidenceRating}
-                </span>
+            <div className="absolute bottom-6 right-6 z-10 w-96 backdrop-blur-md bg-slate-950/90 border border-slate-800 rounded-2xl p-4 shadow-2xl text-white space-y-3 max-h-[420px] overflow-y-auto animate-fadeIn">
+              <div className="flex justify-between items-center border-b border-slate-800 pb-2 mb-2">
+                <h4 className="text-xs font-mono font-bold text-slate-200">OSTM Node Inspector™</h4>
+                <button onClick={() => setSelectedNodeId(null)} className="text-slate-400 hover:text-slate-250 border-none bg-transparent cursor-pointer">
+                  <X className="w-3.5 h-3.5" />
+                </button>
               </div>
-              <div className="text-[10px] space-y-2.5 leading-relaxed font-sans">
-                <div className="grid grid-cols-2 gap-2 font-mono text-[9px] bg-slate-900/50 p-2 rounded-lg border border-slate-850">
-                  <div>
-                    <span className="text-slate-500 block text-[8px]">CLINICAL STATUS</span>
-                    <strong className="text-slate-200">{selectedNodeInfo.status}</strong>
-                  </div>
-                  <div>
-                    <span className="text-slate-500 block text-[8px]">CONFIDENCE</span>
-                    <strong className="text-emerald-400">{selectedNodeInfo.confidence}%</strong>
-                  </div>
-                </div>
-                <div>
-                  <span className="text-[8.5px] text-purple-400 block uppercase font-mono tracking-wider font-semibold">Anatomical / Remedial Description</span>
-                  <p className="text-slate-300 text-[9.5px]">
-                    {selectedNodeInfo.description}
-                  </p>
-                </div>
-                <div>
-                  <span className="text-[8.5px] text-sky-400 block uppercase font-mono tracking-wider font-semibold">Historical Trends & Changes</span>
-                  <p className="text-slate-300 text-[9.5px]">
-                    {selectedNodeId?.includes("kidney") ? "Creatinine rose 1.1 -> 1.6, eGFR declined 78 -> 49 over 12 months." : 
-                     selectedNodeId?.includes("thyroid") ? "TSH rose 6.2 -> 7.8, now compensated at 4.8." :
-                     selectedNodeId?.includes("joints") ? "ESR rose 45 -> 58, currently stabilized at 38." :
-                     selectedNodeId?.includes("liver") ? "ALT/AST rose 38 -> 64, bilirubin stabilized at 0.9." :
-                     selectedNodeId?.includes("lungs") ? "FEV1 stabilized at 82%, SpO2 96-98%." :
-                     "Baseline metric stabilized under remedy matched course."}
-                  </p>
-                </div>
-                <div>
-                  <span className="text-[8.5px] text-amber-400 block uppercase font-mono tracking-wider font-semibold">Suggested Actions / Predicted Outcomes</span>
-                  <p className="text-emerald-400 text-[9.5px] font-medium">✓ {selectedNodeInfo.historicalOutcome}</p>
-                </div>
-                <div>
-                  <span className="text-[8.5px] text-slate-500 block uppercase font-mono tracking-wider">Connected Elements</span>
-                  <div className="flex flex-wrap gap-1 mt-1">
-                    {selectedNodeInfo.connectedElements.map((elem, idx) => (
-                      <span key={idx} className="px-1.5 py-0.5 bg-slate-900 border border-slate-800 text-[8px] rounded-md text-slate-400">
-                        {elem}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              {renderInspectorDetails(true)}
             </div>
           )}
+            </div>
+          </div>
 
           {/* Floating Bottom Center Panel: Graph Insights Panel */}
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 w-[450px] backdrop-blur-md bg-slate-950/75 dark:bg-slate-950/75 border border-slate-800 rounded-xl px-4 py-2.5 shadow-2xl text-slate-300 text-[9.5px] font-sans flex justify-between items-center gap-3">
@@ -3155,39 +3589,13 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
           {/* Floating inspector in fullscreen mode (Priority 2 details) */}
           {isFullscreen && selectedNodeInfo && (
             <div className="absolute bottom-6 right-6 w-80 bg-slate-950/95 backdrop-blur-md border border-slate-800 rounded-2xl p-4 shadow-2xl text-white space-y-3 z-10 max-h-[350px] overflow-y-auto animate-fadeIn">
-              <div className="flex justify-between items-start border-b border-slate-800 pb-1.5">
-                <div>
-                  <span className="text-[8px] font-mono text-purple-400 uppercase tracking-wider block">{selectedNodeInfo.type}</span>
-                  <h4 className="text-xs font-bold text-slate-200">{selectedNodeInfo.title}</h4>
-                </div>
-                <span className="text-[8px] px-1.5 py-0.5 bg-sky-950 border border-sky-800 text-sky-400 font-bold rounded uppercase">
-                  {selectedNodeInfo.evidenceRating}
-                </span>
+              <div className="flex justify-between items-center border-b border-slate-800 pb-1.5 mb-2">
+                <h4 className="text-xs font-mono font-bold text-slate-200">OSTM Node Inspector™</h4>
+                <button onClick={() => setSelectedNodeId(null)} className="text-slate-400 hover:text-slate-250 border-none bg-transparent cursor-pointer">
+                  <X className="w-3.5 h-3.5" />
+                </button>
               </div>
-              <div className="text-[10px] space-y-2 leading-relaxed font-sans">
-                <div className="grid grid-cols-2 gap-2 font-mono text-[9px] bg-slate-900/50 p-2 rounded-lg border border-slate-850">
-                  <div>
-                    <span className="text-slate-500 block text-[8px]">CLINICAL STATUS</span>
-                    <strong className="text-slate-200">{selectedNodeInfo.status}</strong>
-                  </div>
-                  <div>
-                    <span className="text-slate-500 block text-[8px]">CONFIDENCE</span>
-                    <strong className="text-emerald-400">{selectedNodeInfo.confidence}%</strong>
-                  </div>
-                </div>
-                <div>
-                  <span className="text-[8px] text-slate-555 block uppercase font-mono">Historical Trends & Changes</span>
-                  <p className="text-slate-300 text-[9px]">
-                    {selectedNodeId?.includes("kidney") ? "Creatinine rose 1.1 -> 1.6, eGFR declined 78 -> 49 over 12 months." : 
-                     selectedNodeId?.includes("thyroid") ? "TSH rose 6.2 -> 7.8, now compensated at 4.8." :
-                     "ESR rose 45 -> 58, currently stabilized at 38."}
-                  </p>
-                </div>
-                <div>
-                  <span className="text-[8px] text-slate-555 block uppercase font-mono">Suggested Actions / Predicted Outcomes</span>
-                  <p className="text-emerald-400 text-[9px] font-medium">✓ {selectedNodeInfo.historicalOutcome}</p>
-                </div>
-              </div>
+              {renderInspectorDetails(true)}
             </div>
           )}
         </div>
@@ -3952,98 +4360,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
                 </div>
 
                 {selectedNodeInfo ? (
-                  <div className="flex-1 flex flex-col justify-between gap-4 animate-fadeIn">
-                    <div className="space-y-4">
-                      
-                      {/* Name & Category Header */}
-                      <div className="flex justify-between items-start border-b border-slate-100 dark:border-slate-800 pb-2">
-                        <div>
-                          <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block">{selectedNodeInfo.type}</span>
-                          <span className="text-sm font-bold text-slate-850 dark:text-zinc-150">{selectedNodeInfo.title}</span>
-                        </div>
-                        <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase ${selectedNodeInfo.evidenceRating.includes("Grade A") ? "bg-emerald-950/40 text-emerald-400 border border-emerald-900" : "bg-sky-950/40 text-sky-400 border border-sky-900"}`}>
-                          {selectedNodeInfo.evidenceRating}
-                        </span>
-                      </div>
-
-                      {/* Clinical Status & Metric Grid (Priority 2 & 12) */}
-                      <div className="grid grid-cols-2 gap-3 text-[10px] leading-normal font-sans">
-                        <div className="p-2.5 bg-slate-50 dark:bg-slate-955 rounded-xl border border-slate-150 dark:border-slate-850">
-                          <span className="text-[8px] text-slate-450 uppercase font-mono block">Clinical Status</span>
-                          <strong className="text-slate-800 dark:text-zinc-200 block mt-0.5">{selectedNodeInfo.status}</strong>
-                        </div>
-                        <div className="p-2.5 bg-slate-50 dark:bg-slate-955 rounded-xl border border-slate-150 dark:border-slate-850">
-                          <span className="text-[8px] text-slate-450 uppercase font-mono block">Centrality Index</span>
-                          <strong className="text-emerald-500 block mt-0.5">0.88 (High)</strong>
-                        </div>
-                        <div className="p-2.5 bg-slate-50 dark:bg-slate-955 rounded-xl border border-slate-150 dark:border-slate-850">
-                          <span className="text-[8px] text-slate-450 uppercase font-mono block">Confidence Rating</span>
-                          <strong className="text-emerald-500 block mt-0.5">{selectedNodeInfo.confidence}%</strong>
-                        </div>
-                        <div className="p-2.5 bg-slate-50 dark:bg-slate-955 rounded-xl border border-slate-150 dark:border-slate-850">
-                          <span className="text-[8px] text-slate-450 uppercase font-mono block">Evidence Weight</span>
-                          <strong className="text-slate-700 dark:text-zinc-300 block mt-0.5">{selectedNodeInfo.evidenceRating.split(' ')[2] || "92%"}</strong>
-                        </div>
-                        <div className="p-2.5 bg-slate-50 dark:bg-slate-955 rounded-xl border border-slate-150 dark:border-slate-850 col-span-2">
-                          <span className="text-[8px] text-slate-450 uppercase font-mono block">Historical Trends & Changes</span>
-                          <span className="text-slate-650 dark:text-zinc-350 block mt-0.5">
-                            {selectedNodeId?.includes("kidney") ? "Creatinine rose 1.1 -> 1.6, eGFR declined 78 -> 49 over 12 months." : 
-                             selectedNodeId?.includes("thyroid") ? "TSH rose 6.2 -> 7.8, now compensated at 4.8." :
-                             "ESR rose 45 -> 58, currently stabilized at 38."}
-                          </span>
-                        </div>
-                        <div className="p-2.5 bg-slate-50 dark:bg-slate-955 rounded-xl border border-slate-150 dark:border-slate-850 col-span-2">
-                          <span className="text-[8px] text-slate-450 uppercase font-mono block">Population Benchmark</span>
-                          <span className="text-slate-650 dark:text-zinc-350 block mt-0.5">{selectedNodeInfo.populationBenchmark}</span>
-                        </div>
-                      </div>
-
-                      {/* Connected Nodes List with Edge weights (Priority 2 & 3) */}
-                      <div className="space-y-2">
-                        <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Connected Nodes & Strengths</span>
-                        <div className="grid grid-cols-1 gap-1.5 max-h-[120px] overflow-y-auto pr-1">
-                          {selectedNodeInfo.connectedElements.map((fact: string, idx: number) => {
-                            const isVeryStrong = fact.includes("Kidneys") || fact.includes("eGFR") || fact.includes("TSH") || fact.includes("Stiffness") || fact.includes("Rhus");
-                            return (
-                              <div key={idx} className="p-2 bg-slate-50 dark:bg-slate-955 rounded-xl border border-slate-200/50 dark:border-slate-850/50 text-[10px] flex justify-between items-center">
-                                <span className="text-slate-700 dark:text-zinc-350 font-medium">❖ {fact}</span>
-                                <span className={`font-bold font-mono ${isVeryStrong ? "text-emerald-500" : "text-sky-500"}`}>
-                                  {isVeryStrong ? "Very Strong (95%)" : "Strong (82%)"}
-                                </span>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-
-                      {/* Similar Patient Overlay (Priority 10) */}
-                      <div className="p-3 bg-gradient-to-r from-purple-950/10 to-teal-950/10 rounded-2xl border border-purple-900/30 space-y-1.5 text-[10px] leading-normal font-sans">
-                        <span className="text-[8.5px] font-mono text-purple-400 uppercase tracking-widest block font-bold">Similar Patient Overlay™</span>
-                        <div className="text-slate-300">
-                          Matched <strong>128 similar patient twins</strong> in active database:
-                        </div>
-                        <div className="grid grid-cols-3 gap-2 text-center text-[9px] font-mono font-bold mt-1">
-                          <div className="bg-emerald-950/40 text-emerald-400 px-1.5 py-1 rounded border border-emerald-900">Improved: 72%</div>
-                          <div className="bg-slate-900 text-slate-400 px-1.5 py-1 rounded border border-slate-800">Stable: 18%</div>
-                          <div className="bg-rose-950/40 text-rose-400 px-1.5 py-1 rounded border border-rose-900">Progressed: 10%</div>
-                        </div>
-                      </div>
-
-                    </div>
-
-                    {/* Bottom Outcomes card */}
-                    <div className="p-3.5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-850 space-y-1.5 text-[10px] shrink-0">
-                      <div className="flex justify-between font-bold">
-                        <span>Predicted Outcomes:</span>
-                        <span className="text-emerald-500 font-mono text-right">{selectedNodeInfo.historicalOutcome}</span>
-                      </div>
-                      <div className="flex justify-between text-slate-400 text-[9px]">
-                        <span>Suggested Actions:</span>
-                        <span className="text-sky-400 font-bold">Assess intercurrent remedy response</span>
-                      </div>
-                    </div>
-
-                  </div>
+                  renderInspectorDetails(false)
                 ) : (
                   <div className="flex-1 flex flex-col items-center justify-center text-center p-6 text-slate-400 gap-2">
                     <Network className="w-8 h-8 text-slate-300 dark:text-slate-700 animate-pulse" />
@@ -4291,40 +4608,249 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
 
             {/* 7. LONGITUDINAL PATIENT STORY TIMELINE (PRIORITY 7) */}
             <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm space-y-4">
-              <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2">
+              <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-3">
                 <div>
                   <h3 className="font-serif text-sm font-bold flex items-center gap-2">
                     <Calendar className="w-4 h-4 text-sky-500" /> Longitudinal Patient Story™
                   </h3>
                   <p className="text-[10px] text-slate-400 mt-0.5">Narrative clinical chronology generated automatically from twin history data.</p>
                 </div>
-                <button 
-                  onClick={() => {
-                    alert("Compiling report... Redirecting to Compiled Reports tab.");
-                    setActiveTab("reports");
-                    handleCompileReport("clinical_summary");
-                  }}
-                  className="px-3.5 py-1.5 bg-emerald-600 hover:opacity-90 text-white rounded-xl text-[10px] font-bold border-none cursor-pointer flex items-center gap-1.5 shadow-sm"
-                >
-                  <FileText className="w-3.5 h-3.5" /> Export Report
-                </button>
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="flex items-center gap-3 text-[10px]">
+                    <span className="flex items-center gap-1.5 font-bold">
+                      <span className="w-2 h-2 bg-emerald-500 rounded-full inline-block" /> Vitality Index
+                    </span>
+                    <span className="flex items-center gap-1.5 font-bold">
+                      <span className="w-2 h-2 bg-rose-500 rounded-full inline-block" /> Disease Burden
+                    </span>
+                  </div>
+                  <button 
+                    onClick={() => {
+                      alert("Compiling report... Redirecting to Compiled Reports tab.");
+                      setActiveTab("reports");
+                      handleCompileReport("clinical_summary");
+                    }}
+                    className="px-3 py-1.5 bg-emerald-600 hover:opacity-90 text-white rounded-xl text-[10px] font-bold border-none cursor-pointer flex items-center gap-1.5 shadow-sm ml-auto sm:ml-0"
+                  >
+                    <FileText className="w-3.5 h-3.5" /> Export Report
+                  </button>
+                </div>
               </div>
 
-              {/* Story list */}
-              <div className="space-y-3">
-                {activeData.history.map((h: any, i: number) => (
-                  <div key={i} className="flex gap-3 text-xs">
-                    <div className="w-[80px] shrink-0 font-mono text-slate-400 font-bold">{h.date}</div>
-                    <div className="w-2 bg-slate-200 dark:bg-slate-800 relative rounded-full">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500 absolute top-1.5 left-0 border border-white" />
+              {/* Interactive SVG Timeline Chart */}
+              {(() => {
+                const N = activeData.history.length;
+                const startVitality = Math.max(10, activeData.vitalityIndex - 18);
+                const startBurden = Math.min(95, activeData.diseaseBurdenIndex + 20);
+                
+                const points = activeData.history.map((h: any, idx: number) => {
+                  const fraction = N > 1 ? idx / (N - 1) : 1;
+                  const wave = Math.sin(idx * 2.3 + (activeData.name || "").length) * 3;
+                  const vitality = Math.round(startVitality + fraction * (activeData.vitalityIndex - startVitality) + (idx > 0 && idx < N - 1 ? wave : 0));
+                  const burden = Math.round(startBurden + fraction * (activeData.diseaseBurdenIndex - startBurden) - (idx > 0 && idx < N - 1 ? wave * 0.7 : 0));
+                  
+                  // Extract remedy abbreviation if type is Remedy
+                  let remedyLabel = "";
+                  if (h.type.toLowerCase() === "remedy") {
+                    const firstWord = h.event.split(" ")[0];
+                    remedyLabel = firstWord.length > 5 ? firstWord.substring(0, 4) + "." : firstWord;
+                  }
+                  
+                  return {
+                    date: h.date,
+                    type: h.type,
+                    event: h.event,
+                    notes: h.notes,
+                    vitality: Math.max(0, Math.min(100, vitality)),
+                    burden: Math.max(0, Math.min(100, burden)),
+                    isRemedy: h.type.toLowerCase() === "remedy",
+                    remedyLabel
+                  };
+                });
+
+                const svgWidth = 600;
+                const svgHeight = 160;
+                const chartPadding = { left: 35, right: 35, top: 35, bottom: 25 };
+                const chartW = svgWidth - chartPadding.left - chartPadding.right;
+                const chartH = svgHeight - chartPadding.top - chartPadding.bottom;
+                
+                const getCoords = (idx: number) => {
+                  const x = chartPadding.left + (N > 1 ? idx / (N - 1) : 0.5) * chartW;
+                  return x;
+                };
+
+                const vitalityPath = points.map((p: any, idx: number) => {
+                  const x = getCoords(idx);
+                  const y = chartPadding.top + chartH - (p.vitality / 100) * chartH;
+                  return `${idx === 0 ? 'M' : 'L'} ${x} ${y}`;
+                }).join(' ');
+
+                const burdenPath = points.map((p: any, idx: number) => {
+                  const x = getCoords(idx);
+                  const y = chartPadding.top + chartH - (p.burden / 100) * chartH;
+                  return `${idx === 0 ? 'M' : 'L'} ${x} ${y}`;
+                }).join(' ');
+
+                const vitalityArea = points.length > 0 ? `${vitalityPath} L ${getCoords(N-1)} ${chartPadding.top + chartH} L ${getCoords(0)} ${chartPadding.top + chartH} Z` : '';
+                const burdenArea = points.length > 0 ? `${burdenPath} L ${getCoords(N-1)} ${chartPadding.top + chartH} L ${getCoords(0)} ${chartPadding.top + chartH} Z` : '';
+
+                return (
+                  <div className="space-y-4">
+                    <div className="relative w-full bg-slate-50 dark:bg-slate-950/40 rounded-2xl border border-slate-100 dark:border-slate-850 p-2 overflow-visible">
+                      <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} className="w-full h-auto overflow-visible select-none">
+                        <defs>
+                          <linearGradient id="vitality-grad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#10b981" stopOpacity="0.25" />
+                            <stop offset="100%" stopColor="#10b981" stopOpacity="0.0" />
+                          </linearGradient>
+                          <linearGradient id="burden-grad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#ef4444" stopOpacity="0.2" />
+                            <stop offset="100%" stopColor="#ef4444" stopOpacity="0.0" />
+                          </linearGradient>
+                        </defs>
+                        
+                        {/* Horizontal grid lines */}
+                        {[0, 25, 50, 75, 100].map((val, idx) => {
+                          const y = chartPadding.top + chartH - (val / 100) * chartH;
+                          return (
+                            <g key={idx} opacity={0.4}>
+                              <line x1={chartPadding.left} y1={y} x2={svgWidth - chartPadding.right} y2={y} stroke={theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(15, 23, 42, 0.06)'} strokeDasharray="2,2" />
+                              <text x={chartPadding.left - 8} y={y + 3} fontSize={8} fontFamily="monospace" textAnchor="end" fill={theme === 'dark' ? '#94a3b8' : '#64748b'}>{val}%</text>
+                            </g>
+                          );
+                        })}
+
+                        {/* Area backgrounds */}
+                        {points.length > 0 && (
+                          <>
+                            <path d={vitalityArea} fill="url(#vitality-grad)" />
+                            <path d={burdenArea} fill="url(#burden-grad)" />
+                          </>
+                        )}
+
+                        {/* Trend paths */}
+                        <path d={vitalityPath} fill="none" stroke="#10b981" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" />
+                        <path d={burdenPath} fill="none" stroke="#ef4444" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="3,3" />
+
+                        {/* Vertical line and points */}
+                        {points.map((p: any, idx: number) => {
+                          const x = getCoords(idx);
+                          const vy = chartPadding.top + chartH - (p.vitality / 100) * chartH;
+                          const by = chartPadding.top + chartH - (p.burden / 100) * chartH;
+                          const isSelected = twinIndex === idx;
+
+                          return (
+                            <g key={idx}>
+                              {/* Vertical visit line */}
+                              <line x1={x} y1={chartPadding.top - 5} x2={x} y2={chartPadding.top + chartH} stroke={isSelected ? '#3b82f6' : (theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(15, 23, 42, 0.04)')} strokeWidth={isSelected ? 1.5 : 1} />
+                              
+                              {/* Selected Pulsing Glow */}
+                              {isSelected && (
+                                <>
+                                  <circle cx={x} cy={vy} r={9} fill="none" stroke="#10b981" strokeWidth={1.5} className="animate-ping" style={{ transformOrigin: `${x}px ${vy}px` }} />
+                                  <circle cx={x} cy={by} r={9} fill="none" stroke="#ef4444" strokeWidth={1.5} className="animate-ping" style={{ transformOrigin: `${x}px ${by}px` }} />
+                                </>
+                              )}
+
+                              {/* Vitality node */}
+                              <circle 
+                                cx={x} cy={vy} r={isSelected ? 6 : 4} 
+                                fill="#10b981" stroke={theme === 'dark' ? '#0f172a' : '#fff'} strokeWidth={1.5} 
+                                className="cursor-pointer hover:scale-125 transition-transform"
+                                onClick={() => {
+                                  setTwinIndex(idx);
+                                  setActiveTwinMode("playback");
+                                }}
+                              />
+
+                              {/* Burden node */}
+                              <circle 
+                                cx={x} cy={by} r={isSelected ? 6 : 4} 
+                                fill="#ef4444" stroke={theme === 'dark' ? '#0f172a' : '#fff'} strokeWidth={1.5} 
+                                className="cursor-pointer hover:scale-125 transition-transform"
+                                onClick={() => {
+                                  setTwinIndex(idx);
+                                  setActiveTwinMode("playback");
+                                }}
+                              />
+
+                              {/* Remedy Tag Badge */}
+                              {p.isRemedy && (
+                                <g transform={`translate(${x - 20}, ${vy - 26})`} className="cursor-pointer" onClick={() => { setTwinIndex(idx); setActiveTwinMode("playback"); }}>
+                                  <rect width={40} height={13} rx={6} fill={isSelected ? "#2563eb" : "#3b82f6"} stroke={theme === 'dark' ? '#0f172a' : '#fff'} strokeWidth={1} />
+                                  <text x={20} y={9} fill="#fff" fontSize={7} fontWeight="bold" textAnchor="middle" fontFamily="sans-serif">{p.remedyLabel}</text>
+                                </g>
+                              )}
+
+                              {/* Bottom Date labels */}
+                              <text x={x} y={chartPadding.top + chartH + 14} fontSize={8} fontFamily="monospace" fill={isSelected ? '#3b82f6' : '#64748b'} fontWeight={isSelected ? 'bold' : 'normal'} textAnchor="middle">
+                                {p.date.substring(5)}
+                              </text>
+                            </g>
+                          );
+                        })}
+                      </svg>
                     </div>
-                    <div className="flex-1 pb-3 border-b border-slate-100 dark:border-slate-850">
-                      <span className="font-bold text-slate-700 dark:text-slate-300 block">{h.event}</span>
-                      <span className="text-slate-550 dark:text-slate-450 mt-0.5 block leading-relaxed">{h.notes}</span>
+
+                    {/* Active Selected History Detail Card */}
+                    <div className="bg-slate-50 dark:bg-slate-950/40 border border-slate-150 dark:border-slate-850 p-4.5 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-xs">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-slate-400 font-bold">{points[twinIndex]?.date}</span>
+                          <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider border ${
+                            points[twinIndex]?.type === 'Remedy' ? 'bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-450 border-blue-200 dark:border-blue-800' :
+                            points[twinIndex]?.type === 'Lab' ? 'bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-450 border-purple-200 dark:border-purple-800' :
+                            'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-350 border-slate-200 dark:border-slate-700'
+                          }`}>
+                            {points[twinIndex]?.type}
+                          </span>
+                        </div>
+                        <h4 className="font-extrabold text-slate-900 dark:text-zinc-100">{points[twinIndex]?.event}</h4>
+                        <p className="text-slate-550 dark:text-slate-400 leading-relaxed font-semibold mt-0.5">{points[twinIndex]?.notes}</p>
+                      </div>
+
+                      <div className="flex md:flex-col gap-4 md:gap-1.5 self-stretch justify-between items-end border-t md:border-t-0 border-slate-100 dark:border-slate-850 pt-2.5 md:pt-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[9px] text-slate-450 uppercase font-black tracking-wider">Vitality Index:</span>
+                          <span className="font-mono font-black text-emerald-500 text-sm">{points[twinIndex]?.vitality}%</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[9px] text-slate-450 uppercase font-black tracking-wider">Disease Burden:</span>
+                          <span className="font-mono font-black text-rose-500 text-sm">{points[twinIndex]?.burden}%</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Historical List Items */}
+                    <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
+                      {points.map((p: any, idx: number) => {
+                        const isSelected = twinIndex === idx;
+                        return (
+                          <div 
+                            key={idx} 
+                            onClick={() => {
+                              setTwinIndex(idx);
+                              setActiveTwinMode("playback");
+                            }}
+                            className={`flex items-start gap-3 p-2.5 rounded-xl border transition-all cursor-pointer ${
+                              isSelected 
+                                ? "bg-emerald-500/5 dark:bg-emerald-500/10 border-emerald-500/30 dark:border-emerald-500/40" 
+                                : "bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-850 border-slate-100 dark:border-slate-805"
+                            }`}
+                          >
+                            <div className="w-[75px] shrink-0 font-mono text-[10px] text-slate-400 font-bold pt-0.5">{p.date}</div>
+                            <div className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" style={{ backgroundColor: p.isRemedy ? '#3b82f6' : p.type === 'Lab' ? '#a855f7' : '#10b981' }} />
+                            <div className="flex-1 text-xs">
+                              <span className="font-bold text-slate-800 dark:text-zinc-200 block">{p.event}</span>
+                              <span className="text-slate-500 dark:text-slate-400 mt-0.5 block line-clamp-1 leading-normal">{p.notes}</span>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
-                ))}
-              </div>
+                );
+              })()}
             </div>
 
             {/* 8. COHORTS POPULATION DIGITAL TWIN & LEARNING ENGINE (PRIORITY 8 & 9) */}
@@ -4755,59 +5281,178 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
           {/* LEFT COLUMN: MIASMATIC BURDEN & CONSTITUTION DETAILS (7 COLS) */}
           <div className="lg:col-span-7 space-y-6">
             
-            {/* 1. Miasmatic Burden Distribution Card */}
+            {/* 1. Miasmatic Burden Distribution Card (with Radar Chart) */}
             <div className="bg-slate-900 dark:bg-slate-950 border border-slate-800 rounded-[28px] p-6 shadow-xl text-white space-y-5">
-              <div>
-                <h3 className="font-serif text-base font-bold flex items-center gap-2">
-                  <Activity className="w-5 h-5 text-emerald-400 animate-pulse" /> Homeopathic Miasmatic Burden
-                </h3>
-                <p className="text-xs text-slate-400 mt-0.5">Active chronic diathesis load computed from symptom affinities and modalities.</p>
+              <div className="flex justify-between items-center border-b border-slate-850 pb-3">
+                <div>
+                  <h3 className="font-serif text-base font-bold flex items-center gap-2">
+                    <Activity className="w-5 h-5 text-emerald-400 animate-pulse" /> Homeopathic Miasmatic Burden
+                  </h3>
+                  <p className="text-xs text-slate-400 mt-0.5">Active chronic diathesis load computed from symptom affinities and modalities.</p>
+                </div>
               </div>
 
-              <div className="space-y-4">
-                {/* Psora */}
-                <div className="p-4 bg-slate-950/40 border border-slate-850 rounded-2xl space-y-2">
-                  <div className="flex justify-between items-center text-xs font-bold">
-                    <span className="text-slate-300">Psora Miasm (Functional Hypersensitivity)</span>
-                    <span className="text-amber-400 font-mono">{activeData.miasmaticIndex.psora}%</span>
-                  </div>
-                  <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-                    <div className="bg-amber-500 h-full rounded-full transition-all duration-500" style={{ width: `${activeData.miasmaticIndex.psora}%` }} />
-                  </div>
-                  <p className="text-[10px] text-slate-400 leading-relaxed">
-                    Functional defense, inflammatory states, hypersensitive nerve response, skin eruptions, and fatigue.
-                  </p>
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                {/* SVG Radar Chart (5 cols) */}
+                <div className="md:col-span-5 flex justify-center py-2">
+                  {(() => {
+                    const cx = 100;
+                    const cy = 105;
+                    const R = 70;
+                    
+                    const p1 = activeData.miasmaticIndex.psora;
+                    const p2 = activeData.miasmaticIndex.sycosis;
+                    const p3 = activeData.miasmaticIndex.syphilis;
+                    
+                    // Vertex calculations
+                    // Psora (Up): 90 deg -> x = cx, y = cy - R
+                    // Sycosis (Down-Right): 330 deg -> x = cx + R * cos(30), y = cy + R * sin(30)
+                    // Syphilis (Down-Left): 210 deg -> x = cx - R * cos(30), y = cy + R * sin(30)
+                    const cos30 = 0.866;
+                    const sin30 = 0.5;
+                    
+                    // Coordinates of data points
+                    const x1 = cx;
+                    const y1 = cy - R * (p1 / 100);
+                    
+                    const x2 = cx + R * (p2 / 100) * cos30;
+                    const y2 = cy + R * (p2 / 100) * sin30;
+                    
+                    const x3 = cx - R * (p3 / 100) * cos30;
+                    const y3 = cy + R * (p3 / 100) * sin30;
+                    
+                    // grid points for 25%, 50%, 75%, 100%
+                    const getGridPath = (pct: number) => {
+                      const r = R * (pct / 100);
+                      const gx1 = cx;
+                      const gy1 = cy - r;
+                      const gx2 = cx + r * cos30;
+                      const gy2 = cy + r * sin30;
+                      const gx3 = cx - r * cos30;
+                      const gy3 = cy + r * sin30;
+                      return `M ${gx1} ${gy1} L ${gx2} ${gy2} L ${gx3} ${gy3} Z`;
+                    };
+
+                    return (
+                      <div className="relative w-48 h-48 bg-slate-950 rounded-2xl border border-slate-850 p-2 flex items-center justify-center">
+                        <svg viewBox="0 0 200 200" className="w-full h-full overflow-visible">
+                          {/* Grid backgrounds */}
+                          {[25, 50, 75, 100].map(pct => (
+                            <path key={pct} d={getGridPath(pct)} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={1} />
+                          ))}
+                          
+                          {/* Axis lines */}
+                          <line x1={cx} y1={cy} x2={cx} y2={cy - R} stroke="rgba(255,255,255,0.12)" strokeWidth={1} />
+                          <line x1={cx} y1={cy} x2={cx + R * cos30} y2={cy + R * sin30} stroke="rgba(255,255,255,0.12)" strokeWidth={1} />
+                          <line x1={cx} y1={cy} x2={cx - R * cos30} y2={cy + R * sin30} stroke="rgba(255,255,255,0.12)" strokeWidth={1} />
+
+                          {/* Data shape */}
+                          <path d={`M ${x1} ${y1} L ${x2} ${y2} L ${x3} ${y3} Z`} fill="rgba(16, 185, 129, 0.2)" stroke="#10b981" strokeWidth={2} />
+
+                          {/* Vertex dots */}
+                          <circle cx={x1} cy={y1} r={4} fill="#f59e0b" />
+                          <circle cx={x2} cy={y2} r={4} fill="#14b8a6" />
+                          <circle cx={x3} cy={y3} r={4} fill="#ef4444" />
+
+                          {/* Axis labels */}
+                          <text x={cx} y={cy - R - 6} fill="#f59e0b" fontSize={8} fontWeight="bold" textAnchor="middle" fontFamily="sans-serif">PSORA</text>
+                          <text x={cx + R * cos30 + 10} y={cy + R * sin30 + 6} fill="#14b8a6" fontSize={8} fontWeight="bold" textAnchor="middle" fontFamily="sans-serif">SYCOSIS</text>
+                          <text x={cx - R * cos30 - 10} y={cy + R * sin30 + 6} fill="#ef4444" fontSize={8} fontWeight="bold" textAnchor="middle" fontFamily="sans-serif">SYPHILIS</text>
+                        </svg>
+                      </div>
+                    );
+                  })()}
                 </div>
 
-                {/* Sycosis */}
-                <div className="p-4 bg-slate-950/40 border border-slate-850 rounded-2xl space-y-2">
-                  <div className="flex justify-between items-center text-xs font-bold">
-                    <span className="text-slate-300">Sycosis Miasm (Metabolic Sluggishness / Proliferation)</span>
-                    <span className="text-teal-455 font-mono">{activeData.miasmaticIndex.sycosis}%</span>
+                {/* Progress details (7 cols) */}
+                <div className="md:col-span-7 space-y-3">
+                  {/* Psora details */}
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-slate-350 font-bold flex items-center gap-1.5">
+                      <span className="w-2 h-2 bg-amber-500 rounded-full inline-block" /> Psora (Hypersensitivity):
+                    </span>
+                    <span className="text-amber-400 font-mono font-bold">{activeData.miasmaticIndex.psora}%</span>
                   </div>
-                  <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-                    <div className="bg-teal-500 h-full rounded-full transition-all duration-500" style={{ width: `${activeData.miasmaticIndex.sycosis}%` }} />
+                  
+                  {/* Sycosis details */}
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-slate-350 font-bold flex items-center gap-1.5">
+                      <span className="w-2 h-2 bg-teal-500 rounded-full inline-block" /> Sycosis (Sluggishness):
+                    </span>
+                    <span className="text-teal-400 font-mono font-bold">{activeData.miasmaticIndex.sycosis}%</span>
                   </div>
-                  <p className="text-[10px] text-slate-400 leading-relaxed">
-                    Metabolic sluggishness, chronic water retention, fibrotic growths, overproduction, and pelvic organ affinity.
-                  </p>
-                </div>
-
-                {/* Syphilis */}
-                <div className="p-4 bg-slate-950/40 border border-slate-850 rounded-2xl space-y-2">
-                  <div className="flex justify-between items-center text-xs font-bold">
-                    <span className="text-slate-300">Syphilis Miasm (Destruction / Degeneration)</span>
-                    <span className="text-rose-455 font-mono">{activeData.miasmaticIndex.syphilis}%</span>
+                  
+                  {/* Syphilis details */}
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-slate-350 font-bold flex items-center gap-1.5">
+                      <span className="w-2 h-2 bg-rose-500 rounded-full inline-block" /> Syphilis (Degeneration):
+                    </span>
+                    <span className="text-rose-400 font-mono font-bold">{activeData.miasmaticIndex.syphilis}%</span>
                   </div>
-                  <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-                    <div className="bg-rose-500 h-full rounded-full transition-all duration-500" style={{ width: `${activeData.miasmaticIndex.syphilis}%` }} />
+                  
+                  <div className="pt-2 text-[10px] text-slate-400 leading-relaxed border-t border-slate-850">
+                    <strong className="text-slate-300">Clinical Focus:</strong> Dominant chronic layer is <span className="text-emerald-400 font-bold">{activeData.miasm}</span>. Deep remedies are targeted to bypass epigenetic blocking.
                   </div>
-                  <p className="text-[10px] text-slate-400 leading-relaxed">
-                    Tissue degeneration, ulceration, structural breakdown, bone pain, vascular damage, and deep mental depression.
-                  </p>
                 </div>
               </div>
             </div>
+
+            {/* OSTM Potency Advice & Clinical Decision Card */}
+            {(() => {
+              const vitality = activeData.vitalityIndex;
+              let recommendedPotency = "30C or 200C";
+              let adviceText = "";
+              let potencyColor = "text-sky-500 bg-sky-500/10 border-sky-500/20";
+              
+              if (vitality < 65) {
+                recommendedPotency = "LM1 - LM3 or 30C";
+                potencyColor = "text-pink-500 bg-pink-500/10 border-pink-500/20";
+                adviceText = `Patient Vitality Index is low (${vitality}%). To prevent severe homeopathic aggravation or physiological shock, constitutional remedies should be administered in Fifty-Millesimal (LM) potencies diluted in water, or gentle 30C centesimal doses. Avoid high centesimal triggers (200C or 1M) at this stage.`;
+              } else if (vitality >= 65 && vitality < 80) {
+                recommendedPotency = "30C or 200C";
+                potencyColor = "text-teal-500 bg-teal-500/10 border-teal-500/20";
+                adviceText = `Patient Vitality is moderate (${vitality}%). The system is capable of responding to centesimal constitutional triggers. Initiate with a 30C constitutional potency or a single dose of 200C. Monitor the patient's sleep quality and lab markers for 14 days before repeating.`;
+              } else {
+                recommendedPotency = "200C or 1M";
+                potencyColor = "text-violet-500 bg-violet-500/10 border-violet-500/20";
+                adviceText = `Patient Vitality is high (${vitality}%). The neuro-emotional and immune axes are fully capable of reacting to deep constitutional clearing. 200C or 1M potencies (e.g., constitutional constitutional triggers) can be safely administered to clear chronic hereditary miasmatic layers.`;
+              }
+
+              return (
+                <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm space-y-4">
+                  <div>
+                    <h3 className="font-serif text-sm font-bold flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-violet-500" /> OSTM™ Potency Advice Card
+                    </h3>
+                    <p className="text-[10px] text-slate-400 mt-0.5">Clinical decision support system calculating recommended dilution levels based on vitality reserves.</p>
+                  </div>
+                  
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-850 rounded-2xl">
+                    <div className="space-y-1">
+                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Recommended Potency Level</span>
+                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-black border uppercase tracking-wider ${potencyColor}`}>
+                        {recommendedPotency}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="text-right">
+                        <span className="text-[9px] font-bold text-slate-450 uppercase tracking-wider block">vitality index</span>
+                        <span className="font-mono font-black text-emerald-500 text-sm">{vitality}%</span>
+                      </div>
+                      <div className="h-8 w-px bg-slate-200 dark:bg-slate-800" />
+                      <div>
+                        <span className="text-[9px] font-bold text-slate-455 uppercase tracking-wider block">miasmatic block</span>
+                        <span className="font-sans font-black text-slate-700 dark:text-zinc-200 text-xs">{activeData.miasm}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-slate-550 dark:text-slate-400 leading-relaxed font-medium">
+                    {adviceText}
+                  </p>
+                </div>
+              );
+            })()}
 
             {/* 2. Active Constitutional Details */}
             <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm space-y-4">

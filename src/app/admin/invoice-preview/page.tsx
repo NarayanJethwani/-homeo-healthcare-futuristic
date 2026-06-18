@@ -3,7 +3,6 @@
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Printer, ArrowLeft, Check, Copy, Download, Send, Link } from "lucide-react";
-import Image from "next/image";
 
 interface InvoiceItem {
   description: string;
@@ -189,7 +188,7 @@ Homeo Healthcare`;
           <div>
             <div className="flex items-center gap-2.5">
               <div className="w-9 h-9 rounded-full bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800 overflow-hidden shadow-sm flex items-center justify-center flex-shrink-0">
-                <Image
+                <img
                   src={logoUrl}
                   alt="Homeo Healthcare Logo"
                   width={32}
@@ -370,12 +369,11 @@ Homeo Healthcare`;
               </div>
               <div className="pt-2 flex justify-center sm:justify-start">
                 <div className="bg-white p-1.5 rounded-xl border border-slate-100 print:border-slate-200 shadow-sm inline-block">
-                  <Image
+                  <img
                     src={qrCodeUrl}
                     alt="HDFC Payment QR Code"
                     width={100}
                     height={100}
-                    unoptimized
                     className="w-24 h-24 object-contain"
                   />
                 </div>
