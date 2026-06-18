@@ -1055,6 +1055,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
 
   // Graph state and click-inspector
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const selectedNodeIdRef = useRef<string | null>(null);
   const [inspectorTab, setInspectorTab] = useState<"mapping" | "reference">("mapping");
   const [materiaMedicaData, setMateriaMedicaData] = useState<{ title: string; content: string } | null>(null);
   const [materiaMedicaLoading, setMateriaMedicaLoading] = useState(false);
@@ -1134,6 +1135,11 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
     return () => {
       isMounted = false;
     };
+  }, [selectedNodeId]);
+
+  // Keep selectedNodeIdRef in sync with state (avoids graph useEffect re-running on every click)
+  useEffect(() => {
+    selectedNodeIdRef.current = selectedNodeId;
   }, [selectedNodeId]);
 
   // Explainable AI selected risk driver
@@ -2125,7 +2131,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
         ctx.globalAlpha = isLinkActive ? 0.75 : 0.05;
 
         // Relationship strength calculation (Priority 3)
-        const isHighlighted = selectedNodeId === s.id || selectedNodeId === t.id;
+        const isHighlighted = selectedNodeIdRef.current === s.id || selectedNodeIdRef.current === t.id;
         const searchMatch = nodeSearchQuery && (
           s.label.toLowerCase().includes(nodeSearchQuery.toLowerCase()) || 
           t.label.toLowerCase().includes(nodeSearchQuery.toLowerCase())
@@ -2261,7 +2267,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
           else if (node.type === "modality") color = "#a855f7";
         }
 
-        const isSelected = selectedNodeId === node.id;
+        const isSelected = selectedNodeIdRef.current === node.id;
         const isSearched = nodeSearchQuery && node.label.toLowerCase().includes(nodeSearchQuery.toLowerCase());
 
         // Draw pulsing search ring
@@ -2275,10 +2281,10 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
 
         // Highlight adjacent nodes when a node is clicked
         let isAdjacent = false;
-        if (selectedNodeId) {
+        if (selectedNodeIdRef.current) {
           isAdjacent = links.some(l => 
-            (l.source === selectedNodeId && l.target === node.id) ||
-            (l.target === selectedNodeId && l.source === node.id)
+            (l.source === selectedNodeIdRef.current && l.target === node.id) ||
+            (l.target === selectedNodeIdRef.current && l.source === node.id)
           );
         }
 
@@ -2485,10 +2491,71 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
       canvas.style.height = `${h}px`;
     };
 
+    // Touch event handlers for iPad / touch devices
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return;
+      const touch = e.touches[0];
+      const rect = canvas.getBoundingClientRect();
+      const clickX = touch.clientX - rect.left;
+      const clickY = touch.clientY - rect.top;
+      const normX = clickX * (width / (rect.width || width));
+      const normY = clickY * (height / (rect.height || height));
+      const graphX = (normX - graphPan.x) / graphScale;
+      const graphY = (normY - graphPan.y) / graphScale;
+
+      const touched = nodes.find(n => {
+        const dx = graphX - n.x;
+        const dy = graphY - n.y;
+        return Math.sqrt(dx * dx + dy * dy) < n.radius + 12;
+      });
+
+      if (touched) {
+        e.preventDefault();
+        draggedNodeRef.current = touched;
+        setSelectedNodeId(touched.id);
+      } else {
+        isDraggingGraphRef.current = true;
+        dragStartRef.current = { x: touch.clientX - graphPan.x, y: touch.clientY - graphPan.y };
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return;
+      const touch = e.touches[0];
+      const rect = canvas.getBoundingClientRect();
+      const clickX = touch.clientX - rect.left;
+      const clickY = touch.clientY - rect.top;
+
+      if (draggedNodeRef.current) {
+        e.preventDefault();
+        const normX = clickX * (width / (rect.width || width));
+        const normY = clickY * (height / (rect.height || height));
+        const graphX = (normX - graphPan.x) / graphScale;
+        const graphY = (normY - graphPan.y) / graphScale;
+        draggedNodeRef.current.x = graphX;
+        draggedNodeRef.current.y = graphY;
+        draggedNodeRef.current.vx = 0;
+        draggedNodeRef.current.vy = 0;
+      } else if (isDraggingGraphRef.current) {
+        setGraphPan({
+          x: touch.clientX - dragStartRef.current.x,
+          y: touch.clientY - dragStartRef.current.y
+        });
+      }
+    };
+
+    const handleTouchEnd = () => {
+      draggedNodeRef.current = null;
+      isDraggingGraphRef.current = false;
+    };
+
     canvas.addEventListener("mousedown", handleMouseDown);
     canvas.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("mouseup", handleMouseUp);
     window.addEventListener("resize", handleResize);
+    canvas.addEventListener("touchstart", handleTouchStart, { passive: false });
+    canvas.addEventListener("touchmove", handleTouchMove, { passive: false });
+    canvas.addEventListener("touchend", handleTouchEnd);
 
     return () => {
       cancelAnimationFrame(animationFrameId);
@@ -2496,8 +2563,15 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
       canvas.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
       window.removeEventListener("resize", handleResize);
+      canvas.removeEventListener("touchstart", handleTouchStart);
+      canvas.removeEventListener("touchmove", handleTouchMove);
+      canvas.removeEventListener("touchend", handleTouchEnd);
     };
-  }, [activeTab, theme, selectedNodeId, graphScale, graphPan, nodeSearchQuery, isGraphFullscreen, graphTextSize, graphDimensions, activeDataKey, selectedPatientId, graphFilterTypes, graphHeatmapView, activeData, twinIndex]);
+  // NOTE: selectedNodeId intentionally excluded — we use selectedNodeIdRef inside the closure
+  // to avoid re-running the animation loop on every node click (which caused the inspector
+  // to not populate because the canvas was torn down mid-click).
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, theme, graphScale, graphPan, nodeSearchQuery, isGraphFullscreen, graphTextSize, graphDimensions, activeDataKey, selectedPatientId, graphFilterTypes, graphHeatmapView, activeData, twinIndex]);
 
   // Dynamic OSTM Inspector detail retriever (Priority 2)
   const selectedNodeInfo = (() => {
