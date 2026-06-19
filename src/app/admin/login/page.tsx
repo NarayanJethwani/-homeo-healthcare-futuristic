@@ -62,19 +62,38 @@ export default function AdminLogin() {
             role = data.role || "doctor";
             name = data.name || name;
             assignedPatients = data.assignedPatients || [];
+
+            // ── Subscription expiry check (doctors only) ──────────────────
+            if (role === "doctor" && data.subscription?.plan !== "branch" && data.subscription?.validUntil) {
+              const expiryDate = new Date(data.subscription.validUntil);
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              if (expiryDate < today) {
+                setError(
+                  "Your subscription has expired. Please contact Dr. Narayan Jethwani to renew your franchise access."
+                );
+                setIsLoading(false);
+                return;
+              }
+            }
           }
 
           // Save session details in localStorage for quick client access
+          const userData = userDoc.exists() ? userDoc.data() : {};
           localStorage.setItem("admin_session", JSON.stringify({
             uid: user.uid,
             email: user.email,
             name,
             role,
-            assignedPatients
+            assignedPatients,
+            // Doctor workspace links (used in dashboard)
+            driveFolderUrl: userData?.driveFolderUrl || "",
+            masterSheetUrl: userData?.masterSheetUrl || "",
           }));
 
           router.push("/admin/dashboard");
           return;
+
         } catch (firebaseErr: any) {
           console.warn("Firebase Auth failed, checking for local credential bypass...", firebaseErr.message);
           

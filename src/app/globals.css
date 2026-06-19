@@ -1356,3 +1356,755 @@ html.lenis, html.lenis body {
 
 
 
+
+
+/* ============================================================ 
+   HOMEO HEALTHCARE — MIGRAINE ARTICLE ENHANCED UI/UX 
+   Beyond the Headache: Visualizing Migraine Pathways 
+   ============================================================ */
+
+/* ============================================================
+   HOMEO HEALTHCARE — MIGRAINE ARTICLE ENHANCED UI/UX
+   Beyond the Headache: Visualizing Migraine Pathways
+   ============================================================ */
+
+/* ── 1. ENHANCED KEYFRAME ANIMATIONS ─────────────────────── */
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInLeft {
+  from { opacity: 0; transform: translateX(-24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeInRight {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes neuralPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(13,148,136,0.4), 0 8px 30px -10px rgba(13,148,136,0.15); }
+  40%  { box-shadow: 0 0 0 12px rgba(13,148,136,0), 0 20px 50px 0px rgba(13,148,136,0.35); }
+  100% { box-shadow: 0 0 0 0 rgba(13,148,136,0), 0 8px 30px -10px rgba(13,148,136,0.15); }
+}
+
+@keyframes gradientShimmer {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes borderGlow {
+  0%, 100% { border-color: rgba(13,148,136,0.15); }
+  50%       { border-color: rgba(13,148,136,0.5); }
+}
+
+@keyframes floatUp {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+
+@keyframes scanLine {
+  from { transform: translateY(-100%); }
+  to   { transform: translateY(100vh); }
+}
+
+@keyframes progressReveal {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+
+@keyframes orbFloat {
+  0%   { transform: translate(0, 0) scale(1); opacity: 0.08; }
+  33%  { transform: translate(30px, -20px) scale(1.1); opacity: 0.12; }
+  66%  { transform: translate(-15px, 15px) scale(0.95); opacity: 0.06; }
+  100% { transform: translate(0, 0) scale(1); opacity: 0.08; }
+}
+
+@keyframes typewriterCursor {
+  0%, 100% { border-right-color: #0d9488; }
+  50%       { border-right-color: transparent; }
+}
+
+@keyframes badgePop {
+  0%   { transform: scale(0.8); opacity: 0; }
+  70%  { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes shimmerSweep {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+/* ── 2. ARTICLE ROOT — FULL BACKGROUND TREATMENT ────────── */
+
+.hh-article-root {
+  position: relative;
+  background:
+    radial-gradient(ellipse 800px 600px at 20% 10%, rgba(13,148,136,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 600px 400px at 80% 80%, rgba(6,182,212,0.03) 0%, transparent 60%),
+    radial-gradient(ellipse 400px 300px at 50% 50%, rgba(139,92,246,0.02) 0%, transparent 60%),
+    #ffffff !important;
+  overflow: hidden;
+}
+
+/* Ambient floating orbs */
+.hh-article-root::before,
+.hh-article-root::after {
+  content: '';
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hh-article-root::before {
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, rgba(13,148,136,0.06) 0%, transparent 70%);
+  top: -200px;
+  right: -200px;
+  animation: orbFloat 18s ease-in-out infinite;
+}
+
+.hh-article-root::after {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(6,182,212,0.05) 0%, transparent 70%);
+  bottom: 200px;
+  left: -150px;
+  animation: orbFloat 24s ease-in-out infinite reverse;
+}
+
+/* ── 3. READING PROGRESS BAR ─────────────────────────────── */
+
+.hh-article-root {
+  --scroll-percent: 0%;
+}
+
+/* ── 4. HERO TITLE — ENHANCED ────────────────────────────── */
+
+.wp-block-post-title {
+  font-size: clamp(1.8rem, 4vw, 3rem) !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.03em !important;
+  line-height: 1.15 !important;
+  background: linear-gradient(135deg, #0f172a 0%, #134e4a 40%, #0d9488 70%, #06b6d4 100%) !important;
+  background-size: 300% auto !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  animation: gradientShimmer 8s ease infinite !important;
+  margin-bottom: 1.5rem !important;
+  padding-bottom: 0.5rem !important;
+}
+
+/* ── 5. ARTICLE CONTENT CONTAINER ───────────────────────── */
+
+.wp-content-container {
+  animation: fadeInUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  position: relative;
+  z-index: 1;
+}
+
+/* Lead paragraph — elevated */
+.lead {
+  font-size: 1.1rem !important;
+  line-height: 1.85 !important;
+  color: #334155 !important;
+  background: linear-gradient(135deg, rgba(13,148,136,0.03) 0%, rgba(6,182,212,0.03) 100%) !important;
+  border-left: 4px solid #0d9488 !important;
+  border-radius: 0 16px 16px 0 !important;
+  padding: 1.5rem 1.75rem !important;
+  margin-bottom: 2.5rem !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.lead::before {
+  content: '"';
+  position: absolute;
+  top: -10px;
+  left: 12px;
+  font-size: 5rem;
+  color: rgba(13,148,136,0.1);
+  font-family: Georgia, serif;
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* ── 6. ANIMATED HEADINGS — ENHANCED GRADIENT ────────────── */
+
+.animated-heading {
+  background: linear-gradient(135deg, #0f766e 0%, #0d9488 25%, #06b6d4 50%, #0d9488 75%, #0f766e 100%) !important;
+  background-size: 300% auto !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  animation: gradientShimmer 5s ease infinite !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
+}
+
+/* H2 section headings */
+.hh-article-root h2 {
+  position: relative;
+  padding-bottom: 0.75rem !important;
+  margin-top: 3rem !important;
+  margin-bottom: 1.5rem !important;
+}
+
+.hh-article-root h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 60px;
+  background: linear-gradient(90deg, #0d9488, #06b6d4, transparent);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.hh-article-root h2:hover::after {
+  width: 120px;
+}
+
+/* H3 sub-headings */
+.hh-article-root h3.text-lg {
+  position: relative !important;
+  padding-left: 1rem !important;
+  font-size: 1.1rem !important;
+  letter-spacing: -0.01em !important;
+}
+
+.hh-article-root h3.text-lg::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 70%;
+  background: linear-gradient(180deg, #0d9488, #06b6d4);
+  border-radius: 4px;
+}
+
+/* ── 7. PHASE CARDS — PREMIUM UPGRADE ───────────────────── */
+
+.premium-pill-card {
+  background: linear-gradient(135deg, rgba(13,148,136,0.04) 0%, rgba(6,182,212,0.04) 50%, rgba(139,92,246,0.02) 100%) !important;
+  border: 1px solid rgba(13,148,136,0.12) !important;
+  border-left: 5px solid #0d9488 !important;
+  border-radius: 20px !important;
+  padding: 1.5rem 1.75rem !important;
+  transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  animation: fadeInLeft 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+.premium-pill-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(13,148,136,0.06), transparent);
+  transition: left 0.6s ease;
+  pointer-events: none;
+}
+
+.premium-pill-card:hover::before {
+  left: 200%;
+}
+
+.premium-pill-card:hover {
+  background: linear-gradient(135deg, rgba(13,148,136,0.08) 0%, rgba(6,182,212,0.08) 50%, rgba(139,92,246,0.04) 100%) !important;
+  border-color: rgba(13,148,136,0.35) !important;
+  border-left-color: #0d9488 !important;
+  transform: translateY(-4px) translateX(4px) !important;
+  box-shadow: 0 20px 40px -10px rgba(13,148,136,0.2), 0 4px 16px rgba(0,0,0,0.06) !important;
+}
+
+/* Phase number badges */
+.space-y-6 .premium-pill-card:nth-child(1) { border-left-color: #0d9488 !important; animation-delay: 0.1s; }
+.space-y-6 .premium-pill-card:nth-child(2) { border-left-color: #06b6d4 !important; animation-delay: 0.2s; }
+.space-y-6 .premium-pill-card:nth-child(3) { border-left-color: #8b5cf6 !important; animation-delay: 0.3s; }
+.space-y-6 .premium-pill-card:nth-child(4) { border-left-color: #f59e0b !important; animation-delay: 0.4s; }
+
+/* ── 8. SCIENTIFIC BADGES — VIBRANT UPGRADE ─────────────── */
+
+.scientific-badge {
+  background: linear-gradient(135deg, rgba(13,148,136,0.12) 0%, rgba(6,182,212,0.12) 100%) !important;
+  color: #0f766e !important;
+  border: 1px solid rgba(13,148,136,0.25) !important;
+  padding: 4px 14px !important;
+  border-radius: 999px !important;
+  font-size: 0.7rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  animation: badgePop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
+  box-shadow: 0 2px 8px rgba(13,148,136,0.12) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.scientific-badge::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: shimmerSweep 3s ease-in-out infinite;
+}
+
+/* Phase-specific badge colors */
+.premium-pill-card:nth-child(1) .scientific-badge {
+  background: linear-gradient(135deg, rgba(13,148,136,0.15), rgba(16,185,129,0.15)) !important;
+  color: #059669 !important;
+  border-color: rgba(16,185,129,0.3) !important;
+}
+.premium-pill-card:nth-child(2) .scientific-badge {
+  background: linear-gradient(135deg, rgba(6,182,212,0.15), rgba(14,165,233,0.15)) !important;
+  color: #0284c7 !important;
+  border-color: rgba(6,182,212,0.3) !important;
+}
+.premium-pill-card:nth-child(3) .scientific-badge {
+  background: linear-gradient(135deg, rgba(139,92,246,0.15), rgba(168,85,247,0.15)) !important;
+  color: #7c3aed !important;
+  border-color: rgba(139,92,246,0.3) !important;
+}
+.premium-pill-card:nth-child(4) .scientific-badge {
+  background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(251,146,60,0.15)) !important;
+  color: #d97706 !important;
+  border-color: rgba(245,158,11,0.3) !important;
+}
+
+/* ── 9. CLINICAL IMAGE CARDS — ELEVATED ──────────────────── */
+
+.clinical-image-card,
+.my-8 img[style*="border-radius:24px"] {
+  border-radius: 24px !important;
+  box-shadow:
+    0 30px 60px -20px rgba(13,148,136,0.3),
+    0 10px 30px -10px rgba(0,0,0,0.12),
+    0 0 0 1px rgba(13,148,136,0.1) !important;
+  border: 1px solid rgba(13,148,136,0.15) !important;
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  animation: neuralPulse 6s ease-in-out infinite !important;
+  max-width: 520px !important;
+}
+
+.my-8 img[style*="border-radius:24px"]:hover {
+  transform: scale(1.03) translateY(-8px) !important;
+  box-shadow:
+    0 40px 80px -20px rgba(13,148,136,0.4),
+    0 20px 40px -10px rgba(0,0,0,0.15),
+    0 0 0 2px rgba(13,148,136,0.25) !important;
+}
+
+/* Image containers */
+.my-8.text-center {
+  position: relative !important;
+}
+
+.my-8.text-center::before {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(13,148,136,0.06) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+  border-radius: 50%;
+}
+
+/* Image captions */
+.my-8.text-center .text-xs.text-slate-500 {
+  background: rgba(13,148,136,0.04) !important;
+  border: 1px solid rgba(13,148,136,0.1) !important;
+  border-radius: 10px !important;
+  padding: 8px 14px !important;
+  font-style: italic !important;
+  color: #64748b !important;
+  margin-top: 14px !important;
+  display: inline-block !important;
+}
+
+/* ── 10. TABLES — PREMIUM DATA VISUALIZATION ─────────────── */
+
+.interactive-table {
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  box-shadow: 0 8px 30px -8px rgba(0,0,0,0.1), 0 0 0 1px rgba(13,148,136,0.08) !important;
+  border: none !important;
+  animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+.interactive-table thead {
+  background: linear-gradient(135deg, #0f766e 0%, #0d9488 50%, #0891b2 100%) !important;
+  color: #ffffff !important;
+}
+
+.interactive-table thead th {
+  color: rgba(255,255,255,0.95) !important;
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.1em !important;
+  padding: 14px 20px !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.15) !important;
+}
+
+.interactive-table tbody tr {
+  transition: all 0.25s ease !important;
+  border-bottom: 1px solid rgba(13,148,136,0.07) !important;
+}
+
+.interactive-table tbody tr:nth-child(even) {
+  background: rgba(13,148,136,0.018) !important;
+}
+
+.interactive-table tbody tr:hover {
+  background: linear-gradient(90deg, rgba(13,148,136,0.06) 0%, rgba(6,182,212,0.04) 100%) !important;
+  transform: translateX(4px) !important;
+  box-shadow: inset 4px 0 0 #0d9488 !important;
+}
+
+.interactive-table td {
+  padding: 14px 20px !important;
+  font-size: 0.85rem !important;
+  line-height: 1.6 !important;
+  vertical-align: top !important;
+}
+
+.interactive-table td.font-bold {
+  color: #0d9488 !important;
+  font-weight: 700 !important;
+}
+
+/* ── 11. TRIGGER CHECKLIST UPGRADE ──────────────────────── */
+
+.my-6.p-6.rounded-3xl {
+  background: linear-gradient(135deg, rgba(13,148,136,0.03) 0%, rgba(6,182,212,0.03) 100%) !important;
+  border: 1px solid rgba(13,148,136,0.15) !important;
+  border-radius: 24px !important;
+  box-shadow: 0 8px 24px -8px rgba(13,148,136,0.1) !important;
+  padding: 2rem !important;
+}
+
+.my-6.p-6.rounded-3xl .flex.items-start {
+  background: white !important;
+  border: 1px solid rgba(13,148,136,0.08) !important;
+  border-radius: 14px !important;
+  padding: 12px 16px !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.03) !important;
+}
+
+.my-6.p-6.rounded-3xl .flex.items-start:hover {
+  background: rgba(13,148,136,0.04) !important;
+  border-color: rgba(13,148,136,0.25) !important;
+  transform: translateX(4px) !important;
+  box-shadow: 0 4px 14px rgba(13,148,136,0.1) !important;
+}
+
+/* Accent checkboxes */
+.my-6.p-6.rounded-3xl input[type="checkbox"] {
+  accent-color: #0d9488 !important;
+  width: 16px !important;
+  height: 16px !important;
+}
+
+/* ── 12. CTA BLOCK — STUNNING UPGRADE ────────────────────── */
+
+.not-prose.my-8 {
+  background: linear-gradient(135deg,
+    rgba(13,148,136,0.08) 0%,
+    rgba(6,182,212,0.06) 40%,
+    rgba(139,92,246,0.04) 100%) !important;
+  border: 1px solid rgba(13,148,136,0.2) !important;
+  border-radius: 28px !important;
+  padding: 2.5rem 2rem !important;
+  position: relative !important;
+  overflow: hidden !important;
+  box-shadow:
+    0 20px 40px -10px rgba(13,148,136,0.15),
+    inset 0 1px 0 rgba(255,255,255,0.8) !important;
+  animation: neuralPulse 6s ease-in-out infinite !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+.not-prose.my-8::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(from 0deg at 50% 50%,
+    rgba(13,148,136,0.04) 0deg,
+    transparent 60deg,
+    rgba(6,182,212,0.04) 120deg,
+    transparent 180deg,
+    rgba(139,92,246,0.03) 240deg,
+    transparent 300deg,
+    rgba(13,148,136,0.04) 360deg);
+  animation: gradientShimmer 12s linear infinite;
+  pointer-events: none;
+}
+
+.not-prose.my-8 h3 {
+  font-size: 1.4rem !important;
+  font-weight: 800 !important;
+  background: linear-gradient(135deg, #0f766e, #0d9488, #06b6d4) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  margin-bottom: 1rem !important;
+}
+
+/* CTA Buttons */
+.not-prose.my-8 a[href*="wa.me"] {
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%) !important;
+  color: #ffffff !important;
+  padding: 14px 28px !important;
+  border-radius: 999px !important;
+  font-weight: 700 !important;
+  font-size: 0.85rem !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  box-shadow: 0 8px 24px rgba(37,211,102,0.35) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  letter-spacing: 0.03em !important;
+  text-transform: uppercase !important;
+}
+
+.not-prose.my-8 a[href*="wa.me"]:hover {
+  transform: translateY(-3px) scale(1.02) !important;
+  box-shadow: 0 16px 40px rgba(37,211,102,0.45) !important;
+}
+
+.not-prose.my-8 a[href*="homeo.healthcare"] {
+  background: white !important;
+  color: #0d9488 !important;
+  border: 2px solid #0d9488 !important;
+  padding: 14px 28px !important;
+  border-radius: 999px !important;
+  font-weight: 700 !important;
+  font-size: 0.85rem !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  box-shadow: 0 4px 16px rgba(13,148,136,0.15) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  letter-spacing: 0.03em !important;
+  text-transform: uppercase !important;
+}
+
+.not-prose.my-8 a[href*="homeo.healthcare"]:hover {
+  background: #0d9488 !important;
+  color: white !important;
+  transform: translateY(-3px) scale(1.02) !important;
+  box-shadow: 0 12px 32px rgba(13,148,136,0.35) !important;
+}
+
+/* ── 13. AUTHOR BOX — POLISHED ───────────────────────────── */
+
+.mt-12.border-t {
+  background: linear-gradient(135deg, rgba(13,148,136,0.04) 0%, rgba(6,182,212,0.04) 100%) !important;
+  border-radius: 20px !important;
+  padding: 1.75rem 2rem !important;
+  border: 1px solid rgba(13,148,136,0.12) !important;
+  border-top: 3px solid #0d9488 !important;
+  box-shadow: 0 8px 24px -8px rgba(13,148,136,0.12) !important;
+  margin-top: 3rem !important;
+}
+
+.mt-12.border-t h4 {
+  color: #0d9488 !important;
+  font-size: 0.75rem !important;
+  letter-spacing: 0.15em !important;
+  margin-bottom: 0.75rem !important;
+}
+
+.mt-12.border-t a {
+  color: #0d9488 !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+  border-bottom: 2px solid rgba(13,148,136,0.3) !important;
+  transition: border-color 0.2s ease !important;
+}
+
+.mt-12.border-t a:hover {
+  border-bottom-color: #0d9488 !important;
+}
+
+/* ── 14. BODY TEXT — ENHANCED TYPOGRAPHY ────────────────── */
+
+.hh-article-root p {
+  color: #334155 !important;
+  font-size: 0.975rem !important;
+  line-height: 1.85 !important;
+  letter-spacing: 0.005em !important;
+}
+
+.hh-article-root ul li {
+  position: relative !important;
+  padding-left: 0.5rem !important;
+  color: #475569 !important;
+  font-size: 0.9rem !important;
+  line-height: 1.75 !important;
+  margin-bottom: 0.625rem !important;
+}
+
+.hh-article-root ul li strong {
+  color: #0f766e !important;
+  font-weight: 700 !important;
+}
+
+/* ── 15. ARTICLE POST HEADER — ELEVATED ─────────────────── */
+
+.wp-block-post-featured-image img {
+  border-radius: 24px !important;
+  box-shadow:
+    0 40px 80px -20px rgba(13,148,136,0.25),
+    0 10px 30px rgba(0,0,0,0.1) !important;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.wp-block-post-featured-image img:hover {
+  transform: scale(1.01) !important;
+}
+
+/* Author meta line */
+.wp-block-group.is-layout-flex.has-small-font-size {
+  padding: 10px 16px !important;
+  background: rgba(13,148,136,0.04) !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(13,148,136,0.1) !important;
+  display: inline-flex !important;
+  width: auto !important;
+  margin-bottom: 2rem !important;
+}
+
+.wp-block-post-author-name__link {
+  color: #0d9488 !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+}
+
+/* ── 16. DISCLAIMER BLOCK — STYLED ──────────────────────── */
+
+.hh-article-root .text-xs.text-slate-500.italic.mt-6.border-t {
+  background: linear-gradient(135deg, rgba(245,158,11,0.05), rgba(251,146,60,0.05)) !important;
+  border: 1px solid rgba(245,158,11,0.2) !important;
+  border-top: 3px solid #f59e0b !important;
+  border-radius: 14px !important;
+  padding: 1rem 1.25rem !important;
+  color: #78716c !important;
+  font-style: italic !important;
+}
+
+/* ── 17. SECTION DIVIDERS — ANIMATED ────────────────────── */
+
+.hh-article-root hr,
+.border-t.border-slate-200 {
+  border: none !important;
+  height: 2px !important;
+  background: linear-gradient(90deg, transparent, rgba(13,148,136,0.25), rgba(6,182,212,0.2), transparent) !important;
+  margin: 2.5rem 0 !important;
+  border-radius: 2px !important;
+}
+
+/* ── 18. SCROLL-REVEAL ANIMATIONS ───────────────────────── */
+
+.hh-article-root h2,
+.hh-article-root h3,
+.premium-pill-card,
+.interactive-table,
+.my-8.text-center {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.hh-article-root h2 { animation-delay: 0.05s; }
+.hh-article-root h3 { animation-delay: 0.1s; }
+.premium-pill-card  { animation-delay: 0.15s; }
+.interactive-table  { animation-delay: 0.2s; }
+.my-8.text-center   { animation-delay: 0.25s; }
+
+/* ── 19. POST NAVIGATION — STYLED ───────────────────────── */
+
+.wp-block-post-navigation-link a {
+  color: #0d9488 !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+  padding: 8px 16px !important;
+  background: rgba(13,148,136,0.06) !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(13,148,136,0.2) !important;
+  transition: all 0.3s ease !important;
+  font-size: 0.875rem !important;
+}
+
+.wp-block-post-navigation-link a:hover {
+  background: #0d9488 !important;
+  color: white !important;
+  box-shadow: 0 6px 20px rgba(13,148,136,0.3) !important;
+}
+
+/* ── 20. MOBILE RESPONSIVE POLISH ───────────────────────── */
+
+@media (max-width: 640px) {
+  .hh-article-root { padding: 0 !important; }
+  .premium-pill-card { padding: 1.2rem 1.25rem !important; border-radius: 16px !important; }
+  .interactive-table { font-size: 0.8rem !important; }
+  .interactive-table td,
+  .interactive-table th { padding: 10px 12px !important; }
+  .not-prose.my-8 { padding: 1.5rem 1.25rem !important; border-radius: 20px !important; }
+  .wp-block-post-title { font-size: 1.6rem !important; }
+  .lead { padding: 1.25rem !important; }
+}
+
+@media (max-width: 768px) {
+  .my-8 img[style*="border-radius:24px"] { max-width: 100% !important; }
+}
+
+/* ── 21. HOVER STATE — CUSTOM CURSOR HIGHLIGHT ───────────── */
+
+.hh-article-root a:not(.wp-block-post-navigation-link a) {
+  color: #0d9488 !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+  border-bottom: 1px solid rgba(13,148,136,0.3) !important;
+  transition: all 0.2s ease !important;
+}
+
+.hh-article-root a:not(.wp-block-post-navigation-link a):hover {
+  color: #0f766e !important;
+  border-bottom-color: #0d9488 !important;
+  background: rgba(13,148,136,0.06) !important;
+  border-radius: 3px !important;
+  padding: 1px 4px !important;
+}
+
+/* ── 22. SELECTION HIGHLIGHT ─────────────────────────────── */
+
+.hh-article-root ::selection {
+  background: rgba(13,148,136,0.2) !important;
+  color: #0f766e !important;
+}

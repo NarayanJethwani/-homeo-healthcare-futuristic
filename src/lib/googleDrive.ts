@@ -47,12 +47,157 @@ const PARENT_DRIVE_FOLDER_ID = process.env.GOOGLE_DRIVE_PARENT_FOLDER_ID || "1UR
 const MASTER_SHEET_ID = process.env.GOOGLE_MASTER_SHEET_ID || ""; 
 const TEMPLATE_SHEET_ID = process.env.GOOGLE_TEMPLATE_SHEET_ID || ""; // standard clinical template file ID
 
+// ─── Doctor Workspace ─────────────────────────────────────────────────────────
+
+export interface DoctorWorkspaceResult {
+  driveFolderId: string;
+  driveFolderUrl: string;
+  masterSheetId: string;
+  masterSheetUrl: string;
+  isMock: boolean;
+}
+
+/**
+ * Provisions a private Google Drive folder + Master Sheet for a new franchisee doctor.
+ * Called by /api/onboard-doctor on first doctor setup.
+ *
+ * @param doctorName   Full name of the doctor (used for folder/sheet naming)
+ * @param doctorEmail  Gmail/Workspace email of the doctor (folder is shared with this)
+ */
+export async function createDoctorWorkspace(
+  doctorName: string,
+  doctorEmail: string
+): Promise<DoctorWorkspaceResult> {
+  const auth = getGoogleAuth();
+
+  if (!auth) {
+    console.warn("No Google auth — returning mock workspace for doctor:", doctorName);
+    return {
+      driveFolderId: "mock-doctor-folder-id",
+      driveFolderUrl: `https://drive.google.com/drive/folders/${PARENT_DRIVE_FOLDER_ID}`,
+      masterSheetId: "mock-doctor-sheet-id",
+      masterSheetUrl: "https://docs.google.com/spreadsheets",
+      isMock: true,
+    };
+  }
+
+  const drive = google.drive({ version: "v3", auth });
+  const sheets = google.sheets({ version: "v4", auth });
+
+  // 1. Create the doctor's private subfolder inside the master root
+  const folderRes = await drive.files.create({
+    requestBody: {
+      name: `Dr. ${doctorName} — Franchise Workspace`,
+      mimeType: "application/vnd.google-apps.folder",
+      parents: [PARENT_DRIVE_FOLDER_ID],
+    },
+    fields: "id,webViewLink",
+    supportsAllDrives: true,
+  });
+
+  const driveFolderId = folderRes.data.id || "";
+  const driveFolderUrl =
+    folderRes.data.webViewLink ||
+    (driveFolderId ? `https://drive.google.com/drive/folders/${driveFolderId}` : "");
+
+  // 2. Share the folder with the doctor's own email (editor access)
+  if (driveFolderId && doctorEmail) {
+    await drive.permissions
+      .create({
+        fileId: driveFolderId,
+        sendNotificationEmail: true,
+        supportsAllDrives: true,
+        requestBody: { role: "writer", type: "user", emailAddress: doctorEmail },
+      })
+      .catch((err) =>
+        console.warn(`Could not share Drive folder with ${doctorEmail}:`, err)
+      );
+  }
+
+  // 3. Create the doctor's private Master Record Sheet (copy of template or blank)
+  let masterSheetId = "";
+  let masterSheetUrl = "";
+
+  try {
+    if (MASTER_SHEET_ID) {
+      // Copy the admin master sheet as a template for this doctor
+      const copyRes = await drive.files.copy({
+        fileId: MASTER_SHEET_ID,
+        requestBody: {
+          name: `Master Record — Dr. ${doctorName}`,
+          parents: [driveFolderId],
+        },
+        fields: "id,webViewLink",
+        supportsAllDrives: true,
+      });
+      masterSheetId = copyRes.data.id || "";
+      masterSheetUrl =
+        copyRes.data.webViewLink ||
+        (masterSheetId ? `https://docs.google.com/spreadsheets/d/${masterSheetId}/edit` : "");
+    } else {
+      // Create a fresh Google Sheet in the doctor's folder
+      const sheetRes = await drive.files.create({
+        requestBody: {
+          name: `Master Record — Dr. ${doctorName}`,
+          mimeType: "application/vnd.google-apps.spreadsheet",
+          parents: [driveFolderId],
+        },
+        fields: "id,webViewLink",
+        supportsAllDrives: true,
+      });
+      masterSheetId = sheetRes.data.id || "";
+      masterSheetUrl =
+        sheetRes.data.webViewLink ||
+        (masterSheetId ? `https://docs.google.com/spreadsheets/d/${masterSheetId}/edit` : "");
+
+      // Add column headers to the fresh sheet
+      if (masterSheetId) {
+        await sheets.spreadsheets.values.update({
+          spreadsheetId: masterSheetId,
+          range: "Sheet1!A1:H1",
+          valueInputOption: "USER_ENTERED",
+          requestBody: {
+            values: [
+              ["Patient ID", "Name", "Age/Gender", "Complaint", "Care Level", "Date", "Drive Folder", "Clinical Sheet"],
+            ],
+          },
+        }).catch((err) => console.warn("Could not write headers to master sheet:", err));
+      }
+    }
+
+    // Share master sheet with doctor email too
+    if (masterSheetId && doctorEmail) {
+      await drive.permissions
+        .create({
+          fileId: masterSheetId,
+          sendNotificationEmail: false,
+          supportsAllDrives: true,
+          requestBody: { role: "writer", type: "user", emailAddress: doctorEmail },
+        })
+        .catch((err) =>
+          console.warn(`Could not share Master Sheet with ${doctorEmail}:`, err)
+        );
+    }
+  } catch (sheetErr) {
+    console.error("Failed to create doctor master sheet:", sheetErr);
+  }
+
+  return {
+    driveFolderId,
+    driveFolderUrl,
+    masterSheetId,
+    masterSheetUrl,
+    isMock: false,
+  };
+}
+
 export interface PatientIntakeData {
   id: string;
   name: string;
   age: string;
   gender: string;
   phone: string;
+
   email: string;
   city: string;
   state: string;
@@ -3475,7 +3620,8 @@ export async function createPatientClinicalSheet(
 export async function appendPatientToMasterRecord(
   data: PatientIntakeData,
   folderUrl: string,
-  sheetUrl: string
+  sheetUrl: string,
+  assignedDoctorName?: string
 ): Promise<void> {
   const auth = getGoogleAuth();
   if (!auth || !MASTER_SHEET_ID) {
@@ -3491,35 +3637,87 @@ export async function appendPatientToMasterRecord(
       ? (data.deliveryMode === "shipping" ? `${data.city}, ${data.state}` : `N/A (${data.deliveryMode})`)
       : `${data.city}, ${data.state}`;
 
+    // Columns: A=Patient ID, B=Name, C=Age, D=Gender, E=Phone, F=Email,
+    //          G=Location, H=Complaint, I=Care Level, J=Duration,
+    //          K=Fee, L=Date, M=Assigned Doctor, N=Drive Folder, O=Clinical Sheet, P=Status
     const rowValues = [
       data.id,
       data.name,
       data.age,
       data.gender,
       data.phone,
-      data.email,
+      data.email || "",
       locationVal,
       data.complaint,
       data.careLevel,
       data.durationText,
       `₹${data.finalPrice.toLocaleString("en-IN")}`,
       today,
+      assignedDoctorName || "Unassigned",
       folderUrl,
       sheetUrl,
       "Registered - Awaiting Consult"
     ];
 
-    await sheets.spreadsheets.values.append({
-      spreadsheetId: MASTER_SHEET_ID,
-      range: "Sheet1!A2",
-      valueInputOption: "USER_ENTERED",
-      insertDataOption: "INSERT_ROWS",
-      requestBody: {
-        values: [rowValues]
+    // ── Upsert: check if patient ID already exists in column A ───────────────
+    let existingRowIndex = -1;
+    try {
+      const readRes = await sheets.spreadsheets.values.get({
+        spreadsheetId: MASTER_SHEET_ID,
+        range: "Sheet1!A:A"
+      });
+      const colA = readRes.data.values || [];
+      for (let i = 1; i < colA.length; i++) {         // skip header (row 0)
+        if (colA[i] && colA[i][0] === data.id) {
+          existingRowIndex = i + 1;                    // Sheets rows are 1-indexed
+          break;
+        }
       }
-    });
+    } catch {
+      // If we can't read, just fall through to append
+    }
+
+    if (existingRowIndex > 1) {
+      // Update existing row
+      await sheets.spreadsheets.values.update({
+        spreadsheetId: MASTER_SHEET_ID,
+        range: `Sheet1!A${existingRowIndex}:P${existingRowIndex}`,
+        valueInputOption: "USER_ENTERED",
+        requestBody: { values: [rowValues] }
+      });
+      console.log(`Master sheet: updated row ${existingRowIndex} for patient ${data.id}`);
+    } else {
+      // Ensure header row exists on the very first write
+      const headerCheck = await sheets.spreadsheets.values.get({
+        spreadsheetId: MASTER_SHEET_ID,
+        range: "Sheet1!A1:P1"
+      });
+      if (!headerCheck.data.values?.length) {
+        const headers = [
+          "Patient ID", "Name", "Age", "Gender", "Phone", "Email",
+          "Location", "Chief Complaint", "Care Level", "Duration",
+          "Fee (₹)", "Registration Date", "Assigned Doctor",
+          "Drive Folder", "Clinical Sheet", "Status"
+        ];
+        await sheets.spreadsheets.values.update({
+          spreadsheetId: MASTER_SHEET_ID,
+          range: "Sheet1!A1:P1",
+          valueInputOption: "RAW",
+          requestBody: { values: [headers] }
+        });
+      }
+      // Append new row
+      await sheets.spreadsheets.values.append({
+        spreadsheetId: MASTER_SHEET_ID,
+        range: "Sheet1!A2",
+        valueInputOption: "USER_ENTERED",
+        insertDataOption: "INSERT_ROWS",
+        requestBody: { values: [rowValues] }
+      });
+      console.log(`Master sheet: appended new row for patient ${data.id}`);
+    }
   } catch (error) {
-    console.error("Error appending to Master Google Sheet:", error);
+    console.error("Error upserting patient in Master Google Sheet:", error);
     throw error;
   }
 }

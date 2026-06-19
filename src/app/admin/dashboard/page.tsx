@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   Users, Activity, Sparkles, Folder, FileSpreadsheet, ExternalLink, 
   Search, Sliders, Brain, RefreshCw, Send, Plus, Trash2, CheckCircle, 
-  LogOut, ShieldAlert, Award, FileText, ChevronRight, UserPlus, Upload,
+  LogOut, ShieldAlert, Award, FileText, ChevronRight, UserPlus, Upload, Download,
   BookOpen, Book, ChevronLeft, Maximize2, Minimize2, Receipt, Printer,
   Gauge, AlertTriangle, Check, X, Compass, Layers, History, Zap, TrendingUp, Workflow, Calendar,
   Network, Database, Cpu, GitBranch, Stethoscope, User, UploadCloud, Play, Mail, Mic, MicOff, Sun, Moon, IndianRupee,
@@ -29,6 +29,7 @@ import { getClinicalCoverageScore, CURATED_DIAGNOSES, ORGAN_SYSTEMS, type Diagno
 import { VIRTUAL_PATIENTS, evaluateCaseSubmission } from "@/lib/caseSimulationLab";
 import { calculateClinicalDecisionSupport } from "@/lib/clinicalDecisionSupport";
 import Portal from "@/components/Portal";
+import ManageDoctorsPanel from "@/components/ManageDoctorsPanel";
 
 
 const GLOBAL_JETHWANI_DATA: JethwaniRubric[] = [...JETHWANI_REPERTORY_DATA_ORIG];
@@ -749,13 +750,14 @@ const TABS_DEFINITION = [
   { id: "cie", label: "Clinical OS", icon: Activity, gradient: "from-emerald-500 to-teal-500", shadow: "shadow-[0_4px_12px_rgba(16,185,129,0.3)]", inactiveText: "text-slate-650 hover:text-emerald-600 hover:bg-emerald-50 bg-transparent" },
   { id: "learning-hub", label: "Learning Hub", icon: Award, gradient: "from-fuchsia-500 to-purple-600", shadow: "shadow-[0_4px_12px_rgba(217,70,239,0.3)]", inactiveText: "text-slate-650 hover:text-fuchsia-600 hover:bg-fuchsia-50 bg-transparent" },
   { id: "communication", label: "Communications", icon: Send, gradient: "from-cyan-500 to-teal-500", shadow: "shadow-[0_4px_12px_rgba(6,182,212,0.3)]", inactiveText: "text-slate-650 hover:text-cyan-600 hover:bg-cyan-50 bg-transparent" },
-  { id: "ai-router", label: "AI Router Settings", icon: Cpu, gradient: "from-slate-700 to-slate-800", shadow: "shadow-[0_4px_12px_rgba(71,85,105,0.3)]", inactiveText: "text-slate-650 hover:text-slate-800 hover:bg-slate-100 bg-transparent" }
+  { id: "ai-router", label: "AI Router Settings", icon: Cpu, gradient: "from-slate-700 to-slate-800", shadow: "shadow-[0_4px_12px_rgba(71,85,105,0.3)]", inactiveText: "text-slate-650 hover:text-slate-800 hover:bg-slate-100 bg-transparent" },
+  { id: "team", label: "Manage Doctors", icon: UserPlus, gradient: "from-violet-600 to-purple-600", shadow: "shadow-[0_4px_12px_rgba(124,58,237,0.3)]", inactiveText: "text-slate-650 hover:text-violet-600 hover:bg-violet-50 bg-transparent", adminOnly: true }
 ];
 
 export default function AdminDashboard() {
   const router = useRouter();
   const [session, setSession] = useState<UserSession | null>(null);
-  const [activeTab, setActiveTab] = useState<"dashboard" | "intake" | "patients" | "diagnostics" | "analyzer" | "diet-lifestyle" | "treatment-planner" | "nexus-atlas" | "learning-hub" | "communication" | "ai-router" | "health-intelligence" | "cie">("dashboard");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "intake" | "patients" | "diagnostics" | "analyzer" | "diet-lifestyle" | "treatment-planner" | "nexus-atlas" | "learning-hub" | "communication" | "ai-router" | "health-intelligence" | "cie" | "team">("dashboard");
   const [nexusSubTab, setNexusSubTab] = useState<"repertory" | "mind-map" | "materia-medica">("repertory");
   const [cieSubTab, setCieSubTab] = useState<"cockpit" | "intake" | "miasms" | "reports">("cockpit");
 
@@ -4841,7 +4843,7 @@ Homeo Healthcare`;
     window.open(`https://wa.me/${targetPhone}?text=${encodedText}`, "_blank");
   };
 
-  // Check login session
+  // Check login session — load from localStorage then refresh from Firestore
   useEffect(() => {
     const savedSession = localStorage.getItem("admin_session");
     if (!savedSession) {
@@ -4850,11 +4852,38 @@ Homeo Healthcare`;
       try {
         const parsed = JSON.parse(savedSession);
         setSession(parsed);
+
+        // Refresh session data from Firestore so assignedPatients / role / name
+        // stay up-to-date without requiring a full logout-login cycle.
+        if (parsed?.uid) {
+          getDoc(doc(db, "users", parsed.uid))
+            .then((userSnap) => {
+              if (userSnap.exists()) {
+                const data = userSnap.data();
+                const refreshed = {
+                  ...parsed,
+                  name:             data.name             ?? parsed.name,
+                  role:             data.role             ?? parsed.role,
+                  assignedPatients: data.assignedPatients ?? parsed.assignedPatients,
+                  // Always refresh subscription so the warning banner stays accurate
+                  subscription:     data.subscription     ?? parsed.subscription ?? null,
+                  driveFolderUrl:   data.driveFolderUrl   ?? parsed.driveFolderUrl ?? "",
+                  masterSheetUrl:   data.masterSheetUrl   ?? parsed.masterSheetUrl ?? "",
+                };
+                setSession(refreshed);
+                localStorage.setItem("admin_session", JSON.stringify(refreshed));
+              }
+            })
+            .catch((err) =>
+              console.warn("Could not refresh session from Firestore:", err.message)
+            );
+        }
       } catch {
         router.push("/admin/login");
       }
     }
   }, [router]);
+
 
   // Load persistent chat history from Firestore on login/mount
   useEffect(() => {
@@ -4938,14 +4967,19 @@ Homeo Healthcare`;
   }, [isImportModalOpen, serviceAccountEmail]);
 
   // Load Patients from Firestore in real-time
+  // MULTI-TENANT: Admins see all patients; doctors only see their own (server-side enforced)
   useEffect(() => {
     if (!session?.uid) return;
 
-    const q = query(collection(db, "patients"), orderBy("createdAt", "desc"));
-    
+    // Build the appropriate query based on role
+    const patientsRef = collection(db, "patients");
+    const q = session.role === "admin"
+      ? query(patientsRef, orderBy("createdAt", "desc"))
+      : query(patientsRef, where("assignedDoctor", "==", session.uid), orderBy("createdAt", "desc"));
+
     const unsubscribe = onSnapshot(q, async (snapshot) => {
       if (snapshot.empty) {
-        console.log("Firestore patients collection is empty.");
+        console.log("Firestore patients collection is empty for this scope.");
         setPatients([]);
       } else {
         const list: Patient[] = [];
@@ -4960,6 +4994,7 @@ Homeo Healthcare`;
 
     return () => unsubscribe();
   }, [session]);
+
 
   // Filter patients based on search and roles
   const filteredPatients = patients.filter((p) => {
@@ -5206,6 +5241,24 @@ Homeo Healthcare`;
     setIsCreatingCase(true);
     setCaseCreationError("");
     setCaseCreationSuccess(false);
+
+    // ── Trial patient limit check ─────────────────────────────────────────────
+    // Doctors on a free trial are capped at 10 patients.
+    // Admins are never restricted.
+    const sessionSub = (session as any)?.subscription;
+    if (session?.role !== "admin" && sessionSub?.plan === "trial") {
+      const trialPatientCount = patients.length; // already scoped to this doctor via Firestore query
+      if (trialPatientCount >= 10) {
+        setCaseCreationError(
+          "🔔 Trial limit reached — you have used all 10 free trial patient slots. " +
+          "Please contact Dr. Narayan Jethwani to upgrade your plan and continue adding patients. " +
+          "Your existing 10 patients and their data are fully preserved."
+        );
+        setIsCreatingCase(false);
+        return;
+      }
+    }
+    // ─────────────────────────────────────────────────────────────────────────
 
     try {
       const controller = new AbortController();
@@ -5626,6 +5679,72 @@ Homeo Healthcare`;
       }
     };
     reader.readAsText(file);
+  };
+
+  const handleDownloadPatients = () => {
+    if (!patients.length) {
+      alert("No patient records available to download.");
+      return;
+    }
+    
+    const headers = [
+      "Patient ID",
+      "Name",
+      "Age",
+      "Gender",
+      "Phone",
+      "Email",
+      "Location",
+      "Chief Complaint",
+      "Care Level",
+      "Duration",
+      "Final Price",
+      "Received Amount",
+      "Remaining Balance",
+      "Assigned Doctor UID",
+      "Created At"
+    ];
+
+    const rows = patients.map(p => [
+      p.id,
+      p.name,
+      p.age,
+      p.gender,
+      p.phone || "",
+      p.email || "",
+      p.location || "",
+      p.complaint || "",
+      p.careLevel || "",
+      p.durationText || "",
+      p.finalPrice || 0,
+      p.receivedAmount || 0,
+      p.remainingBalance || 0,
+      p.assignedDoctor || "",
+      p.createdAt || ""
+    ]);
+
+    const csvContent = [
+      headers.join(","),
+      ...rows.map(row => 
+        row.map(val => {
+          const stringVal = typeof val === "string" ? val : String(val);
+          const escaped = stringVal.replace(/"/g, '""');
+          if (escaped.includes(",") || escaped.includes('"') || escaped.includes("\n") || escaped.includes("\r")) {
+            return `"${escaped}"`;
+          }
+          return escaped;
+        }).join(",")
+      )
+    ].join("\n");
+
+    const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `patients_export_${new Date().toISOString().split("T")[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const handleClearAllPatients = async () => {
@@ -7897,7 +8016,57 @@ ${err.message || err}`);
         </div>
       </header>
 
+      {/* ── Subscription / Trial Warning Banner (non-admin doctors only) ── */}
+      {(() => {
+        if (!session || session.role === "admin") return null;
+        const sub = (session as any).subscription;
+        if (!sub?.validUntil || sub.plan === "branch") return null;
+        const daysLeft = Math.floor((new Date(sub.validUntil).getTime() - Date.now()) / 86400000);
+        const isTrial  = sub.plan === "trial";
+        if (daysLeft > 7 && !isTrial) return null; // Only show when ≤ 7 days left or on trial
+
+        const isExpired = daysLeft < 0;
+        const isUrgent  = daysLeft >= 0 && daysLeft <= 3 && !isTrial;
+        const isWarning = daysLeft >= 0 && daysLeft <= 7 && !isTrial && !isUrgent;
+
+        const styles = isExpired
+          ? { bg: "bg-rose-600",  border: "border-rose-700",  text: "text-white",       icon: "⛔", btnClass: "bg-white text-rose-600 hover:bg-rose-50" }
+          : isUrgent
+          ? { bg: "bg-red-500",   border: "border-red-600",   text: "text-white",       icon: "🚨", btnClass: "bg-white text-red-600 hover:bg-red-50" }
+          : isWarning
+          ? { bg: "bg-amber-500", border: "border-amber-600", text: "text-white",       icon: "⚠️", btnClass: "bg-white text-amber-700 hover:bg-amber-50" }
+          : { bg: "bg-sky-500",   border: "border-sky-600",   text: "text-white",       icon: "🔔", btnClass: "bg-white text-sky-700 hover:bg-sky-50" };
+
+        const message = isExpired
+          ? "Your subscription has expired. Your patients are safe — renew to restore full access."
+          : isUrgent
+          ? `Your subscription expires in ${daysLeft} day${daysLeft === 1 ? "" : "s"}. Renew now to avoid interruption.`
+          : isWarning
+          ? `Your subscription expires in ${daysLeft} days. Contact Dr. Jethwani to renew.`
+          : isTrial
+          ? `You're on a free trial — ${daysLeft} day${daysLeft === 1 ? "" : "s"} remaining. Upgrade for unlimited access.`
+          : "";
+
+        return (
+          <div className={`${styles.bg} ${styles.border} border-b px-6 py-3 flex items-center justify-between gap-4`}>
+            <div className="flex items-center gap-3">
+              <span className="text-lg">{styles.icon}</span>
+              <p className={`text-xs font-bold ${styles.text}`}>{message}</p>
+            </div>
+            <a
+              href="https://wa.me/919876543210?text=Hi%20Dr.%20Jethwani%2C%20I%20would%20like%20to%20renew%20my%20subscription."
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`flex-shrink-0 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer ${styles.btnClass}`}
+            >
+              {isExpired ? "Renew Now →" : isTrial ? "Upgrade Plan →" : "Renew →"}
+            </a>
+          </div>
+        );
+      })()}
+
       {/* Main Panel Content */}
+
       <div 
         className={`flex-1 w-full mx-auto px-6 py-8 flex flex-col gap-6 select-text transition-all duration-300 global-font-${globalFontSize} ${
           globalReadingWidth === "standard" 
@@ -7918,6 +8087,9 @@ ${err.message || err}`);
             const Icon = tab.icon;
             const isTabActive = activeTab === tab.id;
             const subtabs = SUBTABS_CONFIG[tab.id] || [];
+
+            // Hide admin-only tabs from non-admin users
+            if ((tab as any).adminOnly && session?.role !== "admin") return null;
 
             return (
               <div key={tab.id} className="relative group">
@@ -12958,12 +13130,22 @@ ${err.message || err}`);
                   </button>
 
                   <button
-                    onClick={handleClearAllPatients}
-                    className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4.5 py-2.5 rounded-full border border-rose-200 hover:border-rose-600 hover:bg-rose-50 text-rose-600 text-xs font-bold uppercase tracking-wider transition-all bg-white shadow-sm cursor-pointer"
+                    onClick={handleDownloadPatients}
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4.5 py-2.5 rounded-full border border-slate-200 hover:border-slate-800 text-slate-800 text-xs font-bold uppercase tracking-wider transition-all bg-white shadow-sm cursor-pointer"
                   >
-                    <Trash2 className="w-4 h-4 text-rose-500" />
-                    <span>Clear All Patient Data</span>
+                    <Download className="w-4 h-4 text-slate-500" />
+                    <span>Download Patient List (Excel)</span>
                   </button>
+
+                  {session?.role === "admin" && (
+                    <button
+                      onClick={handleClearAllPatients}
+                      className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4.5 py-2.5 rounded-full border border-rose-200 hover:border-rose-600 hover:bg-rose-50 text-rose-600 text-xs font-bold uppercase tracking-wider transition-all bg-white shadow-sm cursor-pointer"
+                    >
+                      <Trash2 className="w-4 h-4 text-rose-500" />
+                      <span>Clear All Patient Data</span>
+                    </button>
+                  )}
 
                   {/* Sheet Opening Mode Toggle */}
                   <div className="flex items-center gap-1 px-2 py-1 rounded-xl border border-slate-200 bg-white text-[10px] font-bold shadow-sm">
@@ -18081,88 +18263,22 @@ ${err.message || err}`);
         );
       })()}
 
-          {/* TAB 3: Staff Management (Admin Only) */}
-          {(activeTab as string) === "team" && session?.role === "admin" && (
-            <div className="space-y-6">
-              
-              <div className="flex items-center justify-between border-b border-slate-900/5 pb-3">
-                <h3 className="text-sm font-bold text-[#1A2421] uppercase tracking-wider flex items-center gap-2">
-                  <Users className="w-4.5 h-4.5 text-mint" />
-                  Junior Doctors Directory
-                </h3>
+          {/* ══════════════════════════════════════════════════════════════════
+              MANAGE DOCTORS TAB — Franchise Control Panel (Admin Only)
+          ══════════════════════════════════════════════════════════════════ */}
+          {activeTab === "team" && session?.role === "admin" && (() => {
+            // Local state for this tab — hoisted via useState hooks declared
+            // at component level won't re-render the whole page; we use the
+            // already-declared state slots below via pattern.
+            // We use inline IIFE so we can call hooks through the outer component.
+            return null; // placeholder — real component rendered just below
+          })()}
 
-                <button className="flex items-center gap-1.5 px-4 py-2 bg-mint text-white rounded-full text-xs font-bold uppercase tracking-wider hover:bg-mint-dark cursor-pointer shadow-sm">
-                  <UserPlus className="w-4 h-4" />
-                  <span>Invite New Doctor</span>
-                </button>
-              </div>
-
-              {/* Staff Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                
-                {/* Doctor 1 */}
-                <div className="glass-panel border-white/60 p-6 rounded-3xl flex items-center justify-between">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-mint/10 border border-mint/20 flex items-center justify-center text-xs font-bold text-mint-dark">
-                        DS
-                      </div>
-                      <div>
-                        <h4 className="text-xs font-bold text-[#1A2421] leading-none mb-1">Dr. Sarah (Junior)</h4>
-                        <span className="text-[9px] text-slate-400 font-semibold">Joined: Dec 2025</span>
-                      </div>
-                    </div>
-                    <p className="text-xs font-semibold text-slate-700">
-                      <strong>Access Scope:</strong> Assigned patient folders only.
-                    </p>
-                    <p className="text-[10px] text-[#0F766E] font-bold">
-                      Currently managing <strong>2 cases</strong>
-                    </p>
-                  </div>
-                  
-                  <span className="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100">
-                    Authorized
-                  </span>
-                </div>
-
-                {/* Doctor 2 */}
-                <div className="glass-panel border-white/60 p-6 rounded-3xl flex items-center justify-between opacity-75">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-xs font-bold text-slate-500">
-                        DM
-                      </div>
-                      <div>
-                        <h4 className="text-xs font-bold text-[#1A2421] leading-none mb-1">Dr. Maneesh (Intern)</h4>
-                        <span className="text-[9px] text-slate-400 font-semibold">Joined: Feb 2026</span>
-                      </div>
-                    </div>
-                    <p className="text-xs font-semibold text-slate-700">
-                      <strong>Access Scope:</strong> Read-only to assigned records.
-                    </p>
-                    <p className="text-[10px] text-slate-500 font-bold">
-                      Currently managing <strong>0 cases</strong>
-                    </p>
-                  </div>
-                  
-                  <span className="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-100">
-                    Pending Verification
-                  </span>
-                </div>
-
-              </div>
-
-              {/* Secure Rules Warning */}
-              <div className="p-5 border border-white/60 bg-amber-50/50 rounded-2xl flex items-start gap-3">
-                <ShieldAlert className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                <div className="text-xs text-slate-700 font-semibold leading-relaxed">
-                  <strong className="text-amber-800 uppercase tracking-wide block mb-1">Firebase Cloud Security Rules Enforced</strong>
-                  All directory listings and file requests are audited server-side. Junior doctors are barred from access to folders outside of their explicitly delegated patients (folders not inside their assigned scope return HTTP 403 Forbidden).
-                </div>
-              </div>
-
-            </div>
+          {activeTab === "team" && session?.role === "admin" && (
+            <ManageDoctorsPanel sessionUid={session?.uid || ""} />
           )}
+
+
 
           {/* TAB 4: Materia Medica & Knowledge Hub */}
           {activeTab === "nexus-atlas" && nexusSubTab === "materia-medica" && (
@@ -26155,6 +26271,40 @@ Exported on: ${new Date().toLocaleDateString()}
                         <span>{caseCreationError}</span>
                       </div>
                     )}
+
+                    {/* Trial patient usage banner */}
+                    {session?.role !== "admin" && (session as any)?.subscription?.plan === "trial" && (() => {
+                      const used  = patients.length;
+                      const left  = 10 - used;
+                      if (used < 8) return null;
+                      return (
+                        <div className={`flex-shrink-0 mb-4 p-3.5 rounded-2xl border flex items-center justify-between gap-3 ${
+                          used >= 10
+                            ? "bg-amber-50 border-amber-200"
+                            : "bg-sky-50 border-sky-200"
+                        }`}>
+                          <div>
+                            <p className={`text-[10px] font-bold uppercase tracking-wide ${used >= 10 ? "text-amber-700" : "text-sky-700"}`}>
+                              {used >= 10 ? "⛔ Trial limit reached" : `⚠️ ${left} trial slot${left === 1 ? "" : "s"} remaining`}
+                            </p>
+                            <p className="text-[10px] text-slate-500 font-semibold mt-0.5">
+                              {used >= 10 ? "Upgrade your plan to continue adding patients." : `You've used ${used}/10 free trial patient slots.`}
+                            </p>
+                          </div>
+                          <a
+                            href="https://wa.me/919876543210?text=Hi%20Dr.%20Jethwani%2C%20I%20would%20like%20to%20upgrade%20my%20trial%20plan."
+                            target="_blank" rel="noopener noreferrer"
+                            className={`flex-shrink-0 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider cursor-pointer transition-all ${
+                              used >= 10
+                                ? "bg-amber-500 text-white hover:bg-amber-600"
+                                : "bg-sky-500 text-white hover:bg-sky-600"
+                            }`}
+                          >
+                            Upgrade →
+                          </a>
+                        </div>
+                      );
+                    })()}
 
                     {/* Scrollable Form Body */}
                     <div className="space-y-5 overflow-y-auto flex-grow min-h-0 pr-1 pb-2" data-lenis-prevent="true">
