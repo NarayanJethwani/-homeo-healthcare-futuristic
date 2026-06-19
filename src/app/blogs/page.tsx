@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import BlogsClient, { Article } from "./BlogsClient";
+import type { Metadata } from "next";
 
 export const revalidate = 3600; // Revalidate every 1 hour (ISR)
 
@@ -231,4 +232,152 @@ async function getWordPressPosts(): Promise<Article[]> {
 export default async function BlogsPage() {
   const initialArticles = await getWordPressPosts();
   return <BlogsClient initialArticles={initialArticles} />;
+}
+
+async function getWordPressPostBySlug(slug: string): Promise<Article | null> {
+  try {
+    const res = await fetch(`https://admin.homeo.healthcare/wp-json/wp/v2/posts?slug=${slug}&_embed`, {
+      next: { revalidate: 3600 }
+    });
+    if (!res.ok) return null;
+    const posts = await res.json();
+    if (!Array.isArray(posts) || posts.length === 0) return null;
+    const post = posts[0];
+
+    let image = "/images/epigenetics_gene.png";
+    const localSlugsWithFeaturedImage = new Set([
+      "complete-thyroid-guide",
+      "hashimotos-thyroiditis",
+      "hyperthyroidism-graves",
+      "chronic-respiratory-guide",
+      "allergic-rhinitis-sinusitis",
+      "asthma-bronchospasms",
+      "gut-brain-skin-axis",
+      "ibs-gut-motility",
+      "gerd-acid-reflux",
+      "chronic-skin-pathology",
+      "eczema-barrier-repair",
+      "vitiligo-repigmentation",
+      "joint-bone-health",
+      "osteoarthritis-degradation",
+      "sciatica-spine-care",
+      "neurobiology-stress-anxiety",
+      "insomnia-sleep-rhythms",
+      "female-endocrine-blueprint",
+      "pcos-pcod-reversal",
+      "insulin-resistance-diabetes",
+      "fatty-liver-regeneration",
+      "cardiovascular-hypertension-lipids",
+      "pediatric-immunity-tonsils",
+      "recurrent-childhood-fevers",
+      "constitutional-immunotherapy-cancer"
+    ]);
+
+    if (localSlugsWithFeaturedImage.has(post.slug)) {
+      image = `/images/${post.slug}-featured.png`;
+    } else {
+      try {
+        const media = post._embedded?.['wp:featuredmedia']?.[0];
+        if (media?.source_url) {
+          image = media.source_url;
+        }
+      } catch {}
+    }
+
+    const excerpt = post.excerpt?.rendered 
+      ? post.excerpt.rendered.replace(/<[^>]*>/g, '').replace(/\[&hellip;\]/, '...').replace(/\\n/g, "").trim()
+      : "";
+
+    return {
+      id: post.slug || post.id.toString(),
+      title: decodeHtmlEntities(post.title?.rendered || "Untitled Post"),
+      category: "Research",
+      date: "",
+      readTime: "",
+      author: "",
+      excerpt,
+      content: "",
+      glowColor: "",
+      image
+    };
+  } catch (err) {
+    console.error("Error fetching single post by slug for metadata:", err);
+    return null;
+  }
+}
+
+interface PageProps {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+export async function generateMetadata({
+  searchParams,
+}: PageProps): Promise<Metadata> {
+  const resolvedParams = await searchParams;
+  const articleId = typeof resolvedParams.article === "string" ? resolvedParams.article : undefined;
+
+  const defaultMeta = {
+    title: "Science & Healing Blog | Homeo Healthcare",
+    description: "Read clinical essays, case studies, and nanotechnology-based evidence for advanced homeopathy written by Dr. Narayan Jethwani.",
+    openGraph: {
+      title: "Science & Healing Blog | Homeo Healthcare",
+      description: "Read clinical essays, case studies, and nanotechnology-based evidence for advanced homeopathy written by Dr. Narayan Jethwani.",
+      url: "https://homeo.healthcare/blogs",
+      siteName: "Homeo Healthcare",
+      locale: "en_US",
+      type: "website",
+    }
+  };
+
+  if (!articleId) {
+    return defaultMeta;
+  }
+
+  // 1. Static Migraine Article
+  if (articleId === "migraine-uiux") {
+    return {
+      title: "Beyond the Headache: Visualizing Migraine Pathways | Homeo Healthcare",
+      description: "An in-depth clinical and visual communication analysis of migraine pathophysiology, triggers, and personalized homeopathic care, designed for high-clarity patient education.",
+      openGraph: {
+        title: "Beyond the Headache: Visualizing Migraine Pathways | Homeo Healthcare",
+        description: "An in-depth clinical and visual communication analysis of migraine pathophysiology, triggers, and personalized homeopathic care, designed for high-clarity patient education.",
+        url: "https://homeo.healthcare/blogs?article=migraine-uiux",
+        images: [
+          {
+            url: "https://homeo.healthcare/images/migraine_article_hero.png",
+            width: 1200,
+            height: 630,
+            alt: "Beyond the Headache: Visualizing Migraine Pathways",
+          }
+        ],
+        siteName: "Homeo Healthcare",
+        locale: "en_US",
+        type: "article",
+      }
+    };
+  }
+
+  // 2. Fetch WordPress dynamic post
+  const matched = await getWordPressPostBySlug(articleId);
+  if (matched) {
+    let imageUrl = matched.image;
+    if (imageUrl && imageUrl.startsWith("/")) {
+      imageUrl = `https://homeo.healthcare${imageUrl}`;
+    }
+    return {
+      title: `${matched.title} | Homeo Healthcare`,
+      description: matched.excerpt || defaultMeta.description,
+      openGraph: {
+        title: `${matched.title} | Homeo Healthcare`,
+        description: matched.excerpt || defaultMeta.description,
+        url: `https://homeo.healthcare/blogs?article=${matched.id}`,
+        images: imageUrl ? [{ url: imageUrl, alt: matched.title }] : [],
+        siteName: "Homeo Healthcare",
+        locale: "en_US",
+        type: "article",
+      }
+    };
+  }
+
+  return defaultMeta;
 }
