@@ -1352,7 +1352,8 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
   };
 
   return (
-    <div className="pt-32 pb-24 px-6 relative">\n      <style dangerouslySetInnerHTML={{ __html: `
+    <div className="pt-32 pb-24 px-6 relative">
+      <style dangerouslySetInnerHTML={{ __html: `
         @keyframes textShimmer {
           0% { background-position: 0% 50%; }
           50% { background-position: 100% 50%; }
