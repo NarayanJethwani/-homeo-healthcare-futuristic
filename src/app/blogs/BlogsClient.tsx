@@ -1644,7 +1644,13 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
     const customArticles = localStaticArticles.filter(art => art.id === "migraine-uiux");
     const customTitles = customArticles.map(art => art.title.toLowerCase());
     const others = (initialArticles.length > 0 ? initialArticles : localStaticArticles).filter(
-      art => art.id !== "migraine-uiux" && !customTitles.includes(art.title.toLowerCase())
+      art => {
+        const titleLower = art.title.toLowerCase();
+        const isDuplicateMigraine = titleLower.includes("role of homeopathy in migraine management");
+        return art.id !== "migraine-uiux" && 
+               !isDuplicateMigraine && 
+               !customTitles.includes(titleLower);
+      }
     );
     return [...customArticles, ...others];
   });
