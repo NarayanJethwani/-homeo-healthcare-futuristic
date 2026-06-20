@@ -1124,6 +1124,7 @@ const getCategoryClass = (category: string) => {
   };
   return map[category] || "category-healthcare";
 };
+
 const WhatsAppLogo = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.458 5.705 1.459h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
@@ -1201,9 +1202,422 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
   
   // Reading mode state
   const [isFullPage, setIsFullPage] = useState(false);
-  const [isSepia, setIsSepia] = useState(false);
-  const [fontSize, setFontSize] = useState<"sm" | "base" | "lg">("sm");
+  const [readerTheme, setReaderTheme] = useState<"light" | "sepia" | "dark" | "cream" | "forest">("light");
+  const [fontSize, setFontSize] = useState<"sm" | "base" | "lg" | "xl" | "2xl">("sm");
+  const [fontStyle, setFontStyle] = useState<"sans" | "serif" | "dyslexic">("sans");
+  const [lineHeight, setLineHeight] = useState<"cozy" | "comfortable" | "relaxed">("comfortable");
+  const [contentWidth, setContentWidth] = useState<"compact" | "balanced" | "wide">("balanced");
   const [showReadingToolbar, setShowReadingToolbar] = useState(false);
+  
+  // Advanced tools states
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isSpeechPaused, setIsSpeechPaused] = useState(false);
+  const [speechSpeed, setSpeechSpeed] = useState<number>(1);
+  const [voices, setVoices] = useState<any[]>([]);
+  const [selectedVoiceName, setSelectedVoiceName] = useState<string>("");
+  const [showReadingRuler, setShowReadingRuler] = useState(false);
+  const [rulerY, setRulerY] = useState<number>(0);
+  const [isAutoScrolling, setIsAutoScrolling] = useState(false);
+  const [autoScrollSpeed, setAutoScrollSpeed] = useState<number>(1);
+  const [activeTerm, setActiveTerm] = useState<{ name: string; definition: string; x: number; y: number } | null>(null);
+  
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const getFriendlyVoiceLabel = useCallback((v: any) => {
+    const name = v.name;
+    const lang = v.lang.toLowerCase().replace("_", "-");
+    const isIndian = lang.startsWith("en-in") || name.toLowerCase().includes("india") || name.toLowerCase().includes("indian");
+    
+    if (isIndian) {
+      let gender = "";
+      if (name.includes("Rishi") || name.includes("Ravi") || name.includes("Prabhat") || name.includes("Karan")) {
+        gender = "Male";
+      } else if (name.includes("Isha") || name.includes("Heera") || name.includes("Neerja")) {
+        gender = "Female";
+      } else if (name.toLowerCase().includes("male")) {
+        gender = "Male";
+      } else if (name.toLowerCase().includes("female")) {
+        gender = "Female";
+      }
+      
+      const cleanName = name
+        .replace("Microsoft", "")
+        .replace("Google", "")
+        .replace("Apple", "")
+        .replace("Desktop", "")
+        .replace("Natural", "")
+        .replace("Voice", "")
+        .trim();
+        
+      return `🇮🇳 India - ${cleanName}${gender ? ` (${gender})` : ""}`;
+    }
+    
+    const cleanName = name
+      .replace("Microsoft", "")
+      .replace("Google", "")
+      .replace("Apple", "")
+      .trim();
+    const region = lang.split("-")[1]?.toUpperCase() || lang.toUpperCase();
+    return `${region} - ${cleanName}`;
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.speechSynthesis) return;
+
+    const updateVoices = () => {
+      const allVoices = window.speechSynthesis.getVoices();
+      
+      // Filter for English voices
+      const englishVoices = allVoices.filter(v => v.lang.toLowerCase().replace("_", "-").startsWith("en-"));
+      
+      // Filter out macOS novelty / singing / sound effect / robotic voices
+      const noveltyKeywords = [
+        "bad news", "good news", "cellos", "bells", "organ", "boh", 
+        "trinoids", "whisper", "zarvox", "bubbles", "hysterical", 
+        "deranged", "pipe organ", "boing", "wobble", "jester", "organ",
+        "albert", "fred", "kathy", "boing"
+      ];
+      
+      // Filter strictly for Indian English voices
+      let cleanEnglishVoices = englishVoices.filter(v => {
+        const nameLower = v.name.toLowerCase();
+        const langLower = v.lang.toLowerCase().replace("_", "-");
+        const isIndian = langLower === "en-in" || nameLower.includes("india") || nameLower.includes("indian");
+        return isIndian && !noveltyKeywords.some(keyword => nameLower.includes(keyword));
+      });
+
+      // Fallback: If no Indian voices are found, keep standard English voices to avoid an empty select menu
+      if (cleanEnglishVoices.length === 0) {
+        cleanEnglishVoices = englishVoices.filter(v => {
+          const nameLower = v.name.toLowerCase();
+          return !noveltyKeywords.some(keyword => nameLower.includes(keyword));
+        });
+      }
+      
+      // Sort alphabetically
+      const sortedVoices = [...cleanEnglishVoices].sort((a, b) => {
+        return a.name.localeCompare(b.name);
+      });
+
+      setVoices(sortedVoices);
+      
+      // Default selection: select the first Indian voice, or first English voice
+      const firstIndian = sortedVoices.find(v => v.lang.toLowerCase().replace("_", "-") === "en-in" || v.name.toLowerCase().includes("india"));
+      const fallback = sortedVoices[0] || allVoices[0];
+      const chosenVoice = firstIndian || fallback;
+      if (chosenVoice) {
+        setSelectedVoiceName(chosenVoice.name);
+      }
+    };
+
+    updateVoices();
+    if (window.speechSynthesis.onvoiceschanged !== undefined) {
+      window.speechSynthesis.onvoiceschanged = updateVoices;
+    }
+  }, []);
+
+  const speechUtteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+  const autoScrollTimerRef = useRef<number | null>(null);
+
+  // Glossary mapping
+  const glossaryTerms: Record<string, string> = {
+    "cgrp": "Calcitonin Gene-Related Peptide: A protein released by trigeminal nerve fibers during a migraine, causing blood vessel dilation and neurogenic inflammation.",
+    "calcitonin gene-related peptide": "A protein released by trigeminal nerve fibers during a migraine, causing blood vessel dilation and neurogenic inflammation.",
+    "cortical spreading depression": "CSD: A slow-moving wave of electrical hyperexcitability followed by neural silence across the cerebral cortex, responsible for migraine aura.",
+    "csd": "Cortical Spreading Depression: A slow-moving wave of electrical hyperexcitability followed by neural silence across the cerebral cortex, responsible for migraine aura.",
+    "trigeminovascular": "The sensory pathway linking trigeminal nerves, cerebral blood vessels, and brainstem relay centers to transmit migraine pain signals.",
+    "trigeminal nucleus caudalis": "TNC: A primary sensory relay nucleus in the brainstem that receives and processes pain signals from the head, neck, and face.",
+    "tnc": "Trigeminal Nucleus Caudalis: A primary sensory relay nucleus in the brainstem that receives and processes pain signals from the head, neck, and face.",
+    "allodynia": "A painful response to a normally non-painful stimulus (such as brushing hair or a light touch to the face) due to central nervous system sensitization.",
+    "photophobia": "Extreme sensitivity to light, causing discomfort, pain, or aggravation of migraine symptoms.",
+    "phonophobia": "Extreme sensitivity to sound, where normal ambient noises are perceived as painful or overwhelming.",
+    "prodrome": "The early warning phase of a migraine (24 to 48 hours before pain) marked by neck stiffness, fatigue, yawning, or food cravings.",
+    "postdrome": "The final recovery phase of a migraine ('hangover' phase) characterized by fatigue, cognitive sluggishness, or mood changes.",
+    "meninges": "The three membranes (dura mater, arachnoid, pia mater) that line the skull and vertebral canal and enclose the brain and spinal cord."
+  };
+
+  const injectGlossarySpans = useCallback((html: string): string => {
+    if (typeof window === "undefined") return html;
+    try {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, "text/html");
+      const terms = Object.keys(glossaryTerms).sort((a, b) => b.length - a.length);
+      
+      const traverse = (node: Node) => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          const text = node.nodeValue || "";
+          const escapedTerms = terms.map(t => t.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'));
+          const regex = new RegExp(`\\b(${escapedTerms.join("|")})\\b`, "gi");
+          
+          if (regex.test(text)) {
+            const parent = node.parentNode;
+            if (parent && 
+                parent.nodeName !== "SCRIPT" && 
+                parent.nodeName !== "STYLE" && 
+                !parent.parentElement?.classList.contains("glossary-term") && 
+                !(parent as HTMLElement).classList.contains("glossary-term")) {
+              
+              const tempDiv = document.createElement("div");
+              tempDiv.innerHTML = text.replace(regex, (match) => {
+                const lowerKey = match.toLowerCase();
+                const matchedKey = Object.keys(glossaryTerms).find(k => k === lowerKey) || lowerKey;
+                return `<span class="glossary-term cursor-help border-b border-dotted border-mint text-mint hover:bg-mint/10 px-0.5 rounded transition-all font-bold" data-term="${matchedKey}">${match}</span>`;
+              });
+              
+              while (tempDiv.firstChild) {
+                parent.insertBefore(tempDiv.firstChild, node);
+              }
+              parent.removeChild(node);
+            }
+          }
+        } else {
+          const children = Array.from(node.childNodes);
+          for (const child of children) {
+            traverse(child);
+          }
+        }
+      };
+      
+      traverse(doc.body);
+      return doc.body.innerHTML;
+    } catch (err) {
+      console.error("Error parsing glossary terms", err);
+      return html;
+    }
+  }, []);
+
+  // TTS Actions
+  const startSpeech = () => {
+    if (typeof window === "undefined" || !selectedArticle) return;
+    window.speechSynthesis.cancel();
+    
+    let plainText = "";
+    if (typeof selectedArticle.content === "string") {
+      const temp = document.createElement("div");
+      temp.innerHTML = selectedArticle.content;
+      
+      // 1. Remove style and script tags (removes background code/styles)
+      const styles = temp.querySelectorAll("style, script");
+      styles.forEach(s => s.remove());
+      
+      // 2. Remove photo details / image annotations (e.g. elements containing "[IMAGE")
+      const allElements = temp.querySelectorAll("p, div, figcaption, span");
+      allElements.forEach(el => {
+        const text = el.textContent?.trim() || "";
+        if (text.startsWith("[IMAGE") || text.includes("[IMAGE ")) {
+          el.remove();
+        }
+      });
+      
+      plainText = temp.textContent || temp.innerText || "";
+    } else {
+      // Filter out any elements starting with "[IMAGE"
+      const cleanParagraphs = selectedArticle.content.filter(p => {
+        const trimmed = p.trim();
+        return !trimmed.startsWith("[IMAGE") && !trimmed.includes("[IMAGE ");
+      });
+      plainText = cleanParagraphs.join(". ");
+    }
+    
+    const speechText = `${selectedArticle.title}. ${plainText}`;
+    const utterance = new SpeechSynthesisUtterance(speechText);
+    utterance.rate = speechSpeed;
+    
+    if (selectedVoiceName) {
+      const voice = voices.find(v => v.name === selectedVoiceName);
+      if (voice) {
+        utterance.voice = voice;
+      }
+    }
+    
+    utterance.onend = () => {
+      setIsSpeaking(false);
+      setIsSpeechPaused(false);
+    };
+    utterance.onerror = () => {
+      setIsSpeaking(false);
+      setIsSpeechPaused(false);
+    };
+    
+    speechUtteranceRef.current = utterance;
+    setIsSpeaking(true);
+    setIsSpeechPaused(false);
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const pauseSpeech = () => {
+    if (typeof window === "undefined") return;
+    if (isSpeaking) {
+      if (isSpeechPaused) {
+        window.speechSynthesis.resume();
+        setIsSpeechPaused(false);
+      } else {
+        window.speechSynthesis.pause();
+        setIsSpeechPaused(true);
+      }
+    }
+  };
+
+  const stopSpeech = () => {
+    if (typeof window === "undefined") return;
+    window.speechSynthesis.cancel();
+    setIsSpeaking(false);
+    setIsSpeechPaused(false);
+  };
+
+  useEffect(() => {
+    if (isSpeaking && speechUtteranceRef.current) {
+      startSpeech();
+    }
+  }, [speechSpeed, selectedVoiceName]);
+
+  useEffect(() => {
+    return () => {
+      if (typeof window !== "undefined") {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, [selectedArticle]);
+
+  // Auto-scroll
+  const startAutoScroll = useCallback(() => {
+    if (!scrollContainerRef.current) return;
+    const scroll = () => {
+      if (!scrollContainerRef.current) return;
+      const container = scrollContainerRef.current;
+      const speedMap = { 1: 1.0, 2: 2.5, 3: 5.0 };
+      const speed = speedMap[autoScrollSpeed as 1 | 2 | 3] || 1;
+      container.scrollTop += speed;
+      
+      const maxScroll = container.scrollHeight - container.clientHeight;
+      if (container.scrollTop >= maxScroll - 1) {
+        setIsAutoScrolling(false);
+        if (autoScrollTimerRef.current) {
+          cancelAnimationFrame(autoScrollTimerRef.current);
+          autoScrollTimerRef.current = null;
+        }
+      } else {
+        autoScrollTimerRef.current = requestAnimationFrame(scroll);
+      }
+    };
+    if (autoScrollTimerRef.current) {
+      cancelAnimationFrame(autoScrollTimerRef.current);
+    }
+    autoScrollTimerRef.current = requestAnimationFrame(scroll);
+  }, [autoScrollSpeed]);
+
+  const stopAutoScroll = useCallback(() => {
+    setIsAutoScrolling(false);
+    if (autoScrollTimerRef.current) {
+      cancelAnimationFrame(autoScrollTimerRef.current);
+      autoScrollTimerRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isAutoScrolling) {
+      startAutoScroll();
+    } else {
+      stopAutoScroll();
+    }
+    return () => {
+      if (autoScrollTimerRef.current) {
+        cancelAnimationFrame(autoScrollTimerRef.current);
+      }
+    };
+  }, [isAutoScrolling, startAutoScroll, stopAutoScroll]);
+
+  const handleScrollContainerInteraction = () => {
+    if (isAutoScrolling) {
+      setIsAutoScrolling(false);
+    }
+  };
+
+  // Focus Ruler
+  const handleContentMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!showReadingRuler) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const relativeY = e.clientY - rect.top + e.currentTarget.scrollTop;
+    setRulerY(relativeY);
+  };
+
+  // Glossary clicks
+  const handleContentClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement;
+    const termSpan = target.closest(".glossary-term") as HTMLElement;
+    if (termSpan) {
+      const termKey = termSpan.getAttribute("data-term") || "";
+      const definition = glossaryTerms[termKey];
+      if (definition) {
+        const containerRect = e.currentTarget.getBoundingClientRect();
+        const targetRect = termSpan.getBoundingClientRect();
+        const x = targetRect.left - containerRect.left + (targetRect.width / 2);
+        const y = targetRect.top - containerRect.top - 12;
+        setActiveTerm({
+          name: termSpan.textContent || "",
+          definition,
+          x,
+          y
+        });
+      }
+    } else {
+      setActiveTerm(null);
+    }
+  };
+
+  // UI styling helpers
+  const getButtonClass = (isActive: boolean) => {
+    if (isActive) {
+      return readerTheme === "sepia" ? "bg-amber-400 border-amber-400 text-white shadow-sm" :
+             readerTheme === "dark" ? "bg-mint border-mint text-zinc-950 shadow-sm" :
+             readerTheme === "cream" ? "bg-orange-400 border-orange-400 text-white shadow-sm" :
+             readerTheme === "forest" ? "bg-emerald-600 border-emerald-600 text-white shadow-sm" :
+             "bg-mint border-mint text-white shadow-sm";
+    } else {
+      return readerTheme === "sepia" ? "bg-white border-amber-200 text-amber-700 hover:border-amber-400" :
+             readerTheme === "dark" ? "bg-zinc-800 border-zinc-700 text-zinc-300 hover:border-zinc-500 hover:text-zinc-100" :
+             readerTheme === "cream" ? "bg-white border-orange-200 text-orange-850 hover:border-orange-400" :
+             readerTheme === "forest" ? "bg-white border-emerald-200 text-emerald-800 hover:border-emerald-500" :
+             "bg-white border-slate-200 text-slate-600 hover:border-mint hover:text-mint";
+    }
+  };
+
+  const getActiveTypographyButtonClass = () => {
+    return readerTheme === "sepia" ? "bg-amber-400 text-white border-amber-400" :
+           readerTheme === "dark" ? "bg-mint text-zinc-950 border-mint" :
+           readerTheme === "cream" ? "bg-orange-400 text-white border-orange-400" :
+           readerTheme === "forest" ? "bg-emerald-600 text-white border-emerald-600" :
+           "bg-mint text-white border-mint";
+  };
+
+  const getInactiveTypographyButtonClass = () => {
+    return readerTheme === "sepia" ? "text-amber-600 hover:bg-amber-100 border-amber-200" :
+           readerTheme === "dark" ? "text-zinc-400 hover:bg-zinc-800 border-zinc-700" :
+           readerTheme === "cream" ? "text-orange-700 hover:bg-orange-100 border-orange-200" :
+           readerTheme === "forest" ? "text-emerald-700 hover:bg-emerald-100 border-emerald-200" :
+           "text-slate-500 hover:bg-slate-50 border-slate-200";
+  };
+
+  const getHeaderButtonClass = (isActive: boolean) => {
+    if (isActive) {
+      return readerTheme === "sepia" ? "bg-amber-200 border-amber-300 text-amber-800" :
+             readerTheme === "dark" ? "bg-mint/20 border-mint/40 text-mint" :
+             readerTheme === "cream" ? "bg-orange-200 border-orange-300 text-orange-850" :
+             readerTheme === "forest" ? "bg-emerald-200 border-emerald-300 text-emerald-850" :
+             "bg-mint/10 border-mint/40 text-mint";
+    } else {
+      return readerTheme === "sepia" ? "border-amber-200 text-amber-600 hover:bg-amber-100" :
+             readerTheme === "dark" ? "border-zinc-750 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200" :
+             readerTheme === "cream" ? "border-orange-200 text-orange-600 hover:bg-orange-100" :
+             readerTheme === "forest" ? "border-emerald-200 text-emerald-600 hover:bg-emerald-100" :
+             "border-slate-200 text-slate-500 hover:border-slate-400 hover:text-slate-700";
+    }
+  };
 
   const [liveArticles] = useState<Article[]>(() => {
     const customArticles = localStaticArticles.filter(art => art.id === "migraine-uiux");
@@ -1257,9 +1671,20 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
   useEffect(() => {
     if (!selectedArticle) {
       setIsFullPage(false);
-      setIsSepia(false);
+      setReaderTheme("light");
       setFontSize("sm");
+      setFontStyle("sans");
+      setLineHeight("comfortable");
+      setContentWidth("balanced");
       setShowReadingToolbar(false);
+      setIsSpeaking(false);
+      setIsSpeechPaused(false);
+      if (typeof window !== "undefined") {
+        window.speechSynthesis.cancel();
+      }
+      setIsAutoScrolling(false);
+      setShowReadingRuler(false);
+      setActiveTerm(null);
     }
   }, [selectedArticle]);
 
@@ -1516,14 +1941,15 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: artIdx * 0.04 }}
-                  className={`glass-panel border-white/60 bg-white/40 rounded-3xl p-6 flex flex-col justify-between group relative overflow-hidden cursor-pointer ${getCategoryClass(art.category)}`}
+                  className={`glass-panel border-white/60 rounded-3xl p-6 flex flex-col justify-between group relative overflow-hidden cursor-pointer ${getCategoryClass(art.category)}`}
                   style={{
-                    transition: "box-shadow 0.35s ease, border-color 0.35s ease, transform 0.35s cubic-bezier(0.16,1,0.3,1)",
+                    transition: "background-color 0.4s ease, box-shadow 0.35s ease, border-color 0.35s ease, transform 0.35s cubic-bezier(0.16,1,0.3,1)",
+                    backgroundColor: isHovered ? `${palette.ring}0c` : "rgba(255, 255, 255, 0.4)",
                     boxShadow: isHovered
-                      ? `0 8px 40px -8px ${palette.glow}, 0 0 0 1.5px ${palette.ring}33`
+                      ? `0 12px 40px -8px ${palette.glow}, 0 0 0 2px ${palette.ring}44`
                       : "0 4px 24px rgba(0,0,0,0.01)",
-                    transform: isHovered ? "translateY(-4px) scale(1.008)" : "translateY(0) scale(1)",
-                    borderColor: isHovered ? `${palette.ring}55` : "rgba(255,255,255,0.6)",
+                    transform: isHovered ? "translateY(-6px) scale(1.01)" : "translateY(0) scale(1)",
+                    borderColor: isHovered ? `${palette.ring}77` : "rgba(255,255,255,0.6)",
                   }}
                   onClick={() => setSelectedArticle(art)}
                   onMouseMove={(e) => handleCardMouseMove(e, art.id)}
@@ -1641,44 +2067,88 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 260 }}
-              className={`fixed right-0 top-0 bottom-0 border-l border-white/50 z-[51] shadow-2xl flex flex-col pointer-events-auto overflow-hidden transition-all duration-500 ${
+              className={`fixed right-0 top-0 bottom-0 border-l z-[51] shadow-2xl flex flex-col pointer-events-auto overflow-hidden transition-all duration-500 ${
                 isFullPage ? "w-full" : "w-full sm:w-[640px]"
               } ${
-                isSepia ? "bg-[#f5eed6]/98" : "bg-[#FAF9F6]/97"
+                readerTheme === "sepia" ? "bg-[#f5eed6]/98 border-amber-200/50" :
+                readerTheme === "dark" ? "bg-zinc-950/98 border-zinc-800" :
+                readerTheme === "cream" ? "bg-[#FAF6EE]/98 border-orange-200/50" :
+                readerTheme === "forest" ? "bg-[#EBF2EE]/98 border-emerald-200/50" :
+                "bg-[#FAF9F6]/97 border-white/50"
               }`}
               style={{ backdropFilter: "blur(16px)" }}
             >
+              <style dangerouslySetInnerHTML={{ __html: `
+                @import url('https://cdn.jsdelivr.net/npm/opendyslexic@1.0.3/opendyslexic.css');
+                .font-dyslexic {
+                  font-family: 'OpenDyslexic', sans-serif !important;
+                  letter-spacing: 0.03em;
+                  word-spacing: 0.08em;
+                }
+              ` }} />
+
               {/* Reading Mode Toolbar */}
-              <div className={`border-b transition-all duration-300 ${
-                isSepia ? "border-amber-200/40 bg-amber-50/80" : "border-slate-900/5 bg-white/70"
-              } backdrop-blur-sm`}>
+              <div className={`border-b transition-all duration-300 backdrop-blur-sm ${
+                readerTheme === "sepia" ? "border-amber-200/40 bg-amber-50/80" :
+                readerTheme === "dark" ? "border-zinc-800 bg-zinc-900/70 text-zinc-150" :
+                readerTheme === "cream" ? "border-orange-200/40 bg-orange-50/85" :
+                readerTheme === "forest" ? "border-emerald-200/40 bg-emerald-50/85" :
+                "border-slate-900/5 bg-white/70"
+              }`}>
                 {/* Main Header Row */}
                 <div className="px-5 py-4 flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className={`flex items-center justify-center w-9 h-9 rounded-2xl border shadow-sm ${
-                      isSepia ? "bg-amber-100 border-amber-200 text-amber-700" : "bg-white border-slate-100 text-mint"
+                      readerTheme === "sepia" ? "bg-amber-100 border-amber-200 text-amber-700" :
+                      readerTheme === "dark" ? "bg-zinc-800 border-zinc-700 text-mint" :
+                      readerTheme === "cream" ? "bg-orange-100 border-orange-200 text-orange-850" :
+                      readerTheme === "forest" ? "bg-emerald-100 border-emerald-200 text-emerald-850" :
+                      "bg-white border-slate-100 text-mint"
                     }`}>
                       <BookOpen className="w-4 h-4" />
                     </div>
                     <div>
                       <span className={`text-[9px] font-bold uppercase tracking-wider ${
-                        isSepia ? "text-amber-600" : "text-mint"
+                        readerTheme === "sepia" ? "text-amber-600" :
+                        readerTheme === "dark" ? "text-mint/80" :
+                        readerTheme === "cream" ? "text-orange-700" :
+                        readerTheme === "forest" ? "text-emerald-700" :
+                        "text-mint"
                       }`}>Scientific Essay</span>
                       <h3 className={`text-sm font-bold leading-none ${
-                        isSepia ? "text-amber-900" : "text-slate-800"
+                        readerTheme === "sepia" ? "text-amber-900" :
+                        readerTheme === "dark" ? "text-zinc-200" :
+                        readerTheme === "cream" ? "text-orange-950" :
+                        readerTheme === "forest" ? "text-emerald-950" :
+                        "text-slate-800"
                       }`}>{selectedArticle.category}</h3>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-1.5">
+                    {/* Book Consultation Button */}
+                    <button
+                      onClick={handleBookConsultation}
+                      title="Book Consultation"
+                      className={`h-8 px-2.5 md:px-3.5 rounded-xl border flex items-center gap-1.5 transition-all duration-200 cursor-pointer font-bold text-[9px] uppercase tracking-wider ${
+                        readerTheme === "sepia" ? "border-amber-300 bg-amber-100/50 text-amber-800 hover:bg-amber-100" :
+                        readerTheme === "dark" ? "border-zinc-750 bg-zinc-800/50 text-mint hover:bg-zinc-850 hover:text-zinc-200" :
+                        readerTheme === "cream" ? "border-orange-300 bg-orange-100/50 text-orange-850 hover:bg-orange-100" :
+                        readerTheme === "forest" ? "border-emerald-300 bg-emerald-100/50 text-emerald-850 hover:bg-emerald-100" :
+                        "border-slate-200 bg-slate-50 text-mint hover:bg-slate-100 hover:border-slate-300"
+                      }`}
+                    >
+                      <Calendar className="w-3.5 h-3.5 text-mint" />
+                      <span className="hidden sm:inline">Book Consultation</span>
+                      <span className="sm:hidden">Book</span>
+                    </button>
+
                     {/* Share Link Button */}
                     <button
                       onClick={handleShareLink}
                       title="Copy share link"
                       className={`w-8 h-8 rounded-xl border flex items-center justify-center transition-all duration-200 cursor-pointer ${
-                        copied
-                          ? isSepia ? "bg-amber-200 border-amber-300 text-amber-800" : "bg-mint/10 border-mint/40 text-mint"
-                          : isSepia ? "border-amber-200 text-amber-600 hover:bg-amber-100" : "border-slate-200 text-slate-500 hover:border-slate-400 hover:text-slate-700"
+                        getHeaderButtonClass(copied)
                       }`}
                     >
                       {copied ? (
@@ -1697,7 +2167,7 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
                       rel="noopener noreferrer"
                       title="Share on WhatsApp"
                       className={`w-8 h-8 rounded-xl border flex items-center justify-center transition-all duration-200 cursor-pointer ${
-                        isSepia ? "border-amber-200 text-amber-600 hover:bg-amber-100" : "border-slate-200 text-slate-500 hover:border-slate-400 hover:text-slate-700"
+                        getHeaderButtonClass(false)
                       }`}
                     >
                       <WhatsAppLogo className="w-3.5 h-3.5 text-emerald-500 hover:scale-110 transition-transform" />
@@ -1712,7 +2182,7 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
                       rel="noopener noreferrer"
                       title="Share on Facebook"
                       className={`w-8 h-8 rounded-xl border flex items-center justify-center transition-all duration-200 cursor-pointer ${
-                        isSepia ? "border-amber-200 text-amber-600 hover:bg-amber-100" : "border-slate-200 text-slate-500 hover:border-slate-400 hover:text-slate-700"
+                        getHeaderButtonClass(false)
                       }`}
                     >
                       <FacebookLogo className="w-3.5 h-3.5 text-[#1877F2] hover:scale-110 transition-transform" />
@@ -1725,7 +2195,7 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
                       rel="noopener noreferrer"
                       title="Dr. Narayan Jethwani on Facebook"
                       className={`w-8 h-8 rounded-xl border flex items-center justify-center transition-all duration-200 cursor-pointer ${
-                        isSepia ? "border-amber-200 text-amber-600 hover:bg-amber-100" : "border-slate-200 text-slate-500 hover:border-slate-400 hover:text-slate-700"
+                        getHeaderButtonClass(false)
                       }`}
                     >
                       <FacebookLogo className="w-3.5 h-3.5 text-slate-400 hover:text-[#1877F2] transition-colors hover:scale-110 transition-transform" />
@@ -1736,10 +2206,27 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
                       onClick={handleInstagramShare}
                       title="Copy link and open Instagram"
                       className={`w-8 h-8 rounded-xl border flex items-center justify-center transition-all duration-200 cursor-pointer ${
-                        isSepia ? "border-amber-200 text-amber-600 hover:bg-amber-100" : "border-slate-200 text-slate-500 hover:border-slate-400 hover:text-slate-700"
+                        getHeaderButtonClass(false)
                       }`}
                     >
                       <InstagramLogo className="w-3.5 h-3.5 text-pink-500 hover:scale-110 transition-transform" />
+                    </button>
+
+                    {/* Full Page Toggle */}
+                    <button
+                      onClick={() => {
+                        setIsFullPage(v => !v);
+                      }}
+                      title={isFullPage ? "Exit Full Page Mode" : "Enter Full Page Mode"}
+                      className={`w-8 h-8 rounded-xl border flex items-center justify-center transition-all duration-200 cursor-pointer ${
+                        getHeaderButtonClass(isFullPage)
+                      }`}
+                    >
+                      {isFullPage ? (
+                        <Minimize2 className="w-3.5 h-3.5 hover:scale-110 transition-transform" />
+                      ) : (
+                        <Maximize2 className="w-3.5 h-3.5 hover:scale-110 transition-transform" />
+                      )}
                     </button>
 
                     {/* Toggle reading toolbar */}
@@ -1747,9 +2234,7 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
                       onClick={() => setShowReadingToolbar(v => !v)}
                       title="Reading options"
                       className={`w-8 h-8 rounded-xl border flex items-center justify-center transition-all duration-200 cursor-pointer ${
-                        showReadingToolbar
-                          ? isSepia ? "bg-amber-200 border-amber-300 text-amber-800" : "bg-mint/10 border-mint/40 text-mint"
-                          : isSepia ? "border-amber-200 text-amber-600 hover:bg-amber-100" : "border-slate-200 text-slate-500 hover:border-slate-400 hover:text-slate-700"
+                        getHeaderButtonClass(showReadingToolbar)
                       }`}
                     >
                       <AlignLeft className="w-3.5 h-3.5" />
@@ -1758,7 +2243,11 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
                     <button
                       onClick={() => setSelectedArticle(null)}
                       className={`w-8 h-8 rounded-xl border flex items-center justify-center transition-colors cursor-pointer ${
-                        isSepia ? "border-amber-200 text-amber-600 hover:bg-amber-100" : "border-slate-200 text-slate-500 hover:border-slate-800 hover:text-slate-800"
+                        readerTheme === "sepia" ? "border-amber-200 text-amber-600 hover:bg-amber-100" :
+                        readerTheme === "dark" ? "border-zinc-700 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200" :
+                        readerTheme === "cream" ? "border-orange-200 text-orange-600 hover:bg-orange-100" :
+                        readerTheme === "forest" ? "border-emerald-200 text-emerald-600 hover:bg-emerald-100" :
+                        "border-slate-200 text-slate-500 hover:border-slate-800 hover:text-slate-800"
                       }`}
                     >
                       <X className="w-3.5 h-3.5" />
@@ -1776,77 +2265,177 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
                       transition={{ duration: 0.25, ease: "easeInOut" }}
                       className="overflow-hidden"
                     >
-                      <div className={`px-5 pb-4 flex flex-wrap items-center gap-3 border-t ${
-                        isSepia ? "border-amber-200/50" : "border-slate-100"
+                      <div className={`px-5 py-3 flex flex-wrap items-center gap-4 border-t text-[10px] ${
+                        readerTheme === "sepia" ? "border-amber-200/50" :
+                        readerTheme === "dark" ? "border-zinc-800" :
+                        readerTheme === "cream" ? "border-orange-200/50" :
+                        readerTheme === "forest" ? "border-emerald-200/50" :
+                        "border-slate-100"
                       }`}>
                         <span className={`text-[9px] font-black uppercase tracking-widest ${
-                          isSepia ? "text-amber-600" : "text-slate-400"
+                          readerTheme === "sepia" ? "text-amber-600" :
+                          readerTheme === "dark" ? "text-zinc-500" :
+                          readerTheme === "cream" ? "text-orange-600" :
+                          readerTheme === "forest" ? "text-emerald-600" :
+                          "text-slate-400"
                         }`}>Reading Mode</span>
 
-                        {/* Sepia Toggle */}
-                        <button
-                          onClick={() => setIsSepia(v => !v)}
-                          title={isSepia ? "Switch to Default" : "Sepia Mode"}
-                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold border transition-all duration-200 cursor-pointer ${
-                            isSepia
-                              ? "bg-amber-400 border-amber-400 text-white shadow-sm"
-                              : "bg-white border-slate-200 text-slate-600 hover:border-amber-400 hover:text-amber-600"
-                          }`}
-                        >
-                          <Sun className="w-3 h-3" />
-                          Sepia
-                        </button>
+                        <div className="w-px h-4 bg-current/15 hidden md:block" />
 
-                        {/* Full Page Toggle */}
-                        <button
-                          onClick={() => setIsFullPage(v => !v)}
-                          title={isFullPage ? "Panel Mode" : "Full Page Mode"}
-                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold border transition-all duration-200 cursor-pointer ${
-                            isFullPage
-                              ? isSepia ? "bg-amber-500 border-amber-500 text-white" : "bg-mint border-mint text-white shadow-sm"
-                              : isSepia ? "bg-white border-amber-200 text-amber-700 hover:border-amber-400" : "bg-white border-slate-200 text-slate-600 hover:border-mint hover:text-mint"
-                          }`}
-                        >
-                          {isFullPage ? <Minimize2 className="w-3 h-3" /> : <Maximize2 className="w-3 h-3" />}
+                        {/* Themes Selector */}
+                        <div className="flex items-center gap-1">
+                          <button onClick={() => setReaderTheme("light")} className={`px-2.5 py-1 rounded-full text-[9px] font-bold border transition-all cursor-pointer ${getButtonClass(readerTheme === "light")}`}>Light</button>
+                          <button onClick={() => setReaderTheme("sepia")} className={`px-2.5 py-1 rounded-full text-[9px] font-bold border transition-all cursor-pointer ${getButtonClass(readerTheme === "sepia")}`}>Sepia</button>
+                          <button onClick={() => setReaderTheme("cream")} className={`px-2.5 py-1 rounded-full text-[9px] font-bold border transition-all cursor-pointer ${getButtonClass(readerTheme === "cream")}`}>Cream</button>
+                          <button onClick={() => setReaderTheme("forest")} className={`px-2.5 py-1 rounded-full text-[9px] font-bold border transition-all cursor-pointer ${getButtonClass(readerTheme === "forest")}`}>Forest</button>
+                          <button onClick={() => setReaderTheme("dark")} className={`px-2.5 py-1 rounded-full text-[9px] font-bold border transition-all cursor-pointer ${getButtonClass(readerTheme === "dark")}`}>Dark</button>
+                        </div>
+
+                        <div className="w-px h-4 bg-current/15 hidden md:block" />
+
+                        {/* Font Family Selector */}
+                        <div className={`flex items-center gap-0.5 rounded-full border overflow-hidden ${
+                          readerTheme === "sepia" ? "border-amber-200" :
+                          readerTheme === "dark" ? "border-zinc-700" :
+                          readerTheme === "cream" ? "border-orange-200" :
+                          readerTheme === "forest" ? "border-emerald-200" :
+                          "border-slate-200"
+                        }`}>
+                          <button onClick={() => setFontStyle("sans")} className={`px-2 py-1 text-[9px] font-bold transition-all cursor-pointer ${
+                            fontStyle === "sans" ? getActiveTypographyButtonClass() : getInactiveTypographyButtonClass()
+                          }`}>Sans</button>
+                          <button onClick={() => setFontStyle("serif")} className={`px-2 py-1 text-[9px] font-bold transition-all cursor-pointer ${
+                            fontStyle === "serif" ? getActiveTypographyButtonClass() : getInactiveTypographyButtonClass()
+                          }`}>Serif</button>
+                          <button onClick={() => setFontStyle("dyslexic")} className={`px-2 py-1 text-[9px] font-bold transition-all cursor-pointer ${
+                            fontStyle === "dyslexic" ? getActiveTypographyButtonClass() : getInactiveTypographyButtonClass()
+                          }`}>Dyslexic</button>
+                        </div>
+
+                        {/* Font Size Selector */}
+                        <div className={`flex items-center gap-0.5 rounded-full border overflow-hidden ${
+                          readerTheme === "sepia" ? "border-amber-200" :
+                          readerTheme === "dark" ? "border-zinc-700" :
+                          readerTheme === "cream" ? "border-orange-200" :
+                          readerTheme === "forest" ? "border-emerald-200" :
+                          "border-slate-200"
+                        }`}>
+                          <button onClick={() => setFontSize("sm")} title="Small text" className={`px-2 py-1 transition-all cursor-pointer ${fontSize === "sm" ? getActiveTypographyButtonClass() : getInactiveTypographyButtonClass()}`}><Type className="w-2.5 h-2.5" /></button>
+                          <button onClick={() => setFontSize("base")} title="Medium text" className={`px-2 py-1 text-[9px] font-black transition-all cursor-pointer ${fontSize === "base" ? getActiveTypographyButtonClass() : getInactiveTypographyButtonClass()}`}>A</button>
+                          <button onClick={() => setFontSize("lg")} title="Large text" className={`px-2.5 py-1 text-[10px] font-black transition-all cursor-pointer ${fontSize === "lg" ? getActiveTypographyButtonClass() : getInactiveTypographyButtonClass()}`}>A+</button>
+                          <button onClick={() => setFontSize("xl")} title="Extra Large text" className={`px-2.5 py-1 text-[10px] font-black transition-all cursor-pointer ${fontSize === "xl" ? getActiveTypographyButtonClass() : getInactiveTypographyButtonClass()}`}>A++</button>
+                          <button onClick={() => setFontSize("2xl")} title="Double Extra Large text" className={`px-2.5 py-1 text-[10px] font-black transition-all cursor-pointer ${fontSize === "2xl" ? getActiveTypographyButtonClass() : getInactiveTypographyButtonClass()}`}>A+++</button>
+                        </div>
+
+                        <div className="w-px h-4 bg-current/15 hidden md:block" />
+
+                        {/* Spacing Selector */}
+                        <div className={`flex items-center gap-0.5 rounded-full border overflow-hidden ${
+                          readerTheme === "sepia" ? "border-amber-200" :
+                          readerTheme === "dark" ? "border-zinc-700" :
+                          readerTheme === "cream" ? "border-orange-200" :
+                          readerTheme === "forest" ? "border-emerald-200" :
+                          "border-slate-200"
+                        }`}>
+                          <button onClick={() => setLineHeight("cozy")} title="Cozy" className={`px-2 py-1 text-[8px] font-bold border-r transition-all cursor-pointer ${lineHeight === "cozy" ? getActiveTypographyButtonClass() : getInactiveTypographyButtonClass()}`}>Cozy</button>
+                          <button onClick={() => setLineHeight("comfortable")} title="Comfortable" className={`px-2 py-1 text-[8px] font-bold border-r transition-all cursor-pointer ${lineHeight === "comfortable" ? getActiveTypographyButtonClass() : getInactiveTypographyButtonClass()}`}>Comfort</button>
+                          <button onClick={() => setLineHeight("relaxed")} title="Relaxed" className={`px-2 py-1 text-[8px] font-bold transition-all cursor-pointer ${lineHeight === "relaxed" ? getActiveTypographyButtonClass() : getInactiveTypographyButtonClass()}`}>Relaxed</button>
+                        </div>
+
+                        {/* Width Selector (only visible in full page) */}
+                        {isFullPage && (
+                          <div className={`flex items-center gap-0.5 rounded-full border overflow-hidden ${
+                            readerTheme === "sepia" ? "border-amber-200" :
+                            readerTheme === "dark" ? "border-zinc-700" :
+                            readerTheme === "cream" ? "border-orange-200" :
+                            readerTheme === "forest" ? "border-emerald-200" :
+                            "border-slate-200"
+                          }`}>
+                            <button onClick={() => setContentWidth("compact")} title="Narrow" className={`px-2 py-1 text-[8px] font-bold border-r transition-all cursor-pointer ${contentWidth === "compact" ? getActiveTypographyButtonClass() : getInactiveTypographyButtonClass()}`}>Narrow</button>
+                            <button onClick={() => setContentWidth("balanced")} title="Medium" className={`px-2 py-1 text-[8px] font-bold border-r transition-all cursor-pointer ${contentWidth === "balanced" ? getActiveTypographyButtonClass() : getInactiveTypographyButtonClass()}`}>Medium</button>
+                            <button onClick={() => setContentWidth("wide")} title="Wide" className={`px-2 py-1 text-[8px] font-bold transition-all cursor-pointer ${contentWidth === "wide" ? getActiveTypographyButtonClass() : getInactiveTypographyButtonClass()}`}>Wide</button>
+                          </div>
+                        )}
+
+                        <div className="w-px h-4 bg-current/15 hidden md:block" />
+
+                        {/* Reading Aids */}
+                        <div className="flex items-center gap-1.5">
+                          <button onClick={() => setShowReadingRuler(v => !v)} title="Toggle Focus Ruler (Reading Aid)" className={`p-1.5 rounded-full border transition-all cursor-pointer ${getButtonClass(showReadingRuler)}`}><AlignLeft className="w-3 h-3 rotate-90" /></button>
+                          
+                          <div className="flex items-center gap-0.5">
+                            <button onClick={() => setIsAutoScrolling(v => !v)} title="Toggle Auto Scroll (Hands-Free Reading)" className={`p-1.5 rounded-full border transition-all cursor-pointer ${getButtonClass(isAutoScrolling)}`}><Clock className="w-3 h-3" /></button>
+                            {isAutoScrolling && (
+                              <div className={`flex items-center gap-0.5 rounded-full border overflow-hidden ${
+                                readerTheme === "sepia" ? "border-amber-200" : "border-zinc-750"
+                              }`}>
+                                <button onClick={() => setAutoScrollSpeed(1)} className={`px-1.5 py-0.5 text-[7px] font-bold transition-all cursor-pointer ${autoScrollSpeed === 1 ? getActiveTypographyButtonClass() : getInactiveTypographyButtonClass()}`}>1x</button>
+                                <button onClick={() => setAutoScrollSpeed(2)} className={`px-1.5 py-0.5 text-[7px] font-bold transition-all cursor-pointer ${autoScrollSpeed === 2 ? getActiveTypographyButtonClass() : getInactiveTypographyButtonClass()}`}>2x</button>
+                                <button onClick={() => setAutoScrollSpeed(3)} className={`px-1.5 py-0.5 text-[7px] font-bold transition-all cursor-pointer ${autoScrollSpeed === 3 ? getActiveTypographyButtonClass() : getInactiveTypographyButtonClass()}`}>3x</button>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="flex items-center gap-1">
+                            <button onClick={isSpeaking ? pauseSpeech : startSpeech} title="Read Aloud" className={`p-1.5 rounded-full border transition-all cursor-pointer ${isSpeaking ? getButtonClass(true) : getButtonClass(false)}`}><Sparkles className="w-3 h-3" /></button>
+                            
+                            {/* Voice selector dropdown */}
+                            {voices.length > 0 && (
+                              <select
+                                value={selectedVoiceName}
+                                onChange={(e) => setSelectedVoiceName(e.target.value)}
+                                className={`px-2.5 py-1 rounded-full text-[8.5px] font-bold border outline-none cursor-pointer max-w-[145px] truncate ${
+                                  readerTheme === "sepia" ? "bg-amber-100 text-amber-800 border-amber-300" :
+                                  readerTheme === "dark" ? "bg-zinc-800 text-zinc-200 border-zinc-700" :
+                                  readerTheme === "cream" ? "bg-orange-100 text-orange-850 border-orange-200" :
+                                  readerTheme === "forest" ? "bg-emerald-100 text-emerald-850 border-emerald-200" :
+                                  "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                                }`}
+                              >
+                                {voices.map((v) => (
+                                  <option key={v.name} value={v.name}>
+                                    {getFriendlyVoiceLabel(v)}
+                                  </option>
+                                ))}
+                              </select>
+                            )}
+
+                            {isSpeaking && (
+                              <>
+                                <button onClick={stopSpeech} className={`px-2 py-1 rounded-full text-[8px] font-bold border transition-all cursor-pointer ${
+                                  readerTheme === "sepia" ? "bg-amber-150 text-amber-800 border-amber-300" :
+                                  readerTheme === "dark" ? "bg-zinc-800 text-zinc-100 border-zinc-700" :
+                                  "bg-slate-100 text-slate-800 border-slate-200"
+                                }`}>Stop</button>
+                                <div className={`flex items-center gap-0.5 rounded-full border overflow-hidden ${
+                                  readerTheme === "sepia" ? "border-amber-200" : "border-zinc-750"
+                                }`}>
+                                  <button onClick={() => setSpeechSpeed(0.75)} className={`px-1.5 py-0.5 text-[7px] font-bold transition-all cursor-pointer ${speechSpeed === 0.75 ? getActiveTypographyButtonClass() : getInactiveTypographyButtonClass()}`}>0.75x</button>
+                                  <button onClick={() => setSpeechSpeed(1)} className={`px-1.5 py-0.5 text-[7px] font-bold transition-all cursor-pointer ${speechSpeed === 1 ? getActiveTypographyButtonClass() : getInactiveTypographyButtonClass()}`}>1x</button>
+                                  <button onClick={() => setSpeechSpeed(1.5)} className={`px-1.5 py-0.5 text-[7px] font-bold transition-all cursor-pointer ${speechSpeed === 1.5 ? getActiveTypographyButtonClass() : getInactiveTypographyButtonClass()}`}>1.5x</button>
+                                  <button onClick={() => setSpeechSpeed(2)} className={`px-1.5 py-0.5 text-[7px] font-bold transition-all cursor-pointer ${speechSpeed === 2 ? getActiveTypographyButtonClass() : getInactiveTypographyButtonClass()}`}>2x</button>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="w-px h-4 bg-current/15 hidden md:block" />
+
+                        {/* Panel / Full Page Toggle */}
+                        <button onClick={() => setIsFullPage(v => !v)} className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[9px] font-bold border transition-all cursor-pointer ${getButtonClass(isFullPage)}`}>
+                          {isFullPage ? <Minimize2 className="w-2.5 h-2.5" /> : <Maximize2 className="w-2.5 h-2.5" />}
                           {isFullPage ? "Panel" : "Full Page"}
                         </button>
 
-                        {/* Font Size Controls */}
-                        <div className={`flex items-center gap-0.5 rounded-full border overflow-hidden ${
-                          isSepia ? "border-amber-200" : "border-slate-200"
-                        }`}>
-                          <button
-                            onClick={() => setFontSize("sm")}
-                            title="Small text"
-                            className={`px-2.5 py-1.5 text-[9px] font-black border-r transition-colors cursor-pointer ${
-                              fontSize === "sm"
-                                ? isSepia ? "bg-amber-400 text-white" : "bg-mint text-white"
-                                : isSepia ? "text-amber-600 hover:bg-amber-100 border-amber-200" : "text-slate-500 hover:bg-slate-50 border-slate-200"
-                            }`}
-                          ><Type className="w-3 h-3" /></button>
-                          <button
-                            onClick={() => setFontSize("base")}
-                            title="Medium text"
-                            className={`px-2.5 py-1.5 text-[10px] font-black border-r transition-colors cursor-pointer ${
-                              fontSize === "base"
-                                ? isSepia ? "bg-amber-400 text-white" : "bg-mint text-white"
-                                : isSepia ? "text-amber-600 hover:bg-amber-100 border-amber-200" : "text-slate-500 hover:bg-slate-50 border-slate-200"
-                            }`}
-                          >A</button>
-                          <button
-                            onClick={() => setFontSize("lg")}
-                            title="Large text"
-                            className={`px-2.5 py-1.5 text-[11px] font-black transition-colors cursor-pointer ${
-                              fontSize === "lg"
-                                ? isSepia ? "bg-amber-400 text-white" : "bg-mint text-white"
-                                : isSepia ? "text-amber-600 hover:bg-amber-100" : "text-slate-500 hover:bg-slate-50"
-                            }`}
-                          >A+</button>
-                        </div>
-
-                        <span className={`text-[9px] font-semibold ml-auto ${
-                          isSepia ? "text-amber-500" : "text-slate-400"
-                        }`}>{isFullPage ? "Full Page" : "Panel"} · {isSepia ? "Sepia" : "Default"} · {fontSize === "sm" ? "Small" : fontSize === "base" ? "Medium" : "Large"} Text</span>
+                        {/* Layout status text */}
+                        <span className={`text-[8px] font-semibold ml-auto hidden sm:block ${
+                          readerTheme === "sepia" ? "text-amber-500" :
+                          readerTheme === "dark" ? "text-zinc-500" :
+                          readerTheme === "cream" ? "text-orange-700" :
+                          readerTheme === "forest" ? "text-emerald-700" :
+                          "text-slate-400"
+                        }`}>{isFullPage ? "Full Page" : "Panel"} · {readerTheme.toUpperCase()} · {fontStyle.toUpperCase()} · {fontSize.toUpperCase()} Text</span>
                       </div>
                     </motion.div>
                   )}
@@ -1855,14 +2444,95 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
 
               {/* Drawer Scrollable Content */}
               <div 
+                ref={scrollContainerRef}
+                onWheel={handleScrollContainerInteraction}
+                onTouchStart={handleScrollContainerInteraction}
+                onMouseDown={handleScrollContainerInteraction}
+                onMouseMove={handleContentMouseMove}
                 data-lenis-prevent
-                className={`flex-1 overflow-y-auto select-text transition-colors duration-500 ${
-                  isSepia ? "bg-[#f5eed6]/60" : ""
+                className={`flex-1 overflow-y-auto select-text transition-all duration-500 ${
+                  readerTheme === "sepia" ? "bg-[#f5eed6]/60" :
+                  readerTheme === "dark" ? "bg-zinc-900/40" :
+                  readerTheme === "cream" ? "bg-[#FAF6EE]/60" :
+                  readerTheme === "forest" ? "bg-[#EBF2EE]/60" :
+                  ""
                 }`}
               >
                 <div className={`${
-                  isFullPage ? "max-w-3xl mx-auto px-8 py-10" : "p-6 md:p-8"
-                } space-y-6`}>
+                  isFullPage 
+                    ? contentWidth === "compact" ? "max-w-xl mx-auto px-8 py-10" : contentWidth === "wide" ? "max-w-7xl mx-auto px-8 py-10" : "max-w-4xl mx-auto px-8 py-10"
+                    : "p-6 md:p-8"
+                } space-y-6 relative`}>
+                  
+                  {/* Focus Ruler */}
+                  {showReadingRuler && (
+                    <div 
+                      className="absolute left-0 right-0 h-10 pointer-events-none transition-all duration-75 mix-blend-difference z-40"
+                      style={{ 
+                        top: `${rulerY - 20}px`,
+                        background: readerTheme === "sepia" 
+                          ? "linear-gradient(to bottom, transparent, rgba(217, 119, 6, 0.15) 45%, rgba(217, 119, 6, 0.4) 50%, rgba(217, 119, 6, 0.15) 55%, transparent)"
+                          : readerTheme === "dark"
+                          ? "linear-gradient(to bottom, transparent, rgba(45, 212, 191, 0.2) 45%, rgba(45, 212, 191, 0.5) 50%, rgba(45, 212, 191, 0.2) 55%, transparent)"
+                          : readerTheme === "forest"
+                          ? "linear-gradient(to bottom, transparent, rgba(16, 185, 129, 0.15) 45%, rgba(16, 185, 129, 0.4) 50%, rgba(16, 185, 129, 0.15) 55%, transparent)"
+                          : "linear-gradient(to bottom, transparent, rgba(20, 184, 166, 0.15) 45%, rgba(20, 184, 166, 0.4) 50%, rgba(20, 184, 166, 0.15) 55%, transparent)",
+                        boxShadow: readerTheme === "dark" 
+                          ? "0 0 15px rgba(45, 212, 191, 0.15)" 
+                          : "0 0 15px rgba(20, 184, 166, 0.1)"
+                      }}
+                    />
+                  )}
+
+                  {/* Glossary Term Explainer Tooltip */}
+                  {activeTerm && (
+                    <div 
+                      className={`absolute z-50 -translate-x-1/2 -translate-y-full max-w-xs p-4 rounded-2xl shadow-2xl border text-xs font-semibold leading-relaxed transition-all duration-300 ${
+                        readerTheme === "dark"
+                          ? "bg-zinc-900 border-zinc-800 text-zinc-250 shadow-black/80"
+                          : readerTheme === "sepia"
+                          ? "bg-amber-100 border-amber-200 text-amber-900"
+                          : readerTheme === "forest"
+                          ? "bg-emerald-50 border-emerald-100 text-emerald-950"
+                          : readerTheme === "cream"
+                          ? "bg-orange-50 border-orange-100 text-orange-950"
+                          : "bg-white border-slate-100 text-slate-700"
+                      }`}
+                      style={{ 
+                        left: `${activeTerm.x}px`, 
+                        top: `${activeTerm.y}px`
+                      }}
+                    >
+                      <div className="flex items-center justify-between gap-4 mb-1.5 border-b pb-1 border-current/10">
+                        <span className="font-bold text-mint uppercase tracking-wider">{activeTerm.name}</span>
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActiveTerm(null);
+                          }}
+                          className="hover:opacity-70 cursor-pointer"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                      <p>{activeTerm.definition}</p>
+                      {/* Tooltip arrow */}
+                      <div 
+                        className={`absolute left-1/2 -translate-x-1/2 bottom-0 translate-y-full w-0 h-0 border-x-[6px] border-x-transparent border-t-[6px] ${
+                          readerTheme === "dark"
+                            ? "border-t-zinc-900"
+                            : readerTheme === "sepia"
+                            ? "border-t-amber-100"
+                            : readerTheme === "forest"
+                            ? "border-t-emerald-50"
+                            : readerTheme === "cream"
+                            ? "border-t-orange-50"
+                            : "border-t-white"
+                        }`}
+                      />
+                    </div>
+                  )}
+
                   {/* Large Banner Image */}
                   <div className="w-full aspect-video rounded-2xl overflow-hidden relative border border-slate-900/5 bg-slate-100 mb-6">
                     <img 
@@ -1874,65 +2544,127 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
                   </div>
 
                   <div className={`flex items-center gap-3 text-[10px] font-bold uppercase tracking-wider ${
-                    isSepia ? "text-amber-700" : "text-slate-700"
+                    readerTheme === "sepia" ? "text-amber-700" :
+                    readerTheme === "dark" ? "text-zinc-400" :
+                    readerTheme === "cream" ? "text-orange-700" :
+                    readerTheme === "forest" ? "text-emerald-700" :
+                    "text-slate-700"
                   }`}>
-                    <span className="flex items-center gap-1"><Calendar className={`w-3.5 h-3.5 ${ isSepia ? "text-amber-500" : "text-slate-500"}`} /> {selectedArticle.date}</span>
-                    <span className={`w-1 h-1 rounded-full ${ isSepia ? "bg-amber-400" : "bg-slate-400" }`} />
-                    <span className="flex items-center gap-1"><Clock className={`w-3.5 h-3.5 ${ isSepia ? "text-amber-500" : "text-slate-500"}`} /> {selectedArticle.readTime}</span>
+                    <span className="flex items-center gap-1"><Calendar className={`w-3.5 h-3.5 ${ readerTheme === "sepia" ? "text-amber-500" : readerTheme === "dark" ? "text-zinc-500" : readerTheme === "cream" ? "text-orange-500" : readerTheme === "forest" ? "text-emerald-500" : "text-slate-500"}`} /> {selectedArticle.date}</span>
+                    <span className={`w-1 h-1 rounded-full ${ readerTheme === "sepia" ? "bg-amber-400" : readerTheme === "dark" ? "bg-zinc-600" : readerTheme === "cream" ? "bg-orange-400" : readerTheme === "forest" ? "bg-emerald-400" : "bg-slate-400" }`} />
+                    <span className="flex items-center gap-1"><Clock className={`w-3.5 h-3.5 ${ readerTheme === "sepia" ? "text-amber-500" : readerTheme === "dark" ? "text-zinc-500" : readerTheme === "cream" ? "text-orange-500" : readerTheme === "forest" ? "text-emerald-500" : "text-slate-500"}`} /> {selectedArticle.readTime}</span>
                   </div>
 
-                  <h1 className={`font-serif font-semibold tracking-tight leading-tight ${
-                    isSepia ? "text-amber-950" : "text-[#1A2421]"
+                  <h1 className={`font-semibold tracking-tight leading-tight ${
+                    fontStyle === "serif" ? "font-serif" : fontStyle === "dyslexic" ? "font-dyslexic" : "font-sans"
                   } ${
-                    fontSize === "lg" ? "text-3xl md:text-4xl" : fontSize === "base" ? "text-2xl md:text-3xl" : "text-2xl md:text-3xl"
+                    readerTheme === "sepia" ? "text-amber-950" :
+                    readerTheme === "dark" ? "text-zinc-100" :
+                    readerTheme === "cream" ? "text-[#2D251E]" :
+                    readerTheme === "forest" ? "text-[#1E3A2F]" :
+                    "text-[#1A2421]"
+                  } ${
+                    fontSize === "2xl" ? "text-5xl md:text-6xl" :
+                    fontSize === "xl" ? "text-4xl md:text-5xl" :
+                    fontSize === "lg" ? "text-3xl md:text-4xl" :
+                    fontSize === "base" ? "text-2xl md:text-3xl" :
+                    "text-xl md:text-2xl"
                   }`}>
                     {selectedArticle.title}
                   </h1>
 
                   <div className={`flex items-center gap-2 text-xs font-bold px-4 py-2.5 rounded-2xl w-fit ${
-                    isSepia ? "bg-amber-200/50 text-amber-900" : "bg-slate-900/5 text-slate-900"
+                    readerTheme === "sepia" ? "bg-amber-200/50 text-amber-900" :
+                    readerTheme === "dark" ? "bg-zinc-800/50 text-zinc-300" :
+                    readerTheme === "cream" ? "bg-orange-200/50 text-orange-900" :
+                    readerTheme === "forest" ? "bg-emerald-250/50 text-emerald-950" :
+                    "bg-slate-900/5 text-slate-900"
                   }`}>
-                    <User className={`w-4 h-4 ${ isSepia ? "text-amber-600" : "text-slate-500" }`} />
+                    <User className={`w-4 h-4 ${ readerTheme === "sepia" ? "text-amber-600" : readerTheme === "dark" ? "text-zinc-400" : readerTheme === "cream" ? "text-orange-600" : readerTheme === "forest" ? "text-emerald-600" : "text-slate-500" }`} />
                     <span>Written by {selectedArticle.author} · MD (Hom.)</span>
                   </div>
 
-                  <hr className={isSepia ? "border-amber-200" : "border-slate-100"} />
+                  <hr className={
+                    readerTheme === "sepia" ? "border-amber-200" :
+                    readerTheme === "dark" ? "border-zinc-800" :
+                    readerTheme === "cream" ? "border-orange-200" :
+                    readerTheme === "forest" ? "border-emerald-200" :
+                    "border-slate-100"
+                  } />
 
                   {/* Article body content */}
-                  <div className={`space-y-6 font-semibold leading-relaxed wp-content ${
-                    isSepia ? "text-amber-900" : "text-slate-700"
-                  } ${
-                    fontSize === "lg" ? "text-base" : fontSize === "base" ? "text-sm" : "text-sm"
-                  }`}>
+                  <div 
+                    onClick={handleContentClick}
+                    className={`space-y-6 leading-relaxed wp-content relative ${
+                      fontStyle === "serif" ? "font-serif" : fontStyle === "dyslexic" ? "font-dyslexic" : "font-sans"
+                    } ${
+                      lineHeight === "cozy" ? "leading-normal" : lineHeight === "relaxed" ? "leading-loose" : "leading-relaxed"
+                    } ${
+                      readerTheme === "sepia" ? "text-amber-950" :
+                      readerTheme === "dark" ? "text-zinc-300" :
+                      readerTheme === "cream" ? "text-[#2D251E]" :
+                      readerTheme === "forest" ? "text-[#1E3A2F]" :
+                      "text-slate-700"
+                    } ${
+                      fontSize === "2xl" ? "text-2xl md:text-3xl" :
+                      fontSize === "xl" ? "text-xl md:text-2xl" :
+                      fontSize === "lg" ? "text-lg md:text-xl" :
+                      fontSize === "base" ? "text-base md:text-lg" :
+                      "text-sm md:text-base"
+                    } ${
+                      isFullPage 
+                        ? contentWidth === "compact" ? "max-w-xl mx-auto" : contentWidth === "wide" ? "max-w-7xl mx-auto" : "max-w-4xl mx-auto"
+                        : ""
+                    }`}
+                  >
                     {typeof selectedArticle.content === "string" ? (
-                      <div dangerouslySetInnerHTML={{ __html: selectedArticle.content }} />
+                      <div dangerouslySetInnerHTML={{ 
+                        __html: isMounted ? injectGlossarySpans(selectedArticle.content) : selectedArticle.content 
+                      }} />
                     ) : (
                       selectedArticle.content.map((paragraph, idx) => (
                         <p key={idx}>{paragraph}</p>
                       ))
                     )}
                   </div>
-                </div>
-              </div>
 
-              {/* Drawer Footer CTA */}
-              <div className={`p-5 md:p-6 backdrop-blur-sm border-t flex flex-col items-center ${
-                isSepia ? "bg-amber-50/80 border-amber-200/50" : "bg-white/70 border-slate-900/5"
-              }`}>
-                <div className="w-full max-w-md mx-auto text-center space-y-3">
-                  <h4 className={`text-sm font-bold ${ isSepia ? "text-amber-950" : "text-[#1A2421]" }`}>Interested in constitutional treatment?</h4>
-                  <p className={`text-xs font-semibold ${ isSepia ? "text-amber-700" : "text-slate-700" }`}>
-                    Schedule a clinical or telehealth video call setup directly with Dr. Jethwani.
-                  </p>
-                  <Magnetic>
-                    <button
-                      onClick={handleBookConsultation}
-                      className="w-full py-3.5 bg-mint hover:bg-mint-dark text-white rounded-full font-bold uppercase tracking-wider text-xs shadow-[0_8px_30px_rgba(20,184,166,0.2)] transition-all duration-300 flex items-center justify-center gap-2 group cursor-pointer"
-                    >
-                      Book Consultation with Dr. Jethwani
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </button>
-                  </Magnetic>
+                  {/* Consultation Card - inline in flow */}
+                  <div className={`mt-10 p-5 md:p-6 rounded-2xl border flex flex-col items-center transition-all duration-300 ${
+                    readerTheme === "sepia" ? "bg-amber-50/60 border-amber-200/50" :
+                    readerTheme === "dark" ? "bg-zinc-950/40 border-zinc-800 text-zinc-150" :
+                    readerTheme === "cream" ? "bg-orange-50/60 border-orange-200/50" :
+                    readerTheme === "forest" ? "bg-emerald-50/60 border-emerald-200/50" :
+                    "bg-white/60 border-slate-900/5"
+                  }`}>
+                    <div className="w-full max-w-md mx-auto text-center space-y-3">
+                      <h4 className={`text-sm font-bold ${
+                        readerTheme === "sepia" ? "text-amber-950" :
+                        readerTheme === "dark" ? "text-zinc-200" :
+                        readerTheme === "cream" ? "text-orange-950" :
+                        readerTheme === "forest" ? "text-emerald-950" :
+                        "text-[#1A2421]"
+                      }`}>Interested in constitutional treatment?</h4>
+                      <p className={`text-xs font-semibold ${
+                        readerTheme === "sepia" ? "text-amber-700" :
+                        readerTheme === "dark" ? "text-zinc-400" :
+                        readerTheme === "cream" ? "text-orange-850" :
+                        readerTheme === "forest" ? "text-emerald-850" :
+                        "text-slate-700"
+                      }`}>
+                        Schedule a clinical or telehealth video call setup directly with Dr. Jethwani.
+                      </p>
+                      <Magnetic>
+                        <button
+                          onClick={handleBookConsultation}
+                          className="w-full py-3 bg-mint hover:bg-mint-dark text-white rounded-full font-bold uppercase tracking-wider text-[10px] shadow-[0_8px_30px_rgba(20,184,166,0.2)] transition-all duration-300 flex items-center justify-center gap-2 group cursor-pointer"
+                        >
+                          Book Consultation with Dr. Jethwani
+                          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </button>
+                      </Magnetic>
+                    </div>
+                  </div>
+
                 </div>
               </div>
 
