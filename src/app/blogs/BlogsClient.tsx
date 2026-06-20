@@ -1230,23 +1230,39 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
   const getFriendlyVoiceLabel = useCallback((v: any) => {
     const name = v.name;
     const lang = v.lang.toLowerCase().replace("_", "-");
-    const isIndian = lang.startsWith("en-in") || name.toLowerCase().includes("india") || name.toLowerCase().includes("indian");
+    const isIndian = lang.endsWith("-in") || name.toLowerCase().includes("india") || name.toLowerCase().includes("indian");
     
     if (isIndian) {
       let gender = "";
       if (name.includes("Rishi") || name.includes("Ravi") || name.includes("Prabhat") || name.includes("Karan") || name.includes("Hemant") || name.includes("Madhur") || name.includes("Rohan")) {
         gender = "Male";
-      } else if (name.includes("Isha") || name.includes("Heera") || name.includes("Neerja") || name.includes("Kalpana") || name.includes("Ananya") || name.includes("Kavya") || name.includes("Aarohi") || name.includes("Swara")) {
+      } else if (name.includes("Isha") || name.includes("Heera") || name.includes("Neerja") || name.includes("Lekha") || name.includes("Kalpana") || name.includes("Ananya") || name.includes("Kavya") || name.includes("Aarohi") || name.includes("Swara")) {
         gender = "Female";
       } else if (name.toLowerCase().includes("male")) {
         gender = "Male";
       } else if (name.toLowerCase().includes("female")) {
         gender = "Female";
       }
+
+      // Check if it is a Microsoft voice
+      if (name.includes("Microsoft")) {
+        const cleanName = name
+          .replace("Online (Natural)", "")
+          .replace("Desktop", "")
+          .replace("Natural", "")
+          .replace("Voice", "")
+          .trim();
+        return `🇮🇳 India - ${cleanName}${gender ? ` (${gender})` : ""}`;
+      }
       
+      // Check if it is a Google voice
+      if (name.includes("Google")) {
+        let cleanName = name.replace("Voice ", "Voice").trim();
+        return `🇮🇳 India - ${cleanName}${gender ? ` (${gender})` : ""}`;
+      }
+
+      // Apple and other default voices
       const cleanName = name
-        .replace("Microsoft", "")
-        .replace("Google", "")
         .replace("Apple", "")
         .replace("Desktop", "")
         .replace("Natural", "")
@@ -1271,8 +1287,11 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
     const updateVoices = () => {
       const allVoices = window.speechSynthesis.getVoices();
       
-      // Filter for English voices
-      const englishVoices = allVoices.filter(v => v.lang.toLowerCase().replace("_", "-").startsWith("en-"));
+      // Filter for English and Hindi/Indic voices
+      const englishOrIndicVoices = allVoices.filter(v => {
+        const langLower = v.lang.toLowerCase().replace("_", "-");
+        return langLower.startsWith("en-") || langLower.endsWith("-in") || v.name.toLowerCase().includes("india");
+      });
       
       // Filter out macOS novelty / singing / sound effect / robotic voices
       const noveltyKeywords = [
@@ -1282,31 +1301,42 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
         "albert", "fred", "kathy", "boing"
       ];
       
-      // Filter strictly for Indian English voices
-      let cleanEnglishVoices = englishVoices.filter(v => {
+      const cleanVoices = englishOrIndicVoices.filter(v => {
         const nameLower = v.name.toLowerCase();
-        const langLower = v.lang.toLowerCase().replace("_", "-");
-        const isIndian = langLower === "en-in" || nameLower.includes("india") || nameLower.includes("indian");
-        return isIndian && !noveltyKeywords.some(keyword => nameLower.includes(keyword));
+        return !noveltyKeywords.some(keyword => nameLower.includes(keyword));
       });
-
-      // Fallback: If no Indian voices are found, keep standard English voices to avoid an empty select menu
-      if (cleanEnglishVoices.length === 0) {
-        cleanEnglishVoices = englishVoices.filter(v => {
-          const nameLower = v.name.toLowerCase();
-          return !noveltyKeywords.some(keyword => nameLower.includes(keyword));
-        });
-      }
       
-      // Sort alphabetically
-      const sortedVoices = [...cleanEnglishVoices].sort((a, b) => {
+      // Sort: Indian voices first (en-in, hi-in, mr-in, etc. or containing "india"), then others (US, GB, etc.)
+      const sortedVoices = [...cleanVoices].sort((a, b) => {
+        const aLang = a.lang.toLowerCase().replace("_", "-");
+        const bLang = b.lang.toLowerCase().replace("_", "-");
+        const aName = a.name.toLowerCase();
+        const bName = b.name.toLowerCase();
+        
+        const aIsIndian = aLang.endsWith("-in") || aName.includes("india") || aName.includes("indian");
+        const bIsIndian = bLang.endsWith("-in") || bName.includes("india") || bName.includes("indian");
+        
+        if (aIsIndian && !bIsIndian) return -1;
+        if (!aIsIndian && bIsIndian) return 1;
+        
+        // If both are Indian, prioritize English-India, then Hindi-India, then others
+        if (aIsIndian && bIsIndian) {
+          const aIsEn = aLang.startsWith("en-");
+          const bIsEn = bLang.startsWith("en-");
+          if (aIsEn && !bIsEn) return -1;
+          if (!aIsEn && bIsEn) return 1;
+        }
+        
         return a.name.localeCompare(b.name);
       });
 
       setVoices(sortedVoices);
       
-      // Default selection: select the first Indian voice, or first English voice
-      const firstIndian = sortedVoices.find(v => v.lang.toLowerCase().replace("_", "-") === "en-in" || v.name.toLowerCase().includes("india"));
+      // Default selection: select the first Indian voice, or first available voice
+      const firstIndian = sortedVoices.find(v => {
+        const langLower = v.lang.toLowerCase().replace("_", "-");
+        return langLower.endsWith("-in") || v.name.toLowerCase().includes("india") || v.name.toLowerCase().includes("indian");
+      });
       const fallback = sortedVoices[0] || allVoices[0];
       const chosenVoice = firstIndian || fallback;
       if (chosenVoice) {
