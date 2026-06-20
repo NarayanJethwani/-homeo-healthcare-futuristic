@@ -1234,9 +1234,9 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
     
     if (isIndian) {
       let gender = "";
-      if (name.includes("Rishi") || name.includes("Ravi") || name.includes("Prabhat") || name.includes("Karan")) {
+      if (name.includes("Rishi") || name.includes("Ravi") || name.includes("Prabhat") || name.includes("Karan") || name.includes("Hemant") || name.includes("Madhur") || name.includes("Rohan")) {
         gender = "Male";
-      } else if (name.includes("Isha") || name.includes("Heera") || name.includes("Neerja")) {
+      } else if (name.includes("Isha") || name.includes("Heera") || name.includes("Neerja") || name.includes("Kalpana") || name.includes("Ananya") || name.includes("Kavya") || name.includes("Aarohi") || name.includes("Swara")) {
         gender = "Female";
       } else if (name.toLowerCase().includes("male")) {
         gender = "Male";
