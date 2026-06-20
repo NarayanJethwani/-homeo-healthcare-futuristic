@@ -1287,10 +1287,11 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
     const updateVoices = () => {
       const allVoices = window.speechSynthesis.getVoices();
       
-      // Filter for English and Hindi/Indic voices
-      const englishOrIndicVoices = allVoices.filter(v => {
+      // Filter strictly for Indian voices (ends with "-in" or contains "india" in name/lang)
+      let cleanVoices = allVoices.filter(v => {
         const langLower = v.lang.toLowerCase().replace("_", "-");
-        return langLower.startsWith("en-") || langLower.endsWith("-in") || v.name.toLowerCase().includes("india");
+        const nameLower = v.name.toLowerCase();
+        return langLower.endsWith("-in") || nameLower.includes("india") || nameLower.includes("indian");
       });
       
       // Filter out macOS novelty / singing / sound effect / robotic voices
@@ -1301,32 +1302,22 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
         "albert", "fred", "kathy", "boing"
       ];
       
-      const cleanVoices = englishOrIndicVoices.filter(v => {
+      cleanVoices = cleanVoices.filter(v => {
         const nameLower = v.name.toLowerCase();
         return !noveltyKeywords.some(keyword => nameLower.includes(keyword));
       });
+
+      // Fallback: If no Indian voices are found at all, keep all standard English voices (filtered for novelty)
+      if (cleanVoices.length === 0) {
+        cleanVoices = allVoices.filter(v => {
+          const langLower = v.lang.toLowerCase().replace("_", "-");
+          const nameLower = v.name.toLowerCase();
+          return langLower.startsWith("en-") && !noveltyKeywords.some(keyword => nameLower.includes(keyword));
+        });
+      }
       
-      // Sort: Indian voices first (en-in, hi-in, mr-in, etc. or containing "india"), then others (US, GB, etc.)
+      // Sort alphabetically
       const sortedVoices = [...cleanVoices].sort((a, b) => {
-        const aLang = a.lang.toLowerCase().replace("_", "-");
-        const bLang = b.lang.toLowerCase().replace("_", "-");
-        const aName = a.name.toLowerCase();
-        const bName = b.name.toLowerCase();
-        
-        const aIsIndian = aLang.endsWith("-in") || aName.includes("india") || aName.includes("indian");
-        const bIsIndian = bLang.endsWith("-in") || bName.includes("india") || bName.includes("indian");
-        
-        if (aIsIndian && !bIsIndian) return -1;
-        if (!aIsIndian && bIsIndian) return 1;
-        
-        // If both are Indian, prioritize English-India, then Hindi-India, then others
-        if (aIsIndian && bIsIndian) {
-          const aIsEn = aLang.startsWith("en-");
-          const bIsEn = bLang.startsWith("en-");
-          if (aIsEn && !bIsEn) return -1;
-          if (!aIsEn && bIsEn) return 1;
-        }
-        
         return a.name.localeCompare(b.name);
       });
 
