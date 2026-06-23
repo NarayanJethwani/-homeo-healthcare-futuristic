@@ -748,6 +748,7 @@ const TABS_DEFINITION = [
   { id: "treatment-planner", label: "Treatment Planner", icon: IndianRupee, gradient: "from-emerald-600 to-teal-500", shadow: "shadow-[0_4px_12px_rgba(16,185,129,0.3)]", inactiveText: "text-slate-650 hover:text-emerald-600 hover:bg-emerald-50 bg-transparent" },
   { id: "nexus-atlas", label: "Nexus Atlas", icon: Network, gradient: "from-violet-600 to-fuchsia-600", shadow: "shadow-[0_4px_12px_rgba(139,92,246,0.3)]", inactiveText: "text-slate-650 hover:text-violet-600 hover:bg-violet-50 bg-transparent" },
   { id: "cie", label: "Clinical OS", icon: Activity, gradient: "from-emerald-500 to-teal-500", shadow: "shadow-[0_4px_12px_rgba(16,185,129,0.3)]", inactiveText: "text-slate-650 hover:text-emerald-600 hover:bg-emerald-50 bg-transparent" },
+  { id: "medical-academy", label: "Medical Academy", icon: Award, gradient: "from-blue-600 to-indigo-600", shadow: "shadow-[0_4px_12px_rgba(37,99,235,0.3)]", inactiveText: "text-slate-650 hover:text-blue-600 hover:bg-blue-50 bg-transparent" },
   { id: "learning-hub", label: "Learning Hub", icon: Award, gradient: "from-fuchsia-500 to-purple-600", shadow: "shadow-[0_4px_12px_rgba(217,70,239,0.3)]", inactiveText: "text-slate-650 hover:text-fuchsia-600 hover:bg-fuchsia-50 bg-transparent" },
   { id: "communication", label: "Communications", icon: Send, gradient: "from-cyan-500 to-teal-500", shadow: "shadow-[0_4px_12px_rgba(6,182,212,0.3)]", inactiveText: "text-slate-650 hover:text-cyan-600 hover:bg-cyan-50 bg-transparent" },
   { id: "ai-router", label: "AI Router Settings", icon: Cpu, gradient: "from-slate-700 to-slate-800", shadow: "shadow-[0_4px_12px_rgba(71,85,105,0.3)]", inactiveText: "text-slate-650 hover:text-slate-800 hover:bg-slate-100 bg-transparent" },
@@ -757,7 +758,7 @@ const TABS_DEFINITION = [
 export default function AdminDashboard() {
   const router = useRouter();
   const [session, setSession] = useState<UserSession | null>(null);
-  const [activeTab, setActiveTab] = useState<"dashboard" | "intake" | "patients" | "diagnostics" | "analyzer" | "diet-lifestyle" | "treatment-planner" | "nexus-atlas" | "learning-hub" | "communication" | "ai-router" | "health-intelligence" | "cie" | "team">("dashboard");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "intake" | "patients" | "diagnostics" | "analyzer" | "diet-lifestyle" | "treatment-planner" | "nexus-atlas" | "learning-hub" | "communication" | "ai-router" | "health-intelligence" | "cie" | "team" | "medical-academy">("dashboard");
   const [nexusSubTab, setNexusSubTab] = useState<"repertory" | "mind-map" | "materia-medica">("repertory");
   const [cieSubTab, setCieSubTab] = useState<"cockpit" | "intake" | "miasms" | "reports">("cockpit");
 
@@ -13065,6 +13066,18 @@ ${err.message || err}`);
               theme={theme} 
               activeTabOverride={cieSubTab}
             />
+          )}
+
+          {/* TAB: Medical Academy (3D Anatomy & Clinical Twin Lab) */}
+          {activeTab === "medical-academy" && (
+            <div className="w-full h-[80vh] border border-slate-200/50 dark:border-slate-800/50 rounded-[32px] overflow-hidden bg-slate-950 shadow-2xl relative">
+              <iframe 
+                src="https://clinical-intelligence-engine.vercel.app?view=medical-academy&hide_sidebar=true" 
+                className="w-full h-full border-none"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
           )}
 
           {/* TAB 1: Patients List */}
