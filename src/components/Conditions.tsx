@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import ConditionCard from "./ConditionCard";
 import Magnetic from "./Magnetic";
+import Portal from "./Portal";
 
 interface ClinicalDetail {
   neurologyPath: string;
@@ -340,25 +341,27 @@ export default function Conditions() {
       </div>
 
       {/* Slide-over Detail Drawer */}
-      <AnimatePresence>
-        {selectedCondition && activeProfile && (
-          <>
-            {/* Backdrop Blur Overlay */}
+      <Portal>
+        <AnimatePresence>
+          {selectedCondition && activeProfile && (
             <motion.div
+              key="backdrop"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedCondition(null)}
-              className="fixed inset-0 bg-slate-900/10 backdrop-blur-md z-50 pointer-events-auto"
+              className="fixed inset-0 bg-slate-900/10 backdrop-blur-md z-40 pointer-events-auto"
             />
+          )}
 
-            {/* Sliding Drawer Container */}
+          {selectedCondition && activeProfile && (
             <motion.div
+              key="drawer"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 260 }}
-              className="fixed right-0 top-0 bottom-0 w-full sm:w-[540px] bg-[#FAF9F6]/95 dark:bg-slate-900/95 border-l border-white/50 dark:border-slate-800 z-[51] shadow-2xl flex flex-col pointer-events-auto overflow-hidden"
+              className="fixed right-0 top-0 bottom-0 w-full sm:w-[540px] bg-[#FAF9F6]/95 dark:bg-slate-900/95 border-l border-white/50 dark:border-slate-800 z-50 shadow-2xl flex flex-col pointer-events-auto overflow-hidden"
             >
               {/* Drawer Header */}
               <div className="p-6 md:p-8 border-b border-slate-900/5 dark:border-slate-800/40 flex items-center justify-between bg-white/70 backdrop-blur-sm">
@@ -521,9 +524,9 @@ export default function Conditions() {
               </div>
 
             </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>
+      </Portal>
     </section>
   );
 }

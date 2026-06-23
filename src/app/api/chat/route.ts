@@ -256,8 +256,8 @@ Note: Tailor the plan name to the symptoms, e.g., [Headache Recovery Plan] or [F
 ]
 
 ### Continue on WhatsApp
-📱 I can check in with you later today to see how you are doing. Select a check-in preference:
-[Remind Me in 4 Hours] [Track This Symptom] [Send Recovery Plan]
+📱 I can check in with you later today, or you can connect with Dr. Jethwani for a clinical review. Select a preference:
+[Remind Me in 4 Hours] [Track This Symptom] [Ask Dr. Jethwani]
 
 ⸻
 

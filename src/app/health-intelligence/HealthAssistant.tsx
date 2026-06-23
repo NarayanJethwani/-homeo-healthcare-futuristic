@@ -62,8 +62,8 @@ Dr. Jethwani advocates addressing root miasmatic patterns rather than treating s
 3. How is your overall vitality score trending?
 
 ### Continue on WhatsApp
-📱 Let's schedule a miasmatic review:
-[Remind Me in 4 Hours] [Track Miasms] [Send Miasm Guide]`;
+📱 Let's schedule a miasmatic review, or connect with Dr. Jethwani:
+[Remind Me in 4 Hours] [Track Miasms] [Ask Dr. Jethwani]`;
   }
 
   // 2. eGFR / Kidney / Creatinine
@@ -105,8 +105,8 @@ Dr. Jethwani emphasizes that renal load is often aggravated by high blood pressu
 3. What is your daily water consumption?
 
 ### Continue on WhatsApp
-📱 Let's track your kidney biomarkers:
-[Remind Me in 4 Hours] [Track Water Intake] [Send Renal Guide]`;
+📱 Let's track your kidney biomarkers, or connect with Dr. Jethwani:
+[Remind Me in 4 Hours] [Track Water Intake] [Ask Dr. Jethwani]`;
   }
 
   // 3. PCOS
@@ -149,8 +149,8 @@ Dr. Jethwani’s clinical approach emphasizes that PCOS is a systemic metabolic 
 3. Do you experience symptoms like hair thinning, acne, or fatigue?
 
 ### Continue on WhatsApp
-📱 Let's map your metabolic trends together:
-[Remind Me in 4 Hours] [Track PCOS Symptoms] [Send PCOS Guide]`;
+📱 Let's map your metabolic trends together, or connect with Dr. Jethwani:
+[Remind Me in 4 Hours] [Track PCOS Symptoms] [Ask Dr. Jethwani]`;
   }
 
   // 4. HbA1c / Insulin / Diabetes
@@ -193,8 +193,8 @@ Dr. Jethwani emphasizes that HbA1c is a lagging indicator. Focus on restoring ea
 3. Do you experience afternoon energy crashes or sugar cravings?
 
 ### Continue on WhatsApp
-📱 We can monitor your daily energy logs:
-[Remind Me in 4 Hours] [Track Sugar Cravings] [Send Glucose Protocol]`;
+📱 We can monitor your daily energy logs, or connect with Dr. Jethwani:
+[Remind Me in 4 Hours] [Track Sugar Cravings] [Ask Dr. Jethwani]`;
   }
 
   // 5. Ferritin / Iron
@@ -236,8 +236,8 @@ Dr. Jethwani points out that iron deficiency is often an absorption issue in the
 3. What is your typical diet (vegetarian, vegan, non-vegetarian)?
 
 ### Continue on WhatsApp
-📱 Let's monitor your fatigue score over time:
-[Remind Me in 4 Hours] [Track Fatigue levels] [Send Iron Absorption Tips]`;
+📱 Let's monitor your fatigue score over time, or connect with Dr. Jethwani:
+[Remind Me in 4 Hours] [Track Fatigue levels] [Ask Dr. Jethwani]`;
   }
 
   // 6. Thyroid / TSH
@@ -279,8 +279,8 @@ Dr. Jethwani explains that thyroid load is heavily connected to adrenal stress a
 3. How is your sleep quality and stress load?
 
 ### Continue on WhatsApp
-📱 We can check in on your recovery stats:
-[Remind Me in 4 Hours] [Track Cold Modality] [Send Thyroid Care Guide]`;
+📱 We can check in on your recovery stats, or connect with Dr. Jethwani:
+[Remind Me in 4 Hours] [Track Cold Modality] [Ask Dr. Jethwani]`;
   }
 
   // 7. Headache / Migraine
@@ -322,8 +322,8 @@ Dr. Jethwani advises looking at transient triggers first when underlying vitalit
 3. How many hours of sleep did you get last night?
 
 ### Continue on WhatsApp
-📱 Let's do a follow-up check-in later today:
-[Remind Me in 4 Hours] [Track Headache Severity] [Send Recovery Plan]`;
+📱 Let's do a follow-up check-in later today, or connect with Dr. Jethwani:
+[Remind Me in 4 Hours] [Track Headache Severity] [Ask Dr. Jethwani]`;
   }
 
   // 8. Fatigue / Tired
@@ -365,8 +365,8 @@ Dr. Jethwani emphasizes addressing sleep restoration and metabolic reserves toge
 3. Have you had recent blood tests checking ferritin, TSH, or vitamin D?
 
 ### Continue on WhatsApp
-📱 I can check in on your energy patterns tomorrow:
-[Remind Me in 4 Hours] [Track Energy Levels] [Send Fatigue Protocol]`;
+📱 I can check in on your energy patterns tomorrow, or connect with Dr. Jethwani:
+[Remind Me in 4 Hours] [Track Energy Levels] [Ask Dr. Jethwani]`;
   }
 
   // 9. Bloated / Gas / Digestion
@@ -408,8 +408,8 @@ Dr. Jethwani emphasizes that gut health depends on constitutional digestive fire
 3. How is your daily hydration and dietary fiber intake?
 
 ### Continue on WhatsApp
-📱 Let's monitor your digestion symptoms:
-[Remind Me in 4 Hours] [Track Bloating Severity] [Send Gut Health Plan]`;
+📱 Let's monitor your digestion symptoms, or connect with Dr. Jethwani:
+[Remind Me in 4 Hours] [Track Bloating Severity] [Ask Dr. Jethwani]`;
   }
 
   // 10. Result / Score / Health
@@ -448,8 +448,8 @@ Dr. Jethwani emphasizes starting with baseline measurements. Knowing your starti
 2. Are you experiencing any active symptoms today?
 
 ### Continue on WhatsApp
-📱 Let's set up a reminder to complete your first assessment:
-[Remind Me in 4 Hours] [Start Assessment Now] [Send Assessment Guide]`;
+📱 Let's set up a reminder to complete your first assessment, or connect with Dr. Jethwani:
+[Remind Me in 4 Hours] [Start Assessment Now] [Ask Dr. Jethwani]`;
     }
 
     return `### 🧠 Quick Insight
@@ -487,8 +487,8 @@ Dr. Jethwani recommends looking at system reserve preservation. Maintaining high
 2. Have you completed your constitutional profile assessment?
 
 ### Continue on WhatsApp
-📱 I can check in weekly to report your score trends:
-[Remind Me in 4 Hours] [Track Score Weekly] [Send Monthly Health Report]`;
+📱 I can check in weekly to report your score trends, or connect with Dr. Jethwani:
+[Remind Me in 4 Hours] [Track Score Weekly] [Ask Dr. Jethwani]`;
   }
 
   // 11. Remedy / Constitutional / Homeopath
@@ -526,8 +526,8 @@ Dr. Jethwani frequently emphasizes that addressing your core constitutional bala
 2. Are you ready to review this profile in a clinical consultation?
 
 ### Continue on WhatsApp
-📱 We can send your full constitutional report:
-[Remind Me in 4 Hours] [Send Constitutional PDF] [Request Clinical Review]`;
+📱 We can send your full constitutional report, or connect with Dr. Jethwani:
+[Remind Me in 4 Hours] [Ask Dr. Jethwani] [Request Clinical Review]`;
     }
 
     return `### 🧠 Quick Insight
@@ -551,8 +551,8 @@ A constitutional profile maps how your body reacts to stress, temperature, food,
 - Answer all questions accurately to get your matching profile.
 
 ### Continue on WhatsApp
-📱 We can send you a guide on constitutional homeopathy:
-[Remind Me in 4 Hours] [Send Homeopathy Guide] [Start Assessment]`;
+📱 We can send you a guide on constitutional homeopathy, or connect with Dr. Jethwani:
+[Remind Me in 4 Hours] [Start Assessment] [Ask Dr. Jethwani]`;
   }
 
   // 12. Book / Consult / Doctor / Jethwani / WhatsApp
@@ -578,8 +578,8 @@ Dr. Jethwani reviews your Your Health Twin Insights, assessments, and lab report
 - Or book online directly here: https://homeo.healthcare/#booking
 
 ### Continue on WhatsApp
-📱 Select a WhatsApp clinical action:
-[Remind Me in 4 Hours] [Request WhatsApp Review] [Book Consultation]`;
+📱 Select a WhatsApp clinical action, or connect with Dr. Jethwani:
+[Remind Me in 4 Hours] [Ask Dr. Jethwani] [Book Consultation]`;
   }
 
   // Default Fallback
@@ -614,8 +614,8 @@ Dr. Jethwani advises focusing on core vitality reserves rather than treating sym
 2. Have you completed your main assessments?
 
 ### Continue on WhatsApp
-📱 Select a check-in action:
-[Remind Me in 4 Hours] [Track This Symptom] [Send General Guide]`;
+📱 Select a check-in action, or connect with Dr. Jethwani:
+[Remind Me in 4 Hours] [Track This Symptom] [Ask Dr. Jethwani]`;
 }
 
 function stripMarkdownForSpeech(text: string): string {
@@ -778,7 +778,8 @@ export default function HealthAssistant({ twin, theme, onSelectProfile }: Health
       textToSend.startsWith("Track ") ||
       textToSend.startsWith("Send ") ||
       textToSend.startsWith("Request ") ||
-      textToSend === "Book Consultation";
+      textToSend === "Book Consultation" ||
+      textToSend.includes("Jethwani");
 
     if (isWhatsAppAction) {
       let waMessage = `Hello Dr. Jethwani, I am checking in from the Homeo Healthcare Health Intelligence Portal.\n\n`;

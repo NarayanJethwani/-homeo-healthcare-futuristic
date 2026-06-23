@@ -11,6 +11,7 @@ import PotencySimulator from "@/components/PotencySimulator";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Magnetic from "@/components/Magnetic";
+import Portal from "@/components/Portal";
 
 export default function EvidenceBasedHomeopathyPage() {
   const router = useRouter();
@@ -242,7 +243,7 @@ export default function EvidenceBasedHomeopathyPage() {
             <Magnetic>
               <button
                 onClick={handleBookClick}
-                className="glass-panel border-mint/20 hover:border-mint bg-mint text-white px-8 py-4 rounded-full text-xs font-bold tracking-wider uppercase transition-all duration-300 flex items-center gap-2 cursor-pointer shadow-sm shadow-mint/10 animate-float-p1"
+                className="bg-mint hover:bg-mint-dark text-white px-8 py-4 rounded-full text-xs font-bold tracking-wider uppercase transition-all duration-300 flex items-center gap-2 cursor-pointer shadow-[0_8px_30px_rgba(20,184,166,0.25)] hover:shadow-[0_8px_35px_rgba(20,184,166,0.35)] hover:scale-[1.02] active:scale-[0.98] animate-float-p1"
               >
                 Book a Consultation
                 <ArrowRight className="w-4 h-4" />
@@ -549,20 +550,22 @@ export default function EvidenceBasedHomeopathyPage() {
       </div>
 
       {/* Side Panel Drawer */}
-      <AnimatePresence>
-        {selectedPillar && (
-          <>
-            {/* Backdrop Overlay */}
+      <Portal>
+        <AnimatePresence>
+          {selectedPillar && (
             <motion.div
+              key="backdrop"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedPillar(null)}
-              className="fixed inset-0 z-50 bg-[#1A2421]/30 backdrop-blur-sm pointer-events-auto"
+              className="fixed inset-0 z-40 bg-[#1A2421]/30 backdrop-blur-sm pointer-events-auto"
             />
+          )}
 
-            {/* Sliding Drawer Content */}
+          {selectedPillar && (
             <motion.div
+              key="drawer"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
@@ -678,9 +681,9 @@ export default function EvidenceBasedHomeopathyPage() {
                 </button>
               </div>
             </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>
+      </Portal>
 
     </div>
   );
