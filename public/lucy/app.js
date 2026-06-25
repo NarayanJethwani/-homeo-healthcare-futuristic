@@ -1807,6 +1807,195 @@ document.addEventListener('DOMContentLoaded', () => {
         saveState();
     });
 
+    function getPhoneticText(text, lang) {
+        if (!text || lang === 'en') return text;
+
+        const mappings = {
+            hi: {
+                "whatsapp": "व्हाट्सएप",
+                "doctor": "डॉक्टर",
+                "dr": "डॉक्टर",
+                "homeo healthcare": "होमियो हेल्थकेयर",
+                "lucy": "लूसी",
+                "clara": "क्लारा",
+                "hba1c": "एच बी ए वन सी",
+                "dashboard": "डैशबोर्ड",
+                "assessment": "असेसमेंट",
+                "symptoms": "सिम्पटम्स",
+                "symptom": "सिम्पटम",
+                "reports": "रिपोर्ट्स",
+                "report": "रिपोर्ट",
+                "insulin": "इंसुलिन",
+                "thyroid": "थायराइड",
+                "diabetes": "डायबिटीज",
+                "homeopathy": "होम्योपैथी",
+                "medicines": "मेडिसिन्स",
+                "medicine": "मेडिसिन",
+                "healthcare": "हेल्थकेयर",
+                "health": "हेल्थ",
+                "care": "केयर"
+            },
+            mr: {
+                "whatsapp": "व्हाट्सॲप",
+                "doctor": "डॉक्टर",
+                "dr": "डॉक्टर",
+                "homeo healthcare": "होमियो हेल्थकेअर",
+                "lucy": "लुसी",
+                "clara": "क्लारा",
+                "hba1c": "एच बी ए वन सी",
+                "dashboard": "डॅशबोर्ड",
+                "assessment": "असेसमेंट",
+                "symptoms": "सिम्पटम्स",
+                "symptom": "सिम्पटम",
+                "reports": "रिपोर्ट्स",
+                "report": "रिपोर्ट",
+                "insulin": "इन्सुलिन",
+                "thyroid": "थायरॉईड",
+                "diabetes": "डायबिटीज",
+                "homeopathy": "होमिओपॅथी",
+                "medicines": "मेडिसिन्स",
+                "medicine": "मेडिसिन",
+                "healthcare": "हेल्थकेअर",
+                "health": "हेल्थ",
+                "care": "केअर"
+            },
+            gu: {
+                "whatsapp": "વોટ્સએપ",
+                "doctor": "ડોક્ટર",
+                "dr": "ડોક્ટર",
+                "homeo healthcare": "હોમિયો હેલ્થકેર",
+                "lucy": "લ્યુસી",
+                "clara": "ક્લેરા",
+                "hba1c": "એચ બી એ વન સી",
+                "dashboard": "ડેશબોર્ડ",
+                "assessment": "એસેસમેન્ટ",
+                "symptoms": "સિમ્પટમ્સ",
+                "symptom": "સિમ્પટમ",
+                "reports": "રિપોર્ટ્સ",
+                "report": "રિપોર્ટ",
+                "insulin": "ઇન્સ્યુલિન",
+                "thyroid": "થાઇરોઇડ",
+                "diabetes": "ડાયાબિટીસ",
+                "homeopathy": "હોમિયોપેથી",
+                "medicines": "મેડિસિન્સ",
+                "medicine": "મેડિસિન",
+                "healthcare": "હેલ્થકેર",
+                "health": "હેલ્થ",
+                "care": "કેર"
+            },
+            bn: {
+                "whatsapp": "হোয়াটসঅ্যাপ",
+                "doctor": "ডাক্তার",
+                "dr": "ডাক্তার",
+                "homeo healthcare": "হোমিও হেলথকেয়ার",
+                "lucy": "লুসি",
+                "clara": "ক্লারা",
+                "hba1c": "এইচ বি এ ওয়ান সি",
+                "dashboard": "ড্যাশবোর্ড",
+                "assessment": "অ্যাসেসমেন্ট",
+                "symptoms": "সিম্পটমস",
+                "symptom": "সিম্পটম",
+                "reports": "রিপোর্টস",
+                "report": "রিপোর্ট",
+                "insulin": "ইনসুলিন",
+                "thyroid": "থাইরয়েড",
+                "diabetes": "ডায়াবেটিস",
+                "homeopathy": "হোমিওপ্যাথি",
+                "medicines": "মেডিসিন্স",
+                "medicine": "মেডিসিন",
+                "healthcare": "হেলথকেয়ার",
+                "health": "হেলথ",
+                "care": "কেয়ার"
+            },
+            te: {
+                "whatsapp": "వాట్సాప్",
+                "doctor": "డాక్టర్",
+                "dr": "డాక్టర్",
+                "homeo healthcare": "హోమియో హెల్త్‌కేర్",
+                "lucy": "లూసీ",
+                "clara": "క్లారా",
+                "hba1c": "హెచ్ బి ఏ వన్ సి",
+                "dashboard": "డ్యాష్‌బోర్డ్",
+                "assessment": "అసెస్మెంట్",
+                "symptoms": "సింప్టమ్స్",
+                "symptom": "సింప్టమ్",
+                "reports": "రిపోర్ట్స్",
+                "report": "రిపోర్ట్",
+                "insulin": "ఇన్సులిన్",
+                "thyroid": "థైరాయిడ్",
+                "diabetes": "డయాబెటిస్",
+                "homeopathy": "హోమియోపతి",
+                "medicines": "మెడిసిన్స్",
+                "medicine": "మెడిసిన్",
+                "healthcare": "హెల్త్‌కేర్",
+                "health": "హెల్త్",
+                "care": "కేర్"
+            },
+            ta: {
+                "whatsapp": "வாட்ஸ்அப்",
+                "doctor": "டாக்டர்",
+                "dr": "டாக்டர்",
+                "homeo healthcare": "ஹோமியோ ஹெல்த்கேர்",
+                "lucy": "லூசி",
+                "clara": "கிளாரா",
+                "hba1c": "எச் பி ஏ ஒன் சி",
+                "dashboard": "டேஷ்போர்டு",
+                "assessment": "அசஸ்மென்ட்",
+                "symptoms": "சிம்ப்டம்ส์",
+                "symptom": "சிம்ப்டம்",
+                "reports": "ரிப்போர்ட்ส์",
+                "report": "ரிப்போர்ட்",
+                "insulin": "இன்சுலின்",
+                "thyroid": "தைராய்டு",
+                "diabetes": "டயபெடிస్",
+                "homeopathy": "ஹோமியோபதி",
+                "medicines": "மெடிசின்ஸ்",
+                "medicine": "மெடிசின்",
+                "healthcare": "ஹெல்த்கேர்",
+                "health": "ஹெல்த்",
+                "care": "கேர்"
+            },
+            kn: {
+                "whatsapp": "ವಾಟ್ಸಾಪ್",
+                "doctor": "ಡಾಕ್ಟರ್",
+                "dr": "ಡಾಕ್ಟರ್",
+                "homeo healthcare": "ಹೋಮಿಯೋ ಹೆಲ್ತ್‌ಕೇರ್",
+                "lucy": "ಲೂಸಿ",
+                "clara": "ಕ್ಲಾರಾ",
+                "hba1c": "ಎಚ್ ಬಿ ಎ ಒನ್ ಸಿ",
+                "dashboard": "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
+                "assessment": "ಅಸೆಸ್‌ಮೆಂಟ್",
+                "symptoms": "ಸಿಂಪ್ಟಮ್ಸ್",
+                "symptom": "ಸಿಂಪ್ಟಮ್",
+                "reports": "ರಿಪೋರ್ಟ್ಸ್",
+                "report": "ರಿಪೋರ್ಟ್",
+                "insulin": "ಇನ್ಸುಲಿನ್",
+                "thyroid": "ಥೈರಾಯ್ಡ್",
+                "diabetes": "ಡಯಾಬಿಟಿಸ್",
+                "homeopathy": "ಹೋಮಿಯೋಪತಿ",
+                "medicines": "ಮೆಡಿಸಿನ್ಸ್",
+                "medicine": "ಮೆಡಿಸಿನ್",
+                "healthcare": "ಹೆಲ್ತ್‌ಕೇರ್",
+                "health": "ಹೆಲ್ತ್",
+                "care": "ಕೇರ್"
+            }
+        };
+
+        const langMap = mappings[lang];
+        if (!langMap) return text;
+
+        let processedText = text;
+        processedText = processedText.replace(/what's\s*app|whats\s*app/gi, "whatsapp");
+        processedText = processedText.replace(/dr\./gi, "dr");
+
+        const keys = Object.keys(langMap).sort((a, b) => b.length - a.length);
+        for (const key of keys) {
+            const regex = new RegExp("\\b" + key.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + "\\b", "gi");
+            processedText = processedText.replace(regex, langMap[key]);
+        }
+        return processedText;
+    }
+
     function speakText(text, onStartCallback) {
         if (!('speechSynthesis' in window)) return;
         if (!state.ttsEnabled) return;
@@ -1816,8 +2005,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Strip HTML tags for speaking
         const cleanText = text.replace(/<[^>]*>/g, '').replace(/\*\*|__/g, '');
+        const phoneticText = getPhoneticText(cleanText, state.lang);
 
-        const utterance = new SpeechSynthesisUtterance(cleanText);
+        const utterance = new SpeechSynthesisUtterance(phoneticText);
         
         const langMap = {
             hi: 'hi-IN', mr: 'mr-IN', gu: 'gu-IN', bn: 'bn-IN', te: 'te-IN', ta: 'ta-IN', kn: 'kn-IN', en: 'en-US'
