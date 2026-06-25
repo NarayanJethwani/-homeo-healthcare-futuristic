@@ -137,7 +137,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const parsed = JSON.parse(saved);
                 state = { ...state, ...parsed };
                 // Sync select boxes and indicators
-                document.getElementById('lang-select').value = state.lang;
+                const lsMain = document.getElementById('lang-select');
+                if (lsMain) lsMain.value = state.lang;
+                const lsChat = document.getElementById('lang-select-chat');
+                if (lsChat) lsChat.value = state.lang;
                 document.getElementById('track-sleep').value = state.dailyLogs.sleep;
                 document.getElementById('water-count').innerText = state.dailyLogs.water;
                 document.getElementById('track-exercise').value = state.dailyLogs.exercise;
@@ -602,14 +605,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ---------------------------------------------------------
     // Language & Translation Helpers
-    // ----------------------------------------------------        // ---------------------------------------------------------
-    // Language & Translation Helpers
     // ---------------------------------------------------------
     const langSelect = document.getElementById('lang-select');
-    langSelect.addEventListener('change', (e) => {
-        state.lang = e.target.value;
+    const langSelectChat = document.getElementById('lang-select-chat');
+
+    function handleLanguageChange(newLang) {
+        state.lang = newLang;
         saveState();
         updateUILocalization();
+        
+        if (langSelect) langSelect.value = newLang;
+        if (langSelectChat) langSelectChat.value = newLang;
         
         // Auto greet in chosen language
         let greeting = "";
@@ -631,7 +637,18 @@ document.addEventListener('DOMContentLoaded', () => {
             greeting = "Hello! I am Lucy, your AI health guide. How can I help you today?";
         }
         appendLucyMessage(greeting);
-    });
+    }
+
+    if (langSelect) {
+        langSelect.addEventListener('change', (e) => {
+            handleLanguageChange(e.target.value);
+        });
+    }
+    if (langSelectChat) {
+        langSelectChat.addEventListener('change', (e) => {
+            handleLanguageChange(e.target.value);
+        });
+    }
 
     // Basic Multi-lingual response dictionary
     const TRANSLATIONS = {

@@ -2312,6 +2312,10 @@ body.embed-mode #dashboard-area {
     display: none !important;
 }
 
+body.embed-mode #show-dash-btn {
+    display: none !important;
+}
+
 body.embed-mode #assistant-area {
     display: flex !important;
     width: 100% !important;
