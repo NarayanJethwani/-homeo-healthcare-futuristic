@@ -1746,12 +1746,16 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
     }
   }, [liveArticles, searchParams]);
 
+  const isFirstRender = useRef(true);
+
   // Sync selected article to URL query parameter
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      // Avoid deleting query param before the initial read has completed
-      if (!isUrlReadRef.current) return;
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
 
+    if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       if (selectedArticle) {
         if (params.get("article") !== selectedArticle.id) {
@@ -1785,10 +1789,10 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
       cssLink = document.createElement("link");
       cssLink.id = cssId;
       cssLink.rel = "stylesheet";
-      cssLink.href = `https://admin.homeo.healthcare/wp-content/plugins/homeo-premium-injector/assets/css/premium-global.css?t=${timestamp}`;
+      cssLink.href = `/premium-global.css?t=${timestamp}`;
       document.head.appendChild(cssLink);
     } else {
-      cssLink.href = `https://admin.homeo.healthcare/wp-content/plugins/homeo-premium-injector/assets/css/premium-global.css?t=${timestamp}`;
+      cssLink.href = `/premium-global.css?t=${timestamp}`;
     }
 
     // 2. Load Scripts sequentially
@@ -1796,7 +1800,7 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
       { id: "three-js-script", src: "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" },
       { id: "gsap-script", src: "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" },
       { id: "gsap-scrolltrigger-script", src: "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" },
-      { id: "homeo-premium-global-js", src: `https://admin.homeo.healthcare/wp-content/plugins/homeo-premium-injector/assets/js/premium-global.js?t=${timestamp}` }
+      { id: "homeo-premium-global-js", src: `/premium-global.js?t=${timestamp}` }
     ];
 
     const loadScript = (scriptConf: { id: string, src: string }) => {
@@ -2178,11 +2182,11 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
               className={`fixed right-0 top-0 bottom-0 border-l z-[51] shadow-2xl flex flex-col pointer-events-auto overflow-hidden transition-all duration-500 ${
                 isFullPage ? "w-full" : "w-full sm:w-[640px]"
               } ${
-                readerTheme === "sepia" ? "bg-[#f5eed6]/98 border-amber-200/50" :
-                readerTheme === "dark" ? "bg-zinc-950/98 border-zinc-800" :
-                readerTheme === "cream" ? "bg-[#FAF6EE]/98 border-orange-200/50" :
-                readerTheme === "forest" ? "bg-[#EBF2EE]/98 border-emerald-200/50" :
-                "bg-[#FAF9F6]/97 border-white/50"
+                readerTheme === "sepia" ? "bg-[#f5eed6]/98 border-amber-200/50 reader-theme-sepia" :
+                readerTheme === "dark" ? "bg-zinc-950/98 border-zinc-800 reader-theme-dark" :
+                readerTheme === "cream" ? "bg-[#FAF6EE]/98 border-orange-200/50 reader-theme-cream" :
+                readerTheme === "forest" ? "bg-[#EBF2EE]/98 border-emerald-200/50 reader-theme-forest" :
+                "bg-[#FAF9F6]/97 border-white/50 reader-theme-light"
               }`}
               style={{ backdropFilter: "blur(16px)" }}
             >
