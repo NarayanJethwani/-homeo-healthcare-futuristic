@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Styling -->
-    <link rel="stylesheet" href="styles.css?v=2.5.5">
+    <link rel="stylesheet" href="styles.css?v=2.5.6">
 </head>
 <body class="light-mode">
     <!-- Main App Container -->
@@ -81,8 +81,8 @@
                 <!-- Welcome & Stats Banner -->
                 <div class="dashboard-banner">
                     <div class="banner-welcome">
-                        <h2>Welcome to Your Health Intelligence Hub</h2>
-                        <p>Track your vitals, complete assessments, and coordinate your constitutional care.</p>
+                        <h2 id="lbl-welcome-title">Welcome to Your Health Intelligence Hub</h2>
+                    <p id="lbl-welcome-desc">Lucy analyzes your vitals, daily logs, and health assessments to model your constitutional Vitality Score in real-time.</p>
                     </div>
                     <div class="vitality-summary-card">
                         <div class="score-ring-container">
@@ -130,8 +130,8 @@
                             <!-- Organ Performance Card -->
                             <div class="dash-card card-half">
                                 <div class="card-header">
-                                    <h3><i class="fa-solid fa-lungs"></i> Organ Performance Indices</h3>
-                                    <span class="card-subtitle">Self-Assessment & Biomarker Estimate</span>
+                                    <h3 id="lbl-organ-title"><i class="fa-solid fa-lungs"></i> Organ Performance Indices</h3>
+                                    <span id="lbl-organ-sub" class="card-subtitle">Functional Biomarker Estimates</span>
                                 </div>
                                 <div class="card-body">
                                     <div class="bar-chart-list">
@@ -177,8 +177,8 @@
                             <!-- Health Risk Scores -->
                             <div class="dash-card card-half">
                                 <div class="card-header">
-                                    <h3><i class="fa-solid fa-shield-halved"></i> Health Risk Assessment</h3>
-                                    <span class="card-subtitle">Preventive Screening Profile</span>
+                                    <h3 id="lbl-risk-title"><i class="fa-solid fa-shield-halved"></i> Health Risk Assessment</h3>
+                                    <span id="lbl-risk-sub" class="card-subtitle">Preventive Screening Profile</span>
                                 </div>
                                 <div class="card-body">
                                     <div class="risk-metrics">
@@ -215,8 +215,8 @@
                             <!-- Appointments Card -->
                             <div class="dash-card card-full">
                                 <div class="card-header">
-                                    <h3><i class="fa-solid fa-calendar-check"></i> Constitutional Consultation</h3>
-                                    <span class="card-subtitle">Connect with Dr. Narayan Jethwani, MD (Hom.)</span>
+                                    <h3 id="lbl-consult-title"><i class="fa-solid fa-calendar-check"></i> Constitutional Consultation</h3>
+                                    <span id="lbl-consult-sub" class="card-subtitle">Connect with Dr. Narayan Jethwani, MD (Hom.)</span>
                                 </div>
                                 <div class="card-body appointment-widget">
                                     <div class="appointment-details">
@@ -250,31 +250,31 @@
                             <!-- Logs Card -->
                             <div class="dash-card card-half">
                                 <div class="card-header">
-                                    <h3><i class="fa-solid fa-pen-to-square"></i> Log Daily Vitals</h3>
-                                    <span class="card-subtitle">Updates your overall Vitality Score in real-time</span>
+                                    <h3 id="lbl-daily-title"><i class="fa-solid fa-pen-to-square"></i> Log Daily Vitals</h3>
+                                    <span id="lbl-daily-sub" class="card-subtitle">Updates your overall Vitality Score in real-time</span>
                                 </div>
                                 <div class="card-body tracker-form">
                                     <div class="form-group">
-                                        <label for="track-sleep"><i class="fa-solid fa-bed"></i> Sleep Duration (Hours)</label>
+                                        <label for="track-sleep" id="lbl-sleep-duration"><i class="fa-solid fa-bed"></i> Sleep Duration (Hours)</label>
                                         <input type="number" id="track-sleep" min="0" max="24" step="0.5" value="7">
                                     </div>
                                     
                                     <div class="form-group">
-                                        <label for="track-water"><i class="fa-solid fa-glass-water"></i> Water Intake (Glasses / 250ml)</label>
+                                        <label for="track-water" id="lbl-water-intake"><i class="fa-solid fa-glass-water"></i> Water Intake (Glasses / 250ml)</label>
                                         <div class="water-widget">
                                             <button type="button" class="water-btn" id="water-minus">-</button>
-                                            <span id="water-count">6</span> Glasses
+                                            <span id="water-count">6</span> <span id="lbl-water-glasses">Glasses</span>
                                             <button type="button" class="water-btn" id="water-plus">+</button>
                                         </div>
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="track-exercise"><i class="fa-solid fa-person-running"></i> Exercise (Minutes)</label>
+                                        <label for="track-exercise" id="lbl-exercise-dur"><i class="fa-solid fa-person-running"></i> Exercise (Minutes)</label>
                                         <input type="number" id="track-exercise" min="0" max="300" step="5" value="30">
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="track-stress"><i class="fa-solid fa-brain"></i> Stress Level (1-10)</label>
+                                        <label for="track-stress" id="lbl-stress-lvl"><i class="fa-solid fa-brain"></i> Stress Level (1-10)</label>
                                         <div class="slider-container">
                                             <input type="range" id="track-stress" min="1" max="10" value="4">
                                             <span id="stress-val">4/10</span>
@@ -282,12 +282,12 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="track-weight"><i class="fa-solid fa-weight-scale"></i> Current Weight (kg)</label>
+                                        <label for="track-weight" id="lbl-weight-lbs"><i class="fa-solid fa-weight-scale"></i> Current Weight (kg)</label>
                                         <input type="number" id="track-weight" min="10" max="250" step="0.1" value="70">
                                     </div>
 
                                     <button id="save-vitals-btn" class="btn-primary">
-                                        <i class="fa-solid fa-check"></i> Save Daily Metrics
+                                        <i class="fa-solid fa-check"></i> <span id="lbl-save-vitals-btn">Save Daily Metrics</span>
                                     </button>
                                 </div>
                             </div>
@@ -295,8 +295,8 @@
                             <!-- Dashboard Stats Visualizer -->
                             <div class="dash-card card-half">
                                 <div class="card-header">
-                                    <h3><i class="fa-solid fa-ranking-stars"></i> Health Goals & Achievements</h3>
-                                    <span class="card-subtitle">Lucy's Real-time Feedback</span>
+                                    <h3 id="lbl-goals-title"><i class="fa-solid fa-ranking-stars"></i> Health Goals & Achievements</h3>
+                                    <span id="lbl-goals-sub" class="card-subtitle">Lucy's Real-time Feedback</span>
                                 </div>
                                 <div class="card-body">
                                     <div class="goals-status">
@@ -342,8 +342,8 @@
                         <div class="dash-card card-full">
                             <div class="card-header flex-header">
                                 <div>
-                                    <h3><i class="fa-solid fa-clipboard-list"></i> Health Assessments</h3>
-                                    <span class="card-subtitle">Take an assessment to identify sub-health patterns</span>
+                                    <h3 id="lbl-assessments-title"><i class="fa-solid fa-clipboard-list"></i> Health Assessments</h3>
+                                    <span id="lbl-assessments-sub" class="card-subtitle">Take an assessment to identify sub-health patterns</span>
                                 </div>
                                 <div class="assessment-select-wrap">
                                     <select id="assessment-type" class="assess-select">
@@ -429,31 +429,31 @@
                     <div class="tab-pane" id="tab-symptoms">
                         <div class="dash-card card-full">
                             <div class="card-header">
-                                <h3><i class="fa-solid fa-notes-medical"></i> Symptom Navigator</h3>
-                                <span class="card-subtitle">Document symptoms systematically for your next consultation</span>
+                                <h3 id="lbl-symptoms-title"><i class="fa-solid fa-notes-medical"></i> Symptom Navigator</h3>
+                                <span id="lbl-symptoms-sub" class="card-subtitle">Document symptoms systematically for your next consultation</span>
                             </div>
                             <div class="card-body">
                                 <div class="symptom-navigator-layout">
                                     <div class="symptom-form">
                                         <div class="form-group">
-                                            <label for="symp-concern">What is your main health concern / symptoms?</label>
+                                            <label for="symp-concern" id="lbl-symp-concern">What is your main health concern / symptoms?</label>
                                             <textarea id="symp-concern" placeholder="E.g., Throbbing headache on the right side, starting from the back of the head..."></textarea>
                                         </div>
                                         <div class="form-grid">
                                             <div class="form-group">
-                                                <label for="symp-duration">Duration (How long?)</label>
+                                                <label for="symp-duration" id="lbl-symp-duration">Duration (How long?)</label>
                                                 <input type="text" id="symp-duration" placeholder="E.g., 3 days, 6 months...">
                                             </div>
                                             <div class="form-group">
-                                                <label for="symp-triggers">Aggravating Factors (What makes it worse?)</label>
+                                                <label for="symp-triggers" id="lbl-symp-triggers">Aggravating Factors (What makes it worse?)</label>
                                                 <input type="text" id="symp-triggers" placeholder="E.g., Sunlight, noise, skipping meals...">
                                             </div>
                                             <div class="form-group">
-                                                <label for="symp-relieving">Relieving Factors (What makes it better?)</label>
+                                                <label for="symp-relieving" id="lbl-symp-relieving">Relieving Factors (What makes it better?)</label>
                                                 <input type="text" id="symp-relieving" placeholder="E.g., Cold compress, lying in a dark room...">
                                             </div>
                                             <div class="form-group">
-                                                <label for="symp-associated">Associated Symptoms</label>
+                                                <label for="symp-associated" id="lbl-symp-associated">Associated Symptoms</label>
                                                 <input type="text" id="symp-associated" placeholder="E.g., Nausea, sensitivity to light...">
                                             </div>
                                         </div>
@@ -482,8 +482,8 @@
                     <div class="tab-pane" id="tab-reports">
                         <div class="dash-card card-full">
                             <div class="card-header">
-                                <h3><i class="fa-solid fa-file-pdf"></i> Health Report Interpreter</h3>
-                                <span class="card-subtitle">Upload blood test reports (CBC, Thyroid, Lipid, etc.) for a simple breakdown</span>
+                                <h3 id="lbl-reports-title"><i class="fa-solid fa-file-pdf"></i> Health Report Interpreter</h3>
+                                <span id="lbl-reports-sub" class="card-subtitle">Upload blood test reports (CBC, Thyroid, Lipid, etc.) for a simple breakdown</span>
                             </div>
                             <div class="card-body">
                                 <div class="report-interpreter-layout">
@@ -524,8 +524,8 @@
                         <div class="dash-card card-full">
                             <div class="card-header flex-header">
                                 <div>
-                                    <h3><i class="fa-solid fa-book-medical"></i> Homeopathic Materia Medica (Educational Mode)</h3>
-                                    <span class="card-subtitle">Search common remedies, sources, keynotes, and modalities.</span>
+                                    <h3 id="lbl-materia-title"><i class="fa-solid fa-book-medical"></i> Homeopathic Materia Medica (Educational Mode)</h3>
+                                    <span id="lbl-materia-sub" class="card-subtitle">Search common remedies, sources, keynotes, and modalities.</span>
                                 </div>
                                 <div class="materia-search-wrap">
                                     <div class="search-input-group">
@@ -547,8 +547,8 @@
                         <div class="dash-card card-full">
                             <div class="card-header flex-header">
                                 <div>
-                                    <h3><i class="fa-solid fa-calendar-days"></i> Your Personalized 7-Day Wellness Plan</h3>
-                                    <span class="card-subtitle">Customized routines based on your vitality assessments and risk factors.</span>
+                                    <h3 id="lbl-wellness-title"><i class="fa-solid fa-calendar-days"></i> Your Personalized 7-Day Wellness Plan</h3>
+                                    <span id="lbl-wellness-sub" class="card-subtitle">Customized routines based on your vitality assessments and risk factors.</span>
                                 </div>
                                 <div>
                                     <button class="btn-primary btn-sm" id="download-wellness-btn"><i class="fa-solid fa-file-arrow-down"></i> Export Plan</button>
@@ -683,7 +683,7 @@
     </div>
 
     <!-- Background Scripts -->
-    <script src="knowledge_base.js?v=2.5.5"></script>
-    <script src="app.js?v=2.5.5"></script>
+    <script src="knowledge_base.js?v=2.5.6"></script>
+    <script src="app.js?v=2.5.6"></script>
 </body>
 </html>
