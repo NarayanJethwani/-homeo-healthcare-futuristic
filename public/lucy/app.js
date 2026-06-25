@@ -1591,7 +1591,7 @@ document.addEventListener('DOMContentLoaded', () => {
             kn: "ನಮಸ್ತೆ! ನಾನು ಲೂಸಿ, ನಿಮ್ಮ AI ಹೆಲ್ತ್ ಗೈಡ್. ನಿಮ್ಮ ಆರೋಗ್ಯ ಮಾಹಿತಿಯನ್ನು ಸುಲಭವಾಗಿ ಅರ್ಥಮಾಡಿಕೊಳ್ಳಲು ಮತ್ತು ಲಕ್ಷಣಗಳನ್ನು ದಾಖಲಿಸಲು ನಾನು ಇಲ್ಲಿದ್ದೇನೆ."
         },
         materia: {
-            en: "For patient safety, I cannot recommend specific homeopathic remedies, medicines, or dosages in this chat. Remedy selection must be customized to your constitution by a qualified doctor.<br><br>I highly recommend scheduling a clinical consultation with **Dr. Narayan Jethwani** to receive a personalized evaluation and prescription. In the meantime, feel free to ask me about general wellness optimization, hydration guidelines, or sleep hygiene tips.",
+            en: "For patient safety, I cannot recommend specific homeopathic remedies, medicines, or dosages in this chat. Remedy selection must be customized to your constitution by a qualified doctor.<br><br>I highly recommend scheduling a clinical consultation with **Dr. Narayan Jethwani** to receive a personalized evaluation and prescription.",
             hi: "रोगी की सुरक्षा के लिए, मैं इस चैट में विशिष्ट होम्योपैथिक दवाओं या खुराकों की सिफारिश नहीं कर सकती। दवा का चयन एक योग्य डॉक्टर द्वारा आपके संविधान के अनुसार अनुकूलित किया जाना चाहिए। परामर्श के लिए डॉ. नारायण जेठवानी से संपर्क करें।",
             mr: "रुग्णाच्या सुरक्षेसाठी, मी या चॅटमध्ये होमिओपॅथीक औषधांची किंवा डोसची शिफारस करू शकत नाही। औषध निवड डॉक्टरांद्वारे तुमच्या प्रकृतीनुसार केली पाहिजे. डॉ. नारायण जेठवानी यांच्याशी सल्लामसलत करा।",
             gu: "દર્દીની સુરક્ષા માટે, હું આ ચેટમાં વિશિષ્ટ હોમિયોપેથિક દવાઓની ભલામણ કરી શકતો નથી. દવાઓની પસંદગી ડૉક્ટર દ્વારા તમારા બંધારણ અનુસાર થવી જોઈએ. પરામર્શ માટે ડૉ. નારાયણ જેઠવાની સાથે સંપર્ક કરો.",

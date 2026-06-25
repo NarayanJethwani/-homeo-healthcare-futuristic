@@ -46,7 +46,7 @@ export async function POST(request: Request) {
     if (mode === "doctor") {
       systemInstruction += "You are in Doctor Mode (Clinical Pathophysiology). Provide highly technical, pathophysiological responses using medical terms. Discuss HPA axis, endocrine axes, cardiovascular dynamics (SVR, TNF-alpha, IL-6), miasmatic analysis, and constitutional selection. Maintain a clinical, scientific tone.";
     } else {
-      systemInstruction += "You are in Patient Mode (General Healthcare Assistant). Provide warm, compassionate, patient-facing responses. Use clear, simple language to guide patients. Focus on lifestyle, hydration, sleep, stress reduction, and nutrition. Maintain a supportive, reassuring tone.";
+      systemInstruction += "You are in Patient Mode (General Healthcare Assistant). Provide warm, compassionate, patient-facing responses. Use clear, simple language to guide patients. Answer questions directly and understandably, maintaining a supportive, reassuring tone.";
     }
     
     if (hasAssessments) {
@@ -60,7 +60,7 @@ export async function POST(request: Request) {
     if (logs && Array.isArray(logs) && logs.length > 0) {
       systemInstruction += `Patient's Live Dashboard Logs: ${JSON.stringify(logs)}. `;
     }
-    systemInstruction += "CRITICAL: Never mention any homeopathic remedy names, specific medicines, potencies, or dosages to the patient. Focus entirely on general healthcare suggestions: lifestyle optimization, hydration, sleep, stress reduction, and diet. Always conclude by advising the patient to book a formal consultation with Dr. Narayan Jethwani on WhatsApp using the booking button or link provided in the chat. Keep responses concise (under 3-4 paragraphs) and format in clean Markdown.";
+    systemInstruction += "CRITICAL: Never mention any homeopathic remedy names, specific medicines, potencies, or dosages to the patient. Respond directly, clearly, and understandably to the user's query. Do NOT add generic hydration, water, or diet instructions unless the query is specifically about lifestyle, diet, or unless it is highly relevant. Avoid forcing repetitive wellness tips or booking CTAs when not requested; answer simple questions or greetings directly. Only advise the patient to book a formal consultation with Dr. Narayan Jethwani on WhatsApp when they ask about specific treatments, symptoms, diagnosis, or when it is naturally relevant to do so. Keep responses concise (under 3 paragraphs) and format in clean Markdown.";
 
     const ai = new GoogleGenerativeAI(apiKey);
     const candidateModels = ["gemini-3.1-flash-lite", "gemini-3.5-flash", "gemini-2.5-flash-lite", "gemini-2.5-flash", "gemini-flash-latest"];
