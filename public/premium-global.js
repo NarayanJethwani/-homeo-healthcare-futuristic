@@ -27,9 +27,6 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
 /* ── 1. LIGHT / DARK THEME SWITCHER ── */
 
 function initThemeSwitcher() {
-    const themeBtn = document.getElementById('theme-btn') || document.getElementById('theme-toggle');
-    if (!themeBtn) return;
-
     // Retrieve active theme from localStorage
     const savedTheme = localStorage.getItem('theme');
     
@@ -40,6 +37,8 @@ function initThemeSwitcher() {
     const isLightDefault = savedTheme === 'light' || (!savedTheme && systemPrefersLight);
     if (isLightDefault) {
         document.body.classList.add('light-theme');
+    } else {
+        document.body.classList.remove('light-theme');
     }
 
     function syncThemeToIframe(isLight) {
@@ -73,18 +72,21 @@ function initThemeSwitcher() {
     }
 
     // Click handler for theme toggle
-    themeBtn.addEventListener('click', () => {
-        document.body.classList.toggle('light-theme');
-        const isLight = document.body.classList.contains('light-theme');
-        localStorage.setItem('theme', isLight ? 'light' : 'dark');
-        syncThemeToIframe(isLight);
-    });
+    const themeBtn = document.getElementById('theme-btn') || document.getElementById('theme-toggle');
+    if (themeBtn) {
+        themeBtn.addEventListener('click', () => {
+            document.body.classList.toggle('light-theme');
+            const isLight = document.body.classList.contains('light-theme');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            syncThemeToIframe(isLight);
+        });
+    }
 
     // Synchronize theme on iframe load and bind back-syncing click event
     const iframe = document.getElementById('lucy-iframe');
     if (iframe) {
         const handleIframeLoad = () => {
-            const isLight = document.body.classList.contains('light-theme');
+            const isLight = document.body.classList.contains('light-theme') || !document.documentElement.classList.contains('dark');
             syncThemeToIframe(isLight);
 
             try {
@@ -117,6 +119,29 @@ function initThemeSwitcher() {
                 handleIframeLoad();
             }
         } catch (e) {}
+    }
+
+    // Setup MutationObserver to watch classes on html and body elements
+    // so we synchronize theme switches done by Next.js components
+    try {
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.attributeName === 'class') {
+                    const isDark = document.documentElement.classList.contains('dark');
+                    const isBodyLight = document.body.classList.contains('light-theme');
+                    if (isDark && isBodyLight) {
+                        document.body.classList.remove('light-theme');
+                        syncThemeToIframe(false);
+                    } else if (!isDark && !isBodyLight) {
+                        document.body.classList.add('light-theme');
+                        syncThemeToIframe(true);
+                    }
+                }
+            });
+        });
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    } catch (e) {
+        console.warn('MutationObserver not supported or failed to bind:', e);
     }
 }
 
@@ -438,12 +463,15 @@ function initLucyWidget() {
             p1: container.querySelector('#part-1'),
             p2: container.querySelector('#part-2'),
             p3: container.querySelector('#part-3'),
+            p4: container.querySelector('#part-4'),
             nodePsycho: container.querySelector('#node-psycho'),
             nodeNeuro: container.querySelector('#node-neuro'),
+            nodeEndocrine: container.querySelector('#node-endocrine'),
             nodeImmune: container.querySelector('#node-immune'),
             l1: container.querySelector('#path-1'),
             l2: container.querySelector('#path-2'),
             l3: container.querySelector('#path-3'),
+            l4: container.querySelector('#path-4'),
             rPathway: container.querySelector('#readout-pathway'),
             rMolecules: container.querySelector('#readout-molecules'),
             rStatus: container.querySelector('#readout-status')
@@ -452,7 +480,7 @@ function initLucyWidget() {
 
     function setPathwayState(els, state) {
         if (!els) return;
-        const { btnHomeo, btnStress, p1, p2, p3, nodePsycho, nodeNeuro, nodeImmune, l1, l2, l3, rPathway, rMolecules, rStatus } = els;
+        const { btnHomeo, btnStress, p1, p2, p3, p4, nodePsycho, nodeNeuro, nodeEndocrine, nodeImmune, l1, l2, l3, l4, rPathway, rMolecules, rStatus } = els;
 
         if (state === 'stress') {
             if (btnHomeo) btnHomeo.classList.remove('active');
@@ -460,15 +488,18 @@ function initLucyWidget() {
 
             if (p1) { p1.style.animationDuration = '1s'; p1.setAttribute('fill', '#EF4444'); }
             if (p2) { p2.style.animationDuration = '1.2s'; p2.setAttribute('fill', '#F97316'); }
-            if (p3) { p3.style.animationDuration = '1.5s'; p3.setAttribute('fill', '#EF4444'); }
+            if (p3) { p3.style.animationDuration = '1.4s'; p3.setAttribute('fill', '#F43F5E'); }
+            if (p4) { p4.style.animationDuration = '1.6s'; p4.setAttribute('fill', '#B91C1C'); }
 
             if (nodePsycho) nodePsycho.setAttribute('fill', '#EF4444');
             if (nodeNeuro) nodeNeuro.setAttribute('fill', '#F97316');
+            if (nodeEndocrine) nodeEndocrine.setAttribute('fill', '#F43F5E');
             if (nodeImmune) nodeImmune.setAttribute('fill', '#B91C1C');
 
             if (l1) l1.style.stroke = 'rgba(239, 68, 68, 0.4)';
             if (l2) l2.style.stroke = 'rgba(249, 115, 22, 0.4)';
-            if (l3) l3.style.stroke = 'rgba(185, 28, 28, 0.4)';
+            if (l3) l3.style.stroke = 'rgba(244, 63, 94, 0.4)';
+            if (l4) l4.style.stroke = 'rgba(185, 28, 28, 0.4)';
 
             if (rPathway) rPathway.textContent = "Sympathetic / Adrenal Medullary (SAM)";
             if (rMolecules) rMolecules.textContent = "High Cortisol, High Adrenaline, High IL-6 (Inflammatory)";
@@ -482,15 +513,18 @@ function initLucyWidget() {
 
             if (p1) { p1.style.animationDuration = '2.5s'; p1.setAttribute('fill', '#38BDF8'); }
             if (p2) { p2.style.animationDuration = '3s'; p2.setAttribute('fill', '#F472B6'); }
-            if (p3) { p3.style.animationDuration = '4s'; p3.setAttribute('fill', '#C084FC'); }
+            if (p3) { p3.style.animationDuration = '3.5s'; p3.setAttribute('fill', '#FB7185'); }
+            if (p4) { p4.style.animationDuration = '4s'; p4.setAttribute('fill', '#C084FC'); }
 
             if (nodePsycho) nodePsycho.setAttribute('fill', '#0D9488');
             if (nodeNeuro) nodeNeuro.setAttribute('fill', '#0284C7');
+            if (nodeEndocrine) nodeEndocrine.setAttribute('fill', '#EC4899');
             if (nodeImmune) nodeImmune.setAttribute('fill', '#A855F7');
 
             if (l1) l1.style.stroke = 'var(--border-color)';
             if (l2) l2.style.stroke = 'var(--border-color)';
             if (l3) l3.style.stroke = 'var(--border-color)';
+            if (l4) l4.style.stroke = 'var(--border-color)';
 
             if (rPathway) rPathway.textContent = "Parasympathetic / Vagal Restorative";
             if (rMolecules) rMolecules.textContent = "Low Cortisol, Balanced IL-10 (Anti-inflammatory)";
