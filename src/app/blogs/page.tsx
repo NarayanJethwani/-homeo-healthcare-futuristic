@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import BlogsClient, { Article } from "./BlogsClient";
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 export const revalidate = 3600; // Revalidate every 1 hour (ISR)
 
@@ -231,7 +232,11 @@ async function getWordPressPosts(): Promise<Article[]> {
 
 export default async function BlogsPage() {
   const initialArticles = await getWordPressPosts();
-  return <BlogsClient initialArticles={initialArticles} />;
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center text-mint font-mono">Loading...</div>}>
+      <BlogsClient initialArticles={initialArticles} />
+    </Suspense>
+  );
 }
 
 async function getWordPressPostBySlug(slug: string): Promise<Article | null> {

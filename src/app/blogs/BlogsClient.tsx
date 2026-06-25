@@ -7,7 +7,7 @@ import {
   User, Sparkles, Sun, AlignLeft, Maximize2, Minimize2, Type,
   Share2, Check
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Magnetic from "@/components/Magnetic";
 import Portal from "@/components/Portal";
@@ -1147,6 +1147,7 @@ const InstagramLogo = (props: React.SVGProps<SVGSVGElement>) => (
 
 export default function BlogsClient({ initialArticles }: { initialArticles: Article[] }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [filter, setFilter] = useState<
     | "All" 
     | "Skin" 
@@ -1729,20 +1730,21 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
 
   // Read URL query parameter on mount/load to auto-select article
   useEffect(() => {
-    if (typeof window !== "undefined" && liveArticles.length > 0 && !isUrlReadRef.current) {
-      isUrlReadRef.current = true;
-      const params = new URLSearchParams(window.location.search);
-      const articleId = params.get("article");
+    if (liveArticles.length > 0 && !isUrlReadRef.current) {
+      const articleId = searchParams.get("article");
       if (articleId) {
+        isUrlReadRef.current = true;
         const matched = liveArticles.find(
           art => art.id === articleId || art.title.toLowerCase().replace(/[^a-z0-9]+/g, "-") === articleId
         );
         if (matched) {
           setSelectedArticle(matched);
         }
+      } else {
+        isUrlReadRef.current = true;
       }
     }
-  }, [liveArticles]);
+  }, [liveArticles, searchParams]);
 
   // Sync selected article to URL query parameter
   useEffect(() => {
@@ -1765,6 +1767,85 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
         }
       }
     }
+  }, [selectedArticle]);
+
+  // Dynamic loading of premium scripts/styles when a premium article is open
+  useEffect(() => {
+    if (!selectedArticle) return;
+
+    const isPremium = typeof selectedArticle.content === "string" && selectedArticle.content.includes("pnei-widget-container");
+    if (!isPremium) return;
+
+    // 1. Inject CSS
+    const cssId = "homeo-premium-global-css";
+    let cssLink = document.getElementById(cssId) as HTMLLinkElement;
+    const timestamp = Date.now();
+    
+    if (!cssLink) {
+      cssLink = document.createElement("link");
+      cssLink.id = cssId;
+      cssLink.rel = "stylesheet";
+      cssLink.href = `https://admin.homeo.healthcare/wp-content/plugins/homeo-premium-injector/assets/css/premium-global.css?t=${timestamp}`;
+      document.head.appendChild(cssLink);
+    } else {
+      cssLink.href = `https://admin.homeo.healthcare/wp-content/plugins/homeo-premium-injector/assets/css/premium-global.css?t=${timestamp}`;
+    }
+
+    // 2. Load Scripts sequentially
+    const scripts = [
+      { id: "three-js-script", src: "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" },
+      { id: "gsap-script", src: "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" },
+      { id: "gsap-scrolltrigger-script", src: "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" },
+      { id: "homeo-premium-global-js", src: `https://admin.homeo.healthcare/wp-content/plugins/homeo-premium-injector/assets/js/premium-global.js?t=${timestamp}` }
+    ];
+
+    const loadScript = (scriptConf: { id: string, src: string }) => {
+      return new Promise<void>((resolve) => {
+        let scriptEl = document.getElementById(scriptConf.id) as HTMLScriptElement;
+        if (!scriptEl) {
+          scriptEl = document.createElement("script");
+          scriptEl.id = scriptConf.id;
+          scriptEl.src = scriptConf.src;
+          scriptEl.async = false;
+          scriptEl.onload = () => resolve();
+          scriptEl.onerror = () => {
+            console.error(`Failed to load script: ${scriptConf.src}`);
+            resolve();
+          };
+          document.body.appendChild(scriptEl);
+        } else {
+          // If it is our premium-global.js, reload it with new timestamp to trigger fresh init
+          if (scriptConf.id === "homeo-premium-global-js") {
+            scriptEl.remove();
+            const newScript = document.createElement("script");
+            newScript.id = scriptConf.id;
+            newScript.src = scriptConf.src;
+            newScript.async = false;
+            newScript.onload = () => resolve();
+            newScript.onerror = () => resolve();
+            document.body.appendChild(newScript);
+          } else {
+            resolve();
+          }
+        }
+      });
+    };
+
+    // Chain the loads
+    scripts.reduce((promise, scriptConf) => {
+      return promise.then(() => loadScript(scriptConf));
+    }, Promise.resolve()).then(() => {
+      // After all scripts are loaded, wait a tiny bit for render and trigger init
+      setTimeout(() => {
+        if (typeof (window as any).initAll === "function") {
+          (window as any).initAll();
+        }
+        if (typeof (window as any).checkAndInitQuiz === "function") {
+          (window as any).checkAndInitQuiz();
+        }
+      }, 100);
+    });
+
   }, [selectedArticle]);
 
   const filteredArticles = liveArticles.filter((art) => {
