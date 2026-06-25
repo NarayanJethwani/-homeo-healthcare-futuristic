@@ -71,6 +71,41 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // Helper to generate WhatsApp URL with assessment details
+    function getWhatsAppLink(basePurpose = "book a consultation") {
+        let waMsg = `Hi Dr. Narayan Jethwani,\n\nI have completed my health assessments on the Homeo Healthcare portal. Here is my current status:\n`;
+        
+        const PATH = [
+            { id: 'vitality', title: 'Vitality Profile' },
+            { id: 'stress', title: 'Stress & Nervous System' },
+            { id: 'sleep', title: 'Sleep & Recovery' },
+            { id: 'digestive', title: 'Digestive & Gut Health' },
+            { id: 'metabolic', title: 'Metabolic & Energy' },
+            { id: 'womens', title: 'Women\'s Endocrine' },
+            { id: 'mens', title: 'Men\'s Stamina' }
+        ];
+        
+        let completedCount = 0;
+        let scoresText = "";
+        PATH.forEach(item => {
+            const score = state.assessmentsCompleted[item.id];
+            if (score !== null && score !== undefined) {
+                scoresText += `- ${item.title}: ${score}/100\n`;
+                completedCount++;
+            }
+        });
+        
+        if (completedCount > 0) {
+            waMsg += scoresText;
+            waMsg += `\nOverall Health Twin Vitality Score: ${state.vitalityScore}/100\n\n`;
+            waMsg += `I would like to ${basePurpose} to discuss these results.`;
+        } else {
+            waMsg = `Hi Dr. Narayan Jethwani,\n\nI'd like to ${basePurpose} from Homeo Healthcare.`;
+        }
+        
+        return `https://wa.me/919000000000?text=${encodeURIComponent(waMsg)}`;
+    }
+
     // Load State from LocalStorage
     function loadState() {
         // Sync from parent digital twin state
@@ -230,6 +265,12 @@ document.addEventListener('DOMContentLoaded', () => {
         calculatePredictiveRisks();
         if (typeof renderWellnessPlan === 'function') {
             renderWellnessPlan(state.activeWellnessDay || 1);
+        }
+
+        // Update dashboard WhatsApp link with current scores
+        const dashWaBtn = document.getElementById('dash-whatsapp-btn');
+        if (dashWaBtn) {
+            dashWaBtn.href = getWhatsAppLink("book a constitutional consultation");
         }
     }
 
@@ -583,10 +624,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const hasTrigger = triggers.some(trigger => textLower.includes(trigger));
             
             if (hasTrigger) {
-                const waText = encodeURIComponent("Hi, I'd like to book a consultation with Dr. Narayan Jethwani from Homeo Healthcare.");
+                const waUrl = getWhatsAppLink("book a consultation");
                 whatsappBtnHTML = `
                     <div class="chat-cta-container" style="margin-top: 12px; margin-bottom: 4px;">
-                        <a href="https://wa.me/919000000000?text=${waText}" target="_blank" class="chat-whatsapp-btn" style="
+                        <a href="${waUrl}" target="_blank" class="chat-whatsapp-btn" style="
                             display: inline-flex;
                             align-items: center;
                             gap: 8px;
@@ -1416,6 +1457,36 @@ document.addEventListener('DOMContentLoaded', () => {
         if (actionsContainer) {
             actionsContainer.innerHTML = "";
             
+            // Create WhatsApp Share Button
+            const waBtn = document.createElement('a');
+            waBtn.className = "btn-whatsapp";
+            waBtn.href = getWhatsAppLink("book a consultation");
+            waBtn.target = "_blank";
+            waBtn.innerHTML = `<i class="fa-brands fa-whatsapp"></i> Share & Book via WhatsApp`;
+            waBtn.style.padding = "10px 20px";
+            waBtn.style.borderRadius = "8px";
+            waBtn.style.fontWeight = "bold";
+            waBtn.style.cursor = "pointer";
+            waBtn.style.background = "#25D366";
+            waBtn.style.color = "white";
+            waBtn.style.textDecoration = "none";
+            waBtn.style.display = "inline-flex";
+            waBtn.style.alignItems = "center";
+            waBtn.style.gap = "8px";
+            waBtn.style.boxShadow = "0 4px 12px rgba(37, 211, 102, 0.2)";
+            waBtn.style.transition = "transform 0.2s, box-shadow 0.2s";
+            waBtn.addEventListener('mouseenter', () => {
+                waBtn.style.transform = "scale(1.03)";
+            });
+            waBtn.addEventListener('mouseleave', () => {
+                waBtn.style.transform = "none";
+            });
+            waBtn.addEventListener('click', () => {
+                recalculateHealthMetrics();
+                saveState();
+                renderAssessmentGuide();
+            });
+
             if (nextAssessId) {
                 // Option A: Save & Start Next Assessment
                 const nextBtn = document.createElement('button');
@@ -1437,6 +1508,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     appendLucyMessage(`I have saved your score for the completed assessment and started the next recommended one: <strong>${NAMES[nextAssessId]}</strong>. Keep going to calibrate your full Health Twin!`);
                 });
                 actionsContainer.appendChild(nextBtn);
+
+                // Add WhatsApp button
+                actionsContainer.appendChild(waBtn);
 
                 // Option B: Save & Chat with Lucy
                 const chatBtnOpt = document.createElement('button');
@@ -1462,10 +1536,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 actionsContainer.appendChild(chatBtnOpt);
             } else {
                 // Option C: Save & Go to Chat Companion (All completed)
+                waBtn.style.fontSize = "1.05rem";
+                waBtn.style.padding = "12px 24px";
+                actionsContainer.appendChild(waBtn);
+
                 const finishBtn = document.createElement('button');
                 finishBtn.className = "btn-primary";
                 finishBtn.innerText = "Save & Go to Chat Companion";
-                finishBtn.style.padding = "10px 20px";
+                finishBtn.style.padding = "12px 24px";
                 finishBtn.style.borderRadius = "8px";
                 finishBtn.style.fontWeight = "bold";
                 finishBtn.style.cursor = "pointer";
