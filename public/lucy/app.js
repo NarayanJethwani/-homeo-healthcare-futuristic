@@ -2396,7 +2396,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (finishBtnElement) {
             finishBtnElement.innerText = dict.save_update_btn || "Save & Update Dashboard";
         }
-        }
 
         // 1. Populate Cumulative Scores List
         const scoresDiv = document.getElementById('assess-result-scores');
