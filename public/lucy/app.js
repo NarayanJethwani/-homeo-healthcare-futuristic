@@ -1848,8 +1848,9 @@ document.addEventListener('DOMContentLoaded', () => {
             utterance.onend = () => {
                 avatarRing.classList.remove('speaking');
             };
-            utterance.onerror = () => {
+            utterance.onerror = (err) => {
                 avatarRing.classList.remove('speaking');
+                console.error("SpeechSynthesis Error:", err);
             };
 
             window.speechSynthesis.speak(utterance);

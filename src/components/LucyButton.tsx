@@ -166,7 +166,7 @@ export default function LucyButton() {
             id="lucy-iframe"
             src={iframeSrc}
             className="w-full flex-1 border-none bg-transparent"
-            allow="microphone"
+            allow="microphone; autoplay"
           />
         </motion.div>
       )}
