@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucy — AI Doctor Assistant & Health Intelligence Guide | Homeo Healthcare</title>
+    <meta name="description" content="Meet Lucy, your AI health coach and clinical assistant at Homeo Healthcare. Get vitality assessments, symptom tracking, and report analysis guided by evidence-based homeopathy.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Styling -->
+    <link rel="stylesheet" href="styles.css?v=2.5.1">
+</head>
+<body class="light-mode">
+    <!-- Main App Container -->
+    <div id="app-wrapper">
+        
+        <!-- Header -->
+        <header id="app-header">
+            <div class="header-brand">
+                <span class="brand-logo"><i class="fa-solid fa-leaf"></i></span>
+                <div class="brand-text">
+                    <h1>Homeo Healthcare</h1>
+                    <span class="brand-tagline">Evidence-Based Homeopathy</span>
+                </div>
+            </div>
+            
+            <!-- Mid-header layout indicators -->
+            <div class="mode-selector-bar">
+                <span class="selector-label">Assistant Mode:</span>
+                <div class="mode-chips">
+                    <button class="mode-chip" data-mode="bubble" title="Floating assistant bubble on bottom-right">
+                        <i class="fa-solid fa-comment-dots"></i> Floating Bubble
+                    </button>
+                    <button class="mode-chip" data-mode="sidebar" title="Collapsible sidebar assistant">
+                        <i class="fa-solid fa-sidebar"></i> Sidebar
+                    </button>
+                    <button class="mode-chip active" data-mode="fullscreen" title="Immersive full-screen dashboard">
+                        <i class="fa-solid fa-desktop"></i> Full-Screen Coach
+                    </button>
+                </div>
+            </div>
+            
+            <div class="header-actions">
+                <!-- Theme Toggle -->
+                <button id="theme-toggle" class="header-btn" title="Toggle Light/Dark Theme">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+                
+                <!-- Language Selector -->
+                <div class="lang-selector">
+                    <i class="fa-solid fa-globe"></i>
+                    <select id="lang-select" title="Change Language">
+                        <option value="en">English</option>
+                        <option value="hi">हिन्दी (Hindi)</option>
+                        <option value="mr">मराठी (Marathi)</option>
+                    </select>
+                </div>
+                
+                <span class="founder-badge">Dr. Narayan Jethwani, MD (Hom.)</span>
+            </div>
+        </header>
+
+        <!-- Main Body Grid -->
+        <main id="app-main" class="layout-fullscreen">
+            
+            <!-- LEFT AREA: Dashboard & Core Modules (visible in Fullscreen/Sidebar mode) -->
+            <section id="dashboard-area">
+                
+                <!-- Welcome & Stats Banner -->
+                <div class="dashboard-banner">
+                    <div class="banner-welcome">
+                        <h2>Welcome to Your Health Intelligence Hub</h2>
+                        <p>Track your vitals, complete assessments, and coordinate your constitutional care.</p>
+                    </div>
+                    <div class="vitality-summary-card">
+                        <div class="score-ring-container">
+                            <svg class="score-ring" width="100" height="100">
+                                <circle class="ring-bg" cx="50" cy="50" r="42"></circle>
+                                <circle id="vitality-stroke" class="ring-fill" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="74"></circle>
+                            </svg>
+                            <div class="ring-label">
+                                <span id="vitality-val">72</span>
+                                <small>Vitality</small>
+                            </div>
+                        </div>
+                        <div class="score-meta">
+                            <div class="meta-item">
+                                <span class="meta-title">Biological Age</span>
+                                <span class="meta-value" id="bio-age-val">32 yrs</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-title">Target/Actual</span>
+                                <span class="meta-value text-teal" id="bio-age-diff">-3 yrs</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Primary Dashboard Tabs -->
+                <div class="dashboard-tabs">
+                    <button class="tab-btn" data-tab="chat"><i class="fa-solid fa-comments"></i> Chat Companion</button>
+                    <button class="tab-btn active" data-tab="overview"><i class="fa-solid fa-chart-pie"></i> Overview</button>
+                    <button class="tab-btn" data-tab="companion"><i class="fa-solid fa-heart-pulse"></i> AI Companion Logs</button>
+                    <button class="tab-btn" data-tab="assessments"><i class="fa-solid fa-clipboard-question"></i> Vitals Assessments</button>
+                    <button class="tab-btn" data-tab="symptoms"><i class="fa-solid fa-notes-medical"></i> Symptom Navigator</button>
+                    <button class="tab-btn" data-tab="reports"><i class="fa-solid fa-file-medical"></i> Report Interpreter</button>
+                    <button class="tab-btn" data-tab="materia"><i class="fa-solid fa-book-medical"></i> Materia Medica</button>
+                    <button class="tab-btn" data-tab="wellness"><i class="fa-solid fa-calendar-days"></i> Wellness Plan</button>
+                </div>
+
+                <!-- Tab Content Area -->
+                <div class="tab-content-wrapper">
+                    
+                    <!-- TAB 1: OVERVIEW -->
+                    <div class="tab-pane active" id="tab-overview">
+                        <div class="overview-grid">
+                            
+                            <!-- Organ Performance Card -->
+                            <div class="dash-card card-half">
+                                <div class="card-header">
+                                    <h3><i class="fa-solid fa-lungs"></i> Organ Performance Indices</h3>
+                                    <span class="card-subtitle">Self-Assessment & Biomarker Estimate</span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="bar-chart-list">
+                                        <div class="chart-row">
+                                            <span class="bar-label">Digestive Status</span>
+                                            <div class="bar-container">
+                                                <div class="bar-fill bg-emerald" style="width: 78%;"></div>
+                                            </div>
+                                            <span class="bar-value">78%</span>
+                                        </div>
+                                        <div class="chart-row">
+                                            <span class="bar-label">Metabolic Rate</span>
+                                            <div class="bar-container">
+                                                <div class="bar-fill bg-teal" style="width: 65%;"></div>
+                                            </div>
+                                            <span class="bar-value">65%</span>
+                                        </div>
+                                        <div class="chart-row">
+                                            <span class="bar-label">Sleep-Recovery</span>
+                                            <div class="bar-container">
+                                                <div class="bar-fill bg-blue" style="width: 70%;"></div>
+                                            </div>
+                                            <span class="bar-value">70%</span>
+                                        </div>
+                                        <div class="chart-row">
+                                            <span class="bar-label">Stress Resilience</span>
+                                            <div class="bar-container">
+                                                <div class="bar-fill bg-yellow" style="width: 58%;"></div>
+                                            </div>
+                                            <span class="bar-value">58%</span>
+                                        </div>
+                                        <div class="chart-row">
+                                            <span class="bar-label">Immune Vitality</span>
+                                            <div class="bar-container">
+                                                <div class="bar-fill bg-emerald" style="width: 82%;"></div>
+                                            </div>
+                                            <span class="bar-value">82%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Health Risk Scores -->
+                            <div class="dash-card card-half">
+                                <div class="card-header">
+                                    <h3><i class="fa-solid fa-shield-halved"></i> Health Risk Assessment</h3>
+                                    <span class="card-subtitle">Preventive Screening Profile</span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="risk-metrics">
+                                        <div class="risk-item">
+                                            <span class="risk-name">Cardiovascular Susceptibility</span>
+                                            <div class="risk-gauge">
+                                                <span class="gauge-marker" id="cardio-marker" style="left: 20%;"></span>
+                                                <span class="gauge-text" id="cardio-text">Low Risk</span>
+                                            </div>
+                                        </div>
+                                        <div class="risk-item">
+                                            <span class="risk-name">Metabolic Dysregulation</span>
+                                            <div class="risk-gauge">
+                                                <span class="gauge-marker" id="metabolic-marker" style="left: 55%;"></span>
+                                                <span class="gauge-text" id="metabolic-text">Moderate Risk</span>
+                                            </div>
+                                        </div>
+                                        <div class="risk-item">
+                                            <span class="risk-name">Chronic Inflammation Risk</span>
+                                            <div class="risk-gauge">
+                                                <span class="gauge-marker" id="inflammation-marker" style="left: 20%;"></span>
+                                                <span class="gauge-text" id="inflammation-text">Low Risk</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="dashboard-info-alert">
+                                        <i class="fa-solid fa-circle-info"></i>
+                                        <p>Risk calculations are based on constitution profiles and do not substitute diagnostic testing.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Appointments Card -->
+                            <div class="dash-card card-full">
+                                <div class="card-header">
+                                    <h3><i class="fa-solid fa-calendar-check"></i> Constitutional Consultation</h3>
+                                    <span class="card-subtitle">Connect with Dr. Narayan Jethwani, MD (Hom.)</span>
+                                </div>
+                                <div class="card-body appointment-widget">
+                                    <div class="appointment-details">
+                                        <p>Comprehensive constitutional assessment includes full history, vitality calculation, genetics-lifestyle correlation, and customized homeopathic prescription.</p>
+                                        <div class="doctor-badge-inline">
+                                            <i class="fa-solid fa-user-doctor"></i>
+                                            <div>
+                                                <strong>Dr. Narayan Jethwani</strong>
+                                                <span>Constitutional Homeopathic Physician • 20+ Yrs Exp</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="appointment-actions">
+                                        <a href="https://wa.me/919000000000?text=Hi,%20I'd%20like%20to%20book%20a%20constitutional%20consultation%20with%20Dr.%20Narayan%20Jethwani%20from%20Homeo%20Healthcare." target="_blank" class="appt-btn whatsapp">
+                                            <i class="fa-brands fa-whatsapp"></i> Chat on WhatsApp
+                                        </a>
+                                        <button class="appt-btn calendar" id="book-calendar-btn">
+                                            <i class="fa-regular fa-calendar-plus"></i> Schedule Follow-up
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: AI COMPANION DAILY LOGS -->
+                    <div class="tab-pane" id="tab-companion">
+                        <div class="companion-grid">
+                            
+                            <!-- Logs Card -->
+                            <div class="dash-card card-half">
+                                <div class="card-header">
+                                    <h3><i class="fa-solid fa-pen-to-square"></i> Log Daily Vitals</h3>
+                                    <span class="card-subtitle">Updates your overall Vitality Score in real-time</span>
+                                </div>
+                                <div class="card-body tracker-form">
+                                    <div class="form-group">
+                                        <label for="track-sleep"><i class="fa-solid fa-bed"></i> Sleep Duration (Hours)</label>
+                                        <input type="number" id="track-sleep" min="0" max="24" step="0.5" value="7">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="track-water"><i class="fa-solid fa-glass-water"></i> Water Intake (Glasses / 250ml)</label>
+                                        <div class="water-widget">
+                                            <button type="button" class="water-btn" id="water-minus">-</button>
+                                            <span id="water-count">6</span> Glasses
+                                            <button type="button" class="water-btn" id="water-plus">+</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="track-exercise"><i class="fa-solid fa-person-running"></i> Exercise (Minutes)</label>
+                                        <input type="number" id="track-exercise" min="0" max="300" step="5" value="30">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="track-stress"><i class="fa-solid fa-brain"></i> Stress Level (1-10)</label>
+                                        <div class="slider-container">
+                                            <input type="range" id="track-stress" min="1" max="10" value="4">
+                                            <span id="stress-val">4/10</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="track-weight"><i class="fa-solid fa-weight-scale"></i> Current Weight (kg)</label>
+                                        <input type="number" id="track-weight" min="10" max="250" step="0.1" value="70">
+                                    </div>
+
+                                    <button id="save-vitals-btn" class="btn-primary">
+                                        <i class="fa-solid fa-check"></i> Save Daily Metrics
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Dashboard Stats Visualizer -->
+                            <div class="dash-card card-half">
+                                <div class="card-header">
+                                    <h3><i class="fa-solid fa-ranking-stars"></i> Health Goals & Achievements</h3>
+                                    <span class="card-subtitle">Lucy's Real-time Feedback</span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="goals-status">
+                                        <div class="goal-item" id="goal-water">
+                                            <span class="goal-icon"><i class="fa-solid fa-circle-check text-muted"></i></span>
+                                            <div class="goal-details">
+                                                <strong>Water Intake</strong>
+                                                <span>6 / 8 glasses (75% of target)</span>
+                                            </div>
+                                        </div>
+                                        <div class="goal-item" id="goal-sleep">
+                                            <span class="goal-icon"><i class="fa-solid fa-circle-check text-emerald"></i></span>
+                                            <div class="goal-details">
+                                                <strong>Sleep Target</strong>
+                                                <span>7.0 Hours (Optimal range)</span>
+                                            </div>
+                                        </div>
+                                        <div class="goal-item" id="goal-stress">
+                                            <span class="goal-icon"><i class="fa-solid fa-circle-check text-emerald"></i></span>
+                                            <div class="goal-details">
+                                                <strong>Stress Resilience</strong>
+                                                <span>Level 4 (Mild Stress - Controlled)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="coach-encouragement" id="coach-tip">
+                                        <div class="coach-avatar-mini">
+                                            <img src="assets/lucy_avatar.png" alt="Lucy Avatar">
+                                        </div>
+                                        <div class="coach-speech-bubble">
+                                            <strong>Lucy's Tip:</strong>
+                                            <p id="coach-speech-text">"You are doing great! Drinking 2 more glasses of water will fully hydrate your cells and support digestive detoxification today."</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 3: HEALTH ASSESSMENT GUIDE -->
+                    <div class="tab-pane" id="tab-assessments">
+                        <div class="dash-card card-full">
+                            <div class="card-header flex-header">
+                                <div>
+                                    <h3><i class="fa-solid fa-clipboard-list"></i> Health Assessments</h3>
+                                    <span class="card-subtitle">Take an assessment to identify sub-health patterns</span>
+                                </div>
+                                <div class="assessment-select-wrap">
+                                    <select id="assessment-type" class="assess-select">
+                                        <option value="vitality">Vitality Assessment (General)</option>
+                                        <option value="stress">Stress & Nervous System Assessment</option>
+                                        <option value="sleep">Sleep & Recovery Assessment</option>
+                                        <option value="digestive">Digestive & Gut Health Assessment</option>
+                                        <option value="metabolic">Metabolic & Energy Assessment</option>
+                                        <option value="womens">Women's Health Assessment</option>
+                                        <option value="mens">Men's Health Assessment</option>
+                                    </select>
+                                    <button class="btn-primary btn-sm" id="start-assess-btn">Start Assessment</button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <!-- Assessment Start Panel -->
+                                <div id="assessment-intro" class="assessment-panel">
+                                    <div class="intro-graphic"><i class="fa-solid fa-heart-pulse"></i></div>
+                                    <h4>Your Assessment Guidance Path</h4>
+                                    <p class="intro-subtitle" style="margin-bottom: 20px; font-size: 0.8rem; color: var(--text-muted);">Initialize your Health Twin by completing assessments in the recommended order below.</p>
+                                    
+                                    <div class="assessment-guide-list" id="assessment-guide-list">
+                                        <!-- Dynamically filled -->
+                                    </div>
+                                    
+                                    <div class="assess-reset-wrap" style="margin-top: 24px; text-align: center;">
+                                        <button class="btn-secondary" id="reset-assess-btn" style="border: 1px solid #f87171; color: #ef4444; background: rgba(239, 68, 68, 0.03); padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 0.8rem;">
+                                            <i class="fa-solid fa-trash-can"></i> Reset All Assessments
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Active Assessment Panel -->
+                                <div id="assessment-active" class="assessment-panel hidden">
+                                    <div class="assess-header">
+                                        <span id="assess-progress">Question 1 of 5</span>
+                                        <h4 id="assess-title">Vitality Assessment</h4>
+                                    </div>
+                                    
+                                    <div class="question-container">
+                                        <p id="assess-question">How frequently do you feel physical fatigue or energy slumps during the day?</p>
+                                        <div class="options-list" id="assess-options">
+                                            <!-- Dynamically filled -->
+                                        </div>
+                                    </div>
+
+                                    <!-- Lucy's Explanation Box -->
+                                    <div class="lucy-question-explanation">
+                                        <div class="lucy-icon-small"><i class="fa-solid fa-user-doctor"></i></div>
+                                        <div class="explanation-text">
+                                            <strong>Lucy's Insight:</strong>
+                                            <p id="assess-explanation">Fatigue slumps, particularly in the afternoon, often correlate with blood glucose fluctuations or adrenal fatigue, which helps us gauge your metabolic baseline.</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="assess-navigation">
+                                        <button class="btn-secondary hidden" id="assess-prev-btn">Previous</button>
+                                        <button class="btn-primary" id="assess-next-btn" disabled>Next Question <i class="fa-solid fa-arrow-right"></i></button>
+                                    </div>
+                                </div>
+
+                                <!-- Assessment Result Panel -->
+                                <div id="assessment-result" class="assessment-panel hidden">
+                                    <div class="result-graphic success"><i class="fa-solid fa-circle-check"></i></div>
+                                    <h4>Assessment Completed!</h4>
+                                    <p id="assess-result-desc">Your Stress & Nervous System score is 68/100.</p>
+                                    
+                                    <div class="result-breakdown">
+                                        <h5>Key Recommendation:</h5>
+                                        <p id="assess-result-advice">We noticed moderate sleep disruption alongside high stress. Practicing natural stress-reduction techniques and maintaining hydration will support your vital force recovery.</p>
+                                    </div>
+                                    
+                                    <button class="btn-primary" id="assess-finish-btn">Save & Update Dashboard</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 4: SYMPTOM NAVIGATOR -->
+                    <div class="tab-pane" id="tab-symptoms">
+                        <div class="dash-card card-full">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-notes-medical"></i> Symptom Navigator</h3>
+                                <span class="card-subtitle">Document symptoms systematically for your next consultation</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="symptom-navigator-layout">
+                                    <div class="symptom-form">
+                                        <div class="form-group">
+                                            <label for="symp-concern">What is your main health concern / symptoms?</label>
+                                            <textarea id="symp-concern" placeholder="E.g., Throbbing headache on the right side, starting from the back of the head..."></textarea>
+                                        </div>
+                                        <div class="form-grid">
+                                            <div class="form-group">
+                                                <label for="symp-duration">Duration (How long?)</label>
+                                                <input type="text" id="symp-duration" placeholder="E.g., 3 days, 6 months...">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="symp-triggers">Aggravating Factors (What makes it worse?)</label>
+                                                <input type="text" id="symp-triggers" placeholder="E.g., Sunlight, noise, skipping meals...">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="symp-relieving">Relieving Factors (What makes it better?)</label>
+                                                <input type="text" id="symp-relieving" placeholder="E.g., Cold compress, lying in a dark room...">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="symp-associated">Associated Symptoms</label>
+                                                <input type="text" id="symp-associated" placeholder="E.g., Nausea, sensitivity to light...">
+                                            </div>
+                                        </div>
+                                        <button class="btn-primary" id="generate-symp-btn">Generate Doctor Summary</button>
+                                    </div>
+
+                                    <!-- Formatted Output -->
+                                    <div class="symptom-output-container">
+                                        <div class="symptom-output-header">
+                                            <h4>Symptom Summary for Doctor</h4>
+                                            <button class="btn-sm-action" id="copy-symp-btn" disabled><i class="fa-solid fa-copy"></i> Copy</button>
+                                        </div>
+                                        <div class="symptom-output-box" id="symptom-summary-output">
+                                            <div class="empty-state-output">
+                                                <i class="fa-solid fa-receipt"></i>
+                                                <p>Fill out the symptom details on the left and click 'Generate Doctor Summary' to create a structured clinical report.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 5: REPORT INTERPRETER -->
+                    <div class="tab-pane" id="tab-reports">
+                        <div class="dash-card card-full">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-file-pdf"></i> Health Report Interpreter</h3>
+                                <span class="card-subtitle">Upload blood test reports (CBC, Thyroid, Lipid, etc.) for a simple breakdown</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="report-interpreter-layout">
+                                    <div class="upload-zone" id="report-dropzone">
+                                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                                        <h4>Drag & Drop Blood Report PDF here</h4>
+                                        <p>or click to simulate a file upload</p>
+                                        <input type="file" id="report-file-input" class="hidden" accept=".pdf,.png,.jpg,.jpeg">
+                                        
+                                        <div class="simulate-files">
+                                            <span>Simulate Upload:</span>
+                                            <button class="simulate-file-btn" data-file="cbc">Complete Blood Count (CBC).pdf</button>
+                                            <button class="simulate-file-btn" data-file="lipid">Lipid Profile.pdf</button>
+                                            <button class="simulate-file-btn" data-file="thyroid">Thyroid Panel.pdf</button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Output Panel -->
+                                    <div class="report-output-panel">
+                                        <div class="report-output-header">
+                                            <h4>Easy-to-Understand Summary</h4>
+                                            <span class="report-badge hidden" id="report-type-badge">CBC Report</span>
+                                        </div>
+                                        <div class="report-output-content" id="report-summary-output">
+                                            <div class="empty-state-output">
+                                                <i class="fa-solid fa-microscope"></i>
+                                                <p>Upload a report or select one of the simulation buttons on the left to view a simplified interpretation of results.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 6: MATERIA MEDICA -->
+                    <div class="tab-pane" id="tab-materia">
+                        <div class="dash-card card-full">
+                            <div class="card-header flex-header">
+                                <div>
+                                    <h3><i class="fa-solid fa-book-medical"></i> Homeopathic Materia Medica (Educational Mode)</h3>
+                                    <span class="card-subtitle">Search common remedies, sources, keynotes, and modalities.</span>
+                                </div>
+                                <div class="materia-search-wrap">
+                                    <div class="search-input-group">
+                                        <i class="fa-solid fa-magnifying-glass"></i>
+                                        <input type="text" id="materia-search-input" placeholder="Search by name, symptom, or keyword...">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="materia-grid" id="materia-grid-container">
+                                    <!-- Remedy cards dynamically generated -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 7: PERSONALIZED WELLNESS PLAN -->
+                    <div class="tab-pane" id="tab-wellness">
+                        <div class="dash-card card-full">
+                            <div class="card-header flex-header">
+                                <div>
+                                    <h3><i class="fa-solid fa-calendar-days"></i> Your Personalized 7-Day Wellness Plan</h3>
+                                    <span class="card-subtitle">Customized routines based on your vitality assessments and risk factors.</span>
+                                </div>
+                                <div>
+                                    <button class="btn-primary btn-sm" id="download-wellness-btn"><i class="fa-solid fa-file-arrow-down"></i> Export Plan</button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="wellness-plan-container">
+                                    <div class="wellness-days-nav" id="wellness-days-tabs">
+                                        <button class="day-nav-btn active" data-day="1">Day 1</button>
+                                        <button class="day-nav-btn" data-day="2">Day 2</button>
+                                        <button class="day-nav-btn" data-day="3">Day 3</button>
+                                        <button class="day-nav-btn" data-day="4">Day 4</button>
+                                        <button class="day-nav-btn" data-day="5">Day 5</button>
+                                        <button class="day-nav-btn" data-day="6">Day 6</button>
+                                        <button class="day-nav-btn" data-day="7">Day 7</button>
+                                    </div>
+                                    
+                                    <div class="wellness-routines-grid" id="wellness-routines-content">
+                                        <!-- Dynamic routine sections generated in app.js -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- RIGHT AREA: Lucy Conversational Panel -->
+            <section id="assistant-area">
+                <div class="lucy-card">
+                    
+                    <!-- Lucy Panel Header -->
+                    <div class="lucy-header">
+                        <!-- Avatar Graphic -->
+                        <div class="lucy-avatar-container">
+                            <div class="avatar-ring"></div>
+                            <img src="assets/lucy_avatar.png" id="lucy-avatar-img" class="lucy-avatar" alt="Lucy AI Assistant">
+                        </div>
+                        <div class="lucy-header-info">
+                            <h3>Lucy</h3>
+                            <span class="lucy-status">AI Health Intelligence Guide</span>
+                        </div>
+                        <div class="lucy-header-actions" style="display: flex; gap: 4px; align-items: center;">
+                            <button id="show-dash-btn" class="action-icon-btn" title="Open Health Dashboard">
+                                <i class="fa-solid fa-chart-line"></i>
+                            </button>
+                            <button id="font-dec-btn" class="action-icon-btn" title="Decrease Font Size" style="font-weight: bold; font-size: 0.85rem; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">A-</button>
+                            <button id="font-inc-btn" class="action-icon-btn" title="Increase Font Size" style="font-weight: bold; font-size: 0.85rem; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">A+</button>
+                            <button id="chat-fullscreen-btn" class="action-icon-btn" title="Toggle Fullscreen Mode">
+                                <i class="fa-solid fa-expand"></i>
+                            </button>
+                            <button id="tts-toggle-btn" class="action-icon-btn active" title="Text-to-Speech (Toggle Voice)">
+                                <i class="fa-solid fa-volume-high"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Lucy Chat Thread -->
+                    <div class="chat-thread" id="chat-thread-container">
+                        <!-- Welcome message initially -->
+                        <div class="chat-msg lucy-msg">
+                            <div class="msg-avatar"><i class="fa-solid fa-user-doctor"></i></div>
+                            <div class="msg-content">
+                                <p>Hello! I am <strong>Lucy</strong>, your AI Health Intelligence Assistant for <strong>Homeo Healthcare</strong>. How may I assist you today?</p>
+                                <p>I can help you interpret vital scores, organize symptoms for doctor visits, guide you through health assessments, or answer questions about evidence-based homeopathy.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Typing Indicator -->
+                    <div class="typing-indicator-wrapper hidden" id="typing-indicator">
+                        <div class="typing-indicator">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+
+                    <!-- Quick Chips Container -->
+                    <div class="quick-chips-wrapper">
+                        <div class="quick-chips" id="quick-chips-container">
+                            <button class="chip-btn" data-action="assess">Take Health Assessment</button>
+                            <button class="chip-btn" data-action="symptoms">Track Symptoms</button>
+                            <button class="chip-btn" data-action="homeo">Explain Homeopathy</button>
+                            <button class="chip-btn" data-action="report">Interpret Report</button>
+                            <button class="chip-btn" data-action="appointment">Book Appointment</button>
+                        </div>
+                    </div>
+
+                    <!-- Speech Input Waveform indicator (hidden by default) -->
+                    <div class="voice-input-indicator hidden" id="voice-wave-container">
+                        <div class="waveform">
+                            <span class="wave-bar"></span>
+                            <span class="wave-bar"></span>
+                            <span class="wave-bar"></span>
+                            <span class="wave-bar"></span>
+                            <span class="wave-bar"></span>
+                        </div>
+                        <span class="voice-status-text">Listening... Speak now</span>
+                    </div>
+
+                    <!-- Chat Input Panel -->
+                    <div class="chat-input-panel">
+                        <button id="mic-btn" class="input-action-btn" title="Speak to Lucy (Speech-to-Text)">
+                            <i class="fa-solid fa-microphone"></i>
+                        </button>
+                        <input type="text" id="chat-input" placeholder="Type a message or click mic to speak..." autocomplete="off">
+                        <button id="send-btn" class="send-submit-btn" title="Send Message">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </div>
+
+                    <!-- Disclaimer Footer -->
+                    <div class="lucy-disclaimer">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        <span>Lucy does not replace a doctor. Treatment recommendations must be confirmed by a qualified homeopathic physician. In case of emergency, contact emergency services immediately.</span>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Floating Chat Trigger Button (only visible in 'bubble' or 'sidebar' modes when closed) -->
+    <div id="floating-bubble-trigger" class="hidden">
+        <div class="bubble-avatar-wrapper">
+            <img src="assets/lucy_avatar.png" alt="Lucy AI Bubble">
+            <span class="unread-dot"></span>
+        </div>
+        <span class="bubble-tooltip">Ask Lucy</span>
+    </div>
+
+    <!-- Background Scripts -->
+    <script src="knowledge_base.js?v=2.5.1"></script>
+    <script src="app.js?v=2.5.1"></script>
+</body>
+</html>

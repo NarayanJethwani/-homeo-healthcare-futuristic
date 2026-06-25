@@ -936,6 +936,29 @@ export default function HealthIntelligencePage() {
 
     stopSpeaking();
 
+    // Intercept specific actions to open Lucy's corresponding tabs
+    if (typeof window !== "undefined" && (window as any).openLucyTab) {
+      const lowerText = textToSend.toLowerCase();
+      if (lowerText.includes("assessment")) {
+        (window as any).openLucyTab("assessments");
+        return;
+      }
+      if (lowerText.includes("symptom")) {
+        (window as any).openLucyTab("symptoms");
+        return;
+      }
+      if (
+        lowerText.includes("report") || 
+        lowerText.includes("upload lab") || 
+        lowerText.includes("upload blood") ||
+        lowerText.includes("blood test") ||
+        lowerText.includes("compare with my health data")
+      ) {
+        (window as any).openLucyTab("reports");
+        return;
+      }
+    }
+
     // Check if it's a WhatsApp action first (ensures synchronous call for popup blockers)
     const isWhatsAppAction = 
       textToSend.startsWith("Remind Me") ||
@@ -2849,14 +2872,19 @@ export default function HealthIntelligencePage() {
                               ringColor = "stroke-amber-500";
                             } else if (score < 90) {
                               status = "Compensated";
-                              statusColor = "text-teal-500 bg-teal-50 dark:bg-teal-950/20 border-teal-100/20";
+                              statusColor = "text-teal-500 bg-teal-50 dark:teal-950/20 border-teal-100/20";
                               ringColor = "stroke-teal-500";
                             }
 
                             return (
                               <div 
                                 key={key} 
-                                className="glass-panel bg-white/40 dark:bg-slate-950/10 border border-slate-150 dark:border-slate-850 p-4.5 rounded-2xl flex flex-col items-center text-center justify-between h-[150px] transition-all hover:border-slate-350 dark:hover:border-slate-750"
+                                onClick={() => {
+                                  if (typeof window !== "undefined" && (window as any).openLucyTab) {
+                                    (window as any).openLucyTab("assessments");
+                                  }
+                                }}
+                                className="glass-panel bg-white/40 dark:bg-slate-950/10 border border-slate-150 dark:border-slate-850 p-4.5 rounded-2xl flex flex-col items-center text-center justify-between h-[150px] transition-all hover:border-slate-350 dark:hover:border-slate-750 cursor-pointer active:scale-98"
                               >
                                 <span className="text-[9px] font-extrabold uppercase tracking-widest text-slate-400">{label}</span>
                                 

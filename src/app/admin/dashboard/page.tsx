@@ -761,6 +761,7 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<"dashboard" | "intake" | "patients" | "diagnostics" | "analyzer" | "diet-lifestyle" | "treatment-planner" | "nexus-atlas" | "learning-hub" | "communication" | "ai-router" | "health-intelligence" | "cie" | "team" | "medical-academy">("dashboard");
   const [nexusSubTab, setNexusSubTab] = useState<"repertory" | "mind-map" | "materia-medica">("repertory");
   const [cieSubTab, setCieSubTab] = useState<"cockpit" | "intake" | "miasms" | "reports">("cockpit");
+  const [immersiveMode, setImmersiveMode] = useState(false);
 
   // Global Accessibility Controls
   const [globalFontSize, setGlobalFontSize] = useState<"S" | "M" | "L" | "XL">("M");
@@ -778,6 +779,12 @@ export default function AdminDashboard() {
     const isDark = document.documentElement.classList.contains("dark");
     setTheme(isDark ? "dark" : "light");
   }, []);
+
+  useEffect(() => {
+    if (activeTab !== "medical-academy") {
+      setImmersiveMode(false);
+    }
+  }, [activeTab]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -869,11 +876,25 @@ export default function AdminDashboard() {
   const chatEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const academyIframeRef = useRef<HTMLIFrameElement>(null);
+
   useEffect(() => {
     if (chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [intakeChatMessages]);
+
+  useEffect(() => {
+    if (activeTab === "medical-academy" && academyIframeRef.current?.contentWindow) {
+      academyIframeRef.current.contentWindow.postMessage({
+        type: "cios-settings-sync",
+        theme,
+        fontSize: globalFontSize,
+        zoomLevel: globalLayoutZoom,
+        readingWidth: globalReadingWidth
+      }, "*");
+    }
+  }, [activeTab, theme, globalFontSize, globalLayoutZoom, globalReadingWidth]);
   const [intakeInterviewIndex, setIntakeInterviewIndex] = useState<number>(0);
   const [intakeChatInput, setIntakeChatInput] = useState<string>("");
   const [intakeInterviewActive, setIntakeInterviewActive] = useState<boolean>(false);
@@ -7905,120 +7926,124 @@ ${err.message || err}`);
 
   return (
     <div 
-      className="min-h-screen flex flex-col bg-transparent transition-all duration-300"
+      className={`flex flex-col bg-transparent transition-all duration-300 ${
+        activeTab === "medical-academy" ? "h-screen overflow-hidden" : "min-h-screen"
+      }`}
     >
       
       {/* Dashboard Top Header */}
-      <header className="sticky top-0 z-35 w-full glass-panel border-b border-slate-900/5 px-6 py-4 flex items-center justify-between shadow-sm bg-white/70 backdrop-blur-md" style={{ fontSize: "16px" }}>
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-white border border-slate-200/50 flex items-center justify-center shadow-sm breathe">
-            <Activity className="w-5 h-5 text-mint" />
+      {!immersiveMode && (
+        <header className="sticky top-0 z-35 w-full glass-panel border-b border-slate-900/5 px-6 py-4 flex items-center justify-between shadow-sm bg-white/70 backdrop-blur-md" style={{ fontSize: "16px" }}>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-white border border-slate-200/50 flex items-center justify-center shadow-sm breathe">
+              <Activity className="w-5 h-5 text-mint" />
+            </div>
+            <div>
+              <h1 className="font-serif text-lg font-bold text-[#1A2421] leading-none mb-1">Dr. Jethwani's Clinical Intelligence OS™</h1>
+              <span className="text-[10px] text-mint font-bold uppercase tracking-wider">
+                {session?.role === "admin" ? "Master Control Panel (Admin)" : "Junior Medical Officer Panel"}
+              </span>
+            </div>
           </div>
-          <div>
-            <h1 className="font-serif text-lg font-bold text-[#1A2421] leading-none mb-1">Dr. Jethwani's Clinical Intelligence OS™</h1>
-            <span className="text-[10px] text-mint font-bold uppercase tracking-wider">
-              {session?.role === "admin" ? "Master Control Panel (Admin)" : "Junior Medical Officer Panel"}
-            </span>
-          </div>
-        </div>
 
-        {/* Global Accessibility Settings */}
-        <div className="hidden lg:flex items-center gap-4 px-4 py-1.5 bg-slate-100 rounded-full border border-slate-200">
-          {/* Font Sizer */}
-          <div className="flex items-center gap-1">
-            <span className="text-[9px] uppercase tracking-wider font-extrabold text-slate-500 mr-1">Font</span>
-            {(["S", "M", "L", "XL"] as const).map(size => (
-              <button
-                key={size}
-                onClick={() => setGlobalFontSize(size)}
-                className={`w-6 h-6 rounded-full text-[10px] font-bold transition-all cursor-pointer ${
-                  globalFontSize === size 
-                    ? "bg-mint text-white" 
-                    : "text-slate-500 hover:text-[#1A2421]"
-                }`}
+          {/* Global Accessibility Settings */}
+          <div className="hidden lg:flex items-center gap-4 px-4 py-1.5 bg-slate-100 rounded-full border border-slate-200">
+            {/* Font Sizer */}
+            <div className="flex items-center gap-1">
+              <span className="text-[9px] uppercase tracking-wider font-extrabold text-slate-500 mr-1">Font</span>
+              {(["S", "M", "L", "XL"] as const).map(size => (
+                <button
+                  key={size}
+                  onClick={() => setGlobalFontSize(size)}
+                  className={`w-6 h-6 rounded-full text-[10px] font-bold transition-all cursor-pointer ${
+                    globalFontSize === size 
+                      ? "bg-mint text-white" 
+                      : "text-slate-500 hover:text-[#1A2421]"
+                  }`}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+
+            <div className="w-px h-4 bg-slate-300" />
+
+            {/* Zoom Level */}
+            <div className="flex items-center gap-1">
+              <span className="text-[9px] uppercase tracking-wider font-extrabold text-slate-500 mr-1">Zoom</span>
+              <button 
+                onClick={() => setGlobalLayoutZoom(prev => Math.max(90, prev - 10))}
+                className="w-5 h-5 rounded bg-white border border-slate-200 text-xs font-bold flex items-center justify-center cursor-pointer hover:bg-slate-50"
               >
-                {size}
+                -
               </button>
-            ))}
-          </div>
-
-          <div className="w-px h-4 bg-slate-300" />
-
-          {/* Zoom Level */}
-          <div className="flex items-center gap-1">
-            <span className="text-[9px] uppercase tracking-wider font-extrabold text-slate-500 mr-1">Zoom</span>
-            <button 
-              onClick={() => setGlobalLayoutZoom(prev => Math.max(90, prev - 10))}
-              className="w-5 h-5 rounded bg-white border border-slate-200 text-xs font-bold flex items-center justify-center cursor-pointer hover:bg-slate-50"
-            >
-              -
-            </button>
-            <span className="text-[10px] font-mono font-bold w-10 text-center">{globalLayoutZoom}%</span>
-            <button 
-              onClick={() => setGlobalLayoutZoom(prev => Math.min(150, prev + 10))}
-              className="w-5 h-5 rounded bg-white border border-slate-200 text-xs font-bold flex items-center justify-center cursor-pointer hover:bg-slate-50"
-            >
-              +
-            </button>
-          </div>
-
-          <div className="w-px h-4 bg-slate-300" />
-
-          {/* Page Width */}
-          <div className="flex items-center gap-1">
-            <span className="text-[9px] uppercase tracking-wider font-extrabold text-slate-500 mr-1">Width</span>
-            {(["standard", "wide", "borderless"] as const).map(w => (
-              <button
-                key={w}
-                onClick={() => setGlobalReadingWidth(w)}
-                className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase transition-all cursor-pointer ${
-                  globalReadingWidth === w 
-                    ? "bg-mint text-white" 
-                    : "text-slate-500 hover:text-[#1A2421]"
-                }`}
+              <span className="text-[10px] font-mono font-bold w-10 text-center">{globalLayoutZoom}%</span>
+              <button 
+                onClick={() => setGlobalLayoutZoom(prev => Math.min(150, prev + 10))}
+                className="w-5 h-5 rounded bg-white border border-slate-200 text-xs font-bold flex items-center justify-center cursor-pointer hover:bg-slate-50"
               >
-                {w === "standard" ? "Std" : w === "wide" ? "Wide" : "Full"}
+                +
               </button>
-            ))}
+            </div>
+
+            <div className="w-px h-4 bg-slate-300" />
+
+            {/* Page Width */}
+            <div className="flex items-center gap-1">
+              <span className="text-[9px] uppercase tracking-wider font-extrabold text-slate-500 mr-1">Width</span>
+              {(["standard", "wide", "borderless"] as const).map(w => (
+                <button
+                  key={w}
+                  onClick={() => setGlobalReadingWidth(w)}
+                  className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase transition-all cursor-pointer ${
+                    globalReadingWidth === w 
+                      ? "bg-mint text-white" 
+                      : "text-slate-500 hover:text-[#1A2421]"
+                  }`}
+                >
+                  {w === "standard" ? "Std" : w === "wide" ? "Wide" : "Full"}
+                </button>
+              ))}
+            </div>
+
+            <div className="w-px h-4 bg-slate-300" />
+
+            {/* Theme Shift */}
+            <div className="flex items-center gap-1">
+              <span className="text-[9px] uppercase tracking-wider font-extrabold text-slate-500 mr-1">Theme</span>
+              <button
+                onClick={toggleTheme}
+                aria-label="Toggle theme"
+                className="w-6 h-6 rounded-full flex items-center justify-center text-slate-500 hover:text-[#1A2421] transition-all cursor-pointer hover:bg-slate-200/50"
+              >
+                {theme === "light" ? <Moon className="w-3.5 h-3.5" /> : <Sun className="w-3.5 h-3.5" />}
+              </button>
+            </div>
           </div>
 
-          <div className="w-px h-4 bg-slate-300" />
+          {/* User profile & Actions */}
+          <div className="flex items-center gap-4">
+            <div className="hidden sm:flex flex-col text-right">
+              <span className="text-xs font-bold text-[#1A2421]">{session?.name}</span>
+              <span className="text-[9px] text-slate-400 font-semibold">{session?.email}</span>
+            </div>
 
-          {/* Theme Shift */}
-          <div className="flex items-center gap-1">
-            <span className="text-[9px] uppercase tracking-wider font-extrabold text-slate-500 mr-1">Theme</span>
+            <div className="h-8 w-px bg-slate-900/5 hidden sm:block" />
+
+            {/* Logout button */}
             <button
-              onClick={toggleTheme}
-              aria-label="Toggle theme"
-              className="w-6 h-6 rounded-full flex items-center justify-center text-slate-500 hover:text-[#1A2421] transition-all cursor-pointer hover:bg-slate-200/50"
+              onClick={handleLogout}
+              className="flex items-center gap-1.5 px-3.5 py-2 border border-slate-200 rounded-full text-slate-500 hover:text-rose-600 hover:border-rose-200 hover:bg-rose-50/50 text-xs font-semibold tracking-wide transition-all duration-300 cursor-pointer"
             >
-              {theme === "light" ? <Moon className="w-3.5 h-3.5" /> : <Sun className="w-3.5 h-3.5" />}
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Sign Out</span>
             </button>
           </div>
-        </div>
-
-        {/* User profile & Actions */}
-        <div className="flex items-center gap-4">
-          <div className="hidden sm:flex flex-col text-right">
-            <span className="text-xs font-bold text-[#1A2421]">{session?.name}</span>
-            <span className="text-[9px] text-slate-400 font-semibold">{session?.email}</span>
-          </div>
-
-          <div className="h-8 w-px bg-slate-900/5 hidden sm:block" />
-
-          {/* Logout button */}
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-1.5 px-3.5 py-2 border border-slate-200 rounded-full text-slate-500 hover:text-rose-600 hover:border-rose-200 hover:bg-rose-50/50 text-xs font-semibold tracking-wide transition-all duration-300 cursor-pointer"
-          >
-            <LogOut className="w-3.5 h-3.5" />
-            <span>Sign Out</span>
-          </button>
-        </div>
-      </header>
+        </header>
+      )}
 
       {/* ── Subscription / Trial Warning Banner (non-admin doctors only) ── */}
-      {(() => {
+      {!immersiveMode && (() => {
         if (!session || session.role === "admin") return null;
         const sub = (session as any).subscription;
         if (!sub?.validUntil || sub.plan === "branch") return null;
@@ -8069,75 +8094,99 @@ ${err.message || err}`);
       {/* Main Panel Content */}
 
       <div 
-        className={`flex-1 w-full mx-auto px-6 py-8 flex flex-col gap-6 select-text transition-all duration-300 global-font-${globalFontSize} ${
-          globalReadingWidth === "standard" 
-            ? "max-w-7xl" 
-            : globalReadingWidth === "wide" 
-            ? "max-w-[95%]" 
-            : "max-w-full"
+        className={`flex-1 w-full mx-auto flex flex-col select-text transition-all duration-300 global-font-${globalFontSize} ${
+          activeTab === "medical-academy"
+            ? `gap-0 min-h-0 ${
+                globalReadingWidth === "standard" 
+                  ? "max-w-7xl px-6 pb-6" 
+                  : globalReadingWidth === "wide" 
+                  ? "max-w-[95%] px-6 pb-4" 
+                  : "max-w-none px-0 py-0"
+              }`
+            : `gap-6 py-8 ${
+                globalReadingWidth === "standard" 
+                  ? "max-w-7xl px-6" 
+                  : globalReadingWidth === "wide" 
+                  ? "max-w-[95%] px-6" 
+                  : "max-w-full px-6"
+              }`
         }`}
         style={{ 
-          zoom: `${globalLayoutZoom}%`,
+          zoom: activeTab === "medical-academy" ? "100%" : `${globalLayoutZoom}%`,
           fontSize: globalFontSize === "S" ? "12px" : globalFontSize === "M" ? "14px" : globalFontSize === "L" ? "16px" : "18px"
         }}
       >
         
-        {/* Navigation Tabs */}
-        <div className="flex flex-wrap bg-white/80 backdrop-blur-xl border border-slate-200/80 p-1.5 rounded-3xl gap-1.5 shadow-[0_8px_32px_0_rgba(15,23,42,0.06)] max-w-fit mb-6 transition-all duration-300 relative z-40">
-          {TABS_DEFINITION.map((tab) => {
-            const Icon = tab.icon;
-            const isTabActive = activeTab === tab.id;
-            const subtabs = SUBTABS_CONFIG[tab.id] || [];
+        {/* Navigation Tabs Wrapper */}
+        {!immersiveMode && (
+          <div className={activeTab === "medical-academy" ? "px-6 pt-6 flex items-center justify-between" : ""}>
+            {/* Navigation Tabs */}
+            <div className="flex flex-wrap bg-white/80 backdrop-blur-xl border border-slate-200/80 p-1.5 rounded-3xl gap-1.5 shadow-[0_8px_32px_0_rgba(15,23,42,0.06)] max-w-fit mb-6 transition-all duration-300 relative z-40">
+              {TABS_DEFINITION.map((tab) => {
+                const Icon = tab.icon;
+                const isTabActive = activeTab === tab.id;
+                const subtabs = SUBTABS_CONFIG[tab.id] || [];
 
-            // Hide admin-only tabs from non-admin users
-            if ((tab as any).adminOnly && session?.role !== "admin") return null;
+                // Hide admin-only tabs from non-admin users
+                if ((tab as any).adminOnly && session?.role !== "admin") return null;
 
-            return (
-              <div key={tab.id} className="relative group">
-                <button
-                  onClick={() => setActiveTab(tab.id as any)}
-                  className={`px-4 py-2.5 rounded-2xl text-[10.5px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer border-none hover:scale-102 active:scale-98 duration-200 relative ${
-                    isTabActive
-                      ? "text-white"
-                      : "text-slate-650 hover:text-slate-800 hover:bg-slate-50/50"
-                  }`}
-                >
-                  {isTabActive && (
-                    <motion.div
-                      layoutId="activeTabIndicator"
-                      className={`absolute inset-0 bg-gradient-to-r ${tab.gradient} ${tab.shadow} rounded-2xl z-0`}
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    />
-                  )}
-                  <span className="relative z-10 flex items-center gap-1.5">
-                    <Icon className="w-3.5 h-3.5" />
-                    <span>{tab.label}</span>
-                  </span>
-                </button>
+                return (
+                  <div key={tab.id} className="relative group">
+                    <button
+                      onClick={() => setActiveTab(tab.id as any)}
+                      className={`px-4 py-2.5 rounded-2xl text-[10.5px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer border-none hover:scale-102 active:scale-98 duration-200 relative ${
+                        isTabActive
+                          ? "text-white"
+                          : "text-slate-650 hover:text-slate-800 hover:bg-slate-50/50"
+                      }`}
+                    >
+                      {isTabActive && (
+                        <motion.div
+                          layoutId="activeTabIndicator"
+                          className={`absolute inset-0 bg-gradient-to-r ${tab.gradient} ${tab.shadow} rounded-2xl z-0`}
+                          transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                        />
+                      )}
+                      <span className="relative z-10 flex items-center gap-1.5">
+                        <Icon className="w-3.5 h-3.5" />
+                        <span>{tab.label}</span>
+                      </span>
+                    </button>
 
-                {subtabs.length > 0 && (
-                  <div className="absolute top-full left-0 pt-2 hidden group-hover:block z-[60] min-w-[210px] animate-fadeIn">
-                    <div className="bg-white/95 border border-slate-200/80 p-2 rounded-2xl shadow-[0_10px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)] flex flex-col gap-1">
-                      {subtabs.map((sub) => (
-                        <button
-                          key={sub.id}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleSubTabClick(tab.id as any, sub.id);
-                          }}
-                          className="w-full text-left px-3 py-1.5 rounded-xl text-[10px] font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all cursor-pointer border-none bg-transparent flex items-center gap-2"
-                        >
-                          <span className="w-1.5 h-1.5 rounded-full bg-slate-300 transition-colors duration-200 hover:bg-mint" />
-                          {sub.label}
-                        </button>
-                      ))}
-                    </div>
+                    {subtabs.length > 0 && (
+                      <div className="absolute top-full left-0 pt-2 hidden group-hover:block z-[60] min-w-[210px] animate-fadeIn">
+                        <div className="bg-white/95 border border-slate-200/80 p-2 rounded-2xl shadow-[0_10px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)] flex flex-col gap-1">
+                          {subtabs.map((sub) => (
+                            <button
+                              key={sub.id}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSubTabClick(tab.id as any, sub.id);
+                              }}
+                              className="w-full text-left px-3 py-1.5 rounded-xl text-[10px] font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all cursor-pointer border-none bg-transparent flex items-center gap-2"
+                            >
+                              <span className="w-1.5 h-1.5 rounded-full bg-slate-300 transition-colors duration-200 hover:bg-mint" />
+                              {sub.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+                );
+              })}
+            </div>
+            {activeTab === "medical-academy" && (
+              <button
+                onClick={() => setImmersiveMode(true)}
+                className="mb-6 px-4 py-2.5 bg-white/80 backdrop-blur-xl border border-slate-200/80 hover:bg-slate-50 text-slate-755 hover:text-blue-600 rounded-2xl text-[10.5px] font-bold uppercase tracking-wider shadow-sm transition-all duration-200 flex items-center gap-1.5 cursor-pointer z-40 hover:scale-102 active:scale-98"
+              >
+                <Maximize2 className="w-3.5 h-3.5 text-blue-500" />
+                <span>Immersive Mode</span>
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Tab Views */}
         <div className="flex-1 min-h-0 text-[#1A2421]">
@@ -13070,13 +13119,25 @@ ${err.message || err}`);
 
           {/* TAB: Medical Academy (3D Anatomy & Clinical Twin Lab) */}
           {activeTab === "medical-academy" && (
-            <div className="w-full h-[80vh] border border-slate-200/50 dark:border-slate-800/50 rounded-[32px] overflow-hidden bg-slate-950 shadow-2xl relative">
+            <div className="w-full h-full relative overflow-hidden">
               <iframe 
-                src="https://clinical-intelligence-engine.vercel.app?view=medical-academy&hide_sidebar=true" 
+                ref={academyIframeRef}
+                src={`https://clinical-intelligence-engine.vercel.app?view=medical-academy&hide_sidebar=true&theme=${theme}&font=${globalFontSize}&zoom=${globalLayoutZoom}&width=${globalReadingWidth}`} 
                 className="w-full h-full border-none"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; microphone"
                 allowFullScreen
               />
+              {/* Floating Exit Button for Immersive Mode */}
+              {immersiveMode && (
+                <button
+                  onClick={() => setImmersiveMode(false)}
+                  className="fixed top-4 right-4 z-[9999] px-4 py-2.5 bg-white/95 hover:bg-white text-slate-750 hover:text-rose-600 border border-slate-200/80 rounded-2xl text-[10.5px] font-bold uppercase tracking-wider shadow-[0_8px_30px_rgba(15,23,42,0.12)] hover:scale-105 active:scale-95 transition-all duration-200 flex items-center gap-1.5 cursor-pointer"
+                  title="Exit Full Screen"
+                >
+                  <Minimize2 className="w-3.5 h-3.5 text-rose-500 animate-pulse" />
+                  <span>Exit Immersive</span>
+                </button>
+              )}
             </div>
           )}
 

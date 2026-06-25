@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import ScrollProvider from "@/components/ScrollProvider";
 import CursorOrb from "@/components/CursorOrb";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import LucyButton from "@/components/LucyButton";
 import ClientCanvasWrapper from "@/components/ClientCanvasWrapper";
 import "./globals.css";
 
@@ -137,6 +138,9 @@ export default async function RootLayout({
 
             {/* Floating WhatsApp Quick-Chat Action */}
             {!isPortal && <WhatsAppButton />}
+
+            {/* Floating Lucy Assistant Action */}
+            {!isPortal && <LucyButton />}
           </div>
         </ScrollProvider>
       </body>

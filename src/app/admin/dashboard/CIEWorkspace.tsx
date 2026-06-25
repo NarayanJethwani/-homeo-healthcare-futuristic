@@ -1,7 +1,7 @@
 "use client";
 /* eslint-disable react-hooks/immutability, react-hooks/purity, react-hooks/refs */
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -859,12 +859,14 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
 
   // getCustomPatientBase has been moved outside the component.
 
-  const activeData = {
-    ...(PATIENT_LONGITUDINAL_DATA[activeDataKey] 
-      ? PATIENT_LONGITUDINAL_DATA[activeDataKey] 
-      : getCustomPatientBase(activeDataKey, patients)),
-    ...(patientOverrides[activeDataKey] || {})
-  };
+  const activeData = useMemo(() => {
+    return {
+      ...(PATIENT_LONGITUDINAL_DATA[activeDataKey] 
+        ? PATIENT_LONGITUDINAL_DATA[activeDataKey] 
+        : getCustomPatientBase(activeDataKey, patients)),
+      ...(patientOverrides[activeDataKey] || {})
+    };
+  }, [activeDataKey, patients, patientOverrides]);
 
   // Navigation Tabs: Unified Cockpit, Raw note parser intake, Miasms & Constitution, Compiled print reports
   const [activeTab, setActiveTab] = useState<"cockpit" | "intake" | "miasms" | "reports">("cockpit");
@@ -1203,7 +1205,8 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
       improveSleep: false,
       stopTreatment: false
     });
-  }, [selectedPatientId, activeData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedPatientId]);
 
   // Playback timer ticker
   useEffect(() => {
@@ -2115,6 +2118,34 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
         ctx.fillText(value.label.toUpperCase(), avgX, avgY);
       });
 
+      // --- Draw Concentric Ring Guidelines ---
+      const maxR = Math.min(width, height) * (isGraphFullscreen ? 0.44 : 0.42);
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const ringLayers = [
+        { r: maxR * 1.0, label: "System Layer" },
+        { r: maxR * 0.82, label: "Organ Layer" },
+        { r: maxR * 0.64, label: "Diagnostic Layer" },
+        { r: maxR * 0.46, label: "Symptom & Lab Layer" },
+        { r: maxR * 0.28, label: "Remedy & Miasm Layer" }
+      ];
+
+      ringLayers.forEach(ring => {
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, ring.r, 0, 2 * Math.PI);
+        ctx.strokeStyle = isDark ? "rgba(255, 255, 255, 0.035)" : "rgba(15, 23, 42, 0.035)";
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 6]);
+        ctx.stroke();
+        ctx.setLineDash([]); // Reset dash pattern
+
+        // Draw ring label at the top
+        ctx.fillStyle = isDark ? "rgba(255, 255, 255, 0.2)" : "rgba(15, 23, 42, 0.2)";
+        ctx.font = "bold 6.5px monospace";
+        ctx.textAlign = "center";
+        ctx.fillText(ring.label.toUpperCase(), centerX, centerY - ring.r - 2);
+      });
+
       // 2. Links drawing (with relationship weights & flows)
       links.forEach(link => {
         const s = nodes.find(n => n.id === link.source);
@@ -2390,9 +2421,29 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
       nodes.forEach(node => {
         if (node === draggedNodeRef.current) return; // Keep dragged node pinned
 
-        // Gravity pull to center
-        node.vx += (centerX - node.x) * kGravity;
-        node.vy += (centerY - node.y) * kGravity;
+        // Radial ring layout constraint force
+        const maxR = Math.min(width, height) * (isFullscreen ? 0.44 : 0.42);
+        let targetRadius = maxR;
+        if (node.type === "system") targetRadius = maxR * 1.0;
+        else if (node.type === "organ") targetRadius = maxR * 0.82;
+        else if (node.type === "diagnosis" || node.type === "risk") targetRadius = maxR * 0.64;
+        else if (node.type === "lab" || node.type === "symptom" || node.type === "modality") targetRadius = maxR * 0.46;
+        else if (node.type === "remedy" || node.type === "miasm") targetRadius = maxR * 0.28;
+
+        const dx = node.x - centerX;
+        const dy = node.y - centerY;
+        const currentDist = Math.sqrt(dx * dx + dy * dy) || 1;
+        
+        // Strength of radial force (keep it moderate so links and repulsion can still group them angularly)
+        const kRadial = isFullscreen ? 0.015 : 0.025;
+        const radialForce = (targetRadius - currentDist) * kRadial;
+        
+        node.vx += (dx / currentDist) * radialForce;
+        node.vy += (dy / currentDist) * radialForce;
+
+        // Weak gravity pull to center just in case
+        node.vx += (centerX - node.x) * (kGravity * 0.1);
+        node.vy += (centerY - node.y) * (kGravity * 0.1);
 
         // Apply friction
         node.vx *= damping;
