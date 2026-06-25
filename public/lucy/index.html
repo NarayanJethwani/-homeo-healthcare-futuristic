@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Styling -->
-    <link rel="stylesheet" href="styles.css?v=2.5.2">
+    <link rel="stylesheet" href="styles.css?v=2.5.3">
 </head>
 <body class="light-mode">
     <!-- Main App Container -->
@@ -409,9 +409,12 @@
                                     <div class="result-breakdown">
                                         <h5>Key Recommendation:</h5>
                                         <p id="assess-result-advice">We noticed moderate sleep disruption alongside high stress. Practicing natural stress-reduction techniques and maintaining hydration will support your vital force recovery.</p>
+                                        <div id="assess-result-scores" style="margin-top: 16px; border-top: 1px dashed rgba(13, 148, 136, 0.2); padding-top: 12px; text-align: left;"></div>
                                     </div>
                                     
-                                    <button class="btn-primary" id="assess-finish-btn">Save & Update Dashboard</button>
+                                    <div id="assess-result-actions" style="display: flex; gap: 12px; justify-content: center; margin-top: 20px; flex-wrap: wrap; width: 100%;">
+                                        <button class="btn-primary" id="assess-finish-btn">Save & Update Dashboard</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -675,7 +678,7 @@
     </div>
 
     <!-- Background Scripts -->
-    <script src="knowledge_base.js?v=2.5.2"></script>
-    <script src="app.js?v=2.5.2"></script>
+    <script src="knowledge_base.js?v=2.5.3"></script>
+    <script src="app.js?v=2.5.3"></script>
 </body>
 </html>

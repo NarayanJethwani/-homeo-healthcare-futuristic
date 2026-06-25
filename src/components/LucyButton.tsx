@@ -44,7 +44,7 @@ export default function LucyButton() {
     if (typeof window !== "undefined") {
       (window as any).openLucyTab = (tab: string) => {
         if (!hasOpened) {
-          setIframeSrc(`/lucy/index.html?embed=true&v=2.5.2&tab=${tab}`);
+          setIframeSrc(`/lucy/index.html?embed=true&v=2.5.3&tab=${tab}`);
           setHasOpened(true);
         } else {
           const iframe = document.getElementById('lucy-iframe') as HTMLIFrameElement;
@@ -65,7 +65,7 @@ export default function LucyButton() {
   // Open iframe on demand
   const handleToggle = () => {
     if (!hasOpened) {
-      setIframeSrc("/lucy/index.html?embed=true&v=2.5.2");
+      setIframeSrc("/lucy/index.html?embed=true&v=2.5.3");
       setHasOpened(true);
     }
     if (isOpen) {

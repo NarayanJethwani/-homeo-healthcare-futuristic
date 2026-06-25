@@ -1346,22 +1346,162 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             advice.innerText = "Low vital force resilience. We highly recommend booking a comprehensive consultation with Dr. Narayan Jethwani to build a personalized therapeutic plan.";
         }
+
+        // 1. Populate Cumulative Scores List
+        const scoresDiv = document.getElementById('assess-result-scores');
+        if (scoresDiv) {
+            let completedHtml = "";
+            let completedCount = 0;
+            const PATH = [
+                { id: 'vitality', title: 'Vitality Profile' },
+                { id: 'stress', title: 'Stress & Nervous System' },
+                { id: 'sleep', title: 'Sleep & Recovery' },
+                { id: 'digestive', title: 'Digestive & Gut Health' },
+                { id: 'metabolic', title: 'Metabolic & Energy' },
+                { id: 'womens', title: 'Women\'s Endocrine' },
+                { id: 'mens', title: 'Men\'s Stamina' }
+            ];
+            PATH.forEach(item => {
+                const score = state.assessmentsCompleted[item.id];
+                if (score !== null && score !== undefined) {
+                    completedHtml += `
+                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px;">
+                            <span style="color: var(--text-muted);">${item.title}</span>
+                            <strong style="color: var(--text-color);">${score}/100</strong>
+                        </div>`;
+                    completedCount++;
+                }
+            });
+            
+            // Recalculate health metrics to get the latest vitality score
+            recalculateHealthMetrics();
+
+            scoresDiv.innerHTML = `
+                <div style="font-size: 0.85rem; font-weight: bold; margin-bottom: 8px; color: var(--text-color);">
+                    Cumulative Status (${completedCount} completed):
+                </div>
+                ${completedHtml}
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-top: 8px; border-top: 1px solid rgba(13, 148, 136, 0.2); padding-top: 8px; color: var(--teal-500); font-weight: bold;">
+                    <span>Overall Vitality Score:</span>
+                    <span>${state.vitalityScore}/100</span>
+                </div>
+            `;
+        }
+
+        // 2. Identify the Next Recommended Assessment
+        const ORDER = ['vitality', 'stress', 'sleep', 'digestive', 'metabolic', 'womens', 'mens'];
+        const NAMES = {
+            vitality: "Vitality Profile",
+            stress: "Stress & Nervous System",
+            sleep: "Sleep & Recovery",
+            digestive: "Digestive & Gut Health",
+            metabolic: "Metabolic & Energy",
+            womens: "Women's Endocrine Profile",
+            mens: "Men's Stamina Profile"
+        };
+        
+        let nextAssessId = null;
+        const currentIndex = ORDER.indexOf(currentAssessType);
+        for (let i = 1; i <= ORDER.length; i++) {
+            const nextIdx = (currentIndex + i) % ORDER.length;
+            const nextId = ORDER[nextIdx];
+            if (state.assessmentsCompleted[nextId] === null || state.assessmentsCompleted[nextId] === undefined) {
+                nextAssessId = nextId;
+                break;
+            }
+        }
+
+        // 3. Render Dynamic Buttons
+        const actionsContainer = document.getElementById('assess-result-actions');
+        if (actionsContainer) {
+            actionsContainer.innerHTML = "";
+            
+            if (nextAssessId) {
+                // Option A: Save & Start Next Assessment
+                const nextBtn = document.createElement('button');
+                nextBtn.className = "btn-primary";
+                nextBtn.innerText = `Save & Start Next: ${NAMES[nextAssessId]}`;
+                nextBtn.style.padding = "10px 20px";
+                nextBtn.style.borderRadius = "8px";
+                nextBtn.style.fontWeight = "bold";
+                nextBtn.style.cursor = "pointer";
+                nextBtn.addEventListener('click', () => {
+                    recalculateHealthMetrics();
+                    saveState();
+                    renderAssessmentGuide();
+                    
+                    assessResult.classList.add('hidden');
+                    assessTypeSelect.value = nextAssessId;
+                    startAssessBtn.click();
+                    
+                    appendLucyMessage(`I have saved your score for the completed assessment and started the next recommended one: <strong>${NAMES[nextAssessId]}</strong>. Keep going to calibrate your full Health Twin!`);
+                });
+                actionsContainer.appendChild(nextBtn);
+
+                // Option B: Save & Chat with Lucy
+                const chatBtnOpt = document.createElement('button');
+                chatBtnOpt.className = "btn-secondary";
+                chatBtnOpt.innerText = "Save & Chat with Lucy";
+                chatBtnOpt.style.padding = "10px 20px";
+                chatBtnOpt.style.borderRadius = "8px";
+                chatBtnOpt.style.fontWeight = "bold";
+                chatBtnOpt.style.cursor = "pointer";
+                chatBtnOpt.addEventListener('click', () => {
+                    recalculateHealthMetrics();
+                    saveState();
+                    renderAssessmentGuide();
+
+                    const chatBtn = document.querySelector('[data-tab="chat"]');
+                    if (chatBtn) chatBtn.click();
+                    
+                    assessResult.classList.add('hidden');
+                    assessIntro.classList.remove('hidden');
+
+                    appendLucyMessage(`Congratulations on completing your assessment! Your overall Vitality Score is now updated to ${state.vitalityScore}/100. Let me know if you would like me to explain any recommendations.`);
+                });
+                actionsContainer.appendChild(chatBtnOpt);
+            } else {
+                // Option C: Save & Go to Chat Companion (All completed)
+                const finishBtn = document.createElement('button');
+                finishBtn.className = "btn-primary";
+                finishBtn.innerText = "Save & Go to Chat Companion";
+                finishBtn.style.padding = "10px 20px";
+                finishBtn.style.borderRadius = "8px";
+                finishBtn.style.fontWeight = "bold";
+                finishBtn.style.cursor = "pointer";
+                finishBtn.addEventListener('click', () => {
+                    recalculateHealthMetrics();
+                    saveState();
+                    renderAssessmentGuide();
+
+                    const chatBtn = document.querySelector('[data-tab="chat"]');
+                    if (chatBtn) chatBtn.click();
+                    
+                    assessResult.classList.add('hidden');
+                    assessIntro.classList.remove('hidden');
+
+                    appendLucyMessage(`Congratulations on completing all assessments! Your overall Vitality Score is now updated to ${state.vitalityScore}/100. Let me know if you would like me to explain any recommendations.`);
+                });
+                actionsContainer.appendChild(finishBtn);
+            }
+        }
     }
 
-    assessFinishBtn.addEventListener('click', () => {
-        recalculateHealthMetrics();
-        saveState();
-        renderAssessmentGuide();
+    if (assessFinishBtn) {
+        assessFinishBtn.addEventListener('click', () => {
+            recalculateHealthMetrics();
+            saveState();
+            renderAssessmentGuide();
 
-        // Switch back to Chat Companion (both in embed and standalone modes)
-        const chatBtn = document.querySelector('[data-tab="chat"]');
-        if (chatBtn) chatBtn.click();
-        
-        assessResult.classList.add('hidden');
-        assessIntro.classList.remove('hidden');
+            const chatBtn = document.querySelector('[data-tab="chat"]');
+            if (chatBtn) chatBtn.click();
+            
+            assessResult.classList.add('hidden');
+            assessIntro.classList.remove('hidden');
 
-        appendLucyMessage(`Congratulations on completing your assessment! Your overall Vitality Score is now updated to ${state.vitalityScore}/100. Let me know if you would like me to explain any recommendations.`);
-    });
+            appendLucyMessage(`Congratulations on completing your assessment! Your overall Vitality Score is now updated to ${state.vitalityScore}/100. Let me know if you would like me to explain any recommendations.`);
+        });
+    }
 
     // Run dynamic guide initialization on startup
     renderAssessmentGuide();
