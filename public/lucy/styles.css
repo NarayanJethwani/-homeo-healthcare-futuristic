@@ -1181,6 +1181,12 @@ body.dark-mode .bar-container {
     background: var(--bg-panel);
 }
 
+.option-card:focus,
+.option-card:focus-visible {
+    outline: 2px solid var(--teal);
+    outline-offset: 2px;
+}
+
 .option-card.selected {
     background: rgba(13, 148, 136, 0.08);
     border-color: var(--teal);

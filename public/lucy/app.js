@@ -168,6 +168,77 @@ document.addEventListener('DOMContentLoaded', () => {
     // Save State to LocalStorage
     function saveState() {
         localStorage.setItem('lucy_health_state', JSON.stringify(state));
+
+        // Bidirectional sync: write back to parent's digital twin state key in localStorage
+        try {
+            const parentTwinStr = localStorage.getItem('homeo_health_digital_twin_2026_v2');
+            let parentTwin = {};
+            if (parentTwinStr) {
+                parentTwin = JSON.parse(parentTwinStr) || {};
+            }
+
+            parentTwin.completedAssessments = parentTwin.completedAssessments || {};
+            parentTwin.history = parentTwin.history || [];
+
+            const mapping = {
+                vitality: 'metabolic_profile',
+                stress: 'anxiety_assessment',
+                sleep: 'sleep_apnea',
+                digestive: 'ibs_assessment',
+                metabolic: 'insulin_resistance',
+                womens: 'pcos_assessment'
+            };
+
+            let updatedAny = false;
+            for (const [lucyKey, val] of Object.entries(state.assessmentsCompleted)) {
+                if (val !== null && val !== undefined) {
+                    const parentId = mapping[lucyKey];
+                    if (parentId) {
+                        const existing = parentTwin.completedAssessments[parentId];
+                        if (!existing || existing.score !== val) {
+                            parentTwin.completedAssessments[parentId] = {
+                                date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+                                score: val,
+                                answers: {},
+                                symptoms: []
+                            };
+                            updatedAny = true;
+                        }
+                    }
+                }
+            }
+
+            if (state.vitalityScore !== parentTwin.overallScore || state.biologicalAge !== parentTwin.biologicalAge) {
+                parentTwin.overallScore = state.vitalityScore;
+                parentTwin.biologicalAge = state.biologicalAge;
+                updatedAny = true;
+            }
+
+            if (updatedAny) {
+                localStorage.setItem('homeo_health_digital_twin_2026_v2', JSON.stringify(parentTwin));
+            }
+        } catch (e) {
+            console.error("Failed to sync state to parent digital twin:", e);
+        }
+
+        // Trigger real-time postMessage event to parent page
+        try {
+            window.parent.postMessage({
+                type: 'sync-digital-twin',
+                vitalityScore: state.vitalityScore,
+                biologicalAge: state.biologicalAge,
+                assessments: state.assessmentsCompleted
+            }, '*');
+        } catch (e) {
+            // Ignore if parent window is inaccessible
+        }
+    }
+
+    function cancelSpeaking() {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            avatarRing.classList.remove('speaking');
+        }
     }
 
     // Recalculate Vitality and Biological Age
@@ -441,6 +512,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     tabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
+            cancelSpeaking();
             tabBtns.forEach(b => b.classList.remove('active'));
             tabPanes.forEach(p => p.classList.remove('active'));
 
@@ -530,8 +602,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ---------------------------------------------------------
     // Language & Translation Helpers
-    // ---------------------------------------------------------
-    const langSelect = document.getElementById('lang-select');
+    // ----------------------------------------------------    const langSelect = document.getElementById('lang-select');
     langSelect.addEventListener('change', (e) => {
         state.lang = e.target.value;
         saveState();
@@ -539,9 +610,19 @@ document.addEventListener('DOMContentLoaded', () => {
         // Auto greet in chosen language
         let greeting = "";
         if (state.lang === 'hi') {
-            greeting = "नमस्ते! मैं क्लारा हूँ, आपकी एआई स्वास्थ्य सहायक। मैं आपकी क्या मदद कर सकती हूँ?";
+            greeting = "नमस्ते! मैं लूसी हूँ, आपकी एआई स्वास्थ्य मार्गदर्शिका। मैं आज आपकी क्या मदद कर सकती हूँ?";
         } else if (state.lang === 'mr') {
-            greeting = "नमस्कार! मी क्लारा आहे, तुमची एआय आरोग्य सहाय्यक. मी तुम्हाला काय मदत करू शकते?";
+            greeting = "नमस्कार! मी लुसी आहे, तुमची एआय आरोग्य मार्गदर्शिका. मी आज तुम्हाला काय मदत करू शकते?";
+        } else if (state.lang === 'gu') {
+            greeting = "નમસ્તે! હું લ્યુસી છું, તમારી AI હેલ્થ ગાઇડ. આજે હું તમને કેવી રીતે મદદ કરી શકું?";
+        } else if (state.lang === 'bn') {
+            greeting = "নমস্কার! আমি লুসি, আপনার এআই হেলথ গাইড। আজ আমি আপনাকে কীভাবে সাহায্য করতে পারি?";
+        } else if (state.lang === 'te') {
+            greeting = "నమస్తే! నేను లూసీ, మీ AI హెల్త్ గైడ్. ఈరోజు నేను మీకు ఎలా సహాయపడగలను?";
+        } else if (state.lang === 'ta') {
+            greeting = "வணக்கம்! நான் லூசி, உங்கள் AI ஹெல்த் கைடு. இன்று நான் உங்களுக்கு எவ்வாறு உதவ முடியும்?";
+        } else if (state.lang === 'kn') {
+            greeting = "ನಮಸ್ತೆ! ನಾನು ಲೂಸಿ, ನಿಮ್ಮ AI ಹೆಲ್ತ್ ಗೈಡ್. ಇಂದು ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಬಹುದು?";
         } else {
             greeting = "Hello! I am Lucy, your AI health guide. How can I help you today?";
         }
@@ -553,6 +634,24 @@ document.addEventListener('DOMContentLoaded', () => {
         emergency: {
             en: "⚠️ CRITICAL ALERT: These symptoms may require urgent medical attention. Please contact emergency services (112 or 108) or visit the nearest hospital emergency room immediately.",
             hi: "⚠️ आपातकालीन चेतावनी: इन लक्षणों के लिए तत्काल चिकित्सा सहायता की आवश्यकता हो सकती है। कृपया तुरंत आपातकालीन सेवाओं (112 या 108) से संपर्क करें या निकटतम अस्पताल के आपातकालीन कक्ष में जाएं।",
+            mr: "⚠️ तातडीची चेतावणी: या लक्षणांसाठी तात्काळ वैद्यकीय मदतीची आवश्यकता असू शकते. कृपया त्वरित आपत्कालीन सेवांशी (112 किंवा 108) संपर्क साधा किंवा जवळच्या रुग्णालयातील आपत्कालीन विभागात जा.",
+            gu: "⚠️ કટોકટીની ચેતવણી: આ લક્ષણો માટે તાત્કાલિક તબીબી સારવારની જરૂર પડી શકે છે. કૃપા કરીને તાત્કાલિક કટોકટી સેવાઓ (112 અથવા 108) નો સંપર્ક કરો અથવા નજીકની હોસ્પિટલના ઇમરજન્સી રૂમની મુલાકાત લો.",
+            bn: "⚠️ জরুরি সতর্কতা: এই লক্ষণগুলির জন্য জরুরি চিকিৎসার প্রয়োজন হতে পারে। অনুগ্রহ করে অবিলম্বে জরুরি পরিষেবা (112 বা 108) এর সাথে যোগাযোগ করুন অথবা নিকটস্থ হাসপাতালের জরুরি বিভাগে যান।",
+            te: "⚠️ అత్యవసర హెచ్చరిక: ఈ లక్షణాలకు తక్షణ వైద్య సహాయం అవసరం కావచ్చు. దయచేసి వెంటనే అత్యవసర సేవలను (112 లేదా 108) సంప్రదించండి లేదా సమీపంలోని ఆసుపత్రి అత్యవసర విభాగానికి వెళ్లండి.",
+            ta: "⚠️ அவசர எச்சரிக்கை: இந்த அறிகுறிகளுக்கு அவசர மருத்துவ சிகிச்சை தேவைப்படலாம். தயவுசெய்து உடனடியாக அவசர சேவைகளை (112 లేదా 108) தொடர்பு கொள்ளவும் లేదా அருகிலுள்ள மருத்துவமனையின் அவசர சிகிச்சைப் பிரிவுக்குச் செல்லவும்.",
+            kn: "⚠️ ತುರ್ತು ಎಚ್ಚರಿಕೆ: ಈ ರೋಗಲಕ್ಷಣಗಳಿಗೆ ತಕ್ಷಣದ ವೈದ್ಯಕೀಯ ಚಿಕಿತ್ಸೆಯ ಅಗತ್ಯವಿರಬಹುದು. ದಯವಿಟ್ಟು ತಕ್ಷಣವೇ ತುರ್ತು ಸೇವೆಗಳನ್ನು (112 ಅಥವಾ 108) ಸಂಪರ್ಕಿಸಿ ಅಥವಾ ಹತ್ತಿರದ ಆಸ್ಪತ್ರೆಯ ತುರ್ತು ಚಿಕಿತ್ಸಾ ವಿಭಾಗಕ್ಕೆ ಭೇಟಿ ನೀಡಿ."
+        },
+        disclaimer: {
+            en: "Treatment recommendations should be confirmed by a qualified homeopathic physician.",
+            hi: "उपचार संबंधी सिफारिशों की पुष्टि एक योग्य होम्योपैथिक चिकित्सक द्वारा की जानी चाहिए।",
+            mr: "औषधोपचाराच्या शिफारसींची खात्री पात्र होमिओपॅथी डॉक्टरांकडून केली पाहिजे.",
+            gu: "સારવારની ભલામણો લાયક હોમિયોપેથિક ડૉક્ટર દ્વારા કન્ફર્મ થવી જોઈએ.",
+            bn: "চিকিৎসার সুপারিশগুলি একজন যোগ্যতাসম্পন্ন হোমিওপ্যাথিক চিকিৎসক দ্বারা নিশ্চিত করা উচিত।",
+            te: "చికిత్స సిఫార్సులు అర్హత కలిగిన హోమియోపతి వైద్యునిచే ధృవీకరించబడాలి.",
+            ta: "சிகிச்சை பரிந்துரைகள் தகுதி வாய்ந்த ஹோமியோபதி மருத்துவரால் உறுதிப்படுத்தப்பட வேண்டும்.",
+            kn: "ಚಿಕಿತ್ಸೆಯ ಶಿಫಾರಸುಗಳನ್ನು ಅರ್ಹ ಹೋಮಿಯೋಪತಿ ವೈದ್ಯರಿಂದ ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಬೇಕು."
+        }
+    };�",
             mr: "⚠️ तातडीची चेतावणी: या लक्षणांसाठी तात्काळ वैद्यकीय मदतीची आवश्यकता असू शकते. कृपया त्वरित आपत्कालीन सेवांशी (112 किंवा 108) संपर्क साधा किंवा जवळच्या रुग्णालयातील आपत्कालीन विभागात जा."
         },
         disclaimer: {
@@ -592,6 +691,8 @@ document.addEventListener('DOMContentLoaded', () => {
     chatInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') handleSendMessage();
     });
+    chatInput.addEventListener('focus', cancelSpeaking);
+    chatInput.addEventListener('input', cancelSpeaking);
 
     function appendUserMessage(text) {
         const msg = document.createElement('div');
@@ -691,6 +792,109 @@ document.addEventListener('DOMContentLoaded', () => {
         return emergencyKeywords.some(keyword => lowercase.includes(keyword));
     }
 
+    const MOCK_LOCAL_TRANSLATIONS = {
+        appointment: {
+            en: "Would you like me to help schedule a consultation with **Dr. Narayan Jethwani**? You can use the Quick Call to Action buttons on the dashboard or directly chat with the reception on WhatsApp.",
+            hi: "क्या आप डॉ. नारायण जेठवानी के साथ परामर्श का समय निर्धारित करना चाहते हैं? कृपया डैशबोर्ड पर अपॉइंटमेंट बटन का उपयोग करें या सीधे व्हाट्सएप पर चैट करें।",
+            mr: "तुम्हाला डॉ. नारायण जेठवानी यांच्यासोबत भेटीची वेळ बुक करायची आहे का? कृपया यासाठी डाव्या बाजूच्या अपॉइंटमेंट पॅनेलचा वापर करा किंवा थेट व्हॉट्सॲपवर संपर्क साधा.",
+            gu: "શું તમે ડૉ. નારાયણ જેઠવાની સાથે પરામર્શ નક્કી કરવા માંગો છો? કૃપા કરીને ડેશબોર્ડ પરના એપોઇન્ટમેન્ટ બટનનો ઉપયોગ કરો અથવા સીધા વોટ્સએપ પર ચેટ કરો.",
+            bn: "আপনি কি ডাঃ নারায়ণ জেঠওয়ানির সাথে অ্যাপয়েন্টমেন্ট নির্ধারণ করতে চান? দয়া করে ড্যাশবোর্ডের অ্যাপয়েন্টমেন্ট বোতামটি ব্যবহার করুন বা সরাসরি হোয়াটসঅ্যাপে যোগাযোগ করুন।",
+            te: "మీరు డాక్టర్ నారాయణ్ జెత్వాని గారితో కన్సల్టేషన్ బుక్ చేయాలనుకుంటున్నారా? దయచేసి డ్యాష్‌బోర్డ్ లో ఉన్న అపాయింట్‌మెంట్ బటన్ ఉపయోగించండి లేదా నేరుగా వాట్సాప్ లో చాట్ చేయండి.",
+            ta: "நீங்கள்  டாக்டர் நாராயண் ஜெத்வானியுடன் ஆலோசனைக்கான சந்திப்பை ஒதுக்க விரும்புகிறீர்களா? தயவுசெய்து டேஷ்போர்டில் உள்ள அப்பாயிண்ட்மெண்ட் பட்டனைப் பயன்படுத்தவும் அல்லது நேரடியாக வாட்ஸ்அப்பில் அரட்டையடிக்கவும்.",
+            kn: "ನೀವು ಡಾ. ನಾರಾಯಣ್ ಜೇಠ್ವಾನಿ ಅವರೊಂದಿಗೆ ಸಮಾಲೋಚನೆಯನ್ನು ನಿಗದಿಪಡಿಸಲು ಬಯಸುತ್ತೀರಾ? ದಯವಿಟ್ಟು ಡ್ಯಾಶ್‌ಬೋರ್ಡ್‌ನಲ್ಲಿರುವ ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಬಟನ್ ಬಳಸಿ ಅಥವಾ ನೇರವಾಗಿ ವಾಟ್ಸಾಪ್‌ನಲ್ಲಿ ಚಾಟ್ ಮಾಡಿ."
+        },
+        vitality: {
+            en: "Your current **Vitality Score is {score}/100** and estimated **Biological Age is {age} years** (chronological baseline is 35). A comprehensive vitality metric is calibrated using sleep patterns, exercise, stress levels, and completed wellness profile assessments.",
+            hi: "आपका वर्तमान **वाइटैलिटी स्कोर {score}/100** है और अनुमानित **जैविक आयु {age} वर्ष** है (कालानुक्रमिक आधार 35 है)। यह स्कोर आपके दैनिक लॉग और पूर्ण किए गए स्वास्थ्य आकलनों पर आधारित है।",
+            mr: "तुमचा चालू **वाइटॅलिटी स्कोअर {score}/100** असून अंदाजित **जैविक वय {age} वर्षे** आहे (chronological baseline ३५ वर्षे आहे). हे वय तुमच्या झोप, व्यायाम, पाणी आणि दैनंदिन स्वास्थ्य आकलनावरून ठरवले जाते.",
+            gu: "તમારો વર્તમાન **વાઇટેલિટી સ્કોર {score}/100** છે અને જૈવિક ઉંમર {age} વર્ષ છે. સ્વસ્થ જીવનશૈલી અપનાવીને તેને હજી સુધારી શકાય છે.",
+            bn: "আপনার বর্তমান **ভাইট্যালিটি স্কোর {score}/100** এবং জৈবিক বয়স {age} বছর। স্বাস্থ্যকর জীবনযাত্রার মাধ্যমে এটি আরও উন্নত করা সম্ভব।",
+            te: "మీ ప్రస్తుత **వైటాలిటీ స్కోర్ {score}/100** మరియు జీవసంబంధ వయస్సు {age} సంవత్సరాలు. ఆరోగ్యకరమైన జీవనశైలితో దీనిని మరింత మెరుగుపరచవచ్చు.",
+            ta: "உங்களது தற்போதைய **வைட்டாலிటీ ஸ்கோர் {score}/100** மற்றும் உயிரியல் வயது {age} ஆண்டுகள் ஆகும். ஆரோக்கியமான வாழ்க்கை முறை மூலம் இதை மேலும் மேம்படுத்தலாம்.",
+            kn: "ನಿಮ್ಮ ಪ್ರಸ್ತುತ **ವೈಟಾಲಿಟಿ ಸ್ಕೋರ್ {score}/100** ಮತ್ತು ಜೈವಿಕ ವಯಸ್ಸು {age} ವರ್ಷಗಳು. ಆರೋಗ್ಯಕರ ಜೀವನಶೈಲಿಯಿಂದ ಇದನ್ನು ಇನ್ನಷ್ಟು ಸುಧಾರಿಸಬಹುದು."
+        },
+        water: {
+            en: "Proper hydration is crucial. You've logged {water} glasses of water today. Drinking 2.5 to 3 liters of filtered water daily maintains cellular hydration and supports renal clearance. Aim for at least 8 glasses!",
+            hi: "पानी पीना अत्यंत आवश्यक है। आज आपने {water} गिलास पानी पिया है। आदर्श रूप से प्रतिदिन कम से कम 8 गिलास (2 लीटर) पानी पीना चाहिए ताकि शरीर के विषैले तत्व बाहर निकल सकें।",
+            mr: "योग्य जलhydration महत्वाचे आहे. आपण आज {water} ग्लास पाणी प्यायले आहे. दररोज किमान ८ ग्लास (२ लीटर) पाणी पिण्याचे ध्येय ठेवा जेणेकरून शरीरातील विषारी घटक बाहेर पडतील.",
+            gu: "યોગ્ય હાઇડ્રેશન ખૂબ મહત્વનું છે. આજે તમે {water} ગ્લાસ પાણી પીધું છે. દરરોજ ઓછામાં ઓછા ૮ ગ્લાસ (૨ લિટર) પાણી પીવાનું લક્ષ્ય રાખો!",
+            bn: "পর্যাপ্ত জল পান করা অত্যন্ত গুরুত্বপূর্ণ। আজ আপনি {water} গ্লাস জল পান করেছেন। প্রতিদিন কমপক্ষে ৮ গ্লাস (২ লিটার) জল পান করার লক্ষ্য রাখুন!",
+            te: "శరీరానికి తగినంత నీరు అందించడం చాలా ముఖ్యం. ఈరోజు మీరు {water} గ్లాసుల నీరు తాగారు. ప్రతిరోజూ కనీసం 8 గ్లాసుల (2 లీటర్లు) నీరు తాగాలని లక్ష్యంగా పెట్టుకోండి!",
+            ta: "சரியான நீரேற்றம் மிகவும் முக்கியம். இன்று நீங்கள் {water} ग्लास தண்ணீர் குடித்திருக்கிறீர்கள். தினமும் குறைந்தது 8 கிளாஸ் (2 லிட்டர்) தண்ணீர் குடிக்க இலக்கு வையுங்கள்!",
+            kn: "ದೇಹದ ಹೈಡ್ರೇಶನ್ ತುಂಬಾ ಮುಖ್ಯವಾಗಿದೆ. ಇಂದು ನೀವು {water} ಗ್ಲಾಸ್ ನೀರು ಕುಡಿದಿದ್ದೀರಿ. ಪ್ರತಿದಿನ ಕನಿಷ್ಠ 8 ಗ್ಲಾಸ್ (2 ಲೀಟರ್) ನೀರು ಕುಡಿಯುವ ಗುರಿ ಇಟ್ಟುಕೊಳ್ಳಿ!"
+        },
+        sleep: {
+            en: "You logged {sleep} hours of sleep last night. Tips for optimal sleep recovery include: maintaining a consistent sleep schedule and avoiding screen exposure at least 1 hour before sleeping to support natural melatonin production.",
+            hi: "आपने कल रात {sleep} घंटे की नींद ली। बेहतर नींद के लिए सुझाव: मोबाइल/स्क्रीन सोने से 1 घंटे पहले बंद करें और सोने का समय निश्चित रखें ताकि प्राकृतिक मेलाटोनिन बन सके।",
+            mr: "तुम्ही काल रात्री {sleep} तास झोप घेतली. चांगल्या झोपेसाठी टिप्स: झोपण्यापूर्वी १ तास आधी स्क्रीन बंद करा आणि वेळेवर झोपा जेणेकरून शांत झोप येईल.",
+            gu: "તમે ગઈકાલે રાત્રે {sleep} કલાકની ઊંઘ લીધી. સારી ઊંઘ માટે ટિપ્સ: સૂવાના ૧ કલાક પહેલા સ્ક્રીન બંધ કરો અને સમય નક્કી રાખો.",
+            bn: "আপনি গত রাতে {sleep} ঘণ্টা ঘুমিয়েছেন। ভালো ঘুমের জন্য পরামর্শ: ঘুমানোর ১ ঘণ্টা আগে স্ক্রিন বন্ধ করুন এবং নিয়মিত সময় বজায় রাখুন।",
+            te: "మీరు నిన్న రాత్రి {sleep} గంటలు నిద్రపోయారు. మంచి నిద్ర కోసం చిట్కాలు: నిద్రపోయే 1 గంట ముందు స్క్రీన్ ఆపివేయండి.",
+            ta: "நீங்கள் நேற்று இரவு {sleep} மணிநேரம் தூங்கினீர்கள். நல்ல தூக்கத்திற்கான குறிப்புகள்: தூங்குவதற்கு 1 மணி நேரத்திற்கு முன் மொபைலைத் தவிர்க்கவும்.",
+            kn: "ನಿಮ್ಮು ನಿನ್ನೆ ರಾತ್ರಿ {sleep} ಗಂಟೆ ನಿದ್ರಿಸಿದ್ದೀರಿ. ಉತ್ತಮ ನಿದ್ರೆಗಾಗಿ ಸಲಹೆಗಳು: ಮಲಗುವ 1 ಗಂಟೆ ಮೊದಲು ಮೊಬೈಲ್ ಬಳಕೆಯನ್ನು ನಿಲ್ಲಿಸಿ."
+        },
+        assess: {
+            en: "I can guide you through a comprehensive wellness assessment (Vitality, Stress, Digestive, Metabolic, Sleep). Please use the **Vitals Assessments** tab on the left to start a structured questionnaire!",
+            hi: "मैं स्वास्थ्य मूल्यांकन (वाइटैलिटी, तनाव, पाचन, चयापचय, नींद) में आपका मार्गदर्शन कर सकती हूँ। कृपया शुरू करने के लिए बाईं ओर 'Vitals Assessments' टैब पर जाएँ।",
+            mr: "मी आरोग्य मूल्यांकन (वाइटॅलिटी, ताण, पचन, चयापचय, झोप) मध्ये मदत करू शकते। कृपया डाव्या बाजूच्या 'Vitals Assessments' टॅबचा वापर करा।",
+            gu: "હું તમને આરોગ્ય મૂલ્યાંકન (વાઇટેલિટી, તણાવ, પાચન, ચયાપચય, ઊંઘ) માં માર્ગદર્શન આપી શકું છું. કૃપા કરીને શરૂ કરવા માટે ડાબી બાજુના 'Vitals Assessments' ટેબ પર જાઓ.",
+            bn: "আমি আপনাকে স্বাস্থ্য মূল্যায়নের (ভাইট্যালিটি, মানসিক চাপ, পরিপাক, বিপাক, ঘুম) নির্দেশিকা দিতে পারি। দয়া করে বাম দিকের 'Vitals Assessments' ট্যাবে যান।",
+            te: "నేను మీకు ఆరోగ్య అంచనా (వైటాలిటీ, ఒత్తిడి, జీర్ణక్రియ, జీవక్రియ, నిద్ర) లో సహాయపడగలను. దయచేసి ఎడమ వైపున ఉన్న 'Vitals Assessments' ట్యాబ్‌ను ఉపయోగించండి.",
+            ta: "நான் உங்களுக்கு ஆரோக்கிய மதிப்பீட்டில் (வைட்டாலிటీ, மன அழுத்தம், செரிமானம், வளர்சிதை மாற்றம், தூக்கம்) வழிகாட்ட முடியும். தயவுசெய்து இடதுபுறத்தில் உள்ள 'Vitals Assessments' தாவலுக்குச் செல்லவும்.",
+            kn: "ನಾನು ನಿಮಗೆ ಆರೋಗ್ಯ ಮೌಲ್ಯಮಾಪನದಲ್ಲಿ (ವೈಟಾಲಿಟಿ, ಒತ್ತಡ, ಜೀರ್ಣಕ್ರಿಯೆ, ಚಯಾಪಚಯ, ನಿದ್ರೆ) ಸಹಾಯ ಮಾಡಬಲ್ಲೆ. ದಯವಿಟ್ಟು ಎಡಭಾಗದಲ್ಲಿರುವ 'Vitals Assessments' ಟ್ಯಾಬ್ ಬಳಸಿ."
+        },
+        symptoms: {
+            en: "I see you are mentioning symptoms. To help you prepare a structured summary for Dr. Jethwani, please go to the **Symptom Navigator** tab on the left. Type your duration, triggers, and severity, and I will generate a clean report for you.",
+            hi: "यदि आप लक्षणों के बारे में बात कर रहे हैं, तो डॉ. जेठवानी के लिए एक संरचित रिपोर्ट तैयार करने के लिए बाईं ओर 'Symptom Navigator' टैब का उपयोग करें।",
+            mr: "डॉ. जेठवानी यांच्यासाठी लक्षणांचा अहवाल तयार करण्यासाठी डाव्या बाजूच्या 'Symptom Navigator' टॅबचा वापर करा।",
+            gu: "ડૉ. જેઠવાની માટે લક્ષણોનો અહેવાલ તૈયાર કરવા માટે ડાબી બાજુના 'Symptom Navigator' ટેબનો ઉપયોગ કરો.",
+            bn: "ডাঃ জেঠওয়ানির জন্য একটি কাঠামোগত লক্ষণ রিপোর্ট তৈরি করতে বাম দিকের 'Symptom Navigator' ট্যাবে যান।",
+            te: "డాక్టర్ జెత్వాని గారి కోసం లక్షణాల నివేదికను రూపొందించడానికి ఎడమ వైపున ఉన్న 'Symptom Navigator' ట్యాబ్‌ను సందర్శించండి.",
+            ta: "டாக்டர் ஜெத்வானிக்கான அறிகுறிகளின் சுருக்கத்தை உருவாக்க இடதுபுறத்தில் உள்ள 'Symptom Navigator' தாவலுக்குச் செல்லவும்.",
+            kn: "ಡಾ. ಜೇಠ್ವಾನಿ ಅವರಿಗಾಗಿ ಲಕ್ಷಣಗಳ ವರದಿಯನ್ನು ತಯಾರಿಸಲು ಎಡಭಾಗದಲ್ಲಿರುವ 'Symptom Navigator' ಟ್ಯಾಬ್ ಬಳಸಿ."
+        },
+        report: {
+            en: "To interpret blood reports or labs (CBC, Lipid panel, Thyroid panel), navigate to the **Report Interpreter** tab on the left. You can simulate file uploads there to see immediate easy-to-understand findings.",
+            hi: "रक्त परीक्षण रिपोर्ट (CBC, लिपिड, थायराइड) को समझने के लिए बाईं ओर 'Report Interpreter' टैब पर जाएँ। वहाँ रिपोर्ट अपलोड का अनुकरण करें।",
+            mr: "रक्त अहवाल समजून घेण्यासाठी डाव्या बाजूच्या 'Report Interpreter' टॅबवर जा।",
+            gu: "લોહીના રિપોર્ટ (CBC, લિપિડ, થાઇરોઇડ) સમજવા માટે ડાબી બાજુના 'Report Interpreter' ટેબ પર જાઓ.",
+            bn: "রক্ত পরীক্ষার রিপোর্ট (CBC, লিপিড, থাইরয়েড) বোঝার জন্য বাম দিকের 'Report Interpreter' ট্যাবে যান।",
+            te: "రక్త పరీక్షల నివేదికలను (CBC, లిపిడ్, థైరాయిడ్) అర్థం చేసుకోవడానికి ఎడమ వైపున ఉన్న 'Report Interpreter' ట్యాబ్‌కు వెళ్లండి.",
+            ta: "இரத்த பரிசோதனை அறிக்கைகளை (CBC, லிப்பிட், தைராய்டு) புரிந்து கொள்ள இடதுபுறத்தில் உள்ள 'Report Interpreter' தாவலுக்குச் செல்லவும்.",
+            kn: "ರಕ್ತ ಪರೀಕ್ಷೆಗಳ ವರದಿಯನ್ನು (CBC, ಲಿಪಿಡ್, ಥೈರಾಯ್ಡ್) ಅರ್ಥಮಾಡಿಕೊಳ್ಳಲು ಎಡಭಾಗದಲ್ಲಿರುವ 'Report Interpreter' ಟ್ಯಾಬ್‌ಗೆ ಹೋಗಿ."
+        },
+        welcome: {
+            en: "Hello! I'm Lucy, your AI health guide. I'm here to translate complex medical data, help you record symptoms, and support you on your wellness path. Remember, I support Dr. Jethwani's clinical assessment but never replace direct physician consultations.",
+            hi: "नमस्ते! मैं लूसी हूँ, आपकी एआई स्वास्थ्य मार्गदर्शिका। मैं यहाँ आपके स्वास्थ्य डेटा को समझाने और लक्षणों को रिकॉर्ड करने में मदद के लिए हूँ। कृपया ध्यान दें कि मैं केवल डॉक्टर की सहायता करती हूँ, परामर्श का विकल्प नहीं हूँ।",
+            mr: "नमस्कार! मी लुसी आहे, तुमची एआय आरोग्य मार्गदर्शिका. मी येथे आपल्या आरोग्य डेटा स्पष्ट करण्यासाठी आणि लक्षणे नोंदवण्यासाठी आहे। कृपया नोंद घ्या की मी डॉक्टरांचा पर्याय नाही.",
+            gu: "નમસ્તે! હું લ્યુસી છું, તમારી AI હેલ્થ ગાઇડ. આજે હું તમને કેવી રીતે મદદ કરી શકું? હું અહીં તમારા સ્વાસ્થ્ય ડેટાને સમજાવવા અને લક્ષણોને રેકોર્ડ કરવામાં મદદ કરવા માટે છું.",
+            bn: "নমস্কার! আমি লুসি, আপনার এআই হেলথ গাইড। আমি এখানে আপনার স্বাস্থ্য সম্পর্কিত ডেটা সহজ করতে এবং লক্ষণ রেকর্ড করতে সাহায্য করতে আছি।",
+            te: "నమస్తే! నేను లూసీ, మీ AI హెల్త్ గైడ్. మీ ఆరోగ్య సమాచారాన్ని సులభంగా అర్థం చేసుకోవడానికి మరియు మీ లక్షణాలను నమోదు చేయడానికి నేను ఇక్కడ ఉన్నాను.",
+            ta: "வணக்கம்! நான் லூசி, உங்கள் AI ஹெல்த் கைடு. உங்கள் ஆரோக்கிய தரவை விளக்கவும், அறிகுறிகளை பதிவு செய்யவும் நான் இங்கு இருக்கிறேன்.",
+            kn: "ನಮಸ್ತೆ! ನಾನು ಲೂಸಿ, ನಿಮ್ಮ AI ಹೆಲ್ತ್ ಗೈಡ್. ನಿಮ್ಮ ಆರೋಗ್ಯ ಮಾಹಿತಿಯನ್ನು ಸುಲಭವಾಗಿ ಅರ್ಥಮಾಡಿಕೊಳ್ಳಲು ಮತ್ತು ಲಕ್ಷಣಗಳನ್ನು ದಾಖಲಿಸಲು ನಾನು ಇಲ್ಲಿದ್ದೇನೆ."
+        },
+        materia: {
+            en: "For patient safety, I cannot recommend specific homeopathic remedies, medicines, or dosages in this chat. Remedy selection must be customized to your constitution by a qualified doctor.<br><br>I highly recommend scheduling a clinical consultation with **Dr. Narayan Jethwani** to receive a personalized evaluation and prescription. In the meantime, feel free to ask me about general wellness optimization, hydration guidelines, or sleep hygiene tips.",
+            hi: "रोगी की सुरक्षा के लिए, मैं इस चैट में विशिष्ट होम्योपैथिक दवाओं या खुराकों की सिफारिश नहीं कर सकती। दवा का चयन एक योग्य डॉक्टर द्वारा आपके संविधान के अनुसार अनुकूलित किया जाना चाहिए। परामर्श के लिए डॉ. नारायण जेठवानी से संपर्क करें।",
+            mr: "रुग्णाच्या सुरक्षेसाठी, मी या चॅटमध्ये होमिओपॅथीक औषधांची किंवा डोसची शिफारस करू शकत नाही। औषध निवड डॉक्टरांद्वारे तुमच्या प्रकृतीनुसार केली पाहिजे. डॉ. नारायण जेठवानी यांच्याशी सल्लामसलत करा।",
+            gu: "દર્દીની સુરક્ષા માટે, હું આ ચેટમાં વિશિષ્ટ હોમિયોપેથિક દવાઓની ભલામણ કરી શકતો નથી. દવાઓની પસંદગી ડૉક્ટર દ્વારા તમારા બંધારણ અનુસાર થવી જોઈએ. પરામર્શ માટે ડૉ. નારાયણ જેઠવાની સાથે સંપર્ક કરો.",
+            bn: "রোগীর সুরক্ষার জন্য, আমি এই চ্যাটে নির্দিষ্ট হোমিওপ্যাথিক ওষুধের পরামর্শ দিতে পারি না। ওষুধের নির্বাচন একজন ডাক্তারের দ্বারা আপনার সংবিধান অনুযায়ী হওয়া উচিত। অনুগ্রহ করে ডাঃ নারায়ণ জেঠওয়ানির সাথে অ্যাপয়েন্টমেন্ট করুন।",
+            te: "రోగి భద్రత కొరకు, నేను ఈ చాట్‌లో నిర్దిష్ట హోమియోపతి మందులను సిఫార్సు చేయలేను. మందుల ఎంపిక డాక్టర్ ద్వారా మీ శరీర తత్వానికి అనుగుణంగా జరగాలి. దయచేసి డాక్టర్ నారాయణ్ జెత్వాని గారిని సంప్రదించండి.",
+            ta: "நோயாளி பாதுகாப்பிற்காக, இந்த அரட்டையில் நான் குறிப்பிட்ட ஹோமியோபதி மருந்துகளை பரிந்துரைக்க முடியாது. மருந்து தேர்வு தகுதியான மருத்துவரால் உறுதி செய்யப்பட வேண்டும். தயவுசெய்து டாக்டர் நாராயண் ஜெத்வானியை அணுகவும்.",
+            kn: "ರೋಗಿಯ ಸುರಕ್ಷತೆಗಾಗಿ, ಈ ಚಾಟ್‌ನಲ್ಲಿ ನಿರ್ದಿಷ್ಟ ಹೋಮಿಯೋಪತಿ ಔಷಧಿಗಳನ್ನು ಶಿಫారಸು ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ಔಷಧಿಯ ಆಯ್ಕೆಯು ವೈದ್ಯರಿಂದ ನಿಮ್ಮ ದೇಹ ಪ್ರಕೃತಿಗೆ ತಕ್ಕಂತೆ ನಿರ್ಧರಿಸಲ್ಪಡಬೇಕು. ದಯವಿಟ್ಟು ಡಾ. ನಾರಾಯಣ್ ಜೇಠ್ವಾನಿ ಅವರನ್ನು ಸಂಪರ್ಕಿಸಿ."
+        },
+        fallback: {
+            en: "I understand you are asking about health. To provide the best help, you can use the quick chips below or select a tab on the dashboard to take a **Vitality Assessment**, map your **Symptoms**, or upload a **Health Report** for interpretation.",
+            hi: "मुझे आपकी बात समझ आई। स्वास्थ्य संबंधी अधिक सटीक जानकारी के लिए आप वाइटैलिटी मूल्यांकन, लक्षण लॉगिंग, या लैब रिपोर्ट अपलोड विकल्पों का चयन कर सकते हैं।",
+            mr: "मला समजले. अधिक माहितीसाठी तुम्ही डाव्या बाजूला असणारे आरोग्य मूल्यांकन पूर्ण करू शकता किंवा तुमची वैद्यकीय रिपोर्ट अपलोड करू शकता.",
+            gu: "મને તમારી વાત સમજાઈ. આરોગ્ય સંબંધિત વધુ સચોટ માહિતી માટે તમે વાઇટેલિટી મૂલ્યાંકન પૂર્ણ કરી શકો છો અથવા લેબ રિપોર્ટ અપલોડ કરી શકો છો.",
+            bn: "আমি আপনার প্রশ্নটি বুঝতে পেরেছি। স্বাস্থ্য সম্পর্কিত আরও সঠিক তথ্যের জন্য আপনি ভাইট্যালিটি মূল্যায়ন সম্পূর্ণ করতে পারেন বা ল্যাব রিপোর্ট আপলোড করতে পারেন।",
+            te: "నేను మీ ప్రశ్నను అర్థం చేసుకున్నాను. మరింత సమాచారం కోసం మీరు వైటాలిటీ అసెస్‌మెంట్ పూర్తి చేయవచ్చు లేదా ల్యాబ్ రిపోర్ట్ అప్‌లోడ్ చేయవచ్చు.",
+            ta: "உங்களது கேள்வி எனக்குப் புரிகிறது. ஆரோக்கியம் தொடர்பான கூடுதல் விவரங்களுக்கு நீங்கள் வைட்டாலிட்டி மதிப்பீட்டை முடிக்கலாம் அல்லது ஆய்வக அறிக்கையை பதிவேற்றலாம்.",
+            kn: "ನಿಮ್ಮ ಪ್ರಶ್ನೆ ನನಗೆ ಅರ್ಥವಾಯಿತು. ಆರೋಗ್ಯದ ಬಗ್ಗೆ ಹೆಚ್ಚಿನ ವಿವರಗಳಿಗಾಗಿ ನೀವು ವೈಟಾಲಿಟಿ ಮೌಲ್ಯಮಾಪನವನ್ನು ಪೂರ್ಣಗೊಳಿಸಬಹುದು ಅಥವಾ ಲ್ಯಾಬ್ ವರದಿಯನ್ನು ಅಪ್ಲೋಡ್ ಮಾಡಬಹುದು."
+        }
+    };
+
     // Lucy AI Response Generator
     function generateLucyResponse(inputText) {
         // 1. Safety Filter first
@@ -711,6 +915,21 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (/नमस्कार|कसे|आरोग्य|मदत/.test(inputText)) {
             state.lang = 'mr';
             langSelect.value = 'mr';
+        } else if (/કેમ છો|નમસ્તે|મદદ/.test(inputText)) {
+            state.lang = 'gu';
+            langSelect.value = 'gu';
+        } else if (/নমস্কার|কেমন|সাহায্য/.test(inputText)) {
+            state.lang = 'bn';
+            langSelect.value = 'bn';
+        } else if (/నమస్తే|ఎలా|సహాయం/.test(inputText)) {
+            state.lang = 'te';
+            langSelect.value = 'te';
+        } else if (/வணக்கம்|எப்படி|உதவி/.test(inputText)) {
+            state.lang = 'ta';
+            langSelect.value = 'ta';
+        } else if (/ನಮಸ್ತೆ|ಹೇಗೆ|ಸಹಾಯ/.test(inputText)) {
+            state.lang = 'kn';
+            langSelect.value = 'kn';
         }
 
         // 3. Dialogue Routers
@@ -719,49 +938,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Metric questions
         if (lowercase.includes("vitality") || lowercase.includes("biological age") || lowercase.includes("bio age")) {
-            response = `Your current **Vitality Score is ${state.vitalityScore}/100** and your estimated **Biological Age is ${state.biologicalAge} years** (chronological baseline is 35). ${LUCY_KB.metrics.vitality.description}`;
+            const template = MOCK_LOCAL_TRANSLATIONS.vitality[state.lang] || MOCK_LOCAL_TRANSLATIONS.vitality.en;
+            response = template.replace("{score}", state.vitalityScore).replace("{age}", state.biologicalAge);
         }
         // Daily trackers
         else if (lowercase.includes("water") || lowercase.includes("drink")) {
-            response = `Proper hydration is crucial. You've logged ${state.dailyLogs.water} glasses of water today. ${LUCY_KB.lifestyleTips[1].tips[1]} Aim for at least 8 glasses!`;
+            const template = MOCK_LOCAL_TRANSLATIONS.water[state.lang] || MOCK_LOCAL_TRANSLATIONS.water.en;
+            response = template.replace("{water}", state.dailyLogs.water);
         }
         else if (lowercase.includes("sleep") || lowercase.includes("insomnia") || lowercase.includes("rest")) {
-            response = `You logged ${state.dailyLogs.sleep} hours of sleep last night. Tips for optimal sleep recovery include: <ul><li>${LUCY_KB.lifestyleTips[0].tips[2]}</li><li>${LUCY_KB.lifestyleTips[0].tips[0]}</li></ul>`;
+            const template = MOCK_LOCAL_TRANSLATIONS.sleep[state.lang] || MOCK_LOCAL_TRANSLATIONS.sleep.en;
+            response = template.replace("{sleep}", state.dailyLogs.sleep);
         }
         // Doctor consulting
         else if (lowercase.includes("appointment") || lowercase.includes("book") || lowercase.includes("schedule") || lowercase.includes("doctor") || lowercase.includes("jethwani")) {
-            response = `Would you like me to help schedule a consultation with **Dr. Narayan Jethwani**? You can use the Quick Call to Action buttons on the dashboard or directly chat with the reception on WhatsApp.`;
+            response = MOCK_LOCAL_TRANSLATIONS.appointment[state.lang] || MOCK_LOCAL_TRANSLATIONS.appointment.en;
         }
         // Assessment initiation
         else if (lowercase.includes("assess") || lowercase.includes("quiz") || lowercase.includes("test")) {
-            response = `I can guide you through a comprehensive wellness assessment (Vitality, Stress, Digestive, Metabolic, Sleep). Please use the **Vitals Assessments** tab on the left to start a structured questionnaire!`;
+            response = MOCK_LOCAL_TRANSLATIONS.assess[state.lang] || MOCK_LOCAL_TRANSLATIONS.assess.en;
         }
         // Symptom tracking
         else if (lowercase.includes("symptom") || lowercase.includes("pain") || lowercase.includes("ache")) {
-            response = `I see you are mentioning symptoms. To help you prepare a structured summary for Dr. Jethwani, please go to the **Symptom Navigator** tab on the left. Type your duration, triggers, and severity, and I will generate a clean report for you.`;
+            response = MOCK_LOCAL_TRANSLATIONS.symptoms[state.lang] || MOCK_LOCAL_TRANSLATIONS.symptoms.en;
         }
         // Report interpretation
         else if (lowercase.includes("report") || lowercase.includes("blood") || lowercase.includes("interpret") || lowercase.includes("pdf")) {
-            response = `To interpret blood reports or labs (CBC, Lipid panel, Thyroid panel), navigate to the **Report Interpreter** tab on the left. You can simulate file uploads there to see immediate easy-to-understand findings.`;
+            response = MOCK_LOCAL_TRANSLATIONS.report[state.lang] || MOCK_LOCAL_TRANSLATIONS.report.en;
         }
         // General Welcome / Lucy introduction
         else if (lowercase.includes("hello") || lowercase.includes("hi") || lowercase.includes("lucy") || lowercase.includes("who are you")) {
-            response = `Hello! I'm Lucy, your AI health guide. I'm here to translate complex medical data, help you record symptoms, and support you on your wellness path. Remember, I support Dr. Jethwani's clinical assessment but never replace direct physician consultations.`;
+            response = MOCK_LOCAL_TRANSLATIONS.welcome[state.lang] || MOCK_LOCAL_TRANSLATIONS.welcome.en;
         }
-        // Materia Medica query check (prevent specific remedy/dosage recommendation)
+        // Materia Medica query check
         else if (lowercase.includes("materia medica") || lowercase.includes("remedy") || lowercase.includes("remedies") || 
                  LUCY_KB.materiaMedica.some(rem => lowercase.includes(rem.name.toLowerCase()) || lowercase.includes(rem.commonName.toLowerCase().split(' ')[0].toLowerCase()))) {
-            response = `For patient safety, I cannot recommend specific homeopathic remedies, medicines, or dosages in this chat. Remedy selection must be customized to your constitution by a qualified doctor.<br><br>I highly recommend scheduling a clinical consultation with Dr. Narayan Jethwani to receive a personalized evaluation and prescription. In the meantime, feel free to ask me about general wellness optimization, hydration guidelines, or sleep hygiene tips.`;
+            response = MOCK_LOCAL_TRANSLATIONS.materia[state.lang] || MOCK_LOCAL_TRANSLATIONS.materia.en;
             requiresDisclaimer = false;
         }
 
         // If we matched a local dialogue rule, return immediately
         if (response) {
-            if (state.lang === 'hi') {
-                response = `[हिन्दी अनुवाद]: ` + translateToHindiMock(lowercase, response);
-            } else if (state.lang === 'mr') {
-                response = `[मराठी अनुवाद]: ` + translateToMarathiMock(lowercase, response);
-            }
             appendLucyMessage(response, requiresDisclaimer);
             return;
         }
@@ -803,7 +1020,8 @@ document.addEventListener('DOMContentLoaded', () => {
             hasAssessments: state.hasAssessments,
             answers: state.assessAnswers,
             logs: state.dailyLogs,
-            mode: "patient"
+            mode: "patient",
+            lang: state.lang
         }));
     }
 
@@ -915,7 +1133,10 @@ document.addEventListener('DOMContentLoaded', () => {
         recognition = new SpeechRecognition();
         recognition.continuous = false;
         recognition.interimResults = false;
-        recognition.lang = state.lang === 'hi' ? 'hi-IN' : state.lang === 'mr' ? 'mr-IN' : 'en-US';
+        const sttLangMap = {
+            hi: 'hi-IN', mr: 'mr-IN', gu: 'gu-IN', bn: 'bn-IN', te: 'te-IN', ta: 'ta-IN', kn: 'kn-IN'
+        };
+        recognition.lang = sttLangMap[state.lang] || 'en-US';
 
         recognition.onstart = () => {
             isListening = true;
@@ -971,7 +1192,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.speechSynthesis.cancel();
             }
             // Set lang context
-            recognition.lang = state.lang === 'hi' ? 'hi-IN' : state.lang === 'mr' ? 'mr-IN' : 'en-US';
+            const sttLangMap = {
+                hi: 'hi-IN', mr: 'mr-IN', gu: 'gu-IN', bn: 'bn-IN', te: 'te-IN', ta: 'ta-IN', kn: 'kn-IN'
+            };
+            recognition.lang = sttLangMap[state.lang] || 'en-US';
             recognition.start();
         }
     });
@@ -985,6 +1209,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const target = e.target;
         if (!target.classList.contains('chip-btn')) return;
 
+        cancelSpeaking();
         const action = target.dataset.action;
         const text = target.innerText;
 
@@ -1307,6 +1532,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     startAssessBtn.addEventListener('click', () => {
+        cancelSpeaking();
         currentAssessType = assessTypeSelect.value;
         const quiz = ASSESSMENT_DATA[currentAssessType] || ASSESSMENT_DATA['vitality'];
         activeQuestions = quiz.questions;
@@ -1335,16 +1561,33 @@ document.addEventListener('DOMContentLoaded', () => {
         qData.options.forEach((opt, idx) => {
             const card = document.createElement('div');
             card.className = "option-card";
+            card.tabIndex = 0;
+            card.setAttribute('role', 'radio');
+            card.setAttribute('aria-checked', 'false');
             card.innerHTML = `
                 <span class="option-radio"></span>
                 <span>${opt.text}</span>
             `;
-            card.addEventListener('click', () => {
-                document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+            
+            const selectOption = () => {
+                document.querySelectorAll('.option-card').forEach(c => {
+                    c.classList.remove('selected');
+                    c.setAttribute('aria-checked', 'false');
+                });
                 card.classList.add('selected');
+                card.setAttribute('aria-checked', 'true');
                 selectedScore = opt.score;
                 assessNextBtn.disabled = false;
+            };
+
+            card.addEventListener('click', selectOption);
+            card.addEventListener('keydown', (e) => {
+                if (e.key === ' ' || e.key === 'Enter') {
+                    e.preventDefault();
+                    selectOption();
+                }
             });
+            
             assessOptions.appendChild(card);
         });
 
@@ -1354,6 +1597,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     assessNextBtn.addEventListener('click', () => {
+        cancelSpeaking();
         state.assessAnswers.push(selectedScore);
         
         if (state.assessQuestionIndex < activeQuestions.length - 1) {

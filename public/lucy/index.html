@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Styling -->
-    <link rel="stylesheet" href="styles.css?v=2.5.4">
+    <link rel="stylesheet" href="styles.css?v=2.5.5">
 </head>
 <body class="light-mode">
     <!-- Main App Container -->
@@ -60,6 +60,11 @@
                         <option value="en">English</option>
                         <option value="hi">हिन्दी (Hindi)</option>
                         <option value="mr">मराठी (Marathi)</option>
+                        <option value="gu">ગુજરાતી (Gujarati)</option>
+                        <option value="bn">বাংলা (Bengali)</option>
+                        <option value="te">తెలుగు (Telugu)</option>
+                        <option value="ta">தமிழ் (Tamil)</option>
+                        <option value="kn">ಕನ್ನಡ (Kannada)</option>
                     </select>
                 </div>
                 
@@ -588,15 +593,15 @@
                             <span class="lucy-status">AI Health Intelligence Guide</span>
                         </div>
                         <div class="lucy-header-actions" style="display: flex; gap: 4px; align-items: center;">
-                            <button id="show-dash-btn" class="action-icon-btn" title="Open Health Dashboard">
+                            <button id="show-dash-btn" class="action-icon-btn" title="Open Health Dashboard" aria-label="Open Health Dashboard">
                                 <i class="fa-solid fa-chart-line"></i>
                             </button>
-                            <button id="font-dec-btn" class="action-icon-btn" title="Decrease Font Size" style="font-weight: bold; font-size: 0.85rem; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">A-</button>
-                            <button id="font-inc-btn" class="action-icon-btn" title="Increase Font Size" style="font-weight: bold; font-size: 0.85rem; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">A+</button>
-                            <button id="chat-fullscreen-btn" class="action-icon-btn" title="Toggle Fullscreen Mode">
+                            <button id="font-dec-btn" class="action-icon-btn" title="Decrease Font Size" aria-label="Decrease Font Size" style="font-weight: bold; font-size: 0.85rem; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">A-</button>
+                            <button id="font-inc-btn" class="action-icon-btn" title="Increase Font Size" aria-label="Increase Font Size" style="font-weight: bold; font-size: 0.85rem; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">A+</button>
+                            <button id="chat-fullscreen-btn" class="action-icon-btn" title="Toggle Fullscreen Mode" aria-label="Toggle Fullscreen Mode">
                                 <i class="fa-solid fa-expand"></i>
                             </button>
-                            <button id="tts-toggle-btn" class="action-icon-btn active" title="Text-to-Speech (Toggle Voice)">
+                            <button id="tts-toggle-btn" class="action-icon-btn active" title="Text-to-Speech (Toggle Voice)" aria-label="Toggle Text-to-Speech Voice">
                                 <i class="fa-solid fa-volume-high"></i>
                             </button>
                         </div>
@@ -678,7 +683,7 @@
     </div>
 
     <!-- Background Scripts -->
-    <script src="knowledge_base.js?v=2.5.4"></script>
-    <script src="app.js?v=2.5.4"></script>
+    <script src="knowledge_base.js?v=2.5.5"></script>
+    <script src="app.js?v=2.5.5"></script>
 </body>
 </html>

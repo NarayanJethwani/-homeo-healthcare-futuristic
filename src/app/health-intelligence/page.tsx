@@ -1088,6 +1088,65 @@ export default function HealthIntelligencePage() {
     setMounted(true);
   }, []);
 
+  // Listen to postMessage event from Lucy widget to update digitalTwin React state in real-time
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data && event.data.type === 'sync-digital-twin') {
+        const { vitalityScore, biologicalAge, assessments } = event.data;
+        setDigitalTwin(prev => {
+          const completed = { ...prev.completedAssessments };
+          
+          const mapping: Record<string, string> = {
+            vitality: 'metabolic_profile',
+            stress: 'anxiety_assessment',
+            sleep: 'sleep_apnea',
+            digestive: 'ibs_assessment',
+            metabolic: 'insulin_resistance',
+            womens: 'pcos_assessment'
+          };
+
+          let changed = false;
+          Object.keys(assessments).forEach(lucyKey => {
+            const val = assessments[lucyKey];
+            if (val !== null && val !== undefined) {
+              const parentId = mapping[lucyKey];
+              if (parentId) {
+                const existing = completed[parentId];
+                if (!existing || existing.score !== val) {
+                  completed[parentId] = {
+                    date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+                    score: val,
+                    answers: existing?.answers || {},
+                    symptoms: existing?.symptoms || []
+                  };
+                  changed = true;
+                }
+              }
+            }
+          });
+
+          if (vitalityScore !== prev.overallScore || biologicalAge !== prev.biologicalAge) {
+            changed = true;
+          }
+
+          if (changed) {
+            const updated = {
+              ...prev,
+              overallScore: vitalityScore ?? prev.overallScore,
+              biologicalAge: biologicalAge ?? prev.biologicalAge,
+              completedAssessments: completed
+            };
+            localStorage.setItem("homeo_health_digital_twin_2026_v2", JSON.stringify(updated));
+            return updated;
+          }
+          return prev;
+        });
+      }
+    };
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
   // Theme synchronizer with global navbar
   useEffect(() => {
     const checkTheme = () => {

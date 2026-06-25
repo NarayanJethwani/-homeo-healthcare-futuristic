@@ -16,7 +16,7 @@ export async function OPTIONS() {
 
 export async function POST(request: Request) {
   try {
-    const { query, score, answers, logs, mode, hasAssessments } = await request.json();
+    const { query, score, answers, logs, mode, hasAssessments, lang } = await request.json();
 
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
@@ -28,6 +28,21 @@ export async function POST(request: Request) {
     }
 
     let systemInstruction = "You are a scientific clinical AI assistant for Dr. Narayan Jethwani's evidence-based classical homeopathy practice (Homeo Healthcare). ";
+    
+    // Set response language
+    const languageNames: Record<string, string> = {
+      en: "English",
+      hi: "Hindi",
+      mr: "Marathi",
+      gu: "Gujarati",
+      bn: "Bengali",
+      te: "Telugu",
+      ta: "Tamil",
+      kn: "Kannada"
+    };
+    const responseLang = languageNames[lang as string] || "English";
+    systemInstruction += `CRITICAL: You MUST write your entire response natively in the ${responseLang} language using its proper native script (e.g., Devanagari script for Hindi/Marathi, Gujarati script for Gujarati, Bengali script for Bengali, Telugu script for Telugu, Tamil script for Tamil, Kannada script for Kannada). Do not write non-English languages in English alphabets (do not transliterate). `;
+
     if (mode === "doctor") {
       systemInstruction += "You are in Doctor Mode (Clinical Pathophysiology). Provide highly technical, pathophysiological responses using medical terms. Discuss HPA axis, endocrine axes, cardiovascular dynamics (SVR, TNF-alpha, IL-6), miasmatic analysis, and constitutional selection. Maintain a clinical, scientific tone.";
     } else {
