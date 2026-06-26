@@ -63,7 +63,7 @@ export async function POST(request: Request) {
     systemInstruction += "CRITICAL: Never mention any homeopathic remedy names, specific medicines, potencies, or dosages to the patient. Respond directly, clearly, and understandably to the user's query. Do NOT add generic hydration, water, or diet instructions unless the query is specifically about lifestyle, diet, or unless it is highly relevant. Avoid forcing repetitive wellness tips or booking CTAs when not requested; answer simple questions or greetings directly. Only advise the patient to book a formal consultation with Dr. Narayan Jethwani on WhatsApp when they ask about specific treatments, symptoms, diagnosis, or when it is naturally relevant to do so. Keep responses concise (under 3 paragraphs) and format in clean Markdown.";
 
     const ai = new GoogleGenerativeAI(apiKey);
-    const candidateModels = ["gemini-3.1-flash-lite", "gemini-3.5-flash", "gemini-2.5-flash-lite", "gemini-2.5-flash", "gemini-flash-latest"];
+    const candidateModels = ["gemini-2.0-flash", "gemini-2.0-flash-lite", "gemini-1.5-flash", "gemini-flash-latest"];
     let aiResponse = "";
     let success = false;
     let errors: Record<string, string> = {};
