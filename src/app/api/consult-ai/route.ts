@@ -1,11 +1,65 @@
 import { NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { aiRouterService } from "@/lib/aiRouter";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization"
 };
+
+// In-memory rate limiter: Map of IP -> timestamps of requests
+const ipLimiter = new Map<string, number[]>();
+const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
+const MAX_REQUESTS_PER_WINDOW = 15;
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const timestamps = ipLimiter.get(ip) || [];
+  
+  // Filter out expired timestamps
+  const activeTimestamps = timestamps.filter(t => now - t < RATE_LIMIT_WINDOW_MS);
+  
+  if (activeTimestamps.length >= MAX_REQUESTS_PER_WINDOW) {
+    return true;
+  }
+  
+  activeTimestamps.push(now);
+  ipLimiter.set(ip, activeTimestamps);
+  return false;
+}
+
+// Simple prompt injection detection
+function isPromptInjection(query: string): boolean {
+  const injectionPatterns = [
+    "ignore previous instructions",
+    "ignore all previous",
+    "system rules",
+    "bypass safety",
+    "forget what you were told",
+    "developer mode",
+    "act as a developer",
+    "you are now a coding assistant"
+  ];
+  const q = query.toLowerCase();
+  return injectionPatterns.some(pattern => q.includes(pattern));
+}
+
+// Medical safety filters
+function checkMedicalSafety(query: string): string | null {
+  const q = query.toLowerCase();
+  
+  // Crisis prevention
+  if (q.includes("suicide") || q.includes("kill myself") || q.includes("end my life") || q.includes("harm myself") || q.includes("self-harm")) {
+    return "If you are experiencing thoughts of self-harm or a mental health crisis, please contact emergency service lines immediately (such as dialing 911, 112, or local mental health lifelines) or proceed to the nearest hospital emergency room. Please seek urgent care.";
+  }
+
+  // Dangerous poisoning
+  if (q.includes("drink bleach") || q.includes("ingest poison") || q.includes("toxic cure")) {
+    return "For your safety, please immediately call a local poison control center or emergency services. Never ingest toxic substances under any circumstances.";
+  }
+
+  return null;
+}
 
 export async function OPTIONS() {
   return new NextResponse(null, {
@@ -16,17 +70,45 @@ export async function OPTIONS() {
 
 export async function POST(request: Request) {
   try {
-    const { query, score, answers, logs, mode, hasAssessments, lang } = await request.json();
-
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      console.warn("GEMINI_API_KEY is not configured.");
+    // 1. Get client IP for rate limiting
+    const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "anonymous_ip";
+    if (isRateLimited(ip)) {
+      console.warn(`Rate limit triggered for IP: ${ip}`);
       return NextResponse.json({
         success: false,
-        response: "Note: The clinical AI assistant is running in offline mode. Configure the Gemini API Key on Vercel.\n\nTo fully confirm these results, Dr. Jethwani suggests obtaining standard biological checkups: Fasting Insulin, HbA1c, and a Complete Thyroid Panel."
+        response: "You are sending requests too quickly. Please wait a minute before asking Lucy again."
+      }, { status: 429, headers: CORS_HEADERS });
+    }
+
+    const { query, score, answers, logs, mode, hasAssessments, lang } = await request.json();
+
+    if (!query || typeof query !== "string") {
+      return NextResponse.json({
+        success: false,
+        response: "Query parameter is required."
+      }, { status: 400, headers: CORS_HEADERS });
+    }
+
+    // 2. Security: Prompt Injection Guard
+    if (isPromptInjection(query)) {
+      console.warn(`Prompt injection attempt blocked from IP: ${ip}`);
+      return NextResponse.json({
+        success: true, // return natural response instead of throwing technical error
+        response: "I am designed exclusively to support your health journey with Homeo Healthcare. I cannot modify my instructions, perform coding tasks, or bypass clinical safety guidelines."
       }, { headers: CORS_HEADERS });
     }
 
+    // 3. Security: Medical Safety Filter
+    const safetyWarning = checkMedicalSafety(query);
+    if (safetyWarning) {
+      console.warn(`Medical safety filter triggered from IP: ${ip}`);
+      return NextResponse.json({
+        success: true,
+        response: safetyWarning
+      }, { headers: CORS_HEADERS });
+    }
+
+    // 4. Construct System Instruction
     let systemInstruction = "You are a scientific clinical AI assistant for Dr. Narayan Jethwani's evidence-based classical homeopathy practice (Homeo Healthcare). ";
     
     // Set response language
@@ -46,7 +128,7 @@ export async function POST(request: Request) {
     if (mode === "doctor") {
       systemInstruction += "You are in Doctor Mode (Clinical Pathophysiology). Provide highly technical, pathophysiological responses using medical terms. Discuss HPA axis, endocrine axes, cardiovascular dynamics (SVR, TNF-alpha, IL-6), miasmatic analysis, and constitutional selection. Maintain a clinical, scientific tone.";
     } else {
-      systemInstruction += "You are in Patient Mode (General Healthcare Assistant). Provide warm, compassionate, patient-facing responses. Use clear, simple language to guide patients. Answer questions directly and understandably, maintaining a supportive, reassuring tone.";
+      systemInstruction += "You are in Patient Mode (General Healthcare Assistant). Provide warm, compassionate, patient-facing responses. Use clear, simple language to guide patients. Answer questions directly and understandably, maintaining a supportive, reassuring tone. Never mention you are switching models or providers; keep the personality seamless.";
     }
     
     if (hasAssessments) {
@@ -62,56 +144,23 @@ export async function POST(request: Request) {
     }
     systemInstruction += "CRITICAL: Never mention any homeopathic remedy names, specific medicines, potencies, or dosages to the patient. Respond directly, clearly, and understandably to the user's query. Do NOT add generic hydration, water, or diet instructions unless the query is specifically about lifestyle, diet, or unless it is highly relevant. Avoid forcing repetitive wellness tips or booking CTAs when not requested; answer simple questions or greetings directly. Only advise the patient to book a formal consultation with Dr. Narayan Jethwani on WhatsApp when they ask about specific treatments, symptoms, diagnosis, or when it is naturally relevant to do so. Keep responses concise (under 3 paragraphs) and format in clean Markdown.";
 
-    const ai = new GoogleGenerativeAI(apiKey);
-    const candidateModels = ["gemini-2.0-flash", "gemini-2.0-flash-lite", "gemini-2.5-flash", "gemini-flash-latest"];
-    let aiResponse = "";
-    let success = false;
-    let errors: Record<string, string> = {};
+    // 5. Call Central AI Router
+    const result = await aiRouterService.consultAI(query, systemInstruction, {
+      score,
+      answers,
+      logs,
+      mode,
+      lang
+    });
 
-    for (const modelName of candidateModels) {
-      try {
-        const model = ai.getGenerativeModel({ model: modelName });
-        const result = await model.generateContent({
-          contents: [
-            {
-              role: "user",
-              parts: [{ text: `System Instructions:\n${systemInstruction}\n\nUser Question:\n${query}` }]
-            }
-          ],
-          generationConfig: {
-            maxOutputTokens: 1024,
-            temperature: 0.4
-          }
-        });
-        aiResponse = result.response.text();
-        if (aiResponse) {
-          success = true;
-          break;
-        }
-      } catch (err: any) {
-        errors[modelName] = err.message || String(err);
-      }
-    }
-
-    if (!success) {
-      console.error("All Gemini models failed in Next.js API:", errors);
-      return NextResponse.json({
-        success: false,
-        response: "All clinical AI models are currently busy. Serving offline fallback:\n\nTo fully confirm these results, Dr. Jethwani suggests obtaining standard biological checkups: Fasting Insulin, HbA1c, and a Complete Thyroid Panel.",
-        errors
-      }, { status: 500, headers: CORS_HEADERS });
-    }
-
-    return NextResponse.json({
-      success: true,
-      response: aiResponse
-    }, { headers: CORS_HEADERS });
+    return NextResponse.json(result, { headers: CORS_HEADERS });
 
   } catch (error: any) {
     console.error("Error in consult-ai route:", error);
     return NextResponse.json({
       success: false,
-      response: "An unexpected error occurred in the clinical AI route."
+      response: "An unexpected error occurred. Connecting you to local clinical resources.",
+      error: error.message || String(error)
     }, { status: 500, headers: CORS_HEADERS });
   }
 }
