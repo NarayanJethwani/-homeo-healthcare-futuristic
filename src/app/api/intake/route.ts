@@ -65,7 +65,8 @@ const intakeSchema = z.object({
 export async function POST(request: Request) {
   try {
     // 1. Rate limiting
-    const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "anonymous_ip";
+    const rawIp = request.headers.get("x-real-ip") || request.headers.get("x-forwarded-for");
+    const ip = rawIp ? rawIp.split(",")[0].trim() : "127.0.0.1";
     if (isRateLimited(ip)) {
       console.warn(`Intake rate limit triggered for IP: ${ip}`);
       return NextResponse.json({
@@ -226,6 +227,7 @@ export async function POST(request: Request) {
       sheetId,
       sheetUrl,
       assignedDoctor: body.assignedDoctor || "unassigned",
+      isMock,
       status,
       createdAt,
       billingCycle: patientData.billingCycle || "Monthly",
