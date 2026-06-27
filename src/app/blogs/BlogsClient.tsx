@@ -1673,6 +1673,35 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
     setCursorMap(prev => { const next = { ...prev }; delete next[id]; return next; });
   }, []);
 
+  const loadFullArticle = useCallback(async (article: Article) => {
+    if (article.content) {
+      setSelectedArticle(article);
+      return;
+    }
+
+    setSelectedArticle(article);
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/blog-post?slug=${encodeURIComponent(article.id)}`);
+      if (!response.ok) return;
+      const fullArticle = await response.json();
+      setSelectedArticle((current) => {
+        if (!current || current.id !== article.id) return current;
+        return {
+          ...current,
+          ...fullArticle,
+          category: current.category,
+          glowColor: current.glowColor,
+          image: current.image,
+        };
+      });
+    } catch (error) {
+      console.error("Unable to load blog article:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   // Dynamic unique hover palette — each article gets its own vibrant glow color
   const dynamicHoverPalettes: Record<string, { glow: string; ring: string; text: string }> = {
     "Skin": { glow: "rgba(20,184,166,0.25)", ring: "#14b8a6", text: "#0d9488" },
@@ -1738,13 +1767,13 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
           art => art.id === articleId || art.title.toLowerCase().replace(/[^a-z0-9]+/g, "-") === articleId
         );
         if (matched) {
-          setSelectedArticle(matched);
+          void loadFullArticle(matched);
         }
       } else {
         isUrlReadRef.current = true;
       }
     }
-  }, [liveArticles, searchParams]);
+  }, [liveArticles, loadFullArticle, searchParams]);
 
   const isFirstRender = useRef(true);
 
@@ -2063,7 +2092,7 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
                     transform: isHovered ? "translateY(-6px) scale(1.01)" : "translateY(0) scale(1)",
                     borderColor: isHovered ? `${palette.ring}77` : "rgba(255,255,255,0.6)",
                   }}
-                  onClick={() => setSelectedArticle(art)}
+                  onClick={() => void loadFullArticle(art)}
                   onMouseMove={(e) => handleCardMouseMove(e, art.id)}
                   onMouseLeave={() => handleCardMouseLeave(art.id)}
                 >
@@ -2729,7 +2758,11 @@ export default function BlogsClient({ initialArticles }: { initialArticles: Arti
                         : ""
                     }`}
                   >
-                    {typeof selectedArticle.content === "string" ? (
+                    {loading && !selectedArticle.content ? (
+                      <p>Loading article...</p>
+                    ) : !selectedArticle.content ? (
+                      <p>{selectedArticle.excerpt}</p>
+                    ) : typeof selectedArticle.content === "string" ? (
                       <div dangerouslySetInnerHTML={{ 
                         __html: isMounted ? injectGlossarySpans(selectedArticle.content) : selectedArticle.content 
                       }} />
