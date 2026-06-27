@@ -37,6 +37,19 @@ export default function AdminLogin() {
     }
   };
 
+  const establishServerSession = async (payload: { idToken?: string; devBypassRole?: "admin" | "doctor" }) => {
+    const response = await fetch("/api/admin/session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const data = await response.json().catch(() => null);
+      throw new Error(data?.message || "Unable to establish secure admin session.");
+    }
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -80,6 +93,9 @@ export default function AdminLogin() {
 
           // Save session details in localStorage for quick client access
           const userData = userDoc.exists() ? userDoc.data() : {};
+          const idToken = await user.getIdToken();
+          await establishServerSession({ idToken });
+
           localStorage.setItem("admin_session", JSON.stringify({
             uid: user.uid,
             email: user.email,
@@ -105,6 +121,7 @@ export default function AdminLogin() {
             )
           ) {
             const isAdm = email.startsWith("admin");
+            await establishServerSession({ devBypassRole: isAdm ? "admin" : "doctor" });
             localStorage.setItem("admin_session", JSON.stringify({
               uid: isAdm ? "admin-bypass-id" : "doctor-bypass-id",
               email,
@@ -132,26 +149,32 @@ export default function AdminLogin() {
   const handleMockBypass = (role: "admin" | "doctor") => {
     if (process.env.NODE_ENV !== "development") return;
     setIsLoading(true);
-    setTimeout(() => {
-      if (role === "admin") {
-        localStorage.setItem("admin_session", JSON.stringify({
-          uid: "admin-bypass-id",
-          email: "admin@homeo.healthcare",
-          name: "Dr. Narayan Jethwani",
-          role: "admin",
-          assignedPatients: []
-        }));
-      } else {
-        localStorage.setItem("admin_session", JSON.stringify({
-          uid: "doctor-bypass-id",
-          email: "doctor@homeo.healthcare",
-          name: "Dr. Sarah (Junior)",
-          role: "doctor",
-          assignedPatients: ["P-100234", "P-200567"] // mock assigned patient IDs
-        }));
+    setTimeout(async () => {
+      try {
+        await establishServerSession({ devBypassRole: role });
+        if (role === "admin") {
+          localStorage.setItem("admin_session", JSON.stringify({
+            uid: "admin-bypass-id",
+            email: "admin@homeo.healthcare",
+            name: "Dr. Narayan Jethwani",
+            role: "admin",
+            assignedPatients: []
+          }));
+        } else {
+          localStorage.setItem("admin_session", JSON.stringify({
+            uid: "doctor-bypass-id",
+            email: "doctor@homeo.healthcare",
+            name: "Dr. Sarah (Junior)",
+            role: "doctor",
+            assignedPatients: ["P-100234", "P-200567"] // mock assigned patient IDs
+          }));
+        }
+        setIsLoading(false);
+        router.push("/admin/dashboard");
+      } catch (err: any) {
+        setError(err.message || "Unable to establish secure admin session.");
+        setIsLoading(false);
       }
-      setIsLoading(false);
-      router.push("/admin/dashboard");
     }, 800);
   };
 
