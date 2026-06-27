@@ -55,7 +55,7 @@ export function getAdminAuth() {
 
 // Legacy exports as safe Proxies to prevent startup/import-time crashes
 const adminAuth = new Proxy({} as any, {
-  get(target, prop) {
+  get(_target, prop) {
     try {
       const auth = getAdminAuth();
       const value = Reflect.get(auth, prop);
@@ -66,7 +66,7 @@ const adminAuth = new Proxy({} as any, {
         throw new Error(`Firebase Admin Auth is not initialized. Failed calling Auth.${String(prop)}`);
       };
       return new Proxy(dummyFn, {
-        get(t, p) {
+        get() {
           return dummyFn;
         }
       });
@@ -75,7 +75,7 @@ const adminAuth = new Proxy({} as any, {
 });
 
 const adminDb = new Proxy({} as any, {
-  get(target, prop) {
+  get(_target, prop) {
     try {
       const db = getAdminDb();
       const value = Reflect.get(db, prop);
@@ -86,7 +86,7 @@ const adminDb = new Proxy({} as any, {
         throw new Error(`Firebase Admin Firestore is not initialized. Failed calling Firestore.${String(prop)}`);
       };
       return new Proxy(dummyFn, {
-        get(t, p) {
+        get() {
           return dummyFn;
         }
       });

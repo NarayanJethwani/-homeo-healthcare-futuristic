@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAdminDb } from "@/lib/firebaseAdmin";
-import { syncRepertoryToClinicalSheet, RepertoryExportRubric } from "@/lib/googleDrive";
+import { syncRepertoryToClinicalSheet } from "@/lib/googleDrive";
 
 export async function POST(request: Request) {
   try {
