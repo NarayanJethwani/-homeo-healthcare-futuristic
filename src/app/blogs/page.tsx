@@ -1,10 +1,45 @@
-import fs from "fs";
-import path from "path";
 import BlogsClient, { Article } from "./BlogsClient";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
 export const revalidate = 3600; // Revalidate every 1 hour (ISR)
+
+const WORDPRESS_POSTS_URL = "https://admin.homeo.healthcare/wp-json/wp/v2/posts";
+const WORDPRESS_LIST_FIELDS = [
+  "id",
+  "slug",
+  "date",
+  "title.rendered",
+  "excerpt.rendered",
+].join(",");
+
+const localSlugsWithFeaturedImage = new Set([
+  "complete-thyroid-guide",
+  "hashimotos-thyroiditis",
+  "hyperthyroidism-graves",
+  "chronic-respiratory-guide",
+  "allergic-rhinitis-sinusitis",
+  "asthma-bronchospasms",
+  "gut-brain-skin-axis",
+  "ibs-gut-motility",
+  "gerd-acid-reflux",
+  "chronic-skin-pathology",
+  "eczema-barrier-repair",
+  "vitiligo-repigmentation",
+  "joint-bone-health",
+  "osteoarthritis-degradation",
+  "sciatica-spine-care",
+  "neurobiology-stress-anxiety",
+  "insomnia-sleep-rhythms",
+  "female-endocrine-blueprint",
+  "pcos-pcod-reversal",
+  "insulin-resistance-diabetes",
+  "fatty-liver-regeneration",
+  "cardiovascular-hypertension-lipids",
+  "pediatric-immunity-tonsils",
+  "recurrent-childhood-fevers",
+  "constitutional-immunotherapy-cancer"
+]);
 
 function decodeHtmlEntities(html: string): string {
   if (!html) return "";
@@ -36,7 +71,12 @@ async function getWordPressPosts(): Promise<Article[]> {
     let hasMore = true;
     
     while (hasMore && page <= 5) {
-      const res = await fetch(`https://admin.homeo.healthcare/wp-json/wp/v2/posts?_embed&per_page=100&page=${page}`, {
+      const params = new URLSearchParams({
+        _fields: WORDPRESS_LIST_FIELDS,
+        per_page: "100",
+        page: page.toString(),
+      });
+      const res = await fetch(`${WORDPRESS_POSTS_URL}?${params.toString()}`, {
         next: { revalidate: 3600 }
       });
       if (!res.ok) {
@@ -62,69 +102,35 @@ async function getWordPressPosts(): Promise<Article[]> {
     }
     
     const mapped: Article[] = allPosts.map((post: any) => {
-      // Clean up literal \n strings from content, excerpt, and title if present
-      if (post.content?.rendered) {
-        post.content.rendered = post.content.rendered
-          .replace(/<style[^>]*>([\s\S]*?)<\/style>/gi, "")
-          .replace(/\\n/g, "");
-      }
-      if (post.excerpt?.rendered) {
-        post.excerpt.rendered = decodeHtmlEntities(post.excerpt.rendered.replace(/\\n/g, ""));
-      }
-      if (post.title?.rendered) {
-        post.title.rendered = decodeHtmlEntities(post.title.rendered.replace(/\\n/g, ""));
-      }
+      const title = decodeHtmlEntities((post.title?.rendered || "").replace(/\\n/g, ""));
+      const renderedExcerpt = decodeHtmlEntities((post.excerpt?.rendered || "").replace(/\\n/g, ""));
 
       // Extract category
       let category: Article["category"] = "Research";
       try {
-        const title = (post.title?.rendered || "").toLowerCase();
-        const terms = post._embedded?.['wp:term']?.[0];
-        const catName = (terms && terms.length > 0) ? terms[0].name.toLowerCase() : "";
-        const slug = (terms && terms.length > 0) ? (terms[0].slug?.toLowerCase() || "") : "";
+        const titleLower = title.toLowerCase();
 
         // Title keyword check first
-        if (['skin', 'eczema', 'psoriasis', 'liver', 'gall', 'digest', 'stomach', 'gut', 'acne', 'gerd', 'acidity', 'constipation', 'abdomen', 'gastric', 'bowel', 'ibs', 'crohn', 'ulcer', 'fistula', 'fissure', 'piles', 'hemorrhoid', 'pancreas', 'digestive'].some(w => title.includes(w))) {
+        if (['skin', 'eczema', 'psoriasis', 'liver', 'gall', 'digest', 'stomach', 'gut', 'acne', 'gerd', 'acidity', 'constipation', 'abdomen', 'gastric', 'bowel', 'ibs', 'crohn', 'ulcer', 'fistula', 'fissure', 'piles', 'hemorrhoid', 'pancreas', 'digestive'].some(w => titleLower.includes(w))) {
           category = "Skin & Digestive";
-        } else if (['asthma', 'bronchial', 'lung', 'throat', 'sinus', 'cough', 'rhinitis', 'respiratory', 'breathing', 'copd', 'cold', 'tonsil', 'adenoid', 'sneeze'].some(w => title.includes(w))) {
+        } else if (['asthma', 'bronchial', 'lung', 'throat', 'sinus', 'cough', 'rhinitis', 'respiratory', 'breathing', 'copd', 'cold', 'tonsil', 'adenoid', 'sneeze'].some(w => titleLower.includes(w))) {
           category = "Respiratory & Lungs";
-        } else if (['diabetes', 'thyroid', 'hormon', 'endocrine', 'gland', 'pcos', 'obesity', 'metabolic', 'weight', 'insulin', 'adrenal', 'goitre', 'pcod', 'hormonal'].some(w => title.includes(w))) {
+        } else if (['diabetes', 'thyroid', 'hormon', 'endocrine', 'gland', 'pcos', 'obesity', 'metabolic', 'weight', 'insulin', 'adrenal', 'goitre', 'pcod', 'hormonal'].some(w => titleLower.includes(w))) {
           category = "Hormones & Diabetes";
-        } else if (['heart', 'lipid', 'cholesterol', 'triglyceride', 'cardio', 'blood pressure', 'hypertension', 'angina', 'artery', 'vascular', 'circulat', 'cardiac'].some(w => title.includes(w))) {
+        } else if (['heart', 'lipid', 'cholesterol', 'triglyceride', 'cardio', 'blood pressure', 'hypertension', 'angina', 'artery', 'vascular', 'circulat', 'cardiac'].some(w => titleLower.includes(w))) {
           category = "Heart & Lipids";
-        } else if (['joint', 'spondylosis', 'neck', 'spine', 'arthritis', 'rheumat', 'bone', 'neuro', 'back', 'sciatica', 'gout', 'muscul', 'paralysis', 'neuropathy', 'headache', 'migraine', 'disc', 'lumbar', 'nerve'].some(w => title.includes(w))) {
+        } else if (['joint', 'spondylosis', 'neck', 'spine', 'arthritis', 'rheumat', 'bone', 'neuro', 'back', 'sciatica', 'gout', 'muscul', 'paralysis', 'neuropathy', 'headache', 'migraine', 'disc', 'lumbar', 'nerve'].some(w => titleLower.includes(w))) {
           category = "Joints & Neuro";
-        } else if (['kidney', 'urolog', 'renal', 'urine', 'bladder', 'prostate', 'calculi', 'stone', 'uti', 'nephro'].some(w => title.includes(w))) {
+        } else if (['kidney', 'urolog', 'renal', 'urine', 'bladder', 'prostate', 'calculi', 'stone', 'uti', 'nephro'].some(w => titleLower.includes(w))) {
           category = "Kidney & Urology";
-        } else if (['infect', 'viral', 'fever', 'immun', 'flu', 'covid', 'chickenpox', 'measles', 'allergy', 'allergies', 'parasite', 'bacteri', 'autoimmune'].some(w => title.includes(w))) {
+        } else if (['infect', 'viral', 'fever', 'immun', 'flu', 'covid', 'chickenpox', 'measles', 'allergy', 'allergies', 'parasite', 'bacteri', 'autoimmune'].some(w => titleLower.includes(w))) {
           category = "Immunity & Infections";
-        } else if (['diet', 'nutrition', 'stress', 'summer', 'health care', 'lifestyle', 'prevent', 'detox', 'sleep', 'wellness', 'anxiety', 'depress', 'mental', 'mind', 'insomnia', 'fatigue', 'fitness', 'exercise'].some(w => title.includes(w))) {
+        } else if (['diet', 'nutrition', 'stress', 'summer', 'health care', 'lifestyle', 'prevent', 'detox', 'sleep', 'wellness', 'anxiety', 'depress', 'mental', 'mind', 'insomnia', 'fatigue', 'fitness', 'exercise'].some(w => titleLower.includes(w))) {
           category = "Lifestyle & Wellness";
-        } else if (['cancer', 'oncology', 'tumor', 'malignan', 'chemo', 'radiat'].some(w => title.includes(w))) {
+        } else if (['cancer', 'oncology', 'tumor', 'malignan', 'chemo', 'radiat'].some(w => titleLower.includes(w))) {
           category = "Cancer Care";
-        } else if (['kids', 'child', 'pediatric', 'infant', 'baby', 'toddler', 'autism', 'adhd'].some(w => title.includes(w))) {
+        } else if (['kids', 'child', 'pediatric', 'infant', 'baby', 'toddler', 'autism', 'adhd'].some(w => titleLower.includes(w))) {
           category = "Children's Health";
-        } else {
-          // Fallback to category terms matching
-          if (catName.includes("skin") || catName.includes("eczema") || catName.includes("psoriasis")) {
-            category = "Skin & Digestive";
-          } else if (catName.includes("lung") || catName.includes("respiratory") || catName.includes("asthma")) {
-            category = "Respiratory & Lungs";
-          } else if (catName.includes("child") || catName.includes("pediatric") || catName.includes("kids") || slug.includes("kids")) {
-            category = "Children's Health";
-          } else if (catName.includes("gut") || catName.includes("digestive") || catName.includes("hormone") || catName.includes("endocrine")) {
-            category = "Skin & Digestive";
-          } else if (catName.includes("joint") || catName.includes("neuro") || catName.includes("spine") || catName.includes("headache")) {
-            category = "Joints & Neuro";
-          } else if (catName.includes("heart") || slug.includes("heart")) {
-            category = "Heart & Lipids";
-          } else if (catName.includes("cancer") || slug.includes("cancer")) {
-            category = "Cancer Care";
-          } else if (catName.includes("healthcare") || slug.includes("healthcare")) {
-            category = "Healthcare";
-          } else if (catName.includes("homeopathy") || slug === "uncategorized") {
-            category = "Homeopathy";
-          }
         }
       } catch {}
 
@@ -151,55 +157,17 @@ async function getWordPressPosts(): Promise<Article[]> {
 
       // Get featured image: prefer local unwatermarked image, fallback to WordPress featured media URL
       let image = "/images/epigenetics_gene.png";
-      
-      const localSlugsWithFeaturedImage = new Set([
-        "complete-thyroid-guide",
-        "hashimotos-thyroiditis",
-        "hyperthyroidism-graves",
-        "chronic-respiratory-guide",
-        "allergic-rhinitis-sinusitis",
-        "asthma-bronchospasms",
-        "gut-brain-skin-axis",
-        "ibs-gut-motility",
-        "gerd-acid-reflux",
-        "chronic-skin-pathology",
-        "eczema-barrier-repair",
-        "vitiligo-repigmentation",
-        "joint-bone-health",
-        "osteoarthritis-degradation",
-        "sciatica-spine-care",
-        "neurobiology-stress-anxiety",
-        "insomnia-sleep-rhythms",
-        "female-endocrine-blueprint",
-        "pcos-pcod-reversal",
-        "insulin-resistance-diabetes",
-        "fatty-liver-regeneration",
-        "cardiovascular-hypertension-lipids",
-        "pediatric-immunity-tonsils",
-        "recurrent-childhood-fevers",
-        "constitutional-immunotherapy-cancer"
-      ]);
-
       if (localSlugsWithFeaturedImage.has(post.slug)) {
         image = `/images/${post.slug}-featured.png`;
-      } else {
-        try {
-          const media = post._embedded?.['wp:featuredmedia']?.[0];
-          if (media?.source_url) {
-            image = media.source_url;
-          }
-        } catch {}
       }
 
       // Get excerpt
-      const excerpt = post.excerpt?.rendered 
-        ? post.excerpt.rendered.replace(/<[^>]*>/g, '').replace(/\[&hellip;\]/, '...').trim()
+      const excerpt = renderedExcerpt
+        ? renderedExcerpt.replace(/<[^>]*>/g, '').replace(/\[&hellip;\]/, '...').trim()
         : "";
 
       // Calculate read time
-      const wordCount = post.content?.rendered 
-        ? post.content.rendered.replace(/<[^>]*>/g, '').split(/\s+/).length 
-        : 0;
+      const wordCount = excerpt ? excerpt.split(/\s+/).length : 0;
       const readTime = `${Math.max(3, Math.ceil(wordCount / 200))} min read`;
 
       // Format Date
@@ -211,13 +179,13 @@ async function getWordPressPosts(): Promise<Article[]> {
 
       return {
         id: post.slug || post.id.toString(),
-        title: post.title?.rendered || "Untitled Post",
+        title: title || "Untitled Post",
         category,
         date,
         readTime,
-        author: post._embedded?.author?.[0]?.name || "Dr. Narayan Jethwani",
+        author: "Dr. Narayan Jethwani",
         excerpt,
-        content: post.content?.rendered || "",
+        content: "",
         glowColor: glowColors[category],
         image
       };
@@ -241,7 +209,11 @@ export default async function BlogsPage() {
 
 async function getWordPressPostBySlug(slug: string): Promise<Article | null> {
   try {
-    const res = await fetch(`https://admin.homeo.healthcare/wp-json/wp/v2/posts?slug=${slug}&_embed`, {
+    const params = new URLSearchParams({
+      slug,
+      _fields: "id,slug,title.rendered,excerpt.rendered",
+    });
+    const res = await fetch(`${WORDPRESS_POSTS_URL}?${params.toString()}`, {
       next: { revalidate: 3600 }
     });
     if (!res.ok) return null;
@@ -250,43 +222,8 @@ async function getWordPressPostBySlug(slug: string): Promise<Article | null> {
     const post = posts[0];
 
     let image = "/images/epigenetics_gene.png";
-    const localSlugsWithFeaturedImage = new Set([
-      "complete-thyroid-guide",
-      "hashimotos-thyroiditis",
-      "hyperthyroidism-graves",
-      "chronic-respiratory-guide",
-      "allergic-rhinitis-sinusitis",
-      "asthma-bronchospasms",
-      "gut-brain-skin-axis",
-      "ibs-gut-motility",
-      "gerd-acid-reflux",
-      "chronic-skin-pathology",
-      "eczema-barrier-repair",
-      "vitiligo-repigmentation",
-      "joint-bone-health",
-      "osteoarthritis-degradation",
-      "sciatica-spine-care",
-      "neurobiology-stress-anxiety",
-      "insomnia-sleep-rhythms",
-      "female-endocrine-blueprint",
-      "pcos-pcod-reversal",
-      "insulin-resistance-diabetes",
-      "fatty-liver-regeneration",
-      "cardiovascular-hypertension-lipids",
-      "pediatric-immunity-tonsils",
-      "recurrent-childhood-fevers",
-      "constitutional-immunotherapy-cancer"
-    ]);
-
     if (localSlugsWithFeaturedImage.has(post.slug)) {
       image = `/images/${post.slug}-featured.png`;
-    } else {
-      try {
-        const media = post._embedded?.['wp:featuredmedia']?.[0];
-        if (media?.source_url) {
-          image = media.source_url;
-        }
-      } catch {}
     }
 
     const excerpt = post.excerpt?.rendered 
