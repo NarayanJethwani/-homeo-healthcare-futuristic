@@ -5044,6 +5044,7 @@ Homeo Healthcare`;
   // Handle Log Out
   const handleLogout = () => {
     localStorage.removeItem("admin_session");
+    void fetch("/api/admin/session", { method: "DELETE" });
     router.push("/admin/login");
   };
 
