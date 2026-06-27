@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { adminDb } from "@/lib/firebaseAdmin";
+import { getAdminDb } from "@/lib/firebaseAdmin";
 
 export async function POST(request: Request) {
   try {
@@ -9,7 +9,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: "Rubric ID is required." }, { status: 400 });
     }
 
-    const docRef = adminDb.collection("rubrics").doc(id);
+    const docRef = getAdminDb().collection("rubrics").doc(id);
     const docSnap = await docRef.get();
 
     if (!docSnap.exists) {

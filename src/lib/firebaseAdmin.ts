@@ -1,5 +1,7 @@
 import * as admin from "firebase-admin";
 
+let isInitialized = false;
+
 if (!admin.apps.length) {
   try {
     let serviceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY || process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
@@ -19,18 +21,75 @@ if (!admin.apps.length) {
         databaseURL: `https://${parsedKey.project_id}.firebaseio.com`
       });
       console.log("Firebase Admin initialized for project:", parsedKey.project_id);
+      isInitialized = true;
     } else {
       // Fallback for local development using application default credentials or mock
       admin.initializeApp({
         projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "mock-project-id"
       });
+      isInitialized = true;
     }
   } catch (error: any) {
     console.error("Firebase admin initialization error:", error?.message || error);
+    isInitialized = false;
   }
+} else {
+  isInitialized = true;
 }
 
-const adminAuth = admin.auth();
-const adminDb = admin.firestore();
+export function getAdminDb() {
+  if (!isInitialized || !admin.apps.length) {
+    throw new Error("Firebase Admin SDK is not initialized. Check your credentials.");
+  }
+  return admin.firestore();
+}
+
+export function getAdminAuth() {
+  if (!isInitialized || !admin.apps.length) {
+    throw new Error("Firebase Admin SDK is not initialized. Check your credentials.");
+  }
+  return admin.auth();
+}
+
+// Legacy exports as safe Proxies to prevent startup/import-time crashes
+const adminAuth = new Proxy({} as any, {
+  get(target, prop) {
+    try {
+      const auth = getAdminAuth();
+      const value = Reflect.get(auth, prop);
+      return typeof value === "function" ? value.bind(auth) : value;
+    } catch (err: any) {
+      console.warn(`Firebase Admin Auth service unavailable: ${err.message}`);
+      const dummyFn = () => {
+        throw new Error(`Firebase Admin Auth is not initialized. Failed calling Auth.${String(prop)}`);
+      };
+      return new Proxy(dummyFn, {
+        get(t, p) {
+          return dummyFn;
+        }
+      });
+    }
+  }
+});
+
+const adminDb = new Proxy({} as any, {
+  get(target, prop) {
+    try {
+      const db = getAdminDb();
+      const value = Reflect.get(db, prop);
+      return typeof value === "function" ? value.bind(db) : value;
+    } catch (err: any) {
+      console.warn(`Firebase Admin Firestore service unavailable: ${err.message}`);
+      const dummyFn = () => {
+        throw new Error(`Firebase Admin Firestore is not initialized. Failed calling Firestore.${String(prop)}`);
+      };
+      return new Proxy(dummyFn, {
+        get(t, p) {
+          return dummyFn;
+        }
+      });
+    }
+  }
+});
 
 export { adminAuth, adminDb };

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { adminDb } from "@/lib/firebaseAdmin";
+import { getAdminDb } from "@/lib/firebaseAdmin";
 
 /**
  * POST /api/admin/extend-subscription
@@ -40,9 +40,9 @@ export async function POST(request: Request) {
 
     if (isFirebaseConfigured) {
       // Update both users/{uid} and doctors/{uid} so both collections stay in sync
-      const batch = adminDb.batch();
-      batch.update(adminDb.collection("users").doc(doctorUid),   subscriptionUpdate);
-      batch.update(adminDb.collection("doctors").doc(doctorUid), subscriptionUpdate);
+      const batch = getAdminDb().batch();
+      batch.update(getAdminDb().collection("users").doc(doctorUid),   subscriptionUpdate);
+      batch.update(getAdminDb().collection("doctors").doc(doctorUid), subscriptionUpdate);
       await batch.commit();
     } else {
       console.log("[MOCK] Would extend subscription for:", doctorUid, plan, validUntil);

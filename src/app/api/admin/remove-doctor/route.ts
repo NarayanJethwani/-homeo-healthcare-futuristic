@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { adminAuth, adminDb } from "@/lib/firebaseAdmin";
+import { getAdminAuth, getAdminDb } from "@/lib/firebaseAdmin";
 
 /**
  * POST /api/admin/remove-doctor
@@ -32,16 +32,16 @@ export async function POST(request: Request) {
     if (isFirebaseConfigured) {
       // 1. Delete from Firebase Auth
       try {
-        await adminAuth.deleteUser(doctorUid);
+        await getAdminAuth().deleteUser(doctorUid);
         console.log(`Successfully deleted auth user: ${doctorUid}`);
       } catch (authErr: any) {
         console.warn(`Could not delete Auth user ${doctorUid} (it may not exist):`, authErr.message);
       }
 
       // 2. Delete Firestore documents
-      const batch = adminDb.batch();
-      batch.delete(adminDb.collection("users").doc(doctorUid));
-      batch.delete(adminDb.collection("doctors").doc(doctorUid));
+      const batch = getAdminDb().batch();
+      batch.delete(getAdminDb().collection("users").doc(doctorUid));
+      batch.delete(getAdminDb().collection("doctors").doc(doctorUid));
       await batch.commit();
       console.log(`Successfully deleted Firestore docs for: ${doctorUid}`);
     } else {

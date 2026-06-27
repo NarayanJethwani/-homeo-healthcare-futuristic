@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
-import { adminDb } from "@/lib/firebaseAdmin";
+import { getAdminDb } from "@/lib/firebaseAdmin";
 import { JETHWANI_REPERTORY_DATA } from "@/lib/repertoryData";
 
 export async function GET() {
@@ -58,7 +58,7 @@ export async function GET() {
     // Load Jethwani clinical rubrics from Firestore with fallback
     let jethwaniData: any[] = [];
     try {
-      const rubricsSnap = await adminDb.collection("rubrics").where("status", "==", "active").get();
+      const rubricsSnap = await getAdminDb().collection("rubrics").where("status", "==", "active").get();
       rubricsSnap.forEach((doc: any) => {
         jethwaniData.push(doc.data());
       });

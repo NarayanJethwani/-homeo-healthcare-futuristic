@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { adminDb } from "@/lib/firebaseAdmin";
+import { getAdminDb } from "@/lib/firebaseAdmin";
 import { 
   createInvoiceSheet, 
   appendInvoiceToClinicalSheet, 
@@ -83,7 +83,7 @@ export async function POST(request: Request) {
 
     const isMockProject = !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID === "mock-project-id";
     if (!isMockProject) {
-      await adminDb.collection("invoices").doc(invoiceDoc.id).set(invoiceDoc);
+      await getAdminDb().collection("invoices").doc(invoiceDoc.id).set(invoiceDoc);
     } else {
       console.log("Firebase operating in mock mode. Skipping invoices Firestore write.");
     }

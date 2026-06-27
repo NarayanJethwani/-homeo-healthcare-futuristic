@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { google } from "googleapis";
-import { adminDb } from "@/lib/firebaseAdmin";
+import { getAdminDb } from "@/lib/firebaseAdmin";
 import { createPatientClinicalSheet } from "@/lib/googleDrive";
 
 const getGoogleAuth = () => {
@@ -54,7 +54,7 @@ export async function GET(request: Request) {
     // 2. If not in env, check Firestore cache
     if (!spreadsheetId && !isMockProject) {
       try {
-        const settingsSnap = await adminDb.collection("settings").doc("google_sheets").get();
+        const settingsSnap = await getAdminDb().collection("settings").doc("google_sheets").get();
         if (settingsSnap.exists) {
           spreadsheetId = settingsSnap.data()?.templateSheetId || "";
           if (spreadsheetId) {
@@ -107,7 +107,7 @@ export async function GET(request: Request) {
         // Save to Firestore settings
         if (!isMockProject && spreadsheetId) {
           try {
-            await adminDb.collection("settings").doc("google_sheets").set({
+            await getAdminDb().collection("settings").doc("google_sheets").set({
               templateSheetId: spreadsheetId,
               createdAt: new Date().toISOString()
             }, { merge: true });

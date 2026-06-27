@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { adminDb } from "@/lib/firebaseAdmin";
+import { getAdminDb } from "@/lib/firebaseAdmin";
 import { JETHWANI_REPERTORY_DATA, SEARCH_SYNONYMS } from "@/lib/repertoryData";
 
 // Helper to generate slug
@@ -32,7 +32,7 @@ export async function GET(request: Request) {
     console.log("Starting repertory database seeding operation...");
 
     // Check if database is already seeded
-    const rubricsRef = adminDb.collection("rubrics");
+    const rubricsRef = getAdminDb().collection("rubrics");
     const snapshot = await rubricsRef.limit(1).get();
 
     if (!snapshot.empty && !force) {
@@ -44,7 +44,7 @@ export async function GET(request: Request) {
 
     // 1. Seed Rubrics
     let rubricsSeeded = 0;
-    const batch = adminDb.batch();
+    const batch = getAdminDb().batch();
 
     JETHWANI_REPERTORY_DATA.forEach(fr => {
       const docRef = rubricsRef.doc(fr.id);
@@ -83,8 +83,8 @@ export async function GET(request: Request) {
 
     // 2. Seed Synonyms
     let synonymsSeeded = 0;
-    const synBatch = adminDb.batch();
-    const synonymsRef = adminDb.collection("synonyms");
+    const synBatch = getAdminDb().batch();
+    const synonymsRef = getAdminDb().collection("synonyms");
 
     Object.entries(SEARCH_SYNONYMS).forEach(([word, synonyms]) => {
       const docRef = synonymsRef.doc(word);

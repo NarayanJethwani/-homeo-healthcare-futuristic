@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { adminDb } from "@/lib/firebaseAdmin";
+import { getAdminDb } from "@/lib/firebaseAdmin";
 import { REMEDIES_METADATA } from "@/lib/repertoryData";
 
 export async function GET(request: Request) {
@@ -14,7 +14,7 @@ export async function GET(request: Request) {
       }, { status: 400 });
     }
 
-    const docRef = adminDb.collection("rubrics").doc(id);
+    const docRef = getAdminDb().collection("rubrics").doc(id);
     const docSnap = await docRef.get();
 
     if (!docSnap.exists) {

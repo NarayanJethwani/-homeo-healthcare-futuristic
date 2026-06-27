@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { adminDb } from "@/lib/firebaseAdmin";
+import { getAdminDb } from "@/lib/firebaseAdmin";
 
 export async function POST(request: Request) {
   try {
@@ -12,7 +12,7 @@ export async function POST(request: Request) {
       }, { status: 400 });
     }
 
-    const rubricsRef = adminDb.collection("rubrics");
+    const rubricsRef = getAdminDb().collection("rubrics");
     const scores: Record<string, { coverage: number; score: number; remedy: string }> = {};
 
     for (const activeSymptom of selectedRubrics) {
@@ -79,7 +79,7 @@ export async function POST(request: Request) {
       createdAt: new Date().toISOString()
     };
 
-    await adminDb.collection("repertorization_sessions").doc(sessionId).set(sessionDoc);
+    await getAdminDb().collection("repertorization_sessions").doc(sessionId).set(sessionDoc);
 
     return NextResponse.json({
       success: true,

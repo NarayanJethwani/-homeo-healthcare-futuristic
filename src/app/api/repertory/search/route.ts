@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { adminDb } from "@/lib/firebaseAdmin";
+import { getAdminDb } from "@/lib/firebaseAdmin";
 
 export async function GET(request: Request) {
   try {
@@ -10,7 +10,7 @@ export async function GET(request: Request) {
     const miasm = searchParams.get("miasm") || "All";
     const remedy = searchParams.get("remedy") || "All";
 
-    const rubricsRef = adminDb.collection("rubrics");
+    const rubricsRef = getAdminDb().collection("rubrics");
     let results: any[] = [];
 
     if (!q) {
@@ -39,7 +39,7 @@ export async function GET(request: Request) {
     } else {
       // 1. Expand query using synonyms
       let searchTerms = [q];
-      const synDoc = await adminDb.collection("synonyms").doc(q).get();
+      const synDoc = await getAdminDb().collection("synonyms").doc(q).get();
       if (synDoc.exists) {
         const data = synDoc.data();
         if (data && data.synonyms) {
@@ -52,7 +52,7 @@ export async function GET(request: Request) {
       for (const word of words) {
         if (word.length > 2 && word !== q) {
           searchTerms.push(word);
-          const wSynDoc = await adminDb.collection("synonyms").doc(word).get();
+          const wSynDoc = await getAdminDb().collection("synonyms").doc(word).get();
           if (wSynDoc.exists) {
             const data = wSynDoc.data();
             if (data && data.synonyms) {

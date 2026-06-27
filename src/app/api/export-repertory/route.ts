@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { adminDb } from "@/lib/firebaseAdmin";
+import { getAdminDb } from "@/lib/firebaseAdmin";
 import { syncRepertoryToClinicalSheet, RepertoryExportRubric } from "@/lib/googleDrive";
 
 export async function POST(request: Request) {
@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     // 1. Fetch patient document to get sheetId only if not provided by client
     if ((!sheetId || sheetId === "mock-sheet-id") && process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID && process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID !== "mock-project-id") {
       try {
-        const patientSnap = await adminDb.collection("patients").doc(patientId).get();
+        const patientSnap = await getAdminDb().collection("patients").doc(patientId).get();
         if (patientSnap.exists) {
           const patientData = patientSnap.data();
           sheetId = patientData?.sheetId || "mock-sheet-id";

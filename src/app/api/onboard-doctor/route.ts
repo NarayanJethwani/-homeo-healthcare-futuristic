@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { adminAuth, adminDb } from "@/lib/firebaseAdmin";
+import { getAdminAuth, getAdminDb } from "@/lib/firebaseAdmin";
 import { createDoctorWorkspace } from "@/lib/googleDrive";
 
 /**
@@ -50,13 +50,13 @@ export async function POST(request: Request) {
       try {
         // Check if user already exists
         try {
-          const existingUser = await adminAuth.getUserByEmail(email);
+          const existingUser = await getAdminAuth().getUserByEmail(email);
           uid = existingUser.uid;
           console.log("Doctor already exists in Firebase Auth:", email, "uid:", uid);
         } catch {
           // User doesn't exist — create them with a random temp password
           const tempPassword = `Homeo@${Math.random().toString(36).slice(-8)}`;
-          const userRecord = await adminAuth.createUser({
+          const userRecord = await getAdminAuth().createUser({
             email,
             displayName: name,
             password: tempPassword,
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
           console.log("Firebase Auth user created:", email, uid);
 
           // Send password reset so the doctor sets their own password
-          await adminAuth
+          await getAdminAuth()
             .generatePasswordResetLink(email)
             .then((link) => {
               console.log("Password reset link for", email, ":", link);
@@ -118,10 +118,10 @@ export async function POST(request: Request) {
 
     if (isFirebaseConfigured) {
       // Write to users/{uid}
-      await adminDb.collection("users").doc(uid).set(userProfile, { merge: true });
+      await getAdminDb().collection("users").doc(uid).set(userProfile, { merge: true });
 
       // Write to doctors/{uid} (workspace metadata for Firestore rules)
-      await adminDb.collection("doctors").doc(uid).set(
+      await getAdminDb().collection("doctors").doc(uid).set(
         {
           uid,
           name,

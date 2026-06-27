@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { adminDb } from "@/lib/firebaseAdmin";
+import { getAdminDb } from "@/lib/firebaseAdmin";
 
 function generateSlug(text: string): string {
   return text
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { action, rubricData, mergeData, cloneData } = body;
 
-    const rubricsRef = adminDb.collection("rubrics");
+    const rubricsRef = getAdminDb().collection("rubrics");
 
     if (action === "save") {
       if (!rubricData || !rubricData.name) {
