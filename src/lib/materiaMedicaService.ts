@@ -1,5 +1,5 @@
 import { db } from "./firebase";
-import { doc, getDoc, collection, getDocs, query, where, limit } from "firebase/firestore";
+import { doc, getDoc, collection, getDocs, query, where } from "firebase/firestore";
 import { MateriaMedicaDocument } from "./materiaMedicaSchema";
 import { FirestoreRemedyBridge } from "./materiaMedicaDb";
 

@@ -165,7 +165,7 @@ export class RAGService {
     if (isOllamaOnline) {
       try {
         queryVector = await ollamaService.getEmbeddings(query);
-      } catch (e) {
+      } catch {
         console.warn("Failed to retrieve embeddings from Ollama. Falling back to keyword search.");
       }
     }

@@ -1,6 +1,6 @@
 import { GENOME_REMEDY_DB } from './remedyGenomeSchema';
 import { MASTER_REMEDY_DB } from './searchAndCompare';
-import { getClosestRemedies, getGenomeSimilarity } from './caseIntelligence';
+import { getClosestRemedies } from './caseIntelligence';
 
 export interface RemedyCompletenessScore {
   remedyId: string;
@@ -72,8 +72,6 @@ export function runCompletenessAudit(remedyId: string): RemedyCompletenessScore 
   const missingCitations = !masterRem?.sourceAttributions || Object.keys(masterRem.sourceAttributions).length === 0;
 
   // 6. Score calculations
-  const totalModalityScore = 3 - missingModalityFields.length;
-
   const distinctAuthors = new Set<string>();
   if (masterRem?.sourceAttributions) {
     Object.values(masterRem.sourceAttributions).forEach(attrs => {

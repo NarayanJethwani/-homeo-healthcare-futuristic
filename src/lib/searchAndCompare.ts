@@ -1,4 +1,4 @@
-import { MateriaMedicaDocument, OrganAffinity, MiasmaticAnalysis } from "./materiaMedicaSchema";
+import { MateriaMedicaDocument, MiasmaticAnalysis } from "./materiaMedicaSchema";
 import { MASTER_REMEDY_DB } from "./materiaMedicaDb";
 import { resolveCanonicalRemedyId } from "./normalizationEngine";
 
@@ -72,8 +72,6 @@ export const searchRemedies = (filters: SearchFilters): ScoredSearchResult[] => 
     // 1. Symptom Query (searches keynotes, clinical conditions, personality, organs)
     if (filters.symptomQuery) {
       const q = filters.symptomQuery;
-      let matched = false;
-
       // Check keynotes
       const allKeynotes = [
         ...(remedy.keynotes.top10 || []),
@@ -88,7 +86,6 @@ export const searchRemedies = (filters: SearchFilters): ScoredSearchResult[] => 
           matchText: `Matches keynote(s): ${matchingKeynotes.slice(0, 3).join(", ")}`,
           score: 15
         });
-        matched = true;
       }
 
       // Check clinical conditions
@@ -103,7 +100,6 @@ export const searchRemedies = (filters: SearchFilters): ScoredSearchResult[] => 
           matchText: `Matches clinical condition: ${matchingConditions[0].condition}`,
           score: 15
         });
-        matched = true;
       }
 
       // Check personality
@@ -114,7 +110,6 @@ export const searchRemedies = (filters: SearchFilters): ScoredSearchResult[] => 
           matchText: `Matches mental picture details`,
           score: 10
         });
-        matched = true;
       }
 
       // Check physical generals sleep/energy
@@ -125,15 +120,12 @@ export const searchRemedies = (filters: SearchFilters): ScoredSearchResult[] => 
           matchText: `Matches sleep or energy pattern description`,
           score: 10
         });
-        matched = true;
       }
     }
 
     // 2. Theme Query (searches essence core theme, central conflict, compensation)
     if (filters.themeQuery) {
       const q = filters.themeQuery;
-      let matched = false;
-
       if (matchesText(remedy.essence.coreTheme, q)) {
         score += 15;
         reasons.push({
@@ -141,7 +133,6 @@ export const searchRemedies = (filters: SearchFilters): ScoredSearchResult[] => 
           matchText: `Core Theme: "${remedy.essence.coreTheme.slice(0, 50)}..."`,
           score: 15
         });
-        matched = true;
       }
       if (matchesText(remedy.essence.centralConflict, q)) {
         score += 10;
@@ -150,7 +141,6 @@ export const searchRemedies = (filters: SearchFilters): ScoredSearchResult[] => 
           matchText: `Central Conflict matches`,
           score: 10
         });
-        matched = true;
       }
       if (matchesText(remedy.essence.compensationPattern, q)) {
         score += 10;
@@ -159,7 +149,6 @@ export const searchRemedies = (filters: SearchFilters): ScoredSearchResult[] => 
           matchText: `Compensation pattern matches`,
           score: 10
         });
-        matched = true;
       }
     }
 
@@ -1272,5 +1261,4 @@ export const CLINICAL_BOARD_QUESTIONS = [
     explanation: "Belladonna produces sudden congestive heat, throbbing right-sided headaches, red flushed face, dilated pupils, and extreme sensitivity to jarring/light."
   }
 ];
-
 

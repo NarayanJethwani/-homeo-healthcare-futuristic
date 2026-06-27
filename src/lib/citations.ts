@@ -160,10 +160,8 @@ export function getEvidencePanel(remedyId: string, itemKey: string): EvidencePan
     }
   } else if (remedy) {
     // 2. Dynamic Fallback Generation based on active remedy properties
-    const thermal = remedy.physicalGenerals.thermalState.toLowerCase();
     const cravings = remedy.physicalGenerals.foodDesires.map(c => c.toLowerCase());
     const worseFrom = remedy.modalities.worseFrom.map(w => w.toLowerCase());
-    const keynotes = remedy.keynotes.top10.map(k => k.toLowerCase());
 
     if (key.includes("thermal") || key.includes("chilly") || key.includes("hot") || key.includes("warm")) {
       citations.push({

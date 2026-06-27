@@ -9,7 +9,7 @@ function generateSlug(text: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
-function inferOrganSystem(name: string, category: string): string {
+function inferOrganSystem(name: string): string {
   const text = name.toLowerCase();
   if (text.includes("heart") || text.includes("pulse") || text.includes("hypertension") || text.includes("circulation")) return "Cardiovascular";
   if (text.includes("stomach") || text.includes("gerd") || text.includes("ibs") || text.includes("gastric") || text.includes("acidity") || text.includes("bloating")) return "Gastrointestinal";
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
         description: rubricData.description || "",
         category: rubricData.category || "Custom Rubrics",
         subcategory: rubricData.subcategory || "Personal",
-        organSystem: rubricData.organSystem || inferOrganSystem(rubricData.name, rubricData.category || ""),
+        organSystem: rubricData.organSystem || inferOrganSystem(rubricData.name),
         clinicalPriority: rubricData.clinicalPriority || "medium",
         createdDate: rubricData.createdDate || new Date().toISOString(),
         modifiedDate: new Date().toISOString(),
@@ -124,7 +124,7 @@ export async function POST(request: Request) {
         description: `Merged clinical rubric combining: ${sourceRubrics.map(r => r.name).join("; ")}`,
         category,
         subcategory: "Merged",
-        organSystem: inferOrganSystem(targetName, category),
+        organSystem: inferOrganSystem(targetName),
         clinicalPriority: "medium",
         createdDate: new Date().toISOString(),
         modifiedDate: new Date().toISOString(),

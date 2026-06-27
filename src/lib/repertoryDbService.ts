@@ -8,10 +8,7 @@ import {
   updateDoc, 
   deleteDoc, 
   query, 
-  where, 
-  orderBy, 
-  limit, 
-  serverTimestamp 
+  where
 } from "firebase/firestore";
 import { JETHWANI_REPERTORY_DATA as FALLBACK_DATA, JethwaniRubric as FallbackRubric, SEARCH_SYNONYMS as FALLBACK_SYNONYMS } from "./repertoryData";
 
@@ -97,7 +94,7 @@ export function mapFallbackToRubric(fr: FallbackRubric): Rubric {
     description: fr.researchCitation?.detail || "Dr. Jethwani's clinical indicator.",
     category: fr.section,
     subcategory: fr.name.split(",")[0] || fr.section,
-    organSystem: inferOrganSystem(fr.name, fr.section),
+    organSystem: inferOrganSystem(fr.name),
     clinicalPriority: fr.id.includes("burnout") || fr.id.includes("panic") || fr.id.includes("collapse") ? "high" : "medium",
     createdDate: new Date().toISOString(),
     modifiedDate: new Date().toISOString(),
@@ -114,7 +111,7 @@ export function mapFallbackToRubric(fr: FallbackRubric): Rubric {
   };
 }
 
-function inferOrganSystem(name: string, section: string): string {
+function inferOrganSystem(name: string): string {
   const text = name.toLowerCase();
   if (text.includes("heart") || text.includes("pulse") || text.includes("hypertension") || text.includes("circulation")) return "Cardiovascular";
   if (text.includes("stomach") || text.includes("gerd") || text.includes("ibs") || text.includes("gastric") || text.includes("acidity") || text.includes("bloating")) return "Gastrointestinal";
@@ -208,7 +205,7 @@ export async function searchRubrics(
           synonymTerms = Array.from(new Set([normalizedText, ...localSyn]));
         }
       }
-    } catch (e) {
+    } catch {
       console.warn("Failed to retrieve synonyms from Firestore. Using local synonym engine.");
       const localSyn = FALLBACK_SYNONYMS[normalizedText];
       if (localSyn) {
@@ -272,7 +269,7 @@ export async function getRubricDetails(id: string): Promise<Rubric | null> {
     const fallback = FALLBACK_DATA.find(r => r.id === id);
     if (fallback) return mapFallbackToRubric(fallback);
     return null;
-  } catch (err) {
+  } catch {
     const fallback = FALLBACK_DATA.find(r => r.id === id);
     if (fallback) return mapFallbackToRubric(fallback);
     return null;
@@ -300,7 +297,7 @@ export async function saveRubric(rubricData: Partial<Rubric>): Promise<Rubric> {
     description: rubricData.description || "",
     category: rubricData.category || "Custom Rubrics",
     subcategory: rubricData.subcategory || "Personal",
-    organSystem: rubricData.organSystem || inferOrganSystem(rubricData.name, rubricData.category || ""),
+    organSystem: rubricData.organSystem || inferOrganSystem(rubricData.name),
     clinicalPriority: rubricData.clinicalPriority || "medium",
     createdDate: rubricData.createdDate || new Date().toISOString(),
     modifiedDate: new Date().toISOString(),

@@ -97,7 +97,7 @@ export default function ObservabilityDashboard() {
         `[${json.providerUsed} - ${json.modelUsed}] (Response in ${(duration / 1000).toFixed(2)}s):\n\n${json.response}`
       );
       fetchHealth(); // refresh stats after testing
-    } catch (err) {
+    } catch {
       setTestResponse(`Error: Failed to fetch AI consultation.`);
     } finally {
       setTesting(false);

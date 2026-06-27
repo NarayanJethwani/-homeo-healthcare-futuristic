@@ -121,8 +121,6 @@ export const runIngestionSimulation = (sourceId: string): IngestionSummary => {
 
   // Step 3: Remedies Abbreviation Normalization
   addLog('info', `Running Normalization Engine: Scanning for remedy nomenclature codes...`);
-  const abbrevKeys = Object.keys(REMEDY_ABBREVIATIONS);
-  
   if (source.type === 'repertory') {
     addLog('info', `Found abbreviations: "sulph", "lyc", "nux-v", "ars", "calc-c" in raw data.`);
     normalizedRemedies = 10;
