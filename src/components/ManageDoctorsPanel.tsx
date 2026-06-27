@@ -150,10 +150,12 @@ export default function ManageDoctorsPanel({ sessionUid }: Props) {
     ).then(() => setPatientCounts({ ...counts }));
   }, [doctors]);
 
+  const [now] = useState(() => Date.now());
+
   // ── Stats ─────────────────────────────────────────────────────────────────────
   const activeCount   = doctors.filter(d => {
     if (d.subscription?.plan === "branch") return true;
-    const daysLeft = Math.floor((new Date(d.subscription?.validUntil || "").getTime() - Date.now()) / 86400000);
+    const daysLeft = Math.floor((new Date(d.subscription?.validUntil || "").getTime() - now) / 86400000);
     return daysLeft >= 0;
   }).length;
   const totalPatients = Object.values(patientCounts).reduce((a, b) => a + b, 0) ||

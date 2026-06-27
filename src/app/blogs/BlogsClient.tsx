@@ -642,7 +642,7 @@ const localStaticArticles: Article[] = [   {
       Schedule a comprehensive evaluation or online video consultation with Dr. Narayan Jethwani MD (Hom.). We will review your clinical history, map your trigger thresholds, and design a personalized, evidence-based homeopathic treatment plan.
     </p>
     <div class="flex flex-col sm:flex-row justify-center gap-4 pt-2">
-      <a href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918446056789"}`} style="background-color: #25D366 !important; color: #ffffff !important; display: inline-block;" class="px-6 py-3 rounded-full font-bold uppercase tracking-wider text-xs shadow-md transition-all hover:opacity-90">
+      <a href="https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '918446056789'}" style="background-color: #25D366 !important; color: #ffffff !important; display: inline-block;" class="px-6 py-3 rounded-full font-bold uppercase tracking-wider text-xs shadow-md transition-all hover:opacity-90">
         WhatsApp: +91 84460 56789
       </a>
       <a href="https://homeo.healthcare" style="border: 1px solid #0d9488 !important; background-color: #ffffff !important; color: #0d9488 !important; display: inline-block;" class="px-6 py-3 rounded-full font-bold uppercase tracking-wider text-xs shadow-sm transition-all hover:bg-slate-50">

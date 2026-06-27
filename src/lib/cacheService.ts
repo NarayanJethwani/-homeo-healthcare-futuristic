@@ -66,7 +66,7 @@ class ResponseCacheService {
     const redisUrl = process.env.REDIS_URL;
     if (redisUrl) {
       try {
-        // @ts-ignore
+        // @ts-expect-error: Redis package is optional and might not be present at compile time
         const { createClient } = await import("redis");
         this.redisClient = createClient({ url: redisUrl });
         this.redisClient.on("error", (err: any) => console.error("Redis Client Error", err));
