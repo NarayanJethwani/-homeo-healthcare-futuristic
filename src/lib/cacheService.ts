@@ -53,6 +53,14 @@ export const CACHE_TTLS = {
   DEFAULT: 60 * 60 * 1000            // 1 hour
 };
 
+type RedisModule = {
+  createClient: (options: { url: string }) => any;
+};
+
+const importOptionalRedis = new Function("specifier", "return import(specifier)") as (
+  specifier: string,
+) => Promise<RedisModule>;
+
 class ResponseCacheService {
   private localCache = new LocalCache();
   private redisClient: any = null;
@@ -66,14 +74,13 @@ class ResponseCacheService {
     const redisUrl = process.env.REDIS_URL;
     if (redisUrl) {
       try {
-        // @ts-expect-error: Redis package is optional and might not be present at compile time
-        const { createClient } = await import("redis");
+        const { createClient } = await importOptionalRedis("redis");
         this.redisClient = createClient({ url: redisUrl });
         this.redisClient.on("error", (err: any) => console.error("Redis Client Error", err));
         await this.redisClient.connect();
         this.useRedis = true;
         console.log("Connected to Redis successfully for AI Router Caching.");
-      } catch (e) {
+      } catch {
         console.warn("Redis URL is set, but redis library is unavailable or connection failed. Using local in-memory cache.");
       }
     }
