@@ -1,33 +1,8 @@
 import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { getKnowledgeGraph } from "@/lib/knowledgeGraph";
-import { MASTER_REMEDY_DB } from "@/lib/materiaMedicaDb";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, collection, addDoc } from "firebase/firestore";
-
-function findRemedyInDb(queryName: string): any {
-  if (!queryName) return null;
-  const q = queryName.trim().toLowerCase();
-  
-  // 1. Match by exact abbreviation or name
-  let match = MASTER_REMEDY_DB.find(
-    (r) => r.identity.abbreviation.toLowerCase() === q || r.identity.name.toLowerCase() === q
-  );
-  if (match) return match;
-
-  // 2. Match by id (e.g. "rem_sulphur" for "Sulphur" or "Sulph")
-  const idToTry = `rem_${q.replace(/[^a-z0-9]/g, "")}`;
-  match = MASTER_REMEDY_DB.find((r) => r.id.toLowerCase() === idToTry);
-  if (match) return match;
-
-  // 3. Match by name substring
-  match = MASTER_REMEDY_DB.find(
-    (r) => r.identity.name.toLowerCase().includes(q) || q.includes(r.identity.name.toLowerCase())
-  );
-  if (match) return match;
-
-  return null;
-}
 
 export function compileLocalSynthesisResponse(taskType: string, body: any): any {
   const patientName = body?.patientInfo?.name || body?.patientName || "Patient";
@@ -541,7 +516,6 @@ export function compileLocalSynthesisResponse(taskType: string, body: any): any 
 
   if (taskType === "diet-lifestyle") {
     const dietPreference = body?.dietPreference || "Vegetarian";
-    const restrictions = body?.restrictions || "None";
     
     const vegetarianMenu = {
       breakfast: "Oats porridge with almonds and chia seeds, or warm Ragi malt. Avoid iced milk.",
@@ -619,7 +593,7 @@ export function compileLocalSynthesisResponse(taskType: string, body: any): any 
     const studyMode = body?.studyMode || "Student";
     
     let answer = "";
-    let references = ["Organon of Medicine, 6th Edition"];
+    const references = ["Organon of Medicine, 6th Edition"];
     
     if (aphorismNumber === "§153" || question.includes("153")) {
       answer = `Greetings. Let us examine Aphorism 153, which is the foundational guide to homeopathic individualization. When selecting the specific medicine (the Simillimum), we must bypass the common, general symptoms (like fever, pain, or nausea) which belong to all diseases. Instead, we must focus 'chiefly and almost solely' on the striking, singular, uncommon, and peculiar (characteristic) signs. These PQRS symptoms are the true signature of the patient's individual vital derangement.
@@ -678,7 +652,7 @@ In a case of chronic migraine, standard pathology focuses on vascular dilation. 
   let psoraScore = 45;
   let sycosisScore = 20;
   let syphilisScore = 15;
-  let tubercularScore = 20;
+  const tubercularScore = 20;
 
   if (hasSkin) psoraScore += 20;
   if (hasDigestive) sycosisScore += 20;
@@ -1487,7 +1461,7 @@ export async function POST(request: Request) {
     if (!apiKey) {
       console.warn("GEMINI_API_KEY not configured. Operating in mock/local fallback mode.");
       const responseTextLocal = JSON.stringify(taskType === "synthesis" ? localResponse : localResponse.analysis);
-      let logEntry = {
+      const logEntry = {
         timestamp: new Date().toISOString(),
         taskType,
         modelUsed: "local-synthesizer",
@@ -1635,7 +1609,7 @@ export async function POST(request: Request) {
       const latencyLocal = (Date.now() - startLocal) / 1000;
 
       // Write fallback telemetry log
-      let logEntry = {
+      const logEntry = {
         timestamp: new Date().toISOString(),
         taskType,
         modelUsed: "local-synthesizer",
@@ -1679,7 +1653,7 @@ export async function POST(request: Request) {
     let isJsonOk = true;
     try {
       JSON.parse(responseText);
-    } catch (parseError) {
+    } catch {
       console.error("Gemini output was not valid JSON, trying regex extraction:", responseText);
       const jsonMatch = responseText.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
@@ -1698,7 +1672,7 @@ export async function POST(request: Request) {
     if (!isJsonOk) {
       console.warn("LLM returned unparseable text. Reverting to local fallback.");
       const responseTextLocal = JSON.stringify(taskType === "synthesis" ? localResponse : localResponse.analysis);
-      let logEntry = {
+      const logEntry = {
         timestamp: new Date().toISOString(),
         taskType,
         modelUsed: "local-synthesizer",
@@ -1743,7 +1717,7 @@ export async function POST(request: Request) {
     }
 
     // 4. Save success telemetry log in Firestore
-    let logEntry = {
+    const logEntry = {
       timestamp: new Date().toISOString(),
       taskType,
       modelUsed: successfulModel,
@@ -1778,7 +1752,7 @@ export async function POST(request: Request) {
     const localResponseText = JSON.stringify(taskType === "synthesis" ? localResponse : localResponse?.analysis);
     
     // Log crash telemetry
-    let logEntry = {
+    const logEntry = {
       timestamp: new Date().toISOString(),
       taskType,
       modelUsed: "local-synthesizer",
