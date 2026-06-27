@@ -1,15 +1,13 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { MessageSquare, X, Send, Sparkles, Brain, HelpCircle, Calendar, ArrowRight, Mic, Volume2, VolumeX, Play, Pause } from "lucide-react";
+import { MessageSquare, X, Send, Brain, Mic, Volume2, VolumeX, Play } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { HealthDigitalTwin } from "./types";
 import MarkdownRenderer from "./MarkdownRenderer";
 
 interface HealthAssistantProps {
   twin: HealthDigitalTwin;
-  theme: "light" | "dark";
-  onSelectProfile: (id: string) => void;
 }
 
 interface ChatMessage {
@@ -638,7 +636,7 @@ function stripMarkdownForSpeech(text: string): string {
     .trim();
 }
 
-export default function HealthAssistant({ twin, theme, onSelectProfile }: HealthAssistantProps) {
+export default function HealthAssistant({ twin }: HealthAssistantProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -880,8 +878,6 @@ export default function HealthAssistant({ twin, theme, onSelectProfile }: Health
   const handleQuickQuestion = (q: string) => {
     handleSend(q);
   };
-
-  const isDark = theme === "dark";
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">

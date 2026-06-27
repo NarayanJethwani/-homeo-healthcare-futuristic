@@ -4431,9 +4431,7 @@ export default function HealthIntelligencePage() {
       {/* Floating AI Health Assistant Chat Widget (print:hidden) */}
       <div className="print:hidden">
         <HealthAssistant 
-          twin={digitalTwin} 
-          theme={theme}
-          onSelectProfile={handleSelectProfile}
+          twin={digitalTwin}
         />
       </div>
 
