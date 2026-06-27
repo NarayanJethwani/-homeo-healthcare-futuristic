@@ -2305,7 +2305,7 @@ export default function StorePage() {
                         <div>
                           <h4 className="text-[10px] font-extrabold uppercase text-mint tracking-wider">Direct Registration Payment</h4>
                           <p className="text-xs font-bold text-[#1A2421] mt-0.5">GPay / PhonePe / Paytm:</p>
-                          <p className="text-sm font-black text-mint-dark tracking-wide">8446056789</p>
+                          <p className="text-sm font-black text-mint-dark tracking-wide">{process.env.NEXT_PUBLIC_PAYMENT_PHONE || "8446056789"}</p>
                           <p className="text-[9px] text-slate-500 font-semibold leading-normal mt-1">
                             Send correct total cost via UPI to register instantly. Share transfer screenshot over WhatsApp.
                           </p>
@@ -5109,7 +5109,7 @@ export default function StorePage() {
                       </div>
 
                       {paymentMethod === "upi" && (() => {
-                        const upiPayUrl = `upi://pay?pa=8446056789@hdfc&pn=Dr%20Narayan%20Jethwani&am=${finalPayable}&cu=INR&tn=${encodeURIComponent(`Plan - ${checkoutPlan.title}`)}`;
+                        const upiPayUrl = `upi://pay?pa=${process.env.NEXT_PUBLIC_PAYMENT_UPI || "8446056789@hdfc"}&pn=Dr%20Narayan%20Jethwani&am=${finalPayable}&cu=INR&tn=${encodeURIComponent(`Plan - ${checkoutPlan.title}`)}`;
                         const qrCodeSrc = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(upiPayUrl)}`;
                         
                         return (
@@ -5133,7 +5133,7 @@ export default function StorePage() {
                                 <div className="pt-2 flex flex-wrap gap-2 justify-center sm:justify-start">
                                   <button
                                     onClick={() => {
-                                      navigator.clipboard.writeText("8446056789@hdfc");
+                                      navigator.clipboard.writeText(process.env.NEXT_PUBLIC_PAYMENT_UPI || "8446056789@hdfc");
                                     }}
                                     className="px-3 py-1.5 border border-slate-200 bg-white hover:border-slate-800 text-[9px] font-bold uppercase tracking-wider rounded-lg transition-colors cursor-pointer flex items-center gap-1.5"
                                   >
@@ -5300,10 +5300,10 @@ ${deliveryMode === "shipping" ? `- *Email:* ${patientEmail}\n` : ""}- *Delivery 
 - *Ref / UTR ID:* ${transactionRef.trim() || "Not provided"}
 - *Screenshot:* ${screenshotText}
 
-I have transferred the payment to your registered GPay (8446056789) or bank account. Please review my profile and confirm next clinical consultation steps.`;
+I have transferred the payment to your registered GPay (${process.env.NEXT_PUBLIC_PAYMENT_PHONE || "8446056789"}) or bank account. Please review my profile and confirm next clinical consultation steps.`;
 
                             const encodedText = encodeURIComponent(message);
-                            window.open(`https://wa.me/918446056789?text=${encodedText}`, "_blank");
+                            window.open(`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918446056789"}?text=${encodedText}`, "_blank");
                             setCheckoutStep("success");
                           }}
                           className="px-8 py-3 bg-mint hover:bg-mint-dark text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-1.5 cursor-pointer shadow-md"

@@ -982,7 +982,7 @@ export default function HealthIntelligencePage() {
         waMessage += `- Active Assessments: ${lastAssessments.join(", ")}\n`;
       }
       
-      const waLink = `https://wa.me/918446056789?text=${encodeURIComponent(waMessage)}`;
+      const waLink = `https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918446056789"}?text=${encodeURIComponent(waMessage)}`;
       
       // Open immediately in user interaction stack
       const newWin = window.open(waLink, "_blank");
@@ -1346,7 +1346,7 @@ export default function HealthIntelligencePage() {
         });
       }
     }
-    return `https://wa.me/918446056789?text=${encodeURIComponent(message)}`;
+    return `https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918446056789"}?text=${encodeURIComponent(message)}`;
   };
 
   // Questionnaire helpers
@@ -2129,7 +2129,7 @@ export default function HealthIntelligencePage() {
               Need a professional review? Let's connect you directly with Dr. Jethwani:
             </p>
             <a 
-              href={`https://wa.me/918446056789?text=${encodeURIComponent(
+              href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918446056789"}?text=${encodeURIComponent(
                 `Hello Dr. Narayan Jethwani, I completed my Health Intelligence profile and would like to review my digital health twin metrics with you.`
               )}`}
               target="_blank"

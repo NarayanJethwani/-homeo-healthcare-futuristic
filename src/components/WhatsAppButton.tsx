@@ -17,7 +17,7 @@ export default function WhatsAppButton() {
 
   if (pathname?.startsWith("/admin") || isPortalHost) return null;
 
-  const phoneNumber = "918446056789";
+  const phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918446056789";
   const defaultMessage = encodeURIComponent(
     "Hello Dr. Narayan, I am visiting your website and would like to inquire about a homeopathic consultation."
   );

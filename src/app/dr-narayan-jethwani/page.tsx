@@ -62,7 +62,7 @@ export default function DoctorProfilePage() {
   ];
 
   const handleWhatsAppChat = () => {
-    window.open("https://wa.me/918446056789", "_blank");
+    window.open(`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918446056789"}`, "_blank");
   };
 
   const handleBookConsultation = () => {

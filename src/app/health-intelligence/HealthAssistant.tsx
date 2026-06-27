@@ -574,7 +574,7 @@ What would you like to do?
 Dr. Jethwani reviews your Your Health Twin Insights, assessments, and lab reports to compile your customized constitutional remedy protocol.
 
 ### Recommended Next Steps
-- Click the **Chat on WA** button at the top of the chat widget to instantly share your digital twin data and book directly on WhatsApp (+91 84460 56789).
+- Click the **Chat on WA** button at the top of the chat widget to instantly share your digital twin data and book directly on WhatsApp ({process.env.NEXT_PUBLIC_WHATSAPP_DISPLAY || "+91 84460 56789"}).
 - Or book online directly here: https://homeo.healthcare/#booking
 
 ### Continue on WhatsApp
@@ -795,7 +795,7 @@ export default function HealthAssistant({ twin, theme, onSelectProfile }: Health
         waMessage += `- Active Assessments: ${lastAssessments.join(", ")}\n`;
       }
       
-      const waLink = `https://wa.me/918446056789?text=${encodeURIComponent(waMessage)}`;
+      const waLink = `https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918446056789"}?text=${encodeURIComponent(waMessage)}`;
       
       // Open immediately in user interaction stack
       const newWin = window.open(waLink, "_blank");
@@ -874,7 +874,7 @@ export default function HealthAssistant({ twin, theme, onSelectProfile }: Health
         message += `- ${cat.toUpperCase()}: Score ${item.score}%\n`;
       });
     }
-    return `https://wa.me/918446056789?text=${encodeURIComponent(message)}`;
+    return `https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918446056789"}?text=${encodeURIComponent(message)}`;
   };
 
   const handleQuickQuestion = (q: string) => {

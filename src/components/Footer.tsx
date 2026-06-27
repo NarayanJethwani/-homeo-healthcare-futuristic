@@ -97,8 +97,8 @@ export default function Footer() {
                 <svg className="w-4 h-4 text-mint/60" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                   <path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984a9.96 9.96 0 0 0 1.333 4.993L2 22l5.13-1.347a9.947 9.947 0 0 0 4.88 1.282h.005c5.505 0 9.99-4.478 9.99-9.985 0-2.667-1.04-5.176-2.93-7.065A9.923 9.923 0 0 0 12.012 2zm5.727 14.045c-.244.693-1.42 1.262-1.956 1.344-.479.073-1.103.137-3.224-.741-2.715-1.124-4.46-3.887-4.597-4.068-.135-.181-1.102-1.464-1.102-2.793 0-1.329.697-1.984.97-2.257.274-.273.595-.341.794-.341.2 0 .399.001.573.01.18.008.419-.07.658.502.244.585.83 2.03.902 2.179.072.15.12.322.02.522-.1.2-.149.324-.298.497-.15.173-.314.385-.448.517-.15.148-.306.31-.132.61.174.3.774 1.278 1.66 2.067.944.844 1.74 1.107 1.989 1.232.25.125.393.104.539-.065.144-.17.622-.723.789-.97.168-.246.335-.207.564-.122.23.085 1.458.687 1.708.812.25.125.416.188.478.297.062.109.062.63-.182 1.323z" />
                 </svg>
-                <a href="https://wa.me/918446056789" target="_blank" rel="noopener noreferrer" className="hover:text-mint transition-colors duration-300 cursor-pointer">
-                  +91 84460 56789
+                <a href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918446056789"}`} target="_blank" rel="noopener noreferrer" className="hover:text-mint transition-colors duration-300 cursor-pointer">
+                  {process.env.NEXT_PUBLIC_WHATSAPP_DISPLAY || "+91 84460 56789"}
                 </a>
               </div>
               <div className="flex items-center gap-2.5 text-xs text-slate-700 font-medium">

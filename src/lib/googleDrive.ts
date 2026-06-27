@@ -1,5 +1,18 @@
 import { google } from "googleapis";
 
+
+function getDoctorEmails(): string[] {
+  const envEmails = process.env.DOCTOR_EMAILS;
+  if (envEmails) {
+    return envEmails.split(",").map(e => e.trim()).filter(Boolean);
+  }
+  return ["narayan.jethwani@gmail.com", "narayan.jethwani@homeo.healthcare"];
+}
+
+const paymentPhone = process.env.PAYMENT_PHONE || "8446056789";
+const paymentUpi = process.env.PAYMENT_UPI || "8446056789@hdfc";
+const whatsappDisplay = process.env.WHATSAPP_DISPLAY || "+91 84460 56789";
+
 // Initialize Google Auth client using Service Account credentials
 const getGoogleAuth = () => {
   let serviceAccountKeyJson = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
@@ -273,7 +286,7 @@ export async function addCalendarEvent(data: PatientIntakeData): Promise<{ event
 - Category: ${data.careLevel}
 - Patient ID: ${data.id}
 
-Instructions: Patient to confirm on WhatsApp or call +91 84460 56789 to be added.`,
+Instructions: Patient to confirm on WhatsApp or call ${whatsappDisplay} to be added.`,
       start: {
         dateTime: startIso,
         timeZone: "Asia/Kolkata",
@@ -282,10 +295,7 @@ Instructions: Patient to confirm on WhatsApp or call +91 84460 56789 to be added
         dateTime: endIso,
         timeZone: "Asia/Kolkata",
       },
-      attendees: [
-        { email: "narayan.jethwani@gmail.com" },
-        { email: "narayan.jethwani@homeo.healthcare" }
-      ],
+      attendees: getDoctorEmails().map(email => ({ email })),
       reminders: {
         useDefault: false,
         overrides: [
@@ -346,7 +356,7 @@ export async function createPatientFolder(data: PatientIntakeData): Promise<{ fo
 
     if (folderId) {
       try {
-        const emails = ["narayan.jethwani@gmail.com", "narayan.jethwani@homeo.healthcare"];
+        const emails = getDoctorEmails();
         const sharePromises = emails.map(email =>
           drive.permissions.create({
             fileId: folderId,
@@ -443,7 +453,7 @@ export async function createPatientClinicalSheet(
     // Share the spreadsheet only with the doctor's accounts (password-equivalent protection)
     if (newSheetId) {
       try {
-        const emails = ["narayan.jethwani@gmail.com", "narayan.jethwani@homeo.healthcare"];
+        const emails = getDoctorEmails();
         const sharePromises = emails.map(email =>
           drive.permissions.create({
             fileId: newSheetId,
@@ -581,7 +591,7 @@ export async function createPatientClinicalSheet(
                 {
                   range: "'Treatment Planner'!A19:B19",
                   values: [
-                    ["WhatsApp Invoice Message", `="Dear " & 'Case Taking'!B4 & ", thank you for consulting Homeo Healthcare. Your treatment package is: " & A4 & " (" & IF(D4=1, "1 condition", D4 & " conditions") & ", " & C4 & " " & IF(B4="Weekly", IF(C4=1, "week", "weeks"), IF(C4=1, "month", "months")) & IF(E4="None", "", " [" & E4 & "]") & "). Total Cost: ₹" & TEXT(B15, "#,##0") & ". Balance Due: ₹" & TEXT(B17, "#,##0") & ". Please pay using Gpay: 8446056789. Clinic Branch: Homeo Healthcare."`]
+                    ["WhatsApp Invoice Message", `="Dear " & 'Case Taking'!B4 & ", thank you for consulting Homeo Healthcare. Your treatment package is: " & A4 & " (" & IF(D4=1, "1 condition", D4 & " conditions") & ", " & C4 & " " & IF(B4="Weekly", IF(C4=1, "week", "weeks"), IF(C4=1, "month", "months")) & IF(E4="None", "", " [" & E4 & "]") & "). Total Cost: ₹" & TEXT(B15, "#,##0") & ". Balance Due: ₹" & TEXT(B17, "#,##0") & ". Please pay using Gpay: ${paymentPhone}. Clinic Branch: Homeo Healthcare."`]
                   ]
                 },
                 {
@@ -995,7 +1005,7 @@ export async function createPatientClinicalSheet(
           ["Amount Received", data.receivedAmount !== undefined ? data.receivedAmount : data.finalPrice, "Amount collected from patient for this plan", "", "", "", ""],
           ["Balance Due", "=B15-B16", "Outstanding dues for this treatment plan", "", "", "", ""],
           ["", "", "", "", "", "", ""],
-          ["WhatsApp Invoice Message", `="Dear " & 'Case Taking'!B4 & ", thank you for consulting Homeo Healthcare. Your treatment package is: " & A4 & " (" & IF(D4=1, "1 condition", D4 & " conditions") & ", " & C4 & " " & IF(B4="Weekly", IF(C4=1, "week", "weeks"), IF(C4=1, "month", "months")) & IF(E4="None", "", " [" & E4 & "]") & "). Total Cost: ₹" & TEXT(B15, "#,##0") & ". Balance Due: ₹" & TEXT(B17, "#,##0") & ". Please pay using Gpay: 8446056789. Clinic Branch: Homeo Healthcare."`, "", "", "", "", ""]
+          ["WhatsApp Invoice Message", `="Dear " & 'Case Taking'!B4 & ", thank you for consulting Homeo Healthcare. Your treatment package is: " & A4 & " (" & IF(D4=1, "1 condition", D4 & " conditions") & ", " & C4 & " " & IF(B4="Weekly", IF(C4=1, "week", "weeks"), IF(C4=1, "month", "months")) & IF(E4="None", "", " [" & E4 & "]") & "). Total Cost: ₹" & TEXT(B15, "#,##0") & ". Balance Due: ₹" & TEXT(B17, "#,##0") & ". Please pay using Gpay: ${paymentPhone}. Clinic Branch: Homeo Healthcare."`, "", "", "", "", ""]
         ];
 
         // values for Finance
@@ -4250,7 +4260,7 @@ export async function createInvoiceSheet(
       ["", "", "", "", ""],
       ["PAYMENT INSTRUCTIONS", "", "", "", ""],
       ["Please transfer via NEFT/IMPS to Current Account or pay via UPI:", "", "", "", ""],
-      ["Bank Name", "HDFC Bank Ltd", "", "UPI ID", "8446056789@hdfc"],
+      ["Bank Name", "HDFC Bank Ltd", "", "UPI ID", paymentUpi],
       ["Account Name", "Dr. Narayan Jethwani", "", "", ""],
       ["Account Number", "50200039742057", "", "", ""],
       ["IFSC Code", "HDFC0004793", "", "", ""],

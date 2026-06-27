@@ -47,7 +47,7 @@ export default function ContactUsPage() {
       role: "Main Consultation Centre",
       address: "Office 404, 4th Floor, Pyramid Axis, Baner Road, Behind Croma Showroom, Veerbhadra Nagar, Baner, Pune – 411045",
       landmark: "Behind Croma Showroom, Baner Road · 4th Floor",
-      phone: "+91 84460 56789",
+      phone: process.env.NEXT_PUBLIC_WHATSAPP_DISPLAY || "+91 84460 56789",
       mapUrl: "https://maps.google.com/?q=Office+404,+Pyramid+Axis,+Baner+Road,+Behind+Croma,+Pune",
       glowColor: "rgba(20,184,166,0.15)"
     },
@@ -57,7 +57,7 @@ export default function ContactUsPage() {
       role: "Established Practice",
       address: "Shop No. 2, Seema Park, Baner Road, Opp. Savata Mali Temple, Near Sattva Hotel, Baner, Pune – 411069",
       landmark: "Opposite Savata Mali (Sawatamali) Temple · Near Sattva Hotel, Baner Road",
-      phone: "+91 84460 56789",
+      phone: process.env.NEXT_PUBLIC_WHATSAPP_DISPLAY || "+91 84460 56789",
       mapUrl: "https://maps.google.com/?q=Shop+2,+Seema+Park,+Baner+Road,+Opp+Savata+Mali+Temple,+Pune",
       glowColor: "rgba(168,85,247,0.15)"
     }
@@ -129,8 +129,8 @@ export default function ContactUsPage() {
             </div>
             <div>
               <span className="block text-[10px] text-slate-700 font-bold uppercase tracking-wider">Appointments</span>
-              <a href="tel:+918446056789" className="text-base font-extrabold text-[#1A2421] hover:text-mint transition-colors cursor-pointer">
-                +91 84460 56789
+              <a href={`tel:${process.env.NEXT_PUBLIC_PAYMENT_PHONE || "8446056789"}`} className="text-base font-extrabold text-[#1A2421] hover:text-mint transition-colors cursor-pointer">
+                {process.env.NEXT_PUBLIC_WHATSAPP_DISPLAY || "+91 84460 56789"}
               </a>
             </div>
           </div>
@@ -141,7 +141,7 @@ export default function ContactUsPage() {
             </div>
             <div>
               <span className="block text-[10px] text-slate-700 font-bold uppercase tracking-wider">WhatsApp Support</span>
-              <a href="https://wa.me/918446056789" target="_blank" rel="noopener noreferrer" className="text-base font-extrabold text-[#1A2421] hover:text-mint transition-colors cursor-pointer">
+              <a href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918446056789"}`} target="_blank" rel="noopener noreferrer" className="text-base font-extrabold text-[#1A2421] hover:text-mint transition-colors cursor-pointer">
                 84460 56789
               </a>
             </div>

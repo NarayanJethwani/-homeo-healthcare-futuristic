@@ -143,7 +143,7 @@ export default function BookingSection() {
 - *Primary Symptoms:* ${formData.symptoms}
 
 Please confirm my appointment.`;
-    return `https://wa.me/918446056789?text=${encodeURIComponent(text)}`;
+    return `https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918446056789"}?text=${encodeURIComponent(text)}`;
   };
 
   return (
@@ -414,12 +414,12 @@ Please confirm my appointment.`;
                       <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider mb-1">Instant Activation Required</h4>
                       <p className="text-xs text-slate-700 font-medium leading-relaxed">
                         To guarantee and lock your slot, please confirm via{" "}
-                        <a href="https://wa.me/918446056789" target="_blank" rel="noopener noreferrer" className="font-extrabold text-[#0F766E] hover:underline">
+                        <a href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918446056789"}`} target="_blank" rel="noopener noreferrer" className="font-extrabold text-[#0F766E] hover:underline">
                           WhatsApp
                         </a>{" "}
                         or call directly at{" "}
-                        <a href="tel:+918446056789" className="font-extrabold text-[#0F766E] hover:underline whitespace-nowrap">
-                          +91 84460 56789
+                        <a href={`tel:${process.env.NEXT_PUBLIC_PAYMENT_PHONE || "8446056789"}`} className="font-extrabold text-[#0F766E] hover:underline whitespace-nowrap">
+                          {process.env.NEXT_PUBLIC_WHATSAPP_DISPLAY || "+91 84460 56789"}
                         </a>{" "}
                         immediately after booking.
                       </p>

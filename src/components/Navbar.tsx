@@ -246,7 +246,7 @@ export default function Navbar() {
                     Email Dr. Narayan
                   </a>
                   <a
-                    href="https://wa.me/918446056789"
+                    href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918446056789"}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex-1 text-center border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 bg-emerald-500/5 hover:bg-emerald-500/10 py-3 rounded-2xl text-xs font-bold transition-colors"
