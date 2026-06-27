@@ -1,8 +1,10 @@
-import * as admin from "firebase-admin";
+import { cert, getApps, initializeApp } from "firebase-admin/app";
+import { getAuth } from "firebase-admin/auth";
+import { getFirestore } from "firebase-admin/firestore";
 
 let isInitialized = false;
 
-if (!admin.apps.length) {
+if (!getApps().length) {
   try {
     let serviceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY || process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
     
@@ -16,15 +18,15 @@ if (!admin.apps.length) {
         serviceAccountKey = serviceAccountKey.slice(1, -1);
       }
       const parsedKey = JSON.parse(serviceAccountKey);
-      admin.initializeApp({
-        credential: admin.credential.cert(parsedKey),
+      initializeApp({
+        credential: cert(parsedKey),
         databaseURL: `https://${parsedKey.project_id}.firebaseio.com`
       });
       console.log("Firebase Admin initialized for project:", parsedKey.project_id);
       isInitialized = true;
     } else {
       // Fallback for local development using application default credentials or mock
-      admin.initializeApp({
+      initializeApp({
         projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "mock-project-id"
       });
       isInitialized = true;
@@ -38,17 +40,17 @@ if (!admin.apps.length) {
 }
 
 export function getAdminDb() {
-  if (!isInitialized || !admin.apps.length) {
+  if (!isInitialized || !getApps().length) {
     throw new Error("Firebase Admin SDK is not initialized. Check your credentials.");
   }
-  return admin.firestore();
+  return getFirestore();
 }
 
 export function getAdminAuth() {
-  if (!isInitialized || !admin.apps.length) {
+  if (!isInitialized || !getApps().length) {
     throw new Error("Firebase Admin SDK is not initialized. Check your credentials.");
   }
-  return admin.auth();
+  return getAuth();
 }
 
 // Legacy exports as safe Proxies to prevent startup/import-time crashes

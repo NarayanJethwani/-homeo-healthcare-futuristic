@@ -66,16 +66,14 @@ export async function POST(request: Request) {
           console.log("Firebase Auth user created:", email, uid);
 
           // Send password reset so the doctor sets their own password
-          await getAdminAuth()
-            .generatePasswordResetLink(email)
-            .then((link) => {
-              console.log("Password reset link for", email, ":", link);
-              // NOTE: In production, send this link via your transactional email provider
-              // (e.g. SendGrid, Resend). For now it is logged server-side.
-            })
-            .catch((err) =>
-              console.warn("Could not generate reset link:", err)
-            );
+          try {
+            const resetLink = await getAdminAuth().generatePasswordResetLink(email);
+            console.log("Password reset link for", email, ":", resetLink);
+            // NOTE: In production, send this link via your transactional email provider
+            // (e.g. SendGrid, Resend). For now it is logged server-side.
+          } catch (err) {
+            console.warn("Could not generate reset link:", err);
+          }
         }
       } catch (authErr: any) {
         console.error("Firebase Auth error during onboarding:", authErr.message);
