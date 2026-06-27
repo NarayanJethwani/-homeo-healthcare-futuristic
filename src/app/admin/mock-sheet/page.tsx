@@ -623,6 +623,70 @@ function MockSheetContent() {
     medicineAddons: [] as { id: string; type: string; details: string; amount: number }[]
   });
 
+  // Synchronize mock patient data if mockId is provided
+  useEffect(() => {
+    const mockId = searchParams.get("mockId") || searchParams.get("id");
+    if (!mockId || mockId === "P-100234") return;
+
+    let isMounted = true;
+    const fetchMockPatient = async () => {
+      try {
+        const res = await fetch(`/api/mock-patient?id=${encodeURIComponent(mockId)}`);
+        if (!res.ok) throw new Error("Mock patient not found");
+        const data = await res.json();
+        if (!isMounted) return;
+
+        if (data.success && data.patient) {
+          const p = data.patient;
+          
+          // Update Patient Info
+          setPatient(prev => ({
+            ...prev,
+            id: p.id || prev.id,
+            name: p.name || prev.name,
+            age: String(p.age !== undefined && p.age !== null ? p.age : prev.age),
+            gender: p.gender || prev.gender,
+            phone: p.phone || prev.phone,
+            email: p.email || prev.email,
+            address: p.location || prev.address,
+          }));
+
+          // Update Case Taking
+          setCaseTaking(prev => ({
+            ...prev,
+            mainComplaint: p.complaint || prev.mainComplaint,
+            duration: p.durationText || prev.duration,
+          }));
+
+          // Update Planner
+          const mappedCare = mapCareLevel(p.careLevel || "");
+          const durMonths = getDurationMonths(p.durationText || p.careLevel || "");
+          setPlanner(prev => ({
+            ...prev,
+            careLevel: mappedCare,
+            billingCycle: p.billingCycle 
+              ? (p.billingCycle.toLowerCase() === "weekly" ? "weekly" : "monthly")
+              : ((p.careLevel?.toLowerCase().includes("weekly") || p.durationText?.toLowerCase().includes("week")) ? "weekly" : "monthly"),
+            durationValue: p.durationValue !== undefined && p.durationValue !== null ? p.durationValue : durMonths,
+            conditionsCount: p.conditionsCount !== undefined && p.conditionsCount !== null ? p.conditionsCount : (p.careLevel?.toLowerCase().includes("multisystem") ? 2 : 1),
+            concessionType: p.concessionApplied 
+              ? (p.concessionApplied.toLowerCase().includes("senior") ? "senior" : p.concessionApplied.toLowerCase().includes("socio") ? "compassionate" : p.concessionApplied.toLowerCase().includes("override") ? "override" : "none")
+              : ((parseInt(p.age || "0") >= 60) ? "senior" : "none"),
+            overridePrice: p.finalPrice !== undefined && p.finalPrice !== null ? p.finalPrice : prev.overridePrice,
+            received: p.receivedAmount !== undefined && p.receivedAmount !== null ? p.receivedAmount : (p.finalPrice || prev.overridePrice),
+          }));
+        }
+      } catch (err) {
+        console.error("Failed to load mock patient data:", err);
+      }
+    };
+
+    fetchMockPatient();
+    return () => {
+      isMounted = false;
+    };
+  }, [searchParams]);
+
   // Attachments State
   const [attachments, setAttachments] = useState<any[]>([
     { date: today, category: "Clinical Photo", target: "Epigastric Bloating Snapshot", url: `https://drive.google.com/drive/folders/mock-folder-id` },
