@@ -164,6 +164,8 @@ ${formattedTwinData}
 
 Current Date & Time: ${currentDateStr} (Use this to align check-in recommendations)
 
+${toneInstruction}
+
 ⸻
 
 RESPONSE PRIORITY ENGINE (INTENT DETECTION)
