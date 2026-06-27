@@ -83,7 +83,7 @@ const MAX_LOGS = 50;
 const requestLogs: RequestLog[] = [];
 
 // Global metrics tracker
-let stats: RouterStats = {
+const stats: RouterStats = {
   totalRequests: 0,
   failures: 0,
   cacheHits: 0,
@@ -851,7 +851,7 @@ export class AIRouterService {
         if (idx !== successIndex) {
           try {
             controller.abort();
-          } catch (e) {
+          } catch {
             // ignore
           }
         }

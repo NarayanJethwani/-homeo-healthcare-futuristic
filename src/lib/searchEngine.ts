@@ -1,7 +1,6 @@
 import { 
   getKnowledgeGraph, 
   GraphNode, 
-  GraphEdge, 
   NodeType 
 } from "./knowledgeGraph";
 import { resolveCanonicalRemedyId } from "./normalizationEngine";
@@ -190,7 +189,6 @@ export const parseNaturalLanguageQuery = (queryText: string): ParseQueryResponse
         matchCount++;
         matchingEntities.push({ node: entity, reason: reasons[entity.id] });
         
-        const isSourceRemedy = directEdge.source === remedy.id;
         const sourceNode = graph.nodes.find(n => n.id === directEdge.source)!;
         const targetNode = graph.nodes.find(n => n.id === directEdge.target)!;
         
@@ -206,7 +204,6 @@ export const parseNaturalLanguageQuery = (queryText: string): ParseQueryResponse
         // Check if there is an edge: Remedy -> treats_condition -> Condition, and Condition -> has_symptom -> Rubric
         const firstHops = graph.edges.filter(e => e.source === remedy.id || e.target === remedy.id);
         
-        let pathFound = false;
         for (const edge1 of firstHops) {
           const neighborId = edge1.source === remedy.id ? edge1.target : edge1.source;
           const secondHops = graph.edges.filter(e => e.source === neighborId || e.target === neighborId);
@@ -234,7 +231,6 @@ export const parseNaturalLanguageQuery = (queryText: string): ParseQueryResponse
               targetLabel: nodeE.label,
               targetType: nodeE.type
             });
-            pathFound = true;
             break;
           }
         }

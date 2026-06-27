@@ -1,6 +1,6 @@
 import { MASTER_REMEDY_DB } from "./materiaMedicaDb";
 import { resolveCanonicalRemedyId } from "./normalizationEngine";
-import { GENOME_REMEDY_DB, HKOSExtendedRemedy } from "./remedyGenomeSchema";
+import { GENOME_REMEDY_DB } from "./remedyGenomeSchema";
 
 // ============================================================================
 // MODULE 1: DYNAMIC REMEDY DIFFERENTIAL ATLAS

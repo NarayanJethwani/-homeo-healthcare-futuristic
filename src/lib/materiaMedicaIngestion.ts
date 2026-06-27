@@ -1,4 +1,3 @@
-import { MateriaMedicaDocument } from "./materiaMedicaSchema";
 import { MASTER_REMEDY_DB } from "./materiaMedicaDb";
 
 export interface TextSnippet {

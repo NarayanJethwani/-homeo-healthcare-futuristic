@@ -12,7 +12,7 @@ function generateSlug(text: string): string {
 }
 
 // Inferred organ systems helper
-function inferOrganSystem(name: string, section: string): string {
+function inferOrganSystem(name: string): string {
   const text = name.toLowerCase();
   if (text.includes("heart") || text.includes("pulse") || text.includes("hypertension") || text.includes("circulation")) return "Cardiovascular";
   if (text.includes("stomach") || text.includes("gerd") || text.includes("ibs") || text.includes("gastric") || text.includes("acidity") || text.includes("bloating")) return "Gastrointestinal";
@@ -58,7 +58,7 @@ export async function GET(request: Request) {
         description: fr.researchCitation?.detail || "Dr. Jethwani's clinical indicator.",
         category: fr.section,
         subcategory: fr.name.split(",")[0] || fr.section,
-        organSystem: inferOrganSystem(fr.name, fr.section),
+        organSystem: inferOrganSystem(fr.name),
         clinicalPriority: fr.id.includes("burnout") || fr.id.includes("panic") || fr.id.includes("collapse") ? "high" : "medium",
         createdDate: new Date().toISOString(),
         modifiedDate: new Date().toISOString(),

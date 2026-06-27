@@ -122,7 +122,7 @@ export class OllamaService {
 
       const data = await res.json();
       return data.embedding || [];
-    } catch (e) {
+    } catch {
       console.warn(`Ollama embeddings request failed for model ${model}. Returning mock/dummy vector for safety.`);
       // return a dummy vector matching 1536 dims (or 768 dims for nomic)
       return new Array(768).fill(0.01);
