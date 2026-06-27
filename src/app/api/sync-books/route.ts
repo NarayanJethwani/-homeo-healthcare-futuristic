@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { downloadFileFromGoogleDrive } from "@/lib/googleDrive";
 import path from "path";
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
     const fileId = process.env.GOOGLE_DRIVE_REMEDY_PACK_FILE_ID;
     

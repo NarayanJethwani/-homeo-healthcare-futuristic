@@ -3,7 +3,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export async function POST(request: Request) {
   try {
-    const { fileData, mimeType, fileName } = await request.json();
+    const { fileData, mimeType } = await request.json();
     if (!fileData) {
       return NextResponse.json({ success: false, message: "File data is required." }, { status: 400 });
     }
