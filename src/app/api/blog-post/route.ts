@@ -8,7 +8,10 @@ const WORDPRESS_POST_FIELDS = [
   "title.rendered",
   "excerpt.rendered",
   "content.rendered",
+  "jetpack_featured_media_url",
 ].join(",");
+
+const DEFAULT_BLOG_IMAGE = "/images/epigenetics_gene.png";
 
 const localSlugsWithFeaturedImage = new Set([
   "complete-thyroid-guide",
@@ -61,6 +64,14 @@ function decodeHtmlEntities(html: string): string {
     .replace(/&gt;/g, ">");
 }
 
+function getPostImage(post: any): string {
+  if (localSlugsWithFeaturedImage.has(post.slug)) {
+    return `/images/${post.slug}-featured.png`;
+  }
+
+  return post.jetpack_featured_media_url || DEFAULT_BLOG_IMAGE;
+}
+
 function buildArticle(post: any) {
   const rawContent = post.content?.rendered || "";
   const content = rawContent
@@ -71,9 +82,7 @@ function buildArticle(post: any) {
     .replace(/\[&hellip;\]/, "...")
     .trim();
   const wordCount = content.replace(/<[^>]*>/g, "").split(/\s+/).filter(Boolean).length;
-  const image = localSlugsWithFeaturedImage.has(post.slug)
-    ? `/images/${post.slug}-featured.png`
-    : "/images/epigenetics_gene.png";
+  const image = getPostImage(post);
 
   return {
     id: post.slug || post.id.toString(),
