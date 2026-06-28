@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     // Check if the service account credentials exist
     const hasCredentials = !!process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
     if (!hasCredentials) {
-      const mockSheetUrl = `/admin/mock-sheet?name=${encodeURIComponent(name)}&id=${encodeURIComponent(id)}&age=${encodeURIComponent(age || "30")}&gender=${encodeURIComponent(gender || "Male")}&phone=${encodeURIComponent(phone || "")}&email=${encodeURIComponent(email || "")}&complaint=${encodeURIComponent(complaint || "")}&careLevel=${encodeURIComponent(careLevel || "Standard Consultation")}&durationText=${encodeURIComponent(durationText || "")}&finalPrice=${encodeURIComponent(finalPrice || "3500")}`;
+      const mockSheetUrl = `/admin/mock-sheet?mockId=${encodeURIComponent(id)}`;
       return NextResponse.json({
         success: true,
         isMock: true,

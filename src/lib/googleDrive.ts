@@ -396,22 +396,7 @@ export async function createPatientClinicalSheet(
 ): Promise<{ sheetId: string; sheetUrl: string }> {
   const auth = getGoogleAuth();
   if (!auth) {
-    const mockUrl = `/admin/mock-sheet?name=${encodeURIComponent(data.name)}` +
-      `&id=${encodeURIComponent(data.id)}` +
-      `&age=${encodeURIComponent(data.age)}` +
-      `&gender=${encodeURIComponent(data.gender)}` +
-      `&phone=${encodeURIComponent(data.phone)}` +
-      `&email=${encodeURIComponent(data.email || "")}` +
-      `&complaint=${encodeURIComponent(data.complaint)}` +
-      `&careLevel=${encodeURIComponent(data.careLevel)}` +
-      `&durationText=${encodeURIComponent(data.durationText)}` +
-      `&finalPrice=${encodeURIComponent(String(data.finalPrice))}` +
-      `&receivedAmount=${encodeURIComponent(String(data.receivedAmount !== undefined ? data.receivedAmount : data.finalPrice))}` +
-      `&remainingBalance=${encodeURIComponent(String(data.remainingBalance || 0))}` +
-      `&billingCycle=${encodeURIComponent(data.billingCycle || "Monthly")}` +
-      `&concessionApplied=${encodeURIComponent(data.concessionApplied || "None")}` +
-      `&conditionsCount=${encodeURIComponent(String(data.conditionsCount || 1))}` +
-      `&durationValue=${encodeURIComponent(String(data.durationValue || 1))}`;
+    const mockUrl = `/admin/mock-sheet?mockId=${encodeURIComponent(data.id)}`;
     return { sheetId: "mock-sheet-id", sheetUrl: mockUrl };
   }
 

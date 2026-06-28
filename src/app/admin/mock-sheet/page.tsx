@@ -169,24 +169,21 @@ function MockSheetContent() {
   const searchParams = useSearchParams();
   const sheetUrl = searchParams.get("sheetUrl") || "";
 
-  // Extract query parameters for initial state
-  const initialName = searchParams.get("name") || "Aarav Mehta";
-  const initialId = searchParams.get("id") || "P-100234";
-  const initialAge = searchParams.get("age") || "42";
-  const initialGender = searchParams.get("gender") || "Male";
-  const initialPhone = searchParams.get("phone") || "+91 98200 12345";
-  const initialEmail = searchParams.get("email") || "aarav.mehta@gmail.com";
-  const initialComplaint = searchParams.get("complaint") || "Chronic severe acidity, GERD, and abdominal bloating immediately after eating. Irritability, very chilly, worse cold drinks [Psora] [Sycosis].";
-  const initialCareLevel = searchParams.get("careLevel") || "6-Month Advanced";
-  const initialDurationText = searchParams.get("durationText") || "6-Month Treatment Plan";
-  const initialPriceVal = Number(searchParams.get("finalPrice") || "8500");
-  const initialReceived = searchParams.get("receivedAmount") !== null && searchParams.get("receivedAmount") !== ""
-    ? Number(searchParams.get("receivedAmount"))
-    : initialPriceVal;
-  const initialBillingCycle = searchParams.get("billingCycle") || "";
-  const initialConcessionApplied = searchParams.get("concessionApplied") || "";
-  const initialConditionsCount = searchParams.get("conditionsCount") ? Number(searchParams.get("conditionsCount")) : null;
-  const initialDurationValue = searchParams.get("durationValue") ? Number(searchParams.get("durationValue")) : null;
+  const initialId: string = searchParams.get("mockId") || searchParams.get("id") || "P-100234";
+  const initialName: string = "Mock Patient";
+  const initialAge: string = "";
+  const initialGender: string = "Male";
+  const initialPhone: string = "";
+  const initialEmail: string = "";
+  const initialComplaint: string = "";
+  const initialCareLevel: string = "Standard Consultation";
+  const initialDurationText: string = "Treatment Plan";
+  const initialPriceVal: number = 0;
+  const initialReceived: number = 0;
+  const initialBillingCycle: string = "";
+  const initialConcessionApplied: string = "";
+  const initialConditionsCount: number | null = null;
+  const initialDurationValue: number | null = null;
 
   const today = new Date().toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" });
 
