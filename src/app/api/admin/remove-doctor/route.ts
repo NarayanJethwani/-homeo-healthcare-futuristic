@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth, getAdminDb } from "@/lib/firebaseAdmin";
 import { forbiddenApiResponse, requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiAuth";
+
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 /**
  * POST /api/admin/remove-doctor
@@ -35,6 +37,8 @@ export async function POST(request: NextRequest) {
       process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID !== "mock-project-id";
 
     if (isFirebaseConfigured) {
+      const { getAdminAuth, getAdminDb } = await import("@/lib/firebaseAdmin");
+
       // 1. Delete from Firebase Auth
       try {
         await getAdminAuth().deleteUser(doctorUid);

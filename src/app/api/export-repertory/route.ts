@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminDb } from "@/lib/firebaseAdmin";
 import { syncRepertoryToClinicalSheet } from "@/lib/googleDrive";
 import { requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiAuth";
+
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,6 +23,7 @@ export async function POST(request: NextRequest) {
     // 1. Fetch patient document to get sheetId only if not provided by client
     if ((!sheetId || sheetId === "mock-sheet-id") && process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID && process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID !== "mock-project-id") {
       try {
+        const { getAdminDb } = await import("@/lib/firebaseAdmin");
         const patientSnap = await getAdminDb().collection("patients").doc(patientId).get();
         if (patientSnap.exists) {
           const patientData = patientSnap.data();

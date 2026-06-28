@@ -9,6 +9,9 @@ import {
   listFilesInFolder
 } from "@/lib/googleDrive";
 
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 // Helper to parse sheet rows (supporting vertical single patient and horizontal tabular format)
 function parseSheetDataRows(rows: any[][]): any[] {
   if (rows.length === 0) return [];

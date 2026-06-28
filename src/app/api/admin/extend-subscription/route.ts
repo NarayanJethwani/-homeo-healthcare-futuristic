@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminDb } from "@/lib/firebaseAdmin";
 import { forbiddenApiResponse, requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiAuth";
+
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 /**
  * POST /api/admin/extend-subscription
@@ -44,6 +46,8 @@ export async function POST(request: NextRequest) {
       process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID !== "mock-project-id";
 
     if (isFirebaseConfigured) {
+      const { getAdminDb } = await import("@/lib/firebaseAdmin");
+
       // Update both users/{uid} and doctors/{uid} so both collections stay in sync
       const batch = getAdminDb().batch();
       batch.update(getAdminDb().collection("users").doc(doctorUid),   subscriptionUpdate);
