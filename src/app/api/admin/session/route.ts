@@ -16,7 +16,7 @@ function cookieOptions() {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax" as const,
-    path: "/admin",
+    path: "/",
     maxAge: SESSION_MAX_AGE_SECONDS,
   };
 }
@@ -67,6 +67,11 @@ export async function POST(request: NextRequest) {
 
     const response = jsonResponse({ success: true });
     response.cookies.set(ADMIN_SESSION_COOKIE, cookieValue, cookieOptions());
+    response.cookies.set(ADMIN_SESSION_COOKIE, "", {
+      ...cookieOptions(),
+      path: "/admin",
+      maxAge: 0,
+    });
     return response;
   } catch (err: any) {
     console.error("Failed to create admin session:", err?.message || err);
@@ -78,6 +83,11 @@ export async function DELETE() {
   const response = jsonResponse({ success: true });
   response.cookies.set(ADMIN_SESSION_COOKIE, "", {
     ...cookieOptions(),
+    maxAge: 0,
+  });
+  response.cookies.set(ADMIN_SESSION_COOKIE, "", {
+    ...cookieOptions(),
+    path: "/admin",
     maxAge: 0,
   });
   return response;

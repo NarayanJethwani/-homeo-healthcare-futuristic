@@ -1,13 +1,58 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getAdminDb } from "@/lib/firebaseAdmin";
+import { ADMIN_SESSION_COOKIE, verifyAdminSessionCookie } from "@/lib/adminSession";
 import { 
   createInvoiceSheet, 
   appendInvoiceToClinicalSheet, 
   InvoiceData 
 } from "@/lib/googleDrive";
 
-export async function POST(request: Request) {
+function jsonResponse(body: Record<string, unknown>, status = 200) {
+  const response = NextResponse.json(body, { status });
+  response.headers.set("Cache-Control", "no-store");
+  return response;
+}
+
+async function requireAdminSession(request: NextRequest) {
+  const session = await verifyAdminSessionCookie(request.cookies.get(ADMIN_SESSION_COOKIE)?.value);
+  return session;
+}
+
+function getInvoicePreviewUrl(invoiceNo: string) {
+  return `/admin/invoice-preview?invoiceNo=${encodeURIComponent(invoiceNo)}`;
+}
+
+export async function GET(request: NextRequest) {
   try {
+    const session = await requireAdminSession(request);
+    if (!session) {
+      return jsonResponse({ success: false, message: "Authentication required." }, 401);
+    }
+
+    const invoiceNo = request.nextUrl.searchParams.get("invoiceNo")?.trim();
+    if (!invoiceNo) {
+      return jsonResponse({ success: false, message: "Missing invoice number." }, 400);
+    }
+
+    const invoiceDoc = await getAdminDb().collection("invoices").doc(invoiceNo).get();
+    if (!invoiceDoc.exists) {
+      return jsonResponse({ success: false, message: "Invoice not found." }, 404);
+    }
+
+    return jsonResponse({ success: true, invoice: invoiceDoc.data() });
+  } catch (error: any) {
+    console.error("Invoice lookup failed:", error?.message || error);
+    return jsonResponse({ success: false, message: "Failed to load invoice." }, 500);
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const session = await requireAdminSession(request);
+    if (!session) {
+      return jsonResponse({ success: false, message: "Authentication required." }, 401);
+    }
+
     const body = await request.json();
     
     // Structure invoice data
@@ -28,7 +73,7 @@ export async function POST(request: Request) {
       status: body.status || "Pending"
     };
 
-    console.log(`Processing invoice ${invoiceData.invoiceNo} for patient ${invoiceData.patientName}`);
+    console.log(`Processing invoice ${invoiceData.invoiceNo} for patient ${invoiceData.patientId}`);
 
     // Google folder ID and case sheet ID
     const folderId = body.folderId;
@@ -45,11 +90,11 @@ export async function POST(request: Request) {
         invoiceSheetUrl = result.sheetUrl;
       } catch (err) {
         console.error("Google Drive Invoice creation failed, falling back to mock:", err);
-        invoiceSheetUrl = `/admin/invoice-preview?invoiceNo=${encodeURIComponent(invoiceData.invoiceNo)}&date=${encodeURIComponent(invoiceData.date)}&dueDate=${encodeURIComponent(invoiceData.dueDate)}&patientId=${encodeURIComponent(invoiceData.patientId)}&patientName=${encodeURIComponent(invoiceData.patientName)}&patientPhone=${encodeURIComponent(invoiceData.patientPhone)}&patientEmail=${encodeURIComponent(invoiceData.patientEmail)}&patientAddress=${encodeURIComponent(invoiceData.patientAddress)}&subtotal=${invoiceData.subtotal}&discount=${invoiceData.discount}&grandTotal=${invoiceData.grandTotal}&paymentMode=${encodeURIComponent(invoiceData.paymentMode)}&status=${encodeURIComponent(invoiceData.status)}&items=${encodeURIComponent(JSON.stringify(invoiceData.items))}`;
+        invoiceSheetUrl = getInvoicePreviewUrl(invoiceData.invoiceNo);
       }
     } else {
       // Offline/Mock mode fallback
-      invoiceSheetUrl = `/admin/invoice-preview?invoiceNo=${encodeURIComponent(invoiceData.invoiceNo)}&date=${encodeURIComponent(invoiceData.date)}&dueDate=${encodeURIComponent(invoiceData.dueDate)}&patientId=${encodeURIComponent(invoiceData.patientId)}&patientName=${encodeURIComponent(invoiceData.patientName)}&patientPhone=${encodeURIComponent(invoiceData.patientPhone)}&patientEmail=${encodeURIComponent(invoiceData.patientEmail)}&patientAddress=${encodeURIComponent(invoiceData.patientAddress)}&subtotal=${invoiceData.subtotal}&discount=${invoiceData.discount}&grandTotal=${invoiceData.grandTotal}&paymentMode=${encodeURIComponent(invoiceData.paymentMode)}&status=${encodeURIComponent(invoiceData.status)}&items=${encodeURIComponent(JSON.stringify(invoiceData.items))}`;
+      invoiceSheetUrl = getInvoicePreviewUrl(invoiceData.invoiceNo);
     }
 
     // 2. Append row to patient's primary Clinical Case Sheet
@@ -78,6 +123,7 @@ export async function POST(request: Request) {
       status: invoiceData.status,
       sheetId: invoiceSheetId,
       sheetUrl: invoiceSheetUrl,
+      previewUrl: getInvoicePreviewUrl(invoiceData.invoiceNo),
       createdAt: new Date().toISOString()
     };
 
@@ -88,23 +134,23 @@ export async function POST(request: Request) {
       console.log("Firebase operating in mock mode. Skipping invoices Firestore write.");
     }
 
-    return NextResponse.json({
+    return jsonResponse({
       success: true,
       message: "Invoice generated and synced successfully.",
       invoiceNo: invoiceData.invoiceNo,
       sheetUrl: invoiceSheetUrl,
+      previewUrl: getInvoicePreviewUrl(invoiceData.invoiceNo),
       isMock: invoiceSheetId === "mock-invoice-id"
     });
 
   } catch (error: any) {
     console.error("Invoice generation handler failed:", error);
-    return NextResponse.json(
+    return jsonResponse(
       { 
         success: false, 
-        message: "Failed to process invoice creation.", 
-        error: error.message || error 
+        message: "Failed to process invoice creation."
       },
-      { status: 500 }
+      500
     );
   }
 }
