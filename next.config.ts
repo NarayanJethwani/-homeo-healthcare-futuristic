@@ -25,6 +25,7 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  serverExternalPackages: ["firebase-admin"],
   // Ensure repertory JSON data files are bundled with serverless functions on Vercel
   outputFileTracingIncludes: {
     "/api/repertory": ["./public/data/**/*.json"],
