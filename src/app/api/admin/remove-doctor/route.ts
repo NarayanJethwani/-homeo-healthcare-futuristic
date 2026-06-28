@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getAdminAuth, getAdminDb } from "@/lib/firebaseAdmin";
+import { forbiddenApiResponse, requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiAuth";
 
 /**
  * POST /api/admin/remove-doctor
@@ -13,8 +14,12 @@ import { getAdminAuth, getAdminDb } from "@/lib/firebaseAdmin";
  * Body:
  *   doctorUid - The doctor's Firebase UID
  */
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    const session = await requireAdminApiSession(request);
+    if (!session) return unauthorizedApiResponse();
+    if (session.role !== "admin") return forbiddenApiResponse();
+
     const body = await request.json();
     const { doctorUid } = body;
 

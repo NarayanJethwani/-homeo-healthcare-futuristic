@@ -1,7 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { google } from "googleapis";
 import { getAdminDb } from "@/lib/firebaseAdmin";
 import { createPatientClinicalSheet } from "@/lib/googleDrive";
+import { requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiAuth";
 
 const getGoogleAuth = () => {
   let serviceAccountKeyJson = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
@@ -33,8 +34,11 @@ const getGoogleAuth = () => {
   }
 };
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const session = await requireAdminApiSession(request);
+    if (!session) return unauthorizedApiResponse();
+
     const auth = getGoogleAuth();
     if (!auth) {
       return NextResponse.json(

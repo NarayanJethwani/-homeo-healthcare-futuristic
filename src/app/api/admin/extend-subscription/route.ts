@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getAdminDb } from "@/lib/firebaseAdmin";
+import { forbiddenApiResponse, requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiAuth";
 
 /**
  * POST /api/admin/extend-subscription
@@ -11,8 +12,12 @@ import { getAdminDb } from "@/lib/firebaseAdmin";
  *   plan       – "trial" | "monthly" | "quarterly" | "annual"
  *   note?      – Optional note (e.g. "Paid via UPI - screenshot confirmed")
  */
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    const session = await requireAdminApiSession(request);
+    if (!session) return unauthorizedApiResponse();
+    if (session.role !== "admin") return forbiddenApiResponse();
+
     const body = await request.json();
     const { doctorUid, plan, note = "" } = body;
 

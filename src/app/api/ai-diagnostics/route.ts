@@ -1,8 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { getKnowledgeGraph } from "@/lib/knowledgeGraph";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, collection, addDoc } from "firebase/firestore";
+import { requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiAuth";
 
 export function compileLocalSynthesisResponse(taskType: string, body: any): any {
   const patientName = body?.patientInfo?.name || body?.patientName || "Patient";
@@ -1377,13 +1378,16 @@ const withTimeout = (promise: Promise<any>, timeoutMs: number) => {
   ]);
 };
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   const failoverTrace: string[] = [];
   let taskType = "synthesis";
   let userPrompt = "";
   let localResponse: any = null;
   
   try {
+    const session = await requireAdminApiSession(request);
+    if (!session) return unauthorizedApiResponse();
+
     const apiKey = process.env.GEMINI_API_KEY;
     const body = await request.json();
     taskType = body.taskType || "synthesis";

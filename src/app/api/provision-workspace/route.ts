@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getAdminDb } from "@/lib/firebaseAdmin";
+import { requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiAuth";
 import { 
   createPatientFolder, 
   createPatientClinicalSheet, 
@@ -7,8 +8,11 @@ import {
   PatientIntakeData 
 } from "@/lib/googleDrive";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    const session = await requireAdminApiSession(request);
+    if (!session) return unauthorizedApiResponse();
+
     const body = await request.json();
     const { id, name, age, gender, phone, email, location, complaint, careLevel, durationText, finalPrice } = body;
     
