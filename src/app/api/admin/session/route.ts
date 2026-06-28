@@ -17,40 +17,35 @@ function cookieOptions() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    let uid = "";
-    let email: string | null | undefined;
-    let role: "admin" | "doctor" = "doctor";
-    let name = "Doctor";
 
-    if (process.env.NODE_ENV !== "production" && body?.devBypassRole) {
-      role = body.devBypassRole === "admin" ? "admin" : "doctor";
-      uid = role === "admin" ? "admin-bypass-id" : "doctor-bypass-id";
-      email = role === "admin" ? "admin@homeo.healthcare" : "doctor@homeo.healthcare";
-      name = role === "admin" ? "Dr. Narayan Jethwani" : "Dr. Sarah (Junior)";
-    } else {
-      if (!body?.idToken || typeof body.idToken !== "string") {
-        return NextResponse.json({ success: false, message: "Missing Firebase ID token." }, { status: 400 });
-      }
+    if (!body?.idToken || typeof body.idToken !== "string") {
+      return NextResponse.json({ success: false, message: "Missing Firebase ID token." }, { status: 400 });
+    }
 
-      const decodedToken = await getAdminAuth().verifyIdToken(body.idToken);
-      uid = decodedToken.uid;
-      email = decodedToken.email;
-      name = decodedToken.name || decodedToken.email?.split("@")[0] || "Doctor";
+    const decodedToken = await getAdminAuth().verifyIdToken(body.idToken);
+    const uid = decodedToken.uid;
+    const email = decodedToken.email;
+    let name = decodedToken.name || decodedToken.email?.split("@")[0] || "Doctor";
 
-      const userDoc = await getAdminDb().collection("users").doc(uid).get();
-      if (userDoc.exists) {
-        const data = userDoc.data() || {};
-        role = data.role === "admin" ? "admin" : "doctor";
-        name = data.name || name;
+    const userDoc = await getAdminDb().collection("users").doc(uid).get();
+    if (!userDoc.exists) {
+      return NextResponse.json({ success: false, message: "Account is not authorized." }, { status: 403 });
+    }
 
-        if (role === "doctor" && data.subscription?.plan !== "branch" && data.subscription?.validUntil) {
-          const expiryDate = new Date(data.subscription.validUntil);
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
-          if (expiryDate < today) {
-            return NextResponse.json({ success: false, message: "Subscription expired." }, { status: 403 });
-          }
-        }
+    const data = userDoc.data() || {};
+    if (data.role !== "admin" && data.role !== "doctor") {
+      return NextResponse.json({ success: false, message: "Account is not authorized." }, { status: 403 });
+    }
+
+    const role = data.role;
+    name = data.name || name;
+
+    if (role === "doctor" && data.subscription?.plan !== "branch" && data.subscription?.validUntil) {
+      const expiryDate = new Date(data.subscription.validUntil);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (expiryDate < today) {
+        return NextResponse.json({ success: false, message: "Subscription expired." }, { status: 403 });
       }
     }
 
