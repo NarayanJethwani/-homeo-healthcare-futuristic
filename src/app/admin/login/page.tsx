@@ -37,7 +37,7 @@ export default function AdminLogin() {
     }
   };
 
-  const establishServerSession = async (payload: { idToken?: string; devBypassRole?: "admin" | "doctor" }) => {
+  const establishServerSession = async (payload: { idToken: string }) => {
     const response = await fetch("/api/admin/session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -56,85 +56,54 @@ export default function AdminLogin() {
     setError("");
 
     try {
-      // 1. Firebase Auth Attempt
       if (email && password) {
-        try {
-          const userCredential = await signInWithEmailAndPassword(auth, email, password);
-          const user = userCredential.user;
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
 
-          // Fetch user role from Firestore
-          const userDocRef = doc(db, "users", user.uid);
-          const userDoc = await getDoc(userDocRef);
+        const userDocRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userDocRef);
 
-          let role = "doctor";
-          let name = user.email?.split("@")[0] || "Doctor";
-          let assignedPatients: string[] = [];
+        if (!userDoc.exists()) {
+          throw new Error("This account is not authorized for the clinical workspace.");
+        }
 
-          if (userDoc.exists()) {
-            const data = userDoc.data();
-            role = data.role || "doctor";
-            name = data.name || name;
-            assignedPatients = data.assignedPatients || [];
+        const userData = userDoc.data();
+        const role = userData.role;
+        if (role !== "admin" && role !== "doctor") {
+          throw new Error("This account is not authorized for the clinical workspace.");
+        }
 
-            // ── Subscription expiry check (doctors only) ──────────────────
-            if (role === "doctor" && data.subscription?.plan !== "branch" && data.subscription?.validUntil) {
-              const expiryDate = new Date(data.subscription.validUntil);
-              const today = new Date();
-              today.setHours(0, 0, 0, 0);
-              if (expiryDate < today) {
-                setError(
-                  "Your subscription has expired. Please contact Dr. Narayan Jethwani to renew your franchise access."
-                );
-                setIsLoading(false);
-                return;
-              }
-            }
-          }
+        const name = userData.name || user.email?.split("@")[0] || "Doctor";
+        const assignedPatients = userData.assignedPatients || [];
 
-          // Save session details in localStorage for quick client access
-          const userData = userDoc.exists() ? userDoc.data() : {};
-          const idToken = await user.getIdToken();
-          await establishServerSession({ idToken });
-
-          localStorage.setItem("admin_session", JSON.stringify({
-            uid: user.uid,
-            email: user.email,
-            name,
-            role,
-            assignedPatients,
-            // Doctor workspace links (used in dashboard)
-            driveFolderUrl: userData?.driveFolderUrl || "",
-            masterSheetUrl: userData?.masterSheetUrl || "",
-          }));
-
-          router.push("/admin/dashboard");
-          return;
-
-        } catch (firebaseErr: any) {
-          console.warn("Firebase Auth failed, checking for local credential bypass...", firebaseErr.message);
-          
-          // Fallback bypass: If Firebase configuration is mock/default, check simple matching credentials for testing
-          if (
-            process.env.NODE_ENV === "development" && (
-              (email === "admin@homeo.healthcare" && password === "Admin@123") ||
-              (email === "doctor@homeo.healthcare" && password === "Doctor@123")
-            )
-          ) {
-            const isAdm = email.startsWith("admin");
-            await establishServerSession({ devBypassRole: isAdm ? "admin" : "doctor" });
-            localStorage.setItem("admin_session", JSON.stringify({
-              uid: isAdm ? "admin-bypass-id" : "doctor-bypass-id",
-              email,
-              name: isAdm ? "Dr. Narayan Jethwani" : "Dr. Sarah (Junior)",
-              role: isAdm ? "admin" : "doctor",
-              assignedPatients: isAdm ? [] : ["P-882910", "P-339281"]
-            }));
-            router.push("/admin/dashboard");
+        if (role === "doctor" && userData.subscription?.plan !== "branch" && userData.subscription?.validUntil) {
+          const expiryDate = new Date(userData.subscription.validUntil);
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          if (expiryDate < today) {
+            setError(
+              "Your subscription has expired. Please contact Dr. Narayan Jethwani to renew your franchise access."
+            );
+            setIsLoading(false);
             return;
           }
-
-          throw new Error(firebaseErr.message || "Invalid credentials");
         }
+
+        const idToken = await user.getIdToken();
+        await establishServerSession({ idToken });
+
+        localStorage.setItem("admin_session", JSON.stringify({
+          uid: user.uid,
+          email: user.email,
+          name,
+          role,
+          assignedPatients,
+          driveFolderUrl: userData.driveFolderUrl || "",
+          masterSheetUrl: userData.masterSheetUrl || "",
+        }));
+
+        router.push("/admin/dashboard");
+        return;
       } else {
         throw new Error("Please enter both email and password.");
       }
@@ -143,39 +112,6 @@ export default function AdminLogin() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  // Helper to quickly log in with mock credentials during development
-  const handleMockBypass = (role: "admin" | "doctor") => {
-    if (process.env.NODE_ENV !== "development") return;
-    setIsLoading(true);
-    setTimeout(async () => {
-      try {
-        await establishServerSession({ devBypassRole: role });
-        if (role === "admin") {
-          localStorage.setItem("admin_session", JSON.stringify({
-            uid: "admin-bypass-id",
-            email: "admin@homeo.healthcare",
-            name: "Dr. Narayan Jethwani",
-            role: "admin",
-            assignedPatients: []
-          }));
-        } else {
-          localStorage.setItem("admin_session", JSON.stringify({
-            uid: "doctor-bypass-id",
-            email: "doctor@homeo.healthcare",
-            name: "Dr. Sarah (Junior)",
-            role: "doctor",
-            assignedPatients: ["P-100234", "P-200567"] // mock assigned patient IDs
-          }));
-        }
-        setIsLoading(false);
-        router.push("/admin/dashboard");
-      } catch (err: any) {
-        setError(err.message || "Unable to establish secure admin session.");
-        setIsLoading(false);
-      }
-    }, 800);
   };
 
   return (
@@ -281,33 +217,6 @@ export default function AdminLogin() {
             </div>
           </form>
 
-          {/* Quick-Access Demo Accounts Section */}
-          {process.env.NODE_ENV === "development" && (
-            <div className="mt-8 border-t border-slate-900/5 dark:border-slate-800/60 pt-6 text-center">
-              <span className="text-[10px] text-slate-700 dark:text-slate-400 font-bold uppercase tracking-wider block mb-4">
-                Demo Access / Developer Mode
-              </span>
-              <div className="flex gap-3">
-                <button
-                  type="button"
-                  onClick={() => handleMockBypass("admin")}
-                  className="flex-1 py-2 px-3 border border-slate-200 dark:border-slate-800 hover:border-mint hover:bg-mint/5 dark:hover:bg-mint/10 rounded-xl text-[10px] font-bold text-slate-700 dark:text-slate-300 transition-all cursor-pointer"
-                >
-                  Log as Admin (Jethwani)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleMockBypass("doctor")}
-                  className="flex-1 py-2 px-3 border border-slate-200 dark:border-slate-800 hover:border-mint hover:bg-mint/5 dark:hover:bg-mint/10 rounded-xl text-[10px] font-bold text-slate-700 dark:text-slate-300 transition-all cursor-pointer"
-                >
-                  Log as Junior Doctor
-                </button>
-              </div>
-              <p className="text-[9px] text-slate-400 dark:text-slate-500 font-medium mt-3 leading-normal">
-                Bypasses real OAuth validation when credentials match standard email and password format.
-              </p>
-            </div>
-          )}
         </motion.div>
       </div>
     </div>
