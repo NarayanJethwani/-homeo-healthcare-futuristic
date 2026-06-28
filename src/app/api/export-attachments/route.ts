@@ -1,9 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getAdminDb } from "@/lib/firebaseAdmin";
 import { syncAttachmentsToClinicalSheet } from "@/lib/googleDrive";
+import { requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiAuth";
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
+    const session = await requireAdminApiSession(request);
+    if (!session) return unauthorizedApiResponse();
+
     const { searchParams } = new URL(request.url);
     const patientId = searchParams.get("patientId");
     if (!patientId) {
@@ -43,8 +47,11 @@ export async function GET(request: Request) {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    const session = await requireAdminApiSession(request);
+    if (!session) return unauthorizedApiResponse();
+
     const { patientId, attachments, sheetId: clientSheetId } = await request.json();
     if (!patientId || !Array.isArray(attachments)) {
       return NextResponse.json(

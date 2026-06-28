@@ -1,9 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getAdminDb } from "@/lib/firebaseAdmin";
 import { syncRepertoryToClinicalSheet } from "@/lib/googleDrive";
+import { requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiAuth";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    const session = await requireAdminApiSession(request);
+    if (!session) return unauthorizedApiResponse();
+
     const { patientId, rubrics, remedies, sheetId: clientSheetId } = await request.json();
     if (!patientId || !rubrics || !Array.isArray(rubrics)) {
       return NextResponse.json(

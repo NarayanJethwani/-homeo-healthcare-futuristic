@@ -1,9 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiAuth";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   let fileName = "";
   try {
+    const session = await requireAdminApiSession(request);
+    if (!session) return unauthorizedApiResponse();
+
     const body = await request.json();
     fileName = body.fileName || "";
     const { fileData, mimeType } = body;

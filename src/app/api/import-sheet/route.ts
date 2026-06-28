@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiAuth";
 import { 
   getPatientRowsFromSheet, 
   extractSpreadsheetId, 
@@ -87,8 +88,11 @@ function parseSheetDataRows(rows: any[][]): any[] {
   return patientsList;
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    const session = await requireAdminApiSession(request);
+    if (!session) return unauthorizedApiResponse();
+
     const { urlOrId } = await request.json();
     if (!urlOrId) {
       return NextResponse.json({ success: false, message: "Spreadsheet/Folder URL or ID is required." }, { status: 400 });
@@ -149,7 +153,10 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const session = await requireAdminApiSession(request);
+  if (!session) return unauthorizedApiResponse();
+
   const email = getServiceAccountEmail();
   return NextResponse.json({
     success: true,

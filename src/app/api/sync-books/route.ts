@@ -1,9 +1,14 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { downloadFileFromGoogleDrive } from "@/lib/googleDrive";
+import { forbiddenApiResponse, requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiAuth";
 import path from "path";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const session = await requireAdminApiSession(request);
+    if (!session) return unauthorizedApiResponse();
+    if (session.role !== "admin") return forbiddenApiResponse();
+
     const fileId = process.env.GOOGLE_DRIVE_REMEDY_PACK_FILE_ID;
     
     if (!fileId) {
