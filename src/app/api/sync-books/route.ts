@@ -3,6 +3,9 @@ import { downloadFileFromGoogleDrive } from "@/lib/googleDrive";
 import { forbiddenApiResponse, requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiAuth";
 import path from "path";
 
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 export async function GET(request: NextRequest) {
   try {
     const session = await requireAdminApiSession(request);

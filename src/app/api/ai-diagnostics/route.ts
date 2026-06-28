@@ -5,6 +5,9 @@ import { db } from "@/lib/firebase";
 import { doc, getDoc, collection, addDoc } from "firebase/firestore";
 import { requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiAuth";
 
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 export function compileLocalSynthesisResponse(taskType: string, body: any): any {
   const patientName = body?.patientInfo?.name || body?.patientName || "Patient";
   const age = body?.patientInfo?.age || body?.age || "35";

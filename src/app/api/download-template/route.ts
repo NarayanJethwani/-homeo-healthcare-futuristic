@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { google } from "googleapis";
-import { getAdminDb } from "@/lib/firebaseAdmin";
 import { createPatientClinicalSheet } from "@/lib/googleDrive";
 import { requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiAuth";
+
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 const getGoogleAuth = () => {
   let serviceAccountKeyJson = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
@@ -58,6 +60,7 @@ export async function GET(request: NextRequest) {
     // 2. If not in env, check Firestore cache
     if (!spreadsheetId && !isMockProject) {
       try {
+        const { getAdminDb } = await import("@/lib/firebaseAdmin");
         const settingsSnap = await getAdminDb().collection("settings").doc("google_sheets").get();
         if (settingsSnap.exists) {
           spreadsheetId = settingsSnap.data()?.templateSheetId || "";
@@ -111,6 +114,7 @@ export async function GET(request: NextRequest) {
         // Save to Firestore settings
         if (!isMockProject && spreadsheetId) {
           try {
+            const { getAdminDb } = await import("@/lib/firebaseAdmin");
             await getAdminDb().collection("settings").doc("google_sheets").set({
               templateSheetId: spreadsheetId,
               createdAt: new Date().toISOString()

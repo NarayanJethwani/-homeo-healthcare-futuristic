@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminDb } from "@/lib/firebaseAdmin";
 import { requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiAuth";
 import { 
   createPatientFolder, 
@@ -7,6 +6,9 @@ import {
   appendPatientToMasterRecord,
   PatientIntakeData 
 } from "@/lib/googleDrive";
+
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 export async function POST(request: NextRequest) {
   try {
@@ -67,6 +69,7 @@ export async function POST(request: NextRequest) {
     // 4. Update the patient document in Firestore
     const isMockProject = !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID === "mock-project-id";
     if (!isMockProject) {
+      const { getAdminDb } = await import("@/lib/firebaseAdmin");
       await getAdminDb().collection("patients").doc(id).update({
         folderId: folderResult.folderId,
         folderUrl: folderResult.folderUrl,
