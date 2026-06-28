@@ -4787,7 +4787,7 @@ export default function AdminDashboard() {
 
       const data = await response.json();
       if (data.success) {
-        setGeneratedInvoiceUrl(data.sheetUrl);
+        setGeneratedInvoiceUrl(data.previewUrl || `/admin/invoice-preview?invoiceNo=${encodeURIComponent(invoiceNo)}`);
         
         // Save to mock storage locally if in mock mode
         const isMockProject = !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID === "mock-project-id";
@@ -4808,6 +4808,7 @@ export default function AdminDashboard() {
             status: invoiceStatus,
             sheetId: "mock-invoice-id",
             sheetUrl: data.sheetUrl,
+            previewUrl: data.previewUrl || `/admin/invoice-preview?invoiceNo=${encodeURIComponent(invoiceNo)}`,
             createdAt: new Date().toISOString()
           };
           const key = `mock_invoices_${selectedInvoicePatient.id}`;
@@ -28521,7 +28522,7 @@ Exported on: ${new Date().toLocaleDateString()}
 
                       {generatedInvoiceUrl && (
                         <a
-                          href={`/admin/invoice-preview?invoiceNo=${encodeURIComponent(invoiceNo)}&date=${encodeURIComponent(new Date().toLocaleDateString("en-IN"))}&dueDate=${encodeURIComponent(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString("en-IN"))}&patientId=${encodeURIComponent(selectedInvoicePatient.id)}&patientName=${encodeURIComponent(selectedInvoicePatient.name)}&patientPhone=${encodeURIComponent(selectedInvoicePatient.phone)}&patientEmail=${encodeURIComponent(selectedInvoicePatient.email)}&patientAddress=${encodeURIComponent(selectedInvoicePatient.location || "N/A")}&subtotal=${invoiceSubtotal}&discount=${invoiceDiscount}&grandTotal=${invoiceGrandTotal}&paymentMode=${encodeURIComponent(invoicePaymentMode)}&status=${encodeURIComponent(invoiceStatus)}&items=${encodeURIComponent(JSON.stringify(invoiceItems))}`}
+                          href={generatedInvoiceUrl}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center gap-1.5 px-5 py-3 rounded-full border border-[#0f766e] text-[#0f766e] hover:bg-[#0f766e]/5 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer bg-white"
@@ -28613,7 +28614,7 @@ Exported on: ${new Date().toLocaleDateString()}
                               <div className="flex gap-2">
                                 {/* Print Preview */}
                                 <a
-                                  href={`/admin/invoice-preview?invoiceNo=${encodeURIComponent(inv.id)}&date=${encodeURIComponent(inv.date)}&dueDate=${encodeURIComponent(inv.dueDate)}&patientId=${encodeURIComponent(inv.patientId)}&patientName=${encodeURIComponent(inv.patientName)}&patientPhone=${encodeURIComponent(inv.patientPhone || "")}&patientEmail=${encodeURIComponent(inv.patientEmail || "")}&patientAddress=${encodeURIComponent(inv.patientAddress || "")}&subtotal=${inv.subtotal}&discount=${inv.discount}&grandTotal=${inv.grandTotal}&paymentMode=${encodeURIComponent(inv.paymentMode)}&status=${encodeURIComponent(inv.status)}&items=${encodeURIComponent(JSON.stringify(inv.items))}`}
+                                  href={inv.previewUrl || `/admin/invoice-preview?invoiceNo=${encodeURIComponent(inv.id)}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="p-1.5 rounded-lg border border-slate-200 hover:border-slate-800 text-slate-700 hover:bg-slate-50 transition-all cursor-pointer"

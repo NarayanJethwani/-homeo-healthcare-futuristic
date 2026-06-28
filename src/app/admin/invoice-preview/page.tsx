@@ -11,47 +11,82 @@ interface InvoiceItem {
   amount: number;
 }
 
+interface InvoicePreviewData {
+  id?: string;
+  invoiceNo?: string;
+  date: string;
+  dueDate: string;
+  patientId: string;
+  patientName: string;
+  patientPhone?: string;
+  patientEmail?: string;
+  patientAddress?: string;
+  items?: InvoiceItem[];
+  subtotal: number;
+  discount: number;
+  grandTotal: number;
+  paymentMode: string;
+  status: string;
+}
+
 function InvoiceContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [copied, setCopied] = useState<string | null>(null);
   const [logoUrl, setLogoUrl] = useState("/images/logo.png");
   const [qrCodeUrl, setQrCodeUrl] = useState("/images/payment-qr.jpg");
+  const [invoice, setInvoice] = useState<InvoicePreviewData | null>(null);
+  const [isLoadingInvoice, setIsLoadingInvoice] = useState(true);
+  const [loadError, setLoadError] = useState("");
+  const invoiceNoParam = searchParams.get("invoiceNo") || "";
 
   useEffect(() => {
     setLogoUrl(window.location.origin + "/images/logo.png");
     setQrCodeUrl(window.location.origin + "/images/payment-qr.jpg");
   }, []);
 
-  // Extract invoice parameters from query string
-  const invoiceNo = searchParams.get("invoiceNo") || "INV-TEMP-999";
-  const date = searchParams.get("date") || new Date().toLocaleDateString("en-IN");
-  const dueDate = searchParams.get("dueDate") || new Date().toLocaleDateString("en-IN");
-  const patientId = searchParams.get("patientId") || "P-MOCK";
-  const patientName = searchParams.get("patientName") || "Patient Name";
-  const patientPhone = searchParams.get("patientPhone") || "N/A";
-  const patientEmail = searchParams.get("patientEmail") || "";
-  const patientAddress = searchParams.get("patientAddress") || "Baner, Pune, Maharashtra";
-  const subtotal = Number(searchParams.get("subtotal") || 0);
-  const discount = Number(searchParams.get("discount") || 0);
-  const grandTotal = Number(searchParams.get("grandTotal") || 0);
-  const paymentMode = searchParams.get("paymentMode") || "UPI";
-  const status = searchParams.get("status") || "Paid";
+  useEffect(() => {
+    let isMounted = true;
 
-  const rawItems = searchParams.get("items");
-  let items: InvoiceItem[] = [];
-  try {
-    if (rawItems) {
-      items = JSON.parse(decodeURIComponent(rawItems));
+    async function loadInvoice() {
+      if (!invoiceNoParam) {
+        setLoadError("Invoice number is missing.");
+        setIsLoadingInvoice(false);
+        return;
+      }
+
+      try {
+        setIsLoadingInvoice(true);
+        setLoadError("");
+        const response = await fetch(`/api/invoice?invoiceNo=${encodeURIComponent(invoiceNoParam)}`, {
+          cache: "no-store",
+        });
+        const data = await response.json().catch(() => null);
+
+        if (!response.ok || !data?.success || !data.invoice) {
+          throw new Error(data?.message || "Unable to load invoice.");
+        }
+
+        if (isMounted) {
+          setInvoice(data.invoice);
+        }
+      } catch (error: any) {
+        if (isMounted) {
+          setLoadError(error?.message || "Unable to load invoice.");
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoadingInvoice(false);
+        }
+      }
     }
-  } catch (e) {
-    console.error("Failed to parse invoice items:", e);
-  }
 
-  // Fallback if empty items list
-  if (items.length === 0) {
-    items = [{ description: "General Homeopathic Treatment Fee", qty: 1, unitPrice: grandTotal, amount: grandTotal }];
-  }
+    loadInvoice();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [invoiceNoParam]);
 
   const handleCopyText = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
@@ -86,6 +121,8 @@ function InvoiceContent() {
   };
 
   const handleWhatsAppShare = () => {
+    if (!invoice) return;
+
     const message = `Dear ${patientName},
     
 Hope you are doing well. Please find below the invoice summary from *Homeo Healthcare*:
@@ -119,6 +156,48 @@ Homeo Healthcare`;
     
     window.open(`https://wa.me/${targetPhone}?text=${encodedText}`, "_blank");
   };
+
+  if (isLoadingInvoice) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center px-6">
+        <div className="text-center text-sm font-bold text-slate-500">Loading invoice preview...</div>
+      </div>
+    );
+  }
+
+  if (loadError || !invoice) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center px-6">
+        <div className="max-w-md rounded-2xl border border-rose-100 bg-white p-6 text-center shadow-sm">
+          <h1 className="text-base font-black text-slate-900">Invoice unavailable</h1>
+          <p className="mt-2 text-xs font-semibold text-slate-500">{loadError || "Unable to load invoice."}</p>
+          <button
+            onClick={() => router.push("/admin/dashboard")}
+            className="mt-5 rounded-full bg-[#0f766e] px-5 py-2 text-xs font-bold text-white"
+          >
+            Back to Portal
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const invoiceNo = invoice.invoiceNo || invoice.id || invoiceNoParam;
+  const date = invoice.date || new Date().toLocaleDateString("en-IN");
+  const dueDate = invoice.dueDate || new Date().toLocaleDateString("en-IN");
+  const patientId = invoice.patientId || "P-MOCK";
+  const patientName = invoice.patientName || "Patient";
+  const patientPhone = invoice.patientPhone || "N/A";
+  const patientEmail = invoice.patientEmail || "";
+  const patientAddress = invoice.patientAddress || "";
+  const subtotal = Number(invoice.subtotal || 0);
+  const discount = Number(invoice.discount || 0);
+  const grandTotal = Number(invoice.grandTotal || 0);
+  const paymentMode = invoice.paymentMode || "UPI";
+  const status = invoice.status || "Paid";
+  const items = invoice.items?.length
+    ? invoice.items
+    : [{ description: "General Homeopathic Treatment Fee", qty: 1, unitPrice: grandTotal, amount: grandTotal }];
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-10 px-4 print:bg-white print:py-0 print:px-0">

@@ -4203,7 +4203,7 @@ export async function createInvoiceSheet(
   const auth = getGoogleAuth();
   if (!auth) {
     // Mock URL for offline testing
-    const mockUrl = `/admin/invoice-preview?invoiceNo=${encodeURIComponent(data.invoiceNo)}&date=${encodeURIComponent(data.date)}&dueDate=${encodeURIComponent(data.dueDate)}&patientId=${encodeURIComponent(data.patientId)}&patientName=${encodeURIComponent(data.patientName)}&patientPhone=${encodeURIComponent(data.patientPhone || "")}&patientEmail=${encodeURIComponent(data.patientEmail || "")}&patientAddress=${encodeURIComponent(data.patientAddress || "")}&subtotal=${data.subtotal}&discount=${data.discount}&grandTotal=${data.grandTotal}&paymentMode=${encodeURIComponent(data.paymentMode)}&status=${encodeURIComponent(data.status)}&items=${encodeURIComponent(JSON.stringify(data.items))}`;
+    const mockUrl = `/admin/invoice-preview?invoiceNo=${encodeURIComponent(data.invoiceNo)}`;
     return { sheetId: "mock-invoice-id", sheetUrl: mockUrl };
   }
 
