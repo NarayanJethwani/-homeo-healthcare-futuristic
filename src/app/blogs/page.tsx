@@ -11,7 +11,10 @@ const WORDPRESS_LIST_FIELDS = [
   "date",
   "title.rendered",
   "excerpt.rendered",
+  "jetpack_featured_media_url",
 ].join(",");
+
+const DEFAULT_BLOG_IMAGE = "/images/epigenetics_gene.png";
 
 const localSlugsWithFeaturedImage = new Set([
   "complete-thyroid-guide",
@@ -62,6 +65,14 @@ function decodeHtmlEntities(html: string): string {
     .replace(/&apos;/g, "'")
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">");
+}
+
+function getPostImage(post: any): string {
+  if (localSlugsWithFeaturedImage.has(post.slug)) {
+    return `/images/${post.slug}-featured.png`;
+  }
+
+  return post.jetpack_featured_media_url || DEFAULT_BLOG_IMAGE;
 }
 
 async function getWordPressPosts(): Promise<Article[]> {
@@ -155,11 +166,7 @@ async function getWordPressPosts(): Promise<Article[]> {
         "Lifestyle & Wellness": "rgba(99,102,241,0.15)"
       };
 
-      // Get featured image: prefer local unwatermarked image, fallback to WordPress featured media URL
-      let image = "/images/epigenetics_gene.png";
-      if (localSlugsWithFeaturedImage.has(post.slug)) {
-        image = `/images/${post.slug}-featured.png`;
-      }
+      const image = getPostImage(post);
 
       // Get excerpt
       const excerpt = renderedExcerpt
@@ -211,7 +218,7 @@ async function getWordPressPostBySlug(slug: string): Promise<Article | null> {
   try {
     const params = new URLSearchParams({
       slug,
-      _fields: "id,slug,title.rendered,excerpt.rendered",
+      _fields: "id,slug,title.rendered,excerpt.rendered,jetpack_featured_media_url",
     });
     const res = await fetch(`${WORDPRESS_POSTS_URL}?${params.toString()}`, {
       next: { revalidate: 3600 }
@@ -221,10 +228,7 @@ async function getWordPressPostBySlug(slug: string): Promise<Article | null> {
     if (!Array.isArray(posts) || posts.length === 0) return null;
     const post = posts[0];
 
-    let image = "/images/epigenetics_gene.png";
-    if (localSlugsWithFeaturedImage.has(post.slug)) {
-      image = `/images/${post.slug}-featured.png`;
-    }
+    const image = getPostImage(post);
 
     const excerpt = post.excerpt?.rendered 
       ? post.excerpt.rendered.replace(/<[^>]*>/g, '').replace(/\[&hellip;\]/, '...').replace(/\\n/g, "").trim()
