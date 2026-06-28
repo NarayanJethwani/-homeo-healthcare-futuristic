@@ -3356,18 +3356,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
     if (isRealSheet) {
       window.open(selectedPatient.sheetUrl, "_blank", "noopener,noreferrer");
     } else {
-      const mockUrl = `/admin/mock-sheet?name=${encodeURIComponent(selectedPatient.name)}` +
-        `&id=${encodeURIComponent(selectedPatient.id)}` +
-        `&age=${encodeURIComponent(selectedPatient.age || "30")}` +
-        `&gender=${encodeURIComponent(selectedPatient.gender || "Male")}` +
-        `&phone=${encodeURIComponent(selectedPatient.phone || "")}` +
-        `&email=${encodeURIComponent(selectedPatient.email || "")}` +
-        `&complaint=${encodeURIComponent(selectedPatient.complaint || "")}` +
-        `&careLevel=${encodeURIComponent(selectedPatient.careLevel || "Standard Consultation")}` +
-        `&durationText=${encodeURIComponent(selectedPatient.durationText || "6-Month Plan")}` +
-        `&finalPrice=${encodeURIComponent(String(selectedPatient.finalPrice || 3500))}` +
-        `&receivedAmount=${encodeURIComponent(String(selectedPatient.receivedAmount !== undefined ? selectedPatient.receivedAmount : (selectedPatient.finalPrice || 3500)))}` +
-        `&remainingBalance=${encodeURIComponent(String(selectedPatient.remainingBalance || 0))}`;
+      const mockUrl = `/admin/mock-sheet?mockId=${encodeURIComponent(selectedPatient.id)}`;
       window.open(mockUrl, "_blank", "noopener,noreferrer");
     }
   };

@@ -121,7 +121,7 @@ export default function BookingSection() {
       console.error("Intake automation request failed, using demo fallback links:", error);
       setSubmissionResult({
         folderUrl: "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link",
-        sheetUrl: `/admin/mock-sheet?name=${encodeURIComponent(formData.name)}&id=P-mock&age=30&gender=Male&phone=${encodeURIComponent(formData.phone)}&email=${encodeURIComponent(formData.email)}&complaint=${encodeURIComponent(formData.symptoms)}&careLevel=${encodeURIComponent(formData.category)}&durationText=${encodeURIComponent(`Consultation on ${formData.date} at ${formData.slot}`)}&finalPrice=300`,
+        sheetUrl: "/admin/mock-sheet?mockId=P-100234",
         isMock: true
       });
     } finally {

@@ -4747,6 +4747,14 @@ export default function AdminDashboard() {
     e.target.value = ""; // Reset dropdown
   };
 
+  const buildMockSheetUrl = (patient: Pick<Patient, "id" | "sheetUrl">) => {
+    const params = new URLSearchParams({ mockId: patient.id });
+    if (patient.sheetUrl && patient.sheetUrl.startsWith("https://")) {
+      params.set("sheetUrl", patient.sheetUrl);
+    }
+    return `/admin/mock-sheet?${params.toString()}`;
+  };
+
   const handleGenerateInvoice = async () => {
     if (!selectedInvoicePatient) return;
     
@@ -5342,24 +5350,8 @@ Homeo Healthcare`;
       if (data.success) {
         setCreatedFolderUrl(data.folderUrl);
         
-        // Build mockSheetUrl containing all treatment planner options
         const mockPatientId = data.patientId || `P-${Math.floor(100000 + Math.random() * 900000)}`;
-        const mockSheetUrl = `/admin/mock-sheet?name=${encodeURIComponent(newCaseForm.name)}` +
-          `&id=${encodeURIComponent(mockPatientId)}` +
-          `&age=${encodeURIComponent(newCaseForm.age)}` +
-          `&gender=${encodeURIComponent(newCaseForm.gender)}` +
-          `&phone=${encodeURIComponent(newCaseForm.phone)}` +
-          `&email=${encodeURIComponent(newCaseForm.email)}` +
-          `&complaint=${encodeURIComponent(newCaseForm.complaint)}` +
-          `&careLevel=${encodeURIComponent(newCaseForm.careLevel)}` +
-          `&durationText=${encodeURIComponent(newCaseForm.durationText)}` +
-          `&finalPrice=${encodeURIComponent(newCaseForm.finalPrice)}` +
-          `&receivedAmount=${encodeURIComponent(String(newCaseForm.receivedAmount))}` +
-          `&remainingBalance=${encodeURIComponent(String(newCaseForm.remainingBalance))}` +
-          `&billingCycle=${encodeURIComponent(newCaseForm.billingCycle)}` +
-          `&concessionApplied=${encodeURIComponent(concessionVal)}` +
-          `&conditionsCount=${encodeURIComponent(String(newCaseForm.careLevel.includes("Multisystem") ? 2 : 1))}` +
-          `&durationValue=${encodeURIComponent(String(getDurationValue(newCaseForm.durationText)))}`;
+        const mockSheetUrl = `/admin/mock-sheet?mockId=${encodeURIComponent(mockPatientId)}`;
 
         setCreatedSheetUrl(data.sheetUrl || mockSheetUrl);
         setCaseCreationSuccess(true);
@@ -5438,22 +5430,7 @@ Homeo Healthcare`;
             ? "Override"
             : (parseInt(newCaseForm.age) >= 60 ? "Senior 15%" : "None");
 
-      const sheetUrl = `/admin/mock-sheet?name=${encodeURIComponent(newCaseForm.name)}` +
-        `&id=${encodeURIComponent(mockPatientId)}` +
-        `&age=${encodeURIComponent(newCaseForm.age)}` +
-        `&gender=${encodeURIComponent(newCaseForm.gender)}` +
-        `&phone=${encodeURIComponent(newCaseForm.phone)}` +
-        `&email=${encodeURIComponent(newCaseForm.email)}` +
-        `&complaint=${encodeURIComponent(newCaseForm.complaint)}` +
-        `&careLevel=${encodeURIComponent(newCaseForm.careLevel)}` +
-        `&durationText=${encodeURIComponent(newCaseForm.durationText)}` +
-        `&finalPrice=${encodeURIComponent(newCaseForm.finalPrice)}` +
-        `&receivedAmount=${encodeURIComponent(String(newCaseForm.receivedAmount))}` +
-        `&remainingBalance=${encodeURIComponent(String(newCaseForm.remainingBalance))}` +
-        `&billingCycle=${encodeURIComponent(newCaseForm.billingCycle)}` +
-        `&concessionApplied=${encodeURIComponent(concessionVal)}` +
-        `&conditionsCount=${encodeURIComponent(String(newCaseForm.careLevel.includes("Multisystem") ? 2 : 1))}` +
-        `&durationValue=${encodeURIComponent(String(getDurationValue(newCaseForm.durationText)))}`;
+      const sheetUrl = `/admin/mock-sheet?mockId=${encodeURIComponent(mockPatientId)}`;
       
       setCreatedFolderUrl(folderUrl);
       setCreatedSheetUrl(sheetUrl);
@@ -5948,23 +5925,7 @@ Homeo Healthcare`;
     // If the preference is set to open the Mock Sheet UI, always redirect sheet clicks to mock-sheet page
     if (type === "sheet" && sheetOpeningMode === "mock") {
       e.preventDefault();
-      const mockUrl = `/admin/mock-sheet?name=${encodeURIComponent(patient.name)}` +
-        `&id=${encodeURIComponent(patient.id)}` +
-        `&age=${encodeURIComponent(patient.age)}` +
-        `&gender=${encodeURIComponent(patient.gender)}` +
-        `&phone=${encodeURIComponent(patient.phone || "")}` +
-        `&email=${encodeURIComponent(patient.email || "")}` +
-        `&complaint=${encodeURIComponent(patient.complaint || "")}` +
-        `&careLevel=${encodeURIComponent(patient.careLevel || "")}` +
-        `&durationText=${encodeURIComponent(patient.durationText || "")}` +
-        `&finalPrice=${encodeURIComponent(String(patient.finalPrice || 0))}` +
-        `&receivedAmount=${encodeURIComponent(String(patient.receivedAmount !== undefined ? patient.receivedAmount : (patient.finalPrice || 0)))}` +
-        `&remainingBalance=${encodeURIComponent(String(patient.remainingBalance || 0))}` +
-        `&billingCycle=${encodeURIComponent((patient as any).billingCycle || "Monthly")}` +
-        `&concessionApplied=${encodeURIComponent((patient as any).concessionApplied || "None")}` +
-        `&conditionsCount=${encodeURIComponent(String((patient as any).conditionsCount || (patient.careLevel.includes("Multisystem") ? 2 : 1)))}` +
-        `&durationValue=${encodeURIComponent(String((patient as any).durationValue || getDurationValue(patient.durationText)))}` +
-        (patient.sheetUrl && patient.sheetUrl.startsWith("https://") ? `&sheetUrl=${encodeURIComponent(patient.sheetUrl)}` : "");
+      const mockUrl = buildMockSheetUrl(patient);
       window.open(mockUrl, "_blank", "noopener,noreferrer");
       return;
     }
@@ -6584,23 +6545,7 @@ ${err.message || err}`);
     
     let baseUrl = activePatient.sheetUrl || "/admin/mock-sheet";
     if (sheetOpeningMode === "mock" || baseUrl.includes("google.com/spreadsheets") || !baseUrl.startsWith("/admin/mock-sheet")) {
-      baseUrl = `/admin/mock-sheet?name=${encodeURIComponent(activePatient.name)}` +
-        `&id=${encodeURIComponent(activePatient.id)}` +
-        `&age=${encodeURIComponent(activePatient.age)}` +
-        `&gender=${encodeURIComponent(activePatient.gender)}` +
-        `&phone=${encodeURIComponent(activePatient.phone || "")}` +
-        `&email=${encodeURIComponent(activePatient.email || "")}` +
-        `&complaint=${encodeURIComponent(activePatient.complaint || "")}` +
-        `&careLevel=${encodeURIComponent(activePatient.careLevel || "")}` +
-        `&durationText=${encodeURIComponent(activePatient.durationText || "")}` +
-        `&finalPrice=${encodeURIComponent(String(activePatient.finalPrice || 0))}` +
-        `&receivedAmount=${encodeURIComponent(String(activePatient.receivedAmount !== undefined ? activePatient.receivedAmount : (activePatient.finalPrice || 0)))}` +
-        `&remainingBalance=${encodeURIComponent(String(activePatient.remainingBalance || 0))}` +
-        `&billingCycle=${encodeURIComponent((activePatient as any).billingCycle || "Monthly")}` +
-        `&concessionApplied=${encodeURIComponent((activePatient as any).concessionApplied || "None")}` +
-        `&conditionsCount=${encodeURIComponent(String((activePatient as any).conditionsCount || (activePatient.careLevel.includes("Multisystem") ? 2 : 1)))}` +
-        `&durationValue=${encodeURIComponent(String((activePatient as any).durationValue || getDurationValue(activePatient.durationText)))}` +
-        (activePatient.sheetUrl && activePatient.sheetUrl.startsWith("https://") ? `&sheetUrl=${encodeURIComponent(activePatient.sheetUrl)}` : "");
+      baseUrl = buildMockSheetUrl(activePatient);
     }
     
     const separator = baseUrl.includes("?") ? "&" : "?";
