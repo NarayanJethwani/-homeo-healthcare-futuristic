@@ -1,11 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminDb } from "@/lib/firebaseAdmin";
 import { ADMIN_SESSION_COOKIE, verifyAdminSessionCookie } from "@/lib/adminSession";
-import { 
-  createInvoiceSheet, 
-  appendInvoiceToClinicalSheet, 
-  InvoiceData 
-} from "@/lib/googleDrive";
+import type { InvoiceData } from "@/lib/googleDrive";
 
 function jsonResponse(body: Record<string, unknown>, status = 200) {
   const response = NextResponse.json(body, { status });
@@ -34,6 +29,7 @@ export async function GET(request: NextRequest) {
       return jsonResponse({ success: false, message: "Missing invoice number." }, 400);
     }
 
+    const { getAdminDb } = await import("@/lib/firebaseAdmin");
     const invoiceDoc = await getAdminDb().collection("invoices").doc(invoiceNo).get();
     if (!invoiceDoc.exists) {
       return jsonResponse({ success: false, message: "Invoice not found." }, 404);
@@ -85,6 +81,7 @@ export async function POST(request: NextRequest) {
     // 1. Create Google Sheet Invoice inside the patient folder
     if (folderId && folderId !== "mock-folder-id") {
       try {
+        const { createInvoiceSheet } = await import("@/lib/googleDrive");
         const result = await createInvoiceSheet(folderId, invoiceData);
         invoiceSheetId = result.sheetId;
         invoiceSheetUrl = result.sheetUrl;
@@ -100,6 +97,7 @@ export async function POST(request: NextRequest) {
     // 2. Append row to patient's primary Clinical Case Sheet
     if (caseSheetId && caseSheetId !== "mock-sheet-id" && invoiceSheetId !== "mock-invoice-id") {
       try {
+        const { appendInvoiceToClinicalSheet } = await import("@/lib/googleDrive");
         await appendInvoiceToClinicalSheet(caseSheetId, invoiceData);
       } catch (err) {
         console.error("Failed to append invoice row to clinical sheet:", err);
@@ -129,6 +127,7 @@ export async function POST(request: NextRequest) {
 
     const isMockProject = !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID === "mock-project-id";
     if (!isMockProject) {
+      const { getAdminDb } = await import("@/lib/firebaseAdmin");
       await getAdminDb().collection("invoices").doc(invoiceDoc.id).set(invoiceDoc);
     } else {
       console.log("Firebase operating in mock mode. Skipping invoices Firestore write.");
