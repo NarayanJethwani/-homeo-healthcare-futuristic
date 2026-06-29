@@ -1,4 +1,4 @@
-export const ADMIN_SESSION_COOKIE = "hh_admin_session";
+export const ADMIN_SESSION_COOKIE = "hh_admin_session_v3";
 
 export type AdminSessionPayload = {
   uid: string;
@@ -9,12 +9,19 @@ export type AdminSessionPayload = {
 };
 
 function getSessionSecret() {
-  const secret =
+  let secret =
     process.env.ADMIN_SESSION_SECRET ||
     process.env.FIREBASE_SERVICE_ACCOUNT_KEY ||
     process.env.GOOGLE_SERVICE_ACCOUNT_KEY ||
     (process.env.NODE_ENV !== "production" ? "homeo-healthcare-dev-session-secret" : "");
 
+  secret = secret.trim();
+  if (
+    (secret.startsWith("'") && secret.endsWith("'")) ||
+    (secret.startsWith('"') && secret.endsWith('"'))
+  ) {
+    secret = secret.slice(1, -1);
+  }
   return secret.trim();
 }
 
