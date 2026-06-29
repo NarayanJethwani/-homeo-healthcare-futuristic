@@ -630,6 +630,15 @@ const SAMPLE_FINDINGS = [
     { id: "cie-intake", label: "Guided Case Intake" },
     { id: "cie-miasms", label: "Miasmatic Analysis" },
     { id: "cie-reports", label: "Clinical Reports" }
+  ],
+  "medical-academy": [
+    { id: "academy-home", label: "Home" },
+    { id: "academy-learn", label: "Learn" },
+    { id: "academy-explore", label: "Explore" },
+    { id: "academy-practice", label: "Practice" },
+    { id: "academy-assess", label: "Assess" },
+    { id: "academy-research", label: "Research" },
+    { id: "academy-certify", label: "Certify" }
   ]
 };
 
@@ -762,6 +771,7 @@ export default function AdminDashboard() {
   const [nexusSubTab, setNexusSubTab] = useState<"repertory" | "mind-map" | "materia-medica">("repertory");
   const [cieSubTab, setCieSubTab] = useState<"cockpit" | "intake" | "miasms" | "reports">("cockpit");
   const [immersiveMode, setImmersiveMode] = useState(false);
+  const [academyMode, setAcademyMode] = useState("dashboard");
 
   // Global Accessibility Controls
   const [globalFontSize, setGlobalFontSize] = useState<"S" | "M" | "L" | "XL">("M");
@@ -5069,7 +5079,7 @@ Homeo Healthcare`;
 
   // Helper to handle mouse hover subtabs navigation
   const handleSubTabClick = (
-    tabId: "dashboard" | "intake" | "patients" | "diagnostics" | "analyzer" | "diet-lifestyle" | "treatment-planner" | "nexus-atlas" | "learning-hub" | "communication" | "ai-router" | "health-intelligence" | "cie",
+    tabId: "dashboard" | "intake" | "patients" | "diagnostics" | "analyzer" | "diet-lifestyle" | "treatment-planner" | "nexus-atlas" | "learning-hub" | "communication" | "ai-router" | "health-intelligence" | "cie" | "medical-academy",
     subSectionId: string,
     action?: () => void
   ) => {
@@ -5079,6 +5089,27 @@ Homeo Healthcare`;
       else if (subSectionId === "cie-intake") setCieSubTab("intake");
       else if (subSectionId === "cie-miasms") setCieSubTab("miasms");
       else if (subSectionId === "cie-reports") setCieSubTab("reports");
+    }
+    if (tabId === "medical-academy") {
+      const modeMap: Record<string, string> = {
+        "academy-home": "dashboard",
+        "academy-learn": "learn",
+        "academy-explore": "explore",
+        "academy-practice": "practice",
+        "academy-assess": "assess",
+        "academy-research": "research",
+        "academy-certify": "certify"
+      };
+      const mode = modeMap[subSectionId];
+      if (mode) {
+        setAcademyMode(mode);
+        if (academyIframeRef.current?.contentWindow) {
+          academyIframeRef.current.contentWindow.postMessage({
+            type: "cios-academy-mode-switch",
+            mode: mode
+          }, "*");
+        }
+      }
     }
     if (action) {
       action();
@@ -13079,7 +13110,7 @@ ${err.message || err}`);
             <div className="w-full h-full relative overflow-hidden">
               <iframe 
                 ref={academyIframeRef}
-                src={`https://clinical-intelligence-engine.vercel.app?view=medical-academy&hide_sidebar=true&theme=${theme}&font=${globalFontSize}&zoom=${globalLayoutZoom}&width=${globalReadingWidth}`} 
+                src={`https://clinical-intelligence-engine.vercel.app?view=medical-academy&hide_sidebar=true&theme=${theme}&font=${globalFontSize}&zoom=${globalLayoutZoom}&width=${globalReadingWidth}&academy_mode=${academyMode}`} 
                 className="w-full h-full border-none"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; microphone"
                 allowFullScreen
