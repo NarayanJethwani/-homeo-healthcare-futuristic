@@ -6,7 +6,8 @@
     "dev": "NODE_OPTIONS='--max-old-space-size=5120' next dev",
     "build": "NODE_OPTIONS='--max-old-space-size=5120' next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "npx tsc tests/adminWorkflow.test.ts --target es2020 --module commonjs --moduleResolution node --skipLibCheck --resolveJsonModule --esModuleInterop --outDir tests/dist && node tests/dist/tests/adminWorkflow.test.js && rm -rf tests/dist"
   },
   "dependencies": {
     "@google-cloud/firestore": "^8.6.0",

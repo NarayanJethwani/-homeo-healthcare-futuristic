@@ -2463,6 +2463,13 @@ export default function HealthIntelligencePage() {
                 </div>
                 
                 <div className="flex gap-3">
+                  <Link
+                    href="/patient/login"
+                    className="py-2.5 px-4 bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 dark:text-purple-400 font-bold border border-purple-200/50 dark:border-purple-800/50 rounded-xl text-[11px] uppercase tracking-wider cursor-pointer transition-all flex items-center gap-1.5"
+                  >
+                    <User className="w-4 h-4 text-purple-550" />
+                    Patient Portal
+                  </Link>
                   <button
                     onClick={() => {
                       scrollToUpload();
@@ -2734,8 +2741,23 @@ export default function HealthIntelligencePage() {
                 <div className="text-[9.5px] font-extrabold uppercase tracking-widest text-slate-500">
                   Clinical Portal Sync:
                 </div>
+
+                {/* Patient Portal Navigation Card */}
+                <div className="flex items-center justify-between p-3 bg-purple-50/20 dark:bg-purple-950/10 border border-purple-100/50 dark:border-purple-900/40 rounded-xl">
+                  <div className="space-y-0.5 text-left">
+                    <span className="text-[10.5px] font-bold text-slate-850 dark:text-zinc-150 block">Patient Portal Dashboard</span>
+                    <span className="text-[8.5px] text-slate-400 dark:text-zinc-400 font-bold block leading-none">View prescriptions & upload reports</span>
+                  </div>
+                  <Link
+                    href="/patient/login"
+                    className="px-3 py-1.5 rounded-lg text-[9px] font-extrabold bg-purple-650 text-white hover:bg-purple-700 uppercase tracking-wider cursor-pointer transition-colors text-center"
+                  >
+                    Access Portal
+                  </Link>
+                </div>
+
                 <div className="flex items-center justify-between p-3 bg-slate-50/50 dark:bg-slate-950/20 border border-slate-150 dark:border-slate-850 rounded-xl">
-                  <div className="space-y-0.5">
+                  <div className="space-y-0.5 text-left">
                     <span className="text-[10.5px] font-bold text-slate-800 dark:text-zinc-150 block">Clinician Portal</span>
                     {digitalTwin.clinicalPortal?.connected ? (
                       <span className="text-[8.5px] text-emerald-500 font-bold block leading-none">

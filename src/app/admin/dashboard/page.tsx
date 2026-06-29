@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import dynamic from "next/dynamic";
 import { 
   Users, Activity, Sparkles, Folder, FileSpreadsheet, ExternalLink, 
   Search, Sliders, Brain, RefreshCw, Send, Plus, Trash2, CheckCircle, 
@@ -10,9 +11,12 @@ import {
   BookOpen, Book, ChevronLeft, Maximize2, Minimize2, Receipt, Printer,
   Gauge, AlertTriangle, Check, X, Compass, Layers, History, Zap, TrendingUp, Workflow, Calendar,
   Network, Database, Cpu, GitBranch, Stethoscope, User, UploadCloud, Play, Mail, Mic, MicOff, Sun, Moon, IndianRupee,
-  Star, Copy, Edit, Info, Share2
+  Star, Copy, Edit, Info, Share2, Settings
 } from "lucide-react";
-import CIEWorkspace from "./CIEWorkspace";
+const CIEWorkspace = dynamic(() => import("./CIEWorkspace"), {
+  ssr: false,
+  loading: () => <div className="p-8 text-center text-slate-400">Loading Clinical Intelligence Engine...</div>
+});
 import { REPERTORY_CHAPTERS, REMEDIES_METADATA, Rubric, BOERICKE_CHAPTERS, SEARCH_SYNONYMS, getRepertoryData, JETHWANI_SECTIONS, JETHWANI_REPERTORY_DATA as JETHWANI_REPERTORY_DATA_ORIG, JETHWANI_REMEDY_CONFIRMATIONS, calculateClinicalIndices, type JethwaniRubric, type JethwaniSymptomConfig, type ClinicalIndices, setRepertoryData } from "@/lib/repertoryData";
 import { MATERIA_MEDICA_BOOKS, MateriaMedicaBook } from "@/lib/materiaMedicaData";
 import { ORGANON_EDITIONS, ORGANON_KNOWLEDGE_TREE, ORGANON_APHORISMS, ORGANON_CASES, ACTIVE_RECALL_EXERCISES, TIMELINE_STEPS } from "@/lib/organonData";
@@ -27,9 +31,13 @@ import { GENOME_REMEDY_DB } from "@/lib/remedyGenomeSchema";
 import { calculateSM2, updateStudentMastery } from "@/lib/adaptiveLearning";
 import { getClinicalCoverageScore, CURATED_DIAGNOSES, ORGAN_SYSTEMS, type DiagnosisProfile, getAll15000Diagnoses, SEARCH_SYNONYMS as DIAGNOSIS_SEARCH_SYNONYMS, getIcdDiagnosis } from "@/lib/clinicalDiagnosisLibrary";
 import { VIRTUAL_PATIENTS, evaluateCaseSubmission } from "@/lib/caseSimulationLab";
-import { calculateClinicalDecisionSupport } from "@/lib/clinicalDecisionSupport";
+import { calculateClinicalDecisionSupport, checkPrescriptionSafety } from "@/lib/clinicalDecisionSupport";
 import Portal from "@/components/Portal";
-import ManageDoctorsPanel from "@/components/ManageDoctorsPanel";
+
+const ManageDoctorsPanel = dynamic(() => import("@/components/ManageDoctorsPanel"), {
+  ssr: false,
+  loading: () => <div className="p-8 text-center text-slate-400">Loading Clinician Registry...</div>
+});
 
 
 const GLOBAL_JETHWANI_DATA: JethwaniRubric[] = [...JETHWANI_REPERTORY_DATA_ORIG];
@@ -135,6 +143,7 @@ interface Patient {
   durationText: string;
   finalPrice: number;
   folderUrl: string;
+  folderId?: string;
   sheetUrl: string;
   assignedDoctor: string;
   status: string;
@@ -779,6 +788,93 @@ export default function AdminDashboard() {
   const [globalReadingWidth, setGlobalReadingWidth] = useState<"standard" | "wide" | "borderless">("standard");
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
+  // Patient Portal Access & Settings States
+  const [isPortalModalOpen, setIsPortalModalOpen] = useState(false);
+  const [portalSelectedPatient, setPortalSelectedPatient] = useState<any>(null);
+  const [portalInstructions, setPortalInstructions] = useState("");
+  const [portalShowInstructions, setPortalShowInstructions] = useState(true);
+  const [portalInternalPrescription, setPortalInternalPrescription] = useState("");
+  const [portalDoctorNotes, setPortalDoctorNotes] = useState("");
+  const [portalShowPrescription, setPortalShowPrescription] = useState(false);
+  const [portalOwnerUid, setPortalOwnerUid] = useState("");
+  const [unlinkedPatientUsers, setUnlinkedPatientUsers] = useState<{ uid: string; email: string; name: string }[]>([]);
+  const [isPortalSaving, setIsPortalSaving] = useState(false);
+
+  const fetchUnlinkedPatientUsers = async () => {
+    try {
+      const q = query(collection(db, "users"), where("role", "==", "patient"));
+      const snapshot = await getDocs(q);
+      const list: any[] = [];
+      snapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        list.push({
+          uid: docSnap.id,
+          email: data.email || "",
+          name: data.name || ""
+        });
+      });
+      setUnlinkedPatientUsers(list);
+    } catch (err) {
+      console.error("Failed to fetch patient users roster:", err);
+    }
+  };
+
+  const openPortalSettings = async (patient: any) => {
+    setPortalSelectedPatient(patient);
+    setPortalInstructions(patient.patientInstructions || "");
+    setPortalShowInstructions(patient.showPatientInstructions !== false);
+    setPortalInternalPrescription(patient.internalPrescription || "");
+    setPortalDoctorNotes(patient.doctorClinicalNotes || "");
+    setPortalShowPrescription(!!patient.showPrescriptionToPatient);
+    setPortalOwnerUid(patient.ownerUid || "");
+    setIsPortalModalOpen(true);
+    await fetchUnlinkedPatientUsers();
+  };
+
+  const handleSavePortalSettings = async () => {
+    if (!portalSelectedPatient) return;
+    setIsPortalSaving(true);
+    
+    const patientId = portalSelectedPatient.id;
+    const patientRef = doc(db, "patients", patientId);
+
+    const updatedData = {
+      patientInstructions: portalInstructions,
+      showPatientInstructions: portalShowInstructions,
+      internalPrescription: portalInternalPrescription,
+      doctorClinicalNotes: portalDoctorNotes,
+      showPrescriptionToPatient: portalShowPrescription,
+      ownerUid: portalOwnerUid
+    };
+
+    try {
+      await updateDoc(patientRef, updatedData);
+
+      if (portalOwnerUid) {
+        const userRef = doc(db, "users", portalOwnerUid);
+        await updateDoc(userRef, { patientId });
+      }
+
+      setPatients(prev => prev.map(p => {
+        if (p.id === patientId) {
+          return {
+            ...p,
+            ...updatedData
+          };
+        }
+        return p;
+      }));
+
+      alert("Patient Portal settings successfully updated!");
+      setIsPortalModalOpen(false);
+    } catch (err: any) {
+      console.error("Failed to update Patient Portal settings:", err);
+      alert("Failed to save portal settings: " + err.message);
+    } finally {
+      setIsPortalSaving(false);
+    }
+  };
+
   // Clinician roster state
   const [clinicians, setClinicians] = useState<Clinician[]>([
     { uid: "admin-bypass-id", name: "Dr. Narayan Jethwani", role: "admin", email: "narayan.jethwani@homeo.healthcare" },
@@ -1395,6 +1491,10 @@ export default function AdminDashboard() {
   };
 
   const [searchTerm, setSearchTerm] = useState("");
+  const [timelinePatient, setTimelinePatient] = useState<Patient | null>(null);
+  const [uploadingAttachment, setUploadingAttachment] = useState(false);
+  const [timelinePrescriptionText, setTimelinePrescriptionText] = useState("");
+  const [timelinePrescriptionPotency, setTimelinePrescriptionPotency] = useState("30C");
   const [chatsLoaded, setChatsLoaded] = useState(false);
   
   // Repertory State
@@ -5056,25 +5156,144 @@ Homeo Healthcare`;
         return false;
       }
     }
-    // 2. Search match
+    // 2. Smart Fuzzy Search Match
     if (!searchTerm) return true;
     const term = searchTerm.toLowerCase();
-    return (
+    
+    const matchesBasic = (
       p.name.toLowerCase().includes(term) ||
       p.id.toLowerCase().includes(term) ||
       p.complaint.toLowerCase().includes(term) ||
-      p.location.toLowerCase().includes(term)
+      p.location.toLowerCase().includes(term) ||
+      (p.email && p.email.toLowerCase().includes(term)) ||
+      (p.phone && p.phone.toLowerCase().includes(term)) ||
+      (p.careLevel && p.careLevel.toLowerCase().includes(term))
     );
+
+    let ageMatches = false;
+    const ageNum = parseInt(p.age);
+    if (!isNaN(ageNum)) {
+      if (term === "child" && ageNum < 18) ageMatches = true;
+      if ((term === "senior" || term === "elderly") && ageNum >= 60) ageMatches = true;
+      if (term === "adult" && ageNum >= 18 && ageNum < 60) ageMatches = true;
+      if (p.age === term) ageMatches = true;
+    }
+
+    return matchesBasic || ageMatches;
   });
 
   // Filter pending intakes for queue display
   const pendingIntakes = patients.filter((p) => p.status === "pending" || p.status === "pending_plan");
+
+  // Filter patients due for checkups/follow-ups (no activity in 14 days or lastSeen > 30 days)
+  const dueFollowUpPatients = useMemo(() => {
+    return patients.filter((p) => {
+      if (p.status === "pending" || p.status === "pending_plan") return false;
+      const registeredDate = new Date(p.createdAt);
+      const daysSinceRegistration = (Date.now() - registeredDate.getTime()) / (1000 * 60 * 60 * 24);
+      
+      if (p.lastSeen) {
+        const lastSeenDate = new Date(p.lastSeen);
+        const daysSinceLastSeen = (Date.now() - lastSeenDate.getTime()) / (1000 * 60 * 60 * 24);
+        return daysSinceLastSeen >= 30;
+      }
+      
+      return daysSinceRegistration >= 14;
+    });
+  }, [patients]);
 
   // Handle Log Out
   const handleLogout = () => {
     localStorage.removeItem("admin_session");
     void fetch("/api/admin/session", { method: "DELETE" });
     router.push("/admin/login");
+  };
+
+  const handleAttachmentUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!timelinePatient || !e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0];
+    
+    const folderId = timelinePatient.folderId || timelinePatient.id;
+    if (!folderId) {
+      alert("This patient record does not have a Google Drive folder set up. Cannot upload attachment.");
+      return;
+    }
+
+    setUploadingAttachment(true);
+    try {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = async () => {
+        const base64Str = (reader.result as string).split(",")[1];
+        
+        const response = await fetch("/api/patient/attachment", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            patientId: timelinePatient.id,
+            folderId: folderId,
+            fileName: file.name,
+            fileMimeType: file.type || "application/octet-stream",
+            fileData: base64Str
+          })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          alert(`Successfully uploaded "${file.name}" to Google Drive and synced to clinical ledger!`);
+          
+          const updatedPatient = {
+            ...timelinePatient,
+            attachments: [...(timelinePatient.attachments || []), result.attachment]
+          };
+          setTimelinePatient(updatedPatient);
+          setPatients(prev => prev.map(p => p.id === timelinePatient.id ? updatedPatient : p));
+        } else {
+          alert(`Upload failed: ${result.message}`);
+        }
+      };
+    } catch (err: any) {
+      console.error(err);
+      alert(`Error uploading file: ${err.message || err}`);
+    } finally {
+      setUploadingAttachment(false);
+    }
+  };
+
+  const handleAddTimelinePrescription = async () => {
+    if (!timelinePatient || !timelinePrescriptionText.trim()) return;
+
+    try {
+      const dbRef = doc(db, "patients", timelinePatient.id);
+      const newPrescription = {
+        remedy: timelinePrescriptionText,
+        potency: timelinePrescriptionPotency,
+        prescribedAt: new Date().toISOString()
+      };
+
+      const currentPrescriptions = (timelinePatient as any).prescriptions || [];
+      const updatedPrescriptions = [...currentPrescriptions, newPrescription];
+
+      await updateDoc(dbRef, {
+        prescriptions: updatedPrescriptions,
+        lastSeen: new Date().toISOString()
+      });
+
+      const updatedPatient = {
+        ...timelinePatient,
+        prescriptions: updatedPrescriptions,
+        lastSeen: new Date().toISOString()
+      };
+      setTimelinePatient(updatedPatient);
+      setPatients(prev => prev.map(p => p.id === timelinePatient.id ? updatedPatient : p));
+      setTimelinePrescriptionText("");
+      alert("Prescription added to clinical record and synced!");
+    } catch (err: any) {
+      console.error("Failed to add prescription:", err);
+      alert(`Error saving prescription: ${err.message || err}`);
+    }
   };
 
   // Helper to handle mouse hover subtabs navigation
@@ -13133,6 +13352,35 @@ ${err.message || err}`);
           {activeTab === "patients" && (
             <div className="space-y-6">
               
+              {/* Automated Follow-up Reminders Banner */}
+              {dueFollowUpPatients.length > 0 && (
+                <div className="bg-amber-500/10 border border-amber-500/20 rounded-[24px] p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-amber-500/20 rounded-xl text-amber-600">
+                      <AlertTriangle className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-[#1A2421]">Automated Follow-up Reminders ({dueFollowUpPatients.length})</h4>
+                      <p className="text-[10px] text-slate-500">The following patients are due for checkups (no consultation or update in 14+ days):</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {dueFollowUpPatients.slice(0, 4).map((p) => (
+                      <button
+                        key={p.id}
+                        onClick={() => setSearchTerm(p.name)}
+                        className="px-2.5 py-1 bg-white hover:bg-amber-50 border border-amber-200 text-amber-800 rounded-lg text-[9px] font-bold transition-all cursor-pointer"
+                      >
+                        {p.name}
+                      </button>
+                    ))}
+                    {dueFollowUpPatients.length > 4 && (
+                      <span className="text-[9px] text-slate-400 self-center font-bold">+{dueFollowUpPatients.length - 4} more</span>
+                    )}
+                  </div>
+                </div>
+              )}
+              
               {/* Search & Action Buttons Header */}
               <div id="patients-directory" className="flex flex-col md:flex-row items-center justify-between gap-4">
                 <div className="relative w-full md:max-w-md">
@@ -13146,7 +13394,7 @@ ${err.message || err}`);
                   <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
                 </div>
 
-                <div className="flex items-center gap-3 w-full md:w-auto flex-wrap sm:flex-nowrap">
+                <div className="flex items-center gap-3 w-full md:w-auto flex-wrap">
                   <button
                     onClick={() => {
                       setCaseCreationSuccess(false);
@@ -13318,7 +13566,7 @@ ${err.message || err}`);
                       </div>
 
                       {/* Google Drive Services Actions */}
-                      <div className="flex items-center gap-3 w-full lg:w-auto flex-wrap sm:flex-nowrap">
+                      <div className="flex items-center gap-3 w-full lg:w-auto flex-wrap">
                         {/* Repertory Quick Action */}
                         <button
                           onClick={() => {
@@ -13330,6 +13578,15 @@ ${err.message || err}`);
                         >
                           <Brain className="w-4 h-4" />
                           <span>Repertorise Case</span>
+                        </button>
+
+                        {/* Clinical Timeline Button */}
+                        <button
+                          onClick={() => setTimelinePatient(patient)}
+                          className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4.5 py-3 rounded-full bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold uppercase tracking-wider transition-all shadow-sm cursor-pointer"
+                        >
+                          <Activity className="w-4 h-4 text-emerald-400" />
+                          <span>Timeline & Files</span>
                         </button>
 
                         {patient.status === "pending_plan" ? (
@@ -13379,6 +13636,16 @@ ${err.message || err}`);
                         </button>
                           </>
                         )}
+
+                        {/* Patient Portal Access Settings Button */}
+                        <button
+                          onClick={() => openPortalSettings(patient)}
+                          className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-3 rounded-full border border-purple-200 hover:border-purple-600 text-purple-600 hover:bg-purple-50/5 text-xs font-bold uppercase tracking-wider transition-all bg-white shadow-sm cursor-pointer"
+                          title="Patient Portal Access & Prescription Settings"
+                        >
+                          <Settings className="w-4 h-4 text-purple-550" />
+                          <span>Portal</span>
+                        </button>
 
                         {/* Delete Patient Action */}
                         <button
@@ -26218,6 +26485,271 @@ Exported on: ${new Date().toLocaleDateString()}
           {/* 1. New Case Taking Modal */}
         <Portal>
         <AnimatePresence>
+          {/* Patient Longitudinal Timeline & Google Drive Attachments Modal */}
+          {timelinePatient && (
+            <div className="fixed inset-0 h-full w-full flex items-center justify-center z-50 pointer-events-none p-4 md:p-6 select-none font-sans">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setTimelinePatient(null)}
+                className="absolute inset-0 bg-slate-950/40 backdrop-blur-md pointer-events-auto"
+              />
+
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[28px] shadow-2xl w-full max-w-4xl max-h-[85vh] overflow-hidden flex flex-col pointer-events-auto relative z-10"
+              >
+                {/* Modal Header */}
+                <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-start">
+                  <div>
+                    <span className="text-[9px] font-mono text-emerald-500 font-extrabold uppercase tracking-wider block">Clinical File Ledger</span>
+                    <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                      <Users className="w-5 h-5 text-indigo-500" /> {timelinePatient.name} 
+                      <span className="text-xs font-mono text-slate-400 font-normal">({timelinePatient.id})</span>
+                    </h3>
+                  </div>
+                  <button
+                    onClick={() => setTimelinePatient(null)}
+                    className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-all border-none cursor-pointer text-slate-500"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {/* Modal Content */}
+                <div className="p-6 overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Left Column: Demographics & Prescriptions */}
+                  <div className="space-y-6">
+                    {/* Demographics Card */}
+                    <div className="bg-slate-50 dark:bg-slate-950 p-5 rounded-2xl border border-slate-150 dark:border-slate-850 space-y-3">
+                      <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400">Demographic Profile</h4>
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div>
+                          <span className="text-slate-400 block text-[9px] font-mono">AGE / GENDER</span>
+                          <strong className="text-slate-700 dark:text-slate-350">{timelinePatient.age} Y/O · {timelinePatient.gender}</strong>
+                        </div>
+                        <div>
+                          <span className="text-slate-400 block text-[9px] font-mono">LOCATION</span>
+                          <strong className="text-slate-700 dark:text-slate-350">{timelinePatient.location || "Not Provided"}</strong>
+                        </div>
+                        <div>
+                          <span className="text-slate-400 block text-[9px] font-mono">EMAIL</span>
+                          <strong className="text-slate-700 dark:text-slate-350 truncate block">{timelinePatient.email || "No Email"}</strong>
+                        </div>
+                        <div>
+                          <span className="text-slate-400 block text-[9px] font-mono">PHONE</span>
+                          <strong className="text-slate-700 dark:text-slate-350">{timelinePatient.phone || "No Phone"}</strong>
+                        </div>
+                      </div>
+                      <div className="border-t border-slate-200 dark:border-slate-850 pt-2.5">
+                        <span className="text-slate-400 block text-[9px] font-mono">CARE PLAN LEVEL</span>
+                        <strong className="text-emerald-600 dark:text-emerald-400 text-xs">{timelinePatient.careLevel}</strong>
+                      </div>
+                    </div>
+
+                    {/* Active Prescriber Form */}
+                    <div className="bg-slate-50 dark:bg-slate-950 p-5 rounded-2xl border border-slate-150 dark:border-slate-850 space-y-3">
+                      <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400">Prescribe Constitutional Remedy</h4>
+                      
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          placeholder="Search / enter remedy name..."
+                          value={timelinePrescriptionText}
+                          onChange={(e) => setTimelinePrescriptionText(e.target.value)}
+                          className="flex-grow px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-xl text-xs outline-none focus:border-emerald-500 bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
+                        />
+                        <select
+                          value={timelinePrescriptionPotency}
+                          onChange={(e) => setTimelinePrescriptionPotency(e.target.value)}
+                          className="px-2.5 py-2 border border-slate-200 dark:border-slate-800 rounded-xl text-xs outline-none focus:border-emerald-500 bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
+                        >
+                          <option value="6C">6C</option>
+                          <option value="30C">30C</option>
+                          <option value="200C">200C</option>
+                          <option value="1M">1M</option>
+                          <option value="10M">10M</option>
+                          <option value="LM1">LM1</option>
+                        </select>
+                      </div>
+
+                      {/* Safety warnings check block */}
+                      {(() => {
+                        if (!timelinePrescriptionText.trim()) return null;
+                        
+                        const activeRemediesList = ((timelinePatient as any).prescriptions || []).map((p: any) => p.remedy);
+                        const conditions = [timelinePatient.complaint];
+                        
+                        const safetyCheck = checkPrescriptionSafety(
+                          timelinePrescriptionText,
+                          conditions,
+                          activeRemediesList
+                        );
+
+                        if (safetyCheck.warnings.length === 0) return null;
+
+                        return (
+                          <div className="bg-rose-500/10 border border-rose-500/20 text-rose-600 rounded-xl p-3 text-[10px] space-y-1">
+                            <span className="font-bold flex items-center gap-1">
+                              <ShieldAlert className="w-3.5 h-3.5" /> Safety Contraindication Warning
+                            </span>
+                            <ul className="list-disc pl-3.5 space-y-0.5">
+                              {safetyCheck.warnings.map((w, idx) => (
+                                <li key={idx} className="leading-tight">{w}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        );
+                      })()}
+
+                      <button
+                        onClick={handleAddTimelinePrescription}
+                        className="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all border-none cursor-pointer flex items-center justify-center gap-1.5"
+                      >
+                        <Plus className="w-4 h-4" />
+                        <span>Log & Sign Prescription</span>
+                      </button>
+                    </div>
+
+                    {/* Prescription History Ledger */}
+                    <div className="space-y-2">
+                      <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400">Prescription Ledger</h4>
+                      <div className="space-y-2 max-h-[200px] overflow-y-auto pr-1">
+                        {!(timelinePatient as any).prescriptions || (timelinePatient as any).prescriptions.length === 0 ? (
+                          <div className="text-center py-4 text-slate-400 text-xs">No active prescriptions logged.</div>
+                        ) : (
+                          (timelinePatient as any).prescriptions.map((pres: any, idx: number) => (
+                            <div key={idx} className="p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-xl flex justify-between items-center text-xs">
+                              <div>
+                                <span className="font-bold text-slate-800 dark:text-white">{pres.remedy} {pres.potency}</span>
+                                <div className="text-[10px] text-slate-400 mt-0.5">Dose: Single dose dry, status active</div>
+                              </div>
+                              <span className="text-[9px] font-mono text-slate-400">{new Date(pres.prescribedAt).toLocaleDateString()}</span>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column: Google Drive Attachment Uploader & Longitudinal Timeline */}
+                  <div className="space-y-6">
+                    {/* Google Drive Upload Module */}
+                    <div className="bg-slate-50 dark:bg-slate-950 p-5 rounded-2xl border border-slate-150 dark:border-slate-850 space-y-3">
+                      <div className="flex justify-between items-center">
+                        <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400">Google Drive Attachments</h4>
+                        <span className="text-[9px] font-mono text-slate-400">Syncs directly to folder</span>
+                      </div>
+                      
+                      <div className="border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl p-4 text-center hover:border-emerald-500 transition-all relative">
+                        <input
+                          type="file"
+                          id="timeline-file-upload"
+                          onChange={handleAttachmentUpload}
+                          disabled={uploadingAttachment}
+                          className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                        />
+                        <Upload className={`w-8 h-8 mx-auto mb-1.5 ${uploadingAttachment ? "animate-bounce text-emerald-500" : "text-slate-400"}`} />
+                        <span className="text-xs font-bold text-slate-700 dark:text-slate-300 block">
+                          {uploadingAttachment ? "Uploading to Google Drive..." : "Select File or Drag Here"}
+                        </span>
+                        <span className="text-[10px] text-slate-400 block mt-0.5">PDF, PNG, JPG up to 10MB</span>
+                      </div>
+
+                      {/* Uploaded Files Links */}
+                      <div className="space-y-1.5 max-h-[140px] overflow-y-auto pr-1">
+                        {!timelinePatient.attachments || timelinePatient.attachments.length === 0 ? (
+                          <div className="text-center py-2 text-slate-400 text-[10.5px]">No attachments synced to Drive folder.</div>
+                        ) : (
+                          timelinePatient.attachments.map((att: any, idx: number) => (
+                            <a
+                              key={att.id || idx}
+                              href={att.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-2.5 bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800 hover:border-emerald-500 rounded-xl flex items-center justify-between text-xs transition-all cursor-pointer text-slate-800 dark:text-slate-300"
+                            >
+                              <span className="font-bold truncate max-w-[200px]">{att.name}</span>
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-[9px] font-mono text-slate-400">{att.uploadedAt ? new Date(att.uploadedAt).toLocaleDateString() : ""}</span>
+                                <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
+                              </div>
+                            </a>
+                          ))
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Longitudinal Case Timeline */}
+                    <div className="space-y-2">
+                      <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400">Longitudinal Timeline</h4>
+                      <div className="space-y-4 max-h-[300px] overflow-y-auto pl-2 pr-1 border-l-2 border-slate-100 dark:border-slate-800 py-1">
+                        
+                        {/* Registration Event */}
+                        <div className="relative pl-4">
+                          <div className="absolute -left-[21px] top-0 w-2 h-2 rounded-full bg-indigo-500 border border-white dark:border-slate-900 shadow"></div>
+                          <span className="text-[10px] font-mono text-slate-400 block">{new Date(timelinePatient.createdAt).toLocaleDateString()}</span>
+                          <span className="text-xs font-bold text-slate-800 dark:text-white">Registered Case Intake</span>
+                          <p className="text-[10.5px] text-slate-500 mt-0.5">Initial complaint: "{timelinePatient.complaint}"</p>
+                        </div>
+
+                        {/* Prescription & Attachment chronological list */}
+                        {(() => {
+                          const events: Array<{ date: string; type: "prescription" | "attachment"; title: string; desc: string }> = [];
+                          
+                          if ((timelinePatient as any).prescriptions) {
+                            (timelinePatient as any).prescriptions.forEach((pres: any) => {
+                              events.push({
+                                date: pres.prescribedAt,
+                                type: "prescription",
+                                title: `Prescribed ${pres.remedy} ${pres.potency}`,
+                                desc: "Constitutional anti-miasmatic remedy administered."
+                              });
+                            });
+                          }
+
+                          if (timelinePatient.attachments) {
+                            timelinePatient.attachments.forEach((att: any) => {
+                              events.push({
+                                date: att.uploadedAt || timelinePatient.createdAt,
+                                type: "attachment",
+                                title: `Uploaded Attachment: ${att.name}`,
+                                desc: "Clinical report saved directly to Google Drive."
+                              });
+                            });
+                          }
+
+                          events.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+                          if (events.length === 0) {
+                            return (
+                              <div className="text-left py-2 text-slate-450 text-xs italic pl-4">No follow-ups or ledger events recorded yet.</div>
+                            );
+                          }
+
+                          return events.map((ev, idx) => (
+                            <div key={idx} className="relative pl-4">
+                              <div className={`absolute -left-[21px] top-0 w-2 h-2 rounded-full border border-white dark:border-slate-900 shadow ${
+                                ev.type === "prescription" ? "bg-emerald-500" : "bg-teal-500"
+                              }`}></div>
+                              <span className="text-[10px] font-mono text-slate-400 block">{new Date(ev.date).toLocaleDateString()}</span>
+                              <span className="text-xs font-bold text-slate-800 dark:text-white">{ev.title}</span>
+                              <p className="text-[10.5px] text-slate-500 mt-0.5">{ev.desc}</p>
+                            </div>
+                          ));
+                        })()}
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          )}
+
           {isNewCaseModalOpen && (
             <div className="fixed inset-0 h-full w-full flex items-center justify-center z-50 pointer-events-none p-4 md:p-6">
               {/* Backdrop */}
@@ -26692,6 +27224,179 @@ Exported on: ${new Date().toLocaleDateString()}
                     </div>
                   </form>
                 )}
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+        </Portal>
+
+        {/* 1b. Patient Portal Settings Modal */}
+        <Portal>
+        <AnimatePresence>
+          {isPortalModalOpen && portalSelectedPatient && (
+            <div className="fixed inset-0 h-full w-full flex items-center justify-center z-50 pointer-events-none p-4 md:p-6">
+              {/* Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => {
+                  if (!isPortalSaving) setIsPortalModalOpen(false);
+                }}
+                className="absolute inset-0 bg-slate-900/20 backdrop-blur-md pointer-events-auto"
+              />
+
+              {/* Modal Container */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                transition={{ type: "spring", damping: 25, stiffness: 220 }}
+                data-lenis-prevent
+                className="relative max-w-2xl w-full p-6 md:p-8 bg-[#FAF9F6]/95 dark:bg-slate-900/95 border border-white/60 dark:border-slate-850 shadow-2xl rounded-[36px] flex flex-col pointer-events-auto max-h-[85vh] overflow-y-auto"
+              >
+                {/* Modal Header */}
+                <div className="flex items-center justify-between border-b border-slate-900/5 pb-4 mb-6 flex-shrink-0">
+                  <div className="flex items-center gap-2">
+                    <Settings className="w-5 h-5 text-purple-650 animate-pulse" />
+                    <div>
+                      <h3 className="text-lg font-bold text-[#1A2421] dark:text-slate-100">Patient Portal Settings</h3>
+                      <span className="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">Access Control, Linkage, and Prescription Visibility</span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setIsPortalModalOpen(false)}
+                    className="w-8 h-8 rounded-full border border-slate-200 hover:border-slate-800 flex items-center justify-center transition-all bg-white dark:bg-slate-950 text-slate-650 cursor-pointer"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="space-y-6 text-xs font-semibold text-slate-700 dark:text-slate-350">
+                  {/* Account Linkage Section */}
+                  <div className="bg-white dark:bg-slate-900/40 p-4 rounded-2xl border border-slate-200/50 dark:border-slate-850 space-y-3.5">
+                    <span className="block text-[10px] text-purple-600 font-extrabold uppercase tracking-wider">1. Secure Patient Portal Linkage</span>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block mb-1.5 text-slate-600 dark:text-slate-400">Current Linked Owner UID</label>
+                        <input
+                          type="text"
+                          value={portalOwnerUid}
+                          onChange={(e) => setPortalOwnerUid(e.target.value)}
+                          placeholder="No user linked yet"
+                          className="w-full p-2.5 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-900 text-xs font-mono"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block mb-1.5 text-slate-650 dark:text-slate-405">Quick Link Registered User</label>
+                        <select
+                          value={portalOwnerUid}
+                          onChange={(e) => setPortalOwnerUid(e.target.value)}
+                          className="w-full p-2.5 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 text-xs cursor-pointer text-slate-800 dark:text-slate-100"
+                        >
+                          <option value="">-- Choose Patient User to Link --</option>
+                          {unlinkedPatientUsers.map((u) => (
+                            <option key={u.uid} value={u.uid}>
+                              {u.name || "Unknown"} ({u.email || u.uid})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                    <p className="text-[10px] text-slate-400 font-medium leading-relaxed">
+                      Linking maps the Firebase authenticated user UID to this specific clinical record. This is required for the patient to view their file securely.
+                    </p>
+                  </div>
+
+                  {/* Prescription Visibility Controls */}
+                  <div className="bg-[#FAF9F6] dark:bg-slate-900/40 p-4 rounded-2xl border border-slate-250/50 dark:border-slate-850 space-y-4">
+                    <span className="block text-[10px] text-teal-650 font-extrabold uppercase tracking-wider">2. Patient Visibility & Confidentiality</span>
+
+                    <div className="flex flex-col md:flex-row gap-6">
+                      <label className="flex items-center gap-2.5 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={portalShowInstructions}
+                          onChange={(e) => setPortalShowInstructions(e.target.checked)}
+                          className="w-4 h-4 rounded text-mint focus:ring-mint cursor-pointer"
+                        />
+                        <div className="space-y-0.5">
+                          <span className="block text-slate-800 dark:text-slate-200 text-xs font-bold">Show Patient Instructions</span>
+                          <span className="text-[10px] text-slate-450 block font-medium">Expose dosage handouts, diet restrictions, etc.</span>
+                        </div>
+                      </label>
+
+                      <label className="flex items-center gap-2.5 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={portalShowPrescription}
+                          onChange={(e) => setPortalShowPrescription(e.target.checked)}
+                          className="w-4 h-4 rounded text-mint focus:ring-mint cursor-pointer"
+                        />
+                        <div className="space-y-0.5">
+                          <span className="block text-slate-800 dark:text-slate-200 text-xs font-bold text-purple-650">Show Full Prescription Detail</span>
+                          <span className="text-[10px] text-slate-450 block font-medium text-rose-500 font-bold">Warning: Exposes remedy names & potencies!</span>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Patient Instructions Textarea */}
+                  <div className="space-y-1.5">
+                    <label className="block text-slate-705 dark:text-slate-350">Doctor-Approved Instructions Handout</label>
+                    <textarea
+                      value={portalInstructions}
+                      onChange={(e) => setPortalInstructions(e.target.value)}
+                      placeholder="e.g. Remedy 1: Take 4 globules twice daily before meals. Avoid raw garlic, onions, and perfume inhalations..."
+                      rows={3}
+                      className="w-full p-3 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 outline-none text-xs font-sans leading-relaxed text-slate-800 dark:text-slate-100"
+                    />
+                  </div>
+
+                  {/* Internal Prescription Textarea */}
+                  <div className="space-y-1.5">
+                    <label className="block text-slate-705 dark:text-slate-350">Confidential Remedy Formula & Repetitions (Hidden from Patient by default)</label>
+                    <textarea
+                      value={portalInternalPrescription}
+                      onChange={(e) => setPortalInternalPrescription(e.target.value)}
+                      placeholder="e.g. Nux Vomica 30C (3 doses/daily), followed by Sac Lac 30C (Placebo) morning & evening."
+                      rows={2}
+                      className="w-full p-3 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 outline-none text-xs font-mono leading-relaxed text-slate-800 dark:text-slate-100"
+                    />
+                  </div>
+
+                  {/* Doctor Internal Notes Textarea */}
+                  <div className="space-y-1.5">
+                    <label className="block text-slate-705 dark:text-slate-350">Internal Clinician Notes & Diagnostics (Always Private)</label>
+                    <textarea
+                      value={portalDoctorNotes}
+                      onChange={(e) => setPortalDoctorNotes(e.target.value)}
+                      placeholder="e.g. Miasmatic assessment: Psora-syphilitic vector. Repertory coverage rules out Lycopodium due to warm thermal state."
+                      rows={2}
+                      className="w-full p-3 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 outline-none text-xs font-sans leading-relaxed text-slate-800 dark:text-slate-100"
+                    />
+                  </div>
+                </div>
+
+                {/* Save Footer */}
+                <div className="flex items-center justify-end gap-3 border-t border-slate-900/5 pt-4 mt-6 flex-shrink-0">
+                  <button
+                    onClick={() => setIsPortalModalOpen(false)}
+                    className="px-5 py-2 rounded-full border border-slate-200 hover:border-slate-800 text-xs font-bold uppercase transition-all bg-white text-slate-800 cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSavePortalSettings}
+                    disabled={isPortalSaving}
+                    className="px-6 py-2.5 rounded-full bg-mint hover:bg-mint-dark text-white text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer shadow-sm flex items-center gap-1.5"
+                  >
+                    {isPortalSaving ? "Saving..." : "Save Portal Settings"}
+                  </button>
+                </div>
+
               </motion.div>
             </div>
           )}

@@ -14,708 +14,18 @@ import {
 import EcgGraph from "@/components/EcgGraph";
 import { CONSTITUTIONAL_QUESTIONS, analyzeConstitution } from "@/app/health-intelligence/constitutionalEngine";
 import { getIcdDiagnosis, CURATED_DIAGNOSES, type DiagnosisProfile } from "@/lib/clinicalDiagnosisLibrary";
+import { compareRemedyGenomes, analyzeHeringsLaw, calculateClinicalDecisionSupport } from "@/lib/clinicalDecisionSupport";
+import { PATIENT_LONGITUDINAL_DATA } from "@/lib/patientLongitudinalData";
+import { NODE_PIVOT_MAP, NODE_CLUSTERS } from "@/lib/nodePivotMap";
 
 interface CIEWorkspaceProps {
   patients: any[];
   selectedPatientId: string;
   setSelectedPatientId: (id: string) => void;
   theme: "light" | "dark";
-  activeTabOverride?: "cockpit" | "intake" | "miasms" | "reports";
+  activeTabOverride?: "cockpit" | "intake" | "miasms" | "reports" | "remedy-compare";
 }
 
-// Mapped symptoms, miasms, labs and remedies longitudinal database
-const PATIENT_LONGITUDINAL_DATA: Record<string, {
-  id: number;
-  name: string;
-  constitution: string;
-  miasm: string;
-  thermal: string;
-  cravings: string;
-  aversions: string;
-  vitalityIndex: number;
-  diseaseBurdenIndex: number;
-  history: Array<{ date: string; type: string; event: string; notes: string }>;
-  labs: {
-    timeline: string[];
-    [key: string]: any[];
-  };
-  symptoms: Array<{ name: string; severity: string; modalities: string; organAffinity: string }>;
-  miasmaticIndex: { psora: number; sycosis: number; syphilis: number };
-  remedyMatches: Array<{ name: string; score: number; status: string; keyEvidence: string }>;
-  predictiveRisks: Array<{ id: string; name: string; level: string; val: number; color: string; driver: string; modifiable: string }>;
-  ostmSystems: Array<{ name: string; status: string; color: string }>;
-  cohortPercentiles: { ageCohort: number; remedyCohort: number; regionalPercentile: number };
-}> = {
-  aarav: {
-    id: 1,
-    name: "Aarav Sharma",
-    constitution: "Phosphorus",
-    miasm: "Sycosis (Dominant) & Syphilitic (Sub-acute)",
-    thermal: "Chilly",
-    cravings: "Cold water, spicy food, salt",
-    aversions: "Sweets, warm food",
-    vitalityIndex: 68,
-    diseaseBurdenIndex: 58,
-    history: [
-      { date: "2024-03-15", type: "Diagnosis", event: "Type 2 Diabetes Mellitus diagnosed", notes: "HbA1c 7.8%. Placed on Metformin 500mg BD." },
-      { date: "2024-06-20", type: "Lab", event: "Creatinine: 1.4 mg/dL, eGFR: 58 mL/min (Stage 3a CKD)", notes: "Urinary microalbuminuria detected (120 mg/g)." },
-      { date: "2024-09-10", type: "Remedy", event: "Lycopodium Clavatum 200C prescribed", notes: "Indicated by flatulence, 4-8 PM worsening, warm drinks craving." },
-      { date: "2024-12-05", type: "Clinical", event: "Fatigue worsening, bilateral ankle edema", notes: "eGFR dropped to 52 mL/min. Metformin dose reduced." },
-      { date: "2025-03-01", type: "Remedy", event: "Apis Mellifica 30C + Serum Anguillae 6X", notes: "Bilateral renal support, puffiness under eyes, thirstless." },
-      { date: "2025-06-10", type: "Lab", event: "Creatinine: 1.6 mg/dL, eGFR: 49 mL/min (Stage 3b CKD)", notes: "HbA1c stabilized at 6.9%. Edema reduced." }
-    ],
-    labs: {
-      timeline: ["2024-03-15", "2024-06-20", "2024-09-10", "2024-12-05", "2025-03-01", "2025-06-10"],
-      creatinine: [1.1, 1.4, 1.45, 1.55, 1.5, 1.6],
-      egfr: [78, 58, 55, 51, 53, 49],
-      hba1c: [7.8, 7.5, 7.2, 7.4, 7.0, 6.9],
-      microalbumin: [45, 120, 140, 190, 160, 150]
-    },
-    symptoms: [
-      { name: "Generalized fatigue", severity: "Moderate", modalities: "Worse in morning", organAffinity: "Renal/Nervous" },
-      { name: "Bilateral ankle edema", severity: "Mild", modalities: "Worse standing", organAffinity: "Renal/Circulatory" },
-      { name: "Flatulence & bloating", severity: "Moderate", modalities: "Worse 4-8 PM, better warm drinks", organAffinity: "Digestive" },
-      { name: "Frequent nocturnal urination", severity: "Severe", modalities: "Worse 2-5 AM", organAffinity: "Urinary" }
-    ],
-    miasmaticIndex: { psora: 45, sycosis: 65, syphilis: 50 },
-    remedyMatches: [
-      { name: "Lycopodium Clavatum", score: 88, status: "Active Constitutional", keyEvidence: "Right-sided bloating, 4-8 PM aggravation, desires warm drinks." },
-      { name: "Serum Anguillae", score: 85, status: "Active Organ Support", keyEvidence: "Direct affinity for renal glomeruli under severe metabolic load." },
-      { name: "Apis Mellifica", score: 80, status: "Active Symptomatic", keyEvidence: "Bilateral puffiness, thirstless state, worse standing or warm environments." }
-    ],
-    predictiveRisks: [
-      { id: "ckd", name: "CKD Progression", level: "High Risk", val: 82, color: "text-rose-500", driver: "eGFR decline rate & microalbuminuria", modifiable: "Dietary sodium & blood sugar management" },
-      { id: "neuropathy", name: "Diabetic Neuropathy", level: "Moderate Risk", val: 55, color: "text-amber-500", driver: "Long-standing glycemic fluctuation", modifiable: "HbA1c tight control & exercise" },
-      { id: "cvd", name: "Cardiovascular Stroke", level: "Moderate Risk", val: 48, color: "text-amber-500", driver: "Sedentary job & hypertensive spikes", modifiable: "Weight reduction & aerobic conditioning" }
-    ],
-    ostmSystems: [
-      { name: "Renal Filtration (Kidneys)", status: "Compensated Degraded", color: "text-amber-500" },
-      { name: "Pancreatic Endocrine (Insulin)", status: "Active Stabilized", color: "text-emerald-500" },
-      { name: "Digestive Absorption (Gut)", status: "Active Congested", color: "text-amber-500" }
-    ],
-    cohortPercentiles: { ageCohort: 74, remedyCohort: 86, regionalPercentile: 91 }
-  },
-  priya: {
-    id: 2,
-    name: "Priya Patel",
-    constitution: "Pulsatilla",
-    miasm: "Psora (Dominant)",
-    thermal: "Hot / Warm-blooded",
-    cravings: "Cold food, ice cream, sour things",
-    aversions: "Fatty foods, warm drinks",
-    vitalityIndex: 74,
-    diseaseBurdenIndex: 42,
-    history: [
-      { date: "2024-05-10", type: "Clinical", event: "Irregular cycles, hirsutism, weight gain", notes: "Suspected PCOS. Ultrasound ordered." },
-      { date: "2024-06-02", type: "Lab", event: "TSH: 6.2 uIU/mL, LH/FSH ratio: 2.8", notes: "Subclinical Hypothyroidism and PCOS confirmed." },
-      { date: "2024-08-15", type: "Remedy", event: "Pulsatilla Nigricans 30C prescribed", notes: "Indicated by mild temperament, thirstlessness, open air relief." },
-      { date: "2024-11-20", type: "Lab", event: "TSH: 7.8 uIU/mL (Rising)", notes: "Fatigue increasing. Thyroxin 25mcg recommended but patient prefers homeopathy." },
-      { date: "2025-02-12", type: "Remedy", event: "Thyroidinum 3X + Calcarea Carbonica 200C", notes: "Intercurrent remedies for sluggish metabolism and thyroid focus." },
-      { date: "2025-05-28", type: "Lab", event: "TSH: 4.8 uIU/mL (Improving)", notes: "Cycle regularized to 34 days, fatigue reduced, energy improving." }
-    ],
-    labs: {
-      timeline: ["2024-06-02", "2024-08-15", "2024-11-20", "2025-02-12", "2025-05-28"],
-      tsh: [6.2, 6.5, 7.8, 5.9, 4.8],
-      lh_fsh_ratio: [2.8, 2.7, 2.5, 1.9, 1.4],
-      cholesterol: [220, 225, 240, 215, 205],
-      weight_kg: [76, 77.2, 79.5, 77.8, 75.2]
-    },
-    symptoms: [
-      { name: "Irregular menses", severity: "Severe", modalities: "Delayed, scanty, painful", organAffinity: "Endocrine/Reproductive" },
-      { name: "Weight gain & sluggishness", severity: "Moderate", modalities: "Worse cold, damp weather", organAffinity: "Metabolic/Thyroid" },
-      { name: "Emotional mood swings", severity: "Moderate", modalities: "Better consolation and open air", organAffinity: "Nervous" },
-      { name: "Mild hirsutism", severity: "Mild", modalities: "Constant", organAffinity: "Integumentary" }
-    ],
-    miasmaticIndex: { psora: 75, sycosis: 40, syphilis: 15 },
-    remedyMatches: [
-      { name: "Pulsatilla Nigricans", score: 92, status: "Active Constitutional", keyEvidence: "Thirstless with dry mouth, mild/yielding temper, ameliorated in cool open air." },
-      { name: "Thyroidinum", score: 86, status: "Active Organ Support", keyEvidence: "Affinity for sluggish metabolism, subclinical hypothyroidism triggers." },
-      { name: "Calcarea Carbonica", score: 82, status: "Active Intercurrent", keyEvidence: "Constitutional dampness, tendency to gain weight, cold extremities." }
-    ],
-    predictiveRisks: [
-      { id: "diabetes", name: "Type 2 Diabetes Risk", level: "Moderate Risk", val: 58, color: "text-amber-500", driver: "LH/FSH insulin link & weight gain", modifiable: "Low GI diet, physical conditioning" },
-      { id: "thyroid", name: "Hypothyroidism Severity", level: "Moderate Risk", val: 52, color: "text-amber-500", driver: "TSH rising pattern to 7.8", modifiable: "Thyroidinum support, stress regulation" },
-      { id: "metabolic", name: "Metabolic Syndrome", level: "Low Risk", val: 35, color: "text-emerald-500", driver: "Hypercholesterolemia (240 max)", modifiable: "Regular exercise & lipid detox" }
-    ],
-    ostmSystems: [
-      { name: "Thyroid Gland (T3/T4)", status: "De-compensated Subclinical", color: "text-rose-500" },
-      { name: "Ovarian Gland (Cycle rhythm)", status: "Compensated Improving", color: "text-emerald-500" }
-    ],
-    cohortPercentiles: { ageCohort: 81, remedyCohort: 90, regionalPercentile: 79 }
-  },
-  elena: {
-    id: 3,
-    name: "Elena Rostova",
-    constitution: "Silicea",
-    miasm: "Syphilitic (Dominant) & Psoric (Sub-acute)",
-    thermal: "Chilly",
-    cravings: "Warm water, warm soup, spices",
-    aversions: "Cold food, ice",
-    vitalityIndex: 64,
-    diseaseBurdenIndex: 62,
-    history: [
-      { date: "2024-04-12", type: "Clinical", event: "Symmetrical joint stiffness, fatigue", notes: "Chilly patient, sweat on palms, suspect RA." },
-      { date: "2024-07-18", type: "Lab", event: "RF: Positive, Anti-CCP: 85, ESR: 45 mm/hr", notes: "Rheumatoid Arthritis diagnosed. Standard DMARDs advised but refused." },
-      { date: "2024-10-22", type: "Remedy", event: "Silicea 200C prescribed", notes: "Cold patient, slow resolution of nodes, chilly sensitivity." },
-      { date: "2025-01-20", type: "Lab", event: "ESR: 58 mm/hr, CRP: 18.5 mg/L", notes: "Active flare-up due to cold damp winter. Joint pain score 7/10." },
-      { date: "2025-03-15", type: "Remedy", event: "Rhus Toxicodendron 30C + Causticum 30C", notes: "For joint pain, stiffness relieved by heat and continuous motion." },
-      { date: "2025-06-02", type: "Lab", event: "CRP: 8.2 mg/L, Joint Pain: 4/10", notes: "Stiffness duration reduced from 3 hours to 30 mins. Energy improving." }
-    ],
-    labs: {
-      timeline: ["2024-07-18", "2024-10-22", "2025-01-20", "2025-03-15", "2025-06-02"],
-      esr: [45, 48, 58, 52, 38],
-      crp: [12.4, 14.1, 18.5, 12.0, 8.2],
-      anticcp: [85, 87, 85, 82, 79],
-      painScore: [6, 6.5, 8.0, 6.0, 4.0]
-    },
-    symptoms: [
-      { name: "Morning joint stiffness", severity: "Severe", modalities: "Worse waking, better warm bath", organAffinity: "Musculoskeletal" },
-      { name: "Joint swelling & pain", severity: "Severe", modalities: "Worse cold damp, better dry heat", organAffinity: "Musculoskeletal" },
-      { name: "Extreme chilly state", severity: "Moderate", modalities: "Worse drafts, better warm wraps", organAffinity: "Thermoregulation" },
-      { name: "Dryness of eyes & mouth", severity: "Mild", modalities: "Worse wind", organAffinity: "Mucosal" }
-    ],
-    miasmaticIndex: { psora: 30, sycosis: 20, syphilis: 70 },
-    remedyMatches: [
-      { name: "Silicea Terra", score: 90, status: "Active Constitutional", keyEvidence: "Cold, chilly, sweat of palms, slow tissue changes, nodes." },
-      { name: "Rhus Toxicodendron", score: 85, status: "Active Acute Support", keyEvidence: "Joint stiffness relieved by motion and warm applications, worse cold damp." },
-      { name: "Causticum", score: 81, status: "Active Symptomatic", keyEvidence: "Drawing muscular pains, joint contractures, worse clear fine weather." }
-    ],
-    predictiveRisks: [
-      { id: "ra_flare", name: "Joint Flare Relapse", level: "High Risk", val: 76, color: "text-rose-500", driver: "Anti-CCP autoantibodies & ESR slope", modifiable: "Thermal protection & anti-inflammatory diet" },
-      { id: "sjogren", name: "Secondary Sjogren", level: "Moderate Risk", val: 50, color: "text-amber-500", driver: "Mucosal dryness indices & auto-immune triggers", modifiable: "Hydration & local protection" },
-      { id: "osteopenia", name: "Steroid Osteopenia", level: "Low Risk", val: 24, color: "text-emerald-500", driver: "Calcium levels & exercise tracking", modifiable: "Regular weight bearing physiotherapy" }
-    ],
-    ostmSystems: [
-      { name: "Joint Synovium (Articular)", status: "Active Inflamed", color: "text-rose-500" },
-      { name: "Thermoregulation (Autonomic)", status: "Compensated Chilly", color: "text-amber-500" }
-    ],
-    cohortPercentiles: { ageCohort: 68, remedyCohort: 92, regionalPercentile: 84 }
-  },
-  default: {
-    id: 99,
-    name: "General Twin",
-    constitution: "Sulphur",
-    miasm: "Psora (Dominant)",
-    thermal: "Warm-blooded",
-    cravings: "Sweets, cold drinks",
-    aversions: "Fats, warm drinks",
-    vitalityIndex: 75,
-    diseaseBurdenIndex: 45,
-    history: [
-      { date: "2024-03-01", type: "Clinical", event: "Initial consultation & assessment", notes: "Case taking reveals psoric baseline, functional complaints." },
-      { date: "2024-06-12", type: "Remedy", event: "Sulphur 30C prescribed", notes: "Symptom improvement verified. Metabolic score stabilized." },
-      { date: "2024-10-05", type: "Lab", event: "Follow-up blood panel run", notes: "Lipid profile shows minor elevation. Remedy adjusted." }
-    ],
-    labs: {
-      timeline: ["2024-03-01", "2024-06-12", "2024-10-05"],
-      cholesterol: [220, 215, 205],
-      sugar: [110, 105, 98]
-    },
-    symptoms: [
-      { name: "Digestive gas & flatulence", severity: "Moderate", modalities: "Worse after eating, better warm water", organAffinity: "Digestive" },
-      { name: "Morning lethargy", severity: "Mild", modalities: "Worse waking up, better movement", organAffinity: "Nervous" }
-    ],
-    miasmaticIndex: { psora: 60, sycosis: 30, syphilis: 10 },
-    remedyMatches: [
-      { name: "Sulphur", score: 85, status: "Active Constitutional", keyEvidence: "Warm blooded, red orifices, morning diarrhea, skin irritations." },
-      { name: "Nux Vomica", score: 72, status: "Active Acute Support", keyEvidence: "Sedentary profile, high irritability, chilly draft sensitivities." }
-    ],
-    predictiveRisks: [
-      { id: "metabolic", name: "Metabolic Syndrome", level: "Low Risk", val: 32, color: "text-emerald-500", driver: "Glycemic stability", modifiable: "Regular exercises" }
-    ],
-    ostmSystems: [
-      { name: "Pancreatic Endocrine", status: "Compensated", color: "text-emerald-500" }
-    ],
-    cohortPercentiles: { ageCohort: 55, remedyCohort: 60, regionalPercentile: 58 }
-  }
-};
-
-
-// Centralized OSTM Navigator Focus Mapping Matrix (Priority 1 & 2)
-const NODE_PIVOT_MAP: Record<string, {
-  nodeName: string;
-  type: string;
-  confidence: number;
-  status: string;
-  evidenceWeight: number;
-  connectedLabs: string[];
-  connectedSymptoms: string[];
-  connectedRemedies: string[];
-  predictedOutcome: string;
-  clinicalEvidence: string;
-  populationBenchmark: string;
-  cohortData: { top: number; avg: number; poor: number };
-  copilotPrompt: string;
-  forecastHighlight: string;
-  therapeuticHighlight: string;
-  traceHighlight: string;
-  guideline?: string;
-  pathway?: string;
-  outcomes?: string;
-}> = {
-  org_kidney: {
-    nodeName: "Renal Kidneys",
-    type: "Anatomical Organ System",
-    confidence: 88,
-    status: "Compensated Degraded (Stage 3b CKD)",
-    evidenceWeight: 92,
-    connectedLabs: ["Creatinine", "eGFR", "Urinary Microalbumin"],
-    connectedSymptoms: ["Bilateral Ankle Edema", "Nocturia Urination", "Generalized Fatigue"],
-    connectedRemedies: ["Apis Mellifica", "Serum Anguillae", "Lycopodium Clavatum"],
-    predictedOutcome: "Moderate Progression Risk (stabilizable with glycemic & BP control)",
-    clinicalEvidence: "92% match - Repertory rubrics and KDIGO 2024 renal guidelines.",
-    populationBenchmark: "Renal clearance stability is in the top 14% of the regional age-matched cohort.",
-    cohortData: { top: 76, avg: 20, poor: 4 },
-    copilotPrompt: "Analyze renal reserve decline. Current eGFR is 49. Suggest intercurrent remedies to reduce microalbuminuria.",
-    forecastHighlight: "Renal Risk Progression",
-    therapeuticHighlight: "Dietary Sodium Restriction (< 1.5g / day)",
-    traceHighlight: "ckd"
-  },
-  org_thyroid: {
-    nodeName: "Endocrine Thyroid Gland",
-    type: "Anatomical Organ System",
-    confidence: 84,
-    status: "De-compensated Subclinical (Hypothyroidism)",
-    evidenceWeight: 89,
-    connectedLabs: ["TSH Level", "Serum Cholesterol", "Weight Index"],
-    connectedSymptoms: ["Morning Lethargy", "Weight Gain", "Extreme Fatigue"],
-    connectedRemedies: ["Pulsatilla Nigricans", "Thyroidinum", "Calcarea Carbonica"],
-    predictedOutcome: "Hormonal feedback loop regularization within 90 days under intercurrent support",
-    clinicalEvidence: "89% match - Glandular matching and thyroid hormone feedback literature.",
-    populationBenchmark: "TSH recovery rate matches the top 18% of the subclinical thyroid cohort.",
-    cohortData: { top: 70, avg: 22, poor: 8 },
-    copilotPrompt: "Analyze thyroid hormone loop. TSH is 4.8. Evaluate intercurrent Calcarea Carbonica response.",
-    forecastHighlight: "Thyroid Dysfunction",
-    therapeuticHighlight: "Aerobic Physical Exercise (30m / 4 days a week)",
-    traceHighlight: "thyroid"
-  },
-  org_joints: {
-    nodeName: "Articular Synovium Joints",
-    type: "Anatomical Organ System",
-    confidence: 86,
-    status: "Active Inflamed (Synovial Congestion)",
-    evidenceWeight: 91,
-    connectedLabs: ["CRP Inflammatory", "ESR Rate", "Anti-CCP Autoantibody"],
-    connectedSymptoms: ["Morning Joint Stiffness", "Joint Swelling & Pain", "Chilly State"],
-    connectedRemedies: ["Silicea Terra", "Rhus Toxicodendron", "Causticum"],
-    predictedOutcome: "Articular stiffness mitigation and inflammation reduction within 30 days",
-    clinicalEvidence: "91% match - Rheumatic guidelines and chilly thermal reaction profiles.",
-    populationBenchmark: "Stiffness duration reduction matches the top 22% of auto-immune cohorts.",
-    cohortData: { top: 68, avg: 24, poor: 8 },
-    copilotPrompt: "Review synovial inflammation indicators. Anti-CCP is 79, ESR is 38. Rhus Tox is active.",
-    forecastHighlight: "RA Inflammatory Flare",
-    therapeuticHighlight: "Thermal Protection & Dry Heat Compliance Check",
-    traceHighlight: "ra_flare"
-  },
-  rem_apis: {
-    nodeName: "Apis Mellifica",
-    type: "Homeopathic Remedy Vector",
-    confidence: 90,
-    status: "Active Symptomatic Support",
-    evidenceWeight: 86,
-    connectedLabs: ["eGFR Filtration", "Urinary Microalbumin"],
-    connectedSymptoms: ["Bilateral Ankle Edema", "Nocturia Urination", "Puffiness under eyes"],
-    connectedRemedies: ["Serum Anguillae", "Lycopodium Clavatum"],
-    predictedOutcome: "Rapid fluid drainage and reduction of lower limb interstitial pressure",
-    clinicalEvidence: "86% match - Thirstless state, morning aggravation rubrics in Kent's Repertory.",
-    populationBenchmark: "90% responder rate in renal fluid retention cohorts within 14 days.",
-    cohortData: { top: 82, avg: 14, poor: 4 },
-    copilotPrompt: "Review Apis Mellifica fluid clearing efficacy. Fluid intake slider is set to 2.5L.",
-    forecastHighlight: "Renal Risk Progression",
-    therapeuticHighlight: "Sleep Hygiene Protocol (target > 8 hours nightly)",
-    traceHighlight: "ckd"
-  },
-  rem_lyc: {
-    nodeName: "Lycopodium Clavatum",
-    type: "Constitutional Remedy Vector",
-    confidence: 92,
-    status: "Active Constitutional Support",
-    evidenceWeight: 88,
-    connectedLabs: ["HbA1c Glycemia", "Serum Creatinine"],
-    connectedSymptoms: ["Flatulence & Bloat", "Aggravation 4-8 PM", "Generalized Fatigue"],
-    connectedRemedies: ["Sulphur", "Nux Vomica"],
-    predictedOutcome: "Long-term metabolic reserve restoration and digestive gas clearing",
-    clinicalEvidence: "88% match - Flatulence, warm water craving, and late afternoon aggravation rubrics.",
-    populationBenchmark: "86% success in psoric-sycotic metabolic twins with renal stress.",
-    cohortData: { top: 78, avg: 16, poor: 6 },
-    copilotPrompt: "Explain Lycopodium Clavatum constitutional matching. Rubrics include late afternoon aggravation.",
-    forecastHighlight: "Metabolic Burden",
-    therapeuticHighlight: "Dietary Sodium Restriction (< 1.5g / day)",
-    traceHighlight: "ckd"
-  },
-  rem_anguillae: {
-    nodeName: "Serum Anguillae (Eel Serum)",
-    type: "Organotherapy Remedy Vector",
-    confidence: 85,
-    status: "Active Organ Support",
-    evidenceWeight: 90,
-    connectedLabs: ["Serum Creatinine", "eGFR Filtration", "Urinary Microalbumin"],
-    connectedSymptoms: ["Proteinuria", "Nocturia Urination"],
-    connectedRemedies: ["Apis Mellifica", "Lycopodium Clavatum"],
-    predictedOutcome: "Nephron glomerular membrane stabilization and creatinine clearance improvement",
-    clinicalEvidence: "90% match - Boericke Materia Medica documentation for high-burden kidney filtration.",
-    populationBenchmark: "84% success in stabilizing Stage 3 CKD eGFR declines.",
-    cohortData: { top: 74, avg: 20, poor: 6 },
-    copilotPrompt: "Evaluate Serum Anguillae support for glomerular filtration. Creatinine is 1.6.",
-    forecastHighlight: "Renal Risk Progression",
-    therapeuticHighlight: "Dietary Sodium Restriction (< 1.5g / day)",
-    traceHighlight: "ckd"
-  },
-  rem_puls: {
-    nodeName: "Pulsatilla Nigricans",
-    type: "Constitutional Remedy Vector",
-    confidence: 92,
-    status: "Active Constitutional Support",
-    evidenceWeight: 87,
-    connectedLabs: ["TSH Level", "LH/FSH Ratio"],
-    connectedSymptoms: ["Irregular menses", "Sluggishness", "Mood swings"],
-    connectedRemedies: ["Calcarea Carbonica", "Thyroidinum"],
-    predictedOutcome: "Endocrine pathway regularization and menstrual rhythm alignment",
-    clinicalEvidence: "87% match - Mild temperament, thirstlessness, and amelioration in cool open air.",
-    populationBenchmark: "90% response rate in open-air ameliorated female endocrine cohorts.",
-    cohortData: { top: 80, avg: 15, poor: 5 },
-    copilotPrompt: "Explain Pulsatilla Nigricans selection. Patient is warm-blooded, thirstless.",
-    forecastHighlight: "PCOS Diabetes Trigger",
-    therapeuticHighlight: "Aerobic Physical Exercise (30m / 4 days a week)",
-    traceHighlight: "thyroid"
-  },
-  rem_thyroid: {
-    nodeName: "Thyroidinum",
-    type: "Organotherapy Glandular Support",
-    confidence: 86,
-    status: "Active Organ Support",
-    evidenceWeight: 89,
-    connectedLabs: ["TSH Level", "Serum Cholesterol"],
-    connectedSymptoms: ["Weight Gain", "Sluggishness"],
-    connectedRemedies: ["Pulsatilla Nigricans", "Calcarea Carbonica"],
-    predictedOutcome: "Thyroid hormone loop compensation and basal metabolic acceleration",
-    clinicalEvidence: "89% match - Sluggish metabolism and subclinical thyroid insufficiency profiles.",
-    populationBenchmark: "86% success in subclinical hypothyroidism stabilization.",
-    cohortData: { top: 72, avg: 22, poor: 6 },
-    copilotPrompt: "Review Thyroidinum glandular support. TSH is 4.8, weight is 75kg.",
-    forecastHighlight: "Thyroid Dysfunction",
-    therapeuticHighlight: "Aerobic Physical Exercise (30m / 4 days a week)",
-    traceHighlight: "thyroid"
-  },
-  rem_sil: {
-    nodeName: "Silicea Terra",
-    type: "Constitutional Remedy Vector",
-    confidence: 90,
-    status: "Active Constitutional Support",
-    evidenceWeight: 91,
-    connectedLabs: ["Anti-CCP Autoantibody", "ESR Rate"],
-    connectedSymptoms: ["Morning Joint Stiffness", "Chilly State", "Mucosal Dryness"],
-    connectedRemedies: ["Rhus Toxicodendron", "Causticum"],
-    predictedOutcome: "Deep-acting synovial immune stabilization and joint nodule clearing",
-    clinicalEvidence: "91% match - Extreme chilly sensitivity, sweaty palms, and slow chronic tissue changes.",
-    populationBenchmark: "92% response in auto-immune patients with high chilly sensitivity.",
-    cohortData: { top: 84, avg: 12, poor: 4 },
-    copilotPrompt: "Review Silicea Terra constitutional affinity. Patient is chilly, with joint nodes.",
-    forecastHighlight: "RA Inflammatory Flare",
-    therapeuticHighlight: "Thermal Protection & Dry Heat Compliance Check",
-    traceHighlight: "ra_flare"
-  },
-  sym_renal: {
-    nodeName: "Bilateral Ankle Edema",
-    type: "Clinical Symptom Vector",
-    confidence: 90,
-    status: "Active Fluid Loading",
-    evidenceWeight: 94,
-    connectedLabs: ["eGFR Filtration", "Serum Creatinine", "Urinary Microalbumin"],
-    connectedSymptoms: ["Nocturia Urination", "Generalized Fatigue"],
-    connectedRemedies: ["Apis Mellifica", "Serum Anguillae"],
-    predictedOutcome: "Fluid reduction and systemic clearing within 7 days of active Apis protocol",
-    clinicalEvidence: "94% match - Peripheral fluid overload linked to glomerular filtration lag.",
-    populationBenchmark: "Edema resolution rate matches top 15% of responders under Apis 30C.",
-    cohortData: { top: 78, avg: 18, poor: 4 },
-    copilotPrompt: "Review edema severity and fluid clearing trajectory. Ankle edema is moderate.",
-    forecastHighlight: "Renal Risk Progression",
-    therapeuticHighlight: "Dietary Sodium Restriction (< 1.5g / day)",
-    traceHighlight: "ckd"
-  },
-  sym_stiffness: {
-    nodeName: "Morning Joint Stiffness",
-    type: "Clinical Symptom Vector",
-    confidence: 88,
-    status: "Active Inflamed Articular",
-    evidenceWeight: 90,
-    connectedLabs: ["ESR Rate", "CRP Inflammatory", "Anti-CCP Autoantibody"],
-    connectedSymptoms: ["Joint Swelling & Pain", "Chilly State"],
-    connectedRemedies: ["Rhus Toxicodendron", "Causticum", "Silicea Terra"],
-    predictedOutcome: "Stiffness duration reduced below 30 minutes in 14 days of Rhus Tox support",
-    clinicalEvidence: "90% match - Rheumatic joint congestion rubrics, worse waking up and cold damp.",
-    populationBenchmark: "Stiffness duration drops by 75% in similar cohorts under Rhus Tox 30C.",
-    cohortData: { top: 80, avg: 16, poor: 4 },
-    copilotPrompt: "Evaluate stiffness duration. Stiffness is severe, worse waking up.",
-    forecastHighlight: "RA Inflammatory Flare",
-    therapeuticHighlight: "Thermal Protection & Dry Heat Compliance Check",
-    traceHighlight: "ra_flare"
-  },
-  org_heart: {
-    nodeName: "Cardiovascular Heart",
-    type: "Anatomical Organ System",
-    confidence: 88,
-    status: "Compensated Normal / Subclinical Strain",
-    evidenceWeight: 85,
-    connectedLabs: ["ECG Rhythm Stability", "Serum Cholesterol", "Blood Pressure"],
-    connectedSymptoms: ["Chest Palpitations", "Dyspnea Breathlessness"],
-    connectedRemedies: ["Crataegus Oxyacantha", "Cactus Grandiflorus"],
-    predictedOutcome: "Cardiovascular tone and rhythm normalization under crataegus protocol",
-    clinicalEvidence: "85% match - Cardiovascular guidelines and myocardial tone rubrics.",
-    populationBenchmark: "Cardiac index efficiency matches the top 20% of the active cohort.",
-    cohortData: { top: 74, avg: 20, poor: 6 },
-    copilotPrompt: "Evaluate myocardial status. Rhythm is stable, BP spikes to 142/90. Suggest support.",
-    forecastHighlight: "Cardiovascular Burden",
-    therapeuticHighlight: "Aerobic Conditioning & Stress Management",
-    traceHighlight: "cvd"
-  },
-  org_brain: {
-    nodeName: "Cognitive Brain",
-    type: "Anatomical Organ System",
-    confidence: 90,
-    status: "Active Sluggish (Neural Tension)",
-    evidenceWeight: 88,
-    connectedLabs: ["Sleep Quality Index", "Adrenal Cortisol Output"],
-    connectedSymptoms: ["Cognitive Brain Fog", "Insomnia Sleep Loss", "Systemic Anxiety"],
-    connectedRemedies: ["Kali Phosphoricum 6X", "Gelsemium Sempervirens"],
-    predictedOutcome: "Resolution of cognitive lag and sleep latency reduction within 14 days",
-    clinicalEvidence: "88% match - Kent's Repertory brain fog and nervous fatigue rubrics.",
-    populationBenchmark: "Sleep restoration index matches the top 15% of the active cohort.",
-    cohortData: { top: 82, avg: 14, poor: 4 },
-    copilotPrompt: "Analyze brain fog and sleep continuity. Suggest remedies for neural fatigue.",
-    forecastHighlight: "Neurological Load",
-    therapeuticHighlight: "Sleep Hygiene Protocol (target > 8 hours nightly)",
-    traceHighlight: "neuropathy"
-  },
-  org_liver: {
-    nodeName: "Metabolic Liver",
-    type: "Anatomical Organ System",
-    confidence: 86,
-    status: "Compensated Sluggish (Hepatic Congestion)",
-    evidenceWeight: 84,
-    connectedLabs: ["ALT/AST Enzymes", "Serum Cholesterol"],
-    connectedSymptoms: ["Bilious Jaundice", "Flatulence & Bloat"],
-    connectedRemedies: ["Chelidonium Majus", "Carduus Marianus", "Lycopodium Clavatum"],
-    predictedOutcome: "ALT/AST enzyme normalization and bile clearance within 30 days",
-    clinicalEvidence: "84% match - Boericke Materia Medica hepatic sluggishness and right-sided rubrics.",
-    populationBenchmark: "Liver clearance reserve is in the top 25% of the metabolic cohort.",
-    cohortData: { top: 72, avg: 22, poor: 6 },
-    copilotPrompt: "Assess liver enzymes AST/ALT. Suggest right-sided hepatic support remedies.",
-    forecastHighlight: "Metabolic Burden",
-    therapeuticHighlight: "Fat intake restriction and warm-water therapy",
-    traceHighlight: "metabolic"
-  },
-  org_lungs: {
-    nodeName: "Pulmonary Lungs",
-    type: "Anatomical Organ System",
-    confidence: 85,
-    status: "Reactive Bronze (Bronchial Congestion)",
-    evidenceWeight: 89,
-    connectedLabs: ["Oxygen Saturation SpO2", "FEV1 Lung Volume"],
-    connectedSymptoms: ["Chronic Dry Cough", "Asthmatic Wheezing", "Dyspnea Breathlessness"],
-    connectedRemedies: ["Antimonium Tartaricum", "Arsenicum Album"],
-    predictedOutcome: "Expiratory wheeze resolution and oxygenation stability in 10 days",
-    clinicalEvidence: "89% match - Rattling mucus in bronchial tree rubrics from Kent's Repertory.",
-    populationBenchmark: "FEV1 lung volume is in the top 18% of the respiratory cohort.",
-    cohortData: { top: 76, avg: 18, poor: 6 },
-    copilotPrompt: "Review expellable mucus indicators. Suggest bronchial spasm remedies.",
-    forecastHighlight: "Respiratory Load",
-    therapeuticHighlight: "Air quality check and warm steam inhalations",
-    traceHighlight: "respiratory"
-  },
-  org_skin: {
-    nodeName: "Dermatic Skin",
-    type: "Anatomical Organ System",
-    confidence: 91,
-    status: "Active Eruptive (Cutaneous Leakage)",
-    evidenceWeight: 87,
-    connectedLabs: ["IgE Allergy Index"],
-    connectedSymptoms: ["Dermatic Eczema", "Mucosal Dryness"],
-    connectedRemedies: ["Graphites 30C", "Sulphur 30C"],
-    predictedOutcome: "Eczema surface area reduction and dryness healing within 21 days",
-    clinicalEvidence: "87% match - Honey-like sticky discharge and skin folds eczema rubrics.",
-    populationBenchmark: "Cutaneous barrier recovery rate is in the top 12% of dermatic cohorts.",
-    cohortData: { top: 80, avg: 15, poor: 5 },
-    copilotPrompt: "Review skin eczema discharge and itch rubrics. Suggest dermatic remedies.",
-    forecastHighlight: "Dermatic Load",
-    therapeuticHighlight: "Allergen elimination and natural topical moisturizers",
-    traceHighlight: "sjogren"
-  },
-  org_adrenals: {
-    nodeName: "Adrenal Glands",
-    type: "Anatomical Organ System",
-    confidence: 84,
-    status: "De-compensated (Hypoadrenia / Exhaustion)",
-    evidenceWeight: 86,
-    connectedLabs: ["Adrenal Cortisol Output"],
-    connectedSymptoms: ["Generalized Fatigue", "Morning Lethargy"],
-    connectedRemedies: ["Phosphoricum Acidum", "Gelsemium Sempervirens"],
-    predictedOutcome: "Diurnal cortisol curve stabilization and energy reserve restoration in 45 days",
-    clinicalEvidence: "86% match - Exhaustion from emotional or mental strain rubrics.",
-    populationBenchmark: "Adrenal stress recovery matches the top 22% of fatigue cohorts.",
-    cohortData: { top: 68, avg: 24, poor: 8 },
-    copilotPrompt: "Review cortisol curve. Salivary cortisol is low at 8 AM. Suggest adrenal support.",
-    forecastHighlight: "Endocrine Strain",
-    therapeuticHighlight: "Stress management, adaptogenic diet, and sleep hygiene",
-    traceHighlight: "thyroid"
-  },
-  org_bladder: {
-    nodeName: "Urinary Bladder",
-    type: "Anatomical Organ System",
-    confidence: 89,
-    status: "Active Irritated (Urinary Congestion)",
-    evidenceWeight: 90,
-    connectedLabs: ["Urine Leukocyte Index", "Urinary Microalbumin"],
-    connectedSymptoms: ["Frequent nocturnal urination", "Painful Dysuria"],
-    connectedRemedies: ["Cantharis 30C", "Pulsatilla Nigricans"],
-    predictedOutcome: "Painful urination clearing and nocturnal frequency reduction in 5 days",
-    clinicalEvidence: "90% match - Kent's Repertory scalding urine and constant urging rubrics.",
-    populationBenchmark: "Bladder irritation clearance matches the top 15% of urinary cohorts.",
-    cohortData: { top: 82, avg: 14, poor: 4 },
-    copilotPrompt: "Review bladder urging and dysuria metrics. Urinalysis shows trace leukocytes.",
-    forecastHighlight: "Renal Risk Progression",
-    therapeuticHighlight: "Increased alkaline fluid intake (> 2.5L / day)",
-    traceHighlight: "ckd"
-  },
-  rem_kali_phos: {
-    nodeName: "Kali Phosphoricum 6X",
-    type: "Homeopathic Remedy Vector",
-    confidence: 90,
-    status: "Active Tissue Salt Support",
-    evidenceWeight: 88,
-    connectedLabs: ["Sleep Quality Index"],
-    connectedSymptoms: ["Cognitive Brain Fog", "Insomnia Sleep Loss"],
-    connectedRemedies: ["Silicea Terra", "Phosphoricum Acidum"],
-    predictedOutcome: "Nervous exhaustion relief and cognitive sharpness restoration",
-    clinicalEvidence: "88% match - Schuessler tissue salts documentation for nervous debility.",
-    populationBenchmark: "88% responder rate in brain fog and sleep lag cohorts in 14 days.",
-    cohortData: { top: 82, avg: 14, poor: 4 },
-    copilotPrompt: "Explain Kali Phos selection. Nerve nutrient rubrics matched.",
-    forecastHighlight: "Neurological Load",
-    therapeuticHighlight: "Sleep Hygiene Protocol (target > 8 hours nightly)",
-    traceHighlight: "neuropathy"
-  },
-  rem_crataegus: {
-    nodeName: "Crataegus Oxyacantha",
-    type: "Homeopathic Remedy Vector",
-    confidence: 87,
-    status: "Active Cardiotonic Support",
-    evidenceWeight: 84,
-    connectedLabs: ["ECG Rhythm Stability"],
-    connectedSymptoms: ["Chest Palpitations", "Dyspnea Breathlessness"],
-    connectedRemedies: ["Apis Mellifica", "Serum Anguillae"],
-    predictedOutcome: "Stabilization of cardiovascular rhythm and pulse pressure index",
-    clinicalEvidence: "84% match - Boericke Materia Medica cardiotonic and myocardial support.",
-    populationBenchmark: "82% success in improving pulse pressure indices.",
-    cohortData: { top: 74, avg: 20, poor: 6 },
-    copilotPrompt: "Review Crataegus Oxyacantha cardiotonic indicators.",
-    forecastHighlight: "Cardiovascular Burden",
-    therapeuticHighlight: "Dietary Sodium Restriction (< 1.5g / day)",
-    traceHighlight: "cvd"
-  },
-  rem_chelidonium: {
-    nodeName: "Chelidonium Majus",
-    type: "Homeopathic Remedy Vector",
-    confidence: 88,
-    status: "Active Hepatic Support",
-    evidenceWeight: 85,
-    connectedLabs: ["ALT/AST Enzymes"],
-    connectedSymptoms: ["Bilious Jaundice", "Flatulence & Bloat"],
-    connectedRemedies: ["Lycopodium Clavatum", "Nux Vomica"],
-    predictedOutcome: "Biliary flow acceleration and liver enzyme stabilization",
-    clinicalEvidence: "85% match - Right-sided pain, yellowing of skin and eyes, desire for hot drinks.",
-    populationBenchmark: "85% responder success rate in bilious digestive cohorts.",
-    cohortData: { top: 78, avg: 16, poor: 6 },
-    copilotPrompt: "Review Chelidonium hepatic affinity. Rubrics include right-sided pain.",
-    forecastHighlight: "Metabolic Burden",
-    therapeuticHighlight: "Fat intake restriction and warm-water therapy",
-    traceHighlight: "metabolic"
-  },
-  rem_ant_tart: {
-    nodeName: "Antimonium Tartaricum",
-    type: "Homeopathic Remedy Vector",
-    confidence: 86,
-    status: "Active Bronchial Support",
-    evidenceWeight: 88,
-    connectedLabs: ["Oxygen Saturation SpO2"],
-    connectedSymptoms: ["Chronic Dry Cough", "Asthmatic Wheezing"],
-    connectedRemedies: ["Arsenicum Album"],
-    predictedOutcome: "Bronchial mucus clearance and breathing volume optimization",
-    clinicalEvidence: "88% match - Coarse rattling in chest, suffocative coughing, better sitting up.",
-    populationBenchmark: "86% success in resolving bronchial mucus loads.",
-    cohortData: { top: 72, avg: 22, poor: 6 },
-    copilotPrompt: "Assess Antimonium Tartaricum rattling chest mucus matching.",
-    forecastHighlight: "Respiratory Load",
-    therapeuticHighlight: "Air quality check and warm steam inhalations",
-    traceHighlight: "respiratory"
-  },
-  rem_graphites: {
-    nodeName: "Graphites 30C",
-    type: "Homeopathic Remedy Vector",
-    confidence: 91,
-    status: "Active Cutaneous Support",
-    evidenceWeight: 87,
-    connectedLabs: ["IgE Allergy Index"],
-    connectedSymptoms: ["Dermatic Eczema", "Mucosal Dryness"],
-    connectedRemedies: ["Sulphur 30C", "Silicea Terra"],
-    predictedOutcome: "Eczema clearance and cutaneous moisture restoration",
-    clinicalEvidence: "87% match - Rough dry skin, sticky honey-like discharge, worse in folds.",
-    populationBenchmark: "90% response in chronic eczematous dermatopathic cohorts.",
-    cohortData: { top: 80, avg: 15, poor: 5 },
-    copilotPrompt: "Evaluate Graphites 30C dermatic barrier support.",
-    forecastHighlight: "Dermatic Load",
-    therapeuticHighlight: "Allergen elimination and natural topical moisturizers",
-    traceHighlight: "sjogren"
-  },
-  rem_phos_acid: {
-    nodeName: "Phosphoricum Acidum",
-    type: "Homeopathic Remedy Vector",
-    confidence: 86,
-    status: "Active Adrenal Support",
-    evidenceWeight: 85,
-    connectedLabs: ["Adrenal Cortisol Output"],
-    connectedSymptoms: ["Generalized Fatigue", "Morning Lethargy"],
-    connectedRemedies: ["Kali Phosphoricum 6X", "Calcarea Carbonica"],
-    predictedOutcome: "Adrenal stress recovery and physical vitality restoration",
-    clinicalEvidence: "85% match - Apathy, mental debility, physical weakness from fluid loss or stress.",
-    populationBenchmark: "84% success in resolving subclinical fatigue and cortisol lags.",
-    cohortData: { top: 74, avg: 20, poor: 6 },
-    copilotPrompt: "Review Phos Acid support for adrenal exhaustion.",
-    forecastHighlight: "Endocrine Strain",
-    therapeuticHighlight: "Stress management, adaptogenic diet, and sleep hygiene",
-    traceHighlight: "thyroid"
-  },
-  rem_cantharis: {
-    nodeName: "Cantharis 30C",
-    type: "Homeopathic Remedy Vector",
-    confidence: 92,
-    status: "Active Bladder Support",
-    evidenceWeight: 90,
-    connectedLabs: ["Urine Leukocyte Index"],
-    connectedSymptoms: ["Frequent nocturnal urination", "Painful Dysuria"],
-    connectedRemedies: ["Apis Mellifica", "Pulsatilla Nigricans"],
-    predictedOutcome: "Urinary tract irritation relief and dysuria clearing",
-    clinicalEvidence: "90% match - Intense burning and cutting pain, constant urging to urinate.",
-    populationBenchmark: "92% responder rate in acute bladder irritation within 48 hours.",
-    cohortData: { top: 84, avg: 12, poor: 4 },
-    copilotPrompt: "Evaluate Cantharis 30C for painful bladder urging.",
-    forecastHighlight: "Renal Risk Progression",
-    therapeuticHighlight: "Increased alkaline fluid intake (> 2.5L / day)",
-    traceHighlight: "ckd"
-  }
-};
-
-
-// Cluster mappings for OSTM Graph (Priority 7)
-const NODE_CLUSTERS: Record<string, { id: string; label: string; color: string; cx: number; cy: number }> = {
-  renal: { id: "renal", label: "Renal Cluster", color: "rgba(14, 165, 233, 0.04)", cx: 120, cy: 150 },
-  endocrine: { id: "endocrine", label: "Endocrine Cluster", color: "rgba(168, 85, 247, 0.04)", cx: 240, cy: 160 },
-  musculoskeletal: { id: "musculoskeletal", label: "Musculoskeletal Cluster", color: "rgba(244, 63, 94, 0.04)", cx: 340, cy: 140 },
-  metabolic: { id: "metabolic", label: "Metabolic Cluster", color: "rgba(251, 191, 36, 0.04)", cx: 180, cy: 220 },
-  nervous: { id: "nervous", label: "Nervous Cluster", color: "rgba(99, 102, 241, 0.04)", cx: 400, cy: 300 },
-  cardiorespiratory: { id: "cardiorespiratory", label: "Cardiorespiratory Cluster", color: "rgba(239, 68, 68, 0.04)", cx: 300, cy: 400 },
-  integumentary: { id: "integumentary", label: "Dermatic & Immune Cluster", color: "rgba(16, 185, 129, 0.04)", cx: 100, cy: 300 }
-};
 
 const NODE_TO_CLUSTER: Record<string, string> = {
   org_kidney: "renal", sys_renal: "renal", sym_renal: "renal", sym_nocturia: "renal", sym_proteinuria: "renal", sym_anemia: "renal", lab_creatinine: "renal", lab_egfr: "renal", lab_microalbumin: "renal", diag_ckd: "renal", risk_bp: "renal", rem_apis: "renal", rem_anguillae: "renal",
@@ -869,7 +179,26 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
   }, [activeDataKey, patients, patientOverrides]);
 
   // Navigation Tabs: Unified Cockpit, Raw note parser intake, Miasms & Constitution, Compiled print reports
-  const [activeTab, setActiveTab] = useState<"cockpit" | "intake" | "miasms" | "reports">("cockpit");
+  const [activeTab, setActiveTab] = useState<"cockpit" | "intake" | "miasms" | "reports" | "remedy-compare">("cockpit");
+  const [selectedCompareRemedies, setSelectedCompareRemedies] = useState<string[]>(["rem_sulphur", "rem_lycopodium"]);
+  const [followUpSymptoms, setFollowUpSymptoms] = useState<Array<{ name: string; severity: string; organAffinity: string }>>([]);
+
+  // Dynamic Clinical Decision Support calculations
+  const dynamicCDS = useMemo(() => {
+    const thermal = activeData.thermal === "Chilly" ? "Chilly" : activeData.thermal === "Hot" ? "Hot" : "Ambi";
+    const cravings = activeData.cravings ? activeData.cravings.split(",").map((c: string) => c.trim()) : [];
+    const worseFrom = activeData.symptoms ? activeData.symptoms.map((s: any) => s.modalities).filter(Boolean) : [];
+    const primarySymptom = activeData.symptoms && activeData.symptoms.length > 0 
+      ? activeData.symptoms[0].name + " " + activeData.symptoms.map((s: any) => s.name).join(" ")
+      : "";
+
+    return calculateClinicalDecisionSupport({
+      thermalState: thermal,
+      foodDesires: cravings,
+      worseFrom,
+      primarySymptom
+    });
+  }, [activeData]);
 
   useEffect(() => {
     if (activeTabOverride) {
@@ -953,7 +282,13 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
         fluidIntake: 2.2
       });
     }
-  }, [activeDataKey]);
+
+    if (activeData && activeData.symptoms) {
+      setFollowUpSymptoms(activeData.symptoms.map((s: any) => ({ ...s })));
+    } else {
+      setFollowUpSymptoms([]);
+    }
+  }, [activeDataKey, activeData]);
 
   // Live Clinical Intelligence Feed™ state
   interface FeedItem {
@@ -3783,6 +3118,12 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
           >
             📄 Compiled Reports
           </button>
+          <button 
+            onClick={() => setActiveTab("remedy-compare")}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border ${activeTab === "remedy-compare" ? "bg-emerald-600 border-emerald-500 text-white" : "bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200"}`}
+          >
+            ⚖️ Remedy Comparison
+          </button>
         </div>
       </div>
 
@@ -4506,26 +3847,31 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
                 <p className="text-[10px] text-slate-400 mt-0.5">Detailed matched features and clinical confidence ratings for active remedies.</p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {activeData.remedyMatches.map((match: any, idx: number) => {
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-slate-800 dark:text-white">
+                {dynamicCDS.slice(0, 3).map((match: any, idx: number) => {
                   let badgeColor = "bg-emerald-950/40 text-emerald-400 border border-emerald-900";
-                  if (match.score < 82) badgeColor = "bg-amber-950/40 text-amber-400 border border-amber-900";
+                  if (match.overallScore < 80) badgeColor = "bg-amber-950/40 text-amber-400 border border-amber-900";
 
                   return (
                     <div key={idx} className="p-4 bg-slate-55 dark:bg-slate-950 border border-slate-200/50 dark:border-slate-850/50 rounded-2xl space-y-3 flex flex-col justify-between">
-                      <div className="space-y-1.5">
+                      <div className="space-y-1.5 font-sans">
                         <div className="flex justify-between items-center border-b border-slate-200/50 dark:border-slate-850/50 pb-2">
-                          <span className="font-bold text-xs text-slate-800 dark:text-slate-200">{match.name}</span>
-                          <span className={`px-2 py-0.2 rounded text-[8.5px] font-mono ${badgeColor}`}>{match.score}% Match</span>
+                          <span className="font-bold text-xs text-slate-800 dark:text-slate-200">{match.remedyName}</span>
+                          <span className={`px-2 py-0.2 rounded text-[8.5px] font-mono ${badgeColor}`}>{match.overallScore}% Match</span>
                         </div>
                         
                         {/* Matched Features */}
-                        <div className="space-y-1 text-[10px] text-slate-500 dark:text-slate-450">
-                          <span className="font-bold uppercase tracking-wider text-[8px] text-slate-400 block">Matched Features:</span>
-                          <div>✓ Right-sided affinity</div>
-                          <div>✓ Organ congestion support</div>
-                          <div>✓ Evening aggravation shift</div>
-                          <div>✓ Constitutional alignment</div>
+                        <div className="space-y-1 text-[10px] text-slate-500 dark:text-slate-450 leading-relaxed">
+                          <span className="font-bold uppercase tracking-wider text-[8px] text-slate-400 block mb-0.5">Matched Features:</span>
+                          {match.rubricMatches.slice(0, 4).map((rub: string, i: number) => (
+                            <div key={i} className="truncate font-sans">✓ {rub.split(" - Grade ")[0]}</div>
+                          ))}
+                          
+                          {match.contradictionAlerts.length > 0 && (
+                            <div className="mt-2 text-rose-500 text-[9px] font-bold">
+                              ⚠️ Contradiction: {match.contradictionAlerts[0].split(". Penalty")[0]}
+                            </div>
+                          )}
                         </div>
                       </div>
 
@@ -4533,22 +3879,22 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
                         <div className="flex justify-between font-bold text-slate-650 dark:text-slate-350 items-center">
                           <span>Clinical Confidence:</span>
                           <div className="flex items-center gap-1.5">
-                            <span className="text-emerald-500 font-mono">88% (High)</span>
+                            <span className="text-emerald-500 font-mono">{match.overallScore}%</span>
                             <button
                               onClick={() => {
-                                const foundPivot = Object.values(NODE_PIVOT_MAP).find(p => p.nodeName.toLowerCase().includes(match.name.toLowerCase().split(' ')[0]));
+                                const foundPivot = Object.values(NODE_PIVOT_MAP).find(p => p.nodeName.toLowerCase().includes(match.remedyName.toLowerCase().split(' ')[0]));
                                 setEvidenceExplorerData({
-                                  actionName: `Remedy Selection: ${match.name}`,
-                                  benefit: `${match.score}% match with patient symptoms`,
-                                  confidence: `${match.score}%`,
-                                  urgency: "High Recommendation",
+                                  actionName: `Remedy Selection: ${match.remedyName}`,
+                                  benefit: `Suggested Potency: ${match.potencyRecommendation.suggested}`,
+                                  confidence: `${match.overallScore}%`,
+                                  urgency: `Aggravation Risk: ${match.potencyRecommendation.aggravationRisk}`,
                                   timeToBenefit: "14 - 30 days",
-                                  evidenceLevel: "Grade A Clinical Affinity",
-                                  reason: match.keyEvidence || "Constitutional alignment with thermal reaction and chronic miasmatic layer.",
+                                  evidenceLevel: `Match Grade: ${match.overallScore >= 80 ? "Constitutional Match" : "Systemic Support"}`,
+                                  reason: `Suggested regimen: ${match.potencyRecommendation.suggested}. Rationale: ${match.potencyRecommendation.rationale}`,
                                   guideline: foundPivot ? foundPivot.guideline : "Clinical repertory alignment based on Kent's and Boericke's Materia Medica.",
-                                  pathway: foundPivot ? foundPivot.pathway : `Patient twin symptoms -> ${match.name}`,
-                                  outcomes: foundPivot ? foundPivot.outcomes : "84% success rate in matching chronic responder cohorts.",
-                                  calculations: `Base Match (${match.score - 10}%) + Glandular / Organ Affinity (+6%) + Modality Correlation (+4%) = ${match.score}% Total Confidence.`
+                                  pathway: `Rubrics Matched:\n` + match.rubricMatches.join("\n"),
+                                  outcomes: `Expected Reaction Timeline:\n` + match.expectedReactions.map((r: any) => `${r.timelineDays}d: ${r.symptomShift}`).join("\n"),
+                                  calculations: `Contradiction Checks:\n` + (match.contradictionAlerts.join("\n") || "No somatic or thermal contradictions detected.")
                                 });
                               }}
                               className="px-1.5 py-0.5 bg-sky-900/40 hover:bg-sky-900 text-sky-400 hover:text-white border border-sky-700/50 rounded text-[8.5px] font-bold transition-all cursor-pointer"
@@ -4614,6 +3960,98 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
                     </div>
                   );
                 })}
+              </div>
+            </div>
+
+            {/* NEW: LONGITUDINAL FOLLOW-UP TRACKER (HERING'S LAW ANALYZER) */}
+            <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm space-y-4 text-slate-800 dark:text-white">
+              <div className="border-b border-slate-100 dark:border-slate-800 pb-2">
+                <h3 className="font-serif text-sm font-bold flex items-center gap-2">
+                  <Activity className="w-4 h-4 text-emerald-500" /> Longitudinal Follow-up Tracker (Hering's Law)
+                </h3>
+                <p className="text-[10px] text-slate-400 mt-0.5">Track patient progress dynamically and verify if healing follows Hering's Law of Cure.</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Left side: Adjust Symptom Severities */}
+                <div className="space-y-3">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-450 font-mono block">Adjust Current Symptoms:</span>
+                  <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
+                    {followUpSymptoms.map((sym, idx) => (
+                      <div key={idx} className="bg-slate-55 dark:bg-slate-950 p-3 rounded-xl border border-slate-150 dark:border-slate-850 flex justify-between items-center text-xs">
+                        <div className="space-y-0.5">
+                          <span className="font-bold block">{sym.name}</span>
+                          <span className="text-[9px] text-slate-450 font-mono">Affinity: {sym.organAffinity}</span>
+                        </div>
+                        <select
+                          value={sym.severity}
+                          onChange={(e) => {
+                            const updated = [...followUpSymptoms];
+                            updated[idx].severity = e.target.value;
+                            setFollowUpSymptoms(updated);
+                          }}
+                          className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-2 py-1 text-[11px] focus:outline-none focus:border-emerald-500 cursor-pointer text-slate-700 dark:text-slate-350"
+                        >
+                          <option value="Resolved">Resolved</option>
+                          <option value="Mild">Mild</option>
+                          <option value="Moderate">Moderate</option>
+                          <option value="Severe">Severe</option>
+                        </select>
+                      </div>
+                    ))}
+                    
+                    {/* Add a new follow-up symptom (e.g. Skin Rash to show Inside-Out) */}
+                    <button
+                      onClick={() => {
+                        setFollowUpSymptoms([
+                          ...followUpSymptoms,
+                          { name: "Superficial Skin Eruption", severity: "Mild", organAffinity: "Skin" }
+                        ]);
+                      }}
+                      className="w-full py-2 bg-slate-100 dark:bg-slate-850 border border-dashed border-slate-200 dark:border-slate-800 hover:border-emerald-500 rounded-xl text-[10.5px] font-bold text-slate-650 dark:text-slate-400 transition-all cursor-pointer"
+                    >
+                      + Add New Symptom (e.g. skin rash, joint pain)
+                    </button>
+                  </div>
+                </div>
+
+                {/* Right side: Hering's Law analysis results */}
+                {(() => {
+                  const report = analyzeHeringsLaw(activeData.symptoms || [], followUpSymptoms);
+                  return (
+                    <div className="bg-slate-55 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 p-4 rounded-2xl flex flex-col justify-between space-y-4 font-sans">
+                      <div>
+                        <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest block mb-1">PROGNOSIS DIRECTION ANALYSIS</span>
+                        <div className="flex justify-between items-center">
+                          <strong className="text-xs font-bold text-slate-700 dark:text-slate-350">Hering's Law Score:</strong>
+                          <span className={`px-2 py-0.5 rounded text-xs font-mono font-bold ${
+                            report.match ? "bg-emerald-950/40 text-emerald-400 border border-emerald-900" : "bg-rose-950/40 text-rose-400 border border-rose-900"
+                          }`}>
+                            {report.score}/100 ({report.match ? "Aligned" : "Suppression / Mixed"})
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-150 dark:border-slate-800 text-[11px] leading-relaxed">
+                        <span className="text-slate-450 font-mono text-[9px] block mb-1">CURE DIRECTION</span>
+                        <strong className={`text-xs block font-bold capitalize ${
+                          report.direction === 'Unfavorable' ? 'text-rose-500' : 'text-emerald-500'
+                        }`}>
+                          {report.direction === 'Unfavorable' ? '⚠️ Unfavorable (Suppression Alert)' : `✓ ${report.direction} Vector`}
+                        </strong>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <span className="text-slate-450 font-mono text-[9px] block">CLINICAL OBSERVATIONS:</span>
+                        <ul className="space-y-1 text-[10px] text-slate-650 dark:text-slate-400 list-disc list-inside">
+                          {report.details.map((d, i) => (
+                            <li key={i} className="leading-tight">{d}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
             </div>
 
@@ -5783,6 +5221,163 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
                 className="bg-white p-5 rounded-xl border border-slate-200 text-slate-800 max-h-[300px] overflow-y-auto"
                 dangerouslySetInnerHTML={{ __html: reportContent }}
               ></div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ==================== VIEW 4: REMEDY COMPARISON ==================== */}
+      {activeTab === "remedy-compare" && (
+        <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-sm space-y-6 text-slate-800 dark:text-white">
+          <div className="border-b border-slate-100 dark:border-slate-800 pb-4">
+            <h3 className="font-serif text-base font-bold flex items-center gap-2">
+              <Layers className="w-5 h-5 text-emerald-500" /> AI-Powered Remedy Comparison Engine
+            </h3>
+            <p className="text-xs text-slate-400 mt-0.5">Select up to three homeopathic remedies to compare their genomic profiles side-by-side.</p>
+          </div>
+
+          {/* Remedy Selectors */}
+          <div className="flex flex-wrap gap-4 items-center bg-slate-55 dark:bg-slate-950 p-4 rounded-2xl border border-slate-150 dark:border-slate-850">
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Select Remedies:</span>
+            <div className="flex flex-wrap gap-2">
+              {["rem_sulphur", "rem_lycopodium", "rem_nux_vomica", "rem_arsenicum", "rem_calcarea", "rem_lachesis", "rem_pulsatilla", "rem_gelsemium", "rem_bryonia", "rem_aconite", "rem_nat_mur", "rem_phosphorus", "rem_silicea", "rem_sepia", "rem_belladonna", "rem_apis"].map(id => {
+                const remName = id.replace("rem_", "").replace("_", " ").toUpperCase();
+                const isSelected = selectedCompareRemedies.includes(id);
+                return (
+                  <button
+                    key={id}
+                    onClick={() => {
+                      if (isSelected) {
+                        setSelectedCompareRemedies(selectedCompareRemedies.filter(item => item !== id));
+                      } else if (selectedCompareRemedies.length < 3) {
+                        setSelectedCompareRemedies([...selectedCompareRemedies, id]);
+                      }
+                    }}
+                    className={`px-3 py-1.5 rounded-xl text-[10.5px] font-bold transition-all cursor-pointer border ${
+                      isSelected 
+                        ? "bg-emerald-600 border-emerald-500 text-white" 
+                        : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-350"
+                    }`}
+                  >
+                    {remName}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Comparison Cards Grid */}
+          {selectedCompareRemedies.length === 0 ? (
+            <div className="text-center py-12 text-slate-450 text-xs">Please select at least one remedy above to begin comparison.</div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {compareRemedyGenomes(selectedCompareRemedies).map(rem => (
+                <div key={rem.id} className="bg-slate-55 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-2xl p-5 space-y-4">
+                  <div className="border-b border-slate-200 dark:border-slate-850 pb-2">
+                    <span className="text-[9px] font-mono text-emerald-500 font-black tracking-widest uppercase block">{rem.kingdom} / {rem.family}</span>
+                    <h4 className="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-1.5">
+                      {rem.name} <span className="text-xs font-mono text-slate-400">({rem.abbreviation})</span>
+                    </h4>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-[10.5px]">
+                    <div className="bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-150 dark:border-slate-800">
+                      <span className="text-slate-450 block text-[9px] font-mono">THERMAL STATE</span>
+                      <strong className={`font-bold ${rem.thermalState === 'Hot' ? 'text-rose-500' : rem.thermalState === 'Chilly' ? 'text-sky-500' : 'text-slate-400'}`}>
+                        {rem.thermalState}
+                      </strong>
+                    </div>
+                    <div className="bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-150 dark:border-slate-800">
+                      <span className="text-slate-450 block text-[9px] font-mono">THIRST INDEX</span>
+                      <strong className="text-slate-700 dark:text-slate-300 font-bold">{rem.thirstIndex}%</strong>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <span className="text-slate-450 text-[9px] font-mono block">MIASMATIC MATRIX</span>
+                    <div className="grid grid-cols-4 gap-1 text-[9px] font-mono text-center">
+                      <div className="bg-amber-500/10 text-amber-500 p-1.5 rounded-lg border border-amber-500/20">
+                        <span>PSO</span>
+                        <strong className="block font-bold">{rem.miasms.psora}%</strong>
+                      </div>
+                      <div className="bg-emerald-500/10 text-emerald-500 p-1.5 rounded-lg border border-emerald-500/20">
+                        <span>SYC</span>
+                        <strong className="block font-bold">{rem.miasms.sycosis}%</strong>
+                      </div>
+                      <div className="bg-rose-500/10 text-rose-500 p-1.5 rounded-lg border border-rose-500/20">
+                        <span>SYPH</span>
+                        <strong className="block font-bold">{rem.miasms.syphilis}%</strong>
+                      </div>
+                      <div className="bg-cyan-500/10 text-cyan-500 p-1.5 rounded-lg border border-cyan-500/20">
+                        <span>TUB</span>
+                        <strong className="block font-bold">{rem.miasms.tubercular}%</strong>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <span className="text-slate-450 text-[9px] font-mono block">TOP ORGAN AFFINITIES</span>
+                    <div className="space-y-1.5">
+                      {rem.organAffinities.map(aff => (
+                        <div key={aff.organ} className="space-y-0.5">
+                          <div className="flex justify-between text-[9.5px]">
+                            <span className="text-slate-650 dark:text-slate-350 font-bold">{aff.organ}</span>
+                            <span className="text-slate-400 font-mono">{aff.rating}%</span>
+                          </div>
+                          <div className="w-full bg-slate-200 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                            <div className="bg-emerald-500 h-full rounded-full" style={{ width: `${aff.rating}%` }}></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-1 text-[10.5px]">
+                    <span className="text-slate-450 text-[9px] font-mono block">CRAVINGS</span>
+                    <div className="flex flex-wrap gap-1">
+                      {rem.foodDesires.length > 0 ? rem.foodDesires.map(food => (
+                        <span key={food} className="px-2 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-lg text-[9.5px] font-bold">
+                          {food}
+                        </span>
+                      )) : <span className="text-slate-400 text-[9.5px]">No extreme cravings</span>}
+                    </div>
+                  </div>
+
+                  <div className="space-y-1 text-[10.5px]">
+                    <span className="text-slate-450 text-[9px] font-mono block">AVERSIONS</span>
+                    <div className="flex flex-wrap gap-1">
+                      {rem.foodAversions.length > 0 ? rem.foodAversions.map(food => (
+                        <span key={food} className="px-2 py-1 bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-lg text-[9.5px] font-bold">
+                          {food}
+                        </span>
+                      )) : <span className="text-slate-400 text-[9.5px]">No extreme aversions</span>}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2.5 text-[10.5px] border-t border-slate-200 dark:border-slate-850 pt-2.5">
+                    <div className="space-y-0.5">
+                      <span className="text-rose-500 text-[9px] font-mono block">AGGRAVATIONS (WORSE FROM)</span>
+                      <div className="flex flex-wrap gap-1">
+                        {rem.modalitiesWorse.length > 0 ? rem.modalitiesWorse.map(m => (
+                          <span key={m} className="px-2 py-0.5 bg-rose-500/5 text-rose-500 rounded-lg text-[9.5px]">
+                            {m}
+                          </span>
+                        )) : <span className="text-slate-400 text-[9.5px]">None marked</span>}
+                      </div>
+                    </div>
+                    <div className="space-y-0.5">
+                      <span className="text-emerald-500 text-[9px] font-mono block">AMELIORATIONS (BETTER FROM)</span>
+                      <div className="flex flex-wrap gap-1">
+                        {rem.modalitiesBetter.length > 0 ? rem.modalitiesBetter.map(m => (
+                          <span key={m} className="px-2 py-0.5 bg-emerald-500/5 text-emerald-500 rounded-lg text-[9.5px]">
+                            {m}
+                          </span>
+                        )) : <span className="text-slate-400 text-[9.5px]">None marked</span>}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>

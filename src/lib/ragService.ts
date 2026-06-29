@@ -1,4 +1,6 @@
 import { ollamaService } from "./ollama";
+import { MASTER_REMEDY_DB } from "./materiaMedicaDb";
+import { ORGANON_APHORISMS } from "./organonData";
 
 export interface KnowledgeDocument {
   id: string;
@@ -115,9 +117,51 @@ export interface SearchResult {
 
 export class RAGService {
   private vectorDbUrl: string | null;
+  private unifiedDb: KnowledgeDocument[] | null = null;
 
   constructor() {
     this.vectorDbUrl = process.env.VECTOR_DB_URL || null;
+  }
+
+  private getUnifiedDb(): KnowledgeDocument[] {
+    if (this.unifiedDb) return this.unifiedDb;
+
+    const docs = [...KNOWLEDGE_BASE];
+
+    // 1. Map MASTER_REMEDY_DB
+    if (Array.isArray(MASTER_REMEDY_DB)) {
+      MASTER_REMEDY_DB.forEach((rem) => {
+        const title = `Materia Medica Remedy: ${rem.identity.name} (${rem.identity.abbreviation})`;
+        const content = `Remedy name: ${rem.identity.name} (${rem.identity.abbreviation}). Kingdom: ${rem.identity.kingdom}. Family: ${rem.identity.family}. Source: ${rem.identity.sourceSubstance}. Core Theme: ${rem.essence?.coreTheme || ""}. Mental personality picture: ${rem.mentalPicture?.personality || ""}. Modalities better from: ${rem.modalities?.betterFrom?.join(", ") || ""}; worse from: ${rem.modalities?.worseFrom?.join(", ") || ""}. Keynotes: ${rem.keynotes?.top10?.join(", ") || ""}. Dominant miasm: ${rem.miasmaticAnalysis?.dominantMiasm || ""}. relationships complementary: ${rem.relationships?.complementary?.join(", ") || ""}; inimical: ${rem.relationships?.inimical?.join(", ") || ""}.`;
+        docs.push({
+          id: `rem_${rem.id}`,
+          category: "Materia Medica",
+          title,
+          content,
+          citations: [`Kent's/Boericke's Materia Medica: ${rem.identity.name}`, `Homeo Healthcare Database`],
+          tags: [rem.identity.name.toLowerCase(), rem.identity.abbreviation.toLowerCase(), rem.identity.kingdom.toLowerCase(), "materia medica", "remedy", "protocol"]
+        });
+      });
+    }
+
+    // 2. Map ORGANON_APHORISMS
+    if (Array.isArray(ORGANON_APHORISMS)) {
+      ORGANON_APHORISMS.forEach((aph) => {
+        const title = `Organon of Medicine ${aph.number}: ${aph.title}`;
+        const content = `Organon Aphorism ${aph.number} (${aph.edition}): ${aph.title}. Text: ${aph.originalText}. Modern Translation: ${aph.modernTranslation}. Clinical meaning: ${aph.clinicalMeaning}. Practical application: ${aph.practicalApplication}. related concepts: ${aph.relatedConcepts?.join(", ") || ""}. related remedies: ${aph.relatedRemedies?.join(", ") || ""}.`;
+        docs.push({
+          id: `org_${aph.id}`,
+          category: "Organon",
+          title,
+          content,
+          citations: [`Samuel Hahnemann, Organon of Medicine 6th Edition, Aphorism ${aph.number}`, `Clinical Meaning of Aphorism ${aph.number}`],
+          tags: [aph.number.toLowerCase(), aph.title.toLowerCase(), "organon", "aphorism", "hahnemann", "principles"]
+        });
+      });
+    }
+
+    this.unifiedDb = docs;
+    return docs;
   }
 
   // Calculate cosine similarity between two vectors
@@ -170,7 +214,7 @@ export class RAGService {
       }
     }
 
-    for (const doc of KNOWLEDGE_BASE) {
+    for (const doc of this.getUnifiedDb()) {
       // 1. Keyword Score (Weighted Query Coverage and Jaccard)
       const docText = `${doc.title} ${doc.content} ${doc.tags.join(" ")}`;
       const docTokens = this.getTokens(docText);

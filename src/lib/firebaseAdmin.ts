@@ -49,7 +49,7 @@ export function getAdminAuth() {
   if (!isInitialized || !getApps().length) {
     throw new Error("Firebase Admin SDK is not initialized. Check your credentials.");
   }
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
   const { getAuth } = require("firebase-admin/auth");
   return getAuth();
 }

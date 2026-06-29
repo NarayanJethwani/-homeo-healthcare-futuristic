@@ -648,6 +648,34 @@ export class AIRouterService {
       console.error("Local RAG Search encountered error, continuing:", e);
     }
 
+    // Retrieve RAG Grounding Context if there's no direct high-confidence hit
+    let groundingContext = "";
+    const activeCitations: string[] = [];
+
+    try {
+      const searchResults = await ragService.hybridSearch(query);
+      const relevantMatches = searchResults
+        .filter(r => r.score >= 0.35)
+        .slice(0, 3);
+
+      if (relevantMatches.length > 0) {
+        console.log(`[AIRouter] Found ${relevantMatches.length} grounding documents for query: "${query.substring(0, 30)}..."`);
+        groundingContext = "\n\n[GROUNDING CONTEXT FROM APPROVED HOMEOPATHIC SOURCES]\n";
+        relevantMatches.forEach((m, idx) => {
+          groundingContext += `[Source ${idx + 1}]: ${m.document.title}\nContent snippet: ${m.document.content}\n\n`;
+          m.document.citations.forEach(c => {
+            if (!activeCitations.includes(c)) activeCitations.push(c);
+          });
+        });
+        
+        systemInstruction = `${systemInstruction}\n\nGround your medical analysis strictly in the provided approved homeopathic context. Cite your sources dynamically when referencing facts from the context.`;
+      }
+    } catch (e) {
+      console.error("[AIRouter] Error fetching grounding context:", e);
+    }
+
+    const finalQuery = groundingContext ? `${query}\n\n${groundingContext}` : query;
+
     // 3. Staggered Parallel Race candidate tasks building
     const tasks: RaceTask[] = [];
 
@@ -675,7 +703,7 @@ export class AIRouterService {
             model: mName,
             run: async (signal) => {
               return await this.executeProviderCall("Gemini", mName, () => 
-                this.callGemini(geminiKey, mName, query, systemInstruction, signal)
+                this.callGemini(geminiKey, mName, finalQuery, systemInstruction, signal)
               );
             }
           });
@@ -691,7 +719,7 @@ export class AIRouterService {
         model: "deepseek-chat",
         run: async (signal) => {
           return await this.executeProviderCall("DeepSeek", "deepseek-chat", () =>
-            this.callDeepSeek(process.env.DEEPSEEK_API_KEY!, query, systemInstruction, signal)
+            this.callDeepSeek(process.env.DEEPSEEK_API_KEY!, finalQuery, systemInstruction, signal)
           );
         }
       });
@@ -712,7 +740,7 @@ export class AIRouterService {
             model: model,
             run: async (signal) => {
               return await this.executeProviderCall("Qwen", model, () =>
-                this.callQwen(process.env.QWEN_API_KEY!, model, query, systemInstruction, signal)
+                this.callQwen(process.env.QWEN_API_KEY!, model, finalQuery, systemInstruction, signal)
               );
             }
           });
@@ -730,7 +758,7 @@ export class AIRouterService {
         model: "glm-4",
         run: async (signal) => {
           return await this.executeProviderCall("GLM", "glm-4", () =>
-            this.callGLM(process.env.GLM_API_KEY!, query, systemInstruction, signal)
+            this.callGLM(process.env.GLM_API_KEY!, finalQuery, systemInstruction, signal)
           );
         }
       });
@@ -744,7 +772,7 @@ export class AIRouterService {
         model: "hf-dynamic",
         run: async (signal) => {
           return await this.executeProviderCall("HuggingFace", "hf-dynamic", () =>
-            this.callHuggingFace(process.env.HF_API_KEY!, query, systemInstruction, signal)
+            this.callHuggingFace(process.env.HF_API_KEY!, finalQuery, systemInstruction, signal)
           );
         }
       });
@@ -764,7 +792,7 @@ export class AIRouterService {
               ? "primary"
               : "general";
           const model = ollamaService.selectModel(selectType);
-          return await ollamaService.generate(model, query, systemInstruction, { signal });
+          return await ollamaService.generate(model, finalQuery, systemInstruction, { signal });
         }
       });
     }
@@ -779,7 +807,7 @@ export class AIRouterService {
       const raceResult = await this.runWithStaggeredFallback(tasks, 4000);
       
       // Calculate token counts
-      const promptTokens = Math.ceil((query.length + systemInstruction.length) / 4);
+      const promptTokens = Math.ceil((finalQuery.length + systemInstruction.length) / 4);
       const completionTokens = Math.ceil(raceResult.response.length / 4);
       const totalTokens = promptTokens + completionTokens;
 
@@ -791,7 +819,8 @@ export class AIRouterService {
         latencyMs: raceResult.latencyMs,
         retryCount: 0,
         cacheHit: false,
-        knowledgeHit: false
+        knowledgeHit: activeCitations.length > 0,
+        citations: activeCitations.length > 0 ? activeCitations : undefined
       };
 
       // Record success in health manager
@@ -801,8 +830,8 @@ export class AIRouterService {
       const ttl = taskCategory === "faq" ? CACHE_TTLS.FAQ : CACHE_TTLS.ARTICLE;
       await cacheService.set(cacheKey, result, ttl);
 
-      this.updateStats(true, raceResult.latencyMs, 0, false, false, raceResult.provider);
-      this.addRequestLog(query, taskCategory, raceResult.provider, raceResult.model, raceResult.latencyMs, "Success", 0, false, false, promptTokens, completionTokens, totalTokens);
+      this.updateStats(true, raceResult.latencyMs, 0, false, activeCitations.length > 0, raceResult.provider);
+      this.addRequestLog(query, taskCategory, raceResult.provider, raceResult.model, raceResult.latencyMs, "Success", 0, false, activeCitations.length > 0, promptTokens, completionTokens, totalTokens);
 
       return result;
     } catch (err: any) {

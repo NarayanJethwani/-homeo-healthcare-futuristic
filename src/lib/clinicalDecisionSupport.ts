@@ -282,3 +282,342 @@ export function calculateClinicalDecisionSupport(caseInput: {
 
   return differentials.sort((a, b) => b.overallScore - a.overallScore);
 }
+
+// ========================================================
+// REMEDY COMPARISON & LONGITUDINAL OUTCOME INTEL
+// ========================================================
+
+export interface RemedyComparisonProfile {
+  id: string;
+  name: string;
+  abbreviation: string;
+  kingdom: string;
+  family: string;
+  thermalState: 'Hot' | 'Chilly' | 'Ambi';
+  thirstIndex: number;
+  miasms: { psora: number; sycosis: number; syphilis: number; tubercular: number };
+  organAffinities: Array<{ organ: string; rating: number }>;
+  foodDesires: string[];
+  foodAversions: string[];
+  modalitiesWorse: string[];
+  modalitiesBetter: string[];
+  potencySensitivity: number;
+}
+
+export function compareRemedyGenomes(remedyIds: string[]): RemedyComparisonProfile[] {
+  const comparisonList: RemedyComparisonProfile[] = [];
+
+  remedyIds.forEach(id => {
+    const rem = GENOME_REMEDY_DB.find(r => r.id === id);
+    if (!rem) return;
+
+    const abbr = remedyIdToAbbr[rem.id] || rem.identity.name.substring(0, 5);
+    const thermal = rem.genome.thermalHeatIndex > 65 ? 'Hot' : rem.genome.thermalHeatIndex < 35 ? 'Chilly' : 'Ambi';
+
+    const foodDesires: string[] = [];
+    if (rem.genome.sweetsDesire > 65) foodDesires.push("Sweets");
+    if (rem.genome.saltDesire > 65) foodDesires.push("Salt");
+    if (rem.genome.fatsDesire > 65) foodDesires.push("Fats");
+    if (rem.genome.spicesDesire > 65) foodDesires.push("Spices");
+    if (rem.genome.stimulantsDesire > 65) foodDesires.push("Stimulants");
+    if (rem.genome.eggsDesire > 65) foodDesires.push("Eggs");
+    if (rem.genome.warmDrinksDesire > 65) foodDesires.push("Warm Drinks");
+    if (rem.genome.coldDrinksDesire > 65) foodDesires.push("Cold Drinks");
+
+    const foodAversions: string[] = [];
+    if (rem.genome.meatAversion > 65) foodAversions.push("Meat");
+    if (rem.genome.fatAversion > 65) foodAversions.push("Fats");
+    if (rem.genome.milkAversion > 65) foodAversions.push("Milk");
+    if (rem.genome.breadAversion > 65) foodAversions.push("Bread");
+    if (rem.genome.coldWaterAversion > 65) foodAversions.push("Cold Water");
+    if (rem.genome.bathingAversion > 65) foodAversions.push("Bathing");
+
+    const modalitiesWorse: string[] = [];
+    if (rem.genome.draftSensitivity > 65) modalitiesWorse.push("Cold Drafts");
+    if (rem.genome.motionAggravation > 65) modalitiesWorse.push("Motion");
+    if (rem.genome.midnightAggravation > 65) modalitiesWorse.push("Midnight (12-2 AM)");
+    if (rem.genome.afternoonAggravation > 65) modalitiesWorse.push("Afternoon (4-8 PM)");
+    if (rem.genome.morningAggravation > 65) modalitiesWorse.push("Morning on Waking");
+    if (rem.genome.warmRoomAggravation > 65) modalitiesWorse.push("Warm Room");
+
+    const modalitiesBetter: string[] = [];
+    if (rem.genome.motionAmelioration > 65) modalitiesBetter.push("Gentle Motion");
+    if (rem.genome.pressureAmelioration > 65) modalitiesBetter.push("Hard Pressure");
+    if (rem.genome.openAirDesire > 65) modalitiesBetter.push("Open Cool Air");
+    if (rem.genome.restAmelioration > 65) modalitiesBetter.push("Rest");
+
+    const affinities = [
+      { organ: "Skin", rating: rem.genome.skinAffinity || 0 },
+      { organ: "Digestive Axis", rating: rem.genome.digestiveAxis || 0 },
+      { organ: "Hepatic", rating: rem.genome.hepaticAffinity || 0 },
+      { organ: "Renal", rating: rem.genome.renalAffinity || 0 },
+      { organ: "Brain/Mind", rating: rem.genome.brainAffinity || 0 },
+      { organ: "Respiratory", rating: rem.genome.respiratoryAffinity || 0 },
+      { organ: "Musculoskeletal", rating: rem.genome.musculoskeletalAffinity || 0 },
+      { organ: "Nervous System", rating: rem.genome.nervousSystemAffinity || 0 },
+      { organ: "Urinary", rating: rem.genome.urinaryAffinity || 0 }
+    ].sort((a, b) => b.rating - a.rating).slice(0, 4);
+
+    comparisonList.push({
+      id: rem.id,
+      name: rem.identity.name,
+      abbreviation: abbr,
+      kingdom: rem.identity.kingdom,
+      family: rem.identity.family,
+      thermalState: thermal,
+      thirstIndex: rem.genome.thirstIndex || 50,
+      miasms: {
+        psora: rem.genome.psoraComplexity || 50,
+        sycosis: rem.genome.sycosisComplexity || 50,
+        syphilis: rem.genome.syphilisComplexity || 50,
+        tubercular: rem.genome.tubercularComplexity || 50
+      },
+      organAffinities: affinities,
+      foodDesires,
+      foodAversions,
+      modalitiesWorse,
+      modalitiesBetter,
+      potencySensitivity: rem.genome.potencySensitivity || 50
+    });
+  });
+
+  return comparisonList;
+}
+
+export interface HeringsLawReport {
+  match: boolean;
+  score: number; // 0 to 100
+  details: string[];
+  direction: 'Outward' | 'Downward' | 'Reverse' | 'Mixed' | 'Unfavorable';
+}
+
+export function analyzeHeringsLaw(
+  previousSymptoms: Array<{ name: string; severity: string; organAffinity: string }>,
+  currentSymptoms: Array<{ name: string; severity: string; organAffinity: string }>
+): HeringsLawReport {
+  const details: string[] = [];
+  let score = 50; // Neutral baseline
+  let direction: 'Outward' | 'Downward' | 'Reverse' | 'Mixed' | 'Unfavorable' = 'Mixed';
+
+  // Helper to convert severity to numeric weight
+  const severityWeight = (sev: string): number => {
+    const s = sev.toLowerCase();
+    if (s.includes("severe")) return 3;
+    if (s.includes("moderate")) return 2;
+    if (s.includes("mild")) return 1;
+    return 0; // if stabilized or resolved
+  };
+
+  // Helper to determine depth of organ affinity
+  const getOrganDepth = (affinity: string): number => {
+    const a = affinity.toLowerCase();
+    if (a.includes("renal") || a.includes("kidney") || a.includes("cardio") || a.includes("heart") || a.includes("endocrine") || a.includes("pancreas") || a.includes("brain") || a.includes("nervous") || a.includes("respiratory") || a.includes("lung") || a.includes("hepatic") || a.includes("liver")) {
+      return 3; // Deep Vital Organ
+    }
+    if (a.includes("digestive") || a.includes("stomach") || a.includes("gastro") || a.includes("gut")) {
+      return 2; // Mid-level / Systemic
+    }
+    return 1; // Superficial / Musculoskeletal / Skin
+  };
+
+  // Track symptom changes
+  const prevMap = new Map(previousSymptoms.map(s => [s.name.toLowerCase(), s]));
+  const currMap = new Map(currentSymptoms.map(s => [s.name.toLowerCase(), s]));
+
+  let deepImprovedCount = 0;
+  let superficialWorsenedCount = 0;
+  let suppressionCount = 0;
+
+  // 1. Inside-Out Analysis
+  previousSymptoms.forEach(prev => {
+    const curr = currMap.get(prev.name.toLowerCase());
+    const prevSev = severityWeight(prev.severity);
+    const currSev = curr ? severityWeight(curr.severity) : 0; // 0 if symptom disappeared
+    
+    const depth = getOrganDepth(prev.organAffinity);
+
+    if (prevSev > currSev) {
+      // Symptom improved or resolved
+      if (depth === 3) {
+        deepImprovedCount++;
+      }
+    } else if (prevSev < currSev) {
+      // Symptom worsened or appeared (should check if superficial)
+      if (depth === 1) {
+        superficialWorsenedCount++;
+      }
+    }
+  });
+
+  // Check new symptoms
+  currentSymptoms.forEach(curr => {
+    if (!prevMap.has(curr.name.toLowerCase())) {
+      // New symptom appeared
+      const depth = getOrganDepth(curr.organAffinity);
+      if (depth === 1) {
+        superficialWorsenedCount++;
+      } else if (depth === 3) {
+        // New deep symptom appeared! This is suppression / unfavorable
+        suppressionCount++;
+      }
+    }
+  });
+
+  // Evaluate Inside-Out
+  if (deepImprovedCount > 0 && superficialWorsenedCount > 0) {
+    details.push(`Inside-Out Match: Deep vital organ symptoms (${deepImprovedCount}) improved while superficial skin/extremity symptoms (${superficialWorsenedCount}) surfaced. Positive prognosis [Hering].`);
+    score += 25;
+  }
+
+  // 2. Above-Downwards Analysis
+  // If symptoms in head/neck improved, and symptoms in knees/legs/feet appeared or worsened
+  let headImproved = false;
+  let limbsWorsened = false;
+
+  previousSymptoms.forEach(prev => {
+    const name = prev.name.toLowerCase();
+    const curr = currMap.get(name);
+    const prevSev = severityWeight(prev.severity);
+    const currSev = curr ? severityWeight(curr.severity) : 0;
+
+    if (prevSev > currSev && (name.includes("head") || name.includes("vertigo") || name.includes("mind") || name.includes("anxiety") || name.includes("migraine") || name.includes("throat"))) {
+      headImproved = true;
+    }
+  });
+
+  currentSymptoms.forEach(curr => {
+    const name = curr.name.toLowerCase();
+    if ((name.includes("leg") || name.includes("foot") || name.includes("joint") || name.includes("ankle") || name.includes("knee") || name.includes("edema")) && (!prevMap.has(name) || severityWeight(curr.severity) > severityWeight(prevMap.get(name)!.severity))) {
+      limbsWorsened = true;
+    }
+  });
+
+  if (headImproved && limbsWorsened) {
+    details.push("Above-Downward Match: Head/psychological symptoms improved, and joint/extremity symptoms became active. Downward progression of cure [Hering].");
+    score += 15;
+  }
+
+  // 3. Suppression check
+  if (suppressionCount > 0) {
+    const sampleSymptom = currentSymptoms.find(s => getOrganDepth(s.organAffinity) === 3 && !prevMap.has(s.name.toLowerCase()))?.name;
+    details.push(`Warning (Suppression): New vital organ symptom "${sampleSymptom || 'Deep pathology'}" appeared. Indicates unfavorable suppression [Hahnemann].`);
+    score -= 30;
+    direction = 'Unfavorable';
+  }
+
+  // 4. General improvement or worsening
+  let totalImproved = 0;
+  let totalWorsened = 0;
+
+  previousSymptoms.forEach(prev => {
+    const curr = currMap.get(prev.name.toLowerCase());
+    const prevSev = severityWeight(prev.severity);
+    const currSev = curr ? severityWeight(curr.severity) : 0;
+
+    if (prevSev > currSev) totalImproved++;
+    if (prevSev < currSev) totalWorsened++;
+  });
+
+  if (totalImproved > 0 && totalWorsened === 0) {
+    details.push("Constitutional Improvement: All tracked chronic complaints are systematically resolving.");
+    score += 20;
+    direction = 'Outward';
+  } else if (totalWorsened > 0 && totalImproved === 0 && suppressionCount > 0) {
+    details.push("General Deterioration: Aggravation of primary pathogenetic load without outward redirect.");
+    score -= 15;
+    direction = 'Unfavorable';
+  }
+
+  // Bound score
+  score = Math.max(0, Math.min(100, score));
+  const match = score >= 65;
+
+  if (direction !== 'Unfavorable') {
+    if (match) {
+      direction = headImproved && limbsWorsened ? 'Downward' : 'Outward';
+    } else if (score < 45) {
+      direction = 'Unfavorable';
+    } else {
+      direction = 'Mixed';
+    }
+  }
+
+  return {
+    match,
+    score,
+    details: details.length > 0 ? details : ["No significant directional shifts or Hering's dynamics detected in this follow-up interval."],
+    direction
+  };
+}
+
+export interface PrescriptionSafetyResult {
+  isSafe: boolean;
+  warnings: string[];
+  relationships: string[];
+}
+
+export function checkPrescriptionSafety(
+  remedyName: string,
+  patientImplantsOrConditions: string[] = [],
+  activeRemedies: string[] = []
+): PrescriptionSafetyResult {
+  const warnings: string[] = [];
+  const relationships: string[] = [];
+  const normalizedNew = remedyName.toLowerCase().trim();
+
+  // Inimical (antagonistic) mapping
+  const INIMICAL_MAP: Record<string, string[]> = {
+    "sulphur": ["sepia", "sepia officinalis"],
+    "sulph": ["sep", "sepia"],
+    "sepia": ["sulphur", "sulph"],
+    "sep": ["sulphur", "sulph"],
+    "apis": ["rhus-t", "rhus tox", "rhus toxicodendron"],
+    "rhus-t": ["apis", "apis mellifica"],
+    "lachesis": ["dulcamara"],
+    "lach": ["dulc"],
+    "silicea": ["mercurius", "merc", "merc-sol"],
+    "sil": ["merc", "merc-sol"],
+    "mercurius": ["silicea", "sil"],
+    "merc": ["silicea", "sil"],
+    "zincum": ["nux-v", "nux vomica"],
+    "zinc": ["nux-v", "nux"]
+  };
+
+  // Check active remedies for inimical combinations
+  activeRemedies.forEach(active => {
+    const normalizedActive = active.toLowerCase().trim();
+    
+    const inimicalsForNew = INIMICAL_MAP[normalizedNew] || [];
+    if (inimicalsForNew.some(i => normalizedActive.includes(i) || i.includes(normalizedActive))) {
+      warnings.push(`Antagonistic Pair: Prescribing ${remedyName} alongside active remedy ${active} is contraindicated due to inimical (antagonistic) relationship.`);
+      relationships.push(`Inimical: ${remedyName} ↔ ${active}`);
+    }
+
+    const inimicalsForActive = INIMICAL_MAP[normalizedActive] || [];
+    if (inimicalsForActive.some(i => normalizedNew.includes(i) || i.includes(normalizedNew))) {
+      if (!warnings.some(w => w.includes(active))) {
+        warnings.push(`Antagonistic Pair: Active remedy ${active} is inimical (antagonistic) to ${remedyName}.`);
+        relationships.push(`Inimical: ${active} ↔ ${remedyName}`);
+      }
+    }
+  });
+
+  // Check for foreign body implants when prescribing Silicea
+  const isSilicea = normalizedNew.includes("silicea") || normalizedNew === "sil";
+  if (isSilicea) {
+    const implantKeywords = ["implant", "pacemaker", "plate", "screw", "stent", "valve", "prosthetic", "mesh", "device"];
+    const hasImplant = patientImplantsOrConditions.some(cond => 
+      implantKeywords.some(kw => cond.toLowerCase().includes(kw))
+    );
+
+    if (hasImplant) {
+      warnings.push(`Foreign Body Expulsion Hazard: Silicea stimulates suppuration and elimination of foreign objects. Contraindicated for patients with pacemakers, surgical plates/screws, or implants.`);
+    }
+  }
+
+  return {
+    isSafe: warnings.length === 0,
+    warnings,
+    relationships
+  };
+}

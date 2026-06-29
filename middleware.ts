@@ -12,7 +12,12 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const session = await verifyAdminSessionCookie(request.cookies.get(ADMIN_SESSION_COOKIE)?.value);
+  const cookieVal = request.cookies.get(ADMIN_SESSION_COOKIE)?.value;
+  console.log(`[Middleware] pathname: ${pathname}, key: ${ADMIN_SESSION_COOKIE}, found: ${!!cookieVal}`);
+
+  const session = await verifyAdminSessionCookie(cookieVal);
+  console.log(`[Middleware] session result: ${!!session}`);
+
   if (!session) {
     const loginUrl = new URL("/admin/login", request.url);
     loginUrl.searchParams.set("next", pathname);
