@@ -5368,3 +5368,61 @@ export async function syncRepertoryToClinicalSheet(
     throw error;
   }
 }
+
+/**
+ * Uploads a base64 encoded file to a patient's Google Drive folder.
+ */
+export async function uploadFileToFolder(
+  folderId: string,
+  fileName: string,
+  mimeType: string,
+  fileData: string
+): Promise<{ success: boolean; fileId: string; fileUrl: string }> {
+  const auth = getGoogleAuth();
+  if (!auth) {
+    console.log("No Google auth — returning mock file upload for:", fileName);
+    return {
+      success: true,
+      fileId: `mock-file-${Date.now()}`,
+      fileUrl: `https://drive.google.com/file/d/mock-file-id/view?usp=drivesdk`,
+    };
+  }
+
+  const drive = google.drive({ version: "v3", auth });
+  try {
+    let base64Data = fileData;
+    if (fileData.includes(";base64,")) {
+      base64Data = fileData.split(";base64,")[1];
+    }
+    const buffer = Buffer.from(base64Data, "base64");
+
+    const { Readable } = await import("stream");
+    const media = {
+      mimeType: mimeType,
+      body: Readable.from(buffer),
+    };
+
+    const response = await drive.files.create({
+      requestBody: {
+        name: fileName,
+        parents: [folderId],
+      },
+      media: media,
+      fields: "id,webViewLink",
+      supportsAllDrives: true,
+    });
+
+    return {
+      success: true,
+      fileId: response.data.id || "",
+      fileUrl: response.data.webViewLink || "",
+    };
+  } catch (error) {
+    console.error("Failed to upload file to Google Drive folder:", error);
+    return {
+      success: false,
+      fileId: "",
+      fileUrl: "",
+    };
+  }
+}
