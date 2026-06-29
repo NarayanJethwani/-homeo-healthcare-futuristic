@@ -8107,7 +8107,7 @@ ${err.message || err}`);
         
         {/* Navigation Tabs Wrapper */}
         {!immersiveMode && (
-          <div className={activeTab === "medical-academy" ? "px-6 pt-6 flex items-center justify-between" : ""}>
+          <div className={activeTab === "medical-academy" ? "px-6 pt-6 flex items-center justify-between relative z-50" : "relative z-50"}>
             {/* Navigation Tabs */}
             <div className="flex flex-wrap bg-white/80 backdrop-blur-xl border border-slate-200/80 p-1.5 rounded-3xl gap-1.5 shadow-[0_8px_32px_0_rgba(15,23,42,0.06)] max-w-fit mb-6 transition-all duration-300 relative z-40">
               {TABS_DEFINITION.map((tab) => {
@@ -8119,7 +8119,7 @@ ${err.message || err}`);
                 if ((tab as any).adminOnly && session?.role !== "admin") return null;
 
                 return (
-                  <div key={tab.id} className="relative group">
+                  <div key={tab.id} className="relative group hover:z-50">
                     <button
                       onClick={() => setActiveTab(tab.id as any)}
                       className={`px-4 py-2.5 rounded-2xl text-[10.5px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer border-none hover:scale-102 active:scale-98 duration-200 relative ${
