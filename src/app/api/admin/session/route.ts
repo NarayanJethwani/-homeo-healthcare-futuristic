@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     return response;
   } catch (err: any) {
     console.error("Failed to create admin session:", err?.message || err);
-    return jsonResponse({ success: false, message: "Unable to create admin session." }, 500);
+    return jsonResponse({ success: false, message: "Unable to create admin session: " + (err?.message || String(err)) }, 500);
   }
 }
 
