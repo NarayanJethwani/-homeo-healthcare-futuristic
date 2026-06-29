@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ADMIN_SESSION_COOKIE, createAdminSessionCookie } from "@/lib/adminSession";
+import { verifyFirebaseIdToken } from "@/lib/firebaseAuthVerify";
 
 const SESSION_MAX_AGE_SECONDS = 8 * 60 * 60;
 
@@ -14,8 +15,8 @@ function jsonResponse(body: Record<string, unknown>, status = 200) {
 function cookieOptions() {
   return {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax" as const,
+    secure: true,
+    sameSite: "strict" as const,
     path: "/",
     maxAge: SESSION_MAX_AGE_SECONDS,
   };
@@ -29,8 +30,8 @@ export async function POST(request: NextRequest) {
       return jsonResponse({ success: false, message: "Missing Firebase ID token." }, 400);
     }
 
-    const { getAdminAuth, getAdminDb } = await import("@/lib/firebaseAdmin");
-    const decodedToken = await getAdminAuth().verifyIdToken(body.idToken);
+    const { getAdminDb } = await import("@/lib/firebaseAdmin");
+    const decodedToken = await verifyFirebaseIdToken(body.idToken);
     const uid = decodedToken.uid;
     const email = decodedToken.email;
     let name = decodedToken.name || decodedToken.email?.split("@")[0] || "Doctor";

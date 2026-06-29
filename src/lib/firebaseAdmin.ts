@@ -1,5 +1,4 @@
 import { cert, getApps, initializeApp } from "firebase-admin/app";
-import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 
 let isInitialized = false;
@@ -50,6 +49,8 @@ export function getAdminAuth() {
   if (!isInitialized || !getApps().length) {
     throw new Error("Firebase Admin SDK is not initialized. Check your credentials.");
   }
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { getAuth } = require("firebase-admin/auth");
   return getAuth();
 }
 
