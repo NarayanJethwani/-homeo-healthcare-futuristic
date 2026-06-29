@@ -814,6 +814,16 @@ export default function AdminDashboard() {
   }, []);
 
   useEffect(() => {
+    const handleIframeMessage = (event: MessageEvent) => {
+      if (event.data?.type === "toggle-immersive-mode") {
+        setImmersiveMode(!!event.data.active);
+      }
+    };
+    window.addEventListener("message", handleIframeMessage);
+    return () => window.removeEventListener("message", handleIframeMessage);
+  }, []);
+
+  useEffect(() => {
     const fetchClinicians = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, "users"));
