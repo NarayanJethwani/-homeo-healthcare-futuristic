@@ -104,13 +104,18 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               if ('serviceWorker' in navigator) {
-                window.addEventListener('load', function() {
+                function registerSW() {
                   navigator.serviceWorker.register('/sw.js').then(function(reg) {
                     console.log('Homeo Healthcare ServiceWorker registered on scope: ', reg.scope);
                   }).catch(function(err) {
                     console.error('ServiceWorker registration failed: ', err);
                   });
-                });
+                }
+                if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                  registerSW();
+                } else {
+                  window.addEventListener('load', registerSW);
+                }
               }
             `
           }}
