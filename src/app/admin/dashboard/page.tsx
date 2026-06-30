@@ -696,12 +696,11 @@ const getCareLevelKey = (level: string) => {
   return "mild";
 };
 
-const getCareLevelRate = (level: string, cycle: string) => {
+const getCareLevelRate = (level: string, cycle: string, conditions: number = 1) => {
   const key = getCareLevelKey(level);
   const isWeekly = cycle === "Weekly";
   const basePrice = isWeekly ? careLevelsDetails[key].weeklyPrice : careLevelsDetails[key].monthlyPrice;
   
-  const conditions = 1;
   let surcharge = 0;
   if (conditions > 1) {
     const tierSurcharges = surchargesLookup[key];
@@ -4709,6 +4708,7 @@ export default function AdminDashboard() {
     billingCycle: "Monthly",
     concessionType: "None",
     durationText: "1-Month Consultation",
+    conditionsCount: 1,
     basePrice: 4800,
     discountOverride: 0,
     finalPrice: 4320,
@@ -5346,7 +5346,7 @@ Homeo Healthcare`;
 
   const getOptionLabel = (baseLabel: string, monthlyPrice: number) => {
     const isWeekly = newCaseForm.billingCycle === "Weekly";
-    const basePrice = getCareLevelRate(baseLabel, newCaseForm.billingCycle);
+    const basePrice = getCareLevelRate(baseLabel, newCaseForm.billingCycle, newCaseForm.conditionsCount);
     
     if (newCaseForm.durationText.includes("One-Time")) {
       return `${baseLabel} (₹${basePrice.toLocaleString("en-IN")} One-time)`;
@@ -5365,9 +5365,10 @@ Homeo Healthcare`;
     discountOverride: number,
     billingCycle: string,
     concessionType: string,
+    conditionsCount: number = 1,
     manualFinalPrice?: number
   ) => {
-    const rate = getCareLevelRate(level, billingCycle);
+    const rate = getCareLevelRate(level, billingCycle, conditionsCount);
     const val = getDurationValue(durationText);
     const base = rate * val;
     
@@ -5415,7 +5416,7 @@ Homeo Healthcare`;
   };
 
   const handleCareLevelChange = (level: string) => {
-    const pricing = calculateCaseFormPricing(level, newCaseForm.durationText, newCaseForm.age, newCaseForm.discountOverride, newCaseForm.billingCycle, newCaseForm.concessionType);
+    const pricing = calculateCaseFormPricing(level, newCaseForm.durationText, newCaseForm.age, newCaseForm.discountOverride, newCaseForm.billingCycle, newCaseForm.concessionType, newCaseForm.conditionsCount);
     setNewCaseForm(prev => ({
       ...prev,
       careLevel: level,
@@ -5427,7 +5428,7 @@ Homeo Healthcare`;
   };
 
   const handleDurationChange = (duration: string) => {
-    const pricing = calculateCaseFormPricing(newCaseForm.careLevel, duration, newCaseForm.age, newCaseForm.discountOverride, newCaseForm.billingCycle, newCaseForm.concessionType);
+    const pricing = calculateCaseFormPricing(newCaseForm.careLevel, duration, newCaseForm.age, newCaseForm.discountOverride, newCaseForm.billingCycle, newCaseForm.concessionType, newCaseForm.conditionsCount);
     setNewCaseForm(prev => ({
       ...prev,
       durationText: duration,
@@ -5440,7 +5441,7 @@ Homeo Healthcare`;
 
   const handleBillingCycleChange = (cycle: string) => {
     const defaultDuration = cycle === "Weekly" ? "4-Week Consultation" : "1-Month Consultation";
-    const pricing = calculateCaseFormPricing(newCaseForm.careLevel, defaultDuration, newCaseForm.age, newCaseForm.discountOverride, cycle, newCaseForm.concessionType);
+    const pricing = calculateCaseFormPricing(newCaseForm.careLevel, defaultDuration, newCaseForm.age, newCaseForm.discountOverride, cycle, newCaseForm.concessionType, newCaseForm.conditionsCount);
     setNewCaseForm(prev => ({
       ...prev,
       billingCycle: cycle,
@@ -5460,7 +5461,8 @@ Homeo Healthcare`;
       newCaseForm.age,
       discount,
       newCaseForm.billingCycle,
-      concession
+      concession,
+      newCaseForm.conditionsCount
     );
     setNewCaseForm(prev => ({
       ...prev,
@@ -5481,7 +5483,7 @@ Homeo Healthcare`;
     } else if (ageNum < 60 && concession === "Senior") {
       concession = "None";
     }
-    const pricing = calculateCaseFormPricing(newCaseForm.careLevel, newCaseForm.durationText, age, newCaseForm.discountOverride, newCaseForm.billingCycle, concession);
+    const pricing = calculateCaseFormPricing(newCaseForm.careLevel, newCaseForm.durationText, age, newCaseForm.discountOverride, newCaseForm.billingCycle, concession, newCaseForm.conditionsCount);
     setNewCaseForm(prev => ({
       ...prev,
       age,
@@ -5494,10 +5496,30 @@ Homeo Healthcare`;
   };
 
   const handleDiscountChange = (discount: number) => {
-    const pricing = calculateCaseFormPricing(newCaseForm.careLevel, newCaseForm.durationText, newCaseForm.age, discount, newCaseForm.billingCycle, newCaseForm.concessionType);
+    const pricing = calculateCaseFormPricing(newCaseForm.careLevel, newCaseForm.durationText, newCaseForm.age, discount, newCaseForm.billingCycle, newCaseForm.concessionType, newCaseForm.conditionsCount);
     setNewCaseForm(prev => ({
       ...prev,
       discountOverride: discount,
+      finalPrice: pricing.finalPrice,
+      receivedAmount: pricing.finalPrice,
+      remainingBalance: 0
+    }));
+  };
+
+  const handleConditionsCountChange = (count: number) => {
+    const pricing = calculateCaseFormPricing(
+      newCaseForm.careLevel,
+      newCaseForm.durationText,
+      newCaseForm.age,
+      newCaseForm.discountOverride,
+      newCaseForm.billingCycle,
+      newCaseForm.concessionType,
+      count
+    );
+    setNewCaseForm(prev => ({
+      ...prev,
+      conditionsCount: count,
+      basePrice: pricing.basePrice,
       finalPrice: pricing.finalPrice,
       receivedAmount: pricing.finalPrice,
       remainingBalance: 0
@@ -5564,7 +5586,8 @@ Homeo Healthcare`;
         newCaseForm.age,
         newCaseForm.discountOverride,
         newCaseForm.billingCycle,
-        newCaseForm.concessionType
+        newCaseForm.concessionType,
+        newCaseForm.conditionsCount
       );
       const concessionVal = newCaseForm.concessionType === "Senior"
         ? "Senior 15%"
@@ -5589,7 +5612,7 @@ Homeo Healthcare`;
           country: newCaseForm.country,
           complaint: newCaseForm.complaint,
           careLevel: newCaseForm.careLevel,
-          conditionsCount: 1,
+          conditionsCount: newCaseForm.conditionsCount,
           durationText: newCaseForm.durationText,
           finalPrice: newCaseForm.finalPrice,
           receivedAmount: newCaseForm.receivedAmount,
@@ -5640,7 +5663,7 @@ Homeo Healthcare`;
             createdAt: new Date().toISOString(),
             billingCycle: newCaseForm.billingCycle,
             concessionApplied: concessionVal,
-            conditionsCount: 1,
+            conditionsCount: newCaseForm.conditionsCount,
             durationValue: getDurationValue(newCaseForm.durationText)
           } as any;
           if (isPlanningRegisteredPatient) {
@@ -5665,6 +5688,7 @@ Homeo Healthcare`;
           billingCycle: "Monthly",
           concessionType: "None",
           durationText: "1-Month Consultation",
+          conditionsCount: 1,
           basePrice: 4800,
           discountOverride: 0,
           finalPrice: 4320,
@@ -5716,7 +5740,7 @@ Homeo Healthcare`;
         createdAt: new Date().toISOString(),
         billingCycle: newCaseForm.billingCycle,
         concessionApplied: concessionVal,
-        conditionsCount: 1,
+        conditionsCount: newCaseForm.conditionsCount,
         durationValue: getDurationValue(newCaseForm.durationText)
       } as any;
       
@@ -5776,7 +5800,7 @@ Homeo Healthcare`;
     const careLevel = "🌱 Acute & Wellness Care";
     const duration = "1-Month Consultation";
     const cycle = "Monthly";
-    const pricing = calculateCaseFormPricing(careLevel, duration, ageVal, 0, cycle, concession);
+    const pricing = calculateCaseFormPricing(careLevel, duration, ageVal, 0, cycle, concession, 1);
 
     setNewCaseForm({
       name: patient.name,
@@ -5792,6 +5816,7 @@ Homeo Healthcare`;
       billingCycle: cycle,
       concessionType: concession,
       durationText: duration,
+      conditionsCount: 1,
       basePrice: pricing.basePrice,
       discountOverride: 0,
       finalPrice: pricing.finalPrice,
@@ -5875,7 +5900,7 @@ Homeo Healthcare`;
         const careLevel = "⚡ Standard Chronic Care";
         const duration = "1-Month Consultation";
         const cycle = "Monthly";
-        const pricing = calculateCaseFormPricing(careLevel, duration, ageVal, 0, cycle, concession);
+        const pricing = calculateCaseFormPricing(careLevel, duration, ageVal, 0, cycle, concession, 1);
 
         // Prefill New Case Form
         setNewCaseForm({
@@ -5892,6 +5917,7 @@ Homeo Healthcare`;
           billingCycle: cycle,
           concessionType: concession,
           durationText: duration,
+          conditionsCount: 1,
           basePrice: pricing.basePrice,
           discountOverride: 0,
           finalPrice: pricing.finalPrice,
@@ -6275,7 +6301,7 @@ Homeo Healthcare`;
     const careLevel = "⚡ Standard Chronic Care";
     const duration = "1-Month Consultation";
     const cycle = "Monthly";
-    const pricing = calculateCaseFormPricing(careLevel, duration, ageVal, 0, cycle, concession);
+    const pricing = calculateCaseFormPricing(careLevel, duration, ageVal, 0, cycle, concession, 1);
     
     // Prefill new case taking form
     setNewCaseForm({
@@ -6292,6 +6318,7 @@ Homeo Healthcare`;
       billingCycle: cycle,
       concessionType: concession,
       durationText: duration,
+      conditionsCount: 1,
       basePrice: pricing.basePrice,
       discountOverride: 0,
       finalPrice: pricing.finalPrice,
@@ -8128,7 +8155,8 @@ ${err.message || err}`);
     newCaseForm.age,
     newCaseForm.discountOverride,
     newCaseForm.billingCycle,
-    newCaseForm.concessionType
+    newCaseForm.concessionType,
+    newCaseForm.conditionsCount
   );
 
   return (
@@ -13413,6 +13441,7 @@ ${err.message || err}`);
                         billingCycle: "Monthly",
                         concessionType: "None",
                         durationText: "1-Month Consultation",
+                        conditionsCount: 1,
                         basePrice: 4800,
                         discountOverride: 0,
                         finalPrice: 4320,
@@ -27051,6 +27080,22 @@ Exported on: ${new Date().toLocaleDateString()}
                               <option value="One-Time Consultation">One-Time Consultation</option>
                             </>
                           )}
+                        </select>
+                      </div>
+
+                      {/* Co-existing Conditions Selector */}
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Co-existing Conditions</label>
+                        <select
+                          value={newCaseForm.conditionsCount}
+                          onChange={(e) => handleConditionsCountChange(Number(e.target.value))}
+                          className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-semibold text-[#1A2421]"
+                        >
+                          <option value={1}>1 Condition (Standard)</option>
+                          <option value={2}>2 Conditions (+ Surcharge)</option>
+                          <option value={3}>3 Conditions (+ Surcharge)</option>
+                          <option value={4}>4 Conditions (+ Surcharge)</option>
+                          <option value={5}>5+ Conditions (+ Surcharge)</option>
                         </select>
                       </div>
 
