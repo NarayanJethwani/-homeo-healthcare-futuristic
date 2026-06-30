@@ -7,7 +7,7 @@
     "build": "NODE_OPTIONS='--max-old-space-size=5120' next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "npx tsc tests/adminWorkflow.test.ts --target es2020 --module commonjs --moduleResolution node --skipLibCheck --resolveJsonModule --esModuleInterop --outDir tests/dist && node tests/dist/tests/adminWorkflow.test.js && rm -rf tests/dist"
+    "test": "npx tsc tests/adminWorkflow.test.ts --target es2020 --module commonjs --moduleResolution node --skipLibCheck --resolveJsonModule --esModuleInterop --outDir tests/dist && node tests/dist/tests/adminWorkflow.test.js && rm -rf tests/dist && npx ts-node -O '{\"module\": \"commonjs\", \"esModuleInterop\": true}' -r tsconfig-paths/register src/features/knowledge-admin/__tests__/kms.test.ts && npx ts-node -O '{\"module\": \"commonjs\", \"esModuleInterop\": true}' -r tsconfig-paths/register tests/publicApi.test.ts"
   },
   "dependencies": {
     "@google-cloud/firestore": "^8.6.0",

@@ -80,6 +80,7 @@ export default function Navbar() {
     { name: "Dr Jethwani", href: "/dr-narayan-jethwani", icon: User, color: "bg-blue-500/10 text-blue-600 dark:text-blue-400" },
     { name: "Treatments", href: "/store", icon: ShoppingBag, color: "bg-amber-500/10 text-amber-600 dark:text-amber-400" },
     { name: "Blog", href: "/blogs", icon: BookOpen, color: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400" },
+    { name: "Knowledge", href: "/knowledge", icon: BookOpen, color: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400" },
     { name: "Contact", href: "/contact-us", icon: Mail, color: "bg-rose-500/10 text-rose-600 dark:text-rose-400" },
   ];
 

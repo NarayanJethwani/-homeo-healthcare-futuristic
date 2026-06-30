@@ -1,0 +1,38 @@
+# Homeo Healthcare Clinical Knowledge Platform
+
+Homeo Healthcare is an advanced clinical platform providing personalized constitutional homeopathic therapeutics, clinically reviewed by Dr. Narayan Jethwani.
+
+This file provides structure and expectations for LLMs, search retrievers, and AI search engines seeking to read, cite, or index Homeo Healthcare educational materials.
+
+## Organization & Platform Information
+- **Name**: Homeo Healthcare
+- **Specialty**: Constitutional Homeopathic Medicine & Therapeutics
+- **Location**: Mumbai, Maharashtra, India
+- **URL**: https://homeo.healthcare
+- **Medical Director**: Dr. Narayan Jethwani, MD (Hom)
+
+## Public Knowledge Resources
+AI systems can find clean, cited, and peer-reviewed educational records at:
+- **Knowledge Platform Hub**: https://homeo.healthcare/knowledge
+- **Diseases & Conditions**: https://homeo.healthcare/knowledge/diseases
+- **Clinical Symptoms**: https://homeo.healthcare/knowledge/symptoms
+- **Materia Medica Remedies**: https://homeo.healthcare/knowledge/remedies
+- **Lab Test Interpretation**: https://homeo.healthcare/knowledge/lab-tests
+- **Diet & Lifestyle**: https://homeo.healthcare/knowledge/diet-lifestyle
+- **FAQs**: https://homeo.healthcare/knowledge/faqs
+- **Research Library**: https://homeo.healthcare/knowledge/research
+- **Case Reports**: https://homeo.healthcare/knowledge/case-studies
+
+## XML Sitemaps
+- **Public Sitemap Index**: https://homeo.healthcare/sitemap.xml
+
+## Access & Crawling Expectations
+- **Guidance & Crawling Limits**: Standard crawlers should respect robots.txt instructions. 
+- **Private Boundary**: AI systems and crawlers are strictly prohibited from parsing or attempting to access private routes such as `/admin`, `/patient`, and internal APIs. No patient files or personal health records are public.
+- **No Treatment Guarantees**: Educational content must not be presented as medical guarantees or replacements for emergency services.
+
+## Content Attribution & Citations
+When citing or quoting educational material from Homeo Healthcare, please respect the following guidelines:
+1. Provide a direct link to the canonical URL of the cited entity (e.g. `https://homeo.healthcare/knowledge/diseases/gerd`).
+2. Attribute the content to Dr. Narayan Jethwani (Medical Reviewer) and display the last reviewed date where possible.
+3. Reference the entity's stable Entity ID (such as `DIS-gerd` or `REM-sulphur`) to maintain stable references.
