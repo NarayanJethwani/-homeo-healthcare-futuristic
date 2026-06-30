@@ -218,7 +218,7 @@ export default function Navbar() {
             transition={{ duration: 0.3 }}
             className="fixed inset-x-0 top-24 z-30 mx-6 lg:hidden"
           >
-            <div className="bg-white/80 dark:bg-[#0B0F19]/85 backdrop-blur-2xl border border-white/40 dark:border-slate-800/40 rounded-3xl p-5 shadow-[0_20px_50px_rgba(20,184,166,0.15)]">
+            <div className="bg-white/80 dark:bg-[#0B0F19]/85 backdrop-blur-2xl border border-white/40 dark:border-slate-800/40 rounded-3xl p-5 shadow-[0_20px_50px_rgba(20,184,166,0.15)] max-h-[calc(100vh-120px)] overflow-y-auto">
               <div className="flex flex-col gap-4">
                 {menuItems.map((item, idx) => (
                   <motion.div
