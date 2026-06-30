@@ -35,6 +35,7 @@ export function usePWAInstall() {
         window.matchMedia("(display-mode: standalone)").matches ||
         (window.navigator as any).standalone;
       
+      console.log('PWA Standalone Check (Next.js):', { isStandalone, navigatorStandalone: (window.navigator as any).standalone });
       setIsInstalled(isStandalone);
     };
 
