@@ -33,6 +33,30 @@ import { getClinicalCoverageScore, CURATED_DIAGNOSES, ORGAN_SYSTEMS, type Diagno
 import { VIRTUAL_PATIENTS, evaluateCaseSubmission } from "@/lib/caseSimulationLab";
 import { calculateClinicalDecisionSupport, checkPrescriptionSafety } from "@/lib/clinicalDecisionSupport";
 import Portal from "@/components/Portal";
+import {
+  useDashboardPreferences,
+  ActivityTimeline,
+  AdminSidebar,
+  AiRecommendationsPanel,
+  AnalyticsPanel,
+  ClinicalKpiCards,
+  CriticalAlertsPanel,
+  DashboardHeader,
+  DisplaySettingsDrawer,
+  GlobalCommandPalette,
+  PatientQueue,
+  QuickActionsGrid,
+  SystemStatusGrid,
+  TodayOverviewStats,
+  TodaySchedule,
+  DashboardProvider,
+  DashboardErrorBoundary,
+  QueueSkeleton,
+  AlertsSkeleton,
+  AnalyticsSkeleton,
+  featureFlags,
+} from "../../../features/dashboard";
+
 
 const ManageDoctorsPanel = dynamic(() => import("@/components/ManageDoctorsPanel"), {
   ssr: false,
@@ -648,6 +672,10 @@ const SAMPLE_FINDINGS = [
     { id: "academy-assess", label: "Assess" },
     { id: "academy-research", label: "Research" },
     { id: "academy-certify", label: "Certify" }
+  ],
+  team: [
+    { id: "team-directory", label: "Doctors Directory" },
+    { id: "team-access", label: "Access Controls" }
   ]
 };
 
@@ -781,11 +809,31 @@ export default function AdminDashboard() {
   const [immersiveMode, setImmersiveMode] = useState(false);
   const [academyMode, setAcademyMode] = useState("dashboard");
 
-  // Global Accessibility Controls
-  const [globalFontSize, setGlobalFontSize] = useState<"S" | "M" | "L" | "XL">("M");
-  const [globalLayoutZoom, setGlobalLayoutZoom] = useState<number>(100);
-  const [globalReadingWidth, setGlobalReadingWidth] = useState<"standard" | "wide" | "borderless">("standard");
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+  // Unified Dashboard Visual & Accessibility Preferences
+  const {
+    isSidebarCollapsed,
+    setIsSidebarCollapsed,
+    isDisplayDrawerOpen,
+    setIsDisplayDrawerOpen,
+    isGlobalSearchOpen,
+    setIsGlobalSearchOpen,
+    sidebarFavorites,
+    setSidebarFavorites,
+    dismissedAlerts,
+    setDismissedAlerts,
+    dashboardTimeframe,
+    setDashboardTimeframe,
+    reduceMotion,
+    setReduceMotion,
+    globalFontSize,
+    setGlobalFontSize,
+    globalLayoutZoom,
+    setGlobalLayoutZoom,
+    globalReadingWidth,
+    setGlobalReadingWidth,
+    theme,
+    toggleTheme
+  } = useDashboardPreferences();
 
   // Patient Portal Access & Settings States
   const [isPortalModalOpen, setIsPortalModalOpen] = useState(false);
@@ -798,6 +846,69 @@ export default function AdminDashboard() {
   const [portalOwnerUid, setPortalOwnerUid] = useState("");
   const [unlinkedPatientUsers, setUnlinkedPatientUsers] = useState<{ uid: string; email: string; name: string }[]>([]);
   const [isPortalSaving, setIsPortalSaving] = useState(false);
+
+
+
+  // Global keydown listeners for Ctrl+K/⌘K and Ctrl+[/⌘[
+  useEffect(() => {
+    const handleGlobalShortcuts = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setIsGlobalSearchOpen((prev) => !prev);
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key === "[") {
+        e.preventDefault();
+        setIsSidebarCollapsed((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleGlobalShortcuts);
+    return () => window.removeEventListener("keydown", handleGlobalShortcuts);
+  }, []);
+
+  // Handlers for Quick Actions
+  const handleTriggerQuickAction = (actionKey: string) => {
+    switch (actionKey) {
+      case "new-patient":
+        setIsNewCaseModalOpen(true);
+        break;
+      case "ai-intake":
+        setActiveTab("intake");
+        break;
+      case "upload-report":
+        setActiveTab("analyzer");
+        break;
+      case "create-prescription":
+        setActiveTab("treatment-planner");
+        break;
+      case "schedule-appointment":
+        setActiveTab("communication");
+        break;
+      case "generate-invoice":
+        if (patients.length > 0) {
+          setSelectedInvoicePatient(patients[0]);
+          setIsInvoiceModalOpen(true);
+        } else {
+          alert("Please register a patient first before generating an invoice.");
+        }
+        break;
+      case "emergency-case":
+        setIsNewCaseModalOpen(true);
+        alert("Emergency Case registration initialized.");
+        break;
+      case "message-center":
+        setActiveTab("communication");
+        break;
+      case "alerts-center":
+        setActiveTab("dashboard");
+        setTimeout(() => {
+          const el = document.getElementById("dashboard-alerts");
+          if (el) el.scrollIntoView({ behavior: "smooth" });
+        }, 200);
+        break;
+      default:
+        break;
+    }
+  };
 
   const fetchUnlinkedPatientUsers = async () => {
     try {
@@ -880,10 +991,7 @@ export default function AdminDashboard() {
     { uid: "doctor-bypass-id", name: "Dr. Sarah (Junior)", role: "doctor", email: "sarah@homeo.healthcare" }
   ]);
 
-  useEffect(() => {
-    const isDark = document.documentElement.classList.contains("dark");
-    setTheme(isDark ? "dark" : "light");
-  }, []);
+
 
   useEffect(() => {
     if (activeTab !== "medical-academy") {
@@ -954,19 +1062,7 @@ export default function AdminDashboard() {
     }
   }, [session]);
 
-  const toggleTheme = () => {
-    const nextTheme = theme === "light" ? "dark" : "light";
-    setTheme(nextTheme);
-    if (nextTheme === "dark") {
-      document.documentElement.classList.add("dark");
-      document.documentElement.style.colorScheme = "dark";
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      document.documentElement.style.colorScheme = "light";
-      localStorage.setItem("theme", "light");
-    }
-  };
+
 
   // Fullscreen view mode tracking
   const [fullscreenTab, setFullscreenTab] = useState<"dashboard" | "intake" | "patients" | "diagnostics" | "analyzer" | "diet-lifestyle" | "treatment-planner" | "nexus-atlas" | "learning-hub" | "communication" | "ai-router" | "health-intelligence" | null>(null);
@@ -8160,472 +8256,232 @@ ${err.message || err}`);
   );
 
   return (
-    <div 
-      className={`flex flex-col bg-transparent transition-all duration-300 ${
-        activeTab === "medical-academy" ? "h-screen overflow-hidden" : "min-h-screen"
+    <DashboardProvider>
+      <div 
+      className={`flex bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-205 min-h-screen transition-colors duration-300 select-text font-sans ${
+        reduceMotion ? "transition-none" : ""
       }`}
     >
-      
-      {/* Dashboard Top Header */}
+      {/* Collapsible Left Sidebar */}
       {!immersiveMode && (
-        <header className="sticky top-0 z-35 w-full glass-panel border-b border-slate-900/5 px-6 py-4 flex items-center justify-between shadow-sm bg-white/70 backdrop-blur-md" style={{ fontSize: "16px" }}>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-white border border-slate-200/50 flex items-center justify-center shadow-sm breathe">
-              <Activity className="w-5 h-5 text-mint" />
-            </div>
-            <div>
-              <h1 className="font-serif text-lg font-bold text-[#1A2421] leading-none mb-1">Dr. Jethwani's Clinical Intelligence OS™</h1>
-              <span className="text-[10px] text-mint font-bold uppercase tracking-wider">
-                {session?.role === "admin" ? "Master Control Panel (Admin)" : "Junior Medical Officer Panel"}
-              </span>
-            </div>
-          </div>
-
-          {/* Global Accessibility Settings */}
-          <div className="hidden lg:flex items-center gap-4 px-4 py-1.5 bg-slate-100 rounded-full border border-slate-200">
-            {/* Font Sizer */}
-            <div className="flex items-center gap-1">
-              <span className="text-[9px] uppercase tracking-wider font-extrabold text-slate-500 mr-1">Font</span>
-              {(["S", "M", "L", "XL"] as const).map(size => (
-                <button
-                  key={size}
-                  onClick={() => setGlobalFontSize(size)}
-                  className={`w-6 h-6 rounded-full text-[10px] font-bold transition-all cursor-pointer ${
-                    globalFontSize === size 
-                      ? "bg-mint text-white" 
-                      : "text-slate-500 hover:text-[#1A2421]"
-                  }`}
-                >
-                  {size}
-                </button>
-              ))}
-            </div>
-
-            <div className="w-px h-4 bg-slate-300" />
-
-            {/* Zoom Level */}
-            <div className="flex items-center gap-1">
-              <span className="text-[9px] uppercase tracking-wider font-extrabold text-slate-500 mr-1">Zoom</span>
-              <button 
-                onClick={() => setGlobalLayoutZoom(prev => Math.max(90, prev - 10))}
-                className="w-5 h-5 rounded bg-white border border-slate-200 text-xs font-bold flex items-center justify-center cursor-pointer hover:bg-slate-50"
-              >
-                -
-              </button>
-              <span className="text-[10px] font-mono font-bold w-10 text-center">{globalLayoutZoom}%</span>
-              <button 
-                onClick={() => setGlobalLayoutZoom(prev => Math.min(150, prev + 10))}
-                className="w-5 h-5 rounded bg-white border border-slate-200 text-xs font-bold flex items-center justify-center cursor-pointer hover:bg-slate-50"
-              >
-                +
-              </button>
-            </div>
-
-            <div className="w-px h-4 bg-slate-300" />
-
-            {/* Page Width */}
-            <div className="flex items-center gap-1">
-              <span className="text-[9px] uppercase tracking-wider font-extrabold text-slate-500 mr-1">Width</span>
-              {(["standard", "wide", "borderless"] as const).map(w => (
-                <button
-                  key={w}
-                  onClick={() => setGlobalReadingWidth(w)}
-                  className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase transition-all cursor-pointer ${
-                    globalReadingWidth === w 
-                      ? "bg-mint text-white" 
-                      : "text-slate-500 hover:text-[#1A2421]"
-                  }`}
-                >
-                  {w === "standard" ? "Std" : w === "wide" ? "Wide" : "Full"}
-                </button>
-              ))}
-            </div>
-
-            <div className="w-px h-4 bg-slate-300" />
-
-            {/* Theme Shift */}
-            <div className="flex items-center gap-1">
-              <span className="text-[9px] uppercase tracking-wider font-extrabold text-slate-500 mr-1">Theme</span>
-              <button
-                onClick={toggleTheme}
-                aria-label="Toggle theme"
-                className="w-6 h-6 rounded-full flex items-center justify-center text-slate-500 hover:text-[#1A2421] transition-all cursor-pointer hover:bg-slate-200/50"
-              >
-                {theme === "light" ? <Moon className="w-3.5 h-3.5" /> : <Sun className="w-3.5 h-3.5" />}
-              </button>
-            </div>
-          </div>
-
-          {/* User profile & Actions */}
-          <div className="flex items-center gap-4">
-            <div className="hidden sm:flex flex-col text-right">
-              <span className="text-xs font-bold text-[#1A2421]">{session?.name}</span>
-              <span className="text-[9px] text-slate-400 font-semibold">{session?.email}</span>
-            </div>
-
-            <div className="h-8 w-px bg-slate-900/5 hidden sm:block" />
-
-            {/* Logout button */}
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-1.5 px-3.5 py-2 border border-slate-200 rounded-full text-slate-500 hover:text-rose-600 hover:border-rose-200 hover:bg-rose-50/50 text-xs font-semibold tracking-wide transition-all duration-300 cursor-pointer"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              <span>Sign Out</span>
-            </button>
-          </div>
-        </header>
+        <AdminSidebar
+          isCollapsed={isSidebarCollapsed}
+          setIsCollapsed={setIsSidebarCollapsed}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          session={session}
+          favorites={sidebarFavorites}
+          setFavorites={setSidebarFavorites}
+          handleSubTabClick={handleSubTabClick}
+          reduceMotion={reduceMotion}
+        />
       )}
 
-      {/* ── Subscription / Trial Warning Banner (non-admin doctors only) ── */}
-      {!immersiveMode && (() => {
-        if (!session || session.role === "admin") return null;
-        const sub = (session as any).subscription;
-        if (!sub?.validUntil || sub.plan === "branch") return null;
-        const daysLeft = Math.floor((new Date(sub.validUntil).getTime() - Date.now()) / 86400000);
-        const isTrial  = sub.plan === "trial";
-        if (daysLeft > 7 && !isTrial) return null; // Only show when ≤ 7 days left or on trial
-
-        const isExpired = daysLeft < 0;
-        const isUrgent  = daysLeft >= 0 && daysLeft <= 3 && !isTrial;
-        const isWarning = daysLeft >= 0 && daysLeft <= 7 && !isTrial && !isUrgent;
-
-        const styles = isExpired
-          ? { bg: "bg-rose-600",  border: "border-rose-700",  text: "text-white",       icon: "⛔", btnClass: "bg-white text-rose-600 hover:bg-rose-50" }
-          : isUrgent
-          ? { bg: "bg-red-500",   border: "border-red-600",   text: "text-white",       icon: "🚨", btnClass: "bg-white text-red-600 hover:bg-red-50" }
-          : isWarning
-          ? { bg: "bg-amber-500", border: "border-amber-600", text: "text-white",       icon: "⚠️", btnClass: "bg-white text-amber-700 hover:bg-amber-50" }
-          : { bg: "bg-sky-500",   border: "border-sky-600",   text: "text-white",       icon: "🔔", btnClass: "bg-white text-sky-700 hover:bg-sky-50" };
-
-        const message = isExpired
-          ? "Your subscription has expired. Your patients are safe — renew to restore full access."
-          : isUrgent
-          ? `Your subscription expires in ${daysLeft} day${daysLeft === 1 ? "" : "s"}. Renew now to avoid interruption.`
-          : isWarning
-          ? `Your subscription expires in ${daysLeft} days. Contact Dr. Jethwani to renew.`
-          : isTrial
-          ? `You're on a free trial — ${daysLeft} day${daysLeft === 1 ? "" : "s"} remaining. Upgrade for unlimited access.`
-          : "";
-
-        return (
-          <div className={`${styles.bg} ${styles.border} border-b px-6 py-3 flex items-center justify-between gap-4`}>
-            <div className="flex items-center gap-3">
-              <span className="text-lg">{styles.icon}</span>
-              <p className={`text-xs font-bold ${styles.text}`}>{message}</p>
-            </div>
-            <a
-              href="https://wa.me/919876543210?text=Hi%20Dr.%20Jethwani%2C%20I%20would%20like%20to%20renew%20my%20subscription."
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`flex-shrink-0 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer ${styles.btnClass}`}
-            >
-              {isExpired ? "Renew Now →" : isTrial ? "Upgrade Plan →" : "Renew →"}
-            </a>
-          </div>
-        );
-      })()}
-
-      {/* Main Panel Content */}
-
+      {/* Main Content Area */}
       <div 
-        className={`flex-1 w-full mx-auto flex flex-col select-text transition-all duration-300 global-font-${globalFontSize} ${
-          activeTab === "medical-academy"
-            ? `gap-0 min-h-0 ${
-                globalReadingWidth === "standard" 
-                  ? "max-w-7xl px-6 pb-6" 
-                  : globalReadingWidth === "wide" 
-                  ? "max-w-[95%] px-6 pb-4" 
-                  : "max-w-none px-0 py-0"
-              }`
-            : `gap-6 py-8 ${
-                globalReadingWidth === "standard" 
-                  ? "max-w-7xl px-6" 
-                  : globalReadingWidth === "wide" 
-                  ? "max-w-[95%] px-6" 
-                  : "max-w-full px-6"
-              }`
+        className={`flex-grow flex flex-col min-h-screen overflow-x-hidden ${
+          activeTab === "medical-academy" ? "h-screen overflow-hidden" : ""
         }`}
-        style={{ 
-          zoom: activeTab === "medical-academy" ? "100%" : `${globalLayoutZoom}%`,
-          fontSize: globalFontSize === "S" ? "12px" : globalFontSize === "M" ? "14px" : globalFontSize === "L" ? "16px" : "18px"
-        }}
       >
-        
-        {/* Navigation Tabs Wrapper */}
+        {/* Top Header */}
         {!immersiveMode && (
-          <div className={activeTab === "medical-academy" ? "px-6 pt-6 flex items-center justify-between relative z-50" : "relative z-50"}>
-            {/* Navigation Tabs */}
-            <div className="flex flex-wrap bg-white/80 backdrop-blur-xl border border-slate-200/80 p-1.5 rounded-3xl gap-1.5 shadow-[0_8px_32px_0_rgba(15,23,42,0.06)] max-w-fit mb-6 transition-all duration-300 relative z-40">
-              {TABS_DEFINITION.map((tab) => {
-                const Icon = tab.icon;
-                const isTabActive = activeTab === tab.id;
-                const subtabs = SUBTABS_CONFIG[tab.id] || [];
-
-                // Hide admin-only tabs from non-admin users
-                if ((tab as any).adminOnly && session?.role !== "admin") return null;
-
-                return (
-                  <div key={tab.id} className="relative group hover:z-50">
-                    <button
-                      onClick={() => setActiveTab(tab.id as any)}
-                      className={`px-4 py-2.5 rounded-2xl text-[10.5px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer border-none hover:scale-102 active:scale-98 duration-200 relative ${
-                        isTabActive
-                          ? "text-white"
-                          : "text-slate-650 hover:text-slate-800 hover:bg-slate-50/50"
-                      }`}
-                    >
-                      {isTabActive && (
-                        <motion.div
-                          layoutId="activeTabIndicator"
-                          className={`absolute inset-0 bg-gradient-to-r ${tab.gradient} ${tab.shadow} rounded-2xl z-0`}
-                          transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                        />
-                      )}
-                      <span className="relative z-10 flex items-center gap-1.5">
-                        <Icon className="w-3.5 h-3.5" />
-                        <span>{tab.label}</span>
-                      </span>
-                    </button>
-
-                    {subtabs.length > 0 && (
-                      <div className="absolute top-full left-0 pt-2 hidden group-hover:block z-[60] min-w-[210px] animate-fadeIn">
-                        <div className="bg-white/95 border border-slate-200/80 p-2 rounded-2xl shadow-[0_10px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)] flex flex-col gap-1">
-                          {subtabs.map((sub) => (
-                            <button
-                              key={sub.id}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleSubTabClick(tab.id as any, sub.id);
-                              }}
-                              className="w-full text-left px-3 py-1.5 rounded-xl text-[10px] font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all cursor-pointer border-none bg-transparent flex items-center gap-2"
-                            >
-                              <span className="w-1.5 h-1.5 rounded-full bg-slate-300 transition-colors duration-200 hover:bg-mint" />
-                              {sub.label}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-            {activeTab === "medical-academy" && (
-              <button
-                onClick={() => setImmersiveMode(true)}
-                className="mb-6 px-4 py-2.5 bg-white/80 backdrop-blur-xl border border-slate-200/80 hover:bg-slate-50 text-slate-755 hover:text-blue-600 rounded-2xl text-[10.5px] font-bold uppercase tracking-wider shadow-sm transition-all duration-200 flex items-center gap-1.5 cursor-pointer z-40 hover:scale-102 active:scale-98"
-              >
-                <Maximize2 className="w-3.5 h-3.5 text-blue-500" />
-                <span>Immersive Mode</span>
-              </button>
-            )}
-          </div>
+          <DashboardHeader
+            session={session}
+            handleLogout={handleLogout}
+            onTriggerQuickAction={handleTriggerQuickAction}
+            onOpenSearch={() => setIsGlobalSearchOpen(true)}
+            onOpenDisplayDrawer={() => setIsDisplayDrawerOpen(true)}
+            reduceMotion={reduceMotion}
+          />
         )}
 
-        {/* Tab Views */}
-        <div className="flex-1 min-h-0 text-[#1A2421]">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeTab}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.2, ease: "easeInOut" }}
-              className="w-full h-full"
-            >
-          
-          {/* TAB: Dashboard */}
-          {activeTab === "dashboard" && (() => {
-            // 1. Calculate Live Metrics
-            const totalCases = patients.length;
-            const activeCount = patients.filter(p => p.status === "active").length;
-            const recoveryIndex = totalCases > 0 
-              ? (86.5 + (activeCount / totalCases) * 8.5).toFixed(1) + "%" 
-              : "94.2%";
+        {/* ── Subscription / Trial Warning Banner (non-admin doctors only) ── */}
+        {!immersiveMode && (() => {
+          if (!session || session.role === "admin") return null;
+          const sub = (session as any).subscription;
+          if (!sub?.validUntil || sub.plan === "branch") return null;
+          const daysLeft = Math.floor((new Date(sub.validUntil).getTime() - Date.now()) / 86400000);
+          const isTrial  = sub.plan === "trial";
+          if (daysLeft > 7 && !isTrial) return null; // Only show when ≤ 7 days left or on trial
 
-            // Calculate Router Uptime
-            const totalLogs = telemetryLogs.length;
-            const failedLogs = telemetryLogs.filter(log => log.status === "failed" || log.failoverTrace?.length > 1).length;
-            const routerUptime = totalLogs > 0
-              ? (100 - (failedLogs / totalLogs) * 4.5).toFixed(1) + "% Uptime"
-              : "100% Uptime";
+          const isExpired = daysLeft < 0;
+          const isUrgent  = daysLeft >= 0 && daysLeft <= 3 && !isTrial;
+          const isWarning = daysLeft >= 0 && daysLeft <= 7 && !isTrial && !isUrgent;
 
-            // 2. Generate Live Patient Queue
-            const queueItems = patients.map((pat, idx) => {
-              let stage = "Intake Pending";
-              if (pat.status === "active") {
-                stage = idx % 2 === 0 ? "Report Analyzer" : "Outreach Pending";
-              } else if (pat.status === "awaiting-consult") {
-                stage = "Intake Pending";
-              } else {
-                stage = "Follow-up Due";
-              }
+          const styles = isExpired
+            ? { bg: "bg-rose-600",  border: "border-rose-700",  text: "text-white",       icon: "⛔", btnClass: "bg-white text-rose-600 hover:bg-rose-50" }
+            : isUrgent
+            ? { bg: "bg-red-500",   border: "border-red-600",   text: "text-white",       icon: "🚨", btnClass: "bg-white text-red-600 hover:bg-red-50" }
+            : isWarning
+            ? { bg: "bg-amber-500", border: "border-amber-600", text: "text-white",       icon: "⚠️", btnClass: "bg-white text-amber-700 hover:bg-amber-50" }
+            : { bg: "bg-sky-500",   border: "border-sky-600",   text: "text-white",       icon: "🔔", btnClass: "bg-white text-sky-700 hover:bg-sky-50" };
 
-              let problem = pat.complaint;
-              if (problem.length > 40) {
-                const commaIdx = problem.indexOf(",");
-                if (commaIdx !== -1 && commaIdx < 40) {
-                  problem = problem.substring(0, commaIdx);
-                } else {
-                  problem = problem.substring(0, 40) + "...";
-                }
-              }
+          const message = isExpired
+            ? "Your subscription has expired. Your patients are safe — renew to restore full access."
+            : isUrgent
+            ? `Your subscription expires in ${daysLeft} day${daysLeft === 1 ? "" : "s"}. Renew now to avoid interruption.`
+            : isWarning
+            ? `Your subscription expires in ${daysLeft} days. Contact Dr. Jethwani to renew.`
+            : isTrial
+            ? `You're on a free trial — ${daysLeft} day${daysLeft === 1 ? "" : "s"} remaining. Upgrade for unlimited access.`
+            : "";
 
-              let timeStr = "Today 10:30 AM";
-              if (pat.createdAt) {
-                try {
-                  const d = new Date(pat.createdAt);
-                  timeStr = d.toLocaleDateString("en-US", { month: "short", day: "numeric" }) + " " + d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
-                } catch {
-                  timeStr = "Today 10:30 AM";
-                }
-              }
-
-              return {
-                name: pat.name,
-                age: pat.age,
-                problem,
-                stage,
-                time: timeStr
-              };
-            }).slice(0, 5); // show up to 5 patients
-
-            // If queue is empty, use some high-quality fallbacks so dashboard isn't blank
-            const displayQueue = queueItems.length > 0 ? queueItems : [
-              { name: "Rahul Sharma", age: "34", problem: "Suppressed Eczema & Asthma", stage: "Intake Pending", time: "Today 10:30 AM" },
-              { name: "Meera Jethwani", age: "62", problem: "Severe GERD & Flatulence", stage: "Report Analyzer", time: "Today 11:45 AM" },
-              { name: "Baby Kabir", age: "5", problem: "Psoric skin itching", stage: "Outreach Pending", time: "Today 02:00 PM" }
-            ];
-
-            // 3. Generate Live Clinical Alerts
-            const clinicalAlerts: Array<{ type: "abnormal" | "followup"; title: string; message: string }> = [];
-            patients.forEach((pat) => {
-              const compl = pat.complaint.toLowerCase();
-              if (compl.includes("acid") || compl.includes("gerd")) {
-                clinicalAlerts.push({
-                  type: "abnormal",
-                  title: "Abnormal blood/gastric report uploaded",
-                  message: `Patient ${pat.name} shows symptoms of severe hyperacidity. Consider Iris Versicolor complementary drainage.`
-                });
-              } else if (compl.includes("eczema") || compl.includes("itching")) {
-                clinicalAlerts.push({
-                  type: "followup",
-                  title: "Dose 14-day follow-up review due",
-                  message: `${pat.name} (${pat.durationText || "Standard plan"}): evaluate if skin flare occurred or itching ameliorated.`
-                });
-              } else if (compl.includes("stiffness") || compl.includes("joint")) {
-                clinicalAlerts.push({
-                  type: "abnormal",
-                  title: "Chronic joint stiffness flare noted",
-                  message: `Patient ${pat.name} reports stiffness aggravated by damp weather. Check anti-cyclic citrullinated peptide (CCP).`
-                });
-              }
-            });
-
-            // Fallback alerts if no patients match keywords
-            const displayAlerts = clinicalAlerts.length > 0 ? clinicalAlerts.slice(0, 3) : [
-              {
-                type: "abnormal",
-                title: "Abnormal blood report uploaded",
-                message: "Patient Meera Jethwani shows highly elevated TSH (5.4 uIU/mL). Consider Thyroidinum complementary layer."
-              },
-              {
-                type: "followup",
-                title: "Dose 21-day follow-up review due",
-                message: "Rahul Sharma (Sulphur 30C): evaluate if skin flare occurred or respiratory symptoms ameliorated."
-              }
-            ];
-
-            return (
-              <div className={`space-y-6 transition-all duration-300 ${fullscreenTab === "dashboard" ? "fixed inset-0 z-[50] overflow-y-auto bg-pearl p-8" : "relative"}`}>
-                <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-                  <div>
-                    <h2 className="text-xl font-serif font-bold text-slate-800">Clinical Dashboard</h2>
-                    <p className="text-xs text-slate-400 font-sans mt-0.5">Real-time clinical metrics, queue status, and emergency alerts.</p>
-                  </div>
-                  <button
-                    onClick={() => setFullscreenTab(fullscreenTab === "dashboard" ? null : "dashboard")}
-                    className="px-3 py-1.5 border border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-bold text-slate-600 transition-all flex items-center gap-1.5 cursor-pointer"
-                  >
-                    {fullscreenTab === "dashboard" ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
-                    <span>{fullscreenTab === "dashboard" ? "Minimize" : "Full Screen"}</span>
-                  </button>
-                </div>
-
-                {/* Metrics Grid */}
-                <div id="dashboard-metrics" className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between hover:scale-[1.01] transition-all">
-                    <div>
-                      <span className="text-[10px] uppercase font-extrabold tracking-wider text-slate-400">Total Consultation Cases</span>
-                      <h3 className="text-2xl font-bold text-slate-800 mt-1">{totalCases}</h3>
-                    </div>
-                    <div className="w-12 h-12 rounded-2xl bg-mint/10 flex items-center justify-center text-mint font-bold"><Users className="w-6 h-6" /></div>
-                  </div>
-                  <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between hover:scale-[1.01] transition-all">
-                    <div>
-                      <span className="text-[10px] uppercase font-extrabold tracking-wider text-slate-400">Clinical Recovery Index</span>
-                      <h3 className="text-2xl font-bold text-[#14B8A6] mt-1">{recoveryIndex}</h3>
-                    </div>
-                    <div className="w-12 h-12 rounded-2xl bg-[#14B8A6]/10 flex items-center justify-center text-[#14B8A6] font-bold"><TrendingUp className="w-6 h-6" /></div>
-                  </div>
-                  <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between hover:scale-[1.01] transition-all">
-                    <div>
-                      <span className="text-[10px] uppercase font-extrabold tracking-wider text-slate-400">Multi-LLM Failover Router</span>
-                      <h3 className="text-2xl font-bold text-indigo-600 mt-1">{routerUptime}</h3>
-                    </div>
-                    <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 font-bold"><Zap className="w-6 h-6" /></div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* Active Patient Queue */}
-                  <div id="dashboard-queue" className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
-                    <h4 className="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2">Patient Intake & Action Queue</h4>
-                    <div className="space-y-3">
-                      {displayQueue.map((pat, idx) => (
-                        <div key={idx} className="p-3 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between text-xs hover:border-mint transition-all">
-                          <div>
-                            <div className="font-bold text-slate-800">{pat.name} {pat.age ? `(${pat.age}y/o)` : ""}</div>
-                            <div className="text-[10px] text-slate-400 font-semibold mt-0.5">{pat.problem}</div>
-                          </div>
-                          <div className="text-right">
-                            <span className="inline-block px-2.5 py-0.5 rounded-full text-[9px] font-bold bg-mint/10 text-mint-dark">{pat.stage}</span>
-                            <div className="text-[9px] text-slate-400 font-semibold mt-1">{pat.time}</div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Realtime Clinical Alerts */}
-                  <div id="dashboard-alerts" className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
-                    <h4 className="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2">Real-Time Clinical Alerts</h4>
-                    <div className="space-y-3">
-                      {displayAlerts.map((alert, idx) => (
-                        <div key={idx} className={`p-3 rounded-2xl border flex gap-3 text-xs items-start ${
-                          alert.type === "abnormal" 
-                            ? "bg-rose-50 border-rose-100 text-rose-800" 
-                            : "bg-amber-50 border-amber-100 text-amber-800"
-                        }`}>
-                          {alert.type === "abnormal" 
-                            ? <AlertTriangle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
-                            : <Calendar className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-                          }
-                          <div>
-                            <div className="font-bold">{alert.title}</div>
-                            <div className={`text-[10px] mt-0.5 leading-normal ${
-                              alert.type === "abnormal" ? "text-rose-600" : "text-amber-600"
-                            }`}>{alert.message}</div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+          return (
+            <div className={`${styles.bg} ${styles.border} border-b px-6 py-3 flex items-center justify-between gap-4`}>
+              <div className="flex items-center gap-3">
+                <span className="text-lg">{styles.icon}</span>
+                <p className={`text-xs font-bold ${styles.text}`}>{message}</p>
               </div>
-            );
-          })()}
+              <a
+                href="https://wa.me/919876543210?text=Hi%20Dr.%20Jethwani%2C%20I%20would%2520like%2520to%2520renew%2520my%252520subscription."
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`flex-shrink-0 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer ${styles.btnClass}`}
+              >
+                {isExpired ? "Renew Now →" : isTrial ? "Upgrade Plan →" : "Renew →"}
+              </a>
+            </div>
+          );
+        })()}
+
+        {/* Dynamic content page container */}
+        <div 
+          className={`flex-grow w-full mx-auto flex flex-col select-text transition-all duration-300 global-font-${globalFontSize} ${
+            activeTab === "medical-academy"
+              ? `gap-0 min-h-0 ${
+                  globalReadingWidth === "standard" 
+                    ? "max-w-7xl px-6 pb-6" 
+                    : globalReadingWidth === "wide" 
+                    ? "max-w-[95%] px-6 pb-4" 
+                    : "max-w-none px-0 py-0"
+                }`
+              : `gap-6 py-6 ${
+                  globalReadingWidth === "standard" 
+                    ? "max-w-7xl px-6" 
+                    : globalReadingWidth === "wide" 
+                    ? "max-w-[95%] px-6" 
+                    : "max-w-full px-6"
+                }`
+          }`}
+          style={{ 
+            zoom: activeTab === "medical-academy" ? "100%" : `${globalLayoutZoom}%`,
+            fontSize: globalFontSize === "S" ? "12px" : globalFontSize === "M" ? "14px" : globalFontSize === "L" ? "16px" : "18px"
+          }}
+        >
+          {/* Tab Views */}
+          <div className="flex-grow flex-1 min-h-0 text-[#1A2421]">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: reduceMotion ? 0 : 0.2, ease: "easeInOut" }}
+                className="w-full h-full"
+              >
+                {activeTab === "dashboard" && (() => {
+              const overviewStats = {
+                appointmentsCount: patients.slice(0, 4).length || 4,
+                followUpsCount: patients.filter((p) => p.status === "inactive" || p.durationText?.includes("Follow-up")).length || 3,
+                abnormalReportsCount: patients.filter((p) => p.complaint.toLowerCase().includes("acid") || p.complaint.toLowerCase().includes("gerd")).length || 2,
+                emergencyCasesCount: patients.filter((p) => p.careLevel === "emergency" || p.careLevel === "high").length || 1,
+                revenueCollected: invoicesList.filter((inv) => inv.status === "Paid").slice(0, 3).reduce((sum, inv) => sum + (inv.amount || inv.grandTotal || 0), 0) || 18400,
+                recoveryIndex: patients.length > 0 ? (86.5 + (patients.filter((p) => p.status === "active").length / patients.length) * 8.5).toFixed(1) + "%" : "94.2%",
+              };
+
+              return (
+                <div className="space-y-6">
+                  {/* Today's Overview (Dashboard Intelligence) */}
+                  <TodayOverviewStats 
+                    stats={overviewStats}
+                    reduceMotion={reduceMotion}
+                  />
+
+                  {/* Priority 1 & 2: Today's Schedule & Smart Alerts Panel */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                    <DashboardErrorBoundary widgetName="Today's Schedule">
+                      <TodaySchedule
+                        patients={patients}
+                        onSelectPatient={setSelectedPatientId}
+                        setActiveTab={setActiveTab}
+                        reduceMotion={reduceMotion}
+                      />
+                    </DashboardErrorBoundary>
+                    <DashboardErrorBoundary widgetName="Critical Alerts" fallback={<AlertsSkeleton />}>
+                      <CriticalAlertsPanel
+                        patients={patients}
+                        onSelectPatient={setSelectedPatientId}
+                        setActiveTab={setActiveTab}
+                        dismissedAlerts={dismissedAlerts}
+                        onDismissAlert={(id) => setDismissedAlerts(prev => [...prev, id])}
+                        reduceMotion={reduceMotion}
+                      />
+                    </DashboardErrorBoundary>
+                  </div>
+
+                  {/* Priority 3 & 4: Patient Intake Queue & AI Decision Support */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                    <DashboardErrorBoundary widgetName="Patient Queue" fallback={<QueueSkeleton />}>
+                      <PatientQueue
+                        patients={patients}
+                        onSelectPatient={setSelectedPatientId}
+                        setActiveTab={setActiveTab}
+                        reduceMotion={reduceMotion}
+                      />
+                    </DashboardErrorBoundary>
+                    {featureFlags.aiAssistant && (
+                      <DashboardErrorBoundary widgetName="AI CDSS Suggestions">
+                        <AiRecommendationsPanel
+                          patients={patients}
+                          onSelectPatient={setSelectedPatientId}
+                          setActiveTab={setActiveTab}
+                          reduceMotion={reduceMotion}
+                        />
+                      </DashboardErrorBoundary>
+                    )}
+                  </div>
+
+                  {/* Priority 5: Shortcuts & Quick Actions */}
+                  <QuickActionsGrid 
+                    onTriggerQuickAction={handleTriggerQuickAction} 
+                    reduceMotion={reduceMotion}
+                  />
+
+                  {/* Priority 6: Clinical KPI Cards */}
+                  <ClinicalKpiCards 
+                    patients={patients} 
+                    invoicesList={invoicesList} 
+                    reduceMotion={reduceMotion}
+                  />
+
+                  {/* Lower Priority: Analytics Panel */}
+                  {featureFlags.advancedAnalytics && (
+                    <DashboardErrorBoundary widgetName="Analytics Charts" fallback={<AnalyticsSkeleton />}>
+                      <AnalyticsPanel
+                        timeframe={dashboardTimeframe}
+                        setTimeframe={setDashboardTimeframe}
+                        reduceMotion={reduceMotion}
+                      />
+                    </DashboardErrorBoundary>
+                  )}
+
+                  {/* Lower Priority: Timeline Feed */}
+                  <ActivityTimeline
+                    patients={patients}
+                    onSelectPatient={setSelectedPatientId}
+                    setActiveTab={setActiveTab}
+                    reduceMotion={reduceMotion}
+                  />
+
+                  {/* Lower Priority: Engine Telemetry Status */}
+                  <SystemStatusGrid
+                    telemetryLogs={telemetryLogs}
+                    failedLogsCount={telemetryLogs.filter(log => log.status === "failed" || log.failoverTrace?.length > 1).length}
+                    reduceMotion={reduceMotion}
+                  />
+                </div>
+              );
+            })()}
 
           {activeTab === "health-intelligence" && (
             <div className="space-y-6 animate-fadeIn text-slate-800 select-text overflow-y-auto h-[calc(100vh-230px)] pr-2">
@@ -13347,7 +13203,7 @@ ${err.message || err}`);
               patients={patients} 
               selectedPatientId={selectedPatientId} 
               setSelectedPatientId={setSelectedPatientId} 
-              theme={theme} 
+              theme={theme === "system" ? "dark" : theme} 
               activeTabOverride={cieSubTab}
             />
           )}
@@ -29618,9 +29474,44 @@ Exported on: ${new Date().toLocaleDateString()}
           </div>
           </Portal>
         )}
+        {/* Accessibility Settings Drawer */}
+        <DisplaySettingsDrawer
+          isOpen={isDisplayDrawerOpen}
+          onClose={() => setIsDisplayDrawerOpen(false)}
+          globalFontSize={globalFontSize}
+          setGlobalFontSize={setGlobalFontSize}
+          globalLayoutZoom={globalLayoutZoom}
+          setGlobalLayoutZoom={setGlobalLayoutZoom}
+          globalReadingWidth={globalReadingWidth}
+          setGlobalReadingWidth={setGlobalReadingWidth}
+          theme={theme}
+          toggleTheme={toggleTheme}
+          reduceMotion={reduceMotion}
+          setReduceMotion={setReduceMotion}
+        />
+
+        {/* Global Command Search (⌘K Command Palette) */}
+        <GlobalCommandPalette
+          isOpen={isGlobalSearchOpen}
+          onClose={() => setIsGlobalSearchOpen(false)}
+          patients={patients}
+          onSelectPatient={setSelectedPatientId}
+          invoicesList={invoicesList}
+          onOpenInvoice={(inv) => {
+            setSelectedInvoicePatient(patients.find(p => p.name === inv.patientName) || null);
+            setIsInvoiceModalOpen(true);
+          }}
+          setActiveTab={setActiveTab}
+          onTriggerQuickAction={handleTriggerQuickAction}
+          clinicians={clinicians}
+          remediesKeynotes={COMMON_REMEDIES_KEYNOTES}
+          reduceMotion={reduceMotion}
+        />
 
       </div>
-    </div>
-  </div>
+      </div>
+      </div>
+      </div>
+    </DashboardProvider>
   );
 }
