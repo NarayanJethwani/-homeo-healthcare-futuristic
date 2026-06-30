@@ -282,7 +282,7 @@ export default function Navbar() {
                 
                 <div className="flex gap-3 pt-1">
                   <a
-                    href="mailto:narayan.jethwani@gmail.com"
+                    href="mailto:narayan.jethwani@homeo.healthcare"
                     className="flex-1 text-center border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-zinc-300 py-3 rounded-2xl text-xs font-bold hover:border-mint hover:text-mint dark:hover:text-mint transition-colors"
                   >
                     Email Dr. Narayan

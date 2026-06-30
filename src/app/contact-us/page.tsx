@@ -153,8 +153,8 @@ export default function ContactUsPage() {
             </div>
             <div>
               <span className="block text-[10px] text-slate-700 font-bold uppercase tracking-wider">Email Inquiry</span>
-              <a href="mailto:narayan.jethwani@gmail.com" className="text-sm font-extrabold text-[#1A2421] hover:text-mint transition-colors cursor-pointer">
-                narayan.jethwani@gmail.com
+              <a href="mailto:narayan.jethwani@homeo.healthcare" className="text-sm font-extrabold text-[#1A2421] hover:text-mint transition-colors cursor-pointer">
+                narayan.jethwani@homeo.healthcare
               </a>
             </div>
           </div>

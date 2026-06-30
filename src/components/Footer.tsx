@@ -96,8 +96,8 @@ export default function Footer() {
             <div className="space-y-3 pt-2">
               <div className="flex items-center gap-2.5 text-xs text-slate-700 font-medium">
                 <Mail className="w-4 h-4 text-mint/60" />
-                <a href="mailto:narayan.jethwani@gmail.com" className="hover:text-mint transition-colors duration-300 cursor-pointer">
-                  narayan.jethwani@gmail.com
+                <a href="mailto:narayan.jethwani@homeo.healthcare" className="hover:text-mint transition-colors duration-300 cursor-pointer">
+                  narayan.jethwani@homeo.healthcare
                 </a>
               </div>
               <div className="flex items-center gap-2.5 text-xs text-slate-700 font-medium">

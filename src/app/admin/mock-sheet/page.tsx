@@ -611,7 +611,7 @@ function MockSheetContent() {
       ? (initialBillingCycle.toLowerCase() === "weekly" ? "weekly" : "monthly")
       : ((initialCareLevel.toLowerCase().includes("weekly") || initialDurationText.toLowerCase().includes("week")) ? "weekly" : "monthly")) as "weekly" | "monthly",
     durationValue: initialDurationValue !== null ? initialDurationValue : initialDurationMonthsVal,
-    conditionsCount: initialConditionsCount !== null ? initialConditionsCount : (initialCareLevel.toLowerCase().includes("multisystem") ? 2 : 1),
+    conditionsCount: initialConditionsCount !== null ? initialConditionsCount : 1,
     concessionType: (initialConcessionApplied 
       ? (initialConcessionApplied.toLowerCase().includes("senior") ? "senior" : initialConcessionApplied.toLowerCase().includes("socio") ? "compassionate" : initialConcessionApplied.toLowerCase().includes("override") ? "override" : "none")
       : ((parseInt(initialAge) >= 60) ? "senior" : "none")) as "none" | "senior" | "compassionate" | "override",
@@ -665,7 +665,7 @@ function MockSheetContent() {
               ? (p.billingCycle.toLowerCase() === "weekly" ? "weekly" : "monthly")
               : ((p.careLevel?.toLowerCase().includes("weekly") || p.durationText?.toLowerCase().includes("week")) ? "weekly" : "monthly"),
             durationValue: p.durationValue !== undefined && p.durationValue !== null ? p.durationValue : durMonths,
-            conditionsCount: p.conditionsCount !== undefined && p.conditionsCount !== null ? p.conditionsCount : (p.careLevel?.toLowerCase().includes("multisystem") ? 2 : 1),
+            conditionsCount: p.conditionsCount !== undefined && p.conditionsCount !== null ? p.conditionsCount : 1,
             concessionType: p.concessionApplied 
               ? (p.concessionApplied.toLowerCase().includes("senior") ? "senior" : p.concessionApplied.toLowerCase().includes("socio") ? "compassionate" : p.concessionApplied.toLowerCase().includes("override") ? "override" : "none")
               : ((parseInt(p.age || "0") >= 60) ? "senior" : "none"),

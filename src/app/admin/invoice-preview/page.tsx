@@ -283,7 +283,7 @@ Homeo Healthcare`;
             <p className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 print:text-slate-500 max-w-sm mt-1 leading-relaxed">
               Consulting Homeopathic Physician & Clinical Specialist<br />
               Office 404, 4th Floor, Pyramid Axis, Baner Road, Behind Croma Showroom, Baner, Pune – 411045<br />
-              Phone: {process.env.NEXT_PUBLIC_WHATSAPP_DISPLAY || "+91 84460 56789"} | narayan.jethwani@gmail.com
+              Phone: {process.env.NEXT_PUBLIC_WHATSAPP_DISPLAY || "+91 84460 56789"} | narayan.jethwani@homeo.healthcare
             </p>
           </div>
           

@@ -231,7 +231,7 @@ export default function PrivacyPolicyPage() {
                     <ShieldAlert className="w-4 h-4" /> Patient Rights
                   </h4>
                   <p className="text-xs text-slate-700 font-semibold leading-relaxed">
-                    Under health data protection acts, you have the absolute right to request a full copy of your clinical files, request correcting diagnostic history details, or request total deletion of your communication records (subject to clinical record-keeping legal durations). Contact <a href="mailto:narayan.jethwani@gmail.com" className="text-mint underline cursor-pointer font-bold">narayan.jethwani@gmail.com</a> for requests.
+                    Under health data protection acts, you have the absolute right to request a full copy of your clinical files, request correcting diagnostic history details, or request total deletion of your communication records (subject to clinical record-keeping legal durations). Contact <a href="mailto:narayan.jethwani@homeo.healthcare" className="text-mint underline cursor-pointer font-bold">narayan.jethwani@homeo.healthcare</a> for requests.
                   </p>
                 </div>
               </motion.div>

@@ -701,7 +701,7 @@ const getCareLevelRate = (level: string, cycle: string) => {
   const isWeekly = cycle === "Weekly";
   const basePrice = isWeekly ? careLevelsDetails[key].weeklyPrice : careLevelsDetails[key].monthlyPrice;
   
-  const conditions = level.includes("Multisystem") ? 2 : 1;
+  const conditions = 1;
   let surcharge = 0;
   if (conditions > 1) {
     const tierSurcharges = surchargesLookup[key];
@@ -5589,7 +5589,7 @@ Homeo Healthcare`;
           country: newCaseForm.country,
           complaint: newCaseForm.complaint,
           careLevel: newCaseForm.careLevel,
-          conditionsCount: newCaseForm.careLevel.includes("Multisystem") ? 2 : 1,
+          conditionsCount: 1,
           durationText: newCaseForm.durationText,
           finalPrice: newCaseForm.finalPrice,
           receivedAmount: newCaseForm.receivedAmount,
@@ -5640,7 +5640,7 @@ Homeo Healthcare`;
             createdAt: new Date().toISOString(),
             billingCycle: newCaseForm.billingCycle,
             concessionApplied: concessionVal,
-            conditionsCount: newCaseForm.careLevel.includes("Multisystem") ? 2 : 1,
+            conditionsCount: 1,
             durationValue: getDurationValue(newCaseForm.durationText)
           } as any;
           if (isPlanningRegisteredPatient) {
@@ -5716,7 +5716,7 @@ Homeo Healthcare`;
         createdAt: new Date().toISOString(),
         billingCycle: newCaseForm.billingCycle,
         concessionApplied: concessionVal,
-        conditionsCount: newCaseForm.careLevel.includes("Multisystem") ? 2 : 1,
+        conditionsCount: 1,
         durationValue: getDurationValue(newCaseForm.durationText)
       } as any;
       
