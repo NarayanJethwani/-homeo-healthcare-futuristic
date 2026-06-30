@@ -7,6 +7,11 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  // Only handle GET requests and HTTP/HTTPS protocol
+  if (event.request.method !== 'GET' || !event.request.url.startsWith('http')) {
+    return;
+  }
+
   // Pass-through fetch handler to satisfy PWA installability requirements
   event.respondWith(
     fetch(event.request).catch(() => {
@@ -14,3 +19,4 @@ self.addEventListener('fetch', (event) => {
     })
   );
 });
+

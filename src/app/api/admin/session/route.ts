@@ -35,27 +35,36 @@ export async function POST(request: NextRequest) {
     const uid = decodedToken.uid;
     const email = decodedToken.email;
     let name = decodedToken.name || decodedToken.email?.split("@")[0] || "Doctor";
+    let role = decodedToken.role;
 
-    const userDoc = await getAdminDb().collection("users").doc(uid).get();
-    if (!userDoc.exists) {
-      return jsonResponse({ success: false, message: "Account is not authorized." }, 403);
-    }
+    try {
+      const userDoc = await getAdminDb().collection("users").doc(uid).get();
+      if (userDoc.exists) {
+        const data = userDoc.data() || {};
+        if (data.role === "admin" || data.role === "doctor") {
+          role = data.role;
+          name = data.name || name;
 
-    const data = userDoc.data() || {};
-    if (data.role !== "admin" && data.role !== "doctor") {
-      return jsonResponse({ success: false, message: "Account is not authorized." }, 403);
-    }
-
-    const role = data.role;
-    name = data.name || name;
-
-    if (role === "doctor" && data.subscription?.plan !== "branch" && data.subscription?.validUntil) {
-      const expiryDate = new Date(data.subscription.validUntil);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      if (expiryDate < today) {
-        return jsonResponse({ success: false, message: "Subscription expired." }, 403);
+          if (role === "doctor" && data.subscription?.plan !== "branch" && data.subscription?.validUntil) {
+            const expiryDate = new Date(data.subscription.validUntil);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            if (expiryDate < today) {
+              return jsonResponse({ success: false, message: "Subscription expired." }, 403);
+            }
+          }
+        }
+      } else {
+        if (!role) {
+          return jsonResponse({ success: false, message: "Account is not authorized." }, 403);
+        }
       }
+    } catch (firestoreErr: any) {
+      console.warn("Firestore user lookup failed, falling back to custom claims:", firestoreErr?.message || firestoreErr);
+    }
+
+    if (role !== "admin" && role !== "doctor") {
+      return jsonResponse({ success: false, message: "Account is not authorized." }, 403);
     }
 
     const cookieValue = await createAdminSessionCookie({

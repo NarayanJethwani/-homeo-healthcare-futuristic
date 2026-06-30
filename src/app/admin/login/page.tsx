@@ -50,6 +50,22 @@ export default function AdminLogin() {
     }
   };
 
+  function decodeJwtPayload(token: string): any {
+    try {
+      const base64Url = token.split(".")[1];
+      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+      const jsonPayload = decodeURIComponent(
+        window.atob(base64)
+          .split("")
+          .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+          .join("")
+      );
+      return JSON.parse(jsonPayload);
+    } catch {
+      return null;
+    }
+  }
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -60,36 +76,47 @@ export default function AdminLogin() {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        const userDocRef = doc(db, "users", user.uid);
-        const userDoc = await getDoc(userDocRef);
+        const idToken = await user.getIdToken();
+        const decodedToken = decodeJwtPayload(idToken);
 
-        if (!userDoc.exists()) {
-          throw new Error("This account is not authorized for the clinical workspace.");
+        let role = decodedToken?.role;
+        let name = decodedToken?.name || user.email?.split("@")[0] || "Doctor";
+        let assignedPatients: string[] = [];
+        let driveFolderUrl = "";
+        let masterSheetUrl = "";
+
+        try {
+          const userDocRef = doc(db, "users", user.uid);
+          const userDoc = await getDoc(userDocRef);
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            role = userData.role || role;
+            name = userData.name || name;
+            assignedPatients = userData.assignedPatients || [];
+            driveFolderUrl = userData.driveFolderUrl || "";
+            masterSheetUrl = userData.masterSheetUrl || "";
+
+            if (role === "doctor" && userData.subscription?.plan !== "branch" && userData.subscription?.validUntil) {
+              const expiryDate = new Date(userData.subscription.validUntil);
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              if (expiryDate < today) {
+                setError(
+                  "Your subscription has expired. Please contact Dr. Narayan Jethwani to renew your franchise access."
+                );
+                setIsLoading(false);
+                return;
+              }
+            }
+          }
+        } catch (firestoreErr: any) {
+          console.warn("Firestore user lookup failed, falling back to custom claims:", firestoreErr?.message || firestoreErr);
         }
 
-        const userData = userDoc.data();
-        const role = userData.role;
         if (role !== "admin" && role !== "doctor") {
           throw new Error("This account is not authorized for the clinical workspace.");
         }
 
-        const name = userData.name || user.email?.split("@")[0] || "Doctor";
-        const assignedPatients = userData.assignedPatients || [];
-
-        if (role === "doctor" && userData.subscription?.plan !== "branch" && userData.subscription?.validUntil) {
-          const expiryDate = new Date(userData.subscription.validUntil);
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
-          if (expiryDate < today) {
-            setError(
-              "Your subscription has expired. Please contact Dr. Narayan Jethwani to renew your franchise access."
-            );
-            setIsLoading(false);
-            return;
-          }
-        }
-
-        const idToken = await user.getIdToken();
         await establishServerSession({ idToken });
 
         localStorage.setItem("admin_session", JSON.stringify({
@@ -98,8 +125,8 @@ export default function AdminLogin() {
           name,
           role,
           assignedPatients,
-          driveFolderUrl: userData.driveFolderUrl || "",
-          masterSheetUrl: userData.masterSheetUrl || "",
+          driveFolderUrl,
+          masterSheetUrl,
         }));
 
         router.push("/admin/dashboard");
