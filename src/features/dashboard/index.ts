@@ -56,3 +56,6 @@ export { default as QuickActionsGrid } from "./components/QuickActionsGrid";
 export { default as SystemStatusGrid } from "./components/SystemStatusGrid";
 export { default as TodayOverviewStats } from "./components/TodayOverviewStats";
 export { default as TodaySchedule } from "./components/TodaySchedule";
+export { default as SystemStatusStrip } from "./components/SystemStatusStrip";
+export { default as MyTasksWidget } from "./components/MyTasksWidget";
+export { default as KnowledgeKmsWidget } from "./components/KnowledgeKmsWidget";

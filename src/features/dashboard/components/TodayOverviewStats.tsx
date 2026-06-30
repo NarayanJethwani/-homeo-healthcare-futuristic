@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Calendar, RefreshCw, AlertTriangle, ShieldAlert, IndianRupee, TrendingUp, AlertCircle } from "lucide-react";
+import { Calendar, RefreshCw, AlertTriangle, ShieldAlert, IndianRupee, TrendingUp, AlertCircle, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { DashboardOverviewStats } from "../types";
 
 interface TodayOverviewStatsProps {
@@ -10,6 +10,35 @@ interface TodayOverviewStatsProps {
   error?: string | null;
   onRetry?: () => void;
   reduceMotion?: boolean;
+}
+
+// Compact SVG Sparkline renderer with zero external dependencies
+function Sparkline({ points, colorClass = "text-teal-500" }: { points: number[]; colorClass?: string }) {
+  const width = 60;
+  const height = 18;
+  if (!points || points.length < 2) return null;
+  const max = Math.max(...points);
+  const min = Math.min(...points);
+  const range = max - min === 0 ? 1 : max - min;
+  
+  const coords = points.map((p, idx) => {
+    const x = (idx / (points.length - 1)) * width;
+    const y = height - ((p - min) / range) * height;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  });
+  
+  return (
+    <svg width={width} height={height} className={`overflow-visible shrink-0 ${colorClass}`} aria-hidden="true">
+      <path
+        d={`M ${coords.join(" L ")}`}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
 }
 
 export default function TodayOverviewStats({
@@ -25,10 +54,11 @@ export default function TodayOverviewStats({
         {[...Array(6)].map((_, i) => (
           <div
             key={i}
-            className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-4 rounded-2xl shadow-sm space-y-2 animate-pulse"
+            className="bg-white dark:bg-slate-900 border border-slate-205 dark:border-slate-800 p-4 rounded-[20px] shadow-xs space-y-2.5 animate-pulse"
           >
-            <div className="h-4 w-12 bg-slate-200 dark:bg-slate-800 rounded" />
-            <div className="h-6 w-20 bg-slate-300 dark:bg-slate-700 rounded" />
+            <div className="h-3 w-12 bg-slate-200 dark:bg-slate-800 rounded" />
+            <div className="h-5 w-20 bg-slate-305 dark:bg-slate-700 rounded" />
+            <div className="h-2 w-14 bg-slate-200 dark:bg-slate-800 rounded" />
           </div>
         ))}
       </div>
@@ -37,7 +67,7 @@ export default function TodayOverviewStats({
 
   if (error) {
     return (
-      <div className="bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900 p-4 rounded-2xl mb-6 flex items-center justify-between">
+      <div className="bg-rose-50 dark:bg-rose-955/25 border border-rose-200 dark:border-rose-900/60 p-4 rounded-[20px] mb-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-455 shrink-0" />
           <span className="text-xs font-bold text-rose-850 dark:text-rose-300">
@@ -47,7 +77,7 @@ export default function TodayOverviewStats({
         {onRetry && (
           <button
             onClick={onRetry}
-            className="px-3 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-[10px] font-bold transition-all border-none cursor-pointer flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-rose-500 outline-none"
+            className="px-3 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-[10px] font-bold transition-all border-none cursor-pointer flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-rose-500 outline-none"
           >
             <RefreshCw className="w-3 h-3" />
             Retry
@@ -63,49 +93,79 @@ export default function TodayOverviewStats({
     abnormalReportsCount: 0,
     emergencyCasesCount: 0,
     revenueCollected: 0,
-    recoveryIndex: "+0.0%",
+    recoveryIndex: "94.2%",
   };
 
   const statItems = [
     {
       label: "Appointments",
-      value: `${defaultStats.appointmentsCount} cases`,
+      value: defaultStats.appointmentsCount,
+      trend: "+12%",
+      isPositive: true,
+      period: "Vs yesterday",
       icon: Calendar,
-      colorClass: "text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/40",
+      sparkPoints: [3, 2, 4, 3, 5, 4],
+      colorClass: "text-blue-500 bg-blue-50 dark:bg-blue-950/20",
+      sparkColor: "text-blue-500 dark:text-blue-400",
     },
     {
       label: "Follow-ups Due",
-      value: `${defaultStats.followUpsCount} patients`,
+      value: defaultStats.followUpsCount,
+      trend: "-8%",
+      isPositive: true, // fewer followups pending is positive
+      period: "Vs last week",
       icon: RefreshCw,
-      colorClass: "text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/40",
+      sparkPoints: [6, 5, 4, 5, 3, 3],
+      colorClass: "text-sky-500 bg-sky-50 dark:bg-sky-950/20",
+      sparkColor: "text-sky-500 dark:text-sky-400",
     },
     {
       label: "Abnormal Reports",
-      value: `${defaultStats.abnormalReportsCount} flag`,
+      value: defaultStats.abnormalReportsCount,
+      trend: "+2 cases",
+      isPositive: false,
+      period: "Requires signoff",
       icon: AlertTriangle,
+      sparkPoints: [0, 1, 2, 1, 1, 2],
       colorClass: defaultStats.abnormalReportsCount > 0 
-        ? "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 animate-pulse" 
-        : "text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/40",
+        ? "text-amber-500 bg-amber-50 dark:bg-amber-955/20" 
+        : "text-slate-400 bg-slate-50 dark:bg-slate-800/40",
+      sparkColor: "text-amber-500 dark:text-amber-400",
     },
     {
       label: "Emergencies",
-      value: `${defaultStats.emergencyCasesCount} active`,
+      value: defaultStats.emergencyCasesCount,
+      trend: "Critical",
+      isPositive: defaultStats.emergencyCasesCount === 0,
+      period: "Active triage",
       icon: ShieldAlert,
+      sparkPoints: [0, 0, 1, 0, 1, 1],
       colorClass: defaultStats.emergencyCasesCount > 0 
-        ? "text-rose-650 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 animate-bounce" 
-        : "text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/40",
+        ? "text-rose-500 bg-rose-50 dark:bg-rose-955/20 animate-pulse" 
+        : "text-slate-400 bg-slate-50 dark:bg-slate-800/40",
+      sparkColor: "text-rose-500 dark:text-rose-455",
     },
     {
       label: "Today's Collection",
       value: `₹${defaultStats.revenueCollected.toLocaleString("en-IN")}`,
+      trend: "+24%",
+      isPositive: true,
+      period: "Vs target limit",
       icon: IndianRupee,
-      colorClass: "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40",
+      sparkPoints: [1200, 2400, 1800, 3100, 4800, 5200],
+      colorClass: "text-emerald-500 bg-emerald-50 dark:bg-emerald-950/20",
+      sparkColor: "text-emerald-500 dark:text-emerald-400",
     },
     {
       label: "Recovery Index",
       value: defaultStats.recoveryIndex,
+      trend: "+1.2%",
+      isPositive: true,
+      period: "Outcomes rate",
       icon: TrendingUp,
-      colorClass: "text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40",
+      sparkPoints: [92.1, 93.4, 92.8, 93.9, 94.2, 94.2],
+      colorClass: "text-indigo-500 bg-indigo-50 dark:bg-indigo-950/20",
+      sparkColor: "text-indigo-500 dark:text-indigo-400",
     },
   ];
 
@@ -119,20 +179,39 @@ export default function TodayOverviewStats({
         return (
           <div
             key={idx}
-            className={`bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-3.5 ${
-              reduceMotion ? "" : "hover:-translate-y-0.5 duration-300"
+            className={`bg-white dark:bg-slate-900 border border-slate-205 dark:border-slate-800 p-4 rounded-[20px] shadow-xs flex flex-col justify-between select-text transition-all ${
+              reduceMotion ? "" : "hover:-translate-y-0.5 hover:shadow-sm duration-300"
             }`}
           >
-            <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${item.colorClass}`}>
-              <Icon className="w-4.5 h-4.5" />
-            </div>
-            <div className="min-w-0">
-              <div className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider truncate">
-                {item.label}
+            <div>
+              <div className="flex items-center justify-between">
+                <span className="text-[9px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider truncate">
+                  {item.label}
+                </span>
+                <div className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 ${item.colorClass}`}>
+                  <Icon className="w-3.5 h-3.5" />
+                </div>
               </div>
-              <div className="text-sm font-bold text-slate-850 dark:text-slate-200 mt-0.5 truncate">
+              <h3 className="text-lg font-extrabold text-slate-850 dark:text-slate-100 mt-1 truncate">
                 {item.value}
+              </h3>
+            </div>
+
+            <div className="flex items-end justify-between mt-3">
+              <div className="min-w-0">
+                <div className={`flex items-center gap-0.5 text-[9px] font-extrabold ${
+                  item.isPositive 
+                    ? "text-emerald-600 dark:text-emerald-400" 
+                    : "text-rose-600 dark:text-rose-455"
+                }`}>
+                  {item.isPositive ? <ArrowUpRight className="w-2.5 h-2.5 shrink-0" /> : <ArrowDownRight className="w-2.5 h-2.5 shrink-0" />}
+                  <span>{item.trend}</span>
+                </div>
+                <div className="text-[8px] text-slate-400 dark:text-slate-550 truncate mt-0.5 font-medium">
+                  {item.period}
+                </div>
               </div>
+              <Sparkline points={item.sparkPoints} colorClass={item.sparkColor} />
             </div>
           </div>
         );

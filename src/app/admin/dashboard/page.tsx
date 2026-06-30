@@ -54,6 +54,9 @@ import {
   QueueSkeleton,
   AlertsSkeleton,
   AnalyticsSkeleton,
+  SystemStatusStrip,
+  MyTasksWidget,
+  KnowledgeKmsWidget,
   featureFlags,
 } from "../../../features/dashboard";
 
@@ -894,6 +897,9 @@ export default function AdminDashboard() {
       case "emergency-case":
         setIsNewCaseModalOpen(true);
         alert("Emergency Case registration initialized.");
+        break;
+      case "knowledge-editor":
+        setActiveTab("nexus-atlas");
         break;
       case "message-center":
         setActiveTab("communication");
@@ -8274,6 +8280,7 @@ ${err.message || err}`);
           setFavorites={setSidebarFavorites}
           handleSubTabClick={handleSubTabClick}
           reduceMotion={reduceMotion}
+          patients={patients}
         />
       )}
 
@@ -8283,16 +8290,23 @@ ${err.message || err}`);
           activeTab === "medical-academy" ? "h-screen overflow-hidden" : ""
         }`}
       >
-        {/* Top Header */}
         {!immersiveMode && (
-          <DashboardHeader
-            session={session}
-            handleLogout={handleLogout}
-            onTriggerQuickAction={handleTriggerQuickAction}
-            onOpenSearch={() => setIsGlobalSearchOpen(true)}
-            onOpenDisplayDrawer={() => setIsDisplayDrawerOpen(true)}
-            reduceMotion={reduceMotion}
-          />
+          <>
+            <DashboardHeader
+              session={session}
+              handleLogout={handleLogout}
+              onTriggerQuickAction={handleTriggerQuickAction}
+              onOpenSearch={() => setIsGlobalSearchOpen(true)}
+              onOpenDisplayDrawer={() => setIsDisplayDrawerOpen(true)}
+              reduceMotion={reduceMotion}
+            />
+            <SystemStatusStrip
+              telemetryLogs={telemetryLogs}
+              failedLogsCount={telemetryLogs.filter(log => log.status === "failed" || log.failoverTrace?.length > 1).length}
+              setActiveTab={setActiveTab}
+              reduceMotion={reduceMotion}
+            />
+          </>
         )}
 
         {/* ── Subscription / Trial Warning Banner (non-admin doctors only) ── */}
@@ -8397,6 +8411,12 @@ ${err.message || err}`);
                     reduceMotion={reduceMotion}
                   />
 
+                  {/* Shortcuts & Quick Actions (positioned above schedule for faster access) */}
+                  <QuickActionsGrid 
+                    onTriggerQuickAction={handleTriggerQuickAction} 
+                    reduceMotion={reduceMotion}
+                  />
+
                   {/* Priority 1 & 2: Today's Schedule & Smart Alerts Panel */}
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
                     <DashboardErrorBoundary widgetName="Today's Schedule">
@@ -8441,18 +8461,46 @@ ${err.message || err}`);
                     )}
                   </div>
 
-                  {/* Priority 5: Shortcuts & Quick Actions */}
-                  <QuickActionsGrid 
-                    onTriggerQuickAction={handleTriggerQuickAction} 
-                    reduceMotion={reduceMotion}
-                  />
 
-                  {/* Priority 6: Clinical KPI Cards */}
-                  <ClinicalKpiCards 
-                    patients={patients} 
-                    invoicesList={invoicesList} 
-                    reduceMotion={reduceMotion}
-                  />
+
+                  {/* Priority 5 & 6: Clinician Tasks, KMS Status, and Workspace */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+                    <DashboardErrorBoundary widgetName="My Tasks">
+                      <MyTasksWidget
+                        onSelectPatient={setSelectedPatientId}
+                        setActiveTab={setActiveTab}
+                        reduceMotion={reduceMotion}
+                      />
+                    </DashboardErrorBoundary>
+                    
+                    <DashboardErrorBoundary widgetName="Knowledge Base Status">
+                      <KnowledgeKmsWidget
+                        setActiveTab={setActiveTab}
+                        reduceMotion={reduceMotion}
+                      />
+                    </DashboardErrorBoundary>
+
+                    <div className="bg-white dark:bg-slate-900 p-5 rounded-[24px] border border-slate-202/80 dark:border-slate-800/80 shadow-xs flex flex-col justify-between h-[255px]">
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3 select-none">
+                          <h3 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider font-sans">
+                            Clinical Workspace
+                          </h3>
+                        </div>
+                        <p className="text-[10px] text-slate-400 dark:text-slate-500 leading-relaxed font-medium">
+                          Workspace slot reserved for upcoming modular tools:
+                        </p>
+                        <ul className="list-disc pl-4 text-[9.5px] text-slate-400 dark:text-slate-500 space-y-1.5 font-medium">
+                          <li>AI Insights &amp; Clinical Goals</li>
+                          <li>Multi-Clinic Telemetry Overview</li>
+                          <li>Teaching Reminders &amp; Research Updates</li>
+                        </ul>
+                      </div>
+                      <div className="text-[8.5px] text-slate-350 dark:text-slate-655 font-mono select-none">
+                        V2 workspace container nominal
+                      </div>
+                    </div>
+                  </div>
 
                   {/* Lower Priority: Analytics Panel */}
                   {featureFlags.advancedAnalytics && (

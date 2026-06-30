@@ -96,15 +96,16 @@ export default function GlobalCommandPalette({
       }
     });
 
-    // 2. Quick Actions (Always show first if query is empty or matches)
+    // 2. Quick Actions
     const actions = [
-      { key: "new-patient", label: "New Patient Case", desc: "Create a new patient case record" },
+      { key: "new-patient", label: "New Patient Case", desc: "Register patient case record" },
       { key: "ai-intake", label: "Start AI Intake", desc: "Launch new guided interview session" },
       { key: "upload-report", label: "Upload Report", desc: "Upload and analyze diagnostic PDF reports" },
       { key: "create-prescription", label: "Create Prescription", desc: "Open treatment plan compound config" },
       { key: "schedule-appointment", label: "Schedule Appointment", desc: "Open outreach tab to schedule visit" },
       { key: "generate-invoice", label: "Generate Invoice", desc: "Create billing breakdown statement" },
       { key: "emergency-case", label: "Emergency Intake", desc: "Flag case as urgent and initiate triage" },
+      { key: "knowledge-editor", label: "Knowledge Editor", desc: "Open Repertory & Materia Medica KMS Editor" },
     ];
 
     actions.forEach((a) => {
@@ -212,7 +213,17 @@ export default function GlobalCommandPalette({
       }
     });
 
-    return items;
+    // Relevance Category Sorting Map (Clinician priority: Patients > Actions > Navigation > Knowledge > Settings)
+    const typePriority: Record<string, number> = {
+      patient: 1,
+      action: 2,
+      setting: 3,
+      remedy: 4,
+      invoice: 5,
+      doctor: 6,
+    };
+
+    return items.sort((a, b) => typePriority[a.type] - typePriority[b.type]);
   }, [query, patients, invoicesList, remediesKeynotes, clinicians, setActiveTab, onSelectPatient, onOpenInvoice, onTriggerQuickAction, onClose]);
 
   // Reset index when query changes
@@ -248,7 +259,11 @@ export default function GlobalCommandPalette({
   // Scroll selected item into view in container
   useEffect(() => {
     if (itemsContainerRef.current) {
-      const selectedEl = itemsContainerRef.current.children[selectedIndex] as HTMLElement;
+      const children = Array.from(itemsContainerRef.current.children);
+      // Filter out headers to get correct DOM elements for items
+      const itemElements = children.filter((child) => child.getAttribute("role") === "option");
+      const selectedEl = itemElements[selectedIndex] as HTMLElement;
+      
       if (selectedEl) {
         const container = itemsContainerRef.current;
         const containerTop = container.scrollTop;
@@ -278,7 +293,7 @@ export default function GlobalCommandPalette({
       {/* Floating command dialog box */}
       <div
         ref={containerRef}
-        className={`fixed inset-x-4 top-[12%] mx-auto max-w-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl z-[101] overflow-hidden flex flex-col max-h-[60vh] select-none text-slate-850 dark:text-slate-200 ${
+        className={`fixed inset-x-4 top-[12%] mx-auto max-w-2xl bg-white dark:bg-slate-900 border border-slate-205 dark:border-slate-800 rounded-3xl shadow-2xl z-[101] overflow-hidden flex flex-col max-h-[60vh] select-none text-slate-850 dark:text-slate-200 ${
           reduceMotion ? "" : "animate-in fade-in zoom-in-95 duration-150"
         }`}
         role="combobox"
@@ -288,11 +303,11 @@ export default function GlobalCommandPalette({
         aria-label="Global search command palette"
       >
         {/* Search input field */}
-        <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-100 dark:border-slate-800 shrink-0">
-          <Search className="w-5 h-5 text-slate-400" />
+        <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-100 dark:border-slate-850 shrink-0">
+          <Search className="w-5 h-5 text-slate-450" />
           <input
             type="text"
-            className="flex-1 bg-transparent border-none outline-none text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 font-sans"
+            className="flex-grow bg-transparent border-none outline-none text-xs text-slate-850 dark:text-slate-100 placeholder-slate-450 dark:placeholder-slate-500 font-sans"
             placeholder="Search patient, remedy, page setting, action... (Use ↑↓ Enter)"
             autoFocus
             value={query}
@@ -301,76 +316,90 @@ export default function GlobalCommandPalette({
             aria-controls="search-results-list"
             aria-activedescendant={searchResults[selectedIndex] ? `item-${searchResults[selectedIndex].id}` : undefined}
           />
-          <kbd className="hidden sm:inline-block px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-[9px] font-mono text-slate-400 dark:text-slate-550">
+          <kbd className="hidden sm:inline-block px-1.5 py-0.5 bg-slate-50 dark:bg-slate-800 border border-slate-202 dark:border-slate-700 rounded text-[9px] font-mono text-slate-450 shadow-2xs">
             ESC
           </kbd>
         </div>
 
-        {/* Results listbox container */}
+        {/* Results listbox container with visual grouping */}
         <div
           ref={itemsContainerRef}
           id="search-results-list"
           role="listbox"
-          className="flex-grow overflow-y-auto p-2 divide-y divide-transparent scrollbar-thin"
+          className="flex-grow overflow-y-auto p-2 scrollbar-thin"
         >
           {searchResults.length > 0 ? (
             searchResults.map((item, idx) => {
               const Icon = item.icon;
               const isSelected = idx === selectedIndex;
 
+              // Determine group header visibility
+              const showHeader = idx === 0 || searchResults[idx - 1].type !== item.type;
+              const categoryTitles: Record<string, string> = {
+                patient: "Active Patient Records",
+                action: "Clinical Shortcuts & Actions",
+                setting: "System Navigation & Settings",
+                remedy: "Materia Medica & Knowledge Base",
+                invoice: "Invoice & Billing Ledgers",
+                doctor: "Medical Officer Directory"
+              };
+
               return (
-                <div
-                  key={item.id}
-                  id={`item-${item.id}`}
-                  role="option"
-                  aria-selected={isSelected}
-                  onClick={item.action}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer transition-all border border-transparent ${
-                    isSelected
-                      ? "bg-slate-50 dark:bg-slate-850 border-teal-200 dark:border-teal-900 text-teal-650 dark:text-teal-400 shadow-xs"
-                      : "hover:bg-slate-50/50 dark:hover:bg-slate-800/50"
-                  }`}
-                >
+                <React.Fragment key={item.id}>
+                  {showHeader && (
+                    <div className="text-[8.5px] font-extrabold uppercase tracking-widest text-slate-400 dark:text-slate-550 px-3.5 pt-3 pb-1 select-none border-t border-slate-100/50 dark:border-slate-800/40 first:border-none">
+                      {categoryTitles[item.type] || item.type}
+                    </div>
+                  )}
                   <div
-                    className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                    id={`item-${item.id}`}
+                    role="option"
+                    aria-selected={isSelected}
+                    onClick={item.action}
+                    className={`flex items-center gap-3 px-4 py-2.5 rounded-xl cursor-pointer transition-all border border-transparent ${
                       isSelected
-                        ? "bg-teal-100/50 dark:bg-teal-950/40 text-teal-650 dark:text-teal-400"
-                        : "bg-slate-100 dark:bg-slate-800 text-slate-450 dark:text-slate-500"
+                        ? "bg-slate-50 dark:bg-slate-850 border-teal-202 dark:border-teal-900 text-teal-650 dark:text-teal-400 shadow-2xs"
+                        : "hover:bg-slate-50/50 dark:hover:bg-slate-850/50"
                     }`}
                   >
-                    <Icon className="w-4 h-4" />
-                  </div>
-                  <div className="flex-grow min-w-0">
-                    <div className="text-xs font-bold truncate leading-tight text-slate-900 dark:text-slate-200">
-                      {item.title}
+                    <div
+                      className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${
+                        isSelected
+                          ? "bg-teal-100/50 dark:bg-teal-950/40 text-teal-650 dark:text-teal-400"
+                          : "bg-slate-100 dark:bg-slate-800 text-slate-450 dark:text-slate-500"
+                      }`}
+                    >
+                      <Icon className="w-3.5 h-3.5" />
                     </div>
-                    {item.subtitle && (
-                      <div className="text-[10px] text-slate-500 dark:text-slate-450 truncate mt-0.5">
-                        {item.subtitle}
+                    <div className="flex-grow min-w-0">
+                      <div className="text-[11px] font-extrabold truncate leading-tight text-slate-900 dark:text-slate-200">
+                        {item.title}
                       </div>
-                    )}
+                      {item.subtitle && (
+                        <div className="text-[9.5px] text-slate-450 dark:text-slate-500 truncate mt-0.5 font-medium">
+                          {item.subtitle}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <div className="text-[10px] uppercase font-bold tracking-widest text-slate-350 dark:text-slate-600 shrink-0">
-                    {item.type}
-                  </div>
-                </div>
+                </React.Fragment>
               );
             })
           ) : (
             <div className="p-8 text-center space-y-2" role="status">
               <AlertCircle className="w-8 h-8 text-slate-300 dark:text-slate-700 mx-auto" />
-              <div className="text-xs font-bold text-slate-400 dark:text-slate-500">
+              <div className="text-xs font-bold text-slate-400 dark:text-slate-550">
                 No matching results found
               </div>
-              <div className="text-[10px] text-slate-350 dark:text-slate-600">
-                Try searching for specific names, clinical codes, or system actions.
+              <div className="text-[10px] text-slate-350 dark:text-slate-650 max-w-xs mx-auto leading-relaxed">
+                Try searching for specific patient names, clinical complaints, or remedies keynotes.
               </div>
             </div>
           )}
         </div>
 
         {/* Footer actions helper bar */}
-        <div className="px-5 py-2.5 bg-slate-50 dark:bg-slate-850/50 border-t border-slate-100 dark:border-slate-800 text-[9px] text-slate-400 dark:text-slate-500 flex items-center justify-between shrink-0">
+        <div className="px-5 py-2.5 bg-slate-50 dark:bg-slate-850/50 border-t border-slate-100 dark:border-slate-850 text-[9px] text-slate-400 dark:text-slate-550 flex items-center justify-between shrink-0 font-medium select-none">
           <div className="flex items-center gap-1.5">
             <span>↑↓ to navigate</span>
             <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700" />

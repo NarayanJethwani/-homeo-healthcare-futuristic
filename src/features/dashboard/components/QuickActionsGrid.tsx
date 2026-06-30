@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { UserPlus, Sparkles, UploadCloud, FileText, Calendar, Receipt, ShieldAlert } from "lucide-react";
+import { UserPlus, Sparkles, UploadCloud, FileText, Calendar, Receipt, ShieldAlert, BookOpen } from "lucide-react";
 
 interface QuickActionsGridProps {
   onTriggerQuickAction: (actionKey: string) => void;
@@ -18,7 +18,7 @@ export default function QuickActionsGrid({
       label: "New Patient Case",
       description: "Register patient case",
       icon: UserPlus,
-      color: "from-blue-500 to-indigo-600",
+      color: "from-blue-500 to-indigo-605",
       shadow: "shadow-blue-100 dark:shadow-none",
     },
     {
@@ -34,7 +34,7 @@ export default function QuickActionsGrid({
       label: "Upload Report",
       description: "Ingest lab diagnostic PDF",
       icon: UploadCloud,
-      color: "from-indigo-500 to-violet-500",
+      color: "from-indigo-505 to-violet-500",
       shadow: "shadow-indigo-100 dark:shadow-none",
     },
     {
@@ -69,37 +69,45 @@ export default function QuickActionsGrid({
       color: "from-rose-500 to-red-650",
       shadow: "shadow-rose-100 dark:shadow-none",
     },
+    {
+      key: "knowledge-editor",
+      label: "Knowledge Editor",
+      description: "Materia Medica KMS",
+      icon: BookOpen,
+      color: "from-violet-500 to-fuchsia-600",
+      shadow: "shadow-violet-100 dark:shadow-none",
+    },
   ];
 
   return (
     <div className="space-y-3 select-none">
-      <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 dark:text-slate-500 px-1">
+      <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-slate-450 dark:text-slate-500 px-1">
         Clinical Shortcuts & Quick Actions
       </h4>
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
         {actions.map((act) => {
           const Icon = act.icon;
           return (
             <button
               key={act.key}
               onClick={() => onTriggerQuickAction(act.key)}
-              className={`group p-4 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl text-left hover:border-slate-350 dark:hover:border-slate-700 cursor-pointer focus-visible:ring-2 focus-visible:ring-teal-500 outline-none flex flex-col justify-between gap-4 transition-all ${
+              className={`group p-4 bg-white dark:bg-slate-900 border border-slate-202 dark:border-slate-800 rounded-[20px] text-left hover:border-slate-350 dark:hover:border-slate-700 cursor-pointer focus-visible:ring-2 focus-visible:ring-teal-500 outline-none flex flex-col justify-between gap-4 transition-all ${
                 reduceMotion ? "" : "active:scale-98"
               }`}
             >
               {/* Icon Container with Gradient */}
               <div 
-                className={`w-9 h-9 rounded-2xl bg-gradient-to-br ${act.color} text-white flex items-center justify-center shadow-md ${act.shadow} ${
+                className={`w-9 h-9 rounded-xl bg-gradient-to-br ${act.color} text-white flex items-center justify-center shadow-md ${act.shadow} ${
                   reduceMotion ? "" : "group-hover:scale-105 duration-200"
                 }`}
               >
-                <Icon className="w-4 h-4" />
+                <Icon className="w-4.5 h-4.5" />
               </div>
               <div>
                 <div className="text-xs font-bold text-slate-850 dark:text-slate-100 group-hover:text-teal-650 dark:group-hover:text-teal-400 transition-colors">
                   {act.label}
                 </div>
-                <div className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 leading-snug">
+                <div className="text-[9.5px] text-slate-400 dark:text-slate-500 mt-0.5 leading-snug font-medium">
                   {act.description}
                 </div>
               </div>

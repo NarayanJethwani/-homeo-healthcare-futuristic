@@ -4,7 +4,7 @@ export function useDashboardPreferences() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isDisplayDrawerOpen, setIsDisplayDrawerOpen] = useState(false);
   const [isGlobalSearchOpen, setIsGlobalSearchOpen] = useState(false);
-  const [sidebarFavorites, setSidebarFavorites] = useState<string[]>(["dashboard", "intake", "patients"]);
+  const [sidebarFavorites, setSidebarFavorites] = useState<string[]>(["intake", "patients"]);
   const [dismissedAlerts, setDismissedAlerts] = useState<string[]>([]);
   const [dashboardTimeframe, setDashboardTimeframe] = useState<"today" | "week" | "month" | "year">("week");
   const [reduceMotion, setReduceMotion] = useState(false);

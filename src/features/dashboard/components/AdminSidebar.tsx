@@ -17,6 +17,7 @@ interface AdminSidebarProps {
   setFavorites: React.Dispatch<React.SetStateAction<string[]>>;
   handleSubTabClick: (tabId: any, subId: string) => void;
   reduceMotion?: boolean;
+  patients?: any[];
 }
 
 // Icon mappings based on active tab IDs
@@ -151,6 +152,7 @@ export default function AdminSidebar({
   setFavorites,
   handleSubTabClick,
   reduceMotion = false,
+  patients = [],
 }: AdminSidebarProps) {
   const [openSubmenuTab, setOpenSubmenuTab] = useState<string | null>(null);
   const [hoveredTabId, setHoveredTabId] = useState<string | null>(null);
@@ -172,6 +174,26 @@ export default function AdminSidebar({
     );
   };
 
+  const getNotificationDot = (tabId: string) => {
+    if (!patients || patients.length === 0) return null;
+    
+    switch (tabId) {
+      case "intake":
+        const hasIntakePending = patients.some(p => p.status === "awaiting-consult" || p.stage?.includes("Intake"));
+        if (hasIntakePending) return <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" title="Intake pending cases active" />;
+        break;
+      case "patients":
+        const hasCriticalPatients = patients.some(p => p.careLevel === "high" || p.priority === "Critical");
+        if (hasCriticalPatients) return <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" title="Critical patients in registry" />;
+        break;
+      case "analyzer":
+        const hasPendingReports = patients.some(p => p.pendingReports && p.pendingReports.length > 0);
+        if (hasPendingReports) return <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" title="Pending reports to extract" />;
+        break;
+    }
+    return null;
+  };
+
   const renderTabItem = (tabId: string) => {
     const meta = TABS_METADATA[tabId];
     if (!meta) return null;
@@ -180,8 +202,7 @@ export default function AdminSidebar({
     const Icon = meta.icon;
     const isActive = activeTab === tabId;
     const isFavorited = favorites.includes(tabId);
-    const subtabs = SUBTABS_CONFIG[tabId] || [];
-    const isSubmenuOpen = openSubmenuTab === tabId;
+    const hasDot = getNotificationDot(tabId);
 
     return (
       <div 
@@ -206,19 +227,27 @@ export default function AdminSidebar({
           onClick={() => {
             setActiveTab(tabId);
           }}
-          className={`group flex w-full items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer text-left focus-visible:ring-2 focus-visible:ring-teal-500 outline-none transition-all bg-transparent ${
+          className={`group flex w-full items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer text-left focus-visible:ring-2 focus-visible:ring-teal-555 outline-none transition-all bg-transparent ${
             isActive
-              ? "bg-teal-50/70 dark:bg-teal-950/20 text-teal-650 dark:text-teal-400 font-bold border border-teal-100/50 dark:border-teal-900/30"
+              ? "bg-teal-50/70 dark:bg-teal-950/20 text-teal-650 dark:text-teal-400 font-bold border border-teal-100/50 dark:border-teal-900/30 shadow-xs"
               : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 border border-transparent"
           }`}
           title={isCollapsed ? meta.label : undefined}
         >
-          <div className="flex items-center gap-3 min-w-0">
-            <div className={`shrink-0 ${isActive ? "text-teal-555" : "text-slate-400 group-hover:text-slate-605 dark:group-hover:text-slate-300"}`}>
-              <Icon className="w-4 h-4" />
+          <div className="flex items-center gap-3 min-w-0 flex-grow">
+            <div className="relative shrink-0">
+              <div className={`shrink-0 ${isActive ? "text-teal-555" : "text-slate-400 group-hover:text-slate-605 dark:group-hover:text-slate-300"}`}>
+                <Icon className="w-4 h-4" />
+              </div>
+              {isCollapsed && hasDot && (
+                <span className="absolute -top-1 -right-1 w-1.5 h-1.5 rounded-full bg-rose-500 border border-white dark:border-slate-900" />
+              )}
             </div>
             {!isCollapsed && (
-              <span className="text-xs tracking-wide truncate">{meta.label}</span>
+              <div className="flex items-center justify-between flex-grow min-w-0 pr-1">
+                <span className="text-xs tracking-wide truncate">{meta.label}</span>
+                {hasDot}
+              </div>
             )}
           </div>
 
@@ -312,6 +341,7 @@ export default function AdminSidebar({
               const tabMeta = TABS_METADATA[item];
               if (!tabMeta) return false;
               if (tabMeta.adminOnly && !isAdmin) return false;
+              if (!isCollapsed && favorites.includes(item)) return false;
               return true;
             });
 
@@ -325,7 +355,7 @@ export default function AdminSidebar({
                   </h4>
                 )}
                 <div className="space-y-1">
-                  {group.items.map((item) => renderTabItem(item))}
+                  {visibleItems.map((item) => renderTabItem(item))}
                 </div>
               </div>
             );
