@@ -2,16 +2,23 @@
 
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { Sparkles, Mail, MapPin } from "lucide-react";
+import { Sparkles, Mail, MapPin, Download } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import Magnetic from "./Magnetic";
+import { usePWAInstall } from "@/lib/pwaStore";
+import PWAInstallModal from "@/components/PWAInstallModal";
+
 
 export default function Footer() {
   const pathname = usePathname();
   const [isPortalHost, setIsPortalHost] = useState(false);
+  const { isInstallable, isInstalled, isIOS, install } = usePWAInstall();
+  const [showInstallModal, setShowInstallModal] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     if (typeof window !== "undefined") {
       setIsPortalHost(window.location.hostname.includes("portal.homeo.healthcare"));
     }
@@ -187,6 +194,22 @@ export default function Footer() {
                   </Link>
                 </li>
               ))}
+              {mounted && !isInstalled && (
+                <li>
+                  <button
+                    onClick={() => {
+                      if (isInstallable) {
+                        install();
+                      } else {
+                        setShowInstallModal(true);
+                      }
+                    }}
+                    className="text-xs text-slate-700 hover:text-mint transition-colors duration-300 font-semibold cursor-pointer text-left w-full"
+                  >
+                    Install Web App
+                  </button>
+                </li>
+              )}
             </ul>
           </div>
 
@@ -222,6 +245,11 @@ export default function Footer() {
         </div>
 
       </div>
+      <PWAInstallModal
+        isOpen={showInstallModal}
+        onClose={() => setShowInstallModal(false)}
+        isIOS={isIOS}
+      />
     </footer>
   );
 }

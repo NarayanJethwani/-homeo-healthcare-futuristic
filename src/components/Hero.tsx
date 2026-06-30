@@ -164,10 +164,10 @@ export default function Hero() {
               <a
                 href="#booking"
                 data-cursor="book"
-                className="px-8 py-4 rounded-full bg-mint text-white font-semibold shadow-[0_8px_30px_rgb(20,184,166,0.25)] hover:shadow-[0_12px_40px_rgb(20,184,166,0.4)] transition-all duration-500 flex items-center gap-2 cursor-pointer text-sm group"
+                className="px-8 py-4 rounded-full bg-mint hover:bg-white text-white hover:text-mint-dark border border-transparent hover:border-mint/30 font-semibold shadow-[0_8px_30px_rgb(20,184,166,0.25)] hover:shadow-[0_12px_40px_rgba(20,184,166,0.15)] transition-all duration-500 flex items-center gap-2 cursor-pointer text-sm group"
               >
                 Book Consultation
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-white group-hover:text-mint-dark" />
               </a>
             </Magnetic>
             
