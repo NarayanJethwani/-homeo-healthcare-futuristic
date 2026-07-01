@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Search, Plus, Bell, MessageSquare, User, LogOut, Settings, FileText, IndianRupee, Send, Sparkles, Activity } from "lucide-react";
+import KeyboardShortcutsModal from "./KeyboardShortcutsModal";
 
 interface DashboardHeaderProps {
   session: any;
@@ -26,6 +27,8 @@ export default function DashboardHeader({
 }: DashboardHeaderProps) {
   const [isQuickActionsOpen, setIsQuickActionsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isKeyboardShortcutsOpen, setIsKeyboardShortcutsOpen] = useState(false);
+  const [comingSoonFeature, setComingSoonFeature] = useState<string | null>(null);
 
   const dropdownRef = React.useRef<HTMLDivElement>(null);
 
@@ -233,7 +236,7 @@ export default function DashboardHeader({
               >
                 <div className="px-3 py-2 border-b border-slate-100 dark:border-slate-850 mb-1">
                   <div className="text-xs font-bold truncate text-slate-900 dark:text-slate-100">{session?.name || "Clinician"}</div>
-                  <div className="text-[10px] text-slate-400 dark:text-slate-500 truncate mt-0.5">{session?.email || "doctor@clinic.com"}</div>
+                  <div className="text-[10px] text-slate-400 dark:text-slate-400 truncate mt-0.5">{session?.email || "doctor@clinic.com"}</div>
                 </div>
 
                 {[
@@ -248,10 +251,16 @@ export default function DashboardHeader({
                     <button
                       key={item.key}
                       onClick={() => {
-                        onTriggerQuickAction(item.key);
                         setIsProfileOpen(false);
+                        if (item.key === "accessibility") {
+                          onOpenDisplayDrawer();
+                        } else if (item.key === "shortcuts") {
+                          setIsKeyboardShortcutsOpen(true);
+                        } else {
+                          setComingSoonFeature(item.label);
+                        }
                       }}
-                      className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer border-none bg-transparent flex items-center gap-2.5 focus-visible:ring-2 focus-visible:ring-teal-555 outline-none dashboard-focus-ring"
+                      className="w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer border-none bg-transparent flex items-center gap-2.5 focus-visible:ring-2 focus-visible:ring-teal-555 outline-none dashboard-focus-ring"
                       role="menuitem"
                     >
                       <Icon className="w-4 h-4 text-slate-400 shrink-0" />
@@ -264,7 +273,7 @@ export default function DashboardHeader({
 
                 <button
                   onClick={handleLogout}
-                  className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/20 hover:text-rose-700 dark:text-rose-400 dark:hover:text-rose-300 transition-all cursor-pointer border-none bg-transparent flex items-center gap-2.5 focus-visible:ring-2 focus-visible:ring-rose-500 outline-none dashboard-focus-ring"
+                  className="w-full text-left px-3 py-2.5 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/20 hover:text-rose-700 dark:text-rose-400 dark:hover:text-rose-300 transition-all cursor-pointer border-none bg-transparent flex items-center gap-2.5 focus-visible:ring-2 focus-visible:ring-rose-500 outline-none dashboard-focus-ring"
                   role="menuitem"
                 >
                   <LogOut className="w-4 h-4 shrink-0" />
@@ -275,6 +284,46 @@ export default function DashboardHeader({
           )}
         </div>
       </div>
+
+      {/* Keyboard Shortcuts Modal */}
+      <KeyboardShortcutsModal
+        isOpen={isKeyboardShortcutsOpen}
+        onClose={() => setIsKeyboardShortcutsOpen(false)}
+      />
+
+      {/* Coming Soon Modal */}
+      {comingSoonFeature && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          <div 
+            className="fixed inset-0 bg-slate-950/40 dark:bg-black/60 backdrop-blur-sm" 
+            onClick={() => setComingSoonFeature(null)} 
+          />
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="coming-soon-title"
+            className="relative w-full max-w-sm bg-white dark:bg-[#1D2B3E] border border-slate-205 dark:border-slate-800 rounded-3xl shadow-2xl p-6 text-slate-800 dark:text-slate-200 dashboard-dropdown-dark"
+          >
+            <div className="text-center space-y-3.5">
+              <div className="w-10 h-10 rounded-full bg-teal-50 dark:bg-teal-950/30 text-teal-650 dark:text-teal-400 flex items-center justify-center mx-auto">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <h2 id="coming-soon-title" className="text-sm font-extrabold text-slate-900 dark:text-slate-100">
+                {comingSoonFeature}
+              </h2>
+              <p className="text-xs text-slate-550 dark:text-slate-400 leading-normal">
+                This feature is currently being designed and developed for the clinical workflow portal. Stay tuned for upcoming clinical intelligence updates!
+              </p>
+              <button
+                onClick={() => setComingSoonFeature(null)}
+                className="mt-2 w-full py-2 bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-750 text-white rounded-xl text-xs font-bold border-none transition-all cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-teal-555"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
