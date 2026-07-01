@@ -104,10 +104,10 @@ export default function QuickActionsGrid({
                 <Icon className="w-4.5 h-4.5" />
               </div>
               <div>
-                <div className="text-xs font-bold text-slate-850 dark:text-slate-100 group-hover:text-teal-650 dark:group-hover:text-teal-400 transition-colors">
+                <div className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-slate-950 dark:group-hover:text-white transition-colors">
                   {act.label}
                 </div>
-                <div className="text-[9.5px] text-slate-400 dark:text-slate-500 mt-0.5 leading-snug font-medium">
+                <div className="text-[9.5px] text-slate-500 dark:text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-350 mt-0.5 leading-snug font-medium transition-colors">
                   {act.description}
                 </div>
               </div>
