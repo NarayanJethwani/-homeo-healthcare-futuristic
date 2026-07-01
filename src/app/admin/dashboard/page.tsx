@@ -33,6 +33,8 @@ import { getClinicalCoverageScore, CURATED_DIAGNOSES, ORGAN_SYSTEMS, type Diagno
 import { VIRTUAL_PATIENTS, evaluateCaseSubmission } from "@/lib/caseSimulationLab";
 import { calculateClinicalDecisionSupport, checkPrescriptionSafety } from "@/lib/clinicalDecisionSupport";
 import Portal from "@/components/Portal";
+import { ReportUploadModal } from "@/features/dashboard/components/ReportUploadModal";
+import { ReportExtractionResult } from "@/features/dashboard/types/reportExtractionTypes";
 import {
   useDashboardPreferences,
   ActivityTimeline,
@@ -1311,28 +1313,42 @@ export default function AdminDashboard() {
     }
   };
 
-  // Mock clinical report uploads with parameter auto-extraction
-  const handleReportUploadSimulation = (type: 'lab' | 'prescription' | 'imaging') => {
-    setShowUploadModal(type);
-    setTimeout(() => {
-      setShowUploadModal(null);
-      if (type === "lab") {
-        setDiagLabs("Elevated IgE: 420 IU/mL. Elevated TSH: 5.4 uIU/mL. Vitamin D: 14 ng/mL (Deficient).");
-        setDiagDiagnosis("Atopic Dermatitis & Mild Thyroid dysfunction.");
-        setConstThermalState("Chilly");
-        setConstEnergyLevel(4);
-        alert("Extracted Lab Parameters!\n- Diagnosis: Atopic Dermatitis\n- Labs: IgE: 420, TSH: 5.4\n- Thermal State updated to Chilly\n- Energy Level set to 4/10");
-      } else if (type === "prescription") {
-        setDiagPastTreatments("Topical Hydrocortisone 1% cream for 6 months. Antihistamines daily.");
-        setDiagCurrentMeds("Levothyroxine 25mcg daily.");
-        alert("Extracted Prescription Parameters!\n- Past Treatment: Hydrocortisone 1% (Steroid suppression history recorded)\n- Current Meds: Levothyroxine 25mcg");
-      } else if (type === "imaging") {
-        setDiagImaging("Ultrasound pelvis: Bilateral polycystic ovaries, enlarged volume, stromal echogenicity.");
-        setDiagDiagnosis("Polycystic Ovarian Syndrome (PCOS)");
-        setConstMiasmIndicators(["Psora", "Sycosis"]);
-        alert("Extracted Imaging Parameters!\n- Imaging: Polycystic Ovaries matched\n- Diagnosis: PCOS\n- Miasm indicator updated to Sycosis");
+  // Report upload category trigger
+  const [reportUploadCategory, setReportUploadCategory] = useState<'lab' | 'prescription' | 'imaging' | null>(null);
+
+  // Apply OCR extracted results to intake builder
+  const handleApplyReportExtraction = (data: Partial<ReportExtractionResult>) => {
+    if (data.clinicalImpressions) {
+      setDiagDiagnosis(prev => prev ? prev + " | " + data.clinicalImpressions : data.clinicalImpressions!);
+    }
+    if (data.labs) {
+      setDiagLabs(prev => prev ? prev + " | " + data.labs : data.labs!);
+    }
+    if (data.imaging) {
+      setDiagImaging(prev => prev ? prev + " | " + data.imaging : data.imaging!);
+    }
+    if (data.currentMeds) {
+      setDiagCurrentMeds(prev => prev ? prev + " | " + data.currentMeds : data.currentMeds!);
+    }
+    if (data.pastTreatments) {
+      setDiagPastTreatments(prev => prev ? prev + " | " + data.pastTreatments : data.pastTreatments!);
+    }
+    if (data.thermal) {
+      if (data.thermal === "Chilly" || data.thermal === "Hot" || data.thermal === "Mixed") {
+        setConstThermalState(data.thermal);
+      } else {
+        setConstThermalState("Mixed");
       }
-    }, 2000);
+    }
+    if (typeof data.energy === "number") {
+      setConstEnergyLevel(data.energy);
+    }
+    if (data.miasm && data.miasm.length > 0) {
+      setConstMiasmIndicators(prev => {
+        const merged = Array.from(new Set([...prev, ...(data.miasm || [])]));
+        return merged;
+      });
+    }
   };
 
   // Triggering authentic analysis
@@ -9309,28 +9325,49 @@ ${err.message || err}`);
                     </button>
 
                     <button
-                      onClick={() => handleReportUploadSimulation("lab")}
-                      className="py-2 px-2.5 bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 rounded-xl text-[9px] font-extrabold uppercase transition-all flex items-center justify-center gap-1"
+                      onClick={() => setReportUploadCategory("lab")}
+                      className="py-2 px-2.5 bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 rounded-xl text-[9px] font-extrabold uppercase transition-all flex items-center justify-center gap-1 cursor-pointer"
                     >
                       <UploadCloud className="w-3 h-3 text-slate-400" />
                       <span>Labs</span>
                     </button>
 
                     <button
-                      onClick={() => handleReportUploadSimulation("prescription")}
-                      className="py-2 px-2.5 bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 rounded-xl text-[9px] font-extrabold uppercase transition-all flex items-center justify-center gap-1"
+                      onClick={() => setReportUploadCategory("prescription")}
+                      className="py-2 px-2.5 bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 rounded-xl text-[9px] font-extrabold uppercase transition-all flex items-center justify-center gap-1 cursor-pointer"
                     >
                       <FileText className="w-3 h-3 text-slate-400" />
                       <span>Rx</span>
                     </button>
 
                     <button
-                      onClick={() => handleReportUploadSimulation("imaging")}
-                      className="py-2 px-2.5 bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 rounded-xl text-[9px] font-extrabold uppercase transition-all flex items-center justify-center gap-1"
+                      onClick={() => setReportUploadCategory("imaging")}
+                      className="py-2 px-2.5 bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 rounded-xl text-[9px] font-extrabold uppercase transition-all flex items-center justify-center gap-1 cursor-pointer"
                     >
                       <Layers className="w-3 h-3 text-slate-400" />
                       <span>Imaging</span>
                     </button>
+
+                    {(diagLabs || diagImaging || diagCurrentMeds || diagPastTreatments || diagDiagnosis) && (
+                      <button
+                        onClick={() => {
+                          setDiagLabs("");
+                          setDiagImaging("");
+                          setDiagCurrentMeds("");
+                          setDiagPastTreatments("");
+                          setDiagDiagnosis("");
+                          setConstThermalState("Mixed");
+                          setConstMiasmIndicators([]);
+                          setConstEnergyLevel(6);
+                          alert("All AI-extracted fields cleared successfully.");
+                        }}
+                        className="py-2 px-2 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 rounded-xl text-[9px] font-extrabold uppercase transition-all flex items-center justify-center gap-1 cursor-pointer"
+                        title="Clear all extracted values"
+                      >
+                        <Trash2 className="w-3 h-3 text-rose-500" />
+                        <span>Clear</span>
+                      </button>
+                    )}
                   </div>
                 </div>
 
@@ -29821,6 +29858,14 @@ Exported on: ${new Date().toLocaleDateString()}
           clinicians={clinicians}
           remediesKeynotes={COMMON_REMEDIES_KEYNOTES}
           reduceMotion={reduceMotion}
+        />
+
+        {/* Report Ingestion Modal */}
+        <ReportUploadModal
+          isOpen={reportUploadCategory !== null}
+          onClose={() => setReportUploadCategory(null)}
+          uploadType={reportUploadCategory}
+          onApply={handleApplyReportExtraction}
         />
 
       </div>
