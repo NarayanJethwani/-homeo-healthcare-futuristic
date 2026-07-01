@@ -3,12 +3,20 @@ import {
   Search, Sliders, Trash2, Plus, Info, RefreshCw, CheckCircle, 
   AlertTriangle, BookOpen, Download, Upload, HelpCircle, ArrowRight, Check
 } from 'lucide-react';
-import { RepertoryRubric, ScoringResult, RemedyDifferentiation, ValidationReport } from '../types';
+import { RepertoryRubric, ScoringResult, RemedyDifferentiation, ValidationReport, ClinicalReasoningSummary } from '../types';
 import { repertoryRepository } from '../database/repertoryDb';
 import { RepertorySearch } from '../search/repertorySearch';
 import { RepertoryScoring } from '../scoring/repertoryScoring';
 import { DatabaseValidator } from '../validators/databaseValidator';
 import { ImportExportService } from '../import-export/importExportService';
+import { ReasoningEngine } from '../reasoning/reasoningEngine';
+import { RemedyReasoningPanel } from './RemedyReasoningPanel';
+import { DifferentialComparison } from './DifferentialComparison';
+import { MissingInformationCard } from './MissingInformationCard';
+import { SuggestedQuestions } from './SuggestedQuestions';
+import { ConfidenceBreakdownPanel } from './ConfidenceBreakdownPanel';
+import { RubricCoverageHeatmap } from './RubricCoverageHeatmap';
+import { ReasoningTimeline } from './ReasoningTimeline';
 
 export interface RepertoryWorkbenchProps {
   sessionUid?: string;
@@ -46,6 +54,9 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
   const [differentiations, setDifferentiations] = useState<RemedyDifferentiation[]>([]);
   const [activeRemedyDetails, setActiveRemedyDetails] = useState<string | null>(null);
   const [isScoringLoading, setIsScoringLoading] = useState<boolean>(false);
+  const [reasoningSummary, setReasoningSummary] = useState<ClinicalReasoningSummary | null>(null);
+  const [activeReasoningRemedyId, setActiveReasoningRemedyId] = useState<string | null>(null);
+  const [activeReasoningTab, setActiveReasoningTab] = useState<'explanation' | 'differential' | 'coverage' | 'questions' | 'timeline'>('explanation');
 
   // Dialogs & Audits
   const [auditReport, setAuditReport] = useState<ValidationReport | null>(null);
@@ -173,6 +184,32 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
     };
     recalculate();
   }, [selectedRubrics]);
+
+  useEffect(() => {
+    const calcReasoning = async () => {
+      if (selectedRubrics.length === 0 || !scoringResult) {
+        setReasoningSummary(null);
+        return;
+      }
+      try {
+        const summary = await ReasoningEngine.generateReasoning(selectedRubrics, scoringResult);
+        setReasoningSummary(summary);
+      } catch (e) {
+        console.error("Clinical reasoning summary generation failed:", e);
+      }
+    };
+    calcReasoning();
+  }, [selectedRubrics, scoringResult]);
+
+  useEffect(() => {
+    if (scoringResult && scoringResult.topRemedies.length > 0) {
+      if (!activeReasoningRemedyId || !scoringResult.topRemedies.some(r => r.remedyId === activeReasoningRemedyId)) {
+        setActiveReasoningRemedyId(scoringResult.topRemedies[0].remedyId);
+      }
+    } else {
+      setActiveReasoningRemedyId(null);
+    }
+  }, [scoringResult]);
 
   // Toggle rubric selection in workbench
   const handleToggleRubric = (rubric: RepertoryRubric) => {
@@ -347,8 +384,8 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
 
       <div className="w-full grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch pb-12 text-slate-800">
       
-      {/* LEFT COLUMN: Search & Rubric Directory (Col Span 7) */}
-      <div className="xl:col-span-7 flex flex-col gap-6 order-2 xl:order-1">
+      {/* LEFT COLUMN: Search & Rubric Directory (Col Span 4) */}
+      <div className="xl:col-span-4 flex flex-col gap-6 order-2 xl:order-1">
         
         {/* Search & NLP Intake Block */}
         <div className="bg-white/70 backdrop-blur-md rounded-3xl border border-slate-200/80 p-6 space-y-4 shadow-xs">
@@ -562,8 +599,8 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
         </div>
       </div>
 
-      {/* RIGHT COLUMN: Active Workbench & Scoring (Col Span 5) */}
-      <div className="xl:col-span-5 flex flex-col gap-6 order-1 xl:order-2">
+      {/* CENTER COLUMN: Active Workbench & Scoring (Col Span 4) */}
+      <div className="xl:col-span-4 flex flex-col gap-6 order-1 xl:order-2">
         
         {/* Active Symptoms Panel */}
         <div className="bg-white/70 backdrop-blur-md rounded-3xl border border-slate-200/80 p-6 space-y-4 shadow-xs text-left">
@@ -774,6 +811,169 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
           )}
         </div>
 
+      </div>
+
+      {/* RIGHT COLUMN: Clinical Reasoning Engine (Col Span 4) */}
+      <div className="xl:col-span-4 flex flex-col gap-6 order-3 xl:order-3 text-left">
+        <div className="bg-white/70 backdrop-blur-md rounded-3xl border border-slate-200/80 p-6 space-y-4 shadow-xs">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+              <Sliders className="w-4 h-4 text-emerald-500" />
+              Reasoning Engine
+            </h3>
+            <span className="text-[8px] font-black uppercase tracking-wider bg-slate-100 text-slate-600 px-2.5 py-0.5 rounded-full border border-slate-200 font-mono">
+              Deterministic Insights
+            </span>
+          </div>
+
+          <div className="text-[10px] text-amber-700/85 font-semibold bg-amber-50/60 border border-amber-200/50 p-3 rounded-2xl">
+            ⚠️ Clinical reasoning support for clinician review only. Do not prescribe automatically.
+          </div>
+
+          {selectedRubrics.length === 0 || !reasoningSummary ? (
+            <div className="py-12 text-center text-slate-400 space-y-2 border-2 border-dashed border-slate-100 rounded-2xl">
+              <HelpCircle className="w-8 h-8 mx-auto opacity-40 text-slate-400" />
+              <p className="text-xs font-semibold">No active analysis.</p>
+              <p className="text-[10px] text-slate-500 font-semibold px-6">
+                Add symptoms to the workbench to generate explainable AI reasoning, coverage heatmaps, differential comparisons, and follow-up prompts.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {/* Tabs selector */}
+              <div className="flex border-b border-slate-200/60 pb-1.5 gap-1.5 overflow-x-auto">
+                <button
+                  type="button"
+                  onClick={() => setActiveReasoningTab('explanation')}
+                  className={`text-[9px] font-black uppercase px-2.5 py-1.5 rounded-xl transition cursor-pointer ${
+                    activeReasoningTab === 'explanation'
+                      ? 'bg-slate-900 text-white shadow-xs'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  Affinity
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveReasoningTab('differential')}
+                  className={`text-[9px] font-black uppercase px-2.5 py-1.5 rounded-xl transition cursor-pointer ${
+                    activeReasoningTab === 'differential'
+                      ? 'bg-slate-900 text-white shadow-xs'
+                      : 'bg-slate-100 text-slate-655 hover:bg-slate-200'
+                  }`}
+                >
+                  Differential
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveReasoningTab('coverage')}
+                  className={`text-[9px] font-black uppercase px-2.5 py-1.5 rounded-xl transition cursor-pointer ${
+                    activeReasoningTab === 'coverage'
+                      ? 'bg-slate-900 text-white shadow-xs'
+                      : 'bg-slate-100 text-slate-655 hover:bg-slate-200'
+                  }`}
+                >
+                  Coverage
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveReasoningTab('questions')}
+                  className={`text-[9px] font-black uppercase px-2.5 py-1.5 rounded-xl transition cursor-pointer ${
+                    activeReasoningTab === 'questions'
+                      ? 'bg-slate-900 text-white shadow-xs'
+                      : 'bg-slate-100 text-slate-655 hover:bg-slate-200'
+                  }`}
+                >
+                  Questions
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveReasoningTab('timeline')}
+                  className={`text-[9px] font-black uppercase px-2.5 py-1.5 rounded-xl transition cursor-pointer ${
+                    activeReasoningTab === 'timeline'
+                      ? 'bg-slate-900 text-white shadow-xs'
+                      : 'bg-slate-100 text-slate-655 hover:bg-slate-200'
+                  }`}
+                >
+                  Timeline
+                </button>
+              </div>
+
+              {/* Tab Contents */}
+              {activeReasoningTab === 'explanation' && (() => {
+                const activeRes = reasoningSummary.topRemedies.find(r => r.remedyId === activeReasoningRemedyId);
+                return (
+                  <div className="space-y-4">
+                    {/* Remedy selector for active reasoning */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-[9px] font-black text-slate-500 uppercase tracking-wide">Target Remedy:</span>
+                      <select
+                        value={activeReasoningRemedyId || ''}
+                        onChange={(e) => setActiveReasoningRemedyId(e.target.value)}
+                        className="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-[9px] font-bold cursor-pointer"
+                      >
+                        {reasoningSummary.topRemedies.map(r => (
+                          <option key={r.remedyId} value={r.remedyId}>
+                            {r.remedyId} - {r.remedyName} ({r.confidence}%)
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {activeRes ? (
+                      <RemedyReasoningPanel reasoning={activeRes} />
+                    ) : (
+                      <p className="text-[10px] text-slate-400 italic">No target remedy selected.</p>
+                    )}
+                  </div>
+                );
+              })()}
+
+              {activeReasoningTab === 'differential' && (
+                <DifferentialComparison comparisons={reasoningSummary.differentialComparisons} />
+              )}
+
+              {activeReasoningTab === 'coverage' && activeReasoningRemedyId && (
+                <div className="space-y-4">
+                  {/* Remedy selector for active reasoning */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-[9px] font-black text-slate-500 uppercase tracking-wide">Target Remedy:</span>
+                    <select
+                      value={activeReasoningRemedyId || ''}
+                      onChange={(e) => setActiveReasoningRemedyId(e.target.value)}
+                      className="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-[9px] font-bold cursor-pointer"
+                    >
+                      {reasoningSummary.topRemedies.map(r => (
+                        <option key={r.remedyId} value={r.remedyId}>
+                          {r.remedyId} - {r.remedyName} ({r.confidence}%)
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <RubricCoverageHeatmap 
+                    confidenceBreakdown={reasoningSummary.confidenceBreakdown} 
+                    remedyId={activeReasoningRemedyId} 
+                  />
+                  <ConfidenceBreakdownPanel 
+                    evidenceBreakdown={reasoningSummary.evidenceBreakdown} 
+                    remedyId={activeReasoningRemedyId} 
+                  />
+                </div>
+              )}
+
+              {activeReasoningTab === 'questions' && (
+                <div className="space-y-4">
+                  <MissingInformationCard missingInfo={reasoningSummary.missingInformation} />
+                  <SuggestedQuestions questions={reasoningSummary.suggestedQuestions} />
+                </div>
+              )}
+
+              {activeReasoningTab === 'timeline' && (
+                <ReasoningTimeline />
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* MODIFIER CONFIG POPUP MODAL */}

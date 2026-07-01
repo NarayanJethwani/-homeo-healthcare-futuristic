@@ -23,21 +23,16 @@ export class RepertorySearch {
       return rubrics.map(r => ({ rubric: r, score: 0 }));
     }
 
-    // Tokenize query
-    const queryTokens = normalizedQuery
-      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "")
-      .split(/\s+/)
-      .filter(t => t.length > 2);
+    const STOP_WORDS = new Set([
+      'and', 'the', 'for', 'with', 'from', 'that', 'this', 'have', 'has', 'had', 'been', 'was', 'were', 'about', 'some', 'any', 'but', 'not', 'when', 'where', 'who', 'how', 'why', 'what', 'you', 'your', 'his', 'her', 'their', 'them', 'they', 'our', 'after', 'before', 'since',
+      'feel', 'feels', 'felt', 'feeling', 'want', 'wants', 'wanted'
+    ]);
 
-    // Expand query tokens with synonyms
-    const expandedTerms = new Set<string>();
-    queryTokens.forEach(token => {
-      expandedTerms.add(token);
-      
-      // Load fallback synonyms from existing library
-      const syns = SEARCH_SYNONYMS[token] || [];
-      syns.forEach(s => expandedTerms.add(s.toLowerCase()));
-    });
+    // Tokenize query, splitting hyphenated/punctuation to check individual words
+    const queryTokens = normalizedQuery
+      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, " ")
+      .split(/\s+/)
+      .filter(t => t.length > 2 && !STOP_WORDS.has(t));
 
     const scoredList = rubrics.map(rubric => {
       let score = 0;
@@ -55,31 +50,66 @@ export class RepertorySearch {
         score += 120;
       }
 
-      // 2. Token-by-token checks
-      expandedTerms.forEach(term => {
-        // Title contains term
-        if (titleLower.includes(term)) score += 30;
+      // Helper function to check word match with boundaries
+      const hasWord = (text: string, term: string) => {
+        const escaped = term.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        const regex = new RegExp('\\b' + escaped + '\\b', 'i');
+        return regex.test(text);
+      };
+
+      const hasWordInArray = (arr: string[], term: string) => {
+        return arr.some(item => hasWord(item, term));
+      };
+
+      // 2. Token-by-token checks, taking max score among the token and its synonyms
+      queryTokens.forEach(token => {
+        const tokenTerms = new Set<string>();
+        tokenTerms.add(token);
         
-        // Classical wording contains term
-        if (classicalLower.includes(term)) score += 25;
-        
-        // Plain language meaning contains term
-        if (meaningLower.includes(term)) score += 20;
+        // Expand with synonyms
+        const syns = SEARCH_SYNONYMS[token] || [];
+        syns.forEach(s => {
+          const lowerSyn = s.toLowerCase();
+          if (!STOP_WORDS.has(lowerSyn)) {
+            tokenTerms.add(lowerSyn);
+          }
+        });
 
-        // Keywords contain term
-        if (keysLower.some(k => k.includes(term))) score += 15;
+        let maxTokenScore = 0;
 
-        // Synonyms contain term
-        if (synsLower.some(s => s.includes(term))) score += 15;
+        tokenTerms.forEach(term => {
+          let maxTermScore = 0;
+          if (hasWord(titleLower, term)) {
+            maxTermScore = Math.max(maxTermScore, 30);
+          }
+          if (hasWord(classicalLower, term)) {
+            maxTermScore = Math.max(maxTermScore, 25);
+          }
+          if (hasWord(meaningLower, term)) {
+            maxTermScore = Math.max(maxTermScore, 20);
+          }
+          if (hasWordInArray(keysLower, term)) {
+            maxTermScore = Math.max(maxTermScore, 15);
+          }
+          if (hasWordInArray(synsLower, term)) {
+            maxTermScore = Math.max(maxTermScore, 15);
+          }
+          if (hasWordInArray(expressionsLower, term)) {
+            maxTermScore = Math.max(maxTermScore, 25);
+          }
 
-        // Patient expressions contain term
-        if (expressionsLower.some(e => e.includes(term))) score += 25;
+          // Remedy match (e.g. searching "nux" matches Nux-v)
+          const remMatch = rubric.relatedRemedies.some(
+            r => r.remedyId.toLowerCase() === term || hasWord(r.remedyName.toLowerCase(), term)
+          );
+          if (remMatch) {
+            maxTermScore = Math.max(maxTermScore, 40);
+          }
 
-        // Remedy match (e.g. searching "nux" matches Nux-v)
-        const remMatch = rubric.relatedRemedies.some(
-          r => r.remedyId.toLowerCase() === term || r.remedyName.toLowerCase().includes(term)
-        );
-        if (remMatch) score += 40;
+          maxTokenScore = Math.max(maxTokenScore, maxTermScore);
+        });
+
+        score += maxTokenScore;
       });
 
       return { rubric, score };
@@ -116,11 +146,13 @@ export class RepertorySearch {
     for (const phrase of phrases) {
       const searchResults = await this.searchRubrics(phrase);
       if (searchResults.length > 0) {
-        // Grab top match
-        const topHit = searchResults[0];
-        if (topHit.score >= 35) {
-          const rubricId = topHit.rubric.rubricId;
-          const confidence = Math.min(1.0, topHit.score / 200);
+        const topScore = searchResults[0].score;
+        // Keep all matches that are close to the top match and meet threshold
+        const validHits = searchResults.filter(hit => hit.score >= 35 && hit.score >= topScore * 0.5);
+
+        for (const hit of validHits) {
+          const rubricId = hit.rubric.rubricId;
+          const confidence = Math.min(1.0, hit.score / 200);
 
           // Infer severity from text triggers
           let severity = 5;
@@ -133,11 +165,11 @@ export class RepertorySearch {
 
           // Determine matched field
           let matchedField: AIIntakeMatch['matchedOnField'] = 'synonyms';
-          if (topHit.rubric.title.toLowerCase().includes(phrase.toLowerCase())) {
+          if (hit.rubric.title.toLowerCase().includes(phrase.toLowerCase())) {
             matchedField = 'title';
-          } else if (topHit.rubric.classicalWording.toLowerCase().includes(phrase.toLowerCase())) {
+          } else if (hit.rubric.classicalWording.toLowerCase().includes(phrase.toLowerCase())) {
             matchedField = 'classicalWording';
-          } else if (topHit.rubric.patientExpressions.some(e => e.toLowerCase().includes(phrase.toLowerCase()))) {
+          } else if (hit.rubric.patientExpressions.some(e => e.toLowerCase().includes(phrase.toLowerCase()))) {
             matchedField = 'patientExpressions';
           }
 

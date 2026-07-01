@@ -5,6 +5,7 @@ import { RepertoryScoring } from '../scoring/repertoryScoring';
 import { RepertoryGraph } from '../graph/repertoryGraph';
 import { DatabaseValidator } from '../validators/databaseValidator';
 import { ImportExportService } from '../import-export/importExportService';
+import { ReasoningEngine } from '../reasoning/reasoningEngine';
 
 async function runRepertoryTests() {
   console.log("🚀 Starting Clinical Repertory & AI Intake Unit Tests...");
@@ -130,6 +131,47 @@ async function runRepertoryTests() {
     const NTriplesContent = await ImportExportService.exportToGraphTriples();
     assert.ok(typeof NTriplesContent === 'string', "NTriples output must be a string.");
     assert.ok(NTriplesContent.includes("relatesTo") || NTriplesContent.includes("belongsToOrgan"), "NTriples output must contain predicates.");
+  });
+
+  await test("Database Validator - audit weak or empty differential notes", async () => {
+    const report = await DatabaseValidator.validateDatabase();
+    assert.ok(Array.isArray(report.weakDifferentialNotes), "Should return array of weak differential notes.");
+    assert.strictEqual(report.weakDifferentialNotes.length, 0, "No related remedies should have weak or empty differential notes.");
+  });
+
+  await test("Clinical Case Scenarios - validate NLP matching and remedy ranking of 12 cases", async () => {
+    const report = await DatabaseValidator.validateDatabase();
+    assert.ok(report.caseValidationSummary, "Should return case scenario validation summary.");
+    const summary = report.caseValidationSummary!;
+    assert.strictEqual(summary.totalCases, 12, "Should validate exactly 12 cases.");
+    assert.strictEqual(summary.failedCases, 0, `Expected 0 failed cases, got ${summary.failedCases}.`);
+    assert.strictEqual(summary.passedCases, 12, "All 12 cases must pass.");
+  });
+
+  await test("Clinical Reasoning Engine - generate reasoning summary", async () => {
+    const symptoms = [
+      { rubricId: "jeth_rb_panic_death_terror", severity: 8, frequency: 'frequent' as const, impact: 'severe' as const },
+      { rubricId: "jeth_rb_amel_open_air", severity: 7, frequency: 'constant' as const, impact: 'moderate' as const }
+    ];
+
+    const scores = await RepertoryScoring.calculateRepertorization(symptoms);
+    const reasoning = await ReasoningEngine.generateReasoning(symptoms, scores);
+    
+    assert.strictEqual(reasoning.safetyLabel, "Clinical reasoning support for clinician review only.");
+    assert.ok(reasoning.topRemedies.length > 0, "Should generate remedy reasoning for matched remedies.");
+    
+    const firstRem = reasoning.topRemedies[0];
+    assert.ok(firstRem.remedyId, "Remedy reasoning must contain remedyId.");
+    assert.ok(firstRem.confidence > 0, "Remedy confidence must be calculated.");
+    assert.ok(firstRem.explanation.includes("clinician review only") || firstRem.explanation.includes("supporting rubrics"), "Explanation must contain safety phrasing.");
+    
+    assert.ok(reasoning.missingInformation.length > 0, "Missing constitutional categories should be detected.");
+    assert.ok(reasoning.suggestedQuestions.length > 0, "Questions should be generated for missing data.");
+    assert.ok(reasoning.differentialComparisons.length > 0, "Pairwise differential comparisons should be calculated.");
+    assert.ok(reasoning.confidenceBreakdown[firstRem.remedyId], "Confidence breakdown must exist for remedy.");
+    assert.ok(reasoning.confidenceBreakdown[firstRem.remedyId].overall > 0, "Overall confidence score must be computed.");
+    assert.ok(reasoning.evidenceBreakdown.remedyScores[firstRem.remedyId], "Evidence scores breakdown must exist for remedy.");
+    assert.ok(reasoning.evidenceBreakdown.remedyScores[firstRem.remedyId].total > 0, "Total score breakdown must be calculated.");
   });
 
   console.log(`\n🏁 Test Run Finished: ${passed} passed, ${failed} failed.`);

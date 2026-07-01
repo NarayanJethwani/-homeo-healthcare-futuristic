@@ -151,4 +151,94 @@ export interface ValidationReport {
   missingSourceOrReviewer: string[]; // Rubric IDs
   weakClinicalWording: string[]; // Rubric IDs
   prohibitedClaims: ProhibitedClaimMatch[];
+  weakDifferentialNotes: Array<{ rubricId: string; remedyId: string; notes?: string }>;
+  caseValidationSummary?: {
+    totalCases: number;
+    passedCases: number;
+    failedCases: number;
+    expectedRubricsMissed: Array<{ caseId: string; rubricId: string }>;
+    expectedRemediesNotInTop3: Array<{ caseId: string; expectedRemedyId: string; actualTopRemedies: string[] }>;
+  };
 }
+
+export interface CaseScenario {
+  caseId: string;
+  title: string;
+  difficulty: 'easy' | 'moderate' | 'complex';
+  intakeText: string;
+  expectedRemedyId: string;
+  expectedRubrics: string[]; // List of expected matched rubricIds
+  rationale: string;         // Must contain "For clinician review."
+}
+
+export interface RemedyReasoning {
+  remedyId: string;
+  remedyName: string;
+  confidence: number; // 0 - 100
+  matchedRubrics: string[];
+  strongestRubrics: string[];
+  weakestRubrics: string[];
+  supportingEvidence: Record<string, number>; // rubricId -> score contribution
+  missingInformation: string[]; // confirmations missing
+  differentialRemedies: string[];
+  explanation: string;
+}
+
+export interface MissingInformationItem {
+  category: string;
+  displayName: string;
+  key: 'thermal' | 'thirst' | 'modalities' | 'cravings' | 'menses' | 'sleep' | 'etiology' | 'mental';
+  clinicianPrompt: string;
+}
+
+export interface SuggestedQuestion {
+  key: string;
+  questionText: string;
+  options: string[];
+  priority: number; // 1 = High, 2 = Medium, 3 = Low
+}
+
+export interface DifferentialComparisonResult {
+  remedyA: string;
+  remedyB: string;
+  sharedRubrics: string[];
+  uniqueToA: string[];
+  uniqueToB: string[];
+  missingConfirmationA: string[];
+  missingConfirmationB: string[];
+  differentiatingQuestions: string[];
+  confidenceGap: number;
+}
+
+export interface ConfidenceBreakdown {
+  mental: number; // 0 - 100
+  physical: number;
+  modalities: number;
+  etiology: number;
+  thermals: number;
+  overall: number;
+}
+
+export interface EvidenceBreakdown {
+  remedyScores: Record<string, {
+    mental: number;
+    physical: number;
+    modalities: number;
+    thermals: number;
+    miasm: number;
+    clinicalWeight: number;
+    total: number;
+  }>;
+}
+
+export interface ClinicalReasoningSummary {
+  selectedRubrics: string[];
+  topRemedies: RemedyReasoning[];
+  missingInformation: MissingInformationItem[];
+  suggestedQuestions: SuggestedQuestion[];
+  differentialComparisons: DifferentialComparisonResult[];
+  confidenceBreakdown: Record<string, ConfidenceBreakdown>;
+  evidenceBreakdown: EvidenceBreakdown;
+  safetyLabel: "Clinical reasoning support for clinician review only.";
+}
+

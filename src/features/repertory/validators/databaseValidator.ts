@@ -1,6 +1,10 @@
 import { REMEDIES_METADATA } from '../../../lib/repertoryData';
 import { repertoryRepository } from '../database/repertoryDb';
 import { RepertoryRubric, ValidationReport, DuplicateMatch, ProhibitedClaimMatch } from '../types';
+import { CLINICAL_CASE_SCENARIOS } from '../data/caseScenarios';
+import { RepertorySearch } from '../search/repertorySearch';
+import { RepertoryScoring } from '../scoring/repertoryScoring';
+
 
 export class DatabaseValidator {
   
@@ -51,7 +55,8 @@ export class DatabaseValidator {
       invalidRemedyIds: [],
       missingSourceOrReviewer: [],
       weakClinicalWording: [],
-      prohibitedClaims: []
+      prohibitedClaims: [],
+      weakDifferentialNotes: []
     };
 
     const rubrics = await repertoryRepository.getRubrics();
@@ -139,6 +144,15 @@ export class DatabaseValidator {
             remedyId: rem.remedyId
           });
         }
+
+        // Check weak differential notes
+        if (!rem.differentialNotes || rem.differentialNotes.trim().length < 10) {
+          report.weakDifferentialNotes.push({
+            rubricId: rub1.rubricId,
+            remedyId: rem.remedyId,
+            notes: rem.differentialNotes
+          });
+        }
       });
 
       // 7. Check if rubric is an orphan in the relationship graph
@@ -148,12 +162,73 @@ export class DatabaseValidator {
       }
     }
 
+    // 8. Validate Clinical Case Scenarios
+    const expectedRubricsMissed: Array<{ caseId: string; rubricId: string }> = [];
+    const expectedRemediesNotInTop3: Array<{ caseId: string; expectedRemedyId: string; actualTopRemedies: string[] }> = [];
+    let passedCases = 0;
+    let failedCases = 0;
+
+    for (const scenario of CLINICAL_CASE_SCENARIOS) {
+      // Step A: Parse intake text
+      const searchResult = await RepertorySearch.parseAIIntakeText(scenario.intakeText);
+      const matchedIds = searchResult.matchedRubrics.map(m => m.rubricId);
+
+      // Check missed rubrics
+      let hasMissedRubric = false;
+      for (const reqRubricId of scenario.expectedRubrics) {
+        if (!matchedIds.includes(reqRubricId)) {
+          expectedRubricsMissed.push({
+            caseId: scenario.caseId,
+            rubricId: reqRubricId
+          });
+          hasMissedRubric = true;
+        }
+      }
+
+      // Step B: Calculate repertorization scoring
+      const symptomsInput = searchResult.matchedRubrics.map(m => ({
+        rubricId: m.rubricId,
+        severity: m.suggestedSeverity,
+        frequency: 'constant' as const,
+        impact: 'severe' as const
+      }));
+
+      const scoreResult = await RepertoryScoring.calculateRepertorization(symptomsInput);
+      const top3Remedies = scoreResult.topRemedies.slice(0, 3).map(r => r.remedyId);
+
+      let remedyInTop3 = top3Remedies.includes(scenario.expectedRemedyId);
+      if (!remedyInTop3) {
+        expectedRemediesNotInTop3.push({
+          caseId: scenario.caseId,
+          expectedRemedyId: scenario.expectedRemedyId,
+          actualTopRemedies: top3Remedies
+        });
+      }
+
+      // Check if both matched rubrics and top-3 remedy are correct
+      if (!hasMissedRubric && remedyInTop3) {
+        passedCases++;
+      } else {
+        failedCases++;
+      }
+    }
+
+    report.caseValidationSummary = {
+      totalCases: CLINICAL_CASE_SCENARIOS.length,
+      passedCases,
+      failedCases,
+      expectedRubricsMissed,
+      expectedRemediesNotInTop3
+    };
+
     // Set isValid boolean
     if (
       report.duplicates.length > 0 ||
       report.invalidRemedyIds.length > 0 ||
       report.prohibitedClaims.length > 0 ||
-      report.missingRemedyGrades.length > 0
+      report.missingRemedyGrades.length > 0 ||
+      report.weakDifferentialNotes.length > 0 ||
+      failedCases > 0
     ) {
       report.isValid = false;
     }

@@ -271,13 +271,14 @@ export const SEED_RUBRICS: RepertoryRubric[] = [
     category: "Thermal State",
     organSystem: "Generalities",
     subCategory: "Constitutional",
-    synonyms: ["warm blooded", "hot patient", "heat intolerance", "sensitive to heat", "sweats easily"],
+    synonyms: ["warm blooded", "hot patient", "heat intolerance", "sensitive to heat", "sweats easily", "warmth of bed"],
     patientExpressions: [
       "I cannot stand hot weather",
       "I always want the fan or AC on",
       "feels stuffy in a warm room",
       "I prefer winter to summer",
-      "my body runs hot"
+      "my body runs hot",
+      "worse from the warmth of the bed at night"
     ],
     clinicalKeywords: ["hypermetabolic state", "heat hypersensitivity", "vasodilation predisposition"],
     relatedSymptoms: ["jeth_rb_chilly_sensitive"],
@@ -1367,12 +1368,14 @@ export const SEED_RUBRICS: RepertoryRubric[] = [
     classicalWording: "GENERALITIES - WEAKNESS - sudden onset - prostration",
     category: "Physical Generals",
     organSystem: "Generalities",
-    synonyms: ["sudden weakness", "prostration", "feeling faint", "collapse", "loss of strength"],
+    synonyms: ["sudden weakness", "prostration", "feeling faint", "collapse", "loss of strength", "trembling", "heavy muscles"],
     patientExpressions: [
       "I suddenly felt completely weak and had to sit down",
       "overwhelming exhaustion out of nowhere",
       "muscles went limp, felt like fainting",
-      "collapse from minor diarrhea or exertion"
+      "collapse from minor diarrhea or exertion",
+      "trembling from least effort",
+      "muscles feel incredibly heavy"
     ],
     clinicalKeywords: ["acute asthenia", "vasovagal collapse", "hypotonic state"],
     relatedSymptoms: ["jeth_rb_post_viral_fatigue", "jeth_rb_adrenal_burnout"],
@@ -1491,12 +1494,13 @@ export const SEED_RUBRICS: RepertoryRubric[] = [
     classicalWording: "GENERALITIES - COLD - extreme - warming, impossible",
     category: "Thermal State",
     organSystem: "Generalities",
-    synonyms: ["freezing cold", "cannot get warm", "internal chill", "icy coldness", "shivering constantly"],
+    synonyms: ["freezing cold", "cannot get warm", "internal chill", "icy coldness", "shivering constantly", "chilly to the bone"],
     patientExpressions: [
       "I feel icy cold inside, cannot get warm",
       "piles of blankets do not warm me up",
       "cold water in veins",
-      "freezing even next to a hot heater"
+      "freezing even next to a hot heater",
+      "chilly to the bone"
     ],
     clinicalKeywords: ["severe hypothermia sensation", "microvascular constriction"],
     relatedSymptoms: ["jeth_rb_chilly_sensitive"],
@@ -2240,12 +2244,13 @@ export const SEED_RUBRICS: RepertoryRubric[] = [
     classicalWording: "STOMACH - ERUCTATIONS - sour - heartburn - acid reflux",
     category: "GI / Digestive",
     organSystem: "Gastrointestinal",
-    synonyms: ["heartburn", "acid reflux", "sour burps", "gerd", "burning in chest stomach"],
+    synonyms: ["heartburn", "acid reflux", "sour burps", "gerd", "burning in chest stomach", "retrosternal", "meals"],
     patientExpressions: [
       "sour liquid rises up my throat",
       "burning pain behind my breastbone after eating",
       "heartburn is worse when lying down",
-      "sour, burning burps"
+      "sour, burning burps",
+      "retrosternal burning after meals"
     ],
     clinicalKeywords: ["acid regurgitation", "gastroesophageal reflux", "pyrosis"],
     relatedSymptoms: ["jeth_rb_ibs_bloating"],
@@ -2778,11 +2783,12 @@ export const SEED_RUBRICS: RepertoryRubric[] = [
     classicalWording: "GENERALITIES - MOTION - agg. - slightest motion",
     category: "Modalities",
     organSystem: "Generalities",
-    synonyms: ["worse from motion", "motion aggravation", "aggravated by movement", "must lie still"],
+    synonyms: ["worse from motion", "motion aggravation", "aggravated by movement", "must lie still", "getting up from bed", "first motion", "worse starting to move"],
     patientExpressions: [
       "any movement makes my symptoms much worse",
       "I must lie completely quiet and still",
-      "least exertion or turning in bed triggers the pain"
+      "least exertion or turning in bed triggers the pain",
+      "terrible when first getting up from bed"
     ],
     clinicalKeywords: ["kinesialphobia", "motion intolerance"],
     relatedSymptoms: ["jeth_rb_pain_stitching_bryonia"],
@@ -3180,6 +3186,119 @@ export const SEED_RUBRICS: RepertoryRubric[] = [
         differentialNotes: "Blooting is right-sided, lower abdomen."
       }
     ]
+  },
+  {
+    rubricId: "jeth_rb_craves_cold_drinks",
+    title: "Food: Strong craving for cold drinks or ice-cold water",
+    plainLanguageMeaning: "Intense desire to drink cold water or iced beverages.",
+    classicalWording: "STOMACH - DESIRES - cold drinks - water, cold",
+    category: "Food & Cravings",
+    organSystem: "Gastrointestinal",
+    synonyms: ["cold drinks", "ice water", "craves cold water", "cold beverages", "iced drinks"],
+    patientExpressions: [
+      "I crave ice-cold water",
+      "desiring ice-cold water",
+      "only cold drinks satisfy my thirst",
+      "desire for iced drinks"
+    ],
+    clinicalKeywords: ["cryophilic polydipsia", "cold drink craving"],
+    relatedSymptoms: [],
+    relatedDiseases: [],
+    miasmaticWeight: { Psora: 0.6, Sycosis: 0.4, Syphilis: 0.3, Tubercular: 0.8, Cancerinic: 0.5 },
+    intensityScale: 6,
+    polarity: "positive",
+    modalities: ["better from cold water", "worse from warm food"],
+    aggravations: ["warm food", "warm room"],
+    ameliorations: ["cold drinks", "cold water"],
+    source: "Allen's Keynotes",
+    confidence: 0.98,
+    author: "Dr. N. Jethwani",
+    reviewer: "Clinical Board of CIE",
+    lastUpdated: "2026-07-01T12:00:00Z",
+    relatedRemedies: [
+      {
+        remedyId: "Phos",
+        remedyName: "Phosphorus",
+        grade: 4,
+        confidence: 0.98,
+        keynoteReason: "Keynote: Craving for cold water; wants it ice-cold, which is vomited as soon as it gets warm in the stomach.",
+        sourceReference: "Allen's Keynotes",
+        clinicalExperienceWeight: 0.98,
+        differentialNotes: "Ice-cold water craving is a major keynote distinguishing from Arsenicum."
+      },
+      {
+        remedyId: "Verat",
+        remedyName: "Veratrum Album",
+        grade: 3,
+        confidence: 0.9,
+        keynoteReason: "Craves cold drinks and ice; cold sweat on forehead with collapse.",
+        sourceReference: "Boericke",
+        clinicalExperienceWeight: 0.88,
+        differentialNotes: "Extreme coldness and sweating."
+      }
+    ]
+  },
+  {
+    rubricId: "jeth_rb_amel_open_air",
+    title: "Modalities: General symptoms ameliorated by cool open air",
+    plainLanguageMeaning: "Feeling much better when in the fresh air, outdoors, or in a well-ventilated room.",
+    classicalWording: "GENERALITIES - AIR - open air - amel.",
+    category: "Modalities",
+    organSystem: "Generalities",
+    synonyms: ["open air amelioration", "better open air", "desires fresh air", "cool breeze", "better outdoors"],
+    patientExpressions: [
+      "I need to open the window for fresh air",
+      "feels better in the cool open air",
+      "Desperately wanted cold fresh air",
+      "ameliorated by open air",
+      "better when walking outdoors"
+    ],
+    clinicalKeywords: ["aerotherapy preference", "open air relief"],
+    relatedSymptoms: [],
+    relatedDiseases: [],
+    miasmaticWeight: { Psora: 0.5, Sycosis: 0.6, Syphilis: 0.3, Tubercular: 0.8, Cancerinic: 0.6 },
+    intensityScale: 7,
+    polarity: "positive",
+    modalities: ["better in open air", "worse in warm stuffy room"],
+    aggravations: ["warm stuffy room", "warm weather"],
+    ameliorations: ["cool open air", "cool breeze"],
+    source: "Kent's Lectures",
+    confidence: 0.98,
+    author: "Dr. N. Jethwani",
+    reviewer: "Clinical Board of CIE",
+    lastUpdated: "2026-07-01T12:00:00Z",
+    relatedRemedies: [
+      {
+        remedyId: "Puls",
+        remedyName: "Pulsatilla Pratensis",
+        grade: 4,
+        confidence: 0.98,
+        keynoteReason: "Keynote: Absolute requirement for open, cool, fresh air; warm, stuffy rooms are completely intolerable.",
+        sourceReference: "Allen's Keynotes",
+        clinicalExperienceWeight: 0.98,
+        differentialNotes: "Thirstless, gentle, weeping temperament."
+      },
+      {
+        remedyId: "Acon",
+        remedyName: "Aconitum Napellus",
+        grade: 3,
+        confidence: 0.92,
+        keynoteReason: "During acute panic or fever, the patient is intensely anxious and demands cool fresh air.",
+        sourceReference: "Boericke",
+        clinicalExperienceWeight: 0.9,
+        differentialNotes: "Restless, sudden panic, fear of death."
+      },
+      {
+        remedyId: "Lach",
+        remedyName: "Lachesis Muta",
+        grade: 3,
+        confidence: 0.9,
+        keynoteReason: "Hot flushes and breathlessness relieved by open air or fanning.",
+        sourceReference: "Hering",
+        clinicalExperienceWeight: 0.88,
+        differentialNotes: "Intolerant of tight collars or neck contact."
+      }
+    ]
   }
 ];
 
@@ -3356,5 +3475,11 @@ export const SEED_TRIPLES: GraphTriple[] = [
   { subjectId: "jeth_rb_asthma_night_midnight", predicate: "differentiates", objectId: "Ars", weight: 0.95 },
   { subjectId: "jeth_rb_slow_healing_suppurative", predicate: "differentiates", objectId: "Hep", weight: 0.95 },
   { subjectId: "jeth_rb_pain_stitching_bryonia", predicate: "differentiates", objectId: "Bry", weight: 0.95 },
-  { subjectId: "jeth_rb_pain_burning_arsenicum", predicate: "differentiates", objectId: "Ars", weight: 0.95 }
+  { subjectId: "jeth_rb_pain_burning_arsenicum", predicate: "differentiates", objectId: "Ars", weight: 0.95 },
+  { subjectId: "jeth_rb_amel_open_air", predicate: "relatesTo", objectId: "jeth_rb_panic_death_terror", weight: 0.8 },
+  { subjectId: "jeth_rb_amel_open_air", predicate: "relatesTo", objectId: "jeth_rb_hot_flushes_climacteric", weight: 0.85 },
+  { subjectId: "jeth_rb_amel_open_air", predicate: "relatesTo", objectId: "jeth_rb_warm_blooded", weight: 0.9 },
+  { subjectId: "jeth_rb_craves_cold_drinks", predicate: "relatesTo", objectId: "jeth_rb_craves_salt", weight: 0.7 },
+  { subjectId: "jeth_rb_craves_cold_drinks", predicate: "belongsToOrgan", objectId: "Gastrointestinal", weight: 0.8 },
+  { subjectId: "jeth_rb_amel_open_air", predicate: "belongsToOrgan", objectId: "Generalities", weight: 0.8 }
 ];

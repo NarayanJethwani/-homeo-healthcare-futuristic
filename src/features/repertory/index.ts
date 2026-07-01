@@ -10,6 +10,24 @@ export * from './scoring/repertoryScoring';
 export * from './validators/databaseValidator';
 export * from './import-export/importExportService';
 export * from './data/repertorySeed';
+export * from './data/caseScenarios';
+
 
 // UI Components will be exported below
 export * from './components/RepertoryWorkbench';
+export * from './components/RemedyReasoningPanel';
+export * from './components/DifferentialComparison';
+export * from './components/MissingInformationCard';
+export * from './components/SuggestedQuestions';
+export * from './components/ConfidenceBreakdownPanel';
+export * from './components/RubricCoverageHeatmap';
+export * from './components/ReasoningTimeline';
+
+// Reasoning engine modules
+export * from './reasoning/reasoningEngine';
+export * from './reasoning/differentialEngine';
+export * from './reasoning/confidenceEngine';
+export * from './reasoning/questionGenerator';
+export * from './reasoning/explanationBuilder';
+export * from './reasoning/evidenceBreakdown';
+
