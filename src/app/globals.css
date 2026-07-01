@@ -133,7 +133,7 @@
 .admin-dashboard-shell.dark .bg-white,
 .admin-dashboard-shell.dark .dark\:bg-slate-900 {
   background-color: #172232 !important;
-  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25) !important;
   backdrop-filter: none !important;
 }
@@ -197,6 +197,8 @@
 .admin-dashboard-shell.dark [class*="text-slate-600"] { color: #94a3b8 !important; }
 .admin-dashboard-shell.dark [class*="text-slate-605"] { color: #94a3b8 !important; }
 .admin-dashboard-shell.dark [class*="text-slate-650"] { color: #94a3b8 !important; }
+.admin-dashboard-shell.dark [class*="text-slate-700"] { color: #94a3b8 !important; }
+.admin-dashboard-shell.dark [class*="text-slate-800"] { color: #94a3b8 !important; }
 
 /* Tables polish */
 .admin-dashboard-shell.dark table tbody tr {

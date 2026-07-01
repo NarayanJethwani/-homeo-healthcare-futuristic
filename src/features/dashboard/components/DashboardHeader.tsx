@@ -236,7 +236,7 @@ export default function DashboardHeader({
               >
                 <div className="px-3 py-2 border-b border-slate-100 dark:border-slate-850 mb-1">
                   <div className="text-xs font-bold truncate text-slate-900 dark:text-slate-100">{session?.name || "Clinician"}</div>
-                  <div className="text-[10px] text-slate-400 dark:text-slate-400 truncate mt-0.5">{session?.email || "doctor@clinic.com"}</div>
+                  <div className="text-[10px] text-slate-400 dark:text-slate-300 truncate mt-0.5">{session?.email || "doctor@clinic.com"}</div>
                 </div>
 
                 {[

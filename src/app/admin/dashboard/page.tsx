@@ -28,6 +28,7 @@ import { parseNaturalLanguageQuery } from "@/lib/searchEngine";
 import { REMEDY_LEARNING_DB, parseLearningTutorQuery, searchRemedies, compareFamilies, compareKingdoms, compareMiasms, MASTER_REMEDY_DB, CLINICAL_BOARD_QUESTIONS } from "@/lib/searchAndCompare";
 import { simulateMateriaMedicaIngestion, CLASSICAL_SOURCES } from "@/lib/materiaMedicaIngestion";
 import { GENOME_REMEDY_DB } from "@/lib/remedyGenomeSchema";
+import { RepertoryWorkbench } from "@/features/repertory";
 import { calculateSM2, updateStudentMastery } from "@/lib/adaptiveLearning";
 import { getClinicalCoverageScore, CURATED_DIAGNOSES, ORGAN_SYSTEMS, type DiagnosisProfile, getAll15000Diagnoses, SEARCH_SYNONYMS as DIAGNOSIS_SEARCH_SYNONYMS, getIcdDiagnosis } from "@/lib/clinicalDiagnosisLibrary";
 import { VIRTUAL_PATIENTS, evaluateCaseSubmission } from "@/lib/caseSimulationLab";
@@ -61,6 +62,7 @@ import {
   KnowledgeKmsWidget,
   featureFlags,
 } from "../../../features/dashboard";
+import KeyboardShortcutsModal from "../../../features/dashboard/components/KeyboardShortcutsModal";
 
 
 const ManageDoctorsPanel = dynamic(() => import("@/components/ManageDoctorsPanel"), {
@@ -850,8 +852,10 @@ export default function AdminDashboard() {
   const [portalDoctorNotes, setPortalDoctorNotes] = useState("");
   const [portalShowPrescription, setPortalShowPrescription] = useState(false);
   const [portalOwnerUid, setPortalOwnerUid] = useState("");
-  const [unlinkedPatientUsers, setUnlinkedPatientUsers] = useState<{ uid: string; email: string; name: string }[]>([]);
   const [isPortalSaving, setIsPortalSaving] = useState(false);
+  const [unlinkedPatientUsers, setUnlinkedPatientUsers] = useState<any[]>([]);
+  const [isKeyboardShortcutsOpen, setIsKeyboardShortcutsOpen] = useState(false);
+  const [comingSoonFeature, setComingSoonFeature] = useState<string | null>(null);
 
 
 
@@ -913,6 +917,18 @@ export default function AdminDashboard() {
           const el = document.getElementById("dashboard-alerts");
           if (el) el.scrollIntoView({ behavior: "smooth" });
         }, 200);
+        break;
+      case "profile":
+        setComingSoonFeature("Profile");
+        break;
+      case "preferences":
+        setComingSoonFeature("My Preferences");
+        break;
+      case "shortcuts":
+        setIsKeyboardShortcutsOpen(true);
+        break;
+      case "knowledge-settings":
+        setComingSoonFeature("Knowledge Settings");
         break;
       default:
         break;
@@ -14055,6 +14071,81 @@ ${err.message || err}`);
               };
             };
 
+            if (repertoryWorkbenchMode === "jethwani") {
+              return (
+                <div className="w-full max-w-[1700px] mx-auto flex flex-col gap-6 pb-12">
+                  {/* Premium Sub-Navigation Bar for Nexus Atlas */}
+                  <div className="flex items-center gap-1 bg-slate-100/80 border border-slate-200 rounded-2xl p-1 w-fit shadow-inner">
+                    <button
+                      type="button"
+                      onClick={() => setNexusSubTab("repertory")}
+                      className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 cursor-pointer border-none ${
+                        (nexusSubTab as string) === "repertory"
+                          ? "bg-slate-900 text-white shadow-sm"
+                          : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/50 bg-transparent"
+                      }`}
+                    >
+                      <Brain className="w-3.5 h-3.5" />
+                      AI Repertory Lab
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setNexusSubTab("mind-map")}
+                      className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 cursor-pointer border-none ${
+                        (nexusSubTab as string) === "mind-map"
+                          ? "bg-slate-900 text-white shadow-sm"
+                          : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/50 bg-transparent"
+                      }`}
+                    >
+                      <Network className="w-3.5 h-3.5" />
+                      Homeopathic Mind Map
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setNexusSubTab("materia-medica")}
+                      className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 cursor-pointer border-none ${
+                        (nexusSubTab as string) === "materia-medica"
+                          ? "bg-slate-900 text-white shadow-sm"
+                          : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/50 bg-transparent"
+                      }`}
+                    >
+                      <BookOpen className="w-3.5 h-3.5" />
+                      Materia Medica
+                    </button>
+                  </div>
+
+                  {/* Switcher Control */}
+                  <div className="flex items-center justify-between bg-slate-100/80 border border-slate-200 rounded-2xl p-1 max-w-lg mb-4 shadow-inner">
+                    <button
+                      onClick={() => setRepertoryWorkbenchMode("classical")}
+                      className={`flex-1 text-center py-2 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer border-none ${
+                        (repertoryWorkbenchMode as string) === "classical"
+                          ? "bg-slate-900 text-white shadow-md scale-[1.01]"
+                          : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/50 bg-transparent"
+                      }`}
+                    >
+                      🏛️ Classical Grid Lab
+                    </button>
+                    <button
+                      onClick={() => setRepertoryWorkbenchMode("jethwani")}
+                      className={`flex-1 text-center py-2 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer border-none ${
+                        (repertoryWorkbenchMode as string) === "jethwani"
+                          ? "bg-slate-900 text-white shadow-md scale-[1.01]"
+                          : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/50 bg-transparent"
+                      }`}
+                    >
+                      🩺 Dr. Jethwani's Clinical Repertory™
+                    </button>
+                  </div>
+
+                  <RepertoryWorkbench 
+                    sessionUid={session?.uid || ""} 
+                    activePatientId={selectedPatientId || ""} 
+                  />
+                </div>
+              );
+            }
+
             return (
               <div className="w-full max-w-[1700px] mx-auto flex flex-col gap-6 pb-12">
                 {/* Premium Sub-Navigation Bar for Nexus Atlas */}
@@ -14102,7 +14193,7 @@ ${err.message || err}`);
                   <button
                     onClick={() => setRepertoryWorkbenchMode("classical")}
                     className={`flex-1 text-center py-2 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer border-none ${
-                      repertoryWorkbenchMode === "classical"
+                      (repertoryWorkbenchMode as string) === "classical"
                         ? "bg-slate-900 text-white shadow-md scale-[1.01]"
                         : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/50 bg-transparent"
                     }`}
@@ -14112,7 +14203,7 @@ ${err.message || err}`);
                   <button
                     onClick={() => setRepertoryWorkbenchMode("jethwani")}
                     className={`flex-1 text-center py-2 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer border-none ${
-                      repertoryWorkbenchMode === "jethwani"
+                      (repertoryWorkbenchMode as string) === "jethwani"
                         ? "bg-slate-900 text-white shadow-md scale-[1.01]"
                         : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/50 bg-transparent"
                     }`}
@@ -27556,7 +27647,7 @@ Exported on: ${new Date().toLocaleDateString()}
                           className="w-full p-2.5 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 text-xs cursor-pointer text-slate-800 dark:text-slate-100"
                         >
                           <option value="">-- Choose Patient User to Link --</option>
-                          {unlinkedPatientUsers.map((u) => (
+                          {(unlinkedPatientUsers || []).map((u: any) => (
                             <option key={u.uid} value={u.uid}>
                               {u.name || "Unknown"} ({u.email || u.uid})
                             </option>
@@ -29873,6 +29964,39 @@ Exported on: ${new Date().toLocaleDateString()}
           uploadType={reportUploadCategory}
           onApply={handleApplyReportExtraction}
         />
+
+        {/* Keyboard Shortcuts Modal */}
+        <KeyboardShortcutsModal
+          isOpen={isKeyboardShortcutsOpen}
+          onClose={() => setIsKeyboardShortcutsOpen(false)}
+        />
+
+        {/* Coming Soon Notification Modal */}
+        {comingSoonFeature && (
+          <div className="fixed inset-0 h-full w-full flex items-center justify-center z-50 p-4">
+            {/* Backdrop */}
+            <div 
+              className="absolute inset-0 bg-[#0A0F18]/40 backdrop-blur-sm transition-opacity duration-300"
+              onClick={() => setComingSoonFeature(null)}
+            />
+            {/* Content Card */}
+            <div className="relative max-w-sm w-full p-6 bg-[#172232] border border-white/10 shadow-2xl rounded-2xl flex flex-col pointer-events-auto items-center text-center animate-in fade-in zoom-in-95 duration-200">
+              <div className="w-12 h-12 rounded-full bg-teal-500/10 flex items-center justify-center mb-4">
+                <span className="text-teal-400 font-bold text-lg">💡</span>
+              </div>
+              <h3 className="text-lg font-semibold text-slate-100 mb-1">{comingSoonFeature}</h3>
+              <p className="text-sm text-slate-400 mb-6 font-medium">
+                This feature is currently in development for Dr. Jethwani's Clinical Intelligence OS™ platform. Stay tuned!
+              </p>
+              <button
+                onClick={() => setComingSoonFeature(null)}
+                className="w-full py-2.5 px-4 bg-teal-500/20 hover:bg-teal-500/30 text-teal-300 font-semibold rounded-lg border border-teal-500/30 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-teal-500/40"
+              >
+                Understood
+              </button>
+            </div>
+          </div>
+        )}
 
       </div>
       </div>
