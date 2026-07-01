@@ -226,8 +226,8 @@ export default function CriticalAlertsPanel({
                     onClick={() => setSeverityFilter(level)}
                     className={`px-2.5 py-1.5 rounded-lg text-[9px] font-extrabold uppercase border cursor-pointer focus-visible:ring-1 focus-visible:ring-teal-555 outline-none transition-all ${
                       isSelected
-                        ? "bg-teal-50 dark:bg-teal-950/20 text-teal-655 dark:text-teal-400 border-teal-200 dark:border-teal-900"
-                        : "bg-white dark:bg-slate-900 text-slate-450 dark:text-slate-500 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-850"
+                        ? "bg-teal-500/10 dark:bg-teal-500/20 text-teal-600 dark:text-teal-400 border-teal-300 dark:border-teal-500/30 font-extrabold"
+                        : "bg-slate-50 dark:bg-slate-950/40 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-850/60"
                     }`}
                   >
                     {level} ({count})

@@ -330,7 +330,7 @@ export default function AdminSidebar({
           {/* Favorites (if any exist and not collapsed) */}
           {!isCollapsed && favorites.length > 0 && (
             <div className="space-y-1.5">
-              <div className="text-[9px] font-extrabold uppercase tracking-widest text-slate-400 dark:text-slate-500 px-3 flex items-center gap-1.5">
+              <div className="text-[9px] font-extrabold uppercase tracking-widest text-slate-400 dark:text-slate-400 px-3 flex items-center gap-1.5">
                 <Star className="w-3 h-3 text-amber-500 fill-amber-500 shrink-0" />
                 <span>Favorites</span>
               </div>
@@ -356,7 +356,7 @@ export default function AdminSidebar({
             return (
               <div key={group.name} className="space-y-1.5">
                 {!isCollapsed && (
-                  <h4 className="text-[9px] font-extrabold uppercase tracking-widest text-slate-400 dark:text-slate-500 px-3">
+                  <h4 className="text-[9px] font-extrabold uppercase tracking-widest text-slate-400 dark:text-slate-400 px-3">
                     {group.name}
                   </h4>
                 )}

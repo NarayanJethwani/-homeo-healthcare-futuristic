@@ -29,6 +29,13 @@ function Sparkline({ points, colorClass = "text-teal-500" }: { points: number[];
   
   return (
     <svg width={width} height={height} className={`overflow-visible shrink-0 ${colorClass}`} aria-hidden="true">
+      {/* Shaded area under the curve */}
+      <path
+        d={`M 0,${height} L ${coords.join(" L ")} L ${width},${height} Z`}
+        fill="currentColor"
+        fillOpacity="0.12"
+        stroke="none"
+      />
       <path
         d={`M ${coords.join(" L ")}`}
         fill="none"
@@ -186,7 +193,7 @@ export default function TodayOverviewStats({
             <div className="flex-grow flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[9px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider truncate">
+                  <span className="text-[10px] font-bold text-slate-400 dark:text-slate-400 tracking-wide truncate">
                     {item.label}
                   </span>
                   <div className={`w-6.5 h-6.5 rounded-lg flex items-center justify-center shrink-0 ${item.colorClass}`}>
