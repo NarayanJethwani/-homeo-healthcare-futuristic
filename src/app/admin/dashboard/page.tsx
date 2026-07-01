@@ -811,6 +811,7 @@ export default function AdminDashboard() {
   const [cieSubTab, setCieSubTab] = useState<"cockpit" | "intake" | "miasms" | "reports">("cockpit");
   const [immersiveMode, setImmersiveMode] = useState(false);
   const [academyMode, setAcademyMode] = useState("dashboard");
+  const [isDiagnosticsDrawerOpen, setIsDiagnosticsDrawerOpen] = useState(false);
 
   // Unified Dashboard Visual & Accessibility Preferences
   const {
@@ -8299,12 +8300,17 @@ ${err.message || err}`);
               onOpenSearch={() => setIsGlobalSearchOpen(true)}
               onOpenDisplayDrawer={() => setIsDisplayDrawerOpen(true)}
               reduceMotion={reduceMotion}
+              telemetryLogs={telemetryLogs}
+              onOpenDiagnostics={() => setIsDiagnosticsDrawerOpen(true)}
             />
             <SystemStatusStrip
               telemetryLogs={telemetryLogs}
               failedLogsCount={telemetryLogs.filter(log => log.status === "failed" || log.failoverTrace?.length > 1).length}
               setActiveTab={setActiveTab}
               reduceMotion={reduceMotion}
+              hideStrip={true}
+              isDrawerOpen={isDiagnosticsDrawerOpen}
+              setIsDrawerOpen={setIsDiagnosticsDrawerOpen}
             />
           </>
         )}
@@ -8405,15 +8411,15 @@ ${err.message || err}`);
 
               return (
                 <div className="space-y-6">
-                  {/* Today's Overview (Dashboard Intelligence) */}
-                  <TodayOverviewStats 
-                    stats={overviewStats}
+                  {/* Shortcuts & Quick Actions (positioned at the absolute top for faster access) */}
+                  <QuickActionsGrid 
+                    onTriggerQuickAction={handleTriggerQuickAction} 
                     reduceMotion={reduceMotion}
                   />
 
-                  {/* Shortcuts & Quick Actions (positioned above schedule for faster access) */}
-                  <QuickActionsGrid 
-                    onTriggerQuickAction={handleTriggerQuickAction} 
+                  {/* Today's Overview (Dashboard Intelligence) */}
+                  <TodayOverviewStats 
+                    stats={overviewStats}
                     reduceMotion={reduceMotion}
                   />
 

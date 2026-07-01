@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Search, Plus, Bell, MessageSquare, User, LogOut, Settings, FileText, IndianRupee, Send, Sparkles } from "lucide-react";
+import { Search, Plus, Bell, MessageSquare, User, LogOut, Settings, FileText, IndianRupee, Send, Sparkles, Activity } from "lucide-react";
 
 interface DashboardHeaderProps {
   session: any;
@@ -10,6 +10,8 @@ interface DashboardHeaderProps {
   onOpenSearch: () => void;
   onOpenDisplayDrawer: () => void;
   reduceMotion?: boolean;
+  telemetryLogs?: any[];
+  onOpenDiagnostics?: () => void;
 }
 
 export default function DashboardHeader({
@@ -19,6 +21,8 @@ export default function DashboardHeader({
   onOpenSearch,
   onOpenDisplayDrawer,
   reduceMotion = false,
+  telemetryLogs = [],
+  onOpenDiagnostics,
 }: DashboardHeaderProps) {
   const [isQuickActionsOpen, setIsQuickActionsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -26,6 +30,26 @@ export default function DashboardHeader({
   // Mock notifications
   const unreadMessages = 3;
   const alertCount = 2;
+
+  // Determine if the AI Router is currently experiencing warning or fallback conditions based on the latest request
+  const latestLog = telemetryLogs[0];
+  const isAiRouterDegraded = latestLog
+    ? latestLog.status === "failed" || (latestLog.failoverTrace && latestLog.failoverTrace.length > 0)
+    : false;
+
+  const degradedCount = isAiRouterDegraded ? 1 : 0;
+  const offlineCount = latestLog && latestLog.status === "failed" ? 1 : 0;
+
+  let overallColorDot = "bg-emerald-500";
+  let overallStatusText = "Healthy";
+
+  if (offlineCount > 0) {
+    overallColorDot = "bg-rose-500";
+    overallStatusText = "Offline";
+  } else if (degradedCount > 0) {
+    overallColorDot = "bg-amber-500";
+    overallStatusText = "Degraded";
+  }
 
   return (
     <header className="sticky top-0 z-40 w-full bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 px-6 py-3.5 flex items-center justify-between shadow-xs select-none">
@@ -127,6 +151,17 @@ export default function DashboardHeader({
           {alertCount > 0 && (
             <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500 border-2 border-white dark:border-slate-900 shrink-0 animate-pulse" />
           )}
+        </button>
+
+        {/* Clinical OS Health status indicator */}
+        <button
+          onClick={onOpenDiagnostics}
+          className="p-2 rounded-xl text-slate-450 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 focus-visible:ring-2 focus-visible:ring-teal-555 outline-none transition-colors cursor-pointer border-none bg-transparent relative"
+          title={`Clinical OS Health: ${overallStatusText}`}
+          aria-label={`Clinical OS Health: ${overallStatusText}`}
+        >
+          <Activity className="w-4.5 h-4.5 animate-pulse" />
+          <span className={`absolute top-1.5 right-1.5 w-2 h-2 rounded-full ${overallColorDot} border-2 border-white dark:border-slate-900 shrink-0`} />
         </button>
 
         {/* Accessibility configuration cog */}

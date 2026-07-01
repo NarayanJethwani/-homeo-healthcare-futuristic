@@ -26,6 +26,9 @@ interface SystemStatusStripProps {
   failedLogsCount?: number;
   setActiveTab: (tabId: any) => void;
   reduceMotion?: boolean;
+  hideStrip?: boolean;
+  isDrawerOpen?: boolean;
+  setIsDrawerOpen?: (open: boolean) => void;
 }
 
 type HealthLevel = "healthy" | "degraded" | "offline" | "disabled";
@@ -46,9 +49,16 @@ export default function SystemStatusStrip({
   failedLogsCount = 0,
   setActiveTab,
   reduceMotion = false,
+  hideStrip = false,
+  isDrawerOpen: propIsDrawerOpen,
+  setIsDrawerOpen: propSetIsDrawerOpen,
 }: SystemStatusStripProps) {
   const [isCollapsed, setIsCollapsed] = useState(true);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [localDrawerOpen, setLocalDrawerOpen] = useState(false);
+
+  const isDrawerOpen = propIsDrawerOpen !== undefined ? propIsDrawerOpen : localDrawerOpen;
+  const setIsDrawerOpen = propSetIsDrawerOpen !== undefined ? propSetIsDrawerOpen : setLocalDrawerOpen;
+
   const [simulationLogs, setSimulationLogs] = useState<string[]>([]);
   const [isSimulating, setIsSimulating] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -219,6 +229,154 @@ export default function SystemStatusStrip({
       }, (index + 1) * 600);
     });
   };
+
+  if (hideStrip) {
+    return (
+      <AnimatePresence>
+        {isDrawerOpen && (
+          <>
+            {/* Backdrop wrapper */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.35 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsDrawerOpen(false)}
+              className="fixed inset-0 bg-black/60 z-50 cursor-pointer backdrop-blur-xs"
+            />
+
+            {/* Slide-over panel */}
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 28, stiffness: 280 }}
+              className="fixed right-0 top-0 bottom-0 w-80 sm:w-[420px] bg-white dark:bg-slate-955 border-l border-slate-202 dark:border-slate-855 shadow-2xl z-50 p-6 flex flex-col justify-between overflow-y-auto"
+            >
+              <div className="space-y-6">
+                {/* Header */}
+                <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-850 pb-4">
+                  <div className="space-y-1">
+                    <h3 className="text-sm font-extrabold text-slate-855 dark:text-slate-100 font-sans tracking-wide">
+                      System Diagnostics
+                    </h3>
+                    <div className="flex items-center gap-1.5">
+                      <span className={`w-2 h-2 rounded-full ${overallColor}`} />
+                      <span className="text-[9.5px] uppercase font-extrabold tracking-wider text-slate-400 dark:text-slate-500">
+                        {overallText}
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setIsDrawerOpen(false)}
+                    className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-855 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors border-none bg-transparent cursor-pointer outline-none"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Services detailed specs */}
+                <div className="space-y-4">
+                  <h4 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+                    Operational Matrix
+                  </h4>
+
+                  <div className="space-y-3">
+                    {services.map((srv) => {
+                      const SrvIcon = srv.icon;
+                      return (
+                        <div 
+                          key={srv.key}
+                          className="bg-slate-55 dark:bg-slate-900/60 p-3 rounded-2xl border border-slate-202/60 dark:border-slate-850/60 space-y-2.5"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <div className="p-1 bg-slate-100 dark:bg-slate-800 rounded-lg text-slate-500 dark:text-slate-400">
+                                <SrvIcon className="w-3.5 h-3.5" />
+                              </div>
+                              <span className="font-extrabold text-xs text-slate-855 dark:text-slate-200">
+                                {srv.name}
+                              </span>
+                            </div>
+                            <span className={`text-[8px] uppercase font-extrabold px-1.5 py-0.2 rounded-full border ${
+                              srv.status === "healthy" 
+                                ? "bg-emerald-50 text-emerald-650 border-emerald-100 dark:bg-emerald-950/20 dark:border-emerald-900/30"
+                                : srv.status === "degraded"
+                                ? "bg-amber-50 text-amber-655 border-amber-100 dark:bg-amber-955/20 dark:border-amber-900/30"
+                                : "bg-rose-50 text-rose-650 border-rose-100 dark:bg-rose-955/20 dark:border-rose-900/30"
+                            }`}>
+                              {getStatusTextLabel(srv.status)}
+                            </span>
+                          </div>
+
+                          <p className="text-[10px] text-slate-400 dark:text-slate-500 leading-normal">
+                            {srv.desc}
+                          </p>
+
+                          <div className="grid grid-cols-2 gap-2 text-[9px] pt-2 border-t border-slate-100 dark:border-slate-850 font-mono text-slate-450 dark:text-slate-500">
+                            {Object.entries(srv.details || {}).map(([dk, dv]) => (
+                              <div key={dk}>
+                                <span>{dk}:</span>
+                                <div className="font-bold text-slate-700 dark:text-slate-350 mt-0.5">{dv}</div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Simulated Failover Action */}
+                <div className="bg-slate-55 dark:bg-slate-900/60 p-4 rounded-2xl border border-slate-202/60 dark:border-slate-850/60 space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[10px] font-bold text-slate-850 dark:text-slate-200 uppercase tracking-wider font-sans">
+                      Failover Action Controls
+                    </span>
+                    <span className="text-[9px] font-mono text-slate-400 dark:text-slate-500">
+                      Channel: Gemini-Quota-Sim
+                    </span>
+                  </div>
+
+                  <button
+                    onClick={handleSimulateFailover}
+                    disabled={isSimulating}
+                    className="w-full text-center py-2 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white dark:bg-slate-855 dark:hover:bg-slate-750 dark:text-slate-200 rounded-xl text-[10px] font-bold border-none transition-all flex items-center justify-center gap-1.5 cursor-pointer outline-none"
+                  >
+                    <Activity className={`w-3.5 h-3.5 ${isSimulating ? "animate-pulse" : ""}`} />
+                    <span>{isSimulating ? "Simulating..." : "Trigger Failover Simulation"}</span>
+                  </button>
+
+                  {simulationLogs.length > 0 && (
+                    <div className="bg-slate-950 border border-slate-850 p-2.5 rounded-xl text-[8.5px] font-mono text-slate-350 space-y-1 max-h-32 overflow-y-auto leading-relaxed">
+                      {simulationLogs.map((lg, i) => (
+                        <div key={i} className={lg.includes("SUCCESS") ? "text-emerald-400" : lg.includes("WARN") ? "text-amber-400" : "text-slate-350"}>
+                          {lg}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Bottom Console Link */}
+              <div className="pt-6 border-t border-slate-100 dark:border-slate-850 mt-6 select-none">
+                <button
+                  onClick={() => {
+                    setIsDrawerOpen(false);
+                    setActiveTab("ai-router");
+                  }}
+                  className="w-full text-center py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-[10px] font-extrabold cursor-pointer border-none transition-all flex items-center justify-center gap-1 focus-visible:ring-2 focus-visible:ring-teal-500 outline-none"
+                >
+                  <span>Open System Telemetry Logs</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    );
+  }
 
   return (
     <div 
