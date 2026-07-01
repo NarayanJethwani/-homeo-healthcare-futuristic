@@ -69,6 +69,41 @@
   background-color: var(--color-slate-300) !important;
 }
 
+/* High-contrast text color overrides for dark mode */
+.dark .text-slate-300,
+.dark .dark\:text-slate-300 {
+  color: #f1f5f9 !important; /* light gray (slate-100 equivalent) */
+}
+.dark .text-slate-400,
+.dark .dark\:text-slate-400,
+.dark .text-slate-405,
+.dark .dark\:text-slate-405,
+.dark .text-slate-450,
+.dark .dark\:text-slate-450,
+.dark .text-slate-455,
+.dark .dark\:text-slate-455 {
+  color: #cbd5e1 !important; /* light-medium gray (slate-300 equivalent) */
+}
+.dark .text-slate-500,
+.dark .dark\:text-slate-500,
+.dark .text-slate-550,
+.dark .dark\:text-slate-550,
+.dark .text-slate-605,
+.dark .dark\:text-slate-605,
+.dark .text-slate-600,
+.dark .dark\:text-slate-600,
+.dark .text-slate-650,
+.dark .dark\:text-slate-650 {
+  color: #94a3b8 !important; /* medium-light gray (slate-400 equivalent) */
+}
+
+/* Form inputs & textarea placeholder contrast */
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+
 @theme {
   --color-pearl: #FAF9F6;
   --color-mint: #14B8A6;
