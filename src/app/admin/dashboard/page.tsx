@@ -1006,6 +1006,9 @@ export default function AdminDashboard() {
     if (activeTab !== "medical-academy") {
       setImmersiveMode(false);
     }
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
   }, [activeTab]);
 
   useEffect(() => {
@@ -1478,7 +1481,10 @@ export default function AdminDashboard() {
     setActiveTab("nexus-atlas");
     setNexusSubTab("repertory");
     setRepertoryWorkbenchMode("jethwani");
-    alert(`Case Transport Successful!\nMatched rubrics loaded directly into Dr. Jethwani's Clinical Repertory Workbench for monograph analysis.`);
+    setTimeout(() => {
+      alert(`Case Transport Successful!\nMatched rubrics loaded directly into Dr. Jethwani's Clinical Repertory Workbench for monograph analysis.`);
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }, 100);
   };
 
   const triggerSample = (type: string) => {
