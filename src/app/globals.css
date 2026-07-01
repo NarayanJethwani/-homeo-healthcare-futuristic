@@ -71,25 +71,25 @@
 
 /* Reusable Premium Dashboard Utility Classes */
 .dashboard-surface-0 { background-color: var(--color-pearl); }
-.admin-dashboard-shell.dark .dashboard-surface-0 { background-color: #0A0F18 !important; }
+.dark .admin-dashboard-shell .dashboard-surface-0 { background-color: #0A0F18 !important; }
 
 .dashboard-surface-1 { background-color: #ffffff; }
-.admin-dashboard-shell.dark .dashboard-surface-1 { background-color: #121A27 !important; }
+.dark .admin-dashboard-shell .dashboard-surface-1 { background-color: #121A27 !important; }
 
 .dashboard-surface-2 { background-color: #ffffff; }
-.admin-dashboard-shell.dark .dashboard-surface-2 { background-color: #172232 !important; }
+.dark .admin-dashboard-shell .dashboard-surface-2 { background-color: #172232 !important; }
 
 .dashboard-surface-3 { background-color: var(--color-slate-50); }
-.admin-dashboard-shell.dark .dashboard-surface-3 { background-color: #223149 !important; }
+.dark .admin-dashboard-shell .dashboard-surface-3 { background-color: #223149 !important; }
 
 .dashboard-border-subtle { border-color: rgba(226, 232, 240, 0.8); }
-.admin-dashboard-shell.dark .dashboard-border-subtle { border-color: rgba(255, 255, 255, 0.06) !important; }
+.dark .admin-dashboard-shell .dashboard-border-subtle { border-color: rgba(255, 255, 255, 0.06) !important; }
 
 .dashboard-card-dark {
   background-color: #ffffff;
   border: 1px solid rgba(226, 232, 240, 0.8);
 }
-.admin-dashboard-shell.dark .dashboard-card-dark {
+.dark .admin-dashboard-shell .dashboard-card-dark {
   background-color: #172232 !important;
   border: 1px solid rgba(255, 255, 255, 0.06) !important;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25) !important;
@@ -100,7 +100,7 @@
   border: 1px solid rgba(226, 232, 240, 0.8);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
-.admin-dashboard-shell.dark .dashboard-dropdown-dark {
+.dark .admin-dashboard-shell .dashboard-dropdown-dark {
   background-color: rgba(29, 43, 62, 0.85) !important;
   border: 1px solid rgba(255, 255, 255, 0.12) !important;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35) !important;
@@ -112,26 +112,26 @@
   outline: 2px solid #14B8A6;
   outline-offset: 2px;
 }
-.admin-dashboard-shell.dark .dashboard-focus-ring:focus-visible {
+.dark .admin-dashboard-shell .dashboard-focus-ring:focus-visible {
   outline-color: #14B8A6 !important;
 }
 
 /* Scoped Premium Dark Mode Redesign Overrides */
-.admin-dashboard-shell.dark {
+.dark .admin-dashboard-shell {
   background: linear-gradient(180deg, #0A0F18 0%, #101827 100%) !important;
   color: #F8FAFC !important;
 }
 
 /* Level 1: Sidebar Background */
-.admin-dashboard-shell.dark aside {
+.dark .admin-dashboard-shell aside {
   background-color: #121A27 !important;
   border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 
 /* Level 2: Cards & Panels */
-.admin-dashboard-shell.dark .glass-panel,
-.admin-dashboard-shell.dark .bg-white,
-.admin-dashboard-shell.dark .dark\:bg-slate-900 {
+.dark .admin-dashboard-shell .glass-panel,
+.dark .admin-dashboard-shell .bg-white,
+.dark .admin-dashboard-shell .dark\:bg-slate-900 {
   background-color: #172232 !important;
   border: 1px solid rgba(255, 255, 255, 0.07) !important;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25) !important;
@@ -139,9 +139,9 @@
 }
 
 /* Level 3: Hover states with 2px lift */
-.admin-dashboard-shell.dark .glass-panel-hover:hover,
-.admin-dashboard-shell.dark .hover\:bg-slate-50:hover,
-.admin-dashboard-shell.dark .dark\:hover\:bg-slate-800:hover {
+.dark .admin-dashboard-shell .glass-panel-hover:hover,
+.dark .admin-dashboard-shell .hover\:bg-slate-50:hover,
+.dark .admin-dashboard-shell .dark\:hover\:bg-slate-800:hover {
   background-color: #223149 !important;
   border-color: rgba(255, 255, 255, 0.14) !important;
   transform: translateY(-2px) !important;
@@ -149,9 +149,9 @@
 }
 
 /* Level 4: Dropdowns, Menus & Glass Popovers */
-.admin-dashboard-shell.dark [role="menu"],
-.admin-dashboard-shell.dark .absolute.bg-white,
-.admin-dashboard-shell.dark .dark\:bg-slate-900.shadow-xl {
+.dark .admin-dashboard-shell [role="menu"],
+.dark .admin-dashboard-shell .absolute.bg-white,
+.dark .admin-dashboard-shell .dark\:bg-slate-900.shadow-xl {
   background-color: rgba(29, 43, 62, 0.85) !important;
   border: 1px solid rgba(255, 255, 255, 0.12) !important;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35) !important;
@@ -160,56 +160,61 @@
 }
 
 /* Form Inputs, placeholders & focus styling */
-.admin-dashboard-shell.dark input, 
-.admin-dashboard-shell.dark textarea,
-.admin-dashboard-shell.dark select {
+.dark .admin-dashboard-shell input, 
+.dark .admin-dashboard-shell textarea,
+.dark .admin-dashboard-shell select {
   background-color: rgba(10, 15, 24, 0.4) !important;
   border: 1px solid rgba(255, 255, 255, 0.06) !important;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1) !important;
 }
-.admin-dashboard-shell.dark input:focus,
-.admin-dashboard-shell.dark textarea:focus,
-.admin-dashboard-shell.dark select:focus {
+.dark .admin-dashboard-shell input:focus,
+.dark .admin-dashboard-shell textarea:focus,
+.dark .admin-dashboard-shell select:focus {
   border-color: #14B8A6 !important;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 0 0 2px rgba(20, 184, 166, 0.15) !important;
 }
-.admin-dashboard-shell.dark input::placeholder,
-.admin-dashboard-shell.dark textarea::placeholder {
+.dark .admin-dashboard-shell input::placeholder,
+.dark .admin-dashboard-shell textarea::placeholder {
   color: #94a3b8 !important;
 }
 
 /* Accent Color System consistency mappings */
-.admin-dashboard-shell.dark .text-mint, .admin-dashboard-shell.dark .text-teal-650 { color: #14B8A6 !important; }
-.admin-dashboard-shell.dark .text-rose-600, .admin-dashboard-shell.dark .text-rose-650 { color: #EF4444 !important; }
-.admin-dashboard-shell.dark .text-amber-600 { color: #F59E0B !important; }
-.admin-dashboard-shell.dark .text-blue-500, .admin-dashboard-shell.dark .text-sky-600 { color: #3B82F6 !important; }
-.admin-dashboard-shell.dark .text-emerald-500 { color: #10B981 !important; }
-.admin-dashboard-shell.dark .text-purple-500, .admin-dashboard-shell.dark .text-lavender-dark { color: #A855F7 !important; }
+.dark .admin-dashboard-shell .text-mint, .dark .admin-dashboard-shell .text-teal-650 { color: #14B8A6 !important; }
+.dark .admin-dashboard-shell .text-rose-600, .dark .admin-dashboard-shell .text-rose-650 { color: #EF4444 !important; }
+.dark .admin-dashboard-shell .text-amber-600 { color: #F59E0B !important; }
+.dark .admin-dashboard-shell .text-blue-500, .dark .admin-dashboard-shell .text-sky-600 { color: #3B82F6 !important; }
+.dark .admin-dashboard-shell .text-emerald-500 { color: #10B981 !important; }
+.dark .admin-dashboard-shell .text-purple-500, .dark .admin-dashboard-shell .text-lavender-dark { color: #A855F7 !important; }
 
 /* Resilient Attribute-based Text Color Overrides */
-.admin-dashboard-shell.dark [class*="text-slate-300"] { color: #F8FAFC !important; }
-.admin-dashboard-shell.dark [class*="text-slate-400"] { color: #cbd5e1 !important; }
-.admin-dashboard-shell.dark [class*="text-slate-405"] { color: #cbd5e1 !important; }
-.admin-dashboard-shell.dark [class*="text-slate-450"] { color: #cbd5e1 !important; }
-.admin-dashboard-shell.dark [class*="text-slate-455"] { color: #cbd5e1 !important; }
-.admin-dashboard-shell.dark [class*="text-slate-500"] { color: #94a3b8 !important; }
-.admin-dashboard-shell.dark [class*="text-slate-550"] { color: #94a3b8 !important; }
-.admin-dashboard-shell.dark [class*="text-slate-600"] { color: #94a3b8 !important; }
-.admin-dashboard-shell.dark [class*="text-slate-605"] { color: #94a3b8 !important; }
-.admin-dashboard-shell.dark [class*="text-slate-650"] { color: #94a3b8 !important; }
-.admin-dashboard-shell.dark [class*="text-slate-700"] { color: #94a3b8 !important; }
-.admin-dashboard-shell.dark [class*="text-slate-800"] { color: #94a3b8 !important; }
+.dark .admin-dashboard-shell [class*="text-slate-50"] { color: #F8FAFC !important; }
+.dark .admin-dashboard-shell [class*="text-slate-100"] { color: #F8FAFC !important; }
+.dark .admin-dashboard-shell [class*="text-slate-200"] { color: #F1F5F9 !important; }
+.dark .admin-dashboard-shell [class*="text-slate-300"] { color: #F8FAFC !important; }
+.dark .admin-dashboard-shell [class*="text-slate-400"] { color: #cbd5e1 !important; }
+.dark .admin-dashboard-shell [class*="text-slate-405"] { color: #cbd5e1 !important; }
+.dark .admin-dashboard-shell [class*="text-slate-450"] { color: #cbd5e1 !important; }
+.dark .admin-dashboard-shell [class*="text-slate-455"] { color: #cbd5e1 !important; }
+.dark .admin-dashboard-shell [class*="text-slate-500"] { color: #cbd5e1 !important; }
+.dark .admin-dashboard-shell [class*="text-slate-550"] { color: #cbd5e1 !important; }
+.dark .admin-dashboard-shell [class*="text-slate-600"] { color: #cbd5e1 !important; }
+.dark .admin-dashboard-shell [class*="text-slate-605"] { color: #cbd5e1 !important; }
+.dark .admin-dashboard-shell [class*="text-slate-650"] { color: #cbd5e1 !important; }
+.dark .admin-dashboard-shell [class*="text-slate-700"] { color: #cbd5e1 !important; }
+.dark .admin-dashboard-shell [class*="text-slate-800"] { color: #F1F5F9 !important; }
+.dark .admin-dashboard-shell [class*="text-slate-900"] { color: #F8FAFC !important; }
+.dark .admin-dashboard-shell [class*="text-slate-950"] { color: #FFFFFF !important; }
 
 /* Tables polish */
-.admin-dashboard-shell.dark table tbody tr {
+.dark .admin-dashboard-shell table tbody tr {
   border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
 }
-.admin-dashboard-shell.dark table tbody tr:hover {
+.dark .admin-dashboard-shell table tbody tr:hover {
   background-color: rgba(34, 49, 73, 0.3) !important;
 }
-.admin-dashboard-shell.dark table tbody tr.priority-critical { border-left: 3px solid #EF4444 !important; }
-.admin-dashboard-shell.dark table tbody tr.priority-urgent { border-left: 3px solid #F59E0B !important; }
-.admin-dashboard-shell.dark table tbody tr.priority-normal { border-left: 3px solid #3B82F6 !important; }
+.dark .admin-dashboard-shell table tbody tr.priority-critical { border-left: 3px solid #EF4444 !important; }
+.dark .admin-dashboard-shell table tbody tr.priority-urgent { border-left: 3px solid #F59E0B !important; }
+.dark .admin-dashboard-shell table tbody tr.priority-normal { border-left: 3px solid #3B82F6 !important; }
 
 /* Print Safeguard */
 @media print {
