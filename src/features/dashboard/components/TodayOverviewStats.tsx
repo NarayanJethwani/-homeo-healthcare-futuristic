@@ -179,39 +179,44 @@ export default function TodayOverviewStats({
         return (
           <div
             key={idx}
-            className={`bg-white dark:bg-slate-900 border border-slate-205 dark:border-slate-800 p-4 rounded-[20px] shadow-xs flex flex-col justify-between select-text transition-all ${
+            className={`bg-white dark:bg-slate-900 border border-slate-205 dark:border-slate-800 p-5 h-[155px] rounded-[22px] shadow-xs flex flex-col justify-between select-text transition-all ${
               reduceMotion ? "" : "hover:-translate-y-0.5 hover:shadow-sm duration-300"
             }`}
           >
-            <div>
-              <div className="flex items-center justify-between">
-                <span className="text-[9px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider truncate">
-                  {item.label}
-                </span>
-                <div className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 ${item.colorClass}`}>
-                  <Icon className="w-3.5 h-3.5" />
+            <div className="flex-grow flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[9px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider truncate">
+                    {item.label}
+                  </span>
+                  <div className={`w-6.5 h-6.5 rounded-lg flex items-center justify-center shrink-0 ${item.colorClass}`}>
+                    <Icon className="w-3.5 h-3.5" />
+                  </div>
+                </div>
+                <h3 className="text-xl font-extrabold text-slate-850 dark:text-slate-100 mt-1.5 truncate tracking-tight">
+                  {item.value}
+                </h3>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <div className={`flex items-center gap-0.5 text-[9px] font-bold shrink-0 ${
+                    item.isPositive 
+                      ? "text-emerald-600 dark:text-emerald-400" 
+                      : "text-rose-600 dark:text-rose-455"
+                  }`}>
+                    {item.isPositive ? <ArrowUpRight className="w-2.5 h-2.5 shrink-0" /> : <ArrowDownRight className="w-2.5 h-2.5 shrink-0" />}
+                    <span>{item.trend}</span>
+                  </div>
+                  <span className="text-[8px] text-slate-400 dark:text-slate-500 truncate font-medium">
+                    {item.period}
+                  </span>
                 </div>
               </div>
-              <h3 className="text-lg font-extrabold text-slate-850 dark:text-slate-100 mt-1 truncate">
-                {item.value}
-              </h3>
-            </div>
 
-            <div className="flex items-end justify-between mt-3">
-              <div className="min-w-0">
-                <div className={`flex items-center gap-0.5 text-[9px] font-extrabold ${
-                  item.isPositive 
-                    ? "text-emerald-600 dark:text-emerald-400" 
-                    : "text-rose-600 dark:text-rose-455"
-                }`}>
-                  {item.isPositive ? <ArrowUpRight className="w-2.5 h-2.5 shrink-0" /> : <ArrowDownRight className="w-2.5 h-2.5 shrink-0" />}
-                  <span>{item.trend}</span>
-                </div>
-                <div className="text-[8px] text-slate-400 dark:text-slate-550 truncate mt-0.5 font-medium">
-                  {item.period}
-                </div>
+              <div className="flex justify-between items-end mt-2 pt-2 border-t border-slate-100/30 dark:border-slate-850/40">
+                <span className="text-[8px] text-slate-400 dark:text-slate-550 font-medium">
+                  Trend Log
+                </span>
+                <Sparkline points={item.sparkPoints} colorClass={item.sparkColor} />
               </div>
-              <Sparkline points={item.sparkPoints} colorClass={item.sparkColor} />
             </div>
           </div>
         );

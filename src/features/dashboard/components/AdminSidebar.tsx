@@ -223,13 +223,19 @@ export default function AdminSidebar({
           }, 150);
         }}
       >
+        {isActive && (
+          <span 
+            className="absolute left-0 top-2.5 bottom-2.5 w-1 rounded-r-full bg-teal-500 shadow-[0_0_8px_rgba(20,184,166,0.6)]" 
+            aria-hidden="true"
+          />
+        )}
         <button
           onClick={() => {
             setActiveTab(tabId);
           }}
-          className={`group flex w-full items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer text-left focus-visible:ring-2 focus-visible:ring-teal-555 outline-none transition-all bg-transparent ${
+          className={`group flex w-full items-center justify-between pl-4 pr-3 py-2.5 rounded-xl cursor-pointer text-left focus-visible:ring-2 focus-visible:ring-teal-555 outline-none transition-all bg-transparent ${
             isActive
-              ? "bg-teal-50/70 dark:bg-teal-950/20 text-teal-650 dark:text-teal-400 font-bold border border-teal-100/50 dark:border-teal-900/30 shadow-xs"
+              ? "bg-teal-50/70 dark:bg-teal-950/30 text-teal-650 dark:text-teal-400 font-bold border border-teal-100/50 dark:border-teal-900/30 shadow-xs"
               : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 border border-transparent"
           }`}
           title={isCollapsed ? meta.label : undefined}

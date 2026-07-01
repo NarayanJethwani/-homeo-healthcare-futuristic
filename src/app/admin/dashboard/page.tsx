@@ -8384,7 +8384,7 @@ ${err.message || err}`);
   return (
     <DashboardProvider>
       <div 
-      className={`flex bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-205 min-h-screen transition-colors duration-300 select-text font-sans ${
+      className={`admin-dashboard-shell flex bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-205 min-h-screen transition-colors duration-300 select-text font-sans ${
         reduceMotion ? "transition-none" : ""
       }`}
     >

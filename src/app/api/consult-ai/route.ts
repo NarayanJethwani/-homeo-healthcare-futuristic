@@ -80,7 +80,7 @@ export async function POST(request: Request) {
       }, { status: 429, headers: CORS_HEADERS });
     }
 
-    const { query, score, answers, logs, mode, hasAssessments, lang } = await request.json();
+    const { query, score, answers, logs, mode, hasAssessments, lang, micActive, ttsSupported } = await request.json();
 
     if (!query || typeof query !== "string") {
       return NextResponse.json({
@@ -143,6 +143,17 @@ export async function POST(request: Request) {
       systemInstruction += `Patient's Live Dashboard Logs: ${JSON.stringify(logs)}. `;
     }
     systemInstruction += "CRITICAL: Never mention any homeopathic remedy names, specific medicines, potencies, or dosages to the patient. Respond directly, clearly, and understandably to the user's query. Do NOT add generic hydration, water, or diet instructions unless the query is specifically about lifestyle, diet, or unless it is highly relevant. Avoid forcing repetitive wellness tips or booking CTAs when not requested; answer simple questions or greetings directly. Only advise the patient to book a formal consultation with Dr. Narayan Jethwani on WhatsApp when they ask about specific treatments, symptoms, diagnosis, or when it is naturally relevant to do so. Keep responses concise (under 3 paragraphs) and format in clean Markdown.";
+
+    // Apply mic and language support constraints
+    if (micActive === false) {
+      systemInstruction += " The user typed their message (the microphone is off/disabled). Keep your answer extremely short, concise, and direct (under 2 short paragraphs or 3-4 bullet points). Avoid long-winded explanations. ";
+    } else {
+      systemInstruction += " The user spoke their message (the microphone is active/on). Keep the response conversational but concise. ";
+    }
+
+    if (ttsSupported === false) {
+      systemInstruction += " CRITICAL: The user's browser does not support text-to-speech voice for the selected language. Do not include any spoken-word prompts or audio-focused instructions; provide a very direct, short written response. ";
+    }
 
     // 5. Call Central AI Router
     const result = await aiRouterService.consultAI(query, systemInstruction, {

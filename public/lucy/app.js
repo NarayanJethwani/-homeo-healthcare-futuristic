@@ -1397,10 +1397,13 @@ document.addEventListener('DOMContentLoaded', () => {
         appendUserMessage(text);
         chatInput.value = "";
 
+        const isVoice = lastInputWasVoice;
+        lastInputWasVoice = false;
+
         // Trigger Lucy Thinking & Response
         showTyping(true);
         setTimeout(() => {
-            generateLucyResponse(text);
+            generateLucyResponse(text, isVoice);
         }, 1200);
     }
 
@@ -1424,7 +1427,7 @@ document.addEventListener('DOMContentLoaded', () => {
         scrollToBottom();
     }
 
-    function appendLucyMessage(text, isDisclaimerNeeded = false, isEmergency = false) {
+    function appendLucyMessage(text, isDisclaimerNeeded = false, isEmergency = false, customSpeakText = null) {
         showTyping(false);
         const msg = document.createElement('div');
         msg.className = isEmergency ? "chat-msg lucy-msg emergency-msg" : "chat-msg lucy-msg";
@@ -1479,7 +1482,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Voice output (TTS) if enabled
         if (state.ttsEnabled && !isEmergency) {
-            speakText(text);
+            if (customSpeakText !== false) {
+                speakText(customSpeakText !== null ? customSpeakText : text);
+            }
         }
     }
 
@@ -1613,7 +1618,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Lucy AI Response Generator
-    function generateLucyResponse(inputText) {
+    function generateLucyResponse(inputText, isVoice = false) {
         // 1. Safety Filter first
         if (checkForEmergency(inputText)) {
             const emergencyAlert = TRANSLATIONS.emergency[state.lang];
@@ -1748,7 +1753,9 @@ document.addEventListener('DOMContentLoaded', () => {
             answers: state.assessAnswers,
             logs: state.dailyLogs,
             mode: "patient",
-            lang: state.lang
+            lang: state.lang,
+            micActive: isVoice,
+            ttsSupported: isLanguageTTSSupported(state.lang)
         }));
     }
 
@@ -1996,6 +2003,20 @@ document.addEventListener('DOMContentLoaded', () => {
         return processedText;
     }
 
+    function isLanguageTTSSupported(lang) {
+        if (!('speechSynthesis' in window)) return false;
+        const voices = window.speechSynthesis.getVoices();
+        if (voices.length === 0) return true; // Asynchronous fallback
+        const langMap = {
+            hi: 'hi-IN', mr: 'mr-IN', gu: 'gu-IN', bn: 'bn-IN', te: 'te-IN', ta: 'ta-IN', kn: 'kn-IN', en: 'en-US'
+        };
+        const activeLangTag = (langMap[lang] || 'en-US').toLowerCase();
+        return voices.some(v => 
+            v.lang.toLowerCase().replace('_', '-').startsWith(activeLangTag) ||
+            v.lang.toLowerCase().startsWith(lang.toLowerCase())
+        );
+    }
+
     function speakText(text, onStartCallback) {
         if (!('speechSynthesis' in window)) return;
         if (!state.ttsEnabled) return;
@@ -2020,6 +2041,16 @@ document.addEventListener('DOMContentLoaded', () => {
             let voice = voices.find(v => v.lang.toLowerCase().replace('_', '-').startsWith(activeLangTag.toLowerCase()));
             if (!voice) {
                 voice = voices.find(v => v.lang.toLowerCase().startsWith(state.lang));
+            }
+            if (!voice && state.lang !== 'en') {
+                console.warn(`TTS Voice for language '${state.lang}' is not supported in this browser.`);
+                const fallbackUtterance = new SpeechSynthesisUtterance("Voice output is not supported for this language in your browser.");
+                fallbackUtterance.lang = "en-US";
+                const enVoice = voices.find(v => v.lang.toLowerCase().startsWith('en'));
+                if (enVoice) fallbackUtterance.voice = enVoice;
+                fallbackUtterance.rate = 0.95;
+                window.speechSynthesis.speak(fallbackUtterance);
+                return;
             }
             if (!voice && state.lang === 'en') {
                 voice = voices.find(v => v.name.toLowerCase().includes('female') || 
@@ -2067,6 +2098,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const voiceWaveContainer = document.getElementById('voice-wave-container');
     let recognition = null;
     let isListening = false;
+    let lastInputWasVoice = false;
 
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -2087,6 +2119,7 @@ document.addEventListener('DOMContentLoaded', () => {
         recognition.onresult = (event) => {
             const transcript = event.results[0][0].transcript;
             chatInput.value = transcript;
+            lastInputWasVoice = true;
             setTimeout(() => {
                 handleSendMessage();
             }, 600);
@@ -2096,15 +2129,81 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Speech Recognition Error:", event.error);
             stopListening();
             
+            const lang = state.lang || 'en';
+            const micErrorSpokenAlerts = {
+                'not-allowed': {
+                    en: "Microphone permission is blocked. Please check your settings.",
+                    hi: "माइक्रोफोन अनुमति अवरुद्ध है। कृपया अपनी सेटिंग्स जांचें।",
+                    mr: "मायक्रोफोन परवानगी अवरोधित आहे. कृपया तुमची सेटिंग्ज तपासा.",
+                    gu: "માઇક્રોફોન પરવાનગી બ્લોક છે. કૃપા કરીને સેટિંગ્સ તપાસો.",
+                    bn: "মাইক্রোফোন অনুমতি অবরুদ্ধ। আপনার সেটিংস পরীক্ষা করুন।",
+                    te: "మైక్రోఫోన్ అనుమతి నిరోధించబడింది. దయచేసి సెట్టింగ్‌లను తనిఖీ చేయండి.",
+                    ta: "மைக்ரோஃபோன் அனுமதி தடுக்கப்பட்டுள்ளது. உங்கள் அமைப்புகளைச் சரிபார்க்கவும்.",
+                    kn: "ಮೈಕ್ರೊಫೋನ್ ಅನುಮತಿಯನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ. ದಯವಿಟ್ಟು ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ."
+                },
+                'service-not-allowed': {
+                    en: "Voice service is restricted.",
+                    hi: "आवाज सेवा प्रतिबंधित है।",
+                    mr: "आवाज सेवा प्रतिबंधित आहे.",
+                    gu: "વોઇસ સેવા પ્રતિબંધિત છે.",
+                    bn: "ভয়েস পরিষেবা সীমিত।",
+                    te: "వాయిస్ సర్వీస్ పరిమితం చేయబడింది.",
+                    ta: "குரல் சேவை தடைசெய்யப்பட்டுள்ளது.",
+                    kn: "ಧ್ವನಿ ಸೇವೆಯನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ."
+                },
+                'language-not-supported': {
+                    en: "Voice input is not supported for this language.",
+                    hi: "इस भाषा के लिए आवाज इनपुट समर्थित नहीं है।",
+                    mr: "या भाषेसाठी आवाज इनपुट समर्थित नाही.",
+                    gu: "આ ભાષા માટે વોઇસ ઇનપુટ સપોર્ટેડ નથી.",
+                    bn: "এই ভাষার জন্য ভয়েস ইনপুট সমর্থিত নয়।",
+                    te: "ఈ భాషకు వాయిస్ ఇన్‌పుట్ సపోర్ట్ లేదు.",
+                    ta: "இந்த மொழிக்கு குரல் உள்ளீடு ஆதரிக்கப்படவில்லை.",
+                    kn: "ಈ ಭಾಷೆಗೆ ಧ್ವನಿ ಇನ್‌ಪುಟ್ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ."
+                },
+                'generic': {
+                    en: "Voice input error. Please try again.",
+                    hi: "आवाज इनपुट त्रुटि। कृपया पुनः प्रयास करें।",
+                    mr: "आवाज इनपुट त्रुटी. कृपया पुन्हा प्रयत्न करा.",
+                    gu: "વોઇસ ઇનપુટ ભૂલ. કૃપા કરીને ફરી પ્રયાસ કરો.",
+                    bn: "ভয়েস ইনপুট ত্রুটি। আবার চেষ্টা করুন।",
+                    te: "వాయిస్ ఇన్‌పుట్ లోపం. దయచేసి మళ్లీ ప్రయత్నించండి.",
+                    ta: "குரல் உள்ளீட்டு பிழை. மீண்டும் முயற்சிக்கவும்.",
+                    kn: "ಧ್ವನಿ ಇನ್‌ಪುಟ್ ದೋಷ. ದಯವಿಟ್ಟು ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ."
+                }
+            };
+
             if (event.error === 'not-allowed') {
-                appendLucyMessage("🎤 <strong>Microphone Permission Blocked</strong><br>It looks like microphone access is blocked in your browser settings. Please check your browser's address bar (look for the lock, camera, or microphone icon) or go to your site settings, and change the microphone permission to <strong>'Allow'</strong> to speak with me.");
+                appendLucyMessage(
+                    "🎤 <strong>Microphone Permission Blocked</strong><br>It looks like microphone access is blocked in your browser settings. Please check your browser's address bar (look for the lock, camera, or microphone icon) or go to your site settings, and change the microphone permission to <strong>'Allow'</strong> to speak with me.",
+                    false,
+                    false,
+                    micErrorSpokenAlerts['not-allowed'][lang] || micErrorSpokenAlerts['not-allowed'].en
+                );
             } else if (event.error === 'service-not-allowed') {
-                appendLucyMessage("🎤 <strong>Voice Service Restricted</strong><br>The browser's speech recognition service is not allowed (error: <em>service-not-allowed</em>). This typically happens if the browser cannot connect to its cloud-based speech servers (Google/Apple), or if voice input is disabled by your system policies. Please verify your internet connection, ensure dictation is enabled on your device, or try using Chrome/Safari.");
+                appendLucyMessage(
+                    "🎤 <strong>Voice Service Restricted</strong><br>The browser's speech recognition service is not allowed (error: <em>service-not-allowed</em>). This typically happens if the browser cannot connect to its cloud-based speech servers (Google/Apple), or if voice input is disabled by your system policies. Please verify your internet connection, ensure dictation is enabled on your device, or try using Chrome/Safari.",
+                    false,
+                    false,
+                    micErrorSpokenAlerts['service-not-allowed'][lang] || micErrorSpokenAlerts['service-not-allowed'].en
+                );
+            } else if (event.error === 'language-not-supported') {
+                appendLucyMessage(
+                    "🎤 <strong>Language Not Supported</strong><br>Voice input is not supported for this language in your browser. Please try typing your message or switching to English.",
+                    false,
+                    false,
+                    micErrorSpokenAlerts['language-not-supported'][lang] || micErrorSpokenAlerts['language-not-supported'].en
+                );
             } else if (event.error === 'no-speech') {
                 // Silent check fallback
                 console.log("Speech recognition: No speech detected.");
             } else {
-                appendLucyMessage(`🎤 <strong>Voice Input Error</strong><br>I encountered a speech recognition error: <em>${event.error}</em>. Please try speaking again or typing your message.`);
+                appendLucyMessage(
+                    `🎤 <strong>Voice Input Error</strong><br>I encountered a speech recognition error: <em>${event.error}</em>. Please try speaking again or typing your message.`,
+                    false,
+                    false,
+                    micErrorSpokenAlerts['generic'][lang] || micErrorSpokenAlerts['generic'].en
+                );
             }
         };
 

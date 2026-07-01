@@ -27,6 +27,42 @@ export default function DashboardHeader({
   const [isQuickActionsOpen, setIsQuickActionsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (!isProfileOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsProfileOpen(false);
+        return;
+      }
+
+      if (!dropdownRef.current) return;
+      const focusableElements = dropdownRef.current.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex="0"]'
+      );
+      if (focusableElements.length === 0) return;
+
+      const activeElement = document.activeElement;
+      const index = Array.from(focusableElements).indexOf(activeElement as any);
+
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        const nextIndex = (index + 1) % focusableElements.length;
+        (focusableElements[nextIndex] as HTMLElement).focus();
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        const prevIndex = (index - 1 + focusableElements.length) % focusableElements.length;
+        (focusableElements[prevIndex] as HTMLElement).focus();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isProfileOpen]);
+
+
   // Mock notifications
   const unreadMessages = 3;
   const alertCount = 2;
@@ -72,7 +108,7 @@ export default function DashboardHeader({
       </div>
 
       {/* Actions & Profile Controls */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-5 sm:gap-6">
         {/* Quick Actions Dropdown */}
         <div className="relative">
           <button
@@ -124,9 +160,6 @@ export default function DashboardHeader({
             </>
           )}
         </div>
-
-        <div className="w-px h-5 bg-slate-200 dark:bg-slate-800 hidden sm:block" />
-
         {/* Messaging triggers */}
         <button
           onClick={() => onTriggerQuickAction("message-center")}
@@ -192,18 +225,46 @@ export default function DashboardHeader({
             <>
               <div className="fixed inset-0 z-40" onClick={() => setIsProfileOpen(false)} />
               <div 
-                className={`absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl z-50 p-2 flex flex-col gap-1 text-slate-800 dark:text-slate-200 ${
+                ref={dropdownRef}
+                className={`absolute right-0 mt-2 w-60 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl z-50 p-2 flex flex-col gap-1 text-slate-800 dark:text-slate-200 dashboard-dropdown-dark ${
                   reduceMotion ? "" : "animate-in slide-in-from-top-1 duration-150"
                 }`}
                 role="menu"
               >
-                <div className="px-3 py-2 border-b border-slate-100 dark:border-slate-850">
-                  <div className="text-xs font-bold truncate">{session?.name || "Clinician"}</div>
-                  <div className="text-[10px] text-slate-400 dark:text-slate-550 truncate mt-0.5">{session?.email || "doctor@clinic.com"}</div>
+                <div className="px-3 py-2 border-b border-slate-100 dark:border-slate-850 mb-1">
+                  <div className="text-xs font-bold truncate text-slate-900 dark:text-slate-100">{session?.name || "Clinician"}</div>
+                  <div className="text-[10px] text-slate-400 dark:text-slate-500 truncate mt-0.5">{session?.email || "doctor@clinic.com"}</div>
                 </div>
+
+                {[
+                  { key: "profile", label: "Profile", icon: User },
+                  { key: "preferences", label: "My Preferences", icon: Settings },
+                  { key: "accessibility", label: "Accessibility Settings", icon: Settings },
+                  { key: "shortcuts", label: "Keyboard Shortcuts", icon: FileText },
+                  { key: "knowledge-settings", label: "Knowledge Settings", icon: Settings },
+                ].map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={item.key}
+                      onClick={() => {
+                        onTriggerQuickAction(item.key);
+                        setIsProfileOpen(false);
+                      }}
+                      className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer border-none bg-transparent flex items-center gap-2.5 focus-visible:ring-2 focus-visible:ring-teal-555 outline-none dashboard-focus-ring"
+                      role="menuitem"
+                    >
+                      <Icon className="w-4 h-4 text-slate-400 shrink-0" />
+                      <span>{item.label}</span>
+                    </button>
+                  );
+                })}
+
+                <div className="border-t border-slate-100 dark:border-slate-850 my-1" />
+
                 <button
                   onClick={handleLogout}
-                  className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-slate-655 hover:bg-rose-50 dark:hover:bg-rose-950/20 hover:text-rose-600 dark:text-slate-350 dark:hover:text-rose-400 transition-all cursor-pointer border-none bg-transparent flex items-center gap-2.5 focus-visible:ring-2 focus-visible:ring-rose-500 outline-none"
+                  className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/20 hover:text-rose-700 dark:text-rose-400 dark:hover:text-rose-300 transition-all cursor-pointer border-none bg-transparent flex items-center gap-2.5 focus-visible:ring-2 focus-visible:ring-rose-500 outline-none dashboard-focus-ring"
                   role="menuitem"
                 >
                   <LogOut className="w-4 h-4 shrink-0" />

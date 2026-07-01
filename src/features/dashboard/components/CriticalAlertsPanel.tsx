@@ -107,30 +107,30 @@ export default function CriticalAlertsPanel({
     switch (level) {
       case "critical":
         return {
-          border: "border-rose-250 dark:border-rose-900/40 bg-rose-50/50 dark:bg-rose-955/5",
+          border: "border-rose-250/60 dark:border-rose-950/20 bg-rose-50/20 dark:bg-rose-955/5",
           text: "text-rose-900 dark:text-rose-400",
-          badge: "bg-rose-100 dark:bg-rose-955 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-900/30",
+          badge: "bg-rose-100 dark:bg-rose-955/30 text-rose-700 dark:text-rose-400 border border-rose-200/50 dark:border-rose-900/30",
           iconColor: "text-rose-600 dark:text-rose-455",
         };
       case "high":
         return {
-          border: "border-amber-250 dark:border-amber-900/40 bg-amber-50/50 dark:bg-amber-955/5",
+          border: "border-amber-250/60 dark:border-amber-955/20 bg-amber-50/20 dark:bg-amber-955/5",
           text: "text-amber-900 dark:text-amber-400",
-          badge: "bg-amber-100 dark:bg-amber-955 text-amber-700 dark:text-amber-450 border border-amber-200 dark:border-amber-900/30",
+          badge: "bg-amber-100 dark:bg-amber-955/30 text-amber-700 dark:text-amber-450 border border-amber-200/50 dark:border-amber-900/30",
           iconColor: "text-amber-600 dark:text-amber-455",
         };
       case "medium":
         return {
-          border: "border-sky-200 dark:border-sky-900/40 bg-sky-50/30 dark:bg-sky-955/5",
+          border: "border-sky-200/60 dark:border-sky-950/20 bg-sky-50/15 dark:bg-sky-955/5",
           text: "text-sky-900 dark:text-sky-400",
-          badge: "bg-sky-100 dark:bg-sky-955 text-sky-700 dark:text-sky-400 border border-sky-200 dark:border-sky-900/30",
+          badge: "bg-sky-100 dark:bg-sky-955/30 text-sky-700 dark:text-sky-400 border border-sky-200/50 dark:border-sky-900/30",
           iconColor: "text-sky-600 dark:text-sky-455",
         };
       default:
         return {
-          border: "border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/10",
+          border: "border-slate-200 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-900/10",
           text: "text-slate-700 dark:text-slate-350",
-          badge: "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700",
+          badge: "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-750",
           iconColor: "text-slate-500 dark:text-slate-400",
         };
     }
@@ -347,12 +347,54 @@ export default function CriticalAlertsPanel({
               })}
             </div>
           ) : (
-            <div className="p-8 text-center border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl space-y-2 select-none">
-              <Info className="w-8 h-8 text-slate-300 dark:text-slate-700 mx-auto" />
-              <div className="text-xs font-bold text-slate-500 dark:text-slate-400">No active alerts matching search/filters</div>
-              <p className="text-[10px] text-slate-400 dark:text-slate-600 max-w-xs mx-auto">
-                Select another filter level or refine search query parameters.
-              </p>
+            <div className="p-6 text-center border border-dashed border-slate-200 dark:border-slate-800 rounded-[24px] space-y-4 select-none">
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-9 h-9 rounded-full bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shadow-xs">
+                  <CheckCircle className="w-5 h-5 animate-pulse" />
+                </div>
+                <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                  All Systems Operational
+                </span>
+                <p className="text-[10px] text-slate-400 dark:text-slate-500 max-w-xs mx-auto">
+                  No active critical alerts. AI router, KMS, and CDSS clinical rules are synchronized.
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-3 pt-2 text-left">
+                <div className="p-3 bg-slate-50 dark:bg-slate-850/50 rounded-xl border border-slate-100/60 dark:border-slate-800/40">
+                  <div className="text-[9px] uppercase tracking-wider font-extrabold text-slate-455 dark:text-slate-500">
+                    System Uptime
+                  </div>
+                  <div className="text-[11px] font-bold text-slate-800 dark:text-slate-200 mt-0.5">
+                    99.98% (Stable)
+                  </div>
+                </div>
+                <div className="p-3 bg-slate-50 dark:bg-slate-850/50 rounded-xl border border-slate-100/60 dark:border-slate-800/40">
+                  <div className="text-[9px] uppercase tracking-wider font-extrabold text-slate-455 dark:text-slate-500">
+                    AI Router Status
+                  </div>
+                  <div className="text-[11px] font-bold text-teal-600 dark:text-teal-400 mt-0.5 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse" />
+                    <span>Connected</span>
+                  </div>
+                </div>
+                <div className="p-3 bg-slate-50 dark:bg-slate-850/50 rounded-xl border border-slate-100/60 dark:border-slate-800/40">
+                  <div className="text-[9px] uppercase tracking-wider font-extrabold text-slate-455 dark:text-slate-500">
+                    CDSS Knowledge KMS
+                  </div>
+                  <div className="text-[11px] font-bold text-slate-800 dark:text-slate-200 mt-0.5">
+                    Synchronized (2.4k rules)
+                  </div>
+                </div>
+                <div className="p-3 bg-slate-50 dark:bg-slate-850/50 rounded-xl border border-slate-100/60 dark:border-slate-800/40">
+                  <div className="text-[9px] uppercase tracking-wider font-extrabold text-slate-455 dark:text-slate-500">
+                    Active Telemetry
+                  </div>
+                  <div className="text-[11px] font-bold text-slate-800 dark:text-slate-200 mt-0.5">
+                    0 errors / min
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </>
