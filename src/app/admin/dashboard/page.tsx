@@ -1598,6 +1598,103 @@ export default function AdminDashboard() {
   const [timelinePrescriptionText, setTimelinePrescriptionText] = useState("");
   const [timelinePrescriptionPotency, setTimelinePrescriptionPotency] = useState("30C");
   const [chatsLoaded, setChatsLoaded] = useState(false);
+
+  // Create New Case Entry Form State
+  const [caseEntryComplaint, setCaseEntryComplaint] = useState("");
+  const [caseEntryAggravation, setCaseEntryAggravation] = useState("");
+  const [caseEntryAmelioration, setCaseEntryAmelioration] = useState("");
+  const [caseEntryThermal, setCaseEntryThermal] = useState("Ambithermal");
+  const [caseEntryMentals, setCaseEntryMentals] = useState("");
+  const [caseEntryBp, setCaseEntryBp] = useState("");
+  const [caseEntryPulse, setCaseEntryPulse] = useState("");
+  const [caseEntryTemp, setCaseEntryTemp] = useState("");
+  const [caseEntryPrescription, setCaseEntryPrescription] = useState("");
+  const [caseEntryPotency, setCaseEntryPotency] = useState("30C");
+  const [isSavingCaseEntry, setIsSavingCaseEntry] = useState(false);
+
+  const handleSaveCaseEntry = async () => {
+    if (!selectedPatientId) {
+      alert("Please select a patient first in the Plan Configuration panel.");
+      return;
+    }
+    if (!caseEntryComplaint.trim() && !caseEntryPrescription.trim()) {
+      alert("Please enter a chief complaint or prescribed remedy.");
+      return;
+    }
+
+    setIsSavingCaseEntry(true);
+    const isMockProject = !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID === "mock-project-id";
+
+    // Find the target patient
+    const targetPatient = patients.find(p => p.id === selectedPatientId);
+    if (!targetPatient) {
+      alert("Selected patient file not found.");
+      setIsSavingCaseEntry(false);
+      return;
+    }
+
+    const notesParts = [];
+    if (caseEntryComplaint.trim()) notesParts.push(`Complaint: ${caseEntryComplaint}`);
+    if (caseEntryAggravation.trim()) notesParts.push(`Aggravation: Worse from ${caseEntryAggravation}`);
+    if (caseEntryAmelioration.trim()) notesParts.push(`Amelioration: Better from ${caseEntryAmelioration}`);
+    if (caseEntryThermal) notesParts.push(`Thermal: ${caseEntryThermal}`);
+    if (caseEntryMentals.trim()) notesParts.push(`Mentals/Generals: ${caseEntryMentals}`);
+    if (caseEntryBp.trim() || caseEntryPulse.trim() || caseEntryTemp.trim()) {
+      const vitals = [];
+      if (caseEntryBp.trim()) vitals.push(`BP: ${caseEntryBp}`);
+      if (caseEntryPulse.trim()) vitals.push(`Pulse: ${caseEntryPulse} bpm`);
+      if (caseEntryTemp.trim()) vitals.push(`Temp: ${caseEntryTemp}°F`);
+      notesParts.push(`Vitals: ${vitals.join(", ")}`);
+    }
+
+    const newPrescription = {
+      remedy: caseEntryPrescription.trim() || "Consultation Case Entry",
+      potency: caseEntryPrescription.trim() ? caseEntryPotency : "",
+      prescribedAt: new Date().toISOString(),
+      notes: notesParts.join(" | ")
+    };
+
+    const currentPrescriptions = (targetPatient as any).prescriptions || [];
+    const updatedPrescriptions = [...currentPrescriptions, newPrescription];
+
+    const updatedFields = {
+      prescriptions: updatedPrescriptions,
+      lastSeen: new Date().toISOString()
+    };
+
+    try {
+      if (!isMockProject) {
+        const patientRef = doc(db, "patients", selectedPatientId);
+        await updateDoc(patientRef, updatedFields);
+      }
+      
+      // Update local state in all cases
+      const updatedPatient = {
+        ...targetPatient,
+        ...updatedFields
+      };
+      setPatients(prev => prev.map(p => p.id === selectedPatientId ? updatedPatient : p));
+      
+      // Reset form fields
+      setCaseEntryComplaint("");
+      setCaseEntryAggravation("");
+      setCaseEntryAmelioration("");
+      setCaseEntryThermal("Ambithermal");
+      setCaseEntryMentals("");
+      setCaseEntryBp("");
+      setCaseEntryPulse("");
+      setCaseEntryTemp("");
+      setCaseEntryPrescription("");
+      setCaseEntryPotency("30C");
+
+      alert("Case entry successfully logged and synced to patient timeline!");
+    } catch (err: any) {
+      console.error("Failed to save case entry:", err);
+      alert(`Error saving case entry: ${err.message || err}`);
+    } finally {
+      setIsSavingCaseEntry(false);
+    }
+  };
   
   // Repertory State
   const [selectedRepertory, setSelectedRepertory] = useState<'kent' | 'boericke' | 'combined'>("kent");
@@ -11820,8 +11917,10 @@ ${err.message || err}`);
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                  {/* Left Column: Configuration (lg:col-span-5) */}
-                  <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800/85 shadow-sm space-y-4 lg:col-span-5">
+                  {/* Left Column: Configuration & Case Entry (lg:col-span-5) */}
+                  <div className="lg:col-span-5 space-y-6">
+                    {/* Plan Configuration */}
+                    <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800/85 shadow-sm space-y-4">
                     <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 border-b border-slate-100 dark:border-slate-800 pb-2 flex items-center gap-2">
                       <Sliders className="w-4 h-4 text-emerald-600" />
                       Plan Configuration
@@ -12077,6 +12176,168 @@ ${err.message || err}`);
 
                     </div>
                   </div>
+
+                  {/* Create New Case Entry Card */}
+                  <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800/85 shadow-sm space-y-4">
+                    <h3 className="text-sm font-bold text-slate-805 dark:text-slate-200 border-b border-slate-100 dark:border-slate-800 pb-2 flex items-center gap-2">
+                      <FileText className="w-4 h-4 text-emerald-600" />
+                      Create New Case Entry
+                    </h3>
+
+                    {!selectedPatientId ? (
+                      <div className="p-4 bg-amber-500/5 border border-amber-200/50 dark:border-amber-900/40 rounded-2xl text-xs text-amber-700 dark:text-amber-400 font-semibold leading-relaxed">
+                        ⚠️ Please select a patient in the selector above to record a new case entry.
+                      </div>
+                    ) : (
+                      <div className="space-y-4 text-xs font-semibold">
+                        <div className="flex justify-between items-center bg-slate-50 dark:bg-slate-950/40 p-3 rounded-2xl border border-slate-150 dark:border-slate-805">
+                          <span className="text-[10px] uppercase tracking-wider font-extrabold text-slate-450">Active Patient</span>
+                          <span className="text-slate-850 dark:text-slate-200 font-bold">{activePatient?.name}</span>
+                        </div>
+
+                        {/* Chief Complaint & Presenting Symptoms */}
+                        <div className="flex flex-col gap-1">
+                          <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-450 dark:text-slate-400">Chief Complaint & Symptoms</label>
+                          <textarea
+                            rows={3}
+                            placeholder="Describe active symptoms, triggers, pain type, onset..."
+                            className="w-full p-3 border border-slate-250 dark:border-slate-800 bg-white dark:bg-slate-955 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 text-xs font-medium text-slate-800 dark:text-slate-100 leading-normal"
+                            value={caseEntryComplaint}
+                            onChange={(e) => setCaseEntryComplaint(e.target.value)}
+                          />
+                        </div>
+
+                        {/* Homeopathic Modalities (Worse / Better) */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div className="flex flex-col gap-1">
+                            <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-450 dark:text-slate-400">Aggravations (Worse From)</label>
+                            <input
+                              type="text"
+                              placeholder="e.g. cold wind, standing"
+                              className="w-full p-2.5 border border-slate-250 dark:border-slate-800 bg-white dark:bg-slate-955 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 text-xs font-medium text-slate-800 dark:text-slate-100"
+                              value={caseEntryAggravation}
+                              onChange={(e) => setCaseEntryAggravation(e.target.value)}
+                            />
+                          </div>
+                          <div className="flex flex-col gap-1">
+                            <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-450 dark:text-slate-400">Ameliorations (Better From)</label>
+                            <input
+                              type="text"
+                              placeholder="e.g. warm drinks, open air"
+                              className="w-full p-2.5 border border-slate-250 dark:border-slate-800 bg-white dark:bg-slate-955 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 text-xs font-medium text-slate-800 dark:text-slate-100"
+                              value={caseEntryAmelioration}
+                              onChange={(e) => setCaseEntryAmelioration(e.target.value)}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Physical & Mental Generals */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div className="flex flex-col gap-1">
+                            <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-455 dark:text-slate-400">Thermal State</label>
+                            <select
+                              className="w-full p-2.5 border border-slate-250 dark:border-slate-800 bg-white dark:bg-slate-955 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 text-xs font-semibold text-slate-800 dark:text-slate-100 cursor-pointer"
+                              value={caseEntryThermal}
+                              onChange={(e) => setCaseEntryThermal(e.target.value)}
+                            >
+                              <option value="Ambithermal">Ambithermal</option>
+                              <option value="Chilly">Chilly</option>
+                              <option value="Hot">Hot</option>
+                              <option value="Chilly & Chafed">Chilly & Chafed</option>
+                            </select>
+                          </div>
+                          <div className="flex flex-col gap-1">
+                            <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-450 dark:text-slate-400">Mental Generals / Notes</label>
+                            <input
+                              type="text"
+                              placeholder="e.g. anxious, irritable, thirstless"
+                              className="w-full p-2.5 border border-slate-250 dark:border-slate-805 bg-white dark:bg-slate-955 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 text-xs font-medium text-slate-800 dark:text-slate-100"
+                              value={caseEntryMentals}
+                              onChange={(e) => setCaseEntryMentals(e.target.value)}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Vitals (BP, Pulse, Temp) */}
+                        <div className="grid grid-cols-3 gap-2">
+                          <div className="flex flex-col gap-1">
+                            <label className="text-[9px] uppercase tracking-wider font-extrabold text-slate-450 dark:text-slate-400">BP</label>
+                            <input
+                              type="text"
+                              placeholder="e.g. 120/80"
+                              className="w-full p-2 border border-slate-250 dark:border-slate-800 bg-white dark:bg-slate-955 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 text-xs font-medium text-slate-800 dark:text-slate-100 text-center"
+                              value={caseEntryBp}
+                              onChange={(e) => setCaseEntryBp(e.target.value)}
+                            />
+                          </div>
+                          <div className="flex flex-col gap-1">
+                            <label className="text-[9px] uppercase tracking-wider font-extrabold text-slate-450 dark:text-slate-400">Pulse (bpm)</label>
+                            <input
+                              type="text"
+                              placeholder="72"
+                              className="w-full p-2 border border-slate-250 dark:border-slate-808 bg-white dark:bg-slate-955 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 text-xs font-medium text-slate-800 dark:text-slate-100 text-center"
+                              value={caseEntryPulse}
+                              onChange={(e) => setCaseEntryPulse(e.target.value)}
+                            />
+                          </div>
+                          <div className="flex flex-col gap-1">
+                            <label className="text-[9px] uppercase tracking-wider font-extrabold text-slate-455 dark:text-slate-400">Temp (°F)</label>
+                            <input
+                              type="text"
+                              placeholder="98.6"
+                              className="w-full p-2 border border-slate-250 dark:border-slate-800 bg-white dark:bg-slate-955 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 text-xs font-medium text-slate-800 dark:text-slate-100 text-center"
+                              value={caseEntryTemp}
+                              onChange={(e) => setCaseEntryTemp(e.target.value)}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Prescription & Potency */}
+                        <div className="grid grid-cols-3 gap-2 border-t border-slate-100 dark:border-slate-800 pt-3">
+                          <div className="col-span-2 flex flex-col gap-1">
+                            <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-455 dark:text-slate-400">Prescribed Remedy (Optional)</label>
+                            <input
+                              type="text"
+                              placeholder="Remedy name (e.g. Sulphur)"
+                              className="w-full p-2.5 border border-slate-250 dark:border-slate-808 bg-white dark:bg-slate-955 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 text-xs font-semibold text-slate-805 dark:text-slate-100"
+                              value={caseEntryPrescription}
+                              onChange={(e) => setCaseEntryPrescription(e.target.value)}
+                            />
+                          </div>
+                          <div className="col-span-1 flex flex-col gap-1">
+                            <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-450 dark:text-slate-400">Potency</label>
+                            <select
+                              className="w-full p-2.5 border border-slate-250 dark:border-slate-808 bg-white dark:bg-slate-955 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 text-xs font-semibold text-slate-800 dark:text-slate-100 cursor-pointer"
+                              value={caseEntryPotency}
+                              onChange={(e) => setCaseEntryPotency(e.target.value)}
+                            >
+                              <option value="6C">6C</option>
+                              <option value="30C">30C</option>
+                              <option value="200C">200C</option>
+                              <option value="1M">1M</option>
+                              <option value="10M">10M</option>
+                              <option value="LM1">LM1</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        {/* Submit Action */}
+                        <button
+                          onClick={handleSaveCaseEntry}
+                          disabled={isSavingCaseEntry}
+                          className="w-full mt-3 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all border-none cursor-pointer flex items-center justify-center gap-1.5 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {isSavingCaseEntry ? (
+                            <RefreshCw className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <CheckCircle className="w-4 h-4" />
+                          )}
+                          <span>Log & Sign Case Entry</span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
 
                   {/* Right Column: Breakdown & Invoice (lg:col-span-7) */}
                   <div className="lg:col-span-7 space-y-6">
