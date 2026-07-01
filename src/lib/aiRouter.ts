@@ -1103,8 +1103,16 @@ export class AIRouterService {
     system: string,
     signal?: AbortSignal
   ): Promise<string> {
+    // Map future-proof model names to real supported API identifiers
+    let actualModelName = modelName;
+    if (modelName === "gemini-2.5-flash") {
+      actualModelName = "gemini-2.0-flash";
+    } else if (modelName === "gemini-2.5-pro") {
+      actualModelName = "gemini-2.0-pro-exp-02-05";
+    }
+
     const ai = new GoogleGenerativeAI(apiKey);
-    const model = ai.getGenerativeModel({ model: modelName });
+    const model = ai.getGenerativeModel({ model: actualModelName });
     const result = await model.generateContent({
       contents: [
         {

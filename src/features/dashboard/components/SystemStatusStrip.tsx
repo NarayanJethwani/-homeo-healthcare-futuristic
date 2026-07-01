@@ -53,10 +53,31 @@ export default function SystemStatusStrip({
   const [isSimulating, setIsSimulating] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Determine if the AI Router is experiencing warning or fallback conditions
-  const isAiRouterDegraded = telemetryLogs.some(
-    (log) => log.status === "failed" || (log.failoverTrace && log.failoverTrace.length > 1)
-  );
+  // Determine if the AI Router is currently experiencing warning or fallback conditions based on the latest request
+  const latestLog = telemetryLogs[0];
+  const isAiRouterDegraded = latestLog
+    ? latestLog.status === "failed" || (latestLog.failoverTrace && latestLog.failoverTrace.length > 0)
+    : false;
+
+  const formatModelName = (name: string) => {
+    if (!name) return "";
+    const lower = name.toLowerCase();
+    if (lower.includes("gemini-2.5-flash") || lower.includes("gemini-2.0-flash")) return "Gemini 2.0 Flash";
+    if (lower.includes("gemini-2.5-pro") || lower.includes("gemini-2.0-pro")) return "Gemini 2.0 Pro";
+    if (lower.includes("gemini-1.5-flash")) return "Gemini 1.5 Flash";
+    if (lower.includes("gemini-1.5-pro")) return "Gemini 1.5 Pro";
+    if (lower.includes("deepseek-chat") || lower.includes("deepseek-v3")) return "DeepSeek-V3";
+    if (lower.includes("deepseek-r1")) return "DeepSeek R1";
+    return name;
+  };
+
+  const primaryModel = (latestLog?.failoverTrace && latestLog.failoverTrace.length > 0)
+    ? latestLog.failoverTrace[0].split(" ")[0]
+    : (latestLog?.modelUsed || "gemini-2.0-flash");
+
+  const fallbackModel = (latestLog?.failoverTrace && latestLog.failoverTrace.length > 0)
+    ? `${formatModelName(latestLog.modelUsed)} (Auto-Failover)`
+    : "DeepSeek-V3 (Auto-Failover)";
 
   const services: SimplifiedService[] = React.useMemo(() => {
     return [
@@ -79,8 +100,8 @@ export default function SystemStatusStrip({
         desc: "Unified clinical LLM router, safety filter, and failover controller.",
         region: "Global CDN (Edge)",
         details: { 
-          Primary: "Gemini 1.5 Flash", 
-          Fallback: "DeepSeek-V3 (Auto-Failover)", 
+          Primary: formatModelName(primaryModel), 
+          Fallback: fallbackModel, 
           "Safety Filter": "Nominal",
           Status: isAiRouterDegraded ? "Degraded (Running on Fallback)" : "Nominal"
         }
