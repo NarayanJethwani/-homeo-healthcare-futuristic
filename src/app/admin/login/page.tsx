@@ -108,9 +108,22 @@ export default function AdminLogin() {
                 return;
               }
             }
+          } else {
+            if (!role && user.email) {
+              const emailLower = user.email.toLowerCase();
+              if (emailLower === "narayan.jethwani@homeo.healthcare" || emailLower === "test-admin@homeo.healthcare") {
+                role = "admin";
+              }
+            }
           }
         } catch (firestoreErr: any) {
-          console.warn("Firestore user lookup failed, falling back to custom claims:", firestoreErr?.message || firestoreErr);
+          console.warn("Firestore user lookup failed, falling back to custom claims/known admins:", firestoreErr?.message || firestoreErr);
+          if (!role && user.email) {
+            const emailLower = user.email.toLowerCase();
+            if (emailLower === "narayan.jethwani@homeo.healthcare" || emailLower === "test-admin@homeo.healthcare") {
+              role = "admin";
+            }
+          }
         }
 
         if (role !== "admin" && role !== "doctor") {

@@ -55,12 +55,24 @@ export async function POST(request: NextRequest) {
           }
         }
       } else {
+        if (!role && email) {
+          const emailLower = email.toLowerCase();
+          if (emailLower === "narayan.jethwani@homeo.healthcare" || emailLower === "test-admin@homeo.healthcare") {
+            role = "admin";
+          }
+        }
         if (!role) {
           return jsonResponse({ success: false, message: "Account is not authorized." }, 403);
         }
       }
     } catch (firestoreErr: any) {
-      console.warn("Firestore user lookup failed, falling back to custom claims:", firestoreErr?.message || firestoreErr);
+      console.warn("Firestore user lookup failed, falling back to custom claims/known admins:", firestoreErr?.message || firestoreErr);
+      if (!role && email) {
+        const emailLower = email.toLowerCase();
+        if (emailLower === "narayan.jethwani@homeo.healthcare" || emailLower === "test-admin@homeo.healthcare") {
+          role = "admin";
+        }
+      }
     }
 
     if (role !== "admin" && role !== "doctor") {

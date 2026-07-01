@@ -5364,7 +5364,7 @@ Homeo Healthcare`;
     const patientsRef = collection(db, "patients");
     const q = session.role === "admin"
       ? query(patientsRef, orderBy("createdAt", "desc"))
-      : query(patientsRef, where("assignedDoctor", "==", session.uid), orderBy("createdAt", "desc"));
+      : query(patientsRef, where("assignedDoctor", "==", session.uid));
 
     const unsubscribe = onSnapshot(q, async (snapshot) => {
       if (snapshot.empty) {
@@ -5375,6 +5375,13 @@ Homeo Healthcare`;
         snapshot.forEach((doc) => {
           list.push(doc.data() as Patient);
         });
+        if (session.role !== "admin") {
+          list.sort((a, b) => {
+            const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+            const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+            return timeB - timeA;
+          });
+        }
         setPatients(list);
       }
     }, (error) => {
