@@ -104,17 +104,28 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               if ('serviceWorker' in navigator) {
-                function registerSW() {
-                  navigator.serviceWorker.register('/sw.js').then(function(reg) {
-                    console.log('Homeo Healthcare ServiceWorker registered on scope: ', reg.scope);
-                  }).catch(function(err) {
-                    console.error('ServiceWorker registration failed: ', err);
+                if (window.location.pathname.startsWith('/admin')) {
+                  navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                    for (var i = 0; i < registrations.length; i++) {
+                      registrations[i].unregister();
+                    }
                   });
-                }
-                if (document.readyState === 'complete' || document.readyState === 'interactive') {
-                  registerSW();
                 } else {
-                  window.addEventListener('load', registerSW);
+                  var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+                  if (!isSafari) {
+                    var registerSW = function() {
+                      navigator.serviceWorker.register('/sw.js').then(function(reg) {
+                        console.log('Homeo Healthcare ServiceWorker registered on scope: ', reg.scope);
+                      }).catch(function(err) {
+                        console.error('ServiceWorker registration failed: ', err);
+                      });
+                    };
+                    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                      registerSW();
+                    } else {
+                      window.addEventListener('load', registerSW);
+                    }
+                  }
                 }
               }
             `
