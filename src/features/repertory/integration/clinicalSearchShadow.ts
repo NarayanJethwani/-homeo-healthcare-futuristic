@@ -124,7 +124,7 @@ export function runClinicalSearchShadowComparison(input: ClinicalSearchShadowInp
 
   try {
     const filteredCandidates = input.candidateRubrics.filter((rubric) => shouldKeepByFilters(rubric, input.filters));
-    const canonicalRubrics = filteredCandidates.map(adaptFirestoreRubric);
+    const canonicalRubrics = filteredCandidates.map((record) => adaptFirestoreRubric(record as Parameters<typeof adaptFirestoreRubric>[0]));
     const adapterWarningCount = canonicalRubrics.reduce((sum, rubric) => sum + rubric.warnings.length, 0);
     const index = buildCanonicalSearchIndex(canonicalRubrics);
     const v2Results = input.query
