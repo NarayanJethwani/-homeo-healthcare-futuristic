@@ -413,7 +413,6 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
         />
       )}
 
-      {clinicalEngineMode === 'v1' && (
       <div className="w-full grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch pb-12 text-slate-800">
       
       {/* LEFT COLUMN: Search & Rubric Directory (Col Span 4) */}
@@ -1212,9 +1211,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
           </div>
         </div>
       )}
-
       </div>
-      )}
     </div>
   );
 };
