@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiAuth";
 import { getAdminDb } from "@/lib/firebaseAdmin";
 import { runV2ClinicalLiveEngine, V2LiveFilters } from "@/features/repertory/liveMode";
+import { getV2FallbackRubrics } from "@/features/repertory/liveMode/fallbackRubrics";
 
 export const dynamic = "force-dynamic";
 
@@ -35,15 +36,20 @@ async function readRequest(request: NextRequest) {
 }
 
 async function activeRubricCandidates(limit = 5000) {
-  const snapshot = await getAdminDb()
-    .collection("rubrics")
-    .where("status", "==", "active")
-    .limit(limit)
-    .get();
+  try {
+    const snapshot = await getAdminDb()
+      .collection("rubrics")
+      .where("status", "==", "active")
+      .limit(limit)
+      .get();
 
-  const rubrics: unknown[] = [];
-  snapshot.forEach((doc: any) => rubrics.push({ id: doc.id, ...doc.data() }));
-  return rubrics;
+    const rubrics: unknown[] = [];
+    snapshot.forEach((doc: any) => rubrics.push({ id: doc.id, ...doc.data() }));
+    return rubrics.length > 0 ? rubrics : getV2FallbackRubrics();
+  } catch (error) {
+    console.warn("V2 Clinical mode could not load Firestore rubrics. Using local repertory fallback:", error);
+    return getV2FallbackRubrics();
+  }
 }
 
 export async function GET(request: NextRequest) {

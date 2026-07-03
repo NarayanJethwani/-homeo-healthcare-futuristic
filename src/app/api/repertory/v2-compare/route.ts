@@ -12,6 +12,7 @@ import {
 } from "@/features/repertory/liveMode";
 import { adaptFirestoreRubric } from "@/features/repertory/adapters/firestoreRubricAdapter";
 import { createClinicalRepertorizationSession, repertorizeClinicalSession } from "@/features/repertory/repertorization/clinicalRepertorization";
+import { getV2FallbackRubrics } from "@/features/repertory/liveMode/fallbackRubrics";
 
 export const dynamic = "force-dynamic";
 
@@ -55,15 +56,20 @@ async function readRequest(request: NextRequest) {
 }
 
 async function activeRubricCandidates(limit = 5000) {
-  const snapshot = await getAdminDb()
-    .collection("rubrics")
-    .where("status", "==", "active")
-    .limit(limit)
-    .get();
+  try {
+    const snapshot = await getAdminDb()
+      .collection("rubrics")
+      .where("status", "==", "active")
+      .limit(limit)
+      .get();
 
-  const rubrics: any[] = [];
-  snapshot.forEach((doc: any) => rubrics.push({ id: doc.id, ...doc.data() }));
-  return rubrics;
+    const rubrics: any[] = [];
+    snapshot.forEach((doc: any) => rubrics.push({ id: doc.id, ...doc.data() }));
+    return rubrics.length > 0 ? rubrics : getV2FallbackRubrics();
+  } catch (error) {
+    console.warn("V2 comparison could not load Firestore rubrics. Using local repertory fallback:", error);
+    return getV2FallbackRubrics();
+  }
 }
 
 async function runV1Search(query: string, filters: V2LiveFilters, selectedRubricIds: string[]): Promise<V1SearchRun> {
