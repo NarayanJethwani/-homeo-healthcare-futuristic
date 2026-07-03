@@ -17,6 +17,10 @@ import { SuggestedQuestions } from './SuggestedQuestions';
 import { ConfidenceBreakdownPanel } from './ConfidenceBreakdownPanel';
 import { RubricCoverageHeatmap } from './RubricCoverageHeatmap';
 import { ReasoningTimeline } from './ReasoningTimeline';
+import { ClinicalEngineMode } from '../liveMode';
+import { V2ClinicalEngineSwitcher } from './V2ClinicalEngineSwitcher';
+import { V2ComparisonPanel } from './V2ComparisonPanel';
+import { V2LivePanel } from './V2LivePanel';
 
 export interface RepertoryWorkbenchProps {
   sessionUid?: string;
@@ -38,6 +42,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
   const [selectedOrganSystem, setSelectedOrganSystem] = useState<string>('All');
   const [selectedMiasm, setSelectedMiasm] = useState<string>('All');
   const [selectedRemedy, setSelectedRemedy] = useState<string>('All');
+  const [clinicalEngineMode, setClinicalEngineMode] = useState<ClinicalEngineMode>('v1');
 
   // Workbench / Case States
   const [selectedRubrics, setSelectedRubrics] = useState<Array<{
@@ -362,6 +367,14 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
     }
   };
 
+  const v2Filters = {
+    category: selectedCategory,
+    organSystem: selectedOrganSystem,
+    miasm: selectedMiasm,
+    remedy: selectedRemedy,
+  };
+  const selectedRubricIds = selectedRubrics.map((rubric) => rubric.rubricId);
+
   return (
     <div className="w-full space-y-4">
       {/* Safety Header Badge */}
@@ -382,6 +395,25 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
         </span>
       </div>
 
+      <V2ClinicalEngineSwitcher mode={clinicalEngineMode} onModeChange={setClinicalEngineMode} />
+
+      {clinicalEngineMode === 'compare' && (
+        <V2ComparisonPanel
+          query={searchTerm}
+          filters={v2Filters}
+          selectedRubricIds={selectedRubricIds}
+        />
+      )}
+
+      {clinicalEngineMode === 'v2-live' && (
+        <V2LivePanel
+          query={searchTerm}
+          filters={v2Filters}
+          selectedRubricIds={selectedRubricIds}
+        />
+      )}
+
+      {clinicalEngineMode === 'v1' && (
       <div className="w-full grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch pb-12 text-slate-800">
       
       {/* LEFT COLUMN: Search & Rubric Directory (Col Span 4) */}
@@ -598,7 +630,6 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
           )}
         </div>
       </div>
-
       {/* CENTER COLUMN: Active Workbench & Scoring (Col Span 4) */}
       <div className="xl:col-span-4 flex flex-col gap-6 order-1 xl:order-2">
         
@@ -1183,6 +1214,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
       )}
 
       </div>
+      )}
     </div>
   );
 };
