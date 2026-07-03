@@ -11,6 +11,7 @@ export * from './validators/databaseValidator';
 export * from './import-export/importExportService';
 export * from './data/repertorySeed';
 export * from './data/caseScenarios';
+export * from './clinicalWorkspace';
 
 
 // UI Components will be exported below
@@ -30,4 +31,3 @@ export * from './reasoning/confidenceEngine';
 export * from './reasoning/questionGenerator';
 export * from './reasoning/explanationBuilder';
 export * from './reasoning/evidenceBreakdown';
-
