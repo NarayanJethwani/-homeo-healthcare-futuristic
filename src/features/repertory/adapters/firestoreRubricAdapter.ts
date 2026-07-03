@@ -2,6 +2,7 @@ import {
   CanonicalRubric,
   CanonicalRubricCategory,
   ClinicalSystem,
+  RemedyPolarity,
   normalizeRemedyGrade,
 } from "../engine/canonicalTypes";
 import { normalizeRemedyId } from "../engine/remedyNormalizer";
@@ -9,21 +10,88 @@ import { normalizeRemedyId } from "../engine/remedyNormalizer";
 type FirestoreRubricRecord = {
   id?: unknown;
   name?: unknown;
+  slug?: unknown;
+  parentRubricId?: unknown;
   description?: unknown;
   category?: unknown;
   subcategory?: unknown;
   organSystem?: unknown;
+  clinicalPriority?: unknown;
+  createdDate?: unknown;
+  modifiedDate?: unknown;
   status?: unknown;
+  searchWeight?: unknown;
+  indexWeights?: unknown;
   keywords?: unknown;
   synonyms?: unknown;
+  clinicalConditions?: unknown;
   modalities?: unknown;
   miasms?: unknown;
   remedies?: unknown;
   researchCitation?: unknown;
 };
 
+const EXPLICIT_FIELDS = new Set([
+  "id",
+  "name",
+  "slug",
+  "parentRubricId",
+  "description",
+  "category",
+  "subcategory",
+  "organSystem",
+  "clinicalPriority",
+  "createdDate",
+  "modifiedDate",
+  "status",
+  "searchWeight",
+  "indexWeights",
+  "keywords",
+  "synonyms",
+  "clinicalConditions",
+  "modalities",
+  "miasms",
+  "remedies",
+  "researchCitation",
+]);
+
 function stringArray(value: unknown): string[] {
   return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
+}
+
+function stringValue(value: unknown): string | undefined {
+  return typeof value === "string" ? value : undefined;
+}
+
+function numberValue(value: unknown): number | undefined {
+  return typeof value === "number" && Number.isFinite(value) ? value : undefined;
+}
+
+function stringOrNull(value: unknown): string | null | undefined {
+  if (value === null) return null;
+  return stringValue(value);
+}
+
+function numberRecord(value: unknown): Record<string, number> | undefined {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
+  const entries = Object.entries(value as Record<string, unknown>).filter((entry): entry is [string, number] => (
+    typeof entry[1] === "number" && Number.isFinite(entry[1])
+  ));
+  return entries.length ? Object.fromEntries(entries) : undefined;
+}
+
+function sourceGrade(value: unknown): number | undefined {
+  const numeric = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(numeric) ? numeric : undefined;
+}
+
+function mapRemedyPolarity(value: unknown): RemedyPolarity {
+  const grade = sourceGrade(value);
+  return grade !== undefined && grade < 0 ? "negative" : "positive";
+}
+
+function collectMetadata(record: Record<string, unknown>): Record<string, unknown> {
+  return Object.fromEntries(Object.entries(record).filter(([field]) => !EXPLICIT_FIELDS.has(field)));
 }
 
 function mapCategory(value: unknown): CanonicalRubricCategory {
@@ -60,8 +128,11 @@ export function adaptFirestoreRubric(record: FirestoreRubricRecord): CanonicalRu
   const remedies = record.remedies && typeof record.remedies === "object" && !Array.isArray(record.remedies)
     ? Object.entries(record.remedies as Record<string, unknown>).map(([remedyId, grade]) => ({
         remedyId: normalizeRemedyId(remedyId),
+        sourceRemedyId: remedyId,
         grade: normalizeRemedyGrade(grade),
-        sourceGrade: typeof grade === "number" ? grade : Number(grade),
+        sourceGrade: sourceGrade(grade),
+        polarity: mapRemedyPolarity(grade),
+        isEliminating: sourceGrade(grade) !== undefined && sourceGrade(grade)! < 0,
       }))
     : [];
 
@@ -77,21 +148,36 @@ export function adaptFirestoreRubric(record: FirestoreRubricRecord): CanonicalRu
   return {
     id,
     title,
+    sourceTitle: stringValue(record.name),
     source: "firestore",
     sourceId: id,
-    chapter: typeof record.category === "string" ? record.category : undefined,
-    parentId: null,
+    chapter: stringValue(record.category),
+    slug: stringValue(record.slug),
+    parentId: stringOrNull(record.parentRubricId) ?? null,
+    parentRubricId: stringOrNull(record.parentRubricId),
+    description: stringValue(record.description),
     category: mapCategory(record.category),
+    sourceCategory: stringValue(record.category),
+    subCategory: stringValue(record.subcategory),
+    subcategory: stringValue(record.subcategory),
     clinicalSystem: mapClinicalSystem(record.organSystem),
-    status: record.status === "active" ? "active" : "unknown",
+    organSystem: stringValue(record.organSystem),
+    clinicalPriority: stringValue(record.clinicalPriority),
+    createdDate: stringValue(record.createdDate),
+    modifiedDate: stringValue(record.modifiedDate),
+    status: record.status === "active" ? "active" : record.status === "archived" ? "archived" : record.status === "custom" ? "custom" : "unknown",
+    sourceStatus: stringValue(record.status),
+    searchWeight: numberValue(record.searchWeight),
+    indexWeights: numberRecord(record.indexWeights),
     synonyms: stringArray(record.synonyms),
     keywords: stringArray(record.keywords),
+    clinicalConditions: stringArray(record.clinicalConditions),
     modalities: stringArray(record.modalities),
     miasms: stringArray(record.miasms),
     remedies,
     citation,
+    metadata: collectMetadata(record as Record<string, unknown>),
     originalRecord: record,
     warnings,
   };
 }
-

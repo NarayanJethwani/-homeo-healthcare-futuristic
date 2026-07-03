@@ -9,6 +9,17 @@ type ClassicRepertoryRecord = {
   source?: unknown;
 };
 
+const EXPLICIT_FIELDS = new Set(["id", "chapter", "name", "remedies", "source"]);
+
+function sourceGrade(value: unknown): number | undefined {
+  const numeric = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(numeric) ? numeric : undefined;
+}
+
+function collectMetadata(record: Record<string, unknown>): Record<string, unknown> {
+  return Object.fromEntries(Object.entries(record).filter(([field]) => !EXPLICIT_FIELDS.has(field)));
+}
+
 export function adaptKentBoerickeRubric(record: ClassicRepertoryRecord): CanonicalRubric {
   const warnings: string[] = [];
   const source = record.source === "boericke" ? "boericke" : record.source === "kent" ? "kent" : "unknown";
@@ -23,8 +34,11 @@ export function adaptKentBoerickeRubric(record: ClassicRepertoryRecord): Canonic
   const remedies = record.remedies && typeof record.remedies === "object" && !Array.isArray(record.remedies)
     ? Object.entries(record.remedies as Record<string, unknown>).map(([remedyId, grade]) => ({
         remedyId: normalizeRemedyId(remedyId),
+        sourceRemedyId: remedyId,
         grade: normalizeRemedyGrade(grade),
-        sourceGrade: typeof grade === "number" ? grade : Number(grade),
+        sourceGrade: sourceGrade(grade),
+        polarity: sourceGrade(grade) !== undefined && sourceGrade(grade)! < 0 ? "negative" as const : "positive" as const,
+        isEliminating: sourceGrade(grade) !== undefined && sourceGrade(grade)! < 0,
       }))
     : [];
 
@@ -35,6 +49,7 @@ export function adaptKentBoerickeRubric(record: ClassicRepertoryRecord): Canonic
     title,
     source,
     sourceId: id,
+    sourceTitle: typeof record.name === "string" ? record.name : undefined,
     chapter,
     parentId: null,
     category: "unknown",
@@ -46,8 +61,8 @@ export function adaptKentBoerickeRubric(record: ClassicRepertoryRecord): Canonic
     miasms: [],
     remedies,
     citation: source !== "unknown" ? { sourceName: source === "kent" ? "Kent Repertory" : "Boericke Repertory" } : undefined,
+    metadata: collectMetadata(record as Record<string, unknown>),
     originalRecord: record,
     warnings,
   };
 }
-
