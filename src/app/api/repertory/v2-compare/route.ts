@@ -72,77 +72,16 @@ async function activeRubricCandidates(limit = 5000) {
   }
 }
 
-async function runV1Search(query: string, filters: V2LiveFilters, selectedRubricIds: string[]): Promise<V1SearchRun> {
-  const startedAt = Date.now();
-  const q = query.toLowerCase().trim();
-  const rubricsRef = getAdminDb().collection("rubrics");
-  let results: any[] = [];
+function applyV1Filters(results: any[], filters: V2LiveFilters): any[] {
+  let filtered = results;
+  if (filters.category && filters.category !== "All") filtered = filtered.filter((rubric) => rubric.category === filters.category || rubric.section === filters.category);
+  if (filters.organSystem && filters.organSystem !== "All") filtered = filtered.filter((rubric) => rubric.organSystem === filters.organSystem);
+  if (filters.miasm && filters.miasm !== "All") filtered = filtered.filter((rubric) => Array.isArray(rubric.miasms) && rubric.miasms.includes(filters.miasm));
+  if (filters.remedy && filters.remedy !== "All") filtered = filtered.filter((rubric) => rubric.remedies?.[filters.remedy!] !== undefined);
+  return filtered;
+}
 
-  if (!q) {
-    const snapshot = await rubricsRef.where("status", "==", "active").limit(100).get();
-    snapshot.forEach((doc: any) => results.push({ id: doc.id, ...doc.data() }));
-  } else {
-    let searchTerms = [q];
-    const synDoc = await getAdminDb().collection("synonyms").doc(q).get();
-    if (synDoc.exists) {
-      const data = synDoc.data();
-      if (data?.synonyms) searchTerms = Array.from(new Set([q, ...data.synonyms]));
-    }
-
-    const words = q.split(/[\s,\.\-_]+/);
-    for (const word of words) {
-      if (word.length > 2 && word !== q) {
-        searchTerms.push(word);
-        const wSynDoc = await getAdminDb().collection("synonyms").doc(word).get();
-        if (wSynDoc.exists) {
-          const data = wSynDoc.data();
-          if (data?.synonyms) searchTerms.push(...data.synonyms);
-        }
-      }
-    }
-
-    searchTerms = Array.from(new Set(searchTerms.map((term) => term.toLowerCase())));
-    const chunks: string[][] = [];
-    const tempTerms = [...searchTerms];
-    while (tempTerms.length > 0) chunks.push(tempTerms.splice(0, 10));
-
-    const matchedDocs = new Map<string, any>();
-    for (const chunk of chunks) {
-      const querySnapshot = await rubricsRef
-        .where("status", "==", "active")
-        .where("keywords", "array-contains-any", chunk)
-        .get();
-      querySnapshot.forEach((doc: any) => matchedDocs.set(doc.id, { id: doc.id, ...doc.data() }));
-    }
-
-    const directSnapshot = await rubricsRef
-      .where("status", "==", "active")
-      .where("slug", "==", q.replace(/[\s_]+/g, "-"))
-      .get();
-    directSnapshot.forEach((doc: any) => matchedDocs.set(doc.id, { id: doc.id, ...doc.data() }));
-
-    results = Array.from(matchedDocs.values());
-    const scored = results.map((rubric) => {
-      let score = 0;
-      const name = String(rubric.name || "").toLowerCase();
-      const desc = String(rubric.description || "").toLowerCase();
-      searchTerms.forEach((term) => {
-        if (name === term) score += 200;
-        else if (name.includes(term)) score += 100;
-        else if (desc.includes(term)) score += 40;
-        if (rubric.keywords?.includes(term)) score += 30;
-        if (rubric.remedies && Object.keys(rubric.remedies).some((remedy) => remedy.toLowerCase() === term)) score += 50;
-      });
-      return { rubric, score };
-    });
-    results = scored.filter((item) => item.score > 0).sort((a, b) => b.score - a.score).map((item) => item.rubric);
-  }
-
-  if (filters.category && filters.category !== "All") results = results.filter((rubric) => rubric.category === filters.category || rubric.section === filters.category);
-  if (filters.organSystem && filters.organSystem !== "All") results = results.filter((rubric) => rubric.organSystem === filters.organSystem);
-  if (filters.miasm && filters.miasm !== "All") results = results.filter((rubric) => Array.isArray(rubric.miasms) && rubric.miasms.includes(filters.miasm));
-  if (filters.remedy && filters.remedy !== "All") results = results.filter((rubric) => rubric.remedies?.[filters.remedy!] !== undefined);
-
+function buildV1SearchRun(results: any[], startedAt: number, selectedRubricIds: string[]): V1SearchRun {
   const selected = selectedRubricIds.length
     ? results.filter((rubric) => selectedRubricIds.includes(rubric.id))
     : results.slice(0, 10);
@@ -164,6 +103,106 @@ async function runV1Search(query: string, filters: V2LiveFilters, selectedRubric
       matchedRubricCount: ranking.matchedRubricCount,
     })),
   };
+}
+
+function runV1FallbackSearch(query: string, filters: V2LiveFilters, selectedRubricIds: string[], startedAt: number): V1SearchRun {
+  const q = query.toLowerCase().trim();
+  let results = getV2FallbackRubrics();
+
+  if (q) {
+    const words = q.split(/[\s,\.\-_]+/).filter((word) => word.length > 2);
+    const searchTerms = Array.from(new Set([q, ...words].map((term) => term.toLowerCase())));
+    const scored = results.map((rubric) => {
+      let score = 0;
+      const name = String(rubric.name || "").toLowerCase();
+      const desc = String(rubric.description || "").toLowerCase();
+      searchTerms.forEach((term) => {
+        if (name === term) score += 200;
+        else if (name.includes(term)) score += 100;
+        else if (desc.includes(term)) score += 40;
+        if (rubric.keywords?.includes(term)) score += 30;
+        if (rubric.remedies && Object.keys(rubric.remedies).some((remedy) => remedy.toLowerCase() === term)) score += 50;
+      });
+      return { rubric, score };
+    });
+    results = scored.filter((item) => item.score > 0).sort((a, b) => b.score - a.score).map((item) => item.rubric);
+  }
+
+  return buildV1SearchRun(applyV1Filters(results, filters), startedAt, selectedRubricIds);
+}
+
+async function runV1Search(query: string, filters: V2LiveFilters, selectedRubricIds: string[]): Promise<V1SearchRun> {
+  const startedAt = Date.now();
+  const q = query.toLowerCase().trim();
+  try {
+    const rubricsRef = getAdminDb().collection("rubrics");
+    let results: any[] = [];
+
+    if (!q) {
+      const snapshot = await rubricsRef.where("status", "==", "active").limit(100).get();
+      snapshot.forEach((doc: any) => results.push({ id: doc.id, ...doc.data() }));
+    } else {
+      let searchTerms = [q];
+      const synDoc = await getAdminDb().collection("synonyms").doc(q).get();
+      if (synDoc.exists) {
+        const data = synDoc.data();
+        if (data?.synonyms) searchTerms = Array.from(new Set([q, ...data.synonyms]));
+      }
+
+      const words = q.split(/[\s,\.\-_]+/);
+      for (const word of words) {
+        if (word.length > 2 && word !== q) {
+          searchTerms.push(word);
+          const wSynDoc = await getAdminDb().collection("synonyms").doc(word).get();
+          if (wSynDoc.exists) {
+            const data = wSynDoc.data();
+            if (data?.synonyms) searchTerms.push(...data.synonyms);
+          }
+        }
+      }
+
+      searchTerms = Array.from(new Set(searchTerms.map((term) => term.toLowerCase())));
+      const chunks: string[][] = [];
+      const tempTerms = [...searchTerms];
+      while (tempTerms.length > 0) chunks.push(tempTerms.splice(0, 10));
+
+      const matchedDocs = new Map<string, any>();
+      for (const chunk of chunks) {
+        const querySnapshot = await rubricsRef
+          .where("status", "==", "active")
+          .where("keywords", "array-contains-any", chunk)
+          .get();
+        querySnapshot.forEach((doc: any) => matchedDocs.set(doc.id, { id: doc.id, ...doc.data() }));
+      }
+
+      const directSnapshot = await rubricsRef
+        .where("status", "==", "active")
+        .where("slug", "==", q.replace(/[\s_]+/g, "-"))
+        .get();
+      directSnapshot.forEach((doc: any) => matchedDocs.set(doc.id, { id: doc.id, ...doc.data() }));
+
+      results = Array.from(matchedDocs.values());
+      const scored = results.map((rubric) => {
+        let score = 0;
+        const name = String(rubric.name || "").toLowerCase();
+        const desc = String(rubric.description || "").toLowerCase();
+        searchTerms.forEach((term) => {
+          if (name === term) score += 200;
+          else if (name.includes(term)) score += 100;
+          else if (desc.includes(term)) score += 40;
+          if (rubric.keywords?.includes(term)) score += 30;
+          if (rubric.remedies && Object.keys(rubric.remedies).some((remedy) => remedy.toLowerCase() === term)) score += 50;
+        });
+        return { rubric, score };
+      });
+      results = scored.filter((item) => item.score > 0).sort((a, b) => b.score - a.score).map((item) => item.rubric);
+    }
+
+    return buildV1SearchRun(applyV1Filters(results, filters), startedAt, selectedRubricIds);
+  } catch (error) {
+    console.warn("V2 comparison could not run Firestore-backed V1 reference search. Using local repertory fallback:", error);
+    return runV1FallbackSearch(query, filters, selectedRubricIds, startedAt);
+  }
 }
 
 export async function GET(request: NextRequest) {
