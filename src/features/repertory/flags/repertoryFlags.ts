@@ -8,6 +8,7 @@ export interface RepertoryFeatureFlags {
   useIndexedSearch: boolean;
   useClinicalSearchEngine: boolean;
   useRubricIntelligence: boolean;
+  useClinicalRepertorizationEngine: boolean;
 }
 
 function isEnabled(value: string | undefined): boolean {
@@ -25,6 +26,7 @@ export function getRepertoryFeatureFlags(env: Record<string, string | undefined>
     useIndexedSearch: isEnabled(env.REPERTORY_V2_USE_INDEXED_SEARCH),
     useClinicalSearchEngine: isEnabled(env.REPERTORY_V2_USE_CLINICAL_SEARCH_ENGINE),
     useRubricIntelligence: isEnabled(env.REPERTORY_V2_USE_RUBRIC_INTELLIGENCE),
+    useClinicalRepertorizationEngine: isEnabled(env.REPERTORY_V2_USE_CLINICAL_REPERTORIZATION_ENGINE),
   };
 }
 
