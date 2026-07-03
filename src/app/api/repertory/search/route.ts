@@ -1,8 +1,25 @@
 import { NextResponse } from "next/server";
 import { getAdminDb } from "@/lib/firebaseAdmin";
 
+function isEnabled(value: string | undefined): boolean {
+  return value === "true" || value === "1";
+}
+
+function isClinicalSearchShadowEnabled(): boolean {
+  return isEnabled(process.env.REPERTORY_V2_USE_CLINICAL_SEARCH_ENGINE)
+    && isEnabled(process.env.REPERTORY_V2_SEARCH_SHADOW_MODE);
+}
+
+function clinicalSearchShadowMaxRubrics(): number {
+  const parsed = Number(process.env.REPERTORY_V2_SEARCH_MAX_RUBRICS);
+  if (!Number.isFinite(parsed) || parsed <= 0) return 1000;
+  return Math.min(Math.floor(parsed), 5000);
+}
+
 export async function GET(request: Request) {
   try {
+    const shadowEnabled = isClinicalSearchShadowEnabled();
+    const requestStartedAt = shadowEnabled ? Date.now() : 0;
     const { searchParams } = new URL(request.url);
     const q = searchParams.get("q")?.toLowerCase().trim() || "";
     const category = searchParams.get("category") || "All";
@@ -135,11 +152,51 @@ export async function GET(request: Request) {
       }
     }
 
-    return NextResponse.json({
+    const responsePayload = {
       success: true,
       count: results.length,
       rubrics: results
-    });
+    };
+
+    if (shadowEnabled) {
+      void (async () => {
+        let candidateQuery: any = rubricsRef.where("status", "==", "active");
+
+        if (category !== "All") {
+          candidateQuery = candidateQuery.where("category", "==", category);
+        }
+        if (organSystem !== "All") {
+          candidateQuery = candidateQuery.where("organSystem", "==", organSystem);
+        }
+
+        const candidateSnapshot = await candidateQuery.limit(clinicalSearchShadowMaxRubrics()).get();
+        const candidateRubrics: any[] = [];
+        candidateSnapshot.forEach((doc: any) => {
+          candidateRubrics.push(doc.data());
+        });
+
+        const { runClinicalSearchShadowComparison } = await import("@/features/repertory/integration/clinicalSearchShadow");
+        runClinicalSearchShadowComparison({
+          query: q,
+          filters: {
+            category,
+            organSystem,
+            miasm,
+            remedy,
+          },
+          v1Results: results,
+          candidateRubrics,
+          startedAt: requestStartedAt,
+        });
+      })().catch((error) => {
+        console.info("[repertory-v2-search-shadow]", JSON.stringify({
+          query: q,
+          error: error instanceof Error ? error.message : String(error),
+        }));
+      });
+    }
+
+    return NextResponse.json(responsePayload);
   } catch (error: any) {
     console.error("Repertory Search API failed:", error);
     return NextResponse.json({
