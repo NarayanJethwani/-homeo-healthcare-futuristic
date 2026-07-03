@@ -11,6 +11,9 @@ export interface RepertoryFeatureFlags {
   useClinicalRepertorizationEngine: boolean;
   useClinicalValidationFramework: boolean;
   useClinicalSearchShadowMode: boolean;
+  compareModeEnabled: boolean;
+  liveModeEnabled: boolean;
+  feedbackEnabled: boolean;
 }
 
 function isEnabled(value: string | undefined): boolean {
@@ -31,6 +34,9 @@ export function getRepertoryFeatureFlags(env: Record<string, string | undefined>
     useClinicalRepertorizationEngine: isEnabled(env.REPERTORY_V2_USE_CLINICAL_REPERTORIZATION_ENGINE),
     useClinicalValidationFramework: isEnabled(env.REPERTORY_V2_USE_CLINICAL_VALIDATION_FRAMEWORK),
     useClinicalSearchShadowMode: isEnabled(env.REPERTORY_V2_SEARCH_SHADOW_MODE),
+    compareModeEnabled: isEnabled(env.NEXT_PUBLIC_REPERTORY_V2_COMPARE_MODE) || isEnabled(env.REPERTORY_V2_COMPARE_MODE),
+    liveModeEnabled: isEnabled(env.NEXT_PUBLIC_REPERTORY_V2_LIVE_MODE) || isEnabled(env.REPERTORY_V2_LIVE_MODE),
+    feedbackEnabled: isEnabled(env.REPERTORY_V2_FEEDBACK_ENABLED),
   };
 }
 
