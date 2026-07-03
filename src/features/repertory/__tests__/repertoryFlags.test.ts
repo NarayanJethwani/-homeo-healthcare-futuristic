@@ -15,6 +15,7 @@ assert.deepStrictEqual(disabled, {
   useRubricIntelligence: false,
   useClinicalRepertorizationEngine: false,
   useClinicalValidationFramework: false,
+  useClinicalSearchShadowMode: false,
 });
 
 const enabled = getRepertoryFeatureFlags({
@@ -29,6 +30,7 @@ const enabled = getRepertoryFeatureFlags({
   REPERTORY_V2_USE_RUBRIC_INTELLIGENCE: "true",
   REPERTORY_V2_USE_CLINICAL_REPERTORIZATION_ENGINE: "true",
   REPERTORY_V2_USE_CLINICAL_VALIDATION_FRAMEWORK: "true",
+  REPERTORY_V2_SEARCH_SHADOW_MODE: "true",
 });
 
 assert.strictEqual(enabled.uiEnabled, true);
@@ -42,5 +44,6 @@ assert.strictEqual(enabled.useClinicalSearchEngine, true);
 assert.strictEqual(enabled.useRubricIntelligence, true);
 assert.strictEqual(enabled.useClinicalRepertorizationEngine, true);
 assert.strictEqual(enabled.useClinicalValidationFramework, true);
+assert.strictEqual(enabled.useClinicalSearchShadowMode, true);
 
 console.log("repertoryFlags.test.ts passed");

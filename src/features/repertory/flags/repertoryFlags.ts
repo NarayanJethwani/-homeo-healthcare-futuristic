@@ -10,6 +10,7 @@ export interface RepertoryFeatureFlags {
   useRubricIntelligence: boolean;
   useClinicalRepertorizationEngine: boolean;
   useClinicalValidationFramework: boolean;
+  useClinicalSearchShadowMode: boolean;
 }
 
 function isEnabled(value: string | undefined): boolean {
@@ -29,6 +30,7 @@ export function getRepertoryFeatureFlags(env: Record<string, string | undefined>
     useRubricIntelligence: isEnabled(env.REPERTORY_V2_USE_RUBRIC_INTELLIGENCE),
     useClinicalRepertorizationEngine: isEnabled(env.REPERTORY_V2_USE_CLINICAL_REPERTORIZATION_ENGINE),
     useClinicalValidationFramework: isEnabled(env.REPERTORY_V2_USE_CLINICAL_VALIDATION_FRAMEWORK),
+    useClinicalSearchShadowMode: isEnabled(env.REPERTORY_V2_SEARCH_SHADOW_MODE),
   };
 }
 
