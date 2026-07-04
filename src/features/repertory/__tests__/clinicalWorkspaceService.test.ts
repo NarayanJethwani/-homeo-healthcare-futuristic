@@ -114,3 +114,24 @@ service.getLongitudinalSummary('patient-123', [
   assert.ok(arsOut?.warningSigns && arsOut.warningSigns.length > 0);
   console.log("longitudinal timeline assertions passed successfully");
 });
+
+// Knowledge Base Verification (Step 6 & 8)
+import { KnowledgeService } from "../knowledge/knowledgeService";
+
+KnowledgeService.getRemedyKnowledge('Ars').then((record) => {
+  assert.ok(record);
+  assert.strictEqual(record?.remedyId, 'Ars');
+  assert.strictEqual(record?.editorialStatus, 'Verified');
+  assert.ok(record?.clinicalPearls && record.clinicalPearls.length > 0);
+  assert.ok(record?.evidenceItems && record.evidenceItems.length > 0);
+  assert.strictEqual(record?.clinicalPearls[0].origin, 'source-backed');
+  assert.strictEqual(record?.evidenceItems[0].strength, 'Keynote');
+  assert.ok(record?.evidenceItems[0].sourceReferences.includes("Kent's Lectures on Homoeopathic Materia Medica"));
+  console.log("knowledge service remedy assertions passed successfully");
+});
+
+KnowledgeService.queryEvidenceByConcept('Asthma').then((items) => {
+  assert.ok(items.length > 0);
+  assert.strictEqual(items[0].title, 'Midnight Asthma Paroxysm');
+  console.log("knowledge service search concept assertions passed successfully");
+});

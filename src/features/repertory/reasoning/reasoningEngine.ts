@@ -11,6 +11,7 @@ import { QuestionGenerator } from './questionGenerator';
 import { DifferentialEngine } from './differentialEngine';
 import { RepertoryGraph } from '../graph/repertoryGraph';
 import { FollowUpEngine } from './followupEngine';
+import { KnowledgeService } from '../knowledge/knowledgeService';
 
 const unique = <T>(arr: T[]): T[] => Array.from(new Set(arr));
 
@@ -178,6 +179,7 @@ export class ReasoningEngine {
         symptoms
       );
 
+      const knowledgeRecord = await KnowledgeService.getRemedyKnowledge(remedyId);
       const mono = getRemedyMonograph(remedyId, remedyName);
 
       topReasonings.push({
@@ -208,7 +210,9 @@ export class ReasoningEngine {
         coverageRatio: scored.coverageRatio,
         rubricContributions: scored.rubricContributions,
         contradictoryEvidence: scored.contradictoryEvidence,
-        provenance: prov
+        provenance: prov,
+        clinicalPearls: knowledgeRecord?.clinicalPearls || [],
+        evidenceItems: knowledgeRecord?.evidenceItems || []
       });
     }
 

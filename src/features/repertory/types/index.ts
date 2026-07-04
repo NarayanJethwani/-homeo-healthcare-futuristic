@@ -204,6 +204,8 @@ export interface RemedyReasoning {
   rubricContributions?: Array<{ rubricId: string; rubricTitle: string; contribution: number; grade: number }>;
   contradictoryEvidence?: string[];
   provenance?: RemedyProvenance;
+  clinicalPearls?: any[];
+  evidenceItems?: any[];
 }
 
 export interface MissingInformationItem {

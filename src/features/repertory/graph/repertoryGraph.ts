@@ -117,6 +117,26 @@ export class RepertoryGraph {
   }
 
   /**
+   * Externally register a semantic relationship link in the in-memory graph at runtime.
+   */
+  public static async registerRelationship(
+    sourceId: string,
+    type: string,
+    targetId: string,
+    weight: number = 1.0
+  ): Promise<void> {
+    await this.ensureInitialized();
+    if (!this.nodes.has(sourceId)) {
+      this.addNode(sourceId, 'remedy', sourceId);
+    }
+    if (!this.nodes.has(targetId)) {
+      this.addNode(targetId, 'disease', targetId);
+    }
+    this.addEdge(sourceId, targetId, type, weight);
+    this.clearCaches();
+  }
+
+  /**
    * Performs BFS traversal to find all connected concepts up to maxDepth.
    */
   public static async traverseGraph(

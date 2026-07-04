@@ -1,5 +1,5 @@
 import React from 'react';
-import { FileText, BookOpen, Layers, ShieldAlert, Activity, TrendingUp } from 'lucide-react';
+import { FileText, BookOpen, Layers, ShieldAlert, Activity, TrendingUp, CheckSquare, Award } from 'lucide-react';
 import { RemedyReasoning, RemedyProvenance } from '../types';
 
 interface RemedyReasoningPanelProps {
@@ -27,6 +27,25 @@ interface RemedyReasoningPanelProps {
     expectedTimeline?: string;
     warningSigns?: string[];
     followUpCheckpoints?: string[];
+    clinicalPearls?: Array<{
+      id: string;
+      text: string;
+      type: 'characteristic' | 'caution' | 'differentiation' | 'constitutional';
+      origin: 'source-backed' | 'editorial' | 'graph-derived' | 'AI-assisted' | 'Dr. Jethwani clinical note';
+      caution?: string;
+    }>;
+    evidenceItems?: Array<{
+      id: string;
+      title: string;
+      summary: string;
+      strength: 'Keynote' | 'Strong' | 'Supporting' | 'Hypothetical';
+      confidence: number;
+      editorialStatus: 'Draft' | 'Reviewed' | 'Verified' | 'Deprecated';
+      reviewer: string;
+      lastReviewed: string;
+      origin: 'source-backed' | 'editorial' | 'graph-derived' | 'AI-assisted' | 'Dr. Jethwani clinical note';
+      sourceReferences: string[];
+    }>;
   };
   matchedPatterns?: Array<{
     patternName: string;
@@ -57,7 +76,7 @@ export const RemedyReasoningPanel: React.FC<RemedyReasoningPanelProps> = ({ reas
       </div>
 
       <div className="text-[10px] text-amber-700/85 font-semibold bg-amber-50/60 border border-amber-200/50 p-3 rounded-2xl">
-        ⚠️ Clinical reasoning support for clinician review only. Do not prescribe automatically.
+        ⚠️ Clinical review required — do not auto-prescribe. All recommendations are support metrics for practitioner review.
       </div>
 
       {/* Contradictory Evidence Section */}
@@ -92,6 +111,81 @@ export const RemedyReasoningPanel: React.FC<RemedyReasoningPanelProps> = ({ reas
           )}
         </div>
       ))}
+
+      {/* STEP 5 & 7 - Clinical Pearls Display */}
+      {reasoning.clinicalPearls && reasoning.clinicalPearls.length > 0 && (
+        <div className="space-y-2 pt-1">
+          <span className="text-[9px] font-black text-slate-500 uppercase tracking-wide flex items-center gap-1">
+            <Award className="w-3.5 h-3.5 text-amber-500" /> Dr. Jethwani Verified Clinical Pearls
+          </span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {reasoning.clinicalPearls.map((pearl, i) => (
+              <div key={i} className="bg-slate-50 border border-slate-150 p-3.5 rounded-2xl space-y-1.5 text-left relative">
+                <div className="flex items-center justify-between">
+                  <span className={`text-[7.5px] font-black uppercase px-2 py-0.5 rounded-md border ${
+                    pearl.type === 'characteristic' ? 'bg-indigo-50 text-indigo-700 border-indigo-150' :
+                    pearl.type === 'caution' ? 'bg-rose-50 text-rose-700 border-rose-150' :
+                    pearl.type === 'differentiation' ? 'bg-blue-50 text-blue-700 border-blue-150' :
+                    'bg-emerald-50 text-emerald-700 border-emerald-150'
+                  }`}>
+                    {pearl.type}
+                  </span>
+                  <span className="text-[7.5px] font-bold text-slate-400 capitalize">{pearl.origin}</span>
+                </div>
+                <p className="text-[9.5px] text-slate-700 font-bold leading-relaxed">{pearl.text}</p>
+                {pearl.caution && (
+                  <p className="text-[8.5px] text-rose-600 font-black pl-1 border-l-2 border-rose-250">
+                    ⚠️ {pearl.caution}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* STEP 2 & 6 - Explainable Evidence Mappings */}
+      {reasoning.evidenceItems && reasoning.evidenceItems.length > 0 && (
+        <div className="space-y-2 pt-2 border-t border-slate-200/50">
+          <span className="text-[9px] font-black text-slate-500 uppercase tracking-wide flex items-center gap-1">
+            <CheckSquare className="w-3.5 h-3.5 text-emerald-600" /> Evidence Mappings & Source Provenance
+          </span>
+          <div className="space-y-3">
+            {reasoning.evidenceItems.map((item, i) => (
+              <div key={i} className="bg-emerald-50/10 border border-slate-200/60 p-4 rounded-2xl space-y-2 text-left">
+                <div className="flex flex-wrap items-center justify-between gap-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-black text-slate-800">{item.title}</span>
+                    <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 text-[8px] font-black px-1.5 py-0.5 rounded font-mono uppercase">
+                      {item.editorialStatus}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-[8.5px] font-bold text-slate-400">
+                    <span>Reviewed by: {item.reviewer}</span>
+                    <span>•</span>
+                    <span>{item.lastReviewed}</span>
+                  </div>
+                </div>
+                <p className="text-[9.5px] text-slate-650 font-semibold leading-relaxed">{item.summary}</p>
+                
+                <div className="flex flex-wrap gap-2 text-[8px] border-t border-slate-100 pt-2 font-bold text-slate-500">
+                  <span>Confidence: <span className="font-mono text-slate-700">{item.confidence}%</span></span>
+                  <span>•</span>
+                  <span>Strength: <span className="text-emerald-600 font-black">{item.strength}</span></span>
+                  <span>•</span>
+                  <span>Origin: <span className="text-slate-700 underline capitalize">{item.origin}</span></span>
+                  {item.sourceReferences.length > 0 && (
+                    <>
+                      <span>•</span>
+                      <span className="italic">References: {item.sourceReferences.join(', ')}</span>
+                    </>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="space-y-4">
         {/* Core Analysis Explanation */}
