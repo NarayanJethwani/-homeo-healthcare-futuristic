@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Search, Sliders, Trash2, Plus, Info, RefreshCw, CheckCircle, 
-  AlertTriangle, BookOpen, Download, Upload, HelpCircle, ArrowRight, Check
+  AlertTriangle, BookOpen, Download, HelpCircle, ArrowRight, Check
 } from 'lucide-react';
 import { RepertoryRubric, ScoringResult, RemedyDifferentiation, ValidationReport, ClinicalReasoningSummary } from '../types';
 import { repertoryRepository } from '../database/repertoryDb';
@@ -17,10 +17,8 @@ import { SuggestedQuestions } from './SuggestedQuestions';
 import { ConfidenceBreakdownPanel } from './ConfidenceBreakdownPanel';
 import { RubricCoverageHeatmap } from './RubricCoverageHeatmap';
 import { ReasoningTimeline } from './ReasoningTimeline';
-import { ClinicalEngineMode } from '../liveMode';
-import { V2ClinicalEngineSwitcher } from './V2ClinicalEngineSwitcher';
-import { V2ComparisonPanel } from './V2ComparisonPanel';
-import { V2LivePanel } from './V2LivePanel';
+import { ClinicalRepertoryWorkspace } from '../clinicalWorkspace';
+import { CLINICAL_WORKSPACE_SAFETY_NOTICE } from '../clinicalWorkspace/types';
 
 export interface RepertoryWorkbenchProps {
   sessionUid?: string;
@@ -42,7 +40,6 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
   const [selectedOrganSystem, setSelectedOrganSystem] = useState<string>('All');
   const [selectedMiasm, setSelectedMiasm] = useState<string>('All');
   const [selectedRemedy, setSelectedRemedy] = useState<string>('All');
-  const [clinicalEngineMode, setClinicalEngineMode] = useState<ClinicalEngineMode>('v1');
 
   // Workbench / Case States
   const [selectedRubrics, setSelectedRubrics] = useState<Array<{
@@ -376,6 +373,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
   const selectedRubricIds = selectedRubrics.map((rubric) => rubric.rubricId);
 
   return (
+    <ClinicalRepertoryWorkspace>
     <div className="w-full space-y-4">
       {/* Safety Header Badge */}
       <div className="bg-amber-50/90 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-900/30 p-4 rounded-3xl flex items-center justify-between shadow-xs">
@@ -386,7 +384,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
           <div>
             <h4 className="text-[11px] font-black uppercase tracking-wider text-amber-850 dark:text-amber-300">Clinical Review Protocol</h4>
             <p className="text-[10px] text-amber-700/80 dark:text-slate-400 font-bold mt-0.5">
-              Repertory suggestions for clinician review. Do not auto-prescribe.
+              {CLINICAL_WORKSPACE_SAFETY_NOTICE}.
             </p>
           </div>
         </div>
@@ -394,24 +392,6 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
           clinician verification required
         </span>
       </div>
-
-      <V2ClinicalEngineSwitcher mode={clinicalEngineMode} onModeChange={setClinicalEngineMode} />
-
-      {clinicalEngineMode === 'compare' && (
-        <V2ComparisonPanel
-          query={searchTerm}
-          filters={v2Filters}
-          selectedRubricIds={selectedRubricIds}
-        />
-      )}
-
-      {clinicalEngineMode === 'v2-live' && (
-        <V2LivePanel
-          query={searchTerm}
-          filters={v2Filters}
-          selectedRubricIds={selectedRubricIds}
-        />
-      )}
 
       <div className="w-full grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch pb-12 text-slate-800">
       
@@ -1213,5 +1193,6 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
       )}
       </div>
     </div>
+    </ClinicalRepertoryWorkspace>
   );
 };
