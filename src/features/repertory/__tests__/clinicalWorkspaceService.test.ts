@@ -201,3 +201,48 @@ assert.ok(badReport.issues.some(i => i.includes("cannot have relationship with i
 // Cleanup mock invalid entry
 delete JETHWANI_EVIDENCE_REGISTRY['MockInvalid'];
 console.log("editorial registry validator QA alerts verified successfully");
+
+// Advanced Repertorization Engines Verification (Phase 9)
+import { ConstitutionalEngine } from "../scoring/constitutionalEngine";
+import { MiasmaticEngine } from "../scoring/miasmaticEngine";
+import { RepertoryRubric } from "../types";
+
+const mockRubrics: RepertoryRubric[] = [
+  {
+    rubricId: 'rubric-1',
+    title: 'Anxiety with restless desire to change positions',
+    category: 'Mental & Emotional',
+    subCategory: 'Anxiety',
+    confidence: 1.0,
+    miasmaticWeight: { Psora: 1.0, Syphilis: 1.0, Sycosis: 0, Tubercular: 0, Cancerinic: 0 },
+    relatedRemedies: [],
+    relatedDiseases: [],
+    classicalWording: 'Restless anxiety'
+  },
+  {
+    rubricId: 'rubric-2',
+    title: 'Warm-blooded, burning feet at night',
+    category: 'Thermal State',
+    subCategory: 'Warm',
+    confidence: 1.0,
+    miasmaticWeight: { Psora: 2.0, Syphilis: 0, Sycosis: 0, Tubercular: 0, Cancerinic: 0 },
+    relatedRemedies: [],
+    relatedDiseases: [],
+    classicalWording: 'Hot soles'
+  }
+] as unknown as RepertoryRubric[];
+
+const mockSymptoms = [
+  { rubricId: 'rubric-1', severity: 8 },
+  { rubricId: 'rubric-2', severity: 9 }
+];
+
+const constProfileResult = ConstitutionalEngine.analyzeConstitution(mockRubrics, mockSymptoms);
+assert.ok(constProfileResult);
+assert.ok(constProfileResult.dominantType === 'Ars' || constProfileResult.dominantType === 'Sulph');
+assert.ok(constProfileResult.confidence >= 50);
+
+const miasmProfileResult = MiasmaticEngine.analyzeMiasms(mockRubrics, mockSymptoms);
+assert.ok(miasmProfileResult);
+assert.strictEqual(miasmProfileResult.primaryMiasm, 'Psora'); // Psora accumulates highest weight
+console.log("constitutional and miasmatic analysis engines verified successfully");

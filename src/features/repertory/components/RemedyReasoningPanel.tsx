@@ -79,6 +79,52 @@ export const RemedyReasoningPanel: React.FC<RemedyReasoningPanelProps> = ({ reas
         ⚠️ Clinical review required — do not auto-prescribe. All recommendations are support metrics for practitioner review.
       </div>
 
+      {/* Multi-Factor Clinical Fit Ratings (Step 1, 4, 8) */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-slate-50 p-3.5 rounded-2xl border border-slate-150 text-[8.5px] font-bold">
+        {reasoning.constitutionalFit !== undefined && (
+          <div className="flex flex-col bg-white border border-slate-200 p-2 rounded-xl">
+            <span className="text-[7.5px] text-slate-400 uppercase font-black">Constitutional Fit</span>
+            <span className="text-emerald-600 font-mono text-[10px] mt-0.5">{reasoning.constitutionalFit}%</span>
+          </div>
+        )}
+        {reasoning.miasmaticFit !== undefined && (
+          <div className="flex flex-col bg-white border border-slate-200 p-2 rounded-xl">
+            <span className="text-[7.5px] text-slate-400 uppercase font-black">Miasmatic Fit</span>
+            <span className="text-blue-600 font-mono text-[10px] mt-0.5">{reasoning.miasmaticFit}%</span>
+          </div>
+        )}
+        {reasoning.modalityFit !== undefined && (
+          <div className="flex flex-col bg-white border border-slate-200 p-2 rounded-xl">
+            <span className="text-[7.5px] text-slate-400 uppercase font-black">Modality Alignment</span>
+            <span className="text-indigo-600 font-mono text-[10px] mt-0.5">{reasoning.modalityFit}%</span>
+          </div>
+        )}
+        {reasoning.etiologyFit !== undefined && (
+          <div className="flex flex-col bg-white border border-slate-200 p-2 rounded-xl">
+            <span className="text-[7.5px] text-slate-400 uppercase font-black">Etiology Match</span>
+            <span className="text-violet-600 font-mono text-[10px] mt-0.5">{reasoning.etiologyFit}%</span>
+          </div>
+        )}
+        {reasoning.clinicalConfidence !== undefined && (
+          <div className="flex flex-col bg-white border border-slate-200 p-2 rounded-xl">
+            <span className="text-[7.5px] text-slate-400 uppercase font-black">Clinical Conf</span>
+            <span className="text-amber-600 font-mono text-[10px] mt-0.5">{reasoning.clinicalConfidence}%</span>
+          </div>
+        )}
+        {reasoning.editorialConfidence !== undefined && (
+          <div className="flex flex-col bg-white border border-slate-200 p-2 rounded-xl">
+            <span className="text-[7.5px] text-slate-400 uppercase font-black">Editorial Conf</span>
+            <span className="text-teal-600 font-mono text-[10px] mt-0.5">{reasoning.editorialConfidence}%</span>
+          </div>
+        )}
+        {reasoning.graphConfidence !== undefined && (
+          <div className="flex flex-col bg-white border border-slate-200 p-2 rounded-xl">
+            <span className="text-[7.5px] text-slate-400 uppercase font-black">Graph Conf</span>
+            <span className="text-slate-600 font-mono text-[10px] mt-0.5">{reasoning.graphConfidence}%</span>
+          </div>
+        )}
+      </div>
+
       {/* Contradictory Evidence Section */}
       {reasoning.contradictoryEvidence && reasoning.contradictoryEvidence.length > 0 && (
         <div className="bg-rose-50/60 border border-rose-200/50 p-3.5 rounded-2xl space-y-1.5">

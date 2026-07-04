@@ -112,6 +112,13 @@ export interface ScoringResult {
     coverageRatio?: string;
     rubricContributions?: Array<{ rubricId: string; rubricTitle: string; contribution: number; grade: number }>;
     contradictoryEvidence?: string[];
+    constitutionalFit?: number;
+    miasmaticFit?: number;
+    modalityFit?: number;
+    etiologyFit?: number;
+    clinicalConfidence?: number;
+    editorialConfidence?: number;
+    graphConfidence?: number;
   }>;
   matchedRubrics: string[]; // Rubric IDs covered
   differentiatingRubrics: string[]; // Rubric IDs that distinguish the top remedies
@@ -208,6 +215,13 @@ export interface RemedyReasoning {
   evidenceItems?: any[];
   editorialRecords?: any[];
   sourcesRegistry?: any;
+  constitutionalFit?: number;
+  miasmaticFit?: number;
+  modalityFit?: number;
+  etiologyFit?: number;
+  clinicalConfidence?: number;
+  editorialConfidence?: number;
+  graphConfidence?: number;
 }
 
 export interface MissingInformationItem {

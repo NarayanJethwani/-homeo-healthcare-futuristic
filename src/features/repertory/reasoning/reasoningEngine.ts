@@ -223,7 +223,14 @@ export class ReasoningEngine {
         clinicalPearls: knowledgeRecord?.clinicalPearls || [],
         evidenceItems: knowledgeRecord?.evidenceItems || [],
         editorialRecords,
-        sourcesRegistry
+        sourcesRegistry,
+        constitutionalFit: scored.constitutionalFit,
+        miasmaticFit: scored.miasmaticFit,
+        modalityFit: scored.modalityFit,
+        etiologyFit: scored.etiologyFit,
+        clinicalConfidence: scored.clinicalConfidence,
+        editorialConfidence: scored.editorialConfidence,
+        graphConfidence: scored.graphConfidence
       });
     }
 
