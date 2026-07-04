@@ -1,15 +1,18 @@
 # Phase 1 Foundation Deployment Report
 
 Date: 2026-07-03  
+Follow-up verification: 2026-07-04  
 Scope: Phase 1 unified clinical repertory foundation only
 
 ## Status
 
 Deployment flow was triggered through GitHub by pushing `main`.
 
-Final verification status: **Blocked for Phase 2 readiness**.
+Final verification status: **Read-only production verification completed after quota reset**.
 
-Reason: production public and protected route shells load, but the existing V1 repertory search endpoint currently returns Firestore quota exhaustion. Authenticated admin/Nexus Atlas/clinical repertory inner-screen verification was not completed because it would require submitting saved admin credentials.
+The 2026-07-03 blocker was Firestore quota exhaustion on the existing V1 repertory search endpoint. On 2026-07-04, the endpoint was rechecked after quota reset and returned successful repertory results.
+
+Authenticated admin/Nexus Atlas/clinical repertory inner-screen verification was not completed because it would require submitting saved admin credentials. Protected route and login shell behavior was verified.
 
 ## Commit Deployed
 
@@ -101,11 +104,20 @@ Lint:
 | AI router health | `https://www.homeo.healthcare/api/ai-router/health` | `200` |
 | Public search API | `https://www.homeo.healthcare/api/public/search?q=homeopathy` | `200` |
 | Base repertory data API | `https://www.homeo.healthcare/api/repertory` | `200` |
-| Repertory search API | `https://www.homeo.healthcare/api/repertory/search?q=anxiety` | **`500`, Firestore quota exhausted** |
-| Repertory search API | `https://www.homeo.healthcare/api/repertory/search?q=flatulence` | **`500`, Firestore quota exhausted** |
+| Repertory search API | `https://www.homeo.healthcare/api/repertory/search?q=anxiety` | `200`, returned 176 rubrics after quota reset |
+| Repertory search API | `https://www.homeo.healthcare/api/repertory/search?q=flatulence` | `200`, returned 114 rubrics after quota reset |
 | V2 live route guard | `https://www.homeo.healthcare/api/repertory/v2-live` | `401`, protected |
 | V2 compare route guard | `https://www.homeo.healthcare/api/repertory/v2-compare` | `401`, protected |
 | V2 feedback route guard | `https://www.homeo.healthcare/api/repertory/v2-feedback` | `405` for GET, method guarded |
+
+## Quota Reset Follow-Up
+
+Follow-up checks on 2026-07-04 confirmed the Firestore quota condition had cleared:
+
+- `https://www.homeo.healthcare/api/repertory/search?q=anxiety`: `200`, `success: true`, 176 rubrics.
+- `https://www.homeo.healthcare/api/repertory/search?q=flatulence`: `200`, `success: true`, 114 rubrics.
+
+The existing V1 repertory search workflow is no longer blocked by quota exhaustion at the API level.
 
 ## Rendered Browser Verification
 
@@ -139,7 +151,7 @@ Current production workflows:
 - AI health route: **working**
 - Public search: **working**
 - Base repertory data API: **working**
-- Existing repertory search workflow: **blocked by Firestore quota**
+- Existing repertory search workflow: **working after quota reset**
 
 ## Database And Migration Status
 
@@ -150,15 +162,13 @@ Current production workflows:
 
 ## Risks
 
-1. Existing repertory search currently fails in production with:
+1. Authenticated admin/Nexus Atlas/Dr. Jethwani Clinical Repertory screens were not verified beyond protected login routing.
 
-   `8 RESOURCE_EXHAUSTED: Quota exceeded.`
+2. Vercel CLI could not retrieve the exact Vercel deployment status URL in this environment, so deployment status was verified by production responses instead.
 
-2. Authenticated admin/Nexus Atlas/Dr. Jethwani Clinical Repertory screens were not verified beyond protected login routing.
+3. Existing lint warnings remain, though lint exits successfully with 0 errors.
 
-3. Vercel CLI could not retrieve the exact Vercel deployment status URL in this environment, so deployment status was verified by production responses instead.
-
-4. Existing lint warnings remain, though lint exits successfully with 0 errors.
+4. Firestore quota should continue to be monitored because the V1 search endpoint depends on Firestore reads.
 
 ## Rollback Command
 
@@ -173,15 +183,14 @@ The deployment marker commit `cb89b56` is empty and does not change production b
 
 ## Final Recommendation
 
-Do **not** begin Phase 2 yet.
+Phase 1 foundation is deployed and read-only production checks now pass after the Firestore quota reset.
 
 Before Phase 2:
 
-1. Resolve the Firestore quota exhaustion affecting `/api/repertory/search`.
-2. Re-run production repertory search checks for representative queries.
-3. Complete authenticated manual verification of:
+1. Complete authenticated manual verification of:
    - admin dashboard
    - Nexus Atlas
    - Dr. Jethwani Clinical Repertory
    - existing repertory workflow
-4. Confirm again that no migration or production data write occurred.
+2. Confirm again that no migration or production data write occurred.
+3. Continue monitoring Firestore quota during the next work session.
