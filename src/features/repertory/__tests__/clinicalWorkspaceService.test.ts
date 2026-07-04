@@ -135,3 +135,30 @@ KnowledgeService.queryEvidenceByConcept('Asthma').then((items) => {
   assert.strictEqual(items[0].title, 'Midnight Asthma Paroxysm');
   console.log("knowledge service search concept assertions passed successfully");
 });
+
+// Editorial Registry & Source Verification (Phase 7)
+import { EditorialService } from "../editorial/editorialService";
+import { EditorialValidator } from "../editorial/editorialValidator";
+
+EditorialService.getEditorialRecords('Ars').then((records) => {
+  assert.ok(records.length > 0);
+  assert.strictEqual(records[0].remedyId, 'Ars');
+  assert.strictEqual(records[0].currentStatus, 'Verified');
+  assert.strictEqual(records[0].sourceId, 'jethwani_private');
+  
+  // Verify revision history matches
+  assert.ok(records[0].revisionHistory.length > 0);
+  assert.strictEqual(records[0].revisionHistory[0].version, '1.0.0');
+  console.log("editorial service record assertions passed successfully");
+});
+
+EditorialService.getSourceMetadata('jethwani_private').then((source) => {
+  assert.ok(source);
+  assert.strictEqual(source?.author, 'Dr. Narayan Jethwani');
+  assert.strictEqual(source?.legalStatus, 'Clinic Internal');
+  console.log("editorial service source metadata assertions passed successfully");
+});
+
+const qaReport = EditorialValidator.validateRegistry();
+assert.strictEqual(qaReport.isValid, true);
+console.log("editorial registry QA validation check passed successfully");

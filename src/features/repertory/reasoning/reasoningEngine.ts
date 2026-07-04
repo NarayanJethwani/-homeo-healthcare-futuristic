@@ -12,6 +12,7 @@ import { DifferentialEngine } from './differentialEngine';
 import { RepertoryGraph } from '../graph/repertoryGraph';
 import { FollowUpEngine } from './followupEngine';
 import { KnowledgeService } from '../knowledge/knowledgeService';
+import { EditorialService } from '../editorial/editorialService';
 
 const unique = <T>(arr: T[]): T[] => Array.from(new Set(arr));
 
@@ -180,6 +181,14 @@ export class ReasoningEngine {
       );
 
       const knowledgeRecord = await KnowledgeService.getRemedyKnowledge(remedyId);
+      const editorialRecords = await EditorialService.getEditorialRecords(remedyId);
+      const sourcesRegistry: Record<string, any> = {};
+      for (const rec of editorialRecords) {
+        const src = await EditorialService.getSourceMetadata(rec.sourceId);
+        if (src) {
+          sourcesRegistry[rec.sourceId] = src;
+        }
+      }
       const mono = getRemedyMonograph(remedyId, remedyName);
 
       topReasonings.push({
@@ -212,7 +221,9 @@ export class ReasoningEngine {
         contradictoryEvidence: scored.contradictoryEvidence,
         provenance: prov,
         clinicalPearls: knowledgeRecord?.clinicalPearls || [],
-        evidenceItems: knowledgeRecord?.evidenceItems || []
+        evidenceItems: knowledgeRecord?.evidenceItems || [],
+        editorialRecords,
+        sourcesRegistry
       });
     }
 

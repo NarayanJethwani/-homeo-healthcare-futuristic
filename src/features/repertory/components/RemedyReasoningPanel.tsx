@@ -446,6 +446,56 @@ export const RemedyReasoningPanel: React.FC<RemedyReasoningPanelProps> = ({ reas
           </div>
         )}
 
+        {/* STEP 3, 4, 6 - Editorial & Source Platform Records */}
+        {reasoning.editorialRecords && reasoning.editorialRecords.length > 0 && (
+          <div className="space-y-2 pt-2 border-t border-slate-200/50">
+            <span className="text-[9px] font-black text-slate-500 uppercase tracking-wide flex items-center gap-1">
+              <Layers className="w-3.5 h-3.5 text-blue-500" /> Versioned Editorial Records & Source Rights
+            </span>
+            <div className="space-y-3">
+              {reasoning.editorialRecords.map((rec, i) => {
+                const src = reasoning.sourcesRegistry?.[rec.sourceId];
+                return (
+                  <div key={i} className="bg-slate-50 border border-slate-200/70 p-4 rounded-2xl space-y-2.5 text-left text-[9px] font-semibold text-slate-700">
+                    <div className="flex flex-wrap items-center justify-between gap-1 border-b border-slate-100 pb-1.5">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-slate-800 text-[10px]">{src?.title || rec.sourceId}</span>
+                        <span className={`text-[7.5px] font-black px-1.5 py-0.5 rounded border ${
+                          rec.currentStatus === 'Verified' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-blue-50 text-blue-800 border-blue-200'
+                        }`}>
+                          {rec.currentStatus}
+                        </span>
+                      </div>
+                      <span className="text-[8px] font-bold text-slate-400">Source ID: {rec.sourceId}</span>
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-slate-500 text-[8.5px] font-bold">
+                      <div>Author: <span className="text-slate-700">{src?.author || 'Unknown'}</span></div>
+                      <div>Edition: <span className="text-slate-700">{src?.edition || 'Standard'}</span></div>
+                      <div>Legal: <span className="text-indigo-600 underline">{src?.legalStatus || 'Standard'}</span></div>
+                      <div>Confidence Policy: <span className="font-mono text-emerald-600">{src?.confidencePolicy || 90}%</span></div>
+                    </div>
+
+                    {rec.revisionHistory.length > 0 && (
+                      <div className="space-y-1 pl-2 border-l-2 border-blue-200 pt-1">
+                        <span className="text-[8px] font-black uppercase text-slate-400 block mb-0.5">Revision History & Change logs:</span>
+                        {rec.revisionHistory.map((rev: any, revIdx: number) => (
+                          <div key={revIdx} className="text-[8.5px] text-slate-650 flex flex-wrap items-center justify-between gap-1">
+                            <span>
+                              Version <span className="font-mono font-black text-slate-800">{rev.version}</span> - {rev.changeLog}
+                            </span>
+                            <span className="text-[7.5px] text-slate-400">By: {rev.author} on {new Date(rev.modified).toLocaleDateString()}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         <div className="space-y-1.5 pt-2 border-t border-slate-200/50">
           <span className="text-[9px] font-black text-slate-500 uppercase tracking-wide">
             Differential Considerations:

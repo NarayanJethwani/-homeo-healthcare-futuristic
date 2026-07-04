@@ -206,6 +206,8 @@ export interface RemedyReasoning {
   provenance?: RemedyProvenance;
   clinicalPearls?: any[];
   evidenceItems?: any[];
+  editorialRecords?: any[];
+  sourcesRegistry?: any;
 }
 
 export interface MissingInformationItem {
