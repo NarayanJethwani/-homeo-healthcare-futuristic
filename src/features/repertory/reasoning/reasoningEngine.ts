@@ -13,6 +13,7 @@ import { RepertoryGraph } from '../graph/repertoryGraph';
 import { FollowUpEngine } from './followupEngine';
 import { KnowledgeService } from '../knowledge/knowledgeService';
 import { EditorialService } from '../editorial/editorialService';
+import { ClinicalExperienceIndex } from '../clinicalExperience/clinicalExperienceIndex';
 
 const unique = <T>(arr: T[]): T[] => Array.from(new Set(arr));
 
@@ -220,7 +221,15 @@ export class ReasoningEngine {
         rubricContributions: scored.rubricContributions,
         contradictoryEvidence: scored.contradictoryEvidence,
         provenance: prov,
-        clinicalPearls: knowledgeRecord?.clinicalPearls || [],
+        clinicalPearls: [
+          ...(knowledgeRecord?.clinicalPearls || []),
+          ...ClinicalExperienceIndex.getObservationsForRemedy(remedyId).map(obs => ({
+            type: 'characteristic',
+            text: obs.content,
+            origin: 'Dr. Jethwani Clinical Observation',
+            caution: obs.type === 'warning' ? obs.content : undefined
+          }))
+        ],
         evidenceItems: knowledgeRecord?.evidenceItems || [],
         editorialRecords,
         sourcesRegistry,

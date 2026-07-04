@@ -256,3 +256,17 @@ ClinicalValidationFramework.runValidationSuite().then((report) => {
   assert.ok(report.passedCases >= 2); // expects high validation matching
   console.log("clinical validation suite run completed successfully");
 });
+
+// Dr. Jethwani Clinical Knowledge System Verification (Phase 11)
+import { ClinicalExperienceIndex } from "../clinicalExperience/clinicalExperienceIndex";
+
+const obsResults = ClinicalExperienceIndex.searchObservations("Anxiety");
+assert.ok(obsResults.length > 0);
+assert.ok(obsResults[0].title.toLowerCase().includes("anxiety"));
+assert.strictEqual(obsResults[0].author, "Dr. Narayan Jethwani");
+assert.strictEqual(obsResults[0].editorialStatus, "Verified");
+
+const remedyObs = ClinicalExperienceIndex.getObservationsForRemedy("Ars");
+assert.ok(remedyObs.length > 0);
+assert.ok(remedyObs.some(o => o.remedies?.includes("Ars")));
+console.log("Dr. Jethwani clinical observations and patterns verified successfully");
