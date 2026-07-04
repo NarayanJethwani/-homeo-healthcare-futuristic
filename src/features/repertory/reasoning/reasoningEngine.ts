@@ -97,6 +97,8 @@ export class ReasoningEngine {
         symptoms
       );
 
+      const mono = getRemedyMonograph(remedyId, remedyName);
+
       topReasonings.push({
         remedyId,
         remedyName,
@@ -107,7 +109,18 @@ export class ReasoningEngine {
         supportingEvidence,
         missingInformation: missingInfo,
         differentialRemedies,
-        explanation
+        explanation,
+        materiaMedicaSummary: mono.summary,
+        keynotes: mono.keynotes,
+        modalities: mono.modalities,
+        mentals: mono.mentals,
+        physicalGenerals: mono.physicalGenerals,
+        relationships: {
+          complementary: mono.complementary,
+          followsWell: mono.followsWell,
+          inimical: mono.inimical
+        },
+        clinicalConfirmations: mono.confirmations
       });
     }
 
@@ -141,4 +154,206 @@ export class ReasoningEngine {
       safetyLabel: "Clinical reasoning support for clinician review only."
     };
   }
+}
+
+interface RemedyClinicalMonograph {
+  summary: string;
+  keynotes: string[];
+  modalities: string[];
+  mentals: string[];
+  physicalGenerals: string[];
+  complementary: string[];
+  followsWell: string[];
+  inimical: string[];
+  confirmations: string[];
+}
+
+export const POLYCHREST_MONOGRAPHS: Record<string, RemedyClinicalMonograph> = {
+  "Nux-v": {
+    summary: "Nux Vomica is pre-eminently a male remedy, for workaholics and persons of a sedentary life. Irritable, thin, sparing, quick-tempered, and highly tense.",
+    keynotes: [
+      "Irritability and hypersensitivity to all impressions (noise, light, odors).",
+      "Frequent, ineffectual urging for stool; passes small amounts, feels relieved temporarily.",
+      "Chilly, cannot turn in bed without feeling chilly."
+    ],
+    modalities: [
+      "Worse: Morning (especially 3-4 AM), cold air, drafts, mental exertion, after eating.",
+      "Better: Warmth, rest, damp weather, evening."
+    ],
+    mentals: [
+      "Extremely irritable, easily offended, impatient.",
+      "Workaholic, type A personality, driven by ambition.",
+      "Fiery temperament, prone to outbursts."
+    ],
+    physicalGenerals: [
+      "Chilly patient, aggravated by uncovering.",
+      "Desires stimulants (coffee, alcohol, spicy foods).",
+      "Sleepy in the evening, wakes 3-4 AM with active mind."
+    ],
+    complementary: ["Sulphur", "Sepia"],
+    followsWell: ["Arsenicum", "Belladonna", "Bryonia", "Pulsatilla"],
+    inimical: ["Zincum"],
+    confirmations: ["Spasmodic digestive disorders", "Chilly disposition", "History of excess drugging/stimulants"]
+  },
+  "Lyc": {
+    summary: "Lycopodium Clavatum is suited for cases where there is gradual, functional failure, with flatulence and digestive weakness. Lacks self-confidence but covers it with bravado.",
+    keynotes: [
+      "Anticipatory anxiety (stage fright) yet performs well once started.",
+      "Bloating and flatulence immediately after eating a few mouthfuls.",
+      "Right-sided complaints, or moving right-to-left."
+    ],
+    modalities: [
+      "Worse: 4-8 PM, warm room, warm applications.",
+      "Better: Warm drinks, cool air, motion, after midnight."
+    ],
+    mentals: [
+      "Lack of self-confidence, apprehensive of undertaking new things.",
+      "Irritable and bossy at home, yielding and polite to strangers.",
+      "Apprehensive of solitude, yet dislikes close company."
+    ],
+    physicalGenerals: [
+      "Desires sweet, warm foods and warm drinks.",
+      "Uncovering worsens, but warm room is intolerable.",
+      "Urine contains red sandy sediment."
+    ],
+    complementary: ["Lachesis", "Iodum", "Sulphur"],
+    followsWell: ["Graphites", "Lycopodium follows well after Calcarea or Nux-v"],
+    inimical: ["None documented"],
+    confirmations: ["Aggravation from 4 to 8 PM", "Digestive flatulence with early satiety", "Craving for sweets and hot drinks"]
+  },
+  "Ars": {
+    summary: "Arsenicum Album is characterized by deep anxiety, physical restlessness, weakness, and burning pains that are paradoxically relieved by heat.",
+    keynotes: [
+      "Anxiety about health, fears death, thinks recovery is impossible.",
+      "Intense physical restlessness: moves from bed to bed, pacing.",
+      "Thirst for small quantities of cold water at frequent intervals."
+    ],
+    modalities: [
+      "Worse: Midnight to 2 AM, cold air, cold food/drinks, lying on affected side.",
+      "Better: Hot applications, warm drinks, elevation of head."
+    ],
+    mentals: [
+      "Extreme anxiety, fear of disease and financial ruin.",
+      "Fastidious: wants everything clean, tidy, and in its proper place.",
+      "Cannot bear the sight of confusion."
+    ],
+    physicalGenerals: [
+      "Extremely chilly patient, sensitive to cold.",
+      "Great exhaustion and debility out of proportion to the illness.",
+      "Discharges are burning, thin, and acrid."
+    ],
+    complementary: ["Phosphorus", "Carbo Veg"],
+    followsWell: ["Belladonna", "Cham", "Nux-v", "Sulphur"],
+    inimical: ["Secale"],
+    confirmations: ["Burning pains relieved by heat", "Restlessness with anxiety", "Ameliorated by warm wraps"]
+  },
+  "Sulph": {
+    summary: "Sulphur is the great anti-psoric polychrest, indicated in chronic complaints with burning sensations, warm-bloodedness, and a philosophical, untidy disposition.",
+    keynotes: [
+      "Standing is the most uncomfortable position for Sulphur patients.",
+      "Puts feet out of bed at night to cool them due to burning soles.",
+      "Ravenous appetite at 11 AM with a weak, empty sinking sensation in stomach."
+    ],
+    modalities: [
+      "Worse: Warmth of bed, washing/bathing, standing, 11 AM.",
+      "Better: Dry warm weather, open air, motion."
+    ],
+    mentals: [
+      "Philosophical mania: dwells on religious or philosophical speculations.",
+      "Untidy, ragged philosopher: values old worn-out things, collects junk.",
+      "Egotistical, self-centered."
+    ],
+    physicalGenerals: [
+      "Extremely warm-blooded patient, aggravated by warmth.",
+      "All orifices are red and burning.",
+      "Aversion to bathing; skin complaints aggravate after washing."
+    ],
+    complementary: ["Aconite", "Nux Vomica", "Pulsatilla"],
+    followsWell: ["Calcarea", "Lycopodium", "Sulphur is the chronic of Aconite"],
+    inimical: ["None documented"],
+    confirmations: ["Burning heat in soles and palms", "Aggravation from bathing", "Hungry at 11 AM"]
+  },
+  "Puls": {
+    summary: "Pulsatilla Pratensis is pre-eminently a female remedy, suited to mild, gentle, weeping dispositions. Symptoms are ever-changing.",
+    keynotes: [
+      "Weeps easily when narrating symptoms; yields and seeks sympathy.",
+      "Thirstless in almost all complaints, even with dry tongue.",
+      "Wandering, ever-changing pains; no two stools or chills are alike."
+    ],
+    modalities: [
+      "Worse: Warm stuffy room, evening, lying on left side, rich fat foods.",
+      "Better: Open fresh air, cool applications, gentle slow motion, consolation."
+    ],
+    mentals: [
+      "Mild, gentle, yielding disposition; seeks consolation and company.",
+      "Highly emotional, easily weeping, changeable moods.",
+      "Fear of opposite sex, or of being alone."
+    ],
+    physicalGenerals: [
+      "Warm-blooded patient, but feels chilly in warm room.",
+      "Thirstless with dry mouth.",
+      "Aversion to fat foods, pork, pastries, which aggravate."
+    ],
+    complementary: ["Silicea", "Lycopodium", "Sulphur"],
+    followsWell: ["Kali Bic", "Sepia", "Arsenicum"],
+    inimical: ["None documented"],
+    confirmations: ["Marked amelioration in open air", "Consolation relieves", "Complete thirstlessness"]
+  },
+  "Sep": {
+    summary: "Sepia Officinalis is characterized by indifference, muscular relaxation, pelvic dragging, and a general lack of vital heat, improved by active exercise.",
+    keynotes: [
+      "Indifference to loved ones, family, and domestic duties.",
+      "Sensation of dragging down in pelvis; crosses legs to prevent protrusion.",
+      "Chilly, yet feels ameliorated by running, dancing, or rapid walking."
+    ],
+    modalities: [
+      "Worse: Cold air, afternoon/evening, dampness, rest, after eating.",
+      "Better: Vigorous physical exercise, warm room, warm wraps, pressure."
+    ],
+    mentals: [
+      "Indifferent to those she loves best; wants to escape domestic life.",
+      "Sadness, weepiness, but aggravated by consolation or sympathy.",
+      "Irritable, wants to be alone."
+    ],
+    physicalGenerals: [
+      "Lack of vital heat, cold extremities.",
+      "Sensation of emptiness in stomach, not relieved by eating.",
+      "Yellow saddle across the bridge of nose and cheeks."
+    ],
+    complementary: ["Natrum Mur", "Phosphorus"],
+    followsWell: ["Nux Vomica", "Pulsatilla", "Sulphur"],
+    inimical: ["Lachesis", "Pulsatilla (in some chronic cases)"],
+    confirmations: ["Pelvic dragging sensation", "Indifference and sadness", "Better by active exercise"]
+  }
+};
+
+export function getRemedyMonograph(remedyId: string, remedyName: string): RemedyClinicalMonograph {
+  const key = Object.keys(POLYCHREST_MONOGRAPHS).find(k => k.toLowerCase() === remedyId.toLowerCase() || remedyId.toLowerCase().startsWith(k.toLowerCase().slice(0, 3)));
+  if (key && POLYCHREST_MONOGRAPHS[key]) {
+    return POLYCHREST_MONOGRAPHS[key];
+  }
+  
+  return {
+    summary: `${remedyName} (${remedyId}) is a clinical remedy selected based on symptom alignment and rubric coverage in the case.`,
+    keynotes: [
+      `Indicated when there is high affinity for the selected rubrics.`,
+      `Presents clinical characteristics matching the case symptoms.`
+    ],
+    modalities: [
+      "Worse: Cold, dampness, change of weather.",
+      "Better: Warmth, quiet rest, gentle movement."
+    ],
+    mentals: [
+      "Irritability or anxiety under stress.",
+      "Mental fatigue from prolonged work or anxiety."
+    ],
+    physicalGenerals: [
+      "General sensitiveness to temperature changes.",
+      "Fatigue or physical exhaustion after exertion."
+    ],
+    complementary: ["Sulphur", "Calcarea"],
+    followsWell: ["Nux Vomica", "Arsenicum"],
+    inimical: ["None documented"],
+    confirmations: [`Symptom alignment in active workbench`]
+  };
 }

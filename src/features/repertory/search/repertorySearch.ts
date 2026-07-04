@@ -14,7 +14,8 @@ export class RepertorySearch {
       organSystem?: string;
       miasm?: string;
       remedy?: string;
-    }
+    },
+    boostRelationships: boolean = false
   ): Promise<Array<{ rubric: RepertoryRubric; score: number }>> {
     const rubrics = await repertoryRepository.getRubrics(filters);
     const normalizedQuery = queryText.toLowerCase().trim();
@@ -112,6 +113,26 @@ export class RepertorySearch {
         score += maxTokenScore;
       });
 
+      if (boostRelationships) {
+        // Modality / Etiology relationship boost
+        if (normalizedQuery.includes('better') || normalizedQuery.includes('worse') || normalizedQuery.includes('ameliorated') || normalizedQuery.includes('aggravated')) {
+          if (rubric.category === 'Modalities') {
+            score += 40;
+          }
+        }
+        if (normalizedQuery.includes('cause') || normalizedQuery.includes('after') || normalizedQuery.includes('trigger') || normalizedQuery.includes('from')) {
+          if (rubric.category === 'Etiology / Causation') {
+            score += 40;
+          }
+        }
+        // Constitutional boost
+        if (normalizedQuery.includes('chilly') || normalizedQuery.includes('warm') || normalizedQuery.includes('craving') || normalizedQuery.includes('sleep')) {
+          if (['Constitutional Generals', 'Thermal State', 'Food & Cravings', 'Sleep'].includes(rubric.category)) {
+            score += 30;
+          }
+        }
+      }
+
       return { rubric, score };
     });
 
@@ -173,13 +194,31 @@ export class RepertorySearch {
             matchedField = 'patientExpressions';
           }
 
+          let classification: AIIntakeMatch['classification'] = 'Particular';
+          if (hit.rubric.category === 'Mental & Emotional') {
+            classification = 'Mental General';
+          } else if (['Constitutional Generals', 'Thermal State', 'Food & Cravings', 'Sleep'].includes(hit.rubric.category)) {
+            classification = 'Physical General';
+          } else if (hit.rubric.category === 'Modalities') {
+            classification = 'Modality';
+          } else if (hit.rubric.category === 'Etiology / Causation') {
+            classification = 'Etiology';
+          } else if (hit.rubric.category === 'Pain') {
+            classification = 'Sensation';
+          } else if (hit.rubric.category === 'Modern Clinical Conditions') {
+            classification = 'Pathology';
+          } else if (hit.rubric.category === 'Miasmatic Load') {
+            classification = 'Miasmatic clue';
+          }
+
           const existingMatch = rubricMatchesMap.get(rubricId);
           if (!existingMatch || existingMatch.confidence < confidence) {
             rubricMatchesMap.set(rubricId, {
               rubricId,
               confidence,
               matchedOnField: matchedField,
-              suggestedSeverity: severity
+              suggestedSeverity: severity,
+              classification
             });
           }
         }

@@ -852,6 +852,26 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
             ⚠️ Clinical reasoning support for clinician review only. Do not prescribe automatically.
           </div>
 
+          {/* Real-time Clinical Validation Findings inside Reasoning Area */}
+          {selectedRubrics.length > 0 && validationFindings.length > 0 && (
+            <div className="bg-rose-50/60 dark:bg-rose-950/10 border border-rose-150/55 dark:border-rose-900/20 p-4 rounded-2xl space-y-2">
+              <h4 className="text-[11px] font-black uppercase tracking-wider text-rose-800 dark:text-rose-450 flex items-center gap-1.5 justify-start">
+                <AlertTriangle className="w-3.5 h-3.5" />
+                Live Clinical Audits ({validationFindings.length})
+              </h4>
+              <ul className="text-[10px] text-rose-700/90 dark:text-slate-400 font-bold space-y-1.5 pl-4 list-disc text-left">
+                {validationFindings.map((finding, idx) => (
+                  <li key={idx} className={finding.severity === 'critical' ? 'text-rose-900 dark:text-rose-350 font-black' : ''}>
+                    <span className="uppercase text-[8px] font-black tracking-wider bg-rose-100 dark:bg-rose-900/30 px-1.5 py-0.5 rounded mr-1.5">
+                      {finding.category.replace('_', ' ')}
+                    </span>
+                    {finding.message}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           {selectedRubrics.length === 0 || !reasoningSummary ? (
             <div className="py-12 text-center text-slate-400 space-y-2 border-2 border-dashed border-slate-100 rounded-2xl">
               <HelpCircle className="w-8 h-8 mx-auto opacity-40 text-slate-400" />

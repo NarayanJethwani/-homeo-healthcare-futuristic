@@ -84,6 +84,7 @@ export interface AIIntakeMatch {
   confidence: number; // Match strength (0.0 - 1.0)
   matchedOnField: 'title' | 'classicalWording' | 'patientExpressions' | 'synonyms';
   suggestedSeverity: number; // Inferred from intake adjectives (e.g. "extreme pain" -> 9)
+  classification?: 'Mental General' | 'Physical General' | 'Particular' | 'Modality' | 'Etiology' | 'Sensation' | 'Concomitant' | 'Pathology' | 'Miasmatic clue';
 }
 
 export interface AIIntakeMappingResult {
@@ -182,6 +183,17 @@ export interface RemedyReasoning {
   missingInformation: string[]; // confirmations missing
   differentialRemedies: string[];
   explanation: string;
+  materiaMedicaSummary?: string;
+  keynotes?: string[];
+  modalities?: string[];
+  mentals?: string[];
+  physicalGenerals?: string[];
+  relationships?: {
+    complementary?: string[];
+    followsWell?: string[];
+    inimical?: string[];
+  };
+  clinicalConfirmations?: string[];
 }
 
 export interface MissingInformationItem {
