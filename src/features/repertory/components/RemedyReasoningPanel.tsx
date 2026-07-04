@@ -1,5 +1,5 @@
 import React from 'react';
-import { FileText, BookOpen, Layers, ShieldAlert, Activity } from 'lucide-react';
+import { FileText, BookOpen, Layers, ShieldAlert, Activity, TrendingUp } from 'lucide-react';
 import { RemedyReasoning, RemedyProvenance } from '../types';
 
 interface RemedyReasoningPanelProps {
@@ -22,6 +22,11 @@ interface RemedyReasoningPanelProps {
     rubricContributions?: Array<{ rubricId: string; rubricTitle: string; contribution: number; grade: number }>;
     contradictoryEvidence?: string[];
     provenance?: RemedyProvenance;
+    expectedAcuteResponse?: string;
+    expectedChronicResponse?: string;
+    expectedTimeline?: string;
+    warningSigns?: string[];
+    followUpCheckpoints?: string[];
   };
   matchedPatterns?: Array<{
     patternName: string;
@@ -272,6 +277,50 @@ export const RemedyReasoningPanel: React.FC<RemedyReasoningPanelProps> = ({ reas
                 </div>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Remedy Prognosis & Expected Timeline (Step 6 & 7) */}
+        {(reasoning.expectedAcuteResponse || reasoning.expectedChronicResponse) && (
+          <div className="space-y-2.5 pt-2.5 border-t border-slate-200/50">
+            <span className="text-[9px] font-black text-slate-500 uppercase tracking-wide flex items-center gap-1.5">
+              <TrendingUp className="w-3.5 h-3.5 text-emerald-600" /> Remedy Response Prognosis & Expected Timeline
+            </span>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 bg-slate-50/50 p-3.5 rounded-2xl border border-slate-150 text-left text-[9px] font-semibold text-slate-700">
+              <div className="space-y-1">
+                <span className="font-black text-slate-500 uppercase text-[7.5px] tracking-wider block">Expected Acute Action:</span>
+                <p className="leading-relaxed italic">{reasoning.expectedAcuteResponse}</p>
+              </div>
+              <div className="space-y-1">
+                <span className="font-black text-slate-500 uppercase text-[7.5px] tracking-wider block">Expected Chronic Action:</span>
+                <p className="leading-relaxed italic">{reasoning.expectedChronicResponse}</p>
+              </div>
+              <div className="col-span-1 md:col-span-2 border-t border-slate-100 pt-2 flex flex-wrap items-center justify-between text-[8px] font-bold text-slate-650">
+                <span>Expected Response Period: <span className="font-mono text-emerald-600 font-black">{reasoning.expectedTimeline}</span></span>
+              </div>
+            </div>
+            
+            {/* Warning Signs & Checkpoints */}
+            {((reasoning.warningSigns?.length || 0) + (reasoning.followUpCheckpoints?.length || 0)) > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {reasoning.warningSigns && reasoning.warningSigns.length > 0 && (
+                  <div className="bg-rose-50/40 border border-rose-100/50 p-3 rounded-2xl space-y-1">
+                    <span className="text-[8px] font-black text-rose-800 uppercase tracking-wider block">Warning Signs & Alarms:</span>
+                    <ul className="list-disc list-inside text-[8.5px] text-rose-700 font-bold space-y-0.5">
+                      {reasoning.warningSigns.map((w, idx) => <li key={idx}>{w}</li>)}
+                    </ul>
+                  </div>
+                )}
+                {reasoning.followUpCheckpoints && reasoning.followUpCheckpoints.length > 0 && (
+                  <div className="bg-indigo-50/40 border border-indigo-100/50 p-3 rounded-2xl space-y-1">
+                    <span className="text-[8px] font-black text-indigo-800 uppercase tracking-wider block">Follow-up Checkpoints:</span>
+                    <ul className="list-disc list-inside text-[8.5px] text-indigo-700 font-bold space-y-0.5">
+                      {reasoning.followUpCheckpoints.map((c, idx) => <li key={idx}>{c}</li>)}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 

@@ -17,6 +17,8 @@ import { RepertorySearch } from "../search/repertorySearch";
 import { RepertoryScoring } from "../scoring/repertoryScoring";
 import { ReasoningEngine } from "../reasoning/reasoningEngine";
 import { repertoryRepository } from "../database/repertoryDb";
+import { VisitTimelineEntry, LongitudinalCaseSummary } from "./longitudinalTypes";
+import { LongitudinalCaseModel } from "./longitudinalModel";
 
 function unique<T>(values: T[]): T[] {
   return Array.from(new Set(values));
@@ -265,6 +267,18 @@ export function createClinicalRepertoryService(
 
     async parseAIIntakeText(intakeText: string): Promise<AIIntakeMappingResult> {
       return await RepertorySearch.parseAIIntakeText(intakeText);
+    },
+
+    async getLongitudinalSummary(
+      patientId: string,
+      timeline: VisitTimelineEntry[]
+    ): Promise<LongitudinalCaseSummary> {
+      const rubrics = await repertoryRepository.getRubrics();
+      const titlesMap: Record<string, string> = {};
+      rubrics.forEach((r: any) => {
+        titlesMap[r.rubricId] = r.title;
+      });
+      return LongitudinalCaseModel.buildLongitudinalSummary(patientId, timeline, titlesMap);
     }
   };
 }

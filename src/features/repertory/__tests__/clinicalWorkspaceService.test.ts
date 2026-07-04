@@ -74,3 +74,43 @@ service.analyzeCase({ query: "gas", selectedRubrics: [{ rubricId: "abdomen-flatu
   assert.ok(!result.engineTrace.internalProviders.some((provider) => provider.toLowerCase().includes("v2")));
   console.log("clinicalWorkspaceService.test.ts passed");
 });
+
+// Longitudinal timeline verification (Step 2 & Step 8)
+service.getLongitudinalSummary('patient-123', [
+  {
+    visitId: 'visit-1',
+    date: '2026-05-01T12:00:00.000Z',
+    activeSymptoms: [
+      { rubricId: 'jeth_rb_eczema_itching_scratching', severity: 8, observedIntensity: 8 },
+      { rubricId: 'jeth_rb_pain_burning_arsenicum', severity: 2, observedIntensity: 2 }
+    ],
+    prescribedRemedyId: 'Ars',
+    potency: '30C',
+    dosage: '1 dose',
+    generalAmeliorationRating: 2,
+    notes: 'Severe skin itching'
+  },
+  {
+    visitId: 'visit-2',
+    date: '2026-06-01T12:00:00.000Z',
+    activeSymptoms: [
+      { rubricId: 'jeth_rb_eczema_itching_scratching', severity: 2, observedIntensity: 2 },
+      { rubricId: 'jeth_rb_asthma_night_midnight', severity: 9, observedIntensity: 9 }
+    ],
+    prescribedRemedyId: 'Ars',
+    potency: '200C',
+    dosage: '1 dose',
+    generalAmeliorationRating: -2,
+    notes: 'Skin cleared, but severe midnight asthma developed'
+  }
+]).then((summary) => {
+  assert.strictEqual(summary.patientId, 'patient-123');
+  assert.strictEqual(summary.responseTrend, 'suppressed');
+  assert.ok(summary.suppressionWarnings && summary.suppressionWarnings.length > 0);
+  assert.ok(summary.suppressionWarnings[0].includes("Possible suppression detected"));
+  assert.ok(summary.remedyOutcomes.some(r => r.remedyId === 'Ars'));
+  const arsOut = summary.remedyOutcomes.find(r => r.remedyId === 'Ars');
+  assert.ok(arsOut?.expectedTimeline);
+  assert.ok(arsOut?.warningSigns && arsOut.warningSigns.length > 0);
+  console.log("longitudinal timeline assertions passed successfully");
+});

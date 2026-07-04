@@ -16,6 +16,7 @@ import { RubricCoverageHeatmap } from './RubricCoverageHeatmap';
 import { ReasoningTimeline } from './ReasoningTimeline';
 import { createClinicalRepertoryService } from '../clinicalWorkspace/clinicalRepertoryService';
 import { CLINICAL_WORKSPACE_SAFETY_NOTICE, ClinicalValidationFinding } from '../clinicalWorkspace/types';
+import { VisitTimelineEntry, LongitudinalCaseSummary } from '../clinicalWorkspace/longitudinalTypes';
 
 export interface RepertoryWorkbenchProps {
   sessionUid?: string;
@@ -60,6 +61,8 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
   const [activeReasoningRemedyId, setActiveReasoningRemedyId] = useState<string | null>(null);
   const [activeReasoningTab, setActiveReasoningTab] = useState<'explanation' | 'differential' | 'coverage' | 'questions' | 'timeline'>('explanation');
   const [validationFindings, setValidationFindings] = useState<ClinicalValidationFinding[]>([]);
+  const [longitudinalSummary, setLongitudinalSummary] = useState<LongitudinalCaseSummary | null>(null);
+  const [lastAmeliorationRating, setLastAmeliorationRating] = useState<number>(3);
 
   // Dialogs & Audits
   const [auditReport, setAuditReport] = useState<ValidationReport | null>(null);
@@ -203,6 +206,78 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
     };
     recalculate();
   }, [selectedRubrics]);
+
+  // Recalculate longitudinal history matching active selected rubrics
+  useEffect(() => {
+    const updateTimeline = async () => {
+      if (selectedRubrics.length === 0) {
+        setLongitudinalSummary(null);
+        return;
+      }
+
+      const now = new Date();
+      const visit1Date = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000).toISOString();
+      const visit2Date = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      const visit3Date = now.toISOString();
+
+      const keyRubrics = selectedRubrics.slice(0, 2);
+      if (keyRubrics.length === 0) return;
+
+      const mockTimeline: VisitTimelineEntry[] = [
+        {
+          visitId: 'visit-1',
+          date: visit1Date,
+          activeSymptoms: keyRubrics.map(kr => ({
+            rubricId: kr.rubricId,
+            severity: Math.min(10, kr.severity + 2),
+            observedIntensity: 8
+          })),
+          prescribedRemedyId: 'Ars',
+          potency: '30C',
+          dosage: 'Once daily',
+          generalAmeliorationRating: 2,
+          notes: 'Patient presented with severe acute burning pains and midnight restlessness. Prescribed Ars 30C.'
+        },
+        {
+          visitId: 'visit-2',
+          date: visit2Date,
+          activeSymptoms: keyRubrics.map(kr => ({
+            rubricId: kr.rubricId,
+            severity: Math.min(10, kr.severity + 1),
+            observedIntensity: 4
+          })),
+          prescribedRemedyId: 'Ars',
+          potency: '200C',
+          dosage: 'Single dose',
+          generalAmeliorationRating: 4,
+          notes: 'Burning pains subsided by 50%. Restlessness resolved. Eruptions on skin appeared. Potency scaled to 200C.'
+        },
+        {
+          visitId: 'visit-3',
+          date: visit3Date,
+          activeSymptoms: selectedRubrics.map(kr => ({
+            rubricId: kr.rubricId,
+            severity: kr.severity,
+            observedIntensity: kr.severity
+          })),
+          prescribedRemedyId: null,
+          potency: null,
+          dosage: null,
+          generalAmeliorationRating: lastAmeliorationRating,
+          notes: 'Current follow-up session. Assessing remedy response and next steps.'
+        }
+      ];
+
+      try {
+        const summary = await clinicalRepertoryService.current.getLongitudinalSummary('patient-1', mockTimeline);
+        setLongitudinalSummary(summary);
+      } catch (err) {
+        console.error("Timeline analysis calculation failed:", err);
+      }
+    };
+
+    updateTimeline();
+  }, [selectedRubrics, lastAmeliorationRating]);
 
   useEffect(() => {
     if (scoringResult && scoringResult.topRemedies.length > 0) {
@@ -963,7 +1038,13 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
                     </div>
 
                     {activeRes ? (
-                      <RemedyReasoningPanel reasoning={activeRes} matchedPatterns={reasoningSummary.matchedPatterns} />
+                      <RemedyReasoningPanel 
+                        reasoning={{
+                          ...activeRes,
+                          ...(longitudinalSummary?.remedyOutcomes.find(o => o.remedyId === activeRes.remedyId) || {})
+                        }}
+                        matchedPatterns={reasoningSummary.matchedPatterns} 
+                      />
                     ) : (
                       <p className="text-[10px] text-slate-400 italic">No target remedy selected.</p>
                     )}
@@ -1011,7 +1092,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
               )}
 
               {activeReasoningTab === 'timeline' && (
-                <ReasoningTimeline />
+                <ReasoningTimeline summary={longitudinalSummary} />
               )}
             </div>
           )}

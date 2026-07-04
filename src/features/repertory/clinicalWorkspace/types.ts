@@ -243,11 +243,14 @@ export interface ClinicalRepertoryServiceProviders {
   reasoningProviders?: ClinicalReasoningProvider[];
 }
 
+import { VisitTimelineEntry, LongitudinalCaseSummary } from './longitudinalTypes';
+
 export interface ClinicalRepertoryService {
   analyzeCase(request: ClinicalRepertoryRequest): Promise<ClinicalRepertoryResult>;
   runClinicalAnalysis(request: ClinicalRepertoryRequest): Promise<ClinicalRepertoryResult>;
   searchRubrics(query: string, filters?: Record<string, any>): Promise<ClinicalRubricCandidate[]>;
   parseAIIntakeText(intakeText: string): Promise<AIIntakeMappingResult>;
+  getLongitudinalSummary(patientId: string, timeline: VisitTimelineEntry[]): Promise<LongitudinalCaseSummary>;
 }
 
 export const CLINICAL_WORKSPACE_SAFETY_NOTICE = "Clinical review required — do not auto-prescribe";

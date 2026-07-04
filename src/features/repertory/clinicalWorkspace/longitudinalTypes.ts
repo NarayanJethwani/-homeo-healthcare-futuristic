@@ -39,6 +39,11 @@ export interface RemedyResponse {
     visitId: string;
     improvementPercentage: number;
   }>;
+  expectedAcuteResponse?: string;
+  expectedChronicResponse?: string;
+  expectedTimeline?: string;
+  warningSigns?: string[];
+  followUpCheckpoints?: string[];
 }
 
 export interface ConfidenceTrend {
@@ -54,4 +59,9 @@ export interface LongitudinalCaseSummary {
   rubricsHistory: RubricEvolution[];
   remedyOutcomes: RemedyResponse[];
   confidenceHistory: ConfidenceTrend[];
+  responseTrend?: 'improving' | 'stable' | 'regressing' | 'suppressed';
+  expectedResponseOutcome?: string;
+  unexpectedFindings?: string[];
+  relapseIndicators?: string[];
+  suppressionWarnings?: string[];
 }

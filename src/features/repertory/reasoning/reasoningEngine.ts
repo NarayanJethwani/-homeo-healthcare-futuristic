@@ -10,6 +10,7 @@ import { ExplanationBuilder } from './explanationBuilder';
 import { QuestionGenerator } from './questionGenerator';
 import { DifferentialEngine } from './differentialEngine';
 import { RepertoryGraph } from '../graph/repertoryGraph';
+import { FollowUpEngine } from './followupEngine';
 
 const unique = <T>(arr: T[]): T[] => Array.from(new Set(arr));
 
@@ -248,7 +249,9 @@ export class ReasoningEngine {
     }
 
     const missingInformation = await QuestionGenerator.getMissingInformation(symptoms);
-    const suggestedQuestions = await QuestionGenerator.generateQuestions(symptoms);
+    const baseQuestions = await QuestionGenerator.generateQuestions(symptoms);
+    const followupQuestions = await FollowUpEngine.generateFollowUpQuestions(symptoms, scoringResult.topRemedies);
+    const suggestedQuestions = [...baseQuestions, ...followupQuestions];
     const evidenceBreakdown = await EvidenceBreakdownEngine.getEvidenceBreakdown(symptoms);
 
     const differentialComparisons: any[] = [];
