@@ -92,6 +92,28 @@ export class DifferentialEngine {
       );
     }
 
+    const strongDifferentiators: string[] = [];
+    if ((isChillyA && isWarmB) || (isWarmA && isChillyB)) {
+      strongDifferentiators.push(`Thermal: ${remedyA} is ${isChillyA ? 'Chilly' : 'Warm'}, whereas ${remedyB} is ${isChillyB ? 'Chilly' : 'Warm'}.`);
+    }
+    if ((thirstlessA && thirstyB) || (thirstyA && thirstlessB)) {
+      strongDifferentiators.push(`Thirst: ${remedyA} is ${thirstlessA ? 'Thirstless' : 'Thirsty'}, whereas ${remedyB} is ${thirstlessB ? 'Thirstless' : 'Thirsty'}.`);
+    }
+    if (uniqueToA.length > 0) {
+      strongDifferentiators.push(`Symptom Coverage: Only ${remedyA} covers "${uniqueToA.slice(0, 2).join('", "')}".`);
+    }
+    if (uniqueToB.length > 0) {
+      strongDifferentiators.push(`Symptom Coverage: Only ${remedyB} covers "${uniqueToB.slice(0, 2).join('", "')}".`);
+    }
+
+    const whyAInsteadOfB = uniqueToA.length > 0
+      ? `${remedyA} covers unique symptoms (${uniqueToA.slice(0, 3).join(', ')}) that are not matched by ${remedyB}. Additionally, ${remedyA} aligns better with the case keynotes.`
+      : `${remedyA} is indicated due to strong constitutional affinity and high rubric grade matching, with fewer contraindications than ${remedyB}.`;
+
+    const whyBInsteadOfA = uniqueToB.length > 0
+      ? `${remedyB} covers unique symptoms (${uniqueToB.slice(0, 3).join(', ')}) that are not matched by ${remedyA}. Additionally, ${remedyB} aligns better with the case keynotes.`
+      : `${remedyB} is indicated due to strong constitutional affinity and high rubric grade matching, with fewer contraindications than ${remedyA}.`;
+
     return {
       remedyA,
       remedyB,
@@ -101,7 +123,10 @@ export class DifferentialEngine {
       missingConfirmationA,
       missingConfirmationB,
       differentiatingQuestions,
-      confidenceGap: Math.abs(confidenceA - confidenceB)
+      confidenceGap: Math.abs(confidenceA - confidenceB),
+      whyAInsteadOfB,
+      whyBInsteadOfA,
+      strongDifferentiators
     };
   }
 }

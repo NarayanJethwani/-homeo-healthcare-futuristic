@@ -250,7 +250,7 @@ export function createClinicalRepertoryService(
     },
 
     async searchRubrics(query: string, filters?: Record<string, any>): Promise<ClinicalRubricCandidate[]> {
-      const scoredRubrics = await RepertorySearch.searchRubrics(query, filters);
+      const scoredRubrics = await RepertorySearch.searchRubrics(query, filters, true, true);
       return scoredRubrics.map((item) => ({
         id: item.rubric.rubricId,
         title: item.rubric.title,

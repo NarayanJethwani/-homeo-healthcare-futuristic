@@ -76,7 +76,13 @@ export class RepertoryScoring {
     });
 
     // 2. Compute remedy scores
-    const scores: Record<string, { remedyId: string; remedyName: string; score: number; matches: number }> = {};
+    const scores: Record<string, { 
+      remedyId: string; 
+      remedyName: string; 
+      score: number; 
+      matches: number;
+      contributions: Array<{ rubricId: string; rubricTitle: string; contribution: number; grade: number }>;
+    }> = {};
 
     for (const sym of symptoms) {
       const rub = await repertoryRepository.getRubricById(sym.rubricId);
@@ -114,7 +120,8 @@ export class RepertoryScoring {
             remedyId: rem.remedyId,
             remedyName: rem.remedyName,
             score: 0,
-            matches: 0
+            matches: 0,
+            contributions: []
           };
         }
 
@@ -141,13 +148,20 @@ export class RepertoryScoring {
           }
         }
 
+        const contributionValue = Math.round(contribution * 10) / 10;
         scoreObj.score += contribution;
+        scoreObj.contributions.push({
+          rubricId: rub.rubricId,
+          rubricTitle: rub.title,
+          contribution: contributionValue,
+          grade: rem.grade
+        });
       }
     }
 
     // 3. Format and rank top remedies
-    const rankedRemedies = Object.values(scores)
-      .map(r => {
+    const rankedRemedies = await Promise.all(
+      Object.values(scores).map(async r => {
         // Fetch metadata for remedy
         const meta = REMEDIES_METADATA[r.remedyId] || { fullName: r.remedyName, source: 'Plant' };
         const confirmations = JETHWANI_REMEDY_CONFIRMATIONS[r.remedyId];
@@ -160,9 +174,37 @@ export class RepertoryScoring {
         if (confirmations?.confirmatory.some(c => c.toLowerCase().includes('chilly') || c.toLowerCase().includes('cold'))) thermal = 'Chilly';
         else if (confirmations?.confirmatory.some(c => c.toLowerCase().includes('warm') || c.toLowerCase().includes('hot'))) thermal = 'Warm';
 
-        // Calculate a normalization value for confidence (relative score based on maximum possible coverage)
         const matchRatio = r.matches / symptoms.length;
         const confidence = Math.round(matchRatio * 100);
+        const coverageRatio = `${r.matches}/${symptoms.length}`;
+
+        // Contradictory evidence check
+        const contradictoryEvidence: string[] = [];
+        for (const sym of symptoms) {
+          const rub = await repertoryRepository.getRubricById(sym.rubricId);
+          if (!rub) continue;
+          
+          const remDetail = rub.relatedRemedies.find(rem => rem.remedyId === r.remedyId);
+          if (!remDetail) continue;
+
+          if (rub.category === 'Thermal State') {
+            const isChillyRemedy = confirmations?.confirmatory.some(c => c.toLowerCase().includes('chilly') || c.toLowerCase().includes('cold'));
+            const isWarmRemedy = confirmations?.confirmatory.some(c => c.toLowerCase().includes('warm') || c.toLowerCase().includes('hot'));
+            if (rub.subCategory === 'Chilly' && isWarmRemedy) {
+              contradictoryEvidence.push(`Thermal mismatch: Remedy has warm tendencies, but patient is chilly.`);
+            } else if (rub.subCategory === 'Warm' && isChillyRemedy) {
+              contradictoryEvidence.push(`Thermal mismatch: Remedy has chilly tendencies, but patient is warm-blooded.`);
+            }
+          }
+          
+          if (rub.category === 'Modalities') {
+            const title = rub.title.toLowerCase();
+            const notes = remDetail.contraindicationNotes?.toLowerCase() || '';
+            if (title.includes('motion') && title.includes('aggravation') && notes.includes('motion')) {
+              contradictoryEvidence.push(`Modality contradiction: Aggravated by motion, but remedy notes indicate compatibility issues.`);
+            }
+          }
+        }
 
         return {
           remedyId: r.remedyId,
@@ -172,10 +214,15 @@ export class RepertoryScoring {
           confidence,
           kingdom: meta.source,
           miasm,
-          thermal
+          thermal,
+          coverageRatio,
+          rubricContributions: r.contributions,
+          contradictoryEvidence
         };
       })
-      .sort((a, b) => b.score - a.score);
+    );
+
+    rankedRemedies.sort((a, b) => b.score - a.score);
 
     result.topRemedies = rankedRemedies;
 

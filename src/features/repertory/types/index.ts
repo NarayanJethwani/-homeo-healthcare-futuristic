@@ -109,6 +109,9 @@ export interface ScoringResult {
     kingdom: string;
     miasm: string;
     thermal: string;
+    coverageRatio?: string;
+    rubricContributions?: Array<{ rubricId: string; rubricTitle: string; contribution: number; grade: number }>;
+    contradictoryEvidence?: string[];
   }>;
   matchedRubrics: string[]; // Rubric IDs covered
   differentiatingRubrics: string[]; // Rubric IDs that distinguish the top remedies
@@ -192,8 +195,15 @@ export interface RemedyReasoning {
     complementary?: string[];
     followsWell?: string[];
     inimical?: string[];
+    antidotes?: string[];
+    acuteChronic?: string;
+    family?: string;
   };
   clinicalConfirmations?: string[];
+  coverageRatio?: string;
+  rubricContributions?: Array<{ rubricId: string; rubricTitle: string; contribution: number; grade: number }>;
+  contradictoryEvidence?: string[];
+  provenance?: RemedyProvenance;
 }
 
 export interface MissingInformationItem {
@@ -220,6 +230,9 @@ export interface DifferentialComparisonResult {
   missingConfirmationB: string[];
   differentiatingQuestions: string[];
   confidenceGap: number;
+  whyAInsteadOfB?: string;
+  whyBInsteadOfA?: string;
+  strongDifferentiators?: string[];
 }
 
 export interface ConfidenceBreakdown {
@@ -252,5 +265,19 @@ export interface ClinicalReasoningSummary {
   confidenceBreakdown: Record<string, ConfidenceBreakdown>;
   evidenceBreakdown: EvidenceBreakdown;
   safetyLabel: "Clinical reasoning support for clinician review only.";
+  matchedPatterns?: Array<{
+    patternName: string;
+    matchPercentage: number;
+    remedyId: string;
+    missingIndicators: Array<{ rubricId: string; title: string }>;
+  }>;
+}
+
+export interface RemedyProvenance {
+  repertorySources: string[];
+  materiaMedicaSources: string[];
+  graphRelationships: string[];
+  confidence: number;
+  editorialVerification: string;
 }
 

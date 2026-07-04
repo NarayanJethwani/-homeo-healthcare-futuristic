@@ -101,6 +101,34 @@ export const DifferentialComparison: React.FC<DifferentialComparisonProps> = ({ 
                 </div>
               </div>
 
+              {/* Strong Differentiators */}
+              {c.strongDifferentiators && c.strongDifferentiators.length > 0 && (
+                <div className="bg-amber-50/50 border border-amber-250/30 p-2.5 rounded-xl space-y-1">
+                  <div className="text-[9px] font-black text-amber-800 uppercase tracking-wide">Key Differential Differentiators:</div>
+                  <ul className="list-disc list-inside text-[9px] text-amber-700 font-bold space-y-0.5 pl-1 text-left">
+                    {c.strongDifferentiators.map((d, dIdx) => <li key={dIdx}>{d}</li>)}
+                  </ul>
+                </div>
+              )}
+
+              {/* Rationale Comparison */}
+              {(c.whyAInsteadOfB || c.whyBInsteadOfA) && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 pt-1">
+                  {c.whyAInsteadOfB && (
+                    <div className="bg-slate-100/50 p-2.5 rounded-xl border border-slate-200/40 text-left">
+                      <span className="text-[8px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Indications for {c.remedyA}:</span>
+                      <p className="text-[9.5px] text-slate-700 font-semibold leading-relaxed">{c.whyAInsteadOfB}</p>
+                    </div>
+                  )}
+                  {c.whyBInsteadOfA && (
+                    <div className="bg-slate-100/50 p-2.5 rounded-xl border border-slate-200/40 text-left">
+                      <span className="text-[8px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Indications for {c.remedyB}:</span>
+                      <p className="text-[9.5px] text-slate-700 font-semibold leading-relaxed">{c.whyBInsteadOfA}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div className="pt-2 border-t border-slate-200/50 space-y-2">
                 <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wide">Differentiating Considerations:</div>
                 <ul className="list-disc list-inside text-[9px] text-slate-600 font-semibold space-y-1">

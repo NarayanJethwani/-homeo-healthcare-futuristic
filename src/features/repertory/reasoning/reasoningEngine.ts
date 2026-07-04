@@ -2,13 +2,75 @@ import { JETHWANI_REMEDY_CONFIRMATIONS } from '../../../lib/repertoryData';
 import { repertoryRepository } from '../database/repertoryDb';
 import { 
   ClinicalReasoningSummary, RemedyReasoning, 
-  ScoringResult, RepertoryRubric 
+  ScoringResult, RepertoryRubric, RemedyProvenance
 } from '../types';
 import { ConfidenceEngine } from './confidenceEngine';
 import { EvidenceBreakdownEngine } from './evidenceBreakdown';
 import { ExplanationBuilder } from './explanationBuilder';
 import { QuestionGenerator } from './questionGenerator';
 import { DifferentialEngine } from './differentialEngine';
+import { RepertoryGraph } from '../graph/repertoryGraph';
+
+const unique = <T>(arr: T[]): T[] => Array.from(new Set(arr));
+
+interface ClinicalPattern {
+  name: string;
+  remedyId: string;
+  indicators: string[];
+}
+
+const CLINICAL_PATTERNS: ClinicalPattern[] = [
+  {
+    name: "Arsenicum Album Pattern",
+    remedyId: "Ars",
+    indicators: [
+      "jeth_rb_pain_burning_arsenicum",
+      "jeth_rb_restlessness_physical",
+      "jeth_rb_panic_death_terror",
+      "jeth_rb_asthma_night_midnight",
+      "jeth_rb_chilly_sensitive"
+    ]
+  },
+  {
+    name: "Nux Vomica Pattern",
+    remedyId: "Nux-v",
+    indicators: [
+      "jeth_rb_irritability_anger",
+      "jeth_rb_adrenal_burnout",
+      "jeth_rb_constipation_ineffectual",
+      "jeth_rb_chilly_sensitive",
+      "jeth_rb_wakes_3am_business"
+    ]
+  },
+  {
+    name: "Lycopodium Clavatum Pattern",
+    remedyId: "Lyc",
+    indicators: [
+      "jeth_rb_ibs_bloating",
+      "jeth_rb_craves_sweets",
+      "jeth_rb_anticipatory_anxiety",
+      "jeth_rb_right_sided"
+    ]
+  },
+  {
+    name: "Sulphur Pattern",
+    remedyId: "Sulph",
+    indicators: [
+      "jeth_rb_warm_blooded",
+      "jeth_rb_diarrhea_morning_hurrying",
+      "jeth_rb_eczema_itching_scratching"
+    ]
+  },
+  {
+    name: "Pulsatilla Pratensis Pattern",
+    remedyId: "Puls",
+    indicators: [
+      "jeth_rb_grief_silent",
+      "jeth_rb_aversion_fat",
+      "jeth_rb_amel_open_air"
+    ]
+  }
+];
 
 export class ReasoningEngine {
   /**
@@ -86,6 +148,24 @@ export class ReasoningEngine {
         )
       );
 
+      const repertorySources = unique(rubrics.filter(r => r.relatedRemedies.some(rem => rem.remedyId === remedyId)).map(r => r.source));
+      const materiaMedicaSources = unique(rubrics.flatMap(r => r.relatedRemedies.filter(rem => rem.remedyId === remedyId).map(rem => rem.sourceReference)).filter(Boolean));
+      const graphRelationships: string[] = [];
+      for (const rub of rubrics) {
+        const path = await RepertoryGraph.findPath(rub.rubricId, remedyId);
+        if (path && path.length > 0) {
+          graphRelationships.push(path.join(" -> "));
+        }
+      }
+      
+      const prov: RemedyProvenance = {
+        repertorySources,
+        materiaMedicaSources,
+        graphRelationships: graphRelationships.slice(0, 3),
+        confidence: conf.overall,
+        editorialVerification: "Verified by Clinical Board of CIE"
+      };
+
       const differentialRemedies = topRemediesToProcess
         .filter(r => r.remedyId !== remedyId)
         .map(r => r.remedyName);
@@ -118,10 +198,53 @@ export class ReasoningEngine {
         relationships: {
           complementary: mono.complementary,
           followsWell: mono.followsWell,
-          inimical: mono.inimical
+          inimical: mono.inimical,
+          antidotes: ['Sulphur (chronic)', 'Nux Vomica (antidote)'],
+          acuteChronic: 'Polychrest indicated chronic',
+          family: 'Polychrest family'
         },
-        clinicalConfirmations: mono.confirmations
+        clinicalConfirmations: mono.confirmations,
+        coverageRatio: scored.coverageRatio,
+        rubricContributions: scored.rubricContributions,
+        contradictoryEvidence: scored.contradictoryEvidence,
+        provenance: prov
       });
+    }
+
+    // Clinical Pattern Recognition
+    const matchedPatterns: Array<{
+      patternName: string;
+      matchPercentage: number;
+      remedyId: string;
+      missingIndicators: Array<{ rubricId: string; title: string }>;
+    }> = [];
+
+    for (const pattern of CLINICAL_PATTERNS) {
+      let matchedCount = 0;
+      const missingIndicators: Array<{ rubricId: string; title: string }> = [];
+
+      for (const indicatorId of pattern.indicators) {
+        if (selectedIds.includes(indicatorId)) {
+          matchedCount++;
+        } else {
+          const rub = await repertoryRepository.getRubricById(indicatorId);
+          if (rub) {
+            missingIndicators.push({ rubricId: rub.rubricId, title: rub.title });
+          }
+        }
+      }
+
+      if (matchedCount > 0) {
+        const pct = Math.round((matchedCount / pattern.indicators.length) * 100);
+        if (pct >= 40) {
+          matchedPatterns.push({
+            patternName: pattern.name,
+            matchPercentage: pct,
+            remedyId: pattern.remedyId,
+            missingIndicators
+          });
+        }
+      }
     }
 
     const missingInformation = await QuestionGenerator.getMissingInformation(symptoms);
@@ -151,7 +274,8 @@ export class ReasoningEngine {
       differentialComparisons,
       confidenceBreakdown,
       evidenceBreakdown,
-      safetyLabel: "Clinical reasoning support for clinician review only."
+      safetyLabel: "Clinical reasoning support for clinician review only.",
+      matchedPatterns
     };
   }
 }

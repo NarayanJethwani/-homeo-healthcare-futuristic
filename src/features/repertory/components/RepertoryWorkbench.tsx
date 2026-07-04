@@ -963,7 +963,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
                     </div>
 
                     {activeRes ? (
-                      <RemedyReasoningPanel reasoning={activeRes} />
+                      <RemedyReasoningPanel reasoning={activeRes} matchedPatterns={reasoningSummary.matchedPatterns} />
                     ) : (
                       <p className="text-[10px] text-slate-400 italic">No target remedy selected.</p>
                     )}

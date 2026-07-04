@@ -1,6 +1,7 @@
 import { SEARCH_SYNONYMS } from '../../../lib/repertoryData';
 import { repertoryRepository } from '../database/repertoryDb';
 import { RepertoryRubric, AIIntakeMappingResult, AIIntakeMatch } from '../types';
+import { RepertoryGraph } from '../graph/repertoryGraph';
 
 export class RepertorySearch {
   
@@ -15,7 +16,8 @@ export class RepertorySearch {
       miasm?: string;
       remedy?: string;
     },
-    boostRelationships: boolean = false
+    boostRelationships: boolean = false,
+    enableSemanticExpansion: boolean = false
   ): Promise<Array<{ rubric: RepertoryRubric; score: number }>> {
     const rubrics = await repertoryRepository.getRubrics(filters);
     const normalizedQuery = queryText.toLowerCase().trim();
@@ -135,6 +137,25 @@ export class RepertorySearch {
 
       return { rubric, score };
     });
+
+    // Apply semantic query expansion if requested
+    if (enableSemanticExpansion && scoredList.some(item => item.score >= 40)) {
+      const topMatches = [...scoredList]
+        .sort((a, b) => b.score - a.score)
+        .filter(item => item.score >= 40)
+        .slice(0, 3);
+
+      for (const match of topMatches) {
+        const neighbors = await RepertoryGraph.getSemanticNeighbours(match.rubric.rubricId);
+        for (const neigh of neighbors) {
+          const targetItem = scoredList.find(item => item.rubric.rubricId === neigh.rubricId);
+          if (targetItem) {
+            const semanticBoost = Math.round(neigh.score * 0.4);
+            targetItem.score += semanticBoost;
+          }
+        }
+      }
+    }
 
     // Filter out 0 scores and sort descending
     return scoredList
