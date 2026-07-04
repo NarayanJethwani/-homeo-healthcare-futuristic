@@ -246,3 +246,13 @@ const miasmProfileResult = MiasmaticEngine.analyzeMiasms(mockRubrics, mockSympto
 assert.ok(miasmProfileResult);
 assert.strictEqual(miasmProfileResult.primaryMiasm, 'Psora'); // Psora accumulates highest weight
 console.log("constitutional and miasmatic analysis engines verified successfully");
+
+// Clinical Validation Suite Verification (Phase 10)
+import { ClinicalValidationFramework } from "../validation/clinicalValidationFramework";
+
+ClinicalValidationFramework.runValidationSuite().then((report) => {
+  assert.ok(report);
+  assert.strictEqual(report.casesEvaluated, 3);
+  assert.ok(report.passedCases >= 2); // expects high validation matching
+  console.log("clinical validation suite run completed successfully");
+});
