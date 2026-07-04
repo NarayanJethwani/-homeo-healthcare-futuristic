@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Search, Sliders, Trash2, Plus, Info, RefreshCw, CheckCircle, 
   AlertTriangle, BookOpen, Download, HelpCircle, ArrowRight, Check
@@ -17,6 +17,7 @@ import { SuggestedQuestions } from './SuggestedQuestions';
 import { ConfidenceBreakdownPanel } from './ConfidenceBreakdownPanel';
 import { RubricCoverageHeatmap } from './RubricCoverageHeatmap';
 import { ReasoningTimeline } from './ReasoningTimeline';
+import { createClinicalRepertoryService } from '../clinicalWorkspace/clinicalRepertoryService';
 import { CLINICAL_WORKSPACE_SAFETY_NOTICE } from '../clinicalWorkspace/types';
 
 export interface RepertoryWorkbenchProps {
@@ -39,6 +40,9 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
   const [selectedOrganSystem, setSelectedOrganSystem] = useState<string>('All');
   const [selectedMiasm, setSelectedMiasm] = useState<string>('All');
   const [selectedRemedy, setSelectedRemedy] = useState<string>('All');
+
+  // Initialize internal Codex clinical workspace service facade
+  const clinicalRepertoryService = useRef(createClinicalRepertoryService());
 
   // Workbench / Case States
   const [selectedRubrics, setSelectedRubrics] = useState<Array<{
@@ -178,6 +182,20 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
           const diffs = await RepertoryScoring.differentiateRemedies(topIds, activeIds);
           setDifferentiations(diffs);
         }
+
+        // Silent trace call to the internal Codex service facade for observability
+        clinicalRepertoryService.current.analyzeCase({
+          query: searchTerm || undefined,
+          selectedRubrics: selectedRubrics.map(sr => ({
+            rubricId: sr.rubricId,
+            severity: sr.severity,
+            frequency: sr.frequency
+          }))
+        }).then(result => {
+          console.log("[Codex Workspace Service Trace] Success:", result.success, "Run ID:", result.runId, "Latency:", result.engineTrace.latencyMs, "ms");
+        }).catch(err => {
+          console.error("[Codex Workspace Service Trace] Failed:", err);
+        });
       } catch (e) {
         console.error("Repertorization calculation failed:", e);
       }
