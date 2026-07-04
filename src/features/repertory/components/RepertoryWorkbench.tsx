@@ -5,11 +5,8 @@ import {
 } from 'lucide-react';
 import { RepertoryRubric, ScoringResult, RemedyDifferentiation, ValidationReport, ClinicalReasoningSummary } from '../types';
 import { repertoryRepository } from '../database/repertoryDb';
-import { RepertorySearch } from '../search/repertorySearch';
-import { RepertoryScoring } from '../scoring/repertoryScoring';
 import { DatabaseValidator } from '../validators/databaseValidator';
 import { ImportExportService } from '../import-export/importExportService';
-import { ReasoningEngine } from '../reasoning/reasoningEngine';
 import { RemedyReasoningPanel } from './RemedyReasoningPanel';
 import { DifferentialComparison } from './DifferentialComparison';
 import { MissingInformationCard } from './MissingInformationCard';
@@ -18,7 +15,7 @@ import { ConfidenceBreakdownPanel } from './ConfidenceBreakdownPanel';
 import { RubricCoverageHeatmap } from './RubricCoverageHeatmap';
 import { ReasoningTimeline } from './ReasoningTimeline';
 import { createClinicalRepertoryService } from '../clinicalWorkspace/clinicalRepertoryService';
-import { CLINICAL_WORKSPACE_SAFETY_NOTICE } from '../clinicalWorkspace/types';
+import { CLINICAL_WORKSPACE_SAFETY_NOTICE, ClinicalValidationFinding } from '../clinicalWorkspace/types';
 
 export interface RepertoryWorkbenchProps {
   sessionUid?: string;
@@ -62,6 +59,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
   const [reasoningSummary, setReasoningSummary] = useState<ClinicalReasoningSummary | null>(null);
   const [activeReasoningRemedyId, setActiveReasoningRemedyId] = useState<string | null>(null);
   const [activeReasoningTab, setActiveReasoningTab] = useState<'explanation' | 'differential' | 'coverage' | 'questions' | 'timeline'>('explanation');
+  const [validationFindings, setValidationFindings] = useState<ClinicalValidationFinding[]>([]);
 
   // Dialogs & Audits
   const [auditReport, setAuditReport] = useState<ValidationReport | null>(null);
@@ -150,8 +148,9 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
         };
 
         if (debouncedSearch.trim()) {
-          const results = await RepertorySearch.searchRubrics(debouncedSearch, filters);
-          setRubrics(results.map(r => r.rubric));
+          const candidates = await clinicalRepertoryService.current.searchRubrics(debouncedSearch, filters);
+          const data = await Promise.all(candidates.map(c => repertoryRepository.getRubricById(c.id)));
+          setRubrics(data.filter((r): r is NonNullable<typeof r> => r !== undefined));
         } else {
           const data = await repertoryRepository.getRubrics(filters);
           setRubrics(data);
@@ -163,62 +162,47 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
     fetchFiltered();
   }, [debouncedSearch, selectedCategory, selectedOrganSystem, selectedMiasm, selectedRemedy]);
 
-  // Recalculate scoring whenever selected rubrics change
+  // Recalculate scoring, differentiations, reasoning summary, and validation safety checks using the Codex Clinical Workspace Service
   useEffect(() => {
     const recalculate = async () => {
       if (selectedRubrics.length === 0) {
         setScoringResult(null);
         setDifferentiations([]);
+        setReasoningSummary(null);
+        setValidationFindings([]);
         return;
       }
       setIsScoringLoading(true);
       try {
-        const scores = await RepertoryScoring.calculateRepertorization(selectedRubrics);
-        setScoringResult(scores);
-
-        if (scores.topRemedies.length > 0) {
-          const topIds = scores.topRemedies.slice(0, 3).map(r => r.remedyId);
-          const activeIds = selectedRubrics.map(s => s.rubricId);
-          const diffs = await RepertoryScoring.differentiateRemedies(topIds, activeIds);
-          setDifferentiations(diffs);
-        }
-
-        // Silent trace call to the internal Codex service facade for observability
-        clinicalRepertoryService.current.analyzeCase({
-          query: searchTerm || undefined,
+        const result = await clinicalRepertoryService.current.runClinicalAnalysis({
+          query: undefined,
           selectedRubrics: selectedRubrics.map(sr => ({
             rubricId: sr.rubricId,
             severity: sr.severity,
-            frequency: sr.frequency
+            frequency: sr.frequency,
+            impact: sr.impact
           }))
-        }).then(result => {
-          console.log("[Codex Workspace Service Trace] Success:", result.success, "Run ID:", result.runId, "Latency:", result.engineTrace.latencyMs, "ms");
-        }).catch(err => {
-          console.error("[Codex Workspace Service Trace] Failed:", err);
         });
+
+        if (result.success) {
+          if (result.scoringResult) {
+            setScoringResult(result.scoringResult);
+          }
+          if (result.differentiations) {
+            setDifferentiations(result.differentiations);
+          }
+          if (result.reasoningSummary) {
+            setReasoningSummary(result.reasoningSummary);
+          }
+          setValidationFindings(result.validationFindings || []);
+        }
       } catch (e) {
-        console.error("Repertorization calculation failed:", e);
+        console.error("Clinical analysis calculation failed:", e);
       }
       setIsScoringLoading(false);
     };
     recalculate();
   }, [selectedRubrics]);
-
-  useEffect(() => {
-    const calcReasoning = async () => {
-      if (selectedRubrics.length === 0 || !scoringResult) {
-        setReasoningSummary(null);
-        return;
-      }
-      try {
-        const summary = await ReasoningEngine.generateReasoning(selectedRubrics, scoringResult);
-        setReasoningSummary(summary);
-      } catch (e) {
-        console.error("Clinical reasoning summary generation failed:", e);
-      }
-    };
-    calcReasoning();
-  }, [selectedRubrics, scoringResult]);
 
   useEffect(() => {
     if (scoringResult && scoringResult.topRemedies.length > 0) {
@@ -228,7 +212,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
     } else {
       setActiveReasoningRemedyId(null);
     }
-  }, [scoringResult]);
+  }, [scoringResult, activeReasoningRemedyId]);
 
   // Toggle rubric selection in workbench
   const handleToggleRubric = (rubric: RepertoryRubric) => {
@@ -276,10 +260,10 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
     if (!nlpInput.trim()) return;
     setParsingIntake(true);
     try {
-      const results = await RepertorySearch.parseAIIntakeText(nlpInput);
+      const results = await clinicalRepertoryService.current.parseAIIntakeText(nlpInput);
       
       // Map results back to selected rubrics
-      const incoming = results.matchedRubrics.map(m => ({
+      const incoming = results.matchedRubrics.map((m: { rubricId: string; suggestedSeverity: number }) => ({
         rubricId: m.rubricId,
         severity: m.suggestedSeverity,
         frequency: 'frequent' as const,
@@ -288,7 +272,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
 
       // Merge with existing
       setSelectedRubrics(prev => {
-        const filtered = prev.filter(s => !incoming.some(i => i.rubricId === s.rubricId));
+        const filtered = prev.filter(s => !incoming.some((i: { rubricId: string }) => i.rubricId === s.rubricId));
         return [...filtered, ...incoming];
       });
 
@@ -381,14 +365,6 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
     }
   };
 
-  const v2Filters = {
-    category: selectedCategory,
-    organSystem: selectedOrganSystem,
-    miasm: selectedMiasm,
-    remedy: selectedRemedy,
-  };
-  const selectedRubricIds = selectedRubrics.map((rubric) => rubric.rubricId);
-
   return (
     <div className="w-full space-y-4">
       {/* Safety Header Badge */}
@@ -408,6 +384,26 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
           clinician verification required
         </span>
       </div>
+
+      {/* Real-time Clinical Validation Findings */}
+      {validationFindings.length > 0 && (
+        <div className="bg-rose-50/80 dark:bg-rose-950/10 border border-rose-150/50 dark:border-rose-900/20 p-4 rounded-3xl space-y-2 shadow-xs">
+          <h4 className="text-[11px] font-black uppercase tracking-wider text-rose-800 dark:text-rose-450 flex items-center gap-1.5">
+            <AlertTriangle className="w-3.5 h-3.5" />
+            Clinical Validation Audits ({validationFindings.length})
+          </h4>
+          <ul className="text-[10px] text-rose-700/90 dark:text-slate-400 font-bold space-y-1.5 pl-4 list-disc">
+            {validationFindings.map((finding, idx) => (
+              <li key={idx} className={finding.severity === 'critical' ? 'text-rose-900 dark:text-rose-350 font-black' : ''}>
+                <span className="uppercase text-[8px] font-black tracking-wider bg-rose-100 dark:bg-rose-900/30 px-1.5 py-0.5 rounded mr-1.5">
+                  {finding.category.replace('_', ' ')}
+                </span>
+                {finding.message}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className="w-full grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch pb-12 text-slate-800">
       
