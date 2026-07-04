@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   Search, Sliders, Trash2, Plus, Info, RefreshCw, CheckCircle, 
-  AlertTriangle, BookOpen, Download, HelpCircle, ArrowRight, Check
+  AlertTriangle, BookOpen, Download, HelpCircle, ArrowRight, Check,
+  ChevronDown, ChevronUp
 } from 'lucide-react';
 import { RepertoryRubric, ScoringResult, RemedyDifferentiation, ValidationReport, ClinicalReasoningSummary } from '../types';
 import { repertoryRepository } from '../database/repertoryDb';
@@ -71,6 +72,8 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
 
   // UI state
   const [expandedRubricId, setExpandedRubricId] = useState<string | null>(null);
+  const [isCatalogExpanded, setIsCatalogExpanded] = useState<boolean | null>(null);
+  const [showAllAudits, setShowAllAudits] = useState<boolean>(false);
   const [modifyingSymptom, setModifyingSymptom] = useState<{
     rubricId: string;
     severity: number;
@@ -742,15 +745,31 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
 
       {/* Real-time Clinical Validation Findings */}
       {validationFindings.length > 0 && (
-        <div className="bg-rose-50/80 dark:bg-rose-950/10 border border-rose-150/50 dark:border-rose-900/20 p-4 rounded-3xl space-y-2 shadow-xs">
-          <h4 className="text-[11px] font-black uppercase tracking-wider text-rose-800 dark:text-rose-450 flex items-center gap-1.5">
-            <AlertTriangle className="w-3.5 h-3.5" />
-            Clinical Validation Audits ({validationFindings.length})
-          </h4>
-          <ul className="text-[10px] text-rose-700/90 dark:text-slate-400 font-bold space-y-1.5 pl-4 list-disc">
-            {validationFindings.map((finding, idx) => (
-              <li key={idx} className={finding.severity === 'critical' ? 'text-rose-900 dark:text-rose-350 font-black' : ''}>
-                <span className="uppercase text-[8px] font-black tracking-wider bg-rose-100 dark:bg-rose-900/30 px-1.5 py-0.5 rounded mr-1.5">
+        <div className="bg-rose-50/80 border border-rose-150/40 p-3.5 rounded-3xl space-y-3 shadow-xs text-left">
+          <div className="flex items-center justify-between border-b border-rose-200/40 pb-2.5">
+            <div className="flex items-center gap-2">
+              <span className="text-[9px] font-black uppercase tracking-wider bg-rose-500 text-white px-2.5 py-0.5 rounded-full flex items-center gap-1 font-mono">
+                <AlertTriangle className="w-2.5 h-2.5" />
+                Critical Alerts
+              </span>
+              <span className="text-[10px] font-black text-rose-800 font-mono">
+                {validationFindings.length} issues found
+              </span>
+            </div>
+            {validationFindings.length > 2 && (
+              <button
+                type="button"
+                onClick={() => setShowAllAudits(!showAllAudits)}
+                className="text-[9px] font-black uppercase border border-rose-200 hover:border-rose-600 bg-white hover:bg-rose-50 text-rose-700 px-2.5 py-1 rounded-xl transition-all cursor-pointer"
+              >
+                {showAllAudits ? 'View Less' : `View All (${validationFindings.length})`}
+              </button>
+            )}
+          </div>
+          <ul className="text-[10px] text-rose-750 font-bold space-y-1.5 pl-4 list-disc leading-relaxed">
+            {(showAllAudits ? validationFindings : validationFindings.slice(0, 2)).map((finding, idx) => (
+              <li key={idx} className={finding.severity === 'critical' ? 'text-rose-900 font-black' : ''}>
+                <span className="uppercase text-[8px] font-black tracking-wider bg-rose-100/80 text-rose-800 px-1.5 py-0.5 rounded mr-1.5 font-mono inline-block">
                   {finding.category.replace('_', ' ')}
                 </span>
                 {finding.message}
@@ -760,17 +779,17 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
         </div>
       )}
 
-      <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch pb-12 text-slate-800">
+      <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-6 items-start pb-12 text-slate-800 lg:h-[calc(100vh-200px)] lg:max-h-[950px] min-h-[600px]">
       
-      {/* LEFT COLUMN: Search & Rubric Directory (Col Span 4) */}
-      <div className="lg:col-span-5 flex flex-col gap-6 order-2 lg:order-1">
+      {/* LEFT COLUMN: Search & Rubric Directory (Col Span 5) */}
+      <div className="lg:col-span-5 flex flex-col gap-4 order-2 lg:order-1 lg:overflow-y-auto lg:h-full pb-6 pr-1 scrollbar-thin">
         
         {/* Search & NLP Intake Block */}
         <div className="bg-white/70 backdrop-blur-md rounded-3xl border border-slate-200/80 p-6 space-y-4 shadow-xs">
           <div className="flex items-center justify-between border-b border-slate-100 pb-2">
             <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
               <Search className="w-4 h-4 text-emerald-500" />
-              Symptom Lookup & AI Intake
+              AI Intake & Symptoms Workspace
             </h3>
             <span className="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100 font-mono">
               Repertory suggestions for clinician review
@@ -783,7 +802,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
               value={nlpInput}
               onChange={(e) => setNlpInput(e.target.value)}
               placeholder="Paste raw patient voice intake here (e.g., 'Worse at 3am, anxious, extremely chilly, bloating immediately after eating')..."
-              className="w-full h-32 md:h-36 bg-slate-50/50 hover:bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs outline-none focus:border-emerald-500 focus:bg-white transition-all resize-y font-semibold leading-relaxed"
+              className="w-full h-48 md:h-56 min-h-[180px] bg-slate-50/50 hover:bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs outline-none focus:border-emerald-500 focus:bg-white transition-all resize-y font-semibold leading-relaxed"
             />
             <div className="flex justify-end gap-3">
               <button
@@ -897,187 +916,214 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
               </div>
             );
           })()}
-
-          {/* Directory Search & Filters */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
-            <div className="relative">
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search rubrics, synonyms, remedies..."
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs font-semibold outline-none focus:border-emerald-500 focus:bg-white transition-all shadow-xs"
-              />
-              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-3" />
-            </div>
-
-            <div className="grid grid-cols-2 gap-2">
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="bg-slate-50 border border-slate-200 rounded-xl px-2 py-2 text-[10px] font-bold outline-none focus:border-emerald-500 transition-all cursor-pointer"
-              >
-                <option value="All">All Categories</option>
-                {CATEGORIES.filter(c => c !== 'All').map(c => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-              </select>
-
-              <select
-                value={selectedOrganSystem}
-                onChange={(e) => setSelectedOrganSystem(e.target.value)}
-                className="bg-slate-50 border border-slate-200 rounded-xl px-2 py-2 text-[10px] font-bold outline-none focus:border-emerald-500 transition-all cursor-pointer"
-              >
-                <option value="All">All Systems</option>
-                {ORGAN_SYSTEMS.filter(o => o !== 'All').map(o => (
-                  <option key={o} value={o}>{o}</option>
-                ))}
-              </select>
-            </div>
-          </div>
         </div>
 
-        {/* Rubrics Catalog List */}
-        <div className="bg-white/70 backdrop-blur-md rounded-3xl border border-slate-200/80 p-6 flex-grow shadow-xs">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
-            <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
-              <BookOpen className="w-4 h-4 text-emerald-500" />
-              Clinical Rubrics Catalog ({rubrics.length} matches)
-            </h4>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={handleRunAudit}
-                disabled={auditLoading}
-                className="text-[10px] font-black border border-slate-200 hover:border-slate-800 bg-white hover:bg-slate-50 px-3 py-1.5 rounded-xl transition-all cursor-pointer flex items-center gap-1"
-              >
-                <AlertTriangle className="w-3 h-3 text-amber-500" />
-                Audit Database
-              </button>
-            </div>
-          </div>
+        {/* Collapsible Clinical Rubrics Catalog */}
+        {(() => {
+          const resolvedCatalogExpanded = isCatalogExpanded !== null ? isCatalogExpanded : (selectedRubrics.length <= 6);
 
-          {loading ? (
-            <div className="flex justify-center items-center py-20">
-              <RefreshCw className="w-8 h-8 text-slate-300 animate-spin" />
-            </div>
-          ) : rubrics.length === 0 ? (
-            <div className="text-center py-20 text-slate-400 space-y-2">
-              <Info className="w-10 h-10 mx-auto opacity-40 text-slate-400" />
-              <p className="text-xs font-bold">No active clinical rubrics found matching current filter.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 gap-3 max-h-[550px] overflow-y-auto pr-1">
-              {rubrics.map(rub => {
-                const isActive = selectedRubrics.some(s => s.rubricId === rub.rubricId);
-                const isExpanded = expandedRubricId === rub.rubricId;
-                
-                return (
-                  <div 
-                    key={rub.rubricId}
-                    className={`flex flex-col bg-white rounded-2xl border transition-all duration-300 p-4 shadow-2xs hover:shadow-xs ${
-                      isActive ? 'border-emerald-500/40 bg-emerald-50/10' : 'border-slate-100 hover:border-slate-200'
-                    }`}
+          return (
+            <div className="bg-white/70 backdrop-blur-md rounded-3xl border border-slate-200/80 p-6 flex flex-col gap-4 shadow-xs">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                  <BookOpen className="w-4 h-4 text-emerald-500" />
+                  Clinical Rubrics Catalog ({rubrics.length} matches)
+                </h4>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsCatalogExpanded(!resolvedCatalogExpanded)}
+                    className="text-[10px] font-black border border-slate-200 hover:border-slate-800 bg-white hover:bg-slate-50 px-3 py-1.5 rounded-xl transition-all cursor-pointer flex items-center gap-1 font-mono"
                   >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="space-y-1 text-left flex-grow min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-[9px] font-black uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100/50">
-                            {rub.category}
-                          </span>
-                          <span className="text-[8px] font-semibold text-slate-400 font-mono">
-                            {rub.organSystem}
-                          </span>
-                        </div>
-                        <h5 className="text-xs font-bold text-slate-900 line-clamp-2 leading-snug">{rub.title}</h5>
-                        <p className="text-[10px] text-slate-400 font-medium italic">
-                          {rub.classicalWording}
-                        </p>
-                      </div>
-
-                      <div className="flex items-center gap-2 shrink-0">
-                        <button
-                          type="button"
-                          onClick={() => setExpandedRubricId(isExpanded ? null : rub.rubricId)}
-                          className="p-1.5 border border-slate-200 hover:border-slate-800 rounded-xl bg-white text-slate-400 hover:text-slate-800 text-[10px] font-bold cursor-pointer transition-colors"
-                        >
-                          {isExpanded ? 'Hide Grades' : 'Show Grades'}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleToggleRubric(rub)}
-                          className={`p-1.5 rounded-xl border flex items-center justify-center cursor-pointer transition-all duration-200 ${
-                            isActive
-                              ? 'bg-rose-500 border-rose-500 hover:bg-rose-600 text-white'
-                              : 'bg-emerald-500 border-emerald-500 hover:bg-emerald-600 text-white'
-                          }`}
-                          title={isActive ? "Remove from workbench" : "Add to workbench"}
-                        >
-                          {isActive ? <Trash2 className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Expandable Remedy Grades Details Drawer */}
-                    {isExpanded && (
-                      <div className="mt-3 pt-3 border-t border-slate-100 text-left space-y-3 animate-in slide-in-from-top-2 duration-200">
-                        <div className="bg-slate-50/50 p-2.5 rounded-xl border border-slate-100">
-                          <p className="text-[10px] text-slate-500 font-semibold leading-relaxed">
-                            <strong className="text-slate-700">Meaning:</strong> {rub.plainLanguageMeaning}
-                          </p>
-                          {rub.clinicalNotes && (
-                            <p className="text-[10px] text-slate-500 font-semibold leading-relaxed mt-1">
-                              <strong className="text-slate-700">Clinical Tip:</strong> {rub.clinicalNotes}
-                            </p>
-                          )}
-                        </div>
-
-                        <div className="space-y-1.5">
-                          <span className="block text-[8px] font-black uppercase text-slate-400 tracking-widest font-mono">
-                            Graded Remedy Coverage ({rub.relatedRemedies.length})
-                          </span>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                            {rub.relatedRemedies.map(rem => {
-                              // Grade color code
-                              const gradeBadge = 
-                                rem.grade === 4 ? 'bg-purple-100 text-purple-700 border-purple-200' :
-                                rem.grade === 3 ? 'bg-rose-100 text-rose-700 border-rose-200' :
-                                rem.grade === 2 ? 'bg-amber-100 text-amber-700 border-amber-200' :
-                                'bg-slate-100 text-slate-700 border-slate-200';
-                              
-                              const gradeLabel =
-                                rem.grade === 4 ? 'Grade 4 (Keynote)' :
-                                rem.grade === 3 ? 'Grade 3 (Strong)' :
-                                rem.grade === 2 ? 'Grade 2 (Moderate)' :
-                                'Grade 1 (Low)';
-
-                              return (
-                                <div key={rem.remedyId} className="flex flex-col bg-slate-50 border border-slate-100 p-2 rounded-xl">
-                                  <div className="flex items-center justify-between">
-                                    <span className="text-[10px] font-black text-slate-900">{rem.remedyId} - {rem.remedyName}</span>
-                                    <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-full border ${gradeBadge}`}>
-                                      {gradeLabel}
-                                    </span>
-                                  </div>
-                                  <p className="text-[9px] text-slate-500 leading-normal font-semibold mt-1">
-                                    {rem.keynoteReason}
-                                  </p>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      </div>
+                    {resolvedCatalogExpanded ? (
+                      <>
+                        <ChevronUp className="w-3.5 h-3.5" />
+                        Collapse
+                      </>
+                    ) : (
+                      <>
+                        <ChevronDown className="w-3.5 h-3.5" />
+                        Expand
+                      </>
                     )}
-                  </div>
-                );
-              })}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleRunAudit}
+                    disabled={auditLoading}
+                    className="text-[10px] font-black border border-slate-200 hover:border-slate-800 bg-white hover:bg-slate-50 px-3 py-1.5 rounded-xl transition-all cursor-pointer flex items-center gap-1 font-mono"
+                  >
+                    <AlertTriangle className="w-3 h-3 text-amber-500" />
+                    Audit
+                  </button>
+                </div>
+              </div>
+
+              {/* Directory Search & Filters (Always visible inside Catalog card) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Search rubrics, synonyms, remedies..."
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs font-semibold outline-none focus:border-emerald-500 focus:bg-white transition-all shadow-xs"
+                  />
+                  <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-3" />
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <select
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    className="bg-slate-50 border border-slate-200 rounded-xl px-2 py-2 text-[10px] font-bold outline-none focus:border-emerald-500 transition-all cursor-pointer"
+                  >
+                    <option value="All">All Categories</option>
+                    {CATEGORIES.filter(c => c !== 'All').map(c => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+
+                  <select
+                    value={selectedOrganSystem}
+                    onChange={(e) => setSelectedOrganSystem(e.target.value)}
+                    className="bg-slate-50 border border-slate-200 rounded-xl px-2 py-2 text-[10px] font-bold outline-none focus:border-emerald-500 transition-all cursor-pointer"
+                  >
+                    <option value="All">All Systems</option>
+                    {ORGAN_SYSTEMS.filter(o => o !== 'All').map(o => (
+                      <option key={o} value={o}>{o}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Collapsible List Container */}
+              {resolvedCatalogExpanded && (
+                <div className="border-t border-slate-100 pt-4 flex-grow transition-all duration-300">
+                  {loading ? (
+                    <div className="flex justify-center items-center py-20">
+                      <RefreshCw className="w-8 h-8 text-slate-300 animate-spin" />
+                    </div>
+                  ) : rubrics.length === 0 ? (
+                    <div className="text-center py-20 text-slate-400 space-y-2">
+                      <Info className="w-10 h-10 mx-auto opacity-40 text-slate-400" />
+                      <p className="text-xs font-bold">No active clinical rubrics found matching current filter.</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 gap-3 max-h-[350px] overflow-y-auto pr-1">
+                      {rubrics.map(rub => {
+                        const isActive = selectedRubrics.some(s => s.rubricId === rub.rubricId);
+                        const isExpanded = expandedRubricId === rub.rubricId;
+                        
+                        return (
+                          <div 
+                            key={rub.rubricId}
+                            className={`flex flex-col bg-white rounded-2xl border transition-all duration-300 p-4 shadow-2xs hover:shadow-xs ${
+                              isActive ? 'border-emerald-500/40 bg-emerald-50/10' : 'border-slate-100 hover:border-slate-200'
+                            }`}
+                          >
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="space-y-1 text-left flex-grow min-w-0">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <span className="text-[9px] font-black uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100/50">
+                                    {rub.category}
+                                  </span>
+                                  <span className="text-[8px] font-semibold text-slate-400 font-mono">
+                                    {rub.organSystem}
+                                  </span>
+                                </div>
+                                <h5 className="text-xs font-bold text-slate-900 line-clamp-2 leading-snug">{rub.title}</h5>
+                                <p className="text-[10px] text-slate-400 font-medium italic">
+                                  {rub.classicalWording}
+                                </p>
+                              </div>
+
+                              <div className="flex items-center gap-2 shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={() => setExpandedRubricId(isExpanded ? null : rub.rubricId)}
+                                  className="p-1.5 border border-slate-200 hover:border-slate-800 rounded-xl bg-white text-slate-400 hover:text-slate-800 text-[10px] font-bold cursor-pointer transition-colors"
+                                >
+                                  {isExpanded ? 'Hide Grades' : 'Show Grades'}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleToggleRubric(rub)}
+                                  className={`p-1.5 rounded-xl border flex items-center justify-center cursor-pointer transition-all duration-200 ${
+                                    isActive
+                                      ? 'bg-rose-500 border-rose-500 hover:bg-rose-600 text-white'
+                                      : 'bg-emerald-500 border-emerald-500 hover:bg-emerald-600 text-white'
+                                  }`}
+                                  title={isActive ? "Remove from workbench" : "Add to workbench"}
+                                >
+                                  {isActive ? <Trash2 className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Expandable Remedy Grades Details Drawer */}
+                            {isExpanded && (
+                              <div className="mt-3 pt-3 border-t border-slate-100 text-left space-y-3 animate-in slide-in-from-top-2 duration-200">
+                                <div className="bg-slate-50/50 p-2.5 rounded-xl border border-slate-100">
+                                  <p className="text-[10px] text-slate-500 font-semibold leading-relaxed">
+                                    <strong className="text-slate-700">Meaning:</strong> {rub.plainLanguageMeaning}
+                                  </p>
+                                  {rub.clinicalNotes && (
+                                    <p className="text-[10px] text-slate-500 font-semibold leading-relaxed mt-1">
+                                      <strong className="text-slate-700">Clinical Tip:</strong> {rub.clinicalNotes}
+                                    </p>
+                                  )}
+                                </div>
+
+                                <div className="space-y-1.5">
+                                  <span className="block text-[8px] font-black uppercase text-slate-400 tracking-widest font-mono">
+                                    Graded Remedy Coverage ({rub.relatedRemedies.length})
+                                  </span>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                    {rub.relatedRemedies.map(rem => {
+                                      const gradeBadge = 
+                                        rem.grade === 4 ? 'bg-purple-100 text-purple-700 border-purple-200' :
+                                        rem.grade === 3 ? 'bg-rose-100 text-rose-700 border-rose-200' :
+                                        rem.grade === 2 ? 'bg-amber-100 text-amber-700 border-amber-200' :
+                                        'bg-slate-100 text-slate-700 border-slate-200';
+                                      
+                                      const gradeLabel =
+                                        rem.grade === 4 ? 'Grade 4 (Keynote)' :
+                                        rem.grade === 3 ? 'Grade 3 (Strong)' :
+                                        rem.grade === 2 ? 'Grade 2 (Moderate)' :
+                                        'Grade 1 (Low)';
+
+                                      return (
+                                        <div key={rem.remedyId} className="flex flex-col bg-slate-50 border border-slate-100 p-2 rounded-xl">
+                                          <div className="flex items-center justify-between">
+                                            <span className="text-[10px] font-black text-slate-900">{rem.remedyId} - {rem.remedyName}</span>
+                                            <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-full border ${gradeBadge}`}>
+                                              {gradeLabel}
+                                            </span>
+                                          </div>
+                                          <p className="text-[9px] text-slate-500 leading-normal font-semibold mt-1">
+                                            {rem.keynoteReason}
+                                          </p>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          );
+        })()}
       </div>
       {/* CENTER COLUMN: Active Workbench & Scoring (Col Span 4) */}
-      <div className="lg:col-span-4 flex flex-col gap-6 order-1 lg:order-2">
+      <div className="lg:col-span-4 flex flex-col gap-4 order-1 lg:order-2 lg:overflow-y-auto lg:h-full pb-6 pr-1 scrollbar-thin">
         
         {/* Active Symptoms Panel */}
         <div className="bg-white/70 backdrop-blur-md rounded-3xl border border-slate-200/80 p-6 space-y-4 shadow-xs text-left">
@@ -1101,33 +1147,31 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
               <p className="text-xs font-semibold">No rubrics selected. Click the '+' button in the catalog or parse intake text to begin analysis.</p>
             </div>
           ) : (
-            <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1">
+            <div className="space-y-1.5 max-h-[300px] overflow-y-auto pr-1">
               {selectedRubrics.map(s => {
                 const rub = rubrics.find(r => r.rubricId === s.rubricId);
                 return (
-                  <div key={s.rubricId} className="bg-slate-50 border border-slate-150 p-2.5 rounded-2xl flex items-center justify-between gap-3 group">
-                    <div className="flex-grow min-w-0">
-                      <span className="text-[10px] font-black text-slate-800 line-clamp-1">{rub?.title || s.rubricId}</span>
-                      <div className="flex gap-2 text-[8px] font-mono text-emerald-600 font-bold mt-0.5">
-                        <span>Severity: {s.severity}/10</span>
+                  <div key={s.rubricId} className="bg-slate-50 border border-slate-150 p-1.5 px-3 rounded-xl flex items-center justify-between gap-3 group text-[10px]">
+                    <div className="flex-grow min-w-0 flex items-center gap-2">
+                      <span className="font-bold text-slate-800 truncate max-w-[120px] xl:max-w-[180px]">{rub?.title || s.rubricId}</span>
+                      <div className="flex items-center gap-1.5 text-[8px] font-mono text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100/50 shrink-0 font-bold">
+                        <span>Sev: {s.severity}/10</span>
                         <span>•</span>
                         <span className="capitalize">{s.frequency}</span>
-                        <span>•</span>
-                        <span className="capitalize">{s.impact} Impact</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1.5 opacity-80 group-hover:opacity-100 transition-opacity">
+                    <div className="flex items-center gap-1 shrink-0">
                       <button
                         type="button"
                         onClick={() => handleConfigureSymptom(s.rubricId)}
-                        className="p-1 border border-slate-200 hover:border-slate-800 bg-white hover:bg-slate-50 rounded-lg text-[9px] font-black uppercase px-2 font-mono cursor-pointer transition-colors"
+                        className="p-1 border border-slate-200 hover:border-slate-800 bg-white hover:bg-slate-50 rounded-lg text-[8px] font-black uppercase px-2 font-mono cursor-pointer transition-colors"
                       >
-                        Adjust
+                        Edit
                       </button>
                       <button
                         type="button"
                         onClick={() => handleRemoveSymptom(s.rubricId)}
-                        className="p-1.5 border border-rose-100 hover:border-rose-500 rounded-lg bg-rose-50/50 hover:bg-rose-500 hover:text-white text-rose-500 cursor-pointer transition-all"
+                        className="p-1.5 border border-rose-100 hover:border-rose-500 rounded-lg bg-rose-50 hover:bg-rose-500 hover:text-white text-rose-500 cursor-pointer transition-all"
                       >
                         <Trash2 className="w-3 h-3" />
                       </button>
@@ -1292,7 +1336,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
       </div>
 
       {/* RIGHT COLUMN: Clinical Reasoning Engine (Col Span 3) */}
-      <div className="lg:col-span-3 flex flex-col gap-6 order-3 lg:order-3 text-left">
+      <div className="lg:col-span-3 flex flex-col gap-4 order-3 lg:order-3 text-left lg:overflow-y-auto lg:h-full pb-6 pr-1 scrollbar-thin">
         <div className="bg-white/70 backdrop-blur-md rounded-3xl border border-slate-200/80 p-6 space-y-4 shadow-xs">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3">
             <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
