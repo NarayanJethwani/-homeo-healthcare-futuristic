@@ -480,10 +480,10 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
         </div>
       )}
 
-      <div className="w-full grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch pb-12 text-slate-800">
+      <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch pb-12 text-slate-800">
       
       {/* LEFT COLUMN: Search & Rubric Directory (Col Span 4) */}
-      <div className="xl:col-span-4 flex flex-col gap-6 order-2 xl:order-1">
+      <div className="lg:col-span-1 flex flex-col gap-6 order-2 lg:order-1">
         
         {/* Search & NLP Intake Block */}
         <div className="bg-white/70 backdrop-blur-md rounded-3xl border border-slate-200/80 p-6 space-y-4 shadow-xs">
@@ -697,7 +697,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
         </div>
       </div>
       {/* CENTER COLUMN: Active Workbench & Scoring (Col Span 4) */}
-      <div className="xl:col-span-4 flex flex-col gap-6 order-1 xl:order-2">
+      <div className="lg:col-span-1 flex flex-col gap-6 order-1 lg:order-2">
         
         {/* Active Symptoms Panel */}
         <div className="bg-white/70 backdrop-blur-md rounded-3xl border border-slate-200/80 p-6 space-y-4 shadow-xs text-left">
@@ -911,7 +911,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
       </div>
 
       {/* RIGHT COLUMN: Clinical Reasoning Engine (Col Span 4) */}
-      <div className="xl:col-span-4 flex flex-col gap-6 order-3 xl:order-3 text-left">
+      <div className="lg:col-span-1 flex flex-col gap-6 order-3 lg:order-3 text-left">
         <div className="bg-white/70 backdrop-blur-md rounded-3xl border border-slate-200/80 p-6 space-y-4 shadow-xs">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3">
             <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
