@@ -76,6 +76,14 @@ export const EDITORIAL_RECORDS_REGISTRY: Record<string, EditorialRecord[]> = {
           author: 'Dr. Jethwani',
           reviewer: 'CIE Editor',
           changeLog: 'Added caution notes regarding low vital heat contraindications.'
+        },
+        {
+          version: '1.2.0',
+          created: '2026-07-04T12:00:00Z',
+          modified: '2026-07-04T14:00:00Z',
+          author: 'Dr. Jethwani',
+          reviewer: 'CIE Editor',
+          changeLog: 'Enriched records with Syphilitic miasmatic clues.'
         }
       ],
       approvals: [
@@ -86,7 +94,7 @@ export const EDITORIAL_RECORDS_REGISTRY: Record<string, EditorialRecord[]> = {
           comments: 'Approved for active clinic decision support.'
         }
       ],
-      clinicalPearlsIds: ['ars_pearl_restlessness', 'ars_pearl_caution'],
+      clinicalPearlsIds: ['ars_pearl_restlessness', 'ars_pearl_caution', 'ars_pearl_miasm'],
       evidenceItemsIds: []
     },
     {
@@ -130,6 +138,14 @@ export const EDITORIAL_RECORDS_REGISTRY: Record<string, EditorialRecord[]> = {
           author: 'Dr. Jethwani',
           reviewer: 'CIE Editor',
           changeLog: 'Drafted ineffectual urging stool observation.'
+        },
+        {
+          version: '1.1.0',
+          created: '2026-07-04T12:00:00Z',
+          modified: '2026-07-04T14:00:00Z',
+          author: 'Dr. Jethwani',
+          reviewer: 'CIE Editor',
+          changeLog: 'Enriched records with Mixed Psoric and active Sycotic miasmatic clues.'
         }
       ],
       approvals: [
@@ -140,7 +156,7 @@ export const EDITORIAL_RECORDS_REGISTRY: Record<string, EditorialRecord[]> = {
           comments: 'Verified in clinical practice.'
         }
       ],
-      clinicalPearlsIds: ['nux_pearl_stool'],
+      clinicalPearlsIds: ['nux_pearl_stool', 'nux_pearl_miasm'],
       evidenceItemsIds: ['nux_ev_digestive']
     }
   ]

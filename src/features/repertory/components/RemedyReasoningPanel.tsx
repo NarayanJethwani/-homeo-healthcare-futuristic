@@ -122,14 +122,21 @@ export const RemedyReasoningPanel: React.FC<RemedyReasoningPanelProps> = ({ reas
             {reasoning.clinicalPearls.map((pearl, i) => (
               <div key={i} className="bg-slate-50 border border-slate-150 p-3.5 rounded-2xl space-y-1.5 text-left relative">
                 <div className="flex items-center justify-between">
-                  <span className={`text-[7.5px] font-black uppercase px-2 py-0.5 rounded-md border ${
-                    pearl.type === 'characteristic' ? 'bg-indigo-50 text-indigo-700 border-indigo-150' :
-                    pearl.type === 'caution' ? 'bg-rose-50 text-rose-700 border-rose-150' :
-                    pearl.type === 'differentiation' ? 'bg-blue-50 text-blue-700 border-blue-150' :
-                    'bg-emerald-50 text-emerald-700 border-emerald-150'
-                  }`}>
-                    {pearl.type}
-                  </span>
+                  <div className="flex gap-1">
+                    <span className={`text-[7.5px] font-black uppercase px-2 py-0.5 rounded-md border ${
+                      pearl.type === 'characteristic' ? 'bg-indigo-50 text-indigo-700 border-indigo-150' :
+                      pearl.type === 'caution' ? 'bg-rose-50 text-rose-700 border-rose-150' :
+                      pearl.type === 'differentiation' ? 'bg-blue-50 text-blue-700 border-blue-150' :
+                      'bg-emerald-50 text-emerald-700 border-emerald-150'
+                    }`}>
+                      {pearl.type}
+                    </span>
+                    {pearl.text.toLowerCase().includes('miasm') && (
+                      <span className="text-[7.5px] font-black uppercase px-2 py-0.5 rounded-md border bg-amber-50 text-amber-700 border-amber-150">
+                        Miasm Clue
+                      </span>
+                    )}
+                  </div>
                   <span className="text-[7.5px] font-bold text-slate-400 capitalize">{pearl.origin}</span>
                 </div>
                 <p className="text-[9.5px] text-slate-700 font-bold leading-relaxed">{pearl.text}</p>

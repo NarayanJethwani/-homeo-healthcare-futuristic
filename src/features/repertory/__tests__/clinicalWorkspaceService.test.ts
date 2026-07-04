@@ -162,3 +162,42 @@ EditorialService.getSourceMetadata('jethwani_private').then((source) => {
 const qaReport = EditorialValidator.validateRegistry();
 assert.strictEqual(qaReport.isValid, true);
 console.log("editorial registry QA validation check passed successfully");
+
+// Inject mock invalid remedy for QA audit testing (Phase 8)
+import { JETHWANI_EVIDENCE_REGISTRY } from "../knowledge/evidenceRegistry";
+
+JETHWANI_EVIDENCE_REGISTRY['MockInvalid'] = {
+  remedyId: 'MockInvalid',
+  editorialStatus: 'Draft',
+  clinicalPearls: [],
+  evidenceItems: [
+    {
+      id: 'mock_low_conf',
+      title: 'Low Conf Trial',
+      summary: 'Incomplete study',
+      strength: 'Hypothetical',
+      confidence: 50, // Low confidence alert!
+      editorialStatus: 'Draft',
+      reviewer: 'Editor',
+      lastReviewed: '2026-07-04',
+      origin: 'AI-assisted',
+      sourceReferences: []
+    }
+  ],
+  pathologyRelations: [],
+  remedyRelations: [
+    'Ars (complementary)',
+    'Ars (antidote)', // Relationship conflict!
+    'MockInvalid (complementary)' // Self relationship conflict!
+  ]
+};
+
+const badReport = EditorialValidator.validateRegistry();
+assert.strictEqual(badReport.isValid, false);
+assert.ok(badReport.issues.some(i => i.includes("has confidence 50%")));
+assert.ok(badReport.issues.some(i => i.includes("cannot be both complementary and antagonistic")));
+assert.ok(badReport.issues.some(i => i.includes("cannot have relationship with itself")));
+
+// Cleanup mock invalid entry
+delete JETHWANI_EVIDENCE_REGISTRY['MockInvalid'];
+console.log("editorial registry validator QA alerts verified successfully");

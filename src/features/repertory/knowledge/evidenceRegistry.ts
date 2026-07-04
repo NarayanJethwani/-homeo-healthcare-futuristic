@@ -23,6 +23,12 @@ export const JETHWANI_EVIDENCE_REGISTRY: Record<string, RemedyKnowledgeRecord> =
         text: 'Contraindicated in patients with low vital heat if warm wraps cannot be tolerated.',
         type: 'caution',
         origin: 'editorial'
+      },
+      {
+        id: 'ars_pearl_miasm',
+        text: 'Miasmatic clue: Predominantly Syphilitic/destructive miasm target, indicated in ulcerations and gangrenous tendencies.',
+        type: 'characteristic',
+        origin: 'editorial'
       }
     ],
     evidenceItems: [
@@ -70,6 +76,12 @@ export const JETHWANI_EVIDENCE_REGISTRY: Record<string, RemedyKnowledgeRecord> =
         type: 'characteristic',
         origin: 'Dr. Jethwani clinical note',
         caution: 'Do not prescribe if constipation is painless with no urge.'
+      },
+      {
+        id: 'nux_pearl_miasm',
+        text: 'Miasmatic clue: Mixed Psoric and active Sycotic miasm target, showing spasmodic and congestive manifestations.',
+        type: 'characteristic',
+        origin: 'editorial'
       }
     ],
     evidenceItems: [
@@ -104,6 +116,12 @@ export const JETHWANI_EVIDENCE_REGISTRY: Record<string, RemedyKnowledgeRecord> =
         text: 'Intense desire for warm drinks and sweets; cold foods cause immediate flatulence.',
         type: 'constitutional',
         origin: 'Dr. Jethwani clinical note'
+      },
+      {
+        id: 'lyc_pearl_miasm',
+        text: 'Miasmatic clue: Deeply Sycotic miasm target with secondary Psoric layers, marked by gradual tissue changes.',
+        type: 'characteristic',
+        origin: 'editorial'
       }
     ],
     evidenceItems: [
@@ -137,6 +155,12 @@ export const JETHWANI_EVIDENCE_REGISTRY: Record<string, RemedyKnowledgeRecord> =
         id: 'sulph_pearl_philosophical',
         text: 'Philosophical or untidy disposition; often values old or ragged possessions highly.',
         type: 'constitutional',
+        origin: 'source-backed'
+      },
+      {
+        id: 'sulph_pearl_miasm',
+        text: 'Miasmatic clue: Chief representative of the Psoric miasm, acting as the fundamental reactor to clear suppressions.',
+        type: 'characteristic',
         origin: 'source-backed'
       }
     ],
@@ -173,6 +197,12 @@ export const JETHWANI_EVIDENCE_REGISTRY: Record<string, RemedyKnowledgeRecord> =
         type: 'characteristic',
         origin: 'source-backed',
         caution: 'prescribe only if thirstlessness is confirmed.'
+      },
+      {
+        id: 'puls_pearl_miasm',
+        text: 'Miasmatic clue: Principally Sycotic miasm target, producing thick mucous discharge and venous congestions.',
+        type: 'characteristic',
+        origin: 'editorial'
       }
     ],
     evidenceItems: [
