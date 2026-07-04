@@ -17,7 +17,6 @@ import { SuggestedQuestions } from './SuggestedQuestions';
 import { ConfidenceBreakdownPanel } from './ConfidenceBreakdownPanel';
 import { RubricCoverageHeatmap } from './RubricCoverageHeatmap';
 import { ReasoningTimeline } from './ReasoningTimeline';
-import { ClinicalRepertoryWorkspace } from '../clinicalWorkspace';
 import { CLINICAL_WORKSPACE_SAFETY_NOTICE } from '../clinicalWorkspace/types';
 
 export interface RepertoryWorkbenchProps {
@@ -373,7 +372,6 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
   const selectedRubricIds = selectedRubrics.map((rubric) => rubric.rubricId);
 
   return (
-    <ClinicalRepertoryWorkspace>
     <div className="w-full space-y-4">
       {/* Safety Header Badge */}
       <div className="bg-amber-50/90 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-900/30 p-4 rounded-3xl flex items-center justify-between shadow-xs">
@@ -1193,6 +1191,5 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
       )}
       </div>
     </div>
-    </ClinicalRepertoryWorkspace>
   );
 };
