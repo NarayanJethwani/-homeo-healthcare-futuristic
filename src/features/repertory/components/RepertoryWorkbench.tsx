@@ -7,10 +7,7 @@ import { RepertoryRubric, ScoringResult, RemedyDifferentiation, ValidationReport
 import { repertoryRepository } from '../database/repertoryDb';
 import { DatabaseValidator } from '../validators/databaseValidator';
 import { ImportExportService } from '../import-export/importExportService';
-import { RemedyReasoningPanel } from './RemedyReasoningPanel';
 import { DifferentialComparison } from './DifferentialComparison';
-import { MissingInformationCard } from './MissingInformationCard';
-import { SuggestedQuestions } from './SuggestedQuestions';
 import { ConfidenceBreakdownPanel } from './ConfidenceBreakdownPanel';
 import { RubricCoverageHeatmap } from './RubricCoverageHeatmap';
 import { ReasoningTimeline } from './ReasoningTimeline';
@@ -59,7 +56,6 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
   const [isScoringLoading, setIsScoringLoading] = useState<boolean>(false);
   const [reasoningSummary, setReasoningSummary] = useState<ClinicalReasoningSummary | null>(null);
   const [activeReasoningRemedyId, setActiveReasoningRemedyId] = useState<string | null>(null);
-  const [activeReasoningTab, setActiveReasoningTab] = useState<'explanation' | 'differential' | 'coverage' | 'questions' | 'timeline'>('explanation');
   const [validationFindings, setValidationFindings] = useState<ClinicalValidationFinding[]>([]);
   const [longitudinalSummary, setLongitudinalSummary] = useState<LongitudinalCaseSummary | null>(null);
   const [lastAmeliorationRating, setLastAmeliorationRating] = useState<number>(3);
@@ -69,6 +65,9 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
   const [showAuditModal, setShowAuditModal] = useState<boolean>(false);
   const [auditLoading, setAuditLoading] = useState<boolean>(false);
   const [importedStatus, setImportedStatus] = useState<{ success?: string; error?: string }>({});
+
+  const [activeDockTab, setActiveDockTab] = useState<string>('materia-medica');
+  const [expandedDockSection, setExpandedDockSection] = useState<string | null>(null);
 
   // UI state
   const [expandedRubricId, setExpandedRubricId] = useState<string | null>(null);
@@ -330,6 +329,45 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
     setSelectedRubrics(prev => prev.filter(s => s.rubricId !== rubricId));
   };
 
+  const getCategorizedChips = () => {
+    const mental: any[] = [];
+    const physical: any[] = [];
+    const sleep: any[] = [];
+    const modalities: any[] = [];
+    const general: any[] = [];
+
+    selectedRubrics.forEach(sr => {
+      const rub = rubrics.find(r => r.rubricId === sr.rubricId);
+      if (!rub) return;
+
+      const titleLower = rub.title.toLowerCase();
+      const catLower = rub.category.toLowerCase();
+
+      const chip = { sr, rub };
+
+      if (catLower.includes('mind') || catLower.includes('delusions') || catLower.includes('mental')) {
+        mental.push(chip);
+      } else if (catLower.includes('sleep') || catLower.includes('dreams')) {
+        sleep.push(chip);
+      } else if (catLower.includes('modality') || titleLower.includes('worse') || titleLower.includes('better') || titleLower.includes('agg') || titleLower.includes('amel')) {
+        modalities.push(chip);
+      } else if (
+        catLower.includes('stomach') || catLower.includes('abdomen') || 
+        catLower.includes('rectum') || catLower.includes('stool') || 
+        catLower.includes('head') || catLower.includes('mouth') ||
+        catLower.includes('throat') || catLower.includes('chest') ||
+        catLower.includes('respiratory') || catLower.includes('cough') ||
+        catLower.includes('physical')
+      ) {
+        physical.push(chip);
+      } else {
+        general.push(chip);
+      }
+    });
+
+    return { mental, physical, sleep, modalities, general };
+  };
+
   // Parse NLP Clinical Intake
   const handleParseIntake = async () => {
     if (!nlpInput.trim()) return;
@@ -440,8 +478,250 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
     }
   };
 
+  const renderDockContent = () => {
+    if (!reasoningSummary || !activeReasoningRemedyId) {
+      return (
+        <div className="p-8 text-center text-slate-400 text-xs font-semibold">
+          Select a remedy candidate above to inspect detailed clinical intelligence.
+        </div>
+      );
+    }
+
+    const activeRes = reasoningSummary.topRemedies.find(r => r.remedyId === activeReasoningRemedyId);
+    if (!activeRes) return null;
+
+    switch (activeDockTab) {
+      case 'materia-medica':
+        return (
+          <div className="space-y-3">
+            {[
+              { id: 'mm-summary', label: '📖 Materia Medica Summary', content: activeRes.materiaMedicaSummary || 'No summary registered.' },
+              { id: 'mm-keynotes', label: '🩺 Keynotes & Confirmations', list: activeRes.keynotes || [] },
+              { id: 'mm-mentals', label: '🧠 Mental Generals', list: activeRes.mentals || [] },
+              { id: 'mm-physicals', label: '💪 Physical Generals', list: activeRes.physicalGenerals || [] },
+              { id: 'mm-modalities', label: '✨ Modalities', list: activeRes.modalities || [] }
+            ].map(sec => {
+              const isOpen = expandedDockSection === sec.id;
+              return (
+                <div key={sec.id} className="border border-slate-200 rounded-xl bg-white overflow-hidden text-left">
+                  <button
+                    type="button"
+                    onClick={() => setExpandedDockSection(isOpen ? null : sec.id)}
+                    className="w-full text-left px-4 py-3 bg-slate-50 hover:bg-slate-100 flex items-center justify-between text-xs font-bold text-slate-700 outline-none border-none cursor-pointer"
+                  >
+                    <span>{sec.label}</span>
+                    <span className="text-slate-400 font-mono">{isOpen ? '▼' : '▶'}</span>
+                  </button>
+                  {isOpen && (
+                    <div className="p-4 text-xs text-slate-650 leading-relaxed border-t border-slate-100 text-left space-y-1">
+                      {sec.content ? (
+                        <p>{sec.content}</p>
+                      ) : sec.list && sec.list.length > 0 ? (
+                        <ul className="list-disc list-inside space-y-1">
+                          {sec.list.map((item, idx) => <li key={idx}>{item}</li>)}
+                        </ul>
+                      ) : (
+                        <p className="text-slate-400 italic">None registered.</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        );
+
+      case 'clinical-reasoning':
+        return (
+          <div className="p-4 bg-white border border-slate-200 rounded-2xl text-left space-y-4 text-xs">
+            <h4 className="font-bold text-slate-800">Remedy Reasoning Explanation</h4>
+            <p className="text-slate-650 leading-relaxed">{activeRes.materiaMedicaSummary}</p>
+            {activeRes.clinicalPearls && activeRes.clinicalPearls.length > 0 && (
+              <div className="space-y-2">
+                <span className="font-bold text-slate-700 block">Clinical Observations:</span>
+                <div className="space-y-2">
+                  {activeRes.clinicalPearls.map((pearl, i) => (
+                    <div key={i} className="p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                      <p className="font-semibold text-slate-750">{pearl.text}</p>
+                      <span className="text-[9px] text-slate-400 font-mono capitalize mt-1 block">Origin: {pearl.origin}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        );
+
+      case 'knowledge-graph':
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-white border border-slate-200 rounded-2xl p-4">
+              <h4 className="text-xs font-bold text-slate-800 mb-3 text-left">Rubric Coverage Heatmap</h4>
+              <RubricCoverageHeatmap 
+                confidenceBreakdown={reasoningSummary.confidenceBreakdown} 
+                remedyId={activeReasoningRemedyId} 
+              />
+            </div>
+            <div className="bg-white border border-slate-200 rounded-2xl p-4">
+              <h4 className="text-xs font-bold text-slate-800 mb-3 text-left">Confidence Breakdown</h4>
+              <ConfidenceBreakdownPanel 
+                evidenceBreakdown={reasoningSummary.evidenceBreakdown} 
+                remedyId={activeReasoningRemedyId} 
+              />
+            </div>
+          </div>
+        );
+
+      case 'relationships':
+        const rels = activeRes.relationships || {};
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left text-xs">
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 space-y-3">
+              <h4 className="font-bold text-slate-800">Complementary & Follows Well</h4>
+              <div className="space-y-1">
+                <span className="font-bold text-slate-500 text-[10px]">Complementary:</span>
+                <p className="text-slate-650">{rels.complementary?.join(', ') || 'None'}</p>
+              </div>
+              <div className="space-y-1">
+                <span className="font-bold text-slate-500 text-[10px]">Follows Well:</span>
+                <p className="text-slate-650">{rels.followsWell?.join(', ') || 'None'}</p>
+              </div>
+            </div>
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 space-y-3">
+              <h4 className="font-bold text-slate-800">Inimical & Antidotes</h4>
+              <div className="space-y-1">
+                <span className="font-bold text-slate-500 text-[10px]">Inimical (Antagonistic):</span>
+                <p className="text-slate-650 text-rose-650 font-bold">{rels.inimical?.join(', ') || 'None'}</p>
+              </div>
+              <div className="space-y-1">
+                <span className="font-bold text-slate-500 text-[10px]">Antidotes:</span>
+                <p className="text-slate-650">{rels.antidotes?.join(', ') || 'None'}</p>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'timeline':
+        return (
+          <div className="bg-white border border-slate-200 rounded-2xl p-4">
+            <ReasoningTimeline summary={longitudinalSummary} />
+          </div>
+        );
+
+      case 'editorial-sources':
+        return (
+          <div className="bg-white border border-slate-200 rounded-2xl p-4 text-left space-y-4">
+            <h4 className="text-xs font-bold text-slate-800">Editorial Provenance Records</h4>
+            {activeRes.evidenceItems && activeRes.evidenceItems.length > 0 ? (
+              <div className="space-y-3">
+                {activeRes.evidenceItems.map((item, idx) => (
+                  <div key={idx} className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1.5 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-slate-850">{item.title}</span>
+                      <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 text-[8px] font-black px-1.5 py-0.5 rounded font-mono uppercase">{item.editorialStatus}</span>
+                    </div>
+                    <p className="text-slate-600">{item.summary}</p>
+                    <div className="text-[9px] text-slate-400 font-mono">
+                      Reviewer: {item.reviewer} | Last Reviewed: {item.lastReviewed}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-slate-400 italic text-xs">No editorial records registered.</p>
+            )}
+          </div>
+        );
+
+      case 'clinical-experience':
+        const obs = activeRes.clinicalPearls?.filter(p => p.origin.includes('clinical') || p.origin.includes('Jethwani')) || [];
+        return (
+          <div className="bg-white border border-slate-200 rounded-2xl p-4 text-left space-y-3 text-xs">
+            <h4 className="font-bold text-slate-800">Dr. Jethwani Curated Clinical Observations</h4>
+            {obs.length > 0 ? (
+              <div className="space-y-2">
+                {obs.map((o, idx) => (
+                  <div key={idx} className="p-3 bg-indigo-50/40 border border-indigo-105 rounded-xl">
+                    <p className="font-semibold text-indigo-900 leading-normal">{o.text}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-slate-400 italic">No specific clinical observations mapped to this remedy candidate.</p>
+            )}
+          </div>
+        );
+
+      case 'differentials':
+        return (
+          <div className="bg-white border border-slate-200 rounded-2xl p-4">
+            <DifferentialComparison comparisons={reasoningSummary.differentialComparisons} />
+          </div>
+        );
+
+      case 'validation':
+        return (
+          <div className="bg-white border border-slate-200 rounded-2xl p-4 text-left space-y-3">
+            <h4 className="text-xs font-bold text-slate-800">Live Validation Audits</h4>
+            {validationFindings.length > 0 ? (
+              <ul className="text-xs text-rose-700 font-bold space-y-1.5 pl-4 list-disc">
+                {validationFindings.map((finding, idx) => (
+                  <li key={idx}>
+                    <span className="uppercase text-[8px] font-black bg-rose-100 px-1.5 py-0.5 rounded mr-1.5">{finding.category}</span>
+                    {finding.message}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-emerald-600 text-xs font-semibold">✓ 0 validation alerts detected. Clinical integrity check passed.</p>
+            )}
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="w-full space-y-4">
+      {/* Sticky Clinical Summary */}
+      {(() => {
+        const topRem = scoringResult?.topRemedies[0];
+        const totalWarnings = scoringResult?.topRemedies.reduce((acc, r) => acc + (r.contradictoryEvidence?.length || 0), 0) || 0;
+        const missingGaps = reasoningSummary?.missingInformation?.length || 0;
+
+        return (
+          <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border border-slate-200/80 p-3 rounded-2xl flex items-center justify-between shadow-xs mb-4 text-[10px] text-slate-700 font-bold">
+            <div className="flex items-center gap-3">
+              <span className="text-slate-500 uppercase text-[8px] font-black tracking-wider">Clinical OS Summary:</span>
+              {topRem ? (
+                <div className="flex items-center gap-2 bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded-lg border border-emerald-100">
+                  <span>Top Remedy: <strong>{topRem.remedyId}</strong> ({topRem.confidence}%)</span>
+                </div>
+              ) : (
+                <span className="text-slate-400 italic">No active repertorization</span>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="bg-amber-50 text-amber-800 border border-amber-200 text-[8px] font-black px-2 py-0.5 rounded-lg uppercase tracking-wider">
+                ⚠️ Clinical review required — do not auto-prescribe.
+              </span>
+              {totalWarnings > 0 && (
+                <span className="bg-rose-50 text-rose-800 border border-rose-200 text-[8px] font-black px-2 py-0.5 rounded-lg">
+                  {totalWarnings} Warnings
+                </span>
+              )}
+              {missingGaps > 0 && (
+                <span className="bg-sky-50 text-sky-800 border border-sky-200 text-[8px] font-black px-2 py-0.5 rounded-lg">
+                  {missingGaps} Gaps
+                </span>
+              )}
+            </div>
+          </div>
+        );
+      })()}
       {/* Safety Header Badge */}
       <div className="bg-amber-50/90 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-900/30 p-4 rounded-3xl flex items-center justify-between shadow-xs">
         <div className="flex items-center gap-3">
@@ -480,10 +760,10 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
         </div>
       )}
 
-      <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch pb-12 text-slate-800">
+      <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch pb-12 text-slate-800">
       
       {/* LEFT COLUMN: Search & Rubric Directory (Col Span 4) */}
-      <div className="lg:col-span-1 flex flex-col gap-6 order-2 lg:order-1">
+      <div className="lg:col-span-5 flex flex-col gap-6 order-2 lg:order-1">
         
         {/* Search & NLP Intake Block */}
         <div className="bg-white/70 backdrop-blur-md rounded-3xl border border-slate-200/80 p-6 space-y-4 shadow-xs">
@@ -503,7 +783,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
               value={nlpInput}
               onChange={(e) => setNlpInput(e.target.value)}
               placeholder="Paste raw patient voice intake here (e.g., 'Worse at 3am, anxious, extremely chilly, bloating immediately after eating')..."
-              className="w-full h-20 bg-slate-50/50 hover:bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs outline-none focus:border-emerald-500 focus:bg-white transition-all resize-none font-semibold leading-relaxed"
+              className="w-full h-32 md:h-36 bg-slate-50/50 hover:bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs outline-none focus:border-emerald-500 focus:bg-white transition-all resize-y font-semibold leading-relaxed"
             />
             <div className="flex justify-end gap-3">
               <button
@@ -517,6 +797,106 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
               </button>
             </div>
           </div>
+
+          {/* Extracted Symptoms Grid (compact chips) */}
+          {(() => {
+            const chips = getCategorizedChips();
+            const hasChips = chips.mental.length > 0 || chips.physical.length > 0 || chips.sleep.length > 0 || chips.modalities.length > 0 || chips.general.length > 0;
+            if (!hasChips) return null;
+
+            return (
+              <div className="bg-slate-50/50 border border-slate-200/60 p-4 rounded-2xl space-y-3 text-left">
+                <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Extracted Symptoms</h4>
+                <div className="space-y-2">
+                  {chips.mental.length > 0 && (
+                    <div>
+                      <span className="text-[8px] font-black uppercase text-purple-600 block mb-1">Mental</span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {chips.mental.map(({ sr, rub }) => (
+                          <button
+                            type="button"
+                            key={sr.rubricId}
+                            onClick={() => setSearchTerm(rub.title)}
+                            className="bg-white border border-purple-200 hover:border-purple-400 text-purple-800 text-[9px] font-bold px-2 py-0.5 rounded-lg flex items-center gap-1 transition cursor-pointer"
+                          >
+                            ✓ {rub.title} (G{rub.grade})
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {chips.physical.length > 0 && (
+                    <div>
+                      <span className="text-[8px] font-black uppercase text-emerald-600 block mb-1">Physical</span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {chips.physical.map(({ sr, rub }) => (
+                          <button
+                            type="button"
+                            key={sr.rubricId}
+                            onClick={() => setSearchTerm(rub.title)}
+                            className="bg-white border border-emerald-200 hover:border-emerald-400 text-emerald-800 text-[9px] font-bold px-2 py-0.5 rounded-lg flex items-center gap-1 transition cursor-pointer"
+                          >
+                            ✓ {rub.title} (G{rub.grade})
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {chips.sleep.length > 0 && (
+                    <div>
+                      <span className="text-[8px] font-black uppercase text-blue-600 block mb-1">Sleep</span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {chips.sleep.map(({ sr, rub }) => (
+                          <button
+                            type="button"
+                            key={sr.rubricId}
+                            onClick={() => setSearchTerm(rub.title)}
+                            className="bg-white border border-blue-200 hover:border-blue-400 text-blue-800 text-[9px] font-bold px-2 py-0.5 rounded-lg flex items-center gap-1 transition cursor-pointer"
+                          >
+                            ✓ {rub.title} (G{rub.grade})
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {chips.modalities.length > 0 && (
+                    <div>
+                      <span className="text-[8px] font-black uppercase text-amber-600 block mb-1">Modalities</span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {chips.modalities.map(({ sr, rub }) => (
+                          <button
+                            type="button"
+                            key={sr.rubricId}
+                            onClick={() => setSearchTerm(rub.title)}
+                            className="bg-white border border-amber-200 hover:border-amber-400 text-amber-800 text-[9px] font-bold px-2 py-0.5 rounded-lg flex items-center gap-1 transition cursor-pointer"
+                          >
+                            ✓ {rub.title} (G{rub.grade})
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {chips.general.length > 0 && (
+                    <div>
+                      <span className="text-[8px] font-black uppercase text-slate-500 block mb-1">General</span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {chips.general.map(({ sr, rub }) => (
+                          <button
+                            type="button"
+                            key={sr.rubricId}
+                            onClick={() => setSearchTerm(rub.title)}
+                            className="bg-white border border-slate-200 hover:border-slate-400 text-slate-800 text-[9px] font-bold px-2 py-0.5 rounded-lg flex items-center gap-1 transition cursor-pointer"
+                          >
+                            ✓ {rub.title} (G{rub.grade})
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
 
           {/* Directory Search & Filters */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
@@ -697,7 +1077,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
         </div>
       </div>
       {/* CENTER COLUMN: Active Workbench & Scoring (Col Span 4) */}
-      <div className="lg:col-span-1 flex flex-col gap-6 order-1 lg:order-2">
+      <div className="lg:col-span-4 flex flex-col gap-6 order-1 lg:order-2">
         
         {/* Active Symptoms Panel */}
         <div className="bg-white/70 backdrop-blur-md rounded-3xl border border-slate-200/80 p-6 space-y-4 shadow-xs text-left">
@@ -804,15 +1184,16 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
                           : 'bg-slate-850/50 border-white/5 hover:border-white/15'
                       }`}
                     >
-                      <div className="flex items-center justify-between gap-3 text-xs">
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-black text-slate-400">#{idx + 1}</span>
-                          <span className="font-black text-emerald-400">{rem.remedyId}</span>
-                          <span className="text-[9px] text-slate-350 font-bold max-w-[120px] line-clamp-1">{rem.remedyName}</span>
+                      <div className="flex items-center justify-between text-[10px] font-bold">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[9px] text-slate-400">#{idx + 1}</span>
+                          <span className="font-extrabold text-emerald-400">{rem.remedyId}</span>
+                          <span className="text-[8px] text-slate-400 font-medium max-w-[80px] truncate">{rem.remedyName}</span>
                         </div>
-                        <div className="flex items-center gap-1.5 font-mono text-[10px] font-black">
-                          <span className="text-slate-400">Score: {rem.score}</span>
+                        <div className="flex items-center gap-2 font-mono text-[9px] font-medium text-slate-350">
+                          <span>Score: {rem.score}</span>
                           <span className="text-emerald-400">({rem.confidence}%)</span>
+                          <span className="text-blue-400">Fit: {rem.constitutionalFit || 0}%</span>
                         </div>
                       </div>
 
@@ -910,8 +1291,8 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
 
       </div>
 
-      {/* RIGHT COLUMN: Clinical Reasoning Engine (Col Span 4) */}
-      <div className="lg:col-span-1 flex flex-col gap-6 order-3 lg:order-3 text-left">
+      {/* RIGHT COLUMN: Clinical Reasoning Engine (Col Span 3) */}
+      <div className="lg:col-span-3 flex flex-col gap-6 order-3 lg:order-3 text-left">
         <div className="bg-white/70 backdrop-blur-md rounded-3xl border border-slate-200/80 p-6 space-y-4 shadow-xs">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3">
             <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
@@ -955,148 +1336,98 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
                 Add symptoms to the workbench to generate explainable AI reasoning, coverage heatmaps, differential comparisons, and follow-up prompts.
               </p>
             </div>
-          ) : (
-            <div className="space-y-4">
-              {/* Tabs selector */}
-              <div className="flex border-b border-slate-200/60 pb-1.5 gap-1.5 overflow-x-auto">
-                <button
-                  type="button"
-                  onClick={() => setActiveReasoningTab('explanation')}
-                  className={`text-[9px] font-black uppercase px-2.5 py-1.5 rounded-xl transition cursor-pointer ${
-                    activeReasoningTab === 'explanation'
-                      ? 'bg-slate-900 text-white shadow-xs'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
-                >
-                  Affinity
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveReasoningTab('differential')}
-                  className={`text-[9px] font-black uppercase px-2.5 py-1.5 rounded-xl transition cursor-pointer ${
-                    activeReasoningTab === 'differential'
-                      ? 'bg-slate-900 text-white shadow-xs'
-                      : 'bg-slate-100 text-slate-655 hover:bg-slate-200'
-                  }`}
-                >
-                  Differential
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveReasoningTab('coverage')}
-                  className={`text-[9px] font-black uppercase px-2.5 py-1.5 rounded-xl transition cursor-pointer ${
-                    activeReasoningTab === 'coverage'
-                      ? 'bg-slate-900 text-white shadow-xs'
-                      : 'bg-slate-100 text-slate-655 hover:bg-slate-200'
-                  }`}
-                >
-                  Coverage
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveReasoningTab('questions')}
-                  className={`text-[9px] font-black uppercase px-2.5 py-1.5 rounded-xl transition cursor-pointer ${
-                    activeReasoningTab === 'questions'
-                      ? 'bg-slate-900 text-white shadow-xs'
-                      : 'bg-slate-100 text-slate-655 hover:bg-slate-200'
-                  }`}
-                >
-                  Questions
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveReasoningTab('timeline')}
-                  className={`text-[9px] font-black uppercase px-2.5 py-1.5 rounded-xl transition cursor-pointer ${
-                    activeReasoningTab === 'timeline'
-                      ? 'bg-slate-900 text-white shadow-xs'
-                      : 'bg-slate-100 text-slate-655 hover:bg-slate-200'
-                  }`}
-                >
-                  Timeline
-                </button>
-              </div>
+          ) : (() => {
+            const activeRes = reasoningSummary.topRemedies.find(r => r.remedyId === activeReasoningRemedyId);
+            const patMatch = reasoningSummary.matchedPatterns?.find(p => p.remedyId === activeReasoningRemedyId);
+            return (
+              <div className="space-y-4">
+                {/* Target Remedy Selector */}
+                <div className="flex flex-col gap-1.5 pt-2">
+                  <span className="text-[9px] font-black text-slate-500 uppercase tracking-wide">Target Remedy:</span>
+                  <select
+                    value={activeReasoningRemedyId || ''}
+                    onChange={(e) => {
+                      setActiveReasoningRemedyId(e.target.value);
+                      setExpandedDockSection(null);
+                    }}
+                    className="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 text-[9px] font-bold cursor-pointer w-full"
+                  >
+                    {reasoningSummary.topRemedies.map(r => (
+                      <option key={r.remedyId} value={r.remedyId}>
+                        {r.remedyId} - {r.remedyName} ({r.confidence}%)
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-              {/* Tab Contents */}
-              {activeReasoningTab === 'explanation' && (() => {
-                const activeRes = reasoningSummary.topRemedies.find(r => r.remedyId === activeReasoningRemedyId);
-                return (
-                  <div className="space-y-4">
-                    {/* Remedy selector for active reasoning */}
-                    <div className="flex items-center gap-2">
-                      <span className="text-[9px] font-black text-slate-500 uppercase tracking-wide">Target Remedy:</span>
-                      <select
-                        value={activeReasoningRemedyId || ''}
-                        onChange={(e) => setActiveReasoningRemedyId(e.target.value)}
-                        className="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-[9px] font-bold cursor-pointer"
-                      >
-                        {reasoningSummary.topRemedies.map(r => (
-                          <option key={r.remedyId} value={r.remedyId}>
-                            {r.remedyId} - {r.remedyName} ({r.confidence}%)
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    {activeRes ? (
-                      <RemedyReasoningPanel 
-                        reasoning={{
-                          ...activeRes,
-                          ...(longitudinalSummary?.remedyOutcomes.find(o => o.remedyId === activeRes.remedyId) || {})
-                        }}
-                        matchedPatterns={reasoningSummary.matchedPatterns} 
-                      />
-                    ) : (
-                      <p className="text-[10px] text-slate-400 italic">No target remedy selected.</p>
+                {/* Fit Scores */}
+                {activeRes && (
+                  <div className="grid grid-cols-2 gap-2 text-[9px] font-bold">
+                    {activeRes.constitutionalFit !== undefined && (
+                      <div className="flex flex-col bg-slate-50 border border-slate-200 p-2 rounded-xl">
+                        <span className="text-[7px] text-slate-400 uppercase font-black">Constitutional Fit</span>
+                        <span className="text-emerald-600 font-mono text-[9px] mt-0.5">{activeRes.constitutionalFit}%</span>
+                      </div>
+                    )}
+                    {activeRes.miasmaticFit !== undefined && (
+                      <div className="flex flex-col bg-slate-50 border border-slate-200 p-2 rounded-xl">
+                        <span className="text-[7px] text-slate-400 uppercase font-black">Miasmatic Fit</span>
+                        <span className="text-blue-600 font-mono text-[9px] mt-0.5">{activeRes.miasmaticFit}%</span>
+                      </div>
+                    )}
+                    {activeRes.modalityFit !== undefined && (
+                      <div className="flex flex-col bg-slate-50 border border-slate-200 p-2 rounded-xl">
+                        <span className="text-[7px] text-slate-400 uppercase font-black">Modality Align</span>
+                        <span className="text-indigo-600 font-mono text-[9px] mt-0.5">{activeRes.modalityFit}%</span>
+                      </div>
+                    )}
+                    {activeRes.etiologyFit !== undefined && (
+                      <div className="flex flex-col bg-slate-50 border border-slate-200 p-2 rounded-xl">
+                        <span className="text-[7px] text-slate-400 uppercase font-black">Etiology Match</span>
+                        <span className="text-violet-600 font-mono text-[9px] mt-0.5">{activeRes.etiologyFit}%</span>
+                      </div>
                     )}
                   </div>
-                );
-              })()}
+                )}
 
-              {activeReasoningTab === 'differential' && (
-                <DifferentialComparison comparisons={reasoningSummary.differentialComparisons} />
-              )}
-
-              {activeReasoningTab === 'coverage' && activeReasoningRemedyId && (
-                <div className="space-y-4">
-                  {/* Remedy selector for active reasoning */}
-                  <div className="flex items-center gap-2">
-                    <span className="text-[9px] font-black text-slate-500 uppercase tracking-wide">Target Remedy:</span>
-                    <select
-                      value={activeReasoningRemedyId || ''}
-                      onChange={(e) => setActiveReasoningRemedyId(e.target.value)}
-                      className="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-[9px] font-bold cursor-pointer"
-                    >
-                      {reasoningSummary.topRemedies.map(r => (
-                        <option key={r.remedyId} value={r.remedyId}>
-                          {r.remedyId} - {r.remedyName} ({r.confidence}%)
-                        </option>
-                      ))}
-                    </select>
+                {/* Pattern Match */}
+                {patMatch && (
+                  <div className="bg-amber-50 border border-amber-200/50 p-3 rounded-xl text-[10px] text-amber-800">
+                    <span className="font-bold block">🔥 Clinical Pattern Match:</span>
+                    <span className="font-medium block mt-0.5">{patMatch.patternName} ({patMatch.matchPercentage}% Overlap)</span>
                   </div>
-                  <RubricCoverageHeatmap 
-                    confidenceBreakdown={reasoningSummary.confidenceBreakdown} 
-                    remedyId={activeReasoningRemedyId} 
-                  />
-                  <ConfidenceBreakdownPanel 
-                    evidenceBreakdown={reasoningSummary.evidenceBreakdown} 
-                    remedyId={activeReasoningRemedyId} 
-                  />
-                </div>
-              )}
+                )}
 
-              {activeReasoningTab === 'questions' && (
-                <div className="space-y-4">
-                  <MissingInformationCard missingInfo={reasoningSummary.missingInformation} />
-                  <SuggestedQuestions questions={reasoningSummary.suggestedQuestions} />
-                </div>
-              )}
+                {/* Missing Confirmations */}
+                {patMatch && patMatch.missingIndicators.length > 0 && (
+                  <div className="space-y-1.5 text-[9px] text-slate-700">
+                    <span className="font-bold text-amber-700">Missing Confirmations:</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {patMatch.missingIndicators.map((mi, idx) => (
+                        <span key={idx} className="bg-white border border-slate-200 text-slate-600 px-2 py-0.5 rounded-lg font-bold">
+                          {mi.title}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-              {activeReasoningTab === 'timeline' && (
-                <ReasoningTimeline summary={longitudinalSummary} />
-              )}
-            </div>
-          )}
+                {/* Next Follow-up Questions */}
+                {reasoningSummary.suggestedQuestions && reasoningSummary.suggestedQuestions.length > 0 && (
+                  <div className="space-y-1.5 text-[9px] text-slate-700">
+                    <span className="font-bold text-slate-500 uppercase tracking-wide">Next Follow-up Questions:</span>
+                    <ul className="list-disc list-inside space-y-1 pl-1 text-slate-600">
+                      {reasoningSummary.suggestedQuestions.slice(0, 3).map((q, idx) => (
+                        <li key={idx}>{q.questionText}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
         </div>
+      </div>
       </div>
 
       {/* MODIFIER CONFIG POPUP MODAL */}
@@ -1304,7 +1635,50 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
           </div>
         </div>
       )}
-      </div>
+
+      {/* CLINICAL INTELLIGENCE DOCK */}
+      {reasoningSummary && activeReasoningRemedyId && (
+        <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-slate-200/80 p-6 space-y-6 mt-6 shadow-sm">
+          {/* Dock Tab Selector */}
+          <div className="flex border-b border-slate-200/60 pb-3 gap-2 overflow-x-auto">
+            {[
+              { id: 'materia-medica', label: '📖 Materia Medica' },
+              { id: 'clinical-reasoning', label: '🩺 Clinical Reasoning' },
+              { id: 'knowledge-graph', label: '🕸️ Knowledge Graph' },
+              { id: 'relationships', label: '🧬 Relationships' },
+              { id: 'timeline', label: '📅 Case Timeline' },
+              { id: 'editorial-sources', label: '🎯 Editorial & Provenance' },
+              { id: 'clinical-experience', label: '💡 Clinical Experience' },
+              { id: 'differentials', label: '📊 Differentials' },
+              { id: 'validation', label: '🛡️ Validation Audits' }
+            ].map(tab => {
+              const isActive = activeDockTab === tab.id;
+              return (
+                <button
+                  type="button"
+                  key={tab.id}
+                  onClick={() => {
+                    setActiveDockTab(tab.id);
+                    setExpandedDockSection(null);
+                  }}
+                  className={`text-[10px] font-black uppercase px-4 py-2 rounded-xl transition cursor-pointer flex-shrink-0 border ${
+                    isActive
+                      ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
+                      : 'bg-white hover:bg-slate-50 text-slate-600 border-slate-200'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Active Tab Panel */}
+          <div className="mt-4 min-h-[150px]">
+            {renderDockContent()}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
