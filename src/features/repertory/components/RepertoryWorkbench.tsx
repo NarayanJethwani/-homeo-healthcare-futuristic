@@ -13,7 +13,7 @@ import { ConfidenceBreakdownPanel } from './ConfidenceBreakdownPanel';
 import { RubricCoverageHeatmap } from './RubricCoverageHeatmap';
 import { ReasoningTimeline } from './ReasoningTimeline';
 import { createClinicalRepertoryService } from '../clinicalWorkspace/clinicalRepertoryService';
-import { CLINICAL_WORKSPACE_SAFETY_NOTICE, ClinicalValidationFinding } from '../clinicalWorkspace/types';
+import { ClinicalValidationFinding } from '../clinicalWorkspace/types';
 import { VisitTimelineEntry, LongitudinalCaseSummary } from '../clinicalWorkspace/longitudinalTypes';
 
 export interface RepertoryWorkbenchProps {
@@ -725,61 +725,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
           </div>
         );
       })()}
-      {/* Safety Header Badge */}
-      <div className="bg-amber-50/90 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-900/30 p-4 rounded-3xl flex items-center justify-between shadow-xs">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-2xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-amber-600 dark:text-amber-400">
-            <AlertTriangle className="w-4 h-4" />
-          </div>
-          <div>
-            <h4 className="text-[11px] font-black uppercase tracking-wider text-amber-850 dark:text-amber-300">Clinical Review Protocol</h4>
-            <p className="text-[10px] text-amber-700/80 dark:text-slate-400 font-bold mt-0.5">
-              {CLINICAL_WORKSPACE_SAFETY_NOTICE}.
-            </p>
-          </div>
-        </div>
-        <span className="text-[8px] font-black uppercase tracking-wider bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-400 px-3 py-1 rounded-full border border-amber-200/50 dark:border-amber-900/30">
-          clinician verification required
-        </span>
-      </div>
-
-      {/* Real-time Clinical Validation Findings */}
-      {validationFindings.length > 0 && (
-        <div className="bg-rose-50/80 border border-rose-150/40 p-3.5 rounded-3xl space-y-3 shadow-xs text-left">
-          <div className="flex items-center justify-between border-b border-rose-200/40 pb-2.5">
-            <div className="flex items-center gap-2">
-              <span className="text-[9px] font-black uppercase tracking-wider bg-rose-500 text-white px-2.5 py-0.5 rounded-full flex items-center gap-1 font-mono">
-                <AlertTriangle className="w-2.5 h-2.5" />
-                Critical Alerts
-              </span>
-              <span className="text-[10px] font-black text-rose-800 font-mono">
-                {validationFindings.length} issues found
-              </span>
-            </div>
-            {validationFindings.length > 2 && (
-              <button
-                type="button"
-                onClick={() => setShowAllAudits(!showAllAudits)}
-                className="text-[9px] font-black uppercase border border-rose-200 hover:border-rose-600 bg-white hover:bg-rose-50 text-rose-700 px-2.5 py-1 rounded-xl transition-all cursor-pointer"
-              >
-                {showAllAudits ? 'View Less' : `View All (${validationFindings.length})`}
-              </button>
-            )}
-          </div>
-          <ul className="text-[10px] text-rose-750 font-bold space-y-1.5 pl-4 list-disc leading-relaxed">
-            {(showAllAudits ? validationFindings : validationFindings.slice(0, 2)).map((finding, idx) => (
-              <li key={idx} className={finding.severity === 'critical' ? 'text-rose-900 font-black' : ''}>
-                <span className="uppercase text-[8px] font-black tracking-wider bg-rose-100/80 text-rose-800 px-1.5 py-0.5 rounded mr-1.5 font-mono inline-block">
-                  {finding.category.replace('_', ' ')}
-                </span>
-                {finding.message}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-6 items-start pb-12 text-slate-800 lg:h-[calc(100vh-200px)] lg:max-h-[950px] min-h-[600px]">
+      <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch pb-12 text-slate-800 lg:h-[calc(100vh-140px)] lg:max-h-[950px] min-h-[500px]">
       
       {/* LEFT COLUMN: Search & Rubric Directory (Col Span 5) */}
       <div className="lg:col-span-5 flex flex-col gap-4 order-2 lg:order-1 lg:overflow-y-auto lg:h-full pb-6 pr-1 scrollbar-thin">
@@ -1010,7 +956,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
                       <p className="text-xs font-bold">No active clinical rubrics found matching current filter.</p>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 gap-3 max-h-[350px] overflow-y-auto pr-1">
+                    <div className="grid grid-cols-1 gap-3 pr-1">
                       {rubrics.map(rub => {
                         const isActive = selectedRubrics.some(s => s.rubricId === rub.rubricId);
                         const isExpanded = expandedRubricId === rub.rubricId;
@@ -1354,15 +1300,31 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
 
           {/* Real-time Clinical Validation Findings inside Reasoning Area */}
           {selectedRubrics.length > 0 && validationFindings.length > 0 && (
-            <div className="bg-rose-50/60 dark:bg-rose-950/10 border border-rose-150/55 dark:border-rose-900/20 p-4 rounded-2xl space-y-2">
-              <h4 className="text-[11px] font-black uppercase tracking-wider text-rose-800 dark:text-rose-450 flex items-center gap-1.5 justify-start">
-                <AlertTriangle className="w-3.5 h-3.5" />
-                Live Clinical Audits ({validationFindings.length})
-              </h4>
-              <ul className="text-[10px] text-rose-700/90 dark:text-slate-400 font-bold space-y-1.5 pl-4 list-disc text-left">
-                {validationFindings.map((finding, idx) => (
-                  <li key={idx} className={finding.severity === 'critical' ? 'text-rose-900 dark:text-rose-350 font-black' : ''}>
-                    <span className="uppercase text-[8px] font-black tracking-wider bg-rose-100 dark:bg-rose-900/30 px-1.5 py-0.5 rounded mr-1.5">
+            <div className="bg-rose-50/60 border border-rose-150/40 p-3 rounded-xl space-y-2.5 text-left">
+              <div className="flex items-center justify-between border-b border-rose-200/40 pb-1.5">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[8px] font-black uppercase tracking-wider bg-rose-500 text-white px-2 py-0.5 rounded-full flex items-center gap-1 font-mono">
+                    <AlertTriangle className="w-2.5 h-2.5" />
+                    Critical Alerts
+                  </span>
+                  <span className="text-[9px] font-bold text-rose-800 font-mono">
+                    {validationFindings.length} issues
+                  </span>
+                </div>
+                {validationFindings.length > 2 && (
+                  <button
+                    type="button"
+                    onClick={() => setShowAllAudits(!showAllAudits)}
+                    className="text-[8px] font-black uppercase border border-rose-200 hover:border-rose-600 bg-white hover:bg-slate-50 text-rose-700 px-2 py-0.5 rounded-lg transition-all cursor-pointer font-mono"
+                  >
+                    {showAllAudits ? 'Less' : `All (${validationFindings.length})`}
+                  </button>
+                )}
+              </div>
+              <ul className="text-[10px] text-rose-700/90 font-bold space-y-1 pl-3.5 list-disc leading-normal">
+                {(showAllAudits ? validationFindings : validationFindings.slice(0, 2)).map((finding, idx) => (
+                  <li key={idx} className={finding.severity === 'critical' ? 'text-rose-900 font-black' : ''}>
+                    <span className="uppercase text-[8px] font-black tracking-wider bg-rose-100/80 text-rose-800 px-1 py-0.2 rounded mr-1 font-mono inline-block">
                       {finding.category.replace('_', ' ')}
                     </span>
                     {finding.message}
