@@ -471,7 +471,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
       summary += ` - ${m}\n`;
     });
 
-    summary += `\nWARNING: For clinician verification. Do not automatically prescribe.`;
+    summary += `\n---\nDISCLAIMER: Clinical Review Required — This system provides clinical decision support only. Final diagnosis and prescribing remain the responsibility of the clinician.`;
 
     if (onSendToTreatmentPlanner) {
       onSendToTreatmentPlanner(summary);
@@ -688,6 +688,11 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
 
   return (
     <div className="w-full space-y-4">
+      {/* Sticky Global Safety Banner */}
+      <div className="sticky top-0 z-50 bg-amber-50/95 backdrop-blur-md border border-amber-200/80 p-2.5 rounded-2xl flex items-center justify-center text-center shadow-xs text-[10px] text-amber-800 font-bold">
+        <span>⚠️ <strong>Clinical Review Required</strong> — This system provides clinical decision support only. Final diagnosis and prescribing remain the responsibility of the clinician.</span>
+      </div>
+
       {/* Sticky Clinical Summary */}
       {(() => {
         const topRem = scoringResult?.topRemedies[0];
@@ -695,7 +700,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
         const missingGaps = reasoningSummary?.missingInformation?.length || 0;
 
         return (
-          <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border border-slate-200/80 p-3 rounded-2xl flex items-center justify-between shadow-xs mb-4 text-[10px] text-slate-700 font-bold">
+          <div className="sticky top-[42px] z-40 bg-white/95 backdrop-blur-md border border-slate-200/80 p-3 rounded-2xl flex items-center justify-between shadow-xs mb-4 text-[10px] text-slate-700 font-bold">
             <div className="flex items-center gap-3">
               <span className="text-slate-500 uppercase text-[8px] font-black tracking-wider">Clinical OS Summary:</span>
               {topRem ? (
@@ -708,9 +713,6 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="bg-amber-50 text-amber-800 border border-amber-200 text-[8px] font-black px-2 py-0.5 rounded-lg uppercase tracking-wider">
-                ⚠️ Clinical review required — do not auto-prescribe.
-              </span>
               {totalWarnings > 0 && (
                 <span className="bg-rose-50 text-rose-800 border border-rose-200 text-[8px] font-black px-2 py-0.5 rounded-lg">
                   {totalWarnings} Warnings
@@ -1131,20 +1133,21 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
 
         {/* Real-time Scoring Panel */}
         <div className="bg-slate-900 text-slate-100 rounded-3xl p-6 space-y-4 shadow-sm text-left">
-          <div className="flex items-center justify-between border-b border-white/10 pb-3">
+          <div className="flex items-center justify-between border-b border-white/10 pb-3 flex-wrap gap-2">
             <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-2">
               <RefreshCw className="w-3.5 h-3.5 text-emerald-400" />
               Repertorization Scoring Panel
             </h3>
-            {scoringResult && (
-              <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 font-mono">
-                Margin: {scoringResult.confidenceScore}%
+            <div className="flex items-center gap-1.5 shrink-0">
+              <span className="text-[8px] font-black uppercase px-2 py-0.5 rounded bg-amber-500/20 border border-amber-500/30 text-amber-400 font-mono">
+                Decision Support
               </span>
-            )}
-          </div>
-
-          <div className="text-[9px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 p-2.5 rounded-2xl text-center font-mono uppercase tracking-wider">
-            ⚠️ Repertory suggestions for clinician review. Do not auto-prescribe.
+              {scoringResult && (
+                <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 font-mono">
+                  Margin: {scoringResult.confidenceScore}%
+                </span>
+              )}
+            </div>
           </div>
 
           {isScoringLoading ? (
@@ -1284,18 +1287,19 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
       {/* RIGHT COLUMN: Clinical Reasoning Engine (Col Span 3) */}
       <div className="lg:col-span-3 flex flex-col gap-4 order-3 lg:order-3 text-left lg:overflow-y-auto lg:h-full pb-6 pr-1 scrollbar-thin">
         <div className="bg-white/70 backdrop-blur-md rounded-3xl border border-slate-200/80 p-6 space-y-4 shadow-xs">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-3 flex-wrap gap-2">
             <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
               <Sliders className="w-4 h-4 text-emerald-500" />
               Reasoning Engine
             </h3>
-            <span className="text-[8px] font-black uppercase tracking-wider bg-slate-100 text-slate-600 px-2.5 py-0.5 rounded-full border border-slate-200 font-mono">
-              Deterministic Insights
-            </span>
-          </div>
-
-          <div className="text-[10px] text-amber-700/85 font-semibold bg-amber-50/60 border border-amber-200/50 p-3 rounded-2xl">
-            ⚠️ Clinical reasoning support for clinician review only. Do not prescribe automatically.
+            <div className="flex items-center gap-1.5 font-mono">
+              <span className="text-[8px] font-black uppercase tracking-wider bg-amber-50 text-amber-800 px-2 py-0.5 rounded-full border border-amber-250/30">
+                Clinician Review
+              </span>
+              <span className="text-[8px] font-black uppercase tracking-wider bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full border border-slate-200">
+                AI Assisted
+              </span>
+            </div>
           </div>
 
           {/* Real-time Clinical Validation Findings inside Reasoning Area */}

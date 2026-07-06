@@ -98,6 +98,8 @@ export class ImportExportService {
       }
     }
 
+    mdx += `\n---\n\n### Legal Disclaimer\n\n> ⚠️ **Clinical Review Required** — This system provides clinical decision support only. Final diagnosis and prescribing remain the responsibility of the clinician.\n`;
+
     return mdx;
   }
 

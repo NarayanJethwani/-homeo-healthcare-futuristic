@@ -33,13 +33,9 @@ export const RubricCoverageHeatmap: React.FC<RubricCoverageHeatmapProps> = ({ co
           <Layers className="w-4 h-4 text-emerald-500" />
           Symptom Coverage Heatmap
         </h3>
-        <span className="text-[8px] font-black uppercase tracking-wider bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full border border-slate-200 font-mono">
-          For clinician review only
+        <span className="text-[8px] font-black uppercase tracking-wider bg-amber-50 text-amber-800 px-2 py-0.5 rounded-full border border-amber-250/30 font-mono">
+          Decision Support
         </span>
-      </div>
-
-      <div className="text-[10px] text-amber-700/85 font-semibold bg-amber-50/60 border border-amber-200/50 p-3 rounded-2xl">
-        ⚠️ Clinical reasoning support for clinician review only. Do not prescribe automatically.
       </div>
 
       <div className="space-y-4">

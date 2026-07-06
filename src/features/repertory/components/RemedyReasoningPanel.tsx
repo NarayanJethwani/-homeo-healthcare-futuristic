@@ -63,7 +63,10 @@ export const RemedyReasoningPanel: React.FC<RemedyReasoningPanelProps> = ({ reas
           <FileText className="w-4 h-4 text-emerald-500" />
           Remedy Reasoning Analysis: {reasoning.remedyName}
         </h3>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <span className="text-[8px] font-black uppercase tracking-wider bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full border border-amber-200/50 font-mono">
+            Clinician Review
+          </span>
           {reasoning.coverageRatio && (
             <span className="text-[9px] font-bold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full font-mono">
               Coverage: {reasoning.coverageRatio}
@@ -73,10 +76,6 @@ export const RemedyReasoningPanel: React.FC<RemedyReasoningPanelProps> = ({ reas
             Score: {reasoning.confidence}%
           </span>
         </div>
-      </div>
-
-      <div className="text-[10px] text-amber-700/85 font-semibold bg-amber-50/60 border border-amber-200/50 p-3 rounded-2xl">
-        ⚠️ Clinical review required — do not auto-prescribe. All recommendations are support metrics for practitioner review.
       </div>
 
       {/* Multi-Factor Clinical Fit Ratings (Step 1, 4, 8) */}
