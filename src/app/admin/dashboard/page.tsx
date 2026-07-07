@@ -20,8 +20,9 @@ const CIEWorkspace = dynamic(() => import("./CIEWorkspace"), {
 import { REPERTORY_CHAPTERS, REMEDIES_METADATA, Rubric, BOERICKE_CHAPTERS, SEARCH_SYNONYMS, getRepertoryData, JETHWANI_SECTIONS, JETHWANI_REPERTORY_DATA as JETHWANI_REPERTORY_DATA_ORIG, JETHWANI_REMEDY_CONFIRMATIONS, calculateClinicalIndices, type JethwaniRubric, type JethwaniSymptomConfig, type ClinicalIndices, setRepertoryData } from "@/lib/repertoryData";
 import { MATERIA_MEDICA_BOOKS, MateriaMedicaBook } from "@/lib/materiaMedicaData";
 import { ORGANON_EDITIONS, ORGANON_KNOWLEDGE_TREE, ORGANON_APHORISMS, ORGANON_CASES, ACTIVE_RECALL_EXERCISES, TIMELINE_STEPS } from "@/lib/organonData";
-import { db } from "@/lib/firebase";
+import { db, auth } from "@/lib/firebase";
 import { collection, onSnapshot, query, orderBy, doc, updateDoc, setDoc, where, getDoc, getDocs, deleteDoc } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
 import { getKnowledgeGraph, GraphNode } from "@/lib/knowledgeGraph";
 import { runIngestionSimulation, INGESTION_SOURCES } from "@/lib/ingestionPipeline";
 import { parseNaturalLanguageQuery } from "@/lib/searchEngine";
@@ -33,6 +34,7 @@ import { calculateSM2, updateStudentMastery } from "@/lib/adaptiveLearning";
 import { getClinicalCoverageScore, CURATED_DIAGNOSES, ORGAN_SYSTEMS, type DiagnosisProfile, getAll15000Diagnoses, SEARCH_SYNONYMS as DIAGNOSIS_SEARCH_SYNONYMS, getIcdDiagnosis } from "@/lib/clinicalDiagnosisLibrary";
 import { VIRTUAL_PATIENTS, evaluateCaseSubmission } from "@/lib/caseSimulationLab";
 import { calculateClinicalDecisionSupport, checkPrescriptionSafety } from "@/lib/clinicalDecisionSupport";
+import { getTreatmentRecommendation } from "@/lib/treatmentRecommendationEngine";
 import Portal from "@/components/Portal";
 import { ReportUploadModal } from "@/features/dashboard/components/ReportUploadModal";
 import { ReportExtractionResult } from "@/features/dashboard/types/reportExtractionTypes";
@@ -816,6 +818,18 @@ export default function AdminDashboard() {
   const [immersiveMode, setImmersiveMode] = useState(false);
   const [academyMode, setAcademyMode] = useState("dashboard");
   const [isDiagnosticsDrawerOpen, setIsDiagnosticsDrawerOpen] = useState(false);
+  const [authReady, setAuthReady] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setAuthReady(true);
+      } else {
+        setAuthReady(false);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   // Unified Dashboard Visual & Accessibility Preferences
   const {
@@ -1085,10 +1099,10 @@ export default function AdminDashboard() {
         console.error("Failed to fetch clinicians from Firestore:", err);
       }
     };
-    if (session) {
+    if (session && authReady) {
       fetchClinicians();
     }
-  }, [session]);
+  }, [session, authReady]);
 
 
 
@@ -3397,11 +3411,45 @@ export default function AdminDashboard() {
     }
     const isMockProject = !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID === "mock-project-id";
     
+    const targetPatient = patients.find(p => p.id === selectedPatientId);
+    if (!targetPatient) {
+      alert("Selected patient file not found.");
+      return;
+    }
+
     let durationText = `${plannerDurationValue}-Month Treatment Plan`;
     if (plannerBillingCycle === "weekly") {
       durationText = `${plannerDurationValue}-Week Treatment Plan`;
     }
     
+    // Get dynamic recommendation details
+    const recommendation = getTreatmentRecommendation(
+      plannerCareLevel,
+      plannerConditionsCount,
+      plannerDurationValue,
+      plannerBillingCycle
+    );
+
+    const newPlan = {
+      id: Math.random().toString(36).substring(2, 9),
+      createdAt: new Date().toISOString(),
+      careLevel: careLevelsDetails[plannerCareLevel as keyof typeof careLevelsDetails].title,
+      conditionsCount: plannerConditionsCount,
+      careIntensity: recommendation.complexity,
+      durationValue: plannerDurationValue,
+      durationText: durationText,
+      followUpFrequency: recommendation.followUpFrequency,
+      finalPrice: calculatedPrices.finalPrice,
+      billingCycle: plannerBillingCycle,
+      concessionApplied: plannerConcessionType,
+      status: "Draft",
+      notes: "",
+      explanation: recommendation.patientExplanation
+    };
+
+    const currentPlans = (targetPatient as any).treatmentPlans || [];
+    const updatedPlans = [...currentPlans, newPlan];
+
     const updatedFields = {
       careLevel: careLevelsDetails[plannerCareLevel as keyof typeof careLevelsDetails].title,
       durationText: durationText,
@@ -3412,27 +3460,29 @@ export default function AdminDashboard() {
       concessionApplied: plannerConcessionType,
       conditionsCount: plannerConditionsCount,
       durationValue: plannerDurationValue,
-      medicineAddons: plannerMedicineAddons
+      medicineAddons: plannerMedicineAddons,
+      treatmentPlans: updatedPlans
     };
 
     try {
       if (!isMockProject) {
         const patientRef = doc(db, "patients", selectedPatientId);
         await updateDoc(patientRef, updatedFields);
-      } else {
-        setPatients(prev => prev.map(p => {
-          if (p.id === selectedPatientId) {
-            return {
-              ...p,
-              ...updatedFields
-            } as any;
-          }
-          return p;
-        }));
       }
+      
+      setPatients(prev => prev.map(p => {
+        if (p.id === selectedPatientId) {
+          return {
+            ...p,
+            ...updatedFields
+          } as any;
+        }
+        return p;
+      }));
       alert("Plan saved successfully to patient file!");
     } catch (err) {
       console.error("Failed to update patient billing plan in Firestore:", err);
+      // Fallback local update
       setPatients(prev => prev.map(p => {
         if (p.id === selectedPatientId) {
           return {
@@ -4883,6 +4933,7 @@ export default function AdminDashboard() {
   const [remedyFetchError, setRemedyFetchError] = useState("");
   const [isReaderFullscreen, setIsReaderFullscreen] = useState(false);
   const [isNewCaseModalOpen, setIsNewCaseModalOpen] = useState(false);
+  const [newCaseRecommendationText, setNewCaseRecommendationText] = useState<{complexity: string, followUpFrequency: string, patientExplanation: string} | null>(null);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
   // Sync scroll lock when fullscreen views or modals are open
@@ -4923,6 +4974,12 @@ export default function AdminDashboard() {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [isReaderFullscreen, isLearningHubFullscreen, isDrugPictureFullscreen, graphViewMode, isNewCaseModalOpen, isImportModalOpen, selectedRemedyDetail, activeMonographRemedy, mindMapDrugPictureId, isResearchFullscreen, isSearchFullscreen, activeSymptomConfig]);
+
+  useEffect(() => {
+    if (!isNewCaseModalOpen) {
+      setNewCaseRecommendationText(null);
+    }
+  }, [isNewCaseModalOpen]);
 
   const handleSelectBook = async (book: MateriaMedicaBook) => {
     setSelectedBook(book);
@@ -5325,7 +5382,7 @@ Homeo Healthcare`;
 
   // Load persistent chat history from Firestore on login/mount
   useEffect(() => {
-    if (!session?.uid) return;
+    if (!session?.uid || !authReady) return;
     
     const loadChats = async () => {
       try {
@@ -5350,11 +5407,11 @@ Homeo Healthcare`;
     };
     
     loadChats();
-  }, [session?.uid]);
+  }, [session?.uid, authReady]);
 
   // Save active chat history to Firestore when messages change
   useEffect(() => {
-    if (!session?.uid || !chatsLoaded) return;
+    if (!session?.uid || !chatsLoaded || !authReady) return;
     
     const saveChats = async () => {
       try {
@@ -5380,6 +5437,7 @@ Homeo Healthcare`;
   }, [
     session?.uid,
     chatsLoaded,
+    authReady,
     intakeChatMessages,
     intakeInterviewIndex,
     intakeComplaint,
@@ -5407,7 +5465,7 @@ Homeo Healthcare`;
   // Load Patients from Firestore in real-time
   // MULTI-TENANT: Admins see all patients; doctors only see their own (server-side enforced)
   useEffect(() => {
-    if (!session?.uid) return;
+    if (!session?.uid || !authReady) return;
 
     // Build the appropriate query based on role
     const patientsRef = collection(db, "patients");
@@ -5438,7 +5496,7 @@ Homeo Healthcare`;
     });
 
     return () => unsubscribe();
-  }, [session]);
+  }, [session, authReady]);
 
 
   // Filter patients based on search and roles
@@ -5719,6 +5777,35 @@ Homeo Healthcare`;
       receivedAmount: pricing.finalPrice,
       remainingBalance: 0
     }));
+  };
+
+  const handleGenerateRecommendation = () => {
+    const levelVal = newCaseForm.careLevel;
+    let key: "mild" | "moderate" | "focused" | "acute_critical" | "organ" | "comprehensive" = "focused";
+    if (levelVal.includes("Acute & Wellness")) key = "mild";
+    else if (levelVal.includes("Standard Chronic")) key = "moderate";
+    else if (levelVal.includes("Deep Systemic")) key = "focused";
+    else if (levelVal.includes("Acute Critical")) key = "acute_critical";
+    else if (levelVal.includes("Advanced Pathological")) key = "organ";
+    else if (levelVal.includes("Multisystem Integrative")) key = "comprehensive";
+
+    const durVal = newCaseForm.durationText;
+    const match = durVal.match(/^(\d+)/);
+    const duration = match ? parseInt(match[1]) : 1;
+    const cycle = newCaseForm.billingCycle.toLowerCase() as "weekly" | "monthly";
+
+    const rec = getTreatmentRecommendation(
+      key,
+      newCaseForm.conditionsCount,
+      duration,
+      cycle
+    );
+
+    setNewCaseRecommendationText({
+      complexity: rec.complexity,
+      followUpFrequency: rec.followUpFrequency,
+      patientExplanation: rec.patientExplanation
+    });
   };
 
   const handleDurationChange = (duration: string) => {
@@ -11995,21 +12082,28 @@ ${err.message || err}`);
           {activeTab === "treatment-planner" && (() => {
             const activePatient = selectedPatientId ? patients.find(p => p.id === selectedPatientId) : null;
             
+            const recommendation = getTreatmentRecommendation(
+              plannerCareLevel,
+              plannerConditionsCount,
+              plannerDurationValue,
+              plannerBillingCycle
+            );
+
             // Format dynamic WhatsApp message text
             const careText = careLevelsDetails[plannerCareLevel as keyof typeof careLevelsDetails]?.title || "Doctor-Led Custom Care";
-            const condText = plannerConditionsCount === 1 ? "1 Condition" : `${plannerConditionsCount} Conditions`;
+            const condText = plannerConditionsCount === 1 ? "1 Active Concern" : `${plannerConditionsCount} Active Concerns`;
             const durText = plannerBillingCycle === "weekly"
               ? `${plannerDurationValue} ${plannerDurationValue === 1 ? "Week" : "Weeks"}`
               : `${plannerDurationValue} ${plannerDurationValue === 1 ? "Month" : "Months"}`;
             const concessionText = plannerConcessionType !== "None" ? `, Concession: ${plannerConcessionType}` : "";
             
-            const whatsappInvoiceText = `Dear ${activePatient?.name || "Valued Patient"},\n\nThank you for consulting Homeo Healthcare.\n\nYour treatment package is successfully configured:\n*Care Program:* ${careText}\n*Scope:* ${condText}\n*Duration:* ${durText}${concessionText}\n\n*Pricing Breakdown Summary:*\n- Base Care Rate: ₹${calculatedPrices.basePrice.toLocaleString("en-IN")}\n` +
-              (calculatedPrices.surcharge > 0 ? `- Co-existing Surcharge: +₹${calculatedPrices.surcharge.toLocaleString("en-IN")}\n` : "") +
-              (calculatedPrices.discountAmount > 0 ? `- Duration Discount: -₹${calculatedPrices.discountAmount.toLocaleString("en-IN")}\n` : "") +
+            const whatsappInvoiceText = `Dear ${activePatient?.name || "Valued Patient"},\n\nThank you for consulting Homeo Healthcare.\n\nYour treatment package is successfully configured:\n*Care Program:* ${careText}\n*Active Health Concerns:* ${condText}\n*Recommended Treatment Duration:* ${durText}${concessionText}\n\n*Pricing Breakdown Summary:*\n- Clinical Care Fee: ₹${calculatedPrices.basePrice.toLocaleString("en-IN")}\n` +
+              (calculatedPrices.surcharge > 0 ? `- Clinical Care Intensity Adjustment: +₹${calculatedPrices.surcharge.toLocaleString("en-IN")}\n` : "") +
+              (calculatedPrices.discountAmount > 0 ? `- Continuity of Care Benefit: -₹${calculatedPrices.discountAmount.toLocaleString("en-IN")}\n` : "") +
               (calculatedPrices.concessionAmount > 0 ? `- Concession Applied: -₹${calculatedPrices.concessionAmount.toLocaleString("en-IN")}\n` : "") +
               (calculatedPrices.addonsSum > 0 ? `- Medicine Add-ons: +₹${calculatedPrices.addonsSum.toLocaleString("en-IN")}\n` : "") +
               `----------------------------------------\n` +
-              `*Total Program Cost: ₹${calculatedPrices.finalPrice.toLocaleString("en-IN")}*\n` +
+              `*Your Treatment Investment: ₹${calculatedPrices.finalPrice.toLocaleString("en-IN")}*\n` +
               `*Amount Received Today: ₹${plannerReceived.toLocaleString("en-IN")}*\n` +
               `*Outstanding Balance Due: ₹${calculatedPrices.balanceDue.toLocaleString("en-IN")}*\n\n` +
               `Please transfer using GPay: *${process.env.NEXT_PUBLIC_PAYMENT_PHONE || "8446056789"}* (or UPI: *${process.env.NEXT_PUBLIC_PAYMENT_UPI || "8446056789@hdfc"}*).\n` +
@@ -12089,7 +12183,6 @@ ${err.message || err}`);
                         >
                           <option value="mild">Acute & Wellness Care ({plannerBillingCycle === "weekly" ? "₹1,200/wk" : "₹4,800/mo"})</option>
                           <option value="moderate">Standard Chronic Care ({plannerBillingCycle === "weekly" ? "₹2,400/wk" : "₹9,600/mo"})</option>
-                          <option value="focused">Deep Systemic Care ({plannerBillingCycle === "weekly" ? "₹4,200/wk" : "₹16,800/mo"})</option>
                           <option value="acute_critical">Acute Critical Care ({plannerBillingCycle === "weekly" ? "₹5,000/wk" : "₹20,000/mo"})</option>
                           <option value="organ">Advanced Pathological Care ({plannerBillingCycle === "weekly" ? "₹6,000/wk" : "₹24,000/mo"})</option>
                           <option value="comprehensive">Multisystem Integrative Care ({plannerBillingCycle === "weekly" ? "₹8,400/wk" : "₹33,600/mo"})</option>
@@ -12098,7 +12191,7 @@ ${err.message || err}`);
 
                       {/* Billing Cycle */}
                       <div className="flex flex-col gap-1">
-                        <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-450 dark:text-slate-400">Billing Cycle</label>
+                        <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-450 dark:text-slate-400">Care Billing Option</label>
                         <div className="flex gap-2">
                           <button
                             onClick={() => {
@@ -12108,7 +12201,7 @@ ${err.message || err}`);
                             className={`flex-1 py-2 rounded-xl border text-center font-bold transition-all text-xs uppercase tracking-wider cursor-pointer ${
                               plannerBillingCycle === "monthly"
                                 ? "bg-emerald-600 text-white border-emerald-600"
-                                : "bg-white dark:bg-slate-950 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-805 hover:bg-slate-50 dark:hover:bg-slate-900"
+                                : "bg-white dark:bg-slate-955 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-805 hover:bg-slate-50 dark:hover:bg-slate-900"
                             }`}
                           >
                             Monthly Commit
@@ -12132,7 +12225,7 @@ ${err.message || err}`);
                       {/* Duration Value */}
                       <div className="flex flex-col gap-1">
                         <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-450 dark:text-slate-400">
-                          Duration ({plannerBillingCycle === "weekly" ? "Weeks" : "Months"})
+                          Recommended Treatment Duration ({plannerBillingCycle === "weekly" ? "Weeks" : "Months"})
                         </label>
                         <select
                           className="w-full p-3 border border-slate-250 dark:border-slate-800 bg-white dark:bg-slate-950 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 text-xs font-semibold text-slate-800 dark:text-slate-100 cursor-pointer"
@@ -12163,17 +12256,17 @@ ${err.message || err}`);
 
                       {/* Conditions Count */}
                       <div className="flex flex-col gap-1">
-                        <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-450 dark:text-slate-400">Co-existing Conditions</label>
+                        <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-450 dark:text-slate-400">Active Health Concerns</label>
                         <select
-                          className="w-full p-3 border border-slate-255 dark:border-slate-800 bg-white dark:bg-slate-950 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 text-xs font-semibold text-slate-800 dark:text-slate-100 cursor-pointer"
+                          className="w-full p-3 border border-slate-255 dark:border-slate-800 bg-white dark:bg-slate-955 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 text-xs font-semibold text-slate-808 dark:text-slate-100 cursor-pointer"
                           value={plannerConditionsCount}
                           onChange={(e) => setPlannerConditionsCount(Number(e.target.value))}
                         >
-                          <option value={1}>1 Condition (Standard)</option>
-                          <option value={2}>2 Conditions (+ Surcharge)</option>
-                          <option value={3}>3 Conditions (+ Surcharge)</option>
-                          <option value={4}>4 Conditions (+ Surcharge)</option>
-                          <option value={5}>5+ Conditions (+ Surcharge)</option>
+                          <option value={1}>1 Active Concern (Standard)</option>
+                          <option value={2}>2 Active Concerns (+ Intensity Adjustment)</option>
+                          <option value={3}>3 Active Concerns (+ Intensity Adjustment)</option>
+                          <option value={4}>4 Active Concerns (+ Intensity Adjustment)</option>
+                          <option value={5}>5+ Active Concerns (+ Intensity Adjustment)</option>
                         </select>
                       </div>
 
@@ -12204,6 +12297,27 @@ ${err.message || err}`);
                           />
                         </div>
                       )}
+
+                      {/* Clinical Decision Support Card */}
+                      <div className="bg-indigo-500/[0.03] dark:bg-indigo-950/10 border border-indigo-150 dark:border-indigo-900/60 p-4 rounded-2xl space-y-2 mt-2">
+                        <div className="flex items-center gap-1.5 text-indigo-750 dark:text-indigo-400 font-extrabold text-[10px] uppercase tracking-wider">
+                          <Brain className="w-3.5 h-3.5" />
+                          <span>Clinical Recommendation Info</span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 text-slate-700 dark:text-slate-300">
+                          <div>
+                            <span className="text-[8.5px] text-slate-400 uppercase tracking-wider block">Care Intensity</span>
+                            <span className="font-bold text-slate-800 dark:text-slate-100">{recommendation.complexity}</span>
+                          </div>
+                          <div>
+                            <span className="text-[8.5px] text-slate-400 uppercase tracking-wider block">Suggested Follow-up</span>
+                            <span className="font-bold text-slate-800 dark:text-slate-100">{recommendation.followUpFrequency}</span>
+                          </div>
+                        </div>
+                        <div className="text-[9.5px] text-slate-500 font-medium leading-relaxed border-t border-indigo-150/40 dark:border-indigo-900/40 pt-2 italic">
+                          {recommendation.patientExplanation}
+                        </div>
+                      </div>
 
                       {/* Medicine Add-ons Section */}
                       <div className="border-t border-slate-100 dark:border-slate-800 pt-3 space-y-2">
@@ -12465,22 +12579,22 @@ ${err.message || err}`);
 
                       <div className="space-y-2 text-xs font-semibold text-slate-650 dark:text-slate-400">
                         <div className="flex justify-between items-center">
-                          <span>Base Care Rate:</span>
+                          <span>Clinical Care Fee:</span>
                           <span className="font-bold text-slate-800 dark:text-slate-200 font-mono">₹{calculatedPrices.basePrice.toLocaleString("en-IN")} / {plannerBillingCycle === "weekly" ? "week" : "month"}</span>
                         </div>
                         {calculatedPrices.surcharge > 0 && (
                           <div className="flex justify-between items-center text-amber-705 dark:text-amber-400 bg-amber-500/5 px-2.5 py-1.5 rounded-xl border border-amber-200 dark:border-amber-900/40">
-                            <span>Co-existing Conditions Surcharge:</span>
+                            <span>Clinical Care Intensity Adjustment:</span>
                             <span className="font-bold font-mono">+₹{calculatedPrices.surcharge.toLocaleString("en-IN")}</span>
                           </div>
                         )}
                         <div className="flex justify-between items-center border-t border-slate-100 dark:border-slate-800 pt-1.5">
-                          <span>Gross Adjusted Rate:</span>
+                          <span>Personalized Care Investment:</span>
                           <span className="font-bold text-slate-800 dark:text-slate-200 font-mono">₹{calculatedPrices.adjustedBasePrice.toLocaleString("en-IN")}</span>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span>Duration Multiplier:</span>
-                          <span className="font-bold text-slate-850 dark:text-slate-350">× {plannerDurationValue} {plannerBillingCycle === "weekly" ? (plannerDurationValue === 1 ? "week" : "weeks") : (plannerDurationValue === 1 ? "month" : "months")}</span>
+                          <span>Recommended Treatment Duration:</span>
+                          <span className="font-bold text-slate-850 dark:text-slate-350">{plannerDurationValue} {plannerBillingCycle === "weekly" ? (plannerDurationValue === 1 ? "week" : "weeks") : (plannerDurationValue === 1 ? "month" : "months")}</span>
                         </div>
                         <div className="flex justify-between items-center font-bold text-slate-800 dark:text-slate-200 bg-slate-50 dark:bg-slate-950 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
                           <span>Gross Subtotal:</span>
@@ -12488,7 +12602,7 @@ ${err.message || err}`);
                         </div>
                         {calculatedPrices.discountPercent > 0 && (
                           <div className="flex justify-between items-center text-emerald-700 dark:text-emerald-400 bg-emerald-500/5 px-2 py-1 rounded-lg">
-                            <span>Duration Discount ({calculatedPrices.discountPercent}%):</span>
+                            <span>Continuity of Care Benefit ({calculatedPrices.discountPercent}%):</span>
                             <span className="font-mono">-₹{calculatedPrices.discountAmount.toLocaleString("en-IN")}</span>
                           </div>
                         )}
@@ -12506,7 +12620,7 @@ ${err.message || err}`);
                         )}
                         
                         <div className="flex justify-between items-center border-t border-slate-200 dark:border-slate-800 pt-2 text-xs font-black text-slate-850 dark:text-slate-100">
-                          <span className="text-sm">Total Program Cost:</span>
+                          <span className="text-sm">Your Treatment Investment:</span>
                           <span className="text-emerald-600 text-base font-black font-mono">₹{calculatedPrices.finalPrice.toLocaleString("en-IN")}</span>
                         </div>
 
@@ -27394,24 +27508,24 @@ Exported on: ${new Date().toLocaleDateString()}
 
                       {/* Care Level Selector */}
                       <div>
-                        <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Care Level</label>
+                        <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Recommended Care Intensity</label>
                         <select
                           value={newCaseForm.careLevel}
                           onChange={(e) => handleCareLevelChange(e.target.value)}
                           className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-semibold text-[#1A2421]"
                         >
-                          <option value="🌱 Acute & Wellness Care">{getOptionLabel("🌱 Acute & Wellness Care", 4800)}</option>
-                          <option value="⚡ Standard Chronic Care">{getOptionLabel("⚡ Standard Chronic Care", 9600)}</option>
-                          <option value="🎯 Deep Systemic Care">{getOptionLabel("🎯 Deep Systemic Care", 16800)}</option>
-                          <option value="🚨 Acute Critical Care">{getOptionLabel("🚨 Acute Critical Care", 20000)}</option>
-                          <option value="🫁 Advanced Pathological Care">{getOptionLabel("🫁 Advanced Pathological Care", 24000)}</option>
-                          <option value="🔮 Multisystem Integrative Care">{getOptionLabel("🔮 Multisystem Integrative Care", 33600)}</option>
+                          <option value="🌱 Acute & Wellness Care">{getOptionLabel("🌱 Routine (Acute & Wellness Care)", 4800)}</option>
+                          <option value="⚡ Standard Chronic Care">{getOptionLabel("⚡ Standard (Standard Chronic Care)", 9600)}</option>
+                          <option value="🎯 Deep Systemic Care">{getOptionLabel("🎯 Enhanced (Deep Systemic Care)", 16800)}</option>
+                          <option value="🚨 Acute Critical Care">{getOptionLabel("🚨 Advanced (Acute Critical Care)", 20000)}</option>
+                          <option value="🫁 Advanced Pathological Care">{getOptionLabel("🫁 Comprehensive (Advanced Pathological Care)", 24000)}</option>
+                          <option value="🔮 Multisystem Integrative Care">{getOptionLabel("🔮 Intensive (Multisystem Integrative Care)", 33600)}</option>
                         </select>
                       </div>
 
                       {/* Billing Frequency Selector */}
                       <div>
-                        <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Billing Frequency</label>
+                        <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Care Billing Option</label>
                         <select
                           value={newCaseForm.billingCycle}
                           onChange={(e) => handleBillingCycleChange(e.target.value)}
@@ -27424,7 +27538,7 @@ Exported on: ${new Date().toLocaleDateString()}
 
                       {/* Plan Duration Selector */}
                       <div>
-                        <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Plan Duration / Type</label>
+                        <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Recommended Treatment Duration</label>
                         <select
                           value={newCaseForm.durationText}
                           onChange={(e) => handleDurationChange(e.target.value)}
@@ -27452,17 +27566,17 @@ Exported on: ${new Date().toLocaleDateString()}
 
                       {/* Co-existing Conditions Selector */}
                       <div>
-                        <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Co-existing Conditions</label>
+                        <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Active Health Concerns</label>
                         <select
                           value={newCaseForm.conditionsCount}
                           onChange={(e) => handleConditionsCountChange(Number(e.target.value))}
                           className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-semibold text-[#1A2421]"
                         >
-                          <option value={1}>1 Condition (Standard)</option>
-                          <option value={2}>2 Conditions (+ Surcharge)</option>
-                          <option value={3}>3 Conditions (+ Surcharge)</option>
-                          <option value={4}>4 Conditions (+ Surcharge)</option>
-                          <option value={5}>5+ Conditions (+ Surcharge)</option>
+                          <option value={1}>1 Active Concern (Standard)</option>
+                          <option value={2}>2 Active Concerns (+ Intensity Adjustment)</option>
+                          <option value={3}>3 Active Concerns (+ Intensity Adjustment)</option>
+                          <option value={4}>4 Active Concerns (+ Intensity Adjustment)</option>
+                          <option value={5}>5+ Active Concerns (+ Intensity Adjustment)</option>
                         </select>
                       </div>
 
@@ -27476,12 +27590,12 @@ Exported on: ${new Date().toLocaleDateString()}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {/* Base Plan Price */}
                           <div>
-                            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Base Plan Price (₹)</label>
+                            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Clinical Care Fee (₹)</label>
                             <input
                               type="number"
                               value={newCaseForm.basePrice}
                               disabled
-                              className="w-full p-3 border border-slate-200 bg-slate-50 text-slate-505 outline-none rounded-xl text-xs font-bold"
+                              className="w-full p-3 border border-slate-200 bg-slate-50 text-slate-550 outline-none rounded-xl text-xs font-bold"
                             />
                           </div>
 
@@ -27516,7 +27630,7 @@ Exported on: ${new Date().toLocaleDateString()}
 
                           {/* Total Package Price */}
                           <div className={newCaseForm.concessionType === "Override" ? "col-span-full md:col-span-1" : "col-span-full"}>
-                            <label className="block text-[10px] font-bold text-slate-705 dark:text-slate-300 uppercase tracking-wider mb-1.5">Total Package Price (₹)</label>
+                            <label className="block text-[10px] font-bold text-slate-750 dark:text-slate-300 uppercase tracking-wider mb-1.5">Your Treatment Investment (₹)</label>
                             <input
                               type="number"
                               value={newCaseForm.finalPrice}
@@ -27527,6 +27641,44 @@ Exported on: ${new Date().toLocaleDateString()}
                           </div>
                         </div>
 
+                        {/* Generate Recommendation Action */}
+                        <div className="col-span-full border-t border-slate-250/60 dark:border-slate-800 pt-3.5 flex flex-col gap-2.5">
+                          <button
+                            type="button"
+                            onClick={handleGenerateRecommendation}
+                            className="w-full py-2.5 px-4 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border border-emerald-250 dark:border-emerald-900 rounded-xl hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-all font-bold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+                          >
+                            <Sparkles className="w-3.5 h-3.5" />
+                            Generate Treatment Plan Recommendation
+                          </button>
+                          
+                          {newCaseRecommendationText && (
+                            <div className="p-4 bg-emerald-500/5 border border-emerald-200/80 dark:border-emerald-900/60 rounded-2xl space-y-2.5 text-xs text-slate-700 dark:text-slate-300 animate-fade-in">
+                              <div className="flex justify-between items-center border-b border-emerald-100 dark:border-emerald-900/40 pb-2">
+                                <span className="font-extrabold uppercase text-[10px] tracking-wider text-emerald-800 dark:text-emerald-450 flex items-center gap-1.5">
+                                  <Activity className="w-3.5 h-3.5" />
+                                  Clinical Care Recommendation
+                                </span>
+                                <span className="text-[10px] bg-emerald-100 dark:bg-emerald-900 text-emerald-850 dark:text-emerald-350 px-2 py-0.5 rounded-full font-bold">
+                                  Intensity: {newCaseRecommendationText.complexity}
+                                </span>
+                              </div>
+                              <div>
+                                <p className="font-bold text-slate-800 dark:text-slate-200 mb-0.5">Follow-up Frequency:</p>
+                                <p className="text-slate-650 dark:text-slate-400 font-medium">{newCaseRecommendationText.followUpFrequency}</p>
+                              </div>
+                              <div>
+                                <p className="font-bold text-slate-800 dark:text-slate-200 mb-0.5">Clinical Protocol Guidance:</p>
+                                <p className="text-slate-655 dark:text-slate-400 font-medium leading-relaxed">{newCaseRecommendationText.patientExplanation}</p>
+                              </div>
+                              <div className="pt-2 border-t border-emerald-100 dark:border-emerald-900/45 text-[10px] text-slate-500 dark:text-slate-500 font-bold italic flex items-start gap-1">
+                                <span className="text-emerald-600 dark:text-emerald-500">⚠️</span>
+                                <span>Internal planning support only. Final care program must be confirmed by the physician.</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
                         {/* Live Estimate Breakdown aligned with Treatment Planner */}
                         {(currentPricing.discountPercent > 0 || currentPricing.seniorDiscountAmount > 0 || currentPricing.socioDiscountAmount > 0) && (
                           <div className="p-3.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/50 dark:border-slate-800 space-y-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400">
@@ -27535,12 +27687,12 @@ Exported on: ${new Date().toLocaleDateString()}
                               <span className="text-[#0c6b5e]">Live calculation</span>
                             </div>
                             <div className="flex justify-between text-slate-700 dark:text-slate-300">
-                              <span>Base Plan Price:</span>
+                              <span>Clinical Care Fee:</span>
                               <span className="font-bold">₹{currentPricing.basePrice.toLocaleString("en-IN")}</span>
                             </div>
                             {currentPricing.discountPercent > 0 && (
                               <div className="flex justify-between text-[#0c6b5e] dark:text-teal-400">
-                                  <span>Duration Discount ({currentPricing.discountPercent}%):</span>
+                                  <span>Continuity of Care Benefit ({currentPricing.discountPercent}%):</span>
                                   <span className="font-bold">-₹{currentPricing.durationDiscountAmount.toLocaleString("en-IN")}</span>
                               </div>
                             )}
@@ -27557,7 +27709,7 @@ Exported on: ${new Date().toLocaleDateString()}
                               </div>
                             )}
                             <div className="flex justify-between pt-1 border-t border-slate-100 dark:border-slate-800/80 font-bold text-slate-800 dark:text-slate-200">
-                              <span>Total Standard Cost:</span>
+                              <span>Your Treatment Investment:</span>
                               <span>₹{currentPricing.calculatedFinal.toLocaleString("en-IN")}</span>
                             </div>
                           </div>

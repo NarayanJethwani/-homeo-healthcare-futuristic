@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { 
   ArrowLeft, CheckCircle2, Info, 
-  Percent, Clock
+  Percent, Clock, HelpCircle
 } from "lucide-react";
 import Link from "next/link";
 import Magnetic from "@/components/Magnetic";
@@ -20,6 +20,7 @@ const careLevelsDetails = {
     glowColor: "rgba(20,184,166,0.15)",
     surchargeWeekly: 300,
     surchargeMonthly: 1200,
+    complexityLabel: "Low",
     description: "Ideal for general immunity, hair fall, seasonal acute complaints, or general wellness guidance.",
     features: [
       "General constitutional wellness analysis",
@@ -38,6 +39,7 @@ const careLevelsDetails = {
     glowColor: "rgba(168,85,247,0.15)",
     surchargeWeekly: 450,
     surchargeMonthly: 1800,
+    complexityLabel: "Moderate",
     description: "Designed for a single chronic condition (e.g. eczema, IBS, thyroid) requiring active tracking and bi-weekly checks.",
     features: [
       "Single chronic condition profile mapping",
@@ -56,6 +58,7 @@ const careLevelsDetails = {
     glowColor: "rgba(14,165,233,0.15)",
     surchargeWeekly: 750,
     surchargeMonthly: 3000,
+    complexityLabel: "Moderate–High",
     description: "Deep management of complex chronic or systemic health conditions (e.g. asthma, migraine, severe eczema).",
     features: [
       "Deep-seated target system pathology analysis",
@@ -74,6 +77,7 @@ const careLevelsDetails = {
     glowColor: "rgba(16,185,129,0.15)",
     surchargeWeekly: 1050,
     surchargeMonthly: 4200,
+    complexityLabel: "High",
     description: "Advanced recovery protocols for deep-seated pathology, including organ system rebalancing and biomarker reviews.",
     features: [
       "Multi-remedy support for organ pathology",
@@ -92,6 +96,7 @@ const careLevelsDetails = {
     glowColor: "rgba(99,102,241,0.15)",
     surchargeWeekly: 1350,
     surchargeMonthly: 5400,
+    complexityLabel: "Comprehensive",
     description: "For long-standing, multi-system chronic pathologies requiring intensive clinical supervision by Dr. Jethwani.",
     features: [
       "Multi-organ pathogenetic profile mapping",
@@ -110,6 +115,7 @@ const careLevelsDetails = {
     glowColor: "rgba(239,68,68,0.15)",
     surchargeWeekly: 1000,
     surchargeMonthly: 4000,
+    complexityLabel: "Intensive",
     description: "For urgent, high-intensity acute cases requiring daily tracking, frequent remedy adjustments, and intensive physician study.",
     features: [
       "Daily doctor clinical review and check-ins",
@@ -282,11 +288,25 @@ export default function PlansComparisonPage() {
 
                 <div className="space-y-6">
                   {/* Header Badge */}
-                  <div className="flex justify-between items-start gap-4">
-                    <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-full border ${details.colorClass}`}>
-                      {details.badge}
-                    </span>
-                    <span className="text-3xl">{details.icon}</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-full border ${details.colorClass}`}>
+                        {details.badge}
+                      </span>
+
+                      {/* Care Complexity Badge with Tooltip */}
+                      <div className="flex items-center gap-1 bg-indigo-50/60 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/60 px-2 py-0.5 rounded-full text-[8.5px] font-bold text-indigo-750 dark:text-indigo-400 relative group cursor-help select-none w-fit">
+                        <span>Complexity: {details.complexityLabel}</span>
+                        <HelpCircle className="w-3 h-3 text-indigo-500 hover:text-indigo-750 dark:text-indigo-400 shrink-0" />
+
+                        {/* Hover Tooltip */}
+                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2.5 bg-slate-900 text-white text-[9px] font-semibold leading-relaxed rounded-2xl shadow-xl border border-white/10 opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-300 z-50 text-left">
+                          Care Complexity reflects the expected level of physician supervision, follow-up intensity, treatment customization, and coordination required for this care program. It does not indicate disease severity.
+                          <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-slate-900" />
+                        </div>
+                      </div>
+                    </div>
+                    <span className="text-3xl self-end sm:self-auto">{details.icon}</span>
                   </div>
 
                   {/* Title & Price */}
@@ -338,9 +358,9 @@ export default function PlansComparisonPage() {
                   )}
 
                   {/* Coordination surcharge */}
-                  <div className="flex justify-between items-center text-[10px] text-slate-500 font-bold uppercase tracking-wider">
-                    <span>Extra Cond. Surcharge</span>
-                    <span className="text-slate-800 font-extrabold">
+                  <div className="flex justify-between items-center text-[9px] text-slate-500 font-bold uppercase tracking-wider gap-2">
+                    <span>Clinical Complexity Adjustment per Additional Concern</span>
+                    <span className="text-slate-800 font-extrabold shrink-0">
                       +₹{(isWeekly ? details.surchargeWeekly : details.surchargeMonthly).toLocaleString("en-IN")} / {isWeekly ? "wk" : "mo"}
                     </span>
                   </div>
@@ -362,9 +382,9 @@ export default function PlansComparisonPage() {
               <Info className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-black text-[#1A2421] uppercase tracking-wider">Multi-Condition Coordination Fees</h2>
+              <h2 className="text-lg font-black text-[#1A2421] uppercase tracking-wider">Clinical Complexity Adjustment for Multiple Health Concerns</h2>
               <p className="text-xs text-slate-500 font-semibold mt-1">
-                Coordinating multiple co-existing diseases requires linear complexity scaling. Here is why we charge condition surcharges:
+                Coordinating multiple active health concerns requires increased physician time, individualized treatment planning, and coordinated follow-up. The Clinical Complexity Adjustment reflects the additional care required.
               </p>
             </div>
           </div>
@@ -423,9 +443,9 @@ export default function PlansComparisonPage() {
               </select>
             </div>
 
-            {/* Select Billing Frequency */}
+            {/* Select Care Billing Option */}
             <div className="space-y-2">
-              <label className="text-xs font-bold text-[#1A2421] uppercase tracking-wider block">2. Billing Frequency</label>
+              <label className="text-xs font-bold text-[#1A2421] uppercase tracking-wider block">2. Care Billing Option</label>
               <div className="flex gap-2">
                 <button
                   type="button"
@@ -465,9 +485,9 @@ export default function PlansComparisonPage() {
               </div>
             </div>
 
-            {/* Select Conditions covered */}
+            {/* Select Active Health Concerns */}
             <div className="space-y-2">
-              <label className="text-xs font-bold text-[#1A2421] uppercase tracking-wider block">3. Conditions Covered</label>
+              <label className="text-xs font-bold text-[#1A2421] uppercase tracking-wider block">3. Active Health Concerns</label>
               <div className="flex gap-2">
                 {[1, 2, 3, 4, 5].map((num) => (
                   <button
@@ -483,12 +503,17 @@ export default function PlansComparisonPage() {
                   </button>
                 ))}
               </div>
+              {calculatorConditions > 1 && (
+                <p className="text-[10px] text-amber-700 font-semibold leading-relaxed bg-amber-500/5 border border-amber-500/10 p-3 rounded-2xl text-left mt-2">
+                  Additional health concerns may require increased physician time, individualized treatment planning, and coordinated follow-up. The Clinical Complexity Adjustment reflects the additional care required.
+                </p>
+              )}
             </div>
 
             {/* Select Duration */}
             <div className="space-y-2">
               <label className="text-xs font-bold text-[#1A2421] uppercase tracking-wider block">
-                4. Commitment Duration ({calculatorDuration} {billingCycle === "weekly" ? (calculatorDuration === 1 ? "Week" : "Weeks") : (calculatorDuration === 1 ? "Month" : "Months")})
+                4. Recommended Treatment Duration ({calculatorDuration} {billingCycle === "weekly" ? (calculatorDuration === 1 ? "Week" : "Weeks") : (calculatorDuration === 1 ? "Month" : "Months")})
               </label>
               <div className="flex gap-2">
                 {(billingCycle === "weekly" ? [1, 2, 4, 8, 12] : [1, 2, 3, 6, 12]).map((dur) => (
@@ -518,31 +543,31 @@ export default function PlansComparisonPage() {
             <div>
               <span className="text-[10px] font-bold text-mint uppercase tracking-widest block mb-1">Result Summary</span>
               <h3 className="text-lg font-serif font-bold text-[#1A2421]">{careLevelsDetails[calculatorLevel].title}</h3>
-              <p className="text-xs text-slate-500 font-semibold">For {calculatorConditions === 1 ? "1 Condition" : `${calculatorConditions === 5 ? "5+" : calculatorConditions} Conditions`}</p>
+              <p className="text-xs text-slate-500 font-semibold">For {calculatorConditions === 1 ? "1 Health Concern" : `${calculatorConditions === 5 ? "5+" : calculatorConditions} Health Concerns`}</p>
             </div>
 
             {/* Price breakdown */}
             <div className="space-y-3 pt-4 border-t border-slate-900/5">
               <div className="flex justify-between text-xs text-slate-500 font-semibold uppercase tracking-wider">
-                <span>Base Rate ({billingCycle === "weekly" ? "Weekly" : "Monthly"})</span>
+                <span>Clinical Care Fee ({billingCycle === "weekly" ? "Weekly" : "Monthly"})</span>
                 <span>₹{widgetPricing.basePrice.toLocaleString("en-IN")}</span>
               </div>
               
               {widgetPricing.surcharge > 0 && (
                 <div className="flex justify-between text-xs text-slate-500 font-semibold uppercase tracking-wider">
-                  <span>Coordination Surcharge</span>
+                  <span>Clinical Complexity Adjustment</span>
                   <span>+₹{widgetPricing.surcharge.toLocaleString("en-IN")}</span>
                 </div>
               )}
 
               <div className="flex justify-between text-xs text-slate-500 font-semibold uppercase tracking-wider border-b border-slate-900/5 pb-2">
-                <span>Timeline ({calculatorDuration} {billingCycle === "weekly" ? "weeks" : "months"})</span>
+                <span>Recommended Care Period ({calculatorDuration} {billingCycle === "weekly" ? "weeks" : "months"})</span>
                 <span>₹{widgetPricing.rawTotal.toLocaleString("en-IN")}</span>
               </div>
 
               {widgetPricing.discountAmount > 0 && (
                 <div className="flex justify-between text-xs text-emerald-600 font-extrabold uppercase tracking-wider">
-                  <span>Loyalty Discount ({widgetPricing.discountPercent}%)</span>
+                  <span>Continuity of Care Benefit ({widgetPricing.discountPercent}%)</span>
                   <span>-₹{widgetPricing.discountAmount.toLocaleString("en-IN")}</span>
                 </div>
               )}
@@ -553,14 +578,14 @@ export default function PlansComparisonPage() {
               </div>
               
               <div className="flex justify-between text-[10px] text-slate-500 font-semibold uppercase tracking-wider">
-                <span>Day Cost Equivalent</span>
+                <span>Equivalent Daily Care Investment</span>
                 <span className="text-emerald-700 font-bold">₹{widgetPricing.dailyEquivalent} / day</span>
               </div>
             </div>
 
             {/* Total Block */}
             <div className="pt-4 border-t border-slate-900/5 flex justify-between items-baseline mt-4">
-              <span className="text-xs font-black text-slate-900 uppercase">Estimated Total</span>
+              <span className="text-xs font-black text-slate-900 uppercase">Your Treatment Investment</span>
               <div className="text-right">
                 <span className="text-3xl font-black text-[#1A2421] font-sans">
                   ₹{widgetPricing.finalPrice.toLocaleString("en-IN")}

@@ -15,21 +15,97 @@ import { ReasoningTimeline } from './ReasoningTimeline';
 import { createClinicalRepertoryService } from '../clinicalWorkspace/clinicalRepertoryService';
 import { ClinicalValidationFinding } from '../clinicalWorkspace/types';
 import { VisitTimelineEntry, LongitudinalCaseSummary } from '../clinicalWorkspace/longitudinalTypes';
+import { db } from '@/lib/firebase';
+import { collection, doc, getDoc, onSnapshot, query, orderBy } from 'firebase/firestore';
 
 export interface RepertoryWorkbenchProps {
   sessionUid?: string;
   activePatientId?: string;
   onSendToTreatmentPlanner?: (summary: string) => void;
+  onPatientChange?: (patientId: string) => void;
 }
 
 export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
   sessionUid = '',
   activePatientId = '',
-  onSendToTreatmentPlanner
+  onSendToTreatmentPlanner,
+  onPatientChange
 }) => {
   // Database States
   const [rubrics, setRubrics] = useState<RepertoryRubric[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+
+  // Active Patient Switcher & Case Manager states
+  const [patients, setPatients] = useState<any[]>([]);
+  const [loadedPatient, setLoadedPatient] = useState<any | null>(null);
+  const [isNewCaseOpen, setIsNewCaseOpen] = useState<boolean>(false);
+  const [isSyncingToSheet, setIsSyncingToSheet] = useState<boolean>(false);
+
+  // New Case Registration fields
+  const [newCaseName, setNewCaseName] = useState('');
+  const [newCaseAge, setNewCaseAge] = useState('');
+  const [newCaseGender, setNewCaseGender] = useState('Male');
+  const [newCasePhone, setNewCasePhone] = useState('');
+  const [newCaseEmail, setNewCaseEmail] = useState('');
+  const [newCaseComplaint, setNewCaseComplaint] = useState('');
+  const [newCaseCareLevel, setNewCaseCareLevel] = useState('🌱 Acute & Wellness Care');
+  const [newCaseBillingCycle, setNewCaseBillingCycle] = useState('Weekly');
+  const [newCasePrice, setNewCasePrice] = useState('');
+  const [newCaseDuration, setNewCaseDuration] = useState('2');
+  const [newCaseConditions, setNewCaseConditions] = useState('1');
+  const [newCaseConcession, setNewCaseConcession] = useState('None');
+  const [isCreatingCase, setIsCreatingCase] = useState(false);
+
+  // 1. Fetch live patients list from Firestore on mount
+  useEffect(() => {
+    if (typeof window === "undefined" || !db) return;
+    const q = query(collection(db, "patients"), orderBy("createdAt", "desc"));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const list: any[] = [];
+      snapshot.forEach((doc) => {
+        list.push({ id: doc.id, ...doc.data() });
+      });
+      setPatients(list);
+    }, (err) => {
+      console.error("Firestore listener failed in RepertoryWorkbench:", err);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // 2. Fetch specific selected patient case details and pre-fill voice intake
+  useEffect(() => {
+    if (!activePatientId || !db) {
+      setLoadedPatient(null);
+      return;
+    }
+    
+    // Look up in patients array first
+    const found = patients.find(p => p.id === activePatientId);
+    if (found) {
+      setLoadedPatient(found);
+      if (found.complaint) {
+        setNlpInput(prev => prev.trim() ? prev : found.complaint);
+      }
+      return;
+    }
+
+    const loadSingle = async () => {
+      try {
+        const docRef = doc(db, "patients", activePatientId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const pData = docSnap.data();
+          setLoadedPatient({ id: docSnap.id, ...pData });
+          if (pData?.complaint) {
+            setNlpInput(prev => prev.trim() ? prev : pData.complaint);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load active patient document:", err);
+      }
+    };
+    loadSingle();
+  }, [activePatientId, patients]);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [debouncedSearch, setDebouncedSearch] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
@@ -371,6 +447,142 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
     return { mental, physical, sleep, modalities, general };
   };
 
+  // Synchronize active symptoms / rubrics directly to Google Sheets
+  const handleSyncRubricsToSheet = async () => {
+    if (!loadedPatient) {
+      alert("Please select a patient first.");
+      return;
+    }
+    
+    const rubricsPayload = await Promise.all(selectedRubrics.map(async (s) => {
+      const r = await repertoryRepository.getRubricById(s.rubricId);
+      const weight = s.severity >= 7 ? 3 : s.severity >= 4 ? 2 : 1;
+      const grades: Record<string, number> = {};
+      
+      const remediesList = scoringResult?.topRemedies.map(tr => tr.remedyId) || ["Nux-v", "Lyc", "Ars", "Puls", "Sulph", "Rhus-t", "Calc", "Sil", "Nat-m", "Ign", "Sep"];
+      remediesList.forEach(rem => {
+        const foundRem = r?.relatedRemedies?.find(rr => rr.remedyId.toLowerCase() === rem.toLowerCase());
+        grades[rem] = foundRem ? foundRem.grade : 0;
+      });
+      
+      return {
+        name: r ? r.title : s.rubricId,
+        chapter: r ? r.category : "General",
+        source: r?.source || "Kent",
+        weight,
+        grades
+      };
+    }));
+
+    if (rubricsPayload.length === 0) {
+      alert("Please select at least one symptom rubric to sync.");
+      return;
+    }
+
+    setIsSyncingToSheet(true);
+    try {
+      let sheetId = loadedPatient.sheetId;
+      if (!sheetId && loadedPatient.sheetUrl) {
+        const match = loadedPatient.sheetUrl.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+        if (match) {
+          sheetId = match[1];
+        }
+      }
+
+      const res = await fetch("/api/export-repertory", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          patientId: loadedPatient.id,
+          sheetId: sheetId || "",
+          rubrics: rubricsPayload,
+          remedies: scoringResult?.topRemedies.map(tr => tr.remedyId) || ["Nux-v", "Lyc", "Ars", "Puls", "Sulph", "Rhus-t", "Calc", "Sil", "Nat-m", "Ign", "Sep"]
+        })
+      });
+      
+      const data = await res.json();
+      if (data.success) {
+        alert("Rubrics successfully synchronized directly to patient's live Google Sheet!");
+        if (loadedPatient.sheetUrl && loadedPatient.sheetUrl.startsWith("http")) {
+          window.open(loadedPatient.sheetUrl, "_blank");
+        }
+      } else {
+        throw new Error(data.message || "Failed to export");
+      }
+    } catch (err: any) {
+      console.error(err);
+      alert(`Failed to sync to Google Sheet: ${err.message || err}`);
+    } finally {
+      setIsSyncingToSheet(false);
+    }
+  };
+
+  // Submit case registration to intake endpoint
+  const handleCreateNewCase = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCaseName.trim() || !newCaseAge.trim() || !newCasePhone.trim() || !newCaseComplaint.trim()) {
+      alert("Please fill in Name, Age, Phone, and Chief Complaint.");
+      return;
+    }
+    
+    setIsCreatingCase(true);
+    try {
+      const response = await fetch("/api/intake", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: newCaseName.trim(),
+          age: Number(newCaseAge),
+          gender: newCaseGender,
+          phone: newCasePhone.trim(),
+          email: newCaseEmail.trim() || "N/A",
+          city: "Pune",
+          state: "Maharashtra",
+          country: "India",
+          complaint: newCaseComplaint.trim(),
+          careLevel: newCaseCareLevel,
+          conditionsCount: Number(newCaseConditions) || 1,
+          durationText: `${newCaseDuration} Weeks`,
+          finalPrice: newCasePrice ? Number(newCasePrice) : (newCaseCareLevel.includes("Acute") ? 2280 : 9600),
+          receivedAmount: newCasePrice ? Number(newCasePrice) : (newCaseCareLevel.includes("Acute") ? 2280 : 9600),
+          remainingBalance: 0,
+          billingCycle: newCaseBillingCycle,
+          durationValue: Number(newCaseDuration) || 2,
+          concessionApplied: newCaseConcession
+        })
+      });
+
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "Failed to register case");
+      }
+
+      alert(`Case registered successfully with ID: ${data.patientId}.\nReal Google Sheet will be provisioned in the background.`);
+      
+      // Notify parent & switch selected patient
+      if (onPatientChange) {
+        onPatientChange(data.patientId);
+      }
+      
+      // Clear fields and collapse panel
+      setNewCaseName('');
+      setNewCaseAge('');
+      setNewCasePhone('');
+      setNewCaseEmail('');
+      setNewCaseComplaint('');
+      setNewCasePrice('');
+      setNewCaseDuration('2');
+      setNewCaseConditions('1');
+      setNewCaseConcession('None');
+      setIsNewCaseOpen(false);
+    } catch (err: any) {
+      console.error("Case registration failed:", err);
+      alert(`Case registration failed: ${err.message || err}`);
+    } finally {
+      setIsCreatingCase(false);
+    }
+  };
+
   // Parse NLP Clinical Intake
   const handleParseIntake = async () => {
     if (!nlpInput.trim()) return;
@@ -692,6 +904,268 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
       <div className="sticky top-0 z-50 bg-amber-50/95 backdrop-blur-md border border-amber-200/80 p-2.5 rounded-2xl flex items-center justify-center text-center shadow-xs text-[10px] text-amber-800 font-bold">
         <span>⚠️ <strong>Clinical Review Required</strong> — This system provides clinical decision support only. Final diagnosis and prescribing remain the responsibility of the clinician.</span>
       </div>
+
+      {/* Case File Management Bar */}
+      <div className="bg-slate-900 border border-slate-800 p-4 rounded-3xl shadow-md text-white flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+          <div className="space-y-1">
+            <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest font-mono block">Active Patient Switcher</span>
+            <select
+              value={activePatientId || ""}
+              onChange={(e) => {
+                if (onPatientChange) {
+                  onPatientChange(e.target.value);
+                }
+              }}
+              className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500 font-bold min-w-[200px] cursor-pointer shadow-md"
+            >
+              <option value="" className="text-slate-500">-- Select Active Patient --</option>
+              {patients.map(p => (
+                <option key={p.id} value={p.id} className="text-white">
+                  {p.name} ({p.id})
+                </option>
+              ))}
+            </select>
+          </div>
+          
+          {loadedPatient ? (
+            <div className="flex flex-col justify-center text-[11px] border-l border-slate-800 pl-4 h-full">
+              <span className="font-extrabold text-slate-200">{loadedPatient.name} ({loadedPatient.age || "N/A"} / {loadedPatient.gender || "N/A"})</span>
+              <span className="text-slate-400 font-mono text-[9px] mt-0.5">Billing: {loadedPatient.billingCycle || "Weekly"} | Case: {loadedPatient.id}</span>
+            </div>
+          ) : (
+            <div className="flex flex-col justify-center text-[10px] border-l border-slate-800 pl-4 h-full text-slate-400 font-semibold italic">
+              <span>Select an active patient to load clinical files & sync sheets</span>
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center gap-3">
+          {loadedPatient && (
+            <>
+              {loadedPatient.complaint && (
+                <button
+                  type="button"
+                  onClick={() => setNlpInput(loadedPatient.complaint)}
+                  className="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-slate-600 px-3.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1 shadow-sm"
+                  title="Import patient chief complaint notes into NLP text area below"
+                >
+                  <Download className="w-3.5 h-3.5 text-emerald-400" />
+                  Use Complaint Notes
+                </button>
+              )}
+              
+              <button
+                type="button"
+                onClick={handleSyncRubricsToSheet}
+                disabled={isSyncingToSheet || selectedRubrics.length === 0}
+                className="bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-50 px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1 shadow-sm"
+              >
+                {isSyncingToSheet ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle className="w-3.5 h-3.5" />}
+                Sync to Sheet
+              </button>
+            </>
+          )}
+
+          <button
+            type="button"
+            onClick={() => setIsNewCaseOpen(!isNewCaseOpen)}
+            className="bg-slate-100 hover:bg-slate-200 text-slate-900 px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1 shadow-sm"
+          >
+            <Plus className="w-3.5 h-3.5 text-emerald-600" />
+            {isNewCaseOpen ? "Cancel Case Form" : "Create New Case"}
+          </button>
+        </div>
+      </div>
+
+      {/* New Case Creation Form Panel (Collapsible) */}
+      {isNewCaseOpen && (
+        <form onSubmit={handleCreateNewCase} className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-4 text-left animate-fadeIn">
+          <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
+            <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-2">
+              <Plus className="w-4 h-4 text-emerald-500" />
+              New Clinical Case Entry
+            </h3>
+            <span className="text-[9px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">
+              Workspace will be provisioned automatically
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-1">
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Full Name</label>
+              <input
+                type="text"
+                required
+                value={newCaseName}
+                onChange={(e) => setNewCaseName(e.target.value)}
+                placeholder="e.g. John Doe"
+                className="w-full bg-slate-50/50 hover:bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white transition-all font-semibold"
+              />
+            </div>
+            
+            <div className="space-y-1">
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Age</label>
+              <input
+                type="number"
+                required
+                value={newCaseAge}
+                onChange={(e) => setNewCaseAge(e.target.value)}
+                placeholder="e.g. 45"
+                className="w-full bg-slate-50/50 hover:bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white transition-all font-semibold"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Gender</label>
+              <select
+                value={newCaseGender}
+                onChange={(e) => setNewCaseGender(e.target.value)}
+                className="w-full bg-slate-50/50 hover:bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white transition-all font-semibold cursor-pointer"
+              >
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Phone Number</label>
+              <input
+                type="tel"
+                required
+                value={newCasePhone}
+                onChange={(e) => setNewCasePhone(e.target.value)}
+                placeholder="e.g. 9876543210"
+                className="w-full bg-slate-50/50 hover:bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white transition-all font-semibold"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Email (Optional)</label>
+              <input
+                type="email"
+                value={newCaseEmail}
+                onChange={(e) => setNewCaseEmail(e.target.value)}
+                placeholder="e.g. john@example.com"
+                className="w-full bg-slate-50/50 hover:bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white transition-all font-semibold"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Billing Cycle</label>
+              <select
+                value={newCaseBillingCycle}
+                onChange={(e) => setNewCaseBillingCycle(e.target.value)}
+                className="w-full bg-slate-50/50 hover:bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white transition-all font-semibold cursor-pointer"
+              >
+                <option value="Weekly">Weekly Settle</option>
+                <option value="Monthly">Monthly Settle</option>
+              </select>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Care Level</label>
+              <select
+                value={newCaseCareLevel}
+                onChange={(e) => {
+                  setNewCaseCareLevel(e.target.value);
+                  setNewCaseDuration(e.target.value.includes("Acute") ? "2" : "6");
+                }}
+                className="w-full bg-slate-50/50 hover:bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white transition-all font-semibold cursor-pointer"
+              >
+                <option value="🌱 Acute & Wellness Care">🌱 Acute & Wellness Care (₹2,280)</option>
+                <option value="⚡ Standard Chronic Care">⚡ Standard Chronic Care (₹9,600)</option>
+                <option value="🚨 Acute Critical Care">🚨 Acute Critical Care (₹20,000)</option>
+                <option value="🎯 Deep Systemic Care">🎯 Deep Systemic Care (₹16,800)</option>
+                <option value="🫁 Advanced Pathological Care">🫁 Advanced Pathological Care (₹24,000)</option>
+                <option value="🔮 Multisystem Integrative Care">🔮 Multisystem Integrative Care (₹33,600)</option>
+              </select>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Custom Price Override (Optional)</label>
+              <input
+                type="number"
+                value={newCasePrice}
+                onChange={(e) => setNewCasePrice(e.target.value)}
+                placeholder="e.g. 5000"
+                className="w-full bg-slate-50/50 hover:bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white transition-all font-semibold"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Duration (Weeks)</label>
+              <input
+                type="number"
+                required
+                value={newCaseDuration}
+                onChange={(e) => setNewCaseDuration(e.target.value)}
+                placeholder="e.g. 2 or 6"
+                className="w-full bg-slate-50/50 hover:bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white transition-all font-semibold"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">No. of Conditions</label>
+              <input
+                type="number"
+                required
+                value={newCaseConditions}
+                onChange={(e) => setNewCaseConditions(e.target.value)}
+                placeholder="e.g. 1"
+                className="w-full bg-slate-50/50 hover:bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white transition-all font-semibold"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Concession / Discount</label>
+              <select
+                value={newCaseConcession}
+                onChange={(e) => setNewCaseConcession(e.target.value)}
+                className="w-full bg-slate-50/50 hover:bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white transition-all font-semibold cursor-pointer"
+              >
+                <option value="None">No Concession</option>
+                <option value="Senior Citizen Discount">Senior Citizen Discount</option>
+                <option value="Socio-Economic Relief">Socio-Economic Relief</option>
+                <option value="Special Concession">Special Concession</option>
+                <option value="Student Discount">Student Discount</option>
+                <option value="Healthcare Professional Discount">Healthcare Professional Discount</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Chief Complaint Notes</label>
+            <textarea
+              required
+              rows={3}
+              value={newCaseComplaint}
+              onChange={(e) => setNewCaseComplaint(e.target.value)}
+              placeholder="Describe the main clinical complaints, remedy modalities, and pathology index..."
+              className="w-full bg-slate-50/50 hover:bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white transition-all font-semibold resize-y"
+            />
+          </div>
+
+          <div className="flex justify-end gap-3 border-t border-slate-100 pt-3">
+            <button
+              type="button"
+              onClick={() => setIsNewCaseOpen(false)}
+              className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isCreatingCase}
+              className="bg-slate-900 hover:bg-slate-800 text-white disabled:opacity-50 px-6 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5"
+            >
+              {isCreatingCase ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+              Save & Register Case
+            </button>
+          </div>
+        </form>
+      )}
 
       {/* Sticky Clinical Summary */}
       {(() => {

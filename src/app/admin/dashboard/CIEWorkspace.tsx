@@ -9,7 +9,7 @@ import {
   Award, Compass, Network, Layers, ShieldAlert, Cpu, 
   Play, RefreshCw, Zap, TrendingUp, Workflow, Calendar, 
   Database, Stethoscope, AlertTriangle, Check, X, Shield, ChevronRight, ChevronDown,
-  FileSpreadsheet, ExternalLink, Maximize2, Minimize2
+  FileSpreadsheet, ExternalLink, Maximize2, Minimize2, Download
 } from "lucide-react";
 import EcgGraph from "@/components/EcgGraph";
 import { CONSTITUTIONAL_QUESTIONS, analyzeConstitution } from "@/app/health-intelligence/constitutionalEngine";
@@ -428,6 +428,22 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
     }
     const slug = nodeId.replace("rem_", "").replace("_", "-");
     return `/en/materia-medica/william-boericke/${slug}`;
+  };
+
+  const handleExportGraphImage = () => {
+    const canvas = graphCanvasRef.current;
+    if (!canvas) return;
+    try {
+      const link = document.createElement("a");
+      link.download = `OSTM-Knowledge-Graph-${activeDataKey}.png`;
+      link.href = canvas.toDataURL("image/png");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error("Failed to export image:", err);
+      alert("Failed to export graph image.");
+    }
   };
 
   useEffect(() => {
@@ -1520,6 +1536,22 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
           baseLineWidth = 0.8;
         }
 
+        // Draw directional arrowhead at target node boundary
+        const dx = t.x - s.x;
+        const dy = t.y - s.y;
+        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+        
+        // Offset arrowhead by target node radius + some padding
+        const arrowLength = 5.5;
+        const offsetDist = t.radius + 3.0;
+        
+        const targetX = t.x - (dx / dist) * offsetDist;
+        const targetY = t.y - (dy / dist) * offsetDist;
+        
+        // Line stops before target boundary to leave room for arrowhead
+        const lineEndX = t.x - (dx / dist) * (offsetDist + arrowLength);
+        const lineEndY = t.y - (dy / dist) * (offsetDist + arrowLength);
+
         ctx.lineWidth = isHighlighted ? baseLineWidth * 1.5 : baseLineWidth;
         ctx.strokeStyle = isHighlighted || searchMatch
           ? "#10b981"
@@ -1535,16 +1567,78 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
 
         ctx.beginPath();
         ctx.moveTo(s.x, s.y);
-        ctx.lineTo(t.x, t.y);
+        ctx.lineTo(lineEndX, lineEndY);
         ctx.stroke();
+        
+        // Draw Arrowhead pointing to target
+        const angle = Math.atan2(dy, dx);
+        ctx.fillStyle = ctx.strokeStyle;
+        ctx.beginPath();
+        ctx.moveTo(targetX, targetY);
+        ctx.lineTo(
+          targetX - arrowLength * Math.cos(angle - Math.PI / 6),
+          targetY - arrowLength * Math.sin(angle - Math.PI / 6)
+        );
+        ctx.lineTo(
+          targetX - arrowLength * Math.cos(angle + Math.PI / 6),
+          targetY - arrowLength * Math.sin(angle + Math.PI / 6)
+        );
+        ctx.closePath();
+        ctx.fill();
         ctx.shadowBlur = 0; // Reset
 
-        // Animate flow along active pathway (Priority 4)
-        const activePath = activeDataKey === "aarav" 
-          ? ["org_kidney", "lab_egfr", "diag_ckd", "sym_renal", "rem_apis"]
-          : activeDataKey === "priya"
-            ? ["org_thyroid", "lab_tsh", "diag_hypothyroid", "sym_fatigue", "rem_puls"]
-            : ["org_joints", "lab_anticcp", "diag_ra", "sym_stiffness", "rem_rhus"];
+        // Compute dynamic active pathway based on the patient's actual data
+        let activePath: string[] = [];
+        
+        // 1. Resolve Top Remedy node ID
+        const topRemedyName = activeData.remedyMatches?.[0]?.name?.toLowerCase() || "";
+        let remedyNodeId = "rem_sulph"; // Fallback
+        if (topRemedyName.includes("lycopodium")) remedyNodeId = "rem_lyc";
+        else if (topRemedyName.includes("apis")) remedyNodeId = "rem_apis";
+        else if (topRemedyName.includes("anguillae")) remedyNodeId = "rem_anguillae";
+        else if (topRemedyName.includes("pulsatilla")) remedyNodeId = "rem_puls";
+        else if (topRemedyName.includes("thyroidinum")) remedyNodeId = "rem_thyroid";
+        else if (topRemedyName.includes("silica")) remedyNodeId = "rem_sil";
+        else if (topRemedyName.includes("rhus")) remedyNodeId = "rem_rhus";
+        else if (topRemedyName.includes("causticum")) remedyNodeId = "rem_caust";
+        else if (topRemedyName.includes("nux")) remedyNodeId = "rem_nux";
+        else if (topRemedyName.includes("calcarea")) remedyNodeId = "rem_calc";
+        else if (topRemedyName.includes("crataegus")) remedyNodeId = "rem_crataegus";
+        else if (topRemedyName.includes("kali")) remedyNodeId = "rem_kali_phos";
+        else if (topRemedyName.includes("chelidonium")) remedyNodeId = "rem_chelidonium";
+        else if (topRemedyName.includes("antimonium")) remedyNodeId = "rem_ant_tart";
+        else if (topRemedyName.includes("graphites")) remedyNodeId = "rem_graphites";
+        else if (topRemedyName.includes("phosphoric")) remedyNodeId = "rem_phos_acid";
+        else if (topRemedyName.includes("cantharis")) remedyNodeId = "rem_cantharis";
+        else if (topRemedyName.includes("arsenicum")) remedyNodeId = "rem_ars";
+        else if (topRemedyName.includes("phosphorus")) remedyNodeId = "rem_phos";
+        else if (topRemedyName.includes("bryonia")) remedyNodeId = "rem_bry";
+
+        // 2. Identify dominant Organ system / Organ affinity
+        const dominantAffinity = activeData.symptoms?.[0]?.organAffinity?.toLowerCase() || "";
+        
+        if (dominantAffinity.includes("renal") || dominantAffinity.includes("urinary")) {
+          activePath = ["org_kidney", "lab_egfr", "diag_ckd", "sym_renal", remedyNodeId];
+        } else if (dominantAffinity.includes("endocrine") || dominantAffinity.includes("thyroid")) {
+          activePath = ["org_thyroid", "lab_tsh", "diag_hypothyroid", "sym_fatigue", remedyNodeId];
+        } else if (dominantAffinity.includes("musculoskeletal") || dominantAffinity.includes("joint") || dominantAffinity.includes("stiff")) {
+          activePath = ["org_joints", "lab_anticcp", "diag_ra", "sym_stiffness", remedyNodeId];
+        } else if (dominantAffinity.includes("digestive") || dominantAffinity.includes("gut") || dominantAffinity.includes("stomach") || dominantAffinity.includes("acid")) {
+          activePath = ["org_gut", "lab_hba1c", "diag_metabolic", "sym_bloat", remedyNodeId];
+        } else if (dominantAffinity.includes("cardiovascular") || dominantAffinity.includes("heart")) {
+          activePath = ["org_heart", "lab_ecg", "diag_metabolic", "sym_palpitations", remedyNodeId];
+        } else if (dominantAffinity.includes("nervous") || dominantAffinity.includes("brain") || dominantAffinity.includes("sleep")) {
+          activePath = ["org_brain", "lab_sleep_index", "diag_metabolic", "sym_brain_fog", remedyNodeId];
+        } else {
+          // Fallback based on gender/name
+          const matchedPatient = patients.find(p => p.id === selectedPatientId);
+          const patientGender = matchedPatient?.gender || "";
+          if (patientGender.toLowerCase() === "female" || activeData.name?.toLowerCase().includes("priya")) {
+            activePath = ["org_ovaries", "lab_lh_fsh", "diag_pcos", "sym_menses", remedyNodeId];
+          } else {
+            activePath = ["org_kidney", "lab_egfr", "diag_ckd", "sym_renal", remedyNodeId];
+          }
+        }
 
         const sIdx = activePath.indexOf(s.id);
         const tIdx = activePath.indexOf(t.id);
@@ -1555,13 +1649,13 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
           ctx.lineWidth = 3.5;
           ctx.beginPath();
           ctx.moveTo(s.x, s.y);
-          ctx.lineTo(t.x, t.y);
+          ctx.lineTo(lineEndX, lineEndY);
           ctx.stroke();
 
           // Draw moving photon
           const tFlow = (Date.now() * 0.0015) % 1;
-          const flowX = s.x + (t.x - s.x) * tFlow;
-          const flowY = s.y + (t.y - s.y) * tFlow;
+          const flowX = s.x + (lineEndX - s.x) * tFlow;
+          const flowY = s.y + (lineEndY - s.y) * tFlow;
           ctx.beginPath();
           ctx.arc(flowX, flowY, 4, 0, 2 * Math.PI);
           ctx.fillStyle = "#ffffff";
@@ -1877,6 +1971,16 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
       canvas.style.height = `${h}px`;
     };
 
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const zoomFactor = 1.05;
+      if (e.deltaY < 0) {
+        setGraphScale(prev => Math.min(2.0, prev * zoomFactor));
+      } else {
+        setGraphScale(prev => Math.max(0.5, prev / zoomFactor));
+      }
+    };
+
     // Touch event handlers for iPad / touch devices
     const handleTouchStart = (e: TouchEvent) => {
       if (e.touches.length !== 1) return;
@@ -1939,6 +2043,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
     canvas.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("mouseup", handleMouseUp);
     window.addEventListener("resize", handleResize);
+    canvas.addEventListener("wheel", handleWheel, { passive: false });
     canvas.addEventListener("touchstart", handleTouchStart, { passive: false });
     canvas.addEventListener("touchmove", handleTouchMove, { passive: false });
     canvas.addEventListener("touchend", handleTouchEnd);
@@ -1949,6 +2054,7 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
       canvas.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
       window.removeEventListener("resize", handleResize);
+      canvas.removeEventListener("wheel", handleWheel);
       canvas.removeEventListener("touchstart", handleTouchStart);
       canvas.removeEventListener("touchmove", handleTouchMove);
       canvas.removeEventListener("touchend", handleTouchEnd);
@@ -2826,6 +2932,14 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
             </button>
             <span className="w-px h-6 bg-slate-800 self-center mx-1" />
             <button 
+              onClick={handleExportGraphImage}
+              className="px-2.5 h-8 flex items-center justify-center bg-emerald-600 hover:bg-emerald-700 rounded-lg text-white text-xs font-bold border-none cursor-pointer gap-1.5"
+              title="Export High-Res PNG"
+            >
+              <Download className="w-3.5 h-3.5" /> Export PNG
+            </button>
+            <span className="w-px h-6 bg-slate-800 self-center mx-1" />
+            <button 
               onClick={() => setIsGraphFullscreen(false)}
               className="w-8 h-8 flex items-center justify-center bg-rose-950/50 hover:bg-rose-900/60 rounded-lg text-rose-400 font-bold border-none cursor-pointer"
               title="Exit Fullscreen"
@@ -2966,6 +3080,14 @@ export default function CIEWorkspace({ patients, selectedPatientId, setSelectedP
               title="Decrease Label Size (-A)"
             >
               －A
+            </button>
+            <span className="w-px h-4 bg-slate-200 dark:bg-slate-800 mx-1" />
+            <button 
+              onClick={handleExportGraphImage}
+              className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 rounded-lg text-xs font-bold border-none cursor-pointer flex items-center justify-center gap-1 text-white"
+              title="Export High-Res PNG"
+            >
+              <Download className="w-3.5 h-3.5" /> Export PNG
             </button>
             <span className="w-px h-4 bg-slate-200 dark:bg-slate-800 mx-1" />
             {/* Fullscreen Toggle */}

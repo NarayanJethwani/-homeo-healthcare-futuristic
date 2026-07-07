@@ -7,12 +7,13 @@ import {
   ArrowRight, ArrowLeft, MessageSquare, ShieldCheck, Truck, Clock,
   Sliders, Plus, Trash2, Share2, Copy, Save, LayoutGrid, Layers, Activity,
   Info, Percent, HelpCircle, UserCheck, AlertTriangle,
-  PlusCircle
+  PlusCircle, Stethoscope, Fingerprint, BrainCircuit, CalendarCheck, Globe, Pill, ClipboardList
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import Magnetic from "@/components/Magnetic";
 import Portal from "@/components/Portal";
+import { getTreatmentRecommendation } from "@/lib/treatmentRecommendationEngine";
 
 interface Package {
   id: string;
@@ -420,6 +421,7 @@ const careLevelsDetails = {
     monthlyPrice: 4800,
     badge: "Acute & General Support",
     icon: "🌱",
+    complexityLabel: "Low",
     description: "Ideal for general immunity, hair fall, seasonal acute complaints, or general wellness guidance.",
     features: [
       "General constitutional wellness analysis",
@@ -435,6 +437,7 @@ const careLevelsDetails = {
     monthlyPrice: 9600,
     badge: "Focused Chronic Management",
     icon: "⚡",
+    complexityLabel: "Moderate",
     description: "Designed for a single chronic condition (e.g. eczema, IBS, thyroid) requiring active tracking and bi-weekly checks.",
     features: [
       "Single chronic condition profile mapping",
@@ -450,6 +453,7 @@ const careLevelsDetails = {
     monthlyPrice: 16800,
     badge: "Complex Chronic Therapy",
     icon: "🎯",
+    complexityLabel: "Moderate–High",
     description: "Deep management of complex chronic or systemic health conditions (e.g. asthma, migraine, severe eczema).",
     features: [
       "Deep-seated target system pathology analysis",
@@ -465,6 +469,7 @@ const careLevelsDetails = {
     monthlyPrice: 24000,
     badge: "Organ System Recovery",
     icon: "🫁",
+    complexityLabel: "High",
     description: "Advanced recovery protocols for deep-seated pathology, including organ system rebalancing and biomarker reviews.",
     features: [
       "Multi-remedy support for organ pathology",
@@ -480,6 +485,7 @@ const careLevelsDetails = {
     monthlyPrice: 33600,
     badge: "Multi-Organ Intensive Care",
     icon: "🔮",
+    complexityLabel: "Comprehensive",
     description: "For long-standing, multi-system chronic pathologies requiring intensive clinical supervision by Dr. Jethwani.",
     features: [
       "Multi-organ pathogenetic profile mapping",
@@ -495,6 +501,7 @@ const careLevelsDetails = {
     monthlyPrice: 20000,
     badge: "Intensive Daily Supervision",
     icon: "🚨",
+    complexityLabel: "Intensive",
     description: "For urgent, high-intensity acute cases requiring daily tracking, frequent remedy adjustments, and intensive physician study.",
     features: [
       "Daily doctor clinical review and check-ins",
@@ -1451,6 +1458,13 @@ export default function StorePage() {
 
   const activeDetails = careLevelsDetails[careLevel];
 
+  const recommendation = getTreatmentRecommendation(
+    careLevel,
+    conditionsCount,
+    durationValue,
+    billingCycle
+  );
+
   return (
     <div className="pt-28 pb-24 px-4 md:px-8 lg:px-12 relative">
       <div className="w-full z-10 relative">
@@ -1597,8 +1611,170 @@ export default function StorePage() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              className="space-y-16 mb-16"
+              className="space-y-12 mb-16"
             >
+              {/* Section: Clinical Credentials - Why Patients Choose Homeo Healthcare */}
+              <div className="space-y-8 bg-slate-500/[0.01] border border-slate-900/[0.02] p-6 md:p-8 rounded-[32px] backdrop-blur-[2px]">
+                <div className="text-center max-w-3xl mx-auto space-y-3">
+                  <span className="text-[10px] font-bold text-mint tracking-widest uppercase bg-mint/5 border border-mint/15 px-3 py-1 rounded-full">
+                    Clinical Credentials
+                  </span>
+                  <h2 className="font-serif text-3xl md:text-4xl font-semibold tracking-tight text-[#1A2421]">
+                    Why Patients Choose Homeo Healthcare
+                  </h2>
+                  <p className="text-sm text-slate-600 font-semibold leading-relaxed">
+                    Experience physician-led, AI-enhanced, individualized homeopathic care designed for long-term health—not one-size-fits-all treatment.
+                  </p>
+                </div>
+
+                {/* 2-Column Responsive Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Card 1 */}
+                  <div className="glass-panel border-slate-100 bg-white/50 rounded-2xl py-3.5 px-4 flex gap-4 hover:-translate-y-0.5 hover:shadow-md transition-all duration-300">
+                    <div className="w-10 h-10 rounded-xl bg-mint/5 border border-mint/10 text-mint flex items-center justify-center flex-shrink-0">
+                      <Stethoscope className="w-5 h-5" />
+                    </div>
+                    <div className="space-y-1 text-left">
+                      <h3 className="text-sm font-bold text-[#1A2421]">20+ Years of Clinical Experience</h3>
+                      <p className="text-xs text-slate-500 font-semibold leading-relaxed">
+                        Extensive experience managing acute, chronic, and complex conditions with individualized homeopathy.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Card 2 */}
+                  <div className="glass-panel border-slate-100 bg-white/50 rounded-2xl py-3.5 px-4 flex gap-4 hover:-translate-y-0.5 hover:shadow-md transition-all duration-300">
+                    <div className="w-10 h-10 rounded-xl bg-indigo-50/5 border border-indigo-500/10 text-indigo-650 flex items-center justify-center flex-shrink-0">
+                      <Fingerprint className="w-5 h-5" />
+                    </div>
+                    <div className="space-y-1 text-left">
+                      <h3 className="text-sm font-bold text-[#1A2421]">Individualized Constitutional Treatment</h3>
+                      <p className="text-xs text-slate-500 font-semibold leading-relaxed">
+                        Personalized care plans tailored to your unique symptom profile, constitution, and health goals.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Card 3 */}
+                  <div className="glass-panel border-slate-100 bg-white/50 rounded-2xl py-3.5 px-4 flex gap-4 hover:-translate-y-0.5 hover:shadow-md transition-all duration-300">
+                    <div className="w-10 h-10 rounded-xl bg-purple-50/5 border border-purple-500/10 text-purple-650 flex items-center justify-center flex-shrink-0">
+                      <BrainCircuit className="w-5 h-5" />
+                    </div>
+                    <div className="space-y-1 text-left">
+                      <h3 className="text-sm font-bold text-[#1A2421]">Physician-Designed AI Clinical Intelligence</h3>
+                      <p className="text-xs text-slate-500 font-semibold leading-relaxed">
+                        Advanced AI assists analysis and planning while every recommendation remains supervised by a physician.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Card 4 */}
+                  <div className="glass-panel border-slate-100 bg-white/50 rounded-2xl py-3.5 px-4 flex gap-4 hover:-translate-y-0.5 hover:shadow-md transition-all duration-300">
+                    <div className="w-10 h-10 rounded-xl bg-rose-500/5 border border-rose-500/10 text-rose-600 flex items-center justify-center flex-shrink-0">
+                      <Activity className="w-5 h-5" />
+                    </div>
+                    <div className="space-y-1 text-left">
+                      <h3 className="text-sm font-bold text-[#1A2421]">Continuous Treatment Monitoring</h3>
+                      <p className="text-xs text-slate-500 font-semibold leading-relaxed">
+                        Regular reviews ensure medicines and treatment strategies are refined throughout your care.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Card 5 */}
+                  <div className="glass-panel border-slate-100 bg-white/50 rounded-2xl py-3.5 px-4 flex gap-4 hover:-translate-y-0.5 hover:shadow-md transition-all duration-300">
+                    <div className="w-10 h-10 rounded-xl bg-amber-500/5 border border-amber-500/10 text-amber-600 flex items-center justify-center flex-shrink-0">
+                      <CalendarCheck className="w-5 h-5" />
+                    </div>
+                    <div className="space-y-1 text-left">
+                      <h3 className="text-sm font-bold text-[#1A2421]">Regular Physician Follow-ups</h3>
+                      <p className="text-xs text-slate-500 font-semibold leading-relaxed">
+                        Scheduled consultations ensure treatment remains aligned with your clinical progress.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Card 6 */}
+                  <div className="glass-panel border-slate-100 bg-white/50 rounded-2xl py-3.5 px-4 flex gap-4 hover:-translate-y-0.5 hover:shadow-md transition-all duration-300">
+                    <div className="w-10 h-10 rounded-xl bg-blue-500/5 border border-blue-500/10 text-blue-650 flex items-center justify-center flex-shrink-0">
+                      <Globe className="w-5 h-5" />
+                    </div>
+                    <div className="space-y-1 text-left">
+                      <h3 className="text-sm font-bold text-[#1A2421]">Worldwide Online Care</h3>
+                      <p className="text-xs text-slate-500 font-semibold leading-relaxed">
+                        Secure teleconsultations and medicine delivery support patients in India and worldwide.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Card 7 */}
+                  <div className="glass-panel border-slate-100 bg-white/50 rounded-2xl py-3.5 px-4 flex gap-4 hover:-translate-y-0.5 hover:shadow-md transition-all duration-300">
+                    <div className="w-10 h-10 rounded-xl bg-teal-500/5 border border-teal-500/10 text-teal-600 flex items-center justify-center flex-shrink-0">
+                      <Pill className="w-5 h-5" />
+                    </div>
+                    <div className="space-y-1 text-left">
+                      <h3 className="text-sm font-bold text-[#1A2421]">Personalized Medicine Adjustments</h3>
+                      <p className="text-xs text-slate-500 font-semibold leading-relaxed">
+                        Prescriptions are adjusted whenever clinically appropriate rather than remaining fixed.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Card 8 */}
+                  <div className="glass-panel border-slate-100 bg-white/50 rounded-2xl py-3.5 px-4 flex gap-4 hover:-translate-y-0.5 hover:shadow-md transition-all duration-300">
+                    <div className="w-10 h-10 rounded-xl bg-orange-500/5 border border-orange-500/10 text-orange-600 flex items-center justify-center flex-shrink-0">
+                      <ClipboardList className="w-5 h-5" />
+                    </div>
+                    <div className="space-y-1 text-left">
+                      <h3 className="text-sm font-bold text-[#1A2421]">Transparent Treatment Planning</h3>
+                      <p className="text-xs text-slate-500 font-semibold leading-relaxed">
+                        Understand your care level, treatment duration, follow-up schedule, and investment upfront.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bottom Highlight Panel */}
+                <div className="glass-panel border-mint/20 bg-mint/[0.02] rounded-3xl p-6 md:p-8 space-y-4 text-center relative overflow-hidden shadow-sm">
+                  <div className="space-y-2">
+                    <h3 className="text-lg font-bold text-[#1A2421]">Our Commitment to Personalized Care</h3>
+                    <p className="text-xs text-slate-655 font-semibold leading-relaxed max-w-4xl mx-auto">
+                      At Homeo Healthcare, treatment recommendations are based on your individual clinical needs, expected follow-up intensity, and long-term care requirements—not standardized packages. Every care program is designed by Dr. Narayan Jethwani and supported by AI-assisted clinical decision support to enhance consistency, transparency, and patient understanding.
+                    </p>
+                  </div>
+                  
+                  {/* Trust Badges */}
+                  <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 pt-2 text-[10.5px] font-bold text-mint-dark">
+                    <span className="flex items-center gap-1">✓ Physician-Led</span>
+                    <span className="flex items-center gap-1">✓ Personalized</span>
+                    <span className="flex items-center gap-1">✓ AI-Assisted</span>
+                    <span className="flex items-center gap-1">✓ Transparent Care Planning</span>
+                  </div>
+                </div>
+
+                {/* Slim Trust Strip - Visual Bridge */}
+                <div className="border-y border-slate-900/5 py-4 bg-slate-500/[0.02] flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 text-center text-xs font-semibold text-slate-600">
+                  <span className="font-bold text-[#1A2421]">Trusted by patients for:</span>
+                  <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+                    <span className="flex items-center gap-1.5">🌍 Worldwide Online Consultations</span>
+                    <span className="flex items-center gap-1.5">🧬 Personalized Constitutional Care</span>
+                    <span className="flex items-center gap-1.5">🤖 AI-Assisted Clinical Intelligence</span>
+                    <span className="flex items-center gap-1.5">👨‍⚕️ Physician-Led Treatment Planning</span>
+                    <span className="flex items-center gap-1.5">📈 Continuous Progress Monitoring</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Clinical Recommendation Engine Header Label */}
+              <div className="flex flex-col gap-1.5 text-left px-1 mt-4">
+                <span className="text-xs md:text-sm font-bold text-indigo-750 flex items-center gap-1.5 tracking-wide">
+                  🧠 Physician-Guided Clinical Treatment Recommendation Engine
+                </span>
+                <p className="text-[11.5px] text-slate-500 font-semibold leading-relaxed">
+                  AI-assisted recommendations based on your selected clinical requirements. Final treatment plan is confirmed after physician consultation.
+                </p>
+              </div>
+
               <div id="planner-dashboard" className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                 
                 {/* Dashboard Left Form Controls (8 cols) */}
@@ -1609,9 +1785,9 @@ export default function StorePage() {
                     <div className="flex justify-between items-start gap-4">
                       <div>
                         <span className="text-[10px] font-bold text-mint uppercase tracking-widest block mb-1">Step 1</span>
-                        <h2 className="text-xl font-bold text-[#1A2421]">Select Clinical Complexity Level</h2>
+                        <h2 className="text-xl font-bold text-[#1A2421]">Select Recommended Care Intensity</h2>
                         <p className="text-xs text-slate-500 font-semibold mt-1">
-                          Homeopathic treatment scales based on complexity. Every case is unique and requirements can change over time.
+                          Homeopathic treatment scales based on required care intensity. Every case is unique and requirements can change over time.
                         </p>
                       </div>
                       <div className="w-10 h-10 bg-mint/5 border border-mint/10 text-mint rounded-2xl flex items-center justify-center flex-shrink-0">
@@ -1789,13 +1965,22 @@ export default function StorePage() {
                         transition={{ duration: 0.3 }}
                         className="p-4 border-l-4 border-l-mint border-y border-r border-slate-200/60 bg-white/30 backdrop-blur-sm rounded-2xl space-y-3 shadow-sm hover:border-slate-350 transition-all duration-300 text-left"
                       >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                          <div className="flex items-center gap-2 flex-wrap">
                             <span className="text-lg">{activeDetails.icon}</span>
                             <h4 className="text-xs font-black text-[#1A2421] uppercase tracking-wider">{activeDetails.title} Details</h4>
-                            <span className="text-[8px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-mint/10 text-mint-dark border border-mint/25">
-                              {activeDetails.badge}
-                            </span>
+                            
+                            {/* Care Intensity Badge with Tooltip */}
+                            <div className="flex items-center gap-1.5 bg-indigo-50/60 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/60 px-2.5 py-0.5 rounded-full text-[9.5px] font-bold text-indigo-750 dark:text-indigo-400 relative group cursor-help select-none shrink-0 w-fit">
+                              <span>Care Intensity: {activeDetails.complexityLabel}</span>
+                              <HelpCircle className="w-3.5 h-3.5 text-indigo-500 hover:text-indigo-750 dark:text-indigo-400 shrink-0" />
+
+                              {/* Hover Tooltip */}
+                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2.5 w-60 p-3.5 bg-slate-900 text-white text-[10px] font-semibold leading-relaxed rounded-2xl shadow-xl border border-white/10 opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-300 z-50 text-left">
+                                Care Intensity reflects the expected level of physician supervision, follow-up intensity, treatment customization, and coordination required for this care program. It does not indicate disease severity.
+                                <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-slate-900" />
+                              </div>
+                            </div>
                           </div>
                         </div>
                         <p className="text-xs text-slate-500 font-semibold leading-relaxed">
@@ -1813,19 +1998,35 @@ export default function StorePage() {
                         </div>
                       </motion.div>
                     </AnimatePresence>
+
+                    {/* Why this plan? Explanation Panel */}
+                    <motion.div
+                      key={`why-this-plan-${careLevel}-${conditionsCount}-${durationValue}`}
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="p-4 border border-indigo-100 dark:border-indigo-950/40 bg-indigo-500/[0.03] dark:bg-indigo-950/10 rounded-2xl space-y-2 mt-4 text-left"
+                    >
+                      <div className="flex items-center gap-1.5 text-indigo-700 dark:text-indigo-400 font-extrabold text-[11px] uppercase tracking-wider">
+                        <Info className="w-3.5 h-3.5" />
+                        <span>Why this plan?</span>
+                      </div>
+                      <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold leading-relaxed">
+                        {recommendation.patientExplanation}
+                      </p>
+                    </motion.div>
                   </div>
 
                   {/* Steps 1.5 & 2 Side-by-Side Wrapper */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Step 1.5: Co-existing Conditions Selector */}
+                    {/* Step 1.5: Active Health Concerns Selector */}
                     <div className="glass-panel border-white/60 bg-white/40 rounded-3xl p-6 md:p-8 space-y-6 flex flex-col justify-between">
                       <div className="space-y-6">
                         <div className="flex justify-between items-start gap-4">
                           <div>
                             <span className="text-[10px] font-bold text-mint uppercase tracking-widest block mb-1">Step 1.5</span>
-                            <h2 className="text-xl font-bold text-[#1A2421]">Co-existing Conditions</h2>
+                            <h2 className="text-xl font-bold text-[#1A2421]">Active Health Concerns</h2>
                             <p className="text-xs text-slate-500 font-semibold mt-1">
-                              Do you have multiple co-existing mild/moderate conditions? Select to include coordination tracking.
+                              Select the number of concurrent active health concerns you wish to address. Multi-concern tracking scales physician analysis time.
                             </p>
                           </div>
                           <div className="w-10 h-10 bg-mint/5 border border-mint/10 text-mint rounded-2xl flex items-center justify-center flex-shrink-0">
@@ -1845,11 +2046,11 @@ export default function StorePage() {
                             };
                             const activeTierSurcharges = surchargesLookup[careLevel];
                             const items = [
-                              { count: 1, label: "1 Condition", surchargeText: "Included", surchargeInfo: "Base plan" },
-                              { count: 2, label: "2 Conditions", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly}/wk` : `+₹${activeTierSurcharges.unitMonthly}/mo`, surchargeInfo: "Dual coordination" },
-                              { count: 3, label: "3 Conditions", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly * 2}/wk` : `+₹${activeTierSurcharges.unitMonthly * 2}/mo`, surchargeInfo: "Triple mapping" },
-                              { count: 4, label: "4 Conditions", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly * 3}/wk` : `+₹${activeTierSurcharges.unitMonthly * 3}/mo`, surchargeInfo: "Quad coordination" },
-                              { count: 5, label: "5+ Conditions", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly * 4}/wk` : `+₹${activeTierSurcharges.unitMonthly * 4}/mo`, surchargeInfo: "Multisystem integration" }
+                              { count: 1, label: "1 Health Concern", surchargeText: "Included", surchargeInfo: "Base plan" },
+                              { count: 2, label: "2 Health Concerns", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly}/wk` : `+₹${activeTierSurcharges.unitMonthly}/mo`, surchargeInfo: "Dual-concern coordination" },
+                              { count: 3, label: "3 Health Concerns", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly * 2}/wk` : `+₹${activeTierSurcharges.unitMonthly * 2}/mo`, surchargeInfo: "Triple-concern coordination" },
+                              { count: 4, label: "4 Health Concerns", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly * 3}/wk` : `+₹${activeTierSurcharges.unitMonthly * 3}/mo`, surchargeInfo: "Quad-concern coordination" },
+                              { count: 5, label: "5+ Health Concerns", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly * 4}/wk` : `+₹${activeTierSurcharges.unitMonthly * 4}/mo`, surchargeInfo: "Multi-concern integration" }
                             ];
 
                             return items.map((item) => {
@@ -1884,6 +2085,11 @@ export default function StorePage() {
                             });
                           })()}
                         </div>
+                        {conditionsCount > 1 && (
+                          <p className="text-[10px] text-amber-700 font-semibold leading-relaxed bg-amber-500/5 border border-amber-500/10 p-3.5 rounded-2xl text-left">
+                            Additional health concerns may require increased physician time, individualized treatment planning, and coordinated follow-up. The Clinical Complexity Adjustment reflects the additional care required.
+                          </p>
+                        )}
                       </div>
                     </div>
 
@@ -1893,9 +2099,9 @@ export default function StorePage() {
                         <div className="flex justify-between items-start gap-4">
                           <div>
                             <span className="text-[10px] font-bold text-mint uppercase tracking-widest block mb-1">Step 2</span>
-                            <h2 className="text-xl font-bold text-[#1A2421]">Billing & Duration Options</h2>
+                            <h2 className="text-xl font-bold text-[#1A2421]">Billing & Duration Selection</h2>
                             <p className="text-xs text-slate-500 font-semibold mt-1">
-                              Select your cycle and timeline. Long-term commitment helps optimize constitutional healing and activates duration discounts.
+                              Select your care billing option and recommended care period. Continuity of care supports optimal healing and activates continuity benefits.
                             </p>
                           </div>
                           <div className="w-10 h-10 bg-mint/5 border border-mint/10 text-mint rounded-2xl flex items-center justify-center flex-shrink-0">
@@ -1907,8 +2113,8 @@ export default function StorePage() {
                           {/* Cycle Selector */}
                           <div className="p-4.5 bg-slate-900/5 rounded-2xl border border-slate-200/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div>
-                              <h4 className="text-[10px] font-black text-[#1A2421] uppercase tracking-wider">Billing Frequency</h4>
-                              <p className="text-[8px] text-slate-400 font-bold uppercase mt-0.5">Weekly billing vs discounted monthly billing</p>
+                              <h4 className="text-[10px] font-black text-[#1A2421] uppercase tracking-wider">Care Billing Option</h4>
+                              <p className="text-[8px] text-slate-400 font-bold uppercase mt-0.5">Weekly care billing option vs discounted monthly Care billing option</p>
                             </div>
                             <div className="flex items-center gap-1 bg-white/60 p-0.5 rounded-full border border-slate-200/50 w-fit relative z-0">
                               <button
@@ -1953,10 +2159,10 @@ export default function StorePage() {
                           {/* Duration selector */}
                           <div className="space-y-3">
                             <div className="flex justify-between items-center">
-                              <h4 className="text-[10px] font-black text-[#1A2421] uppercase tracking-wider">Duration of Commitment</h4>
+                              <h4 className="text-[10px] font-black text-[#1A2421] uppercase tracking-wider">Recommended Treatment Duration</h4>
                               <span className="text-[9px] text-mint font-bold uppercase tracking-wider flex items-center gap-1">
                                 <Clock className="w-3 h-3" />
-                                Discount: {activePricing.discountPercent}% Off
+                                Continuity of Care Benefit: {activePricing.discountPercent}% Off
                               </span>
                             </div>
                             
@@ -2009,7 +2215,7 @@ export default function StorePage() {
                                               <span className="text-xs font-bold text-slate-850 leading-tight block">{opt.label}</span>
                                               {opt.discount !== "0%" && (
                                                 <span className="text-[8.5px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-gradient-to-r from-emerald-550 to-teal-650 text-white shadow-sm shadow-emerald-500/10">
-                                                  {opt.discount} Off
+                                                  {opt.discount} Benefit
                                                 </span>
                                               )}
                                               <span className="text-[8.5px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200">
@@ -2021,7 +2227,7 @@ export default function StorePage() {
                                         </div>
                                         <div className="text-left sm:text-right relative z-10 flex sm:flex-col items-baseline sm:items-end justify-between border-t sm:border-t-0 border-slate-900/5 pt-2.5 sm:pt-0">
                                           <div>
-                                            <span className="text-xs text-slate-400 font-bold uppercase tracking-wider block sm:inline mr-1.5 sm:mr-0">Total </span>
+                                            <span className="text-xs text-slate-400 font-bold uppercase tracking-wider block sm:inline mr-1.5 sm:mr-0">Investment </span>
                                             <span className="text-base font-black text-slate-900 font-sans">
                                               ₹{optPricing.finalPrice.toLocaleString("en-IN")}
                                             </span>
@@ -2063,7 +2269,7 @@ export default function StorePage() {
                                           </span>
                                           {opt.discount !== "0%" && (
                                             <span className="text-[8.5px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100">
-                                              {opt.discount} Off
+                                              {opt.discount} Benefit
                                             </span>
                                           )}
                                         </div>
@@ -2089,68 +2295,102 @@ export default function StorePage() {
                     {/* Glowing highlight */}
                     <div 
                       className="absolute inset-0 pointer-events-none opacity-40"
-                      style={{
-                        background: `radial-gradient(circle at 80% 20%, ${activeDetails.glowColor} 0%, transparent 60%)`
-                      }}
                     />
-
                     <div className="relative space-y-6">
-                      <div>
-                        <span className="text-[9px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200/50 mb-3 inline-block">
+                      <div className="space-y-4">
+                        <span className="text-[9.5px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200/50 mb-3 inline-block tracking-wide">
                           Active Configuration
                         </span>
                         <h3 className="text-2xl font-bold text-[#1A2421]">{activeDetails.title}</h3>
-                        <span className="text-xs text-slate-500 font-bold uppercase tracking-wider block mt-1">
+                        <span className="text-xs text-slate-500 font-semibold tracking-wide block mt-1">
                           {activeDetails.badge}
                         </span>
                       </div>
 
+                      {/* Recommendation Summary */}
+                      <div className="p-4 bg-indigo-500/[0.04] border border-indigo-100 dark:border-indigo-950/40 rounded-2xl space-y-3 text-left">
+                        <div className="flex items-center gap-1.5 text-[#1A2421] font-bold text-[10.5px] tracking-wide">
+                          <Sparkles className="w-3.5 h-3.5 text-indigo-650" />
+                          <span>Clinical Care Summary</span>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-[11px] font-semibold text-slate-655">
+                          <div>
+                            <span className="text-[9px] text-slate-400 font-semibold block mb-0.5">Recommended Care Program</span>
+                            <span className="text-[#1A2421] font-extrabold block leading-tight">{recommendation.recommendedProgram}</span>
+                          </div>
+                          <div>
+                            <span className="text-[9px] text-slate-400 font-semibold block mb-0.5">Care Complexity</span>
+                            <span className="text-[#1A2421] font-extrabold block leading-tight">{activeDetails.complexityLabel}</span>
+                          </div>
+                          <div>
+                            <span className="text-[9px] text-slate-400 font-semibold block mb-0.5">Suggested Follow-up</span>
+                            <span className="text-[#1A2421] font-extrabold block leading-tight">{recommendation.followUpFrequency}</span>
+                          </div>
+                          <div>
+                            <span className="text-[9px] text-slate-400 font-semibold block mb-0.5">Recommended Care Period</span>
+                            <span className="text-[#1A2421] font-extrabold block leading-tight">
+                              {durationValue} {billingCycle === "weekly" ? (durationValue === 1 ? "Week" : "Weeks") : (durationValue === 1 ? "Month" : "Months")}
+                            </span>
+                          </div>
+                          <div className="col-span-2">
+                            <span className="text-[9px] text-slate-400 font-semibold block mb-0.5">Active Health Concerns</span>
+                            <span className="text-[#1A2421] font-extrabold block leading-tight">
+                              {conditionsCount} {conditionsCount === 1 ? "Concern" : "Concerns"}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
                       {/* Pricing block */}
                       <div className="p-4 bg-white/60 border border-white/80 rounded-2xl space-y-3">
-                        <div className="flex justify-between text-xs text-slate-500 font-bold uppercase tracking-wider">
-                          <span>Base rate</span>
+                        <div className="text-[11px] text-[#1A2421] font-bold tracking-wide border-b border-slate-900/5 pb-2">
+                          Treatment Investment Summary
+                        </div>
+                        <div className="flex justify-between text-xs text-slate-600 font-semibold tracking-wide">
+                          <span>Clinical Care Fee</span>
                           <span>₹{activePricing.basePrice.toLocaleString("en-IN")} / {billingCycle === "weekly" ? "wk" : "mo"}</span>
                         </div>
 
                         {conditionsCount > 1 && (
-                          <div className="flex justify-between text-xs text-slate-500 font-bold uppercase tracking-wider">
-                            <span>Coordination Fee ({conditionsCount} Conds)</span>
+                          <div className="flex justify-between text-xs text-slate-600 font-semibold tracking-wide">
+                            <span>Clinical Complexity Adjustment ({conditionsCount} Concerns)</span>
                             <span>+₹{activePricing.surcharge.toLocaleString("en-IN")} / {billingCycle === "weekly" ? "wk" : "mo"}</span>
                           </div>
                         )}
 
                         {conditionsCount > 1 && (
-                          <div className="flex justify-between text-xs text-slate-900 font-extrabold uppercase tracking-wider border-b border-slate-900/5 pb-2">
-                            <span>Adjusted Rate</span>
+                          <div className="flex justify-between text-xs text-slate-900 font-bold tracking-wide border-b border-slate-900/5 pb-2">
+                            <span>Personalized Care Investment</span>
                             <span>₹{activePricing.adjustedBasePrice.toLocaleString("en-IN")} / {billingCycle === "weekly" ? "wk" : "mo"}</span>
                           </div>
                         )}
 
-                        <div className="flex justify-between text-xs text-slate-500 font-bold uppercase tracking-wider">
-                          <span>Timeline ({durationValue} {billingCycle === "weekly" ? (durationValue === 1 ? "week" : "weeks") : (durationValue === 1 ? "month" : "months")})</span>
+                        <div className="flex justify-between text-xs text-slate-600 font-semibold tracking-wide">
+                          <span>Recommended Care Period ({durationValue} {billingCycle === "weekly" ? (durationValue === 1 ? "week" : "weeks") : (durationValue === 1 ? "month" : "months")})</span>
                           <span>₹{activePricing.rawTotal.toLocaleString("en-IN")}</span>
                         </div>
 
                         {activePricing.discountPercent > 0 && (
-                          <div className="flex justify-between text-xs text-emerald-600 font-bold uppercase tracking-wider">
-                            <span>Discount ({activePricing.discountPercent}%)</span>
+                          <div className="flex justify-between text-xs text-emerald-600 font-bold tracking-wide">
+                            <span>Continuity of Care Benefit ({activePricing.discountPercent}%)</span>
                             <span>-₹{activePricing.discountAmount.toLocaleString("en-IN")}</span>
                           </div>
                         )}
 
                         <div className="pt-2 border-t border-slate-900/5 space-y-1.5">
-                          <div className="flex justify-between text-[10px] text-slate-500 font-bold uppercase tracking-wider">
+                          <div className="flex justify-between text-[10px] text-slate-500 font-semibold tracking-wide">
                             <span>Care Period</span>
                             <span className="text-slate-800 font-extrabold">{billingCycle === "weekly" ? durationValue * 7 : durationValue * 30} Days</span>
                           </div>
-                          <div className="flex justify-between text-[10px] text-slate-500 font-bold uppercase tracking-wider border-b border-slate-900/5 pb-2">
-                            <span>Daily Cost Equivalent</span>
+                          <div className="flex justify-between text-[10px] text-slate-500 font-semibold tracking-wide border-b border-slate-900/5 pb-2">
+                            <span>Equivalent Daily Care Investment</span>
                             <span className="text-emerald-700 font-extrabold">₹{Math.round(activePricing.finalPrice / (billingCycle === "weekly" ? durationValue * 7 : durationValue * 30))}/day</span>
                           </div>
                         </div>
 
                         <div className="pt-1 flex justify-between items-baseline">
-                          <span className="text-xs font-black text-slate-900 uppercase">Total Cost</span>
+                          <span className="text-xs font-bold text-slate-800 tracking-wide">Your Treatment Investment</span>
                           <div className="text-right">
                             <motion.span
                               key={activePricing.finalPrice}
@@ -2172,8 +2412,8 @@ export default function StorePage() {
                           {/* Billing Frequency Card */}
                           <div className="flex flex-col justify-between gap-2">
                             <div>
-                              <h4 className="text-[9px] font-black text-slate-800 uppercase tracking-wider">Billing Frequency</h4>
-                              <p className="text-[7.5px] text-slate-400 font-bold uppercase mt-0.5">Weekly vs Monthly</p>
+                              <h4 className="text-[9px] font-black text-slate-800 uppercase tracking-wider">Care Billing Option</h4>
+                              <p className="text-[7.5px] text-slate-400 font-bold uppercase mt-0.5">Weekly vs Monthly Option</p>
                             </div>
                             <div className="flex items-center gap-1 bg-slate-900/5 p-0.5 rounded-full border border-slate-200/50 w-fit relative scale-[0.9] origin-left z-0">
                               <button
@@ -2222,8 +2462,8 @@ export default function StorePage() {
                           {/* Conditions Covered Card */}
                           <div className="flex flex-col justify-between gap-2">
                             <div>
-                              <h4 className="text-[9px] font-black text-slate-800 uppercase tracking-wider">Conditions Covered</h4>
-                              <p className="text-[7.5px] text-slate-400 font-bold uppercase mt-0.5">Active Concerns to Treat</p>
+                              <h4 className="text-[9px] font-black text-slate-800 uppercase tracking-wider">Active Health Concerns</h4>
+                              <p className="text-[7.5px] text-slate-400 font-bold uppercase mt-0.5">Active Concerns</p>
                             </div>
                             <div className="flex items-center gap-1 scale-[0.95] origin-left">
                               {[1, 2, 3, 4, 5].map((count) => {
@@ -2248,9 +2488,9 @@ export default function StorePage() {
                           </div>
                         </div>
 
-                        {/* Commitment Duration Row */}
+                        {/* Recommended Treatment Duration Row */}
                         <div className="pt-3 border-t border-slate-900/5 space-y-2">
-                          <h4 className="text-[9px] font-black text-slate-800 uppercase tracking-wider">Commitment Duration</h4>
+                          <h4 className="text-[9px] font-black text-slate-800 uppercase tracking-wider">Recommended Treatment Duration</h4>
                           <div className="grid grid-cols-5 gap-1.5">
                             {(() => {
                               const opts = billingCycle === "weekly"
@@ -2315,6 +2555,9 @@ export default function StorePage() {
 
                       {/* Action buttons */}
                       <div className="space-y-3 pt-2">
+                        <p className="text-[10px] text-slate-500 italic text-center font-medium leading-relaxed max-w-xs mx-auto mb-2">
+                          Every treatment program begins with a physician consultation to confirm your personalized care plan.
+                        </p>
                         <Magnetic>
                           <button
                             onClick={handleSelectCalculatedPlan}
@@ -4040,7 +4283,7 @@ export default function StorePage() {
 
                               <div className="space-y-2 text-xs font-semibold text-slate-700">
                                 <div className="flex justify-between">
-                                  <span>Base Rate</span>
+                                  <span>Clinical Care Fee</span>
                                   <span>₹{pricing.basePrice.toLocaleString("en-IN")} / {walkInBillingCycle === "weekly" ? "wk" : "mo"}</span>
                                 </div>
                                 {pricing.surcharge > 0 && (
@@ -4059,7 +4302,7 @@ export default function StorePage() {
                                 </div>
                                 {pricing.discountPercent > 0 && (
                                   <div className="flex justify-between text-emerald-600">
-                                    <span>Discount ({pricing.discountPercent}%)</span>
+                                    <span>Long-Term Care Benefit ({pricing.discountPercent}%)</span>
                                     <span>-₹{Math.round(pricing.adjustedBasePrice * walkInDurationValue * (pricing.discountPercent / 100)).toLocaleString("en-IN")}</span>
                                   </div>
                                 )}
@@ -5006,20 +5249,20 @@ export default function StorePage() {
 
                       <div className="p-4 bg-slate-900/5 rounded-2xl border border-slate-200/50 space-y-3">
                         <div className="flex justify-between text-xs text-slate-500 font-bold uppercase">
-                          <span>Base Care Rate</span>
+                          <span>Clinical Care Fee</span>
                           <span>₹{((checkoutPlan.finalPrice / (1 - (checkoutPlan.discountPercent || 0) / 100)) || checkoutPlan.finalPrice).toLocaleString("en-IN")}</span>
                         </div>
                         <div className="flex justify-between text-xs text-slate-500 font-bold uppercase">
-                          <span>Conditions Setup</span>
-                          <span className="text-[10px] text-slate-600 font-black text-right">{checkoutPlan.conditionsText}</span>
+                          <span>Active Health Concerns</span>
+                          <span className="text-[10px] text-slate-600 font-black text-right">{checkoutPlan.conditionsText ? checkoutPlan.conditionsText.replace("Condition", "Concern") : ""}</span>
                         </div>
                         <div className="flex justify-between text-xs text-slate-500 font-bold uppercase border-b border-slate-200 pb-2">
-                          <span>Timeline Duration</span>
+                          <span>Recommended Care Period</span>
                           <span>{checkoutPlan.durationText}</span>
                         </div>
                         {checkoutPlan.discountPercent > 0 && (
                           <div className="flex justify-between text-xs text-emerald-600 font-bold uppercase">
-                            <span>Discount ({checkoutPlan.discountPercent}%)</span>
+                            <span>Continuity of Care Benefit ({checkoutPlan.discountPercent}%)</span>
                             <span>-₹{(((checkoutPlan.finalPrice / (1 - checkoutPlan.discountPercent / 100)) * (checkoutPlan.discountPercent / 100)) || 0).toLocaleString("en-IN")}</span>
                           </div>
                         )}

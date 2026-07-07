@@ -67,12 +67,26 @@ function decodeHtmlEntities(html: string): string {
     .replace(/&gt;/g, ">");
 }
 
+function sanitizeWordPressImageUrl(url: string): string {
+  if (!url) return "";
+  const jetpackMatch = url.match(/^https?:\/\/i[0-9]\.wp\.com\/([^\?]+)/);
+  if (jetpackMatch && jetpackMatch[1]) {
+    return `https://${jetpackMatch[1]}`;
+  }
+  const queryIndex = url.indexOf("?");
+  if (queryIndex !== -1) {
+    return url.substring(0, queryIndex);
+  }
+  return url;
+}
+
 function getPostImage(post: any): string {
   if (localSlugsWithFeaturedImage.has(post.slug)) {
     return `/images/${post.slug}-featured.png`;
   }
 
-  return post.jetpack_featured_media_url || DEFAULT_BLOG_IMAGE;
+  const rawUrl = post.jetpack_featured_media_url;
+  return rawUrl ? sanitizeWordPressImageUrl(rawUrl) : DEFAULT_BLOG_IMAGE;
 }
 
 async function getWordPressPosts(): Promise<Article[]> {
