@@ -12563,6 +12563,40 @@ ${err.message || err}`);
                           )}
                           <span>Log & Sign Case Entry</span>
                         </button>
+
+                        {/* Recent Case Entries / Ledger history display */}
+                        <div className="border-t border-slate-100 dark:border-slate-800/80 pt-4 mt-4 space-y-3">
+                          <h4 className="text-[10px] uppercase tracking-wider font-extrabold text-slate-450 dark:text-slate-400 flex items-center gap-1.5">
+                            <History className="w-3.5 h-3.5 text-emerald-600 animate-pulse" />
+                            Recent Clinical Ledger Entries
+                          </h4>
+                          
+                          <div className="space-y-2.5 max-h-[220px] overflow-y-auto pr-1">
+                            {!activePatient?.prescriptions || activePatient.prescriptions.length === 0 ? (
+                              <div className="text-center py-4 bg-slate-50/50 dark:bg-slate-950/20 rounded-xl text-slate-400 dark:text-slate-500 text-[11px] italic">
+                                No clinical case entries logged for this patient file yet.
+                              </div>
+                            ) : (
+                              [...activePatient.prescriptions].reverse().map((pres: any, idx: number) => (
+                                <div key={idx} className="p-3 bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-850 rounded-xl space-y-1.5 text-xs animate-fadeIn">
+                                  <div className="flex justify-between items-start gap-2">
+                                    <span className="font-extrabold text-slate-800 dark:text-white block">
+                                      {pres.remedy} {pres.potency && `(${pres.potency})`}
+                                    </span>
+                                    <span className="text-[9px] font-mono text-slate-400 font-bold">
+                                      {new Date(pres.prescribedAt).toLocaleDateString("en-IN", { day: '2-digit', month: 'short', year: 'numeric' })}
+                                    </span>
+                                  </div>
+                                  {pres.notes && (
+                                    <p className="text-[10.5px] text-slate-650 dark:text-slate-400 font-medium leading-relaxed italic bg-white dark:bg-slate-900/60 p-2 rounded-lg border border-slate-100 dark:border-slate-800 select-text">
+                                      {pres.notes}
+                                    </p>
+                                  )}
+                                </div>
+                              ))
+                            )}
+                          </div>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -27215,8 +27249,8 @@ Exported on: ${new Date().toLocaleDateString()}
                               events.push({
                                 date: pres.prescribedAt,
                                 type: "prescription",
-                                title: `Prescribed ${pres.remedy} ${pres.potency}`,
-                                desc: "Constitutional anti-miasmatic remedy administered."
+                                title: `Prescribed ${pres.remedy} ${pres.potency && `(${pres.potency})`}`,
+                                desc: pres.notes || "Constitutional anti-miasmatic remedy administered."
                               });
                             });
                           }
