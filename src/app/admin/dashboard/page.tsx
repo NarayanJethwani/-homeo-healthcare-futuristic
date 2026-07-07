@@ -2274,6 +2274,38 @@ export default function AdminDashboard() {
     }
   }, [selectedPatientId]);
 
+  // Synchronize selectedPatientId state to URL query parameters
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const currentPatientId = params.get("patientId") || "";
+      if (selectedPatientId !== currentPatientId) {
+        if (selectedPatientId) {
+          params.set("patientId", selectedPatientId);
+        } else {
+          params.delete("patientId");
+        }
+        window.history.replaceState({}, "", `${window.location.pathname}?${params.toString()}`);
+      }
+    }
+  }, [selectedPatientId]);
+
+  // Synchronize activeTab state to URL query parameters
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const currentTab = params.get("tab") || "";
+      if (activeTab !== currentTab) {
+        if (activeTab) {
+          params.set("tab", activeTab);
+        } else {
+          params.delete("tab");
+        }
+        window.history.replaceState({}, "", `${window.location.pathname}?${params.toString()}`);
+      }
+    }
+  }, [activeTab]);
+
   // Load patientId and tab from URL search parameters on mount
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -2293,6 +2325,23 @@ export default function AdminDashboard() {
       }
     }
   }, [patients]);
+
+  // Dynamically synchronize and prefill the Diet & Lifestyle Restrictions field when the selected patient changes
+  const lastPrefilledDietPatientIdRef = useRef<string>("");
+  useEffect(() => {
+    if (selectedPatientId && patients.length > 0) {
+      if (lastPrefilledDietPatientIdRef.current !== selectedPatientId) {
+        const pat = patients.find(p => p.id === selectedPatientId);
+        if (pat) {
+          setDietRestrictions(pat.complaint || "");
+          lastPrefilledDietPatientIdRef.current = selectedPatientId;
+        }
+      }
+    } else if (!selectedPatientId) {
+      setDietRestrictions("");
+      lastPrefilledDietPatientIdRef.current = "";
+    }
+  }, [selectedPatientId, patients]);
 
   // Handle exporting parsed lab report findings to patient sheet and database
   const handleSendReportToSheet = async () => {
@@ -14148,6 +14197,12 @@ ${err.message || err}`);
                   <RepertoryWorkbench 
                     sessionUid={session?.uid || ""} 
                     activePatientId={selectedPatientId || ""} 
+                    onPatientChange={(id) => {
+                      setSelectedPatientId(id);
+                      const params = new URLSearchParams(window.location.search);
+                      params.set("patientId", id);
+                      window.history.replaceState({}, "", `${window.location.pathname}?${params.toString()}`);
+                    }}
                   />
                 </div>
               );
