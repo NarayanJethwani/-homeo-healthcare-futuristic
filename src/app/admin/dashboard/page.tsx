@@ -12139,7 +12139,40 @@ ${err.message || err}`);
                     <div className="space-y-4 text-xs font-semibold">
                       {/* Patient Dropdown Selector */}
                       <div className="flex flex-col gap-1">
-                        <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-450 dark:text-slate-400">Select Active Patient</label>
+                        <div className="flex justify-between items-center">
+                          <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-450 dark:text-slate-400">Select Active Patient</label>
+                          <button
+                            onClick={() => {
+                              setIsPlanningRegisteredPatient(false);
+                              setNewCaseForm({
+                                name: "",
+                                age: "",
+                                gender: "Male",
+                                phone: "",
+                                email: "",
+                                city: "",
+                                state: "",
+                                country: "India",
+                                complaint: "",
+                                careLevel: "🌱 Acute & Wellness Care",
+                                billingCycle: "Monthly",
+                                concessionType: "None",
+                                durationText: "1-Month Consultation",
+                                conditionsCount: 1,
+                                basePrice: 4800,
+                                discountOverride: 0,
+                                finalPrice: 4320,
+                                receivedAmount: 4320,
+                                remainingBalance: 0
+                              });
+                              setIsNewCaseModalOpen(true);
+                            }}
+                            className="text-[10.5px] font-bold text-emerald-600 hover:text-emerald-700 transition-colors flex items-center gap-1 cursor-pointer bg-transparent border-none p-0 focus:outline-none"
+                          >
+                            <Plus className="w-3.5 h-3.5" />
+                            <span>New Case Intake</span>
+                          </button>
+                        </div>
                         <select
                           value={selectedPatientId || ""}
                           onChange={(e) => setSelectedPatientId(e.target.value || "")}
