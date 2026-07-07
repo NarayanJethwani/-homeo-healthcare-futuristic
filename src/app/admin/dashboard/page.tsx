@@ -191,6 +191,7 @@ interface Patient {
   conditionsCount?: number;
   durationValue?: number;
   medicineAddons?: { id: string; type: string; details: string; amount: number }[];
+  prescriptions?: any[];
 }
 
 const INVOICE_TEMPLATES = [
@@ -12572,12 +12573,12 @@ ${err.message || err}`);
                           </h4>
                           
                           <div className="space-y-2.5 max-h-[220px] overflow-y-auto pr-1">
-                            {!activePatient?.prescriptions || activePatient.prescriptions.length === 0 ? (
+                            {!(activePatient as any)?.prescriptions || (activePatient as any).prescriptions.length === 0 ? (
                               <div className="text-center py-4 bg-slate-50/50 dark:bg-slate-950/20 rounded-xl text-slate-400 dark:text-slate-500 text-[11px] italic">
                                 No clinical case entries logged for this patient file yet.
                               </div>
                             ) : (
-                              [...activePatient.prescriptions].reverse().map((pres: any, idx: number) => (
+                              [...(activePatient as any).prescriptions].reverse().map((pres: any, idx: number) => (
                                 <div key={idx} className="p-3 bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-850 rounded-xl space-y-1.5 text-xs animate-fadeIn">
                                   <div className="flex justify-between items-start gap-2">
                                     <span className="font-extrabold text-slate-800 dark:text-white block">
