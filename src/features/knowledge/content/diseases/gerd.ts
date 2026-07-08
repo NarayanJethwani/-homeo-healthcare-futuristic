@@ -1,8 +1,8 @@
 import { KnowledgeEntity } from "../../types";
 
-export const GerdEntity: KnowledgeEntity = {
-  id: "DIS-gerd",
-  slug: "gerd",
+export const GerdDisease: KnowledgeEntity = {
+  id: "D0001",
+  slug: "gastroesophageal-reflux-disease",
   entityType: "disease",
   editorialStatus: "published",
   versionInfo: {
@@ -13,92 +13,60 @@ export const GerdEntity: KnowledgeEntity = {
   },
   title: {
     en: "Gastroesophageal Reflux Disease (GERD)",
-    hi: "गैस्ट्रोइसोफेगल रिफ्लक्स रोग (जीईआरडी)",
-    gu: "ગેસ્ટ્રોએસોફેગલ રિફ્લક્સ રોગ (જીઈઆરડી)",
-    mr: "गॅस्ट्रोएसोफेगल रिफ्लक्स रोग (जीईआरडी)",
+    hi: "गैस्ट्रोइसोफेजियल रिफ्लक्स रोग (जीईआरडी)",
+    gu: "એસિડિટી અને જી.ઈ.આર.ડી. (GERD)",
+    mr: "आम्लपित्त आणि जी.ई.आर.डी. (GERD)",
     es: "Enfermedad por Reflujo Gastroesofágico (ERGE)",
-    ar: "مرض الارتجاع المريئي (GERD)"
+    ar: "مرتجع المريء (GERD)"
   },
   summary: {
-    en: "A chronic digestive condition where stomach acid flows back into the food pipe, causing retrosternal burning and irritation.",
-    hi: "एक पुरानी पाचन स्थिति जहां पेट का एसिड भोजन नली में वापस बहता है, जिससे जलन और असुविधा होती है.",
-    gu: "એક ક્રોનિક પાચનની સ્થિતિ જ્યાં પેટમાં રહેલો એસિડ અન્નનળીમાં પાછો વહે છે, જેનાથી બળતરા થાય છે.",
-    mr: "एक जुनाट पचनाचा आजार ज्यामध्ये पोटातील आम्ल अन्ननलिकेत परत जाते, ज्यामुळे छातीत जळजळ होते.",
-    es: "Una condición digestiva crónica donde el ácido estomacal regresa al esófago, causando acidez y dolor.",
-    ar: "حالة هضمية مزمنة حيث يتدفق حمض المعدة مرة أخرى إلى المريء، مما يسبب حرقان وتهيج."
+    en: "A chronic digestive disorder characterized by the backflow of stomach acid into the esophagus, causing irritation, heartburn, and potential mucosal injury.",
+    hi: "एक पुरानी पाचन संबंधी बीमारी जिसमें पेट का एसिड वापस भोजन नली में बहने लगता है, जिससे सीने में जलन और दर्द होता है.",
+    gu: "લાંબા ગાળાની પાચન સંબંધી તકલીફ જેમાં પેટનું એસિડ પાછું અન્નનળીમાં વહે છે, જેનાથી બળતરા અને છાતીમાં દુખાવો થાય છે.",
+    mr: "पोटातील आम्ल अन्ननलिकेत परत येऊन जळजळ आणि छातीत दुखणे निर्माण करणारी एक जुनाट पचनाची तक्रार.",
+    es: "Un trastorno digestivo crónico caracterizado por el flujo retrógrado de ácido estomacal hacia el esófago.",
+    ar: "اضطراب هضمي مزمن يتميز بتدفق حمض المعدة إلى المريء، مما يسبب تهيجًا وحرقة."
   },
   content: {
-    whatItMeans: {
-      en: "GERD occurs when the lower esophageal sphincter (LES) weakens or relaxes inappropriately, allowing gastric contents containing acid and pepsin to reflux into the esophagus. This repeatedly irritates the delicate mucosal lining.",
-      hi: "जीईआरडी तब होता है जब निचले अन्नप्रणाली का स्फिंक्टर कमजोर हो जाता है, जिससे पेट का एसिड ऊपर नली में चढ़ जाता है.",
-      gu: "અન્નનળીનો નીચલો ભાગ નબળો પડતાં ગેસ્ટ્રિક એસિડ ઉપરના ભાગ તરફ વહે છે જેને કારણે આ તકલીફ થાય છે.",
-      mr: "जीईआरडी तेव्हा होतो जेव्हा अन्ननलिकेचा खालचा भाग कमकुवत होतो आणि आम्ल वरच्या दिशेने वाहते.",
-      es: "El ERGE ocurre cuando el esfínter esofágico inferior se debilita, permitiendo que el ácido suba al esófago.",
-      ar: "يحدث مرض الارتجاع المريئي عندما تضعف العضلة العاصرة المريئية السفلى، مما يسمح بارتجاع الحمض."
-    },
-    commonSymptoms: [
-      {
-        en: "Heartburn (retrosternal burning feeling)",
-        hi: "छाती में जलन",
-        gu: "છાતીમાં બળતરા",
-        mr: "छातीत जळजळ",
-        es: "Acidez estomacal",
-        ar: "حرقة المعدة"
-      },
-      {
-        en: "Acid regurgitation or sour taste in the mouth",
-        hi: "खट्टा पानी मुंह में आना",
-        gu: "મોંમાં ખાટો સ્વાદ આવવો",
-        mr: "तोंडात आंबट पाणी येणे",
-        es: "Regurgitación ácida",
-        ar: "ارتجاع حمضي"
-      }
+    overview: "Gastroesophageal Reflux Disease (GERD) is a chronic pathological condition occurring when stomach acid or bile frequently flows back into the tube connecting your mouth and stomach (esophagus). This backflow (acid reflux) can irritate the lining of your esophagus, leading to mucosal inflammation, pain, and systemic complications.",
+    definition: "GERD is clinically defined as symptoms or mucosal damage produced by the abnormal reflux of gastric contents into the esophagus. It is typically diagnosed when reflux occurs more than twice a week and affects the individual's quality of life.",
+    causes: [
+      "Transient lower esophageal sphincter (LES) relaxations.",
+      "Hiatal hernia preventing the diaphragm from supporting the LES.",
+      "Delayed gastric emptying causing increased intra-gastric pressure.",
+      "Impaired esophageal clearance of acid."
     ],
-    whenToConsultDoctor: {
-      en: "Seek immediate medical consultation if you experience progressive difficulty swallowing (dysphagia), painful swallowing (odynophagia), unexplained weight loss, vomiting blood, or black tarry stools. These can indicate severe complications like strictures or bleeding.",
-      hi: "यदि निगलने में कठिनाई हो, बिना कारण वजन कम हो रहा हो या उल्टी में खून आ रहा हो, तो तुरंत चिकित्सक से संपर्क करें.",
-      gu: "જો ગળવામાં તકલીફ થાય કે વજન ઘટવા લાગે તો તુરંત ડોક્ટરનો સંપર્ક કરો.",
-      mr: "घास गिळताना त्रास होणे, वजन कमी होणे किंवा उलट्या वाटे रक्त पडणे अशा वेळी तातडीने डॉक्टरांचा सल्ला घ्या.",
-      es: "Consulte a un médico inmediatamente si tiene dificultad para tragar, pérdida de peso inexplicable o sangre en el vómito.",
-      ar: "استشر الطبيب فورًا إذا كنت تعاني من صعوبة في البلع، أو فقدان الوزن غير المبرر، أو قيء دموي."
-    },
-    conventionalPerspective: {
-      en: "Conventional treatments focus on suppressing acid production using Proton Pump Inhibitors (PPIs) like Omeprazole, H2-receptor antagonists like Famotidine, and recommending weight loss and elevate the head of the bed.",
-      hi: "पारंपरिक चिकित्सा में पीपीआई और एसिड कम करने वाली दवाएं जैसे ओमेप्राजोल दी जाती हैं.",
-      gu: "પરંપરાગત સારવારમાં પીપીઆઈ દવાઓ આપીને એસિડ બનતો અટકાવવામાં આવે છે.",
-      mr: "पारंपारिक उपचारांमध्ये पीपीआय औषधे देऊन आम्ल निर्मिती कमी केली जाते.",
-      es: "El tratamiento convencional se enfoca en inhibidores de la bomba de protones (IBP) para reducir el ácido.",
-      ar: "يركز العلاج التقليدي على تقليل إنتاج الحمض باستخدام مثبطات مضخة البروتون."
-    },
-    homeopathicPerspective: {
-      en: "Homeopathy views GERD as an expression of constitutional imbalance and gastrointestinal dysmotility. Rather than purely suppressing acid, homeopathic remedies are selected to optimize digestive tone and address underlying triggers.",
-      hi: "होम्योपैथी जीईआरडी को आंतरिक असंतुलन के रूप में देखती है और इसका उपचार जड़ से करने का प्रयास करती है.",
-      gu: "હોમિયોપેથી જીઈઆરડીને આંતરિક અસંતુલન ગણે છે અને બંધારણીય સારવાર પૂરી પાડે છે.",
-      mr: "होम्योपैथी पचनाचे कार्य पूर्ववत करून आम्लतेचे मूळ कारण दूर करण्यावर भर देते.",
-      es: "La homeopatía busca restaurar el equilibrio constitucional y mejorar el movimiento gastrointestinal.",
-      ar: "ينظر الطب التجانسى إلى الارتجاع المريئي باعتباره تعبيرًا عن عدم توازن في الجسم ويحاول علاجه دستوريًا."
-    },
-    remedyConsiderations: {
-      en: "Remedies commonly considered for clinician review include Nux Vomica (for reflux worse from coffee, stress, or heavy food), Robinia (for intense, continuous burning and sour regurgitation), and Arsenicum Album (for burning relieved by warm drinks). Requires consultation with a qualified physician.",
-      hi: "जीईआरडी के लिए सामान्य रूप से नुक्स वोमिका, रोबिनिया और आर्सेनिकम एल्बम पर विचार किया जाता है. योग्य चिकित्सक से परामर्श आवश्यक है.",
-      gu: "નક્સ વોમિકા અને રોબિનિયા જેવી દવાઓનો વિચાર કરવામાં આવે છે. ડોક્ટરની સલાહ જરૂરી છે.",
-      mr: "नक्स व्होमिका आणि रॉबिनिया या औषधांचा प्रामुख्याने विचार केला जातो. तज्ज्ञ डॉक्टरांचा सल्ला अनिवार्य आहे.",
-      es: "Remedios comunes incluyen Nux Vomica y Robinia. Requiere consulta con un médico calificado.",
-      ar: "الأدوية الشائعة تشمل نوكس فوميكا وروبينيا. تتطلب استشارة طبيب مؤهل."
-    },
-    lifestyleDietGuidance: {
-      en: "Avoid lying down for 3 hours after meals. Limit trigger foods including caffeine, chocolate, citrus fruits, tomatoes, alcohol, and spicy foods. Eat smaller, more frequent meals, and maintain a healthy weight.",
-      hi: "भोजन के तुरंत बाद न लेटें, चाय-कॉफ़ी और तली-भुनी चीज़ों से परहेज़ करें.",
-      gu: "જમ્યા પછી તરત સૂવું નહીં, ચા-કોફી અને તેલવાળો ખોરાક ટાળવો.",
-      mr: "जेवल्या जेवल्या लगेच झोपू नका. चहा, कॉफी आणि तिखट पदार्थ टाळा.",
-      es: "Evite acostarse inmediatamente después de comer. Evite el café, chocolate y alimentos picantes.",
-      ar: "تجنب الاستلقاء مباشرة بعد تناول الوجبات. قلل من الكافيين والأطعمة الحارة."
-    },
-    references: [
-      "ACG Clinical Guideline: Guidelines for the Diagnosis and Management of Gastroesophageal Reflux Disease, 2022.",
-      "Boericke W. Pocket Manual of Homoeopathic Materia Medica. 1901."
+    riskFactors: [
+      "Obesity increasing intra-abdominal pressure.",
+      "Pregnancy shifting organs and increasing hormones.",
+      "Smoking which relaxes the lower esophageal sphincter.",
+      "Consuming trigger foods (fatty foods, coffee, alcohol, citrus, tomato).",
+      "Certain medications like antihistamines, calcium channel blockers, and sedatives."
     ],
-    relatedEntities: ["SYM-heartburn", "REM-nux-vomica", "REM-lycopodium"]
+    symptoms: [
+      "Pyrosis (heartburn): A burning sensation in the chest, usually after eating, which might be worse at night or when lying down.",
+      "Acid regurgitation: Backflow of sour or bitter-tasting gastric liquid into the throat or mouth.",
+      "Dysphagia: Difficulty swallowing or the sensation of food stuck in the chest.",
+      "Atypical symptoms: Chronic cough, laryngitis, new or worsening asthma, disrupted sleep."
+    ],
+    diagnosis: "Clinically diagnosed based on typical symptoms of heartburn and acid regurgitation. Further diagnostics include Upper Endoscopy (EGD) to evaluate mucosal damage, 24-hour ambulatory pH monitoring (gold standard for acid measurement), and Esophageal Manometry to measure muscle contractions.",
+    differentialDiagnosis: "Esophagitis (infectious, eosinophilic, or pill-induced), Coronary Artery Disease (ruling out cardiac-related chest pain), Esophageal Motility Disorders (achalasia), and Functional Dyspepsia.",
+    labTests: [
+      "Complete Blood Count (CBC) to screen for anemia resulting from chronic esophageal bleeding.",
+      "Serum Gastrin to rule out Zollinger-Ellison syndrome (gastrinoma) in severe refractory cases."
+    ],
+    imaging: "Barium Swallow Radiography to detect structural abnormalities, strictures, or a hiatal hernia.",
+    redFlags: [
+      "Progressive dysphagia (difficulty swallowing) or odynophagia (painful swallowing).",
+      "Unexplained weight loss.",
+      "Evidence of gastrointestinal bleeding (hematemesis, melena, or iron deficiency anemia).",
+      "Persistent vomiting.",
+      "New onset of symptoms in patients over 50 years of age."
+    ],
+    conventionalManagement: "Conventional therapy primarily relies on Acid Suppressants: Proton Pump Inhibitors (PPIs like Omeprazole, Pantoprazole) and H2 Receptor Antagonists (like Famotidine). Antacids are used for temporary relief. Refractory cases may require surgical intervention, such as Nissen Fundoplication.",
+    homeopathicApproach: "Homeopathy views GERD not as an isolated local disorder but as a constitutional imbalance. Treatment focuses on stabilizing gastric motility, strengthening the lower esophageal sphincter tone, and addressing underlying nervous excitability. Standard remedies like Nux Vomica and Lycopodium are selected based on the patient's physical and mental triggers.",
+    lifestyleAdvice: "Maintain a healthy weight. Avoid tight-fitting clothing. Elevate the head of the bed by 6 inches. Avoid lying down within 3 hours of a meal. Eat small, frequent meals instead of large dinners. Eliminate smoking, alcohol, and trigger foods.",
+    references: ["CIT-0001"]
   },
   author: {
     name: "Dr. Narayan Jethwani",
@@ -110,11 +78,11 @@ export const GerdEntity: KnowledgeEntity = {
     specialty: "Gastroenterology & Constitutional Medicine",
     institution: "Homeo Healthcare Clinic"
   },
-  evidenceLevel: "Traditional-Literature",
-  tags: ["GERD", "Acidity", "Reflux", "Heartburn", "Stomach"],
-  canonicalUrl: "https://homeo.healthcare/knowledge/diseases/gerd",
-  readingTimeMinutes: 5,
+  evidenceLevel: "Level-A",
+  tags: ["GERD", "Acid Reflux", "Acidity", "Heartburn", "Digestive Disease"],
+  canonicalUrl: "https://homeo.healthcare/knowledge/diseases/gastroesophageal-reflux-disease",
+  readingTimeMinutes: 6,
   audience: "patient",
-  license: "CC BY-NC-ND 4.0",
-  changeLog: ["1.0.0: Initial release of Gerd education profile"]
+  license: "CC BY-NC-ND 4.5",
+  changeLog: ["1.0.0: Initial release of GERD disease profile"]
 };

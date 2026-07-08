@@ -64,7 +64,7 @@ export function exportEntities(entities: KmsKnowledgeEntity[], options: ExportOp
         "",
         e.content?.safetyWarnings?.en ? `### Safety Guidelines\n${e.content.safetyWarnings.en}` : "",
         "",
-        e.content?.references ? `### References\n${e.content.references.map(r => `- ${r}`).join("\n")}` : ""
+        e.content?.references ? `### References\n${e.content.references.map((r: string) => `- ${r}`).join("\n")}` : ""
       ].join("\n");
 
       return [frontmatter, "", body].join("\n");

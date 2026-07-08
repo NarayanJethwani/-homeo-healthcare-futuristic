@@ -35,7 +35,7 @@ export function searchKnowledgeBase(
     : entities;
 
   return filtered
-    .map(entity => scoreEntity(entity, queryTokens))
+    .map(entity => scoreEntity(entity, queryTokens, query))
     .filter(res => res.score > 0)
     .sort((a, b) => b.score - a.score);
 }

@@ -1,7 +1,7 @@
 import { KnowledgeEntity } from "../../types";
 
 export const HeartburnSymptom: KnowledgeEntity = {
-  id: "SYM-heartburn",
+  id: "S0001",
   slug: "heartburn",
   entityType: "symptom",
   editorialStatus: "published",

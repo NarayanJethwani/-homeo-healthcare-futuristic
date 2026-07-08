@@ -4,7 +4,11 @@ import {
   Author, 
   Reviewer, 
   ContentVersion, 
-  EntityType 
+  EntityType,
+  RemedyContent,
+  DiseaseContent,
+  SymptomContent,
+  LabTestContent
 } from "../../knowledge/types";
 
 export type EditorialRole = 
@@ -54,48 +58,7 @@ export interface KmsKnowledgeEntity {
   };
   
   // Content details matching each specific subclass
-  content?: {
-    overview?: Record<Locale, string>;
-    treatmentPhilosophy?: Record<Locale, string>;
-    remedyAffinity?: Record<Locale, string>;
-    safetyWarnings?: Record<Locale, string>;
-    references?: string[]; // Citation reference record IDs
-    
-    // Symptom subclass
-    sensationType?: string;
-    modalities?: {
-      worse?: string;
-      better?: string;
-    };
-
-    // Remedy subclass
-    sourceMaterial?: string;
-    keynotes?: string[];
-    potencies?: string[];
-
-    // Lab Test subclass
-    referenceRanges?: {
-      standard: string;
-      critical: string;
-    };
-    interpretationGuide?: Record<Locale, string>;
-
-    // FAQ subclass
-    questionsAndAnswers?: {
-      q: string;
-      a: string;
-    }[];
-
-    // Research subclass
-    methodology?: string;
-    cohortSize?: number;
-    outcomes?: Record<Locale, string>;
-
-    // Case Study subclass
-    caseIntake?: Record<Locale, string>;
-    repertorization?: Record<Locale, string>;
-    prescriptionAndFollowUp?: Record<Locale, string>;
-  };
+  content?: RemedyContent | DiseaseContent | SymptomContent | LabTestContent | any;
   
   // Score metrics
   readabilityScore: {

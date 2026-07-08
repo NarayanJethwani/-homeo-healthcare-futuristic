@@ -13,6 +13,13 @@ import ReferencesList from "@/features/knowledge/components/ReferencesList";
 import AICitationBlock from "@/features/knowledge/components/AICitationBlock";
 import RelatedEverything from "@/features/knowledge/components/RelatedEverything";
 import Breadcrumbs from "@/features/knowledge/components/Breadcrumbs";
+import AnalyticsTrigger from "@/features/knowledge/components/AnalyticsTrigger";
+import PatientFriendlyText from "@/features/knowledge/components/PatientFriendlyText";
+import TimelineHistory from "@/features/knowledge/components/TimelineHistory";
+import LearningPathStepper from "@/features/knowledge/components/LearningPathStepper";
+import KnowledgeGraphExplorer from "@/features/knowledge/components/KnowledgeGraphExplorer";
+import ContextualCtaBanner from "@/features/knowledge/components/ContextualCtaBanner";
+import { Info, HelpCircle, Activity, ShieldAlert } from "lucide-react";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -42,10 +49,19 @@ export default async function LabTestDetailPage({ params }: PageProps) {
   const schemaJson = generateMedicalWebPageSchema(labTest);
   const title = typeof labTest.title === "string" ? labTest.title : (labTest.title?.en || "");
   const summary = typeof labTest.summary === "string" ? labTest.summary : (labTest.summary?.en || "");
+  const content = labTest.content;
 
   const crumbs = [
     { name: "Lab Tests", item: "https://homeo.healthcare/knowledge/lab-tests" },
     { name: title, item: labTest.canonicalUrl },
+  ];
+
+  const tocItems = [
+    { id: "overview", label: "Test Overview" },
+    { id: "range", label: "Reference Ranges" },
+    { id: "values", label: "High & Low Interpretation" },
+    { id: "interpretation", label: "Clinical Interpretation" },
+    { id: "warning", label: "Clinical Notices" }
   ];
 
   return (
@@ -55,6 +71,8 @@ export default async function LabTestDetailPage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaJson) }}
       />
+
+      <AnalyticsTrigger entityId={labTest.id} slug={labTest.slug} entityType={labTest.entityType} />
 
       <KnowledgePageLayout
         title={title}
@@ -67,68 +85,102 @@ export default async function LabTestDetailPage({ params }: PageProps) {
             <LastReviewedBadge reviewedDate={labTest.versionInfo.reviewed} />
           </>
         }
+        tocItems={tocItems}
+        entityId={labTest.id}
+        entityType={labTest.entityType}
       >
         <Breadcrumbs crumbs={crumbs} />
 
         <ReviewedBy reviewer={labTest.reviewer} reviewedDate={labTest.versionInfo.reviewed} />
 
-        <div className="mt-8 space-y-8 text-neutral-800 dark:text-neutral-300 leading-relaxed">
-          {/* Section: What it means */}
-          {labTest.content?.whatItMeans && (
-            <section className="space-y-3">
-              <h3 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
-                Test Description & Meaning
-              </h3>
-              <p>{typeof labTest.content.whatItMeans === "string" ? labTest.content.whatItMeans : (labTest.content.whatItMeans?.en || "")}</p>
-            </section>
-          )}
+        <div className="mt-4 space-y-4">
+          <TimelineHistory versionInfo={labTest.versionInfo} reviewer={labTest.reviewer} />
+          <LearningPathStepper currentId={labTest.id} />
+        </div>
 
-          {/* Section: Homeopathic perspective */}
-          {labTest.content?.homeopathicPerspective && (
-            <section className="space-y-3">
-              <h3 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
-                Homeopathic Alignment & Clinical Significance
-              </h3>
-              <p>{typeof labTest.content.homeopathicPerspective === "string" ? labTest.content.homeopathicPerspective : (labTest.content.homeopathicPerspective?.en || "")}</p>
-            </section>
-          )}
+        <div className="mt-8 space-y-8 text-neutral-850 dark:text-neutral-200 leading-relaxed">
+          
+          {/* Section: Overview */}
+          <section id="overview" className="space-y-3 scroll-mt-24">
+            <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 border-b border-neutral-500/5 pb-2">
+              <Info className="h-4.5 w-4.5 text-blue-500" /> Test Description & Overview
+            </h3>
+            <PatientFriendlyText className="text-base text-neutral-700 dark:text-neutral-300" as="p">
+              {content.overview}
+            </PatientFriendlyText>
+          </section>
 
-          {/* Section: Possible homeopathic remedy considerations */}
-          {labTest.content?.remedyConsiderations && (
-            <section className="space-y-3">
-              <h3 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
-                Constitutional Remedy Considerations
-              </h3>
-              <p className="text-sm bg-teal-500/5 border border-teal-500/15 p-4 rounded-xl">
-                {typeof labTest.content.remedyConsiderations === "string" ? labTest.content.remedyConsiderations : (labTest.content.remedyConsiderations?.en || "")}
-              </p>
-            </section>
-          )}
+          {/* Section: Reference Range */}
+          <section id="range" className="p-4 border border-blue-500/25 bg-blue-500/5 rounded-2xl scroll-mt-24">
+            <span className="text-[10px] uppercase font-bold text-blue-600 dark:text-blue-400 block mb-1">Standard Reference Range</span>
+            <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 font-mono">{content.normalRange}</p>
+          </section>
 
-          {/* Section: Lifestyle and diet guidance */}
-          {labTest.content?.lifestyleDietGuidance && (
-            <section className="space-y-3">
-              <h3 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
-                Lifestyle Support
+          {/* Section: High & Low Values Interpretation */}
+          <section id="values" className="scroll-mt-24 space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {content.highValues && content.highValues.length > 0 && (
+                <div className="space-y-3 p-5 border border-rose-500/15 rounded-2xl bg-rose-500/5">
+                  <h4 className="text-xs font-bold text-rose-800 dark:text-rose-455 uppercase tracking-wider mb-2">
+                    Elevated (High) Values
+                  </h4>
+                  <ul className="list-disc list-inside space-y-1.5 text-xs text-neutral-700 dark:text-neutral-300">
+                    {content.highValues.map((h: string, idx: number) => (
+                      <li key={idx}>{h}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {content.lowValues && content.lowValues.length > 0 && (
+                <div className="space-y-3 p-5 border border-blue-500/15 rounded-2xl bg-blue-500/5">
+                  <h4 className="text-xs font-bold text-blue-800 dark:text-blue-455 uppercase tracking-wider mb-2">
+                    Decreased (Low) Values
+                  </h4>
+                  <ul className="list-disc list-inside space-y-1.5 text-xs text-neutral-700 dark:text-neutral-300">
+                    {content.lowValues.map((l: string, idx: number) => (
+                      <li key={idx}>{l}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* Section: Clinical Interpretation */}
+          {content.clinicalInterpretation && (
+            <section id="interpretation" className="space-y-3 border-t border-neutral-500/5 pt-6 scroll-mt-24">
+              <h3 className="text-base font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+                <Activity className="h-4.5 w-4.5 text-teal-650 dark:text-teal-400" /> Clinical Alignment & Significance
               </h3>
-              <p>{typeof labTest.content.lifestyleDietGuidance === "string" ? labTest.content.lifestyleDietGuidance : (labTest.content.lifestyleDietGuidance?.en || "")}</p>
+              <p className="text-sm text-neutral-700 dark:text-neutral-300">{content.clinicalInterpretation}</p>
             </section>
           )}
 
           {/* Section: Warnings */}
-          <section className="p-5 border border-rose-500/20 bg-rose-500/5 rounded-2xl space-y-2">
-            <h4 className="font-bold text-rose-800 dark:text-rose-400">
-              Guidance Warning
-            </h4>
-            <p className="text-sm">
-              Standard laboratory reference ranges vary based on the testing facility. Significant deviations require immediate clinician review to rule out severe medical pathology.
-            </p>
+          <section id="warning" className="p-5 border border-rose-500/20 bg-rose-500/5 rounded-2xl flex gap-3 scroll-mt-24">
+            <ShieldAlert className="h-5 w-5 text-rose-500 shrink-0 mt-0.5" />
+            <div>
+              <h4 className="font-bold text-rose-800 dark:text-rose-450 text-sm">
+                Diagnostic Guidance Notice
+              </h4>
+              <p className="text-xs text-rose-950/80 dark:text-rose-250/90 mt-1">
+                Standard laboratory reference ranges vary based on the testing facility. Significant deviations require immediate clinician review to rule out severe medical pathology.
+              </p>
+            </div>
           </section>
         </div>
 
+        {/* Dynamic Knowledge Graph Explorer */}
+        <div className="mt-8">
+          <KnowledgeGraphExplorer currentId={labTest.id} />
+        </div>
+
         {/* References */}
-        {labTest.content?.references && (
-          <ReferencesList references={labTest.content.references} />
+        {content.references && (
+          <div id="references" className="scroll-mt-24">
+            <ReferencesList references={content.references} />
+          </div>
         )}
 
         {/* AI Citation */}
@@ -136,6 +188,8 @@ export default async function LabTestDetailPage({ params }: PageProps) {
 
         {/* Related everything navigator */}
         <RelatedEverything entityId={labTest.id} />
+
+        <ContextualCtaBanner />
 
         {/* Global Medical Disclaimer */}
         <MedicalDisclaimer />

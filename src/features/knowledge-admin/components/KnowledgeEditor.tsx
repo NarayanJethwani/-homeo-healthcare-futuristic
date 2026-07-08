@@ -288,52 +288,499 @@ export default function KnowledgeEditor({ entity: initialEntity, allEntities, cu
 
             {/* Subclass-specific input modules */}
             <div className="space-y-4 pt-4 border-t border-neutral-850">
-              <h4 className="text-xs font-bold text-neutral-350">
+              <h4 className="text-xs font-bold text-neutral-350 mb-4">
                 Entity Specific Information
               </h4>
 
-              {/* Disease subclass */}
-              {entity.entityType === "disease" && (
-                <div className="grid grid-cols-1 gap-3">
+              {/* Remedy subclass */}
+              {entity.entityType === "remedy" && (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-neutral-400 block uppercase font-bold">Latin Name</span>
+                      <input
+                        type="text"
+                        value={entity.content?.latinName || ""}
+                        onChange={e => setEntity({
+                          ...entity,
+                          content: { ...entity.content, latinName: e.target.value }
+                        })}
+                        className="w-full text-xs px-3 py-1.5 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-neutral-400 block uppercase font-bold">Common Name</span>
+                      <input
+                        type="text"
+                        value={entity.content?.commonName || ""}
+                        onChange={e => setEntity({
+                          ...entity,
+                          content: { ...entity.content, commonName: e.target.value }
+                        })}
+                        className="w-full text-xs px-3 py-1.5 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-neutral-400 block uppercase font-bold">Kingdom</span>
+                      <input
+                        type="text"
+                        value={entity.content?.kingdom || ""}
+                        onChange={e => setEntity({
+                          ...entity,
+                          content: { ...entity.content, kingdom: e.target.value }
+                        })}
+                        className="w-full text-xs px-3 py-1.5 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-neutral-400 block uppercase font-bold">Source Material</span>
+                      <input
+                        type="text"
+                        value={entity.content?.source || ""}
+                        onChange={e => setEntity({
+                          ...entity,
+                          content: { ...entity.content, source: e.target.value }
+                        })}
+                        className="w-full text-xs px-3 py-1.5 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-neutral-400 block uppercase font-bold">Remedy Type</span>
+                      <input
+                        type="text"
+                        value={entity.content?.remedyType || ""}
+                        onChange={e => setEntity({
+                          ...entity,
+                          content: { ...entity.content, remedyType: e.target.value }
+                        })}
+                        className="w-full text-xs px-3 py-1.5 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                      />
+                    </div>
+                  </div>
+
                   <div className="space-y-1">
-                    <span className="text-[10px] text-neutral-400 block">Pathophysiology Overview</span>
+                    <span className="text-[10px] text-neutral-400 block uppercase font-bold">Description</span>
                     <textarea
                       rows={3}
-                      value={entity.content?.overview?.en || ""}
+                      value={entity.content?.description || ""}
                       onChange={e => setEntity({
                         ...entity,
-                        content: {
-                          ...entity.content,
-                          overview: {
-                            en: e.target.value,
-                            hi: entity.content?.overview?.hi || "",
-                            gu: entity.content?.overview?.gu || "",
-                            mr: entity.content?.overview?.mr || "",
-                            es: entity.content?.overview?.es || "",
-                            ar: entity.content?.overview?.ar || ""
-                          }
-                        }
+                        content: { ...entity.content, description: e.target.value }
                       })}
                       className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200 focus:outline-none focus:border-cyan-600"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-neutral-400 block uppercase font-bold">Guiding Keynotes (One per line)</span>
+                      <textarea
+                        rows={3}
+                        value={entity.content?.keynotes?.join("\n") || ""}
+                        onChange={e => setEntity({
+                          ...entity,
+                          content: { ...entity.content, keynotes: e.target.value.split("\n").filter(Boolean) }
+                        })}
+                        className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-neutral-400 block uppercase font-bold">Mental Symptoms (One per line)</span>
+                      <textarea
+                        rows={3}
+                        value={entity.content?.mentalSymptoms?.join("\n") || ""}
+                        onChange={e => setEntity({
+                          ...entity,
+                          content: { ...entity.content, mentalSymptoms: e.target.value.split("\n").filter(Boolean) }
+                        })}
+                        className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-neutral-400 block uppercase font-bold">Physical Symptoms (One per line)</span>
+                      <textarea
+                        rows={3}
+                        value={entity.content?.physicalSymptoms?.join("\n") || ""}
+                        onChange={e => setEntity({
+                          ...entity,
+                          content: { ...entity.content, physicalSymptoms: e.target.value.split("\n").filter(Boolean) }
+                        })}
+                        className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-neutral-400 block uppercase font-bold">Generalities</span>
+                      <textarea
+                        rows={3}
+                        value={entity.content?.generalities || ""}
+                        onChange={e => setEntity({
+                          ...entity,
+                          content: { ...entity.content, generalities: e.target.value }
+                        })}
+                        className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-neutral-400 block uppercase font-bold">Modalities Better (One per line)</span>
+                      <textarea
+                        rows={3}
+                        value={entity.content?.modalitiesBetter?.join("\n") || ""}
+                        onChange={e => setEntity({
+                          ...entity,
+                          content: { ...entity.content, modalitiesBetter: e.target.value.split("\n").filter(Boolean) }
+                        })}
+                        className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-neutral-400 block uppercase font-bold">Modalities Worse (One per line)</span>
+                      <textarea
+                        rows={3}
+                        value={entity.content?.modalitiesWorse?.join("\n") || ""}
+                        onChange={e => setEntity({
+                          ...entity,
+                          content: { ...entity.content, modalitiesWorse: e.target.value.split("\n").filter(Boolean) }
+                        })}
+                        className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-neutral-400 block uppercase font-bold">Clinical Uses (One per line)</span>
+                      <textarea
+                        rows={3}
+                        value={entity.content?.clinicalUses?.join("\n") || ""}
+                        onChange={e => setEntity({
+                          ...entity,
+                          content: { ...entity.content, clinicalUses: e.target.value.split("\n").filter(Boolean) }
+                        })}
+                        className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-neutral-400 block uppercase font-bold">Organ Affinity (One per line)</span>
+                      <textarea
+                        rows={3}
+                        value={entity.content?.organAffinity?.join("\n") || ""}
+                        onChange={e => setEntity({
+                          ...entity,
+                          content: { ...entity.content, organAffinity: e.target.value.split("\n").filter(Boolean) }
+                        })}
+                        className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-neutral-400 block uppercase font-bold">Miasmatic Affinity (One per line)</span>
+                      <textarea
+                        rows={3}
+                        value={entity.content?.miasmaticAffinity?.join("\n") || ""}
+                        onChange={e => setEntity({
+                          ...entity,
+                          content: { ...entity.content, miasmaticAffinity: e.target.value.split("\n").filter(Boolean) }
+                        })}
+                        className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-neutral-400 block uppercase font-bold">Constitution</span>
+                      <textarea
+                        rows={2}
+                        value={entity.content?.constitution || ""}
+                        onChange={e => setEntity({
+                          ...entity,
+                          content: { ...entity.content, constitution: e.target.value }
+                        })}
+                        className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-neutral-400 block uppercase font-bold">Potencies (One per line)</span>
+                      <textarea
+                        rows={2}
+                        value={entity.content?.potencies?.join("\n") || ""}
+                        onChange={e => setEntity({
+                          ...entity,
+                          content: { ...entity.content, potencies: e.target.value.split("\n").filter(Boolean) }
+                        })}
+                        className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200 font-mono"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <span className="text-[10px] text-neutral-400 block uppercase font-bold">Safety Notes</span>
+                    <textarea
+                      rows={2}
+                      value={entity.content?.safetyNotes || ""}
+                      onChange={e => setEntity({
+                        ...entity,
+                        content: { ...entity.content, safetyNotes: e.target.value }
+                      })}
+                      className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
                     />
                   </div>
                 </div>
               )}
 
-              {/* Remedy subclass */}
-              {entity.entityType === "remedy" && (
-                <div className="grid grid-cols-1 gap-3">
+              {/* Disease subclass */}
+              {entity.entityType === "disease" && (
+                <div className="space-y-4">
                   <div className="space-y-1">
-                    <span className="text-[10px] text-neutral-400 block">Source Material</span>
-                    <input
-                      type="text"
-                      value={entity.content?.sourceMaterial || ""}
+                    <span className="text-[10px] text-neutral-400 block uppercase font-bold">Overview</span>
+                    <textarea
+                      rows={3}
+                      value={entity.content?.overview || ""}
                       onChange={e => setEntity({
                         ...entity,
-                        content: { ...entity.content, sourceMaterial: e.target.value }
+                        content: { ...entity.content, overview: e.target.value }
                       })}
-                      placeholder="e.g. Sublimed Sulphur"
-                      className="w-full text-xs px-3 py-1.5 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                      className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[10px] text-neutral-400 block uppercase font-bold">Definition</span>
+                    <textarea
+                      rows={2}
+                      value={entity.content?.definition || ""}
+                      onChange={e => setEntity({
+                        ...entity,
+                        content: { ...entity.content, definition: e.target.value }
+                      })}
+                      className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-neutral-400 block uppercase font-bold">Causes (One per line)</span>
+                      <textarea
+                        rows={3}
+                        value={entity.content?.causes?.join("\n") || ""}
+                        onChange={e => setEntity({
+                          ...entity,
+                          content: { ...entity.content, causes: e.target.value.split("\n").filter(Boolean) }
+                        })}
+                        className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-neutral-400 block uppercase font-bold">Risk Factors (One per line)</span>
+                      <textarea
+                        rows={3}
+                        value={entity.content?.riskFactors?.join("\n") || ""}
+                        onChange={e => setEntity({
+                          ...entity,
+                          content: { ...entity.content, riskFactors: e.target.value.split("\n").filter(Boolean) }
+                        })}
+                        className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[10px] text-neutral-400 block uppercase font-bold">Symptoms (One per line)</span>
+                    <textarea
+                      rows={3}
+                      value={entity.content?.symptoms?.join("\n") || ""}
+                      onChange={e => setEntity({
+                        ...entity,
+                        content: { ...entity.content, symptoms: e.target.value.split("\n").filter(Boolean) }
+                      })}
+                      className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-neutral-400 block uppercase font-bold">Diagnosis</span>
+                      <textarea
+                        rows={3}
+                        value={entity.content?.diagnosis || ""}
+                        onChange={e => setEntity({
+                          ...entity,
+                          content: { ...entity.content, diagnosis: e.target.value }
+                        })}
+                        className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-neutral-400 block uppercase font-bold">Differential Diagnosis</span>
+                      <textarea
+                        rows={3}
+                        value={entity.content?.differentialDiagnosis || ""}
+                        onChange={e => setEntity({
+                          ...entity,
+                          content: { ...entity.content, differentialDiagnosis: e.target.value }
+                        })}
+                        className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200 font-mono"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-neutral-400 block uppercase font-bold">Recommended Lab Tests (One per line)</span>
+                      <textarea
+                        rows={3}
+                        value={entity.content?.labTests?.join("\n") || ""}
+                        onChange={e => setEntity({
+                          ...entity,
+                          content: { ...entity.content, labTests: e.target.value.split("\n").filter(Boolean) }
+                        })}
+                        className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200 font-mono"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-neutral-400 block uppercase font-bold">Imaging Details</span>
+                      <textarea
+                        rows={3}
+                        value={entity.content?.imaging || ""}
+                        onChange={e => setEntity({
+                          ...entity,
+                          content: { ...entity.content, imaging: e.target.value }
+                        })}
+                        className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[10px] text-neutral-400 block uppercase font-bold">Red Flags (One per line)</span>
+                    <textarea
+                      rows={3}
+                      value={entity.content?.redFlags?.join("\n") || ""}
+                      onChange={e => setEntity({
+                        ...entity,
+                        content: { ...entity.content, redFlags: e.target.value.split("\n").filter(Boolean) }
+                      })}
+                      className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200 font-semibold text-rose-500"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-neutral-400 block uppercase font-bold">Conventional Management</span>
+                      <textarea
+                        rows={3}
+                        value={entity.content?.conventionalManagement || ""}
+                        onChange={e => setEntity({
+                          ...entity,
+                          content: { ...entity.content, conventionalManagement: e.target.value }
+                        })}
+                        className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-neutral-400 block uppercase font-bold">Homeopathic Approach</span>
+                      <textarea
+                        rows={3}
+                        value={entity.content?.homeopathicApproach || ""}
+                        onChange={e => setEntity({
+                          ...entity,
+                          content: { ...entity.content, homeopathicApproach: e.target.value }
+                        })}
+                        className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[10px] text-neutral-400 block uppercase font-bold">Lifestyle Advice</span>
+                    <textarea
+                      rows={2}
+                      value={entity.content?.lifestyleAdvice || ""}
+                      onChange={e => setEntity({
+                        ...entity,
+                        content: { ...entity.content, lifestyleAdvice: e.target.value }
+                      })}
+                      className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Symptom subclass */}
+              {entity.entityType === "symptom" && (
+                <div className="space-y-4">
+                  <div className="space-y-1">
+                    <span className="text-[10px] text-neutral-400 block uppercase font-bold">Definition</span>
+                    <textarea
+                      rows={3}
+                      value={entity.content?.definition || ""}
+                      onChange={e => setEntity({
+                        ...entity,
+                        content: { ...entity.content, definition: e.target.value }
+                      })}
+                      className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[10px] text-neutral-400 block uppercase font-bold">Clinical Meaning</span>
+                    <textarea
+                      rows={3}
+                      value={entity.content?.clinicalMeaning || ""}
+                      onChange={e => setEntity({
+                        ...entity,
+                        content: { ...entity.content, clinicalMeaning: e.target.value }
+                      })}
+                      className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-neutral-400 block uppercase font-bold">Common Causes (One per line)</span>
+                      <textarea
+                        rows={3}
+                        value={entity.content?.commonCauses?.join("\n") || ""}
+                        onChange={e => setEntity({
+                          ...entity,
+                          content: { ...entity.content, commonCauses: e.target.value.split("\n").filter(Boolean) }
+                        })}
+                        className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-neutral-400 block uppercase font-bold">Differential Diagnosis</span>
+                      <textarea
+                        rows={3}
+                        value={entity.content?.differentialDiagnosis || ""}
+                        onChange={e => setEntity({
+                          ...entity,
+                          content: { ...entity.content, differentialDiagnosis: e.target.value }
+                        })}
+                        className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[10px] text-neutral-400 block uppercase font-bold">Red Flags (One per line)</span>
+                    <textarea
+                      rows={3}
+                      value={entity.content?.redFlags?.join("\n") || ""}
+                      onChange={e => setEntity({
+                        ...entity,
+                        content: { ...entity.content, redFlags: e.target.value.split("\n").filter(Boolean) }
+                      })}
+                      className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200 font-bold text-rose-500"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[10px] text-neutral-400 block uppercase font-bold">Lifestyle Advice</span>
+                    <textarea
+                      rows={2}
+                      value={entity.content?.lifestyleAdvice || ""}
+                      onChange={e => setEntity({
+                        ...entity,
+                        content: { ...entity.content, lifestyleAdvice: e.target.value }
+                      })}
+                      className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
                     />
                   </div>
                 </div>
@@ -341,72 +788,72 @@ export default function KnowledgeEditor({ entity: initialEntity, allEntities, cu
 
               {/* Lab Test subclass */}
               {entity.entityType === "lab-test" && (
-                <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-4">
                   <div className="space-y-1">
-                    <span className="text-[10px] text-neutral-400 block">Standard Reference Range</span>
-                    <input
-                      type="text"
-                      value={entity.content?.referenceRanges?.standard || ""}
+                    <span className="text-[10px] text-neutral-400 block uppercase font-bold">Overview</span>
+                    <textarea
+                      rows={3}
+                      value={entity.content?.overview || ""}
                       onChange={e => setEntity({
                         ...entity,
-                        content: {
-                          ...entity.content,
-                          referenceRanges: {
-                            standard: e.target.value,
-                            critical: entity.content?.referenceRanges?.critical || ""
-                          }
-                        }
+                        content: { ...entity.content, overview: e.target.value }
                       })}
-                      placeholder="e.g. 0.45 - 4.5 uIU/mL"
-                      className="w-full text-xs px-3 py-1.5 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                      className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
                     />
                   </div>
                   <div className="space-y-1">
-                    <span className="text-[10px] text-neutral-400 block">Critical Values</span>
+                    <span className="text-[10px] text-neutral-400 block uppercase font-bold">Standard Reference Range</span>
                     <input
                       type="text"
-                      value={entity.content?.referenceRanges?.critical || ""}
+                      value={entity.content?.normalRange || ""}
                       onChange={e => setEntity({
                         ...entity,
-                        content: {
-                          ...entity.content,
-                          referenceRanges: {
-                            standard: entity.content?.referenceRanges?.standard || "",
-                            critical: e.target.value
-                          }
-                        }
+                        content: { ...entity.content, normalRange: e.target.value }
                       })}
-                      placeholder="e.g. < 0.1 or > 10"
+                      placeholder="e.g. 13.5 - 17.5 g/dL"
                       className="w-full text-xs px-3 py-1.5 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-neutral-400 block uppercase font-bold">High Values Interpretation (One per line)</span>
+                      <textarea
+                        rows={3}
+                        value={entity.content?.highValues?.join("\n") || ""}
+                        onChange={e => setEntity({
+                          ...entity,
+                          content: { ...entity.content, highValues: e.target.value.split("\n").filter(Boolean) }
+                        })}
+                        className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-neutral-400 block uppercase font-bold">Low Values Interpretation (One per line)</span>
+                      <textarea
+                        rows={3}
+                        value={entity.content?.lowValues?.join("\n") || ""}
+                        onChange={e => setEntity({
+                          ...entity,
+                          content: { ...entity.content, lowValues: e.target.value.split("\n").filter(Boolean) }
+                        })}
+                        className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[10px] text-neutral-400 block uppercase font-bold">Clinical Interpretation</span>
+                    <textarea
+                      rows={3}
+                      value={entity.content?.clinicalInterpretation || ""}
+                      onChange={e => setEntity({
+                        ...entity,
+                        content: { ...entity.content, clinicalInterpretation: e.target.value }
+                      })}
+                      className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200"
                     />
                   </div>
                 </div>
               )}
-
-              {/* Default clinical warning disclaimers */}
-              <div className="space-y-1">
-                <span className="text-[10px] text-neutral-400 block">Clinical Safety warnings / Disclaimers</span>
-                <textarea
-                  rows={2}
-                  value={entity.content?.safetyWarnings?.en || ""}
-                  onChange={e => setEntity({
-                    ...entity,
-                    content: {
-                      ...entity.content,
-                      safetyWarnings: {
-                        en: e.target.value,
-                        hi: entity.content?.safetyWarnings?.hi || "",
-                        gu: entity.content?.safetyWarnings?.gu || "",
-                        mr: entity.content?.safetyWarnings?.mr || "",
-                        es: entity.content?.safetyWarnings?.es || "",
-                        ar: entity.content?.safetyWarnings?.ar || ""
-                      }
-                    }
-                  })}
-                  placeholder="e.g. Consult with a qualified homeopathic practitioner before beginning treatment..."
-                  className="w-full text-xs p-2 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-200 focus:outline-none focus:border-cyan-600"
-                />
-              </div>
             </div>
 
             {/* SEPARATE: Internal Editorial Notes (Never published) */}

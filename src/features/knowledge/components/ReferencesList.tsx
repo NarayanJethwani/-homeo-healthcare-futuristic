@@ -1,5 +1,6 @@
 import React from "react";
 import { BookOpen, ExternalLink } from "lucide-react";
+import { getCitationById } from "../content/citations";
 
 interface ReferencesListProps {
   references: string[];
@@ -14,23 +15,41 @@ export default function ReferencesList({ references }: ReferencesListProps) {
         <BookOpen className="h-5 w-5 text-teal-600 dark:text-teal-400" /> Reference Citations
       </h4>
       <ol className="list-decimal list-inside space-y-3 text-sm text-neutral-600 dark:text-neutral-300">
-        {references.map((ref, index) => {
-          // Detect if reference includes a URL or DOI and extract it
-          const urlMatch = ref.match(/(https?:\/\/[^\s]+)/g);
-          const url = urlMatch ? urlMatch[0] : null;
-          const cleanText = url ? ref.replace(url, "") : ref;
+        {references.map((refId, index) => {
+          const citation = getCitationById(refId);
+          if (!citation) {
+            // Fallback to raw string if it's not in our database
+            return (
+              <li key={index} className="leading-relaxed">
+                <span className="ml-1">{refId}</span>
+              </li>
+            );
+          }
+
+          const authorsStr = citation.authors.join(", ");
+          const citationText = `${authorsStr}. "${citation.title}." ${citation.journal}${citation.year ? ` (${citation.year})` : ""}.`;
 
           return (
             <li key={index} className="leading-relaxed">
-              <span className="ml-1">{cleanText}</span>
-              {url && (
+              <span className="ml-1">{citationText}</span>
+              {citation.doi && (
                 <a
-                  href={url}
+                  href={`https://doi.org/${citation.doi}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 ml-2 text-teal-600 dark:text-teal-400 hover:underline"
+                  className="inline-flex items-center gap-0.5 ml-2 text-teal-600 dark:text-teal-400 hover:underline text-xs"
                 >
-                  View Source <ExternalLink className="h-3 w-3" />
+                  DOI <ExternalLink className="h-2.5 w-2.5" />
+                </a>
+              )}
+              {citation.pubmedId && (
+                <a
+                  href={`https://pubmed.ncbi.nlm.nih.gov/${citation.pubmedId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-0.5 ml-2 text-teal-600 dark:text-teal-400 hover:underline text-xs"
+                >
+                  PubMed <ExternalLink className="h-2.5 w-2.5" />
                 </a>
               )}
             </li>

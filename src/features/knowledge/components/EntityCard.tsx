@@ -7,9 +7,28 @@ import { getEntityUrl } from "../index";
 interface EntityCardProps {
   entity: KnowledgeEntity;
   locale?: Locale;
+  highlightQuery?: string;
 }
 
-export default function EntityCard({ entity, locale = "en" }: EntityCardProps) {
+function highlightText(text: string, query: string) {
+  if (!query) return text;
+  const parts = text.split(new RegExp(`(${query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')})`, 'gi'));
+  return (
+    <>
+      {parts.map((part, i) => 
+        part.toLowerCase() === query.toLowerCase() ? (
+          <mark key={i} className="bg-teal-500/20 dark:bg-teal-500/35 text-teal-800 dark:text-teal-200 px-0.5 rounded font-semibold">
+            {part}
+          </mark>
+        ) : (
+          part
+        )
+      )}
+    </>
+  );
+}
+
+export default function EntityCard({ entity, locale = "en", highlightQuery = "" }: EntityCardProps) {
   const title = typeof entity.title === "string" ? entity.title : (entity.title?.[locale] || entity.title?.["en"] || "");
   const summary = typeof entity.summary === "string" ? entity.summary : (entity.summary?.[locale] || entity.summary?.["en"] || "");
 
@@ -60,11 +79,11 @@ export default function EntityCard({ entity, locale = "en" }: EntityCardProps) {
         </div>
 
         <h4 className="text-lg font-bold text-neutral-800 dark:text-neutral-200 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors duration-200 line-clamp-1">
-          {title}
+          {highlightQuery ? highlightText(title, highlightQuery) : title}
         </h4>
 
         <p className="mt-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400 line-clamp-3">
-          {summary}
+          {highlightQuery ? highlightText(summary, highlightQuery) : summary}
         </p>
 
         {entity.tags && entity.tags.length > 0 && (

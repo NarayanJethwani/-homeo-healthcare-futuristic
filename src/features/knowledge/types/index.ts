@@ -48,27 +48,90 @@ export interface ContentVersion {
   replacementEntityId?: string;
 }
 
+export interface CitationRecord {
+  id: string; // e.g. "CIT-0001"
+  title: string;
+  authors: string[];
+  journal: string;
+  doi?: string;
+  pubmedId?: string;
+  year: number;
+  citationStyle: string; // e.g. "AMA"
+}
+
+// Remedy content type with all requested clinical fields
+export interface RemedyContent {
+  latinName: string;
+  commonName: string;
+  source: string;
+  kingdom: string;
+  remedyType: string;
+  description: string;
+  keynotes: string[];
+  mentalSymptoms: string[];
+  physicalSymptoms: string[];
+  generalities: string;
+  modalitiesBetter: string[];
+  modalitiesWorse: string[];
+  clinicalUses: string[];
+  organAffinity: string[];
+  miasmaticAffinity: string[];
+  constitution: string;
+  potencies: string[];
+  safetyNotes: string;
+  references: string[]; // Reference Citation IDs
+}
+
+// Disease content type with all requested clinical fields
+export interface DiseaseContent {
+  overview: string;
+  definition: string;
+  causes: string[];
+  riskFactors: string[];
+  symptoms: string[]; // clinical descriptions
+  diagnosis: string;
+  differentialDiagnosis: string;
+  labTests: string[];
+  imaging: string;
+  redFlags: string[];
+  conventionalManagement: string;
+  homeopathicApproach: string;
+  lifestyleAdvice: string;
+  references: string[]; // Reference Citation IDs
+}
+
+// Symptom content type with all requested clinical fields
+export interface SymptomContent {
+  definition: string;
+  clinicalMeaning: string;
+  commonCauses: string[];
+  differentialDiagnosis: string;
+  redFlags: string[];
+  lifestyleAdvice: string;
+  references: string[]; // Reference Citation IDs
+}
+
+// Lab Test content type with all requested clinical fields
+export interface LabTestContent {
+  overview: string;
+  normalRange: string;
+  highValues: string[];
+  lowValues: string[];
+  clinicalInterpretation: string;
+  references: string[]; // Reference Citation IDs
+}
+
 export interface KnowledgeEntity {
-  id: string; // prefix-slug e.g. "DIS-gerd", "REM-sulphur"
+  id: string; // permanent ID: e.g. "R0001", "D0001", "S0001", "L0001"
   slug: string; // lowercase URL slug e.g. "gerd", "sulphur"
   entityType: EntityType;
   editorialStatus: EditorialStatus;
   versionInfo: ContentVersion;
   title: LocalizedString;
   summary: LocalizedString;
-  content: {
-    // Entity-specific key-value pairs
-    mainContent?: LocalizedString;
-    whatItMeans?: LocalizedString;
-    commonSymptoms?: LocalizedString[];
-    whenToConsultDoctor?: LocalizedString;
-    conventionalPerspective?: LocalizedString;
-    homeopathicPerspective?: LocalizedString;
-    remedyConsiderations?: LocalizedString;
-    lifestyleDietGuidance?: LocalizedString;
-    references?: string[];
-    [key: string]: any;
-  };
+  featured?: boolean;
+  categories?: string[];
+  content: RemedyContent | DiseaseContent | SymptomContent | LabTestContent | any;
   author: Author;
   reviewer: Reviewer;
   evidenceLevel: EvidenceLevel;
@@ -88,10 +151,13 @@ export type RelationshipType =
   | "riskFactorFor"
   | "contraindicatedWith"
   | "supportedBy"
-  | "hasDietAdvice";
+  | "hasDietAdvice"
+  | "complementaryTo"
+  | "compareWith";
 
 export interface KnowledgeRelationship {
-  source: string; // Source ID e.g., "DIS-gerd"
+  source: string; // Source ID e.g., "D0001"
   relation: RelationshipType;
-  target: string; // Target ID e.g., "SYM-heartburn"
+  target: string; // Target ID e.g., "S0001"
 }
+

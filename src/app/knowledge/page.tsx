@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Stethoscope, HelpCircle, Activity, Heart, Beaker, FileText, ChevronRight } from "lucide-react";
 import KnowledgePageLayout from "@/features/knowledge/components/KnowledgePageLayout";
 import KnowledgeSearch from "@/features/knowledge/components/KnowledgeSearch";
+import CollectionsView from "@/features/knowledge/components/CollectionsView";
 
 export const metadata: Metadata = {
   title: "Clinical Knowledge Platform | Homeo Healthcare",
@@ -50,11 +51,16 @@ export default function KnowledgeHubPage() {
       </div>
 
       {/* Interactive Search Engine Section */}
-      <div className="pt-6 border-t border-neutral-500/5">
+      <div className="py-8 border-t border-neutral-500/5">
         <h2 className="text-xl font-bold text-neutral-800 dark:text-neutral-200 mb-6 text-center">
           Interactive Knowledge Discovery
         </h2>
         <KnowledgeSearch />
+      </div>
+
+      {/* Curated Clinical Collections Specialty Hubs */}
+      <div className="pt-8 border-t border-neutral-500/5">
+        <CollectionsView />
       </div>
     </KnowledgePageLayout>
   );

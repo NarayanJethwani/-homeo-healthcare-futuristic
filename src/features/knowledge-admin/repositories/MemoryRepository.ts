@@ -9,6 +9,7 @@ import { RESEARCH } from "@/features/knowledge/content/research";
 import { CASE_STUDIES } from "@/features/knowledge/content/case-studies";
 import { KNOWLEDGE_RELATIONSHIPS } from "@/features/knowledge/graph/entityRelationships";
 import { KnowledgeEntity } from "@/features/knowledge/types";
+import { CITATIONS } from "@/features/knowledge/content/citations";
 
 // In-memory data store singleton
 const entities: KmsKnowledgeEntity[] = [];
@@ -24,68 +25,26 @@ export class MemoryRepository implements KnowledgeRepository {
   private seedStore() {
     if (isSeeded) return;
 
-    // 1. Seed some baseline citations
-    citations = [
-      {
-        id: "CIT-001",
-        title: "Efficacy of Constitutional Homeopathy in Gastroesophageal Reflux Disease (GERD)",
-        authors: ["Jethwani N.", "Sharma R."],
-        journal: "International Journal of Homeopathic Research",
-        doi: "10.1007/s11938-024-00123-x",
-        pubmedId: "34892019",
-        year: 2024,
-        citationStyle: "AMA",
-        usageCount: 0,
-        linkedEntities: []
-      },
-      {
-        id: "CIT-002",
-        title: "Individualized Homeopathic Treatment for Atopic Dermatitis: A Cohort Study",
-        authors: ["Witt C. M.", "Lüdtke R."],
-        journal: "Complementary Medicine Research",
-        doi: "10.1159/000235948",
-        pubmedId: "19816024",
-        year: 2019,
-        citationStyle: "AMA",
-        usageCount: 0,
-        linkedEntities: []
-      },
-      {
-        id: "CIT-003",
-        title: "TSH Reference Intervals and Homeopathic Prescribing Mappings",
-        authors: ["Miller D."],
-        journal: "Clinical Endocrinology Review",
-        doi: "10.1111/cen.14582",
-        pubmedId: "28910482",
-        year: 2021,
-        citationStyle: "AMA",
-        usageCount: 0,
-        linkedEntities: []
-      }
-    ];
+    // 1. Seed citations from central citations registry
+    citations = CITATIONS.map(cit => ({
+      ...cit,
+      usageCount: 0,
+      linkedEntities: []
+    }));
 
     // Helper to transform a public KnowledgeEntity to an Admin KmsKnowledgeEntity
     const convertToKms = (pub: KnowledgeEntity): KmsKnowledgeEntity => {
       // Map related references
-      const refIds: string[] = [];
-      if (pub.content?.references) {
-        pub.content.references.forEach((ref, idx) => {
-          // If referencing our baseline citations, link them
-          if (pub.slug.includes("gerd") && idx === 0) {
-            refIds.push("CIT-001");
-            citations[0].linkedEntities.push(pub.id);
-            citations[0].usageCount++;
-          } else if (pub.slug.includes("eczema") && idx === 0) {
-            refIds.push("CIT-002");
-            citations[1].linkedEntities.push(pub.id);
-            citations[1].usageCount++;
-          } else if (pub.slug.includes("tsh") && idx === 0) {
-            refIds.push("CIT-003");
-            citations[2].linkedEntities.push(pub.id);
-            citations[2].usageCount++;
-          }
-        });
-      }
+      const refIds: string[] = pub.content?.references || [];
+      
+      // Update citation registry links
+      refIds.forEach(refId => {
+        const found = citations.find(c => c.id === refId);
+        if (found) {
+          found.linkedEntities.push(pub.id);
+          found.usageCount++;
+        }
+      });
 
       const nextYear = new Date();
       nextYear.setFullYear(nextYear.getFullYear() + 1);
@@ -314,7 +273,7 @@ export class MemoryRepository implements KnowledgeRepository {
     // Remove reference from entity links
     entities.forEach(e => {
       if (e.content?.references?.includes(id)) {
-        e.content.references = e.content.references.filter(x => x !== id);
+        e.content.references = e.content.references.filter((x: string) => x !== id);
       }
     });
   }

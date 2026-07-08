@@ -1,7 +1,7 @@
 import { KnowledgeEntity } from "../../types";
 
 export const CbcLabTest: KnowledgeEntity = {
-  id: "LAB-cbc",
+  id: "L0001",
   slug: "cbc",
   entityType: "lab-test",
   editorialStatus: "published",
@@ -13,58 +13,35 @@ export const CbcLabTest: KnowledgeEntity = {
   },
   title: {
     en: "Complete Blood Count (CBC)",
-    hi: "कम्प्लीट ब्लड काउंट (सीबीसी)",
-    gu: "લોહીની સંપૂર્ણ તપાસ (સીબીસી)",
-    mr: "कम्प्लीट ब्लड काऊंट (सीबीसी)",
-    es: "Conteo Sanguíneo Completo (Hemograma)",
+    hi: "कम्पलीट ब्लड काउंट (सीबीसी)",
+    gu: "લોહીની સંપૂર્ણ તપાસ (CBC)",
+    mr: "पूर्ण रक्त तपासणी (CBC)",
+    es: "Conteo Sanguíneo Completo (CSC)",
     ar: "صورة الدم الكاملة (CBC)"
   },
   summary: {
-    en: "A standard blood test evaluating overall health and screening for disorders such as anemia, infection, and leukemia.",
-    hi: "एक सामान्य रक्त परीक्षण जो स्वास्थ्य की स्थिति और एनीमिया, संक्रमण और ल्यूकेमिया जैसी समस्याओं की जांच करता है.",
-    gu: "એક સામાન્ય લોહીની તપાસ જે સ્વાસ્થ્યની સ્થિતિ અને પાંડુરોગ કે કોઈ ચેપની તપાસ કરે છે.",
-    mr: "आरोग्याची स्थिती आणि अ‍ॅनिमिया किंवा जंतूसंसर्ग तपासण्यासाठी केली जाणारी रक्ताची प्राथमिक चाचणी.",
-    es: "Un análisis de sangre estándar para evaluar la salud general y detectar anemia o infecciones.",
-    ar: "اختبار دم قياسي لتقييم الصحة العامة والكشف عن فقر الدم أو العدوى."
+    en: "A standard screening blood test evaluating red cells, white cells, platelets, and hemoglobin to assess overall health and spot anemia or infection.",
+    hi: "रक्त की एक सामान्य जांच जो लाल कोशिकाओं, सफेद कोशिकाओं, प्लेटलेट्स और हीमोग्लोबिन का मूल्यांकन करती है, एनीमिया या संक्रमण को पकड़ने के लिए.",
+    gu: "લોહીની સામાન્ય તપાસ જે રક્તકણો, શ્વેતકણો, પ્લેટલેટ્સ અને હિમોગ્લોબિનનું પ્રમાણ માપે છે, એનિમિયા કે ચેપ જાણવા માટે.",
+    mr: "रक्ताची एक मूलभूत तपासणी ज्यामध्ये तांबड्या पेशी, पांढऱ्या पेशी, प्लेटलेट्स आणि हिमोग्लोबिन मोजले जाते.",
+    es: "Un análisis de sangre estándar para evaluar las células rojas, blancas y plaquetas.",
+    ar: "فحص دم قياسي يقيم خلايا الدم الحمراء والبيضاء والصفائح الدموية والهيموجلوبين."
   },
   content: {
-    whatItMeans: {
-      en: "A CBC measures several components of your blood, including Red Blood Cells (carrying oxygen), White Blood Cells (fighting infection), Hemoglobin (oxygen-carrying protein), Hematocrit (proportion of blood cells to plasma), and Platelets (helping blood clot).",
-      hi: "सीबीसी रक्त के विभिन्न घटकों जैसे लाल रक्त कोशिकाएं, सफेद रक्त कोशिकाएं, हीमोग्लोबिन और प्लेटलेट्स को मापता है.",
-      gu: "આ તપાસ લોહીના વિવિધ ઘટકો જેવા કે રક્તકણો, શ્વેતકણો, હિમોગ્લોબિન અને પ્લેટલેટ્સની ગણતરી કરે છે.",
-      mr: "सीबीसी रक्तातील लाल पेशी, पांढऱ्या पेशी, हिमोग्लोबिन आणि प्लेटलेट्स मोजते.",
-      es: "El hemograma mide componentes como glóbulos rojos, glóbulos blancos, hemoglobina y plaquetas.",
-      ar: "يقيس هذا الاختبار خلايا الدم الحمراء، وخلايا الدم البيضاء، والهيموجلوبين، والصفائح الدموية."
-    },
-    whenToConsultDoctor: {
-      en: "Always discuss your CBC report with a qualified clinician. Significant deviations (such as extremely low platelets or hemoglobin) require immediate medical review to exclude systemic disease.",
-      hi: "रिपोर्ट में किसी भी बड़े बदलाव के होने पर तुरंत डॉक्टर से संपर्क करें.",
-      gu: "રિપોર્ટમાં વધારે ફેરફાર હોય તો તુરંત ડોક્ટરનો સંપર્ક કરવો.",
-      mr: "रिपॉर्टमध्ये अधिक तफावत आढळल्यास त्वरित डॉक्टरांशी संपर्क साधा.",
-      es: "Consulte a un médico si los niveles están fuera de los rangos normales.",
-      ar: "استشر الطبيب دائمًا لمراجعة تقرير صورة الدم الكاملة الخاص بك."
-    },
-    remedyConsiderations: {
-      en: "While homeopathic remedies do not treat lab values, finding indications of chronic anemia (low RBC) or chronic inflammation (elevated WBC) aids in select constitutional remedies (e.g. Ferrum Metallicum for anemia). Requires consultation with a qualified physician.",
-      hi: "होम्योपैथिक उपचार प्रयोगशाला रिपोर्ट के आधार पर नहीं बल्कि रोगी के समग्र लक्षणों के आधार पर व्यक्तिगत रूप से चुने जाते हैं. डॉक्टर की सलाह आवश्यक है.",
-      gu: "હોમિયોપેથિક દવાઓ રિપોર્ટના આંકડા સુધારવા માટે નહીં પણ પૂરક બંધારણીય સુધારા માટે અપાય છે. ડોક્ટરની સલાહ જરૂરી છે.",
-      mr: "होम्योपैथिक उपचार केवळ रक्ताच्या प्रमाणावर अवलंबून नसून रुग्णाच्या संपूर्ण लक्षणांवर आधारित ठरवले जातात.",
-      es: "Los remedios se eligen constitucionalmente, no para tratar valores de laboratorio aislados. Para revisión clínica.",
-      ar: "لا يعالج الطب التجانسى قيم التحاليل مباشرة، ولكن معرفة فقر الدم يساعد في اختيار الأدوية الدستورية."
-    },
-    lifestyleDietGuidance: {
-      en: "Maintain a balanced, iron-rich diet containing green leafy vegetables, beans, and lentils. Stay hydrated and avoid smoking to support healthy bone marrow function.",
-      hi: "आयरन युक्त आहार लें, हरी पत्तेदार सब्जियां खाएं और धूम्रपान से बचें.",
-      gu: "લોહતત્વયુક્ત આહાર લેવો, લીલા પાંદડાવાળા શાકભાजी ખાવા.",
-      mr: "लोहयुक्त आहार घ्या, हिरव्या पालेभाज्या खा आणि भरपूर पाणी प्या.",
-      es: "Consuma una dieta equilibrada rica en hierro. Manténgase hidratado.",
-      ar: "تناول نظامًا غذائيًا متوازنًا غنيًا بالحديد مثل الخضار الورقية."
-    },
-    references: [
-      "Laboratory Medicine Standards - AACC Practice Guidelines, 2021.",
-      "Boericke W. Pocket Manual of Homoeopathic Materia Medica. 1901."
+    overview: "A Complete Blood Count (CBC) is a fundamental diagnostic panel that measures the cells that circulate in your blood. The panel assesses three primary components: Red Blood Cells (carrying oxygen), White Blood Cells (fighting infection), and Platelets (assisting in blood clotting). It provides vital markers of systemic health.",
+    normalRange: "Varies by parameter. Typical reference ranges: Hemoglobin: 13.5 - 17.5 g/dL (male), 12.0 - 15.5 g/dL (female); White Blood Cell (WBC) count: 4,000 - 11,000 cells/mcL; Platelet count: 150,000 - 450,000/mcL.",
+    highValues: [
+      "High Red Blood Cells / Hemoglobin (Polycythemia): Suggests dehydration, chronic hypoxia (smoking, lung disease), or primary bone marrow disorders.",
+      "High White Blood Cells (Leukocytosis): Indicates acute bacterial infection, severe physical stress, tissue necrosis, or leukemia.",
+      "High Platelets (Thrombocytosis): Associated with acute inflammation, iron deficiency, or myeloproliferative disorders."
     ],
-    relatedEntities: ["DIS-gerd", "DIS-eczema"]
+    lowValues: [
+      "Low Red Blood Cells / Hemoglobin (Anemia): Suggests nutritional deficiency (iron, B12, folate), chronic blood loss, renal failure, or hemolysis.",
+      "Low White Blood Cells (Leukopenia): Linked to viral infections, autoimmune destruction, bone marrow suppression, or certain drugs.",
+      "Low Platelets (Thrombocytopenia): Poses risks of bleeding, often caused by immune destruction, viral infections, or splenic sequestration."
+    ],
+    clinicalInterpretation: "In clinical practice, a CBC serves as a diagnostic window. High white cell counts point to inflammatory processes (such as severe atopic eczema flares or gastritis), whereas low hemoglobin suggests a chronic microcytic anemia from gastrointestinal bleeding. Homeopaths correlate these findings with the patient's structural vitality.",
+    references: ["CIT-0002"]
   },
   author: {
     name: "Dr. Narayan Jethwani",
@@ -73,14 +50,14 @@ export const CbcLabTest: KnowledgeEntity = {
   reviewer: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)",
-    specialty: "Clinical Pathology & Therapeutics",
+    specialty: "Hematology & Clinical Diagnostics",
     institution: "Homeo Healthcare Clinic"
   },
-  evidenceLevel: "Expert-Opinion",
-  tags: ["CBC", "Blood Test", "Anemia", "Infection", "Platelets"],
+  evidenceLevel: "Level-A",
+  tags: ["CBC", "Complete Blood Count", "Blood Test", "Hemoglobin", "Diagnostics"],
   canonicalUrl: "https://homeo.healthcare/knowledge/lab-tests/cbc",
-  readingTimeMinutes: 4,
+  readingTimeMinutes: 5,
   audience: "patient",
-  license: "CC BY-NC-ND 4.0",
-  changeLog: ["1.0.0: Initial release of CBC laboratory interpretation guide"]
+  license: "CC BY-NC-ND 4.5",
+  changeLog: ["1.0.0: Initial release of CBC lab test profile"]
 };

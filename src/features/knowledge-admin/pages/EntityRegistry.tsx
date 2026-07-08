@@ -14,6 +14,7 @@ export default function EntityRegistry({ onEditEntity, onCreateEntity }: EntityR
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [reviewFilter, setReviewFilter] = useState<string>("all");
   
   // Selection for bulk actions
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -91,7 +92,18 @@ export default function EntityRegistry({ onEditEntity, onCreateEntity }: EntityR
       e.slug.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === "all" || e.editorialStatus === statusFilter;
     const matchesType = typeFilter === "all" || e.entityType === typeFilter;
-    return matchesSearch && matchesStatus && matchesType;
+    
+    let matchesReview = true;
+    if (reviewFilter === "due") {
+      matchesReview = e.nextReviewDate ? new Date(e.nextReviewDate) < new Date() : false;
+    } else if (reviewFilter === "upcoming") {
+      const now = new Date();
+      const in30Days = new Date();
+      in30Days.setDate(now.getDate() + 30);
+      matchesReview = e.nextReviewDate ? (new Date(e.nextReviewDate) >= now && new Date(e.nextReviewDate) <= in30Days) : false;
+    }
+
+    return matchesSearch && matchesStatus && matchesType && matchesReview;
   });
 
   // Paginated chunk
@@ -147,6 +159,17 @@ export default function EntityRegistry({ onEditEntity, onCreateEntity }: EntityR
             <option value="faq">FAQs</option>
             <option value="research">Research</option>
             <option value="case-study">Case Studies</option>
+          </select>
+
+          {/* Review filter */}
+          <select
+            value={reviewFilter}
+            onChange={e => { setReviewFilter(e.target.value); setCurrentPage(1); }}
+            className="text-xs px-2.5 py-1.5 bg-neutral-950 border border-neutral-850 rounded-lg text-neutral-350 focus:outline-none focus:border-cyan-600"
+          >
+            <option value="all">All Review Cycles</option>
+            <option value="due">Review Overdue</option>
+            <option value="upcoming">Review Due in 30 Days</option>
           </select>
         </div>
 

@@ -1,7 +1,7 @@
 import { KnowledgeEntity } from "../../types";
 
-export const EczemaEntity: KnowledgeEntity = {
-  id: "DIS-eczema",
+export const EczemaDisease: KnowledgeEntity = {
+  id: "D0002",
   slug: "eczema",
   entityType: "disease",
   editorialStatus: "published",
@@ -13,92 +13,58 @@ export const EczemaEntity: KnowledgeEntity = {
   },
   title: {
     en: "Atopic Dermatitis (Eczema)",
-    hi: "एटोपिक डर्मेटाइटिस (एक्जिमा)",
-    gu: "એટોપિક ડર્મેટાઇટિસ (એકઝીમા)",
-    mr: "एटोपिक डर्मेटायटिस (एक्झिमा)",
+    hi: "एक्जिमा (खुजलीदार त्वचा रोग)",
+    gu: "ખરજવું અને ત્વચાના રોગો (Eczema)",
+    mr: "खरूज आणि त्वचेचे आजार (Eczema)",
     es: "Dermatitis Atópica (Eczema)",
-    ar: "التهاب الجلد التأتبي (الإكزيما)"
+    ar: "الأكزيما (Eczema)"
   },
   summary: {
-    en: "An inflammatory chronic skin disorder characterized by dry, red, intensely itchy skin eruptions.",
-    hi: "त्वचा में सूजन का एक पुराना विकार जिसमें सूखी, लाल और बहुत खुजली वाली फुंसियां होती हैं.",
-    gu: "ચામડીની ક્રોનિક બળતરા, જેમાં શુષ્ક, લાલ અને ખૂબ ખંજવાળ આવતી ફોલ્લીઓ થાય છે.",
-    mr: "त्वचेचा एक जुनाट दाहक आजार ज्यामध्ये कोरडी, लाल आणि तीव्र खाज सुटणारी पुरळ येते.",
-    es: "Un trastorno inflamatorio crónico de la piel caracterizado por piel seca, roja y con picazón intensa.",
-    ar: "اضطراب جلدي مزمن يتميز بالجلد الجاف والأحمر والحكة الشديدة."
+    en: "A chronic, inflammatory skin condition characterized by dry, red, itchy patches, commonly associated with personal or family history of allergic conditions.",
+    hi: "त्वचा की एक पुरानी सूजन संबंधी बीमारी जिसमें त्वचा पर लाल, सूखी और खुजलीदार पपड़ीदार परतें बन जाती हैं.",
+    gu: "લાંબા ગાળાનો ત્વચાનો સોજો, જેનાથી ત્વચા લાલ, સુકી અને ખંજવાળવાળી થાય છે. આ ઘણીવાર એલર્જી સાથે જોડાયેલ હોય છે.",
+    mr: "त्वचेचा एक जुनाट दाहयुक्त आजार, ज्यामध्ये त्वचा कोरडी पडते, लाल डाग आणि तीव्र खाज निर्माण होते.",
+    es: "Una condición crónica e inflamatoria de la piel caracterizada por parches secos, rojos y con picazón.",
+    ar: "حالة جلدية مزمنة والتهابية تتميز بوجود بقع جافة وحمراء ومثيرة للحكة."
   },
   content: {
-    whatItMeans: {
-      en: "Eczema is a skin barrier dysfunction linked to immune system dysregulation. Flaws in the skin barrier allow moisture to escape and environmental irritants to penetrate, leading to localized inflammation.",
-      hi: "एक्जिमा त्वचा की सुरक्षात्मक परत के कमजोर होने के कारण होता है, जिससे बाहरी तत्व त्वचा में जलन पैदा करते हैं.",
-      gu: "ત્વચાના સુરક્ષા કવચમાં ખામી આવવાથી ભેજ ઓછો થાય છે અને ખંજવાળ શરૂ થાય છે.",
-      mr: "त्वचेचा संरक्षक थर कमकुवत झाल्यामुळे बाहेरून संसर्ग होण्याची शक्यता वाढते.",
-      es: "El eczema es una disfunción de la barrera cutánea ligada a una desregulación del sistema inmunitario.",
-      ar: "الإكزيما هي خلل في حاجز الجلد مرتبط بخلل في تنظيم الجهاز المناعي."
-    },
-    commonSymptoms: [
-      {
-        en: "Pruritus (intense itching, often worse at night)",
-        hi: "तीव्र खुजली",
-        gu: "ખૂબ ખંજવાળ આવવી",
-        mr: "तीव्र खाज सुटणे",
-        es: "Prurito (picazón intensa)",
-        ar: "حكة شديدة"
-      },
-      {
-        en: "Erythema (red to brownish-gray patches)",
-        hi: "लाल चकत्ते",
-        gu: "લાલ ધાબા પડવા",
-        mr: "लालसर चट्टे पडणे",
-        es: "Eritema (parches rojos)",
-        ar: "احمرار الجلد"
-      }
+    overview: "Atopic Dermatitis (Eczema) is a chronic pruritic inflammatory skin disease that typically affects individuals with a personal or family history of atopic diseases (asthma, allergic rhinitis). It is marked by a dysfunctional skin barrier and an overactive immune response to environmental triggers.",
+    definition: "Eczema is an erythematous, papulovesicular, pruritic skin eruption. It involves structural defects in the epidermal barrier (such as filaggrin mutations) combined with an immune response skew towards Th2 pathways.",
+    causes: [
+      "Genetic mutation in the filaggrin gene leading to skin barrier dysfunction.",
+      "Immune system dysregulation with excessive inflammatory cytokine release.",
+      "Environmental allergens (dust mites, pollen, pet dander).",
+      "Staphylococcus aureus colonization on the skin."
     ],
-    whenToConsultDoctor: {
-      en: "Seek urgent care if you notice yellow crusting, pus-filled blisters, streaks, or rapid spread of redness, which indicate secondary bacterial infection (like Staphylococcus) or viral infection (Eczema Herpeticum).",
-      hi: "यदि त्वचा पर पीली पपड़ी, मवाद या बहुत तेज़ लालिमा दिखे, तो तुरंत डॉक्टर से संपर्क करें.",
-      gu: "જો પીળી પોપડી કે પરુ થાય, તો તુરંત ડોક્ટરનો સંપર્ક કરો.",
-      mr: "त्वचेवर पिवळसर खपली किंवा पू दिसल्यास त्वरित डॉक्टरांशी संपर्क साधा.",
-      es: "Consulte a un médico de inmediato si nota costras amarillas, pus o propagación rápida de enrojecimiento.",
-      ar: "استشر الطبيب فورًا إذا لاحظت وجود قشور صفراء أو صديد أو انتشار سريع للاحمرار."
-    },
-    conventionalPerspective: {
-      en: "Conventional treatments involve topical corticosteroids to suppress inflammation, antihistamines for itching, and barrier repair moisturizers.",
-      hi: "पारंपरिक चिकित्सा में कॉर्टिकोस्टेरॉइड क्रीम और एंटीहिस्टामिन दवाएं शामिल हैं.",
-      gu: "પરંપરાગત સારવારમાં સ્ટીરોઈડ ક્રીમ અને મોઈશ્ચરાઈઝર વાપરવામાં આવે છે.",
-      mr: "पारंपारिक उपचारांमध्ये स्टिरॉइड क्रीम आणि खाज कमी करणारी औषधे दिली जातात.",
-      es: "El tratamiento convencional incluye corticosteroides tópicos y cremas hidratantes.",
-      ar: "يشمل العلاج التقليدي الكورتيكوستيرويدات الموضعية ومضادات الهيستامين."
-    },
-    homeopathicPerspective: {
-      en: "Homeopathy considers eczema an external expression of internal systemic inflammation (often linked to the psoric miasm). Topical suppressive creams are discouraged, as constitutional remedies aim to heal the skin barrier from within.",
-      hi: "होम्योपैथी त्वचा पर किसी भी बाहरी क्रीम से दबाने का विरोध करती है और इसका उपचार अंदरूनी तौर पर करती है.",
-      gu: "હોમિયોપેથી ચામડી પર ક્રીમ લગાવી દબાવવાનો વિરોધ કરે છે અને આંતરિક સારવાર આપે છે.",
-      mr: "होम्योपैथीमध्ये मलम लावून पुरळ दाबण्याचा विरोध केला जातो आणि आजारावर मूळ औषध दिले जाते.",
-      es: "La homeopatía considera el eczema como una expresión externa de inflamación interna.",
-      ar: "تعتبر المعالجة المثلية الإكزيما تعبيرًا خارجيًا عن التهاب داخلي وتتجنب الكريمات المثبطة."
-    },
-    remedyConsiderations: {
-      en: "Remedies commonly considered include Sulphur (for dry, red, itchy skin worse from washing and warmth of bed), Graphites (for thick, cracked skin oozing a sticky, honey-like fluid), and Mezereum (for intense itching with thick crusts). Requires consultation with a qualified physician.",
-      hi: "एक्जिमा के लिए सल्फर, ग्रेफाइटिस और मेजेरियम पर विचार किया जाता है. डॉक्टर की सलाह आवश्यक है.",
-      gu: "સલ્ફર અને ગ્રેફાઈટીસ જેવી દવાઓ વિચારવામાં આવે છે. યોગ્ય ડોક્ટરની સલાह જરૂરી છે.",
-      mr: "सल्फर आणि ग्रेफायटिस या औषधांचा प्रामुख्याने विचार केला जातो. डॉक्टरांचा सल्ला आवश्यक आहे.",
-      es: "Remedios comunes incluyen Sulphur y Graphites. Requiere consulta con un médico calificado.",
-      ar: "الأدوية الشائعة تشمل الكبريت والجرافيت. تتطلب استشارة طبيب مؤهل."
-    },
-    lifestyleDietGuidance: {
-      en: "Keep skin well-lubricated with natural, fragrance-free emollient creams immediately after bathing. Use lukewarm water for showers, wear soft cotton clothing, and avoid harsh detergents or soaps.",
-      hi: "त्वचा को हमेशा मॉइश्चराइज रखें, गुनगुने पानी से नहाएं और सूती कपड़े पहनें.",
-      gu: "ત્વચાને ભેજયુક્ત રાખવી, નવશેકા પાણીથી સ્નાન કરવું અને સુતરાઉ કપડાં પહેરવા.",
-      mr: "त्वचा नेहमी ओलसर ठेवा, कोमट पाण्याने आंघोळ करा आणि सुती कपडे वापरा.",
-      es: "Mantenga la piel hidratada con cremas sin fragancia. Use agua tibia y ropa de algodón.",
-      ar: "حافظ على رطوبة الجلد بكريمات خالية من العطور. استخدم الماء الفاتر واستخدم الملابس القطنية."
-    },
-    references: [
-      "Eczema guidelines - American Academy of Dermatology, 2023.",
-      "Kent JT. Lectures on Homoeopathic Materia Medica. 1905."
+    riskFactors: [
+      "Family history of eczema, asthma, or hay fever.",
+      "Living in cold, damp climates or highly polluted urban areas.",
+      "Frequent contact with harsh chemicals, soaps, or synthetic fabrics.",
+      "Psychological stress, which triggers cutaneous flares."
     ],
-    relatedEntities: ["SYM-skin-eruptions", "REM-sulphur", "REM-lycopodium"]
+    symptoms: [
+      "Pruritus (itching): Often intense, worse during the night.",
+      "Dry, scaly skin patches: Red to brownish-gray in color, especially on hands, feet, ankles, wrists, neck, and inner bends of elbows and knees.",
+      "Small, raised bumps: May leak fluid and crust over when scratched.",
+      "Lichenification: Thickened, cracked, leather-like skin from chronic rubbing."
+    ],
+    diagnosis: "Primarily diagnosed clinically based on history and morphologic features (Hanifin and Rajka criteria). Relevant elements include history of itching, typical distribution of lesions, chronic or relapsing course, and history of atopy.",
+    differentialDiagnosis: "Seborrheic dermatitis, Psoriasis, Contact dermatitis (allergic or irritant), Scabies, and Cutaneous T-cell lymphoma.",
+    labTests: [
+      "Total Serum IgE (often elevated in atopic individuals).",
+      "Allergy patch testing to identify potential contact allergens.",
+      "Skin biopsy in atypical or refractory cases to rule out other dermatoses."
+    ],
+    imaging: "Not applicable for eczema diagnosis.",
+    redFlags: [
+      "Signs of secondary bacterial infection: Pus, yellow crusts, warmth, swelling, or spreading redness.",
+      "Eczema herpeticum: Rapidly spreading painful blisters, often with fever, caused by herpes simplex virus infection.",
+      "Erythroderma: Redness covering more than 90% of the body surface area, posing risks of thermoregulatory failure."
+    ],
+    conventionalManagement: "Conventional therapies emphasize skin hydration with thick emollient creams, topical corticosteroids (Hydrocortisone, Betamethasone) to reduce inflammation, topical calcineurin inhibitors (Tacrolimus), and systemic biologics (Dupilumab) for severe refractory cases.",
+    homeopathicApproach: "Homeopathic prescribing targets the constitutional state rather than suppressing local skin eruptions. Selecting remedies like Sulphur depends on determining whether the skin flares correlate with dry/burning sensations, cold/heat aggravation, and systemic metabolic sluggishness. Suppression is avoided to prevent triggering respiratory atopy (asthma).",
+    lifestyleAdvice: "Moisturize the skin at least twice daily. Take lukewarm showers rather than hot baths (keep under 10 minutes). Use mild, fragrance-free soaps. Pat dry instead of rubbing. Wear soft, breathable cotton fabrics. Keep fingernails short to prevent scratching injury.",
+    references: ["CIT-0002"]
   },
   author: {
     name: "Dr. Narayan Jethwani",
@@ -107,14 +73,14 @@ export const EczemaEntity: KnowledgeEntity = {
   reviewer: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)",
-    specialty: "Dermatology",
+    specialty: "Constitutional Prescribing",
     institution: "Homeo Healthcare Clinic"
   },
-  evidenceLevel: "Clinical-Experience",
-  tags: ["Eczema", "Skin", "Dermatitis", "Pruritus", "Itching"],
+  evidenceLevel: "Level-B",
+  tags: ["Eczema", "Atopic Dermatitis", "Skin Rash", "Allergic Skin", "Dermatology"],
   canonicalUrl: "https://homeo.healthcare/knowledge/diseases/eczema",
   readingTimeMinutes: 6,
   audience: "patient",
-  license: "CC BY-NC-ND 4.0",
-  changeLog: ["1.0.0: Initial release of Eczema education profile"]
+  license: "CC BY-NC-ND 4.5",
+  changeLog: ["1.0.0: Initial release of Eczema disease profile"]
 };

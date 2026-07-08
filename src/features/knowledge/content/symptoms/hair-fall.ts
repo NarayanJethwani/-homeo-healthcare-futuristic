@@ -1,0 +1,64 @@
+import { KnowledgeEntity } from "../../types";
+
+export const HairFallSymptom: KnowledgeEntity = {
+  id: "S0007",
+  slug: "hair-fall",
+  entityType: "symptom",
+  editorialStatus: "published",
+  versionInfo: {
+    version: "1.0.0",
+    created: "2026-07-08T12:00:00Z",
+    updated: "2026-07-08T12:00:00Z",
+    reviewed: "2026-07-08T12:00:00Z"
+  },
+  title: {
+    en: "Hair Fall",
+    hi: "Hair Fall",
+    gu: "Hair Fall",
+    mr: "Hair Fall",
+    es: "Hair Fall",
+    ar: "Hair Fall"
+  },
+  summary: {
+    en: "Clinical definition, significance, causes, and supportive management of Hair Fall.",
+    hi: "Hair Fall के लक्षण की नैदानिक समझ.",
+    gu: "Hair Fall ના લક્ષણ ની સમજણ.",
+    mr: "Hair Fall चे लक्षण आणि उपचार.",
+    es: "Definición clínica y significado de Hair Fall.",
+    ar: "التعريف السريري والأهمية لـ Hair Fall."
+  },
+  content: {
+    definition: "Hair Fall represents a functional or sensory manifestation indicating systemic reaction or localized pathological change.",
+    clinicalMeaning: "In clinical practice, monitoring Hair Fall helps evaluate disease progress and individual metabolic response.",
+    commonCauses: [
+      "Functional systemic stress",
+      "Fatigue or lifestyle imbalance",
+      "Underlying organic pathology"
+    ],
+    differentialDiagnosis: "Must be distinguished based on onset, intensity, duration, and triggering modalities.",
+    redFlags: [
+      "Persistent occurrence lasting more than 7 days",
+      "Associated high-grade fever or neurological deficit",
+      "Unresponsiveness to standard hydration or rest"
+    ],
+    lifestyleAdvice: "Ensure adequate rest, hydration, stress management, and light nutrition.",
+    references: ["CIT-0001", "CIT-0003"]
+  },
+  author: {
+    name: "Dr. Narayan Jethwani",
+    credentials: "MD (Hom)"
+  },
+  reviewer: {
+    name: "Dr. Narayan Jethwani",
+    credentials: "MD (Hom)",
+    specialty: "Internal Medicine",
+    institution: "Homeo Healthcare Clinic"
+  },
+  evidenceLevel: "Traditional-Literature",
+  tags: ["Hair Fall", "Symptom", "Clinical"],
+  canonicalUrl: "https://homeo.healthcare/knowledge/symptoms/hair-fall",
+  readingTimeMinutes: 3,
+  audience: "patient",
+  license: "CC BY-NC-ND 4.0",
+  changeLog: ["1.0.0: Initial release of Hair Fall symptom profile"]
+};

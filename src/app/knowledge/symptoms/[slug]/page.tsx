@@ -13,6 +13,13 @@ import ReferencesList from "@/features/knowledge/components/ReferencesList";
 import AICitationBlock from "@/features/knowledge/components/AICitationBlock";
 import RelatedEverything from "@/features/knowledge/components/RelatedEverything";
 import Breadcrumbs from "@/features/knowledge/components/Breadcrumbs";
+import AnalyticsTrigger from "@/features/knowledge/components/AnalyticsTrigger";
+import PatientFriendlyText from "@/features/knowledge/components/PatientFriendlyText";
+import TimelineHistory from "@/features/knowledge/components/TimelineHistory";
+import LearningPathStepper from "@/features/knowledge/components/LearningPathStepper";
+import KnowledgeGraphExplorer from "@/features/knowledge/components/KnowledgeGraphExplorer";
+import ContextualCtaBanner from "@/features/knowledge/components/ContextualCtaBanner";
+import { Info, HelpCircle, AlertTriangle, BookOpen } from "lucide-react";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -42,10 +49,19 @@ export default async function SymptomDetailPage({ params }: PageProps) {
   const schemaJson = generateMedicalWebPageSchema(symptom);
   const title = typeof symptom.title === "string" ? symptom.title : (symptom.title?.en || "");
   const summary = typeof symptom.summary === "string" ? symptom.summary : (symptom.summary?.en || "");
+  const content = symptom.content;
 
   const crumbs = [
     { name: "Symptoms", item: "https://homeo.healthcare/knowledge/symptoms" },
     { name: title, item: symptom.canonicalUrl },
+  ];
+
+  const tocItems = [
+    { id: "definition", label: "Definition & Meaning" },
+    { id: "causes", label: "Common Causes" },
+    { id: "differentials", label: "Differential Diagnosis" },
+    { id: "redflags", label: "Clinical Red Flags" },
+    { id: "lifestyle", label: "Lifestyle & Diet" }
   ];
 
   return (
@@ -55,6 +71,8 @@ export default async function SymptomDetailPage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaJson) }}
       />
+
+      <AnalyticsTrigger entityId={symptom.id} slug={symptom.slug} entityType={symptom.entityType} />
 
       <KnowledgePageLayout
         title={title}
@@ -67,60 +85,97 @@ export default async function SymptomDetailPage({ params }: PageProps) {
             <LastReviewedBadge reviewedDate={symptom.versionInfo.reviewed} />
           </>
         }
+        tocItems={tocItems}
+        entityId={symptom.id}
+        entityType={symptom.entityType}
       >
         <Breadcrumbs crumbs={crumbs} />
 
         <ReviewedBy reviewer={symptom.reviewer} reviewedDate={symptom.versionInfo.reviewed} />
 
-        <div className="mt-8 space-y-8 text-neutral-800 dark:text-neutral-300 leading-relaxed">
-          {/* Section: What it means */}
-          {symptom.content?.whatItMeans && (
-            <section className="space-y-3">
-              <h3 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
-                Pathophysiology & Meaning
+        <div className="mt-4 space-y-4">
+          <TimelineHistory versionInfo={symptom.versionInfo} reviewer={symptom.reviewer} />
+          <LearningPathStepper currentId={symptom.id} />
+        </div>
+
+        <div className="mt-8 space-y-8 text-neutral-850 dark:text-neutral-200 leading-relaxed">
+          
+          {/* Section: Definition & Meaning */}
+          <section id="definition" className="space-y-3 scroll-mt-24">
+            <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 border-b border-neutral-500/5 pb-2">
+              <Info className="h-4.5 w-4.5 text-amber-500" /> Definition
+            </h3>
+            <PatientFriendlyText className="text-base text-neutral-700 dark:text-neutral-300" as="p">
+              {content.definition}
+            </PatientFriendlyText>
+            <div className="p-4 border-l-4 border-amber-500/50 bg-amber-500/5 rounded-r-xl">
+              <span className="text-[10px] uppercase font-bold text-amber-500 block mb-1">Clinical Meaning</span>
+              <PatientFriendlyText className="text-sm italic text-neutral-800 dark:text-neutral-200" as="p">
+                {content.clinicalMeaning}
+              </PatientFriendlyText>
+            </div>
+          </section>
+
+          {/* Section: Common Causes */}
+          {content.commonCauses && content.commonCauses.length > 0 && (
+            <section id="causes" className="space-y-3 scroll-mt-24">
+              <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 border-b border-neutral-500/5 pb-2">
+                <HelpCircle className="h-4.5 w-4.5 text-amber-500" /> Common Causes
               </h3>
-              <p>{typeof symptom.content.whatItMeans === "string" ? symptom.content.whatItMeans : (symptom.content.whatItMeans?.en || "")}</p>
+              <ul className="list-disc list-inside space-y-1.5 pl-2 text-neutral-700 dark:text-neutral-300">
+                {content.commonCauses.map((cause: string, idx: number) => (
+                  <li key={idx} className="pl-1"><span className="text-neutral-805 dark:text-neutral-250">{cause}</span></li>
+                ))}
+              </ul>
             </section>
           )}
 
-          {/* Section: When to consult doctor */}
-          {symptom.content?.whenToConsultDoctor && (
-            <section className="p-5 border border-rose-500/20 bg-rose-500/5 rounded-2xl space-y-2">
-              <h4 className="font-bold text-rose-800 dark:text-rose-400">
-                When to consult a doctor (Red Flags)
-              </h4>
-              <p className="text-sm">
-                {typeof symptom.content.whenToConsultDoctor === "string" ? symptom.content.whenToConsultDoctor : (symptom.content.whenToConsultDoctor?.en || "")}
-              </p>
+          {/* Section: Differential Diagnosis */}
+          {content.differentialDiagnosis && (
+            <section id="differentials" className="space-y-3 scroll-mt-24">
+              <h4 className="text-sm font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Differential Diagnosis</h4>
+              <p className="text-sm text-neutral-700 dark:text-neutral-300">{content.differentialDiagnosis}</p>
             </section>
           )}
 
-          {/* Section: Possible homeopathic remedy considerations */}
-          {symptom.content?.remedyConsiderations && (
-            <section className="space-y-3">
-              <h3 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
-                Homeopathic Remedy Considerations
-              </h3>
-              <p className="text-sm bg-teal-500/5 border border-teal-500/15 p-4 rounded-xl">
-                {typeof symptom.content.remedyConsiderations === "string" ? symptom.content.remedyConsiderations : (symptom.content.remedyConsiderations?.en || "")}
-              </p>
+          {/* Section: Red Flags */}
+          {content.redFlags && content.redFlags.length > 0 && (
+            <section id="redflags" className="p-5 border border-rose-500/20 bg-rose-500/5 rounded-2xl flex gap-3 scroll-mt-24">
+              <AlertTriangle className="h-5 w-5 text-rose-500 shrink-0 mt-0.5" />
+              <div>
+                <h4 className="font-bold text-rose-800 dark:text-rose-450 text-sm">
+                  Clinical Red Flags (When to Seek Urgent Care)
+                </h4>
+                <ul className="list-disc list-inside space-y-1.5 text-xs text-rose-950/80 dark:text-rose-250/90 mt-2">
+                  {content.redFlags.map((flag: string, idx: number) => (
+                    <li key={idx}>{flag}</li>
+                  ))}
+                </ul>
+              </div>
             </section>
           )}
 
           {/* Section: Lifestyle and diet guidance */}
-          {symptom.content?.lifestyleDietGuidance && (
-            <section className="space-y-3">
-              <h3 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
-                Lifestyle and Diet Support
+          {content.lifestyleAdvice && (
+            <section id="lifestyle" className="space-y-3 border-t border-neutral-500/5 pt-6 scroll-mt-24">
+              <h3 className="text-base font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+                <BookOpen className="h-4.5 w-4.5 text-teal-600 dark:text-teal-400" /> Lifestyle & Diet Support
               </h3>
-              <p>{typeof symptom.content.lifestyleDietGuidance === "string" ? symptom.content.lifestyleDietGuidance : (symptom.content.lifestyleDietGuidance?.en || "")}</p>
+              <p className="text-sm text-neutral-700 dark:text-neutral-300">{content.lifestyleAdvice}</p>
             </section>
           )}
         </div>
 
+        {/* Dynamic Knowledge Graph Explorer */}
+        <div className="mt-8">
+          <KnowledgeGraphExplorer currentId={symptom.id} />
+        </div>
+
         {/* References */}
-        {symptom.content?.references && (
-          <ReferencesList references={symptom.content.references} />
+        {content.references && (
+          <div id="references" className="scroll-mt-24">
+            <ReferencesList references={content.references} />
+          </div>
         )}
 
         {/* AI Citation */}
@@ -128,6 +183,8 @@ export default async function SymptomDetailPage({ params }: PageProps) {
 
         {/* Related everything navigator */}
         <RelatedEverything entityId={symptom.id} />
+
+        <ContextualCtaBanner />
 
         {/* Global Medical Disclaimer */}
         <MedicalDisclaimer />

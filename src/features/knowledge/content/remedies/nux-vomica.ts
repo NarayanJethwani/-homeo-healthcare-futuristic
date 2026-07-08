@@ -1,7 +1,7 @@
 import { KnowledgeEntity } from "../../types";
 
 export const NuxVomicaRemedy: KnowledgeEntity = {
-  id: "REM-nux-vomica",
+  id: "R0002",
   slug: "nux-vomica",
   entityType: "remedy",
   editorialStatus: "published",
@@ -28,51 +28,55 @@ export const NuxVomicaRemedy: KnowledgeEntity = {
     ar: "علاج نباتي رئيسي في المعالجة المثلية، يُحضر من بذور شجرة القيء."
   },
   content: {
-    whatItMeans: {
-      en: "Nux Vomica corresponds to a chilly, irritable, highly active, and ambitious constitutional profile. It is often indicated for those who lead sedentary lifestyles with high mental stress, excess stimulants (caffeine, alcohol), or rich foods.",
-      hi: "नक्स वोमिका चिड़चिड़े, अत्यधिक काम करने वाले और ठंडी तासीर वाले लोगों के लिए अनुकूल है जो कॉफी या शराब का अधिक सेवन करते हैं.",
-      gu: "ઝડપી જીવનશૈલી જીવતા, ચા-કોફીના બંધાણી અને ક્રોધિત પ્રકૃતિવાળા લોકો માટે આ ખૂબ ઉપયોગી છે.",
-      mr: "अति काम करणारे, चिडचिडे आणि चहा-कॉफी पिणारे यांच्यासाठी हे औषध अनुकूल आहे.",
-      es: "Nux Vomica corresponde a un perfil constitucional frío, irritable y muy activo.",
-      ar: "تناسب نوكس فوميكا الشخصية النشطة للغاية، سريعة الغضب، التي تعاني من الإجهاد العقلي."
-    },
-    whenToConsultDoctor: {
-      en: "Always consult a qualified physician for constitutional analysis. Self-prescribing is not advised as potency selection depends on systemic susceptibility.",
-      hi: "दवा की मात्रा और पोटेंसी के लिए हमेशा योग्य डॉक्टर से संपर्क करें.",
-      gu: "દવાની યોગ્ય માત્રા માટે ક્વોલિફાઇડ હોમિયોપેથિક ડોક્ટરની મુલાકાત લેવી.",
-      mr: "औषधाच्या योग्य प्रमाणासाठी डॉक्टरांचा सल्ला अवश्य घ्या.",
-      es: "Consulte a un médico calificado antes de tomar cualquier potencia de Nux Vomica.",
-      ar: "استشر طبيبًا مؤهلًا دائمًا لتحديد الجرعة المناسبة."
-    },
-    homeopathicPerspective: {
-      en: "Nux Vomica is recognized for its actions on the nervous system and liver. Key indicators include ineffectual urging to stool, waking up at 3-4 AM with thoughts of business, and spasmodic cramps.",
-      hi: "यह तंत्रिका तंत्र और यकृत पर कार्य करती है. बार-बार मल त्याग की इच्छा होना लेकिन पेट साफ न होना इसका मुख्य लक्षण है.",
-      gu: "આ આંતરડા અને લિવર પર કાર્ય કરે છે. વારંवार મળત્યાગની ઈચ્છા થવી પણ પેટ સાફ ન થવું તે આનું મુખ્ય લક્ષણ છે.",
-      mr: "हे मज्जासंस्था आणि यकृतावर कार्य करते. पोट साफ न होणे आणि वारंवार शौचास जावे लागणे हे याचे प्रमुख लक्षण आहे.",
-      es: "Es reconocida por sus acciones en el sistema nervioso y el hígado.",
-      ar: "تشتهر نوكس فوميكا بعملها على الجهاز العصبي والكبد."
-    },
-    remedyConsiderations: {
-      en: "Common potencies are 30C and 200C. Used in Gastroesophageal Reflux (GERD), Irritable Bowel Syndrome (IBS), spasmodic colic, and hangover symptoms. Requires consultation with a qualified physician.",
-      hi: "आमतौर पर ३० और २०० पोटेंसी में उपयोग होता है. आईबीएस और गैस में लाभकारी है. चिकित्सक की देखरेख में लें.",
-      gu: "સામાન્ય રીતે ૩૦ અને ૨૦૦ પોટેન્સીમાં એસિડિટી અને ગેસ માટે વપરાય છે. ડોક્ટરની દેખરેખ જરૂરી છે.",
-      mr: "एसिडिटी आणि पोटदुखीवर प्रामुख्याने ३० किंवा २०० च्या प्रमाणात दिले जाते. डॉक्टरांच्या देखरेखीखाली घ्यावे.",
-      es: "Comúnmente utilizada en ERGE y SII. Para revisión clínica.",
-      ar: "تستخدم عادة بقوة 30C و 200C في حالات الارتجاع المريئي والقولون العصبي."
-    },
-    lifestyleDietGuidance: {
-      en: "Reduce reliance on coffee, tea, and alcohol. Practice relaxation techniques, maintain regular sleep patterns, and avoid eating late at night.",
-      hi: "चाय, कॉफी और शराब का सेवन कम करें, रात को देर से भोजन न करें.",
-      gu: "ચા-કોફી અને દારૂનું સેવન ટાળવું, મોડી રાત્રે જમવાનું બંધ કરવું.",
-      mr: "चहा, कॉफी आणि मद्यपान कमी करा, रात्री उशिरा जेवणे टाळा.",
-      es: "Reduzca el consumo de estimulantes. Evite cenar tarde por la noche.",
-      ar: "قلل من المنبهات مثل القهوة. تجنب تناول الطعام في وقت متأخر من الليل."
-    },
-    references: [
-      "Hahnemann S. Materia Medica Pura. 1811.",
-      "Kent JT. Lectures on Homoeopathic Materia Medica. 1905."
+    latinName: "Strychnos nux-vomica",
+    commonName: "Poison Nut / Quaker Buttons",
+    source: "Vegetable Kingdom (Seeds of Strychnos nux-vomica)",
+    kingdom: "Plant",
+    remedyType: "Polychrest / Constitutional",
+    description: "Nux Vomica corresponds to a chilly, irritable, highly active, and ambitious constitutional profile. It is often indicated for those who lead sedentary lifestyles with high mental stress, excess stimulants (caffeine, alcohol, spices), or rich foods.\n\n### Classical References:\n- **Boericke's Materia Medica**: 'The greatest of polychrests because it is the remedy for many conditions incident to modern life.'\n- **Allen's Keynotes**: 'Adapted to thin, irritable, active, brain-workers; leading a sedentary life.'\n\n### Clinical Pearls:\n- Indispensable as an antidote to previous over-drugging or excessive use of stimulants/spices.\n- Ineffectual urging for stool is the absolute guiding clinical symptom.\n\n### Common Prescribing Mistakes:\n- Do not prescribe Nux Vomica immediately before sleep; its high stimulant properties may cause temporary sleeplessness.",
+    keynotes: [
+      "Frequent, ineffectual urging to stool; feels like a part remains unpassed.",
+      "Extreme sensitiveness to all external impressions: noise, light, odors, and draft of air.",
+      "Wakes at 3-4 AM with thoughts of business, then falls into a dull sleep, waking up feeling tired.",
+      "Chilly; wants to be covered in all stages of fever."
     ],
-    relatedEntities: ["DIS-gerd", "DIS-ibs", "SYM-heartburn"]
+    mentalSymptoms: [
+      "Highly irritable, easily angered, impatient, and competitive.",
+      "Over-sensitive to criticism; fits of temper over small matters.",
+      "Workaholic tendencies; prone to mental fatigue from overexertion."
+    ],
+    physicalSymptoms: [
+      "Gastroesophageal reflux (heartburn) and spasmodic stomach cramps.",
+      "Nausea and vomiting, with an expressing: 'If I could only vomit, I would feel better.'",
+      "Spasmodic colic, constrictive sensations in the abdomen."
+    ],
+    generalities: "Chilly; highly sensitive to drafts of cold air; symptoms worse in the morning and after eating; craves stimulants but is aggravated by them.",
+    modalitiesBetter: [
+      "Warmth / Hot drinks",
+      "Rest / Naps",
+      "Damp, wet weather",
+      "In the evening"
+    ],
+    modalitiesWorse: [
+      "Dry, cold air / Drafts",
+      "Morning (waking)",
+      "Stimulants (coffee, alcohol)",
+      "Mental exertion",
+      "After eating"
+    ],
+    clinicalUses: [
+      "Gastroesophageal Reflux Disease (GERD)",
+      "Irritable Bowel Syndrome (IBS)",
+      "Dyspepsia / Acid Indigestion",
+      "Tension Headaches",
+      "Insomnia from stress"
+    ],
+    organAffinity: ["Stomach", "Intestines", "Nervous System", "Liver"],
+    miasmaticAffinity: ["Psora", "Sycosis"],
+    constitution: "Thin, spare, quick, active, irritable persons, with dark hair, who lead a sedentary life and consume stimulants.",
+    potencies: ["30C", "200C", "1M"],
+    safetyNotes: "Avoid prolonged daily repeating of high potencies without clinical supervision due to potential nervous system hypersensitivity.",
+    references: ["CIT-0004", "CIT-0005"]
   },
   author: {
     name: "Dr. Narayan Jethwani",
