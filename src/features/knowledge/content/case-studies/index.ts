@@ -41,10 +41,20 @@ export const CaseStudyEczemaEntity: KnowledgeEntity = {
       hi: "सल्फर २००C की एक खुराक दी गई. १२ सप्ताह में चकत्ते पूरी तरह साफ हो गए."
     },
     references: [
-      "Hahnemann S. The Chronic Diseases. 1828.",
-      "Clinical Case Archives - Homeo Healthcare Practice Studies, 2024."
+      "CIT-0007",
+      "CIT-0022"
     ],
-    relatedEntities: ["DIS-eczema", "SYM-skin-eruptions", "REM-sulphur"]
+    relatedEntities: ["DIS-eczema", "SYM-skin-eruptions", "REM-sulphur", "REM-graphites", "REM-hepar-sulphur", "REM-arsenicum-album"],
+    faqs: [
+      {
+        question: "Why was Sulphur chosen for this eczema case?",
+        answer: "Sulphur was chosen based on the characteristic modalities: intense itching aggravated by warmth and bathing, burning of soles, and thermal heat sensitivity."
+      },
+      {
+        question: "How long did the skin barrier recovery take?",
+        answer: "Complete clearance of eruptions and skin barrier restoration were achieved progressively over 12 weeks with a single dose of Sulphur 200C."
+      }
+    ]
   },
   author: {
     name: "Dr. Narayan Jethwani",

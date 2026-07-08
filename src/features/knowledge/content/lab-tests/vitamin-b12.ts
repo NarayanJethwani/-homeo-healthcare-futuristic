@@ -28,19 +28,39 @@ export const VitaminB12LabTest: KnowledgeEntity = {
     ar: "الغرض السريري وتفسير نتائج اختبار Vitamin B12."
   },
   content: {
-    overview: "Vitamin B12 is a routine clinical investigation used to identify physiological fluctuations, metabolic disorders, or system inflammation.",
-    normalRange: "Varies by laboratory. Typically defined within reference intervals.",
-    highValues: [
-      "Indicates systemic reaction, infection, or metabolic hyper-activity.",
-      "Requires medical correlation with active clinical symptoms."
-    ],
-    lowValues: [
-      "Indicates deficiency, metabolic hypo-activity, or sluggish organ function.",
-      "Requires clinician evaluation of baseline patient data."
-    ],
-    clinicalInterpretation: "Results of Vitamin B12 must be interpreted in conjunction with patient symptoms and constitutional profiles rather than in isolation.",
-    references: ["CIT-0001", "CIT-0004"]
-  },
+  "overview": "VITAMIN B12: A blood panel parameter or cell count analysis designed to evaluate red cell mass, immune defense lines, and coagulation potential.",
+  "normalRange": "Hemoglobin: 12.0-17.5 g/dL; Hematocrit: 36-50%; WBC Count: 4,000-11,000 /mcL; Platelet Count: 150,000-450,000 /mcL.",
+  "highValues": [
+    "Erythrocytosis or dehydration (high RBC/Hgb)",
+    "Leukocytosis indicating active infection or inflammation (high WBC)",
+    "Thrombocytosis from inflammatory or marrow states (high platelets)"
+  ],
+  "lowValues": [
+    "Anemia from nutritional or blood loss causes (low Hgb/RBC)",
+    "Leukopenia suggesting viral or autoimmune suppression (low WBC)",
+    "Thrombocytopenia posing bleeding risks (low platelets)"
+  ],
+  "clinicalInterpretation": "VITAMIN B12 evaluation: Red cell and hemoglobin drops suggest anemia, necessitating iron, B12, or folate evaluation. WBC spikes indicate infection or severe inflammation, while platelet drops warn of bleeding risks.",
+  "references": [
+    "CIT-0015",
+    "CIT-0016",
+    "CIT-0022"
+  ],
+  "faqs": [
+    {
+      "question": "How often should a Complete Blood Count (CBC) be monitored?",
+      "answer": "For healthy individuals, an annual check is standard. Patients with anemia, active infections, or ongoing hematological treatment may require frequent monitoring as directed by a clinician."
+    },
+    {
+      "question": "What is the link between iron deficiency and anemia?",
+      "answer": "Iron is an essential building block for hemoglobin, the protein in red blood cells that carries oxygen. Lack of iron directly limits hemoglobin synthesis, leading to anemia."
+    },
+    {
+      "question": "Can dietary changes alone correct low hemoglobin?",
+      "answer": "Mild nutritional anemias can improve with iron-rich foods and vitamin C, but moderate-to-severe states require clinical investigation and targeted supplementation."
+    }
+  ]
+},
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"

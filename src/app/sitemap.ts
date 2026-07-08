@@ -1,5 +1,7 @@
 import { MetadataRoute } from "next";
 import { getAllKnowledgeEntities, getEntityUrl } from "@/features/knowledge";
+import { CURATED_COLLECTIONS } from "@/features/knowledge/collections/collectionsRegistry";
+import { COMPARISONS } from "@/features/knowledge/comparisons/comparisonRegistry";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://homeo.healthcare";
@@ -8,11 +10,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes = [
     "",
     "/store",
+    "/store/plans",
     "/services",
     "/blogs",
+    "/contact",
     "/contact-us",
+    "/doctors",
     "/dr-narayan-jethwani",
     "/evidence-based-homeopathy",
+    "/health-intelligence",
     "/privacy-policy",
     "/about",
     "/knowledge",
@@ -50,6 +56,34 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   } catch (error) {
     console.error("Error generating dynamic sitemap links:", error);
+  }
+
+  // 3. Dynamic curated hubs (Sprint 3)
+  try {
+    for (const collection of CURATED_COLLECTIONS) {
+      sitemapItems.push({
+        url: `${baseUrl}/knowledge/hubs/${collection.slug}`,
+        lastModified: new Date(),
+        changeFrequency: "weekly",
+        priority: 0.75,
+      });
+    }
+  } catch (error) {
+    console.error("Error generating hubs sitemap links:", error);
+  }
+
+  // 4. Dynamic comparison matrix pages (Sprint 2/3)
+  try {
+    for (const comp of COMPARISONS) {
+      sitemapItems.push({
+        url: `${baseUrl}/knowledge/compare/${comp.slug}`,
+        lastModified: new Date(),
+        changeFrequency: "weekly",
+        priority: 0.75,
+      });
+    }
+  } catch (error) {
+    console.error("Error generating comparisons sitemap links:", error);
   }
 
   return sitemapItems;

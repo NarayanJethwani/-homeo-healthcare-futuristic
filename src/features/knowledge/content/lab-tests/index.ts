@@ -24,6 +24,22 @@ import { RheumatoidFactorLabTest } from "./rheumatoid-factor";
 import { AntiCCPLabTest } from "./anti-ccp";
 import { CompleteUrineAnalysisLabTest } from "./complete-urine-analysis";
 
+import { ANALabTest } from "./ana";
+import { SerumIronLabTest } from "./serum-iron";
+import { TIBCLabTest } from "./tibc";
+import { SerumPotassiumLabTest } from "./serum-potassium";
+import { SerumSodiumLabTest } from "./serum-sodium";
+import { SerumMagnesiumLabTest } from "./serum-magnesium";
+import { TotalIgELabTest } from "./total-ige";
+import { StoolRoutineLabTest } from "./stool-routine";
+import { HPyloriAntigenLabTest } from "./h-pylori-antigen";
+import { FT3LabTest } from "./ft3";
+import { FT4LabTest } from "./ft4";
+import { UrineMicroalbuminLabTest } from "./urine-microalbumin";
+import { ProstateSpecificAntigenLabTest } from "./prostate-specific-antigen";
+import { AntiTPOAntibodiesLabTest } from "./anti-tpo-antibodies";
+import { FolicAcidLabTest } from "./folic-acid";
+
 export const LAB_TESTS = [
   CbcLabTest,
   TshLabTest,
@@ -49,7 +65,22 @@ export const LAB_TESTS = [
   ThyroidProfileLabTest,
   RheumatoidFactorLabTest,
   AntiCCPLabTest,
-  CompleteUrineAnalysisLabTest
+  CompleteUrineAnalysisLabTest,
+  ANALabTest,
+  SerumIronLabTest,
+  TIBCLabTest,
+  SerumPotassiumLabTest,
+  SerumSodiumLabTest,
+  SerumMagnesiumLabTest,
+  TotalIgELabTest,
+  StoolRoutineLabTest,
+  HPyloriAntigenLabTest,
+  FT3LabTest,
+  FT4LabTest,
+  UrineMicroalbuminLabTest,
+  ProstateSpecificAntigenLabTest,
+  AntiTPOAntibodiesLabTest,
+  FolicAcidLabTest,
 ];
 
 export { CbcLabTest, TshLabTest };

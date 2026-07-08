@@ -28,37 +28,49 @@ export const UrticariaDisease: KnowledgeEntity = {
     ar: "نظرة عامة سريرية شاملة لـ Urticaria."
   },
   content: {
-    overview: "Urticaria is a common clinical condition managed in outpatient clinics. An integrated approach combining lifestyle modification and constitutional support yields optimal long-term outcomes.",
-    definition: "Urticaria is defined clinically as a pathological or functional condition affecting systemic homeostasis.",
-    causes: [
-      "Environmental and lifestyle triggers.",
-      "Genetic predisposition and individual susceptibility.",
-      "Functional or metabolic imbalances."
-    ],
-    riskFactors: [
-      "Sedentary lifestyle and stress",
-      "Improper dietary habits",
-      "Family history"
-    ],
-    symptoms: [
-      "Typical physical symptoms associated with Urticaria.",
-      "Aggravation under specific physical or emotional stress.",
-      "Chronic recurrence if left unmanaged."
-    ],
-    diagnosis: "Diagnosed based on patient clinical history, physical examinations, and supporting laboratory investigations.",
-    differentialDiagnosis: "Must be differentiated from other similar functional disorders through target exclusions.",
-    labTests: ["CBC", "ESR"],
-    imaging: "X-ray or Ultrasound as indicated by clinician.",
-    redFlags: [
-      "Sudden severe onset of pain or high fever",
-      "Unexplained rapid weight loss",
-      "Persistent symptoms unresponsive to initial care"
-    ],
-    conventionalManagement: "Standard conventional therapy involves symptomatic management, anti-inflammatories, or metabolic regulators depending on severity.",
-    homeopathicApproach: "Classical homeopathy focuses on constitutional analysis, seeking to reduce individual susceptibility and address underlying chronic tendencies (miasms).",
-    lifestyleAdvice: "Ensure balanced nutrition, regular moderate physical activity, sufficient hydration, and sleep hygiene.",
-    references: ["CIT-0001", "CIT-0002"]
-  },
+  "overview": "Urticaria: Dermatological inflammatory conditions represent cutaneous manifestations of immune-mediated dysregulation, genetic skin barrier defects, and autonomic reactivity. Management focuses on skin barrier integrity and systemic immunomodulation.",
+  "definition": "Chronic, relapsing inflammatory skin disorders characterized by pruritic lesions, scaling, erythema, and epidermal barrier breakdown.",
+  "causes": [
+    "Immune-mediated cutaneous inflammation (T-helper cell dominance)",
+    "Epidermal barrier protein mutations (such as filaggrin defects)",
+    "Environmental contact allergens, irritants, and neurogenic stress triggers"
+  ],
+  "riskFactors": [
+    "Genetic predisposition and family history of atopy (asthma, eczema, hay fever)",
+    "Dry climate and exposure to harsh chemical cleansers",
+    "Chronic emotional stress and food sensitivities"
+  ],
+  "symptoms": [
+    "Intense and persistent pruritus (itching), often worse at night",
+    "Erythematous plaques, papules, and dry scaling skin",
+    "Lichenification (thickened skin) from chronic scratching",
+    "Exudative weeping and secondary bacterial colonization risk"
+  ],
+  "diagnosis": "Diagnosed by clinical inspection of lesion distribution and morphology, patient history, and patch testing for contact allergies.",
+  "differentialDiagnosis": "Differentiate from contact dermatitis, seborrheic dermatitis, psoriasis, and cutaneous dermatophyte (fungal) infections.",
+  "conventionalManagement": "Standard therapy relies on topical emollients, topical corticosteroids, calcineurin inhibitors, antihistamines, or systemic immunosuppressants.",
+  "homeopathicApproach": "Constitutional homeopathic management seeks to balance immune responses, calm pruritus, and support epidermal healing without suppressing local symptoms.",
+  "lifestyleAdvice": "Apply rich emollients within minutes after bathing, bathe in lukewarm water, avoid harsh synthetic soaps, and wear loose breathable cotton clothing.",
+  "references": [
+    "CIT-0002",
+    "CIT-0019",
+    "CIT-0022"
+  ],
+  "faqs": [
+    {
+      "question": "Why do skin conditions worsen with emotional stress?",
+      "answer": "Stress releases cortisol and pro-inflammatory cytokines, which compromise the skin barrier and activate immune pathways, triggering flares of eczema, psoriasis, or acne."
+    },
+    {
+      "question": "Are topical steroids the only treatment for eczema?",
+      "answer": "No. While topical steroids manage acute flare inflammation, long-term care requires barrier repair (emollients), trigger identification, and systemic constitutional support."
+    },
+    {
+      "question": "How does homeopathy approach skin diseases?",
+      "answer": "Homeopathy views skin eruptions as outward manifestations of internal systemic imbalance. Treatment focuses on systemic immunomodulation and constitutional remedies rather than purely suppressing symptoms."
+    }
+  ]
+},
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"

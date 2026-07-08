@@ -28,44 +28,49 @@ export const EczemaDisease: KnowledgeEntity = {
     ar: "حالة جلدية مزمنة والتهابية تتميز بوجود بقع جافة وحمراء ومثيرة للحكة."
   },
   content: {
-    overview: "Atopic Dermatitis (Eczema) is a chronic pruritic inflammatory skin disease that typically affects individuals with a personal or family history of atopic diseases (asthma, allergic rhinitis). It is marked by a dysfunctional skin barrier and an overactive immune response to environmental triggers.",
-    definition: "Eczema is an erythematous, papulovesicular, pruritic skin eruption. It involves structural defects in the epidermal barrier (such as filaggrin mutations) combined with an immune response skew towards Th2 pathways.",
-    causes: [
-      "Genetic mutation in the filaggrin gene leading to skin barrier dysfunction.",
-      "Immune system dysregulation with excessive inflammatory cytokine release.",
-      "Environmental allergens (dust mites, pollen, pet dander).",
-      "Staphylococcus aureus colonization on the skin."
-    ],
-    riskFactors: [
-      "Family history of eczema, asthma, or hay fever.",
-      "Living in cold, damp climates or highly polluted urban areas.",
-      "Frequent contact with harsh chemicals, soaps, or synthetic fabrics.",
-      "Psychological stress, which triggers cutaneous flares."
-    ],
-    symptoms: [
-      "Pruritus (itching): Often intense, worse during the night.",
-      "Dry, scaly skin patches: Red to brownish-gray in color, especially on hands, feet, ankles, wrists, neck, and inner bends of elbows and knees.",
-      "Small, raised bumps: May leak fluid and crust over when scratched.",
-      "Lichenification: Thickened, cracked, leather-like skin from chronic rubbing."
-    ],
-    diagnosis: "Primarily diagnosed clinically based on history and morphologic features (Hanifin and Rajka criteria). Relevant elements include history of itching, typical distribution of lesions, chronic or relapsing course, and history of atopy.",
-    differentialDiagnosis: "Seborrheic dermatitis, Psoriasis, Contact dermatitis (allergic or irritant), Scabies, and Cutaneous T-cell lymphoma.",
-    labTests: [
-      "Total Serum IgE (often elevated in atopic individuals).",
-      "Allergy patch testing to identify potential contact allergens.",
-      "Skin biopsy in atypical or refractory cases to rule out other dermatoses."
-    ],
-    imaging: "Not applicable for eczema diagnosis.",
-    redFlags: [
-      "Signs of secondary bacterial infection: Pus, yellow crusts, warmth, swelling, or spreading redness.",
-      "Eczema herpeticum: Rapidly spreading painful blisters, often with fever, caused by herpes simplex virus infection.",
-      "Erythroderma: Redness covering more than 90% of the body surface area, posing risks of thermoregulatory failure."
-    ],
-    conventionalManagement: "Conventional therapies emphasize skin hydration with thick emollient creams, topical corticosteroids (Hydrocortisone, Betamethasone) to reduce inflammation, topical calcineurin inhibitors (Tacrolimus), and systemic biologics (Dupilumab) for severe refractory cases.",
-    homeopathicApproach: "Homeopathic prescribing targets the constitutional state rather than suppressing local skin eruptions. Selecting remedies like Sulphur depends on determining whether the skin flares correlate with dry/burning sensations, cold/heat aggravation, and systemic metabolic sluggishness. Suppression is avoided to prevent triggering respiratory atopy (asthma).",
-    lifestyleAdvice: "Moisturize the skin at least twice daily. Take lukewarm showers rather than hot baths (keep under 10 minutes). Use mild, fragrance-free soaps. Pat dry instead of rubbing. Wear soft, breathable cotton fabrics. Keep fingernails short to prevent scratching injury.",
-    references: ["CIT-0002"]
-  },
+  "overview": "Eczema: Dermatological inflammatory conditions represent cutaneous manifestations of immune-mediated dysregulation, genetic skin barrier defects, and autonomic reactivity. Management focuses on skin barrier integrity and systemic immunomodulation.",
+  "definition": "Chronic, relapsing inflammatory skin disorders characterized by pruritic lesions, scaling, erythema, and epidermal barrier breakdown.",
+  "causes": [
+    "Immune-mediated cutaneous inflammation (T-helper cell dominance)",
+    "Epidermal barrier protein mutations (such as filaggrin defects)",
+    "Environmental contact allergens, irritants, and neurogenic stress triggers"
+  ],
+  "riskFactors": [
+    "Genetic predisposition and family history of atopy (asthma, eczema, hay fever)",
+    "Dry climate and exposure to harsh chemical cleansers",
+    "Chronic emotional stress and food sensitivities"
+  ],
+  "symptoms": [
+    "Intense and persistent pruritus (itching), often worse at night",
+    "Erythematous plaques, papules, and dry scaling skin",
+    "Lichenification (thickened skin) from chronic scratching",
+    "Exudative weeping and secondary bacterial colonization risk"
+  ],
+  "diagnosis": "Diagnosed by clinical inspection of lesion distribution and morphology, patient history, and patch testing for contact allergies.",
+  "differentialDiagnosis": "Differentiate from contact dermatitis, seborrheic dermatitis, psoriasis, and cutaneous dermatophyte (fungal) infections.",
+  "conventionalManagement": "Standard therapy relies on topical emollients, topical corticosteroids, calcineurin inhibitors, antihistamines, or systemic immunosuppressants.",
+  "homeopathicApproach": "Constitutional homeopathic management seeks to balance immune responses, calm pruritus, and support epidermal healing without suppressing local symptoms.",
+  "lifestyleAdvice": "Apply rich emollients within minutes after bathing, bathe in lukewarm water, avoid harsh synthetic soaps, and wear loose breathable cotton clothing.",
+  "references": [
+    "CIT-0002",
+    "CIT-0019",
+    "CIT-0022"
+  ],
+  "faqs": [
+    {
+      "question": "Why do skin conditions worsen with emotional stress?",
+      "answer": "Stress releases cortisol and pro-inflammatory cytokines, which compromise the skin barrier and activate immune pathways, triggering flares of eczema, psoriasis, or acne."
+    },
+    {
+      "question": "Are topical steroids the only treatment for eczema?",
+      "answer": "No. While topical steroids manage acute flare inflammation, long-term care requires barrier repair (emollients), trigger identification, and systemic constitutional support."
+    },
+    {
+      "question": "How does homeopathy approach skin diseases?",
+      "answer": "Homeopathy views skin eruptions as outward manifestations of internal systemic imbalance. Treatment focuses on systemic immunomodulation and constitutional remedies rather than purely suppressing symptoms."
+    }
+  ]
+},
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"

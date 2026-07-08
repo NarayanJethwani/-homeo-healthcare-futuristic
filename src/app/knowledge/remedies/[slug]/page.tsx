@@ -5,7 +5,7 @@ import { REMEDIES } from "@/features/knowledge/content/remedies";
 import { generateMedicalMetadata } from "@/features/knowledge/metadata/medicalMetadata";
 import { generateMedicalWebPageSchema } from "@/features/knowledge/schemas/jsonLdSchemas";
 import KnowledgePageLayout from "@/features/knowledge/components/KnowledgePageLayout";
-import ReviewedBy from "@/features/knowledge/components/ReviewedBy";
+import EditorialConfidenceBadge from "@/features/knowledge/components/EditorialConfidenceBadge";
 import LastReviewedBadge from "@/features/knowledge/components/LastReviewedBadge";
 import EvidenceBadge from "@/features/knowledge/components/EvidenceBadge";
 import MedicalDisclaimer from "@/features/knowledge/components/MedicalDisclaimer";
@@ -20,6 +20,14 @@ import PatientFriendlyText from "@/features/knowledge/components/PatientFriendly
 import LearningPathStepper from "@/features/knowledge/components/LearningPathStepper";
 import KnowledgeGraphExplorer from "@/features/knowledge/components/KnowledgeGraphExplorer";
 import ContextualCtaBanner from "@/features/knowledge/components/ContextualCtaBanner";
+import QuickFactsCard from "@/features/knowledge/components/QuickFactsCard";
+import ClinicalPearlBox from "@/features/knowledge/components/ClinicalPearlBox";
+import EvidenceSummaryPanel from "@/features/knowledge/components/EvidenceSummaryPanel";
+import VisualBodySystemCard from "@/features/knowledge/components/VisualBodySystemCard";
+import DifferentialDiagnosisTable from "@/features/knowledge/components/DifferentialDiagnosisTable";
+import HomeopathicPerspective from "@/features/knowledge/components/HomeopathicPerspective";
+import RedFlagBox from "@/features/knowledge/components/RedFlagBox";
+import MedicalIllustration from "@/features/knowledge/components/MedicalIllustration";
 import { ShieldAlert, Info, ListChecks, Heart, Beaker, HelpCircle, Activity } from "lucide-react";
 
 interface PageProps {
@@ -93,14 +101,20 @@ export default async function RemedyDetailPage({ params }: PageProps) {
       >
         <Breadcrumbs crumbs={crumbs} />
 
-        <ReviewedBy reviewer={remedy.reviewer} reviewedDate={remedy.versionInfo.reviewed} />
+        <EditorialConfidenceBadge entity={remedy} reviewedDate={remedy.versionInfo.reviewed} />
 
         <div className="mt-4 space-y-4">
           <TimelineHistory versionInfo={remedy.versionInfo} reviewer={remedy.reviewer} />
           <LearningPathStepper currentId={remedy.id} />
+          <QuickFactsCard entity={remedy} />
+          <EvidenceSummaryPanel entity={remedy} />
+          <ClinicalPearlBox entity={remedy} />
+          <VisualBodySystemCard entity={remedy} />
         </div>
 
         <div className="mt-8 space-y-10 text-neutral-850 dark:text-neutral-200 leading-relaxed">
+          {/* Medical Illustration (Sprint 3) */}
+          <MedicalIllustration slug={remedy.slug} />
           
           {/* Section: Overview & Source */}
           <section id="overview" className="space-y-4 scroll-mt-24">
@@ -192,16 +206,16 @@ export default async function RemedyDetailPage({ params }: PageProps) {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-5 border border-neutral-500/10 rounded-2xl bg-white/5">
               <div>
-                <h4 className="font-bold text-rose-600 dark:text-rose-450 text-sm uppercase tracking-wider mb-3">Aggravation (Worse)</h4>
-                <ul className="list-disc list-inside space-y-1.5 text-xs text-neutral-700 dark:text-neutral-350">
+                <h4 className="font-bold text-rose-600 dark:text-rose-400 text-sm uppercase tracking-wider mb-3">Aggravation (Worse)</h4>
+                <ul className="list-disc list-inside space-y-1.5 text-xs text-neutral-750 dark:text-neutral-300">
                   {content.modalitiesWorse.map((worse: string, idx: number) => (
                     <li key={idx}>{worse}</li>
                   ))}
                 </ul>
               </div>
               <div>
-                <h4 className="font-bold text-emerald-600 dark:text-emerald-450 text-sm uppercase tracking-wider mb-3">Amelioration (Better)</h4>
-                <ul className="list-disc list-inside space-y-1.5 text-xs text-neutral-700 dark:text-neutral-350">
+                <h4 className="font-bold text-emerald-600 dark:text-emerald-400 text-sm uppercase tracking-wider mb-3">Amelioration (Better)</h4>
+                <ul className="list-disc list-inside space-y-1.5 text-xs text-neutral-750 dark:text-neutral-300">
                   {content.modalitiesBetter.map((better: string, idx: number) => (
                     <li key={idx}>{better}</li>
                   ))}
@@ -218,21 +232,21 @@ export default async function RemedyDetailPage({ params }: PageProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {content.generalities && (
                 <div className="space-y-1.5">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-450">Generalities</h4>
-                  <p className="text-sm text-neutral-700 dark:text-neutral-355">{content.generalities}</p>
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Generalities</h4>
+                  <p className="text-sm text-neutral-750 dark:text-neutral-300">{content.generalities}</p>
                 </div>
               )}
               {content.constitution && (
                 <div className="space-y-1.5">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-450">Constitutional Type</h4>
-                  <p className="text-sm text-neutral-700 dark:text-neutral-355">{content.constitution}</p>
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Constitutional Type</h4>
+                  <p className="text-sm text-neutral-750 dark:text-neutral-300">{content.constitution}</p>
                 </div>
               )}
             </div>
 
             {/* Clinical / Organ/Miasmatic Affinities */}
             <div className="space-y-4 pt-4 border-t border-neutral-500/5">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-450">Therapeutic Affinities</h4>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Therapeutic Affinities</h4>
               <div className="flex flex-wrap gap-4 text-xs">
                 <div className="px-4 py-2 border border-neutral-500/10 rounded-xl bg-white/5">
                   <span className="font-bold block text-[10px] text-neutral-400 uppercase mb-1">Organ Affinity</span>
@@ -262,6 +276,12 @@ export default async function RemedyDetailPage({ params }: PageProps) {
             </div>
           </section>
 
+          {/* Section: Differential Diagnosis Table */}
+          <DifferentialDiagnosisTable entity={remedy} />
+
+          {/* Section: Homeopathic Perspective */}
+          <HomeopathicPerspective entity={remedy} />
+
           {/* Section: Safety */}
           {content.safetyNotes && (
             <section id="safety" className="p-5 border border-rose-500/20 bg-rose-500/5 rounded-2xl flex gap-3 scroll-mt-24">
@@ -270,7 +290,7 @@ export default async function RemedyDetailPage({ params }: PageProps) {
                 <h4 className="font-bold text-rose-800 dark:text-rose-400 text-sm">
                   Clinical Safety & Potency Guidance
                 </h4>
-                <p className="text-xs text-rose-950/80 dark:text-rose-250/90 mt-1">
+                <p className="text-xs text-rose-950/80 dark:text-rose-300 mt-1">
                   {content.safetyNotes}
                 </p>
               </div>

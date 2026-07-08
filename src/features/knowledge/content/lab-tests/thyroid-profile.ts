@@ -28,19 +28,39 @@ export const ThyroidProfileLabTest: KnowledgeEntity = {
     ar: "الغرض السريري وتفسير نتائج اختبار Thyroid Profile."
   },
   content: {
-    overview: "Thyroid Profile is a routine clinical investigation used to identify physiological fluctuations, metabolic disorders, or system inflammation.",
-    normalRange: "Varies by laboratory. Typically defined within reference intervals.",
-    highValues: [
-      "Indicates systemic reaction, infection, or metabolic hyper-activity.",
-      "Requires medical correlation with active clinical symptoms."
-    ],
-    lowValues: [
-      "Indicates deficiency, metabolic hypo-activity, or sluggish organ function.",
-      "Requires clinician evaluation of baseline patient data."
-    ],
-    clinicalInterpretation: "Results of Thyroid Profile must be interpreted in conjunction with patient symptoms and constitutional profiles rather than in isolation.",
-    references: ["CIT-0001", "CIT-0004"]
-  },
+  "overview": "THYROID PROFILE: A specialized laboratory marker or endocrine hormone measurement used to evaluate thyroid gland function, metabolic control, and autoimmune thyroid activity.",
+  "normalRange": "TSH: 0.45 - 4.5 uIU/mL; Free T4: 0.8 - 1.8 ng/dL; Free T3: 2.3 - 4.2 pg/mL; Anti-TPO: < 9.0 IU/mL.",
+  "highValues": [
+    "Primary hypothyroidism (elevated TSH)",
+    "Thyrotoxicosis or Graves' disease (elevated Free T4/T3)",
+    "Active autoimmune thyroiditis (elevated Anti-TPO / Anti-Tg)"
+  ],
+  "lowValues": [
+    "Hyperthyroidism or secondary hypothyroidism (low TSH)",
+    "Overt hypothyroidism (low Free T4/T3)",
+    "Non-thyroidal illness syndrome"
+  ],
+  "clinicalInterpretation": "THYROID PROFILE evaluation: Elevated TSH with low Free T4 indicates primary hypothyroidism. Conversely, low TSH with high Free T4/T3 confirms hyperthyroidism. Elevated Anti-TPO indicates autoimmune thyroid disease.",
+  "references": [
+    "CIT-0012",
+    "CIT-0013",
+    "CIT-0014"
+  ],
+  "faqs": [
+    {
+      "question": "What causes autoimmune thyroid flares?",
+      "answer": "Thyroid autoantibody flares are typically triggered by systemic immune dysregulation, chronic physical or emotional stress, high iodine intake, or underlying genetic susceptibility."
+    },
+    {
+      "question": "Can thyroid status affect weight and energy levels?",
+      "answer": "Yes. Thyroid hormones regulate the body's metabolic rate. Hypothyroidism slows metabolism leading to weight gain and fatigue, while hyperthyroidism accelerates it."
+    },
+    {
+      "question": "What is the role of homeopathy in thyroid health?",
+      "answer": "Homeopathic care utilizes constitutional remedies to optimize the body's self-regulatory mechanisms and support endocrine balance, always evaluated in conjunction with standard lab monitoring."
+    }
+  ]
+},
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"

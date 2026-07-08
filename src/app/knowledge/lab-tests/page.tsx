@@ -2,7 +2,7 @@ import React from "react";
 import { Metadata } from "next";
 import { LAB_TESTS } from "@/features/knowledge/content/lab-tests";
 import KnowledgePageLayout from "@/features/knowledge/components/KnowledgePageLayout";
-import EntityCard from "@/features/knowledge/components/EntityCard";
+import CategorySearchList from "@/features/knowledge/components/CategorySearchList";
 
 export const metadata: Metadata = {
   title: "Clinical Lab Test Interpretation | Homeo Healthcare",
@@ -22,10 +22,12 @@ export default function LabTestsListPage() {
       backLink="/knowledge"
       backText="Back to Knowledge Hub"
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-        {publishedLabTests.map(labTest => (
-          <EntityCard key={labTest.id} entity={labTest} />
-        ))}
+      <div className="pt-2">
+        <CategorySearchList 
+          entities={publishedLabTests} 
+          placeholder="Search lab tests by name, biomarker, or clinical purpose..."
+          emptyMessage="No matching lab test guides found. Try searching for common biomarkers (e.g. TSH, Hemoglobin, CBC)."
+        />
       </div>
     </KnowledgePageLayout>
   );

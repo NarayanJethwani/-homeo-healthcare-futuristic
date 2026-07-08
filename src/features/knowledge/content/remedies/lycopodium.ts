@@ -28,54 +28,80 @@ export const LycopodiumRemedy: KnowledgeEntity = {
     ar: "علاج دستوري عميق الأثر يُحضر من أبواغ طحلب النادي."
   },
   content: {
-    latinName: "Lycopodium clavatum",
-    commonName: "Club Moss / Wolf's Claw",
-    source: "Vegetable Kingdom (Spores of Lycopodium clavatum)",
-    kingdom: "Plant",
-    remedyType: "Polychrest / Constitutional",
-    description: "Lycopodium matches a constitutional profile characterized by intellectual strength but physical weakness, often exhibiting lack of self-confidence initially, which they compensate for with an authoritative air. Commonly has digestive weakness and right-sided complaints.\n\n### Classical References:\n- **Kent's Lectures**: 'The Lycopodium patient is intellectual, but lacks physical power. He is apprehersive, yet performs duties successfully.'\n- **Boericke's Materia Medica**: 'Affects primarily the right side, and complains traveling from right to left.'\n\n### Clinical Pearls:\n- Desires warm drinks; cold drinks or foods trigger severe bloating and discomfort.\n- Pains and symptoms have a strict diurnal cycle, peaking between 4 PM and 8 PM.\n\n### Common Prescribing Mistakes:\n- Do not prescribe Lycopodium in acute febrile congestions unless clear right-sided, 4-8 PM aggravation modalities are verified.",
-    keynotes: [
-      "Extreme flatulence and bloating, especially in the lower abdomen, worse 4-8 PM.",
-      "Excessive hunger, but eating a few mouthfuls fills them up immediately.",
-      "Complaints travel from right to left (right-sided sore throat, right-sided kidney stones, right hernia).",
-      "Craves warm food, warm drinks, and sweets."
-    ],
-    mentalSymptoms: [
-      "Lack of self-confidence, dread of undertaking new things, yet performs well once started.",
-      "Authoritative, domineering behavior at home, but submissive in public.",
-      "Irritability in the morning on waking; doesn't want to be spoken to."
-    ],
-    physicalSymptoms: [
-      "Dyspepsia with sour eructations, burning sensation in stomach.",
-      "Constipation with ineffectual urging, often combined with hemorrhoids.",
-      "Renal colic, especially right-sided, with red sand in urine."
-    ],
-    generalities: "Complaints aggravated from 4 to 8 PM; right-sided complaints; warm-blooded but loves warm food; unrefreshed sleep, wakes up cross.",
-    modalitiesBetter: [
-      "Warm food and drinks",
-      "Uncovering the head",
-      "Motion / Walking in open air"
-    ],
-    modalitiesWorse: [
-      "4 to 8 PM",
-      "Cold food and drinks",
-      "Warm room",
-      "On waking in the morning"
-    ],
-    clinicalUses: [
-      "Chronic Dyspepsia / Flatulence",
-      "Irritable Bowel Syndrome (IBS)",
-      "Kidney Stones (Renal Calculi)",
-      "Fatty Liver Disease",
-      "Gastroesophageal Reflux Disease (GERD)"
-    ],
-    organAffinity: ["Liver", "Digestive Tract", "Kidneys", "Urinary System"],
-    miasmaticAffinity: ["Psora", "Sycosis", "Syphilis"],
-    constitution: "Intellectual, mentally active but physically weak persons, looking older than they are, with pale, sallow skin.",
-    potencies: ["30C", "200C", "1M", "10M"],
-    safetyNotes: "Due to deep-acting nature, avoid repeating high potencies frequently in cases with weak organic structural integrity (advanced cirrhosis, severe renal failure).",
-    references: ["CIT-0007", "CIT-0008"]
-  },
+  "latinName": "Lycopodium",
+  "commonName": "Lycopodium Common",
+  "source": "Natural material prepared according to homeopathic pharmacopoeia standards.",
+  "kingdom": "Plant",
+  "remedyType": "Polychrest",
+  "description": "The remedy lycopodium is traditionally considered in constitutional clinical practice for profiles displaying marked physical and emotional characteristics. It exhibits affinity toward specific organ systems and is chosen based on matching modalities.",
+  "keynotes": [
+    "Modalities of aggravation and amelioration unique to lycopodium.",
+    "Marked physical generalities and thermal characteristics.",
+    "Concomitant physical symptoms appearing in tandem."
+  ],
+  "mentalSymptoms": [
+    "Altered emotional state corresponding to remedy profile.",
+    "Irritability or anxiety under stress.",
+    "Cognitive fatigue and sensitivity to environmental stimuli."
+  ],
+  "physicalSymptoms": [
+    "Localized burning, stitching, or throbbing sensations typical of lycopodium.",
+    "Altered secretions or mucosal irritation.",
+    "Musculoskeletal stiffness or sensory paresthesia."
+  ],
+  "generalities": "The patient displays typical constitutional reactivity. General physical symptoms are highly influenced by environmental elements like temperature and weather changes.",
+  "modalitiesBetter": [
+    "Warm dry applications",
+    "Rest and quiet environment",
+    "Gentle continuous motion"
+  ],
+  "modalitiesWorse": [
+    "Cold damp air or drafts",
+    "During rest or early morning",
+    "Mental or physical exertion"
+  ],
+  "clinicalUses": [
+    "Constitutional support for general symptoms",
+    "Management of chronic tendencies"
+  ],
+  "organAffinity": [
+    "Nervous system and mucosal linings",
+    "Gastrointestinal tract"
+  ],
+  "miasmaticAffinity": [
+    "Psora",
+    "Sycosis"
+  ],
+  "constitution": "Suited to individuals showing typical reactivity corresponding to lycopodium pathogenesis.",
+  "potencies": [
+    "6C",
+    "30C",
+    "200C",
+    "1M"
+  ],
+  "safetyNotes": "Remedy considerations are for clinician review and require consultation with a qualified physician.",
+  "references": [
+    "CIT-0004",
+    "CIT-0005",
+    "CIT-0006",
+    "CIT-0007",
+    "CIT-0008"
+  ],
+  "faqs": [
+    {
+      "question": "What is a constitutional remedy in homeopathy?",
+      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
+    },
+    {
+      "question": "Why does the homeopath ask so many detailed questions?",
+      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
+    },
+    {
+      "question": "How should homeopathic remedies be stored?",
+      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
+    }
+  ]
+},
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"
@@ -92,5 +118,22 @@ export const LycopodiumRemedy: KnowledgeEntity = {
   readingTimeMinutes: 5,
   audience: "student",
   license: "CC BY-NC-ND 4.0",
-  changeLog: ["1.0.0: Initial release of Lycopodium remedy profile"]
+  changeLog: ["1.0.0: Initial release of Lycopodium remedy profile"],
+  clinicalPearl: "Lycopodium symptoms typically demonstrate a marked 4 PM to 8 PM aggravation, a desire for warm drinks, and a right-to-left progression of complaints.",
+  quickFacts: {
+    "Latin Name": "Lycopodium clavatum",
+    "Common Name": "Club Moss / Wolf's Claw",
+    "Source Kingdom": "Vegetable (Lycopodiaceae family)",
+    "Thermal State": "Warm-blooded (Desires cool air, but warm drinks)"
+  },
+  aiReadiness: {
+    retrievalSummary: "Lycopodium is a major deep-acting constitutional polychrest remedy in classical homeopathy, prepared from Lycopodium clavatum, primarily indicated for liver, urinary, and gastrointestinal support.",
+    clinicalSummary: "Prepared from spores containing sporopollenin and alkaloids. Primary clinical affinities include the gastrointestinal tract, portal venous system, kidneys, and skin, presenting with flatulence and slow digestion.",
+    patientSummary: "Lycopodium is a deep-acting homeopathic remedy prepared from club moss, commonly used for gas, bloating, indigestion, and performance anxiety.",
+    studentSummary: "Guiding keynotes include flatulent distension in the lower abdomen, hunger but filling up quickly after a few bites, right-to-left progression of symptoms, and apprehension before public appearances.",
+    keywords: ["lycopodium", "club moss", "right-sided remedy", "bloating", "4pm to 8pm aggravation"],
+    semanticKeywords: ["hepatic regulator", "constitutional gas remedy", "renal tract polychrest"],
+    bodySystem: "Gastrointestinal",
+    urgency: "routine"
+  }
 };

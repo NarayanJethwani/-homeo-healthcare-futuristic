@@ -2,7 +2,7 @@ import React from "react";
 import { Metadata } from "next";
 import { SYMPTOMS } from "@/features/knowledge/content/symptoms";
 import KnowledgePageLayout from "@/features/knowledge/components/KnowledgePageLayout";
-import EntityCard from "@/features/knowledge/components/EntityCard";
+import CategorySearchList from "@/features/knowledge/components/CategorySearchList";
 
 export const metadata: Metadata = {
   title: "Clinical Symptoms Index | Homeo Healthcare",
@@ -22,10 +22,12 @@ export default function SymptomsListPage() {
       backLink="/knowledge"
       backText="Back to Knowledge Hub"
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-        {publishedSymptoms.map(symptom => (
-          <EntityCard key={symptom.id} entity={symptom} />
-        ))}
+      <div className="pt-2">
+        <CategorySearchList 
+          entities={publishedSymptoms} 
+          placeholder="Search symptoms by name, sensation, or localization..."
+          emptyMessage="No matching symptoms found in the clinical index. Try searching for broader terms like Pain, Headache, or Digestive."
+        />
       </div>
     </KnowledgePageLayout>
   );

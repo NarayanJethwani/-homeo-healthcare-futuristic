@@ -28,53 +28,78 @@ export const ArnicaMontanaRemedy: KnowledgeEntity = {
     ar: "علاج مثلي هام ذو تقارب سريري لـ Capillaries و Muscles و Blood و Skin."
   },
   content: {
-    latinName: "Arnica Montana",
-    commonName: "Leopard's Bane",
-    source: "Arnica montana root",
-    kingdom: "Plant",
-    remedyType: "Polychrest / Trauma",
-    description: "Arnica Montana is prepared in accordance with homeopathic pharmacopoeia principles. It has a significant clinical legacy and provides deep constitutional support.",
-    keynotes: [
-    "Sore, bruised, beaten feeling all over body",
-    "Aversion to being touched or approached",
-    "Traumatic injuries, blows, falls, sprains"
-],
-    mentalSymptoms: [
-      "Anxiety or irritability corresponding to constitutional stressors.",
-      "Sensitive to environmental disharmony or emotional overstimulation."
-    ],
-    physicalSymptoms: [
-      "Physical sensitivity matching the primary organ affinities.",
-      "Tension, stiffness, or functional sluggishness."
-    ],
-    generalities: "Chilly or warm depending on patient constitution; sensitive to weather changes and environmental stress.",
-    modalitiesBetter: [
-      "Warm, dry environment",
-      "Gentle motion",
-      "Rest"
-    ],
-    modalitiesWorse: [
-      "Cold, damp air",
-      "Sudden temperature transitions",
-      "Mental exertion"
-    ],
-    clinicalUses: [
-      "General fatigue",
-      "Mild functional disturbances",
-      "Supportive constitutional therapy"
-    ],
-    organAffinity: [
-    "Capillaries",
-    "Muscles",
-    "Blood",
-    "Skin"
-],
-    miasmaticAffinity: ["Psora"],
-    constitution: "Suited to individuals showing typical indications for constitutional Plant remedies.",
-    potencies: ["30C", "200C"],
-    safetyNotes: "Educational overview only. Use under qualified clinician guidance.",
-    references: ["CIT-0001", "CIT-0002"]
-  },
+  "latinName": "Arnica Montana",
+  "commonName": "Arnica montana Common",
+  "source": "Natural material prepared according to homeopathic pharmacopoeia standards.",
+  "kingdom": "Plant",
+  "remedyType": "Polychrest",
+  "description": "The remedy arnica montana is traditionally considered in constitutional clinical practice for profiles displaying marked physical and emotional characteristics. It exhibits affinity toward specific organ systems and is chosen based on matching modalities.",
+  "keynotes": [
+    "Modalities of aggravation and amelioration unique to arnica montana.",
+    "Marked physical generalities and thermal characteristics.",
+    "Concomitant physical symptoms appearing in tandem."
+  ],
+  "mentalSymptoms": [
+    "Altered emotional state corresponding to remedy profile.",
+    "Irritability or anxiety under stress.",
+    "Cognitive fatigue and sensitivity to environmental stimuli."
+  ],
+  "physicalSymptoms": [
+    "Localized burning, stitching, or throbbing sensations typical of arnica montana.",
+    "Altered secretions or mucosal irritation.",
+    "Musculoskeletal stiffness or sensory paresthesia."
+  ],
+  "generalities": "The patient displays typical constitutional reactivity. General physical symptoms are highly influenced by environmental elements like temperature and weather changes.",
+  "modalitiesBetter": [
+    "Warm dry applications",
+    "Rest and quiet environment",
+    "Gentle continuous motion"
+  ],
+  "modalitiesWorse": [
+    "Cold damp air or drafts",
+    "During rest or early morning",
+    "Mental or physical exertion"
+  ],
+  "clinicalUses": [
+    "Constitutional support for hematology symptoms",
+    "Management of chronic tendencies"
+  ],
+  "organAffinity": [
+    "Nervous system and mucosal linings",
+    "Gastrointestinal tract"
+  ],
+  "miasmaticAffinity": [
+    "Psora",
+    "Sycosis"
+  ],
+  "constitution": "Suited to individuals showing typical reactivity corresponding to arnica montana pathogenesis.",
+  "potencies": [
+    "6C",
+    "30C",
+    "200C",
+    "1M"
+  ],
+  "safetyNotes": "Remedy considerations are for clinician review and require consultation with a qualified physician.",
+  "references": [
+    "CIT-0015",
+    "CIT-0016",
+    "CIT-0022"
+  ],
+  "faqs": [
+    {
+      "question": "How often should a Complete Blood Count (CBC) be monitored?",
+      "answer": "For healthy individuals, an annual check is standard. Patients with anemia, active infections, or ongoing hematological treatment may require frequent monitoring as directed by a clinician."
+    },
+    {
+      "question": "What is the link between iron deficiency and anemia?",
+      "answer": "Iron is an essential building block for hemoglobin, the protein in red blood cells that carries oxygen. Lack of iron directly limits hemoglobin synthesis, leading to anemia."
+    },
+    {
+      "question": "Can dietary changes alone correct low hemoglobin?",
+      "answer": "Mild nutritional anemias can improve with iron-rich foods and vitamin C, but moderate-to-severe states require clinical investigation and targeted supplementation."
+    }
+  ]
+},
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"

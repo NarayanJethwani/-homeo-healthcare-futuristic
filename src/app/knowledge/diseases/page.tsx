@@ -2,7 +2,7 @@ import React from "react";
 import { Metadata } from "next";
 import { DISEASES } from "@/features/knowledge/content/diseases";
 import KnowledgePageLayout from "@/features/knowledge/components/KnowledgePageLayout";
-import EntityCard from "@/features/knowledge/components/EntityCard";
+import CategorySearchList from "@/features/knowledge/components/CategorySearchList";
 
 export const metadata: Metadata = {
   title: "Clinical Condition Guides | Homeo Healthcare",
@@ -22,10 +22,12 @@ export default function DiseasesListPage() {
       backLink="/knowledge"
       backText="Back to Knowledge Hub"
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-        {publishedDiseases.map(disease => (
-          <EntityCard key={disease.id} entity={disease} />
-        ))}
+      <div className="pt-2">
+        <CategorySearchList 
+          entities={publishedDiseases} 
+          placeholder="Search diseases and conditions by name, signs, or symptoms..."
+          emptyMessage="No matching clinical guides found in the database. Try searching for symptoms (e.g. Acid Reflux) or tag categories."
+        />
       </div>
     </KnowledgePageLayout>
   );

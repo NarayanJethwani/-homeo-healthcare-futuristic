@@ -37,10 +37,21 @@ export const ResearchGerdEntity: KnowledgeEntity = {
       hi: "७८% से अधिक रोगियों ने छाती में जलन और खट्टी डकारों की गंभीरता में स्पष्ट सुधार महसूस किया."
     },
     references: [
-      "Homeopathic Therapeutics in GERD - Annals of Clinical Homeopathy, 2023.",
-      "Visceral Hypersensitivity Trials - Journal of Gastroenterology, 2021."
+      "CIT-0001",
+      "CIT-0017",
+      "CIT-0022"
     ],
-    relatedEntities: ["DIS-gerd", "SYM-heartburn", "REM-nux-vomica"]
+    relatedEntities: ["DIS-gerd", "SYM-heartburn", "REM-nux-vomica", "REM-pulsatilla", "REM-carbo-vegetabilis", "REM-lycopodium"],
+    faqs: [
+      {
+        question: "What did the 2024 GERD cohort study conclude?",
+        answer: "It demonstrated that individualized constitutional homeopathy led to a significant, sustained reduction in heartburn severity and frequency over 6 months."
+      },
+      {
+        question: "Were conventional antacids reduced?",
+        answer: "Yes, the study observed a substantial reduction in the requirement for daily conventional proton-pump inhibitors (PPIs) and antacids."
+      }
+    ]
   },
   author: {
     name: "Dr. Narayan Jethwani",

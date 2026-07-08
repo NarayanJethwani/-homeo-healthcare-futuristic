@@ -28,53 +28,80 @@ export const CarboVegetabilisRemedy: KnowledgeEntity = {
     ar: "علاج مثلي هام ذو تقارب سريري لـ Blood و Digestive System و Heart و Lungs."
   },
   content: {
-    latinName: "Carbo Vegetabilis",
-    commonName: "Vegetable Charcoal",
-    source: "Charcoal of birch wood",
-    kingdom: "Plant",
-    remedyType: "Polychrest / Rescue",
-    description: "Carbo Vegetabilis is prepared in accordance with homeopathic pharmacopoeia principles. It has a significant clinical legacy and provides deep constitutional support.",
-    keynotes: [
-    "Great debility, air hunger; wants to be fanned rapidly",
-    "Extreme flatulence, abdomen distended, relieved by eructations",
-    "Cold sweat, cold breath, and collapsed states"
-],
-    mentalSymptoms: [
-      "Anxiety or irritability corresponding to constitutional stressors.",
-      "Sensitive to environmental disharmony or emotional overstimulation."
-    ],
-    physicalSymptoms: [
-      "Physical sensitivity matching the primary organ affinities.",
-      "Tension, stiffness, or functional sluggishness."
-    ],
-    generalities: "Chilly or warm depending on patient constitution; sensitive to weather changes and environmental stress.",
-    modalitiesBetter: [
-      "Warm, dry environment",
-      "Gentle motion",
-      "Rest"
-    ],
-    modalitiesWorse: [
-      "Cold, damp air",
-      "Sudden temperature transitions",
-      "Mental exertion"
-    ],
-    clinicalUses: [
-      "General fatigue",
-      "Mild functional disturbances",
-      "Supportive constitutional therapy"
-    ],
-    organAffinity: [
-    "Blood",
-    "Digestive System",
-    "Heart",
-    "Lungs"
-],
-    miasmaticAffinity: ["Psora"],
-    constitution: "Suited to individuals showing typical indications for constitutional Plant remedies.",
-    potencies: ["30C", "200C"],
-    safetyNotes: "Educational overview only. Use under qualified clinician guidance.",
-    references: ["CIT-0001", "CIT-0002"]
-  },
+  "latinName": "Carbo Vegetabilis",
+  "commonName": "Carbo vegetabilis Common",
+  "source": "Natural material prepared according to homeopathic pharmacopoeia standards.",
+  "kingdom": "Plant",
+  "remedyType": "Polychrest",
+  "description": "The remedy carbo vegetabilis is traditionally considered in constitutional clinical practice for profiles displaying marked physical and emotional characteristics. It exhibits affinity toward specific organ systems and is chosen based on matching modalities.",
+  "keynotes": [
+    "Modalities of aggravation and amelioration unique to carbo vegetabilis.",
+    "Marked physical generalities and thermal characteristics.",
+    "Concomitant physical symptoms appearing in tandem."
+  ],
+  "mentalSymptoms": [
+    "Altered emotional state corresponding to remedy profile.",
+    "Irritability or anxiety under stress.",
+    "Cognitive fatigue and sensitivity to environmental stimuli."
+  ],
+  "physicalSymptoms": [
+    "Localized burning, stitching, or throbbing sensations typical of carbo vegetabilis.",
+    "Altered secretions or mucosal irritation.",
+    "Musculoskeletal stiffness or sensory paresthesia."
+  ],
+  "generalities": "The patient displays typical constitutional reactivity. General physical symptoms are highly influenced by environmental elements like temperature and weather changes.",
+  "modalitiesBetter": [
+    "Warm dry applications",
+    "Rest and quiet environment",
+    "Gentle continuous motion"
+  ],
+  "modalitiesWorse": [
+    "Cold damp air or drafts",
+    "During rest or early morning",
+    "Mental or physical exertion"
+  ],
+  "clinicalUses": [
+    "Constitutional support for general symptoms",
+    "Management of chronic tendencies"
+  ],
+  "organAffinity": [
+    "Nervous system and mucosal linings",
+    "Gastrointestinal tract"
+  ],
+  "miasmaticAffinity": [
+    "Psora",
+    "Sycosis"
+  ],
+  "constitution": "Suited to individuals showing typical reactivity corresponding to carbo vegetabilis pathogenesis.",
+  "potencies": [
+    "6C",
+    "30C",
+    "200C",
+    "1M"
+  ],
+  "safetyNotes": "Remedy considerations are for clinician review and require consultation with a qualified physician.",
+  "references": [
+    "CIT-0004",
+    "CIT-0005",
+    "CIT-0006",
+    "CIT-0007",
+    "CIT-0008"
+  ],
+  "faqs": [
+    {
+      "question": "What is a constitutional remedy in homeopathy?",
+      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
+    },
+    {
+      "question": "Why does the homeopath ask so many detailed questions?",
+      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
+    },
+    {
+      "question": "How should homeopathic remedies be stored?",
+      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
+    }
+  ]
+},
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"

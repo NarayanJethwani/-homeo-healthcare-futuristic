@@ -49,6 +49,32 @@ import { RestlessnessSymptom } from "./restlessness";
 import { TremorsSymptom } from "./tremors";
 import { NightSweatsSymptom } from "./night-sweats";
 
+import { MenstrualIrregularitySymptom } from "./menstrual-irregularity";
+import { BurningUrinationSymptom } from "./burning-urination";
+import { MuscleStiffnessSymptom } from "./muscle-stiffness";
+import { ColdExtremitiesSymptom } from "./cold-extremities";
+import { ExcessiveSweatingSymptom } from "./excessive-sweating";
+import { DryMouthSymptom } from "./dry-mouth";
+import { HalitosisSymptom } from "./halitosis";
+import { EyeStrainSymptom } from "./eye-strain";
+import { StickyDischargesSymptom } from "./sticky-discharges";
+import { FlatulentColicSymptom } from "./flatulent-colic";
+import { MentalBrainFogSymptom } from "./mental-brain-fog";
+import { NoseBleedingSymptom } from "./nose-bleeding";
+import { ChillsSymptom } from "./chills";
+import { ThrobbingHeadacheSymptom } from "./throbbing-headache";
+import { RestlessLegsSymptom } from "./restless-legs";
+import { DrySkinSymptom } from "./dry-skin";
+import { MorningSicknessSymptom } from "./morning-sickness";
+import { TasteLossSymptom } from "./taste-loss";
+import { WheezingSymptom } from "./wheezing";
+import { SwollenGlandsSymptom } from "./swollen-glands";
+import { BurningPainsSymptom } from "./burning-pains";
+import { StitchingPainsSymptom } from "./stitching-pains";
+import { HeavinessinHeadSymptom } from "./heaviness-in-head";
+import { WaterRetentionSymptom } from "./water-retention";
+import { NumbnessinLimbsSymptom } from "./numbness-in-limbs";
+
 export const SYMPTOMS = [
   HeartburnSymptom,
   SkinEruptionsSymptom,
@@ -99,7 +125,32 @@ export const SYMPTOMS = [
   AnxietySymptom,
   RestlessnessSymptom,
   TremorsSymptom,
-  NightSweatsSymptom
+  NightSweatsSymptom,
+  MenstrualIrregularitySymptom,
+  BurningUrinationSymptom,
+  MuscleStiffnessSymptom,
+  ColdExtremitiesSymptom,
+  ExcessiveSweatingSymptom,
+  DryMouthSymptom,
+  HalitosisSymptom,
+  EyeStrainSymptom,
+  StickyDischargesSymptom,
+  FlatulentColicSymptom,
+  MentalBrainFogSymptom,
+  NoseBleedingSymptom,
+  ChillsSymptom,
+  ThrobbingHeadacheSymptom,
+  RestlessLegsSymptom,
+  DrySkinSymptom,
+  MorningSicknessSymptom,
+  TasteLossSymptom,
+  WheezingSymptom,
+  SwollenGlandsSymptom,
+  BurningPainsSymptom,
+  StitchingPainsSymptom,
+  HeavinessinHeadSymptom,
+  WaterRetentionSymptom,
+  NumbnessinLimbsSymptom,
 ];
 
 export { HeartburnSymptom, SkinEruptionsSymptom, HeadacheSymptom };

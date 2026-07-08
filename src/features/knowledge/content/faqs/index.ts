@@ -66,7 +66,22 @@ export const FaqSafetyEntity: KnowledgeEntity = {
         }
       }
     ],
-    relatedEntities: ["DIS-gerd", "DIS-eczema"]
+    relatedEntities: ["DIS-gerd", "DIS-eczema"],
+    references: ["CIT-0004", "CIT-0005"],
+    faqs: [
+      {
+        question: "Is homeopathy safe?",
+        answer: "Yes, individualized homeopathy using ultra-dilute potencies is considered safe when under professional guidance."
+      },
+      {
+        question: "How long does treatment take?",
+        answer: "Chronic conditions require constitutional analysis, often showing gradual improvement over several weeks to months."
+      },
+      {
+        question: "Are there any food restrictions?",
+        answer: "It is recommended to avoid strong aromatic substances like raw garlic, onions, or camphor close to taking remedies."
+      }
+    ]
   },
   author: {
     name: "Dr. Narayan Jethwani",

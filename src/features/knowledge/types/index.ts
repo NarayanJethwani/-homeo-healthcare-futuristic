@@ -13,18 +13,24 @@ export type EntityType =
 
 export type EditorialStatus =
   | "draft"
+  | "ai-assisted"
   | "medical-review"
-  | "legal-review"
+  | "clinical-validation"
   | "published"
+  | "scheduled-review"
   | "archived";
 
 export type EvidenceLevel =
-  | "Level-A" // RCTs / Systematic Reviews
-  | "Level-B" // Cohort / Case-Control
-  | "Level-C" // Observational / Case Series
+  | "Clinical-Evidence"
+  | "Classical-Homeopathic-Literature"
+  | "Clinical-Experience"
+  | "Emerging-Research"
+  | "Consensus-Guidance"
+  | "Level-A"
+  | "Level-B"
+  | "Level-C"
   | "Expert-Opinion"
-  | "Traditional-Literature"
-  | "Clinical-Experience";
+  | "Traditional-Literature";
 
 export interface Author {
   name: string;
@@ -48,6 +54,17 @@ export interface ContentVersion {
   replacementEntityId?: string;
 }
 
+export type CitationCategory =
+  | "Clinical-Guidelines"
+  | "Primary-Research"
+  | "Systematic-Reviews"
+  | "Classical-Homeopathic-Literature"
+  | "Materia-Medica"
+  | "Organon"
+  | "Historical-References"
+  | "Clinical-Review"
+  | "Guidelines";
+
 export interface CitationRecord {
   id: string; // e.g. "CIT-0001"
   title: string;
@@ -57,6 +74,7 @@ export interface CitationRecord {
   pubmedId?: string;
   year: number;
   citationStyle: string; // e.g. "AMA"
+  category?: CitationCategory;
 }
 
 // Remedy content type with all requested clinical fields
@@ -98,6 +116,9 @@ export interface DiseaseContent {
   homeopathicApproach: string;
   lifestyleAdvice: string;
   references: string[]; // Reference Citation IDs
+  clinicalImportance?: string;
+  whyItMatters?: string;
+  complications?: string[];
 }
 
 // Symptom content type with all requested clinical fields
@@ -109,6 +130,9 @@ export interface SymptomContent {
   redFlags: string[];
   lifestyleAdvice: string;
   references: string[]; // Reference Citation IDs
+  clinicalImportance?: string;
+  whyItMatters?: string;
+  complications?: string[];
 }
 
 // Lab Test content type with all requested clinical fields
@@ -141,6 +165,85 @@ export interface KnowledgeEntity {
   audience: "patient" | "student" | "practitioner";
   license: string;
   changeLog?: string[];
+  clinicalPearl?: string;
+  quickFacts?: Record<string, string>;
+  aiReadiness?: {
+    retrievalSummary: string;
+    clinicalSummary: string;
+    patientSummary: string;
+    studentSummary: string;
+    keywords: string[];
+    semanticKeywords: string[];
+    icd?: string;
+    snomed?: string;
+    mesh?: string;
+    bodySystem: string;
+    urgency: "routine" | "monitor" | "urgent" | "emergency";
+  };
+  visualBodySystem?: VisualBodySystem;
+  structuredEvidence?: StructuredEvidence;
+  structuredDifferentials?: StructuredDifferential[];
+  homeopathicPerspective?: HomeopathicPerspectiveData;
+  interpretationAlgorithm?: LabInterpretationAlgorithm;
+  aiKnowledge?: {
+    retrievalSummary: string;
+    differentialSummary: string;
+    practitionerSummary: string;
+    patientSummary: string;
+    educationalSummary: string;
+    graphContext: string;
+    embeddingText: string;
+  };
+  knowledgeEmbedding?: KnowledgeEmbedding;
+  qualityScore?: QualityScore;
+  clinicalTimeline?: TimelineStage[];
+  clinicalImages?: ClinicalImages;
+  clinicalImportance?: string;
+  whyItMatters?: string;
+  complications?: string[];
+}
+
+export interface VisualBodySystem {
+  system: string;
+  organs?: string[];
+  hormones?: string[];
+  remedies?: string[];
+  parameters?: string[];
+}
+
+export interface StructuredDifferential {
+  condition: string;
+  similarity: string;
+  differentiator: string;
+  investigation: string;
+}
+
+export interface StructuredEvidence {
+  system: string;
+  prevalence?: string;
+  typicalAge?: string;
+  causes?: string[];
+  investigations?: string[];
+  urgency?: string;
+}
+
+export interface HomeopathicPerspectiveData {
+  conventionalUnderstanding: string;
+  homeopathicInterpretation: string;
+  constitutionalConsiderations: string;
+  individualization: string;
+  limitations: string;
+}
+
+export interface InterpretationFlowStep {
+  label: string;
+  type: "question" | "action" | "consideration";
+  options?: { nextStepLabel: string; value: string }[];
+}
+
+export interface LabInterpretationAlgorithm {
+  title: string;
+  steps: InterpretationFlowStep[];
 }
 
 export type RelationshipType =
@@ -161,3 +264,49 @@ export interface KnowledgeRelationship {
   target: string; // Target ID e.g., "S0001"
 }
 
+export interface KnowledgeEmbedding {
+  overview: string;
+  pathology: string;
+  diagnosis: string;
+  investigations: string;
+  differentialDiagnosis: string;
+  managementOverview: string;
+  homeopathicPerspective: string;
+  complications: string;
+  prognosis: string;
+  patientEducation: string;
+  graphContext: string;
+  semanticKeywords: string[];
+  embeddingText: string;
+}
+
+export interface QualityScore {
+  editorialQuality: number;
+  clinicalDepth: number;
+  graphConnectivity: number;
+  citationQuality: number;
+  educationalValue: number;
+  aiReadiness: number;
+  seoReadiness: number;
+}
+
+export interface TimelineStage {
+  stage: "risk-factors" | "early-symptoms" | "progression" | "complications" | "recovery" | "monitoring" | "clinical-workflow" | "patient-preparation" | "sample-collection" | "interpretation" | "follow-up-investigation";
+  title: string;
+  description: string;
+  pearl?: string;
+}
+
+export interface ClinicalImages {
+  normalVsAbnormalUrl?: string;
+  anatomyUrl?: string;
+  pathologyUrl?: string;
+  interpretationChartUrl?: string;
+  normalRangeChartUrl?: string;
+  decisionPathwayUrl?: string;
+  botanicalSourceUrl?: string;
+  naturalSourceUrl?: string;
+  historicalOriginUrl?: string;
+  bodyLocationUrl?: string;
+  severityScaleUrl?: string;
+}

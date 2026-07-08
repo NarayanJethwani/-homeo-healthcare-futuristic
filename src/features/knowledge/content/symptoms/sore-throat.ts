@@ -28,22 +28,41 @@ export const SoreThroatSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Sore Throat."
   },
   content: {
-    definition: "Sore Throat represents a functional or sensory manifestation indicating systemic reaction or localized pathological change.",
-    clinicalMeaning: "In clinical practice, monitoring Sore Throat helps evaluate disease progress and individual metabolic response.",
-    commonCauses: [
-      "Functional systemic stress",
-      "Fatigue or lifestyle imbalance",
-      "Underlying organic pathology"
-    ],
-    differentialDiagnosis: "Must be distinguished based on onset, intensity, duration, and triggering modalities.",
-    redFlags: [
-      "Persistent occurrence lasting more than 7 days",
-      "Associated high-grade fever or neurological deficit",
-      "Unresponsiveness to standard hydration or rest"
-    ],
-    lifestyleAdvice: "Ensure adequate rest, hydration, stress management, and light nutrition.",
-    references: ["CIT-0001", "CIT-0003"]
-  },
+  "definition": "Sore throat: A subjective or objective upper or lower airway manifestation indicating mucosal congestion, irritation, or bronchospasm.",
+  "clinicalMeaning": "Replects airway smooth muscle contraction, goblet cell hypersecretion, or trigeminal nerve irritation in the nasal mucosa.",
+  "commonCauses": [
+    "Allergic rhinitis or seasonal hay fever",
+    "Bronchial asthma or hyper-reactivity",
+    "Sinusitis or post-nasal drip",
+    "Viral respiratory tract infections"
+  ],
+  "differentialDiagnosis": "Exclude foreign body aspiration, vocal cord paralysis, post-viral airway hyper-responsiveness, and cardiac asthma.",
+  "redFlags": [
+    "Severe respiratory distress with accessory muscle use",
+    "Stridor, wheezing that suddenly stops (silent chest), or cyanosis",
+    "High fever with foul-smelling nasal discharge and facial swelling"
+  ],
+  "lifestyleAdvice": "Keep windows closed during high pollen seasons, wash bedding weekly at 60°C, and stay hydrated to thin mucus secretions.",
+  "references": [
+    "CIT-0020",
+    "CIT-0021",
+    "CIT-0022"
+  ],
+  "faqs": [
+    {
+      "question": "What is the difference between allergic rhinitis and a common cold?",
+      "answer": "Allergic rhinitis is an IgE-mediated immune response triggered by allergens (pollen, dust), presenting with itchy eyes, sneezing, and clear watery discharge. A cold is a viral infection, usually presenting with thicker discharge, throat irritation, and sometimes a low-grade fever."
+    },
+    {
+      "question": "Can untreated allergies lead to asthma?",
+      "answer": "Yes. The 'atopic march' describes how upper airway allergic inflammation (allergic rhinitis) can progress to involve the lower airways, triggering asthma in susceptible individuals."
+    },
+    {
+      "question": "How does homeopathy support respiratory allergies?",
+      "answer": "Homeopathic remedies aim to reduce the body's hyper-reactivity to environmental allergens and strengthen mucosal defenses, using acute and deep-acting constitutional remedies."
+    }
+  ]
+},
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"

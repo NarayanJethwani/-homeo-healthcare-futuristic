@@ -2,7 +2,7 @@ import React from "react";
 import { Metadata } from "next";
 import { REMEDIES } from "@/features/knowledge/content/remedies";
 import KnowledgePageLayout from "@/features/knowledge/components/KnowledgePageLayout";
-import EntityCard from "@/features/knowledge/components/EntityCard";
+import CategorySearchList from "@/features/knowledge/components/CategorySearchList";
 
 export const metadata: Metadata = {
   title: "Homeopathic Materia Medica | Homeo Healthcare",
@@ -22,10 +22,12 @@ export default function RemediesListPage() {
       backLink="/knowledge"
       backText="Back to Knowledge Hub"
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-        {publishedRemedies.map(remedy => (
-          <EntityCard key={remedy.id} entity={remedy} />
-        ))}
+      <div className="pt-2">
+        <CategorySearchList 
+          entities={publishedRemedies} 
+          placeholder="Search remedies by name, origin, or key symptom affinities..."
+          emptyMessage="No matching remedies found in the Materia Medica database. Try searching for other symptoms or common mineral/plant classifications."
+        />
       </div>
     </KnowledgePageLayout>
   );

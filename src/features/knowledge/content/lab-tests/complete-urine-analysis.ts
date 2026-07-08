@@ -28,19 +28,37 @@ export const CompleteUrineAnalysisLabTest: KnowledgeEntity = {
     ar: "الغرض السريري وتفسير نتائج اختبار Complete Urine Analysis."
   },
   content: {
-    overview: "Complete Urine Analysis is a routine clinical investigation used to identify physiological fluctuations, metabolic disorders, or system inflammation.",
-    normalRange: "Varies by laboratory. Typically defined within reference intervals.",
-    highValues: [
-      "Indicates systemic reaction, infection, or metabolic hyper-activity.",
-      "Requires medical correlation with active clinical symptoms."
-    ],
-    lowValues: [
-      "Indicates deficiency, metabolic hypo-activity, or sluggish organ function.",
-      "Requires clinician evaluation of baseline patient data."
-    ],
-    clinicalInterpretation: "Results of Complete Urine Analysis must be interpreted in conjunction with patient symptoms and constitutional profiles rather than in isolation.",
-    references: ["CIT-0001", "CIT-0004"]
-  },
+  "overview": "COMPLETE URINE ANALYSIS: A renal panel, urinalysis parameter, or urine microalbumin index used to evaluate kidney filtration capacity, urinary tract health, or solute output.",
+  "normalRange": "Urine Microalbumin: < 30 mg/g; Urinalysis WBC: < 5 /HPF; Urinalysis RBC: < 3 /HPF; Urine Culture: No growth.",
+  "highValues": [
+    "Early glomerular filtration damage (high microalbumin)",
+    "Active bacterial urinary tract infection (high WBC & positive culture)",
+    "Hematuria indicating stones or trauma (high RBC)"
+  ],
+  "lowValues": [
+    "Normal renal filtration state",
+    "Absence of active infection"
+  ],
+  "clinicalInterpretation": "COMPLETE URINE ANALYSIS evaluation: Elevated microalbuminuria (>30 mg/g) is a marker of early diabetic or hypertensive nephropathy. Positive nitrites and high WBC counts in urinalysis confirm UTI, needing culture confirmation.",
+  "references": [
+    "CIT-0011",
+    "CIT-0022"
+  ],
+  "faqs": [
+    {
+      "question": "What are the common causes of recurring burning urination?",
+      "answer": "Common causes include urinary tract infections (UTIs), bladder irritation (from caffeine, spices), interstitial cystitis, or early signs of renal sand (gravel)."
+    },
+    {
+      "question": "How does microalbuminuria reflect kidney health?",
+      "answer": "Microalbuminuria is the presence of small amounts of albumin in the urine, indicating early glomerular capillary strain, typically associated with diabetes or hypertension."
+    },
+    {
+      "question": "Can homeopathy support bladder control and urinary health?",
+      "answer": "Yes. Homeopathic remedies help soothe bladder lining irritation, support detrusor muscle tone, and manage chronic urinary susceptibility under medical supervision."
+    }
+  ]
+},
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"

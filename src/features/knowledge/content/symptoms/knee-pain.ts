@@ -28,22 +28,40 @@ export const KneePainSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Knee Pain."
   },
   content: {
-    definition: "Knee Pain represents a functional or sensory manifestation indicating systemic reaction or localized pathological change.",
-    clinicalMeaning: "In clinical practice, monitoring Knee Pain helps evaluate disease progress and individual metabolic response.",
-    commonCauses: [
-      "Functional systemic stress",
-      "Fatigue or lifestyle imbalance",
-      "Underlying organic pathology"
-    ],
-    differentialDiagnosis: "Must be distinguished based on onset, intensity, duration, and triggering modalities.",
-    redFlags: [
-      "Persistent occurrence lasting more than 7 days",
-      "Associated high-grade fever or neurological deficit",
-      "Unresponsiveness to standard hydration or rest"
-    ],
-    lifestyleAdvice: "Ensure adequate rest, hydration, stress management, and light nutrition.",
-    references: ["CIT-0001", "CIT-0003"]
-  },
+  "definition": "Knee pain: A localized pain, sensory alteration, or mobility limitation originating from nerves, muscles, joints, or tendons.",
+  "clinicalMeaning": "Replects nociceptive pathway stimulation, localized tissue injury, or nerve root compression resulting in altered sensation.",
+  "commonCauses": [
+    "Mechanical strain or postural imbalance",
+    "Peripheral nerve compression (e.g., sciatica, carpal tunnel)",
+    "Osteoarthritis or joint degeneration",
+    "Neurogenic inflammation"
+  ],
+  "differentialDiagnosis": "Differentiate from systemic autoimmune joint disease, peripheral vascular disease, and referred visceral pain.",
+  "redFlags": [
+    "Loss of bladder or bowel control (Cauda Equina Syndrome)",
+    "Sudden onset of limb weakness or foot drop",
+    "Severe joint swelling with high fever indicating septic arthritis"
+  ],
+  "lifestyleAdvice": "Implement regular stretching, adjust desk ergonomics, engage in low-impact walking, and stay hydrated to maintain joint lubrication.",
+  "references": [
+    "CIT-0011",
+    "CIT-0022"
+  ],
+  "faqs": [
+    {
+      "question": "What causes muscle stiffness in the morning?",
+      "answer": "Morning stiffness is often caused by localized inflammation, muscle inactivity during sleep, or structural degenerative joint changes that temporarily reduce synovial fluid circulation."
+    },
+    {
+      "question": "How does stress affect nerve and muscle pain?",
+      "answer": "Stress increases muscle tension and heightens pain sensitivity (central sensitization) by releasing stress hormones that lower the pain threshold."
+    },
+    {
+      "question": "What is the homeopathic approach to physical injury?",
+      "answer": "Homeopathy uses remedies like Arnica Montana to manage acute swelling and bruising, and Rhus Tox or Bryonia for joint stiffness and pain, tailored to whether movement improves or worsens the symptoms."
+    }
+  ]
+},
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"

@@ -28,37 +28,49 @@ export const PepticUlcerDisease: KnowledgeEntity = {
     ar: "نظرة عامة سريرية شاملة لـ Peptic Ulcer."
   },
   content: {
-    overview: "Peptic Ulcer is a common clinical condition managed in outpatient clinics. An integrated approach combining lifestyle modification and constitutional support yields optimal long-term outcomes.",
-    definition: "Peptic Ulcer is defined clinically as a pathological or functional condition affecting systemic homeostasis.",
-    causes: [
-      "Environmental and lifestyle triggers.",
-      "Genetic predisposition and individual susceptibility.",
-      "Functional or metabolic imbalances."
-    ],
-    riskFactors: [
-      "Sedentary lifestyle and stress",
-      "Improper dietary habits",
-      "Family history"
-    ],
-    symptoms: [
-      "Typical physical symptoms associated with Peptic Ulcer.",
-      "Aggravation under specific physical or emotional stress.",
-      "Chronic recurrence if left unmanaged."
-    ],
-    diagnosis: "Diagnosed based on patient clinical history, physical examinations, and supporting laboratory investigations.",
-    differentialDiagnosis: "Must be differentiated from other similar functional disorders through target exclusions.",
-    labTests: ["CBC", "ESR"],
-    imaging: "X-ray or Ultrasound as indicated by clinician.",
-    redFlags: [
-      "Sudden severe onset of pain or high fever",
-      "Unexplained rapid weight loss",
-      "Persistent symptoms unresponsive to initial care"
-    ],
-    conventionalManagement: "Standard conventional therapy involves symptomatic management, anti-inflammatories, or metabolic regulators depending on severity.",
-    homeopathicApproach: "Classical homeopathy focuses on constitutional analysis, seeking to reduce individual susceptibility and address underlying chronic tendencies (miasms).",
-    lifestyleAdvice: "Ensure balanced nutrition, regular moderate physical activity, sufficient hydration, and sleep hygiene.",
-    references: ["CIT-0001", "CIT-0002"]
-  },
+  "overview": "Peptic ulcer: Gastrointestinal and functional bowel disorders represent a high-prevalence clinical area involving dysmotility, altered acid secretion, and mucosal inflammation. Effective management relies on stabilizing motility and gut-brain signaling.",
+  "definition": "Pathological or functional disturbances of the upper or lower digestive tract, resulting in symptoms of acid-peptic disease, dysmotility, or altered bowel habits.",
+  "causes": [
+    "Visceral hypersensitivity and gut-brain axis dysregulation",
+    "Mucosal barrier disruption and localized inflammatory responses",
+    "Dietary sensitivities, chronic stress, or microbial dysbiosis (e.g., H. pylori)"
+  ],
+  "riskFactors": [
+    "Chronic stress and sleep deprivation",
+    "Poor dietary habits and low fiber intake",
+    "Frequent use of NSAIDs or broad-spectrum antibiotics"
+  ],
+  "symptoms": [
+    "Epigastric burning (heartburn) and acid regurgitation",
+    "Abdominal discomfort, cramping, and bloating",
+    "Altered stool consistency (diarrhea, constipation, or alternating)",
+    "Nausea, early satiety, and postprandial fullness"
+  ],
+  "diagnosis": "Investigated by clinical history matching Rome IV criteria, upper endoscopy, H. pylori breath test, and stool routine/culture panels.",
+  "differentialDiagnosis": "Differentiate functional bowel disorders from inflammatory bowel disease (Crohn's/UC), celiac disease, and gastric malignancies.",
+  "conventionalManagement": "Involves acid suppressants (PPIs, H2 blockers), prokinetics, antispasmodics, laxatives, or antidiarrheals depending on presentation.",
+  "homeopathicApproach": "Constitutional homeopathic treatment targets motility, visceral sensitivity, and psychological stressors using individualized remedies.",
+  "lifestyleAdvice": "Adopt a low-FODMAP diet if indicated, eat smaller frequent meals, avoid eating close to bedtime, and practice stress-management techniques.",
+  "references": [
+    "CIT-0017",
+    "CIT-0018",
+    "CIT-0022"
+  ],
+  "faqs": [
+    {
+      "question": "What are the common triggers for digestive flares?",
+      "answer": "Common triggers include dietary irritants (caffeine, alcohol, fatty foods), chronic emotional stress, irregular eating habits, and dysbiosis."
+    },
+    {
+      "question": "How does the gut-brain axis affect digestive health?",
+      "answer": "The gut and brain are in constant communication via the vagus nerve. Emotional stress can alter gut motility, increase visceral sensitivity, and worsen symptoms of GERD, gastritis, or IBS."
+    },
+    {
+      "question": "Can homeopathy manage chronic acid reflux (GERD)?",
+      "answer": "Yes, individualized homeopathy can help manage symptoms of chronic acid reflux by addressing digestive motility and hyperacidity alongside lifestyle modifications."
+    }
+  ]
+},
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"

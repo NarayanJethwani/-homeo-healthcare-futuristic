@@ -2,18 +2,38 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { BookOpen, User, Flame, ArrowRight, Eye } from "lucide-react";
+import { 
+  Stethoscope, 
+  Activity, 
+  FlaskConical, 
+  Pill, 
+  ArrowRight, 
+  Eye 
+} from "lucide-react";
 import { getAllKnowledgeEntities } from "../index";
 import { KnowledgeEntity } from "../types";
+import { KNOWLEDGE_RELATIONSHIPS } from "../graph/entityRelationships";
 
 interface InteractiveSidebarProps {
   currentId: string;
   entityType: string;
 }
 
+interface GroupedRelated {
+  disease: KnowledgeEntity[];
+  symptom: KnowledgeEntity[];
+  "lab-test": KnowledgeEntity[];
+  remedy: KnowledgeEntity[];
+}
+
 export default function InteractiveSidebar({ currentId, entityType }: InteractiveSidebarProps) {
   const [recentlyViewed, setRecentlyViewed] = useState<KnowledgeEntity[]>([]);
-  const [recommendations, setRecommendations] = useState<KnowledgeEntity[]>([]);
+  const [groupedRelated, setGroupedRelated] = useState<GroupedRelated>({
+    disease: [],
+    symptom: [],
+    "lab-test": [],
+    remedy: []
+  });
 
   useEffect(() => {
     const all = getAllKnowledgeEntities();
@@ -37,18 +57,26 @@ export default function InteractiveSidebar({ currentId, entityType }: Interactiv
       console.error("Failed to parse recently viewed history", err);
     }
 
-    // 2. Generate dynamic "People Also Read" recommendations based on matching entity types/tags
-    const currentEntity = all.find(e => e.id === currentId);
-    const related = all
-      .filter(e => e.id !== currentId && e.editorialStatus === "published")
-      .filter(e => {
-        // Match either same entity type or share at least one tag
-        const matchType = e.entityType === entityType;
-        const matchTags = e.tags.some(t => currentEntity?.tags.includes(t));
-        return matchType || matchTags;
-      })
-      .slice(0, 4);
-    setRecommendations(related);
+    // 2. Generate categorized recommendations using the Knowledge Graph
+    const neighborIds = new Set(
+      KNOWLEDGE_RELATIONSHIPS.filter(rel => rel.source === currentId || rel.target === currentId)
+        .map(rel => rel.source === currentId ? rel.target : rel.source)
+    );
+
+    // Fetch related published entities
+    const relatedEntities = all.filter(
+      e => neighborIds.has(e.id) && e.editorialStatus === "published"
+    );
+
+    // Group by entity type (limit to 3 per category to prevent sidebar bloat)
+    const grouped: GroupedRelated = {
+      disease: relatedEntities.filter(e => e.entityType === "disease").slice(0, 3),
+      symptom: relatedEntities.filter(e => e.entityType === "symptom").slice(0, 3),
+      "lab-test": relatedEntities.filter(e => e.entityType === "lab-test").slice(0, 3),
+      remedy: relatedEntities.filter(e => e.entityType === "remedy").slice(0, 3)
+    };
+
+    setGroupedRelated(grouped);
 
   }, [currentId, entityType]);
 
@@ -62,39 +90,111 @@ export default function InteractiveSidebar({ currentId, entityType }: Interactiv
     return pathMap[type] || "remedies";
   };
 
+  const hasRelated = 
+    groupedRelated.disease.length > 0 || 
+    groupedRelated.symptom.length > 0 || 
+    groupedRelated["lab-test"].length > 0 || 
+    groupedRelated.remedy.length > 0;
+
   return (
-    <div className="space-y-6 print-hide">
+    <div className="space-y-5 print-hide">
       
-      {/* 1. People Also Read Widget */}
-      {recommendations.length > 0 && (
-        <div className="p-4 border border-neutral-200 dark:border-neutral-850 rounded-2xl bg-white/5 backdrop-blur-md space-y-3 shadow-sm">
-          <span className="text-[10px] text-teal-600 dark:text-teal-400 uppercase font-bold tracking-wider flex items-center gap-1">
-            <Flame className="h-3.5 w-3.5 text-teal-500 animate-pulse" /> People Also Read
-          </span>
-          <div className="space-y-2">
-            {recommendations.map(e => {
-              const title = typeof e.title === "string" ? e.title : e.title.en;
-              const summary = typeof e.summary === "string" ? e.summary : e.summary.en;
-              return (
-                <Link
-                  key={e.id}
-                  href={`/knowledge/${getSectionPath(e.entityType)}/${e.slug}`}
-                  className="block p-2 rounded-xl bg-neutral-100/40 dark:bg-neutral-950/40 hover:bg-teal-500/5 hover:border-teal-500/20 border border-transparent transition-all group"
-                >
-                  <h5 className="text-[11px] font-bold text-neutral-800 dark:text-neutral-200 group-hover:text-teal-500 transition-colors truncate">
-                    {title}
-                  </h5>
-                  <p className="text-[9.5px] text-neutral-500 truncate leading-relaxed">
-                    {summary}
-                  </p>
-                </Link>
-              );
-            })}
-          </div>
+      {/* Dynamic Graph-Driven Categorized Recommendations */}
+      {hasRelated && (
+        <div className="space-y-4">
+          
+          {/* Related Diseases */}
+          {groupedRelated.disease.length > 0 && (
+            <div className="p-3.5 border border-neutral-200 dark:border-neutral-850 rounded-2xl bg-white/5 backdrop-blur-md space-y-2.5 shadow-sm">
+              <span className="text-[10px] text-teal-600 dark:text-teal-400 uppercase font-extrabold tracking-wider flex items-center gap-1.5">
+                <Stethoscope className="h-3.5 w-3.5" /> Related Diseases
+              </span>
+              <div className="space-y-1.5">
+                {groupedRelated.disease.map(e => (
+                  <Link
+                    key={e.id}
+                    href={`/knowledge/diseases/${e.slug}`}
+                    className="block px-2.5 py-1.5 rounded-xl bg-neutral-100/40 dark:bg-neutral-950/40 hover:bg-teal-500/5 hover:border-teal-500/20 border border-transparent transition-all group"
+                  >
+                    <h5 className="text-[11px] font-bold text-neutral-800 dark:text-neutral-200 group-hover:text-teal-500 transition-colors truncate">
+                      {typeof e.title === "string" ? e.title : e.title.en}
+                    </h5>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Related Symptoms */}
+          {groupedRelated.symptom.length > 0 && (
+            <div className="p-3.5 border border-neutral-200 dark:border-neutral-850 rounded-2xl bg-white/5 backdrop-blur-md space-y-2.5 shadow-sm">
+              <span className="text-[10px] text-teal-600 dark:text-teal-400 uppercase font-extrabold tracking-wider flex items-center gap-1.5">
+                <Activity className="h-3.5 w-3.5" /> Related Symptoms
+              </span>
+              <div className="space-y-1.5">
+                {groupedRelated.symptom.map(e => (
+                  <Link
+                    key={e.id}
+                    href={`/knowledge/symptoms/${e.slug}`}
+                    className="block px-2.5 py-1.5 rounded-xl bg-neutral-100/40 dark:bg-neutral-950/40 hover:bg-teal-500/5 hover:border-teal-500/20 border border-transparent transition-all group"
+                  >
+                    <h5 className="text-[11px] font-bold text-neutral-800 dark:text-neutral-200 group-hover:text-teal-500 transition-colors truncate">
+                      {typeof e.title === "string" ? e.title : e.title.en}
+                    </h5>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Related Tests */}
+          {groupedRelated["lab-test"].length > 0 && (
+            <div className="p-3.5 border border-neutral-200 dark:border-neutral-850 rounded-2xl bg-white/5 backdrop-blur-md space-y-2.5 shadow-sm">
+              <span className="text-[10px] text-teal-600 dark:text-teal-400 uppercase font-extrabold tracking-wider flex items-center gap-1.5">
+                <FlaskConical className="h-3.5 w-3.5" /> Related Tests
+              </span>
+              <div className="space-y-1.5">
+                {groupedRelated["lab-test"].map(e => (
+                  <Link
+                    key={e.id}
+                    href={`/knowledge/lab-tests/${e.slug}`}
+                    className="block px-2.5 py-1.5 rounded-xl bg-neutral-100/40 dark:bg-neutral-950/40 hover:bg-teal-500/5 hover:border-teal-500/20 border border-transparent transition-all group"
+                  >
+                    <h5 className="text-[11px] font-bold text-neutral-800 dark:text-neutral-200 group-hover:text-teal-500 transition-colors truncate">
+                      {typeof e.title === "string" ? e.title : e.title.en}
+                    </h5>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Related Remedies */}
+          {groupedRelated.remedy.length > 0 && (
+            <div className="p-3.5 border border-neutral-200 dark:border-neutral-850 rounded-2xl bg-white/5 backdrop-blur-md space-y-2.5 shadow-sm">
+              <span className="text-[10px] text-teal-600 dark:text-teal-400 uppercase font-extrabold tracking-wider flex items-center gap-1.5">
+                <Pill className="h-3.5 w-3.5" /> Related Remedies
+              </span>
+              <div className="space-y-1.5">
+                {groupedRelated.remedy.map(e => (
+                  <Link
+                    key={e.id}
+                    href={`/knowledge/remedies/${e.slug}`}
+                    className="block px-2.5 py-1.5 rounded-xl bg-neutral-100/40 dark:bg-neutral-950/40 hover:bg-teal-500/5 hover:border-teal-500/20 border border-transparent transition-all group"
+                  >
+                    <h5 className="text-[11px] font-bold text-neutral-800 dark:text-neutral-200 group-hover:text-teal-500 transition-colors truncate">
+                      {typeof e.title === "string" ? e.title : e.title.en}
+                    </h5>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
         </div>
       )}
 
-      {/* 2. Recently Viewed History */}
+      {/* Recently Viewed History */}
       {recentlyViewed.length > 0 && (
         <div className="p-4 border border-neutral-200 dark:border-neutral-850 rounded-2xl bg-white/5 backdrop-blur-md space-y-3 shadow-sm">
           <span className="text-[10px] text-neutral-400 uppercase font-bold tracking-wider flex items-center gap-1">
@@ -118,7 +218,7 @@ export default function InteractiveSidebar({ currentId, entityType }: Interactiv
         </div>
       )}
 
-      {/* 3. Category Hub Directory Quick links */}
+      {/* Category Hub Directory Quick links */}
       <div className="p-4 border border-neutral-200 dark:border-neutral-850 rounded-2xl bg-white/5 backdrop-blur-md space-y-3 shadow-sm text-center">
         <span className="text-[9.5px] uppercase font-bold tracking-widest text-neutral-400 block">
           Knowledge Directory

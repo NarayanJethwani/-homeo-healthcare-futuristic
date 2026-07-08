@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { getAllKnowledgeEntities } from "../index";
 import { KNOWLEDGE_RELATIONSHIPS } from "../graph/entityRelationships";
@@ -32,6 +33,22 @@ export default function KnowledgeGraphExplorer({ currentId }: KnowledgeGraphExpl
   // Immersive states
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [hoveredNode, setHoveredNode] = useState<GraphNode | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isFullScreen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isFullScreen]);
 
   useEffect(() => {
     try {
@@ -85,16 +102,25 @@ export default function KnowledgeGraphExplorer({ currentId }: KnowledgeGraphExpl
         }
       });
 
-      // FALLBACK 1: If direct relationships are fewer than 5, load same-category entities
-      if (connected.length < 5 && current) {
-        const categoryMatches = all.filter(e => 
-          e.entityType === current.entityType && 
-          e.editorialStatus === "published" && 
-          !existingIds.has(e.id)
-        );
+      // FALLBACK: If direct relationships are fewer than 8, populate with a diverse mix of categories (remedies, symptoms, diseases, lab tests)
+      if (connected.length < 8 && current) {
+        const remedies = all.filter(e => e.entityType === "remedy" && e.editorialStatus === "published" && !existingIds.has(e.id));
+        const symptoms = all.filter(e => e.entityType === "symptom" && e.editorialStatus === "published" && !existingIds.has(e.id));
+        const diseases = all.filter(e => e.entityType === "disease" && e.editorialStatus === "published" && !existingIds.has(e.id));
+        const labTests = all.filter(e => e.entityType === "lab-test" && e.editorialStatus === "published" && !existingIds.has(e.id));
 
-        categoryMatches.forEach(partner => {
-          if (connected.length >= 8) return; // Allow up to 8 nodes when larger
+        const mixList: typeof all = [];
+        const maxLen = Math.max(remedies.length, symptoms.length, diseases.length, labTests.length);
+        
+        for (let i = 0; i < maxLen; i++) {
+          if (remedies[i]) mixList.push(remedies[i]);
+          if (symptoms[i]) mixList.push(symptoms[i]);
+          if (diseases[i]) mixList.push(diseases[i]);
+          if (labTests[i]) mixList.push(labTests[i]);
+        }
+
+        mixList.forEach(partner => {
+          if (connected.length >= 8) return;
           const titleStr = typeof partner.title === "string" ? partner.title : partner.title.en;
           const summaryStr = typeof partner.summary === "string" ? partner.summary : partner.summary.en;
           connected.push({
@@ -102,38 +128,12 @@ export default function KnowledgeGraphExplorer({ currentId }: KnowledgeGraphExpl
             slug: partner.slug,
             title: titleStr,
             type: partner.entityType,
-            relation: "related topic",
+            relation: partner.entityType === "remedy" ? "remedy" : partner.entityType === "symptom" ? "symptom" : partner.entityType === "lab-test" ? "lab eval" : "related",
             rawRelation: "fallback",
             tags: partner.tags,
             summary: summaryStr
           });
           existingIds.add(partner.id);
-        });
-      }
-
-      // FALLBACK 2: Fill remaining slots with core high-value entities
-      if (connected.length < 4) {
-        const coreIds = ["D0001", "R0002", "S0001", "L0001", "D0003", "R0001"];
-        coreIds.forEach(coreId => {
-          if (connected.length >= 8) return;
-          if (existingIds.has(coreId)) return;
-
-          const partner = all.find(e => e.id === coreId);
-          if (partner) {
-            const titleStr = typeof partner.title === "string" ? partner.title : partner.title.en;
-            const summaryStr = typeof partner.summary === "string" ? partner.summary : partner.summary.en;
-            connected.push({
-              id: partner.id,
-              slug: partner.slug,
-              title: titleStr,
-              type: partner.entityType,
-              relation: "clinical focus",
-              rawRelation: "fallback",
-              tags: partner.tags,
-              summary: summaryStr
-            });
-            existingIds.add(coreId);
-          }
         });
       }
 
@@ -150,17 +150,21 @@ export default function KnowledgeGraphExplorer({ currentId }: KnowledgeGraphExpl
       remedy: "remedies",
       disease: "diseases",
       symptom: "symptoms",
-      "lab-test": "lab-tests"
+      "lab-test": "lab-tests",
+      research: "research",
+      "case-study": "case-studies"
     };
     return pathMap[type] || "remedies";
   };
 
   const getThemeColor = (type: string) => {
     const colorMap: Record<string, string> = {
-      disease: "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/30 hover:bg-rose-500/25 hover:border-rose-500 hover:shadow-[0_0_12px_rgba(244,63,94,0.3)]",
-      remedy: "bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/30 hover:bg-teal-500/25 hover:border-teal-500 hover:shadow-[0_0_12px_rgba(20,184,166,0.3)]",
-      symptom: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30 hover:bg-amber-500/25 hover:border-amber-500 hover:shadow-[0_0_12px_rgba(245,158,11,0.3)]",
-      "lab-test": "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/30 hover:bg-blue-500/25 hover:border-blue-500 hover:shadow-[0_0_12px_rgba(59,130,246,0.3)]"
+      disease: "bg-rose-500/10 text-rose-700 dark:text-rose-300 border-rose-500/30 hover:bg-rose-500/20 hover:border-rose-500 hover:shadow-[0_0_12px_rgba(244,63,94,0.3)]",
+      remedy: "bg-teal-500/10 text-teal-700 dark:text-teal-300 border-teal-500/30 hover:bg-teal-500/20 hover:border-teal-500 hover:shadow-[0_0_12px_rgba(20,184,166,0.3)]",
+      symptom: "bg-amber-500/10 text-amber-800 dark:text-amber-400 border-amber-500/30 hover:bg-amber-500/20 hover:border-amber-500 hover:shadow-[0_0_12px_rgba(245,158,11,0.3)]",
+      "lab-test": "bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/30 hover:bg-blue-500/20 hover:border-blue-500 hover:shadow-[0_0_12px_rgba(59,130,246,0.3)]",
+      research: "bg-purple-500/10 text-purple-700 dark:text-purple-300 border-purple-500/30 hover:bg-purple-500/20 hover:border-purple-500 hover:shadow-[0_0_12px_rgba(168,85,247,0.3)]",
+      "case-study": "bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border-indigo-500/30 hover:bg-indigo-500/20 hover:border-indigo-500 hover:shadow-[0_0_12px_rgba(99,102,241,0.3)]"
     };
     return colorMap[type] || "bg-neutral-500/10 text-neutral-600 border-neutral-500/20";
   };
@@ -198,7 +202,7 @@ export default function KnowledgeGraphExplorer({ currentId }: KnowledgeGraphExpl
   const centerPercent = 50;
 
   const mainContent = (
-    <div className="relative w-full h-full flex items-center justify-center bg-neutral-950/20 dark:bg-black/10 rounded-2xl overflow-hidden border border-neutral-500/5 select-none">
+    <div className="relative w-full h-full flex items-center justify-center bg-white/60 dark:bg-neutral-900/30 backdrop-blur-sm rounded-2xl overflow-hidden border border-neutral-200 dark:border-neutral-850 select-none">
       {/* Decorative Grid Lines */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none" />
 
@@ -278,7 +282,7 @@ export default function KnowledgeGraphExplorer({ currentId }: KnowledgeGraphExpl
             </span>
           </div>
           {hoveredNode.summary && (
-            <p className="text-[8.5px] text-neutral-350 leading-relaxed line-clamp-2 mb-1.5">
+            <p className="text-[8.5px] text-neutral-300 leading-relaxed line-clamp-2 mb-1.5">
               {hoveredNode.summary}
             </p>
           )}
@@ -307,7 +311,7 @@ export default function KnowledgeGraphExplorer({ currentId }: KnowledgeGraphExpl
 
   return (
     <>
-      <div className="p-6 border border-neutral-200 dark:border-neutral-850 rounded-3xl bg-white/5 backdrop-blur-md space-y-6 print-hide shadow-sm transition-all duration-350">
+      <div className="graph-exclude p-6 border border-neutral-200 dark:border-neutral-850 rounded-3xl bg-white/5 backdrop-blur-md space-y-6 print-hide shadow-sm transition-all duration-350">
         
         {/* Widget Header */}
         <div className="flex justify-between items-center pb-3 border-b border-neutral-200 dark:border-neutral-850">
@@ -328,8 +332,8 @@ export default function KnowledgeGraphExplorer({ currentId }: KnowledgeGraphExpl
           </div>
         </div>
 
-        {/* Orbit Visualization Frame - Standard Height */}
-        <div className="w-full aspect-square max-w-[340px] md:max-w-none md:h-[500px] lg:h-[580px] mx-auto relative">
+        {/* Orbit Visualization Frame - Responsive Square */}
+        <div className="w-full aspect-square max-w-[340px] md:max-w-[450px] lg:max-w-[500px] mx-auto relative">
           {mainContent}
         </div>
 
@@ -339,6 +343,8 @@ export default function KnowledgeGraphExplorer({ currentId }: KnowledgeGraphExpl
           <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-amber-500/20 border border-amber-500" /> Symptom</span>
           <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-teal-500/20 border border-teal-500" /> Remedy</span>
           <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-blue-500/20 border border-blue-500" /> Lab Test</span>
+          <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-purple-500/20 border border-purple-500" /> Research</span>
+          <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-indigo-500/20 border border-indigo-500" /> Case Study</span>
         </div>
 
         <p className="text-[9.5px] text-neutral-500 text-center leading-normal">
@@ -347,45 +353,50 @@ export default function KnowledgeGraphExplorer({ currentId }: KnowledgeGraphExpl
       </div>
 
       {/* FULLSCREEN IMMERSIVE MODAL PORTAL VIEW */}
-      {isFullScreen && (
-        <div className="fixed inset-0 z-[100] bg-neutral-950/98 dark:bg-black/98 backdrop-blur-xl flex flex-col justify-between p-6 md:p-12 animate-fadeIn">
+      {isFullScreen && mounted && typeof document !== "undefined" && createPortal(
+        <div className="fixed inset-0 z-[9999] bg-pearl/98 dark:bg-black/98 backdrop-blur-xl flex flex-col justify-between p-6 md:p-12 animate-fadeIn text-neutral-900 dark:text-neutral-50 shadow-2xl">
           {/* Fullscreen Header */}
-          <div className="flex justify-between items-center border-b border-neutral-800 pb-4">
+          <div className="flex justify-between items-center border-b border-neutral-200 dark:border-neutral-800 pb-4">
             <div className="space-y-1">
-              <h3 className="text-base md:text-lg font-extrabold text-neutral-50 flex items-center gap-2">
+              <h3 className="text-base md:text-lg font-extrabold flex items-center gap-2 text-neutral-900 dark:text-neutral-50">
                 <GitFork className="h-5 w-5 text-teal-500 animate-pulse" /> Homeo Healthcare Clinical Graph Explorer
               </h3>
-              <p className="text-xs text-neutral-400">
+              <p className="text-xs text-neutral-600 dark:text-neutral-400 font-semibold">
                 Immersive relational rendering of homeopathic materia medica, diagnostic testing, and clinical symptoms.
               </p>
             </div>
             <button
               onClick={() => setIsFullScreen(false)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-neutral-700 bg-neutral-900 hover:bg-neutral-800 text-xs font-bold text-neutral-300 hover:text-white transition-all cursor-pointer shadow-lg"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-xs font-bold text-neutral-700 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white transition-all cursor-pointer shadow-md"
             >
               <Minimize2 className="h-4 w-4" /> Close Explorer
             </button>
           </div>
 
           {/* Immersive Central Interactive Graph Area */}
-          <div className="flex-1 w-full max-w-3xl mx-auto relative my-8">
-            {mainContent}
+          <div className="flex-1 w-full max-w-3xl mx-auto relative my-8 flex items-center justify-center">
+            <div className="w-full aspect-square max-w-[340px] md:max-w-[480px] lg:max-w-[540px] relative">
+              {mainContent}
+            </div>
           </div>
 
           {/* Fullscreen Footer */}
-          <div className="border-t border-neutral-850 pt-4 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex flex-wrap justify-center gap-5 text-[9px] font-extrabold uppercase tracking-widest text-neutral-450">
+          <div className="border-t border-neutral-200 dark:border-neutral-850 pt-4 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex flex-wrap justify-center gap-5 text-[9px] font-extrabold uppercase tracking-widest text-neutral-500 dark:text-neutral-450">
               <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-rose-500/25 border border-rose-500" /> Disease</span>
               <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-amber-500/25 border border-amber-500" /> Symptom</span>
               <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-teal-500/25 border border-teal-500" /> Remedy</span>
               <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-blue-500/25 border border-blue-500" /> Lab Test</span>
-              <span className="flex items-center gap-1.5"><span className="h-[1px] w-5 border-t border-dashed border-neutral-500" /> Relationship types differ by link strength</span>
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-purple-500/25 border border-purple-500" /> Research</span>
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-indigo-500/25 border border-indigo-500" /> Case Study</span>
+              <span className="flex items-center gap-1.5"><span className="h-[1px] w-5 border-t border-dashed border-neutral-300 dark:border-neutral-500" /> Link Strength</span>
             </div>
-            <p className="text-[10px] text-neutral-500">
-              Double click or tap any satellite node to navigate to its details.
+            <p className="text-[10px] text-neutral-500 dark:text-neutral-400 font-medium">
+              Click any satellite node to navigate to its details.
             </p>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

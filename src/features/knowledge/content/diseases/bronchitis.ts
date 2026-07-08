@@ -28,37 +28,49 @@ export const BronchitisDisease: KnowledgeEntity = {
     ar: "نظرة عامة سريرية شاملة لـ Bronchitis."
   },
   content: {
-    overview: "Bronchitis is a common clinical condition managed in outpatient clinics. An integrated approach combining lifestyle modification and constitutional support yields optimal long-term outcomes.",
-    definition: "Bronchitis is defined clinically as a pathological or functional condition affecting systemic homeostasis.",
-    causes: [
-      "Environmental and lifestyle triggers.",
-      "Genetic predisposition and individual susceptibility.",
-      "Functional or metabolic imbalances."
-    ],
-    riskFactors: [
-      "Sedentary lifestyle and stress",
-      "Improper dietary habits",
-      "Family history"
-    ],
-    symptoms: [
-      "Typical physical symptoms associated with Bronchitis.",
-      "Aggravation under specific physical or emotional stress.",
-      "Chronic recurrence if left unmanaged."
-    ],
-    diagnosis: "Diagnosed based on patient clinical history, physical examinations, and supporting laboratory investigations.",
-    differentialDiagnosis: "Must be differentiated from other similar functional disorders through target exclusions.",
-    labTests: ["CBC", "ESR"],
-    imaging: "X-ray or Ultrasound as indicated by clinician.",
-    redFlags: [
-      "Sudden severe onset of pain or high fever",
-      "Unexplained rapid weight loss",
-      "Persistent symptoms unresponsive to initial care"
-    ],
-    conventionalManagement: "Standard conventional therapy involves symptomatic management, anti-inflammatories, or metabolic regulators depending on severity.",
-    homeopathicApproach: "Classical homeopathy focuses on constitutional analysis, seeking to reduce individual susceptibility and address underlying chronic tendencies (miasms).",
-    lifestyleAdvice: "Ensure balanced nutrition, regular moderate physical activity, sufficient hydration, and sleep hygiene.",
-    references: ["CIT-0001", "CIT-0002"]
-  },
+  "overview": "Bronchitis: Allergic and inflammatory respiratory tract conditions involve mucosal hypersensitivity, hyper-responsiveness, and chronic inflammatory cells. Care focuses on mucosal stabilization and reducing allergic hyper-reactivity.",
+  "definition": "Hypersensitivity or infectious inflammation of the upper or lower respiratory mucosa, resulting in congestion, bronchospasm, and altered secretory patterns.",
+  "causes": [
+    "IgE-mediated immune responses to airborne environmental allergens (pollens, dust mites)",
+    "Bronchial smooth muscle hyper-responsiveness and chronic mucosal remodeling",
+    "Acute or chronic bacterial and viral sinus infections"
+  ],
+  "riskFactors": [
+    "Personal or family history of atopic diseases (eczema, asthma, allergies)",
+    "Exposure to environmental tobacco smoke, pollution, or industrial irritants",
+    "Recurrent early childhood respiratory tract infections"
+  ],
+  "symptoms": [
+    "Paroxysmal sneezing, clear rhinorrhea, and nasal congestion",
+    "Spasmodic cough, wheezing, chest tightness, and dyspnea",
+    "Post-nasal drip, sinus pressure, and frontal headaches",
+    "Hoarseness, dry throat, and vocal fatigue"
+  ],
+  "diagnosis": "Evaluated using spirometry, peak expiratory flow monitoring, allergy skin prick testing, and sinus radiography if indicated.",
+  "differentialDiagnosis": "Differentiate allergic rhinitis from vasomotor rhinitis, and asthma from vocal cord dysfunction, COPD, or cardiac congestion.",
+  "conventionalManagement": "Involves inhaled corticosteroids, bronchodilators, antihistamines, leukotriene receptor antagonists, or immunotherapy.",
+  "homeopathicApproach": "Aims to desensitize the respiratory mucosa, resolve acute spasms, and reduce allergic diathesis through constitutional prescribing.",
+  "lifestyleAdvice": "Monitor local pollen counts, utilize indoor HEPA air purifiers, perform regular saline nasal irrigations, and practice controlled breathing techniques.",
+  "references": [
+    "CIT-0020",
+    "CIT-0021",
+    "CIT-0022"
+  ],
+  "faqs": [
+    {
+      "question": "What is the difference between allergic rhinitis and a common cold?",
+      "answer": "Allergic rhinitis is an IgE-mediated immune response triggered by allergens (pollen, dust), presenting with itchy eyes, sneezing, and clear watery discharge. A cold is a viral infection, usually presenting with thicker discharge, throat irritation, and sometimes a low-grade fever."
+    },
+    {
+      "question": "Can untreated allergies lead to asthma?",
+      "answer": "Yes. The 'atopic march' describes how upper airway allergic inflammation (allergic rhinitis) can progress to involve the lower airways, triggering asthma in susceptible individuals."
+    },
+    {
+      "question": "How does homeopathy support respiratory allergies?",
+      "answer": "Homeopathic remedies aim to reduce the body's hyper-reactivity to environmental allergens and strengthen mucosal defenses, using acute and deep-acting constitutional remedies."
+    }
+  ]
+},
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"

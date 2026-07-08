@@ -45,8 +45,8 @@ export default async function ComparisonDetailPage({ params }: PageProps) {
   const entity1 = all.find(e => e.id === comp.entity1Id);
   const entity2 = all.find(e => e.id === comp.entity2Id);
 
-  const title1 = entity1 ? (typeof entity1.title === "string" ? entity1.title : entity1.title.en) : "Target A";
-  const title2 = entity2 ? (typeof entity2.title === "string" ? entity2.title : entity2.title.en) : "Target B";
+  const title1 = entity1 ? (typeof entity1.title === "string" ? entity1.title : entity1.title.en) : (comp.entity1Name || "Target A");
+  const title2 = entity2 ? (typeof entity2.title === "string" ? entity2.title : entity2.title.en) : (comp.entity2Name || "Target B");
 
   const crumbs = [
     { name: "Knowledge Hub", item: "https://homeo.healthcare/knowledge" },
@@ -81,7 +81,7 @@ export default async function ComparisonDetailPage({ params }: PageProps) {
           <table className="w-full text-left border-collapse text-sm">
             <thead>
               <tr className="bg-neutral-100 dark:bg-neutral-950 border-b border-neutral-200 dark:border-neutral-850">
-                <th className="p-4 font-extrabold text-neutral-450 uppercase tracking-wider text-[10px] w-1/4">Clinical Parameter</th>
+                <th className="p-4 font-extrabold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider text-[10px] w-1/4">Clinical Parameter</th>
                 <th className="p-4 font-bold text-neutral-900 dark:text-neutral-50 text-xs">{title1}</th>
                 <th className="p-4 font-bold text-neutral-900 dark:text-neutral-50 text-xs">{title2}</th>
               </tr>
@@ -103,7 +103,7 @@ export default async function ComparisonDetailPage({ params }: PageProps) {
           {entity1 && (
             <div className="p-5 border border-neutral-200 dark:border-neutral-850 rounded-2xl bg-white/5 flex flex-col justify-between">
               <div>
-                <span className="text-[10px] uppercase font-bold text-neutral-450 tracking-wider">Entity Profile A</span>
+                <span className="text-[10px] uppercase font-bold text-neutral-500 dark:text-neutral-400 tracking-wider">Entity Profile A</span>
                 <h4 className="text-sm font-bold text-neutral-850 dark:text-neutral-200 mt-1">{title1}</h4>
               </div>
               <Link
@@ -118,7 +118,7 @@ export default async function ComparisonDetailPage({ params }: PageProps) {
           {entity2 && (
             <div className="p-5 border border-neutral-200 dark:border-neutral-850 rounded-2xl bg-white/5 flex flex-col justify-between">
               <div>
-                <span className="text-[10px] uppercase font-bold text-neutral-450 tracking-wider">Entity Profile B</span>
+                <span className="text-[10px] uppercase font-bold text-neutral-500 dark:text-neutral-400 tracking-wider">Entity Profile B</span>
                 <h4 className="text-sm font-bold text-neutral-850 dark:text-neutral-200 mt-1">{title2}</h4>
               </div>
               <Link

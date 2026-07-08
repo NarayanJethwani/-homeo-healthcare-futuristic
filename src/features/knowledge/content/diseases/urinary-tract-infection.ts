@@ -28,37 +28,51 @@ export const UrinaryTractInfectionDisease: KnowledgeEntity = {
     ar: "نظرة عامة سريرية شاملة لـ Urinary Tract Infection."
   },
   content: {
-    overview: "Urinary Tract Infection is a common clinical condition managed in outpatient clinics. An integrated approach combining lifestyle modification and constitutional support yields optimal long-term outcomes.",
-    definition: "Urinary Tract Infection is defined clinically as a pathological or functional condition affecting systemic homeostasis.",
-    causes: [
-      "Environmental and lifestyle triggers.",
-      "Genetic predisposition and individual susceptibility.",
-      "Functional or metabolic imbalances."
-    ],
-    riskFactors: [
-      "Sedentary lifestyle and stress",
-      "Improper dietary habits",
-      "Family history"
-    ],
-    symptoms: [
-      "Typical physical symptoms associated with Urinary Tract Infection.",
-      "Aggravation under specific physical or emotional stress.",
-      "Chronic recurrence if left unmanaged."
-    ],
-    diagnosis: "Diagnosed based on patient clinical history, physical examinations, and supporting laboratory investigations.",
-    differentialDiagnosis: "Must be differentiated from other similar functional disorders through target exclusions.",
-    labTests: ["CBC", "ESR"],
-    imaging: "X-ray or Ultrasound as indicated by clinician.",
-    redFlags: [
-      "Sudden severe onset of pain or high fever",
-      "Unexplained rapid weight loss",
-      "Persistent symptoms unresponsive to initial care"
-    ],
-    conventionalManagement: "Standard conventional therapy involves symptomatic management, anti-inflammatories, or metabolic regulators depending on severity.",
-    homeopathicApproach: "Classical homeopathy focuses on constitutional analysis, seeking to reduce individual susceptibility and address underlying chronic tendencies (miasms).",
-    lifestyleAdvice: "Ensure balanced nutrition, regular moderate physical activity, sufficient hydration, and sleep hygiene.",
-    references: ["CIT-0001", "CIT-0002"]
-  },
+  "overview": "Urinary tract infection: Systemic reactive patterns and chronic disease tendencies represent complex clinical entities that manifest across multiple organ systems. Management focuses on optimizing general vitality and addressing deep constitutional susceptibility.",
+  "definition": "A chronic systemic disorder or susceptibility pattern affecting physiological adaptability and cellular self-regulation.",
+  "causes": [
+    "Genetic vulnerability and chronic miasmatic tendencies",
+    "Accumulated environmental stressors and lifestyle imbalances",
+    "Failure of endocrine-immune adaptive regulatory feedback mechanisms"
+  ],
+  "riskFactors": [
+    "Chronic physical or mental exhaustion",
+    "Poor dietary habits and sedentary lifestyle",
+    "Extended exposure to environmental stressors"
+  ],
+  "symptoms": [
+    "Generalized weakness and low reserve capacity",
+    "Altered temperature regulation and sleep disturbances",
+    "Subjective mood changes and emotional coping difficulties",
+    "Wandering localized physical discomforts"
+  ],
+  "diagnosis": "Diagnosed by physical examination, standard baseline lab screens, and exhaustive holistic intake of constitutional symptoms.",
+  "differentialDiagnosis": "Differentiate chronic systemic susceptibility from localized acute pathology and primary endocrine diseases.",
+  "conventionalManagement": "Management involves symptomatic pharmacological support and lifestyle modifications depending on organ systems involved.",
+  "homeopathicApproach": "Holistic constitutional homeopathy utilizes individualized remedies to optimize physiological reactivity and support the vital force.",
+  "lifestyleAdvice": "Follow a nutrient-dense whole foods diet, engage in moderate restorative exercise, adopt stress-management routines, and maintain consistent rest.",
+  "references": [
+    "CIT-0004",
+    "CIT-0005",
+    "CIT-0006",
+    "CIT-0007",
+    "CIT-0008"
+  ],
+  "faqs": [
+    {
+      "question": "What is a constitutional remedy in homeopathy?",
+      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
+    },
+    {
+      "question": "Why does the homeopath ask so many detailed questions?",
+      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
+    },
+    {
+      "question": "How should homeopathic remedies be stored?",
+      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
+    }
+  ]
+},
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"

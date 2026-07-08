@@ -28,22 +28,41 @@ export const IndigestionSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Indigestion."
   },
   content: {
-    definition: "Indigestion represents a functional or sensory manifestation indicating systemic reaction or localized pathological change.",
-    clinicalMeaning: "In clinical practice, monitoring Indigestion helps evaluate disease progress and individual metabolic response.",
-    commonCauses: [
-      "Functional systemic stress",
-      "Fatigue or lifestyle imbalance",
-      "Underlying organic pathology"
-    ],
-    differentialDiagnosis: "Must be distinguished based on onset, intensity, duration, and triggering modalities.",
-    redFlags: [
-      "Persistent occurrence lasting more than 7 days",
-      "Associated high-grade fever or neurological deficit",
-      "Unresponsiveness to standard hydration or rest"
-    ],
-    lifestyleAdvice: "Ensure adequate rest, hydration, stress management, and light nutrition.",
-    references: ["CIT-0001", "CIT-0003"]
-  },
+  "definition": "Indigestion: A subjective abdominal or digestive manifestation of altered gut motility, mucosal irritation, or secretory dysregulation.",
+  "clinicalMeaning": "Indicates mucosal inflammation, smooth muscle spasm, or hyper-reactivity of the enteric nervous system.",
+  "commonCauses": [
+    "Gastroesophageal reflux disease (GERD)",
+    "Gastritis or peptic ulcer disease",
+    "Irritable Bowel Syndrome (IBS)",
+    "Dietary intolerance or food allergies"
+  ],
+  "differentialDiagnosis": "Exclude gallstones, chronic pancreatitis, celiac disease, and acute surgical abdomen conditions.",
+  "redFlags": [
+    "Unexplained weight loss or persistent vomiting",
+    "Difficulty swallowing (dysphagia) or gastrointestinal bleeding (melena)",
+    "Severe overnight abdominal pain waking the patient"
+  ],
+  "lifestyleAdvice": "Avoid carbonated beverages, caffeine, and highly fatty foods; chew food thoroughly, maintain vertical posture for 2 hours post-meals, and manage stress.",
+  "references": [
+    "CIT-0017",
+    "CIT-0018",
+    "CIT-0022"
+  ],
+  "faqs": [
+    {
+      "question": "What are the common triggers for digestive flares?",
+      "answer": "Common triggers include dietary irritants (caffeine, alcohol, fatty foods), chronic emotional stress, irregular eating habits, and dysbiosis."
+    },
+    {
+      "question": "How does the gut-brain axis affect digestive health?",
+      "answer": "The gut and brain are in constant communication via the vagus nerve. Emotional stress can alter gut motility, increase visceral sensitivity, and worsen symptoms of GERD, gastritis, or IBS."
+    },
+    {
+      "question": "Can homeopathy manage chronic acid reflux (GERD)?",
+      "answer": "Yes, individualized homeopathy can help manage symptoms of chronic acid reflux by addressing digestive motility and hyperacidity alongside lifestyle modifications."
+    }
+  ]
+},
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"

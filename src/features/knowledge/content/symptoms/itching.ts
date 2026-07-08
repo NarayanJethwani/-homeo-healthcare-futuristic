@@ -28,22 +28,41 @@ export const ItchingSymptom: KnowledgeEntity = {
     ar: "التعريف السريري والأهمية لـ Itching."
   },
   content: {
-    definition: "Itching represents a functional or sensory manifestation indicating systemic reaction or localized pathological change.",
-    clinicalMeaning: "In clinical practice, monitoring Itching helps evaluate disease progress and individual metabolic response.",
-    commonCauses: [
-      "Functional systemic stress",
-      "Fatigue or lifestyle imbalance",
-      "Underlying organic pathology"
-    ],
-    differentialDiagnosis: "Must be distinguished based on onset, intensity, duration, and triggering modalities.",
-    redFlags: [
-      "Persistent occurrence lasting more than 7 days",
-      "Associated high-grade fever or neurological deficit",
-      "Unresponsiveness to standard hydration or rest"
-    ],
-    lifestyleAdvice: "Ensure adequate rest, hydration, stress management, and light nutrition.",
-    references: ["CIT-0001", "CIT-0003"]
-  },
+  "definition": "Itching: A subjective or visible skin manifestation representing cutaneous inflammation, epidermal barrier damage, or localized histamine release.",
+  "clinicalMeaning": "Reflects localized capillary dilation, dermal infiltration by inflammatory cells, or nerve fiber excitation causing pruritus.",
+  "commonCauses": [
+    "Atopic eczema or contact allergy",
+    "Psoriasis or seborrheic dermatitis",
+    "Urticarial histamine reactions",
+    "Local infections or sweat duct occlusion"
+  ],
+  "differentialDiagnosis": "Differentiate from scabies infestation, drug eruptions, cutaneous lymphoma, and viral exanthems.",
+  "redFlags": [
+    "Rapidly spreading rash with fever or systemic toxicity",
+    "Signs of secondary bacterial infection (pus, warmth, severe pain)",
+    "Erythroderma involving >90% of the body surface area"
+  ],
+  "lifestyleAdvice": "Use gentle soap-free cleansers, keep skin moisturized, avoid hot water, and identify and avoid trigger substances.",
+  "references": [
+    "CIT-0002",
+    "CIT-0019",
+    "CIT-0022"
+  ],
+  "faqs": [
+    {
+      "question": "Why do skin conditions worsen with emotional stress?",
+      "answer": "Stress releases cortisol and pro-inflammatory cytokines, which compromise the skin barrier and activate immune pathways, triggering flares of eczema, psoriasis, or acne."
+    },
+    {
+      "question": "Are topical steroids the only treatment for eczema?",
+      "answer": "No. While topical steroids manage acute flare inflammation, long-term care requires barrier repair (emollients), trigger identification, and systemic constitutional support."
+    },
+    {
+      "question": "How does homeopathy approach skin diseases?",
+      "answer": "Homeopathy views skin eruptions as outward manifestations of internal systemic imbalance. Treatment focuses on systemic immunomodulation and constitutional remedies rather than purely suppressing symptoms."
+    }
+  ]
+},
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"

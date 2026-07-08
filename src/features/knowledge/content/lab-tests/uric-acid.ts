@@ -28,19 +28,38 @@ export const UricAcidLabTest: KnowledgeEntity = {
     ar: "الغرض السريري وتفسير نتائج اختبار Uric Acid."
   },
   content: {
-    overview: "Uric Acid is a routine clinical investigation used to identify physiological fluctuations, metabolic disorders, or system inflammation.",
-    normalRange: "Varies by laboratory. Typically defined within reference intervals.",
-    highValues: [
-      "Indicates systemic reaction, infection, or metabolic hyper-activity.",
-      "Requires medical correlation with active clinical symptoms."
-    ],
-    lowValues: [
-      "Indicates deficiency, metabolic hypo-activity, or sluggish organ function.",
-      "Requires clinician evaluation of baseline patient data."
-    ],
-    clinicalInterpretation: "Results of Uric Acid must be interpreted in conjunction with patient symptoms and constitutional profiles rather than in isolation.",
-    references: ["CIT-0001", "CIT-0004"]
-  },
+  "overview": "URIC ACID: A diagnostic test, stool marker, or breath analysis designed to evaluate gastrointestinal inflammation, digestive enzyme activity, or bacterial colonization.",
+  "normalRange": "H. pylori: Negative; Stool Occult Blood: Negative; Calprotectin: < 50 ug/g.",
+  "highValues": [
+    "Active H. pylori infection",
+    "Intestinal inflammation indicating IBD (high calprotectin)",
+    "Gastrointestinal bleeding (positive occult blood)"
+  ],
+  "lowValues": [
+    "Decreased pancreatic enzyme output",
+    "Hypochlorhydria (low gastric acid output)"
+  ],
+  "clinicalInterpretation": "URIC ACID evaluation: Positive H. pylori requires eradication considerations. High calprotectin indicates active bowel inflammation needing endoscopy, while occult blood requires investigation to locate bleeding sources.",
+  "references": [
+    "CIT-0017",
+    "CIT-0018",
+    "CIT-0022"
+  ],
+  "faqs": [
+    {
+      "question": "What are the common triggers for digestive flares?",
+      "answer": "Common triggers include dietary irritants (caffeine, alcohol, fatty foods), chronic emotional stress, irregular eating habits, and dysbiosis."
+    },
+    {
+      "question": "How does the gut-brain axis affect digestive health?",
+      "answer": "The gut and brain are in constant communication via the vagus nerve. Emotional stress can alter gut motility, increase visceral sensitivity, and worsen symptoms of GERD, gastritis, or IBS."
+    },
+    {
+      "question": "Can homeopathy manage chronic acid reflux (GERD)?",
+      "answer": "Yes, individualized homeopathy can help manage symptoms of chronic acid reflux by addressing digestive motility and hyperacidity alongside lifestyle modifications."
+    }
+  ]
+},
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"

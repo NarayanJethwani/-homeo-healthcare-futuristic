@@ -28,19 +28,41 @@ export const LipidProfileLabTest: KnowledgeEntity = {
     ar: "الغرض السريري وتفسير نتائج اختبار Lipid Profile."
   },
   content: {
-    overview: "Lipid Profile is a routine clinical investigation used to identify physiological fluctuations, metabolic disorders, or system inflammation.",
-    normalRange: "Varies by laboratory. Typically defined within reference intervals.",
-    highValues: [
-      "Indicates systemic reaction, infection, or metabolic hyper-activity.",
-      "Requires medical correlation with active clinical symptoms."
-    ],
-    lowValues: [
-      "Indicates deficiency, metabolic hypo-activity, or sluggish organ function.",
-      "Requires clinician evaluation of baseline patient data."
-    ],
-    clinicalInterpretation: "Results of Lipid Profile must be interpreted in conjunction with patient symptoms and constitutional profiles rather than in isolation.",
-    references: ["CIT-0001", "CIT-0004"]
-  },
+  "overview": "LIPID PROFILE: A general laboratory screening parameter or basic metabolic marker used to assess baseline physiological homeostasis and metabolic efficiency.",
+  "normalRange": "ESR: < 20 mm/hr; Blood Glucose: 70-99 mg/dL; Serum Creatinine: 0.6-1.2 mg/dL.",
+  "highValues": [
+    "Systemic inflammatory baseline (high ESR)",
+    "Metabolic intolerance or early diabetes (high glucose)",
+    "Impaired kidney function (high creatinine)"
+  ],
+  "lowValues": [
+    "Anemia or low muscle mass",
+    "Hypoglycemia",
+    "Nutritional deficiencies"
+  ],
+  "clinicalInterpretation": "LIPID PROFILE evaluation: Elevated inflammatory markers (ESR, CRP) suggest systemic activity needing further investigation. Blood glucose shifts require evaluation of insulin sensitivity and glycemic control.",
+  "references": [
+    "CIT-0004",
+    "CIT-0005",
+    "CIT-0006",
+    "CIT-0007",
+    "CIT-0008"
+  ],
+  "faqs": [
+    {
+      "question": "What is a constitutional remedy in homeopathy?",
+      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
+    },
+    {
+      "question": "Why does the homeopath ask so many detailed questions?",
+      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
+    },
+    {
+      "question": "How should homeopathic remedies be stored?",
+      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
+    }
+  ]
+},
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"

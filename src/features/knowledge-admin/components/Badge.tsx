@@ -44,7 +44,11 @@ export function EvidenceBadge({ level }: { level: EvidenceLevel }) {
     "Level-C": { label: "Case (C)", variant: "warning" },
     "Traditional-Literature": { label: "Traditional", variant: "neutral" },
     "Expert-Opinion": { label: "Expert", variant: "info" },
-    "Clinical-Experience": { label: "Experience", variant: "neutral" }
+    "Clinical-Experience": { label: "Experience", variant: "neutral" },
+    "Clinical-Evidence": { label: "Clinical Evidence", variant: "success" },
+    "Classical-Homeopathic-Literature": { label: "Classical Lit", variant: "neutral" },
+    "Emerging-Research": { label: "Emerging", variant: "info" },
+    "Consensus-Guidance": { label: "Consensus", variant: "warning" }
   };
   const item = map[level] || { label: level, variant: "neutral" };
   return <Badge label={item.label} variant={item.variant} />;

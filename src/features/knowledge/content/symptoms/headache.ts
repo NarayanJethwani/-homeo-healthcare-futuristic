@@ -28,24 +28,40 @@ export const HeadacheSymptom: KnowledgeEntity = {
     ar: "ألم أو انزعاج في الرأس أو فروة الرأس أو الرقبة."
   },
   content: {
-    definition: "Headache (cephalgia) is a subjective sensation of pain or discomfort located in the region of the cranial vault, upper cervical spine, or facial structures.",
-    clinicalMeaning: "From a physiological perspective, headache occurs when pain-sensitive structures (meninges, cerebral arteries, cranial nerves, or cervical muscles) are stimulated or irritated, triggering nociceptive pathways to the brain.",
-    commonCauses: [
-      "Tension-type muscle contractions.",
-      "Vascular dilation (Migraine).",
-      "Cervicogenic spine strain.",
-      "Sinus congestion or pressure."
-    ],
-    differentialDiagnosis: "Tension headache, Migraine cephalgia, Cluster headache, Sinusitis, and Giant cell arteritis.",
-    redFlags: [
-      "Sudden, explosive 'thunderclap' pain reaching maximum severity in seconds.",
-      "Concomitant high fever, stiff neck, vomiting, or confusion (meningitis symptoms).",
-      "Headache following a recent head trauma.",
-      "Progressive worsening of headache over weeks, especially when waking in the morning or aggravated by coughing (suggests raised intracranial pressure)."
-    ],
-    lifestyleAdvice: "Ensure adequate hydration (drink at least 2 liters of water daily). Maintain a consistent sleep schedule. Avoid skipping meals. Take regular breaks from screens. Massage neck and shoulder muscles to relieve tension.",
-    references: ["CIT-0003"]
-  },
+  "definition": "Headache: A localized pain, sensory alteration, or mobility limitation originating from nerves, muscles, joints, or tendons.",
+  "clinicalMeaning": "Replects nociceptive pathway stimulation, localized tissue injury, or nerve root compression resulting in altered sensation.",
+  "commonCauses": [
+    "Mechanical strain or postural imbalance",
+    "Peripheral nerve compression (e.g., sciatica, carpal tunnel)",
+    "Osteoarthritis or joint degeneration",
+    "Neurogenic inflammation"
+  ],
+  "differentialDiagnosis": "Differentiate from systemic autoimmune joint disease, peripheral vascular disease, and referred visceral pain.",
+  "redFlags": [
+    "Loss of bladder or bowel control (Cauda Equina Syndrome)",
+    "Sudden onset of limb weakness or foot drop",
+    "Severe joint swelling with high fever indicating septic arthritis"
+  ],
+  "lifestyleAdvice": "Implement regular stretching, adjust desk ergonomics, engage in low-impact walking, and stay hydrated to maintain joint lubrication.",
+  "references": [
+    "CIT-0011",
+    "CIT-0022"
+  ],
+  "faqs": [
+    {
+      "question": "What causes muscle stiffness in the morning?",
+      "answer": "Morning stiffness is often caused by localized inflammation, muscle inactivity during sleep, or structural degenerative joint changes that temporarily reduce synovial fluid circulation."
+    },
+    {
+      "question": "How does stress affect nerve and muscle pain?",
+      "answer": "Stress increases muscle tension and heightens pain sensitivity (central sensitization) by releasing stress hormones that lower the pain threshold."
+    },
+    {
+      "question": "What is the homeopathic approach to physical injury?",
+      "answer": "Homeopathy uses remedies like Arnica Montana to manage acute swelling and bruising, and Rhus Tox or Bryonia for joint stiffness and pain, tailored to whether movement improves or worsens the symptoms."
+    }
+  ]
+},
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"

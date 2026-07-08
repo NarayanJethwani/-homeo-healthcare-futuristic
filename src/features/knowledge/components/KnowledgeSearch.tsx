@@ -234,23 +234,26 @@ export default function KnowledgeSearch({
 
       {/* Filter Tabs */}
       <div className="flex flex-wrap items-center justify-center gap-2">
-        <span className="text-xs text-neutral-400 font-semibold uppercase mr-2 flex items-center gap-1">
-          <Filter className="h-3.5 w-3.5" /> Filters:
+        <span className="text-xs text-neutral-500 dark:text-neutral-400 font-bold uppercase mr-2 flex items-center gap-1">
+          <Filter className="h-3.5 w-3.5 text-teal-500" /> Filters:
         </span>
-        {filterTabs.map(tab => (
-          <button
-            key={tab.type}
-            onClick={() => setActiveType(tab.type)}
-            className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold border transition-all duration-300 ${
-              activeType === tab.type
-                ? "bg-teal-650 border-teal-600 text-white shadow-md shadow-teal-600/10"
-                : "bg-white/5 border-neutral-500/10 text-neutral-600 dark:text-neutral-400 hover:bg-white/10"
-            }`}
-          >
-            {tab.icon}
-            <span>{tab.label}</span>
-          </button>
-        ))}
+        {filterTabs.map(tab => {
+          const isActive = activeType === tab.type;
+          return (
+            <button
+              key={tab.type}
+              onClick={() => setActiveType(tab.type)}
+              className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border transition-all duration-200 cursor-pointer ${
+                isActive
+                  ? "bg-teal-600 dark:bg-teal-500 border-teal-600 dark:border-teal-500 text-white shadow-md shadow-teal-500/20"
+                  : "bg-neutral-100 dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-350 hover:bg-neutral-200 dark:hover:bg-neutral-800"
+              }`}
+            >
+              {tab.icon}
+              <span>{tab.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Results Count & Visual feedback */}

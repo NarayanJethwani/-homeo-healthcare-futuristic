@@ -5,7 +5,7 @@ import { DISEASES } from "@/features/knowledge/content/diseases";
 import { generateMedicalMetadata } from "@/features/knowledge/metadata/medicalMetadata";
 import { generateMedicalWebPageSchema } from "@/features/knowledge/schemas/jsonLdSchemas";
 import KnowledgePageLayout from "@/features/knowledge/components/KnowledgePageLayout";
-import ReviewedBy from "@/features/knowledge/components/ReviewedBy";
+import EditorialConfidenceBadge from "@/features/knowledge/components/EditorialConfidenceBadge";
 import LastReviewedBadge from "@/features/knowledge/components/LastReviewedBadge";
 import EvidenceBadge from "@/features/knowledge/components/EvidenceBadge";
 import MedicalDisclaimer from "@/features/knowledge/components/MedicalDisclaimer";
@@ -20,6 +20,15 @@ import PatientFriendlyText from "@/features/knowledge/components/PatientFriendly
 import LearningPathStepper from "@/features/knowledge/components/LearningPathStepper";
 import KnowledgeGraphExplorer from "@/features/knowledge/components/KnowledgeGraphExplorer";
 import ContextualCtaBanner from "@/features/knowledge/components/ContextualCtaBanner";
+import QuickFactsCard from "@/features/knowledge/components/QuickFactsCard";
+import ClinicalPearlBox from "@/features/knowledge/components/ClinicalPearlBox";
+import EvidenceSummaryPanel from "@/features/knowledge/components/EvidenceSummaryPanel";
+import VisualBodySystemCard from "@/features/knowledge/components/VisualBodySystemCard";
+import DifferentialDiagnosisTable from "@/features/knowledge/components/DifferentialDiagnosisTable";
+import HomeopathicPerspective from "@/features/knowledge/components/HomeopathicPerspective";
+import RedFlagBox from "@/features/knowledge/components/RedFlagBox";
+import MedicalIllustration from "@/features/knowledge/components/MedicalIllustration";
+import InteractiveTimeline from "@/features/knowledge/components/InteractiveTimeline";
 import { ShieldAlert, Info, ListChecks, Stethoscope, AlertTriangle, BookOpen, Activity } from "lucide-react";
 
 interface PageProps {
@@ -94,14 +103,23 @@ export default async function DiseaseDetailPage({ params }: PageProps) {
       >
         <Breadcrumbs crumbs={crumbs} />
 
-        <ReviewedBy reviewer={disease.reviewer} reviewedDate={disease.versionInfo.reviewed} />
+        <EditorialConfidenceBadge entity={disease} reviewedDate={disease.versionInfo.reviewed} />
 
         <div className="mt-4 space-y-4">
           <TimelineHistory versionInfo={disease.versionInfo} reviewer={disease.reviewer} />
           <LearningPathStepper currentId={disease.id} />
+          <QuickFactsCard entity={disease} />
+          <EvidenceSummaryPanel entity={disease} />
+          <ClinicalPearlBox entity={disease} />
+          <VisualBodySystemCard entity={disease} />
         </div>
 
         <div className="mt-8 space-y-10 text-neutral-850 dark:text-neutral-200 leading-relaxed">
+          {/* Medical Illustration (Sprint 3) */}
+          <MedicalIllustration slug={disease.slug} />
+
+          {/* Interactive Progression Timeline (Sprint 3) */}
+          <InteractiveTimeline entity={disease} />
           
           {/* Section: Overview & Definition */}
           <section id="overview" className="space-y-3 scroll-mt-24">
@@ -127,7 +145,7 @@ export default async function DiseaseDetailPage({ params }: PageProps) {
                   <h4 className="text-sm font-bold text-neutral-900 dark:text-neutral-100 border-b border-neutral-500/5 pb-1">
                     Pathological Causes
                   </h4>
-                  <ul className="list-disc list-inside space-y-1.5 text-xs text-neutral-700 dark:text-neutral-450">
+                  <ul className="list-disc list-inside space-y-1.5 text-xs text-neutral-750 dark:text-neutral-300">
                     {content.causes.map((cause: string, idx: number) => (
                       <li key={idx}>{cause}</li>
                     ))}
@@ -140,7 +158,7 @@ export default async function DiseaseDetailPage({ params }: PageProps) {
                   <h4 className="text-sm font-bold text-neutral-900 dark:text-neutral-100 border-b border-neutral-500/5 pb-1">
                     Risk Factors
                   </h4>
-                  <ul className="list-disc list-inside space-y-1.5 text-xs text-neutral-700 dark:text-neutral-450">
+                  <ul className="list-disc list-inside space-y-1.5 text-xs text-neutral-750 dark:text-neutral-300">
                     {content.riskFactors.map((risk: string, idx: number) => (
                       <li key={idx}>{risk}</li>
                     ))}
@@ -156,9 +174,9 @@ export default async function DiseaseDetailPage({ params }: PageProps) {
               <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 border-b border-neutral-500/5 pb-2">
                 <ListChecks className="h-4.5 w-4.5 text-rose-500" /> Clinical Symptom Presentation
               </h3>
-              <ul className="list-disc list-inside space-y-2 pl-2 text-neutral-700 dark:text-neutral-300">
+              <ul className="list-disc list-inside space-y-2 pl-2 text-neutral-750 dark:text-neutral-300">
                 {content.symptoms.map((sym: string, idx: number) => (
-                  <li key={idx} className="pl-1"><span className="text-neutral-800 dark:text-neutral-250">{sym}</span></li>
+                  <li key={idx} className="pl-1"><span className="text-neutral-800 dark:text-neutral-200">{sym}</span></li>
                 ))}
               </ul>
             </section>
@@ -171,12 +189,12 @@ export default async function DiseaseDetailPage({ params }: PageProps) {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-1.5">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-450">Investigation Protocol</h4>
-                <p className="text-sm text-neutral-700 dark:text-neutral-355">{content.diagnosis}</p>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Investigation Protocol</h4>
+                <p className="text-sm text-neutral-750 dark:text-neutral-300">{content.diagnosis}</p>
               </div>
               <div className="space-y-1.5">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-450">Differential Diagnosis</h4>
-                <p className="text-sm text-neutral-700 dark:text-neutral-355">{content.differentialDiagnosis}</p>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Differential Diagnosis</h4>
+                <p className="text-sm text-neutral-750 dark:text-neutral-300">{content.differentialDiagnosis}</p>
               </div>
             </div>
 
@@ -186,7 +204,7 @@ export default async function DiseaseDetailPage({ params }: PageProps) {
                 {content.labTests && content.labTests.length > 0 && (
                   <div>
                     <span className="text-[10px] uppercase font-bold text-neutral-400 block mb-2">Recommended Lab Parameters</span>
-                    <ul className="list-disc list-inside space-y-1.5 text-xs text-neutral-700 dark:text-neutral-350">
+                    <ul className="list-disc list-inside space-y-1.5 text-xs text-neutral-750 dark:text-neutral-300">
                       {content.labTests.map((t: string, idx: number) => (
                         <li key={idx}>{t}</li>
                       ))}
@@ -196,49 +214,25 @@ export default async function DiseaseDetailPage({ params }: PageProps) {
                 {content.imaging && (
                   <div>
                     <span className="text-[10px] uppercase font-bold text-neutral-400 block mb-2">Imaging & Radiography</span>
-                    <p className="text-xs text-neutral-700 dark:text-neutral-350">{content.imaging}</p>
+                    <p className="text-xs text-neutral-750 dark:text-neutral-300">{content.imaging}</p>
                   </div>
                 )}
               </div>
             </div>
           </section>
 
+          {/* Section: Differential Diagnosis Table */}
+          <DifferentialDiagnosisTable entity={disease} />
+
           {/* Section: Treatment Paradigms */}
           <section id="treatment" className="scroll-mt-24">
-            <CollapsibleSection
-              title="Treatment Approaches (Conventional vs Homeopathic)"
-              icon={<BookOpen className="h-4.5 w-4.5 text-rose-500" />}
-              defaultExpanded={true}
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-3">
-                  <h4 className="font-bold text-neutral-900 dark:text-neutral-100 text-sm uppercase tracking-wider">Conventional Management</h4>
-                  <p className="text-xs text-neutral-600 dark:text-neutral-400">{content.conventionalManagement}</p>
-                </div>
-                <div className="space-y-3">
-                  <h4 className="font-bold text-neutral-900 dark:text-neutral-100 text-sm uppercase tracking-wider">Homeopathic Approach</h4>
-                  <p className="text-xs text-neutral-600 dark:text-neutral-400">{content.homeopathicApproach}</p>
-                </div>
-              </div>
-            </CollapsibleSection>
+            <HomeopathicPerspective entity={disease} />
           </section>
 
           {/* Section: Red Flags / Alert Box */}
-          {content.redFlags && content.redFlags.length > 0 && (
-            <section id="redflags" className="p-5 border border-rose-500/20 bg-rose-500/5 rounded-2xl flex gap-3 scroll-mt-24">
-              <AlertTriangle className="h-5 w-5 text-rose-500 shrink-0 mt-0.5" />
-              <div>
-                <h4 className="font-bold text-rose-800 dark:text-rose-400 text-sm">
-                  Clinical Red Flags (When to Seek Urgent Care)
-                </h4>
-                <ul className="list-disc list-inside space-y-1.5 text-xs text-rose-950/85 dark:text-rose-250/95 mt-2">
-                  {content.redFlags.map((flag: string, idx: number) => (
-                    <li key={idx}>{flag}</li>
-                  ))}
-                </ul>
-              </div>
-            </section>
-          )}
+          <section id="redflags" className="scroll-mt-24">
+            <RedFlagBox entity={disease} />
+          </section>
 
           {/* Section: Lifestyle Advice */}
           {content.lifestyleAdvice && (

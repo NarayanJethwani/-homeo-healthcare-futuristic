@@ -75,7 +75,19 @@ export const SYNONYM_MAP: Record<string, string[]> = {
   "thyroid stimulating hormone": ["tsh", "thyroid stimulating hormone", "thyroid test", "thyroid"],
   "lft": ["lft", "liver function test", "bilirubin", "sgot", "sgpt", "liver panel"],
   "kft": ["kft", "kidney function test", "renal function test", "creatinine", "blood urea nitrogen", "kidney panel"],
-  "renal function test": ["kft", "kidney function test", "creatinine", "renal panel"]
+  "renal function test": ["kft", "kidney function test", "creatinine", "renal panel"],
+
+  // Scale-up additions
+  "anemia": ["anemia", "blood deficiency", "low hemoglobin", "iron deficiency", "weak blood"],
+  "vitamin d": ["vitamin d", "sunshine vitamin", "cholecalciferol", "vit d"],
+  "vitamin b12": ["vitamin b12", "cobalamin", "vit b12", "methylcobalamin"],
+  "low back pain": ["low back pain", "lumbago", "back ache", "lumbar strain"],
+  "recurrent cold": ["recurrent cold", "frequent cold", "susceptible to cold", "chronic runny nose"],
+  "burning urination": ["burning urination", "dysuria", "painful urine", "urine burn"],
+  "menstrual irregularity": ["menstrual irregularity", "pcod periods", "irregular periods", "delayed periods"],
+  "ana": ["ana", "antinuclear antibodies", "autoimmune screen"],
+  "psa": ["psa", "prostate specific antigen", "prostate test"],
+  "anti-tpo": ["anti-tpo", "thyroid antibodies", "anti-tpo antibodies", "hashimotos"]
 };
 
 /**

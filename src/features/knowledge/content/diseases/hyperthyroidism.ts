@@ -28,37 +28,49 @@ export const HyperthyroidismDisease: KnowledgeEntity = {
     ar: "نظرة عامة سريرية شاملة لـ Hyperthyroidism."
   },
   content: {
-    overview: "Hyperthyroidism is a common clinical condition managed in outpatient clinics. An integrated approach combining lifestyle modification and constitutional support yields optimal long-term outcomes.",
-    definition: "Hyperthyroidism is defined clinically as a pathological or functional condition affecting systemic homeostasis.",
-    causes: [
-      "Environmental and lifestyle triggers.",
-      "Genetic predisposition and individual susceptibility.",
-      "Functional or metabolic imbalances."
-    ],
-    riskFactors: [
-      "Sedentary lifestyle and stress",
-      "Improper dietary habits",
-      "Family history"
-    ],
-    symptoms: [
-      "Typical physical symptoms associated with Hyperthyroidism.",
-      "Aggravation under specific physical or emotional stress.",
-      "Chronic recurrence if left unmanaged."
-    ],
-    diagnosis: "Diagnosed based on patient clinical history, physical examinations, and supporting laboratory investigations.",
-    differentialDiagnosis: "Must be differentiated from other similar functional disorders through target exclusions.",
-    labTests: ["CBC", "ESR"],
-    imaging: "X-ray or Ultrasound as indicated by clinician.",
-    redFlags: [
-      "Sudden severe onset of pain or high fever",
-      "Unexplained rapid weight loss",
-      "Persistent symptoms unresponsive to initial care"
-    ],
-    conventionalManagement: "Standard conventional therapy involves symptomatic management, anti-inflammatories, or metabolic regulators depending on severity.",
-    homeopathicApproach: "Classical homeopathy focuses on constitutional analysis, seeking to reduce individual susceptibility and address underlying chronic tendencies (miasms).",
-    lifestyleAdvice: "Ensure balanced nutrition, regular moderate physical activity, sufficient hydration, and sleep hygiene.",
-    references: ["CIT-0001", "CIT-0002"]
-  },
+  "overview": "Hyperthyroidism: Thyroid function and autoimmune thyroiditis represent a primary class of endocrine disorders affecting systemic metabolic rate, energy production, and temperature regulation. Evaluation relies on serum hormone measurements and antibody detection.",
+  "definition": "A physiological state or pathology characterized by autoantibody-mediated destruction of thyroid follicles (Hashimoto's) or over-activation of TSH receptors (Graves'), leading to hypo- or hyper-thyroidism.",
+  "causes": [
+    "Autoimmune systemic dysregulation and lymphocytic infiltration",
+    "Genetic susceptibility linked to HLA-DR antigens",
+    "Environmental triggers such as chronic stress and excessive iodine intake"
+  ],
+  "riskFactors": [
+    "Family history of autoimmune thyroid disease",
+    "Female gender (significantly higher prevalence)",
+    "Co-existing autoimmune conditions like type 1 diabetes or celiac disease"
+  ],
+  "symptoms": [
+    "Persistent physical fatigue and cognitive brain fog",
+    "Unexplained weight changes and altered appetite",
+    "Dryness of skin, brittle hair, and temperature intolerance",
+    "Altered heart rate and muscle weakness"
+  ],
+  "diagnosis": "Diagnosed by measuring serum Thyroid Stimulating Hormone (TSH), Free T3, Free T4, and testing for thyroid autoantibodies (Anti-TPO, Anti-Tg).",
+  "differentialDiagnosis": "Must be differentiated from non-thyroidal illness syndrome, primary pituitary dysfunction, and generalized chronic fatigue syndrome.",
+  "conventionalManagement": "Standard therapy involves hormone replacement (levothyroxine) for hypothyroidism, or anti-thyroid medications (methimazole), radioactive iodine, or thyroidectomy for hyperthyroidism.",
+  "homeopathicApproach": "Constitutional homeopathic support focuses on reducing individual susceptibility, balancing autonomic reactivity, and stabilizing vital endocrine pathways.",
+  "lifestyleAdvice": "Ensure adequate dietary selenium and zinc, avoid raw goitrogenic foods in large quantities, manage stress levels, and maintain consistent sleep hygiene.",
+  "references": [
+    "CIT-0012",
+    "CIT-0013",
+    "CIT-0014"
+  ],
+  "faqs": [
+    {
+      "question": "What causes autoimmune thyroid flares?",
+      "answer": "Thyroid autoantibody flares are typically triggered by systemic immune dysregulation, chronic physical or emotional stress, high iodine intake, or underlying genetic susceptibility."
+    },
+    {
+      "question": "Can thyroid status affect weight and energy levels?",
+      "answer": "Yes. Thyroid hormones regulate the body's metabolic rate. Hypothyroidism slows metabolism leading to weight gain and fatigue, while hyperthyroidism accelerates it."
+    },
+    {
+      "question": "What is the role of homeopathy in thyroid health?",
+      "answer": "Homeopathic care utilizes constitutional remedies to optimize the body's self-regulatory mechanisms and support endocrine balance, always evaluated in conjunction with standard lab monitoring."
+    }
+  ]
+},
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"

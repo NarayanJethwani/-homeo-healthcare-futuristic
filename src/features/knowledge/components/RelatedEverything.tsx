@@ -1,8 +1,11 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
-import { Link2, Stethoscope, HelpCircle, Activity, Heart, Calendar } from "lucide-react";
+import { Link2, Stethoscope, HelpCircle, Activity, Heart, Calendar, GitCompare, FileText } from "lucide-react";
 import { getRelatedEntities } from "../graph/knowledgeGraph";
 import { getEntityUrl } from "../index";
+import { COMPARISONS } from "../comparisons/comparisonRegistry";
 
 interface RelatedEverythingProps {
   entityId: string;
@@ -11,13 +14,10 @@ interface RelatedEverythingProps {
 export default function RelatedEverything({ entityId }: RelatedEverythingProps) {
   const related = getRelatedEntities(entityId);
 
-  if (related.length === 0) {
-    return (
-      <div className="my-8 text-center py-6 px-4 border border-dashed border-neutral-500/10 rounded-2xl">
-        <p className="text-sm text-neutral-500">No related topics found for this entity.</p>
-      </div>
-    );
-  }
+  // Find related comparisons from registry
+  const relatedComparisons = COMPARISONS.filter(
+    c => c.entity1Id === entityId || c.entity2Id === entityId
+  );
 
   // Group by entityType
   const grouped = related.reduce((acc, curr) => {
@@ -27,7 +27,18 @@ export default function RelatedEverything({ entityId }: RelatedEverythingProps) 
     return acc;
   }, {} as Record<string, typeof related>);
 
-  // Helper to map icons to entityType
+  // Check if we have any data to render
+  const hasRelated = related.length > 0 || relatedComparisons.length > 0;
+
+  if (!hasRelated) {
+    return (
+      <div className="my-8 text-center py-6 px-4 border border-dashed border-neutral-500/10 rounded-2xl">
+        <p className="text-sm text-neutral-500">No clinical connections registered for this topic.</p>
+      </div>
+    );
+  }
+
+  // Icons helper
   const getIconForType = (type: string) => {
     switch (type) {
       case "disease": return <Stethoscope className="h-4 w-4" />;
@@ -35,6 +46,8 @@ export default function RelatedEverything({ entityId }: RelatedEverythingProps) 
       case "remedy": return <Heart className="h-4 w-4" />;
       case "lab-test": return <Stethoscope className="h-4 w-4" />;
       case "faq": return <HelpCircle className="h-4 w-4" />;
+      case "research": return <FileText className="h-4 w-4" />;
+      case "case-study": return <FileText className="h-4 w-4" />;
       default: return <Link2 className="h-4 w-4" />;
     }
   };
@@ -43,28 +56,29 @@ export default function RelatedEverything({ entityId }: RelatedEverythingProps) 
     switch (type) {
       case "disease": return "Related Diseases";
       case "symptom": return "Related Symptoms";
-      case "remedy": return "Considered Remedies";
-      case "lab-test": return "Relevant Lab Tests";
-      case "faq": return "FAQs";
-      case "research": return "Research Summaries";
+      case "remedy": return "Related Remedies";
+      case "lab-test": return "Related Investigations";
+      case "faq": return "Related FAQs";
+      case "research": return "Related Protocols & Research";
       case "case-study": return "Clinical Case Studies";
-      default: return "Related Content";
+      default: return "Related Nodes";
     }
   };
 
   return (
     <div className="my-8 space-y-6">
-      <h3 className="text-xl font-bold text-neutral-800 dark:text-neutral-200 flex items-center gap-2 mb-4">
-        <Link2 className="h-5 w-5 text-teal-600 dark:text-teal-400" /> Interconnected Clinical Knowledge
+      <h3 className="text-xl font-bold text-neutral-900 dark:text-neutral-50 flex items-center gap-2 mb-4">
+        <Link2 className="h-5 w-5 text-teal-600 dark:text-teal-400" /> Clinical Connections
       </h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Render Graph relationships grouped by type */}
         {Object.entries(grouped).map(([type, items]) => (
           <div
             key={type}
-            className="p-5 border border-neutral-500/10 rounded-2xl bg-white/5 backdrop-blur-md"
+            className="p-5 border border-neutral-250 dark:border-neutral-850 rounded-2xl bg-white/5 backdrop-blur-md"
           >
-            <h4 className="font-semibold text-sm uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-3 flex items-center gap-2">
+            <h4 className="font-bold text-xs uppercase tracking-wider text-neutral-500 dark:text-neutral-450 mb-3 flex items-center gap-2">
               {getIconForType(type)} {getHeadingForType(type)}
             </h4>
             <div className="flex flex-wrap gap-2">
@@ -78,13 +92,34 @@ export default function RelatedEverything({ entityId }: RelatedEverythingProps) 
                     className="inline-flex items-center gap-1 text-xs py-1.5 px-3 rounded-full border border-teal-500/20 bg-teal-500/5 hover:bg-teal-500/10 text-teal-700 dark:text-teal-400 transition-colors"
                   >
                     <span>{title}</span>
-                    <span className="text-[10px] opacity-60">({relation})</span>
+                    <span className="text-[9px] opacity-60">({relation})</span>
                   </Link>
                 );
               })}
             </div>
           </div>
         ))}
+
+        {/* Render Related Comparisons */}
+        {relatedComparisons.length > 0 && (
+          <div className="p-5 border border-neutral-250 dark:border-neutral-850 rounded-2xl bg-white/5 backdrop-blur-md">
+            <h4 className="font-bold text-xs uppercase tracking-wider text-neutral-500 dark:text-neutral-450 mb-3 flex items-center gap-2">
+              <GitCompare className="h-4 w-4 text-indigo-500" /> Related Comparisons
+            </h4>
+            <div className="flex flex-wrap gap-2">
+              {relatedComparisons.map((comp) => (
+                <Link
+                  key={comp.slug}
+                  href={`/knowledge/compare/${comp.slug}`}
+                  className="inline-flex items-center gap-1.5 text-xs py-1.5 px-3 rounded-full border border-indigo-500/25 bg-indigo-500/5 hover:bg-indigo-500/10 text-indigo-755 dark:text-indigo-400 transition-colors"
+                >
+                  <GitCompare className="h-3 w-3 shrink-0" />
+                  <span>{comp.title}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Appointment CTA Box */}

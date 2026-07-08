@@ -94,6 +94,51 @@ export default function KmsDashboard({ onEditEntity, onCreateEntity, currentUser
       {/* 1. Health dashboard grid */}
       <DashboardHealthCard entities={entities} />
 
+      {/* Platform Metrics Panel (V2.0 Release Standards) */}
+      <div className="p-6 rounded-2xl border border-neutral-850 bg-neutral-900/60 backdrop-blur-xl space-y-4">
+        <div className="space-y-1">
+          <h3 className="text-sm font-bold text-neutral-100 flex items-center gap-2 border-b border-neutral-850 pb-2">
+            <Shield className="h-4.5 w-4.5 text-cyan-400" />
+            Platform Route & Entity Release Metrics (V2.0)
+          </h3>
+          <p className="text-xs text-neutral-400">
+            Standardized production routing metrics registry for the Homeo Healthcare release environment.
+          </p>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 text-xs">
+          <div className="p-3 bg-neutral-950/40 border border-neutral-850 rounded-xl space-y-1">
+            <span className="text-[10px] text-neutral-500 font-extrabold uppercase tracking-wider block">Static Next.js Routes</span>
+            <span className="text-xl font-bold text-neutral-100 block">426</span>
+            <span className="text-[9px] text-neutral-400 block font-mono">Build target paths</span>
+          </div>
+          <div className="p-3 bg-neutral-950/40 border border-neutral-850 rounded-xl space-y-1">
+            <span className="text-[10px] text-neutral-500 font-extrabold uppercase tracking-wider block">Indexable URLs</span>
+            <span className="text-xl font-bold text-cyan-400 block">387</span>
+            <span className="text-[9px] text-neutral-400 block font-mono">Sitemap.xml entries</span>
+          </div>
+          <div className="p-3 bg-neutral-950/40 border border-neutral-850 rounded-xl space-y-1">
+            <span className="text-[10px] text-neutral-500 font-extrabold uppercase tracking-wider block">Knowledge Articles</span>
+            <span className="text-xl font-bold text-neutral-100 block">{entities.length}</span>
+            <span className="text-[9px] text-neutral-400 block font-mono">Dynamic DB entities</span>
+          </div>
+          <div className="p-3 bg-neutral-950/40 border border-neutral-850 rounded-xl space-y-1">
+            <span className="text-[10px] text-neutral-500 font-extrabold uppercase tracking-wider block">Comparison Pages</span>
+            <span className="text-xl font-bold text-neutral-100 block">13</span>
+            <span className="text-[9px] text-neutral-400 block font-mono">Matrix differentials</span>
+          </div>
+          <div className="p-3 bg-neutral-950/40 border border-neutral-850 rounded-xl space-y-1">
+            <span className="text-[10px] text-neutral-500 font-extrabold uppercase tracking-wider block">Curated Hub Pages</span>
+            <span className="text-xl font-bold text-neutral-100 block">9</span>
+            <span className="text-[9px] text-neutral-400 block font-mono">Topic health centers</span>
+          </div>
+          <div className="p-3 bg-neutral-950/40 border border-neutral-850 rounded-xl space-y-1">
+            <span className="text-[10px] text-neutral-500 font-extrabold uppercase tracking-wider block">Site Static Routes</span>
+            <span className="text-xl font-bold text-neutral-100 block">22</span>
+            <span className="text-[9px] text-neutral-400 block font-mono">Marketing/General pages</span>
+          </div>
+        </div>
+      </div>
+
       {/* 2. Admin operations dashboard quick panel */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         

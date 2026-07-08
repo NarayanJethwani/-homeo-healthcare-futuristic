@@ -49,6 +49,32 @@ import { FattyLiverDisease } from "./fatty-liver";
 import { PepticUlcerDisease } from "./peptic-ulcer";
 import { GingivitisDisease } from "./gingivitis";
 
+import { AnemiaDisease } from "./anemia";
+import { VitaminDDeficiencyDisease } from "./vitamin-d-deficiency";
+import { VitaminB12DeficiencyDisease } from "./vitamin-b12-deficiency";
+import { ChronicCoughDisease } from "./chronic-cough";
+import { RecurrentColdDisease } from "./recurrent-cold";
+import { LowBackPainDisease } from "./low-back-pain";
+import { HypochlorhydriaDisease } from "./hypochlorhydria";
+import { EustachianTubeDysfunctionDisease } from "./eustachian-tube-dysfunction";
+import { FibroadenomaDisease } from "./fibroadenoma";
+import { GallstonesCholelithiasisDisease } from "./gallstones-cholelithiasis";
+import { LaryngitisDisease } from "./laryngitis";
+import { MenieresDiseaseDisease } from "./meniere-s-disease";
+import { TensionHeadacheDisease } from "./tension-headache";
+import { DryEyeSyndromeDisease } from "./dry-eye-syndrome";
+import { OralThrushDisease } from "./oral-thrush";
+import { SebaceousCystDisease } from "./sebaceous-cyst";
+import { PlantarFasciitisDisease } from "./plantar-fasciitis";
+import { PostViralFatigueDisease } from "./post-viral-fatigue";
+import { IrritableBladderDisease } from "./irritable-bladder";
+import { PeripheralNeuropathyDisease } from "./peripheral-neuropathy";
+import { SpasmodicDysphoniaDisease } from "./spasmodic-dysphonia";
+import { HypoglycemiaDisease } from "./hypoglycemia";
+import { MastitisDisease } from "./mastitis";
+import { IntertrigoDisease } from "./intertrigo";
+import { HyperacidityDisease } from "./hyperacidity";
+
 export const DISEASES = [
   GerdDisease,
   EczemaDisease,
@@ -99,7 +125,32 @@ export const DISEASES = [
   GastroenteritisDisease,
   FattyLiverDisease,
   PepticUlcerDisease,
-  GingivitisDisease
+  GingivitisDisease,
+  AnemiaDisease,
+  VitaminDDeficiencyDisease,
+  VitaminB12DeficiencyDisease,
+  ChronicCoughDisease,
+  RecurrentColdDisease,
+  LowBackPainDisease,
+  HypochlorhydriaDisease,
+  EustachianTubeDysfunctionDisease,
+  FibroadenomaDisease,
+  GallstonesCholelithiasisDisease,
+  LaryngitisDisease,
+  MenieresDiseaseDisease,
+  TensionHeadacheDisease,
+  DryEyeSyndromeDisease,
+  OralThrushDisease,
+  SebaceousCystDisease,
+  PlantarFasciitisDisease,
+  PostViralFatigueDisease,
+  IrritableBladderDisease,
+  PeripheralNeuropathyDisease,
+  SpasmodicDysphoniaDisease,
+  HypoglycemiaDisease,
+  MastitisDisease,
+  IntertrigoDisease,
+  HyperacidityDisease,
 ];
 
 export { GerdDisease, EczemaDisease, MigraineDisease, IbsDisease };

@@ -5,7 +5,7 @@ import { SYMPTOMS } from "@/features/knowledge/content/symptoms";
 import { generateMedicalMetadata } from "@/features/knowledge/metadata/medicalMetadata";
 import { generateMedicalWebPageSchema } from "@/features/knowledge/schemas/jsonLdSchemas";
 import KnowledgePageLayout from "@/features/knowledge/components/KnowledgePageLayout";
-import ReviewedBy from "@/features/knowledge/components/ReviewedBy";
+import EditorialConfidenceBadge from "@/features/knowledge/components/EditorialConfidenceBadge";
 import LastReviewedBadge from "@/features/knowledge/components/LastReviewedBadge";
 import EvidenceBadge from "@/features/knowledge/components/EvidenceBadge";
 import MedicalDisclaimer from "@/features/knowledge/components/MedicalDisclaimer";
@@ -19,6 +19,14 @@ import TimelineHistory from "@/features/knowledge/components/TimelineHistory";
 import LearningPathStepper from "@/features/knowledge/components/LearningPathStepper";
 import KnowledgeGraphExplorer from "@/features/knowledge/components/KnowledgeGraphExplorer";
 import ContextualCtaBanner from "@/features/knowledge/components/ContextualCtaBanner";
+import QuickFactsCard from "@/features/knowledge/components/QuickFactsCard";
+import ClinicalPearlBox from "@/features/knowledge/components/ClinicalPearlBox";
+import EvidenceSummaryPanel from "@/features/knowledge/components/EvidenceSummaryPanel";
+import VisualBodySystemCard from "@/features/knowledge/components/VisualBodySystemCard";
+import DifferentialDiagnosisTable from "@/features/knowledge/components/DifferentialDiagnosisTable";
+import HomeopathicPerspective from "@/features/knowledge/components/HomeopathicPerspective";
+import RedFlagBox from "@/features/knowledge/components/RedFlagBox";
+import MedicalIllustration from "@/features/knowledge/components/MedicalIllustration";
 import { Info, HelpCircle, AlertTriangle, BookOpen } from "lucide-react";
 
 interface PageProps {
@@ -91,14 +99,20 @@ export default async function SymptomDetailPage({ params }: PageProps) {
       >
         <Breadcrumbs crumbs={crumbs} />
 
-        <ReviewedBy reviewer={symptom.reviewer} reviewedDate={symptom.versionInfo.reviewed} />
+        <EditorialConfidenceBadge entity={symptom} reviewedDate={symptom.versionInfo.reviewed} />
 
         <div className="mt-4 space-y-4">
           <TimelineHistory versionInfo={symptom.versionInfo} reviewer={symptom.reviewer} />
           <LearningPathStepper currentId={symptom.id} />
+          <QuickFactsCard entity={symptom} />
+          <EvidenceSummaryPanel entity={symptom} />
+          <ClinicalPearlBox entity={symptom} />
+          <VisualBodySystemCard entity={symptom} />
         </div>
 
         <div className="mt-8 space-y-8 text-neutral-850 dark:text-neutral-200 leading-relaxed">
+          {/* Medical Illustration (Sprint 3) */}
+          <MedicalIllustration slug={symptom.slug} />
           
           {/* Section: Definition & Meaning */}
           <section id="definition" className="space-y-3 scroll-mt-24">
@@ -122,38 +136,24 @@ export default async function SymptomDetailPage({ params }: PageProps) {
               <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 border-b border-neutral-500/5 pb-2">
                 <HelpCircle className="h-4.5 w-4.5 text-amber-500" /> Common Causes
               </h3>
-              <ul className="list-disc list-inside space-y-1.5 pl-2 text-neutral-700 dark:text-neutral-300">
+              <ul className="list-disc list-inside space-y-1.5 pl-2 text-neutral-750 dark:text-neutral-300">
                 {content.commonCauses.map((cause: string, idx: number) => (
-                  <li key={idx} className="pl-1"><span className="text-neutral-805 dark:text-neutral-250">{cause}</span></li>
+                  <li key={idx} className="pl-1"><span className="text-neutral-800 dark:text-neutral-200">{cause}</span></li>
                 ))}
               </ul>
             </section>
           )}
 
-          {/* Section: Differential Diagnosis */}
-          {content.differentialDiagnosis && (
-            <section id="differentials" className="space-y-3 scroll-mt-24">
-              <h4 className="text-sm font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Differential Diagnosis</h4>
-              <p className="text-sm text-neutral-700 dark:text-neutral-300">{content.differentialDiagnosis}</p>
-            </section>
-          )}
+          {/* Section: Differential Diagnosis Table */}
+          <DifferentialDiagnosisTable entity={symptom} />
 
-          {/* Section: Red Flags */}
-          {content.redFlags && content.redFlags.length > 0 && (
-            <section id="redflags" className="p-5 border border-rose-500/20 bg-rose-500/5 rounded-2xl flex gap-3 scroll-mt-24">
-              <AlertTriangle className="h-5 w-5 text-rose-500 shrink-0 mt-0.5" />
-              <div>
-                <h4 className="font-bold text-rose-800 dark:text-rose-450 text-sm">
-                  Clinical Red Flags (When to Seek Urgent Care)
-                </h4>
-                <ul className="list-disc list-inside space-y-1.5 text-xs text-rose-950/80 dark:text-rose-250/90 mt-2">
-                  {content.redFlags.map((flag: string, idx: number) => (
-                    <li key={idx}>{flag}</li>
-                  ))}
-                </ul>
-              </div>
-            </section>
-          )}
+          {/* Section: Homeopathic Perspective */}
+          <HomeopathicPerspective entity={symptom} />
+
+          {/* Section: Red Flags / Alert Box */}
+          <section id="redflags" className="scroll-mt-24">
+            <RedFlagBox entity={symptom} />
+          </section>
 
           {/* Section: Lifestyle and diet guidance */}
           {content.lifestyleAdvice && (

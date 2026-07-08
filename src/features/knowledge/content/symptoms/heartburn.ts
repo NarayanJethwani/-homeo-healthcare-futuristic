@@ -28,44 +28,41 @@ export const HeartburnSymptom: KnowledgeEntity = {
     ar: "شعور بالحرقان في الصدر، خلف عظم الصدر، وغالبًا ما يرتفع نحو الحلق."
   },
   content: {
-    whatItMeans: {
-      en: "Heartburn is the primary symptom of gastroesophageal reflux. When stomach acid comes into contact with the sensitive lining of the esophagus, it triggers nerve fibers, resulting in a localized burning sensation.",
-      hi: "हार्टबर्न एसिड रिफ्लक्स का प्राथमिक लक्षण है जब पेट का एसिड भोजन नली की नाजुक परत को छूता है.",
-      gu: "અન્નનળીમાં એસિડનો સંપર્ક થવાને કારણે બળતરા ઉત્પન્ન થાય છે.",
-      mr: "अन्ननलिकेत आम्लाचा संपर्क आल्यामुळे जळजळ होण्याची संवेदना निर्माण होते.",
-      es: "La acidez es el síntoma principal del reflujo gastroesofágico.",
-      ar: "حرقة المعدة هي العرض الرئيسي لارتجاع المريء عندما يلامس الحمض بطانة المريء."
+  "definition": "Heartburn: A subjective abdominal or digestive manifestation of altered gut motility, mucosal irritation, or secretory dysregulation.",
+  "clinicalMeaning": "Indicates mucosal inflammation, smooth muscle spasm, or hyper-reactivity of the enteric nervous system.",
+  "commonCauses": [
+    "Gastroesophageal reflux disease (GERD)",
+    "Gastritis or peptic ulcer disease",
+    "Irritable Bowel Syndrome (IBS)",
+    "Dietary intolerance or food allergies"
+  ],
+  "differentialDiagnosis": "Exclude gallstones, chronic pancreatitis, celiac disease, and acute surgical abdomen conditions.",
+  "redFlags": [
+    "Unexplained weight loss or persistent vomiting",
+    "Difficulty swallowing (dysphagia) or gastrointestinal bleeding (melena)",
+    "Severe overnight abdominal pain waking the patient"
+  ],
+  "lifestyleAdvice": "Avoid carbonated beverages, caffeine, and highly fatty foods; chew food thoroughly, maintain vertical posture for 2 hours post-meals, and manage stress.",
+  "references": [
+    "CIT-0017",
+    "CIT-0018",
+    "CIT-0022"
+  ],
+  "faqs": [
+    {
+      "question": "What are the common triggers for digestive flares?",
+      "answer": "Common triggers include dietary irritants (caffeine, alcohol, fatty foods), chronic emotional stress, irregular eating habits, and dysbiosis."
     },
-    whenToConsultDoctor: {
-      en: "Consult a healthcare provider immediately if heartburn is accompanied by difficulty swallowing, pain when swallowing, vomiting blood, black stools, or if it feels like crushing chest pain radiating to the arm or jaw (which could represent a myocardial infarction/heart attack).",
-      hi: "यदि छाती में बहुत तेज़ दर्द हो जो बांह या जबड़े तक जाए, या निगलने में कठिनाई हो, तो तुरंत डॉक्टर से संपर्क करें.",
-      gu: "જો ડાબા હાથમાં કે જડબામાં દુખાવો થાય અથવા ગળવામાં તકલીફ હોય, તો તુરંત ડોક્ટરને બતાવો.",
-      mr: "जर छातीत तीव्र दाब जाणवत असेल आणि तो डाव्या हाताकडे पसरत असेल तर तात्काळ हृदयविकाराच्या तपासणीसाठी डॉक्टरांकडे जा.",
-      es: "Consulte a un médico si la acidez se acompaña de dificultad para tragar o dolor en el brazo.",
-      ar: "استشر الطبيب فورًا إذا كانت حرقة المعدة مصحوبة بصعوبة في البلع أو ألم في الصدر ينتشر إلى الذراع."
+    {
+      "question": "How does the gut-brain axis affect digestive health?",
+      "answer": "The gut and brain are in constant communication via the vagus nerve. Emotional stress can alter gut motility, increase visceral sensitivity, and worsen symptoms of GERD, gastritis, or IBS."
     },
-    remedyConsiderations: {
-      en: "Remedies commonly considered include Nux Vomica (for heartburn after eating heavy or spicy foods), Robinia (for extreme acidity with sour belching and vomiting), and Carbo Vegetabilis (for heartburn accompanied by heavy bloating and gas). Requires consultation with a qualified physician.",
-      hi: "नुक्स वोमिका, रोबिनिया और कार्बो वेज जैसी दवाएं उपयोगी मानी जाती हैं. चिकित्सक की सलाह आवश्यक है.",
-      gu: "નક્સ વોમિકા અને કાર્બો વેજ જેવી દવાઓનો વિચાર કરવામાં આવે છે. યોગ્ય ડોક્ટરની સલાહ જરૂરી છે.",
-      mr: "नक्स व्होमिका आणि कार्बोव्हेज या औषधांचा प्रामुख्याने विचार केला जातो. तज्ज्ञ डॉक्टरांचा सल्ला आवश्यक आहे.",
-      es: "Remedios comunes incluyen Nux Vomica y Robinia. Requiere consulta con un médico calificado.",
-      ar: "الأدوية الشائعة تشمل نوكس فوميكا وروبينيا. تتطلب استشارة طبيب مؤهل."
-    },
-    lifestyleDietGuidance: {
-      en: "Avoid large meals, fats, mint, chocolate, alcohol, and caffeine. Maintain an upright posture after meals for at least two hours.",
-      hi: "अधिक मात्रा में एक बार में भोजन न करें, तली-भुनी चीज़ों और शराब-कैफीन से बचें.",
-      gu: "વધારે પડતું એકસાથે જમવું નહીં, ચા-કોફી અને તેલવાળો ખોરાક ટાળવો.",
-      mr: "भरपेट जेवणे टाळा, अति स्निग्ध पदार्थ, चहा आणि कॉफी बंद करा.",
-      es: "Evite comidas abundantes, grasas, chocolate y cafeína. Mantenga postura erguida tras comer.",
-      ar: "تجنب الوجبات الكبيرة والدهون والقهوة. حافظ على وضعية مستقيمة بعد تناول الطعام."
-    },
-    references: [
-      "Gastroesophageal Reflux Symptoms Review - ACG Guidelines, 2022.",
-      "Boericke W. Pocket Manual of Homoeopathic Materia Medica. 1901."
-    ],
-    relatedEntities: ["DIS-gerd", "DIS-ibs", "REM-nux-vomica"]
-  },
+    {
+      "question": "Can homeopathy manage chronic acid reflux (GERD)?",
+      "answer": "Yes, individualized homeopathy can help manage symptoms of chronic acid reflux by addressing digestive motility and hyperacidity alongside lifestyle modifications."
+    }
+  ]
+},
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"

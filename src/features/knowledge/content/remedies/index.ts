@@ -99,6 +99,57 @@ import { ChelidoniumRemedy } from "./chelidonium";
 import { CicutaVirosaRemedy } from "./cicuta-virosa";
 import { ClematisRemedy } from "./clematis";
 
+import { MercuriusCorrosivusRemedy } from "./mercurius-corrosivus";
+import { AcidumNitricumRemedy } from "./acidum-nitricum";
+import { PetroleumRemedy } from "./petroleum";
+import { PlatinumMetallicumRemedy } from "./platinum-metallicum";
+import { AbrotanumRemedy } from "./abrotanum";
+import { AcalyphaIndicaRemedy } from "./acalypha-indica";
+import { AceticumAcidumRemedy } from "./aceticum-acidum";
+import { ActaeaRacemosaRemedy } from "./actaea-racemosa";
+import { AgnusCastusRemedy } from "./agnus-castus";
+import { AilanthusGlandulosaRemedy } from "./ailanthus-glandulosa";
+import { AluminaRemedy } from "./alumina";
+import { AmbraGriseaRemedy } from "./ambra-grisea";
+import { AmmoniumCarbonicumRemedy } from "./ammonium-carbonicum";
+import { AmmoniumMuriaticumRemedy } from "./ammonium-muriaticum";
+import { AmylNitrosumRemedy } from "./amyl-nitrosum";
+import { AngusturaVeraRemedy } from "./angustura-vera";
+import { AnthracinumRemedy } from "./anthracinum";
+import { AntimoniumArsenicicumRemedy } from "./antimonium-arsenicicum";
+import { ApocynumCannabinumRemedy } from "./apocynum-cannabinum";
+import { AraliaRacemosaRemedy } from "./aralia-racemosa";
+import { AraneaDiademaRemedy } from "./aranea-diadema";
+import { ArsenicumIodatumRemedy } from "./arsenicum-iodatum";
+import { ArumTriphyllumRemedy } from "./arum-triphyllum";
+import { AvenaSativaRemedy } from "./avena-sativa";
+import { BadiagaRemedy } from "./badiaga";
+import { BarytaMuriaticaRemedy } from "./baryta-muriatica";
+import { BellisPerennisRemedy } from "./bellis-perennis";
+import { BenzoicumAcidumRemedy } from "./benzoicum-acidum";
+import { BismuthumRemedy } from "./bismuthum";
+import { BlattaOrientalisRemedy } from "./blatta-orientalis";
+import { BromiumRemedy } from "./bromium";
+import { BufoRanaRemedy } from "./bufo-rana";
+import { CalotropisGiganteaRemedy } from "./calotropis-gigantea";
+import { CalcareaArsenicosaRemedy } from "./calcarea-arsenicosa";
+import { CalendulaOfficinalisRemedy } from "./calendula-officinalis";
+import { CarbolicumAcidumRemedy } from "./carbolicum-acidum";
+import { CarboAnimalisRemedy } from "./carbo-animalis";
+import { CarduusMarianusRemedy } from "./carduus-marianus";
+import { CaulophyllumThalictroidesRemedy } from "./caulophyllum-thalictroides";
+import { CedronRemedy } from "./cedron";
+import { CereusBonplandiiRemedy } from "./cereus-bonplandii";
+import { ChimaphilaUmbellataRemedy } from "./chimaphila-umbellata";
+import { ChininumSulphuricumRemedy } from "./chininum-sulphuricum";
+import { CistusCanadensisRemedy } from "./cistus-canadensis";
+import { CobaltumMetallicumRemedy } from "./cobaltum-metallicum";
+import { CoccusCactiRemedy } from "./coccus-cacti";
+import { CoffeaCrudaRemedy } from "./coffea-cruda";
+import { CollinsoniaCanadensisRemedy } from "./collinsonia-canadensis";
+import { CondurangoRemedy } from "./condurango";
+import { CopaivaOfficinalisRemedy } from "./copaiva-officinalis";
+
 export const REMEDIES = [
   SulphurRemedy,
   NuxVomicaRemedy,
@@ -199,7 +250,57 @@ export const REMEDIES = [
   CapsicumRemedy,
   ChelidoniumRemedy,
   CicutaVirosaRemedy,
-  ClematisRemedy
+  ClematisRemedy,
+  MercuriusCorrosivusRemedy,
+  AcidumNitricumRemedy,
+  PetroleumRemedy,
+  PlatinumMetallicumRemedy,
+  AbrotanumRemedy,
+  AcalyphaIndicaRemedy,
+  AceticumAcidumRemedy,
+  ActaeaRacemosaRemedy,
+  AgnusCastusRemedy,
+  AilanthusGlandulosaRemedy,
+  AluminaRemedy,
+  AmbraGriseaRemedy,
+  AmmoniumCarbonicumRemedy,
+  AmmoniumMuriaticumRemedy,
+  AmylNitrosumRemedy,
+  AngusturaVeraRemedy,
+  AnthracinumRemedy,
+  AntimoniumArsenicicumRemedy,
+  ApocynumCannabinumRemedy,
+  AraliaRacemosaRemedy,
+  AraneaDiademaRemedy,
+  ArsenicumIodatumRemedy,
+  ArumTriphyllumRemedy,
+  AvenaSativaRemedy,
+  BadiagaRemedy,
+  BarytaMuriaticaRemedy,
+  BellisPerennisRemedy,
+  BenzoicumAcidumRemedy,
+  BismuthumRemedy,
+  BlattaOrientalisRemedy,
+  BromiumRemedy,
+  BufoRanaRemedy,
+  CalotropisGiganteaRemedy,
+  CalcareaArsenicosaRemedy,
+  CalendulaOfficinalisRemedy,
+  CarbolicumAcidumRemedy,
+  CarboAnimalisRemedy,
+  CarduusMarianusRemedy,
+  CaulophyllumThalictroidesRemedy,
+  CedronRemedy,
+  CereusBonplandiiRemedy,
+  ChimaphilaUmbellataRemedy,
+  ChininumSulphuricumRemedy,
+  CistusCanadensisRemedy,
+  CobaltumMetallicumRemedy,
+  CoccusCactiRemedy,
+  CoffeaCrudaRemedy,
+  CollinsoniaCanadensisRemedy,
+  CondurangoRemedy,
+  CopaivaOfficinalisRemedy,
 ];
 
 export { SulphurRemedy, NuxVomicaRemedy, LycopodiumRemedy };

@@ -28,37 +28,48 @@ export const SciaticaDisease: KnowledgeEntity = {
     ar: "نظرة عامة سريرية شاملة لـ Sciatica."
   },
   content: {
-    overview: "Sciatica is a common clinical condition managed in outpatient clinics. An integrated approach combining lifestyle modification and constitutional support yields optimal long-term outcomes.",
-    definition: "Sciatica is defined clinically as a pathological or functional condition affecting systemic homeostasis.",
-    causes: [
-      "Environmental and lifestyle triggers.",
-      "Genetic predisposition and individual susceptibility.",
-      "Functional or metabolic imbalances."
-    ],
-    riskFactors: [
-      "Sedentary lifestyle and stress",
-      "Improper dietary habits",
-      "Family history"
-    ],
-    symptoms: [
-      "Typical physical symptoms associated with Sciatica.",
-      "Aggravation under specific physical or emotional stress.",
-      "Chronic recurrence if left unmanaged."
-    ],
-    diagnosis: "Diagnosed based on patient clinical history, physical examinations, and supporting laboratory investigations.",
-    differentialDiagnosis: "Must be differentiated from other similar functional disorders through target exclusions.",
-    labTests: ["CBC", "ESR"],
-    imaging: "X-ray or Ultrasound as indicated by clinician.",
-    redFlags: [
-      "Sudden severe onset of pain or high fever",
-      "Unexplained rapid weight loss",
-      "Persistent symptoms unresponsive to initial care"
-    ],
-    conventionalManagement: "Standard conventional therapy involves symptomatic management, anti-inflammatories, or metabolic regulators depending on severity.",
-    homeopathicApproach: "Classical homeopathy focuses on constitutional analysis, seeking to reduce individual susceptibility and address underlying chronic tendencies (miasms).",
-    lifestyleAdvice: "Ensure balanced nutrition, regular moderate physical activity, sufficient hydration, and sleep hygiene.",
-    references: ["CIT-0001", "CIT-0002"]
-  },
+  "overview": "Sciatica: Neurological and musculoskeletal conditions affect physical mobility, postural alignment, and sensory nerve conductivity. Management focuses on biomechanical alignment, reducing localized neurogenic inflammation, and pain pathway modulation.",
+  "definition": "Chronic or acute inflammatory and degenerative disorders of the musculoskeletal system or peripheral nerves, resulting in localized pain, restricted movement, or parasthesia.",
+  "causes": [
+    "Repetitive strain, mechanical overload, or micro-trauma to ligaments/tendons",
+    "Neurogenic inflammation and peripheral nerve impingement (e.g., neuropathy)",
+    "Systemic metabolic alterations affecting nerve myelin sheath and joint cartilages"
+  ],
+  "riskFactors": [
+    "Poor ergonomics and sedentary lifestyle",
+    "Intense physical stress or history of mechanical trauma",
+    "Advanced age and metabolic conditions like diabetes"
+  ],
+  "symptoms": [
+    "Aching, throbbing, or shooting pain along nerve/muscle pathways",
+    "Morning stiffness, joint crepitus, and restricted range of motion",
+    "Paresthesia, numbness, or burning sensations in the extremities",
+    "Aggravation of discomfort by cold, damp weather or excessive physical exertion"
+  ],
+  "diagnosis": "Confirmed through physical orthopedic examination, radiographic imaging (X-ray, MRI), and nerve conduction velocity (NCV) testing.",
+  "differentialDiagnosis": "Must differentiate mechanical strain from inflammatory arthritis (Rheumatoid/Ankylosing) and true peripheral neuropathy from radiculopathy.",
+  "conventionalManagement": "Involves non-steroidal anti-inflammatory drugs (NSAIDs), physical therapy, muscle relaxants, nerve blocks, or orthopedic supports.",
+  "homeopathicApproach": "Focuses on soft tissue healing, managing localized neural congestion, and reducing musculoskeletal hyper-reactivity using constitutional remedies.",
+  "lifestyleAdvice": "Maintain ergonomic working postures, perform low-impact stretching and strengthening exercises, apply moist heat or cold packs, and optimize physical rest.",
+  "references": [
+    "CIT-0011",
+    "CIT-0022"
+  ],
+  "faqs": [
+    {
+      "question": "What causes muscle stiffness in the morning?",
+      "answer": "Morning stiffness is often caused by localized inflammation, muscle inactivity during sleep, or structural degenerative joint changes that temporarily reduce synovial fluid circulation."
+    },
+    {
+      "question": "How does stress affect nerve and muscle pain?",
+      "answer": "Stress increases muscle tension and heightens pain sensitivity (central sensitization) by releasing stress hormones that lower the pain threshold."
+    },
+    {
+      "question": "What is the homeopathic approach to physical injury?",
+      "answer": "Homeopathy uses remedies like Arnica Montana to manage acute swelling and bruising, and Rhus Tox or Bryonia for joint stiffness and pain, tailored to whether movement improves or worsens the symptoms."
+    }
+  ]
+},
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"
