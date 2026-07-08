@@ -27,7 +27,9 @@ export default function KnowledgeSearch({
 }: KnowledgeSearchProps) {
   const [query, setQuery] = useState(initialQuery);
   const [activeType, setActiveType] = useState<EntityType | "all">(initialType);
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<any[]>(() => 
+    searchKnowledgeBase(initialQuery, initialType === "all" ? undefined : initialType)
+  );
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [isFocused, setIsFocused] = useState(false);
   const [suggestions, setSuggestions] = useState<any[]>([]);
