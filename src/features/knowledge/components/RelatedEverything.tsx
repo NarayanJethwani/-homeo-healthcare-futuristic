@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { Link2, Stethoscope, HelpCircle, Activity, Heart, Calendar } from "lucide-react";
 import { getRelatedEntities } from "../graph/knowledgeGraph";
+import { getEntityUrl } from "../index";
 
 interface RelatedEverythingProps {
   entityId: string;
@@ -69,10 +70,11 @@ export default function RelatedEverything({ entityId }: RelatedEverythingProps) 
             <div className="flex flex-wrap gap-2">
               {items.map(({ entity, relation }) => {
                 const title = typeof entity.title === "string" ? entity.title : (entity.title?.en || "");
+                const href = getEntityUrl(entity.entityType, entity.slug);
                 return (
                   <Link
                     key={entity.id}
-                    href={`/knowledge/${entity.entityType}s/${entity.slug}`}
+                    href={href}
                     className="inline-flex items-center gap-1 text-xs py-1.5 px-3 rounded-full border border-teal-500/20 bg-teal-500/5 hover:bg-teal-500/10 text-teal-700 dark:text-teal-400 transition-colors"
                   >
                     <span>{title}</span>

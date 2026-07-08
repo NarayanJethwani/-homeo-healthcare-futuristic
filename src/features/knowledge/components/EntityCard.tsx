@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { ArrowUpRight, Stethoscope, HelpCircle, Activity, Heart, FileText, Beaker } from "lucide-react";
 import { KnowledgeEntity, Locale } from "../types";
+import { getEntityUrl } from "../index";
 
 interface EntityCardProps {
   entity: KnowledgeEntity;
@@ -41,8 +42,13 @@ export default function EntityCard({ entity, locale = "en" }: EntityCardProps) {
     }
   };
 
+  const href = getEntityUrl(entity.entityType, entity.slug);
+
   return (
-    <div className="group relative rounded-2xl border border-neutral-500/10 bg-white/5 backdrop-blur-md p-6 hover:bg-neutral-500/5 hover:border-teal-500/20 transition-all duration-300 flex flex-col justify-between h-full">
+    <Link
+      href={href}
+      className="group relative rounded-2xl border border-neutral-500/10 bg-white/5 backdrop-blur-md p-6 hover:bg-neutral-500/5 hover:border-teal-500/20 transition-all duration-300 flex flex-col justify-between h-full text-left no-underline cursor-pointer"
+    >
       <div>
         <div className="flex items-center justify-between mb-4">
           <div className="p-2.5 rounded-xl bg-white/10 dark:bg-white/5 border border-white/10">
@@ -74,13 +80,10 @@ export default function EntityCard({ entity, locale = "en" }: EntityCardProps) {
 
       <div className="mt-6 pt-4 border-t border-neutral-500/5 flex items-center justify-between text-xs font-semibold text-neutral-700 dark:text-neutral-300">
         <span className="opacity-65">Audience: {entity.audience}</span>
-        <Link
-          href={`/knowledge/${entity.entityType}s/${entity.slug}`}
-          className="inline-flex items-center gap-1 text-teal-600 dark:text-teal-400 group-hover:translate-x-0.5 transition-transform duration-200"
-        >
+        <span className="inline-flex items-center gap-1 text-teal-600 dark:text-teal-400 group-hover:translate-x-0.5 transition-transform duration-200">
           View Details <ArrowUpRight className="h-4 w-4" />
-        </Link>
+        </span>
       </div>
-    </div>
+    </Link>
   );
 }

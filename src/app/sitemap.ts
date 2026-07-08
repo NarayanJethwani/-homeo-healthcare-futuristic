@@ -1,5 +1,5 @@
 import { MetadataRoute } from "next";
-import { getAllKnowledgeEntities } from "@/features/knowledge";
+import { getAllKnowledgeEntities, getEntityUrl } from "@/features/knowledge";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://homeo.healthcare";
@@ -40,8 +40,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     );
 
     for (const entity of entities) {
-      // e.g. /knowledge/diseases/gerd
-      const entityRoute = `/knowledge/${entity.entityType}s/${entity.slug}`;
+      const entityRoute = getEntityUrl(entity.entityType, entity.slug);
       sitemapItems.push({
         url: `${baseUrl}${entityRoute}`,
         lastModified: new Date(entity.versionInfo.updated),

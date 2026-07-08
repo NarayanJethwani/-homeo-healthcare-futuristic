@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Terminal, Copy, Check } from "lucide-react";
 import { KnowledgeEntity } from "../types";
