@@ -232,6 +232,10 @@ export default function KnowledgeEditorialPage() {
   };
 
   const triggerAutoTaskGeneration = async () => {
+    if (!userHasPermission("WORKFLOW_ASSIGN")) {
+      alert("Error: You do not have the required WORKFLOW_ASSIGN permission to perform this action.");
+      return;
+    }
     setIsGeneratingTasks(true);
     try {
       // Gather active entities to calculate checklist issues
@@ -246,6 +250,10 @@ export default function KnowledgeEditorialPage() {
   };
 
   const handleAssignTask = async (taskId: string) => {
+    if (!userHasPermission("WORKFLOW_ASSIGN")) {
+      alert("Error: You do not have the required WORKFLOW_ASSIGN permission to perform this action.");
+      return;
+    }
     if (!assigneeName) return;
     const ok = await assignEditorialTask(taskId, assigneeName, assigneeRole, session?.name || "Administrator");
     if (ok) {
@@ -256,6 +264,10 @@ export default function KnowledgeEditorialPage() {
   };
 
   const handleTransitionStatus = async (taskId: string, status: EditorialTaskStatus) => {
+    if (!userHasPermission("WORKFLOW_ASSIGN")) {
+      alert("Error: You do not have the required WORKFLOW_ASSIGN permission to perform this action.");
+      return;
+    }
     const ok = await transitionTaskStatus(taskId, status, session?.name || "Administrator", taskNote);
     if (ok) {
       setTaskNote("");
@@ -295,6 +307,10 @@ export default function KnowledgeEditorialPage() {
   };
 
   const handleRagAction = async (action: "processQueue" | "retryFailedJobs" | "reindexStale") => {
+    if (!userHasPermission("RAG_INDEX_MANAGE")) {
+      alert("Error: You do not have the required RAG_INDEX_MANAGE permission to perform this action.");
+      return;
+    }
     setIsRagLoading(true);
     setRagActionMessage(null);
     try {
@@ -456,6 +472,11 @@ export default function KnowledgeEditorialPage() {
     e.preventDefault();
     if (!editingEntity) return;
 
+    if (!userHasPermission("CMS_DRAFT_EDIT")) {
+      alert("Error: You do not have the required CMS_DRAFT_EDIT permission to perform this action.");
+      return;
+    }
+
     try {
       setIsTasksLoading(true);
       
@@ -494,6 +515,11 @@ export default function KnowledgeEditorialPage() {
     e.preventDefault();
     if (!editingEntity) return;
 
+    if (!userHasPermission("CMS_CLINICAL_APPROVE")) {
+      alert("Error: You do not have the required CMS_CLINICAL_APPROVE permission to perform this action.");
+      return;
+    }
+
     if (!clinicalReviewerName) {
       alert("Please select a registered clinical reviewer.");
       return;
@@ -528,6 +554,11 @@ export default function KnowledgeEditorialPage() {
   const handlePublishArticle = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingEntity) return;
+
+    if (!userHasPermission("CMS_PUBLISH")) {
+      alert("Error: You do not have the required CMS_PUBLISH permission to perform this action.");
+      return;
+    }
 
     if (!changeSummary) {
       alert("Please provide a publication change summary.");
@@ -573,6 +604,12 @@ export default function KnowledgeEditorialPage() {
 
   const handleRollback = async (versionId: string) => {
     if (!editingEntity) return;
+
+    if (!userHasPermission("CMS_ROLLBACK")) {
+      alert("Error: You do not have the required CMS_ROLLBACK permission to perform this action.");
+      return;
+    }
+
     if (!confirm("Are you sure you want to rollback to this version snapshot? Unsaved draft changes will be lost and this will update the current draft staging buffer.")) {
       return;
     }
@@ -1556,8 +1593,11 @@ export default function KnowledgeEditorialPage() {
         )}
 
         {/* WORKSPACE BODY - SEO */}
-        {activeWorkspaceTab === "seo" && scSummary && (
-          <div className="space-y-6">
+        {activeWorkspaceTab === "seo" && (
+          !userHasPermission("OBSERVABILITY_VIEW") ? (
+            renderAccessDenied("OBSERVABILITY_VIEW")
+          ) : scSummary ? (
+            <div className="space-y-6">
             
             {/* telemetry source notice */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1714,11 +1754,15 @@ export default function KnowledgeEditorialPage() {
             </div>
 
           </div>
+          ) : null
         )}
 
         {/* WORKSPACE BODY - ANALYTICS */}
-        {activeWorkspaceTab === "analytics" && analyticsSum && (
-          <div className="space-y-6">
+        {activeWorkspaceTab === "analytics" && (
+          !userHasPermission("OBSERVABILITY_VIEW") ? (
+            renderAccessDenied("OBSERVABILITY_VIEW")
+          ) : analyticsSum ? (
+            <div className="space-y-6">
             
             {/* telemetry source notice */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1855,6 +1899,7 @@ export default function KnowledgeEditorialPage() {
             </div>
 
           </div>
+          ) : null
         )}
 
         {/* WORKSPACE BODY - EDITORIAL WORKFLOW */}
@@ -2126,7 +2171,10 @@ export default function KnowledgeEditorialPage() {
         )}
 
         {activeWorkspaceTab === "rag" && (
-          <div className="space-y-6">
+          !userHasPermission("RAG_INDEX_MANAGE") ? (
+            renderAccessDenied("RAG_INDEX_MANAGE")
+          ) : (
+            <div className="space-y-6">
             {/* RAG Health Status Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="bg-neutral-900/40 border border-neutral-800 p-4 rounded-2xl flex flex-col justify-between">
@@ -2275,7 +2323,8 @@ export default function KnowledgeEditorialPage() {
               </div>
             </div>
           </div>
-        )}
+        )
+      )}
 
       </div>
 

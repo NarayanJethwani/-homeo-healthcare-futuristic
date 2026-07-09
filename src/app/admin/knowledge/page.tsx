@@ -14,11 +14,13 @@ import {
 } from "@/features/knowledge-admin";
 import { LayoutDashboard, Database, BookOpen, ChevronLeft, Shield } from "lucide-react";
 
+import { normalizeRole } from "@/lib/security/rbac";
+
 interface UserSession {
   uid: string;
   email: string;
   name: string;
-  role: "admin" | "doctor";
+  role: string;
 }
 
 export default function AdminKmsPage() {
@@ -99,7 +101,8 @@ export default function AdminKmsPage() {
   };
 
   const handleSaveEntity = async (updated: KmsKnowledgeEntity, reason: string) => {
-    const role: EditorialRole = session?.role === "admin" ? "Administrator" : "MedicalEditor";
+    const isSuperAdmin = session?.role === "admin" || (session?.role && normalizeRole(session.role) === "super-admin");
+    const role: EditorialRole = isSuperAdmin ? "Administrator" : "MedicalEditor";
     await globalKmsRepository.saveEntity(updated, session?.name || "Writer", role, reason);
     setActiveEditEntity(null);
     loadAll();
@@ -113,7 +116,8 @@ export default function AdminKmsPage() {
     );
   }
 
-  const editorRole: EditorialRole = session.role === "admin" ? "Administrator" : "MedicalEditor";
+  const isSuperAdmin = session.role === "admin" || (session.role && normalizeRole(session.role) === "super-admin");
+  const editorRole: EditorialRole = isSuperAdmin ? "Administrator" : "MedicalEditor";
 
   return (
     <div className="min-h-screen bg-[#0a0f1d] text-slate-300 font-sans pb-12 antialiased selection:bg-cyan-500/30 selection:text-cyan-200">

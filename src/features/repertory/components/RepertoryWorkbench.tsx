@@ -542,8 +542,8 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
           careLevel: newCaseCareLevel,
           conditionsCount: Number(newCaseConditions) || 1,
           durationText: `${newCaseDuration} Weeks`,
-          finalPrice: newCasePrice ? Number(newCasePrice) : (newCaseCareLevel.includes("Acute") ? 2280 : 9600),
-          receivedAmount: newCasePrice ? Number(newCasePrice) : (newCaseCareLevel.includes("Acute") ? 2280 : 9600),
+          finalPrice: newCasePrice ? Number(newCasePrice) : (newCaseCareLevel.includes("🌱 Acute & Wellness Care") ? 2850 : (newCaseCareLevel.includes("🚨 Acute Critical Care") ? 25000 : 12000)),
+          receivedAmount: newCasePrice ? Number(newCasePrice) : (newCaseCareLevel.includes("🌱 Acute & Wellness Care") ? 2850 : (newCaseCareLevel.includes("🚨 Acute Critical Care") ? 25000 : 12000)),
           remainingBalance: 0,
           billingCycle: newCaseBillingCycle,
           durationValue: Number(newCaseDuration) || 2,
@@ -1073,12 +1073,13 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
                 }}
                 className="w-full bg-slate-50/50 hover:bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white transition-all font-semibold cursor-pointer"
               >
-                <option value="🌱 Acute & Wellness Care">🌱 Acute & Wellness Care (₹2,280)</option>
-                <option value="⚡ Standard Chronic Care">⚡ Standard Chronic Care (₹9,600)</option>
-                <option value="🚨 Acute Critical Care">🚨 Acute Critical Care (₹20,000)</option>
-                <option value="🎯 Deep Systemic Care">🎯 Deep Systemic Care (₹16,800)</option>
-                <option value="🫁 Advanced Pathological Care">🫁 Advanced Pathological Care (₹24,000)</option>
-                <option value="🔮 Multisystem Integrative Care">🔮 Multisystem Integrative Care (₹33,600)</option>
+                {/* 2-week registration package: ₹1,500/week × 2 weeks = ₹3,000, less 5% = ₹2,850 */}
+                <option value="🌱 Acute & Wellness Care">🌱 Acute & Wellness Care (₹2,850)</option>
+                <option value="⚡ Standard Chronic Care">⚡ Standard Chronic Care (₹12,000)</option>
+                <option value="🚨 Acute Critical Care">🚨 Acute Critical Care (₹25,000)</option>
+                <option value="🎯 Deep Systemic Care">🎯 Deep Systemic Care (₹21,000)</option>
+                <option value="🫁 Advanced Pathological Care">🫁 Advanced Pathological Care (₹30,000)</option>
+                <option value="🔮 Multisystem Integrative Care">🔮 Multisystem Integrative Care (₹42,000)</option>
               </select>
             </div>
 

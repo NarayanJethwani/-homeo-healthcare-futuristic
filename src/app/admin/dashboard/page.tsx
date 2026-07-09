@@ -1,5 +1,7 @@
 "use client";
 
+import { CARE_LEVELS_DETAILS, surchargesLookup } from "@/lib/pricingConfig";
+
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -46,6 +48,7 @@ import { VIRTUAL_PATIENTS, evaluateCaseSubmission } from "@/lib/caseSimulationLa
 import { calculateClinicalDecisionSupport, checkPrescriptionSafety } from "@/lib/clinicalDecisionSupport";
 import { getTreatmentRecommendation } from "@/lib/treatmentRecommendationEngine";
 import Portal from "@/components/Portal";
+import { normalizeRole, hasPermission } from "@/lib/security/rbac";
 import { ReportUploadModal } from "@/features/dashboard/components/ReportUploadModal";
 import { ReportExtractionResult } from "@/features/dashboard/types/reportExtractionTypes";
 import {
@@ -207,9 +210,9 @@ interface Patient {
 const INVOICE_TEMPLATES = [
   { description: "General Constitutional Consultation & Case-Taking", qty: 1, unitPrice: 3500 },
   { description: "Follow-up Consultation Fee", qty: 1, unitPrice: 1500 },
-  { description: "Homeopathic Remedy Supply & Compounding (1 Month)", qty: 1, unitPrice: 1200 },
-  { description: "Homeopathic Remedy Supply & Compounding (2 Months)", qty: 1, unitPrice: 2400 },
-  { description: "Homeopathic Remedy Supply & Compounding (3 Months)", qty: 1, unitPrice: 3500 },
+  { description: "Homeopathic Remedy Supply & Compounding (1 Month)", qty: 1, unitPrice: 1500 },
+  { description: "Homeopathic Remedy Supply & Compounding (2 Months)", qty: 1, unitPrice: 3000 },
+  { description: "Homeopathic Remedy Supply & Compounding (3 Months)", qty: 1, unitPrice: 4375 },
   { description: "Courier & Secure Medicine Shipping (India)", qty: 1, unitPrice: 300 },
   { description: "International Medicine Shipping & Customs Handling", qty: 1, unitPrice: 2500 }
 ];
@@ -716,24 +719,7 @@ const getDurationValue = (duration: string) => {
   if (duration.includes("12-Week")) return 12;
   return 1;
 };
-
-const careLevelsDetails = {
-  mild: { title: "Acute & Wellness Care", weeklyPrice: 1200, monthlyPrice: 4800 },
-  moderate: { title: "Standard Chronic Care", weeklyPrice: 2400, monthlyPrice: 9600 },
-  focused: { title: "Deep Systemic Care", weeklyPrice: 4200, monthlyPrice: 16800 },
-  acute_critical: { title: "Acute Critical Care", weeklyPrice: 5000, monthlyPrice: 20000 },
-  organ: { title: "Advanced Pathological Care", weeklyPrice: 6000, monthlyPrice: 24000 },
-  comprehensive: { title: "Multisystem Integrative Care", weeklyPrice: 8400, monthlyPrice: 33600 },
-};
-
-const surchargesLookup = {
-  mild: { unitWeekly: 300, unitMonthly: 1200 },
-  moderate: { unitWeekly: 450, unitMonthly: 1800 },
-  focused: { unitWeekly: 750, unitMonthly: 3000 },
-  acute_critical: { unitWeekly: 1000, unitMonthly: 4000 },
-  organ: { unitWeekly: 1050, unitMonthly: 4200 },
-  comprehensive: { unitWeekly: 1350, unitMonthly: 5400 }
-};
+// careLevelsDetails and surchargesLookup are imported from centralized pricingConfig
 
 const getCareLevelKey = (level: string) => {
   if (level.includes("Standard")) return "moderate";
@@ -747,7 +733,7 @@ const getCareLevelKey = (level: string) => {
 const getCareLevelRate = (level: string, cycle: string, conditions: number = 1) => {
   const key = getCareLevelKey(level);
   const isWeekly = cycle === "Weekly";
-  const basePrice = isWeekly ? careLevelsDetails[key].weeklyPrice : careLevelsDetails[key].monthlyPrice;
+  const basePrice = isWeekly ? CARE_LEVELS_DETAILS[key].weeklyPrice : CARE_LEVELS_DETAILS[key].monthlyPrice;
   
   let surcharge = 0;
   if (conditions > 1) {
@@ -764,7 +750,7 @@ const calculatePlannerPricing = (
   duration: number,
   conditions: number
 ) => {
-  const details = careLevelsDetails[level as keyof typeof careLevelsDetails] || careLevelsDetails.focused;
+  const details = CARE_LEVELS_DETAILS[level as keyof typeof CARE_LEVELS_DETAILS] || CARE_LEVELS_DETAILS.focused;
   const basePrice = cycle === "weekly" ? details.weeklyPrice : details.monthlyPrice;
   
   let surcharge = 0;
@@ -823,6 +809,7 @@ const TABS_DEFINITION = [
 export default function AdminDashboard() {
   const router = useRouter();
   const [session, setSession] = useState<UserSession | null>(null);
+  const isSuperAdmin = session?.role === "admin" || (session?.role && normalizeRole(session.role) === "super-admin");
   const [activeTab, setActiveTab] = useState<"dashboard" | "intake" | "patients" | "diagnostics" | "analyzer" | "diet-lifestyle" | "treatment-planner" | "nexus-atlas" | "learning-hub" | "communication" | "ai-router" | "health-intelligence" | "cie" | "team" | "medical-academy">("dashboard");
   const [nexusSubTab, setNexusSubTab] = useState<"repertory" | "mind-map" | "materia-medica">("repertory");
   const [cieSubTab, setCieSubTab] = useState<"cockpit" | "intake" | "miasms" | "reports">("cockpit");
@@ -3322,7 +3309,7 @@ export default function AdminDashboard() {
   const [plannerDurationValue, setPlannerDurationValue] = useState<number>(3);
   const [plannerConditionsCount, setPlannerConditionsCount] = useState<number>(1);
   const [plannerConcessionType, setPlannerConcessionType] = useState<string>("None");
-  const [plannerOverridePrice, setPlannerOverridePrice] = useState<number>(16800);
+  const [plannerOverridePrice, setPlannerOverridePrice] = useState<number>(21000);
   const [plannerReceived, setPlannerReceived] = useState<number>(0);
   const [plannerMedicineAddons, setPlannerMedicineAddons] = useState<{ id: string; type: string; details: string; amount: number }[]>([]);
   const [addonType, setAddonType] = useState<string>("Dilution");
@@ -3444,7 +3431,7 @@ export default function AdminDashboard() {
     const newPlan = {
       id: Math.random().toString(36).substring(2, 9),
       createdAt: new Date().toISOString(),
-      careLevel: careLevelsDetails[plannerCareLevel as keyof typeof careLevelsDetails].title,
+      careLevel: CARE_LEVELS_DETAILS[plannerCareLevel as keyof typeof CARE_LEVELS_DETAILS].title,
       conditionsCount: plannerConditionsCount,
       careIntensity: recommendation.complexity,
       durationValue: plannerDurationValue,
@@ -3462,7 +3449,7 @@ export default function AdminDashboard() {
     const updatedPlans = [...currentPlans, newPlan];
 
     const updatedFields = {
-      careLevel: careLevelsDetails[plannerCareLevel as keyof typeof careLevelsDetails].title,
+      careLevel: CARE_LEVELS_DETAILS[plannerCareLevel as keyof typeof CARE_LEVELS_DETAILS].title,
       durationText: durationText,
       finalPrice: calculatedPrices.finalPrice,
       receivedAmount: plannerReceived,
@@ -5064,10 +5051,10 @@ export default function AdminDashboard() {
     concessionType: "None",
     durationText: "1-Month Consultation",
     conditionsCount: 1,
-    basePrice: 4800,
+    basePrice: 6000,
     discountOverride: 0,
-    finalPrice: 4320,
-    receivedAmount: 4320,
+    finalPrice: 5400,
+    receivedAmount: 5400,
     remainingBalance: 0
   });
   const [isCreatingCase, setIsCreatingCase] = useState(false);
@@ -5176,8 +5163,8 @@ export default function AdminDashboard() {
       {
         description: `General Consultation & Treatment Plan (${patient.durationText || "1-Month"})`,
         qty: 1,
-        unitPrice: patient.finalPrice || 4800,
-        amount: patient.finalPrice || 4800
+        unitPrice: patient.finalPrice || 6000,
+        amount: patient.finalPrice || 6000
       }
     ]);
     setInvoiceDiscount(0);
@@ -5480,7 +5467,8 @@ Homeo Healthcare`;
 
     // Build the appropriate query based on role
     const patientsRef = collection(db, "patients");
-    const q = session.role === "admin"
+    const isSuperAdmin = session.role === "admin" || (session.role && normalizeRole(session.role) === "super-admin");
+    const q = isSuperAdmin
       ? query(patientsRef, orderBy("createdAt", "desc"))
       : query(patientsRef, where("assignedDoctor", "==", session.uid));
 
@@ -5493,7 +5481,7 @@ Homeo Healthcare`;
         snapshot.forEach((doc) => {
           list.push(doc.data() as Patient);
         });
-        if (session.role !== "admin") {
+        if (!isSuperAdmin) {
           list.sort((a, b) => {
             const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
             const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
@@ -5513,7 +5501,8 @@ Homeo Healthcare`;
   // Filter patients based on search and roles
   const filteredPatients = patients.filter((p) => {
     // 1. Role-based visibility
-    if (session && session.role !== "admin") {
+    const isSuperAdmin = session ? (session.role === "admin" || (session.role && normalizeRole(session.role) === "super-admin")) : false;
+    if (session && !isSuperAdmin) {
       // Junior doctor: Only see assigned patients
       if (p.assignedDoctor !== session.uid && !session.assignedPatients.includes(p.id)) {
         return false;
@@ -6081,10 +6070,10 @@ Homeo Healthcare`;
           concessionType: "None",
           durationText: "1-Month Consultation",
           conditionsCount: 1,
-          basePrice: 4800,
+          basePrice: 6000,
           discountOverride: 0,
-          finalPrice: 4320,
-          receivedAmount: 4320,
+          finalPrice: 5400,
+          receivedAmount: 5400,
           remainingBalance: 0
         });
       } else {
@@ -8606,7 +8595,8 @@ ${err.message || err}`);
 
         {/* ── Subscription / Trial Warning Banner (non-admin doctors only) ── */}
         {!immersiveMode && (() => {
-          if (!session || session.role === "admin") return null;
+          const isSuperAdmin = session?.role === "admin" || (session?.role && normalizeRole(session.role) === "super-admin");
+          if (!session || isSuperAdmin) return null;
           const sub = (session as any).subscription;
           if (!sub?.validUntil || sub.plan === "branch") return null;
           const daysLeft = Math.floor((new Date(sub.validUntil).getTime() - Date.now()) / 86400000);
@@ -12199,7 +12189,7 @@ ${err.message || err}`);
             );
 
             // Format dynamic WhatsApp message text
-            const careText = careLevelsDetails[plannerCareLevel as keyof typeof careLevelsDetails]?.title || "Doctor-Led Custom Care";
+            const careText = CARE_LEVELS_DETAILS[plannerCareLevel as keyof typeof CARE_LEVELS_DETAILS]?.title || "Doctor-Led Custom Care";
             const condText = plannerConditionsCount === 1 ? "1 Active Concern" : `${plannerConditionsCount} Active Concerns`;
             const durText = plannerBillingCycle === "weekly"
               ? `${plannerDurationValue} ${plannerDurationValue === 1 ? "Week" : "Weeks"}`
@@ -12277,10 +12267,10 @@ ${err.message || err}`);
                                 concessionType: "None",
                                 durationText: "1-Month Consultation",
                                 conditionsCount: 1,
-                                basePrice: 4800,
+                                basePrice: 6000,
                                 discountOverride: 0,
-                                finalPrice: 4320,
-                                receivedAmount: 4320,
+                                finalPrice: 5400,
+                                receivedAmount: 5400,
                                 remainingBalance: 0
                               });
                               setIsNewCaseModalOpen(true);
@@ -14028,10 +14018,10 @@ ${err.message || err}`);
                         concessionType: "None",
                         durationText: "1-Month Consultation",
                         conditionsCount: 1,
-                        basePrice: 4800,
+                        basePrice: 6000,
                         discountOverride: 0,
-                        finalPrice: 4320,
-                        receivedAmount: 4320,
+                        finalPrice: 5400,
+                        receivedAmount: 5400,
                         remainingBalance: 0
                       });
                       setIsNewCaseModalOpen(true);
@@ -14062,7 +14052,7 @@ ${err.message || err}`);
                     <span>Download Patient List (Excel)</span>
                   </button>
 
-                  {session?.role === "admin" && (
+                  {isSuperAdmin && (
                     <button
                       onClick={handleClearAllPatients}
                       className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4.5 py-2.5 rounded-full border border-rose-200 hover:border-rose-600 hover:bg-rose-50 text-rose-600 text-xs font-bold uppercase tracking-wider transition-all bg-white shadow-sm cursor-pointer"
@@ -14157,7 +14147,7 @@ ${err.message || err}`);
                         <span className="text-[10px] font-bold text-slate-700 uppercase tracking-wide">
                           Assigned Clinician
                         </span>
-                        {session?.role === "admin" ? (
+                        {isSuperAdmin ? (
                           <select
                             value={patient.assignedDoctor}
                             onChange={(e) => assignDoctor(patient.id, e.target.value)}
@@ -19291,7 +19281,7 @@ ${err.message || err}`);
           {/* ══════════════════════════════════════════════════════════════════
               MANAGE DOCTORS TAB — Franchise Control Panel (Admin Only)
           ══════════════════════════════════════════════════════════════════ */}
-          {activeTab === "team" && session?.role === "admin" && (() => {
+          {activeTab === "team" && isSuperAdmin && (() => {
             // Local state for this tab — hoisted via useState hooks declared
             // at component level won't re-render the whole page; we use the
             // already-declared state slots below via pattern.
@@ -19299,7 +19289,7 @@ ${err.message || err}`);
             return null; // placeholder — real component rendered just below
           })()}
 
-          {activeTab === "team" && session?.role === "admin" && (
+          {activeTab === "team" && isSuperAdmin && (
             <ManageDoctorsPanel sessionUid={session?.uid || ""} />
           )}
 
@@ -27700,12 +27690,12 @@ Exported on: ${new Date().toLocaleDateString()}
                           onChange={(e) => handleCareLevelChange(e.target.value)}
                           className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-semibold text-[#1A2421]"
                         >
-                          <option value="🌱 Acute & Wellness Care">{getOptionLabel("🌱 Routine (Acute & Wellness Care)", 4800)}</option>
-                          <option value="⚡ Standard Chronic Care">{getOptionLabel("⚡ Standard (Standard Chronic Care)", 9600)}</option>
-                          <option value="🎯 Deep Systemic Care">{getOptionLabel("🎯 Enhanced (Deep Systemic Care)", 16800)}</option>
-                          <option value="🚨 Acute Critical Care">{getOptionLabel("🚨 Advanced (Acute Critical Care)", 20000)}</option>
-                          <option value="🫁 Advanced Pathological Care">{getOptionLabel("🫁 Comprehensive (Advanced Pathological Care)", 24000)}</option>
-                          <option value="🔮 Multisystem Integrative Care">{getOptionLabel("🔮 Intensive (Multisystem Integrative Care)", 33600)}</option>
+                          <option value="🌱 Acute & Wellness Care">{getOptionLabel("🌱 Routine (Acute & Wellness Care)", 6000)}</option>
+                          <option value="⚡ Standard Chronic Care">{getOptionLabel("⚡ Standard (Standard Chronic Care)", 12000)}</option>
+                          <option value="🎯 Deep Systemic Care">{getOptionLabel("🎯 Enhanced (Deep Systemic Care)", 21000)}</option>
+                          <option value="🚨 Acute Critical Care">{getOptionLabel("🚨 Advanced (Acute Critical Care)", 25000)}</option>
+                          <option value="🫁 Advanced Pathological Care">{getOptionLabel("🫁 Comprehensive (Advanced Pathological Care)", 30000)}</option>
+                          <option value="🔮 Multisystem Integrative Care">{getOptionLabel("🔮 Intensive (Multisystem Integrative Care)", 42000)}</option>
                         </select>
                       </div>
 

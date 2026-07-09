@@ -65,3 +65,13 @@ This checklist defines the steps required to certify a release of the Homeo Heal
 - [ ] Verify the treatment planner logic, safety criteria checks, and contraindications are unchanged.
 - [ ] Confirm repertory scoring and remedy rankings match expectations.
 - [ ] Verify that Clinical OS reference links are read-only and missing Knowledge links fail safely (return `found: false` without crashing the planner UI).
+
+## 8. Security & RBAC Verification
+- [ ] Run `npm run verify:production` to confirm that all admin API routes (excluding `/api/admin/session`) are guarded by `authorizeRequest` or `requireAdminApiSession`.
+- [ ] Confirm that no raw stack traces are returned by routes (monitored by the verify script).
+- [ ] Confirm that unauthenticated requests to `/api/admin/*` receive the standardized `401 Unauthorized` JSON response.
+- [ ] Confirm that authenticated but unauthorized requests to `/api/admin/*` receive the standardized `403 Forbidden` JSON response.
+- [ ] Confirm that recursive audit log sanitizer correctly blocks sensitive credential keys, patient names, DOBs, SSNs, and long clinical notes from being logged.
+- [ ] Verify that `ALLOW_DEV_ADMIN_BYPASS` bypass safety checks are active and that bypass is rejected when `NODE_ENV === "production"`.
+- [ ] Confirm that client-side controls (buttons for Publish, Rollback, Assign) are disabled or hidden when the user role lacks authorization.
+

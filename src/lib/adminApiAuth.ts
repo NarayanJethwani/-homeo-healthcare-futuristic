@@ -5,13 +5,31 @@ import { AdminRole, normalizeRole } from "./security/rbac";
 type SessionRole = "admin" | "doctor";
 
 export function unauthorizedApiResponse(message = "Authentication required.") {
-  const response = NextResponse.json({ success: false, message }, { status: 401 });
+  const response = NextResponse.json(
+    {
+      ok: false,
+      error: {
+        code: "UNAUTHORIZED",
+        message
+      }
+    },
+    { status: 401 }
+  );
   response.headers.set("Cache-Control", "no-store");
   return response;
 }
 
-export function forbiddenApiResponse(message = "Admin access required.") {
-  const response = NextResponse.json({ success: false, message }, { status: 403 });
+export function forbiddenApiResponse(message = "Insufficient permissions.") {
+  const response = NextResponse.json(
+    {
+      ok: false,
+      error: {
+        code: "FORBIDDEN",
+        message
+      }
+    },
+    { status: 403 }
+  );
   response.headers.set("Cache-Control", "no-store");
   return response;
 }
@@ -20,7 +38,19 @@ export async function requireAdminApiSession(
   request: NextRequest,
   allowedRoles: (SessionRole | AdminRole)[] = ["admin", "doctor"]
 ) {
-  const session = await verifyAdminSessionCookie(request.cookies.get(ADMIN_SESSION_COOKIE)?.value);
+  let session = await verifyAdminSessionCookie(request.cookies.get(ADMIN_SESSION_COOKIE)?.value);
+
+  // Local development bypass support
+  if (!session && process.env.NODE_ENV !== "production" && process.env.ALLOW_DEV_ADMIN_BYPASS === "true") {
+    session = {
+      uid: "dev-bypass-uid",
+      email: "dev-bypass@homeo.healthcare",
+      role: "super-admin",
+      name: "Local Dev Bypass",
+      exp: Math.floor(Date.now() / 1000) + 3600
+    };
+  }
+
   if (!session) return null;
 
   const normRole = normalizeRole(session.role);

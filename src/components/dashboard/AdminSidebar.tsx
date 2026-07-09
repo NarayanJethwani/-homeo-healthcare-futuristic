@@ -6,6 +6,8 @@ import {
   Activity, Cpu, Network, Award, Send, UserPlus, Menu, ChevronLeft, ChevronRight, Star
 } from "lucide-react";
 
+import { normalizeRole } from "@/lib/security/rbac";
+
 interface AdminSidebarProps {
   isCollapsed: boolean;
   setIsCollapsed: (collapsed: boolean) => void;
@@ -97,7 +99,7 @@ export default function AdminSidebar({
   handleSubTabClick,
 }: AdminSidebarProps) {
   const [openSubmenuTab, setOpenSubmenuTab] = useState<string | null>(null);
-  const isAdmin = session?.role === "admin";
+  const isAdmin = session?.role === "admin" || (session?.role && normalizeRole(session.role) === "super-admin");
 
   const toggleFavorite = (tabId: string, e: React.MouseEvent) => {
     e.stopPropagation();

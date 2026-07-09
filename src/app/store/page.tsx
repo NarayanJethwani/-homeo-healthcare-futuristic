@@ -14,6 +14,9 @@ import Image from "next/image";
 import Magnetic from "@/components/Magnetic";
 import Portal from "@/components/Portal";
 import { getTreatmentRecommendation } from "@/lib/treatmentRecommendationEngine";
+import { CARE_LEVELS_DETAILS, surchargesLookup } from "@/lib/pricingConfig";
+
+const careLevelsDetails = CARE_LEVELS_DETAILS;
 
 interface Package {
   id: string;
@@ -44,8 +47,8 @@ const packages: Package[] = [
   {
     id: "wellness-care",
     title: "Acute & Wellness Care",
-    priceWeekly: "₹1,200",
-    priceMonthly: "₹4,800",
+    priceWeekly: "₹1,500",
+    priceMonthly: "₹6,000",
     category: "consultation",
     desc: "Ideal for general immunity, hair fall, seasonal acute complaints, or general wellness guidance.",
     features: [
@@ -70,8 +73,8 @@ const packages: Package[] = [
   {
     id: "standard-chronic-care",
     title: "Standard Chronic Care",
-    priceWeekly: "₹2,400",
-    priceMonthly: "₹9,600",
+    priceWeekly: "₹3,000",
+    priceMonthly: "₹12,000",
     category: "consultation",
     desc: "Designed for a single chronic condition (e.g. eczema, IBS, thyroid) requiring active tracking and bi-weekly checks.",
     features: [
@@ -96,8 +99,8 @@ const packages: Package[] = [
   {
     id: "focused-care",
     title: "Deep Systemic Care",
-    priceWeekly: "₹4,200",
-    priceMonthly: "₹16,800",
+    priceWeekly: "₹5,250",
+    priceMonthly: "₹21,000",
     category: "consultation",
     desc: "Deep homeopathic treatment for complex chronic or systemic health conditions (e.g. asthma, migraine, severe eczema).",
     features: [
@@ -122,8 +125,8 @@ const packages: Package[] = [
   {
     id: "critical-care",
     title: "Acute Critical Care",
-    priceWeekly: "₹5,000",
-    priceMonthly: "₹20,000",
+    priceWeekly: "₹6,250",
+    priceMonthly: "₹25,000",
     category: "consultation",
     desc: "For urgent, high-intensity acute cases requiring daily tracking, frequent remedy adjustments, and intensive physician study.",
     features: [
@@ -149,8 +152,8 @@ const packages: Package[] = [
   {
     id: "recommended-system-care",
     title: "Advanced Pathological Care",
-    priceWeekly: "₹6,000",
-    priceMonthly: "₹24,000",
+    priceWeekly: "₹7,500",
+    priceMonthly: "₹30,000",
     category: "consultation",
     desc: "Targeted recovery protocols for deep-seated pathology, including organ system rebalancing and biomarker reviews.",
     features: [
@@ -176,8 +179,8 @@ const packages: Package[] = [
   {
     id: "comprehensive-care",
     title: "Multisystem Integrative Care",
-    priceWeekly: "₹8,400",
-    priceMonthly: "₹33,600",
+    priceWeekly: "₹10,500",
+    priceMonthly: "₹42,000",
     category: "consultation",
     desc: "High-intensity multi-organ care program under direct physician supervision for advanced chronic diseases.",
     features: [
@@ -414,104 +417,7 @@ export interface SavedConfig {
 }
 
 
-const careLevelsDetails = {
-  mild: {
-    title: "Acute & Wellness Care",
-    weeklyPrice: 1200,
-    monthlyPrice: 4800,
-    badge: "Acute & General Support",
-    icon: "🌱",
-    complexityLabel: "Low",
-    description: "Ideal for general immunity, hair fall, seasonal acute complaints, or general wellness guidance.",
-    features: [
-      "General constitutional wellness analysis",
-      "Corrective micro-dosing remedy supply",
-      "Standard wellness dietary guide sheet",
-      "WhatsApp clinical team updates (bi-weekly)"
-    ],
-    glowColor: "rgba(20,184,166,0.15)"
-  },
-  moderate: {
-    title: "Standard Chronic Care",
-    weeklyPrice: 2400,
-    monthlyPrice: 9600,
-    badge: "Focused Chronic Management",
-    icon: "⚡",
-    complexityLabel: "Moderate",
-    description: "Designed for a single chronic condition (e.g. eczema, IBS, thyroid) requiring active tracking and bi-weekly checks.",
-    features: [
-      "Single chronic condition profile mapping",
-      "Targeted constitutional remedy preparation",
-      "Anti-inflammatory diet & lifestyle sheets",
-      "Standard clinical response monitoring checkups"
-    ],
-    glowColor: "rgba(168,85,247,0.15)"
-  },
-  focused: {
-    title: "Deep Systemic Care",
-    weeklyPrice: 4200,
-    monthlyPrice: 16800,
-    badge: "Complex Chronic Therapy",
-    icon: "🎯",
-    complexityLabel: "Moderate–High",
-    description: "Deep management of complex chronic or systemic health conditions (e.g. asthma, migraine, severe eczema).",
-    features: [
-      "Deep-seated target system pathology analysis",
-      "High-potency customized constitutional dilutions",
-      "Custom anti-inflammatory & allergen guides",
-      "Priority clinical checkins over WhatsApp"
-    ],
-    glowColor: "rgba(14,165,233,0.15)"
-  },
-  organ: {
-    title: "Advanced Pathological Care",
-    weeklyPrice: 6000,
-    monthlyPrice: 24000,
-    badge: "Organ System Recovery",
-    icon: "🫁",
-    complexityLabel: "High",
-    description: "Advanced recovery protocols for deep-seated pathology, including organ system rebalancing and biomarker reviews.",
-    features: [
-      "Multi-remedy support for organ pathology",
-      "Advanced systemic rebalancing protocols",
-      "Biomarker timeline mapping & reviews",
-      "Personalized organ-support lifestyle sheets"
-    ],
-    glowColor: "rgba(16,185,129,0.15)"
-  },
-  comprehensive: {
-    title: "Multisystem Integrative Care",
-    weeklyPrice: 8400,
-    monthlyPrice: 33600,
-    badge: "Multi-Organ Intensive Care",
-    icon: "🔮",
-    complexityLabel: "Comprehensive",
-    description: "For long-standing, multi-system chronic pathologies requiring intensive clinical supervision by Dr. Jethwani.",
-    features: [
-      "Multi-organ pathogenetic profile mapping",
-      "Direct clinical supervision by Dr. Jethwani",
-      "High-frequency dosage titrations & reviews",
-      "Direct priority clinical assistance channel"
-    ],
-    glowColor: "rgba(244,63,94,0.15)"
-  },
-  acute_critical: {
-    title: "Acute Critical Care",
-    weeklyPrice: 5000,
-    monthlyPrice: 20000,
-    badge: "Intensive Daily Supervision",
-    icon: "🚨",
-    complexityLabel: "Intensive",
-    description: "For urgent, high-intensity acute cases requiring daily tracking, frequent remedy adjustments, and intensive physician study.",
-    features: [
-      "Daily doctor clinical review and check-ins",
-      "Intensive daily remedy titration and support",
-      "Emergency/priority WhatsApp communication channel",
-      "Detailed case study and Organon-guided repertorization"
-    ],
-    glowColor: "rgba(239,68,68,0.15)"
-  }
-};
+// careLevelsDetails is imported from centralized config above
 
 const shippingCountries = [
   "India",
@@ -1015,19 +921,11 @@ export default function StorePage() {
     const details = careLevelsDetails[level];
     const basePrice = cycle === "weekly" ? details.weeklyPrice : details.monthlyPrice;
     
-    // Dynamic coordination surcharges lookup based on care level and cycle (perfectly aligned at 4x weekly)
-    const surchargesLookup = {
-      mild: { unitWeekly: 300, unitMonthly: 1200 },
-      moderate: { unitWeekly: 450, unitMonthly: 1800 },
-      focused: { unitWeekly: 750, unitMonthly: 3000 },
-      organ: { unitWeekly: 1050, unitMonthly: 4200 },
-      comprehensive: { unitWeekly: 1350, unitMonthly: 5400 },
-      acute_critical: { unitWeekly: 1000, unitMonthly: 4000 }
-    };
+    // surchargesLookup is imported from config above
 
     let surcharge = 0;
     if (conditions > 1) {
-      const tierSurcharges = surchargesLookup[level];
+      const tierSurcharges = surchargesLookup[level as keyof typeof surchargesLookup];
       const unit = cycle === "weekly" ? tierSurcharges.unitWeekly : tierSurcharges.unitMonthly;
       surcharge = (conditions - 1) * unit;
     }
@@ -1512,7 +1410,7 @@ export default function StorePage() {
             transition={{ duration: 1, delay: 0.2 }}
             className="text-base text-slate-700 font-semibold leading-relaxed"
           >
-            Select a tailored consultation setup or long-term chronic treatment program. All therapeutic care programs include consultation, remedies, custom diet sheets, and shipping inside India.
+            Personalized physician-led homeopathic care with structured follow-up and treatment planning. Starting from ₹1,500/week equivalent, billed monthly from ₹6,000/month before duration benefits. Choose longer care duration to receive continuity benefits. All therapeutic care programs include consultation, remedies, custom diet sheets, and shipping inside India.
           </motion.p>
         </div>
 
@@ -1846,8 +1744,8 @@ export default function StorePage() {
                           </div>
 
                           <div className="space-y-4 text-xs">
-                            <p className="text-[11px] text-slate-600 font-semibold leading-relaxed">
-                              The table below maps common chronic and acute conditions to our clinical care tiers. If treating multiple conditions, choose the tier for your <strong>most complex</strong> complaint, then select the total condition count in the planner. Each surcharge per additional condition is ₹600/mo.
+                            <p className="text-[11px] text-slate-655 font-semibold leading-relaxed">
+                              The table below maps common chronic and acute conditions to our clinical care tiers. If treating multiple conditions, choose the tier for your <strong>most complex</strong> complaint, then select the total condition count in the planner. Each surcharge per additional condition is ₹750/mo (for Acute Care, varying by tier).
                             </p>
 
                             {/* Conditions count guide */}
@@ -1881,43 +1779,43 @@ export default function StorePage() {
                                   <tr>
                                     <td className="py-3 pr-4 font-black text-slate-900 whitespace-nowrap">🌱 Acute &amp; Wellness</td>
                                     <td className="py-3 px-4">Acute cold/cough, seasonal allergies, simple hair fall, minor indigestion, mild flares.</td>
-                                    <td className="py-3 px-4 font-black text-slate-900 whitespace-nowrap">₹4,800/mo</td>
+                                    <td className="py-3 px-4 font-black text-slate-900 whitespace-nowrap">₹6,000/mo</td>
                                     <td className="py-3 pl-4">Constitutional micro-dose remedies, basic diet sheet, bi-weekly check-ins.</td>
                                   </tr>
                                   <tr>
                                     <td className="py-3 pr-4 font-black text-[#1A2421] whitespace-nowrap">⚡ Standard Chronic</td>
                                     <td className="py-3 px-4">Chronic eczema, dry skin/acne, mild thyroid, single joint pain, IBS/gas.</td>
-                                    <td className="py-3 px-4 font-black text-[#1A2421] whitespace-nowrap">₹9,600/mo</td>
+                                    <td className="py-3 px-4 font-black text-[#1A2421] whitespace-nowrap">₹12,000/mo</td>
                                     <td className="py-3 pl-4">Disease mapping, targeted remedies, detailed dietary guide, fortnightly reports.</td>
                                   </tr>
                                   <tr>
                                     <td className="py-3 pr-4 font-black text-mint-dark whitespace-nowrap">🎯 Deep Systemic</td>
                                     <td className="py-3 px-4">Bronchial asthma, severe psoriasis, alopecia areata, PCOS-acne, vascular migraines.</td>
-                                    <td className="py-3 px-4 font-black text-mint-dark whitespace-nowrap">₹16,800/mo</td>
+                                    <td className="py-3 px-4 font-black text-mint-dark whitespace-nowrap">₹21,000/mo</td>
                                     <td className="py-3 pl-4">Deep organ-level pathology protocol, high-potency dilutions, lab report evaluation.</td>
                                   </tr>
                                   <tr>
                                     <td className="py-3 pr-4 font-black text-indigo-700 whitespace-nowrap">🫁 Advanced Pathological</td>
                                     <td className="py-3 px-4">Early CKD, fatty liver/elevated enzymes, multi-joint chronic arthritis, autoimmune rebalancing.</td>
-                                    <td className="py-3 px-4 font-black text-indigo-700 whitespace-nowrap">₹24,000/mo</td>
+                                    <td className="py-3 px-4 font-black text-indigo-700 whitespace-nowrap">₹30,000/mo</td>
                                     <td className="py-3 pl-4">Multi-remedy inter-system support, periodic blood report comparison, dietitian integration.</td>
                                   </tr>
                                   <tr>
                                     <td className="py-3 pr-4 font-black text-rose-600 whitespace-nowrap">🔮 Multisystem Integrative</td>
                                     <td className="py-3 px-4">3+ co-existing conditions (e.g. DM + CKD + RA), advanced poly-chronic autoimmune cases.</td>
-                                    <td className="py-3 px-4 font-black text-rose-600 whitespace-nowrap">₹33,600/mo</td>
+                                    <td className="py-3 px-4 font-black text-rose-600 whitespace-nowrap">₹42,000/mo</td>
                                     <td className="py-3 pl-4">Direct Dr. Jethwani supervision, high-frequency dosage adjustments, acute flare protocols.</td>
                                   </tr>
                                   <tr className="bg-red-50/50">
                                     <td className="py-3 pr-4 font-black text-red-700 whitespace-nowrap">🚨 Acute Critical Care</td>
                                     <td className="py-3 px-4">Urgent acute illness — high fever, acute asthma attacks, acute renal crisis, emergency post-surgical support.</td>
-                                    <td className="py-3 px-4 font-black text-red-700 whitespace-nowrap">₹20,000/mo</td>
+                                    <td className="py-3 px-4 font-black text-red-700 whitespace-nowrap">₹25,000/mo</td>
                                     <td className="py-3 pl-4">Daily clinical monitoring, frequent remedy titration, priority WhatsApp supervision by Dr. Jethwani.</td>
                                   </tr>
                                 </tbody>
                               </table>
                             </div>
-                            <p className="text-[10px] text-slate-400 font-semibold">* Surcharge of ₹600/mo per additional condition beyond 1. Weekly billing available at approx. ×0.26 of monthly rate.</p>
+                            <p className="text-[10px] text-slate-400 font-semibold">* Surcharge of ₹750/mo per additional condition beyond 1 (for Acute & Wellness Care, varying by tier). Weekly billing available.</p>
                           </div>
                         </motion.div>
                       )}
@@ -2036,15 +1934,7 @@ export default function StorePage() {
 
                         <div className="flex flex-col gap-2">
                           {(() => {
-                            const surchargesLookup = {
-                              mild: { unitWeekly: 300, unitMonthly: 1200 },
-                              moderate: { unitWeekly: 450, unitMonthly: 1800 },
-                              focused: { unitWeekly: 750, unitMonthly: 3000 },
-                              organ: { unitWeekly: 1050, unitMonthly: 4200 },
-                              comprehensive: { unitWeekly: 1350, unitMonthly: 5400 },
-                              acute_critical: { unitWeekly: 1000, unitMonthly: 4000 }
-                            };
-                            const activeTierSurcharges = surchargesLookup[careLevel];
+                            const activeTierSurcharges = surchargesLookup[careLevel as keyof typeof surchargesLookup];
                             const items = [
                               { count: 1, label: "1 Health Concern", surchargeText: "Included", surchargeInfo: "Base plan" },
                               { count: 2, label: "2 Health Concerns", surchargeText: billingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly}/wk` : `+₹${activeTierSurcharges.unitMonthly}/mo`, surchargeInfo: "Dual-concern coordination" },
@@ -2101,7 +1991,7 @@ export default function StorePage() {
                             <span className="text-[10px] font-bold text-mint uppercase tracking-widest block mb-1">Step 2</span>
                             <h2 className="text-xl font-bold text-[#1A2421]">Billing & Duration Selection</h2>
                             <p className="text-xs text-slate-500 font-semibold mt-1">
-                              Select your care billing option and recommended care period. Continuity of care supports optimal healing and activates continuity benefits.
+                              Personalized physician-led homeopathic care with structured follow-up and treatment planning. Choose longer care duration to receive continuity benefits.
                             </p>
                           </div>
                           <div className="w-10 h-10 bg-mint/5 border border-mint/10 text-mint rounded-2xl flex items-center justify-center flex-shrink-0">
@@ -2924,7 +2814,7 @@ export default function StorePage() {
                       <span className="text-[10px] font-bold text-mint uppercase tracking-widest block mb-1">Step 2 of 3 · Conditions Count</span>
                       <h3 className="text-xl font-bold text-slate-900">How many conditions are you treating?</h3>
                       <p className="text-xs text-slate-500 font-semibold mt-1">
-                        Count each distinct active chronic complaint you want addressed simultaneously. Each adds ₹600/mo to the base plan.
+                        Count each distinct active chronic complaint you want addressed simultaneously. Each adds ₹750/mo to the base plan (for Acute Care, varying by tier).
                       </p>
                     </div>
 
@@ -2937,7 +2827,7 @@ export default function StorePage() {
                           desc: "Single focused complaint.",
                           examples: "Only eczema. Only thyroid. Only sinusitis. Only PCOS.",
                           surcharge: "No surcharge",
-                          color: "text-slate-650"
+                          color: "text-slate-655"
                         },
                         {
                           val: 2,
@@ -2945,7 +2835,7 @@ export default function StorePage() {
                           icon: "②",
                           desc: "Two co-existing conditions being treated simultaneously.",
                           examples: "Thyroid + Skin. PCOS + Acne. Diabetes + Joint Pain. Sinusitis + Asthma.",
-                          surcharge: "+₹600/mo",
+                          surcharge: "+₹750/mo",
                           color: "text-blue-605"
                         },
                         {
@@ -2954,7 +2844,7 @@ export default function StorePage() {
                           icon: "③",
                           desc: "Three concurrent complaints requiring coordinated management.",
                           examples: "DM + HTN + Skin. Thyroid + PCOS + Hair. Asthma + Eczema + IBS.",
-                          surcharge: "+₹1,200/mo",
+                          surcharge: "+₹1,500/mo",
                           color: "text-amber-605"
                         },
                         {
@@ -2963,7 +2853,7 @@ export default function StorePage() {
                           icon: "④",
                           desc: "Four overlapping health concerns managed together.",
                           examples: "DM + CKD + HTN + Skin. PCOS + Thyroid + Gut + Migraines.",
-                          surcharge: "+₹1,800/mo",
+                          surcharge: "+₹2,250/mo",
                           color: "text-orange-605"
                         },
                         {
@@ -2972,7 +2862,7 @@ export default function StorePage() {
                           icon: "⑤",
                           desc: "Complex poly-morbid case with 5 or more active complaints.",
                           examples: "DM + CKD + RA + HTN + Skin/Gut. Advanced multisystem chronic presentations.",
-                          surcharge: "+₹2,400/mo",
+                          surcharge: "+₹3,000/mo",
                           color: "text-rose-605"
                         }
                       ].map((item) => (
@@ -3225,7 +3115,7 @@ export default function StorePage() {
                     </div>
                     <div className="mt-4 pt-4 border-t border-slate-100">
                       <p className="text-[9px] text-slate-400 font-semibold leading-relaxed">
-                        💡 Commitment discounts apply: <span className="text-emerald-600 font-bold">10% off 1 month → 30% off 12 months.</span> Per extra condition: +₹300–₹1,350/wk depending on tier.
+                        💡 Commitment discounts apply: <span className="text-emerald-600 font-bold">10% off 1 month → 30% off 12 months.</span> Per extra condition: +₹375–₹1,688/wk depending on tier.
                       </p>
                     </div>
                   </div>
@@ -4583,7 +4473,7 @@ export default function StorePage() {
                       <span className="text-[10px] font-bold text-mint uppercase tracking-widest block mb-1">Step 2 of 3 · Conditions Count</span>
                       <h3 className="text-xl font-bold text-slate-900">How many conditions are you treating?</h3>
                       <p className="text-xs text-slate-500 font-semibold mt-1">
-                        Count each distinct active chronic complaint you want addressed simultaneously. Each adds ₹600/mo to the base plan.
+                        Count each distinct active chronic complaint you want addressed simultaneously. Each adds ₹750/mo to the base plan (for Acute Care, varying by tier).
                       </p>
                     </div>
 
@@ -4604,7 +4494,7 @@ export default function StorePage() {
                           icon: "②",
                           desc: "Two co-existing conditions being treated simultaneously.",
                           examples: "Thyroid + Skin. PCOS + Acne. Diabetes + Joint Pain. Sinusitis + Asthma.",
-                          surcharge: "+₹600/mo",
+                          surcharge: "+₹750/mo",
                           color: "text-blue-600"
                         },
                         {
@@ -4613,7 +4503,7 @@ export default function StorePage() {
                           icon: "③",
                           desc: "Three concurrent complaints requiring coordinated management.",
                           examples: "DM + HTN + Skin. Thyroid + PCOS + Hair. Asthma + Eczema + IBS.",
-                          surcharge: "+₹1,200/mo",
+                          surcharge: "+₹1,500/mo",
                           color: "text-amber-600"
                         },
                         {
@@ -4622,7 +4512,7 @@ export default function StorePage() {
                           icon: "④",
                           desc: "Four overlapping health concerns managed together.",
                           examples: "DM + CKD + HTN + Skin. PCOS + Thyroid + Gut + Migraines.",
-                          surcharge: "+₹1,800/mo",
+                          surcharge: "+₹2,250/mo",
                           color: "text-orange-600"
                         },
                         {
@@ -4631,7 +4521,7 @@ export default function StorePage() {
                           icon: "⑤",
                           desc: "Complex poly-morbid case with 5 or more active complaints.",
                           examples: "DM + CKD + RA + HTN + Skin/Gut. Advanced multisystem chronic presentations.",
-                          surcharge: "+₹2,400/mo",
+                          surcharge: "+₹3,000/mo",
                           color: "text-rose-600"
                         }
                       ].map((item) => (

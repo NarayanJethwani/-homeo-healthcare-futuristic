@@ -89,13 +89,11 @@ export async function createAdminSessionCookie(payload: AdminSessionPayload) {
 
 export async function verifyAdminSessionCookie(cookieValue?: string) {
   if (!cookieValue) {
-    console.log("[verifyAdminSessionCookie] No cookie value provided");
     return null;
   }
 
   const parts = cookieValue.split(".");
   if (parts.length !== 2) {
-    console.log(`[verifyAdminSessionCookie] Cookie format invalid. Expected 2 parts, got ${parts.length}`);
     return null;
   }
   const [encodedPayload, signature] = parts;
@@ -103,22 +101,18 @@ export async function verifyAdminSessionCookie(cookieValue?: string) {
   try {
     const expectedSignature = await sign(encodedPayload);
     const signatureMatch = timingSafeEqual(signature, expectedSignature);
-    console.log(`[verifyAdminSessionCookie] Signature match: ${signatureMatch}. Got signature: ${signature}, Expected signature: ${expectedSignature}`);
     if (!signatureMatch) return null;
 
     const payload = decodeJsonPayload(encodedPayload);
-    console.log(`[verifyAdminSessionCookie] Decoded payload: ${JSON.stringify(payload)}`);
     
     const now = Math.floor(Date.now() / 1000);
     const hasExpired = payload.exp <= now;
-    console.log(`[verifyAdminSessionCookie] Expiry check: exp = ${payload.exp}, now = ${now}, hasExpired = ${hasExpired}`);
     
     if (!payload.uid || !payload.role || !payload.exp) return null;
     if (hasExpired) return null;
 
     return payload;
   } catch (err: any) {
-    console.log(`[verifyAdminSessionCookie] Verification error: ${err?.message || err}`);
     return null;
   }
 }

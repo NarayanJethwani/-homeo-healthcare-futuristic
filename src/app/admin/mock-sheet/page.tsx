@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { JETHWANI_REPERTORY_DATA, setRepertoryData } from "@/lib/repertoryData";
+import { CARE_LEVELS_DETAILS, surchargesLookup } from "@/lib/pricingConfig";
 
 type TabType = "Dashboard" | "Case Taking" | "Follow-up Tracker" | "Repertorization" | "Treatment Planner" | "Finance" | "AI Repertory Lab" | "Reports & Attachments" | "Config DB";
 
@@ -1537,23 +1538,7 @@ function MockSheetContent() {
   };
 
   // 3. Treatment planner calculations and prices
-  const careLevelsDetails = {
-    mild: { title: "Acute & Wellness Care", weeklyPrice: 1200, monthlyPrice: 4800 },
-    moderate: { title: "Standard Chronic Care", weeklyPrice: 2400, monthlyPrice: 9600 },
-    focused: { title: "Deep Systemic Care", weeklyPrice: 4200, monthlyPrice: 16800 },
-    acute_critical: { title: "Acute Critical Care", weeklyPrice: 5000, monthlyPrice: 20000 },
-    organ: { title: "Advanced Pathological Care", weeklyPrice: 6000, monthlyPrice: 24000 },
-    comprehensive: { title: "Multisystem Integrative Care", weeklyPrice: 8400, monthlyPrice: 33600 },
-  };
-
-  const surchargesLookup = {
-    mild: { unitWeekly: 300, unitMonthly: 1200 },
-    moderate: { unitWeekly: 450, unitMonthly: 1800 },
-    focused: { unitWeekly: 750, unitMonthly: 3000 },
-    acute_critical: { unitWeekly: 1000, unitMonthly: 4000 },
-    organ: { unitWeekly: 1050, unitMonthly: 4200 },
-    comprehensive: { unitWeekly: 1350, unitMonthly: 5400 }
-  };
+  const careLevelsDetails = CARE_LEVELS_DETAILS;
 
   const calculatePricing = (
     level: keyof typeof careLevelsDetails,
@@ -1566,7 +1551,7 @@ function MockSheetContent() {
     
     let surcharge = 0;
     if (conditions > 1) {
-      const tierSurcharges = surchargesLookup[level];
+      const tierSurcharges = surchargesLookup[level as keyof typeof surchargesLookup];
       const unit = cycle === "weekly" ? tierSurcharges.unitWeekly : tierSurcharges.unitMonthly;
       surcharge = (conditions - 1) * unit;
     }

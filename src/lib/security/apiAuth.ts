@@ -22,7 +22,27 @@ export async function authorizeRequest(
 ): Promise<{ authorized: true; session: AuthorizedSession } | { authorized: false; response: NextResponse }> {
   
   const cookieValue = request.cookies.get(ADMIN_SESSION_COOKIE)?.value;
-  const session = await verifyAdminSessionCookie(cookieValue);
+  const verified = await verifyAdminSessionCookie(cookieValue);
+  let session: AuthorizedSession | null = null;
+
+  if (verified) {
+    session = {
+      uid: verified.uid,
+      email: verified.email || "unknown@homeo.healthcare",
+      role: verified.role,
+      name: verified.name || "Administrator"
+    };
+  }
+
+  // Local development bypass support
+  if (!session && process.env.NODE_ENV !== "production" && process.env.ALLOW_DEV_ADMIN_BYPASS === "true") {
+    session = {
+      uid: "dev-bypass-uid",
+      email: "dev-bypass@homeo.healthcare",
+      role: "super-admin",
+      name: "Local Dev Bypass"
+    };
+  }
 
   if (!session) {
     // Unauthenticated
@@ -38,7 +58,13 @@ export async function authorizeRequest(
     });
 
     const response = NextResponse.json(
-      { success: false, error: "Unauthenticated. Session cookie is missing or invalid." },
+      {
+        ok: false,
+        error: {
+          code: "UNAUTHORIZED",
+          message: "Authentication required."
+        }
+      },
       { status: 401 }
     );
     return { authorized: false, response };
@@ -65,7 +91,13 @@ export async function authorizeRequest(
     });
 
     const response = NextResponse.json(
-      { success: false, error: "Forbidden. Insufficient permissions to perform this action." },
+      {
+        ok: false,
+        error: {
+          code: "FORBIDDEN",
+          message: "Insufficient permissions."
+        }
+      },
       { status: 403 }
     );
     return { authorized: false, response };
