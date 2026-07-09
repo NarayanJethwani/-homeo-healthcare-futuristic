@@ -1,6 +1,7 @@
 import React from 'react';
-import { FileText, BookOpen, Layers, ShieldAlert, Activity, TrendingUp, CheckSquare, Award } from 'lucide-react';
+import { FileText, BookOpen, Layers, ShieldAlert, Activity, TrendingUp, CheckSquare, Award, ExternalLink } from 'lucide-react';
 import { RemedyReasoning, RemedyProvenance } from '../types';
+import { getKnowledgeLinkForRemedy, getKnowledgeContextForRemedy } from '@/features/knowledge/governance/clinicalOsIntegration';
 
 interface RemedyReasoningPanelProps {
   reasoning: RemedyReasoning & {
@@ -55,15 +56,64 @@ interface RemedyReasoningPanelProps {
   }>;
 }
 
+// Knowledge Platform integration is read-only and must not alter clinical decision logic.
+
 export const RemedyReasoningPanel: React.FC<RemedyReasoningPanelProps> = ({ reasoning, matchedPatterns }) => {
+  const link = getKnowledgeLinkForRemedy(reasoning.remedyId);
+  const context = getKnowledgeContextForRemedy(reasoning.remedyId);
+
   return (
     <div className="bg-white/70 backdrop-blur-md rounded-3xl border border-slate-200/80 p-6 space-y-4 shadow-xs text-left">
       <div className="flex items-center justify-between border-b border-slate-100 pb-3">
         <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
           <FileText className="w-4 h-4 text-emerald-500" />
-          Remedy Reasoning Analysis: {reasoning.remedyName}
+          Remedy Reasoning Analysis:{" "}
+          {link.found ? (
+            <a
+              href={link.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-emerald-600 hover:text-emerald-700 underline flex items-center gap-0.5"
+              title={`View ${link.title} on Knowledge Platform`}
+            >
+              {reasoning.remedyName}
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          ) : (
+            <span className="text-slate-800" title="Educational Knowledge article pending">
+              {reasoning.remedyName}
+            </span>
+          )}
         </h3>
         <div className="flex items-center gap-1.5 flex-wrap">
+          {context.found ? (
+            <>
+              <span 
+                className={`text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border font-mono ${
+                  context.editorialStatus === "published" || context.editorialStatus === "clinically-reviewed"
+                    ? "bg-teal-50 text-teal-700 border-teal-200/50"
+                    : "bg-amber-50 text-amber-700 border-amber-200/50"
+                }`}
+                title={context.editorialStatus === "published" ? "Clinically reviewed and published" : "Needs clinical review"}
+              >
+                {context.editorialStatus === "published" || context.editorialStatus === "clinically-reviewed" ? "Clinically Reviewed" : "Review Needed"}
+              </span>
+              <span 
+                className={`text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border font-mono ${
+                  context.citationHealth === "A" || context.citationHealth === "B"
+                    ? "bg-blue-50 text-blue-700 border-blue-200/50"
+                    : "bg-rose-50 text-rose-700 border-rose-200/50"
+                }`}
+                title="Citation Health Score"
+              >
+                {context.citationHealth === "A" || context.citationHealth === "B" ? `Citations: ${context.citationHealth}` : "Citation Caution"}
+              </span>
+            </>
+          ) : (
+            <span className="text-[8px] font-black uppercase tracking-wider bg-slate-50 text-slate-400 px-2 py-0.5 rounded-full border border-slate-200/30 font-mono">
+              Knowledge article pending
+            </span>
+          )}
           <span className="text-[8px] font-black uppercase tracking-wider bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full border border-amber-200/50 font-mono">
             Clinician Review
           </span>

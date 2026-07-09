@@ -30,6 +30,16 @@ import { REMEDY_LEARNING_DB, parseLearningTutorQuery, searchRemedies, compareFam
 import { simulateMateriaMedicaIngestion, CLASSICAL_SOURCES } from "@/lib/materiaMedicaIngestion";
 import { GENOME_REMEDY_DB } from "@/lib/remedyGenomeSchema";
 import { RepertoryWorkbench } from "@/features/repertory";
+import { 
+  getKnowledgeLinkForDisease, 
+  getKnowledgeLinkForRemedy, 
+  getKnowledgeLinkForLabTest, 
+  getKnowledgeLinkForSymptom,
+  getKnowledgeContextForDisease,
+  getKnowledgeContextForRemedy,
+  getKnowledgeContextForLabTest,
+  getKnowledgeContextForSymptom
+} from "@/features/knowledge/governance/clinicalOsIntegration";
 import { calculateSM2, updateStudentMastery } from "@/lib/adaptiveLearning";
 import { getClinicalCoverageScore, CURATED_DIAGNOSES, ORGAN_SYSTEMS, type DiagnosisProfile, getAll15000Diagnoses, SEARCH_SYNONYMS as DIAGNOSIS_SEARCH_SYNONYMS, getIcdDiagnosis } from "@/lib/clinicalDiagnosisLibrary";
 import { VIRTUAL_PATIENTS, evaluateCaseSubmission } from "@/lib/caseSimulationLab";
@@ -10254,85 +10264,128 @@ ${err.message || err}`);
 
                   {/* Right Column: Detailed Diagnostic Profile & Homeopathic layer */}
                   <div id="diagnostics-details" className="lg:col-span-7 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm min-h-[500px]">
-                    {selectedDiagCondition ? (
-                      <div className="space-y-6 select-text">
-                        {/* Title block */}
-                        <div className="border-b border-slate-100 pb-4 flex justify-between items-start">
-                          <div>
-                            <h3 className="text-base font-serif font-bold text-slate-850">{selectedDiagCondition.name}</h3>
-                            <div className="flex items-center gap-3 mt-1.5">
-                              <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">{selectedDiagCondition.organSystem}</span>
-                              <span className="text-[9px] font-mono text-slate-500 bg-slate-50 px-2 py-0.5 rounded border border-slate-200/50">ICD-10: {selectedDiagCondition.icd10} | ICD-11: {selectedDiagCondition.icd11}</span>
-                            </div>
-                          </div>
-                        </div>
+                    {selectedDiagCondition ? (() => {
+                      // Knowledge Platform integration is read-only and must not alter clinical decision logic.
+                      const diseaseLink = getKnowledgeLinkForDisease(selectedDiagCondition.name);
+                      const diseaseContext = getKnowledgeContextForDisease(selectedDiagCondition.name);
 
-                        {/* Medical Summary Tabs */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <span className="text-[9px] uppercase tracking-wider text-slate-400 font-mono font-bold block mb-1">Pathophysiology</span>
-                            <p className="text-[11px] text-slate-600 leading-relaxed font-sans">{selectedDiagCondition.pathophysiology}</p>
-                          </div>
-                          <div>
-                            <span className="text-[9px] uppercase tracking-wider text-slate-400 font-mono font-bold block mb-1">Etiology & Triggers</span>
-                            <p className="text-[11px] text-slate-600 leading-relaxed font-sans">{selectedDiagCondition.etiology}</p>
-                          </div>
-                        </div>
-
-                        {/* Signs, Symptoms, Red Flags */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-slate-100 pt-4">
-                          <div>
-                            <span className="text-[9px] uppercase tracking-wider text-slate-400 font-mono font-bold block mb-2">Common Symptoms</span>
-                            <ul className="list-disc pl-4 text-[10px] text-slate-600 space-y-1">
-                              {selectedDiagCondition.symptoms.map((s: string, idx: number) => (
-                                <li key={idx}>{s}</li>
-                              ))}
-                            </ul>
-                          </div>
-                          <div>
-                            <span className="text-[9px] uppercase tracking-wider text-slate-400 font-mono font-bold block mb-2">Clinical Signs</span>
-                            <ul className="list-disc pl-4 text-[10px] text-slate-600 space-y-1">
-                              {selectedDiagCondition.signs.map((s: string, idx: number) => (
-                                <li key={idx}>{s}</li>
-                              ))}
-                            </ul>
-                          </div>
-                          <div className="bg-rose-500/[0.02] border border-rose-100 p-3 rounded-2xl">
-                            <span className="text-[9px] uppercase tracking-wider text-rose-500 font-mono font-bold block mb-2 flex items-center gap-1">
-                              <ShieldAlert className="w-3.5 h-3.5" />
-                              <span>Clinical Red Flags</span>
-                            </span>
-                            <ul className="list-disc pl-4 text-[10px] text-rose-700 space-y-1 font-semibold">
-                              {selectedDiagCondition.redFlags.map((s: string, idx: number) => (
-                                <li key={idx}>{s}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        </div>
-
-                        {/* Investigations & Differentials */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-slate-100 pt-4">
-                          <div>
-                            <span className="text-[9px] uppercase tracking-wider text-slate-400 font-mono font-bold block mb-2">Recommended Investigations</span>
-                            <div className="text-[10px] space-y-2">
-                              <div>
-                                <span className="font-bold text-slate-500 uppercase text-[8px] font-mono">Lab Panels:</span>
-                                <div className="flex flex-wrap gap-1 mt-1">
-                                  {selectedDiagCondition.investigations.labs.map((l: string, idx: number) => (
-                                    <span key={idx} className="bg-slate-50 text-slate-600 px-2 py-0.5 rounded text-[9px] border border-slate-200/50">{l}</span>
-                                  ))}
-                                </div>
-                              </div>
-                              <div>
-                                <span className="font-bold text-slate-500 uppercase text-[8px] font-mono">Imaging / Scopes:</span>
-                                <div className="flex flex-wrap gap-1 mt-1">
-                                  {selectedDiagCondition.investigations.imaging.map((im: string, idx: number) => (
-                                    <span key={idx} className="bg-slate-50 text-slate-600 px-2 py-0.5 rounded text-[9px] border border-slate-200/50">{im}</span>
-                                  ))}
-                                </div>
+                      return (
+                        <div className="space-y-6 select-text">
+                          {/* Title block */}
+                          <div className="border-b border-slate-100 pb-4 flex justify-between items-start">
+                            <div>
+                              <h3 className="text-base font-serif font-bold text-slate-850 flex items-center gap-1.5 flex-wrap">
+                                {diseaseLink.found ? (
+                                  <a
+                                    href={diseaseLink.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-emerald-600 hover:text-emerald-700 underline flex items-center gap-0.5"
+                                    title={`View ${selectedDiagCondition.name} on Knowledge Platform`}
+                                  >
+                                    {selectedDiagCondition.name}
+                                    <ExternalLink className="w-3.5 h-3.5" />
+                                  </a>
+                                ) : (
+                                  selectedDiagCondition.name
+                                )}
+                              </h3>
+                              <div className="flex items-center gap-3 mt-1.5 flex-wrap">
+                                <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">{selectedDiagCondition.organSystem}</span>
+                                <span className="text-[9px] font-mono text-slate-500 bg-slate-50 px-2 py-0.5 rounded border border-slate-200/50">ICD-10: {selectedDiagCondition.icd10} | ICD-11: {selectedDiagCondition.icd11}</span>
+                                {diseaseContext.found && (
+                                  <span className="text-[9px] font-black uppercase bg-teal-50 text-teal-700 px-2 py-0.5 rounded border border-teal-200/50">
+                                    {diseaseContext.editorialStatus}
+                                  </span>
+                                )}
                               </div>
                             </div>
                           </div>
+
+                          {/* Medical Summary Tabs */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <span className="text-[9px] uppercase tracking-wider text-slate-400 font-mono font-bold block mb-1">Pathophysiology</span>
+                              <p className="text-[11px] text-slate-600 leading-relaxed font-sans">{selectedDiagCondition.pathophysiology}</p>
+                            </div>
+                            <div>
+                              <span className="text-[9px] uppercase tracking-wider text-slate-400 font-mono font-bold block mb-1">Etiology & Triggers</span>
+                              <p className="text-[11px] text-slate-600 leading-relaxed font-sans">{selectedDiagCondition.etiology}</p>
+                            </div>
+                          </div>
+
+                          {/* Signs, Symptoms, Red Flags */}
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-slate-100 pt-4">
+                            <div>
+                              <span className="text-[9px] uppercase tracking-wider text-slate-400 font-mono font-bold block mb-2">Common Symptoms</span>
+                              <ul className="list-disc pl-4 text-[10px] text-slate-600 space-y-1">
+                                {selectedDiagCondition.symptoms.map((s: string, idx: number) => (
+                                  <li key={idx}>{s}</li>
+                                ))}
+                              </ul>
+                            </div>
+                            <div>
+                              <span className="text-[9px] uppercase tracking-wider text-slate-400 font-mono font-bold block mb-2">Clinical Signs</span>
+                              <ul className="list-disc pl-4 text-[10px] text-slate-600 space-y-1">
+                                {selectedDiagCondition.signs.map((s: string, idx: number) => (
+                                  <li key={idx}>{s}</li>
+                                ))}
+                              </ul>
+                            </div>
+                            <div className="bg-rose-500/[0.02] border border-rose-100 p-3 rounded-2xl">
+                              <span className="text-[9px] uppercase tracking-wider text-rose-500 font-mono font-bold block mb-2 flex items-center gap-1">
+                                <ShieldAlert className="w-3.5 h-3.5" />
+                                <span>Clinical Red Flags</span>
+                              </span>
+                              <ul className="list-disc pl-4 text-[10px] text-rose-700 space-y-1 font-semibold">
+                                {selectedDiagCondition.redFlags.map((s: string, idx: number) => (
+                                  <li key={idx}>{s}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+
+                          {/* Investigations & Differentials */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-slate-100 pt-4">
+                            <div>
+                              <span className="text-[9px] uppercase tracking-wider text-slate-400 font-mono font-bold block mb-2">Recommended Investigations</span>
+                              <div className="text-[10px] space-y-2">
+                                <div>
+                                  <span className="font-bold text-slate-500 uppercase text-[8px] font-mono">Lab Panels:</span>
+                                  <div className="flex flex-wrap gap-1 mt-1">
+                                    {selectedDiagCondition.investigations.labs.map((l: string, idx: number) => {
+                                      const labLink = getKnowledgeLinkForLabTest(l);
+                                      if (labLink.found) {
+                                        return (
+                                          <a
+                                            key={idx}
+                                            href={labLink.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="bg-slate-50 hover:bg-slate-100 text-teal-600 hover:text-teal-700 px-2 py-0.5 rounded text-[9px] border border-slate-200/50 font-bold inline-flex items-center gap-0.5"
+                                            title={`View ${l} range reference on Knowledge Platform`}
+                                          >
+                                            {l}
+                                            <ExternalLink className="w-2.5 h-2.5" />
+                                          </a>
+                                        );
+                                      }
+                                      return (
+                                        <span key={idx} className="bg-slate-50 text-slate-600 px-2 py-0.5 rounded text-[9px] border border-slate-200/50">{l}</span>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                                <div>
+                                  <span className="font-bold text-slate-500 uppercase text-[8px] font-mono">Imaging / Scopes:</span>
+                                  <div className="flex flex-wrap gap-1 mt-1">
+                                    {selectedDiagCondition.investigations.imaging.map((im: string, idx: number) => (
+                                      <span key={idx} className="bg-slate-50 text-slate-600 px-2 py-0.5 rounded text-[9px] border border-slate-200/50">{im}</span>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
                           <div>
                             <span className="text-[9px] uppercase tracking-wider text-slate-400 font-mono font-bold block mb-2">Medical Differentials</span>
                             <div className="flex flex-wrap gap-1.5 mt-1">
@@ -10433,9 +10486,27 @@ ${err.message || err}`);
                               <div>
                                 <span className="text-[9px] uppercase tracking-wider text-slate-400 font-mono font-bold block mb-2">Constitutional Types</span>
                                 <div className="flex flex-wrap gap-1">
-                                  {selectedDiagCondition.homeopathicLayer.constitutionalTypes.map((c: string, idx: number) => (
-                                    <span key={idx} className="bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-xl text-[9px] font-bold border border-emerald-100">{c}</span>
-                                  ))}
+                                  {selectedDiagCondition.homeopathicLayer.constitutionalTypes.map((c: string, idx: number) => {
+                                    const link = getKnowledgeLinkForRemedy(c);
+                                    if (link.found) {
+                                      return (
+                                        <a
+                                          key={idx}
+                                          href={link.url}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 hover:text-emerald-800 px-2.5 py-1 rounded-xl text-[9px] font-bold border border-emerald-100 flex items-center gap-0.5"
+                                          title={`View ${c} overview on Knowledge Platform`}
+                                        >
+                                          {c}
+                                          <ExternalLink className="w-2.5 h-2.5" />
+                                        </a>
+                                      );
+                                    }
+                                    return (
+                                      <span key={idx} className="bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-xl text-[9px] font-bold border border-emerald-100">{c}</span>
+                                    );
+                                  })}
                                 </div>
                               </div>
                             </div>
@@ -10445,17 +10516,53 @@ ${err.message || err}`);
                               <div className="p-3 bg-slate-50/50 rounded-2xl border border-slate-100">
                                 <span className="text-[8px] uppercase tracking-wider text-slate-400 font-mono font-bold block mb-1">Top Acute Remedies</span>
                                 <div className="flex flex-wrap gap-1 mt-1">
-                                  {selectedDiagCondition.homeopathicLayer.acuteRemedies.map((r: string, idx: number) => (
-                                    <span key={idx} className="bg-white text-slate-700 px-1.5 py-0.5 rounded text-[9px] font-bold border border-slate-200/50">{r}</span>
-                                  ))}
+                                  {selectedDiagCondition.homeopathicLayer.acuteRemedies.map((r: string, idx: number) => {
+                                    const link = getKnowledgeLinkForRemedy(r);
+                                    if (link.found) {
+                                      return (
+                                        <a
+                                          key={idx}
+                                          href={link.url}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="bg-white hover:bg-slate-50 text-slate-700 hover:text-emerald-700 px-1.5 py-0.5 rounded text-[9px] font-bold border border-slate-200/50 flex items-center gap-0.5"
+                                          title={`View ${r} overview`}
+                                        >
+                                          {r}
+                                          <ExternalLink className="w-2 h-2" />
+                                        </a>
+                                      );
+                                    }
+                                    return (
+                                      <span key={idx} className="bg-white text-slate-700 px-1.5 py-0.5 rounded text-[9px] font-bold border border-slate-200/50">{r}</span>
+                                    );
+                                  })}
                                 </div>
                               </div>
                               <div className="p-3 bg-slate-50/50 rounded-2xl border border-slate-100">
                                 <span className="text-[8px] uppercase tracking-wider text-slate-400 font-mono font-bold block mb-1">Top Chronic Remedies</span>
                                 <div className="flex flex-wrap gap-1 mt-1">
-                                  {selectedDiagCondition.homeopathicLayer.chronicRemedies.map((r: string, idx: number) => (
-                                    <span key={idx} className="bg-white text-slate-700 px-1.5 py-0.5 rounded text-[9px] font-bold border border-slate-200/50">{r}</span>
-                                  ))}
+                                  {selectedDiagCondition.homeopathicLayer.chronicRemedies.map((r: string, idx: number) => {
+                                    const link = getKnowledgeLinkForRemedy(r);
+                                    if (link.found) {
+                                      return (
+                                        <a
+                                          key={idx}
+                                          href={link.url}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="bg-white hover:bg-slate-50 text-slate-700 hover:text-emerald-700 px-1.5 py-0.5 rounded text-[9px] font-bold border border-slate-200/50 flex items-center gap-0.5"
+                                          title={`View ${r} overview`}
+                                        >
+                                          {r}
+                                          <ExternalLink className="w-2 h-2" />
+                                        </a>
+                                      );
+                                    }
+                                    return (
+                                      <span key={idx} className="bg-white text-slate-700 px-1.5 py-0.5 rounded text-[9px] font-bold border border-slate-200/50">{r}</span>
+                                    );
+                                  })}
                                 </div>
                               </div>
                               <div className="p-3 bg-slate-50/50 rounded-2xl border border-slate-100">
@@ -10504,7 +10611,8 @@ ${err.message || err}`);
                           </div>
                         )}
                       </div>
-                    ) : (
+                      );
+                    })() : (
                       <div className="text-center py-48 text-slate-400 text-xs font-semibold">
                         Select a condition from matches to show differential guides, clinical features, and homeopathic mappings.
                       </div>
@@ -12096,7 +12204,17 @@ ${err.message || err}`);
             const durText = plannerBillingCycle === "weekly"
               ? `${plannerDurationValue} ${plannerDurationValue === 1 ? "Week" : "Weeks"}`
               : `${plannerDurationValue} ${plannerDurationValue === 1 ? "Month" : "Months"}`;
-            const concessionText = plannerConcessionType !== "None" ? `, Concession: ${plannerConcessionType}` : "";
+            const concessionText = plannerConcessionType !== "None" 
+              ? `, Concession: ${
+                  plannerConcessionType === "Override" 
+                    ? "Special Clinical Concession" 
+                    : plannerConcessionType === "Senior" 
+                      ? "Senior 15%" 
+                      : plannerConcessionType === "Socio" 
+                        ? "Socio-Economic 30%" 
+                        : plannerConcessionType
+                }` 
+              : "";
             
             const whatsappInvoiceText = `Dear ${activePatient?.name || "Valued Patient"},\n\nThank you for consulting Homeo Healthcare.\n\nYour treatment package is successfully configured:\n*Care Program:* ${careText}\n*Active Health Concerns:* ${condText}\n*Recommended Treatment Duration:* ${durText}${concessionText}\n\n*Pricing Breakdown Summary:*\n- Clinical Care Fee: ₹${calculatedPrices.basePrice.toLocaleString("en-IN")}\n` +
               (calculatedPrices.surcharge > 0 ? `- Clinical Care Intensity Adjustment: +₹${calculatedPrices.surcharge.toLocaleString("en-IN")}\n` : "") +
@@ -12676,7 +12794,7 @@ ${err.message || err}`);
                         )}
                         {calculatedPrices.concessionAmount > 0 && (
                           <div className="flex justify-between items-center text-indigo-700 dark:text-indigo-400 bg-indigo-500/5 px-2 py-1 rounded-lg">
-                            <span>Concession Applied ({plannerConcessionType === "Senior" ? "Senior 15%" : plannerConcessionType === "Socio" ? "Socio-Economic 30%" : "Custom Override"}):</span>
+                            <span>Concession Applied ({plannerConcessionType === "Senior" || plannerConcessionType === "Senior 15%" ? "Senior 15%" : plannerConcessionType === "Socio" || plannerConcessionType === "Socio-Economic 30%" ? "Socio-Economic 30%" : "Special Clinical Concession"}):</span>
                             <span className="font-mono">-₹{calculatedPrices.concessionAmount.toLocaleString("en-IN")}</span>
                           </div>
                         )}

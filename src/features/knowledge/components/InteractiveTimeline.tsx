@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { KnowledgeEntity, TimelineStage } from "../types";
 import { Activity, Clock, FileText, CheckCircle, AlertTriangle, ShieldAlert } from "lucide-react";
 
@@ -11,6 +11,7 @@ interface InteractiveTimelineProps {
 export default function InteractiveTimeline({ entity }: InteractiveTimelineProps) {
   const isDisease = entity.entityType === "disease";
   const isLab = entity.entityType === "lab-test";
+  const [activeIndex, setActiveIndex] = React.useState(0);
 
   // Hide for other types
   if (!isDisease && !isLab) return null;
@@ -90,7 +91,6 @@ export default function InteractiveTimeline({ entity }: InteractiveTimelineProps
 
   // Retrieve timeline stages from database entity, falling back to defaults
   const stages = entity.clinicalTimeline || (isDisease ? defaultDiseaseTimeline : defaultLabTimeline);
-  const [activeIndex, setActiveIndex] = useState(0);
   const currentStage = stages[activeIndex];
 
   if (!currentStage) return null;

@@ -45,3 +45,7 @@ next-env.d.ts
 /scratch/
 /scratch
 
+# docs pending update config
+/docs/pending-update.json
+
+

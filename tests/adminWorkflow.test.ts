@@ -2,6 +2,8 @@ import assert from "assert";
 import { checkPrescriptionSafety } from "../src/lib/clinicalDecisionSupport";
 import { ragService } from "../src/lib/ragService";
 import { aiRouterService } from "../src/lib/aiRouter";
+import { globalVectorStore } from "../src/features/knowledge/retrieval/vectorStore";
+import { ollamaService } from "../src/lib/ollama";
 
 async function runTests() {
   console.log("🚀 Starting Clinical Portal Suite E2E Regression Tests...");
@@ -69,6 +71,26 @@ async function runTests() {
   // 3. RAG Grounding Search Tests
   // ==========================================
   console.log("\n🔍 Running RAG Knowledge Base Hybrid Search tests...");
+  
+  // Seed/Stub the vector store with live mock embeddings for search testing compatibility
+  const originalGetVector = globalVectorStore.getVector;
+  globalVectorStore.getVector = async (id: string) => {
+    const doc = (ragService as any).getUnifiedDb().find((d: any) => d.id === id);
+    if (!doc) return null;
+    try {
+      const vector = await ollamaService.getEmbeddings(doc.content);
+      return {
+        id,
+        entityType: doc.category,
+        title: doc.title,
+        vector,
+        dimensions: vector.length
+      };
+    } catch {
+      return null;
+    }
+  };
+
   try {
     const searchResults = await ragService.hybridSearch("Like cures like");
     const topDoc = searchResults[0];
@@ -91,6 +113,8 @@ async function runTests() {
   } catch (err: any) {
     console.error("❌ RAG Search test failed: ", err.message);
     failed++;
+  } finally {
+    globalVectorStore.getVector = originalGetVector;
   }
 
   // ==========================================

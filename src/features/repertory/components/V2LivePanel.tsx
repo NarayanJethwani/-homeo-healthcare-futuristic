@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Activity, AlertTriangle, Brain } from "lucide-react";
+import { Activity, AlertTriangle, Brain, ExternalLink } from "lucide-react";
 import { ClinicalSafetyBadge } from "./ClinicalSafetyBadge";
 import { V2ClinicalFeedbackPanel } from "./V2ClinicalFeedbackPanel";
+import { getKnowledgeLinkForRemedy } from "@/features/knowledge/governance/clinicalOsIntegration";
 
 interface V2LivePanelProps {
   query: string;
@@ -90,16 +91,40 @@ export function V2LivePanel({ query, filters, selectedRubricIds }: V2LivePanelPr
             ))}
           </div>
         </div>
+// Knowledge Platform integration is read-only and must not alter clinical decision logic.
+
         <div className="rounded-2xl border border-emerald-200 bg-emerald-50/40 p-3">
           <h4 className="mb-2 text-[11px] font-black uppercase tracking-wider text-emerald-800">V2 Remedy Ranking</h4>
           <div className="space-y-2">
-            {data.repertorization.rankings.map((ranking: any, index: number) => (
-              <details key={ranking.remedyId} className="rounded-xl border border-emerald-100 bg-white p-2">
-                <summary className="cursor-pointer list-none">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-[11px] font-black text-slate-800">#{index + 1} {ranking.remedyName || ranking.remedyId}</span>
-                    <span className="text-[10px] font-black text-emerald-600">{ranking.totalScore}</span>
-                  </div>
+            {data.repertorization.rankings.map((ranking: any, index: number) => {
+              const link = getKnowledgeLinkForRemedy(ranking.remedyId);
+              const name = ranking.remedyName || ranking.remedyId;
+
+              return (
+                <details key={ranking.remedyId} className="rounded-xl border border-emerald-100 bg-white p-2">
+                  <summary className="cursor-pointer list-none">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-[11px] font-black text-slate-800 flex items-center gap-1">
+                        #{index + 1}{" "}
+                        {link.found ? (
+                          <a
+                            href={link.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-emerald-600 hover:text-emerald-700 underline flex items-center gap-0.5"
+                            title={`View ${name} on Knowledge Platform`}
+                          >
+                            {name}
+                            <ExternalLink className="w-2.5 h-2.5" />
+                          </a>
+                        ) : (
+                          <span className="text-slate-700" title="Knowledge article pending">
+                            {name}
+                          </span>
+                        )}
+                      </span>
+                      <span className="text-[10px] font-black text-emerald-600">{ranking.totalScore}</span>
+                    </div>
                   <div className="mt-1 text-[9px] font-bold text-slate-500">
                     Confidence {ranking.confidenceScore}% • Matched {ranking.matchedRubricCount}
                   </div>
@@ -116,8 +141,9 @@ export function V2LivePanel({ query, filters, selectedRubricIds }: V2LivePanelPr
                     ))}
                   </div>
                 </div>
-              </details>
-            ))}
+                </details>
+              );
+            })}
           </div>
         </div>
       </div>

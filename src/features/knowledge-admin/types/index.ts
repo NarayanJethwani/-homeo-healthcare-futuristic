@@ -25,6 +25,20 @@ export type EditorialStatus =
   | "published" 
   | "archived";
 
+export type ReviewStatus =
+  | "draft"
+  | "needs-review"
+  | "clinically-reviewed"
+  | "references-needed"
+  | "update-required"
+  | "archived";
+
+export type HealthIndicator =
+  | "excellent"
+  | "good"
+  | "needs-attention"
+  | "critical";
+
 export interface VersionChangeLog {
   version: string;
   updatedAt: string;
@@ -44,7 +58,20 @@ export interface KmsKnowledgeEntity {
   lastReviewed: string; // ISO String
   lastUpdated: string; // ISO String
   author: Author;
-  reviewer: Reviewer;
+  reviewer?: string | Reviewer | any;
+  reviewerRole?: string;
+  lastClinicalReview?: string;
+  nextClinicalReview?: string;
+  referencesUpdated?: string;
+  clinicalChangesSinceLastRevision?: string;
+  reviewStatus?: ReviewStatus;
+  citationHealth?: HealthIndicator;
+  contentCompleteness?: number;
+  graphCompleteness?: number;
+  seoStatus?: HealthIndicator;
+  structuredDataStatus?: HealthIndicator;
+  isCornerstone?: boolean;
+  version?: string;
   evidenceLevel: EvidenceLevel;
   tags: string[];
   canonicalUrl: string;
@@ -70,6 +97,28 @@ export interface KmsKnowledgeEntity {
     seoScore: number; // 0-100
     geoScore: number; // 0-100
     aiReadinessScore: number; // 0-100
+  };
+  aiReadiness?: {
+    retrievalSummary: string;
+    clinicalSummary: string;
+    patientSummary: string;
+    studentSummary: string;
+    keywords: string[];
+    semanticKeywords: string[];
+    icd?: string;
+    snomed?: string;
+    mesh?: string;
+    bodySystem: string;
+    urgency: "routine" | "monitor" | "urgent" | "emergency";
+  };
+  aiKnowledge?: {
+    retrievalSummary: string;
+    differentialSummary: string;
+    practitionerSummary: string;
+    patientSummary: string;
+    educationalSummary: string;
+    graphContext: string;
+    embeddingText: string;
   };
 }
 

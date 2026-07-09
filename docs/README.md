@@ -1,26 +1,77 @@
-# Project Documentation
+# Developer Portal & Onboarding Guide
 
-This folder organizes long-term project documentation for the Unified Clinical Repertory and related Homeo Healthcare clinical tooling.
+Welcome to the Unified Clinical OS and Knowledge Platform. This portal contains the governance, architectural, and operational documentation for the project, organized by maturity and operational scope.
 
-## Folder Guide
+---
 
-- `architecture/` contains system architecture, data model, feature flag, hierarchy, knowledge base, and production integration plans.
-- `deployment/` contains deployment reports, release checklists, rollout strategy, rollback guidance, and production risk reviews.
-- `clinical-engine/` contains clinical repertorization engine, scoring, ranking, validation, feedback, explainability, and live-mode engine documents.
-- `repertory/` contains repertory-specific upgrade plans, search design, rubric intelligence, comparison UI, benchmark schema, regression planning, and admin comparison notes.
-- `ai/` contains AI-related explanation, feedback, and intake workflow documents copied from their primary clinical or roadmap context.
-- `security/` contains audit and risk documentation, including project-level security findings.
-- `release-notes/` contains changelogs, completion reports, verification reports, test results, performance notes, and fix reports.
-- `codex-review-outputs/` is the original Codex review archive. Keep it as the source record for the review output set.
-- `roadmap/` contains future planning, implementation priorities, and safe upgrade roadmaps.
+## 🚀 1. Start Here
 
-## Common Lookup Paths
+If you are a new developer or contributor, follow this quick onboarding path:
+1. Clone the repository and install dependencies:
+   ```bash
+   npm install
+   ```
+2. Initialize and configure local environment variables (copy from `.env.example` to `.env.local`):
+   ```bash
+   cp .env.example .env.local
+   ```
+3. Run the development server:
+   ```bash
+   npm run dev
+   ```
+4. Read the **[Editorial Standards & Clinical Guidelines](file:///Users/drnarayanjethwani/Downloads/Website%20with%20Antigravity/docs/EDITORIAL_STANDARDS.md)** before writing any content or modifying clinical data structures.
 
-- Deployment reports: start with `deployment/PRODUCTION_DEPLOYMENT_REPORT.md`, `deployment/V2_LIVE_DEPLOYMENT_REPORT.md`, and `deployment/V2_INTEGRATED_WORKSPACE_DEPLOYMENT_REPORT.md`.
-- Architecture plans: start with `architecture/UNIFIED_CLINICAL_REPERTORY_ARCHITECTURE_PLAN.md`, `architecture/CLINICAL_OS_LONG_TERM_ARCHITECTURE.md`, and `architecture/TECHNICAL_PLAN.md`.
-- Repertory upgrade documents: start with `repertory/REPERTORY_ONLY_UPGRADE_PLAN.md`, `repertory/FIRST_IMPLEMENTATION_BATCH.md`, and `roadmap/TOP_10_SAFE_UPGRADES.md`.
-- Roadmap documents: start with `roadmap/REPERTORY_WORLD_CLASS_ROADMAP.md` and `roadmap/IMPLEMENTATION_TASKS.md`.
+---
 
-## Archive Policy
+## 📚 2. Portal Index & Directories
 
-The files in `codex-review-outputs/` are preserved as the original archive. Organized folders contain copied documents for easier discovery.
+Select a category below to navigate the governance and engineering documentation:
+
+### 📂 Category A: Project Core & Vision
+High-level indices, vision statements, module tracking, AI interaction rules, and live health metrics.
+*   **[Project README](file:///Users/drnarayanjethwani/Downloads/Website%20with%20Antigravity/docs/README.md)**: Main developer portal landing page and quickstart guide.
+*   **[Project Manifest](file:///Users/drnarayanjethwani/Downloads/Website%20with%20Antigravity/docs/PROJECT_MANIFEST.md)**: Master product layout, subsystem semantic versions, and technology stack.
+*   **[Executive Project Dashboard](file:///Users/drnarayanjethwani/Downloads/Website%20with%20Antigravity/docs/PROJECT_DASHBOARD.md)**: Real-time code statistics, test verification statuses, and knowledge platform counts.
+*   **[AI Assistant Guidelines](file:///Users/drnarayanjethwani/Downloads/Website%20with%20Antigravity/docs/AI_ASSISTANT_GUIDELINES.md)**: Naming conventions, safety rules, prompting styles, and code standards for AI agents.
+
+### 📂 Category B: Engineering & Architecture
+Structural design patterns, data schemas, change indices, and system verification runs.
+*   **[Architecture Decision Records (ADRs)](file:///Users/drnarayanjethwani/Downloads/Website%20with%20Antigravity/docs/architecture/ADR_INDEX.md)**: Record of formal engineering decisions (ADR-001 through ADR-004).
+*   **[Current Architecture Overview](file:///Users/drnarayanjethwani/Downloads/Website%20with%20Antigravity/docs/CURRENT_ARCHITECTURE.md)**: Detailed module boundaries, AI router flowcharts, and sitemap/caching models.
+*   **[Data Model Reference](file:///Users/drnarayanjethwani/Downloads/Website%20with%20Antigravity/docs/DATA_MODEL.md)**: Firestore collection schemas, relational mapping, and key TypeScript interfaces.
+*   **[Platform Statistics Dashboard](file:///Users/drnarayanjethwani/Downloads/Website%20with%20Antigravity/docs/PLATFORM_STATISTICS.md)**: Historical charts tracking codebase growth, LOC count, and rule validation rules.
+
+### 📂 Category C: Development & Sprints
+Timelines, iteration logs, and milestone signs-off for active product phases.
+*   **[Product Roadmap](file:///Users/drnarayanjethwani/Downloads/Website%20with%20Antigravity/docs/PRODUCT_ROADMAP.md)**: Chronological project phase mapping and active development features.
+*   **[Milestone Archive](file:///Users/drnarayanjethwani/Downloads/Website%20with%20Antigravity/docs/MILESTONE_ARCHIVE.md)**: Signed-off deliverables and criteria completed during each milestone review.
+*   **[Master Development Log](file:///Users/drnarayanjethwani/Downloads/Website%20with%20Antigravity/docs/MASTER_DEVELOPMENT_LOG.md)**: Detailed deployment histories, files changed, and sprint notes.
+
+### 📂 Category D: Operations & Release Governance
+Safety gates, change control boards, deployment checklist runbooks, registries, and build analytics.
+*   **[Change Control Board Playbook](file:///Users/drnarayanjethwani/Downloads/Website%20with%20Antigravity/docs/CHANGE_CONTROL.md)**: The strict operational pipeline governing production deployment.
+*   **[Release Notes Register](file:///Users/drnarayanjethwani/Downloads/Website%20with%20Antigravity/docs/RELEASE_NOTES.md)**: Version registry listing deployment dates, tags, and highlights.
+*   **[Production Build History](file:///Users/drnarayanjethwani/Downloads/Website%20with%20Antigravity/docs/BUILD_HISTORY.md)**: Automatic logs of build run times, route counts, and typecheck verifications.
+*   **[Deployment Checklist](file:///Users/drnarayanjethwani/Downloads/Website%20with%20Antigravity/docs/DEPLOYMENT_CHECKLIST.md)**: Standard release gate procedures, smoke tests, and rollback playbook instructions.
+*   **[Operations Runbook](file:///Users/drnarayanjethwani/Downloads/Website%20with%20Antigravity/docs/OPERATIONS_RUNBOOK.md)**: Database migrations, disaster recovery procedures, and secure key parameters.
+*   **[Known Issues & Technical Debt Register](file:///Users/drnarayanjethwani/Downloads/Website%20with%20Antigravity/docs/KNOWN_ISSUES_REGISTER.md)**: Tracked bugs, severity grades, and operational bypasses.
+*   **[Future Backlog](file:///Users/drnarayanjethwani/Downloads/Website%20with%20Antigravity/docs/FUTURE_BACKLOG.md)**: Registry of features scheduled for future sprints.
+*   **[Editorial Standards](file:///Users/drnarayanjethwani/Downloads/Website%20with%20Antigravity/docs/EDITORIAL_STANDARDS.md)**: Strict rules for medical citation formats and safe tone requirements.
+
+---
+
+## 🛠️ 3. Verification Commands
+
+*   **Execute Typechecking**:
+    ```bash
+    npx tsc --noEmit
+    ```
+*   **Run Local Unit & Integration Tests**:
+    ```bash
+    npm test
+    ```
+*   **Compile Documentation**:
+    Add change lists to `docs/pending-update.json` and compile:
+    ```bash
+    npm run docs:update
+    ```

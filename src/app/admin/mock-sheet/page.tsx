@@ -1670,7 +1670,7 @@ function MockSheetContent() {
     const careText = careLevelsDetails[planner.careLevel].title;
     const condText = planner.conditionsCount === 1 ? "1 condition" : `${planner.conditionsCount} conditions`;
     const durText = `${planner.durationValue} ${planner.billingCycle === "weekly" ? "weeks" : "months"}`;
-    const concessionText = planner.concessionType === "senior" ? " [Senior 15%]" : planner.concessionType === "compassionate" ? " [Socio-Economic 30%]" : planner.concessionType === "override" ? " [Override]" : "";
+    const concessionText = planner.concessionType === "senior" ? " [Senior 15%]" : planner.concessionType === "compassionate" ? " [Socio-Economic 30%]" : planner.concessionType === "override" ? " [Special Clinical Concession]" : "";
     return `Dear ${patient.name}, thank you for consulting Homeo Healthcare. Your treatment package is: ${careText} (${condText}, ${durText}${concessionText}). Total Cost: ₹${plannerPrices.finalPrice.toLocaleString("en-IN")}. Balance Due: ₹${balanceDue.toLocaleString("en-IN")}. Please pay using Gpay: ${process.env.NEXT_PUBLIC_PAYMENT_PHONE || "8446056789"}. Clinic Branch: Homeo Healthcare.`;
   };
   const whatsappInvoiceText = generateWhatsAppMessage();
@@ -3695,7 +3695,7 @@ function MockSheetContent() {
                         )}
                         {plannerPrices.concessionAmount > 0 && (
                           <div className="flex justify-between items-center text-indigo-700 bg-indigo-50/50 px-2 py-1 rounded">
-                            <span>Concession Applied ({planner.concessionType === "senior" ? "Senior 15%" : planner.concessionType === "compassionate" ? "Socio-Economic 30%" : "Override"}):</span>
+                            <span>Concession Applied ({planner.concessionType === "senior" ? "Senior 15%" : planner.concessionType === "compassionate" ? "Socio-Economic 30%" : "Special Clinical Concession"}):</span>
                             <span>-₹{plannerPrices.concessionAmount.toLocaleString("en-IN")}</span>
                           </div>
                         )}

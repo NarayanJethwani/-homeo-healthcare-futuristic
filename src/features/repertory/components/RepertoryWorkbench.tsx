@@ -40,6 +40,8 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
   const [loadedPatient, setLoadedPatient] = useState<any | null>(null);
   const [isNewCaseOpen, setIsNewCaseOpen] = useState<boolean>(false);
   const [isSyncingToSheet, setIsSyncingToSheet] = useState<boolean>(false);
+  const [nlpInput, setNlpInput] = useState<string>('');
+  const [parsingIntake, setParsingIntake] = useState<boolean>(false);
 
   // New Case Registration fields
   const [newCaseName, setNewCaseName] = useState('');
@@ -123,9 +125,6 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
     frequency: 'constant' | 'frequent' | 'occasional';
     impact: 'severe' | 'moderate' | 'mild';
   }>>([]);
-  const [nlpInput, setNlpInput] = useState<string>('');
-  const [parsingIntake, setParsingIntake] = useState<boolean>(false);
-  
   // Scoring & Differentiation
   const [scoringResult, setScoringResult] = useState<ScoringResult | null>(null);
   const [differentiations, setDifferentiations] = useState<RemedyDifferentiation[]>([]);

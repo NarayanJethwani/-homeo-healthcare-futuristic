@@ -1,0 +1,46 @@
+{
+  "version": "2.0.1",
+  "sprintName": "Sprint 3: AI Router Stability & Robustness",
+  "deploymentStatus": "Success / Vercel Production",
+  "buildVerification": "Passed clean local build & all integration test suites",
+  "rollbackNotes": "Revert to commit 7c1a381",
+  "changes": [
+    "Refactored AI Router fallback sequence to retry DeepSeek if Gemini fails",
+    "Optimized local storage hydration for search queries in dashboard"
+  ],
+  "filesChanged": [
+    "src/app/api/consult-ai/route.ts",
+    "src/features/knowledge/search/searchSynonyms.ts"
+  ],
+  "architecturalDecisions": [
+    {
+      "id": "ADR-004",
+      "title": "Strict Rate Limiting on AI Router Endpoint",
+      "status": "Accepted",
+      "context": "High volume of automated scan requests on clinical router.",
+      "decision": "Implement Next.js middleware token-bucket rate limiting.",
+      "consequences": "Protects Gemini API quotas but introduces 429 status response handling in UI."
+    }
+  ],
+  "userFacingImprovements": [
+    "Added status indicators to the search input field during hydration"
+  ],
+  "knownIssues": [
+    "Satellite node animations occasionally lag on low-end mobile devices"
+  ],
+  "resolvedIssues": [
+    "KI-003",
+    "KI-004"
+  ],
+  "milestoneCompleted": {
+    "name": "Phase 3 Milestone: AI Router Stability",
+    "description": "Successfully completed integration and stress testing of multi-provider fallback routing."
+  },
+  "backlogAdds": [
+    {
+      "item": "Integrate local Ollama telemetry logs",
+      "component": "AI / Telemetry",
+      "complexity": "Medium"
+    }
+  ]
+}

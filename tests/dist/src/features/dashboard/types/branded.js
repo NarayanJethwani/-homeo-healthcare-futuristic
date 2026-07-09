@@ -1,0 +1,22 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.toUserId = exports.toClinicId = exports.toPrescriptionId = exports.toConsultationId = exports.toAppointmentId = exports.toAlertId = exports.toDoctorId = exports.toInvoiceId = exports.toPatientId = void 0;
+// Safe casting helper functions
+const toPatientId = (id) => id;
+exports.toPatientId = toPatientId;
+const toInvoiceId = (id) => id;
+exports.toInvoiceId = toInvoiceId;
+const toDoctorId = (id) => id;
+exports.toDoctorId = toDoctorId;
+const toAlertId = (id) => id;
+exports.toAlertId = toAlertId;
+const toAppointmentId = (id) => id;
+exports.toAppointmentId = toAppointmentId;
+const toConsultationId = (id) => id;
+exports.toConsultationId = toConsultationId;
+const toPrescriptionId = (id) => id;
+exports.toPrescriptionId = toPrescriptionId;
+const toClinicId = (id) => id;
+exports.toClinicId = toClinicId;
+const toUserId = (id) => id;
+exports.toUserId = toUserId;

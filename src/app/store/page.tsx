@@ -830,7 +830,7 @@ export default function StorePage() {
 
   // Calculator states
   const [careLevel, setCareLevel] = useState<"mild" | "moderate" | "focused" | "organ" | "comprehensive" | "acute_critical">("mild");
-  const [billingCycle, setBillingCycle] = useState<"weekly" | "monthly">("weekly");
+  const [billingCycle, setBillingCycle] = useState<"weekly" | "monthly">("monthly");
   const [durationValue, setDurationValue] = useState<number>(1); // Default to 1 period (1 month or 4 weeks depending on cycle)
   const [conditionsCount, setConditionsCount] = useState<number>(1); // 1, 2, 3, 4, 5
 
@@ -928,7 +928,7 @@ export default function StorePage() {
 
   const [filter, setFilter] = useState<"all" | "consultation" | "specialty">("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [catalogBillingCycle, setCatalogBillingCycle] = useState<"weekly" | "monthly">("weekly");
+  const [catalogBillingCycle, setCatalogBillingCycle] = useState<"weekly" | "monthly">("monthly");
   const [catalogDuration, setCatalogDuration] = useState<number>(1);
 
   // Load saved configs from localStorage and deep links on mount
@@ -1189,7 +1189,7 @@ export default function StorePage() {
           complaint: walkInComplaint,
           careLevel: careLevelsDetails[walkInTier as keyof typeof careLevelsDetails]?.title || "Doctor-Led Custom Care",
           conditionsCount: walkInConditionsCount,
-          durationText: `${walkInDurationValue} ${walkInBillingCycle === "weekly" ? (walkInDurationValue === 1 ? "week" : "weeks") : (walkInDurationValue === 1 ? "month" : "months")} (${walkInBillingCycle === "weekly" ? "Weekly" : "Monthly"})${walkInApplyConcession ? ` [Concession: ${walkInConcessionType === "senior" ? "Senior 15%" : walkInConcessionType === "compassionate" ? "Socio-Economic 30%" : "Custom Override"}]` : ""}${
+          durationText: `${walkInDurationValue} ${walkInBillingCycle === "weekly" ? (walkInDurationValue === 1 ? "week" : "weeks") : (walkInDurationValue === 1 ? "month" : "months")} (${walkInBillingCycle === "weekly" ? "Weekly" : "Monthly"})${walkInApplyConcession ? ` [Concession: ${walkInConcessionType === "senior" ? "Senior 15%" : walkInConcessionType === "compassionate" ? "Socio-Economic 30%" : "Special Clinical Concession"}]` : ""}${
             walkInApplyMedicineAddon 
               ? ` [Medicine Add-ons: ${walkInMedicineAddons
                   .filter(item => {
@@ -4068,7 +4068,7 @@ export default function StorePage() {
                                       {[
                                         { type: "senior", label: "Senior (15%)" },
                                         { type: "compassionate", label: "Socio-Economic (30%)" },
-                                        { type: "override", label: "Custom Override" }
+                                        { type: "override", label: "Special Clinical Concession" }
                                       ].map((opt) => (
                                         <button
                                           key={opt.type}

@@ -1,10 +1,13 @@
 import React from 'react';
-import { Columns } from 'lucide-react';
+import { Columns, ExternalLink } from 'lucide-react';
 import { DifferentialComparisonResult } from '../types';
+import { getKnowledgeLinkForRemedy } from '@/features/knowledge/governance/clinicalOsIntegration';
 
 interface DifferentialComparisonProps {
   comparisons: DifferentialComparisonResult[];
 }
+
+// Knowledge Platform integration is read-only and must not alter clinical decision logic.
 
 export const DifferentialComparison: React.FC<DifferentialComparisonProps> = ({ comparisons }) => {
   return (
@@ -25,19 +28,55 @@ export const DifferentialComparison: React.FC<DifferentialComparisonProps> = ({ 
         </p>
       ) : (
         <div className="space-y-6 max-h-[450px] overflow-y-auto pr-1">
-          {comparisons.map((c, idx) => (
-            <div key={idx} className="bg-slate-50 border border-slate-150 p-4 rounded-2xl space-y-3">
-              <div className="flex items-center justify-between border-b border-slate-200/50 pb-2">
-                <span className="text-[10px] font-black text-slate-800 uppercase tracking-wider">
-                  {c.remedyA} vs {c.remedyB}
-                </span>
-                <span className="text-[9px] font-mono text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
-                  Gap: {c.confidenceGap}%
-                </span>
-              </div>
+          {comparisons.map((c, idx) => {
+            const linkA = getKnowledgeLinkForRemedy(c.remedyA);
+            const linkB = getKnowledgeLinkForRemedy(c.remedyB);
 
-              <div className="space-y-2">
-                <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wide">Shared Active Rubrics:</div>
+            return (
+              <div key={idx} className="bg-slate-50 border border-slate-150 p-4 rounded-2xl space-y-3">
+                <div className="flex items-center justify-between border-b border-slate-200/50 pb-2">
+                  <span className="text-[10px] font-black text-slate-800 uppercase tracking-wider flex items-center gap-1.5 flex-wrap">
+                    {linkA.found ? (
+                      <a
+                        href={linkA.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-emerald-600 hover:text-emerald-700 underline flex items-center gap-0.5 animate-pulse-subtle"
+                        title={`View ${c.remedyA} on Knowledge Platform`}
+                      >
+                        {c.remedyA}
+                        <ExternalLink className="w-2.5 h-2.5" />
+                      </a>
+                    ) : (
+                      <span className="text-slate-800" title="Knowledge article pending">
+                        {c.remedyA} (pending)
+                      </span>
+                    )}
+                    <span className="text-slate-400 font-normal">vs</span>
+                    {linkB.found ? (
+                      <a
+                        href={linkB.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-emerald-600 hover:text-emerald-700 underline flex items-center gap-0.5 animate-pulse-subtle"
+                        title={`View ${c.remedyB} on Knowledge Platform`}
+                      >
+                        {c.remedyB}
+                        <ExternalLink className="w-2.5 h-2.5" />
+                      </a>
+                    ) : (
+                      <span className="text-slate-800" title="Knowledge article pending">
+                        {c.remedyB} (pending)
+                      </span>
+                    )}
+                  </span>
+                  <span className="text-[9px] font-mono text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+                    Gap: {c.confidenceGap}%
+                  </span>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wide">Shared Active Rubrics:</div>
                 {c.sharedRubrics.length === 0 ? (
                   <p className="text-[9px] text-slate-400 italic">None</p>
                 ) : (
@@ -132,7 +171,8 @@ export const DifferentialComparison: React.FC<DifferentialComparisonProps> = ({ 
                 </ul>
               </div>
             </div>
-          ))}
+          );
+        })}
         </div>
       )}
     </div>

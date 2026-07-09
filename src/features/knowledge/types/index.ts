@@ -157,7 +157,21 @@ export interface KnowledgeEntity {
   categories?: string[];
   content: RemedyContent | DiseaseContent | SymptomContent | LabTestContent | any;
   author: Author;
-  reviewer: Reviewer;
+  reviewer?: any; // To allow string, Reviewer or undefined
+  reviewerRole?: string;
+  lastClinicalReview?: string;
+  nextClinicalReview?: string;
+  referencesUpdated?: string;
+  clinicalChangesSinceLastRevision?: string;
+  editorialNotes?: string;
+  reviewStatus?: string;
+  citationHealth?: string;
+  contentCompleteness?: number;
+  graphCompleteness?: number;
+  seoStatus?: string;
+  structuredDataStatus?: string;
+  isCornerstone?: boolean;
+  version?: string;
   evidenceLevel: EvidenceLevel;
   tags: string[];
   canonicalUrl: string;

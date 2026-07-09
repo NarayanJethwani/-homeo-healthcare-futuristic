@@ -167,14 +167,19 @@ export default async function LabTestDetailPage({ params }: PageProps) {
           </section>
 
           {/* Section: Clinical Interpretation */}
-          {content.clinicalInterpretation && (
-            <section id="interpretation" className="space-y-3 border-t border-neutral-500/5 pt-6 scroll-mt-24">
-              <h3 className="text-base font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
-                <Activity className="h-4.5 w-4.5 text-teal-650 dark:text-teal-400" /> Clinical Alignment & Significance
-              </h3>
+          <section id="interpretation" className="space-y-3 border-t border-neutral-500/5 pt-6 scroll-mt-24">
+            <h3 className="text-base font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+              <Activity className="h-4.5 w-4.5 text-teal-600 dark:text-teal-400" /> Clinical Alignment & Significance
+            </h3>
+            {content.clinicalInterpretation ? (
               <p className="text-sm text-neutral-700 dark:text-neutral-300">{content.clinicalInterpretation}</p>
-            </section>
-          )}
+            ) : (
+              <div className="p-5 border border-dashed border-neutral-300 dark:border-neutral-800 rounded-2xl bg-neutral-50/50 dark:bg-neutral-900/50 text-neutral-500 dark:text-neutral-400 text-xs">
+                <p>Clinical alignment and significance guidelines are pending editorial expansion and clinical review.</p>
+                {/* TODO: Connect this to the editorial governance workflow for content expansion */}
+              </div>
+            )}
+          </section>
 
           {/* Section: Interpretation Algorithm */}
           <InterpretationAlgorithm entity={labTest} />

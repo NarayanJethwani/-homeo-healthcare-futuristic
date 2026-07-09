@@ -1,0 +1,24 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const assert_1 = __importDefault(require("assert"));
+const remedyNormalizer_1 = require("../engine/remedyNormalizer");
+const canonicalTypes_1 = require("../engine/canonicalTypes");
+assert_1.default.strictEqual((0, remedyNormalizer_1.normalizeRemedyId)("Nux Vomica"), "Nux-v");
+assert_1.default.strictEqual((0, remedyNormalizer_1.normalizeRemedyId)(" nux-v "), "Nux-v");
+assert_1.default.strictEqual((0, remedyNormalizer_1.normalizeRemedyId)("Arsenicum Album"), "Ars");
+assert_1.default.strictEqual((0, remedyNormalizer_1.normalizeRemedyId)("Sulfur"), "Sulph");
+assert_1.default.strictEqual((0, remedyNormalizer_1.normalizeRemedyId)("Unknown Remedy"), "Unknown Remedy");
+assert_1.default.strictEqual((0, remedyNormalizer_1.normalizeRemedyId)(null), "");
+assert_1.default.strictEqual((0, remedyNormalizer_1.remedyIdsMatch)("Nux Vomica", "Nux-v"), true);
+assert_1.default.strictEqual((0, remedyNormalizer_1.remedyIdsMatch)("Sulfur", "Sulph"), true);
+assert_1.default.strictEqual((0, remedyNormalizer_1.remedyIdsMatch)("Sulph", "Ars"), false);
+assert_1.default.strictEqual((0, canonicalTypes_1.normalizeRemedyGrade)(-1), 0);
+assert_1.default.strictEqual((0, canonicalTypes_1.normalizeRemedyGrade)(2.4), 2);
+assert_1.default.strictEqual((0, canonicalTypes_1.normalizeRemedyGrade)(4.9), 4);
+assert_1.default.strictEqual((0, canonicalTypes_1.normalizeRemedyGrade)("3"), 3);
+assert_1.default.strictEqual((0, canonicalTypes_1.normalizeRemedyGrade)("not-a-grade"), 0);
+assert_1.default.strictEqual((0, canonicalTypes_1.getRemedyGradeWeight)(3), 3);
+console.log("remedyNormalizer.test.ts passed");

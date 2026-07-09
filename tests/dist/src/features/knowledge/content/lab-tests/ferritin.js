@@ -1,0 +1,82 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.FerritinLabTest = void 0;
+exports.FerritinLabTest = {
+    id: "L0009",
+    slug: "ferritin",
+    entityType: "lab-test",
+    editorialStatus: "published",
+    versionInfo: {
+        version: "1.0.0",
+        created: "2026-07-08T12:00:00Z",
+        updated: "2026-07-08T12:00:00Z",
+        reviewed: "2026-07-08T12:00:00Z"
+    },
+    title: {
+        en: "Ferritin",
+        hi: "Ferritin",
+        gu: "Ferritin",
+        mr: "Ferritin",
+        es: "Ferritin",
+        ar: "Ferritin"
+    },
+    summary: {
+        en: "Clinical purpose, normal range, and interpretation of Ferritin lab results.",
+        hi: "Ferritin प्रयोगशाला परीक्षण विवरण.",
+        gu: "Ferritin લેબોરેટરી ટેસ્ટ પરિચય.",
+        mr: "Ferritin लॅब टेस्ट माहिती.",
+        es: "Propósito e interpretación de la prueba de laboratorio Ferritin.",
+        ar: "الغرض السريري وتفسير نتائج اختبار Ferritin."
+    },
+    content: {
+        "overview": "FERRITIN: A blood panel parameter or cell count analysis designed to evaluate red cell mass, immune defense lines, and coagulation potential.",
+        "normalRange": "Hemoglobin: 12.0-17.5 g/dL; Hematocrit: 36-50%; WBC Count: 4,000-11,000 /mcL; Platelet Count: 150,000-450,000 /mcL.",
+        "highValues": [
+            "Erythrocytosis or dehydration (high RBC/Hgb)",
+            "Leukocytosis indicating active infection or inflammation (high WBC)",
+            "Thrombocytosis from inflammatory or marrow states (high platelets)"
+        ],
+        "lowValues": [
+            "Anemia from nutritional or blood loss causes (low Hgb/RBC)",
+            "Leukopenia suggesting viral or autoimmune suppression (low WBC)",
+            "Thrombocytopenia posing bleeding risks (low platelets)"
+        ],
+        "clinicalInterpretation": "FERRITIN evaluation: Red cell and hemoglobin drops suggest anemia, necessitating iron, B12, or folate evaluation. WBC spikes indicate infection or severe inflammation, while platelet drops warn of bleeding risks.",
+        "references": [
+            "CIT-0015",
+            "CIT-0016",
+            "CIT-0022"
+        ],
+        "faqs": [
+            {
+                "question": "How often should a Complete Blood Count (CBC) be monitored?",
+                "answer": "For healthy individuals, an annual check is standard. Patients with anemia, active infections, or ongoing hematological treatment may require frequent monitoring as directed by a clinician."
+            },
+            {
+                "question": "What is the link between iron deficiency and anemia?",
+                "answer": "Iron is an essential building block for hemoglobin, the protein in red blood cells that carries oxygen. Lack of iron directly limits hemoglobin synthesis, leading to anemia."
+            },
+            {
+                "question": "Can dietary changes alone correct low hemoglobin?",
+                "answer": "Mild nutritional anemias can improve with iron-rich foods and vitamin C, but moderate-to-severe states require clinical investigation and targeted supplementation."
+            }
+        ]
+    },
+    author: {
+        name: "Dr. Narayan Jethwani",
+        credentials: "MD (Hom)"
+    },
+    reviewer: {
+        name: "Dr. Narayan Jethwani",
+        credentials: "MD (Hom)",
+        specialty: "Clinical Pathology",
+        institution: "Homeo Healthcare Clinic"
+    },
+    evidenceLevel: "Traditional-Literature",
+    tags: ["Ferritin", "Lab-Test", "Diagnostics"],
+    canonicalUrl: "https://homeo.healthcare/knowledge/lab-tests/ferritin",
+    readingTimeMinutes: 4,
+    audience: "patient",
+    license: "CC BY-NC-ND 4.0",
+    changeLog: ["1.0.0: Initial release of Ferritin test guidelines"]
+};

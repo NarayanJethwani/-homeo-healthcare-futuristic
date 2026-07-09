@@ -139,48 +139,61 @@ export default async function DiseaseDetailPage({ params }: PageProps) {
 
           {/* Section: Etiology (Causes) and Risk Factors */}
           <section id="etiology" className="scroll-mt-24 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {content.causes && content.causes.length > 0 && (
-                <div className="space-y-3 p-5 border border-neutral-500/10 rounded-2xl bg-white/5">
-                  <h4 className="text-sm font-bold text-neutral-900 dark:text-neutral-100 border-b border-neutral-500/5 pb-1">
-                    Pathological Causes
-                  </h4>
-                  <ul className="list-disc list-inside space-y-1.5 text-xs text-neutral-750 dark:text-neutral-300">
-                    {content.causes.map((cause: string, idx: number) => (
-                      <li key={idx}>{cause}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+            {(!content.causes || content.causes.length === 0) && (!content.riskFactors || content.riskFactors.length === 0) ? (
+              <div className="p-5 border border-dashed border-neutral-300 dark:border-neutral-800 rounded-2xl bg-neutral-50/50 dark:bg-neutral-900/50 text-neutral-500 dark:text-neutral-400 text-xs">
+                <p className="font-bold uppercase tracking-wider text-rose-500 mb-1">Etiology & Pathophysiology</p>
+                <p>Pathological causes and risk factors for this disease are pending editorial expansion and clinical review.</p>
+                {/* TODO: Connect this to the editorial governance workflow for content expansion */}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {content.causes && content.causes.length > 0 && (
+                  <div className="space-y-3 p-5 border border-neutral-500/10 rounded-2xl bg-white/5">
+                    <h4 className="text-sm font-bold text-neutral-900 dark:text-neutral-100 border-b border-neutral-500/5 pb-1">
+                      Pathological Causes
+                    </h4>
+                    <ul className="list-disc list-inside space-y-1.5 text-xs text-neutral-750 dark:text-neutral-300">
+                      {content.causes.map((cause: string, idx: number) => (
+                        <li key={idx}>{cause}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
 
-              {content.riskFactors && content.riskFactors.length > 0 && (
-                <div className="space-y-3 p-5 border border-neutral-500/10 rounded-2xl bg-white/5">
-                  <h4 className="text-sm font-bold text-neutral-900 dark:text-neutral-100 border-b border-neutral-500/5 pb-1">
-                    Risk Factors
-                  </h4>
-                  <ul className="list-disc list-inside space-y-1.5 text-xs text-neutral-750 dark:text-neutral-300">
-                    {content.riskFactors.map((risk: string, idx: number) => (
-                      <li key={idx}>{risk}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
+                {content.riskFactors && content.riskFactors.length > 0 && (
+                  <div className="space-y-3 p-5 border border-neutral-500/10 rounded-2xl bg-white/5">
+                    <h4 className="text-sm font-bold text-neutral-900 dark:text-neutral-100 border-b border-neutral-500/5 pb-1">
+                      Risk Factors
+                    </h4>
+                    <ul className="list-disc list-inside space-y-1.5 text-xs text-neutral-750 dark:text-neutral-300">
+                      {content.riskFactors.map((risk: string, idx: number) => (
+                        <li key={idx}>{risk}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
           </section>
 
           {/* Section: Symptoms */}
-          {content.symptoms && content.symptoms.length > 0 && (
-            <section id="symptoms" className="space-y-3 scroll-mt-24">
-              <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 border-b border-neutral-500/5 pb-2">
-                <ListChecks className="h-4.5 w-4.5 text-rose-500" /> Clinical Symptom Presentation
-              </h3>
+          <section id="symptoms" className="space-y-3 scroll-mt-24">
+            <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 border-b border-neutral-500/5 pb-2">
+              <ListChecks className="h-4.5 w-4.5 text-rose-500" /> Clinical Symptom Presentation
+            </h3>
+            {content.symptoms && content.symptoms.length > 0 ? (
               <ul className="list-disc list-inside space-y-2 pl-2 text-neutral-750 dark:text-neutral-300">
                 {content.symptoms.map((sym: string, idx: number) => (
                   <li key={idx} className="pl-1"><span className="text-neutral-800 dark:text-neutral-200">{sym}</span></li>
                 ))}
               </ul>
-            </section>
-          )}
+            ) : (
+              <div className="p-5 border border-dashed border-neutral-300 dark:border-neutral-800 rounded-2xl bg-neutral-50/50 dark:bg-neutral-900/50 text-neutral-500 dark:text-neutral-400 text-xs">
+                <p>Clinical symptom presentation guidelines are pending editorial expansion and clinical review.</p>
+                {/* TODO: Connect this to the editorial governance workflow for content expansion */}
+              </div>
+            )}
+          </section>
 
           {/* Section: Diagnosis & Differential Diagnosis */}
           <section id="diagnosis" className="scroll-mt-24 space-y-6">
@@ -235,14 +248,19 @@ export default async function DiseaseDetailPage({ params }: PageProps) {
           </section>
 
           {/* Section: Lifestyle Advice */}
-          {content.lifestyleAdvice && (
-            <section id="lifestyle" className="space-y-3 scroll-mt-24">
-              <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 border-b border-neutral-500/5 pb-2">
-                <Activity className="h-4.5 w-4.5 text-rose-500" /> Lifestyle & Diet Advice
-              </h3>
+          <section id="lifestyle" className="space-y-3 scroll-mt-24">
+            <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 border-b border-neutral-500/5 pb-2">
+              <Activity className="h-4.5 w-4.5 text-rose-500" /> Lifestyle & Diet Advice
+            </h3>
+            {content.lifestyleAdvice ? (
               <p className="text-sm text-neutral-700 dark:text-neutral-300">{content.lifestyleAdvice}</p>
-            </section>
-          )}
+            ) : (
+              <div className="p-5 border border-dashed border-neutral-300 dark:border-neutral-800 rounded-2xl bg-neutral-50/50 dark:bg-neutral-900/50 text-neutral-500 dark:text-neutral-400 text-xs">
+                <p>Lifestyle and diet guidelines are pending editorial expansion and clinical review.</p>
+                {/* TODO: Connect this to the editorial governance workflow for content expansion */}
+              </div>
+            )}
+          </section>
         </div>
 
         {/* Dynamic Knowledge Graph Explorer */}

@@ -24,6 +24,7 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     "website 1001/**",
     "scratch/**",
+    "tests/dist/**",
   ]),
 ]);
 

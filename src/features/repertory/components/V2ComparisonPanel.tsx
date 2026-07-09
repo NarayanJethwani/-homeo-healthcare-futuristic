@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { AlertTriangle, Brain, GitCompareArrows } from "lucide-react";
+import { AlertTriangle, Brain, GitCompareArrows, ExternalLink } from "lucide-react";
 import { V2ClinicalFeedbackPanel } from "./V2ClinicalFeedbackPanel";
+import { getKnowledgeLinkForRemedy } from "@/features/knowledge/governance/clinicalOsIntegration";
 
 interface V2ComparisonPanelProps {
   query: string;
@@ -30,19 +31,44 @@ function rubricList(items: any[] = []) {
   );
 }
 
+// Knowledge Platform integration is read-only and must not alter clinical decision logic.
+
 function rankingList(items: any[] = []) {
   if (items.length === 0) return <p className="text-[10px] font-bold text-slate-400">No remedy ranking.</p>;
   return (
     <div className="space-y-1.5">
-      {items.slice(0, 5).map((ranking: any, index: number) => (
-        <div key={`${ranking.remedyId}-${index}`} className="rounded-xl border border-slate-100 bg-white p-2">
-          <div className="flex items-center justify-between gap-2">
-            <span className="text-[11px] font-black text-slate-800">#{index + 1} {ranking.remedyName || ranking.remedyId}</span>
-            <span className="text-[10px] font-black text-emerald-600">{ranking.totalScore}</span>
+      {items.slice(0, 5).map((ranking: any, index: number) => {
+        const link = getKnowledgeLinkForRemedy(ranking.remedyId);
+        const name = ranking.remedyName || ranking.remedyId;
+        
+        return (
+          <div key={`${ranking.remedyId}-${index}`} className="rounded-xl border border-slate-100 bg-white p-2">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-[11px] font-black text-slate-800 flex items-center gap-1">
+                #{index + 1}{" "}
+                {link.found ? (
+                  <a
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-emerald-600 hover:text-emerald-700 underline flex items-center gap-0.5"
+                    title={`View ${name} on Knowledge Platform`}
+                  >
+                    {name}
+                    <ExternalLink className="w-2.5 h-2.5" />
+                  </a>
+                ) : (
+                  <span className="text-slate-700" title="Knowledge article pending">
+                    {name}
+                  </span>
+                )}
+              </span>
+              <span className="text-[10px] font-black text-emerald-600">{ranking.totalScore}</span>
+            </div>
+            {ranking.whyRanked?.[0] && <p className="mt-1 text-[9px] font-semibold text-slate-500">{ranking.whyRanked[0]}</p>}
           </div>
-          {ranking.whyRanked?.[0] && <p className="mt-1 text-[9px] font-semibold text-slate-500">{ranking.whyRanked[0]}</p>}
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

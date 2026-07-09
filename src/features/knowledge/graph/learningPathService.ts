@@ -291,7 +291,7 @@ export function generateLearningPath(
       });
       steps.push({
         label: "Causes & Triggers",
-        href: `/knowledge/diseases/${currentEntity.slug}#causes`,
+        href: `/knowledge/diseases/${currentEntity.slug}#etiology`,
         isActive: false,
         type: "info",
         description: `Pathogenesis factors of ${getShortTitle(currentEntity.title)}`,
@@ -323,7 +323,7 @@ export function generateLearningPath(
       });
       steps.push({
         label: "Etiology & Pathophysiology",
-        href: `/knowledge/diseases/${currentEntity.slug}#causes`,
+        href: `/knowledge/diseases/${currentEntity.slug}#etiology`,
         isActive: false,
         type: "info",
         description: "Functional disease mechanisms and causes",
@@ -389,7 +389,7 @@ export function generateLearningPath(
       }
       steps.push({
         label: "Clinical Red Flags",
-        href: `/knowledge/diseases/${currentEntity.slug}#red-flags`,
+        href: `/knowledge/diseases/${currentEntity.slug}#redflags`,
         isActive: false,
         type: "info",
         description: "High-risk symptoms requiring referral",
@@ -513,7 +513,7 @@ export function generateLearningPath(
       });
       steps.push({
         label: "Analysis Protocol",
-        href: `/knowledge/lab-tests/${currentEntity.slug}#clinical-interpretation`,
+        href: `/knowledge/lab-tests/${currentEntity.slug}#interpretation`,
         isActive: false,
         type: "info",
         description: "Clinical reference ranges & interpretations",
@@ -780,7 +780,7 @@ export function generateLearningPath(
       });
       steps.push({
         label: "Potential Causes",
-        href: `/knowledge/symptoms/${currentEntity.slug}#common-causes`,
+        href: `/knowledge/symptoms/${currentEntity.slug}#causes`,
         isActive: false,
         type: "info",
         description: "Differential diagnosis triggers",
@@ -821,7 +821,7 @@ export function generateLearningPath(
       }
       steps.push({
         label: "Symptom Control Guidelines",
-        href: `/knowledge/symptoms/${currentEntity.slug}#lifestyleAdvice`,
+        href: `/knowledge/symptoms/${currentEntity.slug}#lifestyle`,
         isActive: false,
         type: "info",
         description: "Lifestyle advice & immediate relief tips",
@@ -845,7 +845,7 @@ export function generateLearningPath(
       });
       steps.push({
         label: "Symptom Pathogenesis",
-        href: `/knowledge/symptoms/${currentEntity.slug}#clinicalMeaning`,
+        href: `/knowledge/symptoms/${currentEntity.slug}#definition`,
         isActive: false,
         type: "info",
         description: "Functional mechanisms & pathology",
@@ -853,7 +853,7 @@ export function generateLearningPath(
       });
       steps.push({
         label: "Rule-out Criteria",
-        href: `/knowledge/symptoms/${currentEntity.slug}#differentialDiagnosis`,
+        href: `/knowledge/symptoms/${currentEntity.slug}#redflags`,
         isActive: false,
         type: "info",
         description: "Critical red flags and signs",
@@ -897,7 +897,7 @@ export function generateLearningPath(
       });
       steps.push({
         label: "Clinical Evaluation",
-        href: `/knowledge/symptoms/${currentEntity.slug}#clinicalMeaning`,
+        href: `/knowledge/symptoms/${currentEntity.slug}#definition`,
         isActive: false,
         type: "info",
         description: "Assessment scorecards and guidelines",
@@ -905,7 +905,7 @@ export function generateLearningPath(
       });
       steps.push({
         label: "Critical Risk Signs",
-        href: `/knowledge/symptoms/${currentEntity.slug}#redFlags`,
+        href: `/knowledge/symptoms/${currentEntity.slug}#redflags`,
         isActive: false,
         type: "info",
         description: "Clinical red flags needing direct management",

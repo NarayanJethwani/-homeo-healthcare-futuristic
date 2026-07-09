@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { searchKnowledgeBase } from "@/features/knowledge/search/knowledgeIndex";
 import { EntityType } from "@/features/knowledge/types";
+import { trackSearchQuery } from "@/features/knowledge/analytics/knowledgeSearchAnalytics";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -20,6 +21,17 @@ export async function GET(request: NextRequest) {
   const typeFilter = typeParam && validTypes.includes(typeParam) ? typeParam : undefined;
 
   const results = searchKnowledgeBase(query, typeFilter);
+
+  // Track the search event safely
+  // (We do not await this operation to ensure zero response latency penalty)
+  trackSearchQuery({
+    query,
+    resultCount: results.length,
+    entityTypeFilter: typeFilter || "all",
+    source: "public-site"
+  }).catch(err => {
+    console.error("Failed to track search query event:", err);
+  });
 
   // Return formatted response mapping scores and matching entities
   const responseData = results.map(res => ({

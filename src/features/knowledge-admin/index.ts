@@ -4,6 +4,8 @@ export * from "./repositories/MemoryRepository";
 export * from "./repositories/FirestoreRepository";
 export * from "./adapters/importExport";
 export * from "./adapters/diff";
+export * from "./adapters/searchConsoleAdapter";
+export * from "./adapters/analyticsAdapter";
 export * from "./validation/qualityGates";
 export * from "./validation/duplicateDetector";
 export * from "./validation/relationshipSuggestions";
@@ -21,3 +23,12 @@ export { default as QualityGatePanel } from "./components/QualityGatePanel";
 export { default as VersionTimeline } from "./components/VersionTimeline";
 export { default as DashboardHealthCard } from "./components/DashboardHealthCard";
 export { Badge, EditorialStatusBadge, EvidenceBadge, RoleBadge } from "./components/Badge";
+export * from "./services/editorialPriorityService";
+export * from "./workflow/types";
+export * from "./workflow/workflowClient";
+export * from "./workflow/reviewerDirectory";
+
+// CMS
+export * from "./cms/types";
+export * from "./cms/publicationReadiness";
+export * as cmsClient from "./cms/cmsClient";

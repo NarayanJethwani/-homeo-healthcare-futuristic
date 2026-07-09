@@ -1,6 +1,8 @@
 import { ollamaService } from "./ollama";
 import { MASTER_REMEDY_DB } from "./materiaMedicaDb";
 import { ORGANON_APHORISMS } from "./organonData";
+import { globalVectorStore } from "../features/knowledge/retrieval/vectorStore";
+import { embeddingManager } from "../features/knowledge/retrieval/embeddingProvider";
 
 export interface KnowledgeDocument {
   id: string;
@@ -112,7 +114,19 @@ export const KNOWLEDGE_BASE: KnowledgeDocument[] = [
 
 export interface SearchResult {
   document: KnowledgeDocument;
-  score: number; // 0 to 1
+  score: number;
+}
+
+export interface SearchResultList extends Array<SearchResult> {
+  metadata?: {
+    vectorCoveragePercent: number;
+    numVectorEnabledDocs: number;
+    numMissingVectors: number;
+    numDimensionMismatches: number;
+    fallbackModeUsed: "none" | "text-only-fallback" | "dimension-mismatch-fallback" | "partial-vector-fallback";
+    embeddingProviderUsed: string;
+    searchDurationMs: number;
+  };
 }
 
 export class RAGService {
@@ -123,9 +137,7 @@ export class RAGService {
     this.vectorDbUrl = process.env.VECTOR_DB_URL || null;
   }
 
-  private getUnifiedDb(): KnowledgeDocument[] {
-    if (this.unifiedDb) return this.unifiedDb;
-
+  public getUnifiedDb(): KnowledgeDocument[] {
     const docs = [...KNOWLEDGE_BASE];
 
     // 1. Map MASTER_REMEDY_DB
@@ -160,16 +172,45 @@ export class RAGService {
       });
     }
 
-    this.unifiedDb = docs;
+    // 3. Map Dynamic CMS Published Knowledge Entities
+    try {
+      const { globalKmsRepository } = require("../features/knowledge-admin/repositories/MemoryRepository");
+      if (globalKmsRepository && typeof globalKmsRepository.getEntitiesSync === "function") {
+        const cmsEntities = globalKmsRepository.getEntitiesSync();
+        const published = cmsEntities.filter((e: any) => e.editorialStatus === "published");
+        
+        published.forEach((entity: any) => {
+          const bodyText = typeof entity.content?.overview === "string" 
+            ? entity.content.overview 
+            : typeof entity.content?.description === "string" 
+              ? entity.content.description 
+              : "";
+          const titleStr = typeof entity.title === "string" ? entity.title : (entity.title.en || "");
+          
+          docs.push({
+            id: entity.id,
+            category: entity.entityType,
+            title: titleStr,
+            content: `${titleStr}. ${bodyText}`,
+            citations: entity.content?.references || [],
+            tags: entity.tags || []
+          });
+        });
+      }
+    } catch (err) {
+      console.warn("[RAGService] Failed to load dynamic CMS published entities into search index:", err);
+    }
+
     return docs;
   }
 
-  // Calculate cosine similarity between two vectors
+  // Calculate cosine similarity between two vectors (dimension resilient)
   private cosineSimilarity(vecA: number[], vecB: number[]): number {
     let dotProduct = 0.0;
     let normA = 0.0;
     let normB = 0.0;
-    for (let i = 0; i < vecA.length; i++) {
+    const len = Math.min(vecA.length, vecB.length);
+    for (let i = 0; i < len; i++) {
       dotProduct += vecA[i] * vecB[i];
       normA += vecA[i] * vecA[i];
       normB += vecB[i] * vecB[i];
@@ -197,24 +238,36 @@ export class RAGService {
     return intersection.size / union.size;
   }
 
-  // Central search method: executes local hybrid search (keyword + fallback semantic vector search)
-  async hybridSearch(query: string): Promise<SearchResult[]> {
+  // Central search method: executes local hybrid search (keyword + cached semantic vector search)
+  async hybridSearch(query: string): Promise<SearchResultList> {
+    const startTime = Date.now();
     console.log(`Executing local hybrid search for query: "${query}"`);
     const queryTokens = this.getTokens(query);
     const results: SearchResult[] = [];
 
-    // Try to get vector embedding for query if Ollama is available
+    // Ensure seed vectors are loaded
+    await globalVectorStore.loadSeedVectors();
+
+    // Try to get vector embedding for query using embedding provider manager
     let queryVector: number[] | null = null;
-    const isOllamaOnline = await ollamaService.checkHealth();
-    if (isOllamaOnline) {
+    const provider = await embeddingManager.getActiveProvider();
+    const providerName = provider.name;
+
+    if (providerName !== "null-provider") {
       try {
-        queryVector = await ollamaService.getEmbeddings(query);
-      } catch {
-        console.warn("Failed to retrieve embeddings from Ollama. Falling back to keyword search.");
+        queryVector = await provider.getEmbeddings(query);
+      } catch (err) {
+        console.warn(`Failed to retrieve embeddings from provider ${providerName}. Falling back to keyword search.`, err);
       }
     }
 
-    for (const doc of this.getUnifiedDb()) {
+    let numVectorEnabledDocs = 0;
+    let numMissingVectors = 0;
+    let numDimensionMismatches = 0;
+
+    const unifiedDocs = this.getUnifiedDb();
+
+    for (const doc of unifiedDocs) {
       // 1. Keyword Score (Weighted Query Coverage and Jaccard)
       const docText = `${doc.title} ${doc.content} ${doc.tags.join(" ")}`;
       const docTokens = this.getTokens(docText);
@@ -234,27 +287,64 @@ export class RAGService {
         if (lowerQuery.includes(tag.toLowerCase())) exactBoost += 0.15;
       }
 
-      // 3. Vector Score (if vector is available)
+      // 3. Vector Score (from cached vector store)
       let vectorScore = 0;
       if (queryVector) {
         try {
-          const docVector = await ollamaService.getEmbeddings(doc.content);
-          vectorScore = this.cosineSimilarity(queryVector, docVector);
-        } catch {
+          const cachedRecord = await globalVectorStore.getVector(doc.id);
+          
+          if (!cachedRecord || !cachedRecord.vector || cachedRecord.vector.length === 0) {
+            numMissingVectors++;
+            vectorScore = 0;
+          } else if (cachedRecord.vector.length !== queryVector.length) {
+            numDimensionMismatches++;
+            vectorScore = 0;
+            console.warn(`[RAG Search] Dimension mismatch for doc ${doc.id} (cached: ${cachedRecord.vector.length}, query: ${queryVector.length}). Skipping semantic scoring for this document.`);
+          } else {
+            numVectorEnabledDocs++;
+            vectorScore = this.cosineSimilarity(queryVector, cachedRecord.vector);
+          }
+        } catch (e) {
+          console.warn(`Failed to score vector similarity for ${doc.id}:`, e);
           vectorScore = 0;
         }
       }
 
       // Hybrid combination weight
       const finalScore = queryVector
-        ? Math.min(1.0, keywordScore * 0.4 + exactBoost + vectorScore * 0.5)
-        : Math.min(1.0, keywordScore * 0.75 + exactBoost);
+        ? Math.max(0, Math.min(1.0, keywordScore * 0.4 + exactBoost + vectorScore * 0.5))
+        : Math.max(0, Math.min(1.0, keywordScore * 0.75 + exactBoost));
 
       results.push({ document: doc, score: finalScore });
     }
 
     // Sort descending by score
-    return results.sort((a, b) => b.score - a.score);
+    const sortedResults = results.sort((a, b) => b.score - a.score) as SearchResultList;
+
+    // Calculate metadata statistics
+    const totalDocs = unifiedDocs.length;
+    const vectorCoveragePercent = totalDocs > 0 ? (numVectorEnabledDocs / totalDocs) * 100 : 0;
+
+    let fallbackModeUsed: "none" | "text-only-fallback" | "dimension-mismatch-fallback" | "partial-vector-fallback" = "none";
+    if (!queryVector) {
+      fallbackModeUsed = "text-only-fallback";
+    } else if (numDimensionMismatches > 0 && numVectorEnabledDocs === 0) {
+      fallbackModeUsed = "dimension-mismatch-fallback";
+    } else if (numMissingVectors > 0 || numDimensionMismatches > 0) {
+      fallbackModeUsed = "partial-vector-fallback";
+    }
+
+    sortedResults.metadata = {
+      vectorCoveragePercent,
+      numVectorEnabledDocs,
+      numMissingVectors,
+      numDimensionMismatches,
+      fallbackModeUsed,
+      embeddingProviderUsed: providerName,
+      searchDurationMs: Date.now() - startTime
+    };
+
+    return sortedResults;
   }
 
   // Main RAG Entrypoint: Checks if a local high-confidence answer exists.

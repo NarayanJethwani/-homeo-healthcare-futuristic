@@ -11,6 +11,7 @@ export * from "./governance/prohibitedClaims";
 export * from "./governance/qualityGates";
 export * from "./versioning/contentVersion";
 export * from "./versioning/migration";
+export * from "./governance/clinicalOsIntegration";
 
 import { DISEASES } from "./content/diseases";
 import { SYMPTOMS } from "./content/symptoms";

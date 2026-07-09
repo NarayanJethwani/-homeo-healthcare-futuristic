@@ -67,7 +67,7 @@ export default async function SymptomDetailPage({ params }: PageProps) {
   const tocItems = [
     { id: "definition", label: "Definition & Meaning" },
     { id: "causes", label: "Common Causes" },
-    { id: "differentials", label: "Differential Diagnosis" },
+    { id: "differential-diagnosis-table", label: "Differential Diagnosis" },
     { id: "redflags", label: "Clinical Red Flags" },
     { id: "lifestyle", label: "Lifestyle & Diet" }
   ];
@@ -120,29 +120,36 @@ export default async function SymptomDetailPage({ params }: PageProps) {
               <Info className="h-4.5 w-4.5 text-amber-500" /> Definition
             </h3>
             <PatientFriendlyText className="text-base text-neutral-700 dark:text-neutral-300" as="p">
-              {content.definition}
+              {content.definition || "Definition is pending editorial expansion."}
             </PatientFriendlyText>
-            <div className="p-4 border-l-4 border-amber-500/50 bg-amber-500/5 rounded-r-xl">
-              <span className="text-[10px] uppercase font-bold text-amber-500 block mb-1">Clinical Meaning</span>
-              <PatientFriendlyText className="text-sm italic text-neutral-800 dark:text-neutral-200" as="p">
-                {content.clinicalMeaning}
-              </PatientFriendlyText>
-            </div>
+            {content.clinicalMeaning && (
+              <div id="clinical-meaning" className="p-4 border-l-4 border-amber-500/50 bg-amber-500/5 rounded-r-xl scroll-mt-24">
+                <span className="text-[10px] uppercase font-bold text-amber-500 block mb-1">Clinical Meaning</span>
+                <PatientFriendlyText className="text-sm italic text-neutral-850 dark:text-neutral-205" as="p">
+                  {content.clinicalMeaning}
+                </PatientFriendlyText>
+              </div>
+            )}
           </section>
 
           {/* Section: Common Causes */}
-          {content.commonCauses && content.commonCauses.length > 0 && (
-            <section id="causes" className="space-y-3 scroll-mt-24">
-              <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 border-b border-neutral-500/5 pb-2">
-                <HelpCircle className="h-4.5 w-4.5 text-amber-500" /> Common Causes
-              </h3>
+          <section id="causes" className="space-y-3 scroll-mt-24">
+            <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 border-b border-neutral-500/5 pb-2">
+              <HelpCircle className="h-4.5 w-4.5 text-amber-500" /> Common Causes
+            </h3>
+            {content.commonCauses && content.commonCauses.length > 0 ? (
               <ul className="list-disc list-inside space-y-1.5 pl-2 text-neutral-750 dark:text-neutral-300">
                 {content.commonCauses.map((cause: string, idx: number) => (
                   <li key={idx} className="pl-1"><span className="text-neutral-800 dark:text-neutral-200">{cause}</span></li>
                 ))}
               </ul>
-            </section>
-          )}
+            ) : (
+              <div className="p-5 border border-dashed border-neutral-200 dark:border-neutral-800 rounded-2xl bg-neutral-50/50 dark:bg-neutral-900/50 text-neutral-550 dark:text-neutral-400 text-xs">
+                <p>Common causes for this symptom are pending editorial expansion and clinical review.</p>
+                {/* TODO: Connect this to the editorial governance workflow for content expansion */}
+              </div>
+            )}
+          </section>
 
           {/* Section: Differential Diagnosis Table */}
           <DifferentialDiagnosisTable entity={symptom} />
@@ -156,14 +163,19 @@ export default async function SymptomDetailPage({ params }: PageProps) {
           </section>
 
           {/* Section: Lifestyle and diet guidance */}
-          {content.lifestyleAdvice && (
-            <section id="lifestyle" className="space-y-3 border-t border-neutral-500/5 pt-6 scroll-mt-24">
-              <h3 className="text-base font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
-                <BookOpen className="h-4.5 w-4.5 text-teal-600 dark:text-teal-400" /> Lifestyle & Diet Support
-              </h3>
+          <section id="lifestyle" className="space-y-3 border-t border-neutral-500/5 pt-6 scroll-mt-24">
+            <h3 className="text-base font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+              <BookOpen className="h-4.5 w-4.5 text-teal-600 dark:text-teal-400" /> Lifestyle & Diet Support
+            </h3>
+            {content.lifestyleAdvice ? (
               <p className="text-sm text-neutral-700 dark:text-neutral-300">{content.lifestyleAdvice}</p>
-            </section>
-          )}
+            ) : (
+              <div className="p-5 border border-dashed border-neutral-200 dark:border-neutral-880 rounded-2xl bg-neutral-50/50 dark:bg-neutral-900/50 text-neutral-550 dark:text-neutral-400 text-xs">
+                <p>Lifestyle and diet support protocols are pending editorial expansion and clinical review.</p>
+                {/* TODO: Connect this to the editorial governance workflow for content expansion */}
+              </div>
+            )}
+          </section>
         </div>
 
         {/* Dynamic Knowledge Graph Explorer */}

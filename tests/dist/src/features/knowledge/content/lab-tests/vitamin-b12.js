@@ -1,0 +1,82 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.VitaminB12LabTest = void 0;
+exports.VitaminB12LabTest = {
+    id: "L0008",
+    slug: "vitamin-b12",
+    entityType: "lab-test",
+    editorialStatus: "published",
+    versionInfo: {
+        version: "1.0.0",
+        created: "2026-07-08T12:00:00Z",
+        updated: "2026-07-08T12:00:00Z",
+        reviewed: "2026-07-08T12:00:00Z"
+    },
+    title: {
+        en: "Vitamin B12",
+        hi: "Vitamin B12",
+        gu: "Vitamin B12",
+        mr: "Vitamin B12",
+        es: "Vitamin B12",
+        ar: "Vitamin B12"
+    },
+    summary: {
+        en: "Clinical purpose, normal range, and interpretation of Vitamin B12 lab results.",
+        hi: "Vitamin B12 प्रयोगशाला परीक्षण विवरण.",
+        gu: "Vitamin B12 લેબોરેટરી ટેસ્ટ પરિચય.",
+        mr: "Vitamin B12 लॅब टेस्ट माहिती.",
+        es: "Propósito e interpretación de la prueba de laboratorio Vitamin B12.",
+        ar: "الغرض السريري وتفسير نتائج اختبار Vitamin B12."
+    },
+    content: {
+        "overview": "VITAMIN B12: A blood panel parameter or cell count analysis designed to evaluate red cell mass, immune defense lines, and coagulation potential.",
+        "normalRange": "Hemoglobin: 12.0-17.5 g/dL; Hematocrit: 36-50%; WBC Count: 4,000-11,000 /mcL; Platelet Count: 150,000-450,000 /mcL.",
+        "highValues": [
+            "Erythrocytosis or dehydration (high RBC/Hgb)",
+            "Leukocytosis indicating active infection or inflammation (high WBC)",
+            "Thrombocytosis from inflammatory or marrow states (high platelets)"
+        ],
+        "lowValues": [
+            "Anemia from nutritional or blood loss causes (low Hgb/RBC)",
+            "Leukopenia suggesting viral or autoimmune suppression (low WBC)",
+            "Thrombocytopenia posing bleeding risks (low platelets)"
+        ],
+        "clinicalInterpretation": "VITAMIN B12 evaluation: Red cell and hemoglobin drops suggest anemia, necessitating iron, B12, or folate evaluation. WBC spikes indicate infection or severe inflammation, while platelet drops warn of bleeding risks.",
+        "references": [
+            "CIT-0015",
+            "CIT-0016",
+            "CIT-0022"
+        ],
+        "faqs": [
+            {
+                "question": "How often should a Complete Blood Count (CBC) be monitored?",
+                "answer": "For healthy individuals, an annual check is standard. Patients with anemia, active infections, or ongoing hematological treatment may require frequent monitoring as directed by a clinician."
+            },
+            {
+                "question": "What is the link between iron deficiency and anemia?",
+                "answer": "Iron is an essential building block for hemoglobin, the protein in red blood cells that carries oxygen. Lack of iron directly limits hemoglobin synthesis, leading to anemia."
+            },
+            {
+                "question": "Can dietary changes alone correct low hemoglobin?",
+                "answer": "Mild nutritional anemias can improve with iron-rich foods and vitamin C, but moderate-to-severe states require clinical investigation and targeted supplementation."
+            }
+        ]
+    },
+    author: {
+        name: "Dr. Narayan Jethwani",
+        credentials: "MD (Hom)"
+    },
+    reviewer: {
+        name: "Dr. Narayan Jethwani",
+        credentials: "MD (Hom)",
+        specialty: "Clinical Pathology",
+        institution: "Homeo Healthcare Clinic"
+    },
+    evidenceLevel: "Traditional-Literature",
+    tags: ["Vitamin B12", "Lab-Test", "Diagnostics"],
+    canonicalUrl: "https://homeo.healthcare/knowledge/lab-tests/vitamin-b12",
+    readingTimeMinutes: 4,
+    audience: "patient",
+    license: "CC BY-NC-ND 4.0",
+    changeLog: ["1.0.0: Initial release of Vitamin B12 test guidelines"]
+};
