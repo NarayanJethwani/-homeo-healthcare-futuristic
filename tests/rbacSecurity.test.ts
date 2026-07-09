@@ -297,7 +297,10 @@ async function runTests() {
     const routeFiles = getFilesRecursive(adminApiDir).filter(f => f.endsWith("route.ts"));
     routeFiles.forEach(file => {
       const content = fs.readFileSync(file, "utf8");
-      if (file.includes("api/admin/session/route.ts")) {
+      if (
+        file.includes("api/admin/session/route.ts") ||
+        file.includes("api/admin/invitations/accept/route.ts")
+      ) {
         return;
       }
       const hasGuard = content.includes("authorizeRequest") || content.includes("requireAdminApiSession");

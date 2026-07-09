@@ -53,17 +53,28 @@ All admin API route handlers located in `src/app/api/admin/` must call `authoriz
 
 | API Route | Required Permission | Description |
 | :--- | :--- | :--- |
-| `/api/admin/cms` | `CMS_DRAFT_EDIT` (Post drafts), `CMS_CLINICAL_APPROVE` (Approve), `CMS_PUBLISH` (Publish), `CMS_ROLLBACK` (Rollback) | Editorial Cockpit mutations. |
-| `/api/admin/workflow` | `WORKFLOW_ASSIGN` | Workflow task transition and assignments. |
-| `/api/admin/observability/rag-health` | `RAG_INDEX_MANAGE` (POST index), `OBSERVABILITY_VIEW` (GET stats) | RAG Index admin control tab. |
-| `/api/admin/observability/analytics` | `OBSERVABILITY_VIEW` | Analytics reports. |
-| `/api/admin/observability/seo` | `OBSERVABILITY_VIEW` | Search Console reports. |
-| `/api/admin/sync-vector` | `RAG_INDEX_MANAGE` | Vector updates. |
-| `/api/admin/remove-doctor` | `USER_MANAGE` | Practitoner removal. |
-| `/api/admin/extend-subscription` | `USER_MANAGE` | Subscription management. |
-| `/api/admin/generate-summaries` | `CMS_DRAFT_EDIT` | AI-assisted summaries generation. |
-| `/api/admin/audit-content` | `CMS_DRAFT_EDIT` | AI compliance editing checks. |
-| `/api/admin/session` | **EXEMPT** | Handles user login/logout and session verification. |
+| /api/admin/cms | `CMS_DRAFT_EDIT` (Post drafts), `CMS_CLINICAL_APPROVE` (Approve), `CMS_PUBLISH` (Publish), `CMS_ROLLBACK` (Rollback) | Editorial Cockpit mutations. |
+| /api/admin/workflow | `WORKFLOW_ASSIGN` | Workflow task transition and assignments. |
+| /api/admin/observability/rag-health | `RAG_INDEX_MANAGE` (POST index), `OBSERVABILITY_VIEW` (GET stats) | RAG Index admin control tab. |
+| /api/admin/observability/analytics | `OBSERVABILITY_VIEW` | Analytics reports. |
+| /api/admin/observability/seo | `OBSERVABILITY_VIEW` | Search Console reports. |
+| /api/admin/sync-vector | `RAG_INDEX_MANAGE` | Vector updates. |
+| /api/admin/remove-doctor | `USER_MANAGE` | Practitoner removal. |
+| /api/admin/extend-subscription | `SUBSCRIPTION_MANAGE` | Subscription management (Legacy). |
+| /api/admin/generate-summaries | `CMS_DRAFT_EDIT` | AI-assisted summaries generation. |
+| /api/admin/audit-content | `CMS_DRAFT_EDIT` | AI compliance editing checks. |
+| /api/admin/session | **EXEMPT** | Handles user login/logout and session verification. |
+| /api/admin/users | `USER_MANAGE` | Lists all registered practitioner accounts. |
+| /api/admin/users/[userId] | `USER_MANAGE` | Fetch single profile or PATCH profile metadata updates. |
+| /api/admin/users/invite | `USER_MANAGE` | Create new invitations, generating raw tokens (shown once). |
+| /api/admin/users/invitations | `USER_MANAGE` | List all invitations (hides tokenHash). |
+| /api/admin/users/invitations/[inviteId]/revoke | `USER_MANAGE` | Revoke a pending invitation. |
+| /api/admin/users/[userId]/role | `USER_MANAGE` | Modify user roles (blocks self-escalation). |
+| /api/admin/users/[userId]/suspend | `USER_MANAGE` | Suspend user accounts. |
+| /api/admin/users/[userId]/reactivate | `USER_MANAGE` | Reactivate suspended user accounts. |
+| /api/admin/users/[userId]/deactivate | `USER_MANAGE` | Deactivate user accounts. |
+| /api/admin/users/[userId]/subscription | `SUBSCRIPTION_MANAGE` | Extend practitioner subscriptions. |
+| /api/admin/invitations/accept | **EXEMPT** | Token-protected onboarding endpoint (verifies tokenHash). |
 
 ---
 
@@ -72,9 +83,9 @@ All admin API route handlers located in `src/app/api/admin/` must call `authoriz
 The global Next.js boundary [middleware.ts](file:///Users/drnarayanjethwani/Downloads/Website%20with%20Antigravity/middleware.ts) enforces session checks:
 - **Protected Pages**: `/admin/:path*`
 - **Protected API Routes**: `/api/admin/:path*`
-- **Exemptions**: `/admin/login` and `/api/admin/session` are excluded to allow clinical practitioners to sign in.
+- **Exemptions**: `/admin/login`, `/api/admin/session`, and `/api/admin/invitations/accept` are excluded to allow clinical practitioners to sign in and accept invitations.
 - **Unauthenticated Handling**:
-  - API routes: Returns `401 Unauthorized` JSON directly.
+  - API routes: Returns standardized `401 Unauthorized` JSON directly.
   - Page routes: Redirects to `/admin/login`.
 
 ---

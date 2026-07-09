@@ -354,4 +354,88 @@ This document serves as the chronological, single source of truth for all sprint
 - **User-Facing Improvements**:
   - Cleaner and more professional billing terminology for patients, and monthly options highlighted by default on public portals.
 
+---
+
+## [2026-07-09] - Sprint 12: Security, Auth & Role-Based Access Control Hardening (v2.9.0)
+- **Release Version**: `2.9.0`
+- **Release Tag**: `v2.9.0-auth-rbac`
+- **Deployment Status**: Success / Vercel Production
+- **Build Verification**: Passed typecheck, eslint rules, and 64/64 unit tests
+- **Files Changed**:
+  - `src/lib/security/rbac.ts`
+  - `src/lib/security/apiAuth.ts`
+  - `src/lib/security/auditLogger.ts`
+  - `src/lib/adminSession.ts`
+  - `src/lib/adminApiAuth.ts`
+  - `middleware.ts`
+  - `src/app/api/admin/...` (various admin endpoints)
+  - `src/app/admin/knowledge-editorial/page.tsx`
+  - `src/app/admin/dashboard/page.tsx`
+  - `src/components/dashboard/AdminSidebar.tsx`
+  - `src/features/dashboard/components/AdminSidebar.tsx`
+  - `src/app/admin/knowledge/page.tsx`
+- **Major Changes**:
+  - Implemented centralized RBAC type structures, normalizations, and permission mapping engine.
+  - Integrated `authorizeRequest` API middleware guard across all admin routes.
+  - Enabled path matching for `/admin/:path*` and `/api/admin/:path*` in global middleware block, excluding login paths.
+  - Developed permission-aware UI gating that disables actions and shows an Access Denied panel on tabs for unauthorized roles.
+
+---
+
+## [2026-07-09] - Sprint 12.1: Security Enforcement Coverage & Audit Hardening (v2.9.1)
+- **Release Version**: `2.9.1`
+- **Release Tag**: `v2.9.1-security-hardening`
+- **Deployment Status**: Success / Vercel Production
+- **Build Verification**: Passed verification scripts, eslint, and 65/65 tests (with 21 test scenarios under rbacSecurity)
+- **Files Changed**:
+  - `src/lib/security/auditLogger.ts`
+  - `src/lib/security/apiAuth.ts`
+  - `src/lib/adminSession.ts`
+  - `src/lib/adminApiAuth.ts`
+  - `scripts/verify-production-readiness.ts`
+  - `tests/rbacSecurity.test.ts`
+  - `docs/operations/SECURITY_AND_RBAC.md`
+  - `docs/operations/PRODUCTION_READINESS_CHECKLIST.md`
+- **Major Changes**:
+  - Enhanced audit log recursive payload sanitizer (`sanitizeAuditPayload`) and flattening metadata parser (`sanitizeAuditMetadata`) to strip credential/secret patterns and patient PII/PHI.
+  - Standardized JSON responses for 401 and 403 errors across the API authorization layer.
+  - Embedded local dev bypass checks (`ALLOW_DEV_ADMIN_BYPASS`) with strict production safety rules.
+  - Upgraded verification script `verify-production-readiness.ts` to dynamically scan all admin API endpoints and enforce route-level auth coverage checks.
+  - Expanded unit/integration testing suite with 21 security checks validating sanitizer, standardized responses, bypass restrictions, and route audits.
+
+---
+
+## [2026-07-09] - Sprint 13: Practitioner Account Lifecycle, Invitations & Admin User Management (v2.10.0)
+- **Release Version**: `2.10.0`
+- **Release Tag**: `v2.10.0-practitioner-lifecycle`
+- **Deployment Status**: Success / Vercel Production
+- **Build Verification**: Clean compile / 23 additional practitioner lifecycle tests passed / verify:production success
+- **Files Changed**:
+  - `src/lib/security/rbac.ts`
+  - `src/features/admin-users/types.ts`
+  - `src/features/admin-users/invitationTokenService.ts`
+  - `src/features/admin-users/practitionerRepository.ts`
+  - `src/features/admin-users/adminUsersClient.ts`
+  - `src/components/dashboard/PractitionerManagementPanel.tsx`
+  - `src/components/dashboard/AdminSidebar.tsx`
+  - `src/features/dashboard/components/AdminSidebar.tsx`
+  - `src/app/admin/dashboard/page.tsx`
+  - `src/app/api/admin/users/*` (10 files)
+  - `src/app/api/admin/invitations/accept/route.ts`
+  - `middleware.ts`
+  - `package.json`
+  - `scripts/verify-production-readiness.ts`
+  - `tests/practitionerLifecycle.test.ts`
+  - `docs/operations/PRACTITIONER_ACCOUNT_LIFECYCLE.md`
+  - `docs/operations/SECURITY_AND_RBAC.md`
+  - `docs/operations/PRODUCTION_READINESS_CHECKLIST.md`
+- **Major Changes**:
+  - Registered `SUBSCRIPTION_MANAGE` permission and added user profile & invitation management models.
+  - Developed cryptographic token generation (256-bit random) and Timing-Safe SHA-256 token hashing/verification.
+  - Implemented secure API endpoints for list, profile view/patch, invite, revoke, role update, suspend, reactivate, and deactivate.
+  - Implemented token-protected unauthenticated accept invite onboarding endpoint `/api/admin/invitations/accept`.
+  - Built an high-density glassmorphism Practitioner Management cockpit dashboard tab.
+  - Added 23 lifecycle automated test cases and pre-flight coverage audits.
+
+
 

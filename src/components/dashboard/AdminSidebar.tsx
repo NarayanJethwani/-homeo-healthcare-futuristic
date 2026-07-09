@@ -35,6 +35,7 @@ const TABS_METADATA: Record<string, { label: string; icon: React.ComponentType<{
   "learning-hub": { label: "Learning Hub", icon: Award, gradient: "from-fuchsia-500 to-purple-600", shadow: "shadow-[0_4px_12px_rgba(217,70,239,0.3)]" },
   communication: { label: "Communications", icon: Send, gradient: "from-cyan-500 to-teal-500", shadow: "shadow-[0_4px_12px_rgba(6,182,212,0.3)]" },
   team: { label: "Manage Doctors", icon: UserPlus, gradient: "from-violet-600 to-purple-600", shadow: "shadow-[0_4px_12px_rgba(124,58,237,0.3)]", adminOnly: true },
+  users: { label: "Practitioners", icon: UserPlus, gradient: "from-blue-600 to-indigo-600", shadow: "shadow-[0_4px_12px_rgba(37,99,235,0.3)]", adminOnly: true },
   "health-intelligence": { label: "Public Intake", icon: Activity, gradient: "from-teal-600 to-cyan-600", shadow: "shadow-[0_4px_12px_rgba(13,148,136,0.3)]" },
 };
 
@@ -53,7 +54,7 @@ const SIDEBAR_GROUPS = [
   },
   {
     name: "Administration",
-    items: ["communication", "team"],
+    items: ["communication", "team", "users"],
   },
   {
     name: "Public",

@@ -75,3 +75,14 @@ This checklist defines the steps required to certify a release of the Homeo Heal
 - [ ] Verify that `ALLOW_DEV_ADMIN_BYPASS` bypass safety checks are active and that bypass is rejected when `NODE_ENV === "production"`.
 - [ ] Confirm that client-side controls (buttons for Publish, Rollback, Assign) are disabled or hidden when the user role lacks authorization.
 
+## 9. Practitioner Account Lifecycle & User Management Verification
+- [ ] Confirm invitation generation prints the raw token exactly once on screen and never writes it to server logs or stores it in database raw fields.
+- [ ] Verify `tokenHash` is never exposed in client list/detail API responses.
+- [ ] Confirm invitation accept route `/api/admin/invitations/accept` is exempt from admin middleware session checks but timing-safely matches token hashes.
+- [ ] Confirm accepting invitation forces the role matching the invite metadata, rejecting user-supplied role override attempts in client payload.
+- [ ] Verify duplicate invitations or duplicate active accounts for the same email address are blocked on invitation creation.
+- [ ] Verify modifying roles requires `USER_MANAGE` and blocks self-escalation or accidental self-downgrade.
+- [ ] Verify subscription extension requires `SUBSCRIPTION_MANAGE` and that general user managers without it are blocked from changing licensing dates.
+- [ ] Confirm suspended or deactivated accounts are instantly blocked from accessing the administrative backend.
+- [ ] Verify all sensitive lifecycle modifications (inviting, revoking, accepting, role changes, suspensions) emit sanitized audit logger events.
+

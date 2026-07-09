@@ -14,7 +14,8 @@ export type Permission =
   | "WORKFLOW_ASSIGN"
   | "RAG_INDEX_MANAGE"
   | "OBSERVABILITY_VIEW"
-  | "USER_MANAGE";
+  | "USER_MANAGE"
+  | "SUBSCRIPTION_MANAGE";
 
 // Role-to-Permissions Matrix
 const ROLE_PERMISSIONS: Record<AdminRole, Permission[]> = {
@@ -26,7 +27,8 @@ const ROLE_PERMISSIONS: Record<AdminRole, Permission[]> = {
     "WORKFLOW_ASSIGN",
     "RAG_INDEX_MANAGE",
     "OBSERVABILITY_VIEW",
-    "USER_MANAGE"
+    "USER_MANAGE",
+    "SUBSCRIPTION_MANAGE"
   ],
   "clinical-reviewer": [
     "CMS_CLINICAL_APPROVE",

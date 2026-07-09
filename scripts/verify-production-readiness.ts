@@ -23,7 +23,8 @@ const opDocs = [
   "docs/operations/INCIDENT_RUNBOOKS.md",
   "docs/operations/ENVIRONMENT_VARIABLES.md",
   "docs/operations/DEPLOYMENT_LOG_TEMPLATE.md",
-  "docs/operations/SECURITY_AND_RBAC.md"
+  "docs/operations/SECURITY_AND_RBAC.md",
+  "docs/operations/PRACTITIONER_ACCOUNT_LIFECYCLE.md"
 ];
 opDocs.forEach(doc => verifyFileExists(doc, "Operations document"));
 
@@ -40,7 +41,12 @@ const coreModules = [
   "src/lib/clinicalDecisionSupport.ts",
   "src/lib/security/rbac.ts",
   "src/lib/security/apiAuth.ts",
-  "src/lib/security/auditLogger.ts"
+  "src/lib/security/auditLogger.ts",
+  "src/features/admin-users/types.ts",
+  "src/features/admin-users/invitationTokenService.ts",
+  "src/features/admin-users/practitionerRepository.ts",
+  "src/features/admin-users/adminUsersClient.ts",
+  "src/app/api/admin/invitations/accept/route.ts"
 ];
 coreModules.forEach(mod => verifyFileExists(mod, "Platform core module"));
 
@@ -109,8 +115,11 @@ try {
       const content = fs.readFileSync(file, "utf8");
 
       // Check exclusion
-      if (relativePath.includes("api/admin/session/route.ts")) {
-        console.log(`✅ [Exempt Route] Session verification route: ${relativePath}`);
+      if (
+        relativePath.includes("api/admin/session/route.ts") ||
+        relativePath.includes("api/admin/invitations/accept/route.ts")
+      ) {
+        console.log(`✅ [Exempt Route] Onboarding/Session route: ${relativePath}`);
         return;
       }
 
@@ -136,6 +145,12 @@ try {
         console.error(`❌ [Security Alert] Obvious token/cookie logging found in route: ${relativePath}`);
         passed = false;
       }
+
+      // Ensure no raw tokenHash is leaked to client in output payload
+      if (content.includes("tokenHash") && !content.includes("const { tokenHash") && !content.includes("verifyInvitationToken")) {
+        console.error(`❌ [Security Alert] Route might be returning tokenHash to client: ${relativePath}`);
+        passed = false;
+      }
     });
 
     // Verify security files for token/cookie logging and dev bypass
@@ -146,6 +161,18 @@ try {
       "src/lib/adminSession.ts",
       "src/lib/adminApiAuth.ts"
     ];
+
+    // Extra: Verify SUBSCRIPTION_MANAGE in rbac.ts
+    const rbacPath = path.join(process.cwd(), "src/lib/security/rbac.ts");
+    if (fs.existsSync(rbacPath)) {
+      const rbacContent = fs.readFileSync(rbacPath, "utf8");
+      if (!rbacContent.includes("SUBSCRIPTION_MANAGE")) {
+        console.error("❌ [Security Alert] SUBSCRIPTION_MANAGE permission is missing in rbac.ts");
+        passed = false;
+      } else {
+        console.log("✅ [Security Config] SUBSCRIPTION_MANAGE permission verified in rbac.ts");
+      }
+    }
 
     securityFiles.forEach(secFile => {
       const fullSecPath = path.join(process.cwd(), secFile);

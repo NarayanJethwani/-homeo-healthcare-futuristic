@@ -49,6 +49,7 @@ import { calculateClinicalDecisionSupport, checkPrescriptionSafety } from "@/lib
 import { getTreatmentRecommendation } from "@/lib/treatmentRecommendationEngine";
 import Portal from "@/components/Portal";
 import { normalizeRole, hasPermission } from "@/lib/security/rbac";
+import { PractitionerManagementPanel } from "@/components/dashboard/PractitionerManagementPanel";
 import { ReportUploadModal } from "@/features/dashboard/components/ReportUploadModal";
 import { ReportExtractionResult } from "@/features/dashboard/types/reportExtractionTypes";
 import {
@@ -12319,15 +12320,15 @@ ${err.message || err}`);
                       <div className="flex flex-col gap-1">
                         <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-450 dark:text-slate-400">Care Level</label>
                         <select
-                          className="w-full p-3 border border-slate-250 dark:border-slate-800 bg-white dark:bg-slate-950 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 text-xs font-semibold text-slate-800 dark:text-slate-100 cursor-pointer"
+                          className="w-full p-3 border border-slate-250 dark:border-slate-800 bg-white dark:bg-slate-955 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 text-xs font-semibold text-slate-800 dark:text-slate-100 cursor-pointer"
                           value={plannerCareLevel}
                           onChange={(e) => setPlannerCareLevel(e.target.value)}
                         >
-                          <option value="mild">Acute & Wellness Care ({plannerBillingCycle === "weekly" ? "₹1,200/wk" : "₹4,800/mo"})</option>
-                          <option value="moderate">Standard Chronic Care ({plannerBillingCycle === "weekly" ? "₹2,400/wk" : "₹9,600/mo"})</option>
-                          <option value="acute_critical">Acute Critical Care ({plannerBillingCycle === "weekly" ? "₹5,000/wk" : "₹20,000/mo"})</option>
-                          <option value="organ">Advanced Pathological Care ({plannerBillingCycle === "weekly" ? "₹6,000/wk" : "₹24,000/mo"})</option>
-                          <option value="comprehensive">Multisystem Integrative Care ({plannerBillingCycle === "weekly" ? "₹8,400/wk" : "₹33,600/mo"})</option>
+                          {Object.entries(CARE_LEVELS_DETAILS).map(([key, details]) => (
+                            <option key={key} value={key}>
+                              {details.title} (₹{(plannerBillingCycle === "weekly" ? details.weeklyPrice : details.monthlyPrice).toLocaleString("en-IN")}/{plannerBillingCycle === "weekly" ? "wk" : "mo"})
+                            </option>
+                          ))}
                         </select>
                       </div>
 
@@ -19291,6 +19292,10 @@ ${err.message || err}`);
 
           {activeTab === "team" && isSuperAdmin && (
             <ManageDoctorsPanel sessionUid={session?.uid || ""} />
+          )}
+
+          {((activeTab as string) === "users") && session?.role && hasPermission(normalizeRole(session.role), "USER_MANAGE") && (
+            <PractitionerManagementPanel session={session} />
           )}
 
 
