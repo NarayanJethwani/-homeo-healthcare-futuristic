@@ -500,8 +500,8 @@ export async function createPatientClinicalSheet(
             resolvedConcession = "Senior 15%";
           } else if (rawConcession.includes("socio") || rawConcession.includes("compassionate")) {
             resolvedConcession = "Socio-Economic 30%";
-          } else if (rawConcession.includes("override")) {
-            resolvedConcession = "Override";
+          } else if (rawConcession.includes("override") || rawConcession.includes("special")) {
+            resolvedConcession = "Special Clinical Concession";
           }
 
           await sheets.spreadsheets.values.batchUpdate({
@@ -556,7 +556,7 @@ export async function createPatientClinicalSheet(
                     ["Gross Subtotal", "=(B8+B9)*C4", "Adjusted base rate multiplied by duration"],
                     ["Duration Discount %", `=IF(IF(B4="Weekly", C4, C4*4)>=48, 0.30, IF(IF(B4="Weekly", C4, C4*4)>=24, 0.25, IF(IF(B4="Weekly", C4, C4*4)>=12, 0.20, IF(IF(B4="Weekly", C4, C4*4)>=8, 0.15, IF(IF(B4="Weekly", C4, C4*4)>=4, 0.10, IF(IF(B4="Weekly", C4, C4*4)>=2, 0.05, 0))))))`, "Duration loyalty discount percentage"],
                     ["Duration Discount Amount", "=B10*B11", "Total savings from duration discount"],
-                    ["Concession Discount Amount", `=IF(ISNUMBER(SEARCH("Senior", E4)), (B10-B12)*0.15, IF(ISNUMBER(SEARCH("Socio", E4)), (B10-B12)*0.30, IF(ISNUMBER(SEARCH("Override", E4)), MAX(0, (B10-B12) - F4), 0)))`, "Compassionate, Senior, or Override concession"],
+                    ["Concession Discount Amount", `=IF(ISNUMBER(SEARCH("Senior", E4)), (B10-B12)*0.15, IF(ISNUMBER(SEARCH("Socio", E4)), (B10-B12)*0.30, IF(OR(ISNUMBER(SEARCH("Override", E4)), ISNUMBER(SEARCH("Special", E4))), MAX(0, (B10-B12) - F4), 0)))`, "Compassionate, Senior, or Override concession"],
                     ["Medicine Add-ons", "=G4", "Medicine charges and dynamic add-on scripts"],
                     ["Total Program Cost", "=B10-B12-B13+B14", "Final package cost taking all factors into consideration"]
                   ]
@@ -966,8 +966,8 @@ export async function createPatientClinicalSheet(
           resolvedConcession = "Senior 15%";
         } else if (rawConcession.includes("socio") || rawConcession.includes("compassionate")) {
           resolvedConcession = "Socio-Economic 30%";
-        } else if (rawConcession.includes("override")) {
-          resolvedConcession = "Override";
+        } else if (rawConcession.includes("override") || rawConcession.includes("special")) {
+          resolvedConcession = "Special Clinical Concession";
         }
 
         // values for Treatment Planner (adjusted for exact row indices to prevent circular references)
@@ -984,7 +984,7 @@ export async function createPatientClinicalSheet(
           ["Gross Subtotal", "=(B8+B9)*C4", "Adjusted base rate multiplied by duration", "", "", "", ""],
           ["Duration Discount %", `=IF(IF(B4="Weekly", C4, C4*4)>=48, 0.30, IF(IF(B4="Weekly", C4, C4*4)>=24, 0.25, IF(IF(B4="Weekly", C4, C4*4)>=12, 0.20, IF(IF(B4="Weekly", C4, C4*4)>=8, 0.15, IF(IF(B4="Weekly", C4, C4*4)>=4, 0.10, IF(IF(B4="Weekly", C4, C4*4)>=2, 0.05, 0))))))`, "Duration loyalty discount percentage", "", "", "", ""],
           ["Duration Discount Amount", "=B10*B11", "Total savings from duration discount", "", "", "", ""],
-          ["Concession Discount Amount", `=IF(ISNUMBER(SEARCH("Senior", E4)), (B10-B12)*0.15, IF(ISNUMBER(SEARCH("Socio", E4)), (B10-B12)*0.30, IF(ISNUMBER(SEARCH("Override", E4)), MAX(0, (B10-B12) - F4), 0)))`, "Compassionate, Senior, or Override concession", "", "", "", ""],
+          ["Concession Discount Amount", `=IF(ISNUMBER(SEARCH("Senior", E4)), (B10-B12)*0.15, IF(ISNUMBER(SEARCH("Socio", E4)), (B10-B12)*0.30, IF(OR(ISNUMBER(SEARCH("Override", E4)), ISNUMBER(SEARCH("Special", E4))), MAX(0, (B10-B12) - F4), 0)))`, "Compassionate, Senior, or Override concession", "", "", "", ""],
           ["Medicine Add-ons", "=G4", "Medicine charges and dynamic add-on scripts", "", "", "", ""],
           ["Total Program Cost", "=B10-B12-B13+B14", "Final package cost taking all factors into consideration", "", "", "", ""],
           ["Amount Received", data.receivedAmount !== undefined ? data.receivedAmount : data.finalPrice, "Amount collected from patient for this plan", "", "", "", ""],

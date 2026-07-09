@@ -1111,7 +1111,7 @@ export default function StorePage() {
           status: "pending_plan",
           billingCycle: walkInBillingCycle === "weekly" ? "Weekly" : "Monthly",
           concessionApplied: walkInApplyConcession 
-            ? (walkInConcessionType === "senior" ? "Senior 15%" : walkInConcessionType === "compassionate" ? "Socio-Economic 30%" : "Override")
+            ? (walkInConcessionType === "senior" ? "Senior 15%" : walkInConcessionType === "compassionate" ? "Socio-Economic 30%" : "Special Clinical Concession")
             : "None",
           durationValue: walkInDurationValue,
           medicineAddons: walkInApplyMedicineAddon
@@ -4199,7 +4199,7 @@ export default function StorePage() {
                                 {walkInApplyConcession && concessionDiscount > 0 && (
                                   <div className="flex justify-between text-[#9333ea] font-bold">
                                     <span>
-                                      Concession ({walkInConcessionType === "senior" ? "Senior 15%" : walkInConcessionType === "compassionate" ? "Socio-Economic 30%" : "Override"})
+                                      Concession ({walkInConcessionType === "senior" ? "Senior 15%" : walkInConcessionType === "compassionate" ? "Socio-Economic 30%" : "Special Clinical Concession"})
                                     </span>
                                     <span>-₹{concessionDiscount.toLocaleString("en-IN")}</span>
                                   </div>
