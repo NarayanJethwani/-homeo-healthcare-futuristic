@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { globalVectorStore } from "@/features/knowledge/retrieval/vectorStore";
 import { embeddingManager } from "@/features/knowledge/retrieval/embeddingProvider";
+import { authorizeRequest } from "@/lib/security/apiAuth";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -15,10 +16,10 @@ export async function OPTIONS() {
   });
 }
 
-export async function POST(request: Request) {
-  // TODO: Enforce admin session verification in middleware or central admin layout once session store is centralized.
-  // Current admin API paths are restricted to internal localhost/origin access behind corporate workspace firewalls.
+export async function POST(request: NextRequest) {
   try {
+    const auth = await authorizeRequest(request, "RAG_INDEX_MANAGE", "SYNC_VECTOR_API_POST");
+    if (!auth.authorized) return auth.response;
     const payload = await request.json();
     const { id, entityType, title, contentText } = payload;
 

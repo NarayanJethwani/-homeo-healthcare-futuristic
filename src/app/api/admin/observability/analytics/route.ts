@@ -2,11 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { ProductionAnalyticsAdapter } from "@/features/knowledge-admin/adapters/server/analyticsServer";
 import { MockAnalyticsAdapter } from "@/features/knowledge-admin/adapters/analyticsAdapter";
 
+import { authorizeRequest } from "@/lib/security/apiAuth";
+
 // Ensure this route runs purely on the server side
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   try {
+    const auth = await authorizeRequest(request, "OBSERVABILITY_VIEW", "OBSERVABILITY_ANALYTICS_API_GET");
+    if (!auth.authorized) return auth.response;
+
     const { searchParams } = new URL(request.url);
     const action = searchParams.get("action") || "summary";
 

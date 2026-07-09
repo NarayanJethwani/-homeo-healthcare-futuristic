@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { aiRouterService } from "@/lib/aiRouter";
+import { authorizeRequest } from "@/lib/security/apiAuth";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -14,10 +15,10 @@ export async function OPTIONS() {
   });
 }
 
-export async function POST(request: Request) {
-  // TODO: Enforce admin session verification in middleware or central admin layout once session store is centralized.
-  // Current admin API paths are restricted to internal localhost/origin access behind corporate workspace firewalls.
+export async function POST(request: NextRequest) {
   try {
+    const auth = await authorizeRequest(request, "CMS_DRAFT_EDIT", "AUDIT_CONTENT_API_POST");
+    if (!auth.authorized) return auth.response;
     const payload = await request.json();
     const { title, contentText, tags } = payload;
 

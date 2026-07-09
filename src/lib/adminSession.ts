@@ -1,9 +1,11 @@
+import { AdminRole } from "./security/rbac";
+
 export const ADMIN_SESSION_COOKIE = "hh_admin_session_v3";
 
 export type AdminSessionPayload = {
   uid: string;
   email?: string | null;
-  role: "admin" | "doctor";
+  role: "admin" | "doctor" | AdminRole;
   name?: string;
   exp: number;
 };

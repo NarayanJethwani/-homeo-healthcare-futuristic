@@ -8,7 +8,12 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/admin/login", request.url));
   }
 
-  if (pathname === "/admin/login" || pathname === "/admin/login/") {
+  // Permitted unauthenticated entrypoints
+  if (
+    pathname === "/admin/login" ||
+    pathname === "/admin/login/" ||
+    pathname.startsWith("/api/admin/session")
+  ) {
     return NextResponse.next();
   }
 
@@ -19,6 +24,9 @@ export async function middleware(request: NextRequest) {
   console.log(`[Middleware] session result: ${!!session}`);
 
   if (!session) {
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json({ error: "Unauthorized access: login required." }, { status: 401 });
+    }
     const loginUrl = new URL("/admin/login", request.url);
     loginUrl.searchParams.set("next", pathname);
     return NextResponse.redirect(loginUrl);
@@ -28,5 +36,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/api/admin/:path*"],
 };

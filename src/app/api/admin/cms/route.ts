@@ -8,8 +8,7 @@ import {
   publishArticle, 
   getPublicationEvents 
 } from "@/features/knowledge-admin/cms/cmsManager";
-
-// TODO: Enforce centralized admin auth before exposing CMS mutations in production.
+import { authorizeRequest } from "@/lib/security/apiAuth";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +27,18 @@ function containsPII(text: string): boolean {
 
 export async function GET(request: NextRequest) {
   try {
+    // Read permissions: must have CMS_DRAFT_EDIT, CMS_CLINICAL_APPROVE, or OBSERVABILITY_VIEW
+    let auth = await authorizeRequest(request, "CMS_DRAFT_EDIT", "CMS_API_GET");
+    if (!auth.authorized) {
+      auth = await authorizeRequest(request, "CMS_CLINICAL_APPROVE", "CMS_API_GET");
+    }
+    if (!auth.authorized) {
+      auth = await authorizeRequest(request, "OBSERVABILITY_VIEW", "CMS_API_GET");
+    }
+    if (!auth.authorized) {
+      return auth.response;
+    }
+
     const { searchParams } = new URL(request.url);
     const action = searchParams.get("action");
     const articleId = searchParams.get("articleId");
@@ -74,6 +85,9 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === "saveDraft") {
+      const auth = await authorizeRequest(request, "CMS_DRAFT_EDIT", "CMS_API_POST_saveDraft");
+      if (!auth.authorized) return auth.response;
+
       const { draftData, actor } = body;
       if (!draftData || !draftData.articleId) {
         return NextResponse.json({ error: "Missing draftData or articleId" }, { status: 400 });
@@ -100,6 +114,9 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === "rollbackToVersion") {
+      const auth = await authorizeRequest(request, "CMS_ROLLBACK", "CMS_API_POST_rollback");
+      if (!auth.authorized) return auth.response;
+
       const { versionId, actor, confirmRollback } = body;
       if (!versionId || typeof versionId !== "string") {
         return NextResponse.json({ error: "Invalid versionId" }, { status: 400 });
@@ -120,6 +137,9 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === "approveClinicalReview") {
+      const auth = await authorizeRequest(request, "CMS_CLINICAL_APPROVE", "CMS_API_POST_clinicalApprove");
+      if (!auth.authorized) return auth.response;
+
       const { articleId, reviewer, reviewerRole, reviewDate, nextReviewDate, notes, actor } = body;
       if (!articleId || !reviewer || !reviewDate || !nextReviewDate) {
         return NextResponse.json({ error: "Missing required clinical review validation fields" }, { status: 400 });
@@ -151,6 +171,9 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === "publishArticle") {
+      const auth = await authorizeRequest(request, "CMS_PUBLISH", "CMS_API_POST_publish");
+      if (!auth.authorized) return auth.response;
+
       const { articleId, publisher, changeSummary, confirmPublish } = body;
       if (!articleId || !publisher || !changeSummary) {
         return NextResponse.json({ error: "Missing publishing payload details" }, { status: 400 });

@@ -5,7 +5,7 @@ export interface V2ClinicalFeedbackDocument extends V2ClinicalFeedbackPayload {
   reviewer: {
     uid: string;
     email?: string | null;
-    role: "admin" | "doctor";
+    role: string;
     name?: string;
   };
   safety: {

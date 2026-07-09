@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { forbiddenApiResponse, requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiAuth";
+import { authorizeRequest } from "@/lib/security/apiAuth";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -18,9 +18,8 @@ export const runtime = "nodejs";
  */
 export async function POST(request: NextRequest) {
   try {
-    const session = await requireAdminApiSession(request);
-    if (!session) return unauthorizedApiResponse();
-    if (session.role !== "admin") return forbiddenApiResponse();
+    const auth = await authorizeRequest(request, "USER_MANAGE", "REMOVE_DOCTOR_API_POST");
+    if (!auth.authorized) return auth.response;
 
     const body = await request.json();
     const { doctorUid } = body;

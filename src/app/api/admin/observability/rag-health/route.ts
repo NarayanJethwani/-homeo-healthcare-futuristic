@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { globalVectorStore } from "@/features/knowledge/retrieval/vectorStore";
 import { 
   getQueueJobs, 
@@ -7,6 +7,7 @@ import {
   queueEmbeddingJob 
 } from "@/features/knowledge/retrieval/embeddingQueue";
 import { globalKmsRepository } from "@/features/knowledge-admin/repositories/MemoryRepository";
+import { authorizeRequest } from "@/lib/security/apiAuth";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -21,8 +22,16 @@ export async function OPTIONS() {
   });
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    let auth = await authorizeRequest(request, "RAG_INDEX_MANAGE", "RAG_HEALTH_API_GET");
+    if (!auth.authorized) {
+      auth = await authorizeRequest(request, "OBSERVABILITY_VIEW", "RAG_HEALTH_API_GET");
+    }
+    if (!auth.authorized) {
+      return auth.response;
+    }
+
     const stats = await globalVectorStore.getIndexStats();
     const queue = await getQueueJobs();
     const stale = await globalVectorStore.listStaleVectors();
@@ -42,8 +51,11 @@ export async function GET() {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    const auth = await authorizeRequest(request, "RAG_INDEX_MANAGE", "RAG_HEALTH_API_POST");
+    if (!auth.authorized) return auth.response;
+
     const body = await request.json();
     const { action } = body;
 

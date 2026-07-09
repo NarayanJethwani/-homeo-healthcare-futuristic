@@ -51,12 +51,13 @@ import {
   BookOpen,
   Database
 } from "lucide-react";
+import { AdminRole, Permission, hasPermission } from "@/lib/security/rbac";
 
 interface UserSession {
   uid: string;
   email: string;
   name: string;
-  role: "admin" | "doctor";
+  role: "admin" | "doctor" | AdminRole;
 }
 
 export default function KnowledgeEditorialPage() {
@@ -87,6 +88,21 @@ export default function KnowledgeEditorialPage() {
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [transitionStatusField, setTransitionStatusField] = useState<EditorialTaskStatus>("backlog");
   const [persistenceMode, setPersistenceMode] = useState<"Firestore workflow mode" | "Session workflow mode">("Session workflow mode");
+
+  const userHasPermission = (perm: Permission) => {
+    if (!session?.role) return false;
+    return hasPermission(session.role, perm);
+  };
+
+  const renderAccessDenied = (permissionNeeded: string) => (
+    <div className="bg-neutral-950 border border-neutral-850 p-8 rounded-2xl flex flex-col items-center justify-center text-center space-y-4 max-w-lg mx-auto my-12">
+      <ShieldAlert className="h-12 w-12 text-rose-500" />
+      <h3 className="text-lg font-bold text-slate-200">Access Denied</h3>
+      <p className="text-xs text-slate-400">
+        Your assigned role <span className="text-rose-400 font-semibold uppercase">{session?.role}</span> lacks the required <span className="text-rose-400 font-semibold">{permissionNeeded}</span> privilege key to view this administrative tab surface.
+      </p>
+    </div>
+  );
 
   // Filters state
   const [searchTerm, setSearchTerm] = useState("");

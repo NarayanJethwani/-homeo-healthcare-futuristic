@@ -8,6 +8,7 @@ import {
   isFirestoreWorkflowActive
 } from "@/features/knowledge-admin/workflow/workflowManager";
 import { generateAutomaticCurationTasks } from "@/features/knowledge-admin/workflow/taskGenerator";
+import { authorizeRequest } from "@/lib/security/apiAuth";
 
 // TODO: Enforce centralized admin auth before exposing workflow mutations in production.
 
@@ -34,6 +35,20 @@ function containsPII(text: string): boolean {
 
 export async function GET(request: NextRequest) {
   try {
+    let auth = await authorizeRequest(request, "WORKFLOW_ASSIGN", "WORKFLOW_API_GET");
+    if (!auth.authorized) {
+      auth = await authorizeRequest(request, "CMS_DRAFT_EDIT", "WORKFLOW_API_GET");
+    }
+    if (!auth.authorized) {
+      auth = await authorizeRequest(request, "CMS_CLINICAL_APPROVE", "WORKFLOW_API_GET");
+    }
+    if (!auth.authorized) {
+      auth = await authorizeRequest(request, "OBSERVABILITY_VIEW", "WORKFLOW_API_GET");
+    }
+    if (!auth.authorized) {
+      return auth.response;
+    }
+
     const { searchParams } = new URL(request.url);
     const action = searchParams.get("action");
     const articleId = searchParams.get("articleId") || undefined;
@@ -66,6 +81,10 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // For all task mutations, require WORKFLOW_ASSIGN permission
+    const auth = await authorizeRequest(request, "WORKFLOW_ASSIGN", "WORKFLOW_API_POST");
+    if (!auth.authorized) return auth.response;
+
     const body = await request.json();
     const { action } = body;
 
