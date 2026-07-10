@@ -1111,7 +1111,7 @@ export default function StorePage() {
           status: "pending_plan",
           billingCycle: walkInBillingCycle === "weekly" ? "Weekly" : "Monthly",
           concessionApplied: walkInApplyConcession 
-            ? (walkInConcessionType === "senior" ? "Senior 15%" : walkInConcessionType === "compassionate" ? "Socio-Economic 30%" : "Special Clinical Concession")
+            ? (walkInConcessionType === "senior" ? "Senior Citizen Concession 15%" : walkInConcessionType === "compassionate" ? "Socio-Economic Concession 30%" : "Special Clinical Concession")
             : "None",
           durationValue: walkInDurationValue,
           medicineAddons: walkInApplyMedicineAddon
@@ -3670,7 +3670,7 @@ export default function StorePage() {
                                 type="email"
                                 value={walkInEmail}
                                 onChange={(e) => setWalkInEmail(e.target.value)}
-                                placeholder="email@example.com (Optional)"
+                                placeholder="Email address optional"
                                 className="w-full p-3 rounded-xl border border-slate-250 bg-white/35 backdrop-blur-md text-sm focus:outline-none focus:border-mint focus:bg-white/80 focus:ring-2 focus:ring-mint/20 hover:border-slate-350 hover:bg-white/50 transition-all duration-300 shadow-inner"
                               />
                             </div>
@@ -3828,7 +3828,7 @@ export default function StorePage() {
                                     setWalkInBillingCycle("monthly");
                                     setWalkInDurationValue(1);
                                   }}
-                                  className={`relative px-3 py-1 rounded-full text-[9px] font-extrabold uppercase tracking-wider transition-all duration-300 flex items-center gap-1 cursor-pointer z-10 ${
+                                  className={`relative px-3 py-1 rounded-full text-[9px] font-extrabold uppercase tracking-wider transition-all duration-300 cursor-pointer z-10 ${
                                     walkInBillingCycle === "monthly"
                                       ? "text-white"
                                       : "text-slate-500 hover:text-[#1A2421]"
@@ -3841,17 +3841,7 @@ export default function StorePage() {
                                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
                                     />
                                   )}
-                                  Monthly
-                                  {walkInBillingCycle !== "monthly" && (
-                                    <span className="text-[7px] px-1 py-0.5 rounded-full bg-emerald-500 text-white font-black tracking-normal">
-                                      SAVE 10–30%
-                                    </span>
-                                  )}
-                                  {walkInBillingCycle === "monthly" && (
-                                    <span className="text-[7px] px-1 py-0.5 rounded-full bg-white text-emerald-600 font-black tracking-normal">
-                                      SAVE 10–30%
-                                    </span>
-                                  )}
+                                  Monthly — Save 10–30%
                                 </button>
                               </div>
                             </div>
@@ -4182,14 +4172,23 @@ export default function StorePage() {
                                     <span>+₹{pricing.surcharge.toLocaleString("en-IN")} / {walkInBillingCycle === "weekly" ? "wk" : "mo"}</span>
                                   </div>
                                 )}
-                                <div className="flex justify-between border-t border-slate-100 pt-1.5 font-bold text-slate-900">
-                                  <span>Adjusted Rate</span>
-                                  <span>₹{pricing.adjustedBasePrice.toLocaleString("en-IN")} / {walkInBillingCycle === "weekly" ? "wk" : "mo"}</span>
-                                </div>
-                                <div className="flex justify-between text-xs text-slate-500 font-bold uppercase tracking-wider">
-                                  <span>Timeline ({walkInDurationValue} {walkInBillingCycle === "weekly" ? (walkInDurationValue === 1 ? "week" : "weeks") : (walkInDurationValue === 1 ? "month" : "months")})</span>
-                                  <span>₹{pricing.rawTotal.toLocaleString("en-IN")}</span>
-                                </div>
+                                {pricing.adjustedBasePrice !== pricing.basePrice ? (
+                                  <>
+                                    <div className="flex justify-between border-t border-slate-100 pt-1.5 font-bold text-slate-900">
+                                      <span>Adjusted Rate</span>
+                                      <span>₹{pricing.adjustedBasePrice.toLocaleString("en-IN")} / {walkInBillingCycle === "weekly" ? "wk" : "mo"}</span>
+                                    </div>
+                                    <div className="flex justify-between text-xs text-slate-500 font-bold uppercase tracking-wider">
+                                      <span>Timeline ({walkInDurationValue} {walkInBillingCycle === "weekly" ? (walkInDurationValue === 1 ? "week" : "weeks") : (walkInDurationValue === 1 ? "month" : "months")})</span>
+                                      <span>₹{pricing.rawTotal.toLocaleString("en-IN")}</span>
+                                    </div>
+                                  </>
+                                ) : (
+                                  <div className="flex justify-between border-t border-slate-100 pt-1.5 text-xs text-slate-500 font-bold uppercase tracking-wider">
+                                    <span>Timeline ({walkInDurationValue} {walkInBillingCycle === "weekly" ? (walkInDurationValue === 1 ? "week" : "weeks") : (walkInDurationValue === 1 ? "month" : "months")})</span>
+                                    <span>₹{pricing.rawTotal.toLocaleString("en-IN")}</span>
+                                  </div>
+                                )}
                                 {pricing.discountPercent > 0 && (
                                   <div className="flex justify-between text-emerald-600">
                                     <span>Long-Term Care Benefit ({pricing.discountPercent}%)</span>
@@ -4199,7 +4198,11 @@ export default function StorePage() {
                                 {walkInApplyConcession && concessionDiscount > 0 && (
                                   <div className="flex justify-between text-[#9333ea] font-bold">
                                     <span>
-                                      Concession ({walkInConcessionType === "senior" ? "Senior 15%" : walkInConcessionType === "compassionate" ? "Socio-Economic 30%" : "Special Clinical Concession"})
+                                      {walkInConcessionType === "senior" 
+                                        ? "Senior Citizen Concession 15%" 
+                                        : walkInConcessionType === "compassionate" 
+                                          ? "Socio-Economic Concession 30%" 
+                                          : "Special Clinical Concession"}
                                     </span>
                                     <span>-₹{concessionDiscount.toLocaleString("en-IN")}</span>
                                   </div>
