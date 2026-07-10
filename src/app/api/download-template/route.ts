@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
         state: "Maharashtra",
         country: "India",
         complaint: "Template patient complaint. Modalities, generals, physicals, and diagnoses will be filled here.",
-        careLevel: "Standard Chronic Care",
+        careLevel: "Core Chronic Care",
         conditionsCount: 1,
         durationText: "3-Month Plan",
         finalPrice: 4500,

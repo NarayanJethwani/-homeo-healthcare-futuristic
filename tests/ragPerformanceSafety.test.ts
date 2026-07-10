@@ -1,8 +1,8 @@
 import assert from "assert";
 import { ragService } from "../src/lib/ragService";
 import { ollamaService } from "../src/lib/ollama";
-import { globalVectorStore } from "../src/features/knowledge/retrieval/vectorStore";
-import { embeddingManager } from "../src/features/knowledge/retrieval/embeddingProvider";
+import { globalVectorStore, MemoryVectorStore } from "../src/features/knowledge/retrieval/vectorStore";
+import { embeddingManager, NullEmbeddingProvider } from "../src/features/knowledge/retrieval/embeddingProvider";
 
 async function runPerformanceSafetyTests() {
   console.log("🚀 Starting V2.2.1 AI Knowledge Layer Performance & Safety Regression Tests...");
@@ -108,7 +108,6 @@ async function runPerformanceSafetyTests() {
     // Stub active provider to be null-provider
     const originalGetActiveProvider = embeddingManager.getActiveProvider;
     embeddingManager.getActiveProvider = async () => {
-      const { NullEmbeddingProvider } = require("../src/features/knowledge/retrieval/embeddingProvider");
       return new NullEmbeddingProvider();
     };
 
@@ -125,7 +124,6 @@ async function runPerformanceSafetyTests() {
 
   // 5. Empty vectors.json does not crash
   await test("VectorStore - empty seed handling is safe", async () => {
-    const { MemoryVectorStore } = require("../src/features/knowledge/retrieval/vectorStore");
     const store = new MemoryVectorStore();
     
     // Override filePath to invalid file path to simulate empty/missing seed

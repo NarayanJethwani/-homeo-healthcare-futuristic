@@ -90,8 +90,8 @@ export function V2LivePanel({ query, filters, selectedRubricIds }: V2LivePanelPr
               </div>
             ))}
           </div>
+          {/* Knowledge Platform integration is read-only and must not alter clinical decision logic. */}
         </div>
-// Knowledge Platform integration is read-only and must not alter clinical decision logic.
 
         <div className="rounded-2xl border border-emerald-200 bg-emerald-50/40 p-3">
           <h4 className="mb-2 text-[11px] font-black uppercase tracking-wider text-emerald-800">V2 Remedy Ranking</h4>

@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import {
   Gauge, Sparkles, Users, Compass, IndianRupee, Layers, FileText,
-  Activity, Cpu, Network, Award, Send, UserPlus, Menu, ChevronLeft, ChevronRight, Star
+  Activity, Cpu, Network, Award, Send, UserPlus, Menu, ChevronLeft, ChevronRight, Star, Settings
 } from "lucide-react";
 
 import { normalizeRole } from "@/lib/security/rbac";
@@ -36,6 +36,7 @@ const TABS_METADATA: Record<string, { label: string; icon: React.ComponentType<{
   communication: { label: "Communications", icon: Send, gradient: "from-cyan-500 to-teal-500", shadow: "shadow-[0_4px_12px_rgba(6,182,212,0.3)]" },
   team: { label: "Manage Doctors", icon: UserPlus, gradient: "from-violet-600 to-purple-600", shadow: "shadow-[0_4px_12px_rgba(124,58,237,0.3)]", adminOnly: true },
   users: { label: "Practitioners", icon: UserPlus, gradient: "from-blue-600 to-indigo-600", shadow: "shadow-[0_4px_12px_rgba(37,99,235,0.3)]", adminOnly: true },
+  account: { label: "Account Settings", icon: Settings, gradient: "from-slate-600 to-slate-700", shadow: "shadow-[0_4px_12px_rgba(100,116,139,0.3)]" },
   "health-intelligence": { label: "Public Intake", icon: Activity, gradient: "from-teal-600 to-cyan-600", shadow: "shadow-[0_4px_12px_rgba(13,148,136,0.3)]" },
 };
 
@@ -54,7 +55,7 @@ const SIDEBAR_GROUPS = [
   },
   {
     name: "Administration",
-    items: ["communication", "team", "users"],
+    items: ["communication", "team", "users", "account"],
   },
   {
     name: "Public",

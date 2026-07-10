@@ -86,3 +86,38 @@ This checklist defines the steps required to certify a release of the Homeo Heal
 - [ ] Confirm suspended or deactivated accounts are instantly blocked from accessing the administrative backend.
 - [ ] Verify all sensitive lifecycle modifications (inviting, revoking, accepting, role changes, suspensions) emit sanitized audit logger events.
 
+## 10. Practitioner Workspace Profile & Settings Verification
+- [ ] Confirm self-service profile edits are restricted to safe fields only (`displayName`, `clinicLocation`, `specialties`) and reject administrative overrides at API boundary.
+- [ ] Verify that real-time status check in `authorizeRequest` instantly blocks suspended/deactivated users.
+- [ ] Confirm expired subscription users are blocked from clinical routes but can access self-profile/settings.
+- [ ] Verify visual preferences (density, default tab) do not alter repertory scoring or bypass legal safety regulations.
+- [ ] Confirm security timeline logs retrieve events matching current user only and exclude tokens/secrets.
+- [ ] Verify all self-service profile changes create sanitized audit events.
+
+## 11. Patient Attachments & Lab Extraction Verification
+- [ ] Confirm all patient attachment API routes are protected by `validatePractitionerPatientAccess`.
+- [ ] Verify that unauthenticated dynamic requests return `401 Unauthorized` and unauthorized requests return `403 Forbidden`.
+- [ ] Confirm `Cache-Control: no-store` header is present on attachments, details, download, and parameter routes.
+- [ ] Verify signed URL expiration is capped at 5 minutes (300 seconds).
+- [ ] Confirm archived/deleted attachments block download requests unless super-admin is in audit mode.
+- [ ] Verify path matching of `patientId` against the attachment metadata on all detail endpoints.
+- [ ] Confirm that storage path generation contains no patient name and matches the standard format.
+- [ ] Verify that double extension upload attempts are blocked (e.g. `file.php.pdf`).
+- [ ] Verify that binary signature checks successfully block executable files (`MZ`, `ELF`) and text script content.
+- [ ] Confirm that lab parameters require manual clinician review and do not alter the Treatment Planner.
+- [ ] Verify audit log sanitization completely blocks raw OCR, filenames, patient identifiers, and signed download URLs.
+
+## 12. Clinician-Reviewed Lab Data & Clinical Workspace Verification
+- [ ] Confirm all reviewed lab types exist in `src/features/patient-labs/types.ts`.
+- [ ] Confirm all lab repository operations verify patient scoping and parameter belongs to active attachment.
+- [ ] Verify that parameters from archived or deleted attachments block reviews/confirms.
+- [ ] Confirm that only clinician-confirmed or corrected lab parameters enter the reviewed lab timeline.
+- [ ] Confirm that corrected entries preserve original value and unit, and store the corrected values separately.
+- [ ] Verify that rejected parameters are traceable but excluded from active summaries and timeline logs.
+- [ ] Confirm that `confirmedAt` is used as the date for reviewed timeline entries.
+- [ ] Confirm that Clinical OS context is read-only and safety comments are present in `clinicalLabContext.ts`.
+- [ ] Verify that abnormal lab flags are purely informational and do not alter repertory scoring or prescribing.
+- [ ] Verify that `TreatmentPlannerLabReference` cards are display-only and have zero impact on pricing, duration, or remedy recommendations.
+- [ ] Confirm that POST review actions, GET timeline, and GET summary route responses contain strict `Cache-Control: no-store` headers.
+- [ ] Confirm that audit events are generated for confirms, corrections, and rejections without logging PHI or OCR text.
+

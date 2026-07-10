@@ -46,11 +46,11 @@ interface Package {
 const packages: Package[] = [
   {
     id: "wellness-care",
-    title: "Acute & Wellness Care",
+    title: "Essential Acute & Wellness Care",
     priceWeekly: "₹1,500",
     priceMonthly: "₹6,000",
     category: "consultation",
-    desc: "Ideal for general immunity, hair fall, seasonal acute complaints, or general wellness guidance.",
+    desc: "For short-term symptoms, seasonal complaints, immunity, hair fall, and low-complexity wellness support.",
     features: [
       "General constitutional wellness analysis",
       "Corrective micro-dosing remedy supply",
@@ -58,12 +58,13 @@ const packages: Package[] = [
       "WhatsApp clinical team updates (bi-weekly)"
     ],
     duration: "Flexible Billing",
+    badge: "Short-Term Support",
     glowColor: "rgba(20,184,166,0.15)",
     colorTheme: {
       text: "text-teal-700 dark:text-teal-400",
       border: "border-teal-200/80 hover:border-teal-400/80 dark:border-teal-950 dark:hover:border-teal-800",
       bg: "bg-teal-500/[0.04] dark:bg-teal-950/20",
-      badgeBg: "bg-teal-105 dark:bg-teal-950/40 border border-teal-200/50",
+      badgeBg: "bg-teal-100 dark:bg-teal-950/40 border border-teal-200/50",
       badgeText: "text-teal-700 dark:text-teal-300",
       glow: "rgba(20,184,166,0.15)"
     },
@@ -72,11 +73,11 @@ const packages: Package[] = [
   },
   {
     id: "standard-chronic-care",
-    title: "Standard Chronic Care",
+    title: "Core Chronic Care",
     priceWeekly: "₹3,000",
     priceMonthly: "₹12,000",
     category: "consultation",
-    desc: "Designed for a single chronic condition (e.g. eczema, IBS, thyroid) requiring active tracking and bi-weekly checks.",
+    desc: "For single-system chronic complaints requiring structured follow-up and remedy adjustment.",
     features: [
       "Single chronic condition profile mapping",
       "Targeted constitutional remedy preparation",
@@ -84,6 +85,7 @@ const packages: Package[] = [
       "Standard clinical response monitoring checkups"
     ],
     duration: "Flexible Billing",
+    badge: "Most Patients Start Here",
     glowColor: "rgba(168,85,247,0.15)",
     colorTheme: {
       text: "text-purple-750 dark:text-purple-400",
@@ -98,11 +100,11 @@ const packages: Package[] = [
   },
   {
     id: "focused-care",
-    title: "Deep Systemic Care",
+    title: "Deep Constitutional Care",
     priceWeekly: "₹5,250",
     priceMonthly: "₹21,000",
     category: "consultation",
-    desc: "Deep homeopathic treatment for complex chronic or systemic health conditions (e.g. asthma, migraine, severe eczema).",
+    desc: "For long-standing, recurring, or layered chronic patterns requiring deeper constitutional analysis.",
     features: [
       "Targeted single-condition evaluation",
       "Custom constitutional remedy preparation",
@@ -110,6 +112,7 @@ const packages: Package[] = [
       "Standard clinical response monitoring"
     ],
     duration: "Flexible Billing",
+    badge: "Deeper Case Analysis",
     glowColor: "rgba(14,165,233,0.15)",
     colorTheme: {
       text: "text-sky-700 dark:text-sky-400",
@@ -124,11 +127,11 @@ const packages: Package[] = [
   },
   {
     id: "critical-care",
-    title: "Acute Critical Care",
+    title: "Intensive Acute Priority Care",
     priceWeekly: "₹6,250",
     priceMonthly: "₹25,000",
     category: "consultation",
-    desc: "For urgent, high-intensity acute cases requiring daily tracking, frequent remedy adjustments, and intensive physician study.",
+    desc: "For suitable acute cases requiring priority homeopathic support and closer short-term follow-up. Not a replacement for emergency medical care, hospitalization, or life-saving treatment. In emergencies, seek immediate medical attention.",
     features: [
       "Daily doctor clinical review and check-ins",
       "Intensive daily remedy titration and support",
@@ -136,7 +139,7 @@ const packages: Package[] = [
       "Detailed case study and Organon-guided repertorization"
     ],
     duration: "Flexible Billing",
-    badge: "🚨 Daily Check-ins",
+    badge: "🚨 Priority Acute Support",
     glowColor: "rgba(239,68,68,0.15)",
     colorTheme: {
       text: "text-rose-700 dark:text-rose-400",
@@ -151,11 +154,11 @@ const packages: Package[] = [
   },
   {
     id: "recommended-system-care",
-    title: "Advanced Pathological Care",
+    title: "Advanced Pathology Support",
     priceWeekly: "₹7,500",
     priceMonthly: "₹30,000",
     category: "consultation",
-    desc: "Targeted recovery protocols for deep-seated pathology, including organ system rebalancing and biomarker reviews.",
+    desc: "For medically diagnosed conditions requiring careful monitoring, report review, and structured clinical follow-up.",
     features: [
       "Primary organ system constitutional analysis",
       "Systemic homeopathic rebalancing protocol",
@@ -163,7 +166,7 @@ const packages: Package[] = [
       "Comprehensive systemic dietary guidelines"
     ],
     duration: "Flexible Billing",
-    badge: "⭐ Recommended",
+    badge: "⭐ Report-Based Monitoring",
     glowColor: "rgba(16,185,129,0.15)",
     colorTheme: {
       text: "text-emerald-700 dark:text-emerald-400",
@@ -182,7 +185,7 @@ const packages: Package[] = [
     priceWeekly: "₹10,500",
     priceMonthly: "₹42,000",
     category: "consultation",
-    desc: "High-intensity multi-organ care program under direct physician supervision for advanced chronic diseases.",
+    desc: "For complex cases involving multiple body systems, multiple active concerns, and higher clinical coordination.",
     features: [
       "Deeper multi-system constitutional evaluation",
       "Deeper chronic pathology case reviews",
@@ -190,6 +193,7 @@ const packages: Package[] = [
       "Ongoing supervision by clinical team"
     ],
     duration: "Flexible Billing",
+    badge: "Best for Complex Cases",
     glowColor: "rgba(99,102,241,0.15)",
     colorTheme: {
       text: "text-indigo-700 dark:text-indigo-400",
@@ -1318,7 +1322,7 @@ export default function StorePage() {
       }
     } else if (recommendedLevel === "organ") {
       if (supervisionNeed === "high") {
-        detail = "Your case requires active review of biomarkers/lab tests and specialized multi-remedy support, putting it in the Advanced Pathological care level.";
+        detail = "Your case requires active review of biomarkers/lab tests and specialized multi-remedy support, putting it in the Advanced Pathology Support care level.";
       } else {
         detail = "You have multiple chronic organ-system issues (or a single very advanced pathology) that require multi-remedy constitutional support.";
       }
@@ -1777,25 +1781,25 @@ export default function StorePage() {
                                 </thead>
                                 <tbody className="divide-y divide-slate-100 font-semibold text-slate-700 text-[11px]">
                                   <tr>
-                                    <td className="py-3 pr-4 font-black text-slate-900 whitespace-nowrap">🌱 Acute &amp; Wellness</td>
+                                    <td className="py-3 pr-4 font-black text-slate-900 whitespace-nowrap">🌱 Essential Acute &amp; Wellness</td>
                                     <td className="py-3 px-4">Acute cold/cough, seasonal allergies, simple hair fall, minor indigestion, mild flares.</td>
                                     <td className="py-3 px-4 font-black text-slate-900 whitespace-nowrap">₹6,000/mo</td>
                                     <td className="py-3 pl-4">Constitutional micro-dose remedies, basic diet sheet, bi-weekly check-ins.</td>
                                   </tr>
                                   <tr>
-                                    <td className="py-3 pr-4 font-black text-[#1A2421] whitespace-nowrap">⚡ Standard Chronic</td>
+                                    <td className="py-3 pr-4 font-black text-[#1A2421] whitespace-nowrap">⚡ Core Chronic</td>
                                     <td className="py-3 px-4">Chronic eczema, dry skin/acne, mild thyroid, single joint pain, IBS/gas.</td>
                                     <td className="py-3 px-4 font-black text-[#1A2421] whitespace-nowrap">₹12,000/mo</td>
                                     <td className="py-3 pl-4">Disease mapping, targeted remedies, detailed dietary guide, fortnightly reports.</td>
                                   </tr>
                                   <tr>
-                                    <td className="py-3 pr-4 font-black text-mint-dark whitespace-nowrap">🎯 Deep Systemic</td>
+                                    <td className="py-3 pr-4 font-black text-mint-dark whitespace-nowrap">🎯 Deep Constitutional</td>
                                     <td className="py-3 px-4">Bronchial asthma, severe psoriasis, alopecia areata, PCOS-acne, vascular migraines.</td>
                                     <td className="py-3 px-4 font-black text-mint-dark whitespace-nowrap">₹21,000/mo</td>
                                     <td className="py-3 pl-4">Deep organ-level pathology protocol, high-potency dilutions, lab report evaluation.</td>
                                   </tr>
                                   <tr>
-                                    <td className="py-3 pr-4 font-black text-indigo-700 whitespace-nowrap">🫁 Advanced Pathological</td>
+                                    <td className="py-3 pr-4 font-black text-indigo-700 whitespace-nowrap">🫁 Advanced Pathology Support</td>
                                     <td className="py-3 px-4">Early CKD, fatty liver/elevated enzymes, multi-joint chronic arthritis, autoimmune rebalancing.</td>
                                     <td className="py-3 px-4 font-black text-indigo-700 whitespace-nowrap">₹30,000/mo</td>
                                     <td className="py-3 pl-4">Multi-remedy inter-system support, periodic blood report comparison, dietitian integration.</td>
@@ -1807,7 +1811,7 @@ export default function StorePage() {
                                     <td className="py-3 pl-4">Direct Dr. Jethwani supervision, high-frequency dosage adjustments, acute flare protocols.</td>
                                   </tr>
                                   <tr className="bg-red-50/50">
-                                    <td className="py-3 pr-4 font-black text-red-700 whitespace-nowrap">🚨 Acute Critical Care</td>
+                                    <td className="py-3 pr-4 font-black text-red-700 whitespace-nowrap">🚨 Intensive Acute Priority Care</td>
                                     <td className="py-3 px-4">Urgent acute illness — high fever, acute asthma attacks, acute renal crisis, emergency post-surgical support.</td>
                                     <td className="py-3 px-4 font-black text-red-700 whitespace-nowrap">₹25,000/mo</td>
                                     <td className="py-3 pl-4">Daily clinical monitoring, frequent remedy titration, priority WhatsApp supervision by Dr. Jethwani.</td>
@@ -1815,7 +1819,7 @@ export default function StorePage() {
                                 </tbody>
                               </table>
                             </div>
-                            <p className="text-[10px] text-slate-400 font-semibold">* Surcharge of ₹750/mo per additional condition beyond 1 (for Acute & Wellness Care, varying by tier). Weekly billing available.</p>
+                            <p className="text-[10px] text-slate-400 font-semibold">* Surcharge of ₹750/mo per additional condition beyond 1 (for Essential Acute & Wellness Care, varying by tier). Weekly billing available.</p>
                           </div>
                         </motion.div>
                       )}
@@ -2724,7 +2728,7 @@ export default function StorePage() {
                           label: "Acute or Mild Complaints",
                           desc: "Short-term/mild issues that flare and resolve.",
                           examples: "Seasonal cold, mild acne, general hair fall, minor indigestion, skin allergy flare.",
-                          tier: "→ Acute & Wellness Care",
+                          tier: "→ Essential Acute & Wellness Care",
                           tierColor: "text-slate-650"
                         },
                         {
@@ -2733,7 +2737,7 @@ export default function StorePage() {
                           label: "Single Chronic Condition",
                           desc: "A persistent long-standing issue confined to one organ/system.",
                           examples: "Chronic sinusitis, localized eczema, mild hypothyroidism, IBS, single joint arthritis.",
-                          tier: "→ Standard Chronic Care",
+                          tier: "→ Core Chronic Care",
                           tierColor: "text-slate-700"
                         },
                         {
@@ -2742,7 +2746,7 @@ export default function StorePage() {
                           label: "Deep Organ System Pathology",
                           desc: "Complex systemic condition requiring targeted constitutional management.",
                           examples: "Bronchial asthma, severe psoriasis, PCOS, vascular migraines, hormonal acne.",
-                          tier: "→ Deep Systemic Care",
+                          tier: "→ Deep Constitutional Care",
                           tierColor: "text-mint-dark"
                         },
                         {
@@ -2751,7 +2755,7 @@ export default function StorePage() {
                           label: "Severe / Multi-Organ Pathology",
                           desc: "Advanced chronic disease affecting multiple systems or with serious biomarkers.",
                           examples: "Early CKD, fatty liver, RA, ankylosing spondylitis, autoimmune conditions.",
-                          tier: "→ Advanced Pathological Care",
+                          tier: "→ Advanced Pathology Support",
                           tierColor: "text-indigo-650"
                         },
                         {
@@ -2760,7 +2764,7 @@ export default function StorePage() {
                           label: "Urgent / Critical Acute Condition",
                           desc: "Acute urgent illness requiring daily monitoring and priority intervention.",
                           examples: "Acute asthma attack, high uncontrolled fever, post-surgical recovery, acute renal flare.",
-                          tier: "→ Acute Critical Care",
+                          tier: "→ Intensive Acute Priority Care",
                           tierColor: "text-red-650"
                         }
                       ].map((item) => (
@@ -4246,8 +4250,11 @@ export default function StorePage() {
                                 </div>
                               </div>
 
-                              <div className="pt-2 border-t border-slate-100 text-[9px] text-slate-400 font-semibold leading-relaxed">
-                                Includes case mapping, shipping, remedies supply, and priority clinical assistance.
+                              <div className="pt-2 border-t border-slate-100 text-[9px] text-slate-400 font-semibold leading-relaxed space-y-1">
+                                <p>Includes case mapping, shipping, remedies supply, and priority clinical assistance.</p>
+                                <p className="text-slate-500 italic mt-1 pt-1 border-t border-slate-100/50">
+                                  Final care level is confirmed after physician review. If your case requires a different level of monitoring, our clinical team may recommend upgrading or simplifying the plan before treatment begins.
+                                </p>
                               </div>
                             </div>
                           );
@@ -4386,7 +4393,7 @@ export default function StorePage() {
                           label: "Acute or Mild Complaints",
                           desc: "Short-term/mild issues that flare and resolve.",
                           examples: "Seasonal cold, mild acne, general hair fall, minor indigestion, skin allergy flare.",
-                          tier: "→ Acute & Wellness Care",
+                          tier: "→ Essential Acute & Wellness Care",
                           tierColor: "text-slate-600"
                         },
                         {
@@ -4395,7 +4402,7 @@ export default function StorePage() {
                           label: "Single Chronic Condition",
                           desc: "A persistent long-standing issue confined to one organ/system.",
                           examples: "Chronic sinusitis, localized eczema, mild hypothyroidism, IBS, single joint arthritis.",
-                          tier: "→ Standard Chronic Care",
+                          tier: "→ Core Chronic Care",
                           tierColor: "text-slate-700"
                         },
                         {
@@ -4404,7 +4411,7 @@ export default function StorePage() {
                           label: "Deep Organ System Pathology",
                           desc: "Complex systemic condition requiring targeted constitutional management.",
                           examples: "Bronchial asthma, severe psoriasis, PCOS, vascular migraines, hormonal acne.",
-                          tier: "→ Deep Systemic Care",
+                          tier: "→ Deep Constitutional Care",
                           tierColor: "text-mint-dark"
                         },
                         {
@@ -4413,7 +4420,7 @@ export default function StorePage() {
                           label: "Severe / Multi-Organ Pathology",
                           desc: "Advanced chronic disease affecting multiple systems or with serious biomarkers.",
                           examples: "Early CKD, fatty liver, RA, ankylosing spondylitis, autoimmune conditions.",
-                          tier: "→ Advanced Pathological Care",
+                          tier: "→ Advanced Pathology Support",
                           tierColor: "text-indigo-600"
                         },
                         {
@@ -4422,7 +4429,7 @@ export default function StorePage() {
                           label: "Urgent / Critical Acute Condition",
                           desc: "Acute urgent illness requiring daily monitoring and priority intervention.",
                           examples: "Acute asthma attack, high uncontrolled fever, post-surgical recovery, acute renal flare.",
-                          tier: "→ Acute Critical Care",
+                          tier: "→ Intensive Acute Priority Care",
                           tierColor: "text-red-600"
                         }
                       ].map((item) => (

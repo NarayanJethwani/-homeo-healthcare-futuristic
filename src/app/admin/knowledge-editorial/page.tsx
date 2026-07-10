@@ -289,7 +289,7 @@ export default function KnowledgeEditorialPage() {
     }
   }, [activeWorkspaceTab]);
 
-  const fetchRagHealth = async () => {
+  async function fetchRagHealth() {
     setIsRagLoading(true);
     try {
       const res = await fetch("/api/admin/observability/rag-health");
@@ -304,7 +304,7 @@ export default function KnowledgeEditorialPage() {
     } finally {
       setIsRagLoading(false);
     }
-  };
+  }
 
   const handleRagAction = async (action: "processQueue" | "retryFailedJobs" | "reindexStale") => {
     if (!userHasPermission("RAG_INDEX_MANAGE")) {

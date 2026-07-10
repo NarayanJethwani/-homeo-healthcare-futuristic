@@ -1,4 +1,5 @@
 import { google } from "googleapis";
+import { getCareLevelDisplayNameWithIcon } from "./pricingConfig";
 
 
 function getDoctorEmails(): string[] {
@@ -475,21 +476,7 @@ export async function createPatientClinicalSheet(
           const today = new Date().toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" });
 
           // Normalize and map inputs to align with mock and premium options
-          const normalizedCareLevel = data.careLevel ? data.careLevel.toLowerCase().trim() : "";
-          let resolvedCareLevel = data.careLevel || "🎯 Deep Systemic Care";
-          if (normalizedCareLevel.includes("critical") || normalizedCareLevel.includes("emergency")) {
-            resolvedCareLevel = "🚨 Acute Critical Care";
-          } else if (normalizedCareLevel === "mild" || normalizedCareLevel.includes("acute") || normalizedCareLevel.includes("wellness")) {
-            resolvedCareLevel = "🌱 Acute & Wellness Care";
-          } else if (normalizedCareLevel === "moderate" || normalizedCareLevel.includes("standard") || normalizedCareLevel.includes("chronic")) {
-            resolvedCareLevel = "⚡ Standard Chronic Care";
-          } else if (normalizedCareLevel === "focused" || normalizedCareLevel.includes("deep") || normalizedCareLevel.includes("systemic")) {
-            resolvedCareLevel = "🎯 Deep Systemic Care";
-          } else if (normalizedCareLevel === "organ" || normalizedCareLevel.includes("advanced") || normalizedCareLevel.includes("pathological")) {
-            resolvedCareLevel = "🫁 Advanced Pathological Care";
-          } else if (normalizedCareLevel === "comprehensive" || normalizedCareLevel.includes("multisystem") || normalizedCareLevel.includes("integrative")) {
-            resolvedCareLevel = "🔮 Multisystem Integrative Care";
-          }
+          const resolvedCareLevel = getCareLevelDisplayNameWithIcon(data.careLevel || "focused");
 
           const rawCycle = data.billingCycle ? data.billingCycle.toLowerCase().trim() : "";
           const resolvedBillingCycle = rawCycle === "weekly" ? "Weekly" : "Monthly";
@@ -551,8 +538,8 @@ export async function createPatientClinicalSheet(
                 {
                   range: "'Treatment Planner'!A8:C15",
                   values: [
-                    ["Base Rate", `=IF(ISNUMBER(SEARCH("Critical", A4)), IF(B4="Weekly", 6250, 25000), IF(ISNUMBER(SEARCH("Wellness", A4)), IF(B4="Weekly", 1500, 6000), IF(ISNUMBER(SEARCH("Standard", A4)), IF(B4="Weekly", 3000, 12000), IF(ISNUMBER(SEARCH("Deep", A4)), IF(B4="Weekly", 5250, 21000), IF(ISNUMBER(SEARCH("Advanced", A4)), IF(B4="Weekly", 7500, 30000), IF(ISNUMBER(SEARCH("Multisystem", A4)), IF(B4="Weekly", 10500, 42000), 6000))))))`, "Base rate based on Care Level and Billing Cycle"],
-                    ["Conditions Surcharge", `=IF(D4<=1, 0, (D4-1)*IF(ISNUMBER(SEARCH("Critical", A4)), IF(B4="Weekly", 1250, 5000), IF(ISNUMBER(SEARCH("Wellness", A4)), IF(B4="Weekly", 375, 1500), IF(ISNUMBER(SEARCH("Standard", A4)), IF(B4="Weekly", 563, 2250), IF(ISNUMBER(SEARCH("Deep", A4)), IF(B4="Weekly", 938, 3750), IF(ISNUMBER(SEARCH("Advanced", A4)), IF(B4="Weekly", 1313, 5250), IF(ISNUMBER(SEARCH("Multisystem", A4)), IF(B4="Weekly", 1688, 6750), 0)))))))`, "Surcharge for co-existing chronic conditions"],
+                    ["Base Rate", `=IF(OR(ISNUMBER(SEARCH("Critical", A4)), ISNUMBER(SEARCH("Intensive", A4))), IF(B4="Weekly", 6250, 25000), IF(OR(ISNUMBER(SEARCH("Wellness", A4)), ISNUMBER(SEARCH("Essential", A4))), IF(B4="Weekly", 1500, 6000), IF(OR(ISNUMBER(SEARCH("Standard", A4)), ISNUMBER(SEARCH("Core", A4))), IF(B4="Weekly", 3000, 12000), IF(OR(ISNUMBER(SEARCH("Deep", A4)), ISNUMBER(SEARCH("Constitutional", A4))), IF(B4="Weekly", 5250, 21000), IF(OR(ISNUMBER(SEARCH("Advanced", A4)), ISNUMBER(SEARCH("Pathology", A4))), IF(B4="Weekly", 7500, 30000), IF(OR(ISNUMBER(SEARCH("Multisystem", A4)), ISNUMBER(SEARCH("Integrative", A4))), IF(B4="Weekly", 10500, 42000), 6000))))))`, "Base rate based on Care Level and Billing Cycle"],
+                    ["Conditions Surcharge", `=IF(D4<=1, 0, (D4-1)*IF(OR(ISNUMBER(SEARCH("Critical", A4)), ISNUMBER(SEARCH("Intensive", A4))), IF(B4="Weekly", 1250, 5000), IF(OR(ISNUMBER(SEARCH("Wellness", A4)), ISNUMBER(SEARCH("Essential", A4))), IF(B4="Weekly", 375, 1500), IF(OR(ISNUMBER(SEARCH("Standard", A4)), ISNUMBER(SEARCH("Core", A4))), IF(B4="Weekly", 563, 2250), IF(OR(ISNUMBER(SEARCH("Deep", A4)), ISNUMBER(SEARCH("Constitutional", A4))), IF(B4="Weekly", 938, 3750), IF(OR(ISNUMBER(SEARCH("Advanced", A4)), ISNUMBER(SEARCH("Pathology", A4))), IF(B4="Weekly", 1313, 5250), IF(OR(ISNUMBER(SEARCH("Multisystem", A4)), ISNUMBER(SEARCH("Integrative", A4))), IF(B4="Weekly", 1688, 6750), 0)))))))`, "Surcharge for co-existing chronic conditions"],
                     ["Gross Subtotal", "=(B8+B9)*C4", "Adjusted base rate multiplied by duration"],
                     ["Duration Discount %", `=IF(IF(B4="Weekly", C4, C4*4)>=48, 0.30, IF(IF(B4="Weekly", C4, C4*4)>=24, 0.25, IF(IF(B4="Weekly", C4, C4*4)>=12, 0.20, IF(IF(B4="Weekly", C4, C4*4)>=8, 0.15, IF(IF(B4="Weekly", C4, C4*4)>=4, 0.10, IF(IF(B4="Weekly", C4, C4*4)>=2, 0.05, 0))))))`, "Duration loyalty discount percentage"],
                     ["Duration Discount Amount", "=B10*B11", "Total savings from duration discount"],
@@ -941,21 +928,7 @@ export async function createPatientClinicalSheet(
         ];
 
         // Normalize and map inputs to align with mock and premium options
-        const normalizedCareLevel = data.careLevel ? data.careLevel.toLowerCase().trim() : "";
-        let resolvedCareLevel = data.careLevel || "🎯 Deep Systemic Care";
-        if (normalizedCareLevel.includes("critical") || normalizedCareLevel.includes("emergency")) {
-          resolvedCareLevel = "🚨 Acute Critical Care";
-        } else if (normalizedCareLevel === "mild" || normalizedCareLevel.includes("acute") || normalizedCareLevel.includes("wellness")) {
-          resolvedCareLevel = "🌱 Acute & Wellness Care";
-        } else if (normalizedCareLevel === "moderate" || normalizedCareLevel.includes("standard") || normalizedCareLevel.includes("chronic")) {
-          resolvedCareLevel = "⚡ Standard Chronic Care";
-        } else if (normalizedCareLevel === "focused" || normalizedCareLevel.includes("deep") || normalizedCareLevel.includes("systemic")) {
-          resolvedCareLevel = "🎯 Deep Systemic Care";
-        } else if (normalizedCareLevel === "organ" || normalizedCareLevel.includes("advanced") || normalizedCareLevel.includes("pathological")) {
-          resolvedCareLevel = "🫁 Advanced Pathological Care";
-        } else if (normalizedCareLevel === "comprehensive" || normalizedCareLevel.includes("multisystem") || normalizedCareLevel.includes("integrative")) {
-          resolvedCareLevel = "🔮 Multisystem Integrative Care";
-        }
+        const resolvedCareLevel = getCareLevelDisplayNameWithIcon(data.careLevel || "focused");
 
         const rawCycle = data.billingCycle ? data.billingCycle.toLowerCase().trim() : "";
         const resolvedBillingCycle = rawCycle === "weekly" ? "Weekly" : "Monthly";
@@ -979,8 +952,8 @@ export async function createPatientClinicalSheet(
           ["", "", "", "", "", "", ""],
           ["PRICING BREAKDOWN", "", "", "", "", "", ""],
           ["Component", "Rate / Amount (₹)", "Calculation Description", "", "", "", ""],
-          ["Base Rate", `=IF(ISNUMBER(SEARCH("Critical", A4)), IF(B4="Weekly", 6250, 25000), IF(ISNUMBER(SEARCH("Wellness", A4)), IF(B4="Weekly", 1500, 6000), IF(ISNUMBER(SEARCH("Standard", A4)), IF(B4="Weekly", 3000, 12000), IF(ISNUMBER(SEARCH("Deep", A4)), IF(B4="Weekly", 5250, 21000), IF(ISNUMBER(SEARCH("Advanced", A4)), IF(B4="Weekly", 7500, 30000), IF(ISNUMBER(SEARCH("Multisystem", A4)), IF(B4="Weekly", 10500, 42000), 6000))))))`, "Base rate based on Care Level and Billing Cycle", "", "", ""],
-          ["Conditions Surcharge", `=IF(D4<=1, 0, (D4-1)*IF(ISNUMBER(SEARCH("Critical", A4)), IF(B4="Weekly", 1250, 5000), IF(ISNUMBER(SEARCH("Wellness", A4)), IF(B4="Weekly", 375, 1500), IF(ISNUMBER(SEARCH("Standard", A4)), IF(B4="Weekly", 563, 2250), IF(ISNUMBER(SEARCH("Deep", A4)), IF(B4="Weekly", 938, 3750), IF(ISNUMBER(SEARCH("Advanced", A4)), IF(B4="Weekly", 1313, 5250), IF(ISNUMBER(SEARCH("Multisystem", A4)), IF(B4="Weekly", 1688, 6750), 0)))))))`, "Surcharge for co-existing chronic conditions", "", "", ""],
+          ["Base Rate", `=IF(OR(ISNUMBER(SEARCH("Critical", A4)), ISNUMBER(SEARCH("Intensive", A4))), IF(B4="Weekly", 6250, 25000), IF(OR(ISNUMBER(SEARCH("Wellness", A4)), ISNUMBER(SEARCH("Essential", A4))), IF(B4="Weekly", 1500, 6000), IF(OR(ISNUMBER(SEARCH("Standard", A4)), ISNUMBER(SEARCH("Core", A4))), IF(B4="Weekly", 3000, 12000), IF(OR(ISNUMBER(SEARCH("Deep", A4)), ISNUMBER(SEARCH("Constitutional", A4))), IF(B4="Weekly", 5250, 21000), IF(OR(ISNUMBER(SEARCH("Advanced", A4)), ISNUMBER(SEARCH("Pathology", A4))), IF(B4="Weekly", 7500, 30000), IF(OR(ISNUMBER(SEARCH("Multisystem", A4)), ISNUMBER(SEARCH("Integrative", A4))), IF(B4="Weekly", 10500, 42000), 6000))))))`, "Base rate based on Care Level and Billing Cycle", "", "", "", ""],
+          ["Conditions Surcharge", `=IF(D4<=1, 0, (D4-1)*IF(OR(ISNUMBER(SEARCH("Critical", A4)), ISNUMBER(SEARCH("Intensive", A4))), IF(B4="Weekly", 1250, 5000), IF(OR(ISNUMBER(SEARCH("Wellness", A4)), ISNUMBER(SEARCH("Essential", A4))), IF(B4="Weekly", 375, 1500), IF(OR(ISNUMBER(SEARCH("Standard", A4)), ISNUMBER(SEARCH("Core", A4))), IF(B4="Weekly", 563, 2250), IF(OR(ISNUMBER(SEARCH("Deep", A4)), ISNUMBER(SEARCH("Constitutional", A4))), IF(B4="Weekly", 938, 3750), IF(OR(ISNUMBER(SEARCH("Advanced", A4)), ISNUMBER(SEARCH("Pathology", A4))), IF(B4="Weekly", 1313, 5250), IF(OR(ISNUMBER(SEARCH("Multisystem", A4)), ISNUMBER(SEARCH("Integrative", A4))), IF(B4="Weekly", 1688, 6750), 0)))))))`, "Surcharge for co-existing chronic conditions", "", "", "", ""],
           ["Gross Subtotal", "=(B8+B9)*C4", "Adjusted base rate multiplied by duration", "", "", "", ""],
           ["Duration Discount %", `=IF(IF(B4="Weekly", C4, C4*4)>=48, 0.30, IF(IF(B4="Weekly", C4, C4*4)>=24, 0.25, IF(IF(B4="Weekly", C4, C4*4)>=12, 0.20, IF(IF(B4="Weekly", C4, C4*4)>=8, 0.15, IF(IF(B4="Weekly", C4, C4*4)>=4, 0.10, IF(IF(B4="Weekly", C4, C4*4)>=2, 0.05, 0))))))`, "Duration loyalty discount percentage", "", "", "", ""],
           ["Duration Discount Amount", "=B10*B11", "Total savings from duration discount", "", "", "", ""],

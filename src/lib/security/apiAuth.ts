@@ -44,6 +44,100 @@ export async function authorizeRequest(
     };
   }
 
+  if (session && session.uid !== "dev-bypass-uid") {
+    try {
+      const { getPractitionerByUid } = await import("@/features/admin-users/practitionerRepository");
+      const practitioner = await getPractitionerByUid(session.uid);
+      if (practitioner) {
+        if (practitioner.status === "suspended") {
+          await logSecurityEvent({
+            userId: session.uid,
+            userEmail: session.email,
+            userRole: session.role,
+            action: "suspended_account_access_attempt",
+            resource,
+            status: "denied",
+            timestamp: new Date().toISOString(),
+            details: { status: "suspended", requiredPermission: permission }
+          });
+          return {
+            authorized: false,
+            response: NextResponse.json(
+              {
+                ok: false,
+                error: {
+                  code: "FORBIDDEN",
+                  message: "Account is suspended."
+                }
+              },
+              { status: 403 }
+            )
+          };
+        }
+
+        if (practitioner.status === "deactivated") {
+          await logSecurityEvent({
+            userId: session.uid,
+            userEmail: session.email,
+            userRole: session.role,
+            action: "deactivated_account_access_attempt",
+            resource,
+            status: "denied",
+            timestamp: new Date().toISOString(),
+            details: { status: "deactivated", requiredPermission: permission }
+          });
+          return {
+            authorized: false,
+            response: NextResponse.json(
+              {
+                ok: false,
+                error: {
+                  code: "FORBIDDEN",
+                  message: "Account is deactivated."
+                }
+              },
+              { status: 403 }
+            )
+          };
+        }
+
+        if (practitioner.subscriptionExpiresAt) {
+          const hasExpired = new Date(practitioner.subscriptionExpiresAt) < new Date();
+          if (hasExpired) {
+            const isSelfProfileRoute = resource.startsWith("/api/account/");
+            if (!isSelfProfileRoute) {
+              await logSecurityEvent({
+                userId: session.uid,
+                userEmail: session.email,
+                userRole: session.role,
+                action: "expired_subscription_access_attempt",
+                resource,
+                status: "denied",
+                timestamp: new Date().toISOString(),
+                details: { status: "expired", requiredPermission: permission }
+              });
+              return {
+                authorized: false,
+                response: NextResponse.json(
+                  {
+                    ok: false,
+                    error: {
+                      code: "FORBIDDEN",
+                      message: "Subscription has expired. Access restricted."
+                    }
+                  },
+                  { status: 403 }
+                )
+              };
+            }
+          }
+        }
+      }
+    } catch (err) {
+      console.warn("[apiAuth] Failed to load practitioner database profile status:", err);
+    }
+  }
+
   if (!session) {
     // Unauthenticated
     await logSecurityEvent({

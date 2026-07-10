@@ -28,7 +28,7 @@ export function getTreatmentRecommendation(
   billingFrequency: "weekly" | "monthly",
   selectedComplexity?: string
 ): RecommendationResult {
-  let recommendedProgram = "Standard Chronic Care";
+  let recommendedProgram = "Core Chronic Care";
   let complexity: "Routine" | "Standard" | "Enhanced" | "Advanced" | "Comprehensive" | "Intensive" = "Standard";
   let confidence: "Moderate" | "High" = "High";
   let followUpFrequency: "Weekly" | "Bi-weekly" | "Monthly" = "Bi-weekly";
@@ -38,12 +38,12 @@ export function getTreatmentRecommendation(
 
   // Mapping plan identifiers to friendly names
   const planNames: Record<string, string> = {
-    mild: "Acute & Wellness Care",
-    moderate: "Standard Chronic Care",
-    focused: "Deep Systemic Care",
-    organ: "Advanced Pathological Care",
+    mild: "Essential Acute & Wellness Care",
+    moderate: "Core Chronic Care",
+    focused: "Deep Constitutional Care",
+    organ: "Advanced Pathology Support",
     comprehensive: "Multisystem Integrative Care",
-    acute_critical: "Acute Critical Care",
+    acute_critical: "Intensive Acute Priority Care",
   };
 
   // Determine conservative clinical guidance details based on selected care level / plan
@@ -57,16 +57,16 @@ export function getTreatmentRecommendation(
         "Short care duration suitability",
         "Acute symptoms or general wellness concern"
       ];
-      patientExplanation = "Based on your selected clinical profile, this acute & wellness program provides standard constitutional tracking, lower complexity case monitoring, and seasonal acute support.";
+      patientExplanation = "Based on your selected clinical profile, this essential acute & wellness program provides standard constitutional tracking, lower complexity case monitoring, and seasonal acute support.";
       
       // Safety/conservative checks for mismatch
       if (conditionCount > 1) {
         confidence = "Moderate";
         reasons.push("Multiple active conditions identified");
-        patientExplanation = "Based on your selected clinical profile, this care level is optimized for general wellness, but multi-concern treatment typically requires Standard Chronic Care coordination.";
+        patientExplanation = "Based on your selected clinical profile, this care level is optimized for general wellness, but multi-concern treatment typically requires Core Chronic Care coordination.";
       }
       break;
-
+ 
     case "moderate":
       recommendedProgram = planNames.moderate;
       complexity = "Standard";
@@ -80,8 +80,8 @@ export function getTreatmentRecommendation(
       
       if (conditionCount > 2) {
         confidence = "Moderate";
-        reasons.push("Multiple chronic conditions require deeper systemic evaluation");
-        patientExplanation = "Based on your selected clinical profile, this standard program supports single chronic complaints, but multiple active conditions warrant deeper systemic or integrative tracking.";
+        reasons.push("Multiple chronic conditions require deeper constitutional evaluation");
+        patientExplanation = "Based on your selected clinical profile, this standard program supports single chronic complaints, but multiple active conditions warrant deeper constitutional or integrative tracking.";
       }
       break;
 
@@ -143,7 +143,7 @@ export function getTreatmentRecommendation(
       complexity = "Standard";
       followUpFrequency = "Bi-weekly";
       reasons = ["General clinical chronic monitoring"];
-      patientExplanation = "Based on your selected clinical profile, standard chronic care planning is recommended to begin constitutional mapping and symptom monitoring.";
+      patientExplanation = "Based on your selected clinical profile, core chronic care planning is recommended to begin constitutional mapping and symptom monitoring.";
       break;
   }
 

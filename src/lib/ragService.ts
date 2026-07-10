@@ -3,6 +3,7 @@ import { MASTER_REMEDY_DB } from "./materiaMedicaDb";
 import { ORGANON_APHORISMS } from "./organonData";
 import { globalVectorStore } from "../features/knowledge/retrieval/vectorStore";
 import { embeddingManager } from "../features/knowledge/retrieval/embeddingProvider";
+import { globalKmsRepository } from "../features/knowledge-admin/repositories/MemoryRepository";
 
 export interface KnowledgeDocument {
   id: string;
@@ -174,7 +175,6 @@ export class RAGService {
 
     // 3. Map Dynamic CMS Published Knowledge Entities
     try {
-      const { globalKmsRepository } = require("../features/knowledge-admin/repositories/MemoryRepository");
       if (globalKmsRepository && typeof globalKmsRepository.getEntitiesSync === "function") {
         const cmsEntities = globalKmsRepository.getEntitiesSync();
         const published = cmsEntities.filter((e: any) => e.editorialStatus === "published");

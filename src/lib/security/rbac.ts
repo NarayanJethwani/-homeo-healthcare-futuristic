@@ -84,3 +84,8 @@ export function hasPermission(role: string, permission: Permission): boolean {
   const permissions = ROLE_PERMISSIONS[normRole] || [];
   return permissions.includes(permission);
 }
+
+export function getPermissionsByRole(role: string): Permission[] {
+  const normRole = normalizeRole(role);
+  return ROLE_PERMISSIONS[normRole] || [];
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { CARE_LEVELS_DETAILS, surchargesLookup } from "@/lib/pricingConfig";
+import { CARE_LEVELS_DETAILS, surchargesLookup, normalizeCareLevelName, getCareLevelDisplayName } from "@/lib/pricingConfig";
 
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
@@ -50,6 +50,10 @@ import { getTreatmentRecommendation } from "@/lib/treatmentRecommendationEngine"
 import Portal from "@/components/Portal";
 import { normalizeRole, hasPermission } from "@/lib/security/rbac";
 import { PractitionerManagementPanel } from "@/components/dashboard/PractitionerManagementPanel";
+import { PractitionerProfilePanel } from "@/components/dashboard/PractitionerProfilePanel";
+import PatientAttachmentsPanel from "@/features/patient-attachments/PatientAttachmentsPanel";
+import PatientLabTimelinePanel from "@/features/patient-labs/PatientLabTimelinePanel";
+import TreatmentPlannerLabReference from "@/features/patient-labs/TreatmentPlannerLabReference";
 import { ReportUploadModal } from "@/features/dashboard/components/ReportUploadModal";
 import { ReportExtractionResult } from "@/features/dashboard/types/reportExtractionTypes";
 import {
@@ -723,12 +727,7 @@ const getDurationValue = (duration: string) => {
 // careLevelsDetails and surchargesLookup are imported from centralized pricingConfig
 
 const getCareLevelKey = (level: string) => {
-  if (level.includes("Standard")) return "moderate";
-  if (level.includes("Deep")) return "focused";
-  if (level.includes("Advanced")) return "organ";
-  if (level.includes("Multisystem")) return "comprehensive";
-  if (level.includes("Critical") || level.includes("🚨")) return "acute_critical";
-  return "mild";
+  return normalizeCareLevelName(level);
 };
 
 const getCareLevelRate = (level: string, cycle: string, conditions: number = 1) => {
@@ -1645,6 +1644,7 @@ export default function AdminDashboard() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [timelinePatient, setTimelinePatient] = useState<Patient | null>(null);
+  const [timelineTab, setTimelineTab] = useState<"clinical-feed" | "attachments" | "reviewed-labs">("clinical-feed");
   const [uploadingAttachment, setUploadingAttachment] = useState(false);
   const [timelinePrescriptionText, setTimelinePrescriptionText] = useState("");
   const [timelinePrescriptionPotency, setTimelinePrescriptionPotency] = useState("30C");
@@ -5047,7 +5047,7 @@ export default function AdminDashboard() {
     state: "",
     country: "India",
     complaint: "",
-    careLevel: "🌱 Acute & Wellness Care",
+    careLevel: "🌱 Essential Acute & Wellness Care",
     billingCycle: "Monthly",
     concessionType: "None",
     durationText: "1-Month Consultation",
@@ -5782,13 +5782,7 @@ Homeo Healthcare`;
 
   const handleGenerateRecommendation = () => {
     const levelVal = newCaseForm.careLevel;
-    let key: "mild" | "moderate" | "focused" | "acute_critical" | "organ" | "comprehensive" = "focused";
-    if (levelVal.includes("Acute & Wellness")) key = "mild";
-    else if (levelVal.includes("Standard Chronic")) key = "moderate";
-    else if (levelVal.includes("Deep Systemic")) key = "focused";
-    else if (levelVal.includes("Acute Critical")) key = "acute_critical";
-    else if (levelVal.includes("Advanced Pathological")) key = "organ";
-    else if (levelVal.includes("Multisystem Integrative")) key = "comprehensive";
+    const key = normalizeCareLevelName(levelVal);
 
     const durVal = newCaseForm.durationText;
     const match = durVal.match(/^(\d+)/);
@@ -6066,7 +6060,7 @@ Homeo Healthcare`;
           state: "",
           country: "India",
           complaint: "",
-          careLevel: "🌱 Acute & Wellness Care",
+          careLevel: "🌱 Essential Acute & Wellness Care",
           billingCycle: "Monthly",
           concessionType: "None",
           durationText: "1-Month Consultation",
@@ -6179,7 +6173,7 @@ Homeo Healthcare`;
     const ageVal = patient.age || "30";
     const ageNum = parseInt(ageVal) || 0;
     const concession = ageNum >= 60 ? "Senior" : "None";
-    const careLevel = "🌱 Acute & Wellness Care";
+    const careLevel = "🌱 Essential Acute & Wellness Care";
     const duration = "1-Month Consultation";
     const cycle = "Monthly";
     const pricing = calculateCaseFormPricing(careLevel, duration, ageVal, 0, cycle, concession, 1);
@@ -6279,7 +6273,7 @@ Homeo Healthcare`;
         const ageVal = age || "30";
         const ageNum = parseInt(ageVal) || 0;
         const concession = ageNum >= 60 ? "Senior" : "None";
-        const careLevel = "⚡ Standard Chronic Care";
+        const careLevel = "⚡ Core Chronic Care";
         const duration = "1-Month Consultation";
         const cycle = "Monthly";
         const pricing = calculateCaseFormPricing(careLevel, duration, ageVal, 0, cycle, concession, 1);
@@ -6680,7 +6674,7 @@ Homeo Healthcare`;
     const ageVal = patient.age || "30";
     const ageNum = parseInt(ageVal) || 0;
     const concession = ageNum >= 60 ? "Senior" : "None";
-    const careLevel = "⚡ Standard Chronic Care";
+    const careLevel = "⚡ Core Chronic Care";
     const duration = "1-Month Consultation";
     const cycle = "Monthly";
     const pricing = calculateCaseFormPricing(careLevel, duration, ageVal, 0, cycle, concession, 1);
@@ -12263,7 +12257,7 @@ ${err.message || err}`);
                                 state: "",
                                 country: "India",
                                 complaint: "",
-                                careLevel: "🌱 Acute & Wellness Care",
+                                careLevel: "🌱 Essential Acute & Wellness Care",
                                 billingCycle: "Monthly",
                                 concessionType: "None",
                                 durationText: "1-Month Consultation",
@@ -12297,23 +12291,27 @@ ${err.message || err}`);
                       </div>
 
                       {activePatient && (
-                        <div className="p-3.5 bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800/80 rounded-2xl space-y-1 text-xs text-slate-600 dark:text-slate-400 animate-fadeIn">
-                          <div className="flex justify-between items-center mb-1">
-                            <span className="text-[9px] uppercase tracking-wider font-extrabold text-slate-450">Selected Patient File</span>
-                            <span className="text-[9px] uppercase tracking-wider font-mono bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 px-1.5 py-0.5 rounded font-black">
-                              ID: {activePatient.id.substring(0, 8)}
-                            </span>
-                          </div>
-                          <div className="text-slate-900 dark:text-slate-100 font-bold text-xs mt-1">{activePatient.name}</div>
-                          <div>Complaint: <span className="text-slate-700 dark:text-slate-300 italic">{activePatient.complaint || "N/A"}</span></div>
-                          {activePatient.careLevel && (
-                            <div className="mt-1 flex items-center gap-1.5">
-                              <span className="text-[10px] bg-slate-200 dark:bg-slate-805 px-2 py-0.5 rounded font-semibold text-slate-700 dark:text-slate-300">
-                                Current: {activePatient.careLevel} ({activePatient.durationText})
+                        <>
+                          <div className="p-3.5 bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800/80 rounded-2xl space-y-1 text-xs text-slate-600 dark:text-slate-400 animate-fadeIn">
+                            <div className="flex justify-between items-center mb-1">
+                              <span className="text-[9px] uppercase tracking-wider font-extrabold text-slate-450">Selected Patient File</span>
+                              <span className="text-[9px] uppercase tracking-wider font-mono bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 px-1.5 py-0.5 rounded font-black">
+                                ID: {activePatient.id.substring(0, 8)}
                               </span>
                             </div>
-                          )}
-                        </div>
+                            <div className="text-slate-900 dark:text-slate-100 font-bold text-xs mt-1">{activePatient.name}</div>
+                            <div>Complaint: <span className="text-slate-700 dark:text-slate-300 italic">{activePatient.complaint || "N/A"}</span></div>
+                            {activePatient.careLevel && (
+                              <div className="mt-1 flex items-center gap-1.5">
+                                <span className="text-[10px] bg-slate-200 dark:bg-slate-805 px-2 py-0.5 rounded font-semibold text-slate-700 dark:text-slate-300">
+                                  Current: {activePatient.careLevel} ({activePatient.durationText})
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                          {/* V2.13 Reviewed Lab Reference Cards */}
+                          <TreatmentPlannerLabReference patientId={activePatient.id} />
+                        </>
                       )}
 
                       {/* Care Level */}
@@ -14014,7 +14012,7 @@ ${err.message || err}`);
                         state: "",
                         country: "India",
                         complaint: "",
-                        careLevel: "🌱 Acute & Wellness Care",
+                        careLevel: "🌱 Essential Acute & Wellness Care",
                         billingCycle: "Monthly",
                         concessionType: "None",
                         durationText: "1-Month Consultation",
@@ -19296,6 +19294,10 @@ ${err.message || err}`);
 
           {((activeTab as string) === "users") && session?.role && hasPermission(normalizeRole(session.role), "USER_MANAGE") && (
             <PractitionerManagementPanel session={session} />
+          )}
+
+          {((activeTab as string) === "account") && (
+            <PractitionerProfilePanel session={session} />
           )}
 
 
@@ -27328,113 +27330,161 @@ Exported on: ${new Date().toLocaleDateString()}
 
                   {/* Right Column: Google Drive Attachment Uploader & Longitudinal Timeline */}
                   <div className="space-y-6">
-                    {/* Google Drive Upload Module */}
-                    <div className="bg-slate-50 dark:bg-slate-950 p-5 rounded-2xl border border-slate-150 dark:border-slate-850 space-y-3">
-                      <div className="flex justify-between items-center">
-                        <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400">Google Drive Attachments</h4>
-                        <span className="text-[9px] font-mono text-slate-400">Syncs directly to folder</span>
-                      </div>
-                      
-                      <div className="border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl p-4 text-center hover:border-emerald-500 transition-all relative">
-                        <input
-                          type="file"
-                          id="timeline-file-upload"
-                          onChange={handleAttachmentUpload}
-                          disabled={uploadingAttachment}
-                          className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
-                        />
-                        <Upload className={`w-8 h-8 mx-auto mb-1.5 ${uploadingAttachment ? "animate-bounce text-emerald-500" : "text-slate-400"}`} />
-                        <span className="text-xs font-bold text-slate-700 dark:text-slate-300 block">
-                          {uploadingAttachment ? "Uploading to Google Drive..." : "Select File or Drag Here"}
-                        </span>
-                        <span className="text-[10px] text-slate-400 block mt-0.5">PDF, PNG, JPG up to 10MB</span>
-                      </div>
-
-                      {/* Uploaded Files Links */}
-                      <div className="space-y-1.5 max-h-[140px] overflow-y-auto pr-1">
-                        {!timelinePatient.attachments || timelinePatient.attachments.length === 0 ? (
-                          <div className="text-center py-2 text-slate-400 text-[10.5px]">No attachments synced to Drive folder.</div>
-                        ) : (
-                          timelinePatient.attachments.map((att: any, idx: number) => (
-                            <a
-                              key={att.id || idx}
-                              href={att.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="p-2.5 bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800 hover:border-emerald-500 rounded-xl flex items-center justify-between text-xs transition-all cursor-pointer text-slate-800 dark:text-slate-300"
-                            >
-                              <span className="font-bold truncate max-w-[200px]">{att.name}</span>
-                              <div className="flex items-center gap-1.5">
-                                <span className="text-[9px] font-mono text-slate-400">{att.uploadedAt ? new Date(att.uploadedAt).toLocaleDateString() : ""}</span>
-                                <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
-                              </div>
-                            </a>
-                          ))
-                        )}
-                      </div>
+                    {/* Tab Navigation for Right Column */}
+                    <div className="flex border-b border-slate-200 dark:border-slate-800">
+                      <button
+                        onClick={() => setTimelineTab("clinical-feed")}
+                        type="button"
+                        className={`flex-1 pb-2 text-xs font-bold text-center border-b-2 transition-all cursor-pointer bg-transparent border-t-0 border-l-0 border-r-0 ${
+                          timelineTab === "clinical-feed"
+                            ? "border-emerald-500 text-emerald-600 dark:text-emerald-400 font-extrabold"
+                            : "border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-350"
+                        }`}
+                      >
+                        Clinical Timeline
+                      </button>
+                      <button
+                        onClick={() => setTimelineTab("attachments")}
+                        type="button"
+                        className={`flex-1 pb-2 text-xs font-bold text-center border-b-2 transition-all cursor-pointer bg-transparent border-t-0 border-l-0 border-r-0 ${
+                          timelineTab === "attachments"
+                            ? "border-emerald-500 text-emerald-600 dark:text-emerald-400 font-extrabold"
+                            : "border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-350"
+                        }`}
+                      >
+                        Secure Attachments & Labs
+                      </button>
+                      <button
+                        onClick={() => setTimelineTab("reviewed-labs")}
+                        type="button"
+                        className={`flex-1 pb-2 text-xs font-bold text-center border-b-2 transition-all cursor-pointer bg-transparent border-t-0 border-l-0 border-r-0 ${
+                          timelineTab === "reviewed-labs"
+                            ? "border-emerald-500 text-emerald-600 dark:text-emerald-400 font-extrabold"
+                            : "border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-350"
+                        }`}
+                      >
+                        Reviewed Labs
+                      </button>
                     </div>
 
-                    {/* Longitudinal Case Timeline */}
-                    <div className="space-y-2">
-                      <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400">Longitudinal Timeline</h4>
-                      <div className="space-y-4 max-h-[300px] overflow-y-auto pl-2 pr-1 border-l-2 border-slate-100 dark:border-slate-800 py-1">
-                        
-                        {/* Registration Event */}
-                        <div className="relative pl-4">
-                          <div className="absolute -left-[21px] top-0 w-2 h-2 rounded-full bg-indigo-500 border border-white dark:border-slate-900 shadow"></div>
-                          <span className="text-[10px] font-mono text-slate-400 block">{new Date(timelinePatient.createdAt).toLocaleDateString()}</span>
-                          <span className="text-xs font-bold text-slate-800 dark:text-white">Registered Case Intake</span>
-                          <p className="text-[10.5px] text-slate-500 mt-0.5">Initial complaint: "{timelinePatient.complaint}"</p>
+                    {timelineTab === "clinical-feed" ? (
+                      <>
+                        {/* Google Drive Upload Module */}
+                        <div className="bg-slate-50 dark:bg-slate-950 p-5 rounded-2xl border border-slate-150 dark:border-slate-850 space-y-3">
+                          <div className="flex justify-between items-center">
+                            <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400">Google Drive Attachments</h4>
+                            <span className="text-[9px] font-mono text-slate-400">Syncs directly to folder</span>
+                          </div>
+                          
+                          <div className="border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl p-4 text-center hover:border-emerald-500 transition-all relative">
+                            <input
+                              type="file"
+                              id="timeline-file-upload"
+                              onChange={handleAttachmentUpload}
+                              disabled={uploadingAttachment}
+                              className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                            />
+                            <Upload className={`w-8 h-8 mx-auto mb-1.5 ${uploadingAttachment ? "animate-bounce text-emerald-500" : "text-slate-400"}`} />
+                            <span className="text-xs font-bold text-slate-700 dark:text-slate-300 block">
+                              {uploadingAttachment ? "Uploading to Google Drive..." : "Select File or Drag Here"}
+                            </span>
+                            <span className="text-[10px] text-slate-400 block mt-0.5">PDF, PNG, JPG up to 10MB</span>
+                          </div>
+
+                          {/* Uploaded Files Links */}
+                          <div className="space-y-1.5 max-h-[140px] overflow-y-auto pr-1">
+                            {!timelinePatient.attachments || timelinePatient.attachments.length === 0 ? (
+                              <div className="text-center py-2 text-slate-400 text-[10.5px]">No attachments synced to Drive folder.</div>
+                            ) : (
+                              timelinePatient.attachments.map((att: any, idx: number) => (
+                                <a
+                                  key={att.id || idx}
+                                  href={att.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="p-2.5 bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800 hover:border-emerald-500 rounded-xl flex items-center justify-between text-xs transition-all cursor-pointer text-slate-800 dark:text-slate-300"
+                                >
+                                  <span className="font-bold truncate max-w-[200px]">{att.name}</span>
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="text-[9px] font-mono text-slate-400">{att.uploadedAt ? new Date(att.uploadedAt).toLocaleDateString() : ""}</span>
+                                    <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
+                                  </div>
+                                </a>
+                              ))
+                            )}
+                          </div>
                         </div>
 
-                        {/* Prescription & Attachment chronological list */}
-                        {(() => {
-                          const events: Array<{ date: string; type: "prescription" | "attachment"; title: string; desc: string }> = [];
-                          
-                          if ((timelinePatient as any).prescriptions) {
-                            (timelinePatient as any).prescriptions.forEach((pres: any) => {
-                              events.push({
-                                date: pres.prescribedAt,
-                                type: "prescription",
-                                title: `Prescribed ${pres.remedy} ${pres.potency && `(${pres.potency})`}`,
-                                desc: pres.notes || "Constitutional anti-miasmatic remedy administered."
-                              });
-                            });
-                          }
-
-                          if (timelinePatient.attachments) {
-                            timelinePatient.attachments.forEach((att: any) => {
-                              events.push({
-                                date: att.uploadedAt || timelinePatient.createdAt,
-                                type: "attachment",
-                                title: `Uploaded Attachment: ${att.name}`,
-                                desc: "Clinical report saved directly to Google Drive."
-                              });
-                            });
-                          }
-
-                          events.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
-                          if (events.length === 0) {
-                            return (
-                              <div className="text-left py-2 text-slate-450 text-xs italic pl-4">No follow-ups or ledger events recorded yet.</div>
-                            );
-                          }
-
-                          return events.map((ev, idx) => (
-                            <div key={idx} className="relative pl-4">
-                              <div className={`absolute -left-[21px] top-0 w-2 h-2 rounded-full border border-white dark:border-slate-900 shadow ${
-                                ev.type === "prescription" ? "bg-emerald-500" : "bg-teal-500"
-                              }`}></div>
-                              <span className="text-[10px] font-mono text-slate-400 block">{new Date(ev.date).toLocaleDateString()}</span>
-                              <span className="text-xs font-bold text-slate-800 dark:text-white">{ev.title}</span>
-                              <p className="text-[10.5px] text-slate-500 mt-0.5">{ev.desc}</p>
+                        {/* Longitudinal Case Timeline */}
+                        <div className="space-y-2">
+                          <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400">Longitudinal Timeline</h4>
+                          <div className="space-y-4 max-h-[300px] overflow-y-auto pl-2 pr-1 border-l-2 border-slate-100 dark:border-slate-800 py-1">
+                            
+                            {/* Registration Event */}
+                            <div className="relative pl-4">
+                              <div className="absolute -left-[21px] top-0 w-2 h-2 rounded-full bg-indigo-500 border border-white dark:border-slate-900 shadow"></div>
+                              <span className="text-[10px] font-mono text-slate-400 block">{new Date(timelinePatient.createdAt).toLocaleDateString()}</span>
+                              <span className="text-xs font-bold text-slate-800 dark:text-white">Registered Case Intake</span>
+                              <p className="text-[10.5px] text-slate-500 mt-0.5">Initial complaint: "{timelinePatient.complaint}"</p>
                             </div>
-                          ));
-                        })()}
 
-                      </div>
-                    </div>
+                            {/* Prescription & Attachment chronological list */}
+                            {(() => {
+                              const events: Array<{ date: string; type: "prescription" | "attachment"; title: string; desc: string }> = [];
+                              
+                              if ((timelinePatient as any).prescriptions) {
+                                (timelinePatient as any).prescriptions.forEach((pres: any) => {
+                                  events.push({
+                                    date: pres.prescribedAt,
+                                    type: "prescription",
+                                    title: `Prescribed ${pres.remedy} ${pres.potency && `(${pres.potency})`}`,
+                                    desc: pres.notes || "Constitutional anti-miasmatic remedy administered."
+                                  });
+                                });
+                              }
+
+                              if (timelinePatient.attachments) {
+                                timelinePatient.attachments.forEach((att: any) => {
+                                  events.push({
+                                    date: att.uploadedAt || timelinePatient.createdAt,
+                                    type: "attachment",
+                                    title: `Uploaded Attachment: ${att.name}`,
+                                    desc: "Clinical report saved directly to Google Drive."
+                                  });
+                                });
+                              }
+
+                              events.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+                              if (events.length === 0) {
+                                return (
+                                  <div className="text-left py-2 text-slate-450 text-xs italic pl-4">No follow-ups or ledger events recorded yet.</div>
+                                );
+                              }
+
+                              return events.map((ev, idx) => (
+                                <div key={idx} className="relative pl-4">
+                                  <div className={`absolute -left-[21px] top-0 w-2 h-2 rounded-full border border-white dark:border-slate-900 shadow ${
+                                    ev.type === "prescription" ? "bg-emerald-500" : "bg-teal-500"
+                                  }`}></div>
+                                  <span className="text-[10px] font-mono text-slate-400 block">{new Date(ev.date).toLocaleDateString()}</span>
+                                  <span className="text-xs font-bold text-slate-800 dark:text-white">{ev.title}</span>
+                                  <p className="text-[10.5px] text-slate-500 mt-0.5">{ev.desc}</p>
+                                </div>
+                              ));
+                            })()}
+
+                          </div>
+                        </div>
+                      </>
+                    ) : timelineTab === "attachments" ? (
+                      <PatientAttachmentsPanel patientId={timelinePatient.id} />
+                    ) : (
+                      <PatientLabTimelinePanel 
+                        patientId={timelinePatient.id} 
+                        onGoToExtraction={() => setTimelineTab("attachments")} 
+                      />
+                    )}
                   </div>
                 </div>
               </motion.div>
@@ -27695,11 +27745,11 @@ Exported on: ${new Date().toLocaleDateString()}
                           onChange={(e) => handleCareLevelChange(e.target.value)}
                           className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-semibold text-[#1A2421]"
                         >
-                          <option value="🌱 Acute & Wellness Care">{getOptionLabel("🌱 Routine (Acute & Wellness Care)", 6000)}</option>
-                          <option value="⚡ Standard Chronic Care">{getOptionLabel("⚡ Standard (Standard Chronic Care)", 12000)}</option>
-                          <option value="🎯 Deep Systemic Care">{getOptionLabel("🎯 Enhanced (Deep Systemic Care)", 21000)}</option>
-                          <option value="🚨 Acute Critical Care">{getOptionLabel("🚨 Advanced (Acute Critical Care)", 25000)}</option>
-                          <option value="🫁 Advanced Pathological Care">{getOptionLabel("🫁 Comprehensive (Advanced Pathological Care)", 30000)}</option>
+                          <option value="🌱 Essential Acute & Wellness Care">{getOptionLabel("🌱 Routine (Essential Acute & Wellness Care)", 6000)}</option>
+                          <option value="⚡ Core Chronic Care">{getOptionLabel("⚡ Standard (Core Chronic Care)", 12000)}</option>
+                          <option value="🎯 Deep Constitutional Care">{getOptionLabel("🎯 Enhanced (Deep Constitutional Care)", 21000)}</option>
+                          <option value="🚨 Intensive Acute Priority Care">{getOptionLabel("🚨 Advanced (Intensive Acute Priority Care)", 25000)}</option>
+                          <option value="🫁 Advanced Pathology Support">{getOptionLabel("🫁 Comprehensive (Advanced Pathology Support)", 30000)}</option>
                           <option value="🔮 Multisystem Integrative Care">{getOptionLabel("🔮 Intensive (Multisystem Integrative Care)", 42000)}</option>
                         </select>
                       </div>

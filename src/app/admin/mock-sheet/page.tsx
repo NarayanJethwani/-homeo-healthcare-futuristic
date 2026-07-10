@@ -3472,11 +3472,11 @@ function MockSheetContent() {
                             setPlanner(prev => ({ ...prev, careLevel: level }));
                           }}
                         >
-                          <option value="mild">Acute & Wellness Care</option>
-                          <option value="moderate">Standard Chronic Care</option>
-                          <option value="focused">Deep Systemic Care</option>
-                          <option value="acute_critical">Acute Critical Care</option>
-                          <option value="organ">Advanced Pathological Care</option>
+                          <option value="mild">Essential Acute & Wellness Care</option>
+                          <option value="moderate">Core Chronic Care</option>
+                          <option value="focused">Deep Constitutional Care</option>
+                          <option value="acute_critical">Intensive Acute Priority Care</option>
+                          <option value="organ">Advanced Pathology Support</option>
                           <option value="comprehensive">Multisystem Integrative Care</option>
                         </select>
                       </div>

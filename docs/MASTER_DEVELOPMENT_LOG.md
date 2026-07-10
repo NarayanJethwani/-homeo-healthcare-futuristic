@@ -437,5 +437,135 @@ This document serves as the chronological, single source of truth for all sprint
   - Built an high-density glassmorphism Practitioner Management cockpit dashboard tab.
   - Added 23 lifecycle automated test cases and pre-flight coverage audits.
 
+---
+
+## [2026-07-09] - Sprint 14: Practitioner Workspace Personalization, Profile Settings & Account Security (v2.11.0)
+- **Release Version**: `2.11.0`
+- **Release Tag**: `v2.11.0-practitioner-settings`
+- **Deployment Status**: Pending Deployment
+- **Build Verification**: Clean compile / 17 additional practitioner settings tests passed / verify:production success
+- **Files Changed**:
+  - `src/features/practitioner-profile/types.ts`
+  - `src/features/practitioner-profile/preferences.ts`
+  - `src/features/practitioner-profile/practitionerProfileRepository.ts`
+  - `src/features/practitioner-profile/profileClient.ts`
+  - `src/components/dashboard/PractitionerProfilePanel.tsx`
+  - `src/app/api/account/profile/route.ts`
+  - `src/app/api/account/security-activity/route.ts`
+  - `src/app/api/account/preferences/route.ts`
+  - `src/components/dashboard/AdminSidebar.tsx`
+  - `src/features/dashboard/components/AdminSidebar.tsx`
+  - `src/app/admin/dashboard/page.tsx`
+  - `src/lib/security/apiAuth.ts`
+  - `scripts/verify-production-readiness.ts`
+  - `tests/practitionerProfile.test.ts`
+  - `docs/operations/PRACTITIONER_PROFILE_AND_ACCOUNT_SETTINGS.md`
+  - `docs/operations/PRACTITIONER_ACCOUNT_LIFECYCLE.md`
+  - `docs/operations/SECURITY_AND_RBAC.md`
+  - `docs/operations/PRODUCTION_READINESS_CHECKLIST.md`
+- **Major Changes**:
+  - Defined strict user-facing practitioner view models and visual preferences schemas.
+  - Implemented client settings panel rendering forms, access parameters, and recent timeline lists.
+  - Implemented `/api/account/` sub-routes for session-bound profile retrieval, patches, logs, and preferences.
+  - Extended authorizeRequest to enforce real-time status queries and subscription expiry gates.
+  - Wrote 17 test cases validating settings boundaries and updated verify scripts.
+
+---
+
+## [2026-07-10] - Sprint 15: Patient Attachment Portal, Lab Extraction & Attachments Repository (v2.12.0)
+- **Release Version**: `2.12.0`
+- **Release Tag**: `v2.12.0-patient-attachments`
+- **Deployment Status**: Pending Deployment
+- **Build Verification**: Clean compile / 22 patient attachments and lab extractions tests passed / verify:production success
+- **Files Changed**:
+  - `src/features/patient-attachments/types.ts`
+  - `src/features/patient-attachments/uploadValidation.ts`
+  - `src/features/patient-attachments/storageAdapter.ts`
+  - `src/features/patient-attachments/attachmentRepository.ts`
+  - `src/features/patient-attachments/labExtraction.ts`
+  - `src/features/patient-attachments/attachmentClient.ts`
+  - `src/features/patient-attachments/authHelper.ts`
+  - `src/features/patient-attachments/PatientAttachmentsPanel.tsx`
+  - `src/app/admin/dashboard/page.tsx`
+  - `package.json`
+  - `scripts/verify-production-readiness.ts`
+  - `tests/patientAttachments.test.ts`
+  - `docs/operations/PATIENT_ATTACHMENTS_AND_LAB_EXTRACTION.md`
+- **Major Changes**:
+  - Defined model interfaces for `PatientAttachment` and `ExtractedLabParameter` in a secure attachment repository.
+  - Developed strict file upload validations enforcing 10MB size limits, MIME allowlists, and script injection blocklists.
+  - Formulated dynamic, role-based patient access controls guarding patient record ownership boundary at API and DB layers.
+  - Designed local deterministic lab extraction parsing parameters (TSH, Fasting Glucose, ALT, HbA1c, Hemoglobin) and flagging abnormal values.
+  - Embedded tab navigation switcher in patient modal, enabling clinicians to view secure patient attachments/labs or chronological feeds.
+  - Added 22 E2E test cases validating upload constraints, extraction correctness, API controls, and PII-sanitized logs.
+
+---
+
+## [2026-07-10] - Sprint 16: Patient Attachment Security, Storage & PHI Hardening (v2.12.1)
+- **Release Version**: `2.12.1`
+- **Release Tag**: `v2.12.1-attachments-hardening`
+- **Deployment Status**: Pending Deployment
+- **Build Verification**: Clean compile / 24 patient attachments and lab extractions tests passed / verify:production success
+- **Files Changed**:
+  - `src/features/patient-attachments/types.ts`
+  - `src/features/patient-attachments/uploadValidation.ts`
+  - `src/features/patient-attachments/storageAdapter.ts`
+  - `src/features/patient-attachments/attachmentRepository.ts`
+  - `src/features/patient-attachments/labExtraction.ts`
+  - `src/features/patient-attachments/authHelper.ts`
+  - `src/app/api/patients/[patientId]/attachments/route.ts`
+  - `src/app/api/patients/[patientId]/attachments/[attachmentId]/route.ts`
+  - `src/app/api/patients/[patientId]/attachments/[attachmentId]/download/route.ts`
+  - `src/app/api/patients/[patientId]/attachments/[attachmentId]/lab-parameters/route.ts`
+  - `scripts/verify-production-readiness.ts`
+  - `tests/patientAttachments.test.ts`
+  - `docs/operations/PATIENT_ATTACHMENTS_AND_LAB_EXTRACTION.md`
+  - `docs/operations/PRODUCTION_READINESS_CHECKLIST.md`
+- **Major Changes**:
+  - Hardened file uploads by verifying file contents using binary signature checks (`MZ`, `ELF`) and text pattern scanners for script tags (`<script`, `<?php`, `<html`, `<svg`).
+  - Added strict double-extension check preventing malicious file uploads like `.php.pdf`.
+  - Enforced Cache-Control headers (`no-store, no-cache, must-revalidate, proxy-revalidate`) on all sensitive patient attachment dynamic routes.
+  - Capped signed download URL expiration at 5 minutes (300 seconds) and ensured signed URLs are never persistent or logged.
+  - Implemented parameter ownership validation checking on all lab parameter patch requests to prevent cross-scoping.
+  - Restricted downloading of archived and deleted attachments to super-admins in explicit audit mode.
+  - Excluded archived/deleted files from default list responses and added invalid state transitions to the metadata repository.
+  - Upgraded verification script with safety gates checking for MIME allowlist, size cap, and no OCR/URL leaks in console outputs.
+  - Expanded test suite to 24 E2E security assertions.
 
 
+
+
+
+
+---
+
+## [2026-07-10] - Sprint 17: Clinician-Reviewed Lab Data Layer & Clinical Workspace Integration (v2.13.0)
+- **Release Version**: `2.13.0`
+- **Release Tag**: `v2.13.0-lab-reviews`
+- **Deployment Status**: Pending Deployment
+- **Build Verification**: Clean compile / 14 reviewed lab data tests passed / 24 patient attachments tests passed / verify:production success
+- **Files Changed**:
+  - `src/features/patient-labs/types.ts`
+  - `src/features/patient-labs/labRepository.ts`
+  - `src/features/patient-labs/clinicalLabContext.ts`
+  - `src/features/patient-labs/labClient.ts`
+  - `src/features/patient-labs/PatientLabTimelinePanel.tsx`
+  - `src/features/patient-labs/TreatmentPlannerLabReference.tsx`
+  - `src/app/api/patients/[patientId]/labs/review/route.ts`
+  - `src/app/api/patients/[patientId]/labs/timeline/route.ts`
+  - `src/app/api/patients/[patientId]/labs/summary/route.ts`
+  - `src/app/admin/dashboard/page.tsx`
+  - `package.json`
+  - `scripts/verify-production-readiness.ts`
+  - `tests/patientLabs.test.ts`
+  - `docs/operations/CLINICIAN_REVIEWED_LAB_DATA.md`
+  - `docs/operations/PATIENT_ATTACHMENTS_AND_LAB_EXTRACTION.md`
+  - `docs/operations/PRODUCTION_READINESS_CHECKLIST.md`
+- **Major Changes**:
+  - Implemented Clinician-Reviewed Lab Data types (`LabReviewStatus`, `ReviewedLabResult`, `PatientLabTimelineEntry`).
+  - Created a robust reviewed lab repository checking metadata scope, active parameters, and preventing archived/deleted reviews.
+  - Formulated Clinical OS read-only contexts (`clinicalLabContext.ts`) and warnings isolating clinical logic and remedy selection.
+  - Implemented standard lab review API sub-routes (`review`, `timeline`, `summary`) and client fetchers.
+  - Embedded `PatientLabTimelinePanel` displaying verified lab summaries, SVG sparkline graphs, and pending review counts.
+  - Displayed verified lab summaries as read-only cards in the Treatment Planner column.
+  - Added 14 unit and integration safety test assertions.

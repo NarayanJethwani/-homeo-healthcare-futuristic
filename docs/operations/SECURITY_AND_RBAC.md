@@ -75,6 +75,9 @@ All admin API route handlers located in `src/app/api/admin/` must call `authoriz
 | /api/admin/users/[userId]/deactivate | `USER_MANAGE` | Deactivate user accounts. |
 | /api/admin/users/[userId]/subscription | `SUBSCRIPTION_MANAGE` | Extend practitioner subscriptions. |
 | /api/admin/invitations/accept | **EXEMPT** | Token-protected onboarding endpoint (verifies tokenHash). |
+| /api/account/profile | **SESSION ONLY** | GET self profile / PATCH safe edits (displayName, specialties, clinicLocation). |
+| /api/account/security-activity | **SESSION ONLY** | GET filtered personal security audit log timeline. |
+| /api/account/preferences | **SESSION ONLY** | POST save personal visual workspace preferences. |
 
 ---
 
@@ -82,7 +85,7 @@ All admin API route handlers located in `src/app/api/admin/` must call `authoriz
 
 The global Next.js boundary [middleware.ts](file:///Users/drnarayanjethwani/Downloads/Website%20with%20Antigravity/middleware.ts) enforces session checks:
 - **Protected Pages**: `/admin/:path*`
-- **Protected API Routes**: `/api/admin/:path*`
+- **Protected API Routes**: `/api/admin/:path*` & `/api/account/:path*`
 - **Exemptions**: `/admin/login`, `/api/admin/session`, and `/api/admin/invitations/accept` are excluded to allow clinical practitioners to sign in and accept invitations.
 - **Unauthenticated Handling**:
   - API routes: Returns standardized `401 Unauthorized` JSON directly.
@@ -120,5 +123,6 @@ Strings longer than 200 characters are truncated to 100 characters and suffixed 
 
 ## 7. Remaining Risks & Mitigation
 
+- **Remaining operational dependency**: secure production environment variables and Firebase/Admin credentials must remain correctly configured and rotated as needed.
 - **Key Rotation**: Secure session secrets (`ADMIN_SESSION_SECRET`) are stored in Environment Variables. If compromised, change the environment key to instantly invalidate all active admin sessions.
-- **Client State Advisory Only**: Dashboard components adjust menus dynamically for user convenience, but all actual enforcement and validation is executed on server route entry via `authorizeRequest`.
+- **Client State Advisory Only**: Dashboard components adjust menus dynamically for user convenience, but all actual enforcement and validation is executed on server route entry via `authorizeRequest` (including real-time practitioner status queries).
