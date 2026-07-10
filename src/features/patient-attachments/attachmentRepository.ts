@@ -29,15 +29,8 @@ export async function createAttachmentMetadata(attachment: PatientAttachment): P
   };
 
   if (isFirebaseAvailable()) {
-    try {
-      const db = getAdminDb();
-      await db.collection("patient_attachments").doc(attachment.id).set(updatedAttachment);
-    } catch {
-      console.warn("[Attachment Repo] Firestore set failed, saving to memory.");
-      const idx = memoryPatientAttachments.findIndex(a => a.id === attachment.id);
-      if (idx > -1) memoryPatientAttachments[idx] = updatedAttachment;
-      else memoryPatientAttachments.push(updatedAttachment);
-    }
+    const db = getAdminDb();
+    await db.collection("patient_attachments").doc(attachment.id).set(updatedAttachment);
   } else {
     const idx = memoryPatientAttachments.findIndex(a => a.id === attachment.id);
     if (idx > -1) memoryPatientAttachments[idx] = updatedAttachment;
@@ -149,16 +142,12 @@ export async function archiveAttachment(attachmentId: string, reason?: string, a
   attachment.updatedAt = nowStr;
 
   if (isFirebaseAvailable()) {
-    try {
-      const db = getAdminDb();
-      await db.collection("patient_attachments").doc(attachmentId).update({
-        status: "archived",
-        archivedAt: nowStr,
-        updatedAt: nowStr
-      });
-    } catch {
-      console.warn("[Attachment Repo] Firestore archive update failed.");
-    }
+    const db = getAdminDb();
+    await db.collection("patient_attachments").doc(attachmentId).update({
+      status: "archived",
+      archivedAt: nowStr,
+      updatedAt: nowStr
+    });
   }
 
   await logSecurityEvent({
@@ -192,16 +181,12 @@ export async function deleteAttachmentMetadata(attachmentId: string, reason?: st
   attachment.updatedAt = nowStr;
 
   if (isFirebaseAvailable()) {
-    try {
-      const db = getAdminDb();
-      await db.collection("patient_attachments").doc(attachmentId).update({
-        status: "deleted",
-        deletedAt: nowStr,
-        updatedAt: nowStr
-      });
-    } catch {
-      console.warn("[Attachment Repo] Firestore soft delete failed.");
-    }
+    const db = getAdminDb();
+    await db.collection("patient_attachments").doc(attachmentId).update({
+      status: "deleted",
+      deletedAt: nowStr,
+      updatedAt: nowStr
+    });
   }
 
   await logSecurityEvent({
@@ -227,21 +212,12 @@ export async function createExtractedLabParameters(attachmentId: string, paramet
   }));
 
   if (isFirebaseAvailable()) {
-    try {
-      const db = getAdminDb();
-      const batch = db.batch();
-      for (const param of updatedParameters) {
-        batch.set(db.collection("extracted_lab_parameters").doc(param.id), param);
-      }
-      await batch.commit();
-    } catch {
-      console.warn("[Attachment Repo] Firestore batch set lab parameters failed, saving to memory.");
-      for (const param of updatedParameters) {
-        const idx = memoryExtractedLabParameters.findIndex(p => p.id === param.id);
-        if (idx > -1) memoryExtractedLabParameters[idx] = param;
-        else memoryExtractedLabParameters.push(param);
-      }
+    const db = getAdminDb();
+    const batch = db.batch();
+    for (const param of updatedParameters) {
+      batch.set(db.collection("extracted_lab_parameters").doc(param.id), param);
     }
+    await batch.commit();
   } else {
     for (const param of updatedParameters) {
       const idx = memoryExtractedLabParameters.findIndex(p => p.id === param.id);
@@ -324,12 +300,8 @@ export async function updateLabParameterReviewStatus(
   }
 
   if (isFirebaseAvailable()) {
-    try {
-      const db = getAdminDb();
-      await db.collection("extracted_lab_parameters").doc(parameterId).set(parameter);
-    } catch {
-      console.warn("[Attachment Repo] Firestore save parameter status failed.");
-    }
+    const db = getAdminDb();
+    await db.collection("extracted_lab_parameters").doc(parameterId).set(parameter);
   }
 
   // Audit event logs

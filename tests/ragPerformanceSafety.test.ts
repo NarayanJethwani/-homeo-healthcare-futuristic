@@ -127,7 +127,7 @@ async function runPerformanceSafetyTests() {
     const store = new MemoryVectorStore();
     
     // Override filePath to invalid file path to simulate empty/missing seed
-    store.staticFilePath = "./nonexistent-vectors-seed.json";
+    (store as any).staticFilePath = "./nonexistent-vectors-seed.json";
     
     const records = await store.loadSeedVectors();
     assert.strictEqual(records.length, 0, "Should load empty list for missing file");

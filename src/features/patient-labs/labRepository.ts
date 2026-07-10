@@ -80,15 +80,8 @@ export async function confirmExtractedLabParameter(
 
   // Persist ReviewedLabResult
   if (isFirebaseAvailable()) {
-    try {
-      const db = getAdminDb();
-      await db.collection("reviewed_lab_results").doc(result.id).set(result);
-    } catch {
-      console.warn("[Lab Repo] Firestore save failed, saving to memory.");
-      const idx = memoryReviewedLabResults.findIndex(r => r.id === result.id);
-      if (idx > -1) memoryReviewedLabResults[idx] = result;
-      else memoryReviewedLabResults.push(result);
-    }
+    const db = getAdminDb();
+    await db.collection("reviewed_lab_results").doc(result.id).set(result);
   } else {
     const idx = memoryReviewedLabResults.findIndex(r => r.id === result.id);
     if (idx > -1) memoryReviewedLabResults[idx] = result;
@@ -152,15 +145,8 @@ export async function correctExtractedLabParameter(
 
   // Persist ReviewedLabResult
   if (isFirebaseAvailable()) {
-    try {
-      const db = getAdminDb();
-      await db.collection("reviewed_lab_results").doc(result.id).set(result);
-    } catch {
-      console.warn("[Lab Repo] Firestore save failed, saving to memory.");
-      const idx = memoryReviewedLabResults.findIndex(r => r.id === result.id);
-      if (idx > -1) memoryReviewedLabResults[idx] = result;
-      else memoryReviewedLabResults.push(result);
-    }
+    const db = getAdminDb();
+    await db.collection("reviewed_lab_results").doc(result.id).set(result);
   } else {
     const idx = memoryReviewedLabResults.findIndex(r => r.id === result.id);
     if (idx > -1) memoryReviewedLabResults[idx] = result;
@@ -218,15 +204,8 @@ export async function rejectExtractedLabParameter(
 
   // Persist ReviewedLabResult
   if (isFirebaseAvailable()) {
-    try {
-      const db = getAdminDb();
-      await db.collection("reviewed_lab_results").doc(result.id).set(result);
-    } catch {
-      console.warn("[Lab Repo] Firestore save failed, saving to memory.");
-      const idx = memoryReviewedLabResults.findIndex(r => r.id === result.id);
-      if (idx > -1) memoryReviewedLabResults[idx] = result;
-      else memoryReviewedLabResults.push(result);
-    }
+    const db = getAdminDb();
+    await db.collection("reviewed_lab_results").doc(result.id).set(result);
   } else {
     const idx = memoryReviewedLabResults.findIndex(r => r.id === result.id);
     if (idx > -1) memoryReviewedLabResults[idx] = result;

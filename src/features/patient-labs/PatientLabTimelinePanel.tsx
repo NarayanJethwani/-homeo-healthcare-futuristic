@@ -240,6 +240,7 @@ export default function PatientLabTimelinePanel({ patientId, onGoToExtraction }:
               <button 
                 onClick={handleRefresh}
                 disabled={refreshing}
+                aria-label="Refresh lab data"
                 className="p-1.5 border border-slate-100 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800 rounded-lg text-slate-400 transition-all cursor-pointer"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`} />
@@ -305,6 +306,7 @@ export default function PatientLabTimelinePanel({ patientId, onGoToExtraction }:
                 <select
                   value={filterTest}
                   onChange={(e) => setFilterTest(e.target.value)}
+                  aria-label="Filter by verified laboratory test"
                   className="bg-transparent border-none outline-none text-xs font-bold text-slate-700 dark:text-slate-350 cursor-pointer w-full p-0"
                 >
                   <option value="">All Verified Tests</option>
