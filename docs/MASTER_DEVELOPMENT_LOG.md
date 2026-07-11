@@ -569,3 +569,37 @@ This document serves as the chronological, single source of truth for all sprint
   - Embedded `PatientLabTimelinePanel` displaying verified lab summaries, SVG sparkline graphs, and pending review counts.
   - Displayed verified lab summaries as read-only cards in the Treatment Planner column.
   - Added 14 unit and integration safety test assertions.
+
+---
+
+## [2026-07-11] - Sprint 20: Evidence Metadata and Deterministic Retrieval Priority (v2.14.0-B)
+- **Release Version**: `2.14.0-B`
+- **Release Tag**: `v2.14.0-b-evidence-scoring`
+- **Deployment Status**: Deployed / Commit: `d4b213e43b93717b297f6eeee73e079e3635f207`
+- **Build Verification**: Passed typecheck, eslint rules, Next.js build, and verify:production
+- **Files Changed**:
+  - `src/features/dashboard/constants/featureFlags.ts`
+  - `src/features/knowledge/types/index.ts`
+  - `src/features/knowledge-admin/types/index.ts`
+  - `src/features/knowledge-admin/cms/types.ts`
+  - `src/features/knowledge/retrieval/evidenceScoringService.ts`
+  - `src/lib/security/rbac.ts`
+  - `src/features/knowledge-admin/cms/publicationReadiness.ts`
+  - `src/lib/ragService.ts`
+  - `src/features/knowledge-admin/cms/cmsManager.ts`
+  - `src/app/api/admin/cms/route.ts`
+  - `src/app/api/ai-diagnostics/route.ts`
+  - `src/features/repertory/repositories/RepertoryRetrievalRepository.ts`
+  - `firestore.rules`
+  - `src/app/admin/knowledge-editorial/page.tsx`
+  - `src/lib/firebaseAdmin.ts`
+  - `src/features/knowledge-admin/workflow/workflowManager.ts`
+- **Major Changes**:
+  - Extended CMS metadata model with canonical evidence strength, source quality, and review expiry policy.
+  - Implemented pure deterministic priority scoring (evidenceStrength, sourceQuality, clinical/editorial confidence, review freshness, citation completeness).
+  - Wired strict server-side validation to block client-side injection of read-only metadata fields.
+  - Locked down client-side writes to CMS drafts & version collections in `firestore.rules`.
+  - Configured context-specific RAG retrieval policy gating AI clinical search from expired evidence content.
+  - Added 25 focused evidence unit/integration tests confirming dates, context matrices, permissions, and rollback behavior.
+  - Integrated RAG priority blending (85% relevance / 15% priority) in RAG query pipeline.
+
