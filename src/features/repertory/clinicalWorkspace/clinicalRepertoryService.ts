@@ -13,10 +13,6 @@ import {
   ClinicalValidationFinding,
   ClinicalRubricCandidate,
 } from "./types";
-import { RepertorySearch } from "../search/repertorySearch";
-import { RepertoryScoring } from "../scoring/repertoryScoring";
-import { ReasoningEngine } from "../reasoning/reasoningEngine";
-import { repertoryRepository } from "../database/repertoryDb";
 import { VisitTimelineEntry, LongitudinalCaseSummary } from "./longitudinalTypes";
 import { LongitudinalCaseModel } from "./longitudinalModel";
 
@@ -38,7 +34,12 @@ function capabilitiesFromProviders(
 
 export function createClinicalRepertoryService(
   providers: ClinicalRepertoryServiceProviders = {},
-): ClinicalRepertoryService {
+): ClinicalRepertoryService & {
+  getRubricById(id: string): Promise<any>;
+  loadInitialRubrics(): Promise<any[]>;
+  getRubrics(filters?: Record<string, any>): Promise<any[]>;
+  searchFullRubrics(query: string, filters?: Record<string, any>): Promise<any[]>;
+} {
   const searchProviders = providers.searchProviders || [];
   const repertorizationProviders = providers.repertorizationProviders || [];
   const reasoningProviders = providers.reasoningProviders || [];
@@ -116,169 +117,132 @@ export function createClinicalRepertoryService(
     },
 
     async runClinicalAnalysis(request: ClinicalRepertoryRequest): Promise<ClinicalRepertoryResult> {
-      const startedAt = Date.now();
-      const runId = `clinical-analysis-${startedAt}`;
-
-      // Map request.selectedRubrics to symptoms array expected by engines
-      const symptoms = request.selectedRubrics?.map(sr => ({
-        rubricId: sr.rubricId,
-        severity: sr.severity ?? 5,
-        frequency: (sr.frequency as any) || 'constant',
-        impact: sr.impact || 'moderate'
-      })) || [];
-
-      const scoringResult = await RepertoryScoring.calculateRepertorization(symptoms);
-
-      let differentiations: RemedyDifferentiation[] = [];
-      if (scoringResult.topRemedies.length > 0) {
-        const topIds = scoringResult.topRemedies.slice(0, 3).map(r => r.remedyId);
-        const activeIds = symptoms.map(s => s.rubricId);
-        differentiations = await RepertoryScoring.differentiateRemedies(topIds, activeIds);
-      }
-
-      const reasoningSummary = await ReasoningEngine.generateReasoning(symptoms, scoringResult);
-
-      // Build enhanced validation findings
-      const validationFindings: ClinicalValidationFinding[] = [];
-
-      // Fetch rubric details for advanced rule matching
-      const rubricDetails = await Promise.all(symptoms.map(s => repertoryRepository.getRubricById(s.rubricId)));
-      const categories = rubricDetails.filter((r): r is NonNullable<typeof r> => r !== undefined).map(r => r.category);
-
-      // Conflicting thermals check
-      const thermals = rubricDetails.filter(r => r && r.category === 'Thermal State');
-      if (thermals.length > 1) {
-        const hasChilly = thermals.some(t => t?.subCategory === 'Chilly');
-        const hasWarm = thermals.some(t => t?.subCategory === 'Warm');
-        if (hasChilly && hasWarm) {
-          validationFindings.push({
-            severity: "critical",
-            category: "contradiction",
-            message: "Conflicting thermal states selected: Patient cannot be both cold-sensitive (Chilly) and heat-sensitive (Warm).",
-            relatedRubricIds: thermals.filter((t): t is NonNullable<typeof t> => t !== undefined).map(t => t.rubricId)
-          });
-        }
-      }
-
-      // Missing crucial parameters checks
-      if (!categories.includes('Thermal State')) {
-        validationFindings.push({
-          severity: "warning",
-          category: "missing_information",
-          message: "Missing crucial constitutional general: Patient's Thermal State (Chilly / Warm) has not been specified."
-        });
-      }
-      if (!categories.includes('Food & Cravings')) {
-        validationFindings.push({
-          severity: "info",
-          category: "missing_information",
-          message: "Missing constitutional general: Food cravings & aversions have not been specified."
-        });
-      }
-
-      // Weak evidence checks
-      if (symptoms.length < 3) {
-        validationFindings.push({
-          severity: "warning",
-          category: "weak_evidence",
-          message: `Weak case definition: Only ${symptoms.length} symptom rubric(s) selected. A robust analysis requires at least 3 indicators.`
-        });
-      }
-
-      // Safety checks / Contraindications
-      const contraindications: string[] = [];
-      symptoms.forEach(sym => {
-        const rub = rubricDetails.find(r => r && r.rubricId === sym.rubricId);
-        if (!rub) return;
-        rub.relatedRemedies.forEach(rem => {
-          if (rem.contraindicationNotes) {
-            const isTopRemedy = scoringResult.topRemedies.slice(0, 3).some(tr => tr.remedyId === rem.remedyId);
-            if (isTopRemedy) {
-              const msg = `Contraindication for ${rem.remedyName}: ${rem.contraindicationNotes}`;
-              contraindications.push(msg);
-              validationFindings.push({
-                severity: "critical",
-                category: "safety",
-                message: msg,
-                relatedRemedyIds: [rem.remedyId],
-                relatedRubricIds: [sym.rubricId]
-              });
-            }
-          }
-        });
+      const response = await fetch("/api/repertory/repertorize", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          patientId: "patient-1",
+          userId: "doctor-1",
+          selectedRubrics: request.selectedRubrics
+        })
       });
-
-      const clinicalWarnings = [
-        ...contraindications,
-        ...(reasoningSummary.safetyLabel ? [reasoningSummary.safetyLabel] : [])
-      ];
-
-      return {
-        success: true,
-        runId,
-        safetyNotice: CLINICAL_WORKSPACE_SAFETY_NOTICE,
-        query: request.query,
-        rubricCandidates: [],
-        selectedRubrics: request.selectedRubrics || [],
-        remedyRankings: scoringResult.topRemedies.map((tr, index) => ({
-          remedyId: tr.remedyId,
-          remedyName: tr.remedyName,
-          rank: index + 1,
-          score: tr.score,
-          confidence: tr.confidence,
-          coverage: tr.matches,
-          contributingRubricIds: [],
-          missingRubricIds: [],
-          explanation: [tr.kingdom || "", tr.miasm || "", tr.thermal || ""]
-        })),
-        differentialAnalysis: [],
-        validationFindings,
-        clinicalWarnings,
-        missingInformation: scoringResult.missingDataNeeded,
-        sourceAttribution: [],
-        confidenceAssessment: {
-          score: scoringResult.confidenceScore,
-          explanation: `Analysis margin confidence index is ${scoringResult.confidenceScore}%.`
-        },
-        engineTrace: {
-          selectedCapabilities: request.requestedCapabilities || [],
-          internalProviders: ["repertory-scoring", "reasoning-engine"],
-          latencyMs: Date.now() - startedAt
-        },
-        scoringResult,
-        differentiations,
-        reasoningSummary
-      };
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.message || "Failed to run clinical analysis on server.");
+      }
+      return data;
     },
 
     async searchRubrics(query: string, filters?: Record<string, any>): Promise<ClinicalRubricCandidate[]> {
-      const scoredRubrics = await RepertorySearch.searchRubrics(query, filters, true, true);
-      return scoredRubrics.map((item) => ({
-        id: item.rubric.rubricId,
-        title: item.rubric.title,
-        source: item.rubric.source,
-        category: item.rubric.category,
-        clinicalSystem: item.rubric.organSystem,
+      const qParams = new URLSearchParams();
+      qParams.set('q', query);
+      if (filters) {
+        if (filters.category) qParams.set('category', filters.category);
+        if (filters.organSystem) qParams.set('organSystem', filters.organSystem);
+        if (filters.miasm) qParams.set('miasm', filters.miasm);
+        if (filters.remedy) qParams.set('remedy', filters.remedy);
+        if (filters.sourceId) qParams.set('sourceId', filters.sourceId);
+      }
+      const response = await fetch(`/api/repertory/search?${qParams.toString()}`);
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.message || "Failed to fetch search results from server.");
+      }
+
+      return data.rubrics.map((item: any) => ({
+        id: item.rubricId,
+        title: item.title,
+        source: item.source,
+        category: item.category,
+        clinicalSystem: item.organSystem,
         score: item.score,
         confidence: Math.min(1.0, item.score / 200),
-        explanation: item.rubric.plainLanguageMeaning,
+        explanation: item.classicalWording,
       }));
     },
 
     async parseAIIntakeText(intakeText: string): Promise<AIIntakeMappingResult> {
-      return await RepertorySearch.parseAIIntakeText(intakeText);
+      const response = await fetch("/api/intake", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ text: intakeText })
+      });
+      const data = await response.json();
+      return data as AIIntakeMappingResult;
     },
 
     async getLongitudinalSummary(
       patientId: string,
       timeline: VisitTimelineEntry[]
     ): Promise<LongitudinalCaseSummary> {
-      const rubrics = await repertoryRepository.getRubrics();
+      const response = await fetch("/api/repertory/search?q=&pageSize=100");
+      const data = await response.json();
+      const rubrics = data.success ? data.rubrics : [];
       const titlesMap: Record<string, string> = {};
       rubrics.forEach((r: any) => {
         titlesMap[r.rubricId] = r.title;
       });
       return LongitudinalCaseModel.buildLongitudinalSummary(patientId, timeline, titlesMap);
+    },
+
+    async getRubricById(id: string): Promise<any> {
+      const response = await fetch(`/api/repertory/details?id=${encodeURIComponent(id)}`);
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.message || "Failed to fetch rubric details from server.");
+      }
+      return data.rubric;
+    },
+
+    async loadInitialRubrics(): Promise<any[]> {
+      const response = await fetch("/api/repertory/search?q=&pageSize=100");
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.message || "Failed to load initial rubrics from server.");
+      }
+      return data.rubrics;
+    },
+
+    async getRubrics(filters?: Record<string, any>): Promise<any[]> {
+      const qParams = new URLSearchParams();
+      qParams.set('q', '');
+      qParams.set('pageSize', '100');
+      if (filters) {
+        if (filters.category) qParams.set('category', filters.category);
+        if (filters.organSystem) qParams.set('organSystem', filters.organSystem);
+        if (filters.miasm) qParams.set('miasm', filters.miasm);
+        if (filters.remedy) qParams.set('remedy', filters.remedy);
+        if (filters.sourceId) qParams.set('sourceId', filters.sourceId);
+      }
+      const response = await fetch(`/api/repertory/search?${qParams.toString()}`);
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.message || "Failed to fetch rubrics from server.");
+      }
+      return data.rubrics;
+    },
+
+    async searchFullRubrics(query: string, filters?: Record<string, any>): Promise<any[]> {
+      const qParams = new URLSearchParams();
+      qParams.set('q', query);
+      qParams.set('pageSize', '100');
+      if (filters) {
+        if (filters.category) qParams.set('category', filters.category);
+        if (filters.organSystem) qParams.set('organSystem', filters.organSystem);
+        if (filters.miasm) qParams.set('miasm', filters.miasm);
+        if (filters.remedy) qParams.set('remedy', filters.remedy);
+        if (filters.sourceId) qParams.set('sourceId', filters.sourceId);
+      }
+      const response = await fetch(`/api/repertory/search?${qParams.toString()}`);
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.message || "Failed to search rubrics from server.");
+      }
+      return data.rubrics;
     }
   };
 }

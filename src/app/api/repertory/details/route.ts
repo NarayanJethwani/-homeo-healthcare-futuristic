@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
-import { getAdminDb } from "@/lib/firebaseAdmin";
+import repertoryRepository from "@/features/repertory/database/repertoryDb";
 import { REMEDIES_METADATA } from "@/lib/repertoryData";
+
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 export async function GET(request: Request) {
   try {
@@ -14,34 +17,24 @@ export async function GET(request: Request) {
       }, { status: 400 });
     }
 
-    const docRef = getAdminDb().collection("rubrics").doc(id);
-    const docSnap = await docRef.get();
+    const rubric = await repertoryRepository.getRubricById(id);
 
-    if (!docSnap.exists) {
-      return NextResponse.json({
-        success: false,
-        message: "Rubric not found."
-      }, { status: 404 });
-    }
-
-    const rubric = docSnap.data();
     if (!rubric) {
       return NextResponse.json({
         success: false,
-        message: "Rubric data is empty."
+        message: "Rubric not found in active published snapshot."
       }, { status: 404 });
     }
 
     // Enrich remedies with full names
     const remediesEnriched: any[] = [];
-    if (rubric.remedies) {
-      Object.entries(rubric.remedies).forEach(([abbrev, grade]) => {
-        const meta = REMEDIES_METADATA[abbrev] || { fullName: abbrev, source: "Unknown" };
+    if (rubric.relatedRemedies) {
+      rubric.relatedRemedies.forEach((rem) => {
         remediesEnriched.push({
-          abbreviation: abbrev,
-          fullName: meta.fullName,
-          source: meta.source,
-          grade
+          abbreviation: rem.remedyId,
+          fullName: rem.remedyName || rem.remedyId,
+          source: rem.keynoteReason || "Unknown",
+          grade: rem.grade
         });
       });
     }

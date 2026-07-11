@@ -20,6 +20,21 @@ export type EditorialStatus =
   | "scheduled-review"
   | "archived";
 
+export type KnowledgeEditorialStatus =
+  | "draft"
+  | "medical-review"
+  | "editorial-review"
+  | "approved"
+  | "published"
+  | "archived";
+
+export type LegacyKnowledgeVerificationStatus =
+  | "verified-published"
+  | "legacy-published-unverified"
+  | "review-required"
+  | "archived"
+  | "excluded";
+
 export type EvidenceLevel =
   | "Clinical-Evidence"
   | "Classical-Homeopathic-Literature"
@@ -150,6 +165,10 @@ export interface KnowledgeEntity {
   slug: string; // lowercase URL slug e.g. "gerd", "sulphur"
   entityType: EntityType;
   editorialStatus: EditorialStatus;
+  currentDraftVersionId?: string;
+  approvedVersionId?: string;
+  publishedVersionId?: string;
+  legacyVerificationStatus?: LegacyKnowledgeVerificationStatus;
   versionInfo: ContentVersion;
   title: LocalizedString;
   summary: LocalizedString;

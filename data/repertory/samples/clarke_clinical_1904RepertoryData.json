@@ -1,0 +1,24 @@
+[
+  {
+    "id": "clarke_digestive_0",
+    "chapter": "GI / Digestive",
+    "name": "HEARTBURN - Sour eructations",
+    "remedies": {
+      "Nux-v": 3,
+      "Lyc": 3,
+      "Sulph": 2
+    },
+    "source": "clarke_clinical_1904"
+  },
+  {
+    "id": "clarke_skin_0",
+    "chapter": "Skin",
+    "name": "ITCHING - Worse from warmth of bed",
+    "remedies": {
+      "Sulph": 3,
+      "Puls": 2,
+      "Merc": 2
+    },
+    "source": "clarke_clinical_1904"
+  }
+]

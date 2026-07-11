@@ -78,16 +78,26 @@ export class RepertoryScoring {
       remedyName: string; 
       score: number; 
       matches: number;
-      contributions: Array<{ rubricId: string; rubricTitle: string; contribution: number; grade: number }>;
+      contributions: Array<{ rubricId: string; rubricTitle: string; contribution: number; grade: number; sourceId: string }>;
     }> = {};
+
+    // Group active rubrics by source to calculate balancing factors
+    const rubricsCountBySource: Record<string, number> = {};
+    for (const sym of symptoms) {
+      const rub = await repertoryRepository.getRubricById(sym.rubricId);
+      if (!rub) continue;
+      const srcId = rub.sourceId || rub.source || "unknown";
+      rubricsCountBySource[srcId] = (rubricsCountBySource[srcId] || 0) + 1;
+    }
 
     for (const sym of symptoms) {
       const rub = await repertoryRepository.getRubricById(sym.rubricId);
       if (!rub) continue;
 
       const symptomWeight = activeSymptomWeights[sym.rubricId];
+      const srcId = rub.sourceId || rub.source || "unknown";
 
-      // Category multipliers from dynamic config (Step 1 & 9)
+      // Category multipliers from dynamic config
       let categoryMultiplier = 1.0;
       switch (rub.category) {
         case 'Etiology / Causation':
@@ -143,7 +153,8 @@ export class RepertoryScoring {
           rubricId: rub.rubricId,
           rubricTitle: rub.title,
           contribution: contributionValue,
-          grade: rem.grade
+          grade: rem.grade,
+          sourceId: srcId
         });
       }
     }
@@ -166,6 +177,23 @@ export class RepertoryScoring {
         const matchRatio = r.matches / symptoms.length;
         const confidence = Math.round(matchRatio * 100);
         const coverageRatio = `${r.matches}/${symptoms.length}`;
+
+        // Compute source balanced scoring and source contributions
+        const sourceContributions: Record<string, number> = {};
+        const sourceMatchesCount: Record<string, number> = {};
+        
+        r.contributions.forEach(c => {
+          sourceContributions[c.sourceId] = (sourceContributions[c.sourceId] || 0) + c.contribution;
+          sourceMatchesCount[c.sourceId] = (sourceMatchesCount[c.sourceId] || 0) + 1;
+        });
+
+        // Balanced score: sum of average contributions per source
+        let balancedScore = 0;
+        Object.keys(sourceContributions).forEach(src => {
+          const count = rubricsCountBySource[src] || 1;
+          balancedScore += sourceContributions[src] / count;
+        });
+        balancedScore = Math.round(balancedScore * 10) / 10;
 
         // Contradictory evidence check
         const contradictoryEvidence: string[] = [];
@@ -201,7 +229,11 @@ export class RepertoryScoring {
         return {
           remedyId: r.remedyId,
           remedyName: r.remedyName,
-          score: Math.round(r.score * 10) / 10,
+          score: balancedScore, // Use balanced score by default to prevent large repertory bias
+          rawScore: Math.round(r.score * 10) / 10,
+          balancedScore,
+          sourceContributions,
+          normalizationMethod: "source-average-balancing",
           matches: r.matches,
           confidence,
           kingdom: meta.source,

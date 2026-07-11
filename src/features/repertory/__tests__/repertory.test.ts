@@ -174,6 +174,47 @@ async function runRepertoryTests() {
     assert.ok(reasoning.evidenceBreakdown.remedyScores[firstRem.remedyId].total > 0, "Total score breakdown must be calculated.");
   });
 
+  await test("Ingestion Pipeline - blocked copyrighted source", async () => {
+    const { IngestionPipeline } = require("../import-export/ingestionPipeline");
+    const manifest = await IngestionPipeline.ingestSource("synthesis_9_1", [{ name: "Mind - Panic", chapter: "Mind" }]);
+    assert.strictEqual(manifest.importStatus, "blocked", "Copyrighted source must be blocked from ingestion.");
+  });
+
+  await test("Ingestion Pipeline - abbreviation cleanup and metadata preservation", async () => {
+    const { IngestionPipeline } = require("../import-export/ingestionPipeline");
+    const raw = [{ id: "test_boer_1", name: "Mind - Test", chapter: "Mind", page: 123, remedies: { "Æth": 2, "Tar-h": 1 } }];
+    const manifest = await IngestionPipeline.ingestSource("boericke_1927", raw, { maxItems: 1 });
+    
+    assert.strictEqual(manifest.importStatus, "completed");
+    assert.strictEqual(manifest.validationSummary.totalImported, 1);
+    
+    const rubric = await repertoryRepository.getRubricById("test_boer_1");
+    assert.ok(rubric, "Ingested rubric should be retrieved by ID.");
+    assert.strictEqual(rubric.sourceCitation, "William Boericke, Pocket Manual of Homoeopathic Materia Medica with Repertory (1927)");
+    
+    // Æth mapped to Aeth
+    const aethEntry = rubric.remedyEntries?.find(e => e.sourceAbbreviation === "Æth");
+    assert.ok(aethEntry);
+    assert.strictEqual(aethEntry.canonicalAbbreviation, "Aeth");
+    assert.strictEqual(aethEntry.sourceGrade, 2);
+    
+    // Tar-h unresolved
+    assert.ok(manifest.unresolvedAbbreviationReport.length > 0);
+  });
+
+  await test("Repertorization Scoring - balanced scoring check", async () => {
+    const symptoms = [
+      { rubricId: "jeth_rb_panic_death_terror", severity: 8, frequency: 'frequent' as const, impact: 'severe' as const }
+    ];
+    const scoring = await RepertoryScoring.calculateRepertorization(symptoms);
+    assert.ok(scoring.topRemedies.length > 0);
+    
+    const rem = scoring.topRemedies[0];
+    assert.strictEqual(rem.normalizationMethod, "source-average-balancing");
+    assert.ok(rem.balancedScore !== undefined);
+    assert.ok(rem.sourceContributions !== undefined);
+  });
+
   console.log(`\n🏁 Test Run Finished: ${passed} passed, ${failed} failed.`);
   if (failed > 0) {
     process.exit(1);

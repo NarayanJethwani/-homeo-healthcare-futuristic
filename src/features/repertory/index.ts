@@ -4,12 +4,15 @@ export * from './repositories/RepertoryRepository';
 export * from './repositories/MemoryRepertoryRepository';
 export * from './repositories/FirestoreRepertoryRepository';
 export * from './database/repertoryDb';
+export * from './engine/conceptMapper';
 export * from './graph/repertoryGraph';
 export * from './search/repertorySearch';
 export * from './scoring/repertoryScoring';
 export * from './validators/databaseValidator';
 export * from './import-export/importExportService';
+export * from './import-export/ingestionPipeline';
 export * from './data/repertorySeed';
+export * from './data/repertorySourceRegistry';
 export * from './data/caseScenarios';
 export * from './clinicalWorkspace';
 

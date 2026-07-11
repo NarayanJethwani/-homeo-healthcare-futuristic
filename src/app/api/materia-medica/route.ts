@@ -12,7 +12,7 @@ async function fetchHtml(url: string): Promise<string> {
   };
 
   try {
-    const response = await fetch(url, { headers, next: { revalidate: 86400 } });
+    const response = await fetch(url, { headers, next: { revalidate: 86400 } } as any);
     if (response.ok) {
       return await response.text();
     }
@@ -65,8 +65,22 @@ async function fetchHtml(url: string): Promise<string> {
   });
 }
 
+import { MATERIA_MEDICA_BOOKS } from "@/lib/materiaMedicaData";
+
+export function isLegacyMateriaMedicaScraperEnabled(): boolean {
+  // During migration, if not explicitly defined, we can check for env
+  return process.env.LEGACY_MATERIA_MEDICA_SCRAPER_ENABLED === "true";
+}
+
 export async function GET(request: Request) {
   try {
+    if (!isLegacyMateriaMedicaScraperEnabled()) {
+      return NextResponse.json(
+        { error: "Legacy Materia Medica source is unavailable." },
+        { status: 410 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const author = searchParams.get("author");
     const pathParam = searchParams.get("path");
@@ -78,9 +92,18 @@ export async function GET(request: Request) {
       );
     }
 
+    const allowedBookIds = new Set(
+      MATERIA_MEDICA_BOOKS.map((book) => book.id)
+    );
+
     // CASE 1: Fetch and parse list of remedies for a specific author book
     if (author) {
-      const sanitizedAuthor = encodeURIComponent(author.trim());
+      const trimmedAuthor = author.trim();
+      if (!allowedBookIds.has(trimmedAuthor)) {
+        return NextResponse.json({ error: "Unknown book." }, { status: 404 });
+      }
+
+      const sanitizedAuthor = encodeURIComponent(trimmedAuthor);
       const cacheDir = path.join(process.cwd(), "src", "lib", "books-cache", sanitizedAuthor);
       const cacheFile = path.join(cacheDir, "index.json");
 
@@ -171,28 +194,73 @@ export async function GET(request: Request) {
       // Resolve bookId and remedySlug for caching
       const relativePath = pathParam.substring("/en/materia-medica/".length);
       const parts = relativePath.split("/");
-      let cacheFile = "";
-      let cacheDir = "";
+      if (parts.length !== 2) {
+        return NextResponse.json(
+          { success: false, message: "Invalid path structure." },
+          { status: 400 }
+        );
+      }
 
-      if (parts.length === 2) {
-        const [bookId, remedySlug] = parts;
-        const safeRegex = /^[a-zA-Z0-9\._\-]+$/;
-        if (safeRegex.test(bookId) && safeRegex.test(remedySlug)) {
-          cacheDir = path.join(process.cwd(), "src", "lib", "books-cache", bookId);
-          cacheFile = path.join(cacheDir, `${remedySlug}.json`);
-          if (fs.existsSync(cacheFile)) {
-            try {
-              const cachedData = fs.readFileSync(cacheFile, "utf-8");
-              const parsed = JSON.parse(cachedData);
-              return NextResponse.json(parsed);
-            } catch (err) {
-              console.warn(`Failed to read/parse cache file ${cacheFile}, will re-fetch:`, err);
-            }
-          }
+      const [bookId, remedySlug] = parts;
+      const safeBookRegex = /^[a-zA-Z0-9_\-]+$/;
+      const SAFE_REMEDY_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+      if (!safeBookRegex.test(bookId) || !SAFE_REMEDY_SLUG.test(remedySlug)) {
+        return NextResponse.json(
+          { success: false, message: "Invalid characters in path." },
+          { status: 400 }
+        );
+      }
+
+      if (!allowedBookIds.has(bookId)) {
+        return NextResponse.json({ error: "Unknown book." }, { status: 404 });
+      }
+
+      // Safe immutable path mapping
+      type LegacyBookId =
+        | "james-tyler-kent"
+        | "william-boericke"
+        | "john-henry-clarke"
+        | "henry-c-allen"
+        | "benoit-mure"
+        | "cyrus-maxwell-boger"
+        | "adolf-zur-lippe"
+        | "william-boericke-short";
+
+      const LEGACY_BOOK_SOURCE_PATHS: Record<LegacyBookId, string> = {
+        "james-tyler-kent": "james-tyler-kent",
+        "william-boericke": "william-boericke",
+        "john-henry-clarke": "john-henry-clarke",
+        "henry-c-allen": "henry-c-allen",
+        "benoit-mure": "benoit-mure",
+        "cyrus-maxwell-boger": "cyrus-maxwell-boger",
+        "adolf-zur-lippe": "adolf-zur-lippe",
+        "william-boericke-short": "william-boericke-short",
+      };
+
+      const sourcePath = LEGACY_BOOK_SOURCE_PATHS[bookId as LegacyBookId];
+      if (!sourcePath) {
+        return NextResponse.json({ error: "Unknown book mapping." }, { status: 404 });
+      }
+
+      const cacheDir = path.join(process.cwd(), "src", "lib", "books-cache", bookId);
+      const cacheFile = path.join(cacheDir, `${remedySlug}.json`);
+      if (fs.existsSync(cacheFile)) {
+        try {
+          const cachedData = fs.readFileSync(cacheFile, "utf-8");
+          const parsed = JSON.parse(cachedData);
+          return NextResponse.json(parsed);
+        } catch (err) {
+          console.warn(`Failed to read/parse cache file ${cacheFile}, will re-fetch:`, err);
         }
       }
 
-      const targetUrl = `https://www.materiamedica.info${pathParam}`;
+      // Construct upstreamUrl using standard URL API, encoding path pieces separately
+      const upstreamUrl = new URL(
+        `/en/materia-medica/${sourcePath}/${encodeURIComponent(remedySlug)}`,
+        "https://www.materiamedica.info"
+      );
+      const targetUrl = upstreamUrl.toString();
       console.log(`Fetching Materia Medica remedy details from: ${targetUrl}`);
 
       const html = await fetchHtml(targetUrl);

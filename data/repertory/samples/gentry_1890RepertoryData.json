@@ -1,0 +1,23 @@
+[
+  {
+    "id": "gentry_mind_0",
+    "chapter": "Mind & Nervous System",
+    "name": "DELUSION - Imagines they are rich",
+    "remedies": {
+      "Sulph": 3,
+      "Bell": 1
+    },
+    "source": "gentry_1890"
+  },
+  {
+    "id": "gentry_sleep_0",
+    "chapter": "Sleep",
+    "name": "SLEEPLESSNESS - From overcrowding of ideas",
+    "remedies": {
+      "Coff": 3,
+      "Nux-v": 2,
+      "Ign": 2
+    },
+    "source": "gentry_1890"
+  }
+]

@@ -31,7 +31,8 @@ import { parseNaturalLanguageQuery } from "@/lib/searchEngine";
 import { REMEDY_LEARNING_DB, parseLearningTutorQuery, searchRemedies, compareFamilies, compareKingdoms, compareMiasms, MASTER_REMEDY_DB, CLINICAL_BOARD_QUESTIONS } from "@/lib/searchAndCompare";
 import { simulateMateriaMedicaIngestion, CLASSICAL_SOURCES } from "@/lib/materiaMedicaIngestion";
 import { GENOME_REMEDY_DB } from "@/lib/remedyGenomeSchema";
-import { RepertoryWorkbench } from "@/features/repertory";
+import { RepertoryWorkbench } from "@/features/repertory/components/RepertoryWorkbench";
+import { MateriaMedicaLibrary } from "@/features/materia-medica/components/library/MateriaMedicaLibrary";
 import { 
   getKnowledgeLinkForDisease, 
   getKnowledgeLinkForRemedy, 
@@ -19344,8 +19345,12 @@ ${err.message || err}`);
                   Materia Medica
                 </button>
               </div>
-              {!selectedBook ? (
-                // 1. Classical Books Library Grid View
+              {featureFlags.MATERIA_MEDICA_LIBRARY_V2 ? (
+                <MateriaMedicaLibrary />
+              ) : (
+                <>
+                  {!selectedBook ? (
+                    // 1. Classical Books Library Grid View
                 <div className="space-y-6">
                   <div className="space-y-1">
                     <h2 className="font-serif text-2xl font-bold text-[#1A2421]">Materia Medica & Classical Knowledge Hub</h2>
@@ -19714,6 +19719,8 @@ ${err.message || err}`);
 
                   </div>
                 </div>
+              )}
+                </>
               )}
             </div>
           )}

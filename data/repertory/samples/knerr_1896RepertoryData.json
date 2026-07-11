@@ -1,0 +1,24 @@
+[
+  {
+    "id": "knerr_mind_0",
+    "chapter": "Mind & Nervous System",
+    "name": "HYSTERIA - Emotional volatility",
+    "remedies": {
+      "Ign": 3,
+      "Puls": 2,
+      "Mosch": 3
+    },
+    "source": "knerr_1896"
+  },
+  {
+    "id": "knerr_respiratory_0",
+    "chapter": "Respiratory",
+    "name": "COUGH - Dry, hacking at night",
+    "remedies": {
+      "Bry": 3,
+      "Phos": 3,
+      "Sulph": 2
+    },
+    "source": "knerr_1896"
+  }
+]

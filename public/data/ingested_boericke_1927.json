@@ -1,0 +1,98 @@
+[
+  {
+    "rubricId": "test_boer_1",
+    "id": "test_boer_1",
+    "title": "Test",
+    "displayText": "Test",
+    "plainLanguageMeaning": "Symptom from Boericke Repertory: Mind - Test",
+    "classicalWording": "Mind - Test",
+    "originalText": "Mind - Test",
+    "normalizedText": "mind - test",
+    "category": "Mental & Emotional",
+    "organSystem": "Mind",
+    "chapterId": "Mind",
+    "subCategory": "Mind",
+    "synonyms": [
+      "test"
+    ],
+    "patientExpressions": [
+      "test"
+    ],
+    "clinicalKeywords": [
+      "test"
+    ],
+    "relatedSymptoms": [],
+    "relatedDiseases": [],
+    "miasmaticWeight": {
+      "Psora": 0.5,
+      "Sycosis": 0.2,
+      "Syphilis": 0.1,
+      "Tubercular": 0.2,
+      "Cancerinic": 0.2
+    },
+    "intensityScale": 5,
+    "polarity": "positive",
+    "modalities": [],
+    "aggravations": [],
+    "ameliorations": [],
+    "source": "Boericke Repertory",
+    "sourceId": "boericke_1927",
+    "sourceRubricId": "test_boer_1",
+    "confidence": 0.9,
+    "author": "William Boericke",
+    "reviewer": "CIE Editorial Reviewer",
+    "lastUpdated": "2026-07-10T13:18:07.078Z",
+    "relatedRemedies": [
+      {
+        "remedyId": "Aeth",
+        "remedyName": "Aethusa Cynapium",
+        "grade": 2,
+        "confidence": 1,
+        "keynoteReason": "Graded in Boericke Repertory",
+        "sourceReference": "Pocket Manual of Homoeopathic Materia Medica with Repertory",
+        "clinicalExperienceWeight": 0.8
+      },
+      {
+        "remedyId": "Tar-h",
+        "remedyName": "Tar-h",
+        "grade": 1,
+        "confidence": 0.5,
+        "keynoteReason": "Graded in Boericke Repertory",
+        "sourceReference": "Pocket Manual of Homoeopathic Materia Medica with Repertory",
+        "clinicalExperienceWeight": 0.8
+      }
+    ],
+    "remedyEntries": [
+      {
+        "remedyId": "Aeth",
+        "sourceAbbreviation": "Æth",
+        "canonicalAbbreviation": "Aeth",
+        "sourceGrade": 2,
+        "normalizedGrade": 2,
+        "gradeSystemId": "boericke_3_grade",
+        "sourceId": "boericke_1927",
+        "sourcePage": 123
+      },
+      {
+        "remedyId": "Tar-h",
+        "sourceAbbreviation": "Tar-h",
+        "canonicalAbbreviation": "Tar-h",
+        "sourceGrade": 1,
+        "normalizedGrade": 1,
+        "gradeSystemId": "boericke_3_grade",
+        "sourceId": "boericke_1927",
+        "sourcePage": 123
+      }
+    ],
+    "hierarchyPath": [
+      "Mind",
+      "Mind"
+    ],
+    "language": "en",
+    "evidenceStatus": "source-verified",
+    "editorialStatus": "draft",
+    "createdAt": "2026-07-10T13:18:07.078Z",
+    "updatedAt": "2026-07-10T13:18:07.078Z",
+    "sourceCitation": "William Boericke, Pocket Manual of Homoeopathic Materia Medica with Repertory (1927)"
+  }
+]

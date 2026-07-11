@@ -7,7 +7,8 @@ import {
   approveClinicalReview, 
   publishArticle, 
   getPublicationEvents,
-  clearCmsMemoryStore 
+  clearCmsMemoryStore,
+  transitionLifecycleState 
 } from "../src/features/knowledge-admin/cms/cmsManager";
 import { globalKmsRepository } from "../src/features/knowledge-admin/repositories/MemoryRepository";
 import { EDITORIAL_REVIEWERS } from "../src/features/knowledge-admin/workflow/reviewerDirectory";
@@ -343,6 +344,60 @@ async function runTests() {
 
     const pub = await globalKmsRepository.getEntity(testArticleId18);
     assert.strictEqual(pub?.title.en, "GERD Guidelines 18");
+  });
+
+  // 19. multi-document transaction fail-closed behavior on database error
+  await test("19. multi-document transaction fail-closed behavior on database error", async () => {
+    const testArticleId19 = "DIS-TEST19";
+    const mockPublic19 = {
+      ...mockPublicEntity,
+      id: testArticleId19,
+      slug: "gerd-test19-guide",
+      title: { en: "GERD Guidelines 19", hi: "", gu: "", mr: "", es: "", ar: "" }
+    };
+    await globalKmsRepository.saveEntity(mockPublic19, "System", "Administrator", "Setup 19 mock");
+
+    const draft = await getDraft(testArticleId19);
+    assert.ok(draft);
+    assert.strictEqual(draft.status, "published");
+
+    // Import and mock
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const firebaseAdmin = require("../src/lib/firebaseAdmin");
+    const originalGetAdminDb = firebaseAdmin.getAdminDb;
+    let transactionCalled = false;
+
+    firebaseAdmin.getAdminDb = () => {
+      const realDb = originalGetAdminDb();
+      return {
+        collection: (name: string) => realDb.collection(name),
+        batch: () => realDb.batch(),
+        runTransaction: async (cb: any) => {
+          transactionCalled = true;
+          throw new Error("Transaction aborted: database lock timeout");
+        }
+      };
+    };
+
+    try {
+      await transitionLifecycleState(
+        testArticleId19,
+        "archived",
+        "Editor",
+        "super-admin",
+        "editor@homeo.healthcare"
+      );
+      assert.fail("Should have thrown database save failure error.");
+    } catch (err: any) {
+      assert.ok(err.message.includes("Database save failed"));
+    } finally {
+      firebaseAdmin.getAdminDb = originalGetAdminDb;
+    }
+
+    assert.strictEqual(transactionCalled, true, "runTransaction should have been called");
+
+    const finalDraft = await getDraft(testArticleId19);
+    assert.strictEqual(finalDraft?.status, "published");
   });
 
   console.log(`\n🎉 Editorial CMS Tests Completed. Passed: ${passed}, Failed: ${failed}`);

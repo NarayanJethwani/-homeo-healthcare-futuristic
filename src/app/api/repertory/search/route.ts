@@ -1,199 +1,96 @@
-import { NextResponse } from "next/server";
-import { getAdminDb } from "@/lib/firebaseAdmin";
+import { NextRequest, NextResponse } from "next/server";
+import { RepertorySearch } from "@/features/repertory/search/repertorySearch";
+import { PublishedCorpusRepository } from "@/features/repertory/repositories/PublishedCorpusRepository";
 
-function isEnabled(value: string | undefined): boolean {
-  return value === "true" || value === "1";
-}
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
-function isClinicalSearchShadowEnabled(): boolean {
-  return isEnabled(process.env.REPERTORY_V2_USE_CLINICAL_SEARCH_ENGINE)
-    && isEnabled(process.env.REPERTORY_V2_SEARCH_SHADOW_MODE);
-}
+// Server-side cache for search results to maximize performance
+const searchCache = new Map<string, { response: any; version: string; expiry: number }>();
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes cache
 
-function clinicalSearchShadowMaxRubrics(): number {
-  const parsed = Number(process.env.REPERTORY_V2_SEARCH_MAX_RUBRICS);
-  if (!Number.isFinite(parsed) || parsed <= 0) return 1000;
-  return Math.min(Math.floor(parsed), 5000);
-}
-
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
-    const shadowEnabled = isClinicalSearchShadowEnabled();
-    const requestStartedAt = shadowEnabled ? Date.now() : 0;
     const { searchParams } = new URL(request.url);
     const q = searchParams.get("q")?.toLowerCase().trim() || "";
     const category = searchParams.get("category") || "All";
     const organSystem = searchParams.get("organSystem") || "All";
     const miasm = searchParams.get("miasm") || "All";
     const remedy = searchParams.get("remedy") || "All";
+    const sourceId = searchParams.get("sourceId") || "All";
+    
+    const page = Math.max(1, Number(searchParams.get("page")) || 1);
+    const pageSize = Math.max(1, Math.min(100, Number(searchParams.get("pageSize")) || 50));
 
-    const rubricsRef = getAdminDb().collection("rubrics");
-    let results: any[] = [];
+    const activeVersion = await PublishedCorpusRepository.getActiveVersion();
 
-    if (!q) {
-      // Return list of active rubrics
-      let firestoreQuery: any = rubricsRef.where("status", "==", "active");
-      
-      if (category !== "All") {
-        firestoreQuery = firestoreQuery.where("category", "==", category);
-      }
-      if (organSystem !== "All") {
-        firestoreQuery = firestoreQuery.where("organSystem", "==", organSystem);
-      }
+    // Cache key construction
+    const cacheKey = `${activeVersion}:${q}:${category}:${organSystem}:${miasm}:${remedy}:${sourceId}:${page}:${pageSize}`;
+    const cached = searchCache.get(cacheKey);
 
-      const snapshot = await firestoreQuery.limit(100).get();
-      snapshot.forEach((doc: any) => {
-        results.push(doc.data());
-      });
-
-      // Filter by miasm and remedy if specified (client-side filtering of results limit)
-      if (miasm !== "All") {
-        results = results.filter(r => r.miasms && r.miasms.includes(miasm));
-      }
-      if (remedy !== "All") {
-        results = results.filter(r => r.remedies && r.remedies[remedy] !== undefined);
-      }
-    } else {
-      // 1. Expand query using synonyms
-      let searchTerms = [q];
-      const synDoc = await getAdminDb().collection("synonyms").doc(q).get();
-      if (synDoc.exists) {
-        const data = synDoc.data();
-        if (data && data.synonyms) {
-          searchTerms = Array.from(new Set([q, ...data.synonyms]));
-        }
-      }
-
-      // Also split the query into individual words and add synonyms for each word
-      const words = q.split(/[\s,\.\-_]+/);
-      for (const word of words) {
-        if (word.length > 2 && word !== q) {
-          searchTerms.push(word);
-          const wSynDoc = await getAdminDb().collection("synonyms").doc(word).get();
-          if (wSynDoc.exists) {
-            const data = wSynDoc.data();
-            if (data && data.synonyms) {
-              searchTerms.push(...data.synonyms);
-            }
-          }
-        }
-      }
-
-      // Unique search terms
-      searchTerms = Array.from(new Set(searchTerms.map(t => t.toLowerCase())));
-
-      // Firestore allows array-contains-any up to 10 elements. If we have more, chunk them.
-      const chunks: string[][] = [];
-      const tempTerms = [...searchTerms];
-      while (tempTerms.length > 0) {
-        chunks.push(tempTerms.splice(0, 10));
-      }
-
-      const matchedDocs = new Map<string, any>();
-
-      for (const chunk of chunks) {
-        const querySnapshot = await rubricsRef
-          .where("status", "==", "active")
-          .where("keywords", "array-contains-any", chunk)
-          .get();
-
-        querySnapshot.forEach((doc: any) => {
-          matchedDocs.set(doc.id, doc.data());
-        });
-      }
-
-      // Also check direct match on name or slug as fallback or override
-      const directSnapshot = await rubricsRef
-        .where("status", "==", "active")
-        .where("slug", "==", q.replace(/[\s_]+/g, "-"))
-        .get();
-
-      directSnapshot.forEach((doc: any) => {
-        matchedDocs.set(doc.id, doc.data());
-      });
-
-      results = Array.from(matchedDocs.values());
-
-      // 2. Score results by relevance
-      const scored = results.map(rubric => {
-        let score = 0;
-        const name = rubric.name.toLowerCase();
-        const desc = rubric.description.toLowerCase();
-
-        searchTerms.forEach(term => {
-          if (name === term) score += 200;
-          else if (name.includes(term)) score += 100;
-          else if (desc.includes(term)) score += 40;
-
-          if (rubric.keywords && rubric.keywords.includes(term)) score += 30;
-          if (rubric.remedies && Object.keys(rubric.remedies).some(r => r.toLowerCase() === term)) score += 50;
-        });
-
-        return { rubric, score };
-      });
-
-      results = scored
-        .filter(s => s.score > 0)
-        .sort((a, b) => b.score - a.score)
-        .map(s => s.rubric);
-
-      // Apply filters
-      if (category !== "All") {
-        results = results.filter(r => r.category === category);
-      }
-      if (organSystem !== "All") {
-        results = results.filter(r => r.organSystem === organSystem);
-      }
-      if (miasm !== "All") {
-        results = results.filter(r => r.miasms && r.miasms.includes(miasm));
-      }
-      if (remedy !== "All") {
-        results = results.filter(r => r.remedies && r.remedies[remedy] !== undefined);
-      }
+    if (cached && cached.version === activeVersion && Date.now() < cached.expiry) {
+      console.log(`[repertory-search] Serving cached results for: ${cacheKey}`);
+      return NextResponse.json(cached.response);
     }
+
+    // Call server-side search engine
+    const searchFilters = {
+      category: category !== "All" ? category : undefined,
+      organSystem: organSystem !== "All" ? organSystem : undefined,
+      miasm: miasm !== "All" ? miasm : undefined,
+      remedy: remedy !== "All" ? remedy : undefined,
+      sourceId: sourceId !== "All" ? sourceId : undefined,
+    };
+
+    const scoredRubrics = await RepertorySearch.searchRubrics(q, searchFilters, true, true);
+    
+    // Sort and map candidates
+    const mappedRubrics = scoredRubrics.map(item => ({
+      rubricId: item.rubric.rubricId,
+      id: item.rubric.rubricId,
+      title: item.rubric.title,
+      displayText: item.rubric.displayText || item.rubric.title,
+      classicalWording: item.rubric.classicalWording,
+      category: item.rubric.category,
+      organSystem: item.rubric.organSystem,
+      source: item.rubric.source,
+      sourceId: item.rubric.sourceId,
+      author: item.rubric.author,
+      sourceCitation: item.rubric.sourceCitation,
+      remedies: item.rubric.relatedRemedies.reduce((acc, curr) => {
+        acc[curr.remedyId] = curr.grade;
+        return acc;
+      }, {} as Record<string, number>),
+      score: item.score,
+    }));
+
+    const total = mappedRubrics.length;
+    const startIndex = (page - 1) * pageSize;
+    const paginatedRubrics = mappedRubrics.slice(startIndex, startIndex + pageSize);
 
     const responsePayload = {
       success: true,
-      count: results.length,
-      rubrics: results
+      activeVersion,
+      count: paginatedRubrics.length,
+      total,
+      page,
+      pageSize,
+      rubrics: paginatedRubrics,
     };
 
-    if (shadowEnabled) {
-      void (async () => {
-        let candidateQuery: any = rubricsRef.where("status", "==", "active");
+    // Store in cache
+    searchCache.set(cacheKey, {
+      response: responsePayload,
+      version: activeVersion,
+      expiry: Date.now() + CACHE_TTL_MS,
+    });
 
-        if (category !== "All") {
-          candidateQuery = candidateQuery.where("category", "==", category);
-        }
-        if (organSystem !== "All") {
-          candidateQuery = candidateQuery.where("organSystem", "==", organSystem);
-        }
-
-        const candidateSnapshot = await candidateQuery.limit(clinicalSearchShadowMaxRubrics()).get();
-        const candidateRubrics: any[] = [];
-        candidateSnapshot.forEach((doc: any) => {
-          candidateRubrics.push(doc.data());
-        });
-
-        const { runClinicalSearchShadowComparison } = await import("@/features/repertory/integration/clinicalSearchShadow");
-        runClinicalSearchShadowComparison({
-          query: q,
-          filters: {
-            category,
-            organSystem,
-            miasm,
-            remedy,
-          },
-          v1Results: results,
-          candidateRubrics,
-          startedAt: requestStartedAt,
-        });
-      })().catch((error) => {
-        console.info("[repertory-v2-search-shadow]", JSON.stringify({
-          query: q,
-          error: error instanceof Error ? error.message : String(error),
-        }));
-      });
+    // Housekeeping: remove expired cache items
+    const now = Date.now();
+    for (const [key, val] of searchCache.entries()) {
+      if (val.version !== activeVersion || now > val.expiry) {
+        searchCache.delete(key);
+      }
     }
 
     return NextResponse.json(responsePayload);
@@ -202,7 +99,7 @@ export async function GET(request: Request) {
     return NextResponse.json({
       success: false,
       message: "Failed to search rubrics.",
-      error: error.message || error
+      error: error.message || error,
     }, { status: 500 });
   }
 }

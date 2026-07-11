@@ -73,6 +73,11 @@ async function runTests() {
   console.log("\n🔍 Running RAG Knowledge Base Hybrid Search tests...");
   
   // Seed/Stub the vector store with live mock embeddings for search testing compatibility
+  const originalGetEmbeddings = ollamaService.getEmbeddings;
+  ollamaService.getEmbeddings = async (text: string) => {
+    return new Array(384).fill(1);
+  };
+
   const originalGetVector = globalVectorStore.getVector;
   globalVectorStore.getVector = async (id: string) => {
     const doc = (ragService as any).getUnifiedDb().find((d: any) => d.id === id);
@@ -115,6 +120,7 @@ async function runTests() {
     failed++;
   } finally {
     globalVectorStore.getVector = originalGetVector;
+    ollamaService.getEmbeddings = originalGetEmbeddings;
   }
 
   // ==========================================

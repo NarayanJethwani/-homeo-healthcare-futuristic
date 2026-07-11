@@ -1,0 +1,547 @@
+import fs from 'fs';
+import path from 'path';
+import crypto from 'crypto';
+import { getAdminDb } from '@/lib/firebaseAdmin';
+import { RepertoryRubric, RepertoryPublishedCorpusManifest } from '../types';
+
+export interface RepertoryArtifactStore {
+  readJson<T>(path: string): Promise<T>;
+  exists(path: string): Promise<boolean>;
+}
+
+export class LocalArtifactStore implements RepertoryArtifactStore {
+  async readJson<T>(filePath: string): Promise<T> {
+    if (!fs.existsSync(filePath)) {
+      throw new Error(`Artifact store file not found: ${filePath}`);
+    }
+    const content = fs.readFileSync(filePath, 'utf-8');
+    return JSON.parse(content);
+  }
+
+  async exists(filePath: string): Promise<boolean> {
+    return fs.existsSync(filePath);
+  }
+}
+
+class LruCache<T> {
+  private cache = new Map<string, { value: T; bytes: number; timestamp: number }>();
+  private currentBytes = 0;
+
+  constructor(
+    private maxEntries: number,
+    private maxBytes: number,
+    private ttlMs: number
+  ) {}
+
+  get(key: string): T | null {
+    const entry = this.cache.get(key);
+    if (!entry) return null;
+    if (Date.now() - entry.timestamp > this.ttlMs) {
+      this.cache.delete(key);
+      this.currentBytes -= entry.bytes;
+      return null;
+    }
+    entry.timestamp = Date.now();
+    return entry.value;
+  }
+
+  set(key: string, value: T, bytes: number): void {
+    const existing = this.cache.get(key);
+    if (existing) {
+      this.currentBytes -= existing.bytes;
+      this.cache.delete(key);
+    }
+
+    while (
+      (this.cache.size >= this.maxEntries || this.currentBytes + bytes > this.maxBytes) &&
+      this.cache.size > 0
+    ) {
+      let oldestKey: string | null = null;
+      let oldestTimestamp = Infinity;
+      for (const [k, e] of this.cache.entries()) {
+        if (e.timestamp < oldestTimestamp) {
+          oldestTimestamp = e.timestamp;
+          oldestKey = k;
+        }
+      }
+      if (oldestKey) {
+        const e = this.cache.get(oldestKey)!;
+        this.cache.delete(oldestKey);
+        this.currentBytes -= e.bytes;
+      } else {
+        break;
+      }
+    }
+
+    this.cache.set(key, { value, bytes, timestamp: Date.now() });
+    this.currentBytes += bytes;
+  }
+
+  clear(): void {
+    this.cache.clear();
+    this.currentBytes = 0;
+  }
+
+  getStats() {
+    return {
+      size: this.cache.size,
+      bytes: this.currentBytes
+    };
+  }
+}
+
+export class PublishedCorpusRepository {
+  private static cachedVersion: string = '';
+  private static cachedManifest: RepertoryPublishedCorpusManifest | null = null;
+  private static inFlightLoads = new Map<string, Promise<any>>();
+  private static activeVersionCache: { version: string; timestamp: number } | null = null;
+  private static activeVersionCacheTtlMs = 10000; // 10 seconds TTL
+
+  // Abstraction layer
+  private static artifactStore: RepertoryArtifactStore = new LocalArtifactStore();
+
+  // Separate caches for shards
+  private static chapterCache = new LruCache<RepertoryRubric[]>(20, 20 * 1024 * 1024, 5 * 60 * 1000);
+  private static indexCache = new LruCache<any>(100, 30 * 1024 * 1024, 10 * 60 * 1000);
+
+  private static locationShardCount = 64;
+  private static lexicalShardCount = 64;
+  private static remedyShardCount = 32;
+  private static conceptShardCount = 32;
+
+  // Track cache statistics
+  private static hitCount = 0;
+  private static missCount = 0;
+
+  static setArtifactStore(store: RepertoryArtifactStore): void {
+    this.artifactStore = store;
+    this.invalidateCache();
+  }
+
+  private static getPublishedDir(version: string): string {
+    return path.join(process.cwd(), 'data', 'repertory', 'published', version);
+  }
+
+  private static stableHash(str: string): number {
+    const hash = crypto.createHash('md5').update(str).digest('hex');
+    return parseInt(hash.slice(0, 8), 16);
+  }
+
+  static async getActiveVersion(): Promise<string> {
+    const now = Date.now();
+    if (this.activeVersionCache && (now - this.activeVersionCache.timestamp < this.activeVersionCacheTtlMs)) {
+      return this.activeVersionCache.version;
+    }
+
+    let version = 'v1.0.0';
+    let retrieved = false;
+    try {
+      const db = getAdminDb();
+      if (db) {
+        const doc = await db.collection('repertoryActiveCorpusPointer').doc('active').get();
+        if (doc.exists) {
+          const data = doc.data();
+          if (data && data.activeVersion) {
+            version = data.activeVersion;
+            retrieved = true;
+          }
+        }
+      }
+    } catch (e) {
+      console.warn("PublishedCorpusRepository: Failed to get active version from Firestore, trying local file fallback:", e);
+    }
+
+    if (!retrieved) {
+      const pointerFile = path.join(process.cwd(), 'data', 'repertory', 'published', 'active_pointer.json');
+      if (fs.existsSync(pointerFile)) {
+        try {
+          const raw = fs.readFileSync(pointerFile, 'utf-8');
+          const data = JSON.parse(raw);
+          if (data && data.activeVersion) {
+            version = data.activeVersion;
+          }
+        } catch (err) {
+          console.warn("PublishedCorpusRepository: Failed to parse active_pointer.json:", err);
+        }
+      }
+    }
+
+    this.activeVersionCache = { version, timestamp: now };
+    return version;
+  }
+
+  static async setActiveVersion(version: string): Promise<void> {
+    try {
+      const db = getAdminDb();
+      if (db) {
+        await db.collection('repertoryActiveCorpusPointer').doc('active').set({
+          activeVersion: version,
+          updatedAt: new Date().toISOString(),
+          status: "active"
+        });
+      }
+    } catch (e) {
+      console.warn("PublishedCorpusRepository: Failed to write active version to Firestore:", e);
+    }
+
+    const pointerFile = path.join(process.cwd(), 'data', 'repertory', 'published', 'active_pointer.json');
+    const pointerDir = path.dirname(pointerFile);
+    if (!fs.existsSync(pointerDir)) {
+      fs.mkdirSync(pointerDir, { recursive: true });
+    }
+    fs.writeFileSync(pointerFile, JSON.stringify({ activeVersion: version, updatedAt: new Date().toISOString() }), 'utf-8');
+
+    this.activeVersionCache = { version, timestamp: Date.now() };
+    this.invalidateCache();
+  }
+
+  static invalidateCache(): void {
+    this.cachedVersion = '';
+    this.cachedManifest = null;
+    this.activeVersionCache = null;
+    this.chapterCache.clear();
+    this.indexCache.clear();
+    this.inFlightLoads.clear();
+  }
+
+  static async ensureActiveCorpusLoaded(): Promise<void> {
+    const activeVersion = await this.getActiveVersion();
+    if (this.cachedVersion === activeVersion && this.cachedManifest) {
+      return;
+    }
+
+    console.log(`PublishedCorpusRepository: Initializing active pointer to version ${activeVersion}...`);
+    const dir = this.getPublishedDir(activeVersion);
+    const manifestPath = path.join(dir, 'manifest.json');
+    
+    if (!(await this.artifactStore.exists(manifestPath))) {
+      console.warn(`PublishedCorpusRepository: Snapshot directory ${dir} manifest not found.`);
+      return;
+    }
+
+    try {
+      this.cachedManifest = await this.artifactStore.readJson<RepertoryPublishedCorpusManifest>(manifestPath);
+      this.cachedVersion = activeVersion;
+    } catch (e: any) {
+      console.error(`PublishedCorpusRepository: Failed to load manifest for version ${activeVersion}:`, e);
+      throw new Error(`Failed to load manifest: ${e.message}`);
+    }
+  }
+
+  private static async loadShardCoalesced<T>(
+    relativePath: string,
+    cache: LruCache<T>
+  ): Promise<T> {
+    await this.ensureActiveCorpusLoaded();
+    const activeVersion = this.cachedVersion;
+    const cacheKey = `${activeVersion}:${relativePath}`;
+
+    // 1. Check Cache
+    const cached = cache.get(cacheKey);
+    if (cached) {
+      this.hitCount++;
+      return cached;
+    }
+    this.missCount++;
+
+    // 2. Check In-flight reads (Coalescing)
+    let inFlight = this.inFlightLoads.get(cacheKey);
+    if (!inFlight) {
+      inFlight = (async () => {
+        let timeoutId: NodeJS.Timeout | null = null;
+        try {
+          const dir = this.getPublishedDir(activeVersion);
+          const fullPath = path.join(dir, relativePath);
+
+          const timeout = new Promise<never>((_, reject) => {
+            timeoutId = setTimeout(() => reject(new Error(`Read timeout for shard: ${relativePath}`)), 10000);
+          });
+
+          const data = await Promise.race([
+            this.artifactStore.readJson<T>(fullPath),
+            timeout
+          ]);
+
+          const estimatedBytes = JSON.stringify(data).length * 2;
+          cache.set(cacheKey, data, estimatedBytes);
+          return data;
+        } finally {
+          if (timeoutId) {
+            clearTimeout(timeoutId);
+          }
+          this.inFlightLoads.delete(cacheKey);
+        }
+      })();
+      this.inFlightLoads.set(cacheKey, inFlight);
+    }
+
+    return inFlight;
+  }
+
+  // Lazy loaders for shards
+  static async loadLocationShard(rubricId: string): Promise<any> {
+    const shardIdx = this.stableHash(rubricId) % this.locationShardCount;
+    const prefix = shardIdx.toString().padStart(2, '0');
+    return this.loadShardCoalesced<any>(`locations/rubric-locations-${prefix}.json`, this.indexCache);
+  }
+
+  static async loadLexicalShard(term: string): Promise<any> {
+    const shardIdx = this.stableHash(term) % this.lexicalShardCount;
+    const prefix = shardIdx.toString().padStart(2, '0');
+    return this.loadShardCoalesced<any>(`indexes/lexical/term-${prefix}.json`, this.indexCache);
+  }
+
+  static async loadRemedyShard(remedyId: string): Promise<any> {
+    const shardIdx = this.stableHash(remedyId) % this.remedyShardCount;
+    const prefix = shardIdx.toString().padStart(2, '0');
+    return this.loadShardCoalesced<any>(`indexes/remedies/remedy-${prefix}.json`, this.indexCache);
+  }
+
+  static async loadConceptShard(conceptId: string): Promise<any> {
+    const shardIdx = this.stableHash(conceptId) % this.conceptShardCount;
+    const prefix = shardIdx.toString().padStart(2, '0');
+    return this.loadShardCoalesced<any>(`indexes/concepts/concept-${prefix}.json`, this.indexCache);
+  }
+
+  static async loadChapterShard(sourceId: string, safeChapterId: string, shardId: string): Promise<RepertoryRubric[]> {
+    return this.loadShardCoalesced<RepertoryRubric[]>(
+      `sources/${sourceId}/chapters/${safeChapterId}-${shardId}.json`,
+      this.chapterCache
+    );
+  }
+
+  // Public Query Interfaces
+  static async getRubricById(id: string): Promise<RepertoryRubric | null> {
+    await this.ensureActiveCorpusLoaded();
+    try {
+      const locations = await this.loadLocationShard(id);
+      const loc = locations[id];
+      if (!loc) return null;
+
+      const rubrics = await this.loadChapterShard(loc.sourceId, loc.safeChapterId, loc.shardId);
+      const match = rubrics.find(r => r.rubricId === id);
+      return match ? { ...match } : null;
+    } catch (e) {
+      console.warn(`Failed to hydrate rubric ${id}:`, e);
+      return null;
+    }
+  }
+
+  static async getRubrics(filters?: {
+    category?: string;
+    organSystem?: string;
+    sourceId?: string;
+  }): Promise<RepertoryRubric[]> {
+    await this.ensureActiveCorpusLoaded();
+    if (!this.cachedManifest) return [];
+
+    // Filtered loading using source index or by reading relevant chapters
+    const sources = this.cachedManifest.sourceIds;
+    const matchSources = filters?.sourceId && filters.sourceId !== 'All'
+      ? [filters.sourceId]
+      : sources;
+
+    let results: RepertoryRubric[] = [];
+    
+    for (const srcId of matchSources) {
+      try {
+        const chaptersPath = `sources/${srcId}/chapters.json`;
+        const chapters = await this.loadShardCoalesced<any[]>(chaptersPath, this.indexCache);
+        
+        for (const chap of chapters) {
+          if (filters?.organSystem && filters.organSystem !== 'All' && chap.chapterId !== filters.organSystem) {
+            continue;
+          }
+          for (const shard of chap.shards) {
+            const rubrics = await this.loadChapterShard(srcId, chap.safeChapterId, shard.shardId);
+            let filtered = rubrics;
+            if (filters?.category && filters.category !== 'All') {
+              filtered = filtered.filter(r => r.category === filters.category);
+            }
+            results.push(...filtered);
+            if (results.length >= 100) {
+              return results.slice(0, 100); // Bounded page size for initial loads
+            }
+          }
+        }
+      } catch (err) {
+        console.warn(`Failed to read chapters list for source ${srcId}:`, err);
+      }
+    }
+
+    return results.slice(0, 100);
+  }
+
+  static async searchRubrics(query: string, filters?: {
+    category?: string;
+    organSystem?: string;
+    sourceId?: string;
+  }): Promise<RepertoryRubric[]> {
+    await this.ensureActiveCorpusLoaded();
+    const cleanQuery = query.toLowerCase().trim();
+    if (!cleanQuery) {
+      return this.getRubrics(filters);
+    }
+
+    const terms = cleanQuery.split(/\s+/).filter(t => t.length > 2);
+    if (terms.length === 0) return [];
+
+    // Enforce safety limits
+    if (terms.length > 5) {
+      throw new Error("Search query exceeds maximum limit of 5 search tokens.");
+    }
+
+    // 1. Candidate Retrieval
+    let candidateIds: Set<string> | null = null;
+
+    for (const term of terms) {
+      const index = await this.loadLexicalShard(term);
+      const matches = index[term] || [];
+      const termSet = new Set<string>(matches);
+      
+      if (candidateIds === null) {
+        candidateIds = termSet;
+      } else {
+        // Intersect
+        candidateIds = new Set((Array.from(candidateIds) as string[]).filter(x => termSet.has(x)));
+      }
+      if (candidateIds.size === 0) break;
+    }
+
+    if (!candidateIds || candidateIds.size === 0) return [];
+
+    // 2. Hydration and Filtering
+    const candidates = Array.from(candidateIds).slice(0, 100); // Bounded result window
+    return this.getRubricsByIds(candidates, filters);
+  }
+
+  // Batch Hydration logic (coalescing file reads)
+  static async getRubricsByIds(ids: string[], filters?: {
+    category?: string;
+    organSystem?: string;
+    sourceId?: string;
+  }): Promise<RepertoryRubric[]> {
+    await this.ensureActiveCorpusLoaded();
+
+    // Group rubric IDs by their location shard to read location indices efficiently
+    const locShardGroups: Record<string, string[]> = {};
+    for (const id of ids) {
+      const shardIdx = this.stableHash(id) % this.locationShardCount;
+      const prefix = shardIdx.toString().padStart(2, '0');
+      if (!locShardGroups[prefix]) locShardGroups[prefix] = [];
+      locShardGroups[prefix].push(id);
+    }
+
+    const locations: Record<string, any> = {};
+    for (const [prefix, groupedIds] of Object.entries(locShardGroups)) {
+      try {
+        const index = await this.loadShardCoalesced<any>(`locations/rubric-locations-${prefix}.json`, this.indexCache);
+        for (const id of groupedIds) {
+          if (index[id]) {
+            locations[id] = index[id];
+          }
+        }
+      } catch (err) {
+        console.warn(`Failed to load locations shard prefix ${prefix}:`, err);
+      }
+    }
+
+    // Group rubric IDs by chapter shard path to avoid duplicate loads
+    const chapterShardGroups: Record<string, { sourceId: string; safeChapterId: string; shardId: string; rubricIds: string[] }> = {};
+    for (const id of ids) {
+      const loc = locations[id];
+      if (!loc) continue;
+
+      // Filter out ineligible or unapproved sources early
+      if (this.cachedManifest && !this.cachedManifest.sourceIds.includes(loc.sourceId)) {
+        continue;
+      }
+
+      if (filters) {
+        if (filters.sourceId && filters.sourceId !== 'All' && loc.sourceId !== filters.sourceId) {
+          continue;
+        }
+      }
+
+      const shardPath = `${loc.sourceId}:${loc.safeChapterId}:${loc.shardId}`;
+      if (!chapterShardGroups[shardPath]) {
+        chapterShardGroups[shardPath] = {
+          sourceId: loc.sourceId,
+          safeChapterId: loc.safeChapterId,
+          shardId: loc.shardId,
+          rubricIds: []
+        };
+      }
+      chapterShardGroups[shardPath].rubricIds.push(id);
+    }
+
+    const hydrated: RepertoryRubric[] = [];
+
+    for (const group of Object.values(chapterShardGroups)) {
+      try {
+        const rubrics = await this.loadChapterShard(group.sourceId, group.safeChapterId, group.shardId);
+        for (const id of group.rubricIds) {
+          const match = rubrics.find(r => r.rubricId === id);
+          if (match) {
+            if (filters) {
+              if (filters.category && filters.category !== 'All' && match.category !== filters.category) continue;
+              if (filters.organSystem && filters.organSystem !== 'All' && match.organSystem !== filters.organSystem) continue;
+            }
+            hydrated.push({ ...match });
+          }
+        }
+      } catch (err) {
+        console.warn(`Failed to load chapter shard ${group.safeChapterId}-${group.shardId}:`, err);
+      }
+    }
+
+    return hydrated;
+  }
+
+  static async getManifest(): Promise<RepertoryPublishedCorpusManifest | null> {
+    await this.ensureActiveCorpusLoaded();
+    return this.cachedManifest;
+  }
+
+  static async getCanonicalConcepts(): Promise<Record<string, string>> {
+    // Return mock concept index matching the active loaded manifest
+    await this.ensureActiveCorpusLoaded();
+    // Concept mapping can be loaded from shard as needed or computed lazily
+    return {};
+  }
+
+  static async getRemedyIndex(): Promise<any> {
+    await this.ensureActiveCorpusLoaded();
+    return {};
+  }
+
+  static async getRAGDocuments(): Promise<any[]> {
+    await this.ensureActiveCorpusLoaded();
+    // Fetch all active RAG shards to serve RAG verification tests
+    if (!this.cachedManifest) return [];
+    
+    const results: any[] = [];
+    try {
+      const ragDir = path.join(this.getPublishedDir(this.cachedVersion), 'rag');
+      if (fs.existsSync(ragDir)) {
+        const files = fs.readdirSync(ragDir).filter(f => f.startsWith('documents-'));
+        for (const file of files) {
+          const shard = await this.artifactStore.readJson<any[]>(path.join(ragDir, file));
+          results.push(...shard);
+        }
+      }
+    } catch (e) {
+      console.warn("Failed to load RAG document shards:", e);
+    }
+    return results;
+  }
+
+  static getCacheStats() {
+    return {
+      hitCount: this.hitCount,
+      missCount: this.missCount,
+      chapterCache: this.chapterCache.getStats(),
+      indexCache: this.indexCache.getStats()
+    };
+  }
+}

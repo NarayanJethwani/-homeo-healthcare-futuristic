@@ -1,0 +1,25 @@
+[
+  {
+    "id": "tpb_mind_0",
+    "chapter": "Mind & Nervous System",
+    "name": "MELANCHOLY - Sadness",
+    "remedies": {
+      "Ign": 3,
+      "Nat-m": 3,
+      "Puls": 3,
+      "Sulph": 1
+    },
+    "source": "boenninghausen_tpb_1891"
+  },
+  {
+    "id": "tpb_generals_0",
+    "chapter": "Constitutional Generals",
+    "name": "WEAKNESS - Exhaustion from slight exertion",
+    "remedies": {
+      "Ars": 3,
+      "Calc": 2,
+      "Phos": 2
+    },
+    "source": "boenninghausen_tpb_1891"
+  }
+]

@@ -8,8 +8,12 @@ import {
   RemedyContent,
   DiseaseContent,
   SymptomContent,
-  LabTestContent
+  LabTestContent,
+  type KnowledgeEditorialStatus,
+  type LegacyKnowledgeVerificationStatus
 } from "../../knowledge/types";
+
+export type { KnowledgeEditorialStatus, LegacyKnowledgeVerificationStatus };
 
 export type EditorialRole = 
   | "Administrator" 
@@ -76,6 +80,10 @@ export interface KmsKnowledgeEntity {
   tags: string[];
   canonicalUrl: string;
   editorialStatus: EditorialStatus;
+  currentDraftVersionId?: string;
+  approvedVersionId?: string;
+  publishedVersionId?: string;
+  legacyVerificationStatus?: LegacyKnowledgeVerificationStatus;
   
   // Extended Editorial Governance fields
   editorialNotes: string; // Internal-only, never published

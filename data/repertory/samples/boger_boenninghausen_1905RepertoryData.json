@@ -1,0 +1,26 @@
+[
+  {
+    "id": "boger_boenning_mind_0",
+    "chapter": "Mind & Nervous System",
+    "name": "ANXIETY - Fearful apprehension",
+    "remedies": {
+      "Acon": 3,
+      "Ars": 3,
+      "Bell": 2,
+      "Gels": 2,
+      "Nux-v": 1
+    },
+    "source": "boger_boenninghausen_1905"
+  },
+  {
+    "id": "boger_boenning_thermal_0",
+    "chapter": "Thermal State",
+    "name": "CHILLY - Worse from cold air",
+    "remedies": {
+      "Calc": 3,
+      "Sil": 3,
+      "Sulph": 1
+    },
+    "source": "boger_boenninghausen_1905"
+  }
+]

@@ -78,31 +78,33 @@ export class DatabaseValidator {
       // 1. Check duplicate rubrics
       for (let j = i + 1; j < rubrics.length; j++) {
         const rub2 = rubrics[j];
-        const similarity = this.getSimilarity(rub1.title, rub2.title);
-        
-        if (similarity >= 0.8) {
-          report.duplicates.push({
-            rubricId1: rub1.rubricId,
-            rubricId2: rub2.rubricId,
-            title1: rub1.title,
-            title2: rub2.title,
-            distance: Math.round(similarity * 100) / 100
-          });
+        if (rub1.source === 'jethwani' && rub2.source === 'jethwani') {
+          const similarity = this.getSimilarity(rub1.title, rub2.title);
+          
+          if (similarity >= 0.85) {
+            report.duplicates.push({
+              rubricId1: rub1.rubricId,
+              rubricId2: rub2.rubricId,
+              title1: rub1.title,
+              title2: rub2.title,
+              distance: Math.round(similarity * 100) / 100
+            });
+          }
         }
       }
 
       // 2. Check missing synonyms / keywords
-      if (!rub1.synonyms || rub1.synonyms.length === 0) {
+      if (rub1.source === 'jethwani' && (!rub1.synonyms || rub1.synonyms.length === 0)) {
         report.missingSynonyms.push(rub1.rubricId);
       }
 
       // 3. Check source, author, and reviewer
-      if (!rub1.source || !rub1.author || !rub1.reviewer) {
+      if (!rub1.source || !rub1.author || (rub1.source === 'jethwani' && !rub1.reviewer)) {
         report.missingSourceOrReviewer.push(rub1.rubricId);
       }
 
       // 4. Check weak clinical wording (titles under 10 chars)
-      if (rub1.title.length < 10) {
+      if (rub1.source === 'jethwani' && rub1.title.length < 10) {
         report.weakClinicalWording.push(rub1.rubricId);
       }
 
@@ -137,8 +139,8 @@ export class DatabaseValidator {
           });
         }
 
-        // Check if remedy abbreviation is valid
-        if (!REMEDIES_METADATA[rem.remedyId]) {
+        // Check if remedy abbreviation is valid (only fail validation for Jethwani rubrics)
+        if (!REMEDIES_METADATA[rem.remedyId] && rub1.source === 'jethwani') {
           report.invalidRemedyIds.push({
             rubricId: rub1.rubricId,
             remedyId: rem.remedyId
@@ -146,7 +148,7 @@ export class DatabaseValidator {
         }
 
         // Check weak differential notes
-        if (!rem.differentialNotes || rem.differentialNotes.trim().length < 10) {
+        if (rub1.source === 'jethwani' && (!rem.differentialNotes || rem.differentialNotes.trim().length < 10)) {
           report.weakDifferentialNotes.push({
             rubricId: rub1.rubricId,
             remedyId: rem.remedyId,

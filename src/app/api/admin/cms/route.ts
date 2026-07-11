@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
       const auth = await authorizeRequest(request, "CMS_DRAFT_EDIT", "CMS_API_POST_saveDraft");
       if (!auth.authorized) return auth.response;
 
-      const { draftData, actor } = body;
+      const { draftData } = body;
       if (!draftData || !draftData.articleId) {
         return NextResponse.json({ error: "Missing draftData or articleId" }, { status: 400 });
       }
@@ -98,8 +98,7 @@ export async function POST(request: NextRequest) {
         containsPII(draftData.articleId) ||
         (draftData.title && containsPII(draftData.title)) ||
         (draftData.draftContent && containsPII(draftData.draftContent)) ||
-        (draftData.patientSummary && containsPII(draftData.patientSummary)) ||
-        (actor && containsPII(actor))
+        (draftData.patientSummary && containsPII(draftData.patientSummary))
       ) {
         return NextResponse.json({ error: "Payload contains potential PII/PHI" }, { status: 400 });
       }
@@ -109,7 +108,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "Invalid draft status value" }, { status: 400 });
       }
 
-      const draft = await saveDraft(draftData, actor);
+      const draft = await saveDraft(draftData, auth.session.name);
       return NextResponse.json({ draft });
     }
 
@@ -117,19 +116,16 @@ export async function POST(request: NextRequest) {
       const auth = await authorizeRequest(request, "CMS_ROLLBACK", "CMS_API_POST_rollback");
       if (!auth.authorized) return auth.response;
 
-      const { versionId, actor, confirmRollback } = body;
+      const { versionId, confirmRollback } = body;
       if (!versionId || typeof versionId !== "string") {
         return NextResponse.json({ error: "Invalid versionId" }, { status: 400 });
       }
       if (!confirmRollback) {
         return NextResponse.json({ error: "Explicit rollback confirmation is required" }, { status: 400 });
       }
-      if (actor && containsPII(actor)) {
-        return NextResponse.json({ error: "Actor contains potential PII" }, { status: 400 });
-      }
 
       try {
-        const draft = await rollbackToVersion(versionId, actor, confirmRollback);
+        const draft = await rollbackToVersion(versionId, auth.session.name, confirmRollback);
         return NextResponse.json({ draft });
       } catch (err: any) {
         return NextResponse.json({ error: err.message || "Failed to rollback version" }, { status: 400 });
@@ -140,7 +136,7 @@ export async function POST(request: NextRequest) {
       const auth = await authorizeRequest(request, "CMS_CLINICAL_APPROVE", "CMS_API_POST_clinicalApprove");
       if (!auth.authorized) return auth.response;
 
-      const { articleId, reviewer, reviewerRole, reviewDate, nextReviewDate, notes, actor } = body;
+      const { articleId, reviewer, reviewerRole, reviewDate, nextReviewDate, notes } = body;
       if (!articleId || !reviewer || !reviewDate || !nextReviewDate) {
         return NextResponse.json({ error: "Missing required clinical review validation fields" }, { status: 400 });
       }
@@ -148,8 +144,7 @@ export async function POST(request: NextRequest) {
       if (
         containsPII(articleId) ||
         containsPII(reviewer) ||
-        (notes && containsPII(notes)) ||
-        (actor && containsPII(actor))
+        (notes && containsPII(notes))
       ) {
         return NextResponse.json({ error: "Payload contains potential PII/PHI" }, { status: 400 });
       }
@@ -162,7 +157,8 @@ export async function POST(request: NextRequest) {
           reviewDate,
           nextReviewDate,
           notes,
-          actor
+          auth.session.name,
+          auth.session.role
         );
         return NextResponse.json({ success });
       } catch (err: any) {
@@ -174,8 +170,8 @@ export async function POST(request: NextRequest) {
       const auth = await authorizeRequest(request, "CMS_PUBLISH", "CMS_API_POST_publish");
       if (!auth.authorized) return auth.response;
 
-      const { articleId, publisher, changeSummary, confirmPublish } = body;
-      if (!articleId || !publisher || !changeSummary) {
+      const { articleId, changeSummary, confirmPublish } = body;
+      if (!articleId || !changeSummary) {
         return NextResponse.json({ error: "Missing publishing payload details" }, { status: 400 });
       }
       if (!confirmPublish) {
@@ -184,14 +180,19 @@ export async function POST(request: NextRequest) {
 
       if (
         containsPII(articleId) ||
-        containsPII(publisher) ||
         containsPII(changeSummary)
       ) {
         return NextResponse.json({ error: "Payload contains potential PII/PHI" }, { status: 400 });
       }
 
       try {
-        const result = await publishArticle(articleId, publisher, changeSummary, confirmPublish);
+        const result = await publishArticle(
+          articleId,
+          auth.session.name,
+          changeSummary,
+          confirmPublish,
+          auth.session.role
+        );
         return NextResponse.json(result);
       } catch (err: any) {
         return NextResponse.json({ error: "Failed to publish article safely" }, { status: 500 });

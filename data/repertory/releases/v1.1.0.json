@@ -1,0 +1,10 @@
+{
+  "version": "v1.1.0",
+  "sourceIds": [
+    "kent_1908",
+    "boericke_1927"
+  ],
+  "scoringVersion": "2",
+  "normalizerVersion": "3",
+  "conceptMappingVersion": "1"
+}

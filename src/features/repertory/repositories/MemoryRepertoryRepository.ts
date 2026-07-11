@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import { RepertoryRepository } from './RepertoryRepository';
 import { RepertoryRubric, GraphTriple, MiasmType } from '../types';
 import { SEED_RUBRICS, SEED_TRIPLES } from '../data/repertorySeed';
@@ -10,6 +12,41 @@ export class MemoryRepertoryRepository implements RepertoryRepository {
     // Seed the database in memory
     SEED_RUBRICS.forEach(r => this.rubrics.set(r.rubricId, { ...r }));
     this.triples = [...SEED_TRIPLES];
+
+    // Load any dynamically ingested public-domain sources
+    try {
+      const publicDataDir = path.join(process.cwd(), 'public', 'data');
+      if (fs.existsSync(publicDataDir)) {
+        const files = fs.readdirSync(publicDataDir);
+        files.forEach(file => {
+          if (file.startsWith('ingested_') && file.endsWith('.json')) {
+            const filePath = path.join(publicDataDir, file);
+            const content = fs.readFileSync(filePath, 'utf-8');
+            const rubrics: RepertoryRubric[] = JSON.parse(content);
+            rubrics.forEach(r => {
+              this.rubrics.set(r.rubricId, { ...r });
+              // Dynamically build graph triples for remedy entries
+              if (r.relatedRemedies) {
+                r.relatedRemedies.forEach(rem => {
+                  this.triples.push({
+                    subjectId: r.rubricId,
+                    predicate: `hasRemedyGrade${rem.grade}` as any,
+                    objectId: rem.remedyId
+                  });
+                });
+              }
+            });
+            console.log(`MemoryRepertoryRepository: Loaded ${rubrics.length} ingested rubrics from ${file}`);
+          }
+        });
+      }
+    } catch (e) {
+      console.warn("MemoryRepertoryRepository: Failed to load ingested files:", e);
+    }
+  }
+
+  getRubricsSync(): RepertoryRubric[] {
+    return Array.from(this.rubrics.values());
   }
 
   async getRubrics(filters?: {

@@ -110,11 +110,16 @@ export class OllamaService {
     const url = `${this.endpoint}/api/embeddings`;
     
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 200);
+      
       const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ model, prompt: text })
+        body: JSON.stringify({ model, prompt: text }),
+        signal: controller.signal
       });
+      clearTimeout(timeoutId);
 
       if (!res.ok) {
         throw new Error(`Ollama embeddings failed with status: ${res.status}`);

@@ -4,6 +4,7 @@ import { ORGANON_APHORISMS } from "./organonData";
 import { globalVectorStore } from "../features/knowledge/retrieval/vectorStore";
 import { embeddingManager } from "../features/knowledge/retrieval/embeddingProvider";
 import { globalKmsRepository } from "../features/knowledge-admin/repositories/MemoryRepository";
+import { isEntityEligibleForRetrieval } from "../features/knowledge/retrieval/eligibilityService";
 
 export interface KnowledgeDocument {
   id: string;
@@ -177,7 +178,7 @@ export class RAGService {
     try {
       if (globalKmsRepository && typeof globalKmsRepository.getEntitiesSync === "function") {
         const cmsEntities = globalKmsRepository.getEntitiesSync();
-        const published = cmsEntities.filter((e: any) => e.editorialStatus === "published");
+        const published = cmsEntities.filter((e: any) => isEntityEligibleForRetrieval(e));
         
         published.forEach((entity: any) => {
           const bodyText = typeof entity.content?.overview === "string" 
@@ -199,6 +200,36 @@ export class RAGService {
       }
     } catch (err) {
       console.warn("[RAGService] Failed to load dynamic CMS published entities into search index:", err);
+    }
+
+    // 4. Map Approved Repertory Rubrics
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { repertoryRepository } = require("../features/repertory/database/repertoryDb");
+      if (repertoryRepository && typeof (repertoryRepository as any).getRubricsSync === "function") {
+        const rubrics = (repertoryRepository as any).getRubricsSync();
+        const approvedRubrics = rubrics.filter((r: any) => r.editorialStatus === undefined || r.editorialStatus === "approved" || r.editorialStatus === "published");
+        
+        approvedRubrics.forEach((rub: any) => {
+          const remedyList = rub.relatedRemedies
+            ?.map((rem: any) => `${rem.remedyId} (grade ${rem.grade})`)
+            .join(", ") || "None";
+            
+          const title = `Clinical Rubric: ${rub.title}`;
+          const content = `Clinical Rubric: ${rub.title}. Classical wording: ${rub.classicalWording}. Meaning: ${rub.plainLanguageMeaning}. Category: ${rub.category}. Source: ${rub.sourceId || rub.source}. Reviewer: ${rub.reviewer || "Unknown"}. Remedy coverages: ${remedyList}.`;
+          
+          docs.push({
+            id: `rub_${rub.rubricId}`,
+            category: "Clinical Repertory",
+            title,
+            content,
+            citations: [rub.sourceCitation || `${rub.author}, ${rub.source}`],
+            tags: [rub.title.toLowerCase(), rub.category.toLowerCase(), "rubric", "repertory", rub.sourceId || rub.source]
+          });
+        });
+      }
+    } catch (err) {
+      console.warn("[RAGService] Failed to load repertory rubrics into search index:", err);
     }
 
     return docs;

@@ -15,11 +15,36 @@ export class RepertorySearch {
       organSystem?: string;
       miasm?: string;
       remedy?: string;
+      sourceId?: string;
+      author?: string;
+      editorialStatus?: string;
+      includeDrafts?: boolean;
     },
     boostRelationships: boolean = false,
     enableSemanticExpansion: boolean = false
   ): Promise<Array<{ rubric: RepertoryRubric; score: number }>> {
-    const rubrics = await repertoryRepository.getRubrics(filters);
+    let rubrics = await repertoryRepository.getRubrics(filters);
+
+    // Apply additional corpus-aware filters
+    if (filters) {
+      if (filters.sourceId && filters.sourceId !== 'All') {
+        rubrics = rubrics.filter(r => r.sourceId === filters.sourceId || r.source === filters.sourceId);
+      }
+      if (filters.author && filters.author !== 'All') {
+        rubrics = rubrics.filter(r => r.author === filters.author);
+      }
+      if (filters.editorialStatus) {
+        rubrics = rubrics.filter(r => r.editorialStatus === filters.editorialStatus);
+      }
+      if (!filters.includeDrafts) {
+        // Exclude unapproved/draft items by default in production search
+        rubrics = rubrics.filter(r => r.editorialStatus === undefined || r.editorialStatus === "approved" || r.editorialStatus === "published");
+      }
+    } else {
+      // By default exclude drafts
+      rubrics = rubrics.filter(r => r.editorialStatus === undefined || r.editorialStatus === "approved" || r.editorialStatus === "published");
+    }
+
     const normalizedQuery = queryText.toLowerCase().trim();
     
     if (!normalizedQuery) {

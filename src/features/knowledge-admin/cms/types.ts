@@ -1,11 +1,15 @@
 export type CmsArticleStatus =
   | "draft"
+  | "medical-review"
+  | "editorial-review"
+  | "approved"
+  | "published"
+  | "archived"
+  // Legacy statuses for backwards compatibility
   | "in-editorial-review"
   | "changes-requested"
   | "clinically-approved"
-  | "ready-to-publish"
-  | "published"
-  | "archived";
+  | "ready-to-publish";
 
 export type CmsChangeType =
   | "content-edit"
@@ -42,6 +46,11 @@ export interface CmsArticleDraft {
   version: number;
   basedOnPublishedVersion?: string;
   notes?: string;
+  currentDraftVersionId?: string;
+  approvedVersionId?: string;
+  publishedVersionId?: string;
+  revision?: number;
+  legacyVerificationStatus?: string;
 }
 
 export interface CmsArticleVersion {
@@ -80,5 +89,31 @@ export interface CmsPublishResult {
   rollbackAvailable: boolean;
   warnings: string[];
   errors: string[];
+}
+
+export interface KnowledgeReviewRecord {
+  id: string;
+  entityId: string;
+  versionId: string;
+
+  reviewType:
+    | "medical"
+    | "editorial"
+    | "approval"
+    | "publication"
+    | "return-for-revision";
+
+  decision:
+    | "approved"
+    | "rejected"
+    | "returned"
+    | "published"
+    | "archived";
+
+  reviewerId: string;
+  reviewerNameSnapshot?: string;
+  comments?: string;
+
+  createdAt: string;
 }
 

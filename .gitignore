@@ -48,4 +48,8 @@ next-env.d.ts
 # docs pending update config
 /docs/pending-update.json
 
+# Ignore large generated corpus files
+data/**/corpus.json
+data/**/rag-documents.json
+
 

@@ -30,6 +30,32 @@ export interface GradedRemedy {
   differentialNotes?: string;       // Key differentiation flags vs. related remedies
 }
 
+export interface RepertoryCrossReference {
+  rubricId: string;
+  relationshipType: "exact-equivalent" | "close-equivalent" | "broader-than" | "narrower-than" | "related-to" | "historical-variant" | "possible-match" | "not-equivalent";
+  notes?: string;
+}
+
+export interface RepertoryRemedyEntry {
+  remedyId: string;
+  sourceAbbreviation: string;
+  canonicalAbbreviation: string;
+  sourceGrade: string | number;
+  normalizedGrade?: number;
+  gradeSystemId: string;
+  sourceId: string;
+  sourcePage?: number;
+}
+
+export interface RepertoryGradeSystem {
+  id: string;
+  sourceId: string;
+  originalScale: string[];
+  normalizedScale?: number[];
+  normalizationMethod?: string;
+  normalizationConfidence: "exact" | "mapped" | "approximate" | "unmapped";
+}
+
 export interface RepertoryRubric {
   rubricId: string;                 // Unique identifier
   title: string;                    // Clinical title
@@ -61,7 +87,47 @@ export interface RepertoryRubric {
   reviewer: string;                 // Reviewing clinical authority
   lastUpdated: string;              // ISO timestamp
   relatedRemedies: GradedRemedy[];  // Upgraded structured remedies list
+
+  // Phase 4 - Canonical Data Architecture Additions
+  id?: string;                      // Compatibility alias for rubricId
+  sourceId?: string;                 // References RepertorySourceRecord.id
+  sourceRubricId?: string;           // Original ID in the source dataset
+  canonicalConceptId?: string;       // References canonical concept layer
+  chapterId?: string;                // References chapter ID
+  parentId?: string;                 // References parent rubric ID
+  hierarchyPath?: string[];          // List of parent/ancestor names or IDs
+  originalText?: string;             // Immutable original source text
+  normalizedText?: string;           // Standardized clinical representation
+  displayText?: string;              // Clean UI display text (maps to title)
+  language?: string;                 // Language code (e.g., 'en')
+  rubricType?:
+    | "symptom"
+    | "modality"
+    | "causation"
+    | "clinical"
+    | "pathological-general"
+    | "relationship"
+    | "concomitant"
+    | "location"
+    | "sensation"
+    | "other";
+  remedyEntries?: RepertoryRemedyEntry[];
+  crossReferences?: RepertoryCrossReference[];
+  pageStart?: number;
+  pageEnd?: number;
+  sourceCitation?: string;
+  evidenceStatus?: "source-verified" | "editorially-verified";
+  editorialStatus?:
+    | "draft"
+    | "medical-review"
+    | "editorial-review"
+    | "approved"
+    | "published"
+    | "archived";
+  createdAt?: string;
+  updatedAt?: string;
 }
+
 
 export type GraphPredicate =
   | 'relatesTo'          // Rubric -> Rubric (Complementary relationship)
@@ -110,7 +176,11 @@ export interface ScoringResult {
     miasm: string;
     thermal: string;
     coverageRatio?: string;
-    rubricContributions?: Array<{ rubricId: string; rubricTitle: string; contribution: number; grade: number }>;
+    rawScore?: number;
+    balancedScore?: number;
+    sourceContributions?: Record<string, number>;
+    normalizationMethod?: string;
+    rubricContributions?: Array<{ rubricId: string; rubricTitle: string; contribution: number; grade: number; sourceId?: string }>;
     contradictoryEvidence?: string[];
     constitutionalFit?: number;
     miasmaticFit?: number;
@@ -298,4 +368,116 @@ export interface RemedyProvenance {
   confidence: number;
   editorialVerification: string;
 }
+
+export type RepertoryRubricVersion = {
+  id: string;
+  rubricId: string;
+  sourceId: string;
+
+  baseSourceVersion: string;
+  versionNumber: number;
+
+  originalExtractedText: string;
+  correctedDisplayText?: string;
+  normalizedText?: string;
+
+  originalRemedyEntries: RepertoryRemedyEntry[];
+  correctedRemedyEntries?: RepertoryRemedyEntry[];
+
+  correctionReason: string;
+
+  editorialStatus:
+    | "draft"
+    | "clinical-review"
+    | "editorial-review"
+    | "approved"
+    | "published"
+    | "rejected"
+    | "archived";
+
+  createdByUid: string;
+  createdByRole: string;
+  createdAt: string;
+
+  reviewedByUid?: string;
+  reviewedAt?: string;
+
+  supersedesVersionId?: string;
+  isCurrentApprovedVersion: boolean;
+};
+
+export type RepertoryEditorialAuditLog = {
+  id: string;
+
+  entityType:
+    | "source"
+    | "chapter"
+    | "rubric"
+    | "rubric-version"
+    | "remedy-mapping"
+    | "concept-mapping"
+    | "publication"
+    | "corpus-snapshot";
+
+  entityId: string;
+  sourceId?: string;
+
+  action:
+    | "created"
+    | "corrected"
+    | "submitted"
+    | "approved"
+    | "rejected"
+    | "published"
+    | "archived"
+    | "remedy-resolved"
+    | "concept-mapped"
+    | "snapshot-built"
+    | "snapshot-activated"
+    | "snapshot-failed"
+    | "snapshot-rolled-back";
+
+  previousValue?: unknown;
+  nextValue?: unknown;
+  reason: string;
+
+  actorUid: string;
+  actorRole: string;
+
+  requestId?: string;
+  versionId?: string;
+  corpusVersion?: string;
+  importManifestId?: string;
+
+  createdAt: string;
+};
+
+export type RepertoryPublishedCorpusManifest = {
+  corpusVersion: string;
+  generatedAt: string;
+  generatedBy: string;
+
+  sourceIds: string[];
+  sourceVersions: Record<string, string>;
+
+  totalSources: number;
+  totalChapters: number;
+  totalRubrics: number;
+  totalRemedyEntries: number;
+  totalCanonicalConcepts: number;
+
+  unresolvedRemedyCount: number;
+  excludedRecordCount: number;
+
+  sourceChecksums: Record<string, string>;
+  artifactChecksums: Record<string, string>;
+
+  previousCorpusVersion?: string;
+
+  validationStatus: "passed" | "failed";
+  validationErrors: string[];
+
+  publicationStatus: "staged" | "active" | "superseded" | "rolled-back";
+};
+
 

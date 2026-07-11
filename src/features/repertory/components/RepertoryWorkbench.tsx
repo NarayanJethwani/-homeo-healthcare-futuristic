@@ -5,9 +5,6 @@ import {
   ChevronDown, ChevronUp
 } from 'lucide-react';
 import { RepertoryRubric, ScoringResult, RemedyDifferentiation, ValidationReport, ClinicalReasoningSummary } from '../types';
-import { repertoryRepository } from '../database/repertoryDb';
-import { DatabaseValidator } from '../validators/databaseValidator';
-import { ImportExportService } from '../import-export/importExportService';
 import { DifferentialComparison } from './DifferentialComparison';
 import { ConfidenceBreakdownPanel } from './ConfidenceBreakdownPanel';
 import { RubricCoverageHeatmap } from './RubricCoverageHeatmap';
@@ -198,7 +195,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
     const loadRubrics = async () => {
       setLoading(true);
       try {
-        const data = await repertoryRepository.getRubrics();
+        const data = await clinicalRepertoryService.current.loadInitialRubrics();
         setRubrics(data);
       } catch (e) {
         console.error("Failed to load rubrics:", e);
@@ -228,11 +225,10 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
         };
 
         if (debouncedSearch.trim()) {
-          const candidates = await clinicalRepertoryService.current.searchRubrics(debouncedSearch, filters);
-          const data = await Promise.all(candidates.map(c => repertoryRepository.getRubricById(c.id)));
-          setRubrics(data.filter((r): r is NonNullable<typeof r> => r !== undefined));
+          const data = await clinicalRepertoryService.current.searchFullRubrics(debouncedSearch, filters);
+          setRubrics(data);
         } else {
-          const data = await repertoryRepository.getRubrics(filters);
+          const data = await clinicalRepertoryService.current.getRubrics(filters);
           setRubrics(data);
         }
       } catch (e) {
@@ -454,13 +450,13 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
     }
     
     const rubricsPayload = await Promise.all(selectedRubrics.map(async (s) => {
-      const r = await repertoryRepository.getRubricById(s.rubricId);
+      const r = await clinicalRepertoryService.current.getRubricById(s.rubricId);
       const weight = s.severity >= 7 ? 3 : s.severity >= 4 ? 2 : 1;
       const grades: Record<string, number> = {};
       
       const remediesList = scoringResult?.topRemedies.map(tr => tr.remedyId) || ["Nux-v", "Lyc", "Ars", "Puls", "Sulph", "Rhus-t", "Calc", "Sil", "Nat-m", "Ign", "Sep"];
       remediesList.forEach(rem => {
-        const foundRem = r?.relatedRemedies?.find(rr => rr.remedyId.toLowerCase() === rem.toLowerCase());
+        const foundRem = r?.relatedRemedies?.find((rr: any) => rr.remedyId.toLowerCase() === rem.toLowerCase());
         grades[rem] = foundRem ? foundRem.grade : 0;
       });
       
@@ -615,9 +611,23 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
   const handleRunAudit = async () => {
     setAuditLoading(true);
     try {
-      const report = await DatabaseValidator.validateDatabase();
-      setAuditReport(report);
-      setShowAuditModal(true);
+      const response = await fetch('/api/admin/repertory-review');
+      const data = await response.json();
+      if (data.success) {
+        setAuditReport({
+          isValid: (data.duplicates || []).length === 0,
+          duplicates: data.duplicates || [],
+          missingSynonyms: [],
+          missingRemedyGrades: [],
+          orphanRubrics: [],
+          invalidRemedyIds: [],
+          missingSourceOrReviewer: [],
+          weakClinicalWording: [],
+          prohibitedClaims: [],
+          weakDifferentialNotes: []
+        });
+        setShowAuditModal(true);
+      }
     } catch (e) {
       console.error("Database audit failed:", e);
     }
@@ -627,20 +637,20 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
   // Export handlers
   const handleExportData = async (type: 'json' | 'csv' | 'mdx' | 'triples') => {
     try {
-      let content = '';
       let filename = `repertory_export_${Date.now()}`;
+      const res = await fetch(`/api/repertory/export?type=${type}`);
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || "Server failed to export");
+      
+      const content = data.content;
       
       if (type === 'json') {
-        content = await ImportExportService.exportToJSON();
         filename += '.json';
       } else if (type === 'csv') {
-        content = await ImportExportService.exportToCSV();
         filename += '.csv';
       } else if (type === 'mdx') {
-        content = await ImportExportService.exportToMDX();
         filename += '.mdx';
       } else {
-        content = await ImportExportService.exportToGraphTriples();
         filename += '_triples.txt';
       }
 

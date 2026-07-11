@@ -1,0 +1,23 @@
+[
+  {
+    "id": "synoptic_mind_0",
+    "chapter": "Mind & Nervous System",
+    "name": "IRRITABILITY - Anger easily triggered",
+    "remedies": {
+      "Cham": 3,
+      "Nux-v": 3,
+      "Bry": 2
+    },
+    "source": "boger_synoptic_1915"
+  },
+  {
+    "id": "synoptic_modalities_0",
+    "chapter": "Modalities",
+    "name": "MOTION - Worse from motion",
+    "remedies": {
+      "Bry": 3,
+      "Nux-v": 1
+    },
+    "source": "boger_synoptic_1915"
+  }
+]

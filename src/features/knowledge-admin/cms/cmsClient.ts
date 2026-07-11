@@ -104,3 +104,30 @@ export async function getPublicationEvents(articleId?: string): Promise<CmsPubli
   const data = await res.json();
   return data.publications || [];
 }
+
+export async function transitionLifecycle(
+  articleId: string,
+  targetStatus: string,
+  options: {
+    comments?: string;
+    expectedRevision?: number;
+    reviewer?: string;
+    reviewerRole?: string;
+    reviewDate?: string;
+    nextReviewDate?: string;
+    changeSummary?: string;
+    confirmPublish?: boolean;
+  } = {}
+): Promise<CmsArticleDraft> {
+  const res = await fetch("/api/admin/cms", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "transitionLifecycle", articleId, targetStatus, ...options })
+  });
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.error || "Failed to transition state");
+  }
+  const data = await res.json();
+  return data.draft;
+}
