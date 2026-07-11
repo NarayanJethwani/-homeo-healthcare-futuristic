@@ -272,3 +272,79 @@ export function updateBookMetadata(
     versionBumped: false
   };
 }
+
+export type ReaderBookSelection =
+  | { type: "legacy"; bookId: string }
+  | { type: "governed"; book: MateriaMedicaBook };
+
+export type SourcePageRange = {
+  printedPageStart?: number;
+  printedPageEnd?: number;
+  scanPageIndexStart: number;
+  scanPageIndexEnd: number;
+  mappingConfidence: "verified" | "probable" | "uncertain";
+};
+
+export type PassageBlock =
+  | { type: "heading"; level: 2 | 3; text: string }
+  | { type: "paragraph"; text: string }
+  | { type: "section-label"; text: string };
+
+export type SampleMateriaMedicaPassage = {
+  id: string;
+  bookId: string;
+  sourceVersionId: string;
+  remedyId: string;
+  remedyDisplayName: string;
+  editionId: string;
+  sourcePageRange: SourcePageRange;
+
+  originalText: string;
+  normalizedText: string;
+  blocks: PassageBlock[];
+
+  sourceFileChecksum: string;
+  originalTextChecksum: string;
+  normalizedTextChecksum: string;
+  blocksChecksum: string;
+
+  correctionStatus: "human-reviewed";
+  editorialStatus: "approved";
+
+  transcription: {
+    actorUid: string;
+    completedAt: string;
+  };
+  review: {
+    actorUid: string;
+    completedAt: string;
+    decision: "approved";
+  };
+};
+
+export type MateriaMedicaSourceVersion = {
+  sourceVersionId: string;
+  bookId: string;
+  provider: "internet-archive";
+  providerItemId: string;
+  sourceFilename: string;
+  sourceFileChecksum: string;
+  sourceFileType: "pdf" | "txt" | "html" | "xml";
+  sourceFileSize: number;
+
+  rightsStatus: RightsStatus;
+  editorialStatus: EditorialStatus;
+  ingestionStatus: IngestionStatus;
+
+  approvedBy?: string;
+  approvedAt?: string;
+  deprecatedAt?: string;
+};
+
+export type SampleCorpusManifest = {
+  manifestVersion: 1;
+  sourceVersionId: string;
+  passageIds: string[];
+  manifestChecksum: string;
+};
+

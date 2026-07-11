@@ -3849,30 +3849,71 @@ export default function StorePage() {
                                 </button>
                               </div>
                             </div>
+                          </div>
 
-                            {/* Conditions Covered */}
-                            <div className="p-3 bg-white/40 rounded-xl border border-slate-200/60 space-y-2">
+                          {/* Active Health Concerns Selector */}
+                          <div className="p-4 bg-white/40 rounded-2xl border border-slate-200/60 space-y-4 text-left">
+                            <div className="flex justify-between items-start gap-4">
                               <div>
-                                <h4 className="text-[10px] font-black text-[#1A2421] uppercase tracking-wider">Conditions Covered</h4>
-                                <p className="text-[8px] text-slate-400 font-bold uppercase">Active concerns to treat</p>
+                                <h4 className="text-[10px] font-black text-[#1A2421] uppercase tracking-wider">Active Health Concerns</h4>
+                                <p className="text-[8px] text-slate-400 font-bold uppercase mt-0.5">
+                                  Select the number of concurrent active health concerns you wish to address. Multi-concern tracking scales physician analysis time.
+                                </p>
                               </div>
-                              <div className="grid grid-cols-5 gap-1">
-                                {[1, 2, 3, 4, 5].map((val) => (
-                                  <button
-                                    key={val}
-                                    type="button"
-                                    onClick={() => setWalkInConditionsCount(val)}
-                                    className={`py-1 rounded-lg text-center transition-all duration-305 cursor-pointer border text-xs font-black hover:border-slate-400 hover:-translate-y-0.5 active:scale-95 ${
-                                      walkInConditionsCount === val
-                                        ? "bg-[#1A2421] text-white border-transparent shadow-sm"
-                                        : "bg-white/60 border-slate-200 text-slate-600 hover:border-slate-800 hover:bg-white"
-                                    }`}
-                                  >
-                                    {val === 5 ? "5+" : val}
-                                  </button>
-                                ))}
+                              <div className="w-8 h-8 bg-mint/5 border border-mint/10 text-mint rounded-xl flex items-center justify-center flex-shrink-0">
+                                <Layers className="w-4.5 h-4.5" />
                               </div>
                             </div>
+
+                            <div className="flex flex-col gap-2">
+                              {(() => {
+                                const activeTierSurcharges = surchargesLookup[walkInTier as keyof typeof surchargesLookup] || { unitWeekly: 0, unitMonthly: 0 };
+                                const items = [
+                                  { count: 1, label: "1 Health Concern", surchargeText: "Included", surchargeInfo: "Base plan" },
+                                  { count: 2, label: "2 Health Concerns", surchargeText: walkInBillingCycle === "weekly" ? `+₹${activeTierSurcharges.unitWeekly.toLocaleString("en-IN")}/wk` : `+₹${activeTierSurcharges.unitMonthly.toLocaleString("en-IN")}/mo`, surchargeInfo: "Dual-concern coordination" },
+                                  { count: 3, label: "3 Health Concerns", surchargeText: walkInBillingCycle === "weekly" ? `+₹${(activeTierSurcharges.unitWeekly * 2).toLocaleString("en-IN")}/wk` : `+₹${(activeTierSurcharges.unitMonthly * 2).toLocaleString("en-IN")}/mo`, surchargeInfo: "Triple-concern coordination" },
+                                  { count: 4, label: "4 Health Concerns", surchargeText: walkInBillingCycle === "weekly" ? `+₹${(activeTierSurcharges.unitWeekly * 3).toLocaleString("en-IN")}/wk` : `+₹${(activeTierSurcharges.unitMonthly * 3).toLocaleString("en-IN")}/mo`, surchargeInfo: "Quad-concern coordination" },
+                                  { count: 5, label: "5+ Health Concerns", surchargeText: walkInBillingCycle === "weekly" ? `+₹${(activeTierSurcharges.unitWeekly * 4).toLocaleString("en-IN")}/wk` : `+₹${(activeTierSurcharges.unitMonthly * 4).toLocaleString("en-IN")}/mo`, surchargeInfo: "Multi-concern integration" }
+                                ];
+
+                                return items.map((item) => {
+                                  const active = walkInConditionsCount === item.count;
+                                  return (
+                                    <button
+                                      type="button"
+                                      key={item.count}
+                                      onClick={() => setWalkInConditionsCount(item.count)}
+                                      className={`px-4 py-3 rounded-2xl border transition-all duration-305 flex items-center justify-between cursor-pointer hover:-translate-y-1 hover:shadow-sm active:scale-[0.98] ${
+                                        active
+                                          ? "border-mint bg-gradient-to-r from-mint/[0.05] to-transparent ring-1 ring-mint/20 font-bold shadow-md shadow-mint/5"
+                                          : "border-slate-200/60 hover:border-slate-400 text-slate-700 bg-white/40 hover:bg-white"
+                                      }`}
+                                    >
+                                      <div className="flex items-center gap-3">
+                                        <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all ${
+                                          active ? "border-mint bg-mint" : "border-slate-300 bg-white"
+                                        }`}>
+                                          {active && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                                        </div>
+                                        <div className="text-left">
+                                          <span className="text-xs font-bold text-slate-800 block leading-tight">{item.label}</span>
+                                          <span className="text-[9px] text-slate-400 font-bold block mt-0.5 uppercase tracking-widest">{item.surchargeInfo}</span>
+                                        </div>
+                                      </div>
+                                      <span className="text-xs font-black text-mint-dark font-sans">
+                                        {item.surchargeText}
+                                      </span>
+                                    </button>
+                                  );
+                                });
+                              })()}
+                            </div>
+
+                            {walkInConditionsCount > 1 && (
+                              <p className="text-[10px] text-amber-700 font-semibold leading-relaxed bg-amber-500/5 border border-amber-500/10 p-3.5 rounded-2xl text-left mt-2">
+                                Additional health concerns may require increased physician time, individualized treatment planning, and coordinated follow-up. The Clinical Complexity Adjustment reflects the additional care required.
+                              </p>
+                            )}
                           </div>
 
                           {/* Commitment Duration */}
@@ -4171,31 +4212,24 @@ export default function StorePage() {
                                   <span>₹{pricing.basePrice.toLocaleString("en-IN")} / {walkInBillingCycle === "weekly" ? "wk" : "mo"}</span>
                                 </div>
                                 {pricing.surcharge > 0 && (
-                                  <div className="flex justify-between text-amber-600">
-                                    <span>Surcharge</span>
+                                  <div className="flex justify-between text-xs text-slate-600 font-semibold tracking-wide">
+                                    <span>Clinical Complexity Adjustment ({walkInConditionsCount} Concerns)</span>
                                     <span>+₹{pricing.surcharge.toLocaleString("en-IN")} / {walkInBillingCycle === "weekly" ? "wk" : "mo"}</span>
                                   </div>
                                 )}
-                                {pricing.adjustedBasePrice !== pricing.basePrice ? (
-                                  <>
-                                    <div className="flex justify-between border-t border-slate-100 pt-1.5 font-bold text-slate-900">
-                                      <span>Adjusted Rate</span>
-                                      <span>₹{pricing.adjustedBasePrice.toLocaleString("en-IN")} / {walkInBillingCycle === "weekly" ? "wk" : "mo"}</span>
-                                    </div>
-                                    <div className="flex justify-between text-xs text-slate-500 font-bold uppercase tracking-wider">
-                                      <span>Timeline ({walkInDurationValue} {walkInBillingCycle === "weekly" ? (walkInDurationValue === 1 ? "week" : "weeks") : (walkInDurationValue === 1 ? "month" : "months")})</span>
-                                      <span>₹{pricing.rawTotal.toLocaleString("en-IN")}</span>
-                                    </div>
-                                  </>
-                                ) : (
-                                  <div className="flex justify-between border-t border-slate-100 pt-1.5 text-xs text-slate-500 font-bold uppercase tracking-wider">
-                                    <span>Timeline ({walkInDurationValue} {walkInBillingCycle === "weekly" ? (walkInDurationValue === 1 ? "week" : "weeks") : (walkInDurationValue === 1 ? "month" : "months")})</span>
-                                    <span>₹{pricing.rawTotal.toLocaleString("en-IN")}</span>
+                                {pricing.adjustedBasePrice !== pricing.basePrice && (
+                                  <div className="flex justify-between text-xs text-slate-900 font-bold tracking-wide border-b border-slate-900/5 pb-2">
+                                    <span>Personalized Care Investment</span>
+                                    <span>₹{pricing.adjustedBasePrice.toLocaleString("en-IN")} / {walkInBillingCycle === "weekly" ? "wk" : "mo"}</span>
                                   </div>
                                 )}
+                                <div className="flex justify-between text-xs text-slate-600 font-semibold tracking-wide">
+                                  <span>Recommended Care Period ({walkInDurationValue} {walkInBillingCycle === "weekly" ? (walkInDurationValue === 1 ? "week" : "weeks") : (walkInDurationValue === 1 ? "month" : "months")})</span>
+                                  <span>₹{pricing.rawTotal.toLocaleString("en-IN")}</span>
+                                </div>
                                 {pricing.discountPercent > 0 && (
-                                  <div className="flex justify-between text-emerald-600">
-                                    <span>Long-Term Care Benefit ({pricing.discountPercent}%)</span>
+                                  <div className="flex justify-between text-xs text-emerald-600 font-bold tracking-wide">
+                                    <span>Continuity of Care Benefit ({pricing.discountPercent}%)</span>
                                     <span>-₹{Math.round(pricing.adjustedBasePrice * walkInDurationValue * (pricing.discountPercent / 100)).toLocaleString("en-IN")}</span>
                                   </div>
                                 )}
@@ -4212,7 +4246,7 @@ export default function StorePage() {
                                   </div>
                                 )}
                                 {walkInApplyConcession && walkInConcessionType === "override" && concessionDiscount < 0 && (
-                                  <div className="flex justify-between text-amber-600 font-bold">
+                                  <div className="flex justify-between text-amber-605 font-bold">
                                     <span>Override Increase</span>
                                     <span>+₹{Math.abs(concessionDiscount).toLocaleString("en-IN")}</span>
                                   </div>
@@ -4227,26 +4261,29 @@ export default function StorePage() {
                                   </div>
                                 ))}
                                 <div className="pt-2 border-t border-slate-900/5 space-y-1.5">
-                                  <div className="flex justify-between text-[10px] text-slate-500 font-bold uppercase tracking-wider">
+                                  <div className="flex justify-between text-[10px] text-slate-500 font-semibold tracking-wide">
                                     <span>Care Period</span>
                                     <span className="text-slate-800 font-extrabold">{walkInBillingCycle === "weekly" ? walkInDurationValue * 7 : walkInDurationValue * 30} Days</span>
                                   </div>
-                                  <div className="flex justify-between text-[10px] text-slate-500 font-bold uppercase tracking-wider border-b border-slate-900/5 pb-2">
-                                    <span>Daily Cost Equivalent</span>
+                                  <div className="flex justify-between text-[10px] text-slate-500 font-semibold tracking-wide border-b border-slate-900/5 pb-2">
+                                    <span>Equivalent Daily Care Investment</span>
                                     <span className="text-emerald-700 font-extrabold">₹{Math.round(finalPrice / (walkInBillingCycle === "weekly" ? walkInDurationValue * 7 : walkInDurationValue * 30))}/day</span>
                                   </div>
                                 </div>
-                                <div className="flex justify-between border-t-2 border-slate-900/10 pt-2 text-sm font-black text-slate-900">
-                                  <span>Total Payable</span>
-                                  <motion.span
-                                    key={finalPrice}
-                                    initial={{ scale: 0.95, opacity: 0.8 }}
-                                    animate={{ scale: 1, opacity: 1 }}
-                                    transition={{ type: "spring", stiffness: 350, damping: 15 }}
-                                    className="text-mint-dark font-sans"
-                                  >
-                                    ₹{finalPrice.toLocaleString("en-IN")}
-                                  </motion.span>
+                                <div className="pt-1 flex justify-between items-baseline">
+                                  <span className="text-xs font-bold text-slate-800 tracking-wide">Your Treatment Investment</span>
+                                  <div className="text-right">
+                                    <motion.span
+                                      key={finalPrice}
+                                      initial={{ scale: 0.95, opacity: 0.8 }}
+                                      animate={{ scale: 1, opacity: 1 }}
+                                      transition={{ type: "spring", stiffness: 350, damping: 15 }}
+                                      className="text-2xl font-black text-[#1A2421] font-sans block"
+                                    >
+                                      ₹{finalPrice.toLocaleString("en-IN")}
+                                    </motion.span>
+                                    <span className="text-[9px] text-slate-500 font-semibold block uppercase">Excludes shipping (India ₹300 | Intl at dispatch)</span>
+                                  </div>
                                 </div>
                               </div>
 
