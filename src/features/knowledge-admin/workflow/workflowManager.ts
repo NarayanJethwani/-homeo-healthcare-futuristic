@@ -44,8 +44,8 @@ export async function getEditorialTasks(): Promise<EditorialTask[]> {
         }
       }
       return list;
-    } catch (e) {
-      console.warn("WorkflowManager: Firestore get failed, returning memory fallback tasks.");
+    } catch (e: any) {
+      console.warn("WorkflowManager: Firestore get failed, returning memory fallback tasks. Error:", e.message || e);
     }
   }
   return [...memoryTasks];
@@ -92,8 +92,8 @@ export async function createEditorialTask(taskData: Omit<EditorialTask, "id" | "
         after: newTask
       });
       return newTask;
-    } catch (e) {
-      console.warn("WorkflowManager: Failed to save task to Firestore, adding to memory.");
+    } catch (e: any) {
+      console.warn("WorkflowManager: Failed to save task to Firestore, adding to memory. Error:", e.message || e);
     }
   }
 
@@ -145,8 +145,8 @@ export async function assignEditorialTask(taskId: string, assignee: string, role
         after: { assignedTo: assignee, reviewerRole: role }
       });
       return true;
-    } catch (e) {
-      console.warn("WorkflowManager: Firestore update failed, writing to memory.");
+    } catch (e: any) {
+      console.warn("WorkflowManager: Firestore update failed, writing to memory. Error:", e.message || e);
     }
   }
 
@@ -284,6 +284,16 @@ export async function getWorkflowEvents(articleId?: string): Promise<EditorialWo
 export function clearWorkflowMemoryStore(): void {
   memoryTasks.length = 0;
   memoryEvents.length = 0;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const adminLib = require("../../../lib/firebaseAdmin");
+    const db = adminLib.getAdminDb();
+    if (db && typeof db.clearStore === "function") {
+      db.clearStore();
+    }
+  } catch (e) {
+    // Ignore if not loaded
+  }
 }
 
 /**

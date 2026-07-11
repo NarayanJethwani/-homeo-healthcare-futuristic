@@ -49,7 +49,8 @@ import {
   ShieldAlert,
   Activity,
   BookOpen,
-  Database
+  Database,
+  Save
 } from "lucide-react";
 import { AdminRole, Permission, hasPermission } from "@/lib/security/rbac";
 
@@ -120,7 +121,7 @@ export default function KnowledgeEditorialPage() {
   const [editingEntity, setEditingEntity] = useState<KmsKnowledgeEntity | null>(null);
   
   // AI Assist & Quality states
-  const [activeModalTab, setActiveModalTab] = useState<"general" | "ai" | "draft" | "clinical-review" | "timeline" | "publish">("general");
+  const [activeModalTab, setActiveModalTab] = useState<"general" | "ai" | "draft" | "clinical-review" | "evidence" | "timeline" | "publish">("general");
   const [isGeneratingSummaries, setIsGeneratingSummaries] = useState(false);
   const [isAuditing, setIsAuditing] = useState(false);
 
@@ -141,6 +142,18 @@ export default function KnowledgeEditorialPage() {
   const [clinicalReviewDate, setClinicalReviewDate] = useState("");
   const [clinicalNextReviewDate, setClinicalNextReviewDate] = useState("");
   const [clinicalNotes, setClinicalNotes] = useState("");
+
+  // Evidence profile form states
+  const [evidenceStrength, setEvidenceStrength] = useState("moderate");
+  const [sourceQuality, setSourceQuality] = useState("primary");
+  const [clinicalConfidence, setClinicalConfidence] = useState(75);
+  const [editorialConfidence, setEditorialConfidence] = useState(80);
+  const [reviewIntervalDays, setReviewIntervalDays] = useState(365);
+  const [reviewGracePeriodDays, setReviewGracePeriodDays] = useState(90);
+  const [reviewExpiryPolicy, setReviewExpiryPolicy] = useState("ranking-penalty");
+  const [evidenceRationale, setEvidenceRationale] = useState("");
+  const [classicalSource, setClassicalSource] = useState(false);
+  const [modernSource, setModernSource] = useState(false);
 
   // Publish details
   const [changeSummary, setChangeSummary] = useState("");
@@ -432,9 +445,36 @@ export default function KnowledgeEditorialPage() {
     setClinicalNotes("");
     setChangeSummary("");
 
+    // Clear/default evidence form
+    setEvidenceStrength("moderate");
+    setSourceQuality("primary");
+    setClinicalConfidence(75);
+    setEditorialConfidence(80);
+    setReviewIntervalDays(365);
+    setReviewGracePeriodDays(90);
+    setReviewExpiryPolicy("ranking-penalty");
+    setEvidenceRationale("");
+    setClassicalSource(false);
+    setModernSource(false);
+
     try {
       const draft = await cmsClient.getDraft(entity.id);
       setCurrentDraft(draft);
+
+      const activeProf = draft?.evidenceProfile || entity.evidenceProfile;
+      if (activeProf) {
+        setEvidenceStrength(activeProf.evidenceStrength || "moderate");
+        setSourceQuality(activeProf.sourceQuality || "primary");
+        setClinicalConfidence(activeProf.clinicalConfidence !== undefined ? activeProf.clinicalConfidence : 75);
+        setEditorialConfidence(activeProf.editorialConfidence !== undefined ? activeProf.editorialConfidence : 80);
+        setReviewIntervalDays(activeProf.reviewIntervalDays !== undefined ? activeProf.reviewIntervalDays : 365);
+        setReviewGracePeriodDays(activeProf.reviewGracePeriodDays !== undefined ? activeProf.reviewGracePeriodDays : 90);
+        setReviewExpiryPolicy(activeProf.reviewExpiryPolicy || "ranking-penalty");
+        setEvidenceRationale(activeProf.rationale || "");
+        setClassicalSource(!!activeProf.classicalSource);
+        setModernSource(!!activeProf.modernSource);
+      }
+
       if (draft) {
         setDraftContentField(draft.draftContent || "");
         setPatientSummaryField(draft.patientSummary || "");
@@ -494,6 +534,23 @@ export default function KnowledgeEditorialPage() {
           evidenceLevel: editingEntity.evidenceLevel,
           tags: editingEntity.tags,
           relatedEntities: editingEntity.relatedEntities
+        },
+        evidenceProfile: {
+          evidenceStrength: evidenceStrength as any,
+          sourceQuality: sourceQuality as any,
+          clinicalConfidence: Number(clinicalConfidence),
+          editorialConfidence: Number(editorialConfidence),
+          reviewIntervalDays: Number(reviewIntervalDays),
+          reviewGracePeriodDays: Number(reviewGracePeriodDays),
+          reviewExpiryPolicy: reviewExpiryPolicy as any,
+          rationale: evidenceRationale,
+          classicalSource,
+          modernSource,
+          citationCompleteness: 0,
+          assessedBy: "",
+          assessedAt: "",
+          lastReviewedAt: clinicalReviewDate,
+          nextReviewDueAt: clinicalNextReviewDate
         }
       };
 
@@ -2387,6 +2444,17 @@ export default function KnowledgeEditorialPage() {
               </button>
               <button
                 type="button"
+                onClick={() => setActiveModalTab("evidence")}
+                className={`py-2 px-3 text-[11px] font-bold border-b-2 transition-all ${
+                  activeModalTab === "evidence"
+                    ? "border-teal-500 text-teal-400"
+                    : "border-transparent text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                Evidence & Freshness
+              </button>
+              <button
+                type="button"
                 onClick={() => setActiveModalTab("timeline")}
                 className={`py-2 px-3 text-[11px] font-bold border-b-2 transition-all ${
                   activeModalTab === "timeline"
@@ -2776,6 +2844,177 @@ export default function KnowledgeEditorialPage() {
                     >
                       <CheckCircle2 className="h-4 w-4" />
                       Approve & Clinical review
+                    </button>
+                  </div>
+                </form>
+              ) : activeModalTab === "evidence" ? (
+                <form onSubmit={handleSaveDraftChanges} className="space-y-4">
+                  <div className="bg-teal-500/5 border border-teal-500/10 text-teal-400 p-3 rounded-xl text-[10px] leading-relaxed">
+                    🧬 <strong>Evidence Metadata & Review Freshness Profile</strong>: Structured ratings used by deterministic search priority scoring and AI RAG retrieval.
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-slate-400 font-bold block">EVIDENCE STRENGTH</label>
+                      <select
+                        value={evidenceStrength}
+                        onChange={(e) => setEvidenceStrength(e.target.value)}
+                        className="w-full bg-[#070b14] border border-neutral-850 rounded-xl p-2.5 text-slate-200 focus:outline-none"
+                        required
+                      >
+                        <option value="very-low">Very Low (Level-E / Anecdotal)</option>
+                        <option value="low">Low (Level-D / Case Report)</option>
+                        <option value="moderate">Moderate (Level-C / Observational)</option>
+                        <option value="high">High (Level-B / Controlled Trial)</option>
+                        <option value="very-high">Very High (Level-A / Meta-analysis)</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-slate-400 font-bold block">SOURCE QUALITY</label>
+                      <select
+                        value={sourceQuality}
+                        onChange={(e) => setSourceQuality(e.target.value)}
+                        className="w-full bg-[#070b14] border border-neutral-850 rounded-xl p-2.5 text-slate-200 focus:outline-none"
+                        required
+                      >
+                        <option value="unverified">Unverified (Self-published / Blog)</option>
+                        <option value="secondary">Secondary (Textbook compilation)</option>
+                        <option value="primary">Primary (Original historical text)</option>
+                        <option value="peer-reviewed">Peer-Reviewed Journal</option>
+                        <option value="authoritative">Authoritative (Pharmacopoeia / Consensus)</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-slate-400 font-bold block">CLINICAL CONFIDENCE (0-100)</label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={clinicalConfidence}
+                        onChange={(e) => setClinicalConfidence(parseInt(e.target.value) || 0)}
+                        className="w-full bg-[#070b14] border border-neutral-850 rounded-xl p-2.5 text-slate-200 focus:outline-none"
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-slate-400 font-bold block">EDITORIAL CONFIDENCE (0-100)</label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={editorialConfidence}
+                        onChange={(e) => setEditorialConfidence(parseInt(e.target.value) || 0)}
+                        className="w-full bg-[#070b14] border border-neutral-850 rounded-xl p-2.5 text-slate-200 focus:outline-none"
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-slate-400 font-bold block">REVIEW INTERVAL (DAYS)</label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="3650"
+                        value={reviewIntervalDays}
+                        onChange={(e) => setReviewIntervalDays(parseInt(e.target.value) || 365)}
+                        className="w-full bg-[#070b14] border border-neutral-850 rounded-xl p-2.5 text-slate-200 focus:outline-none"
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-slate-400 font-bold block">REVIEW GRACE PERIOD (DAYS)</label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="365"
+                        value={reviewGracePeriodDays}
+                        onChange={(e) => setReviewGracePeriodDays(parseInt(e.target.value) || 90)}
+                        className="w-full bg-[#070b14] border border-neutral-850 rounded-xl p-2.5 text-slate-200 focus:outline-none"
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-1 md:col-span-2">
+                      <label className="text-[10px] text-slate-400 font-bold block">REVIEW EXPIRY RETRIEVAL POLICY</label>
+                      <select
+                        value={reviewExpiryPolicy}
+                        onChange={(e) => setReviewExpiryPolicy(e.target.value)}
+                        className="w-full bg-[#070b14] border border-neutral-850 rounded-xl p-2.5 text-slate-200 focus:outline-none"
+                        required
+                      >
+                        <option value="flag-only">Flag Only (Warn admins, no search penalty)</option>
+                        <option value="ranking-penalty">Ranking Penalty (Demote search priority)</option>
+                        <option value="exclude-from-ai">Exclude From AI (Skip in AI context)</option>
+                        <option value="exclude-from-all-search">Exclude From All (Hide from public search)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-6 py-2">
+                    <label className="flex items-center gap-2 text-slate-300 font-medium cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={classicalSource}
+                        onChange={(e) => setClassicalSource(e.target.checked)}
+                        className="rounded border-neutral-800 bg-[#070b14] text-teal-500 focus:ring-0"
+                      />
+                      <span>CLASSICAL TRADITIONAL SOURCE</span>
+                    </label>
+
+                    <label className="flex items-center gap-2 text-slate-300 font-medium cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={modernSource}
+                        onChange={(e) => setModernSource(e.target.checked)}
+                        className="rounded border-neutral-800 bg-[#070b14] text-teal-500 focus:ring-0"
+                      />
+                      <span>MODERN CLINICAL SOURCE</span>
+                    </label>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[10px] text-slate-400 font-bold block">EVIDENCE RATIONALE & CITATION SUMMARY</label>
+                    <textarea
+                      rows={3}
+                      value={evidenceRationale}
+                      onChange={(e) => setEvidenceRationale(e.target.value)}
+                      placeholder="Explain the clinical basis, supporting studies, and reasoning behind this evidence profile classification..."
+                      className="w-full bg-[#070b14] border border-neutral-850 rounded-xl p-2.5 text-slate-200 focus:outline-none resize-none"
+                    />
+                  </div>
+
+                  {currentDraft?.evidenceProfile && (
+                    <div className="p-3 bg-neutral-900/60 border border-neutral-850 rounded-xl space-y-1.5 font-mono text-[9px] text-slate-400">
+                      <div>Assessed By: <span className="text-slate-200">{currentDraft.evidenceProfile.assessedBy || "N/A"}</span></div>
+                      <div>Assessed At: <span className="text-slate-200">{currentDraft.evidenceProfile.assessedAt || "N/A"}</span></div>
+                      <div>Structural Citation Completeness: <span className="text-teal-400 font-bold">{currentDraft.evidenceProfile.citationCompleteness ?? "N/A"}%</span></div>
+                      <div>Last Reviewed At: <span className="text-slate-200">{currentDraft.evidenceProfile.lastReviewedAt || "N/A"}</span></div>
+                      <div>Next Review Due At: <span className="text-slate-200">{currentDraft.evidenceProfile.nextReviewDueAt || "N/A"}</span></div>
+                    </div>
+                  )}
+
+                  {/* Buttons */}
+                  <div className="pt-4 border-t border-neutral-850 flex justify-end gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsEditModalOpen(false);
+                        setEditingEntity(null);
+                      }}
+                      className="px-4 py-2 bg-neutral-900 border border-neutral-850 hover:border-neutral-800 rounded-xl text-slate-400 hover:text-slate-200 font-semibold"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-5 py-2 bg-teal-650 hover:bg-teal-600 text-white rounded-xl font-semibold flex items-center gap-1.5"
+                    >
+                      <Save className="h-4 w-4" />
+                      Save Evidence Settings
                     </button>
                   </div>
                 </form>

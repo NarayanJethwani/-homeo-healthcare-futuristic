@@ -1,3 +1,5 @@
+import { KnowledgeEvidenceProfile } from "../../knowledge/types";
+
 export type CmsArticleStatus =
   | "draft"
   | "medical-review"
@@ -51,6 +53,7 @@ export interface CmsArticleDraft {
   publishedVersionId?: string;
   revision?: number;
   legacyVerificationStatus?: string;
+  evidenceProfile?: KnowledgeEvidenceProfile;
 }
 
 export interface CmsArticleVersion {
@@ -115,5 +118,12 @@ export interface KnowledgeReviewRecord {
   comments?: string;
 
   createdAt: string;
+}
+
+export interface AuthenticatedKnowledgeActor {
+  userId: string;
+  name?: string;
+  role: import("../../../lib/security/rbac").AdminRole;
+  capabilities: ReadonlySet<import("../../../lib/security/rbac").KnowledgeCapability>;
 }
 

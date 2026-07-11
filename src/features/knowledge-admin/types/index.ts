@@ -10,7 +10,8 @@ import {
   SymptomContent,
   LabTestContent,
   type KnowledgeEditorialStatus,
-  type LegacyKnowledgeVerificationStatus
+  type LegacyKnowledgeVerificationStatus,
+  KnowledgeEvidenceProfile
 } from "../../knowledge/types";
 
 export type { KnowledgeEditorialStatus, LegacyKnowledgeVerificationStatus };
@@ -84,6 +85,7 @@ export interface KmsKnowledgeEntity {
   approvedVersionId?: string;
   publishedVersionId?: string;
   legacyVerificationStatus?: LegacyKnowledgeVerificationStatus;
+  evidenceProfile?: KnowledgeEvidenceProfile;
   
   // Extended Editorial Governance fields
   editorialNotes: string; // Internal-only, never published

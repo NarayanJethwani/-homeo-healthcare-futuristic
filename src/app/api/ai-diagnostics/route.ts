@@ -8,7 +8,7 @@ import { requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiA
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-export function compileLocalSynthesisResponse(taskType: string, body: any): any {
+function compileLocalSynthesisResponse(taskType: string, body: any): any {
   const patientName = body?.patientInfo?.name || body?.patientName || "Patient";
   const age = body?.patientInfo?.age || body?.age || "35";
   const gender = body?.patientInfo?.gender || body?.gender || "Male";
@@ -955,7 +955,7 @@ In a case of chronic migraine, standard pathology focuses on vascular dilation. 
   };
 }
 
-export function getPromptsForTask(taskType: string, body: any): { systemPrompt: string, userPrompt: string } {
+function getPromptsForTask(taskType: string, body: any): { systemPrompt: string, userPrompt: string } {
   const patientName = body?.patientInfo?.name || body?.patientName || "Patient";
   const age = body?.patientInfo?.age || body?.age || "35";
   const gender = body?.patientInfo?.gender || body?.gender || "Male";

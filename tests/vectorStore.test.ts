@@ -1,11 +1,12 @@
 import assert from "assert";
-import { globalVectorStore } from "../src/features/knowledge/retrieval/vectorStore";
+import { globalVectorStore, MemoryVectorStore } from "../src/features/knowledge/retrieval/vectorStore";
 import { ragService } from "../src/lib/ragService";
 
 async function runVectorTests() {
   console.log("🚀 Starting MemoryVectorStore & RAG Hybrid Search Integration Tests...");
   let passed = 0;
   let failed = 0;
+  const memoryStore = new MemoryVectorStore();
 
   async function test(name: string, fn: () => void | Promise<void>) {
     try {
@@ -21,8 +22,8 @@ async function runVectorTests() {
 
   // 1. Seed vector loading
   await test("MemoryVectorStore - load seed vectors", async () => {
-    await globalVectorStore.loadSeedVectors();
-    const stats = await globalVectorStore.getStats();
+    await memoryStore.loadSeedVectors();
+    const stats = await memoryStore.getStats();
     assert.strictEqual(stats.source, "memory");
     assert.strictEqual(stats.persistentStorageEnabled, false);
     assert.ok(stats.totalVectors > 0, "Should have loaded seed vectors");
@@ -31,7 +32,7 @@ async function runVectorTests() {
   // 2. Querying a loaded seed vector
   await test("MemoryVectorStore - get loaded seed vector", async () => {
     // Check one of the seeded philosophy articles
-    const record = await globalVectorStore.getVector("kb_brand_philosophy");
+    const record = await memoryStore.getVector("kb_brand_philosophy");
     assert.ok(record, "Should find kb_brand_philosophy in seed");
     assert.strictEqual(record.id, "kb_brand_philosophy");
     assert.strictEqual(record.entityType, "Philosophy");
@@ -43,7 +44,7 @@ async function runVectorTests() {
     const testId = "DIS-custom-test-123";
     const dummyVector = new Array(768).fill(0.5);
 
-    await globalVectorStore.upsertVector({
+    await memoryStore.upsertVector({
       id: testId,
       entityType: "disease",
       title: "Custom Test Disease",
@@ -52,12 +53,15 @@ async function runVectorTests() {
       dimensions: 768
     });
 
-    const record = await globalVectorStore.getVector(testId);
+    const record = await memoryStore.getVector(testId);
     assert.ok(record, "Should retrieve upserted vector");
     assert.strictEqual(record.id, testId);
     assert.strictEqual(record.dimensions, 768);
     assert.deepStrictEqual(record.vector, dummyVector);
   });
+
+  // Load seeds in global store for downstream integration tests
+  await globalVectorStore.loadSeedVectors();
 
   // 4. RAG Hybrid Search with Cache Integration
   await test("RAG Service - hybridSearch queries cached vectors without failure", async () => {

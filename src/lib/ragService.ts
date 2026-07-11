@@ -5,6 +5,16 @@ import { globalVectorStore } from "../features/knowledge/retrieval/vectorStore";
 import { embeddingManager } from "../features/knowledge/retrieval/embeddingProvider";
 import { globalKmsRepository } from "../features/knowledge-admin/repositories/MemoryRepository";
 import { isEntityEligibleForRetrieval } from "../features/knowledge/retrieval/eligibilityService";
+import { featureFlags } from "../features/dashboard/constants/featureFlags";
+import {
+  calculateEvidenceReviewState,
+  calculateCitationCompleteness,
+  calculateRetrievalPriority,
+  EVIDENCE_REVIEW_POLICY_V1,
+  KnowledgeRetrievalContext,
+  EvidenceReviewState,
+  evaluateEvidenceRetrievalPolicy
+} from "../features/knowledge/retrieval/evidenceScoringService";
 
 export interface KnowledgeDocument {
   id: string;
@@ -117,6 +127,7 @@ export const KNOWLEDGE_BASE: KnowledgeDocument[] = [
 export interface SearchResult {
   document: KnowledgeDocument;
   score: number;
+  rankingExplanation?: any;
 }
 
 export interface SearchResultList extends Array<SearchResult> {
@@ -194,8 +205,10 @@ export class RAGService {
             title: titleStr,
             content: `${titleStr}. ${bodyText}`,
             citations: entity.content?.references || [],
-            tags: entity.tags || []
-          });
+            tags: entity.tags || [],
+            evidenceProfile: entity.evidenceProfile || null,
+            references: entity.content?.references || []
+          } as any);
         });
       }
     } catch (err) {
@@ -270,9 +283,12 @@ export class RAGService {
   }
 
   // Central search method: executes local hybrid search (keyword + cached semantic vector search)
-  async hybridSearch(query: string): Promise<SearchResultList> {
+  async hybridSearch(
+    query: string, 
+    context: KnowledgeRetrievalContext = "public-search"
+  ): Promise<SearchResultList> {
     const startTime = Date.now();
-    console.log(`Executing local hybrid search for query: "${query}"`);
+    console.log(`Executing local hybrid search for query: "${query}" (context: ${context})`);
     const queryTokens = this.getTokens(query);
     const results: SearchResult[] = [];
 
@@ -299,6 +315,33 @@ export class RAGService {
     const unifiedDocs = this.getUnifiedDb();
 
     for (const doc of unifiedDocs) {
+      const profile = (doc as any).evidenceProfile;
+      
+      // Feature flag-gated Review Expiry Policy Checks
+      if (featureFlags.knowledgeEvidenceScoringEnabled && profile) {
+        let reviewState: EvidenceReviewState = "not-configured";
+        if (profile.nextReviewDueAt && profile.lastReviewedAt) {
+          reviewState = calculateEvidenceReviewState({
+            nextReviewDueAt: profile.nextReviewDueAt,
+            referenceDate: new Date().toISOString(),
+            dueSoonWindowDays: EVIDENCE_REVIEW_POLICY_V1.dueSoonWindowDays,
+            gracePeriodDays: profile.reviewGracePeriodDays || EVIDENCE_REVIEW_POLICY_V1.defaultGracePeriodDays
+          });
+        }
+        
+        const policy = profile.reviewExpiryPolicy || "ranking-penalty";
+        const evaluation = evaluateEvidenceRetrievalPolicy({
+          policy,
+          reviewState,
+          context,
+          exclusionThreshold: "expired" // Default configured threshold: expired
+        });
+
+        if (!evaluation.eligible) {
+          continue; // Skip document completely
+        }
+      }
+
       // 1. Keyword Score (Weighted Query Coverage and Jaccard)
       const docText = `${doc.title} ${doc.content} ${doc.tags.join(" ")}`;
       const docTokens = this.getTokens(docText);
@@ -341,12 +384,55 @@ export class RAGService {
         }
       }
 
-      // Hybrid combination weight
-      const finalScore = queryVector
+      // 4. Relevance calculation
+      const relevanceScore = queryVector
         ? Math.max(0, Math.min(1.0, keywordScore * 0.4 + exactBoost + vectorScore * 0.5))
         : Math.max(0, Math.min(1.0, keywordScore * 0.75 + exactBoost));
 
-      results.push({ document: doc, score: finalScore });
+      // 5. Apply Priority Scoring or Keep relevance-only
+      if (featureFlags.knowledgeEvidenceScoringEnabled) {
+        let reviewState: EvidenceReviewState = "not-configured";
+        if (profile?.nextReviewDueAt && profile?.lastReviewedAt) {
+          reviewState = calculateEvidenceReviewState({
+            nextReviewDueAt: profile.nextReviewDueAt,
+            referenceDate: new Date().toISOString(),
+            dueSoonWindowDays: EVIDENCE_REVIEW_POLICY_V1.dueSoonWindowDays,
+            gracePeriodDays: profile.reviewGracePeriodDays || EVIDENCE_REVIEW_POLICY_V1.defaultGracePeriodDays
+          });
+        }
+
+        const citResult = calculateCitationCompleteness((doc as any).references);
+        const priorityResult = calculateRetrievalPriority({
+          evidenceProfile: profile || undefined,
+          reviewState,
+          citationCount: citResult.totalReferences,
+          validCitationCount: citResult.structurallyCompleteReferences
+        });
+
+        // Safe validating clamp and normalization
+        const normalizedRelevance = Math.max(0, Math.min(1.0, relevanceScore));
+        const normalizedPriority = Math.max(0, Math.min(1.0, priorityResult.score / 100));
+        const blendedScore = Math.max(0, Math.min(1.0, normalizedRelevance * 0.85 + normalizedPriority * 0.15));
+
+        results.push({
+          document: doc,
+          score: blendedScore,
+          rankingExplanation: {
+            baseRelevanceScore: relevanceScore,
+            normalizedRelevanceScore: normalizedRelevance,
+            evidencePriorityScore: priorityResult.score,
+            normalizedEvidencePriority: normalizedPriority,
+            finalScore: blendedScore,
+            reviewState,
+            reviewPolicy: profile?.reviewExpiryPolicy || "ranking-penalty",
+            methodologyVersion: priorityResult.methodologyVersion,
+            components: priorityResult.components,
+            warnings: priorityResult.warnings
+          }
+        });
+      } else {
+        results.push({ document: doc, score: relevanceScore });
+      }
     }
 
     // Sort descending by score

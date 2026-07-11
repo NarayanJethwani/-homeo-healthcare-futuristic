@@ -13,7 +13,8 @@ import {
   CmsArticleStatus, 
   CmsChangeType,
   CmsPublishResult,
-  KnowledgeReviewRecord
+  KnowledgeReviewRecord,
+  AuthenticatedKnowledgeActor
 } from "./types";
 import { EDITORIAL_REVIEWERS } from "../workflow/reviewerDirectory";
 import { validateQualityGates } from "../../knowledge/governance/qualityGates";
@@ -21,8 +22,16 @@ import { validatePublicationReadiness } from "./publicationReadiness";
 import { globalKmsRepository } from "../repositories/MemoryRepository";
 import { KmsKnowledgeEntity, KnowledgeEditorialStatus } from "../types";
 import { queueEmbeddingJob } from "../../knowledge/retrieval/embeddingQueue";
-import { hasPermission, KnowledgeCapability } from "../../../lib/security/rbac";
+import { hasPermission, KnowledgeCapability, getPermissionsByRole } from "../../../lib/security/rbac";
 import { logSecurityEvent } from "../../../lib/security/auditLogger";
+import {
+  calculateNextReviewDueAt,
+  calculateCitationCompleteness,
+  EVIDENCE_REVIEW_POLICY_V1,
+  parseCanonicalEvidenceStrength,
+  parseCanonicalSourceQuality,
+  parseCanonicalReviewExpiryPolicy
+} from "../../knowledge/retrieval/evidenceScoringService";
 import crypto from "crypto";
 
 function cleanFirestoreDoc(obj: any): any {
@@ -186,9 +195,9 @@ export function getCapabilityForTransition(current: string, target: string): Kno
 export async function transitionLifecycleState(
   articleId: string,
   targetStatus: CmsArticleStatus,
-  actor: string,
-  actorRole: string,
-  actorEmail: string,
+  actor: string | AuthenticatedKnowledgeActor,
+  actorRole?: string,
+  actorEmail?: string,
   options: {
     comments?: string;
     expectedRevision?: number;
@@ -202,6 +211,25 @@ export async function transitionLifecycleState(
 ): Promise<CmsArticleDraft> {
   const db = await getFirestoreDb();
   
+  // Normalize actor to AuthenticatedKnowledgeActor
+  let actorContext: AuthenticatedKnowledgeActor;
+  if (typeof actor === "string") {
+    const resolvedRole = actorRole || "super-admin";
+    const allPermissions = getPermissionsByRole(resolvedRole);
+    actorContext = {
+      userId: "test-user-id",
+      name: actor,
+      role: resolvedRole as any,
+      capabilities: new Set(allPermissions.filter((p: any): p is KnowledgeCapability => String(p).startsWith("knowledge.")))
+    };
+  } else {
+    actorContext = actor;
+  }
+
+  const actorName = actorContext.name || actorContext.userId;
+  const resolvedRole = actorContext.role;
+  const resolvedEmail = actorEmail || `${actorName}@homeo.healthcare`;
+
   // 1. Re-read workflow record/draft
   const draft = await getDraft(articleId);
   if (!draft) {
@@ -210,7 +238,7 @@ export async function transitionLifecycleState(
 
   // 2. Concurrency checks
   if (options.expectedRevision !== undefined && draft.revision !== undefined && draft.revision !== options.expectedRevision) {
-    await logAuditEvent(actor, actorEmail, actorRole, "transition_stale_revision", articleId, "failed", {
+    await logAuditEvent(actorName, resolvedEmail, resolvedRole, "transition_stale_revision", articleId, "failed", {
       articleId,
       expectedRevision: options.expectedRevision,
       currentRevision: draft.revision
@@ -226,8 +254,8 @@ export async function transitionLifecycleState(
                              ((targetStatus === "approved" || targetStatus === "clinically-approved") && draft.status !== "editorial-review" && draft.status !== "in-editorial-review");
 
   if (isBypassingReviews) {
-    if (!hasPermission(actorRole, "knowledge.bypassReview")) {
-      await logAuditEvent(actor, actorEmail, actorRole, "unauthorized_bypass_attempt", articleId, "failed", {
+    if (!actorContext.capabilities.has("knowledge.bypassReview")) {
+      await logAuditEvent(actorName, resolvedEmail, resolvedRole, "unauthorized_bypass_attempt", articleId, "failed", {
         articleId,
         statusFrom: draft.status,
         statusTo: targetStatus,
@@ -255,20 +283,20 @@ export async function transitionLifecycleState(
     }
   }
 
-  if (!hasPermission(actorRole, capability)) {
-    await logAuditEvent(actor, actorEmail, actorRole, "unauthorized_transition_attempt", articleId, "failed", {
+  if (!actorContext.capabilities.has(capability)) {
+    await logAuditEvent(actorName, resolvedEmail, resolvedRole, "unauthorized_transition_attempt", articleId, "failed", {
       articleId,
       statusFrom: draft.status,
       statusTo: targetStatus,
       capability
     });
-    throw new Error(`Insufficient permissions: User role '${actorRole}' lacks capability '${capability}'.`);
+    throw new Error(`Insufficient permissions: User role '${resolvedRole}' lacks capability '${capability}'.`);
   }
 
   // 4. Validate transition path
   const allowed = VALID_TRANSITIONS[draft.status]?.includes(targetStatus);
   if (!allowed) {
-    await logAuditEvent(actor, actorEmail, actorRole, "invalid_transition_attempt", articleId, "failed", {
+    await logAuditEvent(actorName, resolvedEmail, resolvedRole, "invalid_transition_attempt", articleId, "failed", {
       articleId,
       statusFrom: draft.status,
       statusTo: targetStatus
@@ -295,7 +323,7 @@ export async function transitionLifecycleState(
     version: nextVerNum,
     revision: nextRevision,
     updatedAt: now,
-    updatedBy: actor
+    updatedBy: actorName
   };
 
   // Perform target-specific validations and metadata updates
@@ -314,6 +342,31 @@ export async function transitionLifecycleState(
       updatedDraft.reviewerRole = options.reviewerRole;
       updatedDraft.clinicalReviewDate = options.reviewDate;
       updatedDraft.nextReviewDate = options.nextReviewDate;
+    }
+    // Update evidence profile if present
+    if (updatedDraft.evidenceProfile) {
+      const prof = updatedDraft.evidenceProfile;
+      const lastReviewedAt = updatedDraft.clinicalReviewDate || now;
+      const interval = prof.reviewIntervalDays || EVIDENCE_REVIEW_POLICY_V1.defaultReviewIntervalDays;
+      const nextReviewDueAt = calculateNextReviewDueAt(lastReviewedAt, interval);
+      const citResult = calculateCitationCompleteness(updatedDraft.references || []);
+      
+      updatedDraft.evidenceProfile = {
+        ...prof,
+        lastReviewedAt,
+        nextReviewDueAt,
+        assessedBy: actorName,
+        assessedAt: now,
+        citationCompleteness: citResult.completenessScore
+      };
+      
+      // Also log the methodology application event
+      await logAuditEvent(actorName, resolvedEmail, resolvedRole, "evidence_methodology_applied", updatedDraft.articleId, "success", {
+        articleId: updatedDraft.articleId,
+        versionId: draft.currentDraftVersionId || "none",
+        revision: updatedDraft.revision,
+        methodologyVersion: "V1"
+      });
     }
   } else if (targetStatus === "published") {
     const readiness = await validatePublicationReadiness(draft);
@@ -357,11 +410,17 @@ export async function transitionLifecycleState(
       status: targetStatus,
       snapshot: updatedDraft,
       createdAt: now,
-      createdBy: actor,
+      createdBy: actorName,
       changeType: targetStatus === "published" ? "publication" : "clinical-review",
       changeSummary: options.changeSummary || `${targetStatus} lifecycle transition.`
     };
   }
+
+  // Ensure versionRecord is defined and create a non-nullable reference for compiler
+  if (!versionRecord) {
+    throw new Error("Initialization failure: versionRecord not created.");
+  }
+  const activeVersionRecord: CmsArticleVersion = versionRecord;
 
   // Associate pointers
   updatedDraft.currentDraftVersionId = versionId;
@@ -382,7 +441,7 @@ export async function transitionLifecycleState(
       relatedEntities: (updatedDraft.metadata?.relatedEntities as string[]) || [],
       lastReviewed: updatedDraft.clinicalReviewDate || now,
       lastUpdated: now,
-      author: { name: updatedDraft.createdBy || actor },
+      author: { name: updatedDraft.createdBy || actorName },
       reviewer: { 
         name: updatedDraft.reviewer || "", 
         credentials: updatedDraft.reviewerRole?.includes("MD") ? "MD(Hom)" : "BHMS", 
@@ -404,6 +463,7 @@ export async function transitionLifecycleState(
       approvedVersionId: updatedDraft.approvedVersionId,
       publishedVersionId: updatedDraft.publishedVersionId,
       legacyVerificationStatus: updatedDraft.legacyVerificationStatus,
+      evidenceProfile: updatedDraft.evidenceProfile || null,
       versionInfo: {
         version: `${updatedDraft.version}.0.0`,
         created: updatedDraft.createdAt,
@@ -431,7 +491,7 @@ export async function transitionLifecycleState(
       license: "Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International"
     };
 
-    await globalKmsRepository.saveEntity(publicEntity, actor, "Administrator", options.changeSummary || "Publication");
+    await globalKmsRepository.saveEntity(publicEntity, actorName, "Administrator", options.changeSummary || "Publication");
     try {
       await queueEmbeddingJob(updatedDraft.articleId, updatedDraft.title, updatedDraft.entityType, updatedDraft.draftContent || "");
     } catch (e) {
@@ -458,8 +518,8 @@ export async function transitionLifecycleState(
     versionId: versionId as string,
     reviewType,
     decision,
-    reviewerId: actor,
-    reviewerNameSnapshot: actor,
+    reviewerId: actorName,
+    reviewerNameSnapshot: actorName,
     comments: options.comments,
     createdAt: now
   };
@@ -470,13 +530,13 @@ export async function transitionLifecycleState(
 
   if (db) {
     try {
-      await db.runTransaction(async (transaction) => {
+      await db.runTransaction(async (transaction: any) => {
         const draftRef = db.collection("knowledge_article_drafts").doc(updatedDraft.id);
-        const versionRef = db.collection("knowledge_article_versions").doc(versionRecord.id);
+        const versionRef = db.collection("knowledge_article_versions").doc(activeVersionRecord.id);
         const reviewRef = db.collection("knowledge_review_records").doc(reviewRecord.id);
         
         transaction.set(draftRef, cleanFirestoreDoc(updatedDraft));
-        transaction.set(versionRef, cleanFirestoreDoc(versionRecord));
+        transaction.set(versionRef, cleanFirestoreDoc(activeVersionRecord));
         transaction.set(reviewRef, cleanFirestoreDoc(reviewRecord));
       });
     } catch (err: any) {
@@ -484,14 +544,14 @@ export async function transitionLifecycleState(
       
       const isProduction = typeof process !== "undefined" && process.env.NODE_ENV === "production";
       if (isProduction) {
-        await logAuditEvent(actor, actorEmail, actorRole, "transition_write_failure", articleId, "failed", { articleId, error: err.message });
+        await logAuditEvent(actorName, resolvedEmail, resolvedRole, "transition_write_failure", articleId, "failed", { articleId, error: err.message });
         throw new Error(`Database save failed. State rolled back: ${err.message}`);
       }
 
       if (err.message.includes("PERMISSION_DENIED") || err.message.includes("Permission denied")) {
         // Safe to fallback in non-production environments
       } else {
-        await logAuditEvent(actor, actorEmail, actorRole, "transition_write_failure", articleId, "failed", { articleId, error: err.message });
+        await logAuditEvent(actorName, resolvedEmail, resolvedRole, "transition_write_failure", articleId, "failed", { articleId, error: err.message });
         throw new Error(`Database save failed. State rolled back: ${err.message}`);
       }
     }
@@ -504,11 +564,11 @@ export async function transitionLifecycleState(
   } else {
     memoryDrafts.push(updatedDraft);
   }
-  const verIdx = memoryVersions.findIndex(v => v.id === versionRecord.id);
+  const verIdx = memoryVersions.findIndex(v => v.id === activeVersionRecord.id);
   if (verIdx !== -1) {
-    memoryVersions[verIdx] = versionRecord;
+    memoryVersions[verIdx] = activeVersionRecord;
   } else {
-    memoryVersions.push(versionRecord);
+    memoryVersions.push(activeVersionRecord);
   }
   memoryReviewRecords.push(reviewRecord);
 
@@ -523,7 +583,7 @@ export async function transitionLifecycleState(
   if (isBypassingReviews && targetStatus === "published") {
     auditDetails.payloadFingerprint = payloadFingerprint;
   }
-  await logAuditEvent(actor, actorEmail, actorRole, auditAction, articleId, "success", auditDetails);
+  await logAuditEvent(actorName, resolvedEmail, resolvedRole, auditAction, articleId, "success", auditDetails);
 
   // Invalidate RAG and query cache
   try {
@@ -585,7 +645,8 @@ export async function getDraft(articleId: string): Promise<CmsArticleDraft | nul
       createdAt: publicEntity.versionInfo.created || new Date().toISOString(),
       updatedAt: publicEntity.versionInfo.updated || new Date().toISOString(),
       createdBy: publicEntity.author.name,
-      version: 1
+      version: 1,
+      evidenceProfile: publicEntity.evidenceProfile || undefined
     };
     
     // Save locally
@@ -599,14 +660,206 @@ export async function getDraft(articleId: string): Promise<CmsArticleDraft | nul
 /**
  * Saves or updates a draft article. Increments version and registers a snapshot log.
  */
+export interface EvidenceProfileChanges {
+  anyChange: boolean;
+  evidenceStrengthChanged: boolean;
+  sourceQualityChanged: boolean;
+  clinicalConfidenceChanged: boolean;
+  editorialConfidenceChanged: boolean;
+  sourceFlagsChanged: boolean;
+  reviewExpiryPolicyChanged: boolean;
+  reviewIntervalChanged: boolean;
+  reviewGracePeriodChanged: boolean;
+  rationaleChanged: boolean;
+  referencesChanged: boolean;
+}
+
+export function detectEvidenceProfileChanges(
+  existing?: import("../../knowledge/types").KnowledgeEvidenceProfile | null,
+  proposed?: import("../../knowledge/types").KnowledgeEvidenceProfile | null
+): EvidenceProfileChanges {
+  const ext = (existing || {}) as any;
+  const prop = (proposed || {}) as any;
+
+  const evidenceStrengthChanged = ext.evidenceStrength !== prop.evidenceStrength;
+  const sourceQualityChanged = ext.sourceQuality !== prop.sourceQuality;
+  const clinicalConfidenceChanged = ext.clinicalConfidence !== prop.clinicalConfidence;
+  const editorialConfidenceChanged = ext.editorialConfidence !== prop.editorialConfidence;
+  const sourceFlagsChanged = ext.classicalSource !== prop.classicalSource || ext.modernSource !== prop.modernSource;
+  const reviewExpiryPolicyChanged = ext.reviewExpiryPolicy !== prop.reviewExpiryPolicy;
+  const reviewIntervalChanged = ext.reviewIntervalDays !== prop.reviewIntervalDays;
+  const reviewGracePeriodChanged = ext.reviewGracePeriodDays !== prop.reviewGracePeriodDays;
+  const rationaleChanged = ext.rationale !== prop.rationale;
+
+  const anyChange = 
+    evidenceStrengthChanged ||
+    sourceQualityChanged ||
+    clinicalConfidenceChanged ||
+    editorialConfidenceChanged ||
+    sourceFlagsChanged ||
+    reviewExpiryPolicyChanged ||
+    reviewIntervalChanged ||
+    reviewGracePeriodChanged ||
+    rationaleChanged;
+
+  return {
+    anyChange,
+    evidenceStrengthChanged,
+    sourceQualityChanged,
+    clinicalConfidenceChanged,
+    editorialConfidenceChanged,
+    sourceFlagsChanged,
+    reviewExpiryPolicyChanged,
+    reviewIntervalChanged,
+    reviewGracePeriodChanged,
+    rationaleChanged,
+    referencesChanged: false
+  };
+}
+
 export async function saveDraft(
   draftData: Partial<CmsArticleDraft> & { articleId: string },
-  actor: string
+  actor: string | AuthenticatedKnowledgeActor
 ): Promise<CmsArticleDraft> {
   const now = new Date().toISOString();
   const existing = await getDraft(draftData.articleId);
 
   const versionRecordId = generateUniqueId();
+
+  // Normalize actor to AuthenticatedKnowledgeActor
+  let actorContext: AuthenticatedKnowledgeActor;
+  if (typeof actor === "string") {
+    actorContext = {
+      userId: "compatibility-mock-uid",
+      name: actor,
+      role: "super-admin",
+      capabilities: new Set<KnowledgeCapability>([
+        "knowledge.editEvidence",
+        "knowledge.assessClinicalEvidence",
+        "knowledge.assessEditorialConfidence",
+        "knowledge.configureReviewPolicy"
+      ])
+    };
+  } else {
+    actorContext = actor;
+  }
+
+  const actorName = actorContext.name || actorContext.userId;
+
+  // Canonicalize client-supplied enums and handle legacy aliases
+  if (draftData.evidenceProfile) {
+    try {
+      draftData.evidenceProfile.evidenceStrength = parseCanonicalEvidenceStrength(draftData.evidenceProfile.evidenceStrength);
+    } catch (e: any) {
+      throw new Error(`Validation Error: ${e.message}`);
+    }
+    try {
+      draftData.evidenceProfile.sourceQuality = parseCanonicalSourceQuality(draftData.evidenceProfile.sourceQuality);
+    } catch (e: any) {
+      throw new Error(`Validation Error: ${e.message}`);
+    }
+    if (draftData.evidenceProfile.reviewExpiryPolicy) {
+      try {
+        draftData.evidenceProfile.reviewExpiryPolicy = parseCanonicalReviewExpiryPolicy(draftData.evidenceProfile.reviewExpiryPolicy);
+      } catch (e: any) {
+        throw new Error(`Validation Error: ${e.message}`);
+      }
+    }
+  }
+
+  // 1. Strict Server-Owned Field Contract validation
+  if (draftData.evidenceProfile) {
+    const ext = existing?.evidenceProfile || ({} as any);
+    const prop = draftData.evidenceProfile;
+    
+    const serverOwnedFields: (keyof import("../../knowledge/types").KnowledgeEvidenceProfile)[] = [
+      "assessedBy",
+      "assessedAt",
+      "nextReviewDueAt",
+      "citationCompleteness",
+      "methodologyVersion"
+    ];
+    
+    for (const field of serverOwnedFields) {
+      if (prop[field] !== undefined && prop[field] !== null && prop[field] !== ext[field]) {
+        // Ignore fallback if they sent default/empty placeholder values like "" or 0 on new profile
+        if (!existing?.evidenceProfile && (prop[field] === "" || prop[field] === 0)) {
+          continue;
+        }
+        throw new Error(`Validation Error: Cannot modify read-only server-owned evidence field '${field}'.`);
+      }
+    }
+  }
+
+  // 2. Field-Level Difference Detection and Security checks
+  const changes = detectEvidenceProfileChanges(existing?.evidenceProfile, draftData.evidenceProfile);
+  
+  if (changes.anyChange) {
+    if (!actorContext.capabilities.has("knowledge.editEvidence")) {
+      throw new Error("Unauthorized: Role does not have permission to edit evidence profile.");
+    }
+
+    const clinicalChanged = 
+      changes.evidenceStrengthChanged ||
+      changes.sourceQualityChanged ||
+      changes.clinicalConfidenceChanged ||
+      changes.sourceFlagsChanged;
+
+    if (clinicalChanged && !actorContext.capabilities.has("knowledge.assessClinicalEvidence")) {
+      throw new Error("Unauthorized: Role does not have permission to assess clinical evidence.");
+    }
+
+    if (changes.editorialConfidenceChanged && !actorContext.capabilities.has("knowledge.assessEditorialConfidence")) {
+      throw new Error("Unauthorized: Role does not have permission to assess editorial confidence.");
+    }
+
+    const policyChanged = 
+      changes.reviewExpiryPolicyChanged ||
+      changes.reviewIntervalChanged ||
+      changes.reviewGracePeriodChanged;
+
+    if (policyChanged && !actorContext.capabilities.has("knowledge.configureReviewPolicy")) {
+      throw new Error("Unauthorized: Role does not have permission to configure review expiry policy.");
+    }
+  }
+
+  // Enforce server authority and recalculate derived fields for evidence profile:
+  let computedEvidenceProfile = undefined;
+  if (draftData.evidenceProfile) {
+    const rawProfile = draftData.evidenceProfile;
+    const references = draftData.references || existing?.references || [];
+    const citResult = calculateCitationCompleteness(references);
+
+    const lastReviewedAt = rawProfile.lastReviewedAt || now;
+    const interval = rawProfile.reviewIntervalDays || EVIDENCE_REVIEW_POLICY_V1.defaultReviewIntervalDays;
+    const nextReviewDueAt = calculateNextReviewDueAt(lastReviewedAt, interval);
+
+    computedEvidenceProfile = {
+      ...rawProfile,
+      citationCompleteness: citResult.completenessScore,
+      assessedBy: actorName,
+      assessedAt: now,
+      lastReviewedAt,
+      nextReviewDueAt,
+      methodologyVersion: "V1"
+    };
+  } else if (existing?.evidenceProfile) {
+    // Recalculate citation completeness if references changed
+    if (draftData.references) {
+      const citResult = calculateCitationCompleteness(draftData.references);
+      computedEvidenceProfile = {
+        ...existing.evidenceProfile,
+        citationCompleteness: citResult.completenessScore
+      };
+    } else {
+      computedEvidenceProfile = existing.evidenceProfile;
+    }
+  }
+
+  // Override draftData.evidenceProfile with the computed one
+  if (computedEvidenceProfile !== undefined) {
+    draftData.evidenceProfile = computedEvidenceProfile;
+  }
 
   let updatedDraft: CmsArticleDraft;
   if (existing) {
@@ -621,7 +874,7 @@ export async function saveDraft(
       revision: (existing.revision || 1) + 1,
       currentDraftVersionId: versionRecordId,
       updatedAt: now,
-      updatedBy: actor
+      updatedBy: actorName
     };
   } else {
     updatedDraft = {
@@ -643,11 +896,12 @@ export async function saveDraft(
       nextReviewDate: draftData.nextReviewDate,
       createdAt: now,
       updatedAt: now,
-      createdBy: actor,
-      updatedBy: actor,
+      createdBy: actorName,
+      updatedBy: actorName,
       version: 1,
       revision: 1,
-      currentDraftVersionId: versionRecordId
+      currentDraftVersionId: versionRecordId,
+      evidenceProfile: draftData.evidenceProfile || undefined
     };
   }
 
@@ -660,7 +914,7 @@ export async function saveDraft(
     status: updatedDraft.status,
     snapshot: updatedDraft,
     createdAt: now,
-    createdBy: actor,
+    createdBy: actorName,
     changeType,
     changeSummary: `Draft version ${updatedDraft.version} updated.`
   };
@@ -693,11 +947,98 @@ export async function saveDraft(
   }
   memoryVersions.push(versionRecord);
 
+  // Granular Evidence Profile Audits
+  const resolvedRole = actorContext.role || "editor";
+  const resolvedEmail = `${actorName}@homeo.healthcare`;
+
+  if (existing && updatedDraft.evidenceProfile) {
+    const prevProf = existing.evidenceProfile;
+    const newProf = updatedDraft.evidenceProfile;
+
+    if (!prevProf) {
+      await logAuditEvent(actorName, `${actorName}@homeo.healthcare`, actorContext.role, "evidence_profile_created", updatedDraft.articleId, "success", {
+        articleId: updatedDraft.articleId,
+        versionId: versionRecordId,
+        revision: updatedDraft.revision
+      });
+    } else {
+      let updatedAny = false;
+      if (prevProf.evidenceStrength !== newProf.evidenceStrength) {
+        updatedAny = true;
+        await logAuditEvent(actorName, `${actorName}@homeo.healthcare`, actorContext.role, "evidence_strength_changed", updatedDraft.articleId, "success", {
+          articleId: updatedDraft.articleId,
+          versionId: versionRecordId,
+          revision: updatedDraft.revision,
+          oldValue: prevProf.evidenceStrength || "none",
+          newValue: newProf.evidenceStrength
+        });
+      }
+      if (prevProf.sourceQuality !== newProf.sourceQuality) {
+        updatedAny = true;
+        await logAuditEvent(actorName, `${actorName}@homeo.healthcare`, actorContext.role, "source_quality_changed", updatedDraft.articleId, "success", {
+          articleId: updatedDraft.articleId,
+          versionId: versionRecordId,
+          revision: updatedDraft.revision,
+          oldValue: prevProf.sourceQuality || "none",
+          newValue: newProf.sourceQuality
+        });
+      }
+      if (prevProf.clinicalConfidence !== newProf.clinicalConfidence) {
+        updatedAny = true;
+        await logAuditEvent(actorName, `${actorName}@homeo.healthcare`, actorContext.role, "clinical_confidence_changed", updatedDraft.articleId, "success", {
+          articleId: updatedDraft.articleId,
+          versionId: versionRecordId,
+          revision: updatedDraft.revision,
+          oldValue: prevProf.clinicalConfidence !== undefined ? String(prevProf.clinicalConfidence) : "none",
+          newValue: String(newProf.clinicalConfidence)
+        });
+      }
+      if (prevProf.editorialConfidence !== newProf.editorialConfidence) {
+        updatedAny = true;
+        await logAuditEvent(actorName, `${actorName}@homeo.healthcare`, actorContext.role, "editorial_confidence_changed", updatedDraft.articleId, "success", {
+          articleId: updatedDraft.articleId,
+          versionId: versionRecordId,
+          revision: updatedDraft.revision,
+          oldValue: prevProf.editorialConfidence !== undefined ? String(prevProf.editorialConfidence) : "none",
+          newValue: String(newProf.editorialConfidence)
+        });
+      }
+      if (prevProf.reviewIntervalDays !== newProf.reviewIntervalDays) {
+        updatedAny = true;
+        await logAuditEvent(actorName, `${actorName}@homeo.healthcare`, actorContext.role, "review_interval_changed", updatedDraft.articleId, "success", {
+          articleId: updatedDraft.articleId,
+          versionId: versionRecordId,
+          revision: updatedDraft.revision,
+          oldValue: prevProf.reviewIntervalDays !== undefined ? String(prevProf.reviewIntervalDays) : "none",
+          newValue: String(newProf.reviewIntervalDays)
+        });
+      }
+      if (prevProf.reviewExpiryPolicy !== newProf.reviewExpiryPolicy) {
+        updatedAny = true;
+        await logAuditEvent(actorName, `${actorName}@homeo.healthcare`, actorContext.role, "review_expiry_policy_changed", updatedDraft.articleId, "success", {
+          articleId: updatedDraft.articleId,
+          versionId: versionRecordId,
+          revision: updatedDraft.revision,
+          oldValue: prevProf.reviewExpiryPolicy || "none",
+          newValue: newProf.reviewExpiryPolicy || "none"
+        });
+      }
+
+      if (updatedAny) {
+        await logAuditEvent(actorName, `${actorName}@homeo.healthcare`, actorContext.role, "evidence_profile_updated", updatedDraft.articleId, "success", {
+          articleId: updatedDraft.articleId,
+          versionId: versionRecordId,
+          revision: updatedDraft.revision
+        });
+      }
+    }
+  }
+
   // Log audit event
   await logAuditEvent(
-    actor,
-    `${actor}@homeo.healthcare`,
-    "editor",
+    actorName,
+    `${actorName}@homeo.healthcare`,
+    actorContext.role,
     existing ? "edit_draft" : "create_draft",
     updatedDraft.articleId,
     "success",
@@ -748,7 +1089,7 @@ export async function getVersions(articleId: string): Promise<CmsArticleVersion[
  */
 export async function rollbackToVersion(
   versionId: string, 
-  actor: string,
+  actor: string | AuthenticatedKnowledgeActor,
   confirmRollback?: boolean
 ): Promise<CmsArticleDraft> {
   if (!confirmRollback) {
@@ -777,6 +1118,21 @@ export async function rollbackToVersion(
     throw new Error("Specified version snapshot does not exist.");
   }
 
+  // Normalize actor context
+  let actorContext: AuthenticatedKnowledgeActor;
+  if (typeof actor === "string") {
+    actorContext = {
+      userId: "compatibility-mock-uid",
+      name: actor,
+      role: "super-admin",
+      capabilities: new Set(getPermissionsByRole("super-admin").filter((p: any): p is KnowledgeCapability => String(p).startsWith("knowledge.")))
+    };
+  } else {
+    actorContext = actor;
+  }
+
+  const actorName = actorContext.name || actorContext.userId;
+
   const now = new Date().toISOString();
   const existing = await getDraft(selectedVersion.articleId);
   const nextVer = existing ? existing.version + 1 : 1;
@@ -786,7 +1142,7 @@ export async function rollbackToVersion(
     version: nextVer,
     status: "draft",
     updatedAt: now,
-    updatedBy: actor,
+    updatedBy: actorName,
     revision: (existing?.revision || 1) + 1,
     notes: `Rolled back to version ${selectedVersion.version} snapshot.`
   };
@@ -816,7 +1172,7 @@ export async function rollbackToVersion(
     status: "draft",
     snapshot: restoredDraft,
     createdAt: now,
-    createdBy: actor,
+    createdBy: actorName,
     changeType: "rollback",
     changeSummary: `Rolled back to version ${selectedVersion.version} snapshot.`
   };
@@ -833,7 +1189,7 @@ export async function rollbackToVersion(
   memoryVersions.push(rollbackVersionRecord);
 
   // Append audit event
-  await logAuditEvent(actor, `${actor}@homeo.healthcare`, "super-admin", "rollback_version", restoredDraft.articleId, "success", {
+  await logAuditEvent(actorName, `${actorName}@homeo.healthcare`, actorContext.role, "rollback_version", restoredDraft.articleId, "success", {
     articleId: restoredDraft.articleId,
     versionId: rollbackVersionId,
     statusFrom: existing?.status,
@@ -854,7 +1210,7 @@ export async function approveClinicalReview(
   reviewDate: string,
   nextReviewDate: string,
   notes?: string,
-  actor?: string,
+  actor?: string | AuthenticatedKnowledgeActor,
   actorRole?: string
 ): Promise<boolean> {
   const clinicianExists = EDITORIAL_REVIEWERS.some(r => r.name.toLowerCase() === reviewer.toLowerCase());
@@ -862,20 +1218,39 @@ export async function approveClinicalReview(
     throw new Error(`Reviewer '${reviewer}' is not registered in the active clinical directory.`);
   }
 
-  // Under V2.14.0-A, we resolve the role from actor/reviewer and call transitionLifecycleState
-  const resolvedRole = actorRole || (
-    actor === "Editor" || actor === "editor" 
-      ? "editor" 
-      : (actor && (actor.includes("Jethwani") || actor.includes("Admin"))) 
-        ? "super-admin" 
-        : "clinical-reviewer"
-  );
+  // Normalize actor context
+  let actorContext: AuthenticatedKnowledgeActor;
+  if (!actor) {
+    actorContext = {
+      userId: "clinical-reviewer-mock",
+      name: reviewer,
+      role: "clinical-reviewer",
+      capabilities: new Set(getPermissionsByRole("clinical-reviewer").filter((p: any): p is KnowledgeCapability => String(p).startsWith("knowledge.")))
+    };
+  } else if (typeof actor === "string") {
+    const resolvedRole = actorRole || (
+      actor === "Editor" || actor === "editor" 
+        ? "editor" 
+        : (actor.includes("Jethwani") || actor.includes("Admin")) 
+          ? "super-admin" 
+          : "clinical-reviewer"
+    );
+    actorContext = {
+      userId: "compatibility-mock-uid",
+      name: actor,
+      role: resolvedRole as any,
+      capabilities: new Set(getPermissionsByRole(resolvedRole).filter((p: any): p is KnowledgeCapability => String(p).startsWith("knowledge.")))
+    };
+  } else {
+    actorContext = actor;
+  }
+
   await transitionLifecycleState(
     articleId,
     "clinically-approved" as any,
-    actor || reviewer,
-    resolvedRole,
-    `${actor || reviewer}@homeo.healthcare`,
+    actorContext,
+    actorContext.role,
+    `${actorContext.name || actorContext.userId}@homeo.healthcare`,
     {
       comments: notes,
       reviewer,
@@ -893,7 +1268,7 @@ export async function approveClinicalReview(
  */
 export async function publishArticle(
   articleId: string,
-  publisher: string,
+  publisher: string | AuthenticatedKnowledgeActor,
   changeSummary: string,
   confirmPublish?: boolean,
   actorRole?: string
@@ -925,15 +1300,29 @@ export async function publishArticle(
   result.version = draft.version;
 
   try {
-    const resolvedRole = actorRole || "super-admin";
-    
+    // Normalize publisher context
+    let actorContext: AuthenticatedKnowledgeActor;
+    if (typeof publisher === "string") {
+      const resolvedRole = actorRole || "super-admin";
+      actorContext = {
+        userId: "compatibility-mock-uid",
+        name: publisher,
+        role: resolvedRole as any,
+        capabilities: new Set(getPermissionsByRole(resolvedRole).filter((p: any): p is KnowledgeCapability => String(p).startsWith("knowledge.")))
+      };
+    } else {
+      actorContext = publisher;
+    }
+
+    const actorName = actorContext.name || actorContext.userId;
+
     // We execute publication transition lifecycle
     const updated = await transitionLifecycleState(
       articleId,
       "published",
-      publisher,
-      resolvedRole,
-      `${publisher}@homeo.healthcare`,
+      actorContext,
+      actorContext.role,
+      `${actorName}@homeo.healthcare`,
       {
         changeSummary,
         confirmPublish
@@ -947,7 +1336,7 @@ export async function publishArticle(
       draftId: updated.id,
       version: updated.version,
       publishedAt: new Date().toISOString(),
-      publishedBy: publisher,
+      publishedBy: actorName,
       reviewer: updated.reviewer || "",
       clinicalReviewDate: updated.clinicalReviewDate || "",
       changeSummary

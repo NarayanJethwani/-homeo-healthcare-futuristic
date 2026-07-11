@@ -35,6 +35,63 @@ export type LegacyKnowledgeVerificationStatus =
   | "archived"
   | "excluded";
 
+export type EvidenceStrength =
+  | "very-low"
+  | "low"
+  | "moderate"
+  | "high"
+  | "very-high";
+
+export type SourceQuality =
+  | "unverified"
+  | "secondary"
+  | "primary"
+  | "peer-reviewed"
+  | "authoritative";
+
+export type ReviewExpiryPolicy =
+  | "flag-only"
+  | "ranking-penalty"
+  | "exclude-from-ai"
+  | "exclude-from-all-search";
+
+export type EvidenceReviewState =
+  | "not-configured"
+  | "current"
+  | "due-soon"
+  | "overdue"
+  | "expired";
+
+export interface KnowledgeEvidenceProfile {
+  evidenceStrength: EvidenceStrength;
+  sourceQuality: SourceQuality;
+
+  classicalSource: boolean;
+  modernSource: boolean;
+
+  clinicalConfidence: number;
+  editorialConfidence: number;
+
+  citationCompleteness?: number;
+
+  lastReviewedAt?: string;
+  reviewIntervalDays?: number;
+  nextReviewDueAt?: string;
+
+  reviewExpiryPolicy?: ReviewExpiryPolicy;
+  reviewGracePeriodDays?: number;
+
+  rationale?: string;
+
+  assessedBy?: string;
+  assessedByNameSnapshot?: string;
+  assessedByRoleSnapshot?: string;
+  assessedAt?: string;
+
+  methodologyVersion?: string;
+}
+
+
 export type EvidenceLevel =
   | "Clinical-Evidence"
   | "Classical-Homeopathic-Literature"
@@ -215,6 +272,7 @@ export interface KnowledgeEntity {
   };
   visualBodySystem?: VisualBodySystem;
   structuredEvidence?: StructuredEvidence;
+  evidenceProfile?: KnowledgeEvidenceProfile;
   structuredDifferentials?: StructuredDifferential[];
   homeopathicPerspective?: HomeopathicPerspectiveData;
   interpretationAlgorithm?: LabInterpretationAlgorithm;

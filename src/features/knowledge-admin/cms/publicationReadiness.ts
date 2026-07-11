@@ -2,6 +2,14 @@ import { CmsArticleDraft } from "./types";
 import { EDITORIAL_REVIEWERS } from "../workflow/reviewerDirectory";
 import { checkProhibitedClaims } from "../../knowledge/governance/prohibitedClaims";
 import { globalKmsRepository } from "../repositories/MemoryRepository";
+import { featureFlags } from "@/features/dashboard/constants/featureFlags";
+import { 
+  calculateCitationCompleteness, 
+  calculateEvidenceReviewState,
+  EVIDENCE_STRENGTH_SCORE,
+  SOURCE_QUALITY_SCORE,
+  EVIDENCE_REVIEW_POLICY_V1
+} from "../../knowledge/retrieval/evidenceScoringService";
 
 export interface ReadinessResult {
   passed: boolean;
@@ -159,6 +167,148 @@ export async function validatePublicationReadiness(
   }
   if (draft.patientSummary && (draft.patientSummary.length < 10 || draft.patientSummary.length > 160)) {
     warnings.push("Patient summary length is outside optimal SEO meta description bounds (10-160 characters).");
+  }
+
+  // 11. Evidence Metadata Validation
+  const profile = draft.evidenceProfile;
+
+  if (featureFlags.knowledgeEvidenceScoringEnabled) {
+    if (!profile) {
+      errors.push("Evidence Profile is missing (required when evidence scoring is enabled).");
+    } else {
+      // Enforce valid enums and fields
+      if (!profile.evidenceStrength) {
+        errors.push("Evidence Profile: evidenceStrength is required.");
+      } else if (EVIDENCE_STRENGTH_SCORE[profile.evidenceStrength] === undefined) {
+        errors.push(`Evidence Profile: invalid evidenceStrength value '${profile.evidenceStrength}'.`);
+      }
+
+      if (!profile.sourceQuality) {
+        errors.push("Evidence Profile: sourceQuality is required.");
+      } else if (SOURCE_QUALITY_SCORE[profile.sourceQuality] === undefined) {
+        errors.push(`Evidence Profile: invalid sourceQuality value '${profile.sourceQuality}'.`);
+      }
+
+      if (profile.clinicalConfidence === undefined || profile.clinicalConfidence === null) {
+        errors.push("Evidence Profile: clinicalConfidence is required.");
+      } else {
+        const val = Number(profile.clinicalConfidence);
+        if (isNaN(val) || val < 0 || val > 100 || !Number.isInteger(val)) {
+          errors.push(`Evidence Profile: clinicalConfidence must be an integer between 0 and 100 (got ${profile.clinicalConfidence}).`);
+        } else if (val < 50) {
+          warnings.push(`Evidence Profile: clinicalConfidence is low (${val}/100).`);
+        }
+      }
+
+      if (profile.editorialConfidence === undefined || profile.editorialConfidence === null) {
+        errors.push("Evidence Profile: editorialConfidence is required.");
+      } else {
+        const val = Number(profile.editorialConfidence);
+        if (isNaN(val) || val < 0 || val > 100 || !Number.isInteger(val)) {
+          errors.push(`Evidence Profile: editorialConfidence must be an integer between 0 and 100 (got ${profile.editorialConfidence}).`);
+        } else if (val < 50) {
+          warnings.push(`Evidence Profile: editorialConfidence is low (${val}/100).`);
+        }
+      }
+
+      if (profile.reviewIntervalDays !== undefined && profile.reviewIntervalDays !== null) {
+        const val = Number(profile.reviewIntervalDays);
+        if (isNaN(val) || val <= 0 || !Number.isInteger(val)) {
+          errors.push(`Evidence Profile: reviewIntervalDays must be a positive integer (got ${profile.reviewIntervalDays}).`);
+        } else if (val < EVIDENCE_REVIEW_POLICY_V1.minReviewIntervalDays || val > EVIDENCE_REVIEW_POLICY_V1.maxReviewIntervalDays) {
+          errors.push(`Evidence Profile: reviewIntervalDays must be between ${EVIDENCE_REVIEW_POLICY_V1.minReviewIntervalDays} and ${EVIDENCE_REVIEW_POLICY_V1.maxReviewIntervalDays}.`);
+        }
+      } else {
+        warnings.push("Evidence Profile: reviewIntervalDays is not configured.");
+      }
+
+      if (profile.reviewGracePeriodDays !== undefined && profile.reviewGracePeriodDays !== null) {
+        const val = Number(profile.reviewGracePeriodDays);
+        if (isNaN(val) || val < 0 || !Number.isInteger(val)) {
+          errors.push(`Evidence Profile: reviewGracePeriodDays must be a non-negative integer.`);
+        }
+      }
+
+      if (profile.reviewExpiryPolicy) {
+        const allowedPolicies = ["flag-only", "ranking-penalty", "exclude-from-ai", "exclude-from-all-search"];
+        if (!allowedPolicies.includes(profile.reviewExpiryPolicy)) {
+          errors.push(`Evidence Profile: invalid reviewExpiryPolicy value '${profile.reviewExpiryPolicy}'.`);
+        }
+      }
+
+      if (!profile.rationale || profile.rationale.trim().length === 0) {
+        warnings.push("Evidence Profile: evidence rationale description is empty.");
+      } else if (profile.rationale.length > 5000) {
+        errors.push("Evidence Profile: evidence rationale description exceeds maximum limit of 5000 characters.");
+      }
+
+      if (!profile.assessedBy || profile.assessedBy.trim().length === 0) {
+        errors.push("Evidence Profile: assessor identity is missing.");
+      }
+      if (!profile.assessedAt || profile.assessedAt.trim().length === 0 || isNaN(Date.parse(profile.assessedAt))) {
+        errors.push("Evidence Profile: assessor timestamp is missing or invalid.");
+      }
+
+      // Check date correctness
+      if (profile.nextReviewDueAt && isNaN(Date.parse(profile.nextReviewDueAt))) {
+        errors.push(`Evidence Profile: calculated nextReviewDueAt date is invalid: "${profile.nextReviewDueAt}".`);
+      }
+
+      // Check source flags
+      if (!profile.classicalSource && !profile.modernSource) {
+        warnings.push("Evidence Profile: Neither classicalSource nor modernSource is enabled.");
+      }
+
+      // Calculate citation completeness and check warnings
+      const citResult = calculateCitationCompleteness(draft.references);
+      if (citResult.completenessScore < 50) {
+        warnings.push(`Evidence Profile: Low structural citation completeness (${citResult.completenessScore}%).`);
+      }
+
+      if (profile.evidenceStrength === "low" || profile.evidenceStrength === "very-low") {
+        warnings.push(`Evidence Profile: Low evidence strength level '${profile.evidenceStrength}'.`);
+      }
+      if (profile.sourceQuality === "unverified") {
+        warnings.push("Evidence Profile: Source quality is unverified.");
+      }
+
+      // Check review state for warning
+      if (profile.nextReviewDueAt && profile.lastReviewedAt) {
+        const reviewState = calculateEvidenceReviewState({
+          nextReviewDueAt: profile.nextReviewDueAt,
+          referenceDate: new Date().toISOString(),
+          dueSoonWindowDays: EVIDENCE_REVIEW_POLICY_V1.dueSoonWindowDays,
+          gracePeriodDays: profile.reviewGracePeriodDays || EVIDENCE_REVIEW_POLICY_V1.defaultGracePeriodDays
+        });
+        if (reviewState === "due-soon") {
+          warnings.push("Evidence Profile: Clinical review is due soon.");
+        } else if (reviewState === "overdue" || reviewState === "expired") {
+          warnings.push(`Evidence Profile: Clinical review is overdue (state: ${reviewState}).`);
+        }
+      }
+    }
+  } else {
+    // Feature flag disabled. Only reject if evidenceProfile has malformed data structure (if present)
+    if (profile) {
+      if (profile.clinicalConfidence !== undefined && profile.clinicalConfidence !== null) {
+        const val = Number(profile.clinicalConfidence);
+        if (isNaN(val) || val < 0 || val > 100) {
+          errors.push("Evidence Profile: clinicalConfidence must be between 0 and 100.");
+        }
+      }
+      if (profile.editorialConfidence !== undefined && profile.editorialConfidence !== null) {
+        const val = Number(profile.editorialConfidence);
+        if (isNaN(val) || val < 0 || val > 100) {
+          errors.push("Evidence Profile: editorialConfidence must be between 0 and 100.");
+        }
+      }
+      if (profile.reviewIntervalDays !== undefined && profile.reviewIntervalDays !== null) {
+        const val = Number(profile.reviewIntervalDays);
+        if (isNaN(val) || val <= 0) {
+          errors.push("Evidence Profile: reviewIntervalDays must be a positive integer.");
+        }
+      }
+    }
   }
 
   return {

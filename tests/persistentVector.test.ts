@@ -87,11 +87,19 @@ async function runTests() {
 
   // 1. Vector Store Fallbacks
   await test("1. FirestoreVectorStore fallback to Memory Store when Firestore is offline", async () => {
-    const fStore = new FirestoreVectorStore();
-    const stats = await fStore.getIndexStats();
-    // Since Firebase Admin returns null in test (no credentials), it must fall back to memory
-    assert.strictEqual(stats.persistentStorageEnabled, false);
-    assert.strictEqual(stats.source, "memory");
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const firebaseAdmin = require("../src/lib/firebaseAdmin");
+    const originalGetAdminDb = firebaseAdmin.getAdminDb;
+    firebaseAdmin.getAdminDb = () => null;
+
+    try {
+      const fStore = new FirestoreVectorStore();
+      const stats = await fStore.getIndexStats();
+      assert.strictEqual(stats.persistentStorageEnabled, false);
+      assert.strictEqual(stats.source, "memory");
+    } finally {
+      firebaseAdmin.getAdminDb = originalGetAdminDb;
+    }
   });
 
   // 2. Queue processing and retry recovery

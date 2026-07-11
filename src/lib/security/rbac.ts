@@ -17,7 +17,12 @@ export type KnowledgeCapability =
   | "knowledge.bypassReview"
   | "knowledge.archive"
   | "knowledge.restore"
-  | "knowledge.viewAudit";
+  | "knowledge.viewAudit"
+  | "knowledge.viewEvidence"
+  | "knowledge.editEvidence"
+  | "knowledge.assessClinicalEvidence"
+  | "knowledge.assessEditorialConfidence"
+  | "knowledge.configureReviewPolicy";
 
 export type RepertoryCapability =
   | "repertory.review.read"
@@ -97,7 +102,12 @@ const ROLE_PERMISSIONS: Record<AdminRole, Permission[]> = {
     "materia-medica.content.approve",
     "materia-medica.search.publish",
     "materia-medica.rag.publish",
-    "materia-medica.content.deprecate"
+    "materia-medica.content.deprecate",
+    "knowledge.viewEvidence",
+    "knowledge.editEvidence",
+    "knowledge.assessClinicalEvidence",
+    "knowledge.assessEditorialConfidence",
+    "knowledge.configureReviewPolicy"
   ],
   "clinical-reviewer": [
     "CMS_CLINICAL_APPROVE",
@@ -114,7 +124,11 @@ const ROLE_PERMISSIONS: Record<AdminRole, Permission[]> = {
     "materia-medica.content.approve",
     "materia-medica.search.publish",
     "materia-medica.rag.publish",
-    "materia-medica.content.deprecate"
+    "materia-medica.content.deprecate",
+    "knowledge.viewEvidence",
+    "knowledge.editEvidence",
+    "knowledge.assessClinicalEvidence",
+    "knowledge.configureReviewPolicy"
   ],
   "editor": [
     "CMS_DRAFT_EDIT",
@@ -132,7 +146,10 @@ const ROLE_PERMISSIONS: Record<AdminRole, Permission[]> = {
     "repertory.publish.request",
     "repertory.audit.read",
     "materia-medica.library.view",
-    "materia-medica.transcription.review"
+    "materia-medica.transcription.review",
+    "knowledge.viewEvidence",
+    "knowledge.editEvidence",
+    "knowledge.assessEditorialConfidence"
   ],
   "operations": [
     "CMS_DRAFT_EDIT",
@@ -147,15 +164,18 @@ const ROLE_PERMISSIONS: Record<AdminRole, Permission[]> = {
     "repertory.audit.read",
     "materia-medica.library.view",
     "materia-medica.source.register",
-    "materia-medica.ingestion.execute"
+    "materia-medica.ingestion.execute",
+    "knowledge.viewEvidence"
   ],
   "analytics-viewer": [
     "OBSERVABILITY_VIEW",
     "knowledge.viewAudit",
-    "repertory.audit.read"
+    "repertory.audit.read",
+    "knowledge.viewEvidence"
   ],
   "read-only-admin": [
-    "materia-medica.library.view"
+    "materia-medica.library.view",
+    "knowledge.viewEvidence"
   ]
 };
 

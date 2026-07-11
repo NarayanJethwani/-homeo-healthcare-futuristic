@@ -84,6 +84,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing action in request body" }, { status: 400 });
     }
 
+    const getActorContext = async (session: any) => {
+      const { getPermissionsByRole } = await import("@/lib/security/rbac");
+      const role = session.role;
+      const permissions = getPermissionsByRole(role);
+      const capabilities = new Set<any>(
+        permissions.filter((p: any): p is any => String(p).startsWith("knowledge."))
+      );
+      return {
+        userId: session.uid,
+        name: session.name,
+        role,
+        capabilities
+      };
+    };
+
     if (action === "saveDraft") {
       const auth = await authorizeRequest(request, "CMS_DRAFT_EDIT", "CMS_API_POST_saveDraft");
       if (!auth.authorized) return auth.response;
@@ -108,8 +123,13 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "Invalid draft status value" }, { status: 400 });
       }
 
-      const draft = await saveDraft(draftData, auth.session.name);
-      return NextResponse.json({ draft });
+      const actorContext = await getActorContext(auth.session);
+      try {
+        const draft = await saveDraft(draftData, actorContext);
+        return NextResponse.json({ draft });
+      } catch (err: any) {
+        return NextResponse.json({ error: err.message || "Failed to save draft" }, { status: 400 });
+      }
     }
 
     if (action === "rollbackToVersion") {
@@ -124,8 +144,9 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "Explicit rollback confirmation is required" }, { status: 400 });
       }
 
+      const actorContext = await getActorContext(auth.session);
       try {
-        const draft = await rollbackToVersion(versionId, auth.session.name, confirmRollback);
+        const draft = await rollbackToVersion(versionId, actorContext, confirmRollback);
         return NextResponse.json({ draft });
       } catch (err: any) {
         return NextResponse.json({ error: err.message || "Failed to rollback version" }, { status: 400 });
@@ -149,6 +170,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "Payload contains potential PII/PHI" }, { status: 400 });
       }
 
+      const actorContext = await getActorContext(auth.session);
       try {
         const success = await approveClinicalReview(
           articleId,
@@ -157,7 +179,7 @@ export async function POST(request: NextRequest) {
           reviewDate,
           nextReviewDate,
           notes,
-          auth.session.name,
+          actorContext,
           auth.session.role
         );
         return NextResponse.json({ success });
@@ -185,17 +207,18 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "Payload contains potential PII/PHI" }, { status: 400 });
       }
 
+      const actorContext = await getActorContext(auth.session);
       try {
         const result = await publishArticle(
           articleId,
-          auth.session.name,
+          actorContext,
           changeSummary,
           confirmPublish,
           auth.session.role
         );
         return NextResponse.json(result);
       } catch (err: any) {
-        return NextResponse.json({ error: "Failed to publish article safely" }, { status: 500 });
+        return NextResponse.json({ error: err.message || "Failed to publish article safely" }, { status: 500 });
       }
     }
 
