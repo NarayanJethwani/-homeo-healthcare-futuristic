@@ -21,6 +21,8 @@ export const featureFlags = {
   unifiedClinicalSearchEnabled: false,
   knowledgeQualityDashboardEnabled: false,
   knowledgeContinuousLearningEnabled: false,
+  emrCanonicalPatientReadModelEnabled: false,
+  emrPatientIdentityReconciliationEnabled: false,
   MATERIA_MEDICA_LIBRARY_V2: false,
   MATERIA_MEDICA_READER_V2: false,
   MATERIA_MEDICA_INGESTION_ADMIN: false,

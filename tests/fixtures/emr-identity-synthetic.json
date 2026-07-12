@@ -1,0 +1,44 @@
+{
+  "classification": "synthetic",
+  "datasetId": "emr-identity-preview-fixture-v1",
+  "patients": [
+    {
+      "sourceSystem": "firestore-patients",
+      "sourcePatientId": "synthetic-patient-1",
+      "organizationId": "synthetic-org-1",
+      "uhid": "SYN-UHID-1",
+      "name": "Synthetic Patient One",
+      "dateOfBirth": "1990-01-01"
+    },
+    {
+      "sourceSystem": "legacy-dashboard",
+      "sourcePatientId": "synthetic-legacy-1",
+      "organizationId": "synthetic-org-1",
+      "uhid": "syn-uhid-1",
+      "name": "synthetic patient one",
+      "dateOfBirth": "1990-01-01"
+    }
+  ],
+  "portalLinks": [
+    {
+      "userId": "synthetic-user-1",
+      "patientId": "synthetic-patient-1"
+    },
+    {
+      "userId": "synthetic-user-orphan",
+      "patientId": "missing-synthetic-patient"
+    }
+  ],
+  "linkedRecords": [
+    {
+      "collection": "invoices",
+      "recordId": "synthetic-invoice-1",
+      "patientId": "synthetic-patient-1"
+    },
+    {
+      "collection": "patient_attachments",
+      "recordId": "synthetic-attachment-orphan",
+      "patientId": "missing-synthetic-patient"
+    }
+  ]
+}
