@@ -1,29 +1,15 @@
-import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
-import { getAdminDb } from '@/lib/firebaseAdmin';
 import { RepertoryRubric, RepertoryPublishedCorpusManifest } from '../types';
 import { getRuntimeEnvironment } from '../config/runtimeEnv';
 import { getActiveCorpusPointerRepository } from './ActiveCorpusPointerRepository';
+import {
+  createRepertoryArtifactStore,
+  type RepertoryArtifactStore,
+} from './RepertoryArtifactStore';
 
-export interface RepertoryArtifactStore {
-  readJson<T>(path: string): Promise<T>;
-  exists(path: string): Promise<boolean>;
-}
-
-export class LocalArtifactStore implements RepertoryArtifactStore {
-  async readJson<T>(filePath: string): Promise<T> {
-    if (!fs.existsSync(filePath)) {
-      throw new Error(`Artifact store file not found: ${filePath}`);
-    }
-    const content = fs.readFileSync(filePath, 'utf-8');
-    return JSON.parse(content);
-  }
-
-  async exists(filePath: string): Promise<boolean> {
-    return fs.existsSync(filePath);
-  }
-}
+export type { RepertoryArtifactStore } from './RepertoryArtifactStore';
+export { LocalRepertoryArtifactStore as LocalArtifactStore } from './RepertoryArtifactStore';
 
 class LruCache<T> {
   private cache = new Map<string, { value: T; bytes: number; timestamp: number }>();
@@ -100,7 +86,8 @@ export class PublishedCorpusRepository {
   private static activeVersionCacheTtlMs = getRuntimeEnvironment().mode === 'test' ? 0 : 10000; // 10 seconds TTL
 
   // Abstraction layer
-  private static artifactStore: RepertoryArtifactStore = new LocalArtifactStore();
+  private static artifactStore: RepertoryArtifactStore | null = null;
+  private static artifactStorePromise: Promise<RepertoryArtifactStore> | null = null;
 
   // Separate caches for shards
   private static chapterCache = new LruCache<RepertoryRubric[]>(20, 20 * 1024 * 1024, 5 * 60 * 1000);
@@ -117,7 +104,23 @@ export class PublishedCorpusRepository {
 
   static setArtifactStore(store: RepertoryArtifactStore): void {
     this.artifactStore = store;
+    this.artifactStorePromise = Promise.resolve(store);
     this.invalidateCache();
+  }
+
+  static resetArtifactStore(): void {
+    this.artifactStore = null;
+    this.artifactStorePromise = null;
+    this.invalidateCache();
+  }
+
+  private static async getArtifactStore(): Promise<RepertoryArtifactStore> {
+    if (this.artifactStore) return this.artifactStore;
+    if (!this.artifactStorePromise) {
+      this.artifactStorePromise = createRepertoryArtifactStore(getRuntimeEnvironment());
+    }
+    this.artifactStore = await this.artifactStorePromise;
+    return this.artifactStore;
   }
 
   private static getPublishedDir(version: string): string {
@@ -225,14 +228,15 @@ export class PublishedCorpusRepository {
     console.log(`PublishedCorpusRepository: Initializing active pointer to version ${activeVersion}...`);
     const dir = this.getPublishedDir(activeVersion);
     const manifestPath = path.join(dir, 'manifest.json');
-    
-    if (!(await this.artifactStore.exists(manifestPath))) {
+    const artifactStore = await this.getArtifactStore();
+
+    if (!(await artifactStore.exists(manifestPath))) {
       console.warn(`PublishedCorpusRepository: Snapshot directory ${dir} manifest not found.`);
       return;
     }
 
     try {
-      this.cachedManifest = await this.artifactStore.readJson<RepertoryPublishedCorpusManifest>(manifestPath);
+      this.cachedManifest = await artifactStore.readJson<RepertoryPublishedCorpusManifest>(manifestPath);
       this.cachedVersion = activeVersion;
     } catch (e: any) {
       console.error(`PublishedCorpusRepository: Failed to load manifest for version ${activeVersion}:`, e);
@@ -270,7 +274,7 @@ export class PublishedCorpusRepository {
           });
 
           const data = await Promise.race([
-            this.artifactStore.readJson<T>(fullPath),
+            (await this.getArtifactStore()).readJson<T>(fullPath),
             timeout
           ]);
 
@@ -353,7 +357,7 @@ export class PublishedCorpusRepository {
       ? [filters.sourceId]
       : sources;
 
-    let results: RepertoryRubric[] = [];
+    const results: RepertoryRubric[] = [];
     
     for (const srcId of matchSources) {
       try {
@@ -529,18 +533,17 @@ export class PublishedCorpusRepository {
 
   static async getRAGDocuments(): Promise<any[]> {
     await this.ensureActiveCorpusLoaded();
-    // Fetch all active RAG shards to serve RAG verification tests
     if (!this.cachedManifest) return [];
-    
+
     const results: any[] = [];
     try {
-      const ragDir = path.join(this.getPublishedDir(this.cachedVersion), 'rag');
-      if (fs.existsSync(ragDir)) {
-        const files = fs.readdirSync(ragDir).filter(f => f.startsWith('documents-'));
-        for (const file of files) {
-          const shard = await this.artifactStore.readJson<any[]>(path.join(ragDir, file));
-          results.push(...shard);
-        }
+      const artifactPaths = Object.keys(this.cachedManifest.artifactChecksums || {})
+        .filter((artifactPath) => /^rag\/documents-[^/]+\.json$/.test(artifactPath))
+        .sort();
+
+      for (const artifactPath of artifactPaths) {
+        const shard = await this.loadShardCoalesced<any[]>(artifactPath, this.indexCache);
+        results.push(...shard);
       }
     } catch (e) {
       console.warn("Failed to load RAG document shards:", e);
