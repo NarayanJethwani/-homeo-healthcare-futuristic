@@ -6,12 +6,14 @@ type BookCardProps = {
   book: MateriaMedicaBook;
   onViewDetails: (book: MateriaMedicaBook) => void;
   onViewAuthor: (authorId: string) => void;
+  onRead?: (book: MateriaMedicaBook) => void;
 };
 
 export const BookCard: React.FC<BookCardProps> = ({
   book,
   onViewDetails,
   onViewAuthor,
+  onRead,
 }) => {
   // Parse source provider host
   const provider = React.useMemo(() => {
@@ -121,8 +123,8 @@ export const BookCard: React.FC<BookCardProps> = ({
           
           {isAvailable ? (
             <button
-              disabled={true}
-              className="flex-1 py-2 bg-gradient-to-r from-amber-500 to-amber-600 opacity-50 cursor-not-allowed text-slate-950 text-xs font-semibold rounded-lg min-h-[38px] flex items-center justify-center"
+              onClick={() => onRead?.(book)}
+              className="flex-1 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 text-xs font-semibold rounded-lg min-h-[38px] flex items-center justify-center cursor-pointer transition-all"
             >
               Read Online
             </button>

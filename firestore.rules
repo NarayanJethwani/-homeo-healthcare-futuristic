@@ -9,6 +9,48 @@ service cloud.firestore {
     function isAdmin() {
       return request.auth != null && getUserData().role == 'admin';
     }
+    function isEditor() {
+      return request.auth != null && getUserData().role == 'editor';
+    }
+    function isClinicalReviewer() {
+      return request.auth != null && getUserData().role == 'clinical-reviewer';
+    }
+    function isRepertoryReviewer() {
+      return isAdmin() || isEditor() || isClinicalReviewer();
+    }
+
+    function validAnnotation(data) {
+      let allowedKeys = ['id', 'practitionerId', 'bookId', 'sourceVersionId', 'passageId', 'blockId', 'annotationType', 'selectedText', 'noteText', 'anchor', 'anchorState', 'createdAt', 'updatedAt', 'revision'];
+      return data.keys().hasAll(['id', 'practitionerId', 'bookId', 'sourceVersionId', 'passageId', 'blockId', 'annotationType', 'anchor', 'anchorState', 'createdAt', 'updatedAt', 'revision'])
+        && data.keys().hasOnly(allowedKeys)
+        && data.annotationType in ['keynote', 'mental', 'general', 'modality', 'causation', 'clinical', 'differential', 'personal']
+        && (!data.keys().hasAny(['noteText']) || (data.noteText is string && data.noteText.size() <= 2000))
+        && (!data.keys().hasAny(['selectedText']) || data.selectedText is string)
+        && data.anchor.keys().hasAll(['startOffset', 'endOffset', 'textChecksum'])
+        && data.anchor.startOffset >= 0
+        && data.anchor.endOffset >= data.anchor.startOffset
+        && data.anchor.textChecksum is string
+        && data.anchorState in ['valid', 'source-version-changed', 'text-mismatch', 'orphaned']
+        && data.createdAt is string
+        && data.updatedAt is string
+        && data.revision is int
+        && data.revision >= 0;
+    }
+
+    function validBookmark(data) {
+      let allowedKeys = ['id', 'practitionerId', 'bookId', 'sourceVersionId', 'passageId', 'blockId', 'createdAt'];
+      return data.keys().hasAll(['id', 'practitionerId', 'bookId', 'sourceVersionId', 'passageId', 'createdAt'])
+        && data.keys().hasOnly(allowedKeys)
+        && data.createdAt is string;
+    }
+
+    function validReaderPosition(data) {
+      let allowedKeys = ['practitionerId', 'bookId', 'sourceVersionId', 'passageId', 'blockId', 'relativeOffset', 'updatedAt'];
+      return data.keys().hasAll(['practitionerId', 'bookId', 'sourceVersionId', 'passageId', 'updatedAt'])
+        && data.keys().hasOnly(allowedKeys)
+        && (!data.keys().hasAny(['relativeOffset']) || data.relativeOffset is number)
+        && data.updatedAt is string;
+    }
 
     // ─── User Profiles ───────────────────────────────────────────────────────
     // Admins can read/write all user profiles (needed for doctor onboarding).
@@ -98,6 +140,115 @@ service cloud.firestore {
     match /cms_versions/{versionId} {
       allow read: if request.auth != null;
       allow write: if false;
+    }
+    match /clinical_graph_nodes/{nodeId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+    match /clinical_graph_edges/{edgeId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+    match /clinical_graph_edge_versions/{versionId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+    match /clinical_graph_audit_events/{eventId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+
+    // ─── Repertory Operations, Reviews, Pointers, and Audits ─────────────────
+    match /repertoryAcquisitionRecords/{recordId} {
+      allow read: if isRepertoryReviewer();
+      allow write: if false;
+    }
+    match /repertorySourceReviews/{reviewId} {
+      allow read: if isRepertoryReviewer();
+      allow write: if false;
+    }
+    match /repertoryActiveCorpusPointer/{pointerId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+    match /repertoryEditorialAuditLogs/{logId} {
+      allow read: if isAdmin() || isClinicalReviewer();
+      allow write: if false;
+    }
+
+    // ─── Practitioner Materia Medica Workspace ─────────────────────────────
+    match /practitioners/{practitionerId}/materiaMedicaAnnotations/{annotationId} {
+      allow get, list: if request.auth != null
+        && request.auth.uid == practitionerId;
+
+      allow create: if request.auth != null
+        && request.auth.uid == practitionerId
+        && request.resource.data.practitionerId == practitionerId
+        && validAnnotation(request.resource.data);
+
+      allow update: if request.auth != null
+        && request.auth.uid == practitionerId
+        && resource.data.practitionerId == practitionerId
+        && request.resource.data.practitionerId == practitionerId
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.bookId == resource.data.bookId
+        && request.resource.data.sourceVersionId == resource.data.sourceVersionId
+        && request.resource.data.passageId == resource.data.passageId
+        && request.resource.data.blockId == resource.data.blockId
+        && request.resource.data.anchor == resource.data.anchor
+        && request.resource.data.revision == resource.data.revision + 1
+        && validAnnotation(request.resource.data);
+
+      allow delete: if request.auth != null
+        && request.auth.uid == practitionerId
+        && resource.data.practitionerId == practitionerId;
+    }
+
+    match /practitioners/{practitionerId}/materiaMedicaBookmarks/{bookmarkId} {
+      allow get, list: if request.auth != null
+        && request.auth.uid == practitionerId;
+
+      allow create: if request.auth != null
+        && request.auth.uid == practitionerId
+        && request.resource.data.practitionerId == practitionerId
+        && validBookmark(request.resource.data);
+
+      allow update: if request.auth != null
+        && request.auth.uid == practitionerId
+        && resource.data.practitionerId == practitionerId
+        && request.resource.data.practitionerId == practitionerId
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.bookId == resource.data.bookId
+        && request.resource.data.sourceVersionId == resource.data.sourceVersionId
+        && request.resource.data.passageId == resource.data.passageId
+        && request.resource.data.blockId == resource.data.blockId
+        && validBookmark(request.resource.data);
+
+      allow delete: if request.auth != null
+        && request.auth.uid == practitionerId
+        && resource.data.practitionerId == practitionerId;
+    }
+
+    match /practitioners/{practitionerId}/materiaMedicaReaderPositions/{positionId} {
+      allow get: if request.auth != null
+        && request.auth.uid == practitionerId;
+
+      allow create: if request.auth != null
+        && request.auth.uid == practitionerId
+        && request.resource.data.practitionerId == practitionerId
+        && validReaderPosition(request.resource.data);
+
+      allow update: if request.auth != null
+        && request.auth.uid == practitionerId
+        && resource.data.practitionerId == practitionerId
+        && request.resource.data.practitionerId == practitionerId
+        && request.resource.data.bookId == resource.data.bookId
+        && request.resource.data.sourceVersionId == resource.data.sourceVersionId
+        && validReaderPosition(request.resource.data);
+
+      allow delete: if request.auth != null
+        && request.auth.uid == practitionerId
+        && resource.data.practitionerId == practitionerId;
     }
   }
 }

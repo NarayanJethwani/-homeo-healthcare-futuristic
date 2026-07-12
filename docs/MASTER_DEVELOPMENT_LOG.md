@@ -603,3 +603,28 @@ This document serves as the chronological, single source of truth for all sprint
   - Added 25 focused evidence unit/integration tests confirming dates, context matrices, permissions, and rollback behavior.
   - Integrated RAG priority blending (85% relevance / 15% priority) in RAG query pipeline.
 
+---
+
+## [2026-07-12] - Sprint 21: Private Workspace Persistence & Security Rules (v2.15.0)
+- **Release Version**: `2.15.0`
+- **Release Tag**: `v2.15.0-private-workspace`
+- **Deployment Status**: Deployed
+- **Build Verification**: Passed typecheck, eslint rules, Next.js build, and verify:release
+- **Files Changed**:
+  - `src/features/materia-medica/types/persistenceTypes.ts`
+  - `src/features/materia-medica/services/annotationsService.ts`
+  - `src/features/materia-medica/services/bookmarksService.ts`
+  - `src/features/materia-medica/services/readerPositionService.ts`
+  - `src/features/materia-medica/components/reader/MateriaMedicaReader.tsx`
+  - `src/features/dashboard/constants/featureFlags.ts`
+  - `firestore.rules`
+  - `tests/materiaMedicaPersistence.test.ts`
+- **Major Changes**:
+  - Implemented client persistence models (`MateriaMedicaAnnotation`, `MateriaMedicaBookmark`, `MateriaMedicaReaderPosition`) supporting explicit sync states.
+  - Built decoupled services handling practitioner-specific Firestore subcollections with client-side caching.
+  - Added optimistic concurrency controls preventing last-write-wins (LWW) merge conflicts.
+  - Implemented idempotent bookmark toggles and debounced scroll position tracking.
+  - Enforced strict backend-level security in `firestore.rules` validating ownership and payload schemas.
+  - Added 8 rules-unit-testing emulator assertions verifying read/write permissions, offset bounds, and note sizes.
+
+

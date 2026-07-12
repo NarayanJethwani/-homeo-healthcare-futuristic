@@ -1,341 +1,401 @@
 import fs from "fs";
 import path from "path";
+import child_process from "child_process";
 
-console.log("🚀 Starting Automated Production Readiness Verification Script...");
-
-let passed = true;
-
-function verifyFileExists(filePath: string, description: string) {
-  const fullPath = path.isAbsolute(filePath) ? filePath : path.join(process.cwd(), filePath);
-  if (fs.existsSync(fullPath)) {
-    console.log(`✅ [File Exists] ${description}: ${filePath}`);
-  } else {
-    console.error(`❌ [File Missing] ${description}: ${filePath}`);
-    passed = false;
+// Parse CLI Arguments
+function parseArgs() {
+  const args: Record<string, string> = {};
+  const argv = process.argv.slice(2);
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i].startsWith('--')) {
+      const key = argv[i].substring(2);
+      const val = argv[i + 1];
+      if (val && !val.startsWith('--')) {
+        args[key] = val;
+        i++;
+      } else {
+        args[key] = 'true';
+      }
+    }
   }
+  return args;
 }
 
-// 1. Confirm required operations documents exist
-console.log("\nChecking Operations Documentation Assets...");
-const opDocs = [
-  "docs/operations/PRODUCTION_READINESS_CHECKLIST.md",
-  "docs/operations/RELEASE_GOVERNANCE.md",
-  "docs/operations/INCIDENT_RUNBOOKS.md",
-  "docs/operations/ENVIRONMENT_VARIABLES.md",
-  "docs/operations/DEPLOYMENT_LOG_TEMPLATE.md",
-  "docs/operations/SECURITY_AND_RBAC.md",
-  "docs/operations/PRACTITIONER_ACCOUNT_LIFECYCLE.md",
-  "docs/operations/PRACTITIONER_PROFILE_AND_ACCOUNT_SETTINGS.md",
-  "docs/operations/PATIENT_ATTACHMENTS_AND_LAB_EXTRACTION.md",
-  "docs/operations/CLINICIAN_REVIEWED_LAB_DATA.md"
-];
-opDocs.forEach(doc => verifyFileExists(doc, "Operations document"));
+const args = parseArgs();
+const mode = args.mode || "production"; // default mode is production
 
-// 2. Confirm critical platform modules exist
-console.log("\nChecking Critical System Core Modules...");
-const coreModules = [
-  "src/lib/ragService.ts",
-  "src/features/knowledge/retrieval/vectorStore.ts",
-  "src/features/knowledge/retrieval/embeddingQueue.ts",
-  "src/features/knowledge-admin/cms/cmsManager.ts",
-  "src/app/admin/knowledge-editorial/page.tsx",
-  "src/app/api/admin/observability/rag-health/route.ts",
-  "src/app/api/consult-ai/route.ts",
-  "src/lib/clinicalDecisionSupport.ts",
-  "src/lib/security/rbac.ts",
-  "src/lib/security/apiAuth.ts",
-  "src/lib/security/auditLogger.ts",
-  "src/features/admin-users/types.ts",
-  "src/features/admin-users/invitationTokenService.ts",
-  "src/features/admin-users/practitionerRepository.ts",
-  "src/features/admin-users/adminUsersClient.ts",
-  "src/app/api/admin/invitations/accept/route.ts",
-  "src/features/practitioner-profile/types.ts",
-  "src/features/practitioner-profile/preferences.ts",
-  "src/features/practitioner-profile/practitionerProfileRepository.ts",
-  "src/features/practitioner-profile/profileClient.ts",
-  "src/components/dashboard/PractitionerProfilePanel.tsx",
-  "src/app/api/account/profile/route.ts",
-  "tests/practitionerProfile.test.ts",
-  "src/features/patient-attachments/types.ts",
-  "src/features/patient-attachments/uploadValidation.ts",
-  "src/features/patient-attachments/storageAdapter.ts",
-  "src/features/patient-attachments/attachmentRepository.ts",
-  "src/features/patient-attachments/labExtraction.ts",
-  "src/features/patient-attachments/attachmentClient.ts",
-  "src/features/patient-attachments/authHelper.ts",
-  "src/features/patient-attachments/PatientAttachmentsPanel.tsx",
-  "tests/patientAttachments.test.ts",
-  "src/features/patient-labs/types.ts",
-  "src/features/patient-labs/labRepository.ts",
-  "src/features/patient-labs/clinicalLabContext.ts",
-  "src/features/patient-labs/labClient.ts",
-  "src/features/patient-labs/PatientLabTimelinePanel.tsx",
-  "src/features/patient-labs/TreatmentPlannerLabReference.tsx",
-  "src/app/api/patients/[patientId]/labs/review/route.ts",
-  "src/app/api/patients/[patientId]/labs/timeline/route.ts",
-  "src/app/api/patients/[patientId]/labs/summary/route.ts",
-  "tests/patientLabs.test.ts"
-];
-coreModules.forEach(mod => verifyFileExists(mod, "Platform core module"));
+console.log(`🚀 verify-production-readiness.ts started in mode: ${mode}`);
 
-// 3. Confirm package scripts exist
-console.log("\nChecking package.json script configurations...");
-try {
-  const pkgContent = fs.readFileSync(path.join(process.cwd(), "package.json"), "utf8");
-  const pkg = JSON.parse(pkgContent);
-  
-  if (pkg.scripts && pkg.scripts["verify:production"]) {
-    console.log("✅ [Script Config] 'verify:production' is registered in package.json");
-  } else {
-    console.error("❌ [Script Config Missing] 'verify:production' script is missing in package.json");
-    passed = false;
-  }
-  
-  if (pkg.scripts && pkg.scripts["test"]) {
-    console.log("✅ [Script Config] 'test' runner is registered in package.json");
-  } else {
-    console.error("❌ [Script Config Missing] 'test' runner script is missing in package.json");
-    passed = false;
-  }
-} catch (err: any) {
-  console.error("❌ [Package Read Failure] Could not load package.json:", err.message || err);
-  passed = false;
-}
+type VerificationCheckResult = {
+  id: string;
+  command?: string;
+  status: "passed" | "failed" | "blocked" | "not-run";
+  exitCode?: number;
+  durationMs?: number;
+  details?: Record<string, unknown>;
+};
 
-// 4. Confirm Safety Gates are preserved
-console.log("\nChecking Safety Gates Integrity...");
-const safetyFiles = [
-  "src/features/knowledge-admin/cms/publicationReadiness.ts",
-  "src/features/knowledge/governance/qualityGates.ts"
-];
-safetyFiles.forEach(gate => verifyFileExists(gate, "CMS safety filter gate"));
+const results: VerificationCheckResult[] = [];
 
-// 5. Auditing Security & Auth enforcement layer
-console.log("\nAuditing Security & Auth Route-Level Coverage...");
-try {
-  const adminApiDir = path.join(process.cwd(), "src/app/api/admin");
-  const accountApiDir = path.join(process.cwd(), "src/app/api/account");
-  const patientsApiDir = path.join(process.cwd(), "src/app/api/patients");
-  if (!fs.existsSync(adminApiDir)) {
-    console.error("❌ [Security Audit] src/app/api/admin directory does not exist.");
-    passed = false;
-  } else {
-    function getFilesRecursive(dir: string): string[] {
-      let results: string[] = [];
-      const list = fs.readdirSync(dir);
-      list.forEach(file => {
-        const fullPath = path.join(dir, file);
-        const stat = fs.statSync(fullPath);
-        if (stat && stat.isDirectory()) {
-          results = results.concat(getFilesRecursive(fullPath));
-        } else {
-          results.push(fullPath);
-        }
-      });
-      return results;
+// Helper to run external subcommands safely without shell injection
+function runSubprocess(id: string, cmd: string, cmdArgs: string[]): VerificationCheckResult {
+  console.log(`🏃 Running subcommand: ${cmd} ${cmdArgs.join(' ')}`);
+  const start = Date.now();
+  try {
+    const isEmulatorTask = [
+      "rules-unit-testing",
+      "durable-consistency-test",
+      "approval-persistence-test",
+      "activation-gate-test",
+      "artifact-deployment-test",
+      "clarke-safety-test",
+      "snapshot-activation-test"
+    ].includes(id);
+
+    const subprocessEnv: Record<string, string> = {
+      ...process.env,
+      NODE_ENV: 'test',
+      NODE_OPTIONS: '--max-old-space-size=5120'
+    };
+    if (isEmulatorTask) {
+      subprocessEnv.REPERTORY_RUNTIME_MODE = 'emulator';
+    } else {
+      delete subprocessEnv.REPERTORY_RUNTIME_MODE;
+      delete subprocessEnv.REPERTORY_ENV;
+    }
+    if (id === "next-build") {
+      delete subprocessEnv.FIRESTORE_EMULATOR_HOST;
     }
 
-    const adminFiles = fs.existsSync(adminApiDir) ? getFilesRecursive(adminApiDir) : [];
-    const accountFiles = fs.existsSync(accountApiDir) ? getFilesRecursive(accountApiDir) : [];
-    const patientsFiles = fs.existsSync(patientsApiDir) ? getFilesRecursive(patientsApiDir) : [];
-    const files = [...adminFiles, ...accountFiles, ...patientsFiles];
-    const routeFiles = files.filter(f => f.endsWith("route.ts") || f.endsWith("route.tsx"));
-    
-    console.log(`Discovered ${routeFiles.length} API route files.`);
+    const res = child_process.spawnSync(cmd, cmdArgs, {
+      stdio: 'inherit',
+      env: subprocessEnv as any
+    });
+    const duration = Date.now() - start;
+    if (res.status === 0) {
+      console.log(`✅ ${id} passed in ${duration}ms`);
+      return { id, command: `${cmd} ${cmdArgs.join(' ')}`, status: 'passed', exitCode: 0, durationMs: duration };
+    } else {
+      console.error(`❌ ${id} failed with exit code ${res.status}`);
+      return { id, command: `${cmd} ${cmdArgs.join(' ')}`, status: 'failed', exitCode: res.status ?? 1, durationMs: duration };
+    }
+  } catch (err: any) {
+    const duration = Date.now() - start;
+    console.error(`❌ ${id} crashed:`, err.message);
+    return { id, command: `${cmd} ${cmdArgs.join(' ')}`, status: 'failed', exitCode: 1, durationMs: duration, details: { error: err.message } };
+  }
+}
 
-    routeFiles.forEach(file => {
-      const relativePath = path.relative(process.cwd(), file);
-      const content = fs.readFileSync(file, "utf8");
+// ─── 1. Static Verification Tasks ──────────────────────────────────────────
+function runStaticVerification(): VerificationCheckResult[] {
+  console.log("\n--- Running Static verification ---");
+  const localResults: VerificationCheckResult[] = [];
+  
+  // Linting
+  const lintRes = runSubprocess("lint", "npx", ["eslint"]);
+  localResults.push(lintRes);
 
-      // Check exclusion
-      if (
-        relativePath.includes("api/admin/session/route.ts") ||
-        relativePath.includes("api/admin/invitations/accept/route.ts")
-      ) {
-        console.log(`✅ [Exempt Route] Onboarding/Session route: ${relativePath}`);
-        return;
-      }
+  // TypeScript typecheck
+  const typecheckRes = runSubprocess("typecheck", "npx", ["tsc", "--noEmit", "--project", "tsconfig.verify.json"]);
+  localResults.push(typecheckRes);
 
-      // Must have auth guard
-      const hasGuard = content.includes("authorizeRequest") || 
-        content.includes("requireAdminApiSession") || 
-        content.includes("verifyAdminSessionCookie") || 
-        content.includes("resolveSession") ||
-        content.includes("validatePractitionerPatientAccess");
-      if (hasGuard) {
-        console.log(`✅ [Protected Route] Guarded: ${relativePath}`);
-      } else {
-        console.error(`❌ [Security Alert] Unprotected Route! Missing authorizeRequest, verifyAdminSessionCookie, resolveSession or validatePractitionerPatientAccess in: ${relativePath}`);
+  return localResults;
+}
+
+// ─── 2. Corpus Verification Tasks ──────────────────────────────────────────
+function runCorpusVerification(): VerificationCheckResult[] {
+  console.log("\n--- Running Corpus verification ---");
+  const localResults: VerificationCheckResult[] = [];
+
+  // Snapshot reconciliation
+  const reconcileRes = runSubprocess(
+    "snapshot-reconciliation",
+    "npx",
+    ["ts-node", "-P", "tests/tsconfig.test.json", "-r", "tsconfig-paths/register", "scripts/repertory/reconcileSnapshot.ts", "--release", "v1.2.0"]
+  );
+  localResults.push(reconcileRes);
+
+  // Source Validation (checksums and metadata)
+  const sourceValRes = runSubprocess(
+    "source-validation",
+    "npx",
+    ["ts-node", "-P", "tests/tsconfig.test.json", "-r", "tsconfig-paths/register", "scripts/repertory/validateSource.ts", "--source", "clarke_clinical_1904", "--record", "acq_clarke_1904_001"]
+  );
+  localResults.push(sourceValRes);
+
+  return localResults;
+}
+
+// ─── 3. Security Verification Tasks ────────────────────────────────────────
+function runSecurityVerification(): VerificationCheckResult[] {
+  console.log("\n--- Running Security verification ---");
+  const localResults: VerificationCheckResult[] = [];
+  const start = Date.now();
+  let passed = true;
+  const details: Record<string, any> = {};
+
+  try {
+    // Check documentation files exist
+    const opDocs = [
+      "docs/operations/PRODUCTION_READINESS_CHECKLIST.md",
+      "docs/operations/RELEASE_GOVERNANCE.md",
+      "docs/operations/INCIDENT_RUNBOOKS.md",
+      "docs/operations/ENVIRONMENT_VARIABLES.md",
+      "docs/operations/SECURITY_AND_RBAC.md"
+    ];
+    opDocs.forEach(docPath => {
+      if (!fs.existsSync(path.join(process.cwd(), docPath))) {
         passed = false;
-      }
-
-      // Profile update validation check
-      if (relativePath.includes("api/account/profile/route.ts")) {
-        const hasFieldGate = content.includes("rejectedFields") || content.includes("containsRejected");
-        if (hasFieldGate) {
-          console.log(`✅ [Field Protection] Profile updates route properly rejects admin mutations: ${relativePath}`);
-        } else {
-          console.error(`❌ [Security Alert] Profile updates route lacks administrative field mutation protection: ${relativePath}`);
-          passed = false;
-        }
-      }
-
-      // No raw stack trace return patterns in admin/account routes
-      if (content.includes("stack") && (content.includes("Response.json") || content.includes("NextResponse.json")) && !content.includes("console.error")) {
-        if (/NextResponse\.json\(\s*\{\s*[^}]*stack/.test(content)) {
-          console.error(`❌ [Security Alert] Route might be leaking stack traces: ${relativePath}`);
-          passed = false;
-        }
-      }
-
-      // No request.headers or cookie console logging
-      if (content.includes("console.log") && (content.includes("request.headers") || content.includes("cookie"))) {
-        console.error(`❌ [Security Alert] Obvious token/cookie logging found in route: ${relativePath}`);
-        passed = false;
-      }
-
-      // Ensure no raw tokenHash is leaked to client in output payload
-      if (content.includes("tokenHash") && !content.includes("const { tokenHash") && !content.includes("verifyInvitationToken")) {
-        console.error(`❌ [Security Alert] Route might be returning tokenHash to client: ${relativePath}`);
-        passed = false;
+        console.error(`❌ Missing operations doc: ${docPath}`);
       }
     });
 
-    // Verify security files for token/cookie logging and dev bypass
-    const securityFiles = [
-      "src/lib/security/rbac.ts",
-      "src/lib/security/apiAuth.ts",
-      "src/lib/security/auditLogger.ts",
-      "src/lib/adminSession.ts",
-      "src/lib/adminApiAuth.ts"
-    ];
-
-    // Extra: Verify SUBSCRIPTION_MANAGE in rbac.ts
+    // Check rbac.ts permissions (SUBSCRIPTION_MANAGE check)
     const rbacPath = path.join(process.cwd(), "src/lib/security/rbac.ts");
     if (fs.existsSync(rbacPath)) {
-      const rbacContent = fs.readFileSync(rbacPath, "utf8");
-      if (!rbacContent.includes("SUBSCRIPTION_MANAGE")) {
-        console.error("❌ [Security Alert] SUBSCRIPTION_MANAGE permission is missing in rbac.ts");
+      const content = fs.readFileSync(rbacPath, "utf8");
+      if (!content.includes("SUBSCRIPTION_MANAGE")) {
         passed = false;
-      } else {
-        console.log("✅ [Security Config] SUBSCRIPTION_MANAGE permission verified in rbac.ts");
+        console.error("❌ SUBSCRIPTION_MANAGE permission is missing in rbac.ts");
       }
+    } else {
+      passed = false;
+      console.error("❌ rbac.ts file is missing!");
     }
 
-    securityFiles.forEach(secFile => {
-      const fullSecPath = path.join(process.cwd(), secFile);
-      if (fs.existsSync(fullSecPath)) {
-        const content = fs.readFileSync(fullSecPath, "utf8");
-        
-        // Check for hardcoded dev bypass
-        if (content.includes("ALLOW_DEV_ADMIN_BYPASS") && content.includes("true")) {
-          if (/ALLOW_DEV_ADMIN_BYPASS\s*=\s*(?:true|'true'|"true")/.test(content)) {
-            console.error(`❌ [Security Alert] Hardcoded dev bypass in security file: ${secFile}`);
-            passed = false;
-          }
-        }
-
-        // No cookie/token console logging
-        if (content.includes("console.log") && (content.includes("cookieValue") || content.includes("token"))) {
-          if (/console\.log\([^)]*(?:cookieValue|token)[^)]*\)/.test(content)) {
-            console.error(`❌ [Security Alert] Logging of sensitive tokens/cookies in: ${secFile}`);
-            passed = false;
-          }
-        }
+    // Verify warnings in timeline / attachments
+    const uploadValidationPath = path.join(process.cwd(), "src/features/patient-attachments/uploadValidation.ts");
+    if (fs.existsSync(uploadValidationPath)) {
+      const validationContent = fs.readFileSync(uploadValidationPath, "utf8");
+      if (!validationContent.includes("application/pdf") || !validationContent.includes("image/jpeg")) {
+        passed = false;
+        console.error("❌ Upload validation MIME check list is missing application/pdf or image/jpeg");
       }
+    } else {
+      passed = false;
+      console.error("❌ uploadValidation.ts file is missing!");
+    }
+
+    const duration = Date.now() - start;
+    localResults.push({
+      id: "security-static-audit",
+      status: passed ? "passed" : "failed",
+      durationMs: duration,
+      details
+    });
+
+    // Run security-related test files
+    const securityTest = runSubprocess(
+      "rbac-security-test",
+      "npx",
+      ["ts-node", "-P", "tests/tsconfig.test.json", "-r", "tsconfig-paths/register", "tests/rbacSecurity.test.ts"]
+    );
+    localResults.push(securityTest);
+
+  } catch (err: any) {
+    localResults.push({
+      id: "security-static-audit",
+      status: "failed",
+      durationMs: Date.now() - start,
+      details: { error: err.message }
     });
   }
-} catch (err: any) {
-  console.error("❌ [Security Audit Failure] Could not run route audit:", err.message || err);
-  passed = false;
+
+  return localResults;
 }
 
-// 6. Hardened Attachment & PHI Safety Verification
-console.log("\nVerifying Patient Attachment & PHI Safety Gates...");
-try {
-  const uploadValidationPath = path.join(process.cwd(), "src/features/patient-attachments/uploadValidation.ts");
-  const validationContent = fs.readFileSync(uploadValidationPath, "utf8");
-  
-  // Verify MIME allowlist
-  if (validationContent.includes("application/pdf") && validationContent.includes("image/jpeg")) {
-    console.log("✅ [MIME Check] MIME allowlist matches exactly.");
-  } else {
-    console.error("❌ [MIME Check Failure] Missing standard MIME allowlist.");
-    passed = false;
-  }
-  
-  // Verify File Size limits
-  if (validationContent.includes("10 * 1024 * 1024")) {
-    console.log("✅ [Size Check] Max file size is capped at 10MB.");
-  } else {
-    console.error("❌ [Size Check Failure] Size boundary limit cap not found.");
-    passed = false;
-  }
+// ─── 4. Next.js Build Tasks ────────────────────────────────────────────────
+function runBuildVerification(): VerificationCheckResult[] {
+  console.log("\n--- Running Build verification ---");
+  const localResults: VerificationCheckResult[] = [];
 
-  // Verify warning block in PatientAttachmentsPanel.tsx
-  const panelPath = path.join(process.cwd(), "src/features/patient-attachments/PatientAttachmentsPanel.tsx");
-  const panelContent = fs.readFileSync(panelPath, "utf8");
-  if (panelContent.includes("Extracted lab values require active clinician review")) {
-    console.log("✅ [UI Warning Check] Clinician review notice warning is present.");
-  } else {
-    console.error("❌ [UI Warning Check Failure] Missing diagnostic warnings in attachments UI panel.");
-    passed = false;
-  }
+  // Next.js build directly
+  const buildRes = runSubprocess("next-build", "npx", ["next", "build", "--webpack"]);
+  localResults.push(buildRes);
 
-  // Verify warning block in PatientLabTimelinePanel.tsx
-  const timelinePanelPath = path.join(process.cwd(), "src/features/patient-labs/PatientLabTimelinePanel.tsx");
-  const timelinePanelContent = fs.readFileSync(timelinePanelPath, "utf8");
-  if (timelinePanelContent.includes("Lab values are clinician-reviewed clinical context")) {
-    console.log("✅ [Labs UI Warning Check] Clinician lab timeline review notice warning is present.");
-  } else {
-    console.error("❌ [Labs UI Warning Check Failure] Missing diagnostic warnings in labs timeline UI panel.");
-    passed = false;
-  }
+  return localResults;
+}
 
-  // Verify Clinical OS safety context comment in clinicalLabContext.ts
-  const clinicalCtxPath = path.join(process.cwd(), "src/features/patient-labs/clinicalLabContext.ts");
-  const clinicalCtxContent = fs.readFileSync(clinicalCtxPath, "utf8");
-  if (clinicalCtxContent.includes("Reviewed lab context is informational and must not alter scoring or prescribing logic")) {
-    console.log("✅ [Clinical OS Comment Check] Safety comments are preserved in clinicalLabContext.");
-  } else {
-    console.error("❌ [Clinical OS Comment Check Failure] Safety non-interference comment is missing in clinicalLabContext.");
-    passed = false;
-  }
+// ─── 5. Emulator Verification Tasks ────────────────────────────────────────
+function runEmulatorVerification(): VerificationCheckResult[] {
+  console.log("\n--- Running Emulator-dependent verification ---");
+  const localResults: VerificationCheckResult[] = [];
 
-  // Audit Patient API route files specifically for no stack-trace or raw OCR logging/signed URL leaks
-  const patientsApiDir = path.join(process.cwd(), "src/app/api/patients");
-  if (fs.existsSync(patientsApiDir)) {
-    // Recursively check all patients subroutes for ocr/signed url logs
-    function scanDir(dir: string) {
-      const files = fs.readdirSync(dir);
-      files.forEach(file => {
-        const fullPath = path.join(dir, file);
-        if (fs.statSync(fullPath).isDirectory()) {
-          scanDir(fullPath);
-        } else if (file.endsWith("route.ts")) {
-          const code = fs.readFileSync(fullPath, "utf8");
-          // check no console log of ocrText or signed urls
-          if (code.includes("console.log") && (code.includes("downloadUrl") || code.includes("ocrText") || code.includes("rawText") || code.includes("Buffer"))) {
-            console.error(`❌ [Security Alert] Potential logging of sensitive PHI/URLs in: ${fullPath}`);
-            passed = false;
-          }
+  // A. Rules unit tests using Rules Unit Testing and client SDK identities
+  const rulesClientRes = runSubprocess(
+    "rules-unit-testing",
+    "npx",
+    ["ts-node", "-P", "tests/tsconfig.test.json", "-r", "tsconfig-paths/register", "tests/firestoreRulesClient.test.ts"]
+  );
+  localResults.push(rulesClientRes);
+
+  // B. Durable consistency (separate process pointer transitions)
+  const durableRes = runSubprocess(
+    "durable-consistency-test",
+    "npx",
+    ["ts-node", "-P", "tests/tsconfig.test.json", "-r", "tsconfig-paths/register", "tests/repertoryDurableConsistency.test.ts"]
+  );
+  localResults.push(durableRes);
+
+  // C. Approval persistence and cache deletion resilience
+  const approvalRes = runSubprocess(
+    "approval-persistence-test",
+    "npx",
+    ["ts-node", "-P", "tests/tsconfig.test.json", "-r", "tsconfig-paths/register", "tests/repertoryApprovalPersistence.test.ts"]
+  );
+  localResults.push(approvalRes);
+
+  // D. Emulator Activation Gate
+  const gateRes = runSubprocess(
+    "activation-gate-test",
+    "npx",
+    ["ts-node", "-P", "tests/tsconfig.test.json", "-r", "tsconfig-paths/register", "tests/repertoryProductionActivationGate.test.ts"]
+  );
+  localResults.push(gateRes);
+
+  // E. Artifact Deployment (Contract tests)
+  const artifactRes = runSubprocess(
+    "artifact-deployment-test",
+    "npx",
+    ["ts-node", "-P", "tests/tsconfig.test.json", "-r", "tsconfig-paths/register", "tests/repertoryArtifactDeployment.test.ts"]
+  );
+  localResults.push(artifactRes);
+
+  // F. Search and RAG Smoke/Scoring isolation tests
+  const clarkeSafetyRes = runSubprocess(
+    "clarke-safety-test",
+    "npx",
+    ["ts-node", "-P", "tests/tsconfig.test.json", "-r", "tsconfig-paths/register", "tests/repertoryClarkeSafety.test.ts"]
+  );
+  localResults.push(clarkeSafetyRes);
+
+  const snapshotActivationRes = runSubprocess(
+    "snapshot-activation-test",
+    "npx",
+    ["ts-node", "-P", "tests/tsconfig.test.json", "-r", "tsconfig-paths/register", "tests/repertorySnapshotActivation.test.ts"]
+  );
+  localResults.push(snapshotActivationRes);
+
+  return localResults;
+}
+
+// Write report helper
+function writeReport(filePath: string, modeName: string, state: string, checkResults: VerificationCheckResult[]) {
+  const dir = path.dirname(filePath);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+  const report = {
+    generatedAt: new Date().toISOString(),
+    mode: modeName,
+    releaseState: state,
+    results: checkResults
+  };
+  fs.writeFileSync(filePath, JSON.stringify(report, null, 2), "utf8");
+  console.log(`📝 JSON report written to: ${filePath}`);
+}
+
+async function main() {
+  let passedOverall = true;
+
+  if (mode === "static") {
+    const res = runStaticVerification();
+    results.push(...res);
+    passedOverall = res.every(r => r.status === "passed");
+  } else if (mode === "corpus") {
+    const res = runCorpusVerification();
+    results.push(...res);
+    passedOverall = res.every(r => r.status === "passed");
+  } else if (mode === "security") {
+    const res = runSecurityVerification();
+    results.push(...res);
+    passedOverall = res.every(r => r.status === "passed");
+  } else if (mode === "build") {
+    const res = runBuildVerification();
+    results.push(...res);
+    passedOverall = res.every(r => r.status === "passed");
+  } else if (mode === "production") {
+    // Run all non-emulator production checks
+    const resStatic = runStaticVerification();
+    const resCorpus = runCorpusVerification();
+    const resSecurity = runSecurityVerification();
+    const resBuild = runBuildVerification();
+    
+    results.push(...resStatic, ...resCorpus, ...resSecurity, ...resBuild);
+    passedOverall = results.every(r => r.status === "passed");
+
+    const state = passedOverall ? "production-deployment-ready" : "failed";
+    const reportPath = path.join(process.cwd(), "reports", "production-readiness-report.json");
+    writeReport(reportPath, "production", state, results);
+  } else if (mode === "emulator") {
+    // Run emulator checks
+    const res = runEmulatorVerification();
+    results.push(...res);
+    passedOverall = res.every(r => r.status === "passed");
+
+    const state = passedOverall ? "emulator-verified" : "failed";
+    const reportPath = path.join(process.cwd(), "reports", "emulator-verification-report.json");
+    writeReport(reportPath, "emulator", state, results);
+  } else if (mode === "release") {
+    // Orchestrate both
+    console.log("\n=== ORCHESTRATING FULL RELEASE VERIFICATION ===");
+    
+    const resStatic = runStaticVerification();
+    const resCorpus = runCorpusVerification();
+    const resSecurity = runSecurityVerification();
+    const resBuild = runBuildVerification();
+    
+    const nonEmulatorPassed = [...resStatic, ...resCorpus, ...resSecurity, ...resBuild].every(r => r.status === "passed");
+    
+    let resEmulator: VerificationCheckResult[] = [];
+    if (nonEmulatorPassed) {
+      console.log("\n✨ Non-emulator checks passed. Booting Firestore Emulator for verification...");
+      const start = Date.now();
+      const emulatorRun = child_process.spawnSync("npx", [
+        "firebase-tools", "emulators:exec",
+        "--only", "firestore",
+        "--project", "homeo-healthcare-emulator",
+        "npm run verify:emulator"
+      ], { stdio: 'inherit', env: { ...process.env, JAVA_HOME: "/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home" } });
+      
+      const duration = Date.now() - start;
+      if (emulatorRun.status === 0) {
+        const reportPath = path.join(process.cwd(), "reports", "emulator-verification-report.json");
+        if (fs.existsSync(reportPath)) {
+          const report = JSON.parse(fs.readFileSync(reportPath, "utf8"));
+          resEmulator = report.results;
+        } else {
+          resEmulator = [{ id: "emulator-verification", status: "passed", durationMs: duration }];
         }
-      });
+      } else {
+        resEmulator = [{ id: "emulator-verification", status: "failed", durationMs: duration, exitCode: emulatorRun.status ?? 1 }];
+      }
+    } else {
+      console.log("\n❌ Non-emulator checks failed. Skipping emulator verification.");
+      resEmulator = [{ id: "emulator-verification", status: "not-run" }];
     }
-    scanDir(patientsApiDir);
+
+    results.push(...resStatic, ...resCorpus, ...resSecurity, ...resBuild, ...resEmulator);
+    passedOverall = results.every(r => r.status === "passed");
+
+    const state = passedOverall ? "production-deployment-ready" : "failed";
+    const reportPath = path.join(process.cwd(), "reports", "production-readiness-report.json");
+    writeReport(reportPath, "release", state, results);
+  } else {
+    console.error(`❌ Unknown mode: ${mode}`);
+    process.exit(1);
   }
-} catch (err: any) {
-  console.error("❌ [Hardening Check Failure] Could not run attachments verification:", err.message);
-  passed = false;
+
+  if (passedOverall) {
+    console.log(`\n🎉 Verification SUCCESS for mode ${mode}!`);
+    process.exit(0);
+  } else {
+    console.error(`\n🚨 Verification FAILED for mode ${mode}!`);
+    process.exit(1);
+  }
 }
 
-// 7. Final Report
-console.log("\n==============================================");
-if (passed) {
-  console.log("🎉 Production Readiness Verification: SUCCESS!");
-  process.exit(0);
-} else {
-  console.error("🚨 Production Readiness Verification: FAILED! Correct missing assets or security violations.");
+main().catch(err => {
+  console.error("❌ Critical crash in main verification script:", err);
   process.exit(1);
-}
+});

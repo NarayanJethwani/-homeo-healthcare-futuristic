@@ -1,7 +1,10 @@
+process.env.NODE_ENV = 'test';
 import assert from 'assert';
 import { SnapshotPipeline } from '../src/features/repertory/import-export/snapshotPipeline';
 import * as fs from 'fs';
 import * as path from 'path';
+
+import { getRuntimeEnvironment } from '../src/features/repertory/config/runtimeEnv';
 
 async function run() {
   console.log("🚀 Running Repertory Sharding Tests...");
@@ -11,8 +14,9 @@ async function run() {
   const version2 = "v_test_shard_2";
 
   // Clean directories
-  const dir1 = path.join(process.cwd(), 'data', 'repertory', 'published', version1);
-  const dir2 = path.join(process.cwd(), 'data', 'repertory', 'published', version2);
+  const env = getRuntimeEnvironment();
+  const dir1 = path.join(env.artifactRoot, 'published', version1);
+  const dir2 = path.join(env.artifactRoot, 'published', version2);
   if (fs.existsSync(dir1)) fs.rmSync(dir1, { recursive: true, force: true });
   if (fs.existsSync(dir2)) fs.rmSync(dir2, { recursive: true, force: true });
 

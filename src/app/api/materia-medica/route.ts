@@ -67,7 +67,7 @@ async function fetchHtml(url: string): Promise<string> {
 
 import { MATERIA_MEDICA_BOOKS } from "@/lib/materiaMedicaData";
 
-export function isLegacyMateriaMedicaScraperEnabled(): boolean {
+function isLegacyMateriaMedicaScraperEnabled(): boolean {
   // During migration, if not explicitly defined, we can check for env
   return process.env.LEGACY_MATERIA_MEDICA_SCRAPER_ENABLED === "true";
 }

@@ -1,4 +1,5 @@
 import { AdminRole } from "@/lib/security/rbac";
+import type { DoctorRepertoryEntitlement } from "@/features/repertory/access/DoctorEntitlementService";
 
 export type PractitionerAccountStatus =
   | "invited"
@@ -22,6 +23,9 @@ export interface PractitionerAccount {
   status: PractitionerAccountStatus;
   specialties?: string[];
   clinicLocation?: string;
+  organizationId?: string;
+  clinicId?: string;
+  repertoryCapabilities?: DoctorRepertoryEntitlement["capabilities"];
   createdAt: string;
   updatedAt: string;
   invitedBy?: string;

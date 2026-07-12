@@ -1,0 +1,47 @@
+[
+  {
+    "id": "rev_clinical_clarke_1904",
+    "sourceId": "clarke_clinical_1904",
+    "sourceVersion": "1.0.0",
+    "validationReportId": "val_clarke_clinical_1904_1783737053141",
+    "reviewType": "clinical",
+    "decision": "approved-with-restrictions",
+    "restrictions": [
+      "search-only",
+      "scoring-disabled",
+      "unresolved-remedies-disclosed",
+      "original-abbreviations-preserved"
+    ],
+    "findings": [
+      "Clarke remedy grades are not reliably recoverable from raw typography.",
+      "Unresolved remedy abbreviations are excluded from scoring collections.",
+      "Original remedy abbreviations are preserved in raw data for display.",
+      "Clarke clinical repertory rubrics do not contribute to scoring."
+    ],
+    "reason": "John Henry Clarke's 1904 Clinical Repertory is approved as a search-only reference source with strict scoring isolation.",
+    "actorUid": "reviewer_clinical_01",
+    "actorRole": "clinical-reviewer",
+    "capability": "repertory.source.approve",
+    "createdAt": "2026-07-11T06:35:53.298Z"
+  },
+  {
+    "id": "rev_editorial_clarke_1904",
+    "sourceId": "clarke_clinical_1904",
+    "sourceVersion": "1.0.0",
+    "validationReportId": "val_clarke_clinical_1904_1783737053141",
+    "reviewType": "editorial",
+    "decision": "approved",
+    "findings": [
+      "Checked exact source identity and Archive.org identifier: aclinicalrepert00clargoog.",
+      "Verified checksum 4381dc6d76a95066e1f60f8680c993be90ecfa9ded65a28ab29bdb731bb33d14.",
+      "Verified line-count reconciliation of 51,813 lines and 522 page ranges.",
+      "Reconciled 1,266 mapping dictionary entries and 12 unresolved target keys.",
+      "Verified UI and RAG warning disclosures for search-only capabilities."
+    ],
+    "reason": "John Henry Clarke's 1904 Clinical Repertory metadata, line reconciliation, page ranges, and UI disclosures are verified for staged publication.",
+    "actorUid": "reviewer_editorial_01",
+    "actorRole": "editorial-reviewer",
+    "capability": "repertory.editorial.approve",
+    "createdAt": "2026-07-11T06:35:53.302Z"
+  }
+]

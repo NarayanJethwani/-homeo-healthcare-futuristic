@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { ChevronLeft, Loader2, AlertTriangle } from "lucide-react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { ChevronLeft, Loader2, AlertTriangle, Book, Bookmark } from "lucide-react";
 import { ReaderBookSelection, SampleMateriaMedicaPassage } from "../../types";
 import { useReaderPreferences } from "../../hooks/useReaderPreferences";
 import { THEME_CSS_VARIABLES } from "../../reader/preferences";
@@ -11,13 +11,28 @@ import { ReaderUnavailableState } from "./ReaderUnavailableState";
 import { LegacyMateriaMedicaContentAdapter, LegacyRemedyEntry } from "./LegacyMateriaMedicaContentAdapter";
 import { GovernedMateriaMedicaRepository } from "../../services/GovernedMateriaMedicaRepository";
 import { computeSha256Browser } from "../../services/checksum/checksum.browser";
+import { getRegistryBook } from "../../data/registry";
 import { featureFlags } from "../../../dashboard/constants/featureFlags";
 import Portal from "@/components/Portal";
 import { motion, AnimatePresence } from "framer-motion";
+import { auth } from "@/lib/firebase";
+import { onAuthStateChanged } from "firebase/auth";
+
+import { PrivateWorkspacePanel } from "./PrivateWorkspacePanel";
+import { getAnnotationsForBook, saveAnnotation, deleteAnnotation, clearLocalGuestAnnotations } from "../../services/annotationsService";
+import { getBookmarks, toggleBookmark, clearLocalGuestBookmarks } from "../../services/bookmarksService";
+import { getLastReaderPosition, saveReaderPosition, clearLocalGuestPositions } from "../../services/readerPositionService";
+import { MateriaMedicaBookmark, MateriaMedicaAnnotation } from "../../types/persistenceTypes";
+import { findGovernedScanForPassage } from "../../data/scanAssetRegistry";
+import { isEligibleScanAsset } from "../../services/scanAssetEligibility";
+import { ScanReader } from "./ScanReader";
+import { SplitReader } from "./SplitReader";
+
 
 type MateriaMedicaReaderProps = {
   selection: ReaderBookSelection;
   onBack: () => void;
+  initialRemedyPath?: string;
 };
 
 type PassageLoadState =
@@ -30,13 +45,36 @@ type PassageLoadState =
 export const MateriaMedicaReader: React.FC<MateriaMedicaReaderProps> = ({
   selection,
   onBack,
+  initialRemedyPath,
 }) => {
   const { preferences, setPreferences } = useReaderPreferences();
+
+  const book = React.useMemo(() => {
+    return selection.type === "governed"
+      ? selection.book
+      : (getRegistryBook(selection.bookId) || {
+          id: selection.bookId,
+          title: selection.bookId,
+          author: "Unknown Author",
+          year: 1900,
+          rightsStatus: "public-domain" as const,
+          editorialStatus: "approved" as const,
+          ingestionStatus: "search-indexed" as const,
+          sourceUrl: "",
+          sourceVersion: 1,
+          lastUpdated: ""
+        });
+  }, [selection]);
   
   // Dynamic lists for legacy or governed books
   const [remedies, setRemedies] = useState<Array<{ name: string; path: string; passageId?: string }>>([]);
-  const [selectedPath, setSelectedPath] = useState<string | null>(null);
-  
+  const [selectedPath, setSelectedPath] = useState<string | null>(initialRemedyPath || null);
+
+  useEffect(() => {
+    if (initialRemedyPath) {
+      setSelectedPath(initialRemedyPath);
+    }
+  }, [initialRemedyPath]);
   // Legacy selected remedy
   const [legacyTitle, setLegacyTitle] = useState<string | null>(null);
   const [legacyContent, setLegacyContent] = useState<string | null>(null);
@@ -54,6 +92,132 @@ export const MateriaMedicaReader: React.FC<MateriaMedicaReaderProps> = ({
 
   // Determine if sample corpus feature is active for this reading session
   const isSampleCorpusActive = featureFlags.MATERIA_MEDICA_SAMPLE_CORPUS;
+  const isScanSplitEnabled = featureFlags.MATERIA_MEDICA_SCAN_SPLIT_READER;
+  const [readerMode, setReaderMode] = useState<"text" | "scan" | "split">("text");
+
+  const scanRegistration = React.useMemo(() => {
+    if (!isScanSplitEnabled || passageState.status !== "verified") return null;
+    const registration = findGovernedScanForPassage(passageState.passage.id);
+    return registration && isEligibleScanAsset(registration.asset) ? registration : null;
+  }, [isScanSplitEnabled, passageState]);
+
+  // Phase 6 Workspace State
+  const [sidebarTab, setSidebarTab] = useState<"index" | "workspace">("index");
+  const [bookmarks, setBookmarks] = useState<MateriaMedicaBookmark[]>([]);
+  const [annotations, setAnnotations] = useState<MateriaMedicaAnnotation[]>([]);
+  const [practitionerId, setPractitionerId] = useState<string>("guest");
+
+  const isWorkspaceEnabled = featureFlags.MATERIA_MEDICA_PRIVATE_WORKSPACE;
+
+  // Watch Auth State to reload user-scoped data
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setPractitionerId(user.uid);
+      } else {
+        setPractitionerId("guest");
+        setBookmarks([]);
+        setAnnotations([]);
+      }
+    });
+    return () => unsub();
+  }, []);
+
+  // Fetch bookmarks & annotations for the current book
+  const loadWorkspaceData = useCallback(async () => {
+    if (!isWorkspaceEnabled) return;
+    try {
+      const bookBookmarks = await getBookmarks(book.id);
+      const bookAnnotations = await getAnnotationsForBook(book.id);
+      setBookmarks(bookBookmarks);
+      setAnnotations(bookAnnotations);
+    } catch (e) {
+      console.error("Failed to load workspace data:", e);
+    }
+  }, [book.id, isWorkspaceEnabled]);
+
+  useEffect(() => {
+    loadWorkspaceData();
+  }, [loadWorkspaceData, practitionerId]);
+
+  // Load last position on mount
+  useEffect(() => {
+    if (!isWorkspaceEnabled) return;
+    const loadPosition = async () => {
+      const pos = await getLastReaderPosition(book.id);
+      if (pos && pos.passageId) {
+        // Resolve remedy ID from passage ID
+        const matchingRemedy = pos.passageId.includes("aconitum") ? "aconitum-napellus" : pos.passageId.includes("belladonna") ? "belladonna" : "bryonia";
+        setSelectedPath(matchingRemedy);
+      }
+    };
+    loadPosition();
+  }, [book.id, isWorkspaceEnabled]);
+
+  // Save reader position when passage changes
+  useEffect(() => {
+    if (!isWorkspaceEnabled || !selectedPath || selection.type !== "governed" || passageState.status !== "verified") return;
+    
+    const savePos = async () => {
+      const sourceVersionId = book.versionId || (book.id + "_v1");
+      const passageId = passageState.passage.id;
+      
+      await saveReaderPosition({
+        practitionerId,
+        bookId: book.id,
+        sourceVersionId,
+        passageId,
+        blockId: undefined,
+        relativeOffset: 0,
+        updatedAt: new Date().toISOString()
+      });
+    };
+    savePos();
+  }, [selectedPath, passageState, practitionerId, isWorkspaceEnabled, selection.type, book.id, book.versionId]);
+
+  const handleToggleBookmark = async (arg?: string | MateriaMedicaBookmark) => {
+    if (selection.type !== "governed" || passageState.status !== "verified") return;
+    const sourceVersionId = book.versionId || (book.id + "_v1");
+    const passageId = passageState.passage.id;
+    
+    let targetBookmark: MateriaMedicaBookmark;
+    if (arg && typeof arg === "object") {
+      targetBookmark = arg;
+    } else {
+      targetBookmark = {
+        id: "",
+        practitionerId,
+        bookId: book.id,
+        sourceVersionId,
+        passageId,
+        blockId: arg,
+        createdAt: new Date().toISOString()
+      };
+    }
+
+    await toggleBookmark(targetBookmark);
+    await loadWorkspaceData();
+  };
+
+  const handleSaveAnnotation = async (ann: MateriaMedicaAnnotation) => {
+    const result = await saveAnnotation(ann);
+    await loadWorkspaceData();
+    return result;
+  };
+
+  const handleDeleteAnnotation = async (annId: string) => {
+    const result = await deleteAnnotation(annId);
+    await loadWorkspaceData();
+    return result;
+  };
+
+  const handleClearGuestData = () => {
+    clearLocalGuestAnnotations();
+    clearLocalGuestBookmarks();
+    clearLocalGuestPositions();
+    setBookmarks([]);
+    setAnnotations([]);
+  };
 
   // Load remedy index
   useEffect(() => {
@@ -70,7 +234,7 @@ export const MateriaMedicaReader: React.FC<MateriaMedicaReaderProps> = ({
           }
 
           // Discover through repository layer
-          const approvedPassages = await GovernedMateriaMedicaRepository.listApprovedPassages(selection.book.id);
+          const approvedPassages = await GovernedMateriaMedicaRepository.listApprovedPassages(book.id);
           if (active) {
             setRemedies(
               approvedPassages.map((p) => ({
@@ -82,7 +246,7 @@ export const MateriaMedicaReader: React.FC<MateriaMedicaReaderProps> = ({
           }
         } else {
           // Legacy content adapter
-          const legacyIndex = await LegacyMateriaMedicaContentAdapter.fetchRemediesIndex((selection as any).book?.id || (selection as any).bookId);
+          const legacyIndex = await LegacyMateriaMedicaContentAdapter.fetchRemediesIndex(book.id);
           if (active) {
             setRemedies(legacyIndex.map((r) => ({ name: r.name, path: r.path })));
           }
@@ -98,7 +262,7 @@ export const MateriaMedicaReader: React.FC<MateriaMedicaReaderProps> = ({
     return () => {
       active = false;
     };
-  }, [selection, isSampleCorpusActive]);
+  }, [selection.type, book, isSampleCorpusActive]);
 
   // Load content
   useEffect(() => {
@@ -149,7 +313,7 @@ export const MateriaMedicaReader: React.FC<MateriaMedicaReaderProps> = ({
           if (active) setPassageState({ status: "verified", passage });
         } else {
           // Legacy
-          const data = await LegacyMateriaMedicaContentAdapter.fetchRemedyContent(selection.book.id, selectedPath);
+          const data = await LegacyMateriaMedicaContentAdapter.fetchRemedyContent(book.id, selectedPath);
           if (active) {
             setLegacyTitle(data.title);
             setLegacyContent(data.content);
@@ -173,7 +337,7 @@ export const MateriaMedicaReader: React.FC<MateriaMedicaReaderProps> = ({
     return () => {
       active = false;
     };
-  }, [selection, selectedPath, remedies]);
+  }, [selection.type, book, selectedPath, remedies]);
 
   // Body scroll lock on fullscreen
   useEffect(() => {
@@ -194,10 +358,8 @@ export const MateriaMedicaReader: React.FC<MateriaMedicaReaderProps> = ({
 
   // If governed and sample corpus is disabled OR no approved passages exist, show unavailable state
   if (selection.type === "governed" && (!isSampleCorpusActive || remedies.length === 0)) {
-    return <ReaderUnavailableState book={selection.book} onBack={onBack} />;
+    return <ReaderUnavailableState book={book} onBack={onBack} />;
   }
-
-  const book = selection.book;
 
   const handleToggleFullscreen = () => {
     if (isFullscreen) {
@@ -243,6 +405,25 @@ export const MateriaMedicaReader: React.FC<MateriaMedicaReaderProps> = ({
             </div>
           );
         case "verified":
+          if (readerMode === "scan" && scanRegistration) {
+            return <ScanReader asset={scanRegistration.asset} alt={`${book.title}, printed page ${scanRegistration.asset.printedPage ?? "unknown"}`} />;
+          }
+          if (readerMode === "split" && scanRegistration) {
+            return (
+              <SplitReader
+                asset={scanRegistration.asset}
+                alignment={scanRegistration.alignment}
+                approvedPassageIds={new Set([passageState.passage.id])}
+                text={passageState.passage.blocks.map((block, index) => (
+                  block.type === "heading"
+                    ? <h3 key={index}>{block.text}</h3>
+                    : block.type === "section-label"
+                      ? <h4 key={index}>{block.text}</h4>
+                      : <p key={index}>{block.text}</p>
+                ))}
+              />
+            );
+          }
           const contentHtml = passageState.passage.blocks
             .map((b) => {
               if (b.type === "heading") return `<h3>${b.text}</h3>`;
@@ -258,6 +439,15 @@ export const MateriaMedicaReader: React.FC<MateriaMedicaReaderProps> = ({
               bookTitle={book.title}
               bookAuthor={book.author}
               bookYear={Number(book.year)}
+              bookId={book.id}
+              sourceVersionId={passageState.passage.sourceVersionId}
+              passageId={passageState.passage.id}
+              blocks={passageState.passage.blocks}
+              bookmarks={bookmarks}
+              annotations={annotations}
+              onToggleBookmark={handleToggleBookmark}
+              onSaveAnnotation={handleSaveAnnotation}
+              onDeleteAnnotation={handleDeleteAnnotation}
             />
           );
         default:
@@ -329,23 +519,76 @@ export const MateriaMedicaReader: React.FC<MateriaMedicaReaderProps> = ({
             isFullscreen={isFullscreen}
             onToggleFullscreen={handleToggleFullscreen}
           />
+          {scanRegistration && (
+            <div className="mt-2 flex justify-end gap-2" aria-label="Reader source mode">
+              {(["text", "scan", "split"] as const).map(mode => (
+                <button
+                  key={mode}
+                  type="button"
+                  aria-pressed={readerMode === mode}
+                  onClick={() => setReaderMode(mode)}
+                  className="min-h-11 rounded-lg border border-slate-700 px-3 text-xs capitalize"
+                >
+                  {mode}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
       {/* Main Content Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch pb-12">
         
-        <div className="lg:col-span-4">
-          <ReaderIndexPanel
-            remedies={remedies as LegacyRemedyEntry[]}
-            selectedRemedyPath={selectedPath}
-            onSelectRemedy={setSelectedPath}
-            searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
-            isLoading={isLoadingIndex}
-            error={errorIndex}
-            onJumpToLetter={handleJumpToLetter}
-          />
+        <div className="lg:col-span-4 flex flex-col gap-4">
+          {isWorkspaceEnabled && (
+            <div className="flex bg-slate-900/60 p-1 rounded-2xl border border-slate-850">
+              <button
+                onClick={() => setSidebarTab("index")}
+                className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 focus:outline-none ${
+                  sidebarTab === "index"
+                    ? "bg-slate-950 text-amber-500 border border-slate-800"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                <Book size={14} />
+                Remedy Index
+              </button>
+              <button
+                onClick={() => setSidebarTab("workspace")}
+                className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 focus:outline-none ${
+                  sidebarTab === "workspace"
+                    ? "bg-slate-950 text-amber-500 border border-slate-800"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                <Bookmark size={14} />
+                Private Workspace
+              </button>
+            </div>
+          )}
+
+          {(!isWorkspaceEnabled || sidebarTab === "index") ? (
+            <ReaderIndexPanel
+              remedies={remedies as LegacyRemedyEntry[]}
+              selectedRemedyPath={selectedPath}
+              onSelectRemedy={setSelectedPath}
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
+              isLoading={isLoadingIndex}
+              error={errorIndex}
+              onJumpToLetter={handleJumpToLetter}
+            />
+          ) : (
+            <PrivateWorkspacePanel
+              bookmarks={bookmarks}
+              annotations={annotations}
+              onSelectRemedy={setSelectedPath}
+              onDeleteAnnotation={handleDeleteAnnotation}
+              onToggleBookmark={handleToggleBookmark}
+              onClearGuestData={handleClearGuestData}
+            />
+          )}
         </div>
 
         <div className="lg:col-span-8 flex flex-col">
@@ -417,7 +660,7 @@ export const MateriaMedicaReader: React.FC<MateriaMedicaReaderProps> = ({
 
               <div className="p-4 border-t border-slate-800 bg-slate-950/20 text-[10px] text-slate-500 text-right italic font-mono pr-8">
                 {selection.type === "governed"
-                  ? `* Governed local sample corpus. Source Version: ${sourceVersionId}`
+                  ? `* Governed local sample corpus. Source Version: ${book.versionId || "unknown"}`
                   : "* Sourced from free library at materiamedica.info. Provided without warranty."}
               </div>
             </motion.div>

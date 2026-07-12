@@ -240,7 +240,7 @@ export class FirestoreVectorStore implements PersistentVectorStore {
       }
       for (const chunk of chunks) {
         const snap = await db.collection("knowledge_vector_records").where("id", "in", chunk).get();
-        snap.forEach(doc => results.push(doc.data() as VectorRecord));
+        snap.forEach((doc: import("firebase-admin/firestore").QueryDocumentSnapshot<import("firebase-admin/firestore").DocumentData>) => results.push(doc.data() as VectorRecord));
       }
       
       const foundIds = new Set(results.map(r => r.id));

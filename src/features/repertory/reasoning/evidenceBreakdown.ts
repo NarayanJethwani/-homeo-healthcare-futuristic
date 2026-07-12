@@ -89,7 +89,7 @@ export class EvidenceBreakdownEngine {
         const rScore = breakdown.remedyScores[rem.remedyId];
 
         // Core base contribution
-        const baseScore = rem.grade * symptomWeight * rub.confidence * categoryMultiplier;
+        const baseScore = (rem.grade ?? 0) * symptomWeight * rub.confidence * categoryMultiplier;
         
         // Scaled by clinical weight
         const clinicalWeightPart = baseScore * rem.clinicalExperienceWeight;

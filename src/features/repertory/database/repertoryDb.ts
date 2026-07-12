@@ -47,7 +47,7 @@ class ProductionRepertoryRepository implements RepertoryRepository {
 }
 
 export const repertoryRepository: RepertoryRepository = 
-  process.env.NODE_ENV === 'test' 
+  (process.env.NODE_ENV === 'test' || process.env.REPERTORY_WORKSPACE === 'ingestion')
     ? new MemoryRepertoryRepository() 
     : new ProductionRepertoryRepository();
 

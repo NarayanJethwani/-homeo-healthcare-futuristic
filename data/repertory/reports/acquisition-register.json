@@ -1,0 +1,27 @@
+{
+  "generatedAt": "2026-07-11T06:35:53.302Z",
+  "records": [
+    {
+      "id": "acq_mem_1783737053141_93sifuaqp",
+      "sourceId": "clarke_clinical_1904",
+      "candidateSourceUrl": "https://archive.org/details/aclinicalrepert00clargoog",
+      "sourceProvider": "Archive.org",
+      "archiveIdentifier": "aclinicalrepert00clargoog",
+      "expectedPhysicalPageCount": 350,
+      "expectedPrintedPageStart": "1",
+      "expectedPrintedPageEnd": "340",
+      "acquisitionStatus": "checksum-verified",
+      "extractionStatus": "validated",
+      "createdAt": "2026-07-11T02:30:53.141Z",
+      "updatedAt": "2026-07-11T06:35:53.302Z",
+      "statusReason": "Downloaded file SHA-256 matches stored artifact",
+      "originalFileName": "aclinicalrepert00clargoog_djvu.txt",
+      "fileSizeBytes": 532934,
+      "sourceChecksum": "4381dc6d76a95066e1f60f8680c993be90ecfa9ded65a28ab29bdb731bb33d14",
+      "artifactStoragePath": "aclinicalrepert00clargoog_djvu.txt",
+      "parserVersion": "1.0.0",
+      "editorialStatus": "approved",
+      "publicationStatus": "staged"
+    }
+  ]
+}

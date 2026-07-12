@@ -6,6 +6,7 @@ import { RepertoryGraph } from '../graph/repertoryGraph';
 import { DatabaseValidator } from '../validators/databaseValidator';
 import { ImportExportService } from '../import-export/importExportService';
 import { ReasoningEngine } from '../reasoning/reasoningEngine';
+import { IngestionPipeline } from '../import-export/ingestionPipeline';
 
 async function runRepertoryTests() {
   console.log("🚀 Starting Clinical Repertory & AI Intake Unit Tests...");
@@ -175,13 +176,11 @@ async function runRepertoryTests() {
   });
 
   await test("Ingestion Pipeline - blocked copyrighted source", async () => {
-    const { IngestionPipeline } = require("../import-export/ingestionPipeline");
     const manifest = await IngestionPipeline.ingestSource("synthesis_9_1", [{ name: "Mind - Panic", chapter: "Mind" }]);
     assert.strictEqual(manifest.importStatus, "blocked", "Copyrighted source must be blocked from ingestion.");
   });
 
   await test("Ingestion Pipeline - abbreviation cleanup and metadata preservation", async () => {
-    const { IngestionPipeline } = require("../import-export/ingestionPipeline");
     const raw = [{ id: "test_boer_1", name: "Mind - Test", chapter: "Mind", page: 123, remedies: { "Æth": 2, "Tar-h": 1 } }];
     const manifest = await IngestionPipeline.ingestSource("boericke_1927", raw, { maxItems: 1 });
     

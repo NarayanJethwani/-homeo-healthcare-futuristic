@@ -15,6 +15,9 @@ import {
   EvidenceReviewState,
   evaluateEvidenceRetrievalPolicy
 } from "../features/knowledge/retrieval/evidenceScoringService";
+import { globalGraphRepository } from "../features/knowledge/graph/graphRepository";
+import { traverseGraph } from "../features/knowledge/graph/graphTraversalService";
+import { calculateGraphContribution } from "../features/knowledge/graph/graphContributionService";
 
 export interface KnowledgeDocument {
   id: string;
@@ -314,6 +317,14 @@ export class RAGService {
 
     const unifiedDocs = this.getUnifiedDb();
 
+    const candidates: Array<{
+      doc: KnowledgeDocument;
+      relevanceScore: number;
+      profile: any;
+      reviewState: EvidenceReviewState;
+      priorityResult: any;
+    }> = [];
+
     for (const doc of unifiedDocs) {
       const profile = (doc as any).evidenceProfile;
       
@@ -389,9 +400,10 @@ export class RAGService {
         ? Math.max(0, Math.min(1.0, keywordScore * 0.4 + exactBoost + vectorScore * 0.5))
         : Math.max(0, Math.min(1.0, keywordScore * 0.75 + exactBoost));
 
-      // 5. Apply Priority Scoring or Keep relevance-only
+      let reviewState: EvidenceReviewState = "not-configured";
+      let priorityResult: any = null;
+
       if (featureFlags.knowledgeEvidenceScoringEnabled) {
-        let reviewState: EvidenceReviewState = "not-configured";
         if (profile?.nextReviewDueAt && profile?.lastReviewedAt) {
           reviewState = calculateEvidenceReviewState({
             nextReviewDueAt: profile.nextReviewDueAt,
@@ -402,37 +414,141 @@ export class RAGService {
         }
 
         const citResult = calculateCitationCompleteness((doc as any).references);
-        const priorityResult = calculateRetrievalPriority({
+        priorityResult = calculateRetrievalPriority({
           evidenceProfile: profile || undefined,
           reviewState,
           citationCount: citResult.totalReferences,
           validCitationCount: citResult.structurallyCompleteReferences
         });
-
-        // Safe validating clamp and normalization
-        const normalizedRelevance = Math.max(0, Math.min(1.0, relevanceScore));
-        const normalizedPriority = Math.max(0, Math.min(1.0, priorityResult.score / 100));
-        const blendedScore = Math.max(0, Math.min(1.0, normalizedRelevance * 0.85 + normalizedPriority * 0.15));
-
-        results.push({
-          document: doc,
-          score: blendedScore,
-          rankingExplanation: {
-            baseRelevanceScore: relevanceScore,
-            normalizedRelevanceScore: normalizedRelevance,
-            evidencePriorityScore: priorityResult.score,
-            normalizedEvidencePriority: normalizedPriority,
-            finalScore: blendedScore,
-            reviewState,
-            reviewPolicy: profile?.reviewExpiryPolicy || "ranking-penalty",
-            methodologyVersion: priorityResult.methodologyVersion,
-            components: priorityResult.components,
-            warnings: priorityResult.warnings
-          }
-        });
-      } else {
-        results.push({ document: doc, score: relevanceScore });
       }
+
+      candidates.push({
+        doc,
+        relevanceScore,
+        profile,
+        reviewState,
+        priorityResult
+      });
+    }
+
+    // Helper to map category to nodeType
+    const mapCategoryToNodeType = (cat: string): string => {
+      if (cat === "disease") return "condition";
+      if (cat === "lab-test") return "terminology-code";
+      return cat;
+    };
+
+    const graphBoosts = new Map<string, { score: number; explanation: any }>();
+    if (featureFlags.clinicalKnowledgeGraphRetrievalEnabled) {
+      const seeds = candidates.filter(c => c.relevanceScore >= 0.40);
+      const startNodeIds: string[] = [];
+      const seedRelevanceMap = new Map<string, number>();
+
+      for (const seed of seeds) {
+        const nodeType = mapCategoryToNodeType(seed.doc.category);
+        const graphNode = await globalGraphRepository.getNodeByCanonical(seed.doc.id, nodeType);
+        if (graphNode) {
+          startNodeIds.push(graphNode.id);
+          seedRelevanceMap.set(graphNode.id, seed.relevanceScore);
+        }
+      }
+
+      if (startNodeIds.length > 0) {
+        const graphResult = await traverseGraph({
+          startNodeIds,
+          maxDepth: 2,
+          maxNodes: 100,
+          maxEdges: 250,
+          context
+        });
+
+        for (const path of graphResult.paths) {
+          if (path.edges.length === 0) continue;
+          const lastEdgeDef = path.edges[path.edges.length - 1];
+          const edge = graphResult.edges.find(e => e.id === lastEdgeDef.edgeId);
+          if (edge) {
+            const seedRelevanceScore = seedRelevanceMap.get(path.startNodeId) || 0.4;
+            const contrib = calculateGraphContribution({
+              relationshipType: edge.relationshipType,
+              pathLength: path.pathLength,
+              edgeConfidence: edge.confidence,
+              edgeEvidenceStrength: edge.evidenceStrength,
+              edgeSourceQuality: edge.sourceQuality,
+              provenanceCount: edge.provenance.length,
+              seedRelevanceScore
+            });
+
+            // Resolve target node canonical entity ID
+            const targetNode = graphResult.nodes.find(n => n.id === path.endNodeId);
+            if (targetNode && contrib.score > 0) {
+              const existing = graphBoosts.get(targetNode.canonicalEntityId);
+              if (!existing || existing.score < contrib.score) {
+                graphBoosts.set(targetNode.canonicalEntityId, {
+                  score: contrib.score,
+                  explanation: {
+                    path,
+                    contribution: contrib
+                  }
+                });
+              }
+            }
+          }
+        }
+      }
+    }
+
+    for (const cand of candidates) {
+      const doc = cand.doc;
+      const relevanceScore = cand.relevanceScore;
+      const profile = cand.profile;
+      const reviewState = cand.reviewState;
+      const priorityResult = cand.priorityResult;
+
+      const normalizedRelevance = Math.max(0, Math.min(1.0, relevanceScore));
+      let baseScore = relevanceScore;
+      let rankingExplanation: any = undefined;
+
+      if (featureFlags.knowledgeEvidenceScoringEnabled && priorityResult) {
+        const normalizedPriority = Math.max(0, Math.min(1.0, priorityResult.score / 100));
+        baseScore = Math.max(0, Math.min(1.0, normalizedRelevance * 0.85 + normalizedPriority * 0.15));
+        rankingExplanation = {
+          baseRelevanceScore: relevanceScore,
+          normalizedRelevanceScore: normalizedRelevance,
+          evidencePriorityScore: priorityResult.score,
+          normalizedEvidencePriority: normalizedPriority,
+          finalScore: baseScore,
+          reviewState,
+          reviewPolicy: profile?.reviewExpiryPolicy || "ranking-penalty",
+          methodologyVersion: priorityResult.methodologyVersion,
+          components: priorityResult.components,
+          warnings: priorityResult.warnings
+        };
+      } else {
+        rankingExplanation = {
+          baseRelevanceScore: relevanceScore,
+          finalScore: baseScore
+        };
+      }
+
+      // Graph Retrieval Boost
+      let graphBoost = 0;
+      if (featureFlags.clinicalKnowledgeGraphRetrievalEnabled) {
+        const boostData = graphBoosts.get(doc.id);
+        if (boostData) {
+          graphBoost = boostData.score;
+          baseScore += graphBoost;
+          baseScore = Math.max(0, Math.min(1.0, baseScore));
+          rankingExplanation.graphRetrievalBoost = graphBoost;
+          rankingExplanation.graphExplanation = boostData.explanation;
+          rankingExplanation.finalScore = baseScore;
+        }
+      }
+
+      results.push({
+        document: doc,
+        score: baseScore,
+        rankingExplanation: (featureFlags.knowledgeEvidenceScoringEnabled || featureFlags.clinicalKnowledgeGraphRetrievalEnabled) ? rankingExplanation : undefined
+      });
     }
 
     // Sort descending by score

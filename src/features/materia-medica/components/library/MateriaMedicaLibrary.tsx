@@ -7,6 +7,12 @@ import { AuthorProfile } from "../authors/AuthorProfile";
 import { EmptyLibraryState } from "./EmptyLibraryState";
 import { MATERIA_MEDICA_REGISTRY } from "../../data/registry";
 import { MateriaMedicaBook } from "../../types";
+import { canUseMateriaMedicaLocalSearch, canUseMateriaMedicaComparison } from "../../services/featureGates";
+import { MateriaMedicaSearchPanel } from "../search/MateriaMedicaSearchPanel";
+import { RemedyComparison } from "../remedies/RemedyComparison";
+import { MateriaMedicaReader } from "../reader/MateriaMedicaReader";
+import { ComparisonSelection } from "../../search/localSearchTypes";
+import { Search } from "lucide-react";
 
 type FilterState = {
   author: string;
@@ -31,6 +37,54 @@ export const MateriaMedicaLibrary: React.FC = () => {
   const [filters, setFilters] = useState<FilterState>(initialFilters);
   const [selectedBook, setSelectedBook] = useState<MateriaMedicaBook | null>(null);
   const [selectedAuthorName, setSelectedAuthorName] = useState<string | null>(null);
+
+  const [activeTab, setActiveTab] = useState<"catalog" | "search" | "comparison" | "reader">("catalog");
+  const [selectedBookForReader, setSelectedBookForReader] = useState<MateriaMedicaBook | null>(null);
+  const [initialReaderRemedyPath, setInitialReaderRemedyPath] = useState<string | undefined>(undefined);
+  const [comparisonSelections, setComparisonSelections] = useState<ComparisonSelection[]>([]);
+
+  const handleOpenPassageFromSearch = (passageId: string) => {
+    // passageId format: james-tyler-kent_[remedyId]_passage
+    const book = MATERIA_MEDICA_REGISTRY.find(b => b.id === "james-tyler-kent");
+    if (book) {
+      const remedyId = passageId.replace("james-tyler-kent_", "").replace("_passage", "");
+      setSelectedBookForReader(book);
+      setInitialReaderRemedyPath(remedyId);
+      setActiveTab("reader");
+    }
+  };
+
+  const handleAddToComparison = (remedyId: string) => {
+    if (!canUseMateriaMedicaComparison()) {
+      alert("Remedy Comparison is currently disabled by feature flags.");
+      return;
+    }
+    if (comparisonSelections.length >= 3) {
+      alert("Maximum of 3 remedies can be compared in Phase 5.");
+      return;
+    }
+    if (comparisonSelections.some(s => s.remedyId === remedyId)) {
+      alert("This remedy is already in the comparison workspace.");
+      return;
+    }
+
+    const pId = `james-tyler-kent_${remedyId}_passage`;
+
+    setComparisonSelections(prev => [
+      ...prev,
+      {
+        remedyId,
+        passageIds: [pId],
+        addedAt: new Date().toISOString()
+      }
+    ]);
+    setActiveTab("comparison");
+  };
+
+  const handleRemoveFromComparison = (remedyId: string) => {
+    setComparisonSelections(prev => prev.filter(s => s.remedyId !== remedyId));
+  };
+
 
   // Extract unique filters from registry
   const availableAuthors = useMemo(() => {
@@ -169,6 +223,22 @@ export const MateriaMedicaLibrary: React.FC = () => {
     return MATERIA_MEDICA_REGISTRY.filter((b) => b.author === selectedAuthorName);
   }, [selectedAuthorName]);
 
+  if (activeTab === "reader" && selectedBookForReader) {
+    return (
+      <div className="w-full">
+        <MateriaMedicaReader
+          selection={{ type: "governed", book: selectedBookForReader }}
+          initialRemedyPath={initialReaderRemedyPath}
+          onBack={() => {
+            setActiveTab("catalog");
+            setSelectedBookForReader(null);
+            setInitialReaderRemedyPath(undefined);
+          }}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-8 p-1 sm:p-4 text-slate-100 max-w-7xl mx-auto w-full">
       {/* Header */}
@@ -179,69 +249,153 @@ export const MateriaMedicaLibrary: React.FC = () => {
         filteredCount={filteredBooks.length}
       />
 
-      {/* Filters */}
-      <LibraryFilters
-        filters={filters}
-        onFilterChange={handleFilterChange}
-        onClearFilters={handleClearFilters}
-        availableAuthors={availableAuthors}
-        availableProviders={availableProviders}
-        availableYears={availableYears}
-      />
+      {/* Tabs navigation */}
+      <div className="flex border-b border-slate-800 gap-6 select-none">
+        <button
+          onClick={() => setActiveTab("catalog")}
+          className={`pb-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 cursor-pointer ${
+            activeTab === "catalog"
+              ? "border-amber-500 text-amber-500"
+              : "border-transparent text-slate-500 hover:text-slate-350"
+          }`}
+        >
+          Book Catalog
+        </button>
 
-      {/* Catalog Sections */}
-      {filteredBooks.length === 0 ? (
-        <EmptyLibraryState searchTerm={searchTerm} onClearFilters={handleClearFilters} />
-      ) : (
-        <div className="flex flex-col gap-4 mt-4">
-          <LibrarySection
-            title="Foundational Works"
-            description="Core classical structures outlining key provings and homeopathic theory."
-            books={sections.foundational}
-            onViewDetails={setSelectedBook}
-            onViewAuthor={setSelectedAuthorName}
+        {canUseMateriaMedicaLocalSearch() && (
+          <button
+            onClick={() => setActiveTab("search")}
+            className={`pb-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 cursor-pointer ${
+              activeTab === "search"
+                ? "border-amber-500 text-amber-500"
+                : "border-transparent text-slate-500 hover:text-slate-350"
+            }`}
+          >
+            Search Proving Text
+          </button>
+        )}
+
+        {canUseMateriaMedicaComparison() && (
+          <button
+            onClick={() => setActiveTab("comparison")}
+            className={`pb-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 cursor-pointer ${
+              activeTab === "comparison"
+                ? "border-amber-500 text-amber-500"
+                : "border-transparent text-slate-500 hover:text-slate-350"
+            }`}
+          >
+            Remedy Comparison ({comparisonSelections.length})
+          </button>
+        )}
+      </div>
+
+      {activeTab === "catalog" && (
+        <>
+          {/* Filters */}
+          <LibraryFilters
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            onClearFilters={handleClearFilters}
+            availableAuthors={availableAuthors}
+            availableProviders={availableProviders}
+            availableYears={availableYears}
           />
 
-          <LibrarySection
-            title="Pure Materia Medica"
-            description="Pure drug pathogeneses and primary case record provings."
-            books={sections.pure}
-            onViewDetails={setSelectedBook}
-            onViewAuthor={setSelectedAuthorName}
-          />
+          {/* Catalog Sections */}
+          {filteredBooks.length === 0 ? (
+            <EmptyLibraryState searchTerm={searchTerm} onClearFilters={handleClearFilters} />
+          ) : (
+            <div className="flex flex-col gap-4 mt-4">
+              <LibrarySection
+                title="Foundational Works"
+                description="Core classical structures outlining key provings and homeopathic theory."
+                books={sections.foundational}
+                onViewDetails={setSelectedBook}
+                onViewAuthor={setSelectedAuthorName}
+                onRead={(b) => {
+                  setSelectedBookForReader(b);
+                  setActiveTab("reader");
+                }}
+              />
 
-          <LibrarySection
-            title="Keynotes & Characteristics"
-            description="Concise outlines of characteristic and diagnostic indicators."
-            books={sections.keynotes}
-            onViewDetails={setSelectedBook}
-            onViewAuthor={setSelectedAuthorName}
-          />
+              <LibrarySection
+                title="Pure Materia Medica"
+                description="Pure drug pathogeneses and primary case record provings."
+                books={sections.pure}
+                onViewDetails={setSelectedBook}
+                onViewAuthor={setSelectedAuthorName}
+                onRead={(b) => {
+                  setSelectedBookForReader(b);
+                  setActiveTab("reader");
+                }}
+              />
 
-          <LibrarySection
-            title="Clinical References"
-            description="Comprehensive dictionaries and manuals with clinical therapeutic indexes."
-            books={sections.clinical}
-            onViewDetails={setSelectedBook}
-            onViewAuthor={setSelectedAuthorName}
-          />
+              <LibrarySection
+                title="Keynotes & Characteristics"
+                description="Concise outlines of characteristic and diagnostic indicators."
+                books={sections.keynotes}
+                onViewDetails={setSelectedBook}
+                onViewAuthor={setSelectedAuthorName}
+                onRead={(b) => {
+                  setSelectedBookForReader(b);
+                  setActiveTab("reader");
+                }}
+              />
 
-          <LibrarySection
-            title="Comparative & Regional Works"
-            description="Comparative studies, synoptic keys, and geographical provings."
-            books={sections.comparative}
-            onViewDetails={setSelectedBook}
-            onViewAuthor={setSelectedAuthorName}
-          />
+              <LibrarySection
+                title="Clinical References"
+                description="Comprehensive dictionaries and manuals with clinical therapeutic indexes."
+                books={sections.clinical}
+                onViewDetails={setSelectedBook}
+                onViewAuthor={setSelectedAuthorName}
+                onRead={(b) => {
+                  setSelectedBookForReader(b);
+                  setActiveTab("reader");
+                }}
+              />
 
-          <LibrarySection
-            title="Rights Review Required"
-            description="Registered stubs currently blocked pending clinical copyright review."
-            books={sections.rightsReview}
-            onViewDetails={setSelectedBook}
-            onViewAuthor={setSelectedAuthorName}
-          />
-        </div>
+              <LibrarySection
+                title="Comparative & Regional Works"
+                description="Comparative studies, synoptic keys, and geographical provings."
+                books={sections.comparative}
+                onViewDetails={setSelectedBook}
+                onViewAuthor={setSelectedAuthorName}
+                onRead={(b) => {
+                  setSelectedBookForReader(b);
+                  setActiveTab("reader");
+                }}
+              />
+
+              <LibrarySection
+                title="Rights Review Required"
+                description="Registered stubs currently blocked pending clinical copyright review."
+                books={sections.rightsReview}
+                onViewDetails={setSelectedBook}
+                onViewAuthor={setSelectedAuthorName}
+                onRead={(b) => {
+                  setSelectedBookForReader(b);
+                  setActiveTab("reader");
+                }}
+              />
+            </div>
+          )}
+        </>
+      )}
+
+      {activeTab === "search" && (
+        <MateriaMedicaSearchPanel
+          onOpenPassage={handleOpenPassageFromSearch}
+          onAddToComparison={handleAddToComparison}
+        />
+      )}
+
+      {activeTab === "comparison" && (
+        <RemedyComparison
+          selections={comparisonSelections}
+          onRemove={handleRemoveFromComparison}
+          onReorder={setComparisonSelections}
+          onOpenInReader={handleOpenPassageFromSearch}
+        />
       )}
 
       {/* Details Provenance Overlay Modal */}

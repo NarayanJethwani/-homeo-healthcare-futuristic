@@ -1,55 +1,41 @@
-import { ReaderPreferences, DEFAULT_PREFERENCES, validatePreferences } from "../components/reader/preferences";
+import { ReaderPreferences, DEFAULT_PREFERENCES, validatePreferences } from "../reader/preferences";
 
 const STORAGE_KEY = "materia_medica_reader_prefs_v1";
-const STORAGE_VERSION = 1;
-
-type PreferenceEnvelope = {
-  version: number;
-  data: ReaderPreferences;
-};
 
 export const readerPreferenceStorage = {
   load(): ReaderPreferences {
     if (typeof window === "undefined") {
       return DEFAULT_PREFERENCES;
     }
-
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (!stored) return DEFAULT_PREFERENCES;
+      
+      const parsed = JSON.parse(stored);
+      // Validate schema version
+      if (parsed.version !== 1 || !parsed.data) {
         return DEFAULT_PREFERENCES;
       }
-
-      const envelope: PreferenceEnvelope = JSON.parse(raw);
-      if (envelope && typeof envelope === "object" && envelope.version === STORAGE_VERSION) {
-        return validatePreferences(envelope.data);
-      }
-
-      // Default back if version mismatch or corrupt structure
-      return DEFAULT_PREFERENCES;
-    } catch (err) {
-      // Fail-safe: load default preferences if localStorage is disabled or corrupt
-      console.warn("Materia Medica preference load failed:", err);
+      return validatePreferences(parsed.data);
+    } catch (e) {
+      console.warn("Failed to load reader preferences from localStorage", e);
       return DEFAULT_PREFERENCES;
     }
   },
 
-  save(data: ReaderPreferences): boolean {
-    if (typeof window === "undefined") {
-      return false;
-    }
-
+  save(prefs: ReaderPreferences): boolean {
+    if (typeof window === "undefined") return false;
     try {
-      const envelope: PreferenceEnvelope = {
-        version: STORAGE_VERSION,
-        data: validatePreferences(data),
+      const envelope = {
+        version: 1,
+        data: prefs,
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(envelope));
       return true;
-    } catch (err) {
-      // Fail-safe: ignore storage save errors (e.g. quota exceeded or Private Browsing mode)
-      console.warn("Materia Medica preference save failed:", err);
+    } catch (e) {
+      console.warn("Failed to save reader preferences to localStorage", e);
       return false;
     }
   }
 };
+export default readerPreferenceStorage;

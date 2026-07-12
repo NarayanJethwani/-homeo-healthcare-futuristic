@@ -25,6 +25,9 @@ export type KnowledgeCapability =
   | "knowledge.configureReviewPolicy";
 
 export type RepertoryCapability =
+  | "repertory.search"
+  | "repertory.repertorize"
+  | "repertory.export.json"
   | "repertory.review.read"
   | "repertory.review.correct"
   | "repertory.remedy.resolve"
@@ -47,6 +50,22 @@ export type MateriaMedicaCapability =
   | "materia-medica.rag.publish"
   | "materia-medica.content.deprecate";
 
+export type GraphCapability =
+  | "knowledge.viewGraph"
+  | "knowledge.createGraphNode"
+  | "knowledge.proposeGraphEdge"
+  | "knowledge.editGraphDraft"
+  | "knowledge.submitGraphMedicalReview"
+  | "knowledge.performGraphMedicalReview"
+  | "knowledge.performGraphEditorialReview"
+  | "knowledge.approveGraphEdge"
+  | "knowledge.publishGraphEdge"
+  | "knowledge.disputeGraphEdge"
+  | "knowledge.archiveGraphEdge"
+  | "knowledge.restoreGraphEdge"
+  | "knowledge.viewGraphAudit"
+  | "knowledge.manageGraphSchema";
+
 export type Permission =
   | "CMS_DRAFT_EDIT"
   | "CMS_CLINICAL_APPROVE"
@@ -59,7 +78,8 @@ export type Permission =
   | "SUBSCRIPTION_MANAGE"
   | KnowledgeCapability
   | RepertoryCapability
-  | MateriaMedicaCapability;
+  | MateriaMedicaCapability
+  | GraphCapability;
 
 // Role-to-Permissions Matrix
 const ROLE_PERMISSIONS: Record<AdminRole, Permission[]> = {
@@ -85,6 +105,9 @@ const ROLE_PERMISSIONS: Record<AdminRole, Permission[]> = {
     "knowledge.restore",
     "knowledge.viewAudit",
     "repertory.review.read",
+    "repertory.search",
+    "repertory.repertorize",
+    "repertory.export.json",
     "repertory.review.correct",
     "repertory.remedy.resolve",
     "repertory.concept.map",
@@ -107,7 +130,21 @@ const ROLE_PERMISSIONS: Record<AdminRole, Permission[]> = {
     "knowledge.editEvidence",
     "knowledge.assessClinicalEvidence",
     "knowledge.assessEditorialConfidence",
-    "knowledge.configureReviewPolicy"
+    "knowledge.configureReviewPolicy",
+    "knowledge.viewGraph",
+    "knowledge.createGraphNode",
+    "knowledge.proposeGraphEdge",
+    "knowledge.editGraphDraft",
+    "knowledge.submitGraphMedicalReview",
+    "knowledge.performGraphMedicalReview",
+    "knowledge.performGraphEditorialReview",
+    "knowledge.approveGraphEdge",
+    "knowledge.publishGraphEdge",
+    "knowledge.disputeGraphEdge",
+    "knowledge.archiveGraphEdge",
+    "knowledge.restoreGraphEdge",
+    "knowledge.viewGraphAudit",
+    "knowledge.manageGraphSchema"
   ],
   "clinical-reviewer": [
     "CMS_CLINICAL_APPROVE",
@@ -128,7 +165,10 @@ const ROLE_PERMISSIONS: Record<AdminRole, Permission[]> = {
     "knowledge.viewEvidence",
     "knowledge.editEvidence",
     "knowledge.assessClinicalEvidence",
-    "knowledge.configureReviewPolicy"
+    "knowledge.configureReviewPolicy",
+    "knowledge.viewGraph",
+    "knowledge.performGraphMedicalReview",
+    "knowledge.disputeGraphEdge"
   ],
   "editor": [
     "CMS_DRAFT_EDIT",
@@ -149,7 +189,12 @@ const ROLE_PERMISSIONS: Record<AdminRole, Permission[]> = {
     "materia-medica.transcription.review",
     "knowledge.viewEvidence",
     "knowledge.editEvidence",
-    "knowledge.assessEditorialConfidence"
+    "knowledge.assessEditorialConfidence",
+    "knowledge.viewGraph",
+    "knowledge.createGraphNode",
+    "knowledge.proposeGraphEdge",
+    "knowledge.editGraphDraft",
+    "knowledge.submitGraphMedicalReview"
   ],
   "operations": [
     "CMS_DRAFT_EDIT",
@@ -165,17 +210,21 @@ const ROLE_PERMISSIONS: Record<AdminRole, Permission[]> = {
     "materia-medica.library.view",
     "materia-medica.source.register",
     "materia-medica.ingestion.execute",
-    "knowledge.viewEvidence"
+    "knowledge.viewEvidence",
+    "knowledge.viewGraph"
   ],
   "analytics-viewer": [
     "OBSERVABILITY_VIEW",
     "knowledge.viewAudit",
     "repertory.audit.read",
-    "knowledge.viewEvidence"
+    "knowledge.viewEvidence",
+    "knowledge.viewGraph",
+    "knowledge.viewGraphAudit"
   ],
   "read-only-admin": [
     "materia-medica.library.view",
-    "knowledge.viewEvidence"
+    "knowledge.viewEvidence",
+    "knowledge.viewGraph"
   ]
 };
 

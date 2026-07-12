@@ -1,0 +1,158 @@
+
+> next-app@0.1.0 build
+> NODE_OPTIONS='--max-old-space-size=5120' next build
+
+▲ Next.js 16.2.9 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+Turbopack build encountered 6 warnings:
+./next.config.ts
+Encountered unexpected file in NFT list
+A file was traced that indicates that the whole project was traced unintentionally. Somewhere in the import trace below, there are:
+- filesystem operations (like path.join, path.resolve or fs.readFile), or
+- very dynamic requires (like require('./' + foo)).
+To resolve this, you can
+- remove them if possible, or
+- only use them in development, or
+- make sure they are statically scoped to some subfolder: path.join(process.cwd(), 'data', bar), or
+- add ignore comments: path.join(/*turbopackIgnore: true*/ process.cwd(), bar)
+
+Import trace:
+  App Route:
+    ./next.config.ts
+    ./src/features/repertory/config/runtimeEnv.ts
+    ./src/features/repertory/repositories/PublishedCorpusRepository.ts
+    ./src/app/api/admin/repertory-review/route.ts
+
+
+./next.config.ts
+Encountered unexpected file in NFT list
+A file was traced that indicates that the whole project was traced unintentionally. Somewhere in the import trace below, there are:
+- filesystem operations (like path.join, path.resolve or fs.readFile), or
+- very dynamic requires (like require('./' + foo)).
+To resolve this, you can
+- remove them if possible, or
+- only use them in development, or
+- make sure they are statically scoped to some subfolder: path.join(process.cwd(), 'data', bar), or
+- add ignore comments: path.join(/*turbopackIgnore: true*/ process.cwd(), bar)
+
+Output asset trace:
+  [output]/.next/server/app/api/download-template/route.js
+  [output]/.next/server/chunks/[root-of-the-server]__0h0a2tj._.js
+
+Import trace:
+  App Route:
+    ./next.config.ts
+    ./src/features/repertory/config/runtimeEnv.ts
+    ./src/features/repertory/repositories/PublishedCorpusRepository.ts
+    ./src/app/api/admin/repertory-review/route.ts
+
+
+./next.config.ts
+Encountered unexpected file in NFT list
+A file was traced that indicates that the whole project was traced unintentionally. Somewhere in the import trace below, there are:
+- filesystem operations (like path.join, path.resolve or fs.readFile), or
+- very dynamic requires (like require('./' + foo)).
+To resolve this, you can
+- remove them if possible, or
+- only use them in development, or
+- make sure they are statically scoped to some subfolder: path.join(process.cwd(), 'data', bar), or
+- add ignore comments: path.join(/*turbopackIgnore: true*/ process.cwd(), bar)
+
+Output asset trace:
+  [output]/.next/server/app/api/export-repertory/route.js
+  [output]/.next/server/chunks/[root-of-the-server]__0xjx32e._.js
+
+Import trace:
+  App Route:
+    ./next.config.ts
+    ./src/features/repertory/config/runtimeEnv.ts
+    ./src/features/repertory/repositories/PublishedCorpusRepository.ts
+    ./src/app/api/admin/repertory-review/route.ts
+
+
+./next.config.ts
+Encountered unexpected file in NFT list
+A file was traced that indicates that the whole project was traced unintentionally. Somewhere in the import trace below, there are:
+- filesystem operations (like path.join, path.resolve or fs.readFile), or
+- very dynamic requires (like require('./' + foo)).
+To resolve this, you can
+- remove them if possible, or
+- only use them in development, or
+- make sure they are statically scoped to some subfolder: path.join(process.cwd(), 'data', bar), or
+- add ignore comments: path.join(/*turbopackIgnore: true*/ process.cwd(), bar)
+
+Output asset trace:
+  [output]/.next/server/app/api/invoice/route.js
+  [output]/.next/server/chunks/[root-of-the-server]__1xvt8pp._.js
+
+Import trace:
+  App Route:
+    ./next.config.ts
+    ./src/features/repertory/config/runtimeEnv.ts
+    ./src/features/repertory/repositories/PublishedCorpusRepository.ts
+    ./src/app/api/admin/repertory-review/route.ts
+
+
+./next.config.ts
+Encountered unexpected file in NFT list
+A file was traced that indicates that the whole project was traced unintentionally. Somewhere in the import trace below, there are:
+- filesystem operations (like path.join, path.resolve or fs.readFile), or
+- very dynamic requires (like require('./' + foo)).
+To resolve this, you can
+- remove them if possible, or
+- only use them in development, or
+- make sure they are statically scoped to some subfolder: path.join(process.cwd(), 'data', bar), or
+- add ignore comments: path.join(/*turbopackIgnore: true*/ process.cwd(), bar)
+
+Output asset trace:
+  [output]/.next/server/app/api/patient/session/route.js
+  [output]/.next/server/chunks/[root-of-the-server]__1f9k53f._.js
+
+Import trace:
+  App Route:
+    ./next.config.ts
+    ./src/features/repertory/config/runtimeEnv.ts
+    ./src/features/repertory/repositories/PublishedCorpusRepository.ts
+    ./src/app/api/admin/repertory-review/route.ts
+
+
+./next.config.ts
+Encountered unexpected file in NFT list
+A file was traced that indicates that the whole project was traced unintentionally. Somewhere in the import trace below, there are:
+- filesystem operations (like path.join, path.resolve or fs.readFile), or
+- very dynamic requires (like require('./' + foo)).
+To resolve this, you can
+- remove them if possible, or
+- only use them in development, or
+- make sure they are statically scoped to some subfolder: path.join(process.cwd(), 'data', bar), or
+- add ignore comments: path.join(/*turbopackIgnore: true*/ process.cwd(), bar)
+
+Output asset trace:
+  [output]/.next/server/app/api/patient/upload/route.js
+  [output]/.next/server/chunks/[root-of-the-server]__1hehow-._.js
+
+Import trace:
+  App Route:
+    ./next.config.ts
+    ./src/features/repertory/config/runtimeEnv.ts
+    ./src/features/repertory/repositories/PublishedCorpusRepository.ts
+    ./src/app/api/admin/repertory-review/route.ts
+
+
+✓ Compiled successfully in 25.4s
+  Running TypeScript ...
+Failed to type check.
+
+./src/features/materia-medica/components/reader/MateriaMedicaReader.tsx:152:93
+Type error: Property 'book' does not exist on type '{ type: "legacy"; bookId: string; }'.
+
+  [90m150 |[0m ...
+  [90m151 |[0m ...
+[31m[1m>[0m [90m152 |[0m ...[33montentAdapter[0m.fetchRemedyContent(selection.book.id, selectedPath);
+  [90m    |[0m                                               [31m[1m^[0m
+  [90m153 |[0m ...
+  [90m154 |[0m ...
+  [90m155 |[0m ...
+Next.js build worker exited with code: 1 and signal: null

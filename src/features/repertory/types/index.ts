@@ -21,7 +21,7 @@ export type RubricCategory =
 export interface GradedRemedy {
   remedyId: string;                 // e.g. "Nux-v"
   remedyName: string;               // e.g. "Nux Vomica"
-  grade: 1 | 2 | 3 | 4;             // 1=Low, 2=Moderate, 3=Strong, 4=Keynote
+  grade?: 1 | 2 | 3 | 4;             // 1=Low, 2=Moderate, 3=Strong, 4=Keynote
   confidence: number;               // 0.0 - 1.0
   keynoteReason: string;            // Text explanation
   sourceReference: string;          // Materia Medica citation
@@ -36,6 +36,17 @@ export interface RepertoryCrossReference {
   notes?: string;
 }
 
+export type SourceRemedyGrade = {
+  originalRepresentation?: string;
+  normalizedGrade?: number;
+  status:
+    | "verified"
+    | "unresolved"
+    | "not-recoverable"
+    | "not-applicable";
+  confidence?: number;
+};
+
 export interface RepertoryRemedyEntry {
   remedyId: string;
   sourceAbbreviation: string;
@@ -45,6 +56,7 @@ export interface RepertoryRemedyEntry {
   gradeSystemId: string;
   sourceId: string;
   sourcePage?: number;
+  gradeInfo?: SourceRemedyGrade;
 }
 
 export interface RepertoryGradeSystem {
@@ -194,6 +206,18 @@ export interface ScoringResult {
   differentiatingRubrics: string[]; // Rubric IDs that distinguish the top remedies
   confidenceScore: number;
   missingDataNeeded: string[]; // General modalities not yet selected
+  nonScoringRubrics?: Array<{
+    rubricId: string;
+    sourceId: string;
+    reason:
+      | "source-search-only"
+      | "unverified-grade-system"
+      | "unresolved-remedy-mapping";
+  }>;
+  warnings?: Array<{
+    code: string;
+    message: string;
+  }>;
 }
 
 export interface RemedyDifferentiation {
@@ -452,6 +476,17 @@ export type RepertoryEditorialAuditLog = {
   createdAt: string;
 };
 
+export type RepertorySourceCapabilities = {
+  searchable: boolean;
+  citationEnabled: boolean;
+  ragEnabled: boolean;
+  scoringEnabled: boolean;
+  normalizedScoringEnabled: boolean;
+  canonicalRemedyClaimsEnabled: boolean;
+  unresolvedRemedyDisclosureRequired: boolean;
+  gradeStatus: "verified" | "partially-verified" | "unreliable" | "not-present";
+};
+
 export type RepertoryPublishedCorpusManifest = {
   corpusVersion: string;
   generatedAt: string;
@@ -478,6 +513,187 @@ export type RepertoryPublishedCorpusManifest = {
   validationErrors: string[];
 
   publicationStatus: "staged" | "active" | "superseded" | "rolled-back";
+  sourceCapabilities?: Record<string, RepertorySourceCapabilities>;
 };
+
+export interface AuditActor {
+  uid: string;
+  role: string;
+}
+
+export interface RepertoryAcquisitionRecord {
+  id: string;
+  sourceId: string;
+  volumeId?: string;
+  candidateSourceUrl?: string;
+  sourceProvider?: string;
+  archiveIdentifier?: string;
+  expectedPhysicalPageCount?: number;
+  expectedPrintedPageStart?: string;
+  expectedPrintedPageEnd?: string;
+  
+  acquisitionStatus: "candidate-found" | "rights-review" | "approved-for-acquisition" | "acquired" | "checksum-verified" | "error";
+  statusReason?: string;
+  
+  originalFileName?: string;
+  fileSizeBytes?: number;
+  sourceChecksum?: string;
+  artifactStoragePath?: string;
+  
+  extractionStatus?: "not-started" | "in-progress" | "complete" | "validation-failed" | "validated";
+  parserVersion?: string;
+  
+  editorialStatus?: "not-submitted" | "clinical-review" | "editorial-review" | "approved" | "rejected";
+  publicationStatus?: "not-published" | "staged" | "active" | "superseded" | "blocked";
+
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateRepertoryAcquisitionRecordInput {
+  sourceId: string;
+  volumeId?: string;
+  candidateSourceUrl?: string;
+  sourceProvider?: string;
+  archiveIdentifier?: string;
+  expectedPhysicalPageCount?: number;
+  expectedPrintedPageStart?: string;
+  expectedPrintedPageEnd?: string;
+}
+
+export interface AcquisitionTransition {
+  status: RepertoryAcquisitionRecord["acquisitionStatus"];
+  reason?: string;
+}
+
+export interface AcquiredSourceArtifact {
+  originalFileName: string;
+  fileSizeBytes: number;
+  sourceChecksum: string;
+  artifactStoragePath: string;
+}
+
+export interface RepertoryExtractionStatus {
+  extractionStatus: RepertoryAcquisitionRecord["extractionStatus"];
+  parserVersion: string;
+}
+
+export interface RepertoryAcquisitionRegisterExport {
+  generatedAt: string;
+  records: RepertoryAcquisitionRecord[];
+}
+
+export interface RepertoryExtractionRecord {
+  id: string;
+  sourceId: string;
+  acquisitionRecordId: string;
+  sourceLineNumber: number;
+  physicalPageIndex: number;
+  printedPageNumber: string;
+  parserState: "front-matter" | "clinical" | "causation" | "temperaments" | "clinical-relationships" | "natural-relationships" | "index";
+  originalText: string;
+  normalizedText: string;
+  detectedType: "ignored" | "page-anchor" | "section" | "rubric" | "subrubric" | "remedy-continuation" | "unresolved";
+  parserRuleId?: string;
+  parserConfidence: number;
+  parserVersion: string;
+  linkedRubricId?: string;
+  reviewStatus: "unreviewed" | "reviewed" | "flagged";
+}
+
+export type RepertoryParserState = RepertoryExtractionRecord["parserState"];
+
+export interface StateTransition {
+  fromState: string;
+  toState: string;
+  triggerRuleId: string;
+}
+
+export interface ParserRule {
+  id: string;
+  pattern: string;
+  description?: string;
+}
+
+export interface GradeRule {
+  sourceRepresentation: string;
+  normalizedGrade: number;
+  detectionRule: ParserRule;
+}
+
+export interface RepertoryParserProfile {
+  sourceId: string;
+  parserVersion: string;
+  initialState: string;
+  stateTransitions: StateTransition[];
+  pageAnchorRules: ParserRule[];
+  sectionRules: ParserRule[];
+  rubricRules: ParserRule[];
+  subRubricRules: ParserRule[];
+  remedyContinuationRules: ParserRule[];
+  crossReferenceRules: ParserRule[];
+  pageHeaderRules: ParserRule[];
+  pageFooterRules: ParserRule[];
+  ignoredLineRules: ParserRule[];
+  gradeRules: GradeRule[];
+  lineContinuationRules: ParserRule[];
+  hyphenationRules: ParserRule[];
+  requiredSections: string[];
+}
+
+export type RepertoryReleaseState =
+  | "engineering-complete"
+  | "emulator-verified"
+  | "production-deployment-ready"
+  | "production-staged"
+  | "production-active"
+  | "production-rolled-back"
+  | "blocked";
+
+export type DurableRepertoryAcquisitionRecord = RepertoryAcquisitionRecord & {
+  migratedFromRecordId?: string;
+  migrationVersion?: string;
+  migrationEnvironment?: "emulator" | "staging" | "production";
+};
+
+export type RepertorySourceReviewRecord = {
+  id: string;
+  sourceId: string;
+  acquisitionRecordId: string;
+  sourceChecksum: string;
+  validationReportId: string;
+
+  reviewType:
+    | "clinical"
+    | "editorial"
+    | "publication";
+
+  decision:
+    | "approved"
+    | "approved-with-restrictions"
+    | "rejected"
+    | "changes-requested";
+
+  restrictions: string[];
+  findings: string[];
+  reason: string;
+
+  actorUid: string;
+  actorRole: string;
+  capability: string;
+
+  environment:
+    | "emulator"
+    | "staging"
+    | "production";
+
+  createdAt: string;
+};
+
+export * from './repertoryTypes';
+export * from './remedyTypes';
+
+
+
 
 

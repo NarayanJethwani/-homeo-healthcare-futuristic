@@ -3,6 +3,8 @@ import path from "path";
 import assert from "assert";
 import { execSync } from "child_process";
 
+process.env.NODE_ENV = "test";
+
 async function runTests() {
   console.log("🚀 Starting Production Readiness & Release Governance Operations Assets Tests...");
   let passedCount = 0;
@@ -54,7 +56,11 @@ async function runTests() {
 
   await test("should verify verify-production-readiness.ts exits with 0", () => {
     try {
-      const output = execSync("npm run verify:production", { stdio: "pipe", encoding: "utf8" });
+      const output = execSync("npm run verify:production", { 
+        stdio: "pipe", 
+        encoding: "utf8",
+        env: { ...process.env, NODE_ENV: "test" }
+      });
       assert.ok(output.includes("Production Readiness Verification: SUCCESS!"));
     } catch (error: any) {
       console.error(error.stdout);

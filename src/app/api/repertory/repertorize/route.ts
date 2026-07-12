@@ -1,15 +1,36 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getAdminDb } from "@/lib/firebaseAdmin";
 import { RepertoryScoring } from "@/features/repertory/scoring/repertoryScoring";
 import { ReasoningEngine } from "@/features/repertory/reasoning/reasoningEngine";
 import repertoryRepository from "@/features/repertory/database/repertoryDb";
+import { featureFlags } from "@/features/dashboard/constants/featureFlags";
+import { authorizeRequest } from "@/lib/security/apiAuth";
+import { resolveDoctorRepertoryEntitlement } from "@/features/repertory/access/DoctorEntitlementRepository";
+import { authorizeRepertoryOperation } from "@/features/repertory/access/RepertoryAccessBoundary";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    let authenticatedUserId: string | null = null;
+    if (featureFlags.repertoryDoctorEntitlementsEnabled) {
+      const auth = await authorizeRequest(request, "repertory.repertorize", "REPERTORY_REPERTORIZE");
+      if (!auth.authorized) return auth.response;
+      const entitlement = await resolveDoctorRepertoryEntitlement(auth.session.uid);
+      if (!entitlement) return NextResponse.json({ success: false, message: "Repertory entitlement required." }, { status: 403 });
+      const decision = authorizeRepertoryOperation(entitlement, {
+        organizationId: entitlement.organizationId,
+        clinicId: entitlement.clinicId,
+        doctorId: auth.session.uid,
+        capability: "repertorize",
+      });
+      if (!decision.allowed) return NextResponse.json({ success: false, message: "Repertory entitlement required." }, { status: decision.status });
+      authenticatedUserId = auth.session.uid;
+    }
+
     const { patientId = "anonymous", userId = "unknown", selectedRubrics } = await request.json();
+    const effectiveUserId = authenticatedUserId || userId;
 
     if (!selectedRubrics || !Array.isArray(selectedRubrics) || selectedRubrics.length === 0) {
       return NextResponse.json({
@@ -102,7 +123,8 @@ export async function POST(request: Request) {
 
     const clinicalWarnings = [
       ...contraindications,
-      ...(reasoningSummary.safetyLabel ? [reasoningSummary.safetyLabel] : [])
+      ...(reasoningSummary.safetyLabel ? [reasoningSummary.safetyLabel] : []),
+      ...(scoringResult.warnings?.map(w => w.message) || [])
     ];
 
     const finalResponse = {
@@ -126,6 +148,8 @@ export async function POST(request: Request) {
         score: scoringResult.confidenceScore,
         explanation: `Analysis margin confidence index is ${scoringResult.confidenceScore}%.`
       },
+      nonScoringRubrics: scoringResult.nonScoringRubrics || [],
+      warnings: scoringResult.warnings || [],
       scoringResult,
       differentiations,
       reasoningSummary
@@ -139,7 +163,7 @@ export async function POST(request: Request) {
         const sessionDoc = {
           id: sessionId,
           patientId,
-          userId,
+          userId: effectiveUserId,
           rubrics: selectedRubrics,
           results: scoringResult.topRemedies.reduce((acc, curr) => {
             acc[curr.remedyId] = { score: curr.score, coverage: `${curr.matches}/${selectedRubrics.length}` };

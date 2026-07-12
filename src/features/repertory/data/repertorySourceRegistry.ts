@@ -1,3 +1,5 @@
+import { RepertorySourceCapabilities } from '../types';
+
 export type RepertoryRightsStatus =
   | "public-domain"
   | "licensed"
@@ -43,6 +45,7 @@ export type RepertorySourceRecord = {
   rightsStatus: RepertoryRightsStatus;
   ingestionAllowed: boolean;
   aiIndexingAllowed: boolean;
+  capabilities: RepertorySourceCapabilities;
 
   acquisitionStatus: RepertoryAcquisitionStatus;
   editorialStatus: RepertoryEditorialStatus;
@@ -68,6 +71,39 @@ export type RepertorySourceRecord = {
   rightsEvidenceUrl?: string;
 };
 
+const VERIFIED_CAPABILITIES: RepertorySourceCapabilities = {
+  searchable: true,
+  citationEnabled: true,
+  ragEnabled: true,
+  scoringEnabled: true,
+  normalizedScoringEnabled: true,
+  canonicalRemedyClaimsEnabled: true,
+  unresolvedRemedyDisclosureRequired: false,
+  gradeStatus: "verified"
+};
+
+const UNRELIABLE_CAPABILITIES: RepertorySourceCapabilities = {
+  searchable: true,
+  citationEnabled: true,
+  ragEnabled: true,
+  scoringEnabled: false,
+  normalizedScoringEnabled: false,
+  canonicalRemedyClaimsEnabled: true,
+  unresolvedRemedyDisclosureRequired: true,
+  gradeStatus: "unreliable"
+};
+
+const INACTIVE_CAPABILITIES: RepertorySourceCapabilities = {
+  searchable: false,
+  citationEnabled: false,
+  ragEnabled: false,
+  scoringEnabled: false,
+  normalizedScoringEnabled: false,
+  canonicalRemedyClaimsEnabled: false,
+  unresolvedRemedyDisclosureRequired: false,
+  gradeStatus: "not-present"
+};
+
 export const REPERTORY_SOURCES: RepertorySourceRecord[] = [
   {
     id: "kent_1908",
@@ -88,6 +124,7 @@ export const REPERTORY_SOURCES: RepertorySourceRecord[] = [
     rightsReviewedAt: "2026-07-10T12:00:00Z",
     ingestionAllowed: true,
     aiIndexingAllowed: true,
+    capabilities: VERIFIED_CAPABILITIES,
     acquisitionStatus: "complete-validated",
     editorialStatus: "approved",
     publicationStatus: "active",
@@ -120,6 +157,7 @@ export const REPERTORY_SOURCES: RepertorySourceRecord[] = [
     rightsReviewedAt: "2026-07-10T12:00:00Z",
     ingestionAllowed: true,
     aiIndexingAllowed: true,
+    capabilities: VERIFIED_CAPABILITIES,
     acquisitionStatus: "complete-validated",
     editorialStatus: "approved",
     publicationStatus: "active",
@@ -153,6 +191,7 @@ export const REPERTORY_SOURCES: RepertorySourceRecord[] = [
     rightsReviewedAt: "2026-07-10T14:30:00Z",
     ingestionAllowed: true,
     aiIndexingAllowed: true,
+    capabilities: INACTIVE_CAPABILITIES,
     acquisitionStatus: "sample",
     editorialStatus: "not-submitted",
     publicationStatus: "not-published"
@@ -178,6 +217,7 @@ export const REPERTORY_SOURCES: RepertorySourceRecord[] = [
     rightsReviewedAt: "2026-07-10T14:45:00Z",
     ingestionAllowed: true,
     aiIndexingAllowed: true,
+    capabilities: INACTIVE_CAPABILITIES,
     acquisitionStatus: "sample",
     editorialStatus: "not-submitted",
     publicationStatus: "not-published"
@@ -201,6 +241,7 @@ export const REPERTORY_SOURCES: RepertorySourceRecord[] = [
     rightsReviewedAt: "2026-07-10T15:00:00Z",
     ingestionAllowed: true,
     aiIndexingAllowed: true,
+    capabilities: INACTIVE_CAPABILITIES,
     acquisitionStatus: "sample",
     editorialStatus: "not-submitted",
     publicationStatus: "not-published"
@@ -225,9 +266,10 @@ export const REPERTORY_SOURCES: RepertorySourceRecord[] = [
     rightsReviewedAt: "2026-07-10T15:15:00Z",
     ingestionAllowed: true,
     aiIndexingAllowed: true,
-    acquisitionStatus: "sample",
-    editorialStatus: "not-submitted",
-    publicationStatus: "not-published"
+    capabilities: UNRELIABLE_CAPABILITIES,
+    acquisitionStatus: "complete-validated",
+    editorialStatus: "approved",
+    publicationStatus: "staged"
   },
   {
     id: "knerr_1896",
@@ -248,6 +290,7 @@ export const REPERTORY_SOURCES: RepertorySourceRecord[] = [
     rightsReviewedAt: "2026-07-10T15:30:00Z",
     ingestionAllowed: true,
     aiIndexingAllowed: true,
+    capabilities: INACTIVE_CAPABILITIES,
     acquisitionStatus: "sample",
     editorialStatus: "not-submitted",
     publicationStatus: "not-published"
@@ -271,6 +314,7 @@ export const REPERTORY_SOURCES: RepertorySourceRecord[] = [
     rightsReviewedAt: "2026-07-10T15:45:00Z",
     ingestionAllowed: true,
     aiIndexingAllowed: true,
+    capabilities: INACTIVE_CAPABILITIES,
     acquisitionStatus: "sample",
     editorialStatus: "not-submitted",
     publicationStatus: "not-published"
@@ -289,6 +333,7 @@ export const REPERTORY_SOURCES: RepertorySourceRecord[] = [
     rightsReviewNotes: "Modern copyrighted database of RadarOpus/Archibel. Ingestion strictly prohibited.",
     ingestionAllowed: false,
     aiIndexingAllowed: false,
+    capabilities: INACTIVE_CAPABILITIES,
     acquisitionStatus: "metadata-only",
     editorialStatus: "rejected",
     publicationStatus: "blocked"
@@ -307,6 +352,7 @@ export const REPERTORY_SOURCES: RepertorySourceRecord[] = [
     rightsReviewNotes: "Proprietary twentieth-century database. Ingestion prohibited.",
     ingestionAllowed: false,
     aiIndexingAllowed: false,
+    capabilities: INACTIVE_CAPABILITIES,
     acquisitionStatus: "metadata-only",
     editorialStatus: "rejected",
     publicationStatus: "blocked"
@@ -325,6 +371,7 @@ export const REPERTORY_SOURCES: RepertorySourceRecord[] = [
     rightsReviewNotes: "Modern work, copyrighted. Independent license and permission required. Ingestion blocked.",
     ingestionAllowed: false,
     aiIndexingAllowed: false,
+    capabilities: INACTIVE_CAPABILITIES,
     acquisitionStatus: "metadata-only",
     editorialStatus: "rejected",
     publicationStatus: "blocked"
@@ -332,27 +379,21 @@ export const REPERTORY_SOURCES: RepertorySourceRecord[] = [
 ];
 
 export function validateRegistryRecord(s: RepertorySourceRecord): void {
-  // copyrighted + ingestionAllowed
   if (s.rightsStatus === "copyrighted" && s.ingestionAllowed) {
     throw new Error(`Registry Validation Error for ${s.id}: copyrighted source cannot have ingestionAllowed set to true.`);
   }
-  // sample + active
   if (s.acquisitionStatus === "sample" && s.publicationStatus === "active") {
     throw new Error(`Registry Validation Error for ${s.id}: sample source cannot have publicationStatus set to active.`);
   }
-  // partial + approved for publication (approved editorialStatus)
   if (s.acquisitionStatus === "partial" && s.editorialStatus === "approved") {
     throw new Error(`Registry Validation Error for ${s.id}: partial source cannot be editorially approved.`);
   }
-  // complete-unvalidated + active
   if (s.acquisitionStatus === "complete-unvalidated" && s.publicationStatus === "active") {
     throw new Error(`Registry Validation Error for ${s.id}: complete-unvalidated source cannot have publicationStatus set to active.`);
   }
-  // rejected + active
   if (s.editorialStatus === "rejected" && s.publicationStatus === "active") {
     throw new Error(`Registry Validation Error for ${s.id}: rejected source cannot have publicationStatus set to active.`);
   }
-  // blocked + aiIndexingAllowed
   if (s.publicationStatus === "blocked" && s.aiIndexingAllowed) {
     throw new Error(`Registry Validation Error for ${s.id}: blocked source cannot have aiIndexingAllowed set to true.`);
   }

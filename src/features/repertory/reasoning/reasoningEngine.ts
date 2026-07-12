@@ -134,8 +134,8 @@ export class ReasoningEngine {
         const rel = rub.relatedRemedies.find(r => r.remedyId === remedyId);
         if (rel) {
           matched.push(rub.title);
-          supportingEvidence[rub.rubricId] = rel.grade;
-          if (rel.grade >= 3) {
+          supportingEvidence[rub.rubricId] = rel.grade ?? 0;
+          if ((rel.grade ?? 0) >= 3) {
             strongest.push(rub.title);
           } else {
             weakest.push(rub.title);

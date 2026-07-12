@@ -7,6 +7,8 @@ import { MockEncounterRepository } from "../src/features/encounter/repositories/
 import { MockConsultationRepository } from "../src/features/consultation/repositories/consultationRepository";
 import { AssessmentWorkspaceService } from "../src/features/homeopathy/application/AssessmentWorkspaceService";
 import { TotalitySymptom } from "../src/features/homeopathy/domain/homeopathy.types";
+import { MockHomeopathyRepository } from '../src/features/homeopathy/repositories/homeopathyRepository';
+import { HomeopathyService } from '../src/features/homeopathy/services/homeopathyService';
 
 async function runTests() {
   console.log("🚀 Starting Homeopathic Assessment Engine Integration & Workflow Tests...");
@@ -25,9 +27,9 @@ async function runTests() {
     }
   }
 
-  const mockRepo = new (require("../src/features/homeopathy/repositories/homeopathyRepository").MockHomeopathyRepository)();
+  const mockRepo = new MockHomeopathyRepository();
   const dispatcher = new DomainEventDispatcher();
-  const service = new (require("../src/features/homeopathy/services/homeopathyService").HomeopathyService)(mockRepo, dispatcher);
+  const service = new HomeopathyService(mockRepo, dispatcher);
 
   const mockPatientRepo = new MockPatientRepository();
   const mockAllergyRepo = new MockAllergyRepository();

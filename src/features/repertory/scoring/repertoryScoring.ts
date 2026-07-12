@@ -5,6 +5,7 @@ import { ScoringResult, RemedyDifferentiation, RepertoryRubric, MiasmType } from
 import { CLINICAL_SCORING_CONFIG } from './scoringConfig';
 import { ConstitutionalEngine } from './constitutionalEngine';
 import { MiasmaticEngine } from './miasmaticEngine';
+import { getSourceRecord } from '../data/repertorySourceRegistry';
 
 export class RepertoryScoring {
   
@@ -29,6 +30,52 @@ export class RepertoryScoring {
 
     if (symptoms.length === 0) return result;
 
+    const nonScoringRubrics: Array<{ rubricId: string; sourceId: string; reason: "source-search-only" | "unverified-grade-system" | "unresolved-remedy-mapping" }> = [];
+    const warnings: Array<{ code: string; message: string }> = [];
+
+    const activeRubrics: RepertoryRubric[] = [];
+    const eligibleSymptoms: Array<{
+      rubricId: string;
+      severity: number;
+      frequency: 'constant' | 'frequent' | 'occasional';
+      impact: 'severe' | 'moderate' | 'mild';
+    }> = [];
+
+    for (const sym of symptoms) {
+      const rub = await repertoryRepository.getRubricById(sym.rubricId);
+      if (!rub) continue;
+
+      const srcId = rub.sourceId || rub.source || "unknown";
+      const srcRecord = getSourceRecord(srcId);
+      const scoringEnabled = srcRecord ? srcRecord.capabilities.scoringEnabled : true;
+
+      if (!scoringEnabled) {
+        nonScoringRubrics.push({
+          rubricId: sym.rubricId,
+          sourceId: srcId,
+          reason: "source-search-only"
+        });
+        if (srcId === 'clarke_clinical_1904') {
+          const warnCode = "CLARKE_SCORING_DISABLED_UNVERIFIED_GRADES";
+          if (!warnings.some(w => w.code === warnCode)) {
+            warnings.push({
+              code: warnCode,
+              message: "Clarke 1904 Clinical Repertory scoring is disabled because original grading typography is unreliable."
+            });
+          }
+        }
+        continue; // Exclude from numerical scoring
+      }
+
+      activeRubrics.push(rub);
+      eligibleSymptoms.push(sym);
+    }
+
+    result.nonScoringRubrics = nonScoringRubrics;
+    result.warnings = warnings;
+
+    if (eligibleSymptoms.length === 0) return result;
+
     // 1. Calculate symptom weights and active miasmatic load
     const activeSymptomWeights: Record<string, number> = {};
     const miasmaticTotals: Record<MiasmType, number> = { Psora: 0, Sycosis: 0, Syphilis: 0, Tubercular: 0, Cancerinic: 0 };
@@ -41,11 +88,8 @@ export class RepertoryScoring {
     let hasSleepSelected = false;
     let hasEtiologySelected = false;
 
-    const activeRubrics: RepertoryRubric[] = [];
-    for (const sym of symptoms) {
-      const rub = await repertoryRepository.getRubricById(sym.rubricId);
-      if (!rub) continue;
-      activeRubrics.push(rub);
+    for (const sym of eligibleSymptoms) {
+      const rub = activeRubrics.find(r => r.rubricId === sym.rubricId)!;
 
       if (rub.category === 'Thermal State' || rub.thermalState) hasThermalSelected = true;
       if (rub.thirstPattern && rub.thirstPattern !== 'normal') hasThirstSelected = true;
@@ -69,8 +113,8 @@ export class RepertoryScoring {
     }
 
     // 1b. Run Constitutional and Miasmatic analysis engines
-    const constProfile = ConstitutionalEngine.analyzeConstitution(activeRubrics, symptoms);
-    const miasmProfile = MiasmaticEngine.analyzeMiasms(activeRubrics, symptoms);
+    const constProfile = ConstitutionalEngine.analyzeConstitution(activeRubrics, eligibleSymptoms);
+    const miasmProfile = MiasmaticEngine.analyzeMiasms(activeRubrics, eligibleSymptoms);
 
     // 2. Compute remedy scores
     const scores: Record<string, { 
@@ -83,16 +127,14 @@ export class RepertoryScoring {
 
     // Group active rubrics by source to calculate balancing factors
     const rubricsCountBySource: Record<string, number> = {};
-    for (const sym of symptoms) {
-      const rub = await repertoryRepository.getRubricById(sym.rubricId);
-      if (!rub) continue;
+    for (const sym of eligibleSymptoms) {
+      const rub = activeRubrics.find(r => r.rubricId === sym.rubricId)!;
       const srcId = rub.sourceId || rub.source || "unknown";
       rubricsCountBySource[srcId] = (rubricsCountBySource[srcId] || 0) + 1;
     }
 
-    for (const sym of symptoms) {
-      const rub = await repertoryRepository.getRubricById(sym.rubricId);
-      if (!rub) continue;
+    for (const sym of eligibleSymptoms) {
+      const rub = activeRubrics.find(r => r.rubricId === sym.rubricId)!;
 
       const symptomWeight = activeSymptomWeights[sym.rubricId];
       const srcId = rub.sourceId || rub.source || "unknown";
@@ -137,7 +179,7 @@ export class RepertoryScoring {
         scoreObj.matches += 1;
 
         // Base formula: Grade * weight * confidence * experienceWeight * categoryMultiplier
-        let contribution = rem.grade * symptomWeight * rub.confidence * rem.clinicalExperienceWeight * categoryMultiplier;
+        let contribution = (rem.grade ?? 1) * symptomWeight * rub.confidence * rem.clinicalExperienceWeight * categoryMultiplier;
 
         // Apply miasmatic alignment contribution based on miasm fit score
         const miasmFit = miasmProfile.remedyMiasmaticFit[rem.remedyId] || 50;
@@ -153,7 +195,7 @@ export class RepertoryScoring {
           rubricId: rub.rubricId,
           rubricTitle: rub.title,
           contribution: contributionValue,
-          grade: rem.grade,
+          grade: rem.grade ?? 1,
           sourceId: srcId
         });
       }
@@ -174,9 +216,9 @@ export class RepertoryScoring {
         if (confirmations?.confirmatory.some(c => c.toLowerCase().includes('chilly') || c.toLowerCase().includes('cold'))) thermal = 'Chilly';
         else if (confirmations?.confirmatory.some(c => c.toLowerCase().includes('warm') || c.toLowerCase().includes('hot'))) thermal = 'Warm';
 
-        const matchRatio = r.matches / symptoms.length;
+        const matchRatio = r.matches / eligibleSymptoms.length;
         const confidence = Math.round(matchRatio * 100);
-        const coverageRatio = `${r.matches}/${symptoms.length}`;
+        const coverageRatio = `${r.matches}/${eligibleSymptoms.length}`;
 
         // Compute source balanced scoring and source contributions
         const sourceContributions: Record<string, number> = {};
@@ -191,15 +233,14 @@ export class RepertoryScoring {
         let balancedScore = 0;
         Object.keys(sourceContributions).forEach(src => {
           const count = rubricsCountBySource[src] || 1;
-          balancedScore += sourceContributions[src] / count;
+          balancedScore += (sourceContributions[src] ?? 0) / count;
         });
         balancedScore = Math.round(balancedScore * 10) / 10;
 
         // Contradictory evidence check
         const contradictoryEvidence: string[] = [];
-        for (const sym of symptoms) {
-          const rub = await repertoryRepository.getRubricById(sym.rubricId);
-          if (!rub) continue;
+        for (const sym of eligibleSymptoms) {
+          const rub = activeRubrics.find(r2 => r2.rubricId === sym.rubricId)!;
           
           const remDetail = rub.relatedRemedies.find(rem => rem.remedyId === r.remedyId);
           if (!remDetail) continue;
@@ -300,7 +341,14 @@ export class RepertoryScoring {
 
     for (const rid of selectedRubricIds) {
       const rub = await repertoryRepository.getRubricById(rid);
-      if (rub) activeRubrics.push(rub);
+      if (rub) {
+        const srcId = rub.sourceId || rub.source || "unknown";
+        const srcRecord = getSourceRecord(srcId);
+        if (srcRecord && !srcRecord.capabilities.scoringEnabled) {
+          continue; // Skip non-scoring sources
+        }
+        activeRubrics.push(rub);
+      }
     }
 
     for (const remedyId of topRemedyIds) {
@@ -328,7 +376,7 @@ export class RepertoryScoring {
 
       // Construct differentiation reason
       const strongestMatch = activeRubrics.find(r => 
-        r.relatedRemedies.some(rem => rem.remedyId.toLowerCase() === remedyId.toLowerCase() && rem.grade >= 3)
+        r.relatedRemedies.some(rem => rem.remedyId.toLowerCase() === remedyId.toLowerCase() && (rem.grade ?? 0) >= 3)
       );
       const reason = strongestMatch 
         ? `Appears due to strong coverage on: "${strongestMatch.title}".` 

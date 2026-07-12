@@ -8,6 +8,7 @@ type LibrarySectionProps = {
   books: MateriaMedicaBook[];
   onViewDetails: (book: MateriaMedicaBook) => void;
   onViewAuthor: (authorId: string) => void;
+  onRead?: (book: MateriaMedicaBook) => void;
 };
 
 export const LibrarySection: React.FC<LibrarySectionProps> = ({
@@ -16,6 +17,7 @@ export const LibrarySection: React.FC<LibrarySectionProps> = ({
   books,
   onViewDetails,
   onViewAuthor,
+  onRead,
 }) => {
   if (books.length === 0) return null;
 
@@ -40,6 +42,7 @@ export const LibrarySection: React.FC<LibrarySectionProps> = ({
             book={book}
             onViewDetails={onViewDetails}
             onViewAuthor={onViewAuthor}
+            onRead={onRead}
           />
         ))}
       </div>

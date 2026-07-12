@@ -47,7 +47,7 @@ export function RubricSelectionSection({
     if (isAlreadySelected) return;
 
     const newSelected: SelectedRubric = {
-      id: toSelectedRubricId(`sr_${Math.random().toString(36).substring(2, 11)}`),
+      id: toSelectedRubricId(`sr_${res.rubricId}`),
       rubricId: toConceptId(res.rubricId) as any,
       sourceId: res.sourceId,
       sourceName: res.sourceName,

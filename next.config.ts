@@ -26,6 +26,10 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   serverExternalPackages: ["firebase-admin"],
+  experimental: {
+    workerThreads: false,
+    cpus: 1
+  },
   // Ensure repertory JSON data files are bundled with serverless functions on Vercel
   outputFileTracingIncludes: {
     "/api/repertory": ["./public/data/**/*.json"],
@@ -95,6 +99,20 @@ const nextConfig: NextConfig = {
         headers: securityHeaders,
       },
     ];
+  },
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        net: false,
+        http2: false,
+        dns: false,
+        tls: false,
+        child_process: false,
+        fs: false,
+      };
+    }
+    return config;
   },
 };
 

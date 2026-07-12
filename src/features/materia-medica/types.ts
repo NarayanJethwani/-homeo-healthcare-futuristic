@@ -310,6 +310,12 @@ export type SampleMateriaMedicaPassage = {
 
   correctionStatus: "human-reviewed";
   editorialStatus: "approved";
+  corrections: Array<{
+    original: string;
+    corrected: string;
+    reason: string;
+    printedPage: number;
+  }>;
 
   transcription: {
     actorUid: string;

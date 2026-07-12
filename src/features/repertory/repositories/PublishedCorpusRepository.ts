@@ -3,6 +3,8 @@ import path from 'path';
 import crypto from 'crypto';
 import { getAdminDb } from '@/lib/firebaseAdmin';
 import { RepertoryRubric, RepertoryPublishedCorpusManifest } from '../types';
+import { getRuntimeEnvironment } from '../config/runtimeEnv';
+import { getActiveCorpusPointerRepository } from './ActiveCorpusPointerRepository';
 
 export interface RepertoryArtifactStore {
   readJson<T>(path: string): Promise<T>;
@@ -95,7 +97,7 @@ export class PublishedCorpusRepository {
   private static cachedManifest: RepertoryPublishedCorpusManifest | null = null;
   private static inFlightLoads = new Map<string, Promise<any>>();
   private static activeVersionCache: { version: string; timestamp: number } | null = null;
-  private static activeVersionCacheTtlMs = 10000; // 10 seconds TTL
+  private static activeVersionCacheTtlMs = getRuntimeEnvironment().mode === 'test' ? 0 : 10000; // 10 seconds TTL
 
   // Abstraction layer
   private static artifactStore: RepertoryArtifactStore = new LocalArtifactStore();
@@ -119,7 +121,8 @@ export class PublishedCorpusRepository {
   }
 
   private static getPublishedDir(version: string): string {
-    return path.join(process.cwd(), 'data', 'repertory', 'published', version);
+    const env = getRuntimeEnvironment();
+    return path.join(env.artifactRoot, 'published', version);
   }
 
   private static stableHash(str: string): number {
@@ -134,62 +137,71 @@ export class PublishedCorpusRepository {
     }
 
     let version = 'v1.0.0';
-    let retrieved = false;
     try {
-      const db = getAdminDb();
-      if (db) {
-        const doc = await db.collection('repertoryActiveCorpusPointer').doc('active').get();
-        if (doc.exists) {
-          const data = doc.data();
-          if (data && data.activeVersion) {
-            version = data.activeVersion;
-            retrieved = true;
-          }
-        }
+      const repo = getActiveCorpusPointerRepository();
+      const active = await repo.getActive();
+      if (active && active.activeVersion) {
+        version = active.activeVersion;
       }
     } catch (e) {
-      console.warn("PublishedCorpusRepository: Failed to get active version from Firestore, trying local file fallback:", e);
-    }
-
-    if (!retrieved) {
-      const pointerFile = path.join(process.cwd(), 'data', 'repertory', 'published', 'active_pointer.json');
-      if (fs.existsSync(pointerFile)) {
-        try {
-          const raw = fs.readFileSync(pointerFile, 'utf-8');
-          const data = JSON.parse(raw);
-          if (data && data.activeVersion) {
-            version = data.activeVersion;
-          }
-        } catch (err) {
-          console.warn("PublishedCorpusRepository: Failed to parse active_pointer.json:", err);
-        }
-      }
+      console.warn("PublishedCorpusRepository: Failed to get active version from pointer repository:", e);
     }
 
     this.activeVersionCache = { version, timestamp: now };
     return version;
   }
 
-  static async setActiveVersion(version: string): Promise<void> {
-    try {
-      const db = getAdminDb();
-      if (db) {
-        await db.collection('repertoryActiveCorpusPointer').doc('active').set({
-          activeVersion: version,
-          updatedAt: new Date().toISOString(),
-          status: "active"
-        });
-      }
-    } catch (e) {
-      console.warn("PublishedCorpusRepository: Failed to write active version to Firestore:", e);
+  static async setActiveVersion(
+    version: string,
+    options?: {
+      previousVersion?: string;
+      contentHash?: string;
+      actorUid?: string;
+      actorRole?: string;
+      reason?: string;
+      transactionId?: string;
+      auditLogId?: string;
     }
+  ): Promise<void> {
+    const repo = getActiveCorpusPointerRepository();
+    await repo.activate({
+      version,
+      previousVersion: options?.previousVersion,
+      contentHash: options?.contentHash || "unknown-hash",
+      actorUid: options?.actorUid || "system",
+      actorRole: options?.actorRole || "system",
+      reason: options?.reason || `Set pointer active atomically to ${version}`,
+      transactionId: options?.transactionId || `tx_${Date.now()}`,
+      auditLogId: options?.auditLogId || `audit_${Date.now()}`
+    });
 
-    const pointerFile = path.join(process.cwd(), 'data', 'repertory', 'published', 'active_pointer.json');
-    const pointerDir = path.dirname(pointerFile);
-    if (!fs.existsSync(pointerDir)) {
-      fs.mkdirSync(pointerDir, { recursive: true });
+    this.activeVersionCache = { version, timestamp: Date.now() };
+    this.invalidateCache();
+  }
+
+  static async rollbackActiveVersion(
+    version: string,
+    options?: {
+      previousVersion?: string;
+      contentHash?: string;
+      actorUid?: string;
+      actorRole?: string;
+      reason?: string;
+      transactionId?: string;
+      auditLogId?: string;
     }
-    fs.writeFileSync(pointerFile, JSON.stringify({ activeVersion: version, updatedAt: new Date().toISOString() }), 'utf-8');
+  ): Promise<void> {
+    const repo = getActiveCorpusPointerRepository();
+    await repo.rollback({
+      version,
+      previousVersion: options?.previousVersion,
+      contentHash: options?.contentHash || "unknown-hash",
+      actorUid: options?.actorUid || "system",
+      actorRole: options?.actorRole || "system",
+      reason: options?.reason || `Rollback pointer atomically to ${version}`,
+      transactionId: options?.transactionId || `tx_${Date.now()}`,
+      auditLogId: options?.auditLogId || `audit_${Date.now()}`
+    });
 
     this.activeVersionCache = { version, timestamp: Date.now() };
     this.invalidateCache();

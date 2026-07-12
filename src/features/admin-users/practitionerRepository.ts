@@ -29,7 +29,7 @@ export async function getPractitionerAccounts(): Promise<PractitionerAccount[]> 
     try {
       const db = getAdminDb();
       const snap = await db.collection("practitioner_accounts").get();
-      return snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as PractitionerAccount));
+      return snap.docs.map((doc: any) => ({ id: doc.id, ...doc.data() } as PractitionerAccount));
     } catch (err) {
       console.warn("[Practitioner Repo] Firestore load failed, falling back to memory.");
     }
@@ -117,8 +117,8 @@ export async function createPractitionerInvite(input: {
         .where("status", "==", "pending")
         .get();
       
-      const invites = snap.docs.map(d => ({ id: d.id, ...d.data() } as PractitionerInvitation));
-      pendingInvite = invites.find(inv => inv.expiresAt > nowStr) || null;
+      const invites = snap.docs.map((d: any) => ({ id: d.id, ...d.data() } as PractitionerInvitation));
+      pendingInvite = invites.find((inv: any) => inv.expiresAt > nowStr) || null;
     } catch (err) {
       console.warn("[Practitioner Repo] Firestore query failed, falling back to memory.");
       const invites = memoryPractitionerInvitations.filter(i => i.email.toLowerCase().trim() === email && i.status === "pending");
@@ -201,7 +201,7 @@ export async function getInvitations(): Promise<PractitionerInvitation[]> {
     try {
       const db = getAdminDb();
       const snap = await db.collection("practitioner_invitations").get();
-      return snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as PractitionerInvitation));
+      return snap.docs.map((doc: any) => ({ id: doc.id, ...doc.data() } as PractitionerInvitation));
     } catch (err) {
       console.warn("[Practitioner Repo] Firestore load failed, falling back to memory.");
     }

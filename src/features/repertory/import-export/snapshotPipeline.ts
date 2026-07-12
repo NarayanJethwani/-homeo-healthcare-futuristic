@@ -8,6 +8,8 @@ import { getSourceRecord, REPERTORY_SOURCES } from '../data/repertorySourceRegis
 import { RepertoryRubric, RepertoryPublishedCorpusManifest, RepertoryRemedyEntry, GradedRemedy } from '../types';
 import { REMEDIES_METADATA } from '../../../lib/repertoryData';
 import { resolveCanonicalRemedyId } from '../../../lib/normalizationEngine';
+import { getRuntimeEnvironment } from '../config/runtimeEnv';
+import { getAdminDb } from '../../../lib/firebaseAdmin';
 
 export class IneligibleRepertorySourceError extends Error {
   sourceId: string;
@@ -23,7 +25,7 @@ export class IneligibleRepertorySourceError extends Error {
 export class IneligibleRepertorySourcesContainerError extends Error {
   errors: IneligibleRepertorySourceError[];
   constructor(errors: IneligibleRepertorySourceError[]) {
-    super(`Snapshot build failed due to ineligible sources:\n${errors.map(e => e.message).join('\n')}`);
+    super(`One or more sources are ineligible for snapshot compilation.`);
     this.errors = errors;
     Object.setPrototypeOf(this, IneligibleRepertorySourcesContainerError.prototype);
   }
@@ -57,7 +59,8 @@ export class SnapshotPipeline {
   private static readonly IMPORTER_VERSION = "2.14.0";
   
   private static getPublishedDir(version: string): string {
-    return path.join(process.cwd(), 'data', 'repertory', 'published', version);
+    const env = getRuntimeEnvironment();
+    return path.join(env.artifactRoot, 'published', version);
   }
 
   private static computeFileChecksum(filePath: string): string {
@@ -81,7 +84,8 @@ export class SnapshotPipeline {
     console.log(`SnapshotPipeline: Starting snapshot build for version ${options.version}...`);
 
     // 1. Read release definition if present
-    const releasePath = path.join(process.cwd(), 'data', 'repertory', 'releases', `${options.version}.json`);
+    const env = getRuntimeEnvironment();
+    const releasePath = path.join(env.artifactRoot, 'releases', `${options.version}.json`);
     let sourceIds = options.sourceIds;
     if (fs.existsSync(releasePath)) {
       try {
@@ -274,8 +278,23 @@ export class SnapshotPipeline {
             }
           }
 
+          const isClarke = sourceId === 'clarke_clinical_1904';
           const parsedGrade = typeof rawGrade === 'number' ? rawGrade : Number(rawGrade);
-          const normalizedGrade = Number.isNaN(parsedGrade) ? 1 : Math.min(Math.max(Math.round(parsedGrade), 1), 4);
+          
+          let normalizedGrade: number | undefined = undefined;
+          let gradeInfo: any = undefined;
+
+          if (isClarke) {
+            normalizedGrade = undefined;
+            gradeInfo = {
+              originalRepresentation: typeof rawGrade === 'string' ? rawGrade : String(rawGrade),
+              normalizedGrade: undefined,
+              status: isValid ? "not-recoverable" : "unresolved",
+              confidence: 0.0
+            };
+          } else {
+            normalizedGrade = Number.isNaN(parsedGrade) ? 1 : Math.min(Math.max(Math.round(parsedGrade), 1), 4);
+          }
 
           remedyEntries.push({
             remedyId: resolvedAbbr,
@@ -285,19 +304,22 @@ export class SnapshotPipeline {
             normalizedGrade,
             gradeSystemId: sourceId === "kent_1908" ? "kent_3_grade" : "boericke_3_grade",
             sourceId,
-            sourcePage: raw.page || undefined
+            sourcePage: raw.page || undefined,
+            gradeInfo
           });
 
-          const meta = REMEDIES_METADATA[resolvedAbbr] || { fullName: resolvedAbbr, source: "Plant" };
-          relatedRemedies.push({
-            remedyId: resolvedAbbr,
-            remedyName: meta.fullName,
-            grade: normalizedGrade as 1 | 2 | 3 | 4,
-            confidence: isValid ? 1.0 : 0.5,
-            keynoteReason: `Graded in ${sourceRecord.shortTitle}`,
-            sourceReference: sourceRecord.canonicalTitle,
-            clinicalExperienceWeight: 0.8
-          });
+          if (isValid) {
+            const meta = REMEDIES_METADATA[resolvedAbbr] || { fullName: resolvedAbbr, source: "Plant" };
+            relatedRemedies.push({
+              remedyId: resolvedAbbr,
+              remedyName: meta.fullName,
+              grade: normalizedGrade as 1 | 2 | 3 | 4,
+              confidence: 1.0,
+              keynoteReason: `Graded in ${sourceRecord.shortTitle}`,
+              sourceReference: sourceRecord.canonicalTitle,
+              clinicalExperienceWeight: 0.8
+            });
+          }
 
           sourceRemedyEntries++;
           totalRemedyEntriesCount++;
@@ -495,7 +517,7 @@ export class SnapshotPipeline {
         canonicalConcept: r.rubricId,
         page: (r.remedyEntries && r.remedyEntries[0]?.sourcePage) || null,
         remedyGrades: r.relatedRemedies.reduce((acc, curr) => {
-          acc[curr.remedyId] = curr.grade;
+          acc[curr.remedyId] = curr.grade ?? 0;
           return acc;
         }, {} as Record<string, number>),
         editorialStatus: r.editorialStatus,
@@ -655,6 +677,14 @@ export class SnapshotPipeline {
       });
     }
 
+    const sourceCapabilities: Record<string, any> = {};
+    sourceIds.forEach(id => {
+      const rec = getSourceRecord(id);
+      if (rec) {
+        sourceCapabilities[id] = rec.capabilities;
+      }
+    });
+
     const manifest: RepertoryPublishedCorpusManifest = {
       corpusVersion: options.version,
       generatedAt: new Date().toISOString(),
@@ -673,7 +703,8 @@ export class SnapshotPipeline {
       previousCorpusVersion: previousCorpusVersion !== options.version ? previousCorpusVersion : undefined,
       validationStatus: validationErrors.length === 0 ? "passed" : "failed",
       validationErrors,
-      publicationStatus: "staged"
+      publicationStatus: "staged",
+      sourceCapabilities
     };
 
     // Add required stats for schema compatibility
@@ -731,6 +762,46 @@ export class SnapshotPipeline {
       throw new Error(`Cannot activate snapshot version ${version}: Snapshot failed validation.`);
     }
 
+    const env = getRuntimeEnvironment();
+    // Enforce gates in emulator or firestore mode
+    if (env.mode === 'emulator' || env.activePointerRepositoryAdapter === 'firestore') {
+      const db = getAdminDb();
+      for (const sourceId of manifest.sourceIds) {
+        if (sourceId === 'clarke_clinical_1904') {
+          const clinicalSnap = await db.collection('repertorySourceReviews').doc(`rev_clinical_clarke_1904`).get();
+          if (!clinicalSnap.exists) {
+            throw new Error(`Cannot activate snapshot version ${version}: Missing required clinical review for source ${sourceId}.`);
+          }
+          const clinicalReview = clinicalSnap.data() as any;
+          if (clinicalReview.decision !== 'approved-with-restrictions') {
+            throw new Error(`Cannot activate snapshot version ${version}: Clinical review is not approved-with-restrictions.`);
+          }
+          if (!clinicalReview.restrictions.includes('search-only') || !clinicalReview.restrictions.includes('scoring-disabled')) {
+            throw new Error(`Cannot activate snapshot version ${version}: Clinical review restrictions are missing search-only or scoring-disabled.`);
+          }
+          
+          const editorialSnap = await db.collection('repertorySourceReviews').doc(`rev_editorial_clarke_1904`).get();
+          if (!editorialSnap.exists) {
+            throw new Error(`Cannot activate snapshot version ${version}: Missing required editorial review for source ${sourceId}.`);
+          }
+          const editorialReview = editorialSnap.data() as any;
+          if (editorialReview.decision !== 'approved') {
+            throw new Error(`Cannot activate snapshot version ${version}: Editorial review is not approved.`);
+          }
+
+          const expectedChecksum = manifest.sourceChecksums[sourceId];
+          if (clinicalReview.sourceChecksum !== expectedChecksum || editorialReview.sourceChecksum !== expectedChecksum) {
+            throw new Error(`Cannot activate snapshot version ${version}: Source checksum mismatch in review records.`);
+          }
+
+          const capabilities = manifest.sourceCapabilities?.[sourceId];
+          if (!capabilities || capabilities.scoringEnabled) {
+            throw new Error(`Cannot activate snapshot version ${version}: For Clarke clinical source, scoring must be disabled in manifest.`);
+          }
+        }
+      }
+    }
+
     // Dynamically set previousCorpusVersion to the currently active version upon activation
     const currentActive = await PublishedCorpusRepository.getActiveVersion();
     if (currentActive && currentActive !== version) {
@@ -742,8 +813,20 @@ export class SnapshotPipeline {
       }
     }
 
+    const txId = `tx_activate_${version}_${Date.now()}`;
+    const auditId = `audit_activate_${version}_${Date.now()}`;
+    const contentHash = (manifest as any).contentHash || "unknown-hash";
+
     // Set pointer active atomically
-    await PublishedCorpusRepository.setActiveVersion(version);
+    await PublishedCorpusRepository.setActiveVersion(version, {
+      previousVersion: currentActive || undefined,
+      contentHash,
+      actorUid,
+      actorRole,
+      reason,
+      transactionId: txId,
+      auditLogId: auditId
+    });
 
     // Invalidate caches across version change
     PublishedCorpusRepository.invalidateCache();
@@ -783,7 +866,24 @@ export class SnapshotPipeline {
       throw new Error(`Cannot rollback: No previous corpus version recorded in active version ${activeVersion} manifest.`);
     }
 
-    await PublishedCorpusRepository.setActiveVersion(prevVersion);
+    const txId = `tx_rollback_${Date.now()}`;
+    const auditId = `audit_rollback_${Date.now()}`;
+    let prevContentHash = "unknown-hash";
+    try {
+      const prevDir = this.getPublishedDir(prevVersion);
+      const prevManifest = JSON.parse(fs.readFileSync(path.join(prevDir, 'manifest.json'), 'utf-8'));
+      prevContentHash = prevManifest.contentHash || "unknown-hash";
+    } catch (e) {}
+
+    await PublishedCorpusRepository.rollbackActiveVersion(prevVersion, {
+      previousVersion: activeVersion,
+      contentHash: prevContentHash,
+      actorUid,
+      actorRole,
+      reason,
+      transactionId: txId,
+      auditLogId: auditId
+    });
     PublishedCorpusRepository.invalidateCache();
 
     try {

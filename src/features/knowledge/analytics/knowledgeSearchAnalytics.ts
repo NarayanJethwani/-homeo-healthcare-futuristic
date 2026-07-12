@@ -156,7 +156,7 @@ export async function getSearchAnalyticsSummary(): Promise<{
         .get();
 
       const entries: SearchLogEntry[] = [];
-      snap.forEach(doc => {
+      snap.forEach((doc: import("firebase-admin/firestore").QueryDocumentSnapshot<import("firebase-admin/firestore").DocumentData>) => {
         entries.push(doc.data() as SearchLogEntry);
       });
 

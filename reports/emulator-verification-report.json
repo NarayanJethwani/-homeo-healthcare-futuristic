@@ -1,0 +1,56 @@
+{
+  "generatedAt": "2026-07-12T04:13:34.817Z",
+  "mode": "emulator",
+  "releaseState": "emulator-verified",
+  "results": [
+    {
+      "id": "rules-unit-testing",
+      "command": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/firestoreRulesClient.test.ts",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 4011
+    },
+    {
+      "id": "durable-consistency-test",
+      "command": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertoryDurableConsistency.test.ts",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 20526
+    },
+    {
+      "id": "approval-persistence-test",
+      "command": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertoryApprovalPersistence.test.ts",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 1956
+    },
+    {
+      "id": "activation-gate-test",
+      "command": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertoryProductionActivationGate.test.ts",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 2496
+    },
+    {
+      "id": "artifact-deployment-test",
+      "command": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertoryArtifactDeployment.test.ts",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 2419
+    },
+    {
+      "id": "clarke-safety-test",
+      "command": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertoryClarkeSafety.test.ts",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 3106
+    },
+    {
+      "id": "snapshot-activation-test",
+      "command": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertorySnapshotActivation.test.ts",
+      "status": "passed",
+      "exitCode": 0,
+      "durationMs": 4206
+    }
+  ]
+}

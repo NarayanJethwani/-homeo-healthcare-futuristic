@@ -3,6 +3,27 @@ import { createClinicalRepertoryService } from "../clinicalWorkspace/clinicalRep
 import { CLINICAL_WORKSPACE_SAFETY_NOTICE } from "../clinicalWorkspace/types";
 import { CLINICAL_REPERTORY_WORKSPACE_SECTIONS } from "../clinicalWorkspace/workspaceModel";
 
+if (typeof global.fetch === "undefined" || !(global as any).fetch.isMock) {
+  (global as any).fetch = async (url: string) => {
+    if (url.includes("/api/repertory/search")) {
+      return {
+        json: async () => ({
+          success: true,
+          rubrics: [
+            { rubricId: 'jeth_rb_eczema_itching_scratching', title: 'Skin; eczema; itching' },
+            { rubricId: 'jeth_rb_pain_burning_arsenicum', title: 'Generalities; pain; burning' },
+            { rubricId: 'jeth_rb_asthma_night_midnight', title: 'Chest; asthma; night; midnight' }
+          ]
+        })
+      };
+    }
+    return {
+      json: async () => ({ success: false })
+    };
+  };
+  (global as any).fetch.isMock = true;
+}
+
 assert.strictEqual(CLINICAL_REPERTORY_WORKSPACE_SECTIONS[0].id, "intake");
 assert.strictEqual(CLINICAL_REPERTORY_WORKSPACE_SECTIONS.at(-1)?.id, "final_review");
 assert.ok(CLINICAL_REPERTORY_WORKSPACE_SECTIONS.every((section) => section.capabilityIds.length > 0));

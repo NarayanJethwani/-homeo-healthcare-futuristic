@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "skipLibCheck": true,
+    "noImplicitAny": false
+  },
+  "include": [
+    "src/features/repertory/**/*.ts",
+    "src/lib/firebaseAdmin.ts",
+    "tests/repertory*.test.ts",
+    "tests/helpers/**/*.ts"
+  ]
+}

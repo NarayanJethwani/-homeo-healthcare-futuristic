@@ -289,7 +289,7 @@ export class RepertorySearch {
             };
           }
           const item = remedyScores[rem.remedyId];
-          item.rawScore += rem.grade * match.confidence * match.suggestedSeverity;
+          item.rawScore += (rem.grade ?? 0) * match.confidence * match.suggestedSeverity;
           item.matchCount += 1;
         });
       }

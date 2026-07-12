@@ -1,3 +1,4 @@
+process.env.NODE_ENV = 'development';
 import assert from 'assert';
 import { PublishedCorpusRepository } from '../src/features/repertory/repositories/PublishedCorpusRepository';
 import { RepertoryScoring } from '../src/features/repertory/scoring/repertoryScoring';

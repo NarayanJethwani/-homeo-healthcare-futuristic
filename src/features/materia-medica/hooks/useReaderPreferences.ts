@@ -1,25 +1,24 @@
 import { useState, useEffect } from "react";
-import { ReaderPreferences, DEFAULT_PREFERENCES } from "../components/reader/preferences";
+import { ReaderPreferences, DEFAULT_PREFERENCES } from "../reader/preferences";
 import { readerPreferenceStorage } from "../services/readerPreferenceStorage";
 
 export function useReaderPreferences() {
   const [preferences, setPreferencesState] = useState<ReaderPreferences>(DEFAULT_PREFERENCES);
 
-  // Safely initialize state after mount to avoid server-client mismatches
+  // Load preferences once on mount
   useEffect(() => {
-    setPreferencesState(readerPreferenceStorage.load());
+    const loaded = readerPreferenceStorage.load();
+    setPreferencesState(loaded);
   }, []);
 
-  const setPreferences = (newPrefs: Partial<ReaderPreferences>) => {
+  const setPreferences = (newPrefs: ReaderPreferences | ((prev: ReaderPreferences) => ReaderPreferences)) => {
     setPreferencesState((prev) => {
-      const updated = { ...prev, ...newPrefs };
+      const updated = typeof newPrefs === "function" ? newPrefs(prev) : newPrefs;
       readerPreferenceStorage.save(updated);
       return updated;
     });
   };
 
-  return {
-    preferences,
-    setPreferences,
-  };
+  return { preferences, setPreferences };
 }
+export default useReaderPreferences;

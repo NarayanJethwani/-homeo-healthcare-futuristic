@@ -1,3 +1,4 @@
+process.env.NODE_ENV = 'test';
 import assert from 'assert';
 import { PublishedCorpusRepository } from '../src/features/repertory/repositories/PublishedCorpusRepository';
 import { SnapshotPipeline } from '../src/features/repertory/import-export/snapshotPipeline';

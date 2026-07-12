@@ -1,3 +1,4 @@
+import type { QueryDocumentSnapshot, DocumentData } from "firebase-admin/firestore";
 import { globalVectorStore, VectorRecord } from "./vectorStore";
 import { embeddingManager } from "./embeddingProvider";
 
@@ -122,7 +123,7 @@ export async function getQueueJobs(): Promise<EmbeddingJob[]> {
     try {
       const snap = await db.collection("knowledge_embedding_jobs").get();
       const list: EmbeddingJob[] = [];
-      snap.forEach(doc => list.push(doc.data() as EmbeddingJob));
+      snap.forEach((doc: any) => list.push(doc.data() as EmbeddingJob));
       return list.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
     } catch {
       // Fallback

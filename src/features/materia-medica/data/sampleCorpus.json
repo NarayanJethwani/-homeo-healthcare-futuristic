@@ -889,12 +889,13 @@
       "blocksChecksum": "10c961e9cb176cd7dfdd5d8c1b33ef36c79bdd41727536cffaa1348057b293c7",
       "correctionStatus": "human-reviewed",
       "editorialStatus": "approved",
+      "corrections": [],
       "transcription": {
-        "actorUid": "transcriber-1",
-        "completedAt": "2026-07-11T12:00:00Z"
+        "actorUid": "editorial-transcriber-uid-082",
+        "completedAt": "2026-07-11T09:30:00Z"
       },
       "review": {
-        "actorUid": "reviewer-1",
+        "actorUid": "clinical-editor-uid-991",
         "completedAt": "2026-07-11T12:00:00Z",
         "decision": "approved"
       }
@@ -2501,12 +2502,13 @@
       "blocksChecksum": "098cf6f5cb64f0d6a586b200be7dd6a2b1111571b44b14aceb2a2e50a53302b7",
       "correctionStatus": "human-reviewed",
       "editorialStatus": "approved",
+      "corrections": [],
       "transcription": {
-        "actorUid": "transcriber-1",
-        "completedAt": "2026-07-11T12:00:00Z"
+        "actorUid": "editorial-transcriber-uid-082",
+        "completedAt": "2026-07-11T09:30:00Z"
       },
       "review": {
-        "actorUid": "reviewer-1",
+        "actorUid": "clinical-editor-uid-991",
         "completedAt": "2026-07-11T12:00:00Z",
         "decision": "approved"
       }
@@ -3570,12 +3572,13 @@
       "blocksChecksum": "03ec575a66d55921965fa8bf1a6916bdbdbb511be72efb32bc4fef878ae8abe7",
       "correctionStatus": "human-reviewed",
       "editorialStatus": "approved",
+      "corrections": [],
       "transcription": {
-        "actorUid": "transcriber-1",
-        "completedAt": "2026-07-11T12:00:00Z"
+        "actorUid": "editorial-transcriber-uid-082",
+        "completedAt": "2026-07-11T09:30:00Z"
       },
       "review": {
-        "actorUid": "reviewer-1",
+        "actorUid": "clinical-editor-uid-991",
         "completedAt": "2026-07-11T12:00:00Z",
         "decision": "approved"
       }

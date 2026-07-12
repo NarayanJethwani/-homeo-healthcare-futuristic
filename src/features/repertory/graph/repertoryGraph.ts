@@ -55,7 +55,7 @@ export class RepertoryGraph {
       // Add related remedies and link them
       for (const rem of rub.relatedRemedies) {
         this.addNode(rem.remedyId, 'remedy', rem.remedyName);
-        this.addEdge(rub.rubricId, rem.remedyId, 'hasRemedy', rem.grade / 4.0);
+        this.addEdge(rub.rubricId, rem.remedyId, 'hasRemedy', (rem.grade ?? 1) / 4.0);
       }
 
       // Add related diseases
@@ -331,8 +331,8 @@ export class RepertoryGraph {
       const covA = rub.relatedRemedies.find(r => r.remedyId.toLowerCase() === remedyA.toLowerCase());
       const covB = rub.relatedRemedies.find(r => r.remedyId.toLowerCase() === remedyB.toLowerCase());
 
-      const gradeA = covA ? covA.grade : 0;
-      const gradeB = covB ? covB.grade : 0;
+      const gradeA = covA ? (covA.grade ?? 0) : 0;
+      const gradeB = covB ? (covB.grade ?? 0) : 0;
 
       if (Math.abs(gradeA - gradeB) >= 2 || (gradeA >= 3 && gradeB === 0) || (gradeB >= 3 && gradeA === 0)) {
         const diffWeight = Math.max(

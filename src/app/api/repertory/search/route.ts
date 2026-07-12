@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { RepertorySearch } from "@/features/repertory/search/repertorySearch";
 import { PublishedCorpusRepository } from "@/features/repertory/repositories/PublishedCorpusRepository";
+import { featureFlags } from "@/features/dashboard/constants/featureFlags";
+import { authorizeRequest } from "@/lib/security/apiAuth";
+import { resolveDoctorRepertoryEntitlement } from "@/features/repertory/access/DoctorEntitlementRepository";
+import { authorizeRepertoryOperation } from "@/features/repertory/access/RepertoryAccessBoundary";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -11,6 +15,21 @@ const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes cache
 
 export async function GET(request: NextRequest) {
   try {
+    let tenantCacheScope = "legacy-unscoped";
+    if (featureFlags.repertoryDoctorEntitlementsEnabled) {
+      const auth = await authorizeRequest(request, "repertory.search", "REPERTORY_SEARCH");
+      if (!auth.authorized) return auth.response;
+      const entitlement = await resolveDoctorRepertoryEntitlement(auth.session.uid);
+      if (!entitlement) return NextResponse.json({ success: false, message: "Repertory entitlement required." }, { status: 403 });
+      const decision = authorizeRepertoryOperation(entitlement, {
+        organizationId: entitlement.organizationId,
+        clinicId: entitlement.clinicId,
+        doctorId: auth.session.uid,
+        capability: "search",
+      });
+      if (!decision.allowed) return NextResponse.json({ success: false, message: "Repertory entitlement required." }, { status: decision.status });
+      tenantCacheScope = `${entitlement.organizationId}:${entitlement.clinicId}:${auth.session.uid}`;
+    }
     const { searchParams } = new URL(request.url);
     const q = searchParams.get("q")?.toLowerCase().trim() || "";
     const category = searchParams.get("category") || "All";
@@ -25,7 +44,7 @@ export async function GET(request: NextRequest) {
     const activeVersion = await PublishedCorpusRepository.getActiveVersion();
 
     // Cache key construction
-    const cacheKey = `${activeVersion}:${q}:${category}:${organSystem}:${miasm}:${remedy}:${sourceId}:${page}:${pageSize}`;
+    const cacheKey = `${tenantCacheScope}:${activeVersion}:${q}:${category}:${organSystem}:${miasm}:${remedy}:${sourceId}:${page}:${pageSize}`;
     const cached = searchCache.get(cacheKey);
 
     if (cached && cached.version === activeVersion && Date.now() < cached.expiry) {
@@ -58,7 +77,7 @@ export async function GET(request: NextRequest) {
       author: item.rubric.author,
       sourceCitation: item.rubric.sourceCitation,
       remedies: item.rubric.relatedRemedies.reduce((acc, curr) => {
-        acc[curr.remedyId] = curr.grade;
+        acc[curr.remedyId] = curr.grade ?? 1;
         return acc;
       }, {} as Record<string, number>),
       score: item.score,

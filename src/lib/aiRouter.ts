@@ -653,7 +653,7 @@ export class AIRouterService {
     const activeCitations: string[] = [];
 
     try {
-      const searchResults = await ragService.hybridSearch(query);
+      const searchResults = await ragService.hybridSearch(query, "ai-clinical-context");
       const relevantMatches = searchResults
         .filter(r => r.score >= 0.35)
         .slice(0, 3);

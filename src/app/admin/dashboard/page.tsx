@@ -55,6 +55,7 @@ import { PractitionerProfilePanel } from "@/components/dashboard/PractitionerPro
 import PatientAttachmentsPanel from "@/features/patient-attachments/PatientAttachmentsPanel";
 import PatientLabTimelinePanel from "@/features/patient-labs/PatientLabTimelinePanel";
 import TreatmentPlannerLabReference from "@/features/patient-labs/TreatmentPlannerLabReference";
+import { ClinicalKnowledgeReferencePanel } from "@/features/clinical-os/components/ClinicalKnowledgeReferencePanel";
 import { ReportUploadModal } from "@/features/dashboard/components/ReportUploadModal";
 import { ReportExtractionResult } from "@/features/dashboard/types/reportExtractionTypes";
 import {
@@ -223,7 +224,7 @@ const INVOICE_TEMPLATES = [
   { description: "International Medicine Shipping & Customs Handling", qty: 1, unitPrice: 2500 }
 ];
 
-export const COMMON_REMEDIES_KEYNOTES: Record<string, {
+const COMMON_REMEDIES_KEYNOTES: Record<string, {
   keynotes: string[];
   aggravations: string[];
   ameliorations: string[];
@@ -310,7 +311,7 @@ interface RemedyDeepDive {
   source_substance: string;
 }
 
-export const REMEDIES_DEEP_DIVE_TEMPLATES: Record<string, RemedyDeepDive> = {
+const REMEDIES_DEEP_DIVE_TEMPLATES: Record<string, RemedyDeepDive> = {
   "Sulphur": {
     remedy: "Sulphur",
     constitutional_portrait: "The classic 'ragged philosopher' - highly intellectual, idealistic, egotistical, yet physically untidy and prone to burning sensations and skin eruptions.",
@@ -403,7 +404,7 @@ export const REMEDIES_DEEP_DIVE_TEMPLATES: Record<string, RemedyDeepDive> = {
   }
 };
 
-export const RELATIONSHIP_DICTIONARY: Record<string, {
+const RELATIONSHIP_DICTIONARY: Record<string, {
   complementary: string[];
   inimical: string[];
   follows_well: string[];
@@ -500,7 +501,7 @@ const NeuralConnections = () => {
   );
 };
 
-export const DIAGNOSTIC_CONDITIONS: Record<string, Array<{
+const DIAGNOSTIC_CONDITIONS: Record<string, Array<{
   name: string;
   pathophysiology: string;
   remedies: string[];
@@ -12312,6 +12313,9 @@ ${err.message || err}`);
                           </div>
                           {/* V2.13 Reviewed Lab Reference Cards */}
                           <TreatmentPlannerLabReference patientId={activePatient.id} />
+                          {featureFlags.clinicalKnowledgeReferencesEnabled && (
+                            <ClinicalKnowledgeReferencePanel patientId={activePatient.id} />
+                          )}
                         </>
                       )}
 

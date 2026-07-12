@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import { KmsKnowledgeEntity, EditorialStatus } from "../types";
 import globalKmsRepository from "../repositories/MemoryRepository";
 import { EditorialStatusBadge, EvidenceBadge } from "../components/Badge";
-import { Search, Filter, Plus, Edit2, Trash2, ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Plus, Edit2, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { SourceDiscrepancyPanel } from "../components/SourceDiscrepancyPanel";
+import { featureFlags } from "../../dashboard/constants/featureFlags";
 
 interface EntityRegistryProps {
   onEditEntity: (entity: KmsKnowledgeEntity) => void;
@@ -182,6 +184,10 @@ export default function EntityRegistry({ onEditEntity, onCreateEntity }: EntityR
           <Plus className="h-4 w-4" /> Add Entity
         </button>
       </div>
+
+      {featureFlags.knowledgeSourceDiscrepancyQueueEnabled && (
+        <SourceDiscrepancyPanel entities={entities} />
+      )}
 
       {/* Bulk action toolbar if selections exist */}
       {selectedIds.length > 0 && (

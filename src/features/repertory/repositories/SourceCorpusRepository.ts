@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 
 export class SourceCorpusRepository {
   private static getSourceDir(): string {
@@ -46,7 +47,7 @@ export class SourceCorpusRepository {
     if (!fs.existsSync(filePath)) {
       return '';
     }
-    const crypto = require('crypto');
+    // crypto is imported statically at the top of the file
     const fileBuffer = fs.readFileSync(filePath);
     const hash = crypto.createHash('sha256');
     hash.update(fileBuffer);

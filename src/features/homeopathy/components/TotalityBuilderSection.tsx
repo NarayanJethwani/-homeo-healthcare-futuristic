@@ -36,7 +36,7 @@ export function TotalityBuilderSection({
       };
 
       const newSymptom: TotalitySymptom = {
-        id: toTotalitySymptomId(`ts_${Math.random().toString(36).substring(2, 11)}`),
+        id: toTotalitySymptomId(`ts_${s.id}`),
         sourceSymptomId: s.id,
         sourceSnapshot: {
           patientWording: s.patientWording,
