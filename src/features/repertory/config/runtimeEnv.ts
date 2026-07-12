@@ -143,6 +143,27 @@ export function validateEnvironment(env: RepertoryRuntimeEnvironment): void {
     }
   }
 
+  if (env.artifactStoreAdapter === 'object-storage') {
+    const bucketName = process.env.REPERTORY_ARTIFACT_BUCKET?.trim();
+    if (!bucketName) {
+      throw new Error("Artifact Store Guard: REPERTORY_ARTIFACT_BUCKET is required for object-storage mode.");
+    }
+    if (!/^[a-z0-9][a-z0-9._-]{1,220}[a-z0-9]$/.test(bucketName)) {
+      throw new Error("Artifact Store Guard: REPERTORY_ARTIFACT_BUCKET is invalid.");
+    }
+
+    const prefixSegments = (process.env.REPERTORY_ARTIFACT_PREFIX || 'repertory')
+      .replace(/\\/g, '/')
+      .split('/')
+      .filter(Boolean);
+    if (
+      prefixSegments.length === 0 ||
+      prefixSegments.some((segment) => segment === '.' || segment === '..')
+    ) {
+      throw new Error("Artifact Store Guard: REPERTORY_ARTIFACT_PREFIX is invalid.");
+    }
+  }
+
   if (env.mode === 'emulator' || process.env.REPERTORY_RUNTIME_MODE === 'emulator') {
     if (process.env.REPERTORY_RUNTIME_MODE !== 'emulator') {
       throw new Error("Emulator Guard: REPERTORY_RUNTIME_MODE must be set to 'emulator'.");
