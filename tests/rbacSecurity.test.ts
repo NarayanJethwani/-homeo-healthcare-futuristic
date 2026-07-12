@@ -258,7 +258,7 @@ async function runTests() {
     const origBypass = process.env.ALLOW_DEV_ADMIN_BYPASS;
 
     try {
-      process.env.NODE_ENV = "production";
+      (process.env as Record<string, string | undefined>).NODE_ENV = "production";
       process.env.ALLOW_DEV_ADMIN_BYPASS = "true";
 
       const req = mockRequest();
@@ -269,7 +269,7 @@ async function runTests() {
       }
     } finally {
       // Restore
-      process.env.NODE_ENV = origEnv;
+      (process.env as Record<string, string | undefined>).NODE_ENV = origEnv;
       process.env.ALLOW_DEV_ADMIN_BYPASS = origBypass;
     }
   });

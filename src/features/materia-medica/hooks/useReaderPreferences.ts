@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ReaderPreferences, DEFAULT_PREFERENCES } from "../components/reader/preferences";
+import { ReaderPreferences, DEFAULT_PREFERENCES } from "../reader/preferences";
 import { readerPreferenceStorage } from "../services/readerPreferenceStorage";
 
 export function useReaderPreferences() {
@@ -10,9 +10,9 @@ export function useReaderPreferences() {
     setPreferencesState(readerPreferenceStorage.load());
   }, []);
 
-  const setPreferences = (newPrefs: Partial<ReaderPreferences>) => {
+  const setPreferences = (newPrefs: ReaderPreferences | ((prev: ReaderPreferences) => ReaderPreferences)) => {
     setPreferencesState((prev) => {
-      const updated = { ...prev, ...newPrefs };
+      const updated = typeof newPrefs === "function" ? newPrefs(prev) : newPrefs;
       readerPreferenceStorage.save(updated);
       return updated;
     });

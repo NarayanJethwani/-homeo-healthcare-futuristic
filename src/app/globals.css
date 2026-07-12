@@ -52,20 +52,20 @@
 }
 
 /* Dark Mode Selector mapping for hardcoded hex classes */
-.dark [class*="text-[#1A2421]"] {
+.dark .text-\[\#1A2421\] {
   color: var(--foreground) !important;
 }
 
-.dark [class*="hover:text-[#1A2421]"]:hover {
+.dark .hover\:text-\[\#1A2421\]:hover {
   color: var(--foreground) !important;
 }
 
-.dark [class*="bg-[#1A2421]"] {
+.dark .bg-\[\#1A2421\] {
   background-color: var(--color-slate-200) !important;
   color: var(--foreground) !important;
 }
 
-.dark [class*="hover:bg-[#1A2421]"]:hover {
+.dark .hover\:bg-\[\#1A2421\]:hover {
   background-color: var(--color-slate-300) !important;
 }
 
@@ -187,23 +187,23 @@
 .dark .admin-dashboard-shell .text-purple-500, .dark .admin-dashboard-shell .text-lavender-dark { color: #A855F7 !important; }
 
 /* Resilient Attribute-based Text Color Overrides */
-.dark .admin-dashboard-shell [class*="text-slate-50"] { color: #F8FAFC !important; }
-.dark .admin-dashboard-shell [class*="text-slate-100"] { color: #F8FAFC !important; }
-.dark .admin-dashboard-shell [class*="text-slate-200"] { color: #F1F5F9 !important; }
-.dark .admin-dashboard-shell [class*="text-slate-300"] { color: #F8FAFC !important; }
-.dark .admin-dashboard-shell [class*="text-slate-400"] { color: #cbd5e1 !important; }
-.dark .admin-dashboard-shell [class*="text-slate-405"] { color: #cbd5e1 !important; }
-.dark .admin-dashboard-shell [class*="text-slate-450"] { color: #cbd5e1 !important; }
-.dark .admin-dashboard-shell [class*="text-slate-455"] { color: #cbd5e1 !important; }
-.dark .admin-dashboard-shell [class*="text-slate-500"] { color: #cbd5e1 !important; }
-.dark .admin-dashboard-shell [class*="text-slate-550"] { color: #cbd5e1 !important; }
-.dark .admin-dashboard-shell [class*="text-slate-600"] { color: #cbd5e1 !important; }
-.dark .admin-dashboard-shell [class*="text-slate-605"] { color: #cbd5e1 !important; }
-.dark .admin-dashboard-shell [class*="text-slate-650"] { color: #cbd5e1 !important; }
-.dark .admin-dashboard-shell [class*="text-slate-700"] { color: #cbd5e1 !important; }
-.dark .admin-dashboard-shell [class*="text-slate-800"] { color: #F1F5F9 !important; }
-.dark .admin-dashboard-shell [class*="text-slate-900"] { color: #F8FAFC !important; }
-.dark .admin-dashboard-shell [class*="text-slate-950"] { color: #FFFFFF !important; }
+.dark .admin-dashboard-shell .text-slate-50 { color: #F8FAFC !important; }
+.dark .admin-dashboard-shell .text-slate-100 { color: #F8FAFC !important; }
+.dark .admin-dashboard-shell .text-slate-200 { color: #F1F5F9 !important; }
+.dark .admin-dashboard-shell .text-slate-300 { color: #F8FAFC !important; }
+.dark .admin-dashboard-shell .text-slate-400 { color: #cbd5e1 !important; }
+.dark .admin-dashboard-shell .text-slate-405 { color: #cbd5e1 !important; }
+.dark .admin-dashboard-shell .text-slate-450 { color: #cbd5e1 !important; }
+.dark .admin-dashboard-shell .text-slate-455 { color: #cbd5e1 !important; }
+.dark .admin-dashboard-shell .text-slate-500 { color: #cbd5e1 !important; }
+.dark .admin-dashboard-shell .text-slate-550 { color: #cbd5e1 !important; }
+.dark .admin-dashboard-shell .text-slate-600 { color: #cbd5e1 !important; }
+.dark .admin-dashboard-shell .text-slate-605 { color: #cbd5e1 !important; }
+.dark .admin-dashboard-shell .text-slate-650 { color: #cbd5e1 !important; }
+.dark .admin-dashboard-shell .text-slate-700 { color: #cbd5e1 !important; }
+.dark .admin-dashboard-shell .text-slate-800 { color: #F1F5F9 !important; }
+.dark .admin-dashboard-shell .text-slate-900 { color: #F8FAFC !important; }
+.dark .admin-dashboard-shell .text-slate-950 { color: #FFFFFF !important; }
 
 /* Tables polish */
 .dark .admin-dashboard-shell table tbody tr {
@@ -590,65 +590,65 @@ html.lenis, html.lenis body {
    ========================================== */
 
 /* Turn all solid white card backgrounds into deep slate in dark mode */
-.dark .bg-white,
-.dark [class*="bg-white "] {
+.dark .bg-white {
   background-color: #0f172a !important;
 }
 
 /* Map white background with transparency levels to corresponding dark slates */
-.dark [class*="bg-white/98"] { background-color: rgba(15, 23, 42, 0.98) !important; }
-.dark [class*="bg-white/95"] { background-color: rgba(15, 23, 42, 0.95) !important; }
-.dark [class*="bg-white/90"] { background-color: rgba(15, 23, 42, 0.9) !important; }
-.dark [class*="bg-white/85"] { background-color: rgba(15, 23, 42, 0.85) !important; }
-.dark [class*="bg-white/80"] { background-color: rgba(15, 23, 42, 0.8) !important; }
-.dark [class*="bg-white/75"] { background-color: rgba(15, 23, 42, 0.75) !important; }
-.dark [class*="bg-white/70"] { background-color: rgba(15, 23, 42, 0.7) !important; }
-.dark [class*="bg-white/60"] { background-color: rgba(15, 23, 42, 0.6) !important; }
-.dark [class*="bg-white/50"] { background-color: rgba(15, 23, 42, 0.5) !important; }
-.dark [class*="bg-white/40"] { background-color: rgba(15, 23, 42, 0.4) !important; }
-.dark [class*="bg-white/30"] { background-color: rgba(15, 23, 42, 0.3) !important; }
-.dark [class*="bg-white/20"] { background-color: rgba(15, 23, 42, 0.2) !important; }
-.dark [class*="bg-white/15"] { background-color: rgba(15, 23, 42, 0.15) !important; }
-.dark [class*="bg-white/10"] { background-color: rgba(15, 23, 42, 0.1) !important; }
-.dark [class*="bg-white/8"]  { background-color: rgba(15, 23, 42, 0.08) !important; }
-.dark [class*="bg-white/5"]  { background-color: rgba(15, 23, 42, 0.05) !important; }
-.dark [class*="bg-white/3"]  { background-color: rgba(15, 23, 42, 0.03) !important; }
+.dark .bg-white\/98 { background-color: rgba(15, 23, 42, 0.98) !important; }
+.dark .bg-white\/95 { background-color: rgba(15, 23, 42, 0.95) !important; }
+.dark .bg-white\/90 { background-color: rgba(15, 23, 42, 0.9) !important; }
+.dark .bg-white\/85 { background-color: rgba(15, 23, 42, 0.85) !important; }
+.dark .bg-white\/80 { background-color: rgba(15, 23, 42, 0.8) !important; }
+.dark .bg-white\/75 { background-color: rgba(15, 23, 42, 0.75) !important; }
+.dark .bg-white\/70 { background-color: rgba(15, 23, 42, 0.7) !important; }
+.dark .bg-white\/60 { background-color: rgba(15, 23, 42, 0.6) !important; }
+.dark .bg-white\/50 { background-color: rgba(15, 23, 42, 0.5) !important; }
+.dark .bg-white\/40 { background-color: rgba(15, 23, 42, 0.4) !important; }
+.dark .bg-white\/30 { background-color: rgba(15, 23, 42, 0.3) !important; }
+.dark .bg-white\/20 { background-color: rgba(15, 23, 42, 0.2) !important; }
+.dark .bg-white\/15 { background-color: rgba(15, 23, 42, 0.15) !important; }
+.dark .bg-white\/10 { background-color: rgba(15, 23, 42, 0.1) !important; }
+.dark .bg-white\/8  { background-color: rgba(15, 23, 42, 0.08) !important; }
+.dark .bg-white\/5  { background-color: rgba(15, 23, 42, 0.05) !important; }
+.dark .bg-white\/3  { background-color: rgba(15, 23, 42, 0.03) !important; }
 
 /* Improve active tab background when it is styled with slate-700/800 gradients */
-.dark [class*="from-slate-700"] {
+.dark .from-slate-700 {
   background-image: linear-gradient(to right, #1e293b, #0f172a) !important;
 }
 
 /* Force dark backgrounds for button/surface slate classes that are backgrounds (decoupling from text-slate-*) */
-.dark .bg-slate-950,
-.dark [class*="bg-slate-950"] {
+.dark .bg-slate-950 {
   background-color: #090d16 !important;
 }
-.dark .bg-slate-900,
-.dark [class*="bg-slate-900"] {
+.dark .bg-slate-900 {
   background-color: #1e293b !important;
 }
-.dark .bg-slate-800,
-.dark [class*="bg-slate-800"] {
+.dark .bg-slate-800 {
   background-color: #162032 !important;
 }
 
 /* Google Drive Button styling override in dark mode */
-.dark .bg-blue-50,
-.dark [class*="bg-blue-50"] {
+.dark .bg-blue-50 {
   background-color: rgba(37, 99, 235, 0.15) !important;
   color: #60a5fa !important;
   border-color: rgba(37, 99, 235, 0.3) !important;
 }
-.dark [class*="hover:bg-blue-100/80"]:hover {
+.dark .hover\:bg-blue-100\/80:hover {
   background-color: rgba(37, 99, 235, 0.25) !important;
 }
 
 /* Target and dim very bright light-colored hover backgrounds in dark mode (e.g. hover:bg-teal-50) */
-.dark [class*="hover:bg-"][class*="-50"]:hover {
+.dark .hover\:bg-slate-50:hover,
+.dark .hover\:bg-blue-50:hover,
+.dark .hover\:bg-teal-50:hover,
+.dark .hover\:bg-emerald-50:hover,
+.dark .hover\:bg-rose-50:hover,
+.dark .hover\:bg-violet-50:hover {
   background-color: rgba(20, 184, 166, 0.15) !important;
 }
-.dark [class*="hover:bg-[#1A2421]/5"]:hover {
+.dark .hover\:bg-\[\#1A2421\]\/5:hover {
   background-color: rgba(255, 255, 255, 0.08) !important;
 }
 

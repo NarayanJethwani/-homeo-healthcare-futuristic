@@ -41,7 +41,7 @@ async function runTests() {
 
   // Setup test environment variables
   process.env.ADMIN_SESSION_SECRET = "test-secret-at-least-thirty-two-chars-long";
-  process.env.NODE_ENV = "production"; // Enforce strict security rules
+  (process.env as Record<string, string | undefined>).NODE_ENV = "production"; // Enforce strict security rules
 
   // Clean memory stores
   memoryPatientAttachments.length = 0;

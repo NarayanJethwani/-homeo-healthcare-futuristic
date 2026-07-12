@@ -26,7 +26,7 @@ export class EditorialRepository {
     // In a transaction, if setting this version as the current approved one,
     // we must mark all other versions for this rubric as NOT the current approved version.
     const db = getAdminDb();
-    await db.runTransaction(async (transaction) => {
+    await db.runTransaction(async (transaction: any) => {
       const docRef = col.doc(version.id);
       
       if (version.isCurrentApprovedVersion) {
@@ -35,7 +35,7 @@ export class EditorialRepository {
           .where('isCurrentApprovedVersion', '==', true)
           .get();
 
-        querySnapshot.forEach((doc) => {
+        querySnapshot.forEach((doc: any) => {
           if (doc.id !== version.id) {
             transaction.update(col.doc(doc.id), { isCurrentApprovedVersion: false });
           }
@@ -81,7 +81,7 @@ export class EditorialRepository {
     const col = this.getCollection('repertoryRubricVersions');
     const snapshot = await col.where('isCurrentApprovedVersion', '==', true).get();
     const list: RepertoryRubricVersion[] = [];
-    snapshot.forEach((doc) => {
+    snapshot.forEach((doc: any) => {
       list.push(doc.data() as RepertoryRubricVersion);
     });
     return list;
@@ -112,7 +112,7 @@ export class EditorialRepository {
     const col = this.getCollection('repertoryEditorialAuditLogs');
     const snapshot = await col.orderBy('createdAt', 'desc').get();
     const logs: RepertoryEditorialAuditLog[] = [];
-    snapshot.forEach((doc) => {
+    snapshot.forEach((doc: any) => {
       logs.push(doc.data() as RepertoryEditorialAuditLog);
     });
     return logs;

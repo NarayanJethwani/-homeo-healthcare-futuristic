@@ -11,6 +11,7 @@ import { ReaderUnavailableState } from "./ReaderUnavailableState";
 import { LegacyMateriaMedicaContentAdapter, LegacyRemedyEntry } from "./LegacyMateriaMedicaContentAdapter";
 import { GovernedMateriaMedicaRepository } from "../../services/GovernedMateriaMedicaRepository";
 import { computeSha256Browser } from "../../services/checksum/checksum.browser";
+import { getRegistryBook } from "../../data/registry";
 import { featureFlags } from "../../../dashboard/constants/featureFlags";
 import Portal from "@/components/Portal";
 import { motion, AnimatePresence } from "framer-motion";
@@ -149,7 +150,7 @@ export const MateriaMedicaReader: React.FC<MateriaMedicaReaderProps> = ({
           if (active) setPassageState({ status: "verified", passage });
         } else {
           // Legacy
-          const data = await LegacyMateriaMedicaContentAdapter.fetchRemedyContent(selection.book.id, selectedPath);
+          const data = await LegacyMateriaMedicaContentAdapter.fetchRemedyContent(selection.bookId, selectedPath);
           if (active) {
             setLegacyTitle(data.title);
             setLegacyContent(data.content);
@@ -197,7 +198,10 @@ export const MateriaMedicaReader: React.FC<MateriaMedicaReaderProps> = ({
     return <ReaderUnavailableState book={selection.book} onBack={onBack} />;
   }
 
-  const book = selection.book;
+  const book = selection.type === "governed" ? selection.book : getRegistryBook(selection.bookId);
+  if (!book) {
+    return <div role="alert">This registered book is unavailable.</div>;
+  }
 
   const handleToggleFullscreen = () => {
     if (isFullscreen) {
@@ -417,7 +421,7 @@ export const MateriaMedicaReader: React.FC<MateriaMedicaReaderProps> = ({
 
               <div className="p-4 border-t border-slate-800 bg-slate-950/20 text-[10px] text-slate-500 text-right italic font-mono pr-8">
                 {selection.type === "governed"
-                  ? `* Governed local sample corpus. Source Version: ${sourceVersionId}`
+                  ? `* Governed local sample corpus. Source Version: ${book.versionId || `v${book.sourceVersion}`}`
                   : "* Sourced from free library at materiamedica.info. Provided without warranty."}
               </div>
             </motion.div>

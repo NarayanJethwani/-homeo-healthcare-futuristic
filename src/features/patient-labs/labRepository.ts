@@ -234,7 +234,7 @@ export async function getReviewedLabsForPatient(patientId: string): Promise<Revi
       const snap = await db.collection("reviewed_lab_results")
         .where("patientId", "==", patientId)
         .get();
-      return snap.docs.map(doc => doc.data() as ReviewedLabResult);
+      return snap.docs.map((doc: any) => doc.data() as ReviewedLabResult);
     } catch {
       console.warn("[Lab Repo] Firestore read failed, reading from memory.");
     }

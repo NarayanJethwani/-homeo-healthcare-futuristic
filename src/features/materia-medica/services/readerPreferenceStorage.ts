@@ -1,4 +1,4 @@
-import { ReaderPreferences, DEFAULT_PREFERENCES, validatePreferences } from "../components/reader/preferences";
+import { ReaderPreferences, DEFAULT_PREFERENCES, validatePreferences } from "../reader/preferences";
 
 const STORAGE_KEY = "materia_medica_reader_prefs_v1";
 const STORAGE_VERSION = 1;

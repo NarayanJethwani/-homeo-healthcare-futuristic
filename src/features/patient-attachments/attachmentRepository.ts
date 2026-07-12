@@ -58,8 +58,8 @@ export async function getPatientAttachments(patientId: string, includeArchived =
       const snap = await db.collection("patient_attachments")
         .where("patientId", "==", patientId)
         .get();
-      return snap.docs.map(doc => doc.data() as PatientAttachment)
-        .filter(att => {
+      return snap.docs.map((doc: any) => doc.data() as PatientAttachment)
+        .filter((att: PatientAttachment) => {
           if (att.status === "deleted") return false;
           if (att.status === "archived" && !includeArchived) return false;
           return true;
@@ -239,7 +239,7 @@ export async function getExtractedLabParameters(patientId: string, attachmentId?
         query = query.where("attachmentId", "==", attachmentId);
       }
       const snap = await query.get();
-      return snap.docs.map(doc => doc.data() as ExtractedLabParameter);
+      return snap.docs.map((doc: any) => doc.data() as ExtractedLabParameter);
     } catch {
       console.warn("[Attachment Repo] Firestore load lab parameters failed, checking memory.");
     }

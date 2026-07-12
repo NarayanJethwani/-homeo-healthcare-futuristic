@@ -156,7 +156,7 @@ export async function getSearchAnalyticsSummary(): Promise<{
         .get();
 
       const entries: SearchLogEntry[] = [];
-      snap.forEach(doc => {
+      snap.forEach((doc: any) => {
         entries.push(doc.data() as SearchLogEntry);
       });
 

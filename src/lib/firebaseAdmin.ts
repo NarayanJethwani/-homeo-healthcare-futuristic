@@ -1,6 +1,5 @@
 import { cert, getApps, initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
-import { getRuntimeEnvironment } from "../features/repertory/config/runtimeEnv";
 
 let isInitialized = false;
 
@@ -166,7 +165,6 @@ export function getAdminDb() {
     throw new Error("Firebase Admin SDK is not initialized. Check your credentials.");
   }
   
-  const env = getRuntimeEnvironment();
   const productionProjectIds = (process.env.REPERTORY_PRODUCTION_FIREBASE_PROJECT_IDS || "homeo-healthcare")
     .split(',').map(s => s.trim()).filter(Boolean);
 
