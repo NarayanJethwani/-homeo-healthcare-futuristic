@@ -34,6 +34,14 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/api/repertory": ["./public/data/**/*.json"],
   },
+  // The governed repertory workspace contains source scans, generated shards,
+  // manifests, and test artifacts. It is a build/editorial data store, not a
+  // serverless function dependency. Production corpus reads must use the
+  // configured artifact-store adapter before the governed repertory flags are
+  // enabled. The legacy API's deployable JSON is included explicitly above.
+  outputFileTracingExcludes: {
+    "/*": ["./data/repertory/**/*"],
+  },
   images: {
     remotePatterns: [
       {
