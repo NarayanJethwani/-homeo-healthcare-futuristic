@@ -19,6 +19,7 @@
     "repertory:migrate-acquisition": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register scripts/repertory/migrateAcquisitionRecord.ts",
     "repertory:reconcile-snapshot": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register scripts/repertory/reconcileSnapshot.ts",
     "repertory:snapshot": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register scripts/repertory/buildSnapshot.ts",
+    "repertory:publish-artifacts": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register scripts/repertory/publishArtifacts.ts",
     "verify:static": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register scripts/verify-production-readiness.ts --mode static",
     "verify:corpus": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register scripts/verify-production-readiness.ts --mode corpus",
     "verify:security": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register scripts/verify-production-readiness.ts --mode security",
