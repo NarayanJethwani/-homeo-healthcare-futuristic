@@ -212,6 +212,7 @@ interface Patient {
   durationValue?: number;
   medicineAddons?: { id: string; type: string; details: string; amount: number }[];
   prescriptions?: any[];
+  isMock?: boolean;
 }
 
 const INVOICE_TEMPLATES = [
@@ -5065,6 +5066,7 @@ export default function AdminDashboard() {
   const [planningPatientId, setPlanningPatientId] = useState("");
   const [caseCreationError, setCaseCreationError] = useState("");
   const [caseCreationSuccess, setCaseCreationSuccess] = useState(false);
+  const [caseCreationWarning, setCaseCreationWarning] = useState("");
   const [createdFolderUrl, setCreatedFolderUrl] = useState("");
   const [createdSheetUrl, setCreatedSheetUrl] = useState("");
 
@@ -5933,6 +5935,7 @@ Homeo Healthcare`;
     setIsCreatingCase(true);
     setCaseCreationError("");
     setCaseCreationSuccess(false);
+    setCaseCreationWarning("");
 
     // ── Trial patient limit check ─────────────────────────────────────────────
     // Doctors on a free trial are capped at 10 patients.
@@ -6015,6 +6018,11 @@ Homeo Healthcare`;
         const mockSheetUrl = `/admin/mock-sheet?mockId=${encodeURIComponent(mockPatientId)}`;
 
         setCreatedSheetUrl(data.sheetUrl || mockSheetUrl);
+        if (data.workspaceStatus === "deferred") {
+          setCaseCreationWarning(
+            "Patient saved successfully. Google Drive workspace is temporarily deferred; use the secure local clinical sheet for now.",
+          );
+        }
         setCaseCreationSuccess(true);
         
         // Append to local state if Firestore is in mock-project mode
@@ -6614,6 +6622,21 @@ Homeo Healthcare`;
     setProvisioningPatientName(patient.name);
     
     try {
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        throw new Error("Your secure session has expired. Please sign in again.");
+      }
+
+      const idToken = await currentUser.getIdToken();
+      const sessionResponse = await fetch("/api/admin/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken }),
+      });
+      if (!sessionResponse.ok) {
+        throw new Error("Unable to refresh your secure session. Please sign in again.");
+      }
+
       const res = await fetch("/api/provision-workspace", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -6640,7 +6663,10 @@ Homeo Healthcare`;
       const targetUrl = type === "folder" ? data.folderUrl : data.sheetUrl;
       
       if (data.isMock) {
-        alert(`Operating in Mock Mode (No Google API credentials configured).\n\nRedirecting to folder:\n${targetUrl}`);
+        alert(
+          "Patient record is saved. Google Drive workspace is temporarily deferred. " +
+          "Opening the secure local clinical sheet instead.",
+        );
       }
       
       // Update local state with the newly created real Google Sheets and Folder URLs
@@ -14007,6 +14033,7 @@ ${err.message || err}`);
                     onClick={() => {
                       setCaseCreationSuccess(false);
                       setCaseCreationError("");
+                      setCaseCreationWarning("");
                       setNewCaseForm({
                         name: "",
                         age: "",
@@ -27560,7 +27587,7 @@ Exported on: ${new Date().toLocaleDateString()}
                     <div className="space-y-2">
                       <h4 className="font-serif text-2xl font-bold text-[#1A2421]">Case Sync Complete</h4>
                       <p className="text-xs text-slate-700 font-semibold max-w-md mx-auto leading-relaxed">
-                        Google Workspace automation completed successfully. Patient files are generated and linked.
+                        {caseCreationWarning || "Google Workspace automation completed successfully. Patient files are generated and linked."}
                       </p>
                     </div>
 
@@ -27599,6 +27626,7 @@ Exported on: ${new Date().toLocaleDateString()}
                         onClick={() => {
                           setIsNewCaseModalOpen(false);
                           setCaseCreationSuccess(false);
+                          setCaseCreationWarning("");
                           setIsPlanningRegisteredPatient(false);
                           setPlanningPatientId("");
                         }}

@@ -9,6 +9,12 @@ import {
 } from "@/lib/googleDrive";
 import { z } from "zod";
 import { mockPatientCache } from "@/lib/mockStore";
+import {
+  buildDeferredPatientWorkspace,
+  classifyWorkspaceProvisioningError,
+  isPatientDriveProvisioningEnabled,
+  type WorkspaceProvisioningIssue,
+} from "@/features/clinical-os/application/workspaceProvisioningPolicy";
 
 // In-memory rate limiter: Map of IP -> timestamps of requests
 const ipLimiter = new Map<string, number[]>();
@@ -149,13 +155,16 @@ export async function POST(request: Request) {
     }
 
     let isMock = false;
+    let workspaceStatus: "ready" | "deferred" = "ready";
+    let workspaceIssue: WorkspaceProvisioningIssue | undefined;
 
     // Only provision Google Workspace if the status is active (or anything other than pending_plan)
     // AND if the patient doesn't already have a provisioned folder/sheet.
     if (status !== "pending_plan" && (!folderUrl || !sheetUrl)) {
       const hasGoogleCredentials = !!process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
+      const driveProvisioningEnabled = isPatientDriveProvisioningEnabled();
       
-      if (hasGoogleCredentials) {
+      if (hasGoogleCredentials && driveProvisioningEnabled) {
         try {
           // 1. Create Patient Folder in Google Drive under Parent Folder
           const folderResult = await createPatientFolder(patientData);
@@ -181,21 +190,25 @@ export async function POST(request: Request) {
             console.warn("Could not create Google Calendar event:", calErr);
           }
         } catch (gpErr) {
-          console.error("Failed to provision Google Drive files:", gpErr);
-          // Don't fail the whole request, fallback to mock if Drive fails
+          workspaceIssue = classifyWorkspaceProvisioningError(gpErr);
+          console.error("Failed to provision Google Drive files:", workspaceIssue);
           isMock = true;
         }
       } else {
-        console.warn("GOOGLE_SERVICE_ACCOUNT_KEY not set. Intake operating in mock mode for:", patientData.name);
+        workspaceIssue = driveProvisioningEnabled
+          ? "temporarily-unavailable"
+          : "disabled";
+        console.warn("Google Drive provisioning unavailable. Intake using deferred workspace.");
         isMock = true;
       }
 
       if (isMock) {
-        // Build mock sheet URL with a short temporary mock ID instead of serializing patient details
-        const mockSheetUrl = `/admin/mock-sheet?mockId=${encodeURIComponent(patientData.id)}`;
-
-        folderUrl = "https://drive.google.com/drive/folders/1UR6te8zTdXsrtsWhiuDnhpBGZPx4_Mkb?usp=share_link";
-        sheetUrl = mockSheetUrl;
+        const deferredWorkspace = buildDeferredPatientWorkspace(patientData.id);
+        folderId = deferredWorkspace.folderId;
+        folderUrl = deferredWorkspace.folderUrl;
+        sheetId = deferredWorkspace.sheetId;
+        sheetUrl = deferredWorkspace.sheetUrl;
+        workspaceStatus = deferredWorkspace.workspaceStatus;
       }
     }
 
@@ -253,11 +266,15 @@ export async function POST(request: Request) {
       success: true,
       message: status === "pending_plan" 
         ? "Patient case registered successfully in Firestore. Clinical Sheet and Folder will be dynamically provisioned on first doctor access."
-        : "Patient case registered and workspace provisioned successfully.",
+        : workspaceStatus === "deferred"
+          ? "Patient saved successfully. Google Drive workspace is temporarily deferred; the secure local clinical sheet is available."
+          : "Patient case registered and workspace provisioned successfully.",
       patientId: patientDoc.id,
       folderUrl: patientDoc.folderUrl,
       sheetUrl: patientDoc.sheetUrl,
-      isMock
+      isMock,
+      workspaceStatus,
+      workspaceIssue,
     });
 
   } catch (error: any) {
