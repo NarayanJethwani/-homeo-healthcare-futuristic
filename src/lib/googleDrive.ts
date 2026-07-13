@@ -110,6 +110,9 @@ export async function createDoctorWorkspace(
   });
 
   const driveFolderId = folderRes.data.id || "";
+  if (!driveFolderId) {
+    throw new Error("Google Drive did not return a doctor workspace folder ID.");
+  }
   const driveFolderUrl =
     folderRes.data.webViewLink ||
     (driveFolderId ? `https://drive.google.com/drive/folders/${driveFolderId}` : "");
@@ -133,23 +136,7 @@ export async function createDoctorWorkspace(
   let masterSheetUrl = "";
 
   try {
-    if (MASTER_SHEET_ID) {
-      // Copy the admin master sheet as a template for this doctor
-      const copyRes = await drive.files.copy({
-        fileId: MASTER_SHEET_ID,
-        requestBody: {
-          name: `Master Record — Dr. ${doctorName}`,
-          parents: [driveFolderId],
-        },
-        fields: "id,webViewLink",
-        supportsAllDrives: true,
-      });
-      masterSheetId = copyRes.data.id || "";
-      masterSheetUrl =
-        copyRes.data.webViewLink ||
-        (masterSheetId ? `https://docs.google.com/spreadsheets/d/${masterSheetId}/edit` : "");
-    } else {
-      // Create a fresh Google Sheet in the doctor's folder
+    const createFreshMasterSheet = async () => {
       const sheetRes = await drive.files.create({
         requestBody: {
           name: `Master Record — Dr. ${doctorName}`,
@@ -159,24 +146,55 @@ export async function createDoctorWorkspace(
         fields: "id,webViewLink",
         supportsAllDrives: true,
       });
+
       masterSheetId = sheetRes.data.id || "";
       masterSheetUrl =
         sheetRes.data.webViewLink ||
         (masterSheetId ? `https://docs.google.com/spreadsheets/d/${masterSheetId}/edit` : "");
 
-      // Add column headers to the fresh sheet
-      if (masterSheetId) {
-        await sheets.spreadsheets.values.update({
-          spreadsheetId: masterSheetId,
-          range: "Sheet1!A1:H1",
-          valueInputOption: "USER_ENTERED",
-          requestBody: {
-            values: [
-              ["Patient ID", "Name", "Age/Gender", "Complaint", "Care Level", "Date", "Drive Folder", "Clinical Sheet"],
-            ],
-          },
-        }).catch((err) => console.warn("Could not write headers to master sheet:", err));
+      if (!masterSheetId || !masterSheetUrl) {
+        throw new Error("Google Drive did not return a doctor master sheet ID and URL.");
       }
+
+      await sheets.spreadsheets.values.update({
+        spreadsheetId: masterSheetId,
+        range: "Sheet1!A1:H1",
+        valueInputOption: "USER_ENTERED",
+        requestBody: {
+          values: [
+            ["Patient ID", "Name", "Age/Gender", "Complaint", "Care Level", "Date", "Drive Folder", "Clinical Sheet"],
+          ],
+        },
+      });
+    };
+
+    if (MASTER_SHEET_ID) {
+      // Copy the admin master sheet as a template for this doctor
+      try {
+        const copyRes = await drive.files.copy({
+          fileId: MASTER_SHEET_ID,
+          requestBody: {
+            name: `Master Record — Dr. ${doctorName}`,
+            parents: [driveFolderId],
+          },
+          fields: "id,webViewLink",
+          supportsAllDrives: true,
+        });
+        masterSheetId = copyRes.data.id || "";
+        masterSheetUrl =
+          copyRes.data.webViewLink ||
+          (masterSheetId ? `https://docs.google.com/spreadsheets/d/${masterSheetId}/edit` : "");
+
+        if (!masterSheetId || !masterSheetUrl) {
+          throw new Error("Google Drive did not return a copied doctor master sheet ID and URL.");
+        }
+      } catch (templateError) {
+        console.warn("Could not copy the configured doctor master sheet template; creating a fresh sheet instead:", templateError);
+        await createFreshMasterSheet();
+      }
+    } else {
+      // Create a fresh Google Sheet in the doctor's folder
+      await createFreshMasterSheet();
     }
 
     // Share master sheet with doctor email too
@@ -194,6 +212,10 @@ export async function createDoctorWorkspace(
     }
   } catch (sheetErr) {
     console.error("Failed to create doctor master sheet:", sheetErr);
+    await drive.files.delete({ fileId: driveFolderId, supportsAllDrives: true }).catch((cleanupError) =>
+      console.warn("Could not clean up incomplete doctor workspace folder:", cleanupError)
+    );
+    throw new Error("Doctor master sheet provisioning failed.", { cause: sheetErr });
   }
 
   return {
