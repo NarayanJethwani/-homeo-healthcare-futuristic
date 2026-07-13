@@ -7,16 +7,28 @@ import { featureFlags } from "@/features/dashboard/constants/featureFlags";
 import { authorizeRequest } from "@/lib/security/apiAuth";
 import { resolveDoctorRepertoryEntitlement } from "@/features/repertory/access/DoctorEntitlementRepository";
 import { authorizeRepertoryOperation } from "@/features/repertory/access/RepertoryAccessBoundary";
+import {
+  consumeRepertoryRateLimit,
+  MAX_REPERTORIZATION_BODY_BYTES,
+  rateLimitResponse,
+  validateRepertorizationPayload,
+} from "@/features/repertory/security/RepertoryApiSecurity";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export async function POST(request: NextRequest) {
   try {
-    let authenticatedUserId: string | null = null;
+    const auth = await authorizeRequest(request, "repertory.repertorize", "REPERTORY_REPERTORIZE");
+    if (!auth.authorized) return auth.response;
+
+    const rateLimit = consumeRepertoryRateLimit("repertorize", auth.session.uid, {
+      maxRequests: 12,
+      windowMs: 60_000,
+    });
+    if (!rateLimit.allowed) return rateLimitResponse(rateLimit.retryAfterSeconds);
+
     if (featureFlags.repertoryDoctorEntitlementsEnabled) {
-      const auth = await authorizeRequest(request, "repertory.repertorize", "REPERTORY_REPERTORIZE");
-      if (!auth.authorized) return auth.response;
       const entitlement = await resolveDoctorRepertoryEntitlement(auth.session.uid);
       if (!entitlement) return NextResponse.json({ success: false, message: "Repertory entitlement required." }, { status: 403 });
       const decision = authorizeRepertoryOperation(entitlement, {
@@ -26,18 +38,40 @@ export async function POST(request: NextRequest) {
         capability: "repertorize",
       });
       if (!decision.allowed) return NextResponse.json({ success: false, message: "Repertory entitlement required." }, { status: decision.status });
-      authenticatedUserId = auth.session.uid;
     }
 
-    const { patientId = "anonymous", userId = "unknown", selectedRubrics } = await request.json();
-    const effectiveUserId = authenticatedUserId || userId;
-
-    if (!selectedRubrics || !Array.isArray(selectedRubrics) || selectedRubrics.length === 0) {
-      return NextResponse.json({
-        success: false,
-        message: "No rubrics selected for repertorization."
-      }, { status: 400 });
+    const declaredLength = Number(request.headers.get("content-length") || "0");
+    if (Number.isFinite(declaredLength) && declaredLength > MAX_REPERTORIZATION_BODY_BYTES) {
+      return NextResponse.json(
+        { success: false, message: "Repertorization request is too large." },
+        { status: 413, headers: { "Cache-Control": "no-store" } }
+      );
     }
+    const rawBody = await request.text();
+    if (new TextEncoder().encode(rawBody).byteLength > MAX_REPERTORIZATION_BODY_BYTES) {
+      return NextResponse.json(
+        { success: false, message: "Repertorization request is too large." },
+        { status: 413, headers: { "Cache-Control": "no-store" } }
+      );
+    }
+    let decoded: unknown;
+    try {
+      decoded = JSON.parse(rawBody);
+    } catch {
+      return NextResponse.json(
+        { success: false, message: "Request body must contain valid JSON." },
+        { status: 400, headers: { "Cache-Control": "no-store" } }
+      );
+    }
+    const validation = validateRepertorizationPayload(decoded);
+    if (!validation.valid) {
+      return NextResponse.json(
+        { success: false, message: validation.message },
+        { status: 400, headers: { "Cache-Control": "no-store" } }
+      );
+    }
+    const { patientId, selectedRubrics } = validation.value;
+    const effectiveUserId = auth.session.uid;
 
     // Validate all rubric IDs exist in active published corpus
     const validatedSymptoms = [];
@@ -177,13 +211,12 @@ export async function POST(request: NextRequest) {
       console.warn("Failed to save session to Firestore:", e);
     }
 
-    return NextResponse.json(finalResponse);
+    return NextResponse.json(finalResponse, { headers: { "Cache-Control": "private, no-store" } });
   } catch (error: any) {
     console.error("Repertorization API failed:", error);
     return NextResponse.json({
       success: false,
       message: "Failed to run case repertorization.",
-      error: error.message || error
-    }, { status: 500 });
+    }, { status: 500, headers: { "Cache-Control": "no-store" } });
   }
 }

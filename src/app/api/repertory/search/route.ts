@@ -5,6 +5,11 @@ import { featureFlags } from "@/features/dashboard/constants/featureFlags";
 import { authorizeRequest } from "@/lib/security/apiAuth";
 import { resolveDoctorRepertoryEntitlement } from "@/features/repertory/access/DoctorEntitlementRepository";
 import { authorizeRepertoryOperation } from "@/features/repertory/access/RepertoryAccessBoundary";
+import {
+  consumeRepertoryRateLimit,
+  rateLimitResponse,
+  validateRepertorySearchParams,
+} from "@/features/repertory/security/RepertoryApiSecurity";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -15,10 +20,17 @@ const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes cache
 
 export async function GET(request: NextRequest) {
   try {
-    let tenantCacheScope = "legacy-unscoped";
+    const auth = await authorizeRequest(request, "repertory.search", "REPERTORY_SEARCH");
+    if (!auth.authorized) return auth.response;
+
+    const rateLimit = consumeRepertoryRateLimit("search", auth.session.uid, {
+      maxRequests: 60,
+      windowMs: 60_000,
+    });
+    if (!rateLimit.allowed) return rateLimitResponse(rateLimit.retryAfterSeconds);
+
+    let tenantCacheScope = `authenticated:${auth.session.uid}`;
     if (featureFlags.repertoryDoctorEntitlementsEnabled) {
-      const auth = await authorizeRequest(request, "repertory.search", "REPERTORY_SEARCH");
-      if (!auth.authorized) return auth.response;
       const entitlement = await resolveDoctorRepertoryEntitlement(auth.session.uid);
       if (!entitlement) return NextResponse.json({ success: false, message: "Repertory entitlement required." }, { status: 403 });
       const decision = authorizeRepertoryOperation(entitlement, {
@@ -31,15 +43,14 @@ export async function GET(request: NextRequest) {
       tenantCacheScope = `${entitlement.organizationId}:${entitlement.clinicId}:${auth.session.uid}`;
     }
     const { searchParams } = new URL(request.url);
-    const q = searchParams.get("q")?.toLowerCase().trim() || "";
-    const category = searchParams.get("category") || "All";
-    const organSystem = searchParams.get("organSystem") || "All";
-    const miasm = searchParams.get("miasm") || "All";
-    const remedy = searchParams.get("remedy") || "All";
-    const sourceId = searchParams.get("sourceId") || "All";
-    
-    const page = Math.max(1, Number(searchParams.get("page")) || 1);
-    const pageSize = Math.max(1, Math.min(100, Number(searchParams.get("pageSize")) || 50));
+    const validation = validateRepertorySearchParams(searchParams);
+    if (!validation.valid) {
+      return NextResponse.json(
+        { success: false, message: validation.message },
+        { status: 400, headers: { "Cache-Control": "no-store" } }
+      );
+    }
+    const { q, category, organSystem, miasm, remedy, sourceId, page, pageSize } = validation.value;
 
     const activeVersion = await PublishedCorpusRepository.getActiveVersion();
 
@@ -49,7 +60,7 @@ export async function GET(request: NextRequest) {
 
     if (cached && cached.version === activeVersion && Date.now() < cached.expiry) {
       console.log(`[repertory-search] Serving cached results for: ${cacheKey}`);
-      return NextResponse.json(cached.response);
+      return NextResponse.json(cached.response, { headers: { "Cache-Control": "private, no-store" } });
     }
 
     // Call server-side search engine
@@ -112,13 +123,12 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    return NextResponse.json(responsePayload);
+    return NextResponse.json(responsePayload, { headers: { "Cache-Control": "private, no-store" } });
   } catch (error: any) {
     console.error("Repertory Search API failed:", error);
     return NextResponse.json({
       success: false,
       message: "Failed to search rubrics.",
-      error: error.message || error,
-    }, { status: 500 });
+    }, { status: 500, headers: { "Cache-Control": "no-store" } });
   }
 }
