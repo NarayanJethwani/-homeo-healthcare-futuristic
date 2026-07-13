@@ -19294,7 +19294,7 @@ ${err.message || err}`);
           })()}
 
           {activeTab === "team" && isSuperAdmin && (
-            <ManageDoctorsPanel sessionUid={session?.uid || ""} />
+            <ManageDoctorsPanel />
           )}
 
           {((activeTab as string) === "users") && session?.role && hasPermission(normalizeRole(session.role), "USER_MANAGE") && (

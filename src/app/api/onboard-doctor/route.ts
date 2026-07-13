@@ -1,100 +1,91 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiAuth";
 import { getAdminAuth, getAdminDb } from "@/lib/firebaseAdmin";
 import { createDoctorWorkspace } from "@/lib/googleDrive";
+import { computeDoctorPlanValidUntil, onboardDoctorSchema } from "@/features/doctor-onboarding/onboardingValidation";
+
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 /**
- * POST /api/onboard-doctor
- *
- * Onboards a new franchisee doctor:
- *   1. Creates a Firebase Auth account and sends a password-reset email
- *   2. Writes a Firestore user profile (role: 'doctor')
- *   3. Writes a Firestore doctors/{uid} workspace metadata document
- *   4. Provisions a private Google Drive folder + Master Sheet
- *
- * Body:
- *   name         – Full doctor name, e.g. "Dr. Priya Sharma"
- *   email        – Doctor's email (must be unique in Firebase Auth)
- *   phone?       – Optional phone number
- *   speciality?  – e.g. "Paediatric Homeopathy"
- *   plan?        – "monthly" | "quarterly" | "annual"  (default: "monthly")
- *   adminUid     – UID of the calling admin (passed from client session)
+ * Creates a doctor account and its isolated workspace.
+ * Only a signed-in super administrator may call this route.
  */
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  const session = await requireAdminApiSession(request, ["super-admin"]);
+  if (!session) return unauthorizedApiResponse("Super administrator access is required.");
+
+  const parsed = onboardDoctorSchema.safeParse(await request.json().catch(() => null));
+  if (!parsed.success) {
+    return NextResponse.json(
+      { success: false, message: "Please check the doctor details and try again." },
+      { status: 400, headers: { "Cache-Control": "no-store" } },
+    );
+  }
+
+  const { name, email, phone, speciality, plan } = parsed.data;
+  const isFirebaseConfigured =
+    Boolean(process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) &&
+    process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID !== "mock-project-id";
+
+  if (!isFirebaseConfigured && process.env.NODE_ENV === "production") {
+    return NextResponse.json(
+      { success: false, message: "Doctor onboarding is temporarily unavailable." },
+      { status: 503, headers: { "Cache-Control": "no-store" } },
+    );
+  }
+
+  if (!isFirebaseConfigured) {
+    return NextResponse.json({
+      success: true,
+      isMockFirebase: true,
+      isMockWorkspace: true,
+      message: "Doctor onboarding preview completed. No production account was created.",
+      doctor: {
+        uid: `mock-${Date.now()}`,
+        name,
+        email,
+        subscription: { plan, validUntil: computeDoctorPlanValidUntil(plan), status: "active" },
+      },
+    }, { headers: { "Cache-Control": "no-store" } });
+  }
+
+  const auth = getAdminAuth();
+  let createdUid: string | null = null;
+
   try {
-    const body = await request.json();
-    const {
-      name,
-      email,
-      phone = "",
-      speciality = "General Homeopathy",
-      plan = "monthly",
-      adminUid = "",
-    } = body;
-
-    if (!name || !email) {
+    try {
+      await auth.getUserByEmail(email);
       return NextResponse.json(
-        { success: false, message: "Doctor name and email are required." },
-        { status: 400 }
+        { success: false, message: "An account already exists for this email address." },
+        { status: 409, headers: { "Cache-Control": "no-store" } },
       );
+    } catch (error: unknown) {
+      const code = typeof error === "object" && error && "code" in error
+        ? String((error as { code?: unknown }).code)
+        : "";
+      if (code !== "auth/user-not-found") throw error;
     }
 
-    const isFirebaseConfigured =
-      process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID &&
-      process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID !== "mock-project-id";
+    const userRecord = await auth.createUser({
+      email,
+      displayName: name,
+      emailVerified: false,
+    });
+    createdUid = userRecord.uid;
+    const passwordSetupLink = await auth.generatePasswordResetLink(email);
 
-    let uid = `mock-${Date.now()}`;
-    let isMockFirebase = !isFirebaseConfigured;
-
-    // ── 1. Create Firebase Auth account ───────────────────────────────────────
-    if (isFirebaseConfigured) {
-      try {
-        // Check if user already exists
-        try {
-          const existingUser = await getAdminAuth().getUserByEmail(email);
-          uid = existingUser.uid;
-          console.log("Doctor already exists in Firebase Auth:", email, "uid:", uid);
-        } catch {
-          // User doesn't exist — create them with a random temp password
-          const tempPassword = `Homeo@${Math.random().toString(36).slice(-8)}`;
-          const userRecord = await getAdminAuth().createUser({
-            email,
-            displayName: name,
-            password: tempPassword,
-            emailVerified: false,
-          });
-          uid = userRecord.uid;
-          console.log("Firebase Auth user created:", email, uid);
-
-          // Send password reset so the doctor sets their own password
-          try {
-            const resetLink = await getAdminAuth().generatePasswordResetLink(email);
-            console.log("Password reset link for", email, ":", resetLink);
-            // NOTE: In production, send this link via your transactional email provider
-            // (e.g. SendGrid, Resend). For now it is logged server-side.
-          } catch (err) {
-            console.warn("Could not generate reset link:", err);
-          }
-        }
-      } catch (authErr: any) {
-        console.error("Firebase Auth error during onboarding:", authErr.message);
-        if (!authErr.message?.includes("already exists")) {
-          return NextResponse.json(
-            { success: false, message: "Firebase Auth error: " + authErr.message },
-            { status: 500 }
-          );
-        }
-      }
-    }
-
-    // ── 2. Provision Google Drive folder + Master Sheet ───────────────────────
     const workspace = await createDoctorWorkspace(name, email);
+    if (workspace.isMock) {
+      throw new Error("Doctor workspace provisioning is unavailable.");
+    }
 
-    // ── 3. Write Firestore user profile ───────────────────────────────────────
     const onboardedAt = new Date().toISOString();
-    const validUntil = computeValidUntil(plan);
+    const validUntil = computeDoctorPlanValidUntil(plan);
+    const subscription = { plan, validUntil, status: "active" };
 
     const userProfile = {
-      uid,
+      uid: createdUid,
       name,
       email,
       phone,
@@ -104,78 +95,55 @@ export async function POST(request: Request) {
       driveFolderUrl: workspace.driveFolderUrl,
       masterSheetId: workspace.masterSheetId,
       masterSheetUrl: workspace.masterSheetUrl,
-      subscription: {
-        plan,
-        validUntil,
-        status: "active",
-      },
+      subscription,
       onboardedAt,
-      onboardedBy: adminUid || "admin",
-      isMockWorkspace: workspace.isMock,
+      onboardedBy: session.uid,
+      isMockWorkspace: false,
     };
 
-    if (isFirebaseConfigured) {
-      // Write to users/{uid}
-      await getAdminDb().collection("users").doc(uid).set(userProfile, { merge: true });
-
-      // Write to doctors/{uid} (workspace metadata for Firestore rules)
-      await getAdminDb().collection("doctors").doc(uid).set(
-        {
-          uid,
-          name,
-          email,
-          driveFolderId: workspace.driveFolderId,
-          driveFolderUrl: workspace.driveFolderUrl,
-          masterSheetId: workspace.masterSheetId,
-          masterSheetUrl: workspace.masterSheetUrl,
-          subscription: { plan, validUntil, status: "active" },
-          onboardedAt,
-          onboardedBy: adminUid || "admin",
-          patientCount: 0,
-        },
-        { merge: true }
-      );
-    } else {
-      isMockFirebase = true;
-      console.log("[MOCK] Would have written Firestore user profile for:", email);
-    }
+    const db = getAdminDb();
+    const batch = db.batch();
+    batch.set(db.collection("users").doc(createdUid), userProfile, { merge: true });
+    batch.set(db.collection("doctors").doc(createdUid), {
+      uid: createdUid,
+      name,
+      email,
+      driveFolderId: workspace.driveFolderId,
+      driveFolderUrl: workspace.driveFolderUrl,
+      masterSheetId: workspace.masterSheetId,
+      masterSheetUrl: workspace.masterSheetUrl,
+      subscription,
+      onboardedAt,
+      onboardedBy: session.uid,
+      patientCount: 0,
+    }, { merge: true });
+    await batch.commit();
 
     return NextResponse.json({
       success: true,
-      isMockFirebase,
-      isMockWorkspace: workspace.isMock,
-      message: isMockFirebase
-        ? "Doctor onboarded in mock mode (Firebase not configured)."
-        : `Doctor ${name} successfully onboarded. A password-reset email has been sent to ${email}.`,
+      isMockFirebase: false,
+      isMockWorkspace: false,
+      message: `Doctor ${name} was onboarded. Copy and securely share the password-setup link.`,
+      passwordSetupLink,
       doctor: {
-        uid,
+        uid: createdUid,
         name,
         email,
         driveFolderUrl: workspace.driveFolderUrl,
         masterSheetUrl: workspace.masterSheetUrl,
-        subscription: { plan, validUntil, status: "active" },
+        subscription,
         onboardedAt,
       },
-    });
-  } catch (error: any) {
-    console.error("Doctor onboarding failed:", error);
+    }, { headers: { "Cache-Control": "no-store" } });
+  } catch (error: unknown) {
+    if (createdUid) {
+      await auth.deleteUser(createdUid).catch(() => undefined);
+    }
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("Doctor onboarding failed:", message);
     return NextResponse.json(
-      {
-        success: false,
-        message: "Doctor onboarding failed.",
-        error: error.message || String(error),
-      },
-      { status: 500 }
+      { success: false, message: "Doctor onboarding failed. No active login was retained." },
+      { status: 500, headers: { "Cache-Control": "no-store" } },
     );
   }
-}
-
-/** Returns an ISO date string N months from now based on the chosen plan */
-function computeValidUntil(plan: string): string {
-  if (plan === "branch") return "2099-12-31"; // Permanent access for branch doctors
-  const d = new Date();
-  if (plan === "annual") d.setFullYear(d.getFullYear() + 1);
-  else if (plan === "quarterly") d.setMonth(d.getMonth() + 3);
-  else d.setMonth(d.getMonth() + 1); // default: monthly
-  return d.toISOString().split("T")[0]; // YYYY-MM-DD
 }

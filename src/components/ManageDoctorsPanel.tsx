@@ -33,8 +33,6 @@ interface DoctorRecord {
   isMockWorkspace?: boolean;
 }
 
-interface Props { sessionUid: string; }
-
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const PLAN_LABELS: Record<string, string> = {
@@ -89,7 +87,7 @@ function initials(name: string) {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function ManageDoctorsPanel({ sessionUid }: Props) {
+export default function ManageDoctorsPanel() {
   const [doctors,       setDoctors]       = useState<DoctorRecord[]>([]);
   const [patientCounts, setPatientCounts] = useState<Record<string, number>>({});
   const [loading,       setLoading]       = useState(true);
@@ -101,7 +99,7 @@ export default function ManageDoctorsPanel({ sessionUid }: Props) {
     name: "", email: "", phone: "", speciality: "General Homeopathy", plan: "trial",
   });
   const [inviteLoading, setInviteLoading] = useState(false);
-  const [inviteResult,  setInviteResult]  = useState<{ success: boolean; message: string } | null>(null);
+  const [inviteResult,  setInviteResult]  = useState<{ success: boolean; message: string; passwordSetupLink?: string } | null>(null);
 
   // Extend subscription modal
   const [extendTarget,  setExtendTarget]  = useState<DoctorRecord | null>(null);
@@ -175,14 +173,16 @@ export default function ManageDoctorsPanel({ sessionUid }: Props) {
       const res  = await fetch("/api/onboard-doctor", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...inviteForm, adminUid: sessionUid }),
+        body: JSON.stringify(inviteForm),
       });
       const data = await res.json();
       if (data.success) {
-        setInviteResult({ success: true, message: `✅ ${inviteForm.name} onboarded! Login email sent to ${inviteForm.email}.` });
-        setInviteForm({ name: "", email: "", phone: "", speciality: "General Homeopathy", plan: "trial" });
+        setInviteResult({
+          success: true,
+          message: `${inviteForm.name} was onboarded. Copy and securely share the password-setup link below.`,
+          passwordSetupLink: data.passwordSetupLink,
+        });
         setRefreshKey(k => k + 1);
-        setTimeout(() => { setShowInviteModal(false); setInviteResult(null); }, 3500);
       } else {
         setInviteResult({ success: false, message: data.message || "Onboarding failed." });
       }
@@ -492,9 +492,20 @@ export default function ManageDoctorsPanel({ sessionUid }: Props) {
 
               <form onSubmit={handleInvite} className="p-6 space-y-4">
                 {inviteResult && (
-                  <div className={`p-3.5 rounded-2xl flex items-start gap-2.5 text-xs font-semibold ${inviteResult.success ? "bg-emerald-50 border border-emerald-100 text-emerald-700" : "bg-rose-50 border border-rose-100 text-rose-700"}`}>
-                    {inviteResult.success ? <CheckCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-emerald-500" /> : <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-rose-500" />}
-                    <span>{inviteResult.message}</span>
+                  <div className={`p-3.5 rounded-2xl text-xs font-semibold ${inviteResult.success ? "bg-emerald-50 border border-emerald-100 text-emerald-700" : "bg-rose-50 border border-rose-100 text-rose-700"}`}>
+                    <div className="flex items-start gap-2.5">
+                      {inviteResult.success ? <CheckCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-emerald-500" /> : <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-rose-500" />}
+                      <span>{inviteResult.message}</span>
+                    </div>
+                    {inviteResult.passwordSetupLink && (
+                      <button
+                        type="button"
+                        onClick={() => navigator.clipboard.writeText(inviteResult.passwordSetupLink || "")}
+                        className="mt-3 min-h-11 w-full rounded-xl border border-emerald-200 bg-white px-3 text-xs font-bold text-emerald-800 hover:bg-emerald-100"
+                      >
+                        Copy password-setup link
+                      </button>
+                    )}
                   </div>
                 )}
 
@@ -566,7 +577,7 @@ export default function ManageDoctorsPanel({ sessionUid }: Props) {
                   className="w-full py-3.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-full font-bold uppercase tracking-wider text-xs shadow-[0_8px_24px_rgba(124,58,237,0.3)] hover:shadow-[0_10px_28px_rgba(124,58,237,0.4)] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
                 >
                   {inviteLoading ? <><Loader className="w-4 h-4 animate-spin" />Provisioning…</> :
-                   inviteResult?.success ? <><CheckCircle className="w-4 h-4" />Done! Closing…</> :
+                   inviteResult?.success ? <><CheckCircle className="w-4 h-4" />Doctor Onboarded</> :
                    <><UserPlus className="w-4 h-4" />Onboard Doctor &amp; Send Invite</>}
                 </button>
               </form>
