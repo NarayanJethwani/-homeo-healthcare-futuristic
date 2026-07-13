@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { RepertorySearch } from "@/features/repertory/search/repertorySearch";
 import { PublishedCorpusRepository } from "@/features/repertory/repositories/PublishedCorpusRepository";
-import { featureFlags } from "@/features/dashboard/constants/featureFlags";
-import { authorizeRequest } from "@/lib/security/apiAuth";
-import { resolveDoctorRepertoryEntitlement } from "@/features/repertory/access/DoctorEntitlementRepository";
-import { authorizeRepertoryOperation } from "@/features/repertory/access/RepertoryAccessBoundary";
+import { authorizeRepertoryRequest } from "@/features/repertory/access/RepertoryRequestAuthorization";
 import {
   consumeRepertoryRateLimit,
   rateLimitResponse,
@@ -20,7 +17,7 @@ const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes cache
 
 export async function GET(request: NextRequest) {
   try {
-    const auth = await authorizeRequest(request, "repertory.search", "REPERTORY_SEARCH");
+    const auth = await authorizeRepertoryRequest(request, "repertory.search", "REPERTORY_SEARCH");
     if (!auth.authorized) return auth.response;
 
     const rateLimit = consumeRepertoryRateLimit("search", auth.session.uid, {
@@ -29,19 +26,7 @@ export async function GET(request: NextRequest) {
     });
     if (!rateLimit.allowed) return rateLimitResponse(rateLimit.retryAfterSeconds);
 
-    let tenantCacheScope = `authenticated:${auth.session.uid}`;
-    if (featureFlags.repertoryDoctorEntitlementsEnabled) {
-      const entitlement = await resolveDoctorRepertoryEntitlement(auth.session.uid);
-      if (!entitlement) return NextResponse.json({ success: false, message: "Repertory entitlement required." }, { status: 403 });
-      const decision = authorizeRepertoryOperation(entitlement, {
-        organizationId: entitlement.organizationId,
-        clinicId: entitlement.clinicId,
-        doctorId: auth.session.uid,
-        capability: "search",
-      });
-      if (!decision.allowed) return NextResponse.json({ success: false, message: "Repertory entitlement required." }, { status: decision.status });
-      tenantCacheScope = `${entitlement.organizationId}:${entitlement.clinicId}:${auth.session.uid}`;
-    }
+    const tenantCacheScope = auth.tenantCacheScope;
     const { searchParams } = new URL(request.url);
     const validation = validateRepertorySearchParams(searchParams);
     if (!validation.valid) {

@@ -92,9 +92,10 @@ async function run() {
   const searchSource = fs.readFileSync(path.join(root, "search", "route.ts"), "utf8");
   const repertorizeSource = fs.readFileSync(path.join(root, "repertorize", "route.ts"), "utf8");
   for (const source of [searchSource, repertorizeSource]) {
-    const authPosition = source.indexOf("await authorizeRequest");
-    const entitlementPosition = source.indexOf("if (featureFlags.repertoryDoctorEntitlementsEnabled)");
-    assert.ok(authPosition >= 0 && entitlementPosition > authPosition, "Authentication must precede optional entitlement checks");
+    const authPosition = source.indexOf("await authorizeRepertoryRequest");
+    const rateLimitPosition = source.indexOf("const rateLimit = consumeRepertoryRateLimit");
+    assert.ok(authPosition >= 0 && rateLimitPosition > authPosition, "Authorization must precede rate limiting");
+    assert.ok(!source.includes("repertoryDoctorEntitlementsEnabled"));
   }
   assert.ok(repertorizeSource.includes("const effectiveUserId = auth.session.uid"));
   assert.ok(!repertorizeSource.includes("authenticatedUserId || userId"));

@@ -3,10 +3,7 @@ import { getAdminDb } from "@/lib/firebaseAdmin";
 import { RepertoryScoring } from "@/features/repertory/scoring/repertoryScoring";
 import { ReasoningEngine } from "@/features/repertory/reasoning/reasoningEngine";
 import repertoryRepository from "@/features/repertory/database/repertoryDb";
-import { featureFlags } from "@/features/dashboard/constants/featureFlags";
-import { authorizeRequest } from "@/lib/security/apiAuth";
-import { resolveDoctorRepertoryEntitlement } from "@/features/repertory/access/DoctorEntitlementRepository";
-import { authorizeRepertoryOperation } from "@/features/repertory/access/RepertoryAccessBoundary";
+import { authorizeRepertoryRequest } from "@/features/repertory/access/RepertoryRequestAuthorization";
 import {
   consumeRepertoryRateLimit,
   MAX_REPERTORIZATION_BODY_BYTES,
@@ -19,7 +16,7 @@ export const runtime = "nodejs";
 
 export async function POST(request: NextRequest) {
   try {
-    const auth = await authorizeRequest(request, "repertory.repertorize", "REPERTORY_REPERTORIZE");
+    const auth = await authorizeRepertoryRequest(request, "repertory.repertorize", "REPERTORY_REPERTORIZE");
     if (!auth.authorized) return auth.response;
 
     const rateLimit = consumeRepertoryRateLimit("repertorize", auth.session.uid, {
@@ -27,18 +24,6 @@ export async function POST(request: NextRequest) {
       windowMs: 60_000,
     });
     if (!rateLimit.allowed) return rateLimitResponse(rateLimit.retryAfterSeconds);
-
-    if (featureFlags.repertoryDoctorEntitlementsEnabled) {
-      const entitlement = await resolveDoctorRepertoryEntitlement(auth.session.uid);
-      if (!entitlement) return NextResponse.json({ success: false, message: "Repertory entitlement required." }, { status: 403 });
-      const decision = authorizeRepertoryOperation(entitlement, {
-        organizationId: entitlement.organizationId,
-        clinicId: entitlement.clinicId,
-        doctorId: auth.session.uid,
-        capability: "repertorize",
-      });
-      if (!decision.allowed) return NextResponse.json({ success: false, message: "Repertory entitlement required." }, { status: decision.status });
-    }
 
     const declaredLength = Number(request.headers.get("content-length") || "0");
     if (Number.isFinite(declaredLength) && declaredLength > MAX_REPERTORIZATION_BODY_BYTES) {
