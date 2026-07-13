@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { 
   Users, Activity, Sparkles, Brain, Shield, AlertTriangle, 
@@ -34,6 +34,10 @@ import {
   TreatmentEpisode, EpisodeStatus, 
   MockEpisodeRepository, EpisodeService 
 } from "@/features/treatment-episode";
+import {
+  createPatientRegistrationKey,
+  IdempotentSubmissionCoordinator,
+} from "@/features/clinical-os/application/idempotentPatientRegistration";
 
 // Initialize mock repos and services for dev foundation verification
 const patientRepo = new MockPatientRepository();
@@ -45,6 +49,7 @@ const patientService = new PatientService(patientRepo);
 const allergyService = new AllergyService(allergyRepo);
 const consentService = new ConsentService(consentRepo);
 const episodeService = new EpisodeService(episodeRepo);
+const patientRegistrationCoordinator = new IdempotentSubmissionCoordinator<Patient>();
 
 export default function ClinicalConsole() {
   const [activePatient, setActivePatient] = useState<Patient | null>(null);
@@ -60,6 +65,8 @@ export default function ClinicalConsole() {
   const [eventLogs, setEventLogs] = useState<string[]>([]);
   const [searchUhid, setSearchUhid] = useState("");
   const [verificationOutput, setVerificationOutput] = useState<string>("");
+  const [isRegistering, setIsRegistering] = useState(false);
+  const registrationInProgressRef = useRef(false);
 
   // Form states
   const [regName, setRegName] = useState("Aarav Sharma");
@@ -109,6 +116,14 @@ export default function ClinicalConsole() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (registrationInProgressRef.current) {
+      addLog("Registration already in progress; duplicate submission ignored.");
+      return;
+    }
+
+    registrationInProgressRef.current = true;
+    setIsRegistering(true);
+
     try {
       const demographics: PatientDemographics = {
         name: regName,
@@ -124,22 +139,41 @@ export default function ClinicalConsole() {
         }
       };
 
-      addLog(`Registering new patient: ${regName}...`);
-      const patient = await patientService.registerPatient({
+      const registrationParams = {
         organizationId: "org_homeo_premium",
         clinicId: "clinic_pune_baner",
         createdBy: "doc_jethwani_007",
-        demographics
+        demographics,
+      };
+      const registrationKey = createPatientRegistrationKey({
+        ...registrationParams,
+        name: demographics.name,
+        dateOfBirth: demographics.dateOfBirth,
+        phone: demographics.phone,
+        email: demographics.email,
       });
+
+      addLog(`Registering new patient: ${regName}...`);
+      const { value: patient, reused } = await patientRegistrationCoordinator.run(
+        registrationKey,
+        () => patientService.registerPatient(registrationParams),
+      );
 
       setActivePatient(patient);
       setSearchUhid(patient.uhid);
-      addLog(`SUCCESS: Patient registered with UHID: ${patient.uhid}. Entity Version: ${patient.recordVersion}`);
+      if (reused) {
+        addLog(`DUPLICATE BLOCKED: Reusing the existing registration with UHID: ${patient.uhid}.`);
+      } else {
+        addLog(`SUCCESS: Patient registered with UHID: ${patient.uhid}. Entity Version: ${patient.recordVersion}`);
+      }
       
       // Auto-load lists
       await refreshPatientData(patient.id);
     } catch (err: any) {
       addLog(`ERROR during registration: ${err.message}. Details: ${JSON.stringify(err.details || {})}`);
+    } finally {
+      registrationInProgressRef.current = false;
+      setIsRegistering(false);
     }
   };
 
@@ -414,9 +448,11 @@ export default function ClinicalConsole() {
               </div>
               <button
                 type="submit"
-                className="w-full mt-4 py-1.5 bg-emerald-700 hover:bg-emerald-600 active:bg-emerald-800 text-white rounded-lg text-xs font-bold transition-colors cursor-pointer"
+                disabled={isRegistering}
+                aria-busy={isRegistering}
+                className="w-full mt-4 py-1.5 bg-emerald-700 hover:bg-emerald-600 active:bg-emerald-800 disabled:bg-emerald-950 disabled:text-emerald-300 disabled:cursor-wait text-white rounded-lg text-xs font-bold transition-colors cursor-pointer"
               >
-                Register & Initialize EMR
+                {isRegistering ? "Registering…" : "Register & Initialize EMR"}
               </button>
             </form>
           </section>
