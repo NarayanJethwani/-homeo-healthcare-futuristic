@@ -117,14 +117,20 @@ export function createClinicalRepertoryService(
     },
 
     async runClinicalAnalysis(request: ClinicalRepertoryRequest): Promise<ClinicalRepertoryResult> {
+      // patientId comes from the caller context — never synthesised here.
+      // userId is deliberately omitted: the server derives it from the verified
+      // session cookie. Sending a client-supplied userId would allow identity spoofing.
+      const patientId = typeof request.patientId === "string" && request.patientId.length > 0
+        ? request.patientId
+        : "unassigned";
+
       const response = await fetch("/api/repertory/repertorize", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          patientId: "patient-1",
-          userId: "doctor-1",
+          patientId,
           selectedRubrics: request.selectedRubrics
         })
       });

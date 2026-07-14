@@ -1,3 +1,4 @@
+import "./setupEnv";
 import assert from "assert";
 import { normalizeRole, hasPermission, AdminRole, Permission } from "../src/lib/security/rbac";
 import { createAdminSessionCookie, verifyAdminSessionCookie } from "../src/lib/adminSession";

@@ -2,6 +2,25 @@ import fs from "fs";
 import path from "path";
 import child_process from "child_process";
 
+// ─── SHA-bound dirty-tree enforcement ──────────────────────────────────────
+// Captures HEAD SHA and working-tree status at a point in time.
+// Called BEFORE and AFTER all verification checks. If HEAD moved or the
+// working tree became dirty during the run, readiness is blocked regardless
+// of whether individual checks passed.
+function captureGitState(): { sha: string; isDirty: boolean; statusLines: string } {
+  try {
+    const sha = child_process
+      .spawnSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' })
+      .stdout.trim();
+    const status = child_process
+      .spawnSync('git', ['status', '--porcelain'], { encoding: 'utf8' })
+      .stdout.trim();
+    return { sha, isDirty: status.length > 0, statusLines: status };
+  } catch (e: any) {
+    return { sha: 'UNKNOWN', isDirty: true, statusLines: `git error: ${e.message}` };
+  }
+}
+
 // Parse CLI Arguments
 function parseArgs() {
   const args: Record<string, string> = {};
@@ -184,13 +203,22 @@ function runSecurityVerification(): VerificationCheckResult[] {
       details
     });
 
-    // Run security-related test files
-    const securityTest = runSubprocess(
-      "rbac-security-test",
-      "npx",
-      ["ts-node", "-P", "tests/tsconfig.test.json", "-r", "tsconfig-paths/register", "tests/rbacSecurity.test.ts"]
-    );
-    localResults.push(securityTest);
+    // Run security-related test files including Sprint 24 export remediation
+    const securityTests = [
+      "tests/rbacSecurity.test.ts",
+      "tests/repertoryEntitlementExport.test.ts",
+      "tests/repertoryExportRoute.test.ts",
+      "tests/repertorySessionExportService.test.ts",
+      "tests/repertoryExportAuthorization.test.ts",
+    ];
+    for (const testFile of securityTests) {
+      const secTest = runSubprocess(
+        `security-test:${path.basename(testFile, '.ts')}`,
+        "npx",
+        ["ts-node", "-P", "tests/tsconfig.test.json", "-r", "tsconfig-paths/register", testFile],
+      );
+      localResults.push(secTest);
+    }
 
   } catch (err: any) {
     localResults.push({
@@ -298,6 +326,12 @@ function writeReport(filePath: string, modeName: string, state: string, checkRes
 async function main() {
   let passedOverall = true;
 
+  // ── Git state capture (always) ────────────────────────────────────────────
+  // Captured here for all modes so SHA is available for reporting.
+  // The dirty-tree *block* is only enforced in production/release modes below.
+  const preState = captureGitState();
+  console.log(`\n📌 PRE-CHECK  SHA: ${preState.sha}`);
+
   if (mode === "static") {
     const res = runStaticVerification();
     results.push(...res);
@@ -315,6 +349,22 @@ async function main() {
     results.push(...res);
     passedOverall = res.every(r => r.status === "passed");
   } else if (mode === "production") {
+    // ── R4 pre-check: dirty tree blocks production evidence ─────────────────
+    // Readiness evidence must be bound to a reviewable commit SHA.
+    // A dirty tree means the checks would run against uncommitted code.
+    if (preState.isDirty) {
+      console.error('\n🚫 dirty-tree-blocked: working tree is dirty at check start');
+      console.error('Commit or stash all changes before running verify:production.');
+      console.error(preState.statusLines);
+      const earlyReportPath = path.join(process.cwd(), "reports", "production-readiness-report.json");
+      writeReport(earlyReportPath, "production", "dirty-tree-blocked", []);
+      const earlyReport = JSON.parse(fs.readFileSync(earlyReportPath, 'utf8'));
+      earlyReport.headSha = preState.sha;
+      earlyReport.dirtyAtStart = true;
+      fs.writeFileSync(earlyReportPath, JSON.stringify(earlyReport, null, 2), 'utf8');
+      process.exit(1);
+    }
+
     // Run all non-emulator production checks
     const resStatic = runStaticVerification();
     const resCorpus = runCorpusVerification();
@@ -324,9 +374,30 @@ async function main() {
     results.push(...resStatic, ...resCorpus, ...resSecurity, ...resBuild);
     passedOverall = results.every(r => r.status === "passed");
 
+    // ── R4 post-check: re-verify SHA and tree; block if modified during run ──
+    const postState = captureGitState();
+    console.log(`\n📌 POST-CHECK SHA: ${postState.sha}`);
+    const shaChanged = postState.sha !== preState.sha && preState.sha !== 'UNKNOWN';
+    const treeNowDirty = postState.isDirty; // preState.isDirty already blocked above
+    if (shaChanged || treeNowDirty) {
+      passedOverall = false;
+      const reason = shaChanged ? 'HEAD moved during check run' : 'working tree became dirty during checks';
+      console.error(`\n🚫 dirty-tree-blocked: ${reason}`);
+      if (treeNowDirty) console.error(postState.statusLines);
+      const reportPath = path.join(process.cwd(), "reports", "production-readiness-report.json");
+      writeReport(reportPath, "production", "dirty-tree-blocked", results);
+      process.exit(1);
+    }
+
     const state = passedOverall ? "production-deployment-ready" : "failed";
     const reportPath = path.join(process.cwd(), "reports", "production-readiness-report.json");
     writeReport(reportPath, "production", state, results);
+    // Embed SHA into report for traceable evidence
+    const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+    report.headSha = postState.sha;
+    report.dirtyAtStart = preState.isDirty;
+    fs.writeFileSync(reportPath, JSON.stringify(report, null, 2), 'utf8');
+    console.log(`📌 Readiness evidence bound to SHA: ${postState.sha}`);
   } else if (mode === "emulator") {
     // Run emulator checks
     const res = runEmulatorVerification();
@@ -339,7 +410,21 @@ async function main() {
   } else if (mode === "release") {
     // Orchestrate both
     console.log("\n=== ORCHESTRATING FULL RELEASE VERIFICATION ===");
-    
+
+    // ── R4 pre-check: dirty tree blocks release evidence ──────────────────
+    if (preState.isDirty) {
+      console.error('\n🚫 dirty-tree-blocked: working tree is dirty at check start');
+      console.error('Commit or stash all changes before running verify:release.');
+      console.error(preState.statusLines);
+      const earlyReportPath = path.join(process.cwd(), "reports", "production-readiness-report.json");
+      writeReport(earlyReportPath, "release", "dirty-tree-blocked", []);
+      const earlyReport = JSON.parse(fs.readFileSync(earlyReportPath, 'utf8'));
+      earlyReport.headSha = preState.sha;
+      earlyReport.dirtyAtStart = true;
+      fs.writeFileSync(earlyReportPath, JSON.stringify(earlyReport, null, 2), 'utf8');
+      process.exit(1);
+    }
+
     const resStatic = runStaticVerification();
     const resCorpus = runCorpusVerification();
     const resSecurity = runSecurityVerification();

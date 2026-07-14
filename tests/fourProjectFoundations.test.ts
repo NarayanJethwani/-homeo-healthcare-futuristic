@@ -2,7 +2,8 @@ import assert from "assert";
 import { buildKnowledgeSourceVersionReadModel } from "../src/features/knowledge/read-models/sourceVersionReadModel";
 import { adjustScanZoom, rotateScan } from "../src/features/materia-medica/services/scanViewport";
 import { DEFAULT_SCAN_VIEWPORT } from "../src/features/materia-medica/reader/scanTypes";
-import { canAccessDoctorRepertory, createRepertorySessionExport } from "../src/features/repertory/access/DoctorEntitlementService";
+import { canAccessDoctorRepertory } from "../src/features/repertory/access/DoctorEntitlementService";
+import { buildClinicianExport } from "../src/features/repertory/import-export/versionedCliniciansExport";
 import { buildClinicalWorkspaceReference } from "../src/features/clinical-os/application/ClinicalKnowledgeReferenceService";
 import { buildSourceDiscrepancyQueue } from "../src/features/knowledge/read-models/sourceDiscrepancyQueue";
 import { authorizeRepertoryOperation } from "../src/features/repertory/access/RepertoryAccessBoundary";
@@ -54,12 +55,11 @@ assert.deepEqual(authorizeRepertoryOperation(null, { ...access, capability: "sea
   status: 403,
   code: "REPERTORY_ENTITLEMENT_REQUIRED",
 });
-assert.equal(createRepertorySessionExport(entitlement, access, {
+assert.equal(buildClinicianExport(entitlement, {
   corpusVersion: "v1.2.0",
-  sessionId: "session-1",
   selectedRubricIds: ["rubric-1"],
   resultRemedyIds: ["remedy-1"],
-}).schemaVersion, 1);
+}, "session-1", new Date()).schemaVersion, 1);
 
 assert.deepEqual(buildClinicalWorkspaceReference({
   referenceId: "ref-1",

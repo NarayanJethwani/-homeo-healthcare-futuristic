@@ -132,6 +132,17 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
   const [validationFindings, setValidationFindings] = useState<ClinicalValidationFinding[]>([]);
   const [longitudinalSummary, setLongitudinalSummary] = useState<LongitudinalCaseSummary | null>(null);
   const [lastAmeliorationRating, setLastAmeliorationRating] = useState<number>(3);
+  
+  // Session token lifecycle & stale response prevention
+  const [sessionToken, setSessionToken] = useState<string | null>(null);
+  const repertorizeGenerationRef = useRef<number>(0);
+
+  // Invalidate in-flight responses and clear token when patient changes
+  useEffect(() => {
+    setSessionToken(null);
+    repertorizeGenerationRef.current++;
+  }, [activePatientId]);
+
 
   // Dialogs & Audits
   const [auditReport, setAuditReport] = useState<ValidationReport | null>(null);
@@ -241,16 +252,24 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
   // Recalculate scoring, differentiations, reasoning summary, and validation safety checks using the Codex Clinical Workspace Service
   useEffect(() => {
     const recalculate = async () => {
+      // zero-rubric reset: clear everything, including token
       if (selectedRubrics.length === 0) {
         setScoringResult(null);
         setDifferentiations([]);
         setReasoningSummary(null);
         setValidationFindings([]);
+        setSessionToken(null);
         return;
       }
+
+      // rubric-recalculate start: clear token and increment generation
+      setSessionToken(null);
+      const localGeneration = ++repertorizeGenerationRef.current;
       setIsScoringLoading(true);
+
       try {
         const result = await clinicalRepertoryService.current.runClinicalAnalysis({
+          patientId: activePatientId || undefined,
           query: undefined,
           selectedRubrics: selectedRubrics.map(sr => ({
             rubricId: sr.rubricId,
@@ -259,6 +278,11 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
             impact: sr.impact
           }))
         });
+
+        // stale-response guard: compare generation before committing results
+        if (localGeneration !== repertorizeGenerationRef.current) {
+          return;
+        }
 
         if (result.success) {
           if (result.scoringResult) {
@@ -271,14 +295,29 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
             setReasoningSummary(result.reasoningSummary);
           }
           setValidationFindings(result.validationFindings || []);
+          
+          const sessionTokenVal = (result as any).sessionToken;
+          if (sessionTokenVal) {
+            setSessionToken(sessionTokenVal);
+          }
+        } else {
+          // failure: clear token
+          setSessionToken(null);
         }
       } catch (e) {
         console.error("Clinical analysis calculation failed:", e);
+        // failure: clear token
+        setSessionToken(null);
       }
-      setIsScoringLoading(false);
+
+      // Ensure we only unset loading if no newer request overtook us
+      if (localGeneration === repertorizeGenerationRef.current) {
+        setIsScoringLoading(false);
+      }
     };
     recalculate();
-  }, [selectedRubrics]);
+  }, [selectedRubrics, activePatientId]);
+
 
   // Recalculate longitudinal history matching active selected rubrics
   useEffect(() => {
@@ -635,24 +674,27 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
   };
 
   // Export handlers
-  const handleExportData = async (type: 'json' | 'csv' | 'mdx' | 'triples') => {
+  const handleExportData = async (type: 'json') => {
     try {
       let filename = `repertory_export_${Date.now()}`;
-      const res = await fetch(`/api/repertory/export?type=${type}`);
-      const data = await res.json();
-      if (!data.success) throw new Error(data.error || "Server failed to export");
-      
-      const content = data.content;
-      
-      if (type === 'json') {
-        filename += '.json';
-      } else if (type === 'csv') {
-        filename += '.csv';
-      } else if (type === 'mdx') {
-        filename += '.mdx';
-      } else {
-        filename += '_triples.txt';
+      let content: string;
+
+      if (!sessionToken) {
+        throw new Error("No active session token available for JSON export.");
       }
+      const res = await fetch('/api/repertory/export', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ sessionId: sessionToken })
+      });
+      const data = await res.json();
+      if (!data.ok) {
+        throw new Error(data.error?.message || "Server failed to export session JSON");
+      }
+      content = JSON.stringify(data.export, null, 2);
+      filename += '.json';
 
       const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
       const url = URL.createObjectURL(blob);
@@ -662,8 +704,9 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    } catch (e) {
+    } catch (e: any) {
       console.error("Export operation failed:", e);
+      alert(`Export failed: ${e.message}`);
     }
   };
 
@@ -1734,7 +1777,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
               )}
 
               {/* Send / Export buttons */}
-              <div className="pt-2 border-t border-white/5 grid grid-cols-2 gap-3">
+              <div className={`pt-2 border-t border-white/5 grid ${sessionToken ? 'grid-cols-2' : 'grid-cols-1'} gap-3`}>
                 <button
                   type="button"
                   onClick={handleSendToPlanner}
@@ -1743,21 +1786,16 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
                   <Check className="w-3.5 h-3.5 text-slate-950" />
                   Send to Planner
                 </button>
-                <div className="relative group/export">
+                {sessionToken && (
                   <button
                     type="button"
-                    className="w-full bg-slate-800 hover:bg-slate-750 text-slate-200 py-2.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer border border-white/5 flex items-center justify-center gap-1 font-mono"
+                    onClick={() => handleExportData('json')}
+                    className="bg-slate-800 hover:bg-slate-750 text-slate-200 py-2.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer border border-white/5 flex items-center justify-center gap-1.5 font-mono"
                   >
                     <Download className="w-3.5 h-3.5" />
-                    Export Options
+                    Export JSON
                   </button>
-                  <div className="absolute right-0 bottom-full mb-2 hidden group-hover/export:flex flex-col bg-slate-800 border border-white/10 rounded-xl p-1 shadow-xl z-20 w-[150px] animate-in fade-in duration-200">
-                    <button onClick={() => handleExportData('json')} className="w-full text-left px-3 py-1.5 hover:bg-slate-750 text-[10px] font-bold text-slate-200 border-none bg-transparent cursor-pointer rounded-lg">JSON schema</button>
-                    <button onClick={() => handleExportData('csv')} className="w-full text-left px-3 py-1.5 hover:bg-slate-750 text-[10px] font-bold text-slate-200 border-none bg-transparent cursor-pointer rounded-lg">CSV spreadsheet</button>
-                    <button onClick={() => handleExportData('mdx')} className="w-full text-left px-3 py-1.5 hover:bg-slate-750 text-[10px] font-bold text-slate-200 border-none bg-transparent cursor-pointer rounded-lg">MDX report</button>
-                    <button onClick={() => handleExportData('triples')} className="w-full text-left px-3 py-1.5 hover:bg-slate-750 text-[10px] font-bold text-slate-200 border-none bg-transparent cursor-pointer rounded-lg">RDF Triples</button>
-                  </div>
-                </div>
+                )}
               </div>
 
             </div>

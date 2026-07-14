@@ -167,6 +167,10 @@ export interface ClinicalRepertoryRequest {
   filters?: Record<string, unknown>;
   requestedCapabilities?: ClinicalCapabilityId[];
   metadata?: Record<string, unknown>;
+  /** The active patient's ID in the current workspace context.
+   *  Forwarded to the server to scope session persistence.
+   *  The server derives the doctor identity from the session cookie — never from the client. */
+  patientId?: string;
 }
 
 export interface ClinicalRepertoryResult {
@@ -194,6 +198,7 @@ export interface ClinicalRepertoryResult {
   scoringResult?: ScoringResult;
   differentiations?: RemedyDifferentiation[];
   reasoningSummary?: ClinicalReasoningSummary;
+  sessionToken?: string;
 }
 
 export interface ClinicalSearchProvider {

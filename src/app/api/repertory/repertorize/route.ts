@@ -1,15 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
+import { randomUUID } from "crypto";
 import { getAdminDb } from "@/lib/firebaseAdmin";
 import { RepertoryScoring } from "@/features/repertory/scoring/repertoryScoring";
 import { ReasoningEngine } from "@/features/repertory/reasoning/reasoningEngine";
 import repertoryRepository from "@/features/repertory/database/repertoryDb";
+import { PublishedCorpusRepository } from "@/features/repertory/repositories/PublishedCorpusRepository";
+import { resolveDoctorRepertoryEntitlement } from "@/features/repertory/access/DoctorEntitlementRepository";
 import { authorizeRepertoryRequest } from "@/features/repertory/access/RepertoryRequestAuthorization";
+import { canAccessDoctorRepertory } from "@/features/repertory/access/DoctorEntitlementService";
 import {
   consumeRepertoryRateLimit,
   MAX_REPERTORIZATION_BODY_BYTES,
   rateLimitResponse,
   validateRepertorizationPayload,
 } from "@/features/repertory/security/RepertoryApiSecurity";
+
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -174,29 +179,91 @@ export async function POST(request: NextRequest) {
       reasoningSummary
     };
 
-    // Save session to Firestore
-    try {
-      const db = getAdminDb();
-      if (db) {
-        const sessionId = `session_${patientId}_${Date.now()}`;
-        const sessionDoc = {
-          id: sessionId,
-          patientId,
-          userId: effectiveUserId,
-          rubrics: selectedRubrics,
-          results: scoringResult.topRemedies.reduce((acc, curr) => {
-            acc[curr.remedyId] = { score: curr.score, coverage: `${curr.matches}/${selectedRubrics.length}` };
-            return acc;
-          }, {} as Record<string, any>),
-          createdAt: new Date().toISOString()
-        };
-        await db.collection("repertorization_sessions").doc(sessionId).set(sessionDoc);
+    // ── Opaque session persistence ─────────────────────────────────────────
+    // Session IDs are opaque: rsess_ prefix + 32 hex chars from randomUUID().
+    // patientId is stored in the document body only, never in the document key.
+    // Sessions are skipped for unassigned patients and zero-remedy results.
+    let sessionToken: string | undefined;
+    const isAssignedPatient =
+      typeof patientId === 'string' &&
+      patientId.length > 0 &&
+      patientId !== 'unassigned';
+    const hasResults = scoringResult.topRemedies.length > 0;
+
+    if (isAssignedPatient && hasResults) {
+      try {
+        const db = getAdminDb();
+        if (db) {
+          // Resolve entitlement for tenant fields (organizationId, clinicId).
+          // SECURITY: must have a valid entitlement with export-json capability before
+          // persisting any session document or issuing a sessionToken.
+          // Fallback to "unknown" tenant fields is explicitly disallowed.
+          const entitlement = await resolveDoctorRepertoryEntitlement(effectiveUserId);
+
+          const isAuthorized = entitlement && canAccessDoctorRepertory(entitlement, {
+            organizationId: entitlement.organizationId,
+            clinicId: entitlement.clinicId,
+            doctorId: effectiveUserId,
+            capability: "export-json",
+          });
+
+          if (!isAuthorized) {
+            // Not export-capable or invalid entitlement (e.g. suspended, expired, wrong doctor/tenant) — skip session persistence silently.
+            // The repertorization result is still returned; only the token is withheld.
+          } else {
+            const corpusVersion = await PublishedCorpusRepository.getActiveVersion();
+
+            // Generate opaque session ID: rsess_ + 32 hex chars (no patient data)
+            const opaqueId = `rsess_${randomUUID().replace(/-/g, '')}`;
+
+            const sessionDoc = {
+              schemaVersion: 1,
+              id: opaqueId,
+              organizationId: entitlement.organizationId,
+              clinicId: entitlement.clinicId,
+              userId: effectiveUserId,
+              patientId,
+              corpusVersion,
+              selectedRubricIds: validatedSymptoms.map(s => s.rubricId),
+              resultRemedyIds: scoringResult.topRemedies.map(r => r.remedyId),
+              createdAt: new Date().toISOString(),
+            };
+
+            await db
+              .collection('repertorization_sessions')
+              .doc(opaqueId)
+              .set(sessionDoc);
+
+            sessionToken = opaqueId;
+          }
+        }
+      } catch (e) {
+        // Non-fatal: scoring result is returned even if session persistence fails
+        console.warn('Failed to save repertorization session to Firestore:', e);
       }
-    } catch (e) {
-      console.warn("Failed to save session to Firestore:", e);
     }
 
-    return NextResponse.json(finalResponse, { headers: { "Cache-Control": "private, no-store" } });
+    const typedResponse: {
+      success: boolean;
+      runId: string;
+      remedyRankings: typeof finalResponse.remedyRankings;
+      validationFindings: typeof finalResponse.validationFindings;
+      clinicalWarnings: typeof finalResponse.clinicalWarnings;
+      missingInformation: typeof finalResponse.missingInformation;
+      confidenceAssessment: typeof finalResponse.confidenceAssessment;
+      nonScoringRubrics: typeof finalResponse.nonScoringRubrics;
+      warnings: typeof finalResponse.warnings;
+      scoringResult: typeof finalResponse.scoringResult;
+      differentiations: typeof finalResponse.differentiations;
+      reasoningSummary: typeof finalResponse.reasoningSummary;
+      sessionToken?: string;
+    } = { ...finalResponse };
+    if (sessionToken !== undefined) {
+      typedResponse.sessionToken = sessionToken;
+    }
+
+    return NextResponse.json(typedResponse, { headers: { 'Cache-Control': 'private, no-store' } });
+
   } catch (error: any) {
     console.error("Repertorization API failed:", error);
     return NextResponse.json({

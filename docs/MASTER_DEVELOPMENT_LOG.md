@@ -628,3 +628,52 @@ This document serves as the chronological, single source of truth for all sprint
   - Added 8 rules-unit-testing emulator assertions verifying read/write permissions, offset bounds, and note sizes.
 
 
+---
+
+## [2026-07-14] - Sprint 23: Knowledge Source Read Model Hardening (v2.17.0)
+- **Release Version**: `2.17.0`
+- **Release Tag**: `v2.17.0-source-read-model`
+- **Deployment Status**: Committed — Pending Deployment
+- **Build Verification**: Passed typecheck and foundation test gate (`knowledgeSourceReadModel.test.ts`, `fourProjectFoundations.test.ts` Sprint 23 block)
+- **Files Changed**:
+  - `src/features/knowledge/read-models/sourceVersionReadModel.ts`
+  - `src/features/knowledge/read-models/sourceDiscrepancyQueue.ts`
+  - `src/features/knowledge/read-models/sourceExpiry.ts` [NEW]
+  - `src/features/knowledge/read-models/reviewerDiscrepancyQueueService.ts` [NEW]
+  - `src/features/knowledge/read-models/auditExport.ts` [NEW]
+  - `src/app/admin/knowledge-editorial/page.tsx`
+  - `tests/knowledgeSourceReadModel.test.ts` [NEW]
+- **Major Changes**:
+  - Added `isSourceWithdrawn` and `propagateWithdrawal` utilities in `sourceExpiry.ts` for deterministic withdrawal state computation.
+  - Added `buildReviewerQueueSummary` in `reviewerDiscrepancyQueueService.ts` producing blocking/review counts from live discrepancy queue.
+  - Added `buildSourceAuditExport` and `verifyAuditExportIdempotency` in `auditExport.ts` for deterministic, schema-versioned (v1) audit exports.
+  - Added Discrepancy Queue tab to Knowledge Editorial cockpit showing reviewer queue summary.
+  - Added 15 assertions in `knowledgeSourceReadModel.test.ts` covering all read-model paths and idempotency.
+- **Integration Status**: **Foundation-only.** `isSourceWithdrawn` and `propagateWithdrawal` compute withdrawal state but are not yet connected to live search or graph indexes. The Discrepancy Queue tab renders static mock sources. The audit export schema is defined and tested but not yet surfaced via an API endpoint. Full propagation integration is deferred to a separately approved future milestone.
+
+---
+
+## [2026-07-14] - Sprint 24: Repertory Export PHI Remediation (v2.18.0)
+- **Release Version**: `2.18.0`
+- **Release Tag**: `v2.18.0-export-phi-remediation`
+- **Deployment Status**: Committed — Remediation Applied
+- **Build Verification**: Passed Next.js Production Build
+- **Files Changed**:
+  - `src/app/api/repertory/export/route.ts` [MODIFIED — POST uses authorizeRepertoryExportRequest to enforce export-json capability check]
+  - `src/app/api/repertory/repertorize/route.ts` [MODIFIED — persistent session write gated on complete canAccessDoctorRepertory entitlement check]
+  - `src/features/repertory/access/DoctorEntitlementService.ts` [MODIFIED — deleted unsafe createRepertorySessionExport]
+  - `src/features/repertory/clinicalWorkspace/clinicalRepertoryService.ts` [MODIFIED — patientId passed properly; userId stripped from client payload]
+  - `src/features/repertory/clinicalWorkspace/types.ts` [MODIFIED — added patientId to request and sessionToken to result]
+  - `src/features/repertory/components/RepertoryWorkbench.tsx` [MODIFIED — Workbench passes patientId || undefined; clears sessionToken correctly on reset, restart, and failure; ignores stale responses]
+  - `scripts/verify-production-readiness.ts` [MODIFIED — dirty-tree check scoped to production/release modes only; added authorization test to verify list]
+  - `tests/fourProjectFoundations.test.ts` [MODIFIED — test updated to use buildClinicianExport instead of deleted helper]
+  - `tests/repertoryExportAuthorization.test.ts` [NEW — unit tests for authorizeRepertoryExportRequest status and capability gates]
+  - `tests/repertoryEntitlementExport.test.ts` [MODIFIED — updated for buildClinicianExport]
+  - `tests/repertoryExportRoute.test.ts` [MODIFIED — updated to mock new exports]
+- **Security Fixes**:
+  - **PHI-free export**: sessionId and patientId structurally absent from RepertoryClinicianExportV1; value scan defense-in-depth.
+  - **Enforce export capability**: authorizeRepertoryExportRequest hardcodes export-json check.
+  - **Complete entitlement validation**: canAccessDoctorRepertory validates status, expiration, doctor ID, and tenant bounds before session creation.
+  - **Identity boundary**: client-supplied userId stripped; server derives doctor identity from session cookie.
+  - **Client session contract**: stale response detection, clear token on reset/failure, and show export options only on valid token.
+  - **Readiness check logic**: dirty-tree check now only blocks production/release modes, allowing normal dev tasks.
