@@ -30,6 +30,7 @@ const nextConfig: NextConfig = {
     workerThreads: false,
     cpus: 1
   },
+  productionBrowserSourceMaps: false,
   // Ensure repertory JSON data files are bundled with serverless functions on Vercel
   outputFileTracingIncludes: {
     "/api/repertory": ["./public/data/**/*.json"],
