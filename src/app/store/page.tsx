@@ -1749,7 +1749,7 @@ export default function StorePage() {
 
                           <div className="space-y-4 text-xs">
                             <p className="text-[11px] text-slate-655 font-semibold leading-relaxed">
-                              The table below maps common chronic and acute conditions to our clinical care tiers. If treating multiple conditions, choose the tier for your <strong>most complex</strong> complaint, then select the total condition count in the planner. Each surcharge per additional condition is ₹750/mo (for Acute Care, varying by tier).
+                              The table below maps common chronic and acute conditions to our clinical care tiers. If treating multiple conditions, choose the tier for your <strong>most complex</strong> complaint, then select the total condition count in the planner. A clinical complexity adjustment applies per additional condition (from ₹750/mo for Acute Care, varying by tier).
                             </p>
 
                             {/* Conditions count guide */}
@@ -1819,7 +1819,7 @@ export default function StorePage() {
                                 </tbody>
                               </table>
                             </div>
-                            <p className="text-[10px] text-slate-400 font-semibold">* Surcharge of ₹750/mo per additional condition beyond 1 (for Essential Acute & Wellness Care, varying by tier). Weekly billing available.</p>
+                            <p className="text-[10px] text-slate-400 font-semibold">* Clinical complexity adjustment of ₹750/mo per additional condition beyond 1 (for Essential Acute & Wellness Care, varying by tier). Weekly billing available.</p>
                           </div>
                         </motion.div>
                       )}
@@ -2830,7 +2830,7 @@ export default function StorePage() {
                           icon: "①",
                           desc: "Single focused complaint.",
                           examples: "Only eczema. Only thyroid. Only sinusitis. Only PCOS.",
-                          surcharge: "No surcharge",
+                          surcharge: "Included",
                           color: "text-slate-655"
                         },
                         {
@@ -4532,7 +4532,7 @@ export default function StorePage() {
                           icon: "①",
                           desc: "Single focused complaint.",
                           examples: "Only eczema. Only thyroid. Only sinusitis. Only PCOS.",
-                          surcharge: "No surcharge",
+                          surcharge: "Included",
                           color: "text-slate-600"
                         },
                         {
