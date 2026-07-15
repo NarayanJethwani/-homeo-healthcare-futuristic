@@ -655,9 +655,9 @@ This document serves as the chronological, single source of truth for all sprint
 
 ## [2026-07-14] - Sprint 24: Repertory Export PHI Remediation (v2.18.0)
 - **Release Version**: `2.18.0`
-- **Release Tag**: `v2.18.0-export-phi-remediation`
-- **Deployment Status**: Committed — Remediation Applied
-- **Build Verification**: Passed Next.js Production Build
+- **Release Tag**: `v2.18.0`
+- **Deployment Status**: Deployed
+- **Build Verification**: Passed production verification check (SHA af57029989cf2a33d0a503e91197e83dec9002c2)
 - **Files Changed**:
   - `src/app/api/repertory/export/route.ts` [MODIFIED — POST uses authorizeRepertoryExportRequest to enforce export-json capability check]
   - `src/app/api/repertory/repertorize/route.ts` [MODIFIED — persistent session write gated on complete canAccessDoctorRepertory entitlement check]
