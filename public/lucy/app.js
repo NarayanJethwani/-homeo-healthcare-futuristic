@@ -1748,14 +1748,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         xhr.send(JSON.stringify({
             query: inputText,
-            score: state.vitalityScore,
-            hasAssessments: state.hasAssessments,
-            answers: state.assessAnswers,
-            logs: state.dailyLogs,
-            mode: "patient",
-            lang: state.lang,
-            micActive: isVoice,
-            ttsSupported: isLanguageTTSSupported(state.lang)
+            mode: "public",
+            lang: state.lang
         }));
     }
 

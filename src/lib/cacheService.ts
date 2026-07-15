@@ -136,6 +136,10 @@ class ResponseCacheService {
     this.localCache.clear();
   }
 
+  getRedisClient(): any {
+    return this.redisClient;
+  }
+
   async getStats(): Promise<{ type: string; size: number }> {
     return {
       type: this.useRedis ? "Redis" : "In-Memory",

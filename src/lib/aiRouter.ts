@@ -2,6 +2,16 @@ import { cacheService, CACHE_TTLS } from "./cacheService";
 import { ragService } from "./ragService";
 import { ollamaService } from "./ollama";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { ProviderPolicy } from "../features/ai-security/provider-policy/providerPolicy";
+import { APPROVED_PROVIDERS, ApprovedProviderConfig } from "../features/ai-security/provider-policy/approvedProviders";
+
+export class OrphanedProviderError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "OrphanedProviderError";
+    Object.setPrototypeOf(this, OrphanedProviderError.prototype);
+  }
+}
 
 // Task categories and preferred model routing rules
 export type MedicalTaskCategory =
@@ -460,9 +470,21 @@ export class AIRouterService {
     totalTokens: number,
     failureReason?: string
   ) {
+    let sanitizedFailureReason = failureReason;
+    if (failureReason) {
+      const lowerReason = failureReason.toLowerCase();
+      if (lowerReason.includes("safety") || lowerReason.includes("blocked") || lowerReason.includes("refusal")) {
+        sanitizedFailureReason = "Safety policy block / safety refusal";
+      } else if (lowerReason.includes("api key") || lowerReason.includes("unauthorized") || lowerReason.includes("401") || lowerReason.includes("403")) {
+        sanitizedFailureReason = "Authentication/authorization error";
+      } else {
+        sanitizedFailureReason = "Operational failure / transient error";
+      }
+    }
+
     const log: RequestLog = {
       timestamp: new Date().toISOString(),
-      query: query.substring(0, 100) + (query.length > 100 ? "..." : ""),
+      query: "[REDACTED_QUERY]",
       category,
       provider,
       model,
@@ -474,7 +496,7 @@ export class AIRouterService {
       promptTokens,
       completionTokens,
       totalTokens,
-      failureReason
+      failureReason: sanitizedFailureReason
     };
     requestLogs.unshift(log);
     if (requestLogs.length > MAX_LOGS) {
@@ -578,7 +600,7 @@ export class AIRouterService {
     }
   }
 
-  // Main router method using staggered parallel failover racing
+  // Main router method using sequential fallback queueing
   async consultAI(
     query: string,
     systemInstruction: string,
@@ -588,10 +610,13 @@ export class AIRouterService {
       logs?: any;
       mode?: string;
       lang?: string;
-    } = {}
+    },
+    dataClassification: "phi" | "non-phi",
+    signal?: AbortSignal
   ): Promise<AIResponse> {
     const startTime = Date.now();
     const taskCategory = this.classifyTask(query);
+    const hasPHI = dataClassification === "phi";
 
     // Dynamic discovery calls in background
     if (process.env.GEMINI_API_KEY) {
@@ -601,82 +626,88 @@ export class AIRouterService {
       discoverQwenModels(process.env.QWEN_API_KEY).catch(() => {});
     }
 
-    // 1. Check Local Cache first
+    // 1. Check Local Cache first (BYPASS completely for PHI queries)
     const cacheKey = `ai_response:${Buffer.from(query + "_" + systemInstruction + "_" + options.lang).toString("base64")}`;
-    const cachedResponse = await cacheService.get(cacheKey);
-    if (cachedResponse) {
-      console.log("Response found in Cache.");
-      const latency = Date.now() - startTime;
-      this.updateStats(true, latency, 0, true, false, cachedResponse.providerUsed);
-      this.addRequestLog(query, taskCategory, cachedResponse.providerUsed, cachedResponse.modelUsed, latency, "Success", 0, true, false, 0, 0, 0);
-      return {
-        success: true,
-        response: cachedResponse.response,
-        providerUsed: cachedResponse.providerUsed,
-        modelUsed: cachedResponse.modelUsed,
-        latencyMs: latency,
-        retryCount: 0,
-        cacheHit: true,
-        knowledgeHit: false
-      };
-    }
-
-    // 2. Search local Knowledge Base (RAG)
-    try {
-      const ragHit = await ragService.queryLocalKnowledge(query);
-      if (ragHit) {
+    if (!hasPHI) {
+      const cachedResponse = await cacheService.get(cacheKey);
+      if (cachedResponse) {
+        console.log("Response found in Cache.");
         const latency = Date.now() - startTime;
-        const result: AIResponse = {
+        this.updateStats(true, latency, 0, true, false, cachedResponse.providerUsed);
+        this.addRequestLog(query, taskCategory, cachedResponse.providerUsed, cachedResponse.modelUsed, latency, "Success", 0, true, false, 0, 0, 0);
+        return {
           success: true,
-          response: ragHit.answer,
-          providerUsed: "Knowledge Base (Local)",
-          modelUsed: "Vector Search",
+          response: cachedResponse.response,
+          providerUsed: cachedResponse.providerUsed,
+          modelUsed: cachedResponse.modelUsed,
           latencyMs: latency,
           retryCount: 0,
-          cacheHit: false,
-          knowledgeHit: true,
-          citations: ragHit.citations
+          cacheHit: true,
+          knowledgeHit: false
         };
-        const ttl = taskCategory === "faq" ? CACHE_TTLS.FAQ : CACHE_TTLS.ARTICLE;
-        await cacheService.set(cacheKey, result, ttl);
-        
-        this.updateStats(true, latency, 0, false, true, "Knowledge Base (Local)");
-        this.addRequestLog(query, taskCategory, "Knowledge Base (Local)", "Vector Search", latency, "Success", 0, false, true, 0, 0, 0);
-        return result;
       }
-    } catch (e) {
-      console.error("Local RAG Search encountered error, continuing:", e);
+    }
+
+    // 2. Search local Knowledge Base (RAG) (BYPASS completely for PHI queries)
+    if (!hasPHI) {
+      try {
+        const ragHit = await ragService.queryLocalKnowledge(query);
+        if (ragHit) {
+          const latency = Date.now() - startTime;
+          const result: AIResponse = {
+            success: true,
+            response: ragHit.answer,
+            providerUsed: "Knowledge Base (Local)",
+            modelUsed: "Vector Search",
+            latencyMs: latency,
+            retryCount: 0,
+            cacheHit: false,
+            knowledgeHit: true,
+            citations: ragHit.citations
+          };
+          const ttl = taskCategory === "faq" ? CACHE_TTLS.FAQ : CACHE_TTLS.ARTICLE;
+          await cacheService.set(cacheKey, result, ttl);
+          
+          this.updateStats(true, latency, 0, false, true, "Knowledge Base (Local)");
+          this.addRequestLog(query, taskCategory, "Knowledge Base (Local)", "Vector Search", latency, "Success", 0, false, true, 0, 0, 0);
+          return result;
+        }
+      } catch (e) {
+        console.error("[AIRouter] Local RAG search failed. Details redacted.");
+      }
     }
 
     // Retrieve RAG Grounding Context if there's no direct high-confidence hit
     let groundingContext = "";
     const activeCitations: string[] = [];
 
-    try {
-      const searchResults = await ragService.hybridSearch(query, "ai-clinical-context");
-      const relevantMatches = searchResults
-        .filter(r => r.score >= 0.35)
-        .slice(0, 3);
+    if (!hasPHI) {
+      try {
+        const searchResults = await ragService.hybridSearch(query, "ai-clinical-context");
+        const relevantMatches = searchResults
+          .filter(r => r.score >= 0.35)
+          .slice(0, 3);
 
-      if (relevantMatches.length > 0) {
-        console.log(`[AIRouter] Found ${relevantMatches.length} grounding documents for query: "${query.substring(0, 30)}..."`);
-        groundingContext = "\n\n[GROUNDING CONTEXT FROM APPROVED HOMEOPATHIC SOURCES]\n";
-        relevantMatches.forEach((m, idx) => {
-          groundingContext += `[Source ${idx + 1}]: ${m.document.title}\nContent snippet: ${m.document.content}\n\n`;
-          m.document.citations.forEach(c => {
-            if (!activeCitations.includes(c)) activeCitations.push(c);
+        if (relevantMatches.length > 0) {
+          console.log(`[AIRouter] Found ${relevantMatches.length} grounding documents for query: "${query.substring(0, 30)}..."`);
+          groundingContext = "\n\n[GROUNDING CONTEXT FROM APPROVED HOMEOPATHIC SOURCES]\n";
+          relevantMatches.forEach((m, idx) => {
+            groundingContext += `[Source ${idx + 1}]: ${m.document.title}\nContent snippet: ${m.document.content}\n\n`;
+            m.document.citations.forEach(c => {
+              if (!activeCitations.includes(c)) activeCitations.push(c);
+            });
           });
-        });
-        
-        systemInstruction = `${systemInstruction}\n\nGround your medical analysis strictly in the provided approved homeopathic context. Cite your sources dynamically when referencing facts from the context.`;
+          
+          systemInstruction = `${systemInstruction}\n\nGround your medical analysis strictly in the provided approved homeopathic context. Cite your sources dynamically when referencing facts from the context.`;
+        }
+      } catch (e) {
+        console.error("[AIRouter] Error fetching grounding context. Details redacted.");
       }
-    } catch (e) {
-      console.error("[AIRouter] Error fetching grounding context:", e);
     }
 
     const finalQuery = groundingContext ? `${query}\n\n${groundingContext}` : query;
 
-    // 3. Staggered Parallel Race candidate tasks building
+    // 3. Sequential Candidate tasks building
     const tasks: RaceTask[] = [];
 
     // Sort Gemini priorities based on intelligent model selection rules
@@ -701,9 +732,9 @@ export class AIRouterService {
             name: `Gemini (${mName})`,
             provider: "Gemini",
             model: mName,
-            run: async (signal) => {
+            run: async (sig) => {
               return await this.executeProviderCall("Gemini", mName, () => 
-                this.callGemini(geminiKey, mName, finalQuery, systemInstruction, signal)
+                this.callGemini(geminiKey, mName, finalQuery, systemInstruction, sig)
               );
             }
           });
@@ -717,9 +748,9 @@ export class AIRouterService {
         name: "DeepSeek (deepseek-chat)",
         provider: "DeepSeek",
         model: "deepseek-chat",
-        run: async (signal) => {
+        run: async (sig) => {
           return await this.executeProviderCall("DeepSeek", "deepseek-chat", () =>
-            this.callDeepSeek(process.env.DEEPSEEK_API_KEY!, finalQuery, systemInstruction, signal)
+            this.callDeepSeek(process.env.DEEPSEEK_API_KEY!, finalQuery, systemInstruction, sig)
           );
         }
       });
@@ -738,15 +769,15 @@ export class AIRouterService {
             name: `Qwen (${model})`,
             provider: "Qwen",
             model: model,
-            run: async (signal) => {
+            run: async (sig) => {
               return await this.executeProviderCall("Qwen", model, () =>
-                this.callQwen(process.env.QWEN_API_KEY!, model, finalQuery, systemInstruction, signal)
+                this.callQwen(process.env.QWEN_API_KEY!, model, finalQuery, systemInstruction, sig)
               );
             }
           });
         }
       } catch (err: any) {
-        console.error("[AIRouter] Qwen model selection failed dynamically:", err.message);
+        console.error("[AIRouter] Qwen model selection failed dynamically. Details redacted.");
       }
     }
 
@@ -756,9 +787,9 @@ export class AIRouterService {
         name: "GLM (glm-4)",
         provider: "GLM",
         model: "glm-4",
-        run: async (signal) => {
+        run: async (sig) => {
           return await this.executeProviderCall("GLM", "glm-4", () =>
-            this.callGLM(process.env.GLM_API_KEY!, finalQuery, systemInstruction, signal)
+            this.callGLM(process.env.GLM_API_KEY!, finalQuery, systemInstruction, sig)
           );
         }
       });
@@ -770,9 +801,9 @@ export class AIRouterService {
         name: "HuggingFace (dynamic)",
         provider: "HuggingFace",
         model: "hf-dynamic",
-        run: async (signal) => {
+        run: async (sig) => {
           return await this.executeProviderCall("HuggingFace", "hf-dynamic", () =>
-            this.callHuggingFace(process.env.HF_API_KEY!, finalQuery, systemInstruction, signal)
+            this.callHuggingFace(process.env.HF_API_KEY!, finalQuery, systemInstruction, sig)
           );
         }
       });
@@ -785,26 +816,44 @@ export class AIRouterService {
         name: "Ollama (Local)",
         provider: "Ollama",
         model: "ollama-local",
-        run: async (signal) => {
+        run: async (sig) => {
           const selectType = taskCategory === "reasoning" || taskCategory === "long_reasoning" 
             ? "reasoning" 
             : taskCategory === "coding" 
               ? "primary"
               : "general";
           const model = ollamaService.selectModel(selectType);
-          return await ollamaService.generate(model, finalQuery, systemInstruction, { signal });
+          return await ollamaService.generate(model, finalQuery, systemInstruction, { signal: sig });
         }
       });
     }
 
-    if (tasks.length === 0) {
-      console.error("[AIRouter] No candidate providers/models available for routing.");
-      return this.returnFailureResponse(startTime, query, taskCategory, 0, "No candidate providers configured or available");
+    // Filter to only governance approved and active models if request classification contains PHI
+    if (hasPHI) {
+      const phiTasks = tasks.filter(t => {
+        const approved = APPROVED_PROVIDERS.find(p => 
+          p.modelName === t.model && 
+          p.providerId === t.provider && 
+          p.phiApproved === true && 
+          p.dataRetention === "zero-retention" &&
+          p.region &&
+          p.contractReferenceId &&
+          p.status === "active"
+        );
+        return !!approved;
+      });
+      tasks.length = 0;
+      tasks.push(...phiTasks);
     }
 
-    // 4. Run staggered race (stagger timeout is 4 seconds)
+    if (tasks.length === 0) {
+      console.error("[AIRouter] No candidate providers/models available for routing. PHI query fail closed.");
+      return this.returnFailureResponse(startTime, query, taskCategory, 0, "No candidate providers configured or available", dataClassification);
+    }
+
+    // 4. Run sequential non-overlapping fallback (timeout per candidate is 4 seconds)
     try {
-      const raceResult = await this.runWithStaggeredFallback(tasks, 4000);
+      const raceResult = await this.runWithStaggeredFallback(tasks, 4000, dataClassification, signal);
       
       // Calculate token counts
       const promptTokens = Math.ceil((finalQuery.length + systemInstruction.length) / 4);
@@ -826,17 +875,24 @@ export class AIRouterService {
       // Record success in health manager
       this.recordSuccess(raceResult.provider, raceResult.model, raceResult.latencyMs, totalTokens);
 
-      // Cache response
-      const ttl = taskCategory === "faq" ? CACHE_TTLS.FAQ : CACHE_TTLS.ARTICLE;
-      await cacheService.set(cacheKey, result, ttl);
+      // Cache response (BYPASS for PHI)
+      if (!hasPHI) {
+        const ttl = taskCategory === "faq" ? CACHE_TTLS.FAQ : CACHE_TTLS.ARTICLE;
+        await cacheService.set(cacheKey, result, ttl);
+      }
 
       this.updateStats(true, raceResult.latencyMs, 0, false, activeCitations.length > 0, raceResult.provider);
-      this.addRequestLog(query, taskCategory, raceResult.provider, raceResult.model, raceResult.latencyMs, "Success", 0, false, activeCitations.length > 0, promptTokens, completionTokens, totalTokens);
+      
+      const logQuery = hasPHI ? "[PHI_REDACTED]" : query;
+      this.addRequestLog(logQuery, taskCategory, raceResult.provider, raceResult.model, raceResult.latencyMs, "Success", 0, false, activeCitations.length > 0, promptTokens, completionTokens, totalTokens);
 
       return result;
     } catch (err: any) {
-      console.error("[AIRouter] All raced providers failed:", err.message || err);
-      return this.returnFailureResponse(startTime, query, taskCategory, 0, err.message || "All raced providers failed");
+      if (err instanceof OrphanedProviderError || err.name === "OrphanedProviderError") {
+        throw err;
+      }
+      console.error("[AIRouter] All sequential providers failed. Details redacted.");
+      return this.returnFailureResponse(startTime, query, taskCategory, 0, "All sequential providers failed", dataClassification);
     }
   }
 
@@ -845,11 +901,15 @@ export class AIRouterService {
     query: string,
     taskCategory: MedicalTaskCategory,
     retries: number,
-    reason: string
+    reason: string,
+    dataClassification: "phi" | "non-phi"
   ): AIResponse {
     const latency = Date.now() - startTime;
     this.updateStats(false, latency, retries, false, false, "None");
-    this.addRequestLog(query, taskCategory, "None", "None", latency, "Failed", retries, false, false, 0, 0, 0, reason);
+    
+    const logQuery = dataClassification === "phi" ? "[PHI_REDACTED]" : query;
+    const logReason = dataClassification === "phi" ? "[ERROR_REDACTED]" : reason;
+    this.addRequestLog(logQuery, taskCategory, "None", "None", latency, "Failed", retries, false, false, 0, 0, 0, logReason);
 
     return {
       success: false,
@@ -860,136 +920,117 @@ export class AIRouterService {
       retryCount: retries,
       cacheHit: false,
       knowledgeHit: false,
-      error: reason
+      error: logReason
     };
   }
 
-  // Staggered race runner
+  // Staggered sequential fallback runner: no overlapping provider executions
   private async runWithStaggeredFallback(
     tasks: RaceTask[],
-    timeoutMs = 4000
+    timeoutMs = 4000,
+    dataClassification: "phi" | "non-phi",
+    signal?: AbortSignal
   ): Promise<{ response: string; provider: string; model: string; latencyMs: number }> {
-    const controllers: AbortController[] = [];
-    const activePromises = new Map<number, Promise<any>>();
     const errors: { name: string; message: string; status: number }[] = [];
-    const startTimes = new Map<number, number>();
-    let successValue: { response: string; provider: string; model: string; latencyMs: number } | null = null;
     
-    const cleanup = (successIndex: number) => {
-      controllers.forEach((controller, idx) => {
-        if (idx !== successIndex) {
-          try {
-            controller.abort();
-          } catch {
-            // ignore
-          }
-        }
+    for (let i = 0; i < tasks.length; i++) {
+      if (signal?.aborted) {
+        throw new Error("Request aborted");
+      }
+
+      const task = tasks[i];
+      const controller = new AbortController();
+      const startTime = Date.now();
+      
+      const onAbort = () => {
+        controller.abort();
+      };
+      if (signal) {
+        signal.addEventListener("abort", onAbort);
+      }
+
+      console.log(`[AIRouter] Sequential fallback executing task ${i}: ${task.provider} (${task.model})`);
+
+      let timeoutId: any;
+      const timeoutPromise = new Promise((_, reject) => {
+        timeoutId = setTimeout(() => {
+          reject(new Error("Timeout"));
+        }, timeoutMs);
       });
-    };
 
-    const delay = (ms: number) => new Promise((resolve) => setTimeout(() => resolve(TIMEOUT_TOKEN), ms));
-    let nextIndex = 0;
-    
-    while (successValue === null) {
-      if (nextIndex < tasks.length && !activePromises.has(nextIndex)) {
-        const idx = nextIndex;
-        const controller = new AbortController();
-        controllers[idx] = controller;
-        startTimes.set(idx, Date.now());
-        
-        console.log(`[AIRouter] Launching staggered task ${idx}: ${tasks[idx].name}`);
-        
-        const promise = tasks[idx].run(controller.signal)
-          .then((res) => {
-            return { type: "success" as const, index: idx, value: res };
-          })
-          .catch((err) => {
-            return { type: "error" as const, index: idx, error: err };
+      let taskPromise: Promise<any> | null = null;
+      try {
+        taskPromise = task.run(controller.signal);
+        const res = (await Promise.race([taskPromise, timeoutPromise])) as any;
+        clearTimeout(timeoutId);
+        if (signal) {
+          signal.removeEventListener("abort", onAbort);
+        }
+
+        const responseText = typeof res === "string" ? res : res.response;
+        const resolvedModel = (typeof res === "object" && res.modelUsed) ? res.modelUsed : task.model;
+
+        return {
+          response: responseText,
+          provider: task.provider,
+          model: resolvedModel,
+          latencyMs: Date.now() - startTime
+        };
+      } catch (err: any) {
+        clearTimeout(timeoutId);
+        if (signal) {
+          signal.removeEventListener("abort", onAbort);
+        }
+        controller.abort(); // actively cancel/abort task execution
+
+        if (err.message === "Timeout" && taskPromise) {
+          let graceTimeoutId: any;
+          const graceTimeoutPromise = new Promise((_, reject) => {
+            graceTimeoutId = setTimeout(() => {
+              reject(new OrphanedProviderError("Grace period timeout: task did not settle after abort"));
+            }, 1000);
           });
-          
-        activePromises.set(idx, promise);
-        nextIndex++;
-      }
-      
-      if (activePromises.size === 0) {
-        break;
-      }
-      
-      const promisesToRace = Array.from(activePromises.values());
-      
-      if (nextIndex < tasks.length) {
-        const result = await Promise.race([...promisesToRace, delay(timeoutMs)]);
-        
-        if (result === TIMEOUT_TOKEN) {
-          console.log(`[AIRouter] Stagger timeout reached after ${timeoutMs}ms. Activating next task...`);
-          continue;
-        }
-        
-        const { type, index, value, error } = result;
-        activePromises.delete(index);
-        const latency = Date.now() - startTimes.get(index)!;
-        
-        if (type === "success") {
-          const responseText = typeof value === "string" ? value : value.response;
-          const resolvedModel = (typeof value === "object" && value.modelUsed) ? value.modelUsed : tasks[index].model;
 
-          successValue = {
-            response: responseText,
-            provider: tasks[index].provider,
-            model: resolvedModel,
-            latencyMs: latency
-          };
-          cleanup(index);
-          break;
-        } else {
-          const status = getErrorStatus(error);
-          console.warn(`[AIRouter] Task ${index} (${tasks[index].name}) failed in ${latency}ms (Status: ${status}):`, error.message || error);
-          
-          this.recordFailure(tasks[index].provider, tasks[index].model, error);
-          
-          if (status === 429) {
-            markModelFailed(tasks[index].model);
+          try {
+            await Promise.race([
+              taskPromise.then(() => {}).catch(() => {}),
+              graceTimeoutPromise
+            ]);
+            clearTimeout(graceTimeoutId);
+          } catch (graceErr: any) {
+            clearTimeout(graceTimeoutId);
+            throw graceErr; // Rethrow OrphanedProviderError immediately to stop fallback
           }
-          
-          errors.push({ name: tasks[index].name, message: error.message || String(error), status });
         }
-      } else {
-        const result = await Promise.race(promisesToRace);
-        const { type, index, value, error } = result;
-        activePromises.delete(index);
-        const latency = Date.now() - startTimes.get(index)!;
-        
-        if (type === "success") {
-          const responseText = typeof value === "string" ? value : value.response;
-          const resolvedModel = (typeof value === "object" && value.modelUsed) ? value.modelUsed : tasks[index].model;
 
-          successValue = {
-            response: responseText,
-            provider: tasks[index].provider,
-            model: resolvedModel,
-            latencyMs: latency
-          };
-          cleanup(index);
-          break;
-        } else {
-          const status = getErrorStatus(error);
-          console.warn(`[AIRouter] Final task ${index} (${tasks[index].name}) failed in ${latency}ms:`, error.message || error);
-          
-          this.recordFailure(tasks[index].provider, tasks[index].model, error);
-          if (status === 429) {
-            markModelFailed(tasks[index].model);
-          }
-          
-          errors.push({ name: tasks[index].name, message: error.message || String(error), status });
+        if (signal?.aborted) {
+          throw new Error("Request aborted");
         }
+
+        const latency = Date.now() - startTime;
+        const errMsg = err?.message || String(err);
+        const status = getErrorStatus(err);
+
+        console.warn(`[AIRouter] Task ${i} (${task.provider}) failed. Details redacted. Status: ${status}`);
+        this.recordFailure(task.provider, task.model, err);
+
+        // Check for safety refusal
+        const nextTask = tasks[i + 1] || null;
+        const nextCandidate = nextTask ? APPROVED_PROVIDERS.find(p => p.modelName === nextTask.model) || null : null;
+        if (!ProviderPolicy.shouldFallback(errMsg, dataClassification, nextCandidate)) {
+          console.error("[AIRouter] Non-fallbackable safety/auth error encountered. Details redacted. Aborting race.");
+          throw err;
+        }
+
+        if (status === 429) {
+          markModelFailed(task.model);
+        }
+
+        errors.push({ name: task.name, message: "[REDACTED]", status });
       }
     }
-    
-    if (successValue !== null) {
-      return successValue;
-    }
-    
-    throw new Error(`All providers failed: ${errors.map(e => `${e.name}: ${e.message}`).join("; ")}`);
+
+    throw new Error("All sequential providers failed. Details redacted.");
   }
 
   // --- API Providers Call Implementations ---

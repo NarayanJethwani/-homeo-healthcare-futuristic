@@ -82,11 +82,7 @@ export default function ObservabilityDashboard() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           query: testQuery,
-          score: 75,
-          answers: [],
-          logs: [],
-          mode: "patient",
-          hasAssessments: false,
+          mode: "public",
           lang: "en"
         })
       });
