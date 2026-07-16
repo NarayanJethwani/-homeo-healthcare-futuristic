@@ -689,7 +689,7 @@ export class AIRouterService {
           .slice(0, 3);
 
         if (relevantMatches.length > 0) {
-          console.log(`[AIRouter] Found ${relevantMatches.length} grounding documents for query: "${query.substring(0, 30)}..."`);
+          console.log(`[AIRouter] Found ${relevantMatches.length} grounding documents for query.`);
           groundingContext = "\n\n[GROUNDING CONTEXT FROM APPROVED HOMEOPATHIC SOURCES]\n";
           relevantMatches.forEach((m, idx) => {
             groundingContext += `[Source ${idx + 1}]: ${m.document.title}\nContent snippet: ${m.document.content}\n\n`;

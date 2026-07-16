@@ -8,8 +8,6 @@ interface Stats {
   failures: number;
   cacheHits: number;
   knowledgeHits: number;
-  retries: number;
-  fallbacks: number;
   averageLatencyMs: number;
   activeProvider: string;
   providerHealth: Record<string, "Healthy" | "Degraded" | "Offline">;
@@ -17,13 +15,10 @@ interface Stats {
 
 interface RequestLog {
   timestamp: string;
-  query: string;
-  category: string;
   provider: string;
   model: string;
   latencyMs: number;
   status: "Success" | "Failed";
-  retries: number;
   cacheHit: boolean;
   knowledgeHit: boolean;
 }
@@ -33,6 +28,10 @@ interface HealthData {
   stats: Stats;
   cache: { type: string; size: number };
   logs: RequestLog[];
+  metricScope: {
+    type: "instance";
+    resettable: boolean;
+  };
 }
 
 export default function ObservabilityDashboard() {
@@ -136,8 +135,11 @@ export default function ObservabilityDashboard() {
             <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
               Lucy Router Analytics
             </h1>
+            <span className="text-xs text-yellow-500/80 bg-yellow-950/30 px-2.5 py-1 border border-yellow-900/40 rounded-full font-mono">
+              Instance Scoped (Resettable)
+            </span>
           </div>
-          <p className="text-sm text-zinc-400 mt-1 font-mono">
+          <p className="text-sm text-zinc-400 mt-2 font-mono">
             Production-Grade Hybrid AI Gateway & Fallback Monitor
           </p>
         </div>
@@ -187,7 +189,7 @@ export default function ObservabilityDashboard() {
             <div className="bg-zinc-900/40 border border-zinc-800/80 rounded-xl p-5 backdrop-blur-md">
               <div className="flex items-center justify-between text-zinc-400 mb-2">
                 <span className="text-xs uppercase font-mono tracking-wider">RAG Hit Rate</span>
-                <Search className="h-4 w-4 text-indigo-400" />
+                <span className="text-xs font-bold text-zinc-400 font-mono">{(parseFloat(ragHitRate)).toFixed(1)}%</span>
               </div>
               <p className="text-2xl font-bold text-zinc-100">{ragHitRate}%</p>
               <p className="text-xs text-indigo-400 font-mono mt-1">Direct KB Answers</p>
@@ -238,7 +240,7 @@ export default function ObservabilityDashboard() {
                   <div key={i} className="pt-2 flex items-start justify-between gap-4">
                     <div className="flex flex-col gap-1">
                       <span className="text-zinc-500">[{new Date(log.timestamp).toLocaleTimeString()}]</span>
-                      <span className="text-zinc-300 font-medium">"{log.query}"</span>
+                      <span className="text-zinc-300 font-medium">Routed Request</span>
                       <div className="flex gap-3 text-[10px] text-zinc-400">
                         <span>Provider: <strong className="text-zinc-200">{log.provider}</strong></span>
                         <span>Model: <strong className="text-zinc-200">{log.model}</strong></span>
@@ -251,7 +253,6 @@ export default function ObservabilityDashboard() {
                       </span>
                       {log.cacheHit && <span className="text-[10px] text-cyan-400">Cache Hit</span>}
                       {log.knowledgeHit && <span className="text-[10px] text-indigo-400">KB Hit</span>}
-                      {log.retries > 0 && <span className="text-[10px] text-yellow-400">Retries: {log.retries}</span>}
                     </div>
                   </div>
                 ))
@@ -281,12 +282,12 @@ export default function ObservabilityDashboard() {
                 <span className="font-mono font-bold text-red-400">{stats?.failures || 0}</span>
               </div>
               <div className="flex justify-between border-b border-zinc-800/40 pb-2">
-                <span className="text-zinc-400">Dynamic Failovers</span>
-                <span className="font-mono font-bold text-yellow-400">{stats?.fallbacks || 0}</span>
+                <span className="text-zinc-400">Cache Hits</span>
+                <span className="font-mono font-bold text-cyan-450">{stats?.cacheHits || 0}</span>
               </div>
               <div className="flex justify-between pb-2">
-                <span className="text-zinc-400">Accumulated Retries</span>
-                <span className="font-mono font-bold text-zinc-200">{stats?.retries || 0}</span>
+                <span className="text-zinc-400">Knowledge Hits</span>
+                <span className="font-mono font-bold text-indigo-400">{stats?.knowledgeHits || 0}</span>
               </div>
             </div>
           </div>

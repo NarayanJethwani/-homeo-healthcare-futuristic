@@ -212,6 +212,7 @@ async function runTests() {
     mockRedis.evalCalls.length = 0;
     mockRedis.setCalls.length = 0;
     mockRedis.eval = MockRedisClient.prototype.eval;
+    IPRateLimiter.resetAll();
   }
 
   // --- PRESERVED 18 BOUNDARY TESTS ---
@@ -1457,6 +1458,411 @@ async function runTests() {
     } finally {
       process.env.ALLOW_DEV_ADMIN_BYPASS = originalBypass;
     }
+  });
+
+  await test("43. Local IP Limiter Capacity Cap: limiter size cannot exceed 1000 and new IPs fail closed", async () => {
+    const { IPRateLimiter } = await import("../src/features/ai-security/protection/rateLimiter");
+    IPRateLimiter.resetAll();
+
+    // Fill to 1000
+    for (let i = 0; i < 1000; i++) {
+      const res = IPRateLimiter.isRateLimited(`192.168.1.${i}`);
+      assert.strictEqual(res.limited, false, `IP 192.168.1.${i} should not be rate limited`);
+    }
+
+    // Try 1001st IP
+    const extra = IPRateLimiter.isRateLimited("192.168.2.1");
+    assert.strictEqual(extra.limited, true, "New IP at capacity must fail closed");
+    assert.strictEqual(extra.retryAfter, 60);
+
+    IPRateLimiter.resetAll();
+  });
+
+  await test("44. Local IP Limiter Expiration Reclamation: expired entries are pruned when map is full", async () => {
+    const { IPRateLimiter } = await import("../src/features/ai-security/protection/rateLimiter");
+    IPRateLimiter.resetAll();
+
+    // Fill to 1000
+    const baseTime = Date.now();
+    const mockClock = {
+      currentTime: baseTime,
+      now() {
+        return new Date(this.currentTime);
+      }
+    };
+
+    for (let i = 0; i < 1000; i++) {
+      IPRateLimiter.isRateLimited(`192.168.1.${i}`, mockClock);
+    }
+
+    // Advance clock by 61 seconds so entries expire
+    mockClock.currentTime += 61000;
+
+    // Request new IP should prune some expired and succeed
+    const res = IPRateLimiter.isRateLimited("192.168.2.1", mockClock);
+    assert.strictEqual(res.limited, false, "New IP should be allowed after expiration and pruning");
+
+    IPRateLimiter.resetAll();
+  });
+
+  await test("45. Existing IP Accounting at Capacity: existing IPs can make requests successfully even when map is full", async () => {
+    const { IPRateLimiter } = await import("../src/features/ai-security/protection/rateLimiter");
+    IPRateLimiter.resetAll();
+
+    // Fill to 1000 (including 192.168.1.5)
+    for (let i = 0; i < 1000; i++) {
+      IPRateLimiter.isRateLimited(`192.168.1.${i}`);
+    }
+
+    // Existing IP request should succeed (within limit of 5 requests)
+    const res = IPRateLimiter.isRateLimited("192.168.1.5", undefined, 5);
+    assert.strictEqual(res.limited, false, "Existing IP should be allowed to make subsequent requests");
+
+    IPRateLimiter.resetAll();
+  });
+
+  await test("46. Health Endpoint Authorization Boundaries (401 vs 403)", async () => {
+    const { GET: ragGet } = await import("../src/app/api/admin/observability/rag-health/route");
+    const { GET: routerGet } = await import("../src/app/api/ai-router/health/route");
+
+    // 1. Missing session returns 401
+    const req1 = new NextRequest("http://localhost/api/admin/observability/rag-health", {
+      method: "GET"
+    });
+    const res1 = await ragGet(req1);
+    assert.strictEqual(res1.status, 401, "Missing session should return 401");
+
+    const req2 = new NextRequest("http://localhost/api/ai-router/health", {
+      method: "GET"
+    });
+    const res2 = await routerGet(req2);
+    assert.strictEqual(res2.status, 401, "Missing session should return 401");
+
+    // 2. Doctor session (authenticated but insufficient permission) returns 403
+    const req3 = new NextRequest("http://localhost/api/admin/observability/rag-health", {
+      method: "GET",
+      headers: {
+        "Cookie": `hh_admin_session_v3=${validDoctorCookie}`
+      }
+    });
+    const res3 = await ragGet(req3);
+    assert.strictEqual(res3.status, 403, "Insufficient permission should return 403");
+
+    const req4 = new NextRequest("http://localhost/api/ai-router/health", {
+      method: "GET",
+      headers: {
+        "Cookie": `hh_admin_session_v3=${validDoctorCookie}`
+      }
+    });
+    const res4 = await routerGet(req4);
+    assert.strictEqual(res4.status, 403, "Insufficient permission should return 403");
+  });
+
+  await test("47. Disallowed Origin CORS blocks", async () => {
+    const { GET: routerGet, OPTIONS: routerOptions } = await import("../src/app/api/ai-router/health/route");
+
+    // OPTIONS preflight with disallowed origin returns 403
+    const req1 = new NextRequest("http://localhost/api/ai-router/health", {
+      method: "OPTIONS",
+      headers: {
+        "origin": "https://malicious.com"
+      }
+    });
+    const res1 = await routerOptions(req1);
+    assert.strictEqual(res1.status, 403, "Disallowed origin OPTIONS preflight must return 403");
+
+    // GET with disallowed origin does not return Access-Control-Allow-Origin header
+    const validAdminCookie = await createAdminSessionCookie({
+      uid: "admin-1",
+      role: "super-admin",
+      exp: Math.floor(Date.now() / 1000) + 3600
+    });
+
+    const req2 = new NextRequest("http://localhost/api/ai-router/health", {
+      method: "GET",
+      headers: {
+        "Cookie": `hh_admin_session_v3=${validAdminCookie}`,
+        "origin": "https://malicious.com"
+      }
+    });
+    const res2 = await routerGet(req2);
+    assert.strictEqual(res2.headers.get("access-control-allow-origin"), null, "Disallowed origin GET must omit Access-Control-Allow-Origin header");
+  });
+  await test("48. PHI Sentinel Redaction in Observability and Logs", async () => {
+    const { GET: ragGet } = await import("../src/app/api/admin/observability/rag-health/route");
+    const db = getAdminDb();
+
+    // Seed a job with a PHI sentinel in queue content
+    const sentinel = "SECRET_PHI_SENTINEL_IN_ERROR";
+    const jobDoc = db.collection("knowledge_embedding_jobs").doc("test-phi-job");
+    await jobDoc.set({
+      id: "test-phi-job",
+      articleId: "art-1",
+      title: `Title ${sentinel}`,
+      entityType: "Article",
+      contentText: `Content ${sentinel}`,
+      status: "failed",
+      createdAt: new Date().toISOString()
+    });
+
+    const validAdminCookie = await createAdminSessionCookie({
+      uid: "admin-1",
+      role: "super-admin",
+      exp: Math.floor(Date.now() / 1000) + 3600
+    });
+
+    const logsCaptured: string[] = [];
+    const originalConsoleError = console.error;
+    const originalConsoleWarn = console.warn;
+    const originalConsoleLog = console.log;
+
+    console.error = (...args: any[]) => {
+      logsCaptured.push(args.map(a => String(a)).join(" "));
+      originalConsoleError(...args);
+    };
+    console.warn = (...args: any[]) => {
+      logsCaptured.push(args.map(a => String(a)).join(" "));
+      originalConsoleWarn(...args);
+    };
+    console.log = (...args: any[]) => {
+      logsCaptured.push(args.map(a => String(a)).join(" "));
+      originalConsoleLog(...args);
+    };
+
+    try {
+      const req = new NextRequest("http://localhost/api/admin/observability/rag-health", {
+        method: "GET",
+        headers: {
+          "Cookie": `hh_admin_session_v3=${validAdminCookie}`
+        }
+      });
+      const res = await ragGet(req);
+      assert.strictEqual(res.status, 200);
+
+      const payload = await res.json();
+      const bodyString = JSON.stringify(payload);
+      assert.strictEqual(bodyString.includes(sentinel), false, "Observability response must not contain PHI sentinel");
+
+      // Direct RAG hybridSearch call
+      const { ragService } = await import("../src/lib/ragService");
+      await ragService.hybridSearch(`Search for query containing sentinel ${sentinel}`, "ai-clinical-context");
+
+      // Direct AI Router consultAI call (non-phi triggers grounding context extraction)
+      const { aiRouterService } = await import("../src/lib/aiRouter");
+      try {
+        await aiRouterService.consultAI(
+          `Hello sentinel ${sentinel}`,
+          "You are a helpful assistant.",
+          {},
+          "non-phi"
+        );
+      } catch (e) {
+        // We catch routing errors since no real providers may be registered in test mode,
+        // but the RAG search and AI router sequential fallback path logging still executes.
+      }
+
+      for (const logLine of logsCaptured) {
+        assert.ok(!logLine.includes(sentinel), `PHI sentinel must not leak to logs: "${logLine}"`);
+      }
+    } finally {
+      console.error = originalConsoleError;
+      console.warn = originalConsoleWarn;
+      console.log = originalConsoleLog;
+      await jobDoc.delete();
+    }
+  });
+
+  await test("49. RAG Grounding Draft Isolation Integration", async () => {
+    const { globalKmsRepository } = await import("../src/features/knowledge-admin/repositories/MemoryRepository");
+
+    const suffix = "grounding_test_suffix_" + Math.random().toString(36).substring(7);
+    const draftId = `draft-${suffix}`;
+    const publishedId = `pub-${suffix}`;
+
+    try {
+      // Insert a draft entity with a unique suffix
+      const draftEntity: any = {
+        id: draftId,
+        slug: `draft-slug-${suffix}`,
+        entityType: "Article",
+        title: { en: `Draft Title ${suffix}`, hi: "", gu: "", mr: "", es: "", ar: "" },
+        summary: { en: `Draft Summary ${suffix}`, hi: "", gu: "", mr: "", es: "", ar: "" },
+        relatedEntities: [],
+        author: { name: "System Editor" },
+        editorialStatus: "draft",
+        versionInfo: { version: "1.0.0", created: new Date().toISOString(), updated: new Date().toISOString() },
+        content: { overview: `Confidential draft text ${suffix}` }
+      };
+      await globalKmsRepository.saveEntity(draftEntity, "admin-1", "super-admin");
+
+      // Insert a published entity with the same unique suffix
+      const publishedEntity: any = {
+        id: publishedId,
+        slug: `pub-slug-${suffix}`,
+        entityType: "Article",
+        title: { en: `Published Title ${suffix}`, hi: "", gu: "", mr: "", es: "", ar: "" },
+        summary: { en: `Published Summary ${suffix}`, hi: "", gu: "", mr: "", es: "", ar: "" },
+        relatedEntities: [],
+        author: { name: "System Editor" },
+        editorialStatus: "published",
+        publishedVersionId: "v-pub-1",
+        versionInfo: { version: "1.0.0", created: new Date().toISOString(), updated: new Date().toISOString() },
+        content: { overview: `Published text ${suffix}` }
+      };
+      await globalKmsRepository.saveEntity(publishedEntity, "admin-1", "super-admin");
+
+      // Run hybrid search via RAG service
+      const { ragService } = await import("../src/lib/ragService");
+      const results = await ragService.hybridSearch(`Title ${suffix}`);
+
+      const hasPublished = results.some(r => r.document.id === publishedId);
+      assert.ok(hasPublished, "Published entity must be retrieved in grounding search");
+
+      const hasDraft = results.some(r => r.document.id === draftId);
+      assert.strictEqual(hasDraft, false, "Draft entity must NOT be retrieved in grounding search");
+    } finally {
+      // Guaranteed cleanup of mock fixtures
+      try {
+        await globalKmsRepository.deleteEntity(draftId, "admin-1", "super-admin");
+      } catch {}
+      try {
+        await globalKmsRepository.deleteEntity(publishedId, "admin-1", "super-admin");
+      } catch {}
+    }
+  });
+
+  await test("50. Disallowed origin POST check on RAG health route does not execute mutations", async () => {
+    const { POST: ragPost } = await import("../src/app/api/admin/observability/rag-health/route");
+
+    // Spy on mutation functions
+    const embeddingQueue = await import("../src/features/knowledge/retrieval/embeddingQueue");
+    let processQueueCalled = false;
+    const originalProcessQueue = (embeddingQueue as any).processQueue;
+    (embeddingQueue as any).processQueue = async () => {
+      processQueueCalled = true;
+    };
+
+    const validAdminCookie = await createAdminSessionCookie({
+      uid: "admin-1",
+      role: "super-admin",
+      exp: Math.floor(Date.now() / 1000) + 3600
+    });
+
+    try {
+      // 1. Disallowed origin checks
+      const req1 = new NextRequest("http://localhost/api/admin/observability/rag-health", {
+        method: "POST",
+        headers: {
+          "origin": "https://malicious.com",
+          "content-type": "application/json",
+          "Cookie": `hh_admin_session_v3=${validAdminCookie}`
+        },
+        body: JSON.stringify({ action: "processQueue" })
+      });
+
+      const res1 = await ragPost(req1);
+      assert.strictEqual(res1.status, 403, "Disallowed origin POST must return 403");
+      assert.strictEqual(processQueueCalled, false, "Mutating operation must not be invoked on disallowed origin POST");
+
+      // 2. Extra properties are rejected by strict schema validation (returns 400)
+      const req2 = new NextRequest("http://localhost/api/admin/observability/rag-health", {
+        method: "POST",
+        headers: {
+          "origin": "https://homeo.healthcare",
+          "content-type": "application/json",
+          "Cookie": `hh_admin_session_v3=${validAdminCookie}`
+        },
+        body: JSON.stringify({ action: "processQueue", extraField: "notAllowed" })
+      });
+      const res2 = await ragPost(req2);
+      assert.strictEqual(res2.status, 400, "POST body containing extra fields must return 400");
+
+      // 3. Array bodies are rejected (returns 400)
+      const req3 = new NextRequest("http://localhost/api/admin/observability/rag-health", {
+        method: "POST",
+        headers: {
+          "origin": "https://homeo.healthcare",
+          "content-type": "application/json",
+          "Cookie": `hh_admin_session_v3=${validAdminCookie}`
+        },
+        body: JSON.stringify([{ action: "processQueue" }])
+      });
+      const res3 = await ragPost(req3);
+      assert.strictEqual(res3.status, 400, "POST body with array must return 400");
+
+      // 4. Invalid JSON is rejected cleanly (returns 400)
+      const req4 = new NextRequest("http://localhost/api/admin/observability/rag-health", {
+        method: "POST",
+        headers: {
+          "origin": "https://homeo.healthcare",
+          "content-type": "application/json",
+          "Cookie": `hh_admin_session_v3=${validAdminCookie}`
+        },
+        body: "invalid{json}"
+      });
+      const res4 = await ragPost(req4);
+      assert.strictEqual(res4.status, 400, "Malformed JSON body must return 400");
+    } finally {
+      (embeddingQueue as any).processQueue = originalProcessQueue;
+    }
+  });
+
+  await test("51. Consult AI API CORS regression: OPTIONS only permits POST and OPTIONS", async () => {
+    const { OPTIONS: consultOptions } = await import("../src/app/api/consult-ai/route");
+
+    const reqOptions = new NextRequest("http://localhost/api/consult-ai", {
+      method: "OPTIONS",
+      headers: {
+        "origin": "https://homeo.healthcare"
+      }
+    });
+
+    const res = await consultOptions(reqOptions);
+    assert.strictEqual(res.status, 200);
+    const methods = res.headers.get("access-control-allow-methods");
+    assert.strictEqual(methods, "POST, OPTIONS", "Consult AI CORS preflight must advertise only POST, OPTIONS");
+  });
+
+  await test("52. Local IP Limiter Bounded Rotating Pruning prevents starvation in mixed active/expired map", async () => {
+    const { IPRateLimiter } = await import("../src/features/ai-security/protection/rateLimiter");
+    IPRateLimiter.resetAll();
+
+    const baseClockTime = Date.now();
+    let currentClockTime = baseClockTime;
+    const mockClock = { now: () => new Date(currentClockTime) };
+
+    // Fill map to 1000 entries.
+    // Entries 0 to 49 are created at currentClockTime (will be active later)
+    for (let i = 0; i < 50; i++) {
+      IPRateLimiter.isRateLimited(`192.168.1.${i}`, mockClock);
+    }
+    // Entries 50 to 999 are created at currentClockTime (will be expired later)
+    for (let i = 50; i < 1000; i++) {
+      IPRateLimiter.isRateLimited(`192.168.1.${i}`, mockClock);
+    }
+
+    // Now advance the clock by 61 seconds.
+    // Entries 50 to 999 are now expired.
+    // However, let's keep entries 0 to 49 active by renewing them at the new time.
+    currentClockTime += 61000;
+    for (let i = 0; i < 50; i++) {
+      IPRateLimiter.isRateLimited(`192.168.1.${i}`, mockClock);
+    }
+
+    // At this point, the map has size 1000.
+    // Indices 0-49 are active. Indices 50-999 are expired.
+    // If the scan didn't rotate, the first request at capacity would scan 0-49 (all active), delete 0, remain at capacity, and fail-closed.
+    // Let's do the first request with a new IP. It scans 0-49, deletes nothing, and fails closed (returns limited: true).
+    const res1 = IPRateLimiter.isRateLimited("10.0.0.1", mockClock);
+    assert.strictEqual(res1.limited, true, "First request fails closed because it scans the 50 active entries first");
+
+    // The second request with a new IP will scan index 50 to 99.
+    // Since 50 to 99 are expired, they will be deleted. Capacity will be freed.
+    // Thus, this request (or the next after space is reclaimed) will succeed!
+    const res2 = IPRateLimiter.isRateLimited("10.0.0.2", mockClock);
+    assert.strictEqual(res2.limited, false, "Second request succeeds because rotating cursor scans indices 50-99 (expired) and reclaims capacity");
+
+    IPRateLimiter.resetAll();
   });
 
   console.log(`\nSprint 27 Tests Completed. Passed: ${passedCount} | Failed: ${failedCount}`);
