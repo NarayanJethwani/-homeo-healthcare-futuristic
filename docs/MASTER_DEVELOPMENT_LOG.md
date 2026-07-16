@@ -677,3 +677,48 @@ This document serves as the chronological, single source of truth for all sprint
   - **Identity boundary**: client-supplied userId stripped; server derives doctor identity from session cookie.
   - **Client session contract**: stale response detection, clear token on reset/failure, and show export options only on valid token.
   - **Readiness check logic**: dirty-tree check now only blocks production/release modes, allowing normal dev tasks.
+
+---
+
+## [2026-07-15] - Sprint 27A: AI Security and Resilient Routing Boundaries (v2.19.0)
+- **Release Version**: `2.19.0`
+- **Release Tag**: `v2.19.0`
+- **Deployment Status**: Deployed (Commit: `130e70682e8476c4eb6d136f95869b5d5155db0`)
+- **Build Verification**: Passed typecheck, eslint rules, Next.js build, and verify:production (SHA-bound evidence: `c78be17c267678bd2dd24d9c70e364867fd11f22`)
+- **Files Changed**:
+  - `src/lib/aiRouter.ts`
+  - `src/lib/ragService.ts`
+  - `src/app/api/consult-ai/route.ts`
+  - `src/features/ai-security/access/aiSecurityHeaders.ts`
+  - `src/features/ai-security/protection/rateLimiter.ts`
+  - `tests/aiSecurityBoundary.test.ts`
+- **Security & Resilience Hardening**:
+  - **PHI Redaction**: Gated EMR data logging, masked client exceptions, and scrubbed exception trace messages to prevent PHI exposure.
+  - **Strict Schema Enforcement**: Required strict schemas on all consult-ai requests, rejecting any unexpected parameter or payload.
+  - **Sequential Fallback Quarantine**: Implemented a fail-closed 60-second lease quarantine on orphaned providers to guarantee they settle before a lease is reacquired.
+  - **Redis Readiness Checks**: Bypassed Redis operations and fell back gracefully to local caches if the connection was not fully established.
+  - **Tenant & Entitlement Gates**: Validated EMR doctor workspace entitlement, organization bounds, patient consent, and clinic boundaries.
+
+---
+
+## [2026-07-16] - Sprint 27B: AI Security Observability & Rate Limiter Resilience (v2.20.0)
+- **Release Version**: `2.20.0`
+- **Release Tag**: `v2.20.0`
+- **Deployment Status**: Deployed (Commit: `04e25999f8be7800827299a9a1495d0e57480849`)
+- **Build Verification**: Passed typecheck, eslint rules, Next.js build, and verify:production (SHA-bound evidence: `b98664fb93574c885fe7f3d8f3ecb11394f9e16a`)
+- **Files Changed**:
+  - `src/app/api/admin/observability/rag-health/route.ts`
+  - `src/app/api/ai-router/health/route.ts`
+  - `src/app/admin/observability/page.tsx`
+  - `src/features/ai-security/access/aiSecurityHeaders.ts`
+  - `src/features/ai-security/protection/rateLimiter.ts`
+  - `src/features/knowledge/retrieval/embeddingQueue.ts`
+  - `src/lib/aiRouter.ts`
+  - `src/lib/ragService.ts`
+  - `tests/aiSecurityBoundary.test.ts`
+- **Security & Observability Hardening**:
+  - **Strict Zod Body Validation**: Gated RAG health POST mutation endpoint with a strict Zod schema checking for action enums, rejecting extra fields, arrays, and malformed JSON with a `400 Bad Request` early.
+  - **CORS Exact-Origin Checks**: Checked present request origins against an allowed list on health routes and rejected disallowed origins with `403 Forbidden`.
+  - **Rotating Bounded Pruning**: Implemented a rotating prune cursor index checking up to 50 entries per insertion order, reclaiming capacity on mixed active/expired rate limiter entries to prevent starvation.
+  - **Query Log Redaction**: Removed all raw search queries and error stack details from both RAG search and AI Router grounding logs.
+  - **Sentinel Log and Isolation Tests**: Added verification tests validating log sentinel redactions across all log levels, isolated RAG grounding draft checks, disallowed origin POST checks, and Consult AI OPTIONS preflight regressions.
