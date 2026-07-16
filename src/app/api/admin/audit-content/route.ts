@@ -1,12 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { aiRouterService } from "@/lib/aiRouter";
 import { authorizeRequest } from "@/lib/security/apiAuth";
+import { getDraft } from "@/features/knowledge-admin/cms/cmsManager";
+import { z } from "zod";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization"
 };
+
+const AdminRequestSchema = z.object({
+  articleId: z.string().min(1)
+}).strict();
 
 export async function OPTIONS() {
   return new NextResponse(null, {
@@ -19,28 +25,33 @@ export async function POST(request: NextRequest) {
   try {
     const auth = await authorizeRequest(request, "CMS_DRAFT_EDIT", "AUDIT_CONTENT_API_POST");
     if (!auth.authorized) return auth.response;
+    
     const payload = await request.json();
-    const { title, contentText, tags } = payload;
+    const parsed = AdminRequestSchema.safeParse(payload);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { success: false, error: "Invalid input schema: strictly 'articleId' string is required." },
+        { status: 400, headers: CORS_HEADERS }
+      );
+    }
+    const { articleId } = parsed.data;
 
-    // Input Validation
-    if (!contentText || typeof contentText !== "string") {
+    const draft = await getDraft(articleId);
+    if (!draft) {
       return NextResponse.json(
-        { success: false, error: "Invalid payload: 'contentText' string is required." },
-        { status: 400, headers: CORS_HEADERS }
+        { success: false, error: "Article draft not found." },
+        { status: 404, headers: CORS_HEADERS }
       );
     }
-    if (!title || typeof title !== "string") {
-      return NextResponse.json(
-        { success: false, error: "Invalid payload: 'title' string is required." },
-        { status: 400, headers: CORS_HEADERS }
-      );
-    }
-    if (tags && !Array.isArray(tags)) {
-      return NextResponse.json(
-        { success: false, error: "Invalid payload: 'tags' must be an array of strings." },
-        { status: 400, headers: CORS_HEADERS }
-      );
-    }
+
+    const title = draft.title || "Untitled Article";
+    const contentText = draft.draftContent || "";
+    
+    // Validate tags with Array.isArray() and retain only strings
+    const rawTags = draft.metadata?.tags;
+    const tags: string[] = Array.isArray(rawTags)
+      ? rawTags.filter((t): t is string => typeof t === "string")
+      : [];
 
     // Length limit checks (prevent excessive token usage or DOS)
     if (contentText.length > 100000) {
@@ -82,10 +93,17 @@ Do not include any markdown formatting wrappers (like \`\`\`json) or conversatio
 
     const userPrompt = `Content to audit:\n\nCurrent Tags: ${JSON.stringify(tags || [])}\n\nText:\n${contentText}`;
 
-    const aiResponse = await aiRouterService.consultAI(userPrompt, systemInstruction, {
-      mode: "doctor",
-      lang: "en"
-    });
+    // Classified as phi because content to audit is a mutable draft that has not undergone
+    // approved/published governance validation and can contain pasted patient information.
+    const aiResponse = await aiRouterService.consultAI(
+      userPrompt,
+      systemInstruction,
+      {
+        mode: "doctor",
+        lang: "en"
+      },
+      "phi"
+    );
 
     if (!aiResponse.success) {
       return NextResponse.json(
@@ -104,7 +122,7 @@ Do not include any markdown formatting wrappers (like \`\`\`json) or conversatio
     try {
       auditResults = JSON.parse(cleanText);
     } catch {
-      console.warn("AI returned non-JSON audit, utilizing mock parser fallback:", cleanText);
+      console.warn("AI returned non-JSON audit, utilizing mock parser fallback.");
       // fallback
       const wordCount = contentText.split(/\s+/).length;
       auditResults = {
@@ -131,9 +149,9 @@ Do not include any markdown formatting wrappers (like \`\`\`json) or conversatio
       { headers: CORS_HEADERS }
     );
   } catch (error: any) {
-    console.error("Error in audit-content route:", error);
+    console.error("Error in audit-content route: Internal Server Error");
     return NextResponse.json(
-      { success: false, error: error.message || "Internal Server Error" },
+      { success: false, error: "An unexpected error occurred during content audit." },
       { status: 500, headers: CORS_HEADERS }
     );
   }

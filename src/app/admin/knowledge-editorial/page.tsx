@@ -714,9 +714,7 @@ export default function KnowledgeEditorialPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title: editingEntity.title.en,
-          entityType: editingEntity.entityType,
-          contentText: text
+          articleId: editingEntity.id
         })
       });
       const data = await res.json();
@@ -785,9 +783,7 @@ export default function KnowledgeEditorialPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title: editingEntity.title.en,
-          contentText: text,
-          tags: editingEntity.tags || []
+          articleId: editingEntity.id
         })
       });
       const data = await res.json();

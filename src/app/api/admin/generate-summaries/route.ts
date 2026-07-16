@@ -1,12 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { aiRouterService } from "@/lib/aiRouter";
 import { authorizeRequest } from "@/lib/security/apiAuth";
+import { getDraft } from "@/features/knowledge-admin/cms/cmsManager";
+import { z } from "zod";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization"
 };
+
+const AdminRequestSchema = z.object({
+  articleId: z.string().min(1)
+}).strict();
 
 export async function OPTIONS() {
   return new NextResponse(null, {
@@ -19,28 +25,28 @@ export async function POST(request: NextRequest) {
   try {
     const auth = await authorizeRequest(request, "CMS_DRAFT_EDIT", "GENERATE_SUMMARIES_API_POST");
     if (!auth.authorized) return auth.response;
+    
     const payload = await request.json();
-    const { title, entityType, contentText } = payload;
+    const parsed = AdminRequestSchema.safeParse(payload);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { success: false, error: "Invalid input schema: strictly 'articleId' string is required." },
+        { status: 400, headers: CORS_HEADERS }
+      );
+    }
+    const { articleId } = parsed.data;
 
-    // Input Validation
-    if (!contentText || typeof contentText !== "string") {
+    const draft = await getDraft(articleId);
+    if (!draft) {
       return NextResponse.json(
-        { success: false, error: "Invalid payload: 'contentText' string is required." },
-        { status: 400, headers: CORS_HEADERS }
+        { success: false, error: "Article draft not found." },
+        { status: 404, headers: CORS_HEADERS }
       );
     }
-    if (!title || typeof title !== "string") {
-      return NextResponse.json(
-        { success: false, error: "Invalid payload: 'title' string is required." },
-        { status: 400, headers: CORS_HEADERS }
-      );
-    }
-    if (!entityType || typeof entityType !== "string") {
-      return NextResponse.json(
-        { success: false, error: "Invalid payload: 'entityType' string is required." },
-        { status: 400, headers: CORS_HEADERS }
-      );
-    }
+
+    const title = draft.title || "Untitled Article";
+    const entityType = draft.entityType || "article";
+    const contentText = draft.draftContent || "";
 
     // Length limit checks (prevent excessive token usage or DOS)
     if (contentText.length > 100000) {
@@ -73,10 +79,17 @@ Do not include any markdown formatting wrappers (like \`\`\`json) or conversatio
 
     const userPrompt = `Content to summarize:\n\n${contentText}`;
 
-    const aiResponse = await aiRouterService.consultAI(userPrompt, systemInstruction, {
-      mode: "doctor",
-      lang: "en"
-    });
+    // Classified as phi because the prompt consists of a mutable draft that has not undergone
+    // approved/published governance validation and can contain pasted patient information.
+    const aiResponse = await aiRouterService.consultAI(
+      userPrompt,
+      systemInstruction,
+      {
+        mode: "doctor",
+        lang: "en"
+      },
+      "phi"
+    );
 
     if (!aiResponse.success) {
       return NextResponse.json(
@@ -97,11 +110,11 @@ Do not include any markdown formatting wrappers (like \`\`\`json) or conversatio
       parsedSummaries = JSON.parse(cleanText);
     } catch {
       // Fallback if parsing fails
-      console.warn("AI returned non-JSON summaries, using default splitting fallback:", cleanText);
+      console.warn("AI returned non-JSON summaries, using default generic fallback.");
       parsedSummaries = {
-        patientSummary: `[AI Draft Suggestion for Patients]\n${cleanText.substring(0, 300)}...`,
-        practitionerSummary: `[AI Draft Technical Suggestion]\n${cleanText.substring(0, 300)}...`,
-        educationalSummary: `[AI Draft Study Guide Suggestion]\n${cleanText.substring(0, 300)}...`
+        patientSummary: `[AI Draft Suggestion for Patients]\nRefer to the main article draft.`,
+        practitionerSummary: `[AI Draft Technical Suggestion]\nRefer to the main article draft.`,
+        educationalSummary: `[AI Draft Study Guide Suggestion]\nRefer to the main article draft.`
       };
     }
 
@@ -117,9 +130,9 @@ Do not include any markdown formatting wrappers (like \`\`\`json) or conversatio
       { headers: CORS_HEADERS }
     );
   } catch (error: any) {
-    console.error("Error in generate-summaries route:", error);
+    console.error("Error in generate-summaries route: Internal Server Error");
     return NextResponse.json(
-      { success: false, error: error.message || "Internal Server Error" },
+      { success: false, error: "An unexpected error occurred during summary generation." },
       { status: 500, headers: CORS_HEADERS }
     );
   }

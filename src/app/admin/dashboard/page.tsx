@@ -8629,7 +8629,7 @@ ${err.message || err}`);
                 <p className={`text-xs font-bold ${styles.text}`}>{message}</p>
               </div>
               <a
-                href="https://wa.me/918446056789?text=Hi%20Dr.%20Jethwani%2C%20I%20would%2520like%2520to%2520renew%2520my%252520subscription."
+                href="https://wa.me/918446056789?text=Hi%20Dr.%20Jethwani%2C%20I%20would%20like%20to%20renew%20my%20subscription."
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`flex-shrink-0 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer ${styles.btnClass}`}
