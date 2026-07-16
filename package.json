@@ -27,6 +27,7 @@
     "verify:production": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register scripts/verify-production-readiness.ts --mode production",
     "verify:emulator": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register scripts/verify-production-readiness.ts --mode emulator",
     "verify:release": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register scripts/verify-production-readiness.ts --mode release",
+    "test:ui": "vitest run tests/knowledgeGraphExplorer.test.tsx",
     "test:repertory-durable": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertoryDurableConsistency.test.ts",
     "test:repertory-approval": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertoryApprovalPersistence.test.ts",
     "test:repertory-gate": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertoryProductionActivationGate.test.ts",
@@ -70,15 +71,20 @@
   "devDependencies": {
     "@firebase/rules-unit-testing": "^5.0.1",
     "@tailwindcss/postcss": "^4",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6.0.3",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
+    "jsdom": "^29.1.1",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.10"
   },
   "overrides": {
     "postcss": "^8.5.15",

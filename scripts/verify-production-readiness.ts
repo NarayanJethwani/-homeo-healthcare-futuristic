@@ -118,6 +118,10 @@ function runStaticVerification(): VerificationCheckResult[] {
   const typecheckRes = runSubprocess("typecheck", "npx", ["tsc", "--noEmit", "--project", "tsconfig.verify.json"]);
   localResults.push(typecheckRes);
 
+  // Vitest UI tests
+  const uiTestRes = runSubprocess("test:ui", "npx", ["vitest", "run", "tests/knowledgeGraphExplorer.test.tsx"]);
+  localResults.push(uiTestRes);
+
   return localResults;
 }
 
