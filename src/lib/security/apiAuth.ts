@@ -134,7 +134,20 @@ export async function authorizeRequest(
         }
       }
     } catch (err) {
-      console.warn("[apiAuth] Failed to load practitioner database profile status:", err);
+      console.warn("[apiAuth] Failed to load practitioner database profile status: Database query failure");
+      return {
+        authorized: false,
+        response: NextResponse.json(
+          {
+            ok: false,
+            error: {
+              code: "INTERNAL_SERVER_ERROR",
+              message: "Failed to load practitioner profile status."
+            }
+          },
+          { status: 500 }
+        )
+      };
     }
   }
 

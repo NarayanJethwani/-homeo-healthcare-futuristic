@@ -1,29 +1,45 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import repertoryRepository from "@/features/repertory/database/repertoryDb";
-import { REMEDIES_METADATA } from "@/lib/repertoryData";
+import { authorizeRepertoryRequest } from "@/features/repertory/access/RepertoryRequestAuthorization";
+import { consumeRepertoryRateLimit, rateLimitResponse } from "@/features/repertory/security/RepertoryApiSecurity";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-export async function GET(request: Request) {
+const SAFE_IDENTIFIER = /^[a-zA-Z0-9_\-.:]+$/;
+
+export async function GET(request: NextRequest) {
   try {
+    const auth = await authorizeRepertoryRequest(request, "repertory.search", "REPERTORY_DETAILS_GET");
+    if (!auth.authorized) return auth.response;
+
+    const rateLimit = consumeRepertoryRateLimit("details_get", auth.session.uid, {
+      maxRequests: 60,
+      windowMs: 60_000,
+    });
+    if (!rateLimit.allowed) return rateLimitResponse(rateLimit.retryAfterSeconds);
+
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
-    if (!id) {
-      return NextResponse.json({
+    if (!id || id.length > 100 || !SAFE_IDENTIFIER.test(id)) {
+      const response = NextResponse.json({
         success: false,
-        message: "Rubric ID is required."
+        message: "Invalid Rubric ID."
       }, { status: 400 });
+      response.headers.set("Cache-Control", "no-store");
+      return response;
     }
 
     const rubric = await repertoryRepository.getRubricById(id);
 
     if (!rubric) {
-      return NextResponse.json({
+      const response = NextResponse.json({
         success: false,
         message: "Rubric not found in active published snapshot."
       }, { status: 404 });
+      response.headers.set("Cache-Control", "no-store");
+      return response;
     }
 
     // Enrich remedies with full names
@@ -42,19 +58,22 @@ export async function GET(request: Request) {
     // Sort remedies by grade descending
     remediesEnriched.sort((a, b) => b.grade - a.grade);
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       rubric: {
         ...rubric,
         remediesEnriched
       }
     });
+    response.headers.set("Cache-Control", "private, no-store");
+    return response;
   } catch (error: any) {
-    console.error("Repertory Details API failed:", error);
-    return NextResponse.json({
+    console.error("Repertory Details API failed. Details redacted.");
+    const response = NextResponse.json({
       success: false,
-      message: "Failed to load rubric details.",
-      error: error.message || error
+      message: "Failed to load rubric details."
     }, { status: 500 });
+    response.headers.set("Cache-Control", "no-store");
+    return response;
   }
 }
