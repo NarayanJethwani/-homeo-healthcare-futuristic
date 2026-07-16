@@ -22,12 +22,12 @@ export function isOriginAllowed(origin: string | null): boolean {
   }
 }
 
-export function getCorsHeaders(origin: string | null): Record<string, string> {
+export function getCorsHeaders(origin: string | null, allowedMethods: string = "POST, OPTIONS"): Record<string, string> {
   const allowed = isOriginAllowed(origin);
   if (!allowed) {
     // If not allowed, return safe baseline headers omitting Access-Control-Allow-Origin
     return {
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Methods": allowedMethods,
       "Access-Control-Allow-Headers": "Content-Type, Authorization, X-CSRF-Token",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
@@ -36,20 +36,20 @@ export function getCorsHeaders(origin: string | null): Record<string, string> {
 
   return {
     "Access-Control-Allow-Origin": origin!,
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Methods": allowedMethods,
     "Access-Control-Allow-Headers": "Content-Type, Authorization, X-CSRF-Token",
     "Access-Control-Allow-Credentials": "true",
     "Vary": "Origin"
   };
 }
 
-export function handleOptionsRequest(origin: string | null): NextResponse {
+export function handleOptionsRequest(origin: string | null, allowedMethods: string = "POST, OPTIONS"): NextResponse {
   if (!isOriginAllowed(origin)) {
     return new NextResponse(null, {
       status: 403,
       // Omit Access-Control-Allow-Origin entirely
       headers: {
-        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Methods": allowedMethods,
         "Access-Control-Allow-Headers": "Content-Type, Authorization, X-CSRF-Token",
         "Access-Control-Allow-Credentials": "true",
         "Vary": "Origin"
@@ -58,6 +58,6 @@ export function handleOptionsRequest(origin: string | null): NextResponse {
   }
   return new NextResponse(null, {
     status: 200,
-    headers: getCorsHeaders(origin)
+    headers: getCorsHeaders(origin, allowedMethods)
   });
 }

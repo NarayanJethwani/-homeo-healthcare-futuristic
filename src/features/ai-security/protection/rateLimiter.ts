@@ -8,8 +8,10 @@ const MAX_MAP_SIZE = 1000;
  * Enforces strict map size capping to prevent OOM and computes Retry-After seconds.
  */
 export class IPRateLimiter {
+  static pruneCursorIndex = 0;
+
   static isRateLimited(
-    ip: string, 
+    ip: string,
     clock: { now: () => Date } = { now: () => new Date() },
     limit: number = MAX_LOCAL_REQUESTS
   ): { limited: boolean; retryAfter?: number } {
@@ -19,9 +21,20 @@ export class IPRateLimiter {
 
     const now = clock.now().getTime();
 
-    // Auto-prune memory leak guard
-    if (ipLimiterMap.size > MAX_MAP_SIZE) {
-      for (const [key, timestamps] of ipLimiterMap.entries()) {
+    // Capacity limit check prior to inserting a new key
+    if (ipLimiterMap.size >= MAX_MAP_SIZE && !ipLimiterMap.has(ip)) {
+      // Bounded rotating prune: check a maximum of 50 entries to avoid full map scanning DoS
+      const keys = Array.from(ipLimiterMap.keys());
+      const total = keys.length;
+      const pruneLimit = 50;
+      let checked = 0;
+      const start = IPRateLimiter.pruneCursorIndex;
+
+      for (let i = 0; i < total && checked < pruneLimit; i++) {
+        const index = (start + i) % total;
+        const key = keys[index];
+        checked++;
+        const timestamps = ipLimiterMap.get(key) || [];
         const active = timestamps.filter(t => now - t < RATE_LIMIT_WINDOW_MS);
         if (active.length === 0) {
           ipLimiterMap.delete(key);
@@ -30,7 +43,9 @@ export class IPRateLimiter {
         }
       }
 
-      // If still exceeding size limit, refuse new entries (fail closed)
+      IPRateLimiter.pruneCursorIndex = (start + checked) % (total || 1);
+
+      // Fail-closed if still at capacity and new IP is requested
       if (ipLimiterMap.size >= MAX_MAP_SIZE && !ipLimiterMap.has(ip)) {
         return { limited: true, retryAfter: 60 };
       }
@@ -53,5 +68,10 @@ export class IPRateLimiter {
 
   static resetForIp(ip: string) {
     ipLimiterMap.delete(ip);
+  }
+
+  static resetAll() {
+    ipLimiterMap.clear();
+    IPRateLimiter.pruneCursorIndex = 0;
   }
 }

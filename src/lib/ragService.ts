@@ -291,7 +291,7 @@ export class RAGService {
     context: KnowledgeRetrievalContext = "public-search"
   ): Promise<SearchResultList> {
     const startTime = Date.now();
-    console.log(`Executing local hybrid search for query: "${query}" (context: ${context})`);
+    console.log(`Executing local hybrid search (context: ${context})`);
     const queryTokens = this.getTokens(query);
     const results: SearchResult[] = [];
 
@@ -307,7 +307,7 @@ export class RAGService {
       try {
         queryVector = await provider.getEmbeddings(query);
       } catch (err) {
-        console.warn(`Failed to retrieve embeddings from provider ${providerName}. Falling back to keyword search.`, err);
+        console.warn(`Failed to retrieve embeddings from provider ${providerName}. Falling back to keyword search.`);
       }
     }
 

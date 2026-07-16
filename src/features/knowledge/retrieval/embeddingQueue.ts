@@ -132,6 +132,14 @@ export async function getQueueJobs(): Promise<EmbeddingJob[]> {
   return [...memoryQueue].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
+export async function getQueueStats(): Promise<{ totalJobs: number; pendingJobs: number; failedJobs: number }> {
+  const jobs = await getQueueJobs();
+  const totalJobs = jobs.length;
+  const pendingJobs = jobs.filter(j => j.status === "pending").length;
+  const failedJobs = jobs.filter(j => j.status === "failed").length;
+  return { totalJobs, pendingJobs, failedJobs };
+}
+
 export async function processQueue(): Promise<void> {
   const jobs = await getQueueJobs();
   const pendingJobs = jobs.filter(j => j.status === "pending");
