@@ -720,3 +720,26 @@ This document serves as the chronological, single source of truth for all sprint
   - **Rotating Bounded Pruning**: Implemented a rotating prune cursor index checking up to 50 entries per insertion order, reclaiming capacity on mixed active/expired rate limiter entries to prevent starvation.
   - **Query Log Redaction**: Removed all raw search queries and error stack details from both RAG search and AI Router grounding logs.
   - **Sentinel Log and Isolation Tests**: Added verification tests validating log sentinel redactions across all log levels, isolated RAG grounding draft checks, disallowed origin POST checks, and Consult AI OPTIONS preflight regressions.
+
+---
+
+## [2026-07-16] - Sprint 27C: Repertory Admin Security Hardening & Safe Ingestion Boundaries (v2.21.0)
+- **Release Version**: `2.21.0`
+- **Deployment Status**: Success / Vercel Production (Merge commit: `4414d7a69276fd1f469e925a56c5f17a21aa292f`, timestamp: `2026-07-16T14:53:08Z`)
+- **Build Verification**: Passed typecheck, eslint rules, Next.js build, and verify:production (SHA-bound evidence: `f7037fc3b5646f8d8b22ca1090360df3b3396361` bound to code commit `a756188769639f6a11b3671392d69f9742150a39`)
+- **Files Changed**:
+  - `src/app/api/repertory/save/route.ts` [Gated with authorizeRequest, action-discriminated schema, error redact]
+  - `src/app/api/repertory/delete/route.ts` [Gated with authorizeRequest, error redact]
+  - `src/app/api/repertory/seed/route.ts` [Gated with authorizeRequest, POST-only, atomic Firestore transaction]
+  - `src/app/api/repertory/v2-compare/route.ts` [Gated with authorizeRequest, 16KB body stream limit, error redact]
+  - `src/app/api/repertory/v2-live/route.ts` [Zod schema, 16KB body stream limit, error redact]
+  - `src/app/api/repertory/v2-feedback/route.ts` [No query/note PHI, authorizeRequest inside catch fallback, corpus rubric status checks, deduplicated checks]
+  - `src/features/repertory/security/RepertoryApiSecurity.ts` [Shared byte-bounded stream reader]
+  - `tests/repertoryRouteSecurity.test.ts` [30 comprehensive security and regression tests]
+- **Security & Route Hardening**:
+  - **Shared Bounded Stream Reader**: Implemented a secure stream byte reader that aborts instantly if the request body exceeds the limit (4KB for POST feedback, 16KB for compare/live).
+  - **Standardized Admin Authorization**: Unified access control across all administrative routes using `authorizeRequest`, returning standard 401/403 audit logs and preventing doctor-entitlement bypasses.
+  - **Atomic Ingestion Seed Protection**: Gated the seeding mutation endpoint to POST-only, executing seed mutations atomically under a Firestore transaction to prevent race conditions.
+  - **Review Pseudonymization & PHI Strip**: Stripped free-text fields (query/note) from feedback database persistence; stored domain-separated HMAC review attributions using clinical secrets.
+  - **Standard CORS OPTIONS Preflights**: Provided OPTIONS preflight endpoints on every changed route checking exact headers and methods.
+  - **Generic Exceptions & Audit Hardening**: Redacted raw database exception stack details from logs and client JSON responses, logging only sanitized event summaries.
