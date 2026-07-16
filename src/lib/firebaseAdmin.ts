@@ -7,7 +7,7 @@ let isInitialized = false;
 if (!getApps().length) {
   try {
     let serviceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY || process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
-    
+
     if (serviceAccountKey) {
       // Sanitize: strip outer single or double quotes that Vercel env vars sometimes add
       serviceAccountKey = serviceAccountKey.trim();
@@ -42,11 +42,12 @@ if (!getApps().length) {
 let mockDb: any = null;
 
 export function getAdminDb() {
-  if (process.env.REPERTORY_USE_MOCK_FIRESTORE === 'true' || 
+  if (process.env.REPERTORY_USE_MOCK_FIRESTORE === 'true' ||
       (process.env.NODE_ENV === 'test' && !process.env.FIREBASE_SERVICE_ACCOUNT_KEY && !process.env.GOOGLE_SERVICE_ACCOUNT_KEY && !process.env.FIRESTORE_EMULATOR_HOST)) {
     if (!mockDb) {
       class MockDocumentReference {
         constructor(private collectionName: string, private docId: string, private store: any) {}
+        get id() { return this.docId; }
         async get() {
           const data = this.store[this.collectionName]?.[this.docId];
           return {
@@ -93,7 +94,7 @@ export function getAdminDb() {
               data: () => data
             };
           });
-          
+
           for (const filter of this.filters) {
             if (filter.op === "==") {
               docs = docs.filter(doc => {
@@ -165,7 +166,7 @@ export function getAdminDb() {
   if (!isInitialized || !getApps().length) {
     throw new Error("Firebase Admin SDK is not initialized. Check your credentials.");
   }
-  
+
   const env = getRuntimeEnvironment();
   const productionProjectIds = (process.env.REPERTORY_PRODUCTION_FIREBASE_PROJECT_IDS || "homeo-healthcare")
     .split(',').map(s => s.trim()).filter(Boolean);

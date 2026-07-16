@@ -1,11 +1,22 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 import { getAdminDb } from "@/lib/firebaseAdmin";
 import { JETHWANI_REPERTORY_DATA } from "@/lib/repertoryData";
+import { authorizeRepertoryRequest } from "@/features/repertory/access/RepertoryRequestAuthorization";
+import { consumeRepertoryRateLimit, rateLimitResponse } from "@/features/repertory/security/RepertoryApiSecurity";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const auth = await authorizeRepertoryRequest(request, "repertory.search", "REPERTORY_DATABASE_GET");
+    if (!auth.authorized) return auth.response;
+
+    const rateLimit = consumeRepertoryRateLimit("root_db_get", auth.session.uid, {
+      maxRequests: 30,
+      windowMs: 60_000,
+    });
+    if (!rateLimit.allowed) return rateLimitResponse(rateLimit.retryAfterSeconds);
+
     // Try multiple paths for Vercel compatibility
     const possibleBasePaths = [
       path.join(process.cwd(), "public", "data"),        // Vercel serverless (public/ is at cwd)
@@ -28,7 +39,7 @@ export async function GET() {
           console.log(`Loaded Kent repertory from ${kentPath}: ${kentData.length} rubrics`);
           break;
         } catch (e) {
-          console.warn(`Failed to parse Kent data from ${kentPath}:`, e);
+          console.warn(`Failed to parse Kent data. Details redacted.`);
         }
       }
     }
@@ -43,16 +54,16 @@ export async function GET() {
           console.log(`Loaded Boericke repertory from ${boerickePath}: ${boerickeData.length} rubrics`);
           break;
         } catch (e) {
-          console.warn(`Failed to parse Boericke data from ${boerickePath}:`, e);
+          console.warn(`Failed to parse Boericke data. Details redacted.`);
         }
       }
     }
 
     if (kentData.length === 0) {
-      console.warn("Kent repertory data not found in any path. Will serve empty.");
+      console.warn("Kent repertory data not found. Will serve empty.");
     }
     if (boerickeData.length === 0) {
-      console.warn("Boericke repertory data not found in any path. Will serve empty.");
+      console.warn("Boericke repertory data not found. Will serve empty.");
     }
 
     // Load Jethwani clinical rubrics from Firestore with fallback
@@ -70,25 +81,28 @@ export async function GET() {
         console.log(`Loaded ${jethwaniData.length} Jethwani rubrics from Firestore.`);
       }
     } catch (e) {
-      console.warn("Failed to load Jethwani rubrics from Firestore. Using local fallback:", e);
+      console.warn("Failed to load Jethwani rubrics from Firestore. Using local fallback.");
       jethwaniData = JETHWANI_REPERTORY_DATA;
     }
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       kent: kentData,
       boericke: boerickeData,
       jethwani: jethwaniData
     });
+    response.headers.set("Cache-Control", "private, no-store");
+    return response;
   } catch (error: any) {
-    console.error("Repertory API failed:", error);
-    return NextResponse.json(
+    console.error("Repertory API failed. Details redacted.");
+    const response = NextResponse.json(
       {
         success: false,
-        message: "Failed to load repertory database.",
-        error: error.message || error
+        message: "Failed to load repertory database."
       },
       { status: 500 }
     );
+    response.headers.set("Cache-Control", "no-store");
+    return response;
   }
 }

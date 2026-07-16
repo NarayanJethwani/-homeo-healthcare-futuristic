@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiAuth";
 import { getAdminDb } from "@/lib/firebaseAdmin";
+import { authorizeRequest } from "@/lib/security/apiAuth";
+import { isOriginAllowed, getCorsHeaders, handleOptionsRequest } from "@/features/ai-security/access/aiSecurityHeaders";
+import { consumeRepertoryRateLimit, rateLimitResponse, readAndBoundRequestBody } from "@/features/repertory/security/RepertoryApiSecurity";
 import {
   CLINICAL_REVIEW_REQUIRED_NOTICE,
   compareRemedyScores,
@@ -13,14 +15,24 @@ import {
 import { adaptFirestoreRubric } from "@/features/repertory/adapters/firestoreRubricAdapter";
 import { createClinicalRepertorizationSession, repertorizeClinicalSession } from "@/features/repertory/repertorization/clinicalRepertorization";
 import { getV2FallbackRubrics } from "@/features/repertory/liveMode/fallbackRubrics";
+import { z } from "zod";
 
 export const dynamic = "force-dynamic";
 
-function noStoreJson(body: unknown, status = 200) {
-  const response = NextResponse.json(body, { status });
-  response.headers.set("Cache-Control", "no-store");
-  return response;
-}
+const SAFE_IDENTIFIER = /^[A-Za-z0-9_\-.:]{1,100}$/;
+
+const compareFiltersSchema = z.object({
+  category: z.string().max(100).optional(),
+  organSystem: z.string().max(100).optional(),
+  miasm: z.string().max(100).optional(),
+  remedy: z.string().max(100).optional(),
+}).strict().optional();
+
+const compareRequestSchema = z.object({
+  query: z.string().max(100).optional().default(""),
+  filters: compareFiltersSchema,
+  selectedRubricIds: z.array(z.string().max(100).regex(SAFE_IDENTIFIER)).max(100).optional().default([]),
+}).strict();
 
 function snapshotRubric(record: any): V2RubricSnapshot {
   return {
@@ -32,52 +44,32 @@ function snapshotRubric(record: any): V2RubricSnapshot {
   };
 }
 
-async function readRequest(request: NextRequest) {
-  if (request.method === "POST") {
-    const body = await request.json().catch(() => ({}));
-    return {
-      query: typeof body.query === "string" ? body.query : "",
-      filters: (body.filters || {}) as V2LiveFilters,
-      selectedRubricIds: Array.isArray(body.selectedRubricIds) ? body.selectedRubricIds.filter((id: unknown): id is string => typeof id === "string") : [],
-    };
-  }
-
-  const searchParams = request.nextUrl.searchParams;
-  return {
-    query: searchParams.get("q") || "",
-    filters: {
-      category: searchParams.get("category") || "All",
-      organSystem: searchParams.get("organSystem") || "All",
-      miasm: searchParams.get("miasm") || "All",
-      remedy: searchParams.get("remedy") || "All",
-    },
-    selectedRubricIds: searchParams.getAll("selectedRubricIds"),
-  };
-}
-
 async function activeRubricCandidates(limit = 5000) {
-  try {
-    const snapshot = await getAdminDb()
-      .collection("rubrics")
-      .where("status", "==", "active")
-      .limit(limit)
-      .get();
+  const snapshot = await getAdminDb()
+    .collection("rubrics")
+    .where("status", "==", "active")
+    .limit(limit)
+    .get();
 
-    const rubrics: any[] = [];
-    snapshot.forEach((doc: any) => rubrics.push({ id: doc.id, ...doc.data() }));
-    return rubrics.length > 0 ? rubrics : getV2FallbackRubrics();
-  } catch (error) {
-    console.warn("V2 comparison could not load Firestore rubrics. Using local repertory fallback:", error);
-    return getV2FallbackRubrics();
-  }
+  const rubrics: any[] = [];
+  snapshot.forEach((doc: any) => rubrics.push({ id: doc.id, ...doc.data() }));
+  return rubrics.length > 0 ? rubrics : getV2FallbackRubrics();
 }
 
 function applyV1Filters(results: any[], filters: V2LiveFilters): any[] {
   let filtered = results;
-  if (filters.category && filters.category !== "All") filtered = filtered.filter((rubric) => rubric.category === filters.category || rubric.section === filters.category);
-  if (filters.organSystem && filters.organSystem !== "All") filtered = filtered.filter((rubric) => rubric.organSystem === filters.organSystem);
-  if (filters.miasm && filters.miasm !== "All") filtered = filtered.filter((rubric) => Array.isArray(rubric.miasms) && rubric.miasms.includes(filters.miasm));
-  if (filters.remedy && filters.remedy !== "All") filtered = filtered.filter((rubric) => rubric.remedies?.[filters.remedy!] !== undefined);
+  if (filters.category && filters.category !== "All") {
+    filtered = filtered.filter((rubric) => rubric.category === filters.category || rubric.section === filters.category);
+  }
+  if (filters.organSystem && filters.organSystem !== "All") {
+    filtered = filtered.filter((rubric) => rubric.organSystem === filters.organSystem);
+  }
+  if (filters.miasm && filters.miasm !== "All") {
+    filtered = filtered.filter((rubric) => Array.isArray(rubric.miasms) && rubric.miasms.includes(filters.miasm));
+  }
+  if (filters.remedy && filters.remedy !== "All") {
+    filtered = filtered.filter((rubric) => rubric.remedies?.[filters.remedy!] !== undefined);
+  }
   return filtered;
 }
 
@@ -134,107 +126,163 @@ function runV1FallbackSearch(query: string, filters: V2LiveFilters, selectedRubr
 async function runV1Search(query: string, filters: V2LiveFilters, selectedRubricIds: string[]): Promise<V1SearchRun> {
   const startedAt = Date.now();
   const q = query.toLowerCase().trim();
-  try {
-    const rubricsRef = getAdminDb().collection("rubrics");
-    let results: any[] = [];
+  const rubricsRef = getAdminDb().collection("rubrics");
+  let results: any[] = [];
 
-    if (!q) {
-      const snapshot = await rubricsRef.where("status", "==", "active").limit(100).get();
-      snapshot.forEach((doc: any) => results.push({ id: doc.id, ...doc.data() }));
-    } else {
-      let searchTerms = [q];
-      const synDoc = await getAdminDb().collection("synonyms").doc(q).get();
-      if (synDoc.exists) {
-        const data = synDoc.data();
-        if (data?.synonyms) searchTerms = Array.from(new Set([q, ...data.synonyms]));
-      }
-
-      const words = q.split(/[\s,\.\-_]+/);
-      for (const word of words) {
-        if (word.length > 2 && word !== q) {
-          searchTerms.push(word);
-          const wSynDoc = await getAdminDb().collection("synonyms").doc(word).get();
-          if (wSynDoc.exists) {
-            const data = wSynDoc.data();
-            if (data?.synonyms) searchTerms.push(...data.synonyms);
-          }
-        }
-      }
-
-      searchTerms = Array.from(new Set(searchTerms.map((term) => term.toLowerCase())));
-      const chunks: string[][] = [];
-      const tempTerms = [...searchTerms];
-      while (tempTerms.length > 0) chunks.push(tempTerms.splice(0, 10));
-
-      const matchedDocs = new Map<string, any>();
-      for (const chunk of chunks) {
-        const querySnapshot = await rubricsRef
-          .where("status", "==", "active")
-          .where("keywords", "array-contains-any", chunk)
-          .get();
-        querySnapshot.forEach((doc: any) => matchedDocs.set(doc.id, { id: doc.id, ...doc.data() }));
-      }
-
-      const directSnapshot = await rubricsRef
-        .where("status", "==", "active")
-        .where("slug", "==", q.replace(/[\s_]+/g, "-"))
-        .get();
-      directSnapshot.forEach((doc: any) => matchedDocs.set(doc.id, { id: doc.id, ...doc.data() }));
-
-      results = Array.from(matchedDocs.values());
-      const scored = results.map((rubric) => {
-        let score = 0;
-        const name = String(rubric.name || "").toLowerCase();
-        const desc = String(rubric.description || "").toLowerCase();
-        searchTerms.forEach((term) => {
-          if (name === term) score += 200;
-          else if (name.includes(term)) score += 100;
-          else if (desc.includes(term)) score += 40;
-          if (rubric.keywords?.includes(term)) score += 30;
-          if (rubric.remedies && Object.keys(rubric.remedies).some((remedy) => remedy.toLowerCase() === term)) score += 50;
-        });
-        return { rubric, score };
-      });
-      results = scored.filter((item) => item.score > 0).sort((a, b) => b.score - a.score).map((item) => item.rubric);
+  if (!q) {
+    const snapshot = await rubricsRef.where("status", "==", "active").limit(100).get();
+    snapshot.forEach((doc: any) => results.push({ id: doc.id, ...doc.data() }));
+  } else {
+    let searchTerms = [q];
+    const synDoc = await getAdminDb().collection("synonyms").doc(q).get();
+    if (synDoc.exists) {
+      const data = synDoc.data();
+      if (data?.synonyms) searchTerms = Array.from(new Set([q, ...data.synonyms]));
     }
 
-    return buildV1SearchRun(applyV1Filters(results, filters), startedAt, selectedRubricIds);
-  } catch (error) {
-    console.warn("V2 comparison could not run Firestore-backed V1 reference search. Using local repertory fallback:", error);
-    return runV1FallbackSearch(query, filters, selectedRubricIds, startedAt);
+    const words = q.split(/[\s,\.\-_]+/);
+    for (const word of words) {
+      if (word.length > 2 && word !== q) {
+        searchTerms.push(word);
+        const wSynDoc = await getAdminDb().collection("synonyms").doc(word).get();
+        if (wSynDoc.exists) {
+          const data = wSynDoc.data();
+          if (data?.synonyms) searchTerms.push(...data.synonyms);
+        }
+      }
+    }
+
+    searchTerms = Array.from(new Set(searchTerms.map((term) => term.toLowerCase())));
+    const chunks: string[][] = [];
+    const tempTerms = [...searchTerms];
+    while (tempTerms.length > 0) chunks.push(tempTerms.splice(0, 10));
+
+    const matchedDocs = new Map<string, any>();
+    for (const chunk of chunks) {
+      const querySnapshot = await rubricsRef
+        .where("status", "==", "active")
+        .where("keywords", "array-contains-any", chunk)
+        .get();
+      querySnapshot.forEach((doc: any) => matchedDocs.set(doc.id, { id: doc.id, ...doc.data() }));
+    }
+
+    const directSnapshot = await rubricsRef
+      .where("status", "==", "active")
+      .where("slug", "==", q.replace(/[\s_]+/g, "-"))
+      .get();
+    directSnapshot.forEach((doc: any) => matchedDocs.set(doc.id, { id: doc.id, ...doc.data() }));
+
+    results = Array.from(matchedDocs.values());
+    const scored = results.map((rubric) => {
+      let score = 0;
+      const name = String(rubric.name || "").toLowerCase();
+      const desc = String(rubric.description || "").toLowerCase();
+      searchTerms.forEach((term) => {
+        if (name === term) score += 200;
+        else if (name.includes(term)) score += 100;
+        else if (desc.includes(term)) score += 40;
+        if (rubric.keywords?.includes(term)) score += 30;
+        if (rubric.remedies && Object.keys(rubric.remedies).some((remedy) => remedy.toLowerCase() === term)) score += 50;
+      });
+      return { rubric, score };
+    });
+    results = scored.filter((item) => item.score > 0).sort((a, b) => b.score - a.score).map((item) => item.rubric);
   }
+
+  return buildV1SearchRun(applyV1Filters(results, filters), startedAt, selectedRubricIds);
+}
+
+export async function OPTIONS(request: NextRequest) {
+  const origin = request.headers.get("origin");
+  return handleOptionsRequest(origin, "POST, OPTIONS");
 }
 
 export async function GET(request: NextRequest) {
-  return POST(request);
+  const response = NextResponse.json({ ok: false, error: { code: "METHOD_NOT_ALLOWED", message: "GET not allowed on this endpoint" } }, { status: 405 });
+  response.headers.set("Cache-Control", "no-store");
+  return response;
 }
 
 export async function POST(request: NextRequest) {
-  const session = await requireAdminApiSession(request);
-  if (!session) return unauthorizedApiResponse();
+  const origin = request.headers.get("origin");
+
+  // 1. Exact-Origin check
+  if (!isOriginAllowed(origin)) {
+    const response = NextResponse.json({ ok: false, error: { code: "FORBIDDEN", message: "Disallowed Origin" } }, { status: 403 });
+    response.headers.set("Cache-Control", "no-store");
+    return response;
+  }
+
+  const corsHeaders = getCorsHeaders(origin, "POST, OPTIONS");
 
   try {
-    const input = await readRequest(request);
-    const query = input.query.toLowerCase().trim();
+    // 2. Admin Authorization (runs before rate limits or body streams)
+    const auth = await authorizeRequest(request, "repertory.review.read", "REPERTORY_V2_COMPARE");
+    if (!auth.authorized) {
+      const response = auth.response;
+      Object.entries(corsHeaders).forEach(([k, v]) => response.headers.set(k, v));
+      response.headers.set("Cache-Control", "no-store");
+      return response;
+    }
+
+    // 3. Rate Limiting
+    const rateLimit = consumeRepertoryRateLimit("compare_post", auth.session.uid, {
+      maxRequests: 60,
+      windowMs: 60_000,
+    });
+    if (!rateLimit.allowed) {
+      const response = rateLimitResponse(rateLimit.retryAfterSeconds);
+      Object.entries(corsHeaders).forEach(([k, v]) => response.headers.set(k, v));
+      response.headers.set("Cache-Control", "no-store");
+      return response;
+    }
+
+    // 4. Secure stream-bound request body reading (16KB limit to prevent buffering attacks)
+    let rawBody = "";
+    try {
+      rawBody = await readAndBoundRequestBody(request, 16 * 1024);
+    } catch (err: any) {
+      if (err.message === "PAYLOAD_TOO_LARGE") {
+        const response = NextResponse.json({ ok: false, error: { code: "PAYLOAD_TOO_LARGE", message: "Payload too large" } }, { status: 413 });
+        Object.entries(corsHeaders).forEach(([k, v]) => response.headers.set(k, v));
+        response.headers.set("Cache-Control", "no-store");
+        return response;
+      }
+      throw err;
+    }
+
+    const parsedJson = JSON.parse(rawBody);
+    const parsed = compareRequestSchema.safeParse(parsedJson);
+    if (!parsed.success) {
+      const response = NextResponse.json({ ok: false, error: { code: "BAD_REQUEST", message: "Invalid payload schema." } }, { status: 400 });
+      Object.entries(corsHeaders).forEach(([k, v]) => response.headers.set(k, v));
+      response.headers.set("Cache-Control", "no-store");
+      return response;
+    }
+
+    const { query = "", filters = {}, selectedRubricIds = [] } = parsed.data;
+
     const [v1, candidateRubrics] = await Promise.all([
-      runV1Search(query, input.filters, input.selectedRubricIds),
+      runV1Search(query, filters, selectedRubricIds),
       activeRubricCandidates(),
     ]);
+
     const v2Live = runV2ClinicalLiveEngine({
       query,
-      filters: input.filters,
-      selectedRubricIds: input.selectedRubricIds,
+      filters: filters,
+      selectedRubricIds,
       candidateRubrics,
       limit: 100,
     });
+
     const rubricComparison = compareRubricSnapshots(v1.topRubrics, v2Live.search.topRubrics);
     const scoreDifferences = compareRemedyScores(v1.rankings, v2Live.repertorization.result.rankings.slice(0, 10));
 
-    return noStoreJson({
+    const response = NextResponse.json({
       success: true,
       mode: "compare",
       query,
-      filters: input.filters,
+      filters: filters,
       safetyNotice: CLINICAL_REVIEW_REQUIRED_NOTICE,
       v1,
       v2: {
@@ -253,11 +301,19 @@ export async function POST(request: NextRequest) {
         ],
       },
     });
+
+    Object.entries(corsHeaders).forEach(([k, v]) => response.headers.set(k, v));
+    response.headers.set("Cache-Control", "private, no-store");
+    return response;
   } catch (error: any) {
-    return noStoreJson({
+    console.error("Repertory Compare API failed. Details redacted.");
+
+    const response = NextResponse.json({
       success: false,
-      message: "V1 vs V2 comparison failed. V1 remains available.",
-      error: error?.message || String(error),
-    }, 500);
+      message: "V1 vs V2 comparison failed. V1 remains available."
+    }, { status: 500 });
+    Object.entries(corsHeaders).forEach(([k, v]) => response.headers.set(k, v));
+    response.headers.set("Cache-Control", "no-store");
+    return response;
   }
 }

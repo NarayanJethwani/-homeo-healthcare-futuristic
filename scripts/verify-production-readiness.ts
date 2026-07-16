@@ -211,6 +211,7 @@ function runSecurityVerification(): VerificationCheckResult[] {
       "tests/repertorySessionExportService.test.ts",
       "tests/repertoryExportAuthorization.test.ts",
       "tests/aiSecurityBoundary.test.ts",
+      "tests/repertoryRouteSecurity.test.ts",
     ];
     for (const testFile of securityTests) {
       const secTest = runSubprocess(

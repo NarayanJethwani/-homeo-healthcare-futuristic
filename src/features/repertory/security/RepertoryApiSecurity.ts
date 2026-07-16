@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 type RateLimitResult = {
   allowed: boolean;
@@ -237,4 +237,53 @@ export function validateRepertorizationPayload(value: unknown):
 
 export function resetRepertoryRateLimitsForTests(): void {
   rateLimitWindows.clear();
+}
+
+export async function readAndBoundRequestBody(
+  request: NextRequest,
+  limitBytes: number
+): Promise<string> {
+  if (!request.body) {
+    return "";
+  }
+
+  let reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
+  try {
+    reader = request.body.getReader();
+  } catch (e) {
+    throw new Error("STREAM_READ_FAILED");
+  }
+
+  const chunks: Uint8Array[] = [];
+  let totalBytes = 0;
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      if (value) {
+        totalBytes += value.length;
+        if (totalBytes > limitBytes) {
+          await reader.cancel().catch(() => {});
+          throw new Error("PAYLOAD_TOO_LARGE");
+        }
+        chunks.push(value);
+      }
+    }
+  } catch (error: any) {
+    if (error.message === "PAYLOAD_TOO_LARGE") {
+      throw error;
+    }
+    throw new Error("STREAM_READ_FAILED");
+  }
+
+  const combined = new Uint8Array(totalBytes);
+  let offset = 0;
+  for (const chunk of chunks) {
+    combined.set(chunk, offset);
+    offset += chunk.length;
+  }
+
+  return new TextDecoder().decode(combined);
 }
