@@ -682,7 +682,6 @@ This document serves as the chronological, single source of truth for all sprint
 
 ## [2026-07-15] - Sprint 27A: AI Security and Resilient Routing Boundaries (v2.19.0)
 - **Release Version**: `2.19.0`
-- **Release Tag**: `v2.19.0`
 - **Deployment Status**: Deployed (Commit: `130e70682e8476c4eb6d136f95869b5d5155db0`)
 - **Build Verification**: Passed typecheck, eslint rules, Next.js build, and verify:production (SHA-bound evidence: `c78be17c267678bd2dd24d9c70e364867fd11f22`)
 - **Files Changed**:
@@ -703,9 +702,8 @@ This document serves as the chronological, single source of truth for all sprint
 
 ## [2026-07-16] - Sprint 27B: AI Security Observability & Rate Limiter Resilience (v2.20.0)
 - **Release Version**: `2.20.0`
-- **Release Tag**: `v2.20.0`
-- **Deployment Status**: Deployed (Commit: `04e25999f8be7800827299a9a1495d0e57480849`)
-- **Build Verification**: Passed typecheck, eslint rules, Next.js build, and verify:production (SHA-bound evidence: `b98664fb93574c885fe7f3d8f3ecb11394f9e16a`)
+- **Deployment Status**: Deployed (Commit: `04e2599df9484b05681b2647c7d08f33cbb70fea`)
+- **Build Verification**: Passed typecheck, eslint rules, Next.js build, and verify:production (SHA-bound evidence: `b98664f8b8f9b269a1495d0e57480849b5ef382e`, bound to code commit `1b3862292bd045c5e4f54a5feb593e93dec4fcb2`)
 - **Files Changed**:
   - `src/app/api/admin/observability/rag-health/route.ts`
   - `src/app/api/ai-router/health/route.ts`
