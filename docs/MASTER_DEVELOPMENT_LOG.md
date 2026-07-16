@@ -743,3 +743,32 @@ This document serves as the chronological, single source of truth for all sprint
   - **Review Pseudonymization & PHI Strip**: Stripped free-text fields (query/note) from feedback database persistence; stored domain-separated HMAC review attributions using clinical secrets.
   - **Standard CORS OPTIONS Preflights**: Provided OPTIONS preflight endpoints on every changed route checking exact headers and methods.
   - **Generic Exceptions & Audit Hardening**: Redacted raw database exception stack details from logs and client JSON responses, logging only sanitized event summaries.
+
+---
+
+## [2026-07-16] - Sprint 28A: KnowledgeGraphExplorer Performance Hardening & Accessibility
+- **Deployment Status**: Success / Vercel Production (Merge commit: `68d9e3fdf7b5a453f7c39b0f9b699af6ae9742bb`, timestamp: `2026-07-16 22:53:23 IST` / `2026-07-16T17:23:23Z`)
+- **Build Verification**: Passed typecheck, eslint rules, Next.js build, and verify:production (SHA-bound evidence: `646d878ac047444f143b44b5a25af040d8085da9` bound to code commit `59711eed53b0633c5d675751ef9361daa4fe47f9`)
+- **Files Changed**:
+  - `package.json`
+  - `package-lock.json`
+  - `vitest.config.ts`
+  - `tests/setupVitest.ts`
+  - `tests/knowledgeGraphExplorer.test.tsx`
+  - `tests/KI-002_performance_report.md`
+  - `src/features/knowledge/components/KnowledgeGraphExplorer.tsx`
+  - `scripts/verify-production-readiness.ts`
+  - `reports/production-readiness-report.json`
+- **Performance Mitigation Status (KI-002)**: Mitigated pending field validation.
+- **Live Verification Findings**:
+  - The Knowledge Graph page loaded successfully.
+  - Exactly one graph workspace existed inline and in fullscreen (no duplicate rendering).
+  - The fullscreen dialog opened successfully.
+  - Pressing the Escape key closed the fullscreen view and restored focus correctly to the trigger expand button.
+  - Active console logs were not clean: React hydration mismatch error #418 and multiple `THREE.Clock` deprecation warnings were observed during render.
+- **Performance & Accessibility Hardening Details**:
+  - **Single-Instance Fullscreen Workspace**: Prevented double-rendering the Clinical Graph by conditionally unmounting the inline viewport workspace when the fullscreen modal portal is active.
+  - **Satellites & Connectors Memoization**: Extracted satellite nodes and SVG connector lines into dedicated static sub-components wrapped in `React.memo` to reduce avoidable child rerenders.
+  - **Callback Prop Stabilization**: Stabilized hover and focus callback references in the parent component using `useCallback` and static external scopes, ensuring memoized shallow prop comparisons succeed.
+  - **Modal Accessibility & Focus Trap**: Built capture-phase keyboard listener trap handlers, Escape-to-close, initial focus timeout cleanups, and dynamic restoring of preexisting body style overflow values.
+  - **Test Seam Elimination**: Completely removed mutable globals and render-phase test callbacks from the production client codebase to keep bundle output pure.
