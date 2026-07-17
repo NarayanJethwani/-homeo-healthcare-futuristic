@@ -217,10 +217,10 @@ export default function AntigravityBackground() {
     const size = 256;
     const length = size * size;
 
-    // Clock and Time tracking
-    const clock = new THREE.Clock();
-    let time = 0;
-    let lastTime = 0;
+    // Timer and Time tracking
+    const timer = new THREE.Timer();
+    timer.connect(document);
+    let simulationElapsed = 0;
 
     // Noise drift tracker
     const driftNoise = new ValueNoise1D();
@@ -622,15 +622,14 @@ export default function AntigravityBackground() {
     window.addEventListener("pointerleave", handlePointerLeave);
 
     // Core Animation loop
-    const tick = () => {
-      const elapsed = clock.getElapsedTime();
-      const dt = elapsed - lastTime;
-      lastTime = elapsed;
-      time += dt;
+    const tick = (timestamp: number) => {
+      timer.update(timestamp);
+      const dt = Math.min(timer.getDelta(), 0.1);
+      simulationElapsed += dt;
 
       // Calculate 1D drift offset
-      const driftX = (driftNoise.getVal(time * 0.66 + 94.234) - 0.5) * 2;
-      const driftY = (driftNoise.getVal(time * 0.75 + 21.028) - 0.5) * 2;
+      const driftX = (driftNoise.getVal(simulationElapsed * 0.66 + 94.234) - 0.5) * 2;
+      const driftY = (driftNoise.getVal(simulationElapsed * 0.75 + 21.028) - 0.5) * 2;
 
       if (mouseIsOverRef.current) {
         // Project NDC mouse coordinate onto our flat virtual plane at z = 0
@@ -663,7 +662,7 @@ export default function AntigravityBackground() {
 
       // 1. Simulation Step: Solve particle positions
       simMaterial.uniforms.uPosition.value = everRendered ? activeRT.texture : posTex;
-      simMaterial.uniforms.uTime.value = elapsed;
+      simMaterial.uniforms.uTime.value = simulationElapsed;
       simMaterial.uniforms.uDeltaTime.value = dt;
       simMaterial.uniforms.uRingRadius.value = 0.18; // Steady ring radius matching antigravity.google
       simMaterial.uniforms.uRingPos.value = ringPos;
@@ -674,7 +673,7 @@ export default function AntigravityBackground() {
 
       // 2. Rendering Step: Draw final particles
       renderMaterial.uniforms.uPosition.value = everRendered ? nextRT.texture : posTex;
-      renderMaterial.uniforms.uTime.value = elapsed;
+      renderMaterial.uniforms.uTime.value = simulationElapsed;
       renderMaterial.uniforms.uRingPos.value = ringPos;
       renderMaterial.uniforms.uParticleScale.value = particleScale;
 
@@ -692,11 +691,12 @@ export default function AntigravityBackground() {
     };
 
     // Run first frame
-    tick();
+    animationFrameId = requestAnimationFrame(tick);
 
     // Cleanup
     return () => {
       cancelAnimationFrame(animationFrameId);
+      timer.dispose();
       window.removeEventListener("resize", onResize);
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("pointerleave", handlePointerLeave);

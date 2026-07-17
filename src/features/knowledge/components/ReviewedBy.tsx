@@ -1,6 +1,7 @@
 import React from "react";
 import { CheckCircle2, Calendar } from "lucide-react";
 import { Reviewer } from "../types";
+import { formatMedicalDateLong } from "../utils/dateFormatter";
 
 interface ReviewedByProps {
   reviewer: Reviewer;
@@ -8,11 +9,7 @@ interface ReviewedByProps {
 }
 
 export default function ReviewedBy({ reviewer, reviewedDate }: ReviewedByProps) {
-  const formattedDate = new Date(reviewedDate).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  const formattedDate = formatMedicalDateLong(reviewedDate);
 
   return (
     <div className="flex flex-wrap items-center gap-4 py-4 px-6 rounded-xl border border-teal-500/10 bg-teal-500/5 text-teal-800 dark:text-teal-400">
