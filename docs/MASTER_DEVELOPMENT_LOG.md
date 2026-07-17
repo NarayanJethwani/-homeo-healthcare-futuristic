@@ -822,3 +822,24 @@ This document serves as the chronological, single source of truth for all sprint
   - **Grouped & Deduplicated Event Timing**: Implemented `interactionId` deduplication to report true user interactions rather than raw event streams.
   - **Verified Performance Budgets**: Confirmed baseline pacing stays below the animation frame duration budget (p95 = `22.60 ms` < `33.33 ms` target budget) with exactly `0` interaction-phase long tasks, rendering viewport gating unnecessary.
   - **Trace Sanitization**: Removed username sentinels and user environment variables from trace events, validating output before compressing to `baseline_representative.json.gz`.
+
+---
+
+## [2026-07-17] - Sprint 28D: Miasmatic Filter Read Model & Presentation-Only UI
+- **Deployment Status**: Success / Vercel Production (Merge commit: `4127f2cafc87d6f0054c4007a92bc93d7b08908b`, timestamp: `2026-07-17 17:42:25 IST` / `2026-07-17T12:12:25Z`)
+- **Build Verification**: Passed typecheck, eslint rules, Next.js build, and verify:production (SHA-bound evidence: `5778d94aa2a9d928253855212e89ce8d78cb5f00` bound to code commit `deeb0a11a89097e7e8d75051bb472f6284038254`)
+- **Files Changed**:
+  - `package.json`
+  - `vitest.config.ts`
+  - `src/features/repertory/projections/RubricMiasmProjectionV1.ts`
+  - `src/features/repertory/components/RepertoryWorkbench.tsx`
+  - `tests/miasmaticFiltering.test.tsx`
+  - `scripts/verify-production-readiness.ts`
+  - `reports/production-readiness-report.json`
+- **Infrastructure Status**: Production-disabled infrastructure (no active clinical filter).
+- **Major Changes**:
+  - **Miasmatic Projection Model (Read Model)**: Shipped an empty and deeply frozen production projection dictionary `RubricMiasmProjectionV1` in `src/features/repertory/projections/RubricMiasmProjectionV1.ts` with strict schema validation rules enforcing literal version `1.0.0`, `approved` reviewStatus, opaque review IDs `rev_[a-zA-Z0-9_]+`, non-empty provenance and source metadata. Returns safe `['unclassified']` fallback arrays on validation failure or missing mappings.
+  - **UI Presentation Seams & Toggles**: Cleaned up the dormant miasm filtering paths and the obsolete `MIASMS` constant. Wrapped the miasm filter controls in `RepertoryWorkbench.tsx` to remain completely disabled in production environments by default, only allowing enabling during test runs when `process.env.NODE_ENV === 'test'` and the explicit prop `enableMiasmaticFilter` is set.
+  - **Accessibility & Reduced Motion**: Wired Left/Right/Up/Down arrow key focus cycling navigation, and Space/Enter selection controls on the miasm filter buttons. Handled reduced motion settings using `motion-reduce:transition-none` classes on transition boundaries.
+  - **Automatic State Lifecycle Cleanups**: Added triggers to automatically reset all selected miasmatic filters upon patient switching or workspace session changes.
+  - **Vitest Test Suite**: Verified the production model immutability, test-only override safety checks, schema validations, zero-write side-effects (0 database edits, 0 storage writes, 0 router modifications, and 0 console warnings) and unchanged read-count delta metrics, keyboard focus navigation, and score/calculation invariance before and after filtering.
