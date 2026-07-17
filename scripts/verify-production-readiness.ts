@@ -119,7 +119,13 @@ function runStaticVerification(): VerificationCheckResult[] {
   localResults.push(typecheckRes);
 
   // Vitest UI tests
-  const uiTestRes = runSubprocess("test:ui", "npx", ["vitest", "run", "tests/knowledgeGraphExplorer.test.tsx", "tests/hydrationAndTiming.test.tsx"]);
+  const uiTestRes = runSubprocess("test:ui", "npx", [
+    "vitest",
+    "run",
+    "tests/knowledgeGraphExplorer.test.tsx",
+    "tests/hydrationAndTiming.test.tsx",
+    "tests/graphPerformance.test.tsx"
+  ]);
   localResults.push(uiTestRes);
 
   return localResults;
