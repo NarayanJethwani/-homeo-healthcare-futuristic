@@ -124,7 +124,8 @@ function runStaticVerification(): VerificationCheckResult[] {
     "run",
     "tests/knowledgeGraphExplorer.test.tsx",
     "tests/hydrationAndTiming.test.tsx",
-    "tests/graphPerformance.test.tsx"
+    "tests/graphPerformance.test.tsx",
+    "tests/miasmaticFiltering.test.tsx"
   ]);
   localResults.push(uiTestRes);
 

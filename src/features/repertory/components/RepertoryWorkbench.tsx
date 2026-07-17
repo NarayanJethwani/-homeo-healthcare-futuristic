@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { 
   Search, Sliders, Trash2, Plus, Info, RefreshCw, CheckCircle, 
   AlertTriangle, BookOpen, Download, HelpCircle, ArrowRight, Check,
   ChevronDown, ChevronUp
 } from 'lucide-react';
 import { RepertoryRubric, ScoringResult, RemedyDifferentiation, ValidationReport, ClinicalReasoningSummary } from '../types';
+import { getApprovedMiasmsForRubric, IS_MIASMATIC_FILTER_ENABLED, MiasmTypeV1 } from '../projections/RubricMiasmProjectionV1';
 import { DifferentialComparison } from './DifferentialComparison';
 import { ConfidenceBreakdownPanel } from './ConfidenceBreakdownPanel';
 import { RubricCoverageHeatmap } from './RubricCoverageHeatmap';
@@ -20,14 +21,19 @@ export interface RepertoryWorkbenchProps {
   activePatientId?: string;
   onSendToTreatmentPlanner?: (summary: string) => void;
   onPatientChange?: (patientId: string) => void;
+  enableMiasmaticFilter?: boolean;
 }
 
 export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
   sessionUid = '',
   activePatientId = '',
   onSendToTreatmentPlanner,
-  onPatientChange
+  onPatientChange,
+  enableMiasmaticFilter = false
 }) => {
+  const isFilterEnabled = process.env.NODE_ENV === 'test' && enableMiasmaticFilter === true
+    ? true
+    : IS_MIASMATIC_FILTER_ENABLED;
   // Database States
   const [rubrics, setRubrics] = useState<RepertoryRubric[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -109,7 +115,8 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
   const [debouncedSearch, setDebouncedSearch] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [selectedOrganSystem, setSelectedOrganSystem] = useState<string>('All');
-  const [selectedMiasm, setSelectedMiasm] = useState<string>('All');
+  const [selectedMiasms, setSelectedMiasms] = useState<MiasmTypeV1[]>([]);
+  const miasmContainerRef = useRef<HTMLDivElement>(null);
   const [selectedRemedy, setSelectedRemedy] = useState<string>('All');
 
   // Initialize internal Codex clinical workspace service facade
@@ -141,7 +148,8 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
   useEffect(() => {
     setSessionToken(null);
     repertorizeGenerationRef.current++;
-  }, [activePatientId]);
+    setSelectedMiasms([]);
+  }, [activePatientId, sessionUid]);
 
 
   // Dialogs & Audits
@@ -198,9 +206,6 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
     'Generalities'
   ];
 
-  // Miasms list
-  const MIASMS = ['All', 'Psora', 'Sycosis', 'Syphilis', 'Tubercular', 'Cancerinic'];
-
   // Fetch initial rubrics
   useEffect(() => {
     const loadRubrics = async () => {
@@ -231,7 +236,6 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
         const filters = {
           category: selectedCategory === 'All' ? undefined : selectedCategory,
           organSystem: selectedOrganSystem === 'All' ? undefined : selectedOrganSystem,
-          miasm: selectedMiasm === 'All' ? undefined : selectedMiasm,
           remedy: selectedRemedy === 'All' ? undefined : selectedRemedy
         };
 
@@ -247,7 +251,35 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
       }
     };
     fetchFiltered();
-  }, [debouncedSearch, selectedCategory, selectedOrganSystem, selectedMiasm, selectedRemedy]);
+  }, [debouncedSearch, selectedCategory, selectedOrganSystem, selectedRemedy]);
+
+  // Memoized visible catalog rubrics based on local miasmatic filter
+  const visibleCatalogRubrics = useMemo(() => {
+    return rubrics.filter(rub => {
+      if (selectedMiasms.length === 0) return true;
+      const approvedMiasms = getApprovedMiasmsForRubric(rub.rubricId);
+      return selectedMiasms.some(m => approvedMiasms.includes(m));
+    });
+  }, [rubrics, selectedMiasms]);
+
+  const handleMiasmKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
+    if (!miasmContainerRef.current) return;
+    const buttons = Array.from(miasmContainerRef.current.querySelectorAll('button.miasm-btn')) as HTMLButtonElement[];
+    if (buttons.length === 0) return;
+
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      const nextIndex = (index + 1) % buttons.length;
+      buttons[nextIndex].focus();
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      const prevIndex = (index - 1 + buttons.length) % buttons.length;
+      buttons[prevIndex].focus();
+    } else if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      buttons[index].click();
+    }
+  };
 
   // Recalculate scoring, differentiations, reasoning summary, and validation safety checks using the Codex Clinical Workspace Service
   useEffect(() => {
@@ -1470,6 +1502,55 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
                 </div>
               </div>
 
+              {/* Miasmatic filter toggles */}
+              {isFilterEnabled && (
+                <div
+                  ref={miasmContainerRef}
+                  className="mt-3 flex flex-wrap items-center gap-2"
+                  role="group"
+                  aria-label="Filter rubrics by Homeopathic Miasm"
+                >
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono mr-1">
+                    Miasms:
+                  </span>
+                  {(['psora', 'sycosis', 'syphilis', 'tubercular', 'unclassified'] as const).map((miasm, idx) => {
+                    const isSelected = selectedMiasms.includes(miasm);
+                    return (
+                      <button
+                        key={miasm}
+                        type="button"
+                        onClick={() => {
+                          setSelectedMiasms(prev =>
+                            prev.includes(miasm)
+                              ? prev.filter(m => m !== miasm)
+                              : [...prev, miasm]
+                          );
+                        }}
+                        onKeyDown={(e) => handleMiasmKeyDown(e, idx)}
+                        aria-pressed={isSelected}
+                        className={`miasm-btn px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider border cursor-pointer focus:ring-2 focus:ring-emerald-500 focus:outline-none motion-reduce:transition-none ${
+                          isSelected
+                            ? 'bg-emerald-500 border-emerald-500 text-white shadow-xs'
+                            : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 hover:border-slate-350'
+                        }`}
+                        style={{ transitionProperty: 'color, background-color, border-color' }}
+                      >
+                        {miasm}
+                      </button>
+                    );
+                  })}
+                  {selectedMiasms.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setSelectedMiasms([])}
+                      className="px-2 py-1 text-[9px] font-bold text-slate-400 hover:text-rose-500 motion-reduce:transition-none transition-colors uppercase cursor-pointer"
+                    >
+                      Clear Filter
+                    </button>
+                  )}
+                </div>
+              )}
+
               {/* Collapsible List Container */}
               {resolvedCatalogExpanded && (
                 <div className="border-t border-slate-100 pt-4 flex-grow transition-all duration-300">
@@ -1477,14 +1558,14 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
                     <div className="flex justify-center items-center py-20">
                       <RefreshCw className="w-8 h-8 text-slate-300 animate-spin" />
                     </div>
-                  ) : rubrics.length === 0 ? (
+                  ) : visibleCatalogRubrics.length === 0 ? (
                     <div className="text-center py-20 text-slate-400 space-y-2">
                       <Info className="w-10 h-10 mx-auto opacity-40 text-slate-400" />
                       <p className="text-xs font-bold">No active clinical rubrics found matching current filter.</p>
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 gap-3 pr-1">
-                      {rubrics.map(rub => {
+                      {visibleCatalogRubrics.map(rub => {
                         const isActive = selectedRubrics.some(s => s.rubricId === rub.rubricId);
                         const isExpanded = expandedRubricId === rub.rubricId;
                         
