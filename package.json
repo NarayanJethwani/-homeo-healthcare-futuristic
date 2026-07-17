@@ -27,7 +27,7 @@
     "verify:production": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register scripts/verify-production-readiness.ts --mode production",
     "verify:emulator": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register scripts/verify-production-readiness.ts --mode emulator",
     "verify:release": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register scripts/verify-production-readiness.ts --mode release",
-    "test:ui": "vitest run tests/knowledgeGraphExplorer.test.tsx tests/hydrationAndTiming.test.tsx tests/graphPerformance.test.tsx",
+    "test:ui": "vitest run tests/knowledgeGraphExplorer.test.tsx tests/hydrationAndTiming.test.tsx tests/graphPerformance.test.tsx tests/miasmaticFiltering.test.tsx",
     "test:repertory-durable": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertoryDurableConsistency.test.ts",
     "test:repertory-approval": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertoryApprovalPersistence.test.ts",
     "test:repertory-gate": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertoryProductionActivationGate.test.ts",
