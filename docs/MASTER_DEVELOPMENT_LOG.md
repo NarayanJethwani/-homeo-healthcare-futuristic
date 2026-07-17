@@ -772,3 +772,29 @@ This document serves as the chronological, single source of truth for all sprint
   - **Callback Prop Stabilization**: Stabilized hover and focus callback references in the parent component using `useCallback` and static external scopes, ensuring memoized shallow prop comparisons succeed.
   - **Modal Accessibility & Focus Trap**: Built capture-phase keyboard listener trap handlers, Escape-to-close, initial focus timeout cleanups, and dynamic restoring of preexisting body style overflow values.
   - **Test Seam Elimination**: Completely removed mutable globals and render-phase test callbacks from the production client codebase to keep bundle output pure.
+
+---
+
+## [2026-07-17] - Sprint 28B: React Hydration Invariance & WebGL Timer Migration
+- **Deployment Status**: Success / Vercel Production (Merge commit: `93654aeafde8da0f4c5182871e87367f22441d39`, timestamp: `2026-07-17 10:51:00 IST` / `2026-07-17T05:21:00Z`)
+- **Build Verification**: Passed typecheck, eslint rules, Next.js build, and verify:production (SHA-bound evidence: `a440a6436f9c5532dedc0ddf938402a38df69dc3` bound to code commit `ba282fa5aacbeba3934f16e5a07c5110db28d2b0`)
+- **Files Changed**:
+  - `package.json`
+  - `scripts/verify-production-readiness.ts`
+  - `src/features/knowledge/utils/dateFormatter.ts`
+  - `src/features/knowledge/components/LastReviewedBadge.tsx`
+  - `src/features/knowledge/components/EditorialConfidenceBadge.tsx`
+  - `src/features/knowledge/components/ReviewedBy.tsx`
+  - `src/features/knowledge/components/TimelineHistory.tsx`
+  - `src/features/knowledge/components/AICitationBlock.tsx`
+  - `src/app/knowledge/case-studies/page.tsx`
+  - `src/app/knowledge/research/page.tsx`
+  - `src/components/AntigravityBackground.tsx`
+  - `tests/hydrationAndTiming.test.tsx`
+  - `reports/hydration_and_timing_diagnostics.md`
+  - `reports/production-readiness-report.json`
+- **Major Changes**:
+  - **Timezone-Invariant Date Formatter**: Implemented a pure, timezone-invariant `formatMedicalDate` and `formatMedicalDateLong` utility that validates date boundaries and strict ISO hours, minutes, and seconds ranges (rejecting invalid times like `99:99:99` or `24:00:00`), returning `""` on invalid inputs.
+  - **React Hydration Mismatch Fix**: Swapped timezone-sensitive `toLocaleDateString()` methods for our new formatter in all date-rendering badges and pages to eliminate HTML structural and date value discrepancies.
+  - **THREE.Timer Migration**: Replaced deprecated `THREE.Clock` in `AntigravityBackground.tsx` with `THREE.Timer`, implementing clamped tick updates (`Math.min(timer.getDelta(), 0.1)`) and accumulating ticks in `simulationElapsed` to prevent frame-drop rendering jumps.
+  - **Deterministic Timezone Testing**: Added `tests/hydrationAndTiming.test.tsx` with forced UTC server renders and `America/New_York` client hydration checks to programmatically verify hydration resilience, along with static Three.js Clock usage assertions.
