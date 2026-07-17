@@ -3,6 +3,7 @@
 import React from "react";
 import { Terminal, Copy, Check } from "lucide-react";
 import { KnowledgeEntity } from "../types";
+import { formatMedicalDate } from "../utils/dateFormatter";
 
 interface AICitationBlockProps {
   entity: KnowledgeEntity;
@@ -60,7 +61,7 @@ export default function AICitationBlock({ entity }: AICitationBlockProps) {
         </div>
         <div>
           <span className="font-semibold block text-[10px] uppercase opacity-60">Last Reviewed Date</span>
-          <span>{new Date(entity.versionInfo.reviewed).toLocaleDateString()}</span>
+          <span>{formatMedicalDate(entity.versionInfo.reviewed)}</span>
         </div>
         <div>
           <span className="font-semibold block text-[10px] uppercase opacity-60">Evidence Level</span>

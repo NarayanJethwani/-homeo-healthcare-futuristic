@@ -6,6 +6,7 @@ import { CASE_STUDIES } from "@/features/knowledge/content/case-studies";
 import KnowledgePageLayout from "@/features/knowledge/components/KnowledgePageLayout";
 import ReviewedBy from "@/features/knowledge/components/ReviewedBy";
 import MedicalDisclaimer from "@/features/knowledge/components/MedicalDisclaimer";
+import { formatMedicalDate } from "@/features/knowledge/utils/dateFormatter";
 
 export const metadata: Metadata = {
   title: "Clinical Case Studies | Homeo Healthcare",
@@ -74,7 +75,7 @@ export default function CaseStudiesListPage() {
               </div>
 
               <div className="pt-3 border-t border-neutral-500/5 flex items-center justify-between text-xs font-semibold text-neutral-600 dark:text-neutral-400">
-                <span>Audited on: {new Date(report.versionInfo.reviewed).toLocaleDateString()}</span>
+                <span>Audited on: {formatMedicalDate(report.versionInfo.reviewed)}</span>
                 <Link
                   href={`/knowledge/case-studies/${report.slug}`}
                   className="inline-flex items-center gap-1 text-teal-600 dark:text-teal-400 hover:underline"

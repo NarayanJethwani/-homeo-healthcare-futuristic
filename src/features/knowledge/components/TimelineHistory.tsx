@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { History, Calendar, Award, ChevronDown, ChevronUp } from "lucide-react";
+import { formatMedicalDateLong } from "../utils/dateFormatter";
 
 interface TimelineHistoryProps {
   versionInfo: {
@@ -22,17 +23,9 @@ interface TimelineHistoryProps {
 export default function TimelineHistory({ versionInfo, reviewer }: TimelineHistoryProps) {
   const [expanded, setExpanded] = useState(false);
 
-  const createdDate = new Date(versionInfo.created).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric"
-  });
+  const createdDate = formatMedicalDateLong(versionInfo.created);
 
-  const updatedDate = new Date(versionInfo.updated).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric"
-  });
+  const updatedDate = formatMedicalDateLong(versionInfo.updated);
 
   return (
     <div className="p-5 border border-neutral-200 dark:border-neutral-850 rounded-2xl bg-white/5 backdrop-blur-md space-y-4 print-hide">

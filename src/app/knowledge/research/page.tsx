@@ -6,6 +6,7 @@ import { RESEARCH } from "@/features/knowledge/content/research";
 import KnowledgePageLayout from "@/features/knowledge/components/KnowledgePageLayout";
 import ReviewedBy from "@/features/knowledge/components/ReviewedBy";
 import MedicalDisclaimer from "@/features/knowledge/components/MedicalDisclaimer";
+import { formatMedicalDate } from "@/features/knowledge/utils/dateFormatter";
 
 export const metadata: Metadata = {
   title: "Clinical Research Library | Homeo Healthcare",
@@ -74,7 +75,7 @@ export default function ResearchListPage() {
               </div>
 
               <div className="pt-3 border-t border-neutral-500/5 flex items-center justify-between text-xs font-semibold text-neutral-600 dark:text-neutral-400">
-                <span>Published on: {new Date(paper.versionInfo.created).toLocaleDateString()}</span>
+                <span>Published on: {formatMedicalDate(paper.versionInfo.created)}</span>
                 <Link
                   href={`/knowledge/research/${paper.slug}`}
                   className="inline-flex items-center gap-1 text-teal-600 dark:text-teal-400 hover:underline"

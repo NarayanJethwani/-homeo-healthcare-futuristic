@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Star, ShieldCheck, Calendar, BookOpen, GitBranch, FileCheck, ChevronDown, ChevronUp } from "lucide-react";
 import { KnowledgeEntity } from "../types";
 import { getEntityRelationships } from "../graph/knowledgeGraph";
+import { formatMedicalDateLong } from "../utils/dateFormatter";
 
 interface EditorialConfidenceBadgeProps {
   entity: KnowledgeEntity;
@@ -14,11 +15,7 @@ export default function EditorialConfidenceBadge({ entity, reviewedDate }: Edito
   const [expanded, setExpanded] = useState(false);
   
   // Format Date
-  const formattedDate = new Date(reviewedDate).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  const formattedDate = formatMedicalDateLong(reviewedDate);
 
   // Clinical Confidence Stars
   // Determine stars based on evidenceLevel
