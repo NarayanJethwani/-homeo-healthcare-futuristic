@@ -826,7 +826,7 @@ This document serves as the chronological, single source of truth for all sprint
 ---
 
 ## [2026-07-17] - Sprint 28D: Miasmatic Filter Read Model & Presentation-Only UI
-- **Deployment Status**: Success / Vercel Production (Merge commit: `4127f2cafc87d6f0054c4007a92bc93d7b08908b`, timestamp: `2026-07-17 17:42:25 IST` / `2026-07-17T12:12:25Z`)
+- **Deployment Status**: Success / Vercel Production (Verified on current main commit `08f90dac193fee09ed3434f521f373a2fb13d18b`; original merge commit `4127f2cafc87d6f0054c4007a92bc93d7b08908b` had mixed results: Portal success, Futuristic site failure)
 - **Build Verification**: Passed typecheck, eslint rules, Next.js build, and verify:production (SHA-bound evidence: `5778d94aa2a9d928253855212e89ce8d78cb5f00` bound to code commit `deeb0a11a89097e7e8d75051bb472f6284038254`)
 - **Files Changed**:
   - `package.json`
