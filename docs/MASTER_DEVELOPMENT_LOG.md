@@ -798,3 +798,27 @@ This document serves as the chronological, single source of truth for all sprint
   - **React Hydration Mismatch Fix**: Swapped timezone-sensitive `toLocaleDateString()` methods for our new formatter in all date-rendering badges and pages to eliminate HTML structural and date value discrepancies.
   - **THREE.Timer Migration**: Replaced deprecated `THREE.Clock` in `AntigravityBackground.tsx` with `THREE.Timer`, implementing clamped tick updates (`Math.min(timer.getDelta(), 0.1)`) and accumulating ticks in `simulationElapsed` to prevent frame-drop rendering jumps.
   - **Deterministic Timezone Testing**: Added `tests/hydrationAndTiming.test.tsx` with forced UTC server renders and `America/New_York` client hydration checks to programmatically verify hydration resilience, along with static Three.js Clock usage assertions.
+
+---
+
+## [2026-07-17] - Sprint 28C: Knowledge Graph Mobile Performance Validation & KI-002 Mitigation
+- **Deployment Status**: Success / Vercel Production (Merge commit: `1f434a617ef0551fa598c0088e76862d42786fe8`, timestamp: `2026-07-17 12:51:00 IST` / `2026-07-17T07:21:00Z`)
+- **Build Verification**: Passed typecheck, eslint rules, Next.js build, and verify:production (SHA-bound evidence: `ae9d460966eb2ce1ff62456f307deff2239bc2cf` bound to code commit `f57200465b72d3f1dd33c0424ee6939e1ef6ca86`)
+- **Files Changed**:
+  - `docs/KNOWN_ISSUES_REGISTER.md`
+  - `package.json`
+  - `package-lock.json`
+  - `scripts/verify-production-readiness.ts`
+  - `scripts/measure_mobile_performance.ts`
+  - `tests/graphPerformance.test.tsx`
+  - `reports/KI-002_mobile_performance_data.json`
+  - `reports/KI-002_mobile_performance_report.md`
+  - `reports/production-readiness-report.json`
+  - `reports/traces/baseline_representative.json.gz`
+- **Performance Mitigation Status (KI-002)**: Mitigated pending physical-device validation.
+- **Major Changes**:
+  - **Clean-Code Performance Runner**: Added a Puppeteer-based automated browser sequence that emulates low-end mobile viewports (Moto G4, 360x640), CPU throttling (4x), and captures Event Timing and main-thread frame pacing.
+  - **Strict Interactions & Invariance**: Refactored the test interaction loop to use non-navigating components (maximize and close explorer button) and added URL invariance assertions to prevent navigation.
+  - **Grouped & Deduplicated Event Timing**: Implemented `interactionId` deduplication to report true user interactions rather than raw event streams.
+  - **Verified Performance Budgets**: Confirmed baseline pacing stays below the animation frame duration budget (p95 = `22.60 ms` < `33.33 ms` target budget) with exactly `0` interaction-phase long tasks, rendering viewport gating unnecessary.
+  - **Trace Sanitization**: Removed username sentinels and user environment variables from trace events, validating output before compressing to `baseline_representative.json.gz`.
