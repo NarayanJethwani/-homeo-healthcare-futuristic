@@ -32,8 +32,14 @@ async function main() {
   } else {
     process.env.REPERTORY_ENV = 'emulator';
     process.env.REPERTORY_RUNTIME_MODE = 'emulator';
-    process.env.FIRESTORE_EMULATOR_HOST = '127.0.0.1:8080';
-    process.env.FIRESTORE_PROJECT_ID = 'homeo-healthcare-emulator';
+    if (!process.env.FIRESTORE_EMULATOR_HOST) {
+      process.env.FIRESTORE_EMULATOR_HOST = '127.0.0.1:8080';
+    }
+    const resolvedProj = process.env.FIRESTORE_PROJECT_ID || process.env.GCLOUD_PROJECT;
+    if (!resolvedProj) {
+      throw new Error("Configuration Error: FIRESTORE_PROJECT_ID or GCLOUD_PROJECT must be set in emulator mode.");
+    }
+    process.env.FIRESTORE_PROJECT_ID = resolvedProj;
   }
 
   getRuntimeEnvironment();

@@ -12,8 +12,16 @@ async function run() {
 
   const rulesContent = fs.readFileSync(path.resolve(__dirname, '../firestore.rules'), 'utf8');
 
+  const projectId = process.env.FIRESTORE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || process.env.GCLOUD_PROJECT;
+  if (!projectId) {
+    throw new Error("Configuration Error: Project ID is required for rules test.");
+  }
+  if (!/^hh-test-[a-f0-9]{12}$/.test(projectId)) {
+    throw new Error(`Configuration Error: Rules test project ID ${projectId} does not match synthetic pattern.`);
+  }
+
   const testEnv = await initializeTestEnvironment({
-    projectId: 'homeo-healthcare-emulator',
+    projectId,
     firestore: {
       rules: rulesContent,
       host: '127.0.0.1',
@@ -31,7 +39,7 @@ async function run() {
     await setDoc(doc(db, 'users/clinical-user'), { role: 'clinical-reviewer', email: 'clinical@example.com' });
     await setDoc(doc(db, 'users/editor-user'), { role: 'editor', email: 'editor@example.com' });
     await setDoc(doc(db, 'users/admin-user'), { role: 'admin', email: 'admin@example.com' });
-    
+
     // Seed some test data
     await setDoc(doc(db, 'repertoryAcquisitionRecords/acq_clarke_1904_001'), { sourceId: 'clarke_clinical_1904' });
     await setDoc(doc(db, 'repertorySourceReviews/rev_clinical_clarke_1904'), { decision: 'approved-with-restrictions' });

@@ -718,7 +718,7 @@ export class SnapshotPipeline {
 
     writeDeterministicJson(path.join(dir, 'manifest.json'), manifest);
     
-    const manifestDest = path.join(process.cwd(), 'data', 'repertory', 'manifests', `manifest_${options.version}.json`);
+    const manifestDest = path.join(env.artifactRoot, 'manifests', `manifest_${options.version}.json`);
     const manifestsDir = path.dirname(manifestDest);
     if (!fs.existsSync(manifestsDir)) {
       fs.mkdirSync(manifestsDir, { recursive: true });
@@ -807,7 +807,7 @@ export class SnapshotPipeline {
     if (currentActive && currentActive !== version) {
       manifest.previousCorpusVersion = currentActive;
       writeDeterministicJson(path.join(dir, 'manifest.json'), manifest);
-      const manifestDest = path.join(process.cwd(), 'data', 'repertory', 'manifests', `manifest_${version}.json`);
+      const manifestDest = path.join(env.artifactRoot, 'manifests', `manifest_${version}.json`);
       if (fs.existsSync(manifestDest)) {
         writeDeterministicJson(manifestDest, manifest);
       }
