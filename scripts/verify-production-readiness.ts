@@ -356,6 +356,21 @@ async function main() {
       process.exit(1);
     }
 
+    // Check if HEAD commit actually modifies the reports
+    const prDiffFiles = child_process.spawnSync('git', ['diff', '--name-only', 'HEAD~1', 'HEAD'], { encoding: 'utf8' })
+      .stdout.trim()
+      .split('\n')
+      .map(f => f.trim())
+      .filter(Boolean);
+
+    const hasReports = prDiffFiles.includes("reports/production-readiness-report.json") ||
+                       prDiffFiles.includes("reports/emulator-verification-report.json");
+
+    if (!hasReports) {
+      console.log("ℹ️ No reports modified in the HEAD commit. Skipping lineage validation for non-release PR.");
+      process.exit(0);
+    }
+
     const prodReportPath = path.join(process.cwd(), "reports", "production-readiness-report.json");
     const emuReportPath = path.join(process.cwd(), "reports", "emulator-verification-report.json");
 

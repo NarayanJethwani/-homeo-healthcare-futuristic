@@ -843,3 +843,41 @@ This document serves as the chronological, single source of truth for all sprint
   - **Accessibility & Reduced Motion**: Wired Left/Right/Up/Down arrow key focus cycling navigation, and Space/Enter selection controls on the miasm filter buttons. Handled reduced motion settings using `motion-reduce:transition-none` classes on transition boundaries.
   - **Automatic State Lifecycle Cleanups**: Added triggers to automatically reset all selected miasmatic filters upon patient switching or workspace session changes.
   - **Vitest Test Suite**: Verified the production model immutability, test-only override safety checks, schema validations, zero-write side-effects (0 database edits, 0 storage writes, 0 router modifications, and 0 console warnings) and unchanged read-count delta metrics, keyboard focus navigation, and score/calculation invariance before and after filtering.
+
+---
+
+## [2026-07-18] - Sprint 28E: Deterministic Firestore Test Harness & Safety Resolver
+- **Deployment Status**: Merged to `main` (Merge Commit: `e9e5f8a6fd34a2868b412ce1d25963a821d90126` | Evidence HEAD: `f8e50b34e63c5b95a3fd60a567bc9d286ec81e1c` | Code HEAD: `db03495d4615ef82f8087f54c9c2b429d380e227`)
+- **Build Verification**: Passed Next.js build, TypeScript compiler, ESLint, and full verification suite (readiness validation tests, governed unit tests, rules client unit tests, durables consistency, approval persistence, production activation gates, clarke safety, and snapshot activation tests).
+- **Files Changed**:
+  * `.github/workflows/ci.yml`
+  * `.gitignore`
+  * `firebase.json`
+  * `firestore-debug.log` (removed from version control; future generated logs are ignored)
+  * `package.json`
+  * `package-lock.json`
+  * `reports/emulator-verification-report.json`
+  * `reports/production-readiness-report.json`
+  * `scripts/run-unit-tests.ts`
+  * `scripts/verify-production-readiness.ts`
+  * `src/features/repertory/config/runtimeEnv.ts`
+  * `src/features/repertory/import-export/snapshotPipeline.ts`
+  * `src/lib/firebaseAdmin.ts`
+  * `tests/aiSecurityBoundary.test.ts`
+  * `tests/firestoreHarnessValidation.test.ts`
+  * `tests/firestoreRulesClient.test.ts`
+  * `tests/helpers/firestoreTestHarness.ts`
+  * `tests/helpers/pointerClient.ts`
+  * `tests/productionReadiness.test.ts`
+  * `tests/ragPerformanceSafety.test.ts`
+  * `tests/repertoryApprovalPersistence.test.ts`
+  * `tests/repertoryDurableConsistency.test.ts`
+  * `tests/repertoryProductionActivationGate.test.ts`
+  * `tests/setupVitest.ts`
+- **Major Changes**:
+  - **Firestore Lazy Safety Resolver**: Enforced mutually exclusive state checks (Mock vs. Emulator vs. Production) in `resolveBackendMode()`. Loopback-only constraints strictly validate active emulator hosts, preventing silent production fallbacks when environment configurations are missing or incorrect.
+  - **Sanitized Unit Test Runner**: Introduced `scripts/run-unit-tests.ts` to sequentially execute unit tests under clean test settings, purging credentials and overriding project IDs to `mock-project-id` to keep test mock environments isolated.
+  - **Non-Destructive Release Checker**: Refactored `verify-production-readiness.ts` to use temporary directories for test manifests, Git-ignoring generated Firebase/Firestore debug logs and removing destructive `git checkout` cleanups.
+  - **Deterministic RAG Safety**: Stubbed `ollamaService.checkHealth` and `ollamaService.getEmbeddings` inside RAG performance tests to keep them deterministic regardless of whether local Ollama is offline or online.
+  - **Robust Verification Subprocess Test**: Used `child_process.spawnSync` with a large custom `maxBuffer` to run verifier scripts without overflowing stdout buffer limits.
+  - **GitHub Actions PR Lineage isolation**: Configured `ci.yml` to run lineage and build checks on independent PR environments.
