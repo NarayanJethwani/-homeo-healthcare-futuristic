@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import child_process from "child_process";
 
+
 // ─── SHA-bound dirty-tree enforcement ──────────────────────────────────────
 // Captures HEAD SHA and working-tree status at a point in time.
 // Called BEFORE and AFTER all verification checks. If HEAD moved or the
@@ -15,11 +16,31 @@ function captureGitState(): { sha: string; isDirty: boolean; statusLines: string
     const status = child_process
       .spawnSync('git', ['status', '--porcelain'], { encoding: 'utf8' })
       .stdout.trim();
-    return { sha, isDirty: status.length > 0, statusLines: status };
+
+    const lines = status.split('\n').map(l => l.trim()).filter(Boolean);
+    const unexpected = lines.filter(line => {
+      const match = line.match(/^\s*([A-Z?!]{1,2})\s+(.*)$/);
+      if (!match) return true;
+      const filePath = match[2].replace(/^"|"$/g, '').trim();
+      const isReport = filePath === "reports/production-readiness-report.json" ||
+                       filePath === "reports/emulator-verification-report.json";
+      return !isReport;
+    });
+
+    if (unexpected.length > 0) {
+      console.log(`[captureGitState DEBUG] Unexpected dirty files:`, unexpected);
+    }
+
+    return {
+      sha,
+      isDirty: unexpected.length > 0,
+      statusLines: unexpected.join('\n')
+    };
   } catch (e: any) {
-    return { sha: 'UNKNOWN', isDirty: true, statusLines: `git error: ${e.message}` };
+    return { sha: 'UNKNOWN', isDirty: true, statusLines: "git error: Git command execution failed" };
   }
 }
+
 
 // Parse CLI Arguments
 function parseArgs() {
@@ -43,20 +64,18 @@ function parseArgs() {
 const args = parseArgs();
 const mode = args.mode || "production"; // default mode is production
 
-console.log(`🚀 verify-production-readiness.ts started in mode: ${mode}`);
-
-type VerificationCheckResult = {
+interface VerificationCheckResult {
   id: string;
   command?: string;
-  status: "passed" | "failed" | "blocked" | "not-run";
+  status: 'passed' | 'failed' | 'not-run';
   exitCode?: number;
   durationMs?: number;
-  details?: Record<string, unknown>;
-};
+  details?: Record<string, any>;
+}
 
 const results: VerificationCheckResult[] = [];
 
-// Helper to run external subcommands safely without shell injection
+// Helper to spawn subprocesses portably
 function runSubprocess(id: string, cmd: string, cmdArgs: string[]): VerificationCheckResult {
   console.log(`🏃 Running subcommand: ${cmd} ${cmdArgs.join(' ')}`);
   const start = Date.now();
@@ -76,14 +95,43 @@ function runSubprocess(id: string, cmd: string, cmdArgs: string[]): Verification
       NODE_ENV: 'test',
       NODE_OPTIONS: '--max-old-space-size=5120'
     };
-    if (isEmulatorTask) {
+
+    const isUnitTest = cmdArgs.some(arg =>
+      arg.includes('.test.ts') &&
+      !arg.includes('repertoryApprovalPersistence') &&
+      !arg.includes('repertoryProductionActivationGate') &&
+      !arg.includes('repertoryDurableConsistency') &&
+      !arg.includes('firestoreRulesClient') &&
+      !arg.includes('materiaMedicaPersistence')
+    ) || id.startsWith('security-test:') || id === 'lint' || id === 'typecheck' || id === 'test:ui' || id === 'test:unit' || id === 'harness-validation';
+
+    if (isUnitTest) {
+      subprocessEnv.REPERTORY_USE_MOCK_FIRESTORE = 'true';
+      delete subprocessEnv.FIRESTORE_EMULATOR_HOST;
+      delete subprocessEnv.REPERTORY_RUNTIME_MODE;
+      delete subprocessEnv.REPERTORY_ENV;
+      delete subprocessEnv.FIREBASE_SERVICE_ACCOUNT_KEY;
+      delete subprocessEnv.GOOGLE_SERVICE_ACCOUNT_KEY;
+      delete subprocessEnv.GOOGLE_APPLICATION_CREDENTIALS;
+      delete subprocessEnv.REPERTORY_USE_ADC;
+    } else if (isEmulatorTask) {
       subprocessEnv.REPERTORY_RUNTIME_MODE = 'emulator';
+      subprocessEnv.REPERTORY_ENV = 'emulator';
+      subprocessEnv.FIRESTORE_EMULATOR_HOST = process.env.FIRESTORE_EMULATOR_HOST || '127.0.0.1:8080';
+      const resolvedProj = process.env.FIRESTORE_PROJECT_ID || process.env.GCLOUD_PROJECT;
+      if (!resolvedProj) {
+        throw new Error("Configuration Error: FIRESTORE_PROJECT_ID or GCLOUD_PROJECT must be set in emulator mode.");
+      }
+      subprocessEnv.FIRESTORE_PROJECT_ID = resolvedProj;
+      delete subprocessEnv.REPERTORY_USE_MOCK_FIRESTORE;
     } else {
       delete subprocessEnv.REPERTORY_RUNTIME_MODE;
       delete subprocessEnv.REPERTORY_ENV;
     }
+
     if (id === "next-build") {
       delete subprocessEnv.FIRESTORE_EMULATOR_HOST;
+      delete subprocessEnv.FIRESTORE_PROJECT_ID;
     }
 
     const res = child_process.spawnSync(cmd, cmdArgs, {
@@ -100,8 +148,8 @@ function runSubprocess(id: string, cmd: string, cmdArgs: string[]): Verification
     }
   } catch (err: any) {
     const duration = Date.now() - start;
-    console.error(`❌ ${id} crashed:`, err.message);
-    return { id, command: `${cmd} ${cmdArgs.join(' ')}`, status: 'failed', exitCode: 1, durationMs: duration, details: { error: err.message } };
+    console.error(`❌ ${id} crashed:`, "Verification subcommand crashed during execution");
+    return { id, command: `${cmd} ${cmdArgs.join(' ')}`, status: 'failed', exitCode: 1, durationMs: duration, details: { error: "Verification subcommand crashed during execution" } };
   }
 }
 
@@ -109,7 +157,7 @@ function runSubprocess(id: string, cmd: string, cmdArgs: string[]): Verification
 function runStaticVerification(): VerificationCheckResult[] {
   console.log("\n--- Running Static verification ---");
   const localResults: VerificationCheckResult[] = [];
-  
+
   // Linting
   const lintRes = runSubprocess("lint", "npx", ["eslint"]);
   localResults.push(lintRes);
@@ -128,6 +176,18 @@ function runStaticVerification(): VerificationCheckResult[] {
     "tests/miasmaticFiltering.test.tsx"
   ]);
   localResults.push(uiTestRes);
+
+  // Harness safety checks validation
+  const harnessValRes = runSubprocess(
+    "harness-validation",
+    "npx",
+    ["ts-node", "-P", "tests/tsconfig.test.json", "-r", "tsconfig-paths/register", "tests/firestoreHarnessValidation.test.ts"]
+  );
+  localResults.push(harnessValRes);
+
+  // Unit tests
+  const unitTestRes = runSubprocess("test:unit", "npm", ["run", "test:unit"]);
+  localResults.push(unitTestRes);
 
   return localResults;
 }
@@ -173,154 +233,91 @@ function runSecurityVerification(): VerificationCheckResult[] {
       "docs/operations/ENVIRONMENT_VARIABLES.md",
       "docs/operations/SECURITY_AND_RBAC.md"
     ];
-    opDocs.forEach(docPath => {
-      if (!fs.existsSync(path.join(process.cwd(), docPath))) {
+    for (const docFile of opDocs) {
+      const p = path.join(process.cwd(), docFile);
+      if (!fs.existsSync(p)) {
+        console.error(`❌ Security doc missing: ${docFile}`);
         passed = false;
-        console.error(`❌ Missing operations doc: ${docPath}`);
+        details[docFile] = "missing";
+      } else {
+        details[docFile] = "verified";
       }
-    });
-
-    // Check rbac.ts permissions (SUBSCRIPTION_MANAGE check)
-    const rbacPath = path.join(process.cwd(), "src/lib/security/rbac.ts");
-    if (fs.existsSync(rbacPath)) {
-      const content = fs.readFileSync(rbacPath, "utf8");
-      if (!content.includes("SUBSCRIPTION_MANAGE")) {
-        passed = false;
-        console.error("❌ SUBSCRIPTION_MANAGE permission is missing in rbac.ts");
-      }
-    } else {
-      passed = false;
-      console.error("❌ rbac.ts file is missing!");
     }
 
-    // Verify warnings in timeline / attachments
-    const uploadValidationPath = path.join(process.cwd(), "src/features/patient-attachments/uploadValidation.ts");
-    if (fs.existsSync(uploadValidationPath)) {
-      const validationContent = fs.readFileSync(uploadValidationPath, "utf8");
-      if (!validationContent.includes("application/pdf") || !validationContent.includes("image/jpeg")) {
+    // Run security-specific test scripts
+    const securityTests = [
+      "rbacSecurity.test",
+      "repertoryEntitlementExport.test",
+      "repertoryExportRoute.test",
+      "repertorySessionExportService.test",
+      "repertoryExportAuthorization.test",
+      "aiSecurityBoundary.test",
+      "repertoryRouteSecurity.test"
+    ];
+
+    for (const testName of securityTests) {
+      const scriptPath = path.join("tests", `${testName}.ts`);
+      const testRes = runSubprocess(`security-test:${testName}`, "npx", [
+        "ts-node", "-P", "tests/tsconfig.test.json", "-r", "tsconfig-paths/register", scriptPath
+      ]);
+      localResults.push(testRes);
+      if (testRes.status !== "passed") {
         passed = false;
-        console.error("❌ Upload validation MIME check list is missing application/pdf or image/jpeg");
       }
-    } else {
-      passed = false;
-      console.error("❌ uploadValidation.ts file is missing!");
     }
 
-    const duration = Date.now() - start;
     localResults.push({
       id: "security-static-audit",
       status: passed ? "passed" : "failed",
-      durationMs: duration,
+      durationMs: Date.now() - start,
       details
     });
-
-    // Run security-related test files including Sprint 24 export remediation
-    const securityTests = [
-      "tests/rbacSecurity.test.ts",
-      "tests/repertoryEntitlementExport.test.ts",
-      "tests/repertoryExportRoute.test.ts",
-      "tests/repertorySessionExportService.test.ts",
-      "tests/repertoryExportAuthorization.test.ts",
-      "tests/aiSecurityBoundary.test.ts",
-      "tests/repertoryRouteSecurity.test.ts",
-    ];
-    for (const testFile of securityTests) {
-      const secTest = runSubprocess(
-        `security-test:${path.basename(testFile, '.ts')}`,
-        "npx",
-        ["ts-node", "-P", "tests/tsconfig.test.json", "-r", "tsconfig-paths/register", testFile],
-      );
-      localResults.push(secTest);
-    }
-
   } catch (err: any) {
     localResults.push({
       id: "security-static-audit",
       status: "failed",
       durationMs: Date.now() - start,
-      details: { error: err.message }
+      details: { error: "Security audit checks failed due to an internal execution error" }
     });
   }
 
   return localResults;
 }
 
-// ─── 4. Next.js Build Tasks ────────────────────────────────────────────────
+// ─── 4. Build Verification Tasks ───────────────────────────────────────────
 function runBuildVerification(): VerificationCheckResult[] {
   console.log("\n--- Running Build verification ---");
   const localResults: VerificationCheckResult[] = [];
-
-  // Next.js build directly
   const buildRes = runSubprocess("next-build", "npx", ["next", "build", "--webpack"]);
   localResults.push(buildRes);
-
   return localResults;
 }
 
 // ─── 5. Emulator Verification Tasks ────────────────────────────────────────
 function runEmulatorVerification(): VerificationCheckResult[] {
-  console.log("\n--- Running Emulator-dependent verification ---");
+  console.log("\n--- Running Emulator verification ---");
   const localResults: VerificationCheckResult[] = [];
 
-  // A. Rules unit tests using Rules Unit Testing and client SDK identities
-  const rulesClientRes = runSubprocess(
-    "rules-unit-testing",
-    "npx",
-    ["ts-node", "-P", "tests/tsconfig.test.json", "-r", "tsconfig-paths/register", "tests/firestoreRulesClient.test.ts"]
-  );
-  localResults.push(rulesClientRes);
+  const emuTests = [
+    { id: "rules-unit-testing", path: "tests/firestoreRulesClient.test.ts" },
+    { id: "durable-consistency-test", path: "tests/repertoryDurableConsistency.test.ts" },
+    { id: "approval-persistence-test", path: "tests/repertoryApprovalPersistence.test.ts" },
+    { id: "activation-gate-test", path: "tests/repertoryProductionActivationGate.test.ts" },
+    { id: "artifact-deployment-test", path: "tests/repertoryArtifactDeployment.test.ts" },
+    { id: "clarke-safety-test", path: "tests/repertoryClarkeSafety.test.ts" },
+    { id: "snapshot-activation-test", path: "tests/repertorySnapshotActivation.test.ts" }
+  ];
 
-  // B. Durable consistency (separate process pointer transitions)
-  const durableRes = runSubprocess(
-    "durable-consistency-test",
-    "npx",
-    ["ts-node", "-P", "tests/tsconfig.test.json", "-r", "tsconfig-paths/register", "tests/repertoryDurableConsistency.test.ts"]
-  );
-  localResults.push(durableRes);
-
-  // C. Approval persistence and cache deletion resilience
-  const approvalRes = runSubprocess(
-    "approval-persistence-test",
-    "npx",
-    ["ts-node", "-P", "tests/tsconfig.test.json", "-r", "tsconfig-paths/register", "tests/repertoryApprovalPersistence.test.ts"]
-  );
-  localResults.push(approvalRes);
-
-  // D. Emulator Activation Gate
-  const gateRes = runSubprocess(
-    "activation-gate-test",
-    "npx",
-    ["ts-node", "-P", "tests/tsconfig.test.json", "-r", "tsconfig-paths/register", "tests/repertoryProductionActivationGate.test.ts"]
-  );
-  localResults.push(gateRes);
-
-  // E. Artifact Deployment (Contract tests)
-  const artifactRes = runSubprocess(
-    "artifact-deployment-test",
-    "npx",
-    ["ts-node", "-P", "tests/tsconfig.test.json", "-r", "tsconfig-paths/register", "tests/repertoryArtifactDeployment.test.ts"]
-  );
-  localResults.push(artifactRes);
-
-  // F. Search and RAG Smoke/Scoring isolation tests
-  const clarkeSafetyRes = runSubprocess(
-    "clarke-safety-test",
-    "npx",
-    ["ts-node", "-P", "tests/tsconfig.test.json", "-r", "tsconfig-paths/register", "tests/repertoryClarkeSafety.test.ts"]
-  );
-  localResults.push(clarkeSafetyRes);
-
-  const snapshotActivationRes = runSubprocess(
-    "snapshot-activation-test",
-    "npx",
-    ["ts-node", "-P", "tests/tsconfig.test.json", "-r", "tsconfig-paths/register", "tests/repertorySnapshotActivation.test.ts"]
-  );
-  localResults.push(snapshotActivationRes);
+  for (const t of emuTests) {
+    const testRes = runSubprocess(t.id, "npx", [
+      "ts-node", "-P", "tests/tsconfig.test.json", "-r", "tsconfig-paths/register", t.path
+    ]);
+    localResults.push(testRes);
+  }
 
   return localResults;
 }
 
-// Write report helper
 function writeReport(filePath: string, modeName: string, state: string, checkResults: VerificationCheckResult[]) {
   const dir = path.dirname(filePath);
   if (!fs.existsSync(dir)) {
@@ -349,6 +346,148 @@ async function main() {
     const res = runStaticVerification();
     results.push(...res);
     passedOverall = res.every(r => r.status === "passed");
+  } else if (mode === "validate-evidence") {
+    console.log("\n=== VALIDATING EVIDENCE COMMIT LINEAGE ===");
+
+    // 1. Raw clean working tree at validation start
+    if (preState.isDirty) {
+      console.error("❌ Lineage check failed: Working tree is dirty at validation start.");
+      console.log(preState.statusLines);
+      process.exit(1);
+    }
+
+    const prodReportPath = path.join(process.cwd(), "reports", "production-readiness-report.json");
+    const emuReportPath = path.join(process.cwd(), "reports", "emulator-verification-report.json");
+
+    if (!fs.existsSync(prodReportPath) || !fs.existsSync(emuReportPath)) {
+      console.error("❌ Missing required verification reports.");
+      process.exit(1);
+    }
+
+    const prodReport = JSON.parse(fs.readFileSync(prodReportPath, 'utf8'));
+    const emuReport = JSON.parse(fs.readFileSync(emuReportPath, 'utf8'));
+
+    const parentSha = child_process.spawnSync('git', ['rev-parse', 'HEAD~1'], { encoding: 'utf8' }).stdout.trim();
+
+    console.log(`Verifying reports are bound to parent SHA: ${parentSha}`);
+    console.log(`Production Report SHA: ${prodReport.headSha}`);
+    console.log(`Emulator Report SHA: ${emuReport.headSha}`);
+
+    if (prodReport.headSha !== parentSha || emuReport.headSha !== parentSha) {
+      console.error("❌ Reports are not bound to the correct parent code commit SHA.");
+      process.exit(1);
+    }
+
+    if (prodReport.dirtyAtStart || prodReport.dirtyAtEnd || emuReport.dirtyAtStart || emuReport.dirtyAtEnd) {
+      console.error("❌ Reports indicate the verification run was performed on a dirty tree.");
+      process.exit(1);
+    }
+
+    // 2. Evidence commit containing exactly two reports
+    const diffFiles = child_process.spawnSync('git', ['diff', '--name-only', 'HEAD~1', 'HEAD'], { encoding: 'utf8' })
+      .stdout.trim()
+      .split('\n')
+      .map(f => f.trim())
+      .filter(Boolean);
+
+    console.log("Files modified in the evidence commit:", diffFiles);
+
+    const nonReportFiles = diffFiles.filter(f =>
+      f !== "reports/production-readiness-report.json" &&
+      f !== "reports/emulator-verification-report.json"
+    );
+
+    if (nonReportFiles.length > 0) {
+      console.error("❌ Evidence commit contains non-report files:", nonReportFiles);
+      process.exit(1);
+    }
+
+    if (!diffFiles.includes("reports/production-readiness-report.json") ||
+        !diffFiles.includes("reports/emulator-verification-report.json")) {
+      console.error("❌ Evidence commit must contain exactly both verification reports.");
+      process.exit(1);
+    }
+
+    // 3. Code commit free of reports, generated manifests and debug output
+    const codeDiffFiles = child_process.spawnSync('git', ['diff', '--diff-filter=d', '--name-only', 'HEAD~2', 'HEAD~1'], { encoding: 'utf8' })
+      .stdout.trim()
+      .split('\n')
+      .map(f => f.trim())
+      .filter(Boolean);
+
+    console.log("Files modified in the code commit:", codeDiffFiles);
+
+    const dirtyFilesInCodeCommit = codeDiffFiles.filter(f =>
+      f === "reports/production-readiness-report.json" ||
+      f === "reports/emulator-verification-report.json" ||
+      f.startsWith("data/repertory/manifests/manifest_v_test") ||
+      f.endsWith("-debug.log")
+    );
+
+    if (dirtyFilesInCodeCommit.length > 0) {
+      console.error("❌ Code commit contains report, manifest, or debug files:", dirtyFilesInCodeCommit);
+      process.exit(1);
+    }
+
+    // 4. Successful report states, expected test IDs and no failed/not-run results
+    const expectedProdIds = [
+      "lint", "typecheck", "test:ui", "harness-validation", "test:unit",
+      "snapshot-reconciliation", "source-validation",
+      "security-test:rbacSecurity.test",
+      "security-test:repertoryEntitlementExport.test",
+      "security-test:repertoryExportRoute.test",
+      "security-test:repertorySessionExportService.test",
+      "security-test:repertoryExportAuthorization.test",
+      "security-test:aiSecurityBoundary.test",
+      "security-test:repertoryRouteSecurity.test",
+      "security-static-audit", "next-build",
+      "rules-unit-testing", "durable-consistency-test",
+      "approval-persistence-test", "activation-gate-test",
+      "artifact-deployment-test", "clarke-safety-test",
+      "snapshot-activation-test"
+    ];
+
+    const expectedEmuIds = [
+      "rules-unit-testing", "durable-consistency-test",
+      "approval-persistence-test", "activation-gate-test",
+      "artifact-deployment-test", "clarke-safety-test",
+      "snapshot-activation-test"
+    ];
+
+    if (prodReport.releaseState !== "production-deployment-ready") {
+      console.error(`❌ Production report releaseState must be 'production-deployment-ready' (got '${prodReport.releaseState}').`);
+      process.exit(1);
+    }
+    for (const id of expectedProdIds) {
+      const run = prodReport.results.find((r: any) => r.id === id);
+      if (!run) {
+        console.error(`❌ Production report is missing expected check ID: ${id}`);
+        process.exit(1);
+      }
+      if (run.status !== "passed") {
+        console.error(`❌ Production report check ${id} has non-passing status: ${run.status}`);
+        process.exit(1);
+      }
+    }
+
+    if (emuReport.releaseState !== "emulator-verified") {
+      console.error(`❌ Emulator report releaseState must be 'emulator-verified' (got '${emuReport.releaseState}').`);
+      process.exit(1);
+    }
+    for (const id of expectedEmuIds) {
+      const run = emuReport.results.find((r: any) => r.id === id);
+      if (!run) {
+        console.error(`❌ Emulator report is missing expected check ID: ${id}`);
+        process.exit(1);
+      }
+      if (run.status !== "passed") {
+        console.error(`❌ Emulator report check ${id} has non-passing status: ${run.status}`);
+        process.exit(1);
+      }
+    }
+
+    console.log("✅ Evidence lineage validation passed successfully!");
+    process.exit(0);
   } else if (mode === "corpus") {
     const res = runCorpusVerification();
     results.push(...res);
@@ -383,7 +522,7 @@ async function main() {
     const resCorpus = runCorpusVerification();
     const resSecurity = runSecurityVerification();
     const resBuild = runBuildVerification();
-    
+
     results.push(...resStatic, ...resCorpus, ...resSecurity, ...resBuild);
     passedOverall = results.every(r => r.status === "passed");
 
@@ -409,17 +548,25 @@ async function main() {
     const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
     report.headSha = postState.sha;
     report.dirtyAtStart = preState.isDirty;
+    report.dirtyAtEnd = postState.isDirty;
     fs.writeFileSync(reportPath, JSON.stringify(report, null, 2), 'utf8');
     console.log(`📌 Readiness evidence bound to SHA: ${postState.sha}`);
   } else if (mode === "emulator") {
-    // Run emulator checks
+    const preState = captureGitState();
     const res = runEmulatorVerification();
     results.push(...res);
     passedOverall = res.every(r => r.status === "passed");
 
+    const postState = captureGitState();
     const state = passedOverall ? "emulator-verified" : "failed";
     const reportPath = path.join(process.cwd(), "reports", "emulator-verification-report.json");
     writeReport(reportPath, "emulator", state, results);
+
+    const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+    report.headSha = postState.sha;
+    report.dirtyAtStart = preState.isDirty;
+    report.dirtyAtEnd = postState.isDirty;
+    fs.writeFileSync(reportPath, JSON.stringify(report, null, 2), 'utf8');
   } else if (mode === "release") {
     // Orchestrate both
     console.log("\n=== ORCHESTRATING FULL RELEASE VERIFICATION ===");
@@ -442,20 +589,44 @@ async function main() {
     const resCorpus = runCorpusVerification();
     const resSecurity = runSecurityVerification();
     const resBuild = runBuildVerification();
-    
+
     const nonEmulatorPassed = [...resStatic, ...resCorpus, ...resSecurity, ...resBuild].every(r => r.status === "passed");
-    
+
     let resEmulator: VerificationCheckResult[] = [];
     if (nonEmulatorPassed) {
       console.log("\n✨ Non-emulator checks passed. Booting Firestore Emulator for verification...");
       const start = Date.now();
+
+      const hex = child_process.spawnSync('node', ['-e', 'console.log(require("crypto").randomBytes(6).toString("hex"))'], { encoding: 'utf8' }).stdout.trim();
+      const syntheticProjectId = `hh-test-${hex}`;
+      console.log(`Generated synthetic project ID for emulator run: ${syntheticProjectId}`);
+
+      const subenv: Record<string, string | undefined> = {
+        ...process.env,
+        FIRESTORE_PROJECT_ID: syntheticProjectId,
+        NEXT_PUBLIC_FIREBASE_PROJECT_ID: syntheticProjectId
+      };
+
+      if (!subenv.JAVA_HOME) {
+        const javaPaths = [
+          "/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home",
+          "/usr/lib/jvm/java-17-openjdk-amd64"
+        ];
+        for (const p of javaPaths) {
+          if (fs.existsSync(p)) {
+            subenv.JAVA_HOME = p;
+            break;
+          }
+        }
+      }
+
       const emulatorRun = child_process.spawnSync("npx", [
-        "firebase-tools", "emulators:exec",
+        "--no-install", "firebase", "emulators:exec",
         "--only", "firestore",
-        "--project", "homeo-healthcare-emulator",
+        "--project", syntheticProjectId,
         "npm run verify:emulator"
-      ], { stdio: 'inherit', env: { ...process.env, JAVA_HOME: "/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home" } });
-      
+      ], { stdio: 'inherit', env: subenv as any });
+
       const duration = Date.now() - start;
       if (emulatorRun.status === 0) {
         const reportPath = path.join(process.cwd(), "reports", "emulator-verification-report.json");
@@ -476,9 +647,29 @@ async function main() {
     results.push(...resStatic, ...resCorpus, ...resSecurity, ...resBuild, ...resEmulator);
     passedOverall = results.every(r => r.status === "passed");
 
+    // ── R4 post-check: re-verify SHA and tree; block if modified during run ──
+    const postState = captureGitState();
+    const shaChanged = postState.sha !== preState.sha && preState.sha !== 'UNKNOWN';
+    const treeNowDirty = postState.isDirty;
+    if (shaChanged || treeNowDirty) {
+      passedOverall = false;
+      const reason = shaChanged ? 'HEAD moved during check run' : 'working tree became dirty during checks';
+      console.error(`\n🚫 dirty-tree-blocked: ${reason}`);
+      if (treeNowDirty) console.error(postState.statusLines);
+      const reportPath = path.join(process.cwd(), "reports", "production-readiness-report.json");
+      writeReport(reportPath, "release", "dirty-tree-blocked", results);
+      process.exit(1);
+    }
+
     const state = passedOverall ? "production-deployment-ready" : "failed";
     const reportPath = path.join(process.cwd(), "reports", "production-readiness-report.json");
     writeReport(reportPath, "release", state, results);
+
+    const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+    report.headSha = postState.sha;
+    report.dirtyAtStart = preState.isDirty;
+    report.dirtyAtEnd = postState.isDirty;
+    fs.writeFileSync(reportPath, JSON.stringify(report, null, 2), 'utf8');
   } else {
     console.error(`❌ Unknown mode: ${mode}`);
     process.exit(1);
@@ -493,7 +684,12 @@ async function main() {
   }
 }
 
-main().catch(err => {
-  console.error("❌ Critical crash in main verification script:", err);
-  process.exit(1);
-});
+if (require.main === module) {
+  process.env.REPERTORY_VERIFICATION_RUNNING = "true";
+  main().catch(err => {
+    console.error("Fatal error:", "Verification suite execution failed due to an unhandled exception");
+    process.exit(1);
+  });
+}
+
+export { captureGitState, runSubprocess };

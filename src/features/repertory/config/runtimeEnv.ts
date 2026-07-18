@@ -49,10 +49,7 @@ export function getRuntimeEnvironment(): RepertoryRuntimeEnvironment {
     mode = 'development';
   }
 
-  // Auto fallback to mock Firestore if testing without live keys or running emulator
-  if (mode === 'test' && !process.env.FIRESTORE_EMULATOR_HOST && !process.env.FIREBASE_SERVICE_ACCOUNT_KEY && !process.env.GOOGLE_SERVICE_ACCOUNT_KEY) {
-    process.env.REPERTORY_USE_MOCK_FIRESTORE = 'true';
-  }
+
 
   let artifactRoot = process.env.REPERTORY_TEST_ARTIFACT_ROOT || path.join(process.cwd(), 'data', 'repertory');
   if (!process.env.REPERTORY_TEST_ARTIFACT_ROOT && (mode === 'test' || mode === 'emulator')) {

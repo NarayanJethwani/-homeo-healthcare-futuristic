@@ -70,10 +70,10 @@ async function runPerformanceSafetyTests() {
     assert.strictEqual(typeof metadata.vectorCoveragePercent, "number");
   });
 
-  // 3. Dimension mismatch does not trigger regeneration inside search
   await test("RAG Safety - dimension mismatch skips semantic score and does not trigger live generation", async () => {
     let embeddingsCallCount = 0;
     const originalGetEmbeddings = ollamaService.getEmbeddings;
+    const originalCheckHealth = ollamaService.checkHealth;
     
     // Setup a mismatched vector in store (e.g. 10 dimensions)
     await globalVectorStore.upsertVector({
@@ -85,6 +85,7 @@ async function runPerformanceSafetyTests() {
       dimensions: 3
     });
 
+    ollamaService.checkHealth = async () => true;
     ollamaService.getEmbeddings = async (text: string) => {
       embeddingsCallCount++;
       return new Array(768).fill(0.01); // query is 768 dimensions
@@ -100,6 +101,7 @@ async function runPerformanceSafetyTests() {
       assert.ok(metadata.numDimensionMismatches >= 1, "Should report at least 1 dimension mismatch");
     } finally {
       ollamaService.getEmbeddings = originalGetEmbeddings;
+      ollamaService.checkHealth = originalCheckHealth;
     }
   });
 

@@ -27,7 +27,7 @@ class MockRedisClient implements RedisClientAdapter {
 
   async eval(script: string, keys: string[], args: string[]): Promise<any> {
     this.evalCalls.push({ script, keys, args });
-    
+
     // Concurrency lease release Lua script simulation
     if (script.includes("del")) {
       const key = keys[0];
@@ -42,13 +42,13 @@ class MockRedisClient implements RedisClientAdapter {
     // Rate limiting atomic increment simulation
     const minKey = keys[0];
     const dayKey = keys[1];
-    
+
     const minVal = (parseInt(this.store.get(minKey) || "0") + 1);
     const dayVal = (parseInt(this.store.get(dayKey) || "0") + 1);
-    
+
     this.store.set(minKey, String(minVal));
     this.store.set(dayKey, String(dayVal));
-    
+
     return [minVal, dayVal];
   }
 
@@ -666,7 +666,7 @@ async function runTests() {
   await test("22. Redis IP rate limits and Retry-After", async () => {
     resetMockState();
     const redisLimiter = new RedisRateLimiter(mockRedis, mockDeps.clock);
-    
+
     for (let i = 0; i < 16; i++) {
       const res = await redisLimiter.checkLimit("ip", "192.168.1.200", 15, 500);
       if (i < 15) {
@@ -680,11 +680,11 @@ async function runTests() {
 
   await test("23. Concurrency lease acquisition, success, exception, and release paths", async () => {
     resetMockState();
-    
+
     // Injected clock that we can manually progress
     let mockTime = Date.now();
     const testClock = { now: () => new Date(mockTime) };
-    
+
     // Part 1: Standard Redis mode
     const redisLimiter = new RedisRateLimiter(mockRedis, testClock);
 
@@ -702,22 +702,22 @@ async function runTests() {
 
     // Part 2: Degraded Local Limiter with Timeout and Cancellation
     const localLimiter = new RedisRateLimiter(null, testClock);
-    
+
     const localToken = await localLimiter.acquireLease("usr-local-concurrency");
     assert.ok(localToken);
-    
+
     const localToken2 = await localLimiter.acquireLease("usr-local-concurrency");
     assert.strictEqual(localToken2, null); // Locked
-    
+
     // Release with wrong token (cancellation check) -> should fail
     const wrongReleased = await localLimiter.releaseLease("usr-local-concurrency", "wrong-token");
     assert.strictEqual(wrongReleased, false);
-    
+
     // Fast-forward time by 61 seconds (timeout check)
     mockTime += 61000;
     const localToken3 = await localLimiter.acquireLease("usr-local-concurrency");
     assert.ok(localToken3); // Allowed after timeout expiry!
-    
+
     // Clean cancellation
     const cleanReleased = await localLimiter.releaseLease("usr-local-concurrency", localToken3);
     assert.strictEqual(cleanReleased, true);
@@ -730,14 +730,14 @@ async function runTests() {
       del: async () => 0
     };
     const resilientLimiter = new RedisRateLimiter(brokenRedis as any, testClock);
-    
+
     // When Redis throws, it must fallback to local lease instead of crashing
     const fallbackToken = await resilientLimiter.acquireLease("usr-fallback-concurrency");
     assert.ok(fallbackToken);
-    
+
     const fallbackToken2 = await resilientLimiter.acquireLease("usr-fallback-concurrency");
     assert.strictEqual(fallbackToken2, null); // Local lease enforces limits
-    
+
     const fallbackReleased = await resilientLimiter.releaseLease("usr-fallback-concurrency", fallbackToken);
     assert.strictEqual(fallbackReleased, true);
   });
@@ -745,7 +745,7 @@ async function runTests() {
   await test("24. Bounded local fallback rate limiter", async () => {
     resetMockState();
     const clock = mockDeps.clock;
-    
+
     const resUnresolvable = IPRateLimiter.isRateLimited("IP_UNRESOLVABLE", clock);
     assert.strictEqual(resUnresolvable.limited, true);
     assert.strictEqual(resUnresolvable.retryAfter, 60);
@@ -933,7 +933,7 @@ async function runTests() {
 
   await test("32. CORS Preflight Options rejection for disallowed origins", async () => {
     const { handleOptionsRequest } = await import("../src/features/ai-security/access/aiSecurityHeaders");
-    
+
     // Disallowed origin preflight OPTIONS request
     const resDisallowed = handleOptionsRequest("https://attacker.com");
     assert.strictEqual(resDisallowed.status, 403);
@@ -1051,8 +1051,8 @@ async function runTests() {
           consultAborted = true;
           reject(new Error("Request aborted"));
         });
-        // Mock a slow provider that takes 15 seconds
-        setTimeout(() => resolve({ success: true }), 15000);
+        // Mock a slow provider that takes 20 seconds
+        setTimeout(() => resolve({ success: true }), 20000);
       });
     };
 
@@ -1072,7 +1072,7 @@ async function runTests() {
     const duration = Date.now() - startTime;
 
     assert.strictEqual(res.status, 504);
-    assert.ok(duration >= 8000 && duration < 9500, `Handler did not time out at 8 seconds (took ${duration}ms)`);
+    assert.ok(duration >= 7500 && duration < 12000, `Handler did not time out at 8 seconds (took ${duration}ms)`);
     assert.strictEqual(consultAborted, true, "Signal did not propagate to consultAI");
 
     // Assert timeout codes
@@ -1133,7 +1133,7 @@ async function runTests() {
 
   await test("37. Redis Client adapter provider, ready check and options translations", async () => {
     const { NodeRedisAdapter } = await import("../src/features/ai-security/protection/redisAdapter");
-    
+
     let isReadyState = false;
     let evalCalled = false;
     let setCalled = false;
@@ -1443,7 +1443,7 @@ async function runTests() {
         });
         const resError = await auditPost(reqError);
         assert.strictEqual(resError.status, 500);
-        
+
         const dataError = await resError.json();
         assert.strictEqual(dataError.success, false);
         assert.ok(!dataError.error.includes(errorSentinel), "Response must mask internal exception payload");

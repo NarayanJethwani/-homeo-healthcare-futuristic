@@ -52,4 +52,8 @@ next-env.d.ts
 data/**/corpus.json
 data/**/rag-documents.json
 
+# firestore debug logs
+firestore-debug.log
+firebase-debug.log
+
 

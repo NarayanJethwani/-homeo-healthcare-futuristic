@@ -1,60 +1,38 @@
 import assert from 'assert';
 import { execSync } from 'child_process';
-
-import * as net from 'net';
 import * as os from 'os';
 import * as fs from 'fs';
 import * as path from 'path';
-
-function checkEmulatorUp(host: string, port: number): Promise<boolean> {
-  return new Promise((resolve) => {
-    const socket = new net.Socket();
-    socket.setTimeout(200);
-    socket.on('connect', () => {
-      socket.destroy();
-      resolve(true);
-    });
-    socket.on('timeout', () => {
-      socket.destroy();
-      resolve(false);
-    });
-    socket.on('error', () => {
-      socket.destroy();
-      resolve(false);
-    });
-    socket.connect(port, host);
-  });
-}
+import { FirestoreTestHarness } from './helpers/firestoreTestHarness';
 
 async function run() {
-  const emulatorUp = await checkEmulatorUp('127.0.0.1', 8080);
-  const useMock = !emulatorUp;
+  const harness = new FirestoreTestHarness();
+  harness.setupEnvironment();
 
   const sharedTempRoot = path.join(os.tmpdir(), `homeo-pointer-test-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`);
   fs.mkdirSync(sharedTempRoot, { recursive: true });
 
-  // Pre-test deletion of local active_pointer.json to ensure starting from a clean state
   const localPointerPath = path.join(sharedTempRoot, 'published', 'active_pointer.json');
   if (fs.existsSync(localPointerPath)) {
     fs.unlinkSync(localPointerPath);
   }
 
-  if (useMock) {
-    console.log("⚠️ Firestore Emulator not running. Using mock/local-file consistency environment.");
-  }
+  // Clear documents in synthetic namespace
+  await harness.clearDocuments();
 
   function runClient(client: string, action: string, version?: string): any {
     const tsnodeCmd = `npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/helpers/pointerClient.ts --client ${client} --action ${action} ${version ? `--version ${version}` : ''}`;
     const output = execSync(tsnodeCmd, {
       env: {
         ...process.env,
-        REPERTORY_ENV: useMock ? 'test' : 'emulator',
-        REPERTORY_RUNTIME_MODE: useMock ? 'test' : 'emulator',
-        REPERTORY_TEST_ENV: useMock ? 'test-local-file' : 'emulator',
-        REPERTORY_USE_MOCK_FIRESTORE: useMock ? 'true' : 'false',
+        REPERTORY_ENV: 'emulator',
+        REPERTORY_RUNTIME_MODE: 'emulator',
+        REPERTORY_TEST_ENV: 'emulator',
+        REPERTORY_USE_MOCK_FIRESTORE: 'false',
         REPERTORY_TEST_ARTIFACT_ROOT: sharedTempRoot,
-        FIRESTORE_EMULATOR_HOST: useMock ? undefined : '127.0.0.1:8080',
-        FIRESTORE_PROJECT_ID: useMock ? 'mock-project-id' : 'homeo-healthcare-emulator'
+        FIRESTORE_EMULATOR_HOST: harness.getEmulatorHost(),
+        FIRESTORE_PROJECT_ID: harness.getProjectId(),
+        NEXT_PUBLIC_FIREBASE_PROJECT_ID: harness.getProjectId()
       }
     }).toString();
     const lines = output.split('\n');
@@ -66,8 +44,8 @@ async function run() {
   }
   try {
     console.log("🚀 Running Multi-Process Active Pointer Consistency Tests...");
-    console.log(`Emulator Host: ${process.env.FIRESTORE_EMULATOR_HOST || '127.0.0.1:8080'}`);
-    console.log(`Emulator Project ID: ${process.env.FIRESTORE_PROJECT_ID || 'homeo-healthcare-emulator'}`);
+    console.log(`Emulator Host: ${harness.getEmulatorHost()}`);
+    console.log(`Emulator Project ID: ${harness.getProjectId()}`);
 
     let passed = 0;
 
@@ -114,9 +92,15 @@ async function run() {
 
     console.log(`\n🎉 Multi-Process Consistency Tests Passed: ${passed}/4`);
   } finally {
+    try {
+      await harness.clearDocuments();
+    } catch (e) {
+      // Ignored
+    }
     if (fs.existsSync(sharedTempRoot)) {
       fs.rmSync(sharedTempRoot, { recursive: true, force: true });
     }
+    await harness.cleanup();
   }
 }
 
