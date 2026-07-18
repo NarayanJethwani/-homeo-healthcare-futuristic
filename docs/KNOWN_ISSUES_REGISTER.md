@@ -6,7 +6,7 @@ This register tracks unresolved bugs, code smells, performance issues, and plann
 
 | ID | Title | Date Added | Component | Severity | Description / Mitigation | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **KI-001** | Mock database stubs in tests | 2026-07-03 | Tests | Low | Some tests rely on stubs; replace with real local mocks when dependencies are fully configured. | Active |
+| **KI-001** | Mock database stubs in tests | 2026-07-03 | Tests | Low | Enforced pre-initialization safety guards, loopback-only constraints, synthetic tenant namespaces, and a governed test runner environment to isolate unit tests and prevent silent mock fallbacks. | Mitigated |
 | **KI-002** | Satellite node animation performance lag | 2026-07-08 | UI | Medium | Graph satellite nodes may stutter on low-performance mobile devices; simulated Chrome emulation passed performance budgets. | Mitigated pending physical-device validation |
 
 ## Resolved Issues
