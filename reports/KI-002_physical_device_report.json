@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "1.0.0",
+  "timestamp": "2026-07-19T14:10:17Z",
+  "commit": "db73d7b6f8bdc5d99ccc1bd77ccdd3414be6ebfa",
+  "vercelDeploymentId": "dpl_BQxubSG3ugNLgx3hGFJNCBb3Wy3r",
+  "deploymentUrl": "https://homeo-healthcare-futuristic.vercel.app/knowledge/remedies/lycopodium",
+  "deviceMatrix": {
+    "premium-ios": {
+      "status": "incomplete",
+      "reasonCode": "REASON_DEVICE_UNAVAILABLE",
+      "reasonDetail": "HARDWARE_LIMITATION"
+    },
+    "constrained-ios": {
+      "status": "incomplete",
+      "reasonCode": "REASON_DEVICE_UNAVAILABLE",
+      "reasonDetail": "HARDWARE_LIMITATION"
+    },
+    "constrained-android": {
+      "status": "incomplete",
+      "reasonCode": "REASON_DEVICE_UNAVAILABLE",
+      "reasonDetail": "HARDWARE_LIMITATION"
+    }
+  }
+}
