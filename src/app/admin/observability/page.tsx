@@ -41,6 +41,45 @@ export default function ObservabilityDashboard() {
   const [testQuery, setTestQuery] = useState("");
   const [testResponse, setTestResponse] = useState<string | null>(null);
   const [testing, setTesting] = useState(false);
+  const [telemetry, setTelemetry] = useState<any>(null);
+  const [resetting, setResetting] = useState(false);
+
+  const fetchTelemetry = async () => {
+    try {
+      const res = await fetch("/api/admin/observability/provider-metrics");
+      if (res.ok) {
+        const json = await res.json();
+        setTelemetry(json);
+      }
+    } catch (e) {
+      console.error("Failed to load provider metrics telemetry:", e);
+    }
+  };
+
+  const handleResetTelemetry = async () => {
+    if (!confirm("Are you sure you want to reset metrics for this instance only? Resets affect only the current handling instance in memory.")) {
+      return;
+    }
+    setResetting(true);
+    try {
+      const res = await fetch("/api/admin/observability/provider-metrics", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "reset" })
+      });
+      if (res.ok) {
+        alert("Telemetry metrics successfully reset on this instance.");
+        fetchTelemetry();
+      } else {
+        const errJson = await res.json();
+        alert(`Reset failed: ${errJson.error || "Unknown error"}`);
+      }
+    } catch (err) {
+      alert("Failed to connect to reset endpoint.");
+    } finally {
+      setResetting(false);
+    }
+  };
 
   const fetchHealth = async () => {
     try {
@@ -59,13 +98,18 @@ export default function ObservabilityDashboard() {
 
   useEffect(() => {
     fetchHealth();
-    const interval = setInterval(fetchHealth, 10000); // refresh every 10s
+    fetchTelemetry();
+    const interval = setInterval(() => {
+      fetchHealth();
+      fetchTelemetry();
+    }, 10000); // refresh every 10s
     return () => clearInterval(interval);
   }, []);
 
   const handleRefresh = () => {
     setRefreshing(true);
     fetchHealth();
+    fetchTelemetry();
   };
 
   const handleTestConsult = async (e: React.FormEvent) => {
@@ -226,6 +270,147 @@ export default function ObservabilityDashboard() {
                 );
               })}
             </div>
+          </div>
+
+          {/* Local Ollama & Provider Execution Telemetry */}
+          <div className="bg-zinc-900/30 border border-zinc-850 rounded-xl p-6 backdrop-blur-md">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-800/40 pb-4 mb-4">
+              <div>
+                <h2 className="text-lg font-semibold text-zinc-100 flex items-center gap-2">
+                  <Database className="h-5 w-5 text-teal-400" />
+                  Provider Execution & Ollama Telemetry
+                </h2>
+                <p className="text-xs text-zinc-500 mt-1">
+                  Instance-Scoped Warning: Telemetry metrics are process-local (instance-scoped). Resets affect only the current handling instance.
+                </p>
+              </div>
+              <button
+                onClick={handleResetTelemetry}
+                disabled={resetting}
+                className="px-3 py-1.5 bg-red-950/30 border border-red-900/50 hover:bg-red-900/20 active:scale-95 text-red-400 rounded-lg text-xs font-semibold font-mono transition-all disabled:opacity-50"
+              >
+                {resetting ? "Resetting..." : "Reset Current Instance Metrics"}
+              </button>
+            </div>
+
+            {telemetry ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                {/* Left Metrics Column */}
+                <div className="flex flex-col gap-4">
+                  <div>
+                    <h3 className="text-xs uppercase font-mono tracking-wider text-zinc-400 mb-2 font-semibold">Provider Attempts</h3>
+                    <div className="bg-zinc-950/50 border border-zinc-900 rounded-lg p-3 flex flex-col gap-2">
+                      <div className="flex justify-between text-xs">
+                        <span className="text-zinc-500">Total Attempts</span>
+                        <span className="font-mono text-zinc-200 font-semibold">{telemetry.providerAttempts.total}</span>
+                      </div>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-zinc-500">Success Attempts</span>
+                        <span className="font-mono text-emerald-450 font-semibold">{telemetry.providerAttempts.success}</span>
+                      </div>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-zinc-500">Failed Attempts</span>
+                        <span className="font-mono text-red-450 font-semibold">{telemetry.providerAttempts.failed}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xs uppercase font-mono tracking-wider text-zinc-400 mb-2 font-semibold">Cache Operations</h3>
+                    <div className="bg-zinc-950/50 border border-zinc-900 rounded-lg p-3 flex flex-col gap-2">
+                      <div className="flex justify-between text-xs">
+                        <span className="text-zinc-500 font-mono">Cache Hits</span>
+                        <span className="font-mono text-cyan-400 font-semibold">{telemetry.cache.hits}</span>
+                      </div>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-zinc-500 font-mono">Cache Misses</span>
+                        <span className="font-mono text-zinc-400 font-semibold">{telemetry.cache.misses}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xs uppercase font-mono tracking-wider text-zinc-400 mb-2 font-semibold flex items-center justify-between">
+                      <span>Ollama Embeddings</span>
+                      <span className="text-[10px] text-zinc-400 normal-case font-normal">
+                        Readiness: <span className="font-semibold text-teal-400">{telemetry.readiness.ollama}</span>
+                      </span>
+                    </h3>
+                    <div className="bg-zinc-950/50 border border-zinc-900 rounded-lg p-3 flex flex-col gap-2">
+                      <div className="flex justify-between text-xs">
+                        <span className="text-zinc-500">Operations</span>
+                        <span className="font-mono text-zinc-200 font-semibold">{telemetry.embeddings.operations}</span>
+                      </div>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-zinc-500">Failures</span>
+                        <span className="font-mono text-red-450 font-semibold">{telemetry.embeddings.failures}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Metrics Column */}
+                <div className="flex flex-col gap-4">
+                  <div>
+                    <h3 className="text-xs uppercase font-mono tracking-wider text-zinc-400 mb-2 font-semibold">Failures by Category</h3>
+                    <div className="bg-zinc-950/50 border border-zinc-900 rounded-lg p-3 flex flex-col gap-2 font-mono text-xs">
+                      <div className="flex justify-between">
+                        <span className="text-zinc-500">Timeout</span>
+                        <span className="text-zinc-300">{telemetry.failuresByCategory.provider_timeout}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-zinc-500">Rate Limited</span>
+                        <span className="text-zinc-300">{telemetry.failuresByCategory.provider_rate_limited}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-zinc-500">Auth Failure</span>
+                        <span className="text-zinc-300">{telemetry.failuresByCategory.provider_auth}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-zinc-500">Policy Refusal</span>
+                        <span className="text-zinc-300">{telemetry.failuresByCategory.provider_policy}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-zinc-500">Unavailable</span>
+                        <span className="text-zinc-300">{telemetry.failuresByCategory.provider_unavailable}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-zinc-500">Unknown</span>
+                        <span className="text-zinc-300">{telemetry.failuresByCategory.unknown}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xs uppercase font-mono tracking-wider text-zinc-400 mb-2 font-semibold">Latency Distribution</h3>
+                    <div className="bg-zinc-950/50 border border-zinc-900 rounded-lg p-3 flex flex-col gap-2 font-mono text-xs">
+                      <div className="flex justify-between">
+                        <span className="text-zinc-500">&lt; 1s</span>
+                        <span className="text-teal-400">{telemetry.latencyBuckets.under_1s}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-zinc-500">1s - 3s</span>
+                        <span className="text-zinc-300">{telemetry.latencyBuckets["1_to_3s"]}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-zinc-500">3s - 5s</span>
+                        <span className="text-zinc-300">{telemetry.latencyBuckets["3_to_5s"]}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-zinc-500">5s - 10s</span>
+                        <span className="text-zinc-300">{telemetry.latencyBuckets["5_to_10s"]}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-zinc-500">&gt; 10s</span>
+                        <span className="text-zinc-300">{telemetry.latencyBuckets.over_10s}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <p className="text-xs text-zinc-500 text-center py-4 font-mono">No telemetry data loaded.</p>
+            )}
           </div>
 
           {/* Terminal Logs View */}

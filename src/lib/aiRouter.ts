@@ -4,6 +4,7 @@ import { ollamaService } from "./ollama";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { ProviderPolicy } from "../features/ai-security/provider-policy/providerPolicy";
 import { APPROVED_PROVIDERS, ApprovedProviderConfig } from "../features/ai-security/provider-policy/approvedProviders";
+import { providerTelemetryService, TelemetryFailureCategory } from "@/features/ai/services/providerTelemetry";
 
 export class OrphanedProviderError extends Error {
   constructor(message: string) {
@@ -970,11 +971,18 @@ export class AIRouterService {
         const responseText = typeof res === "string" ? res : res.response;
         const resolvedModel = (typeof res === "object" && res.modelUsed) ? res.modelUsed : task.model;
 
+        const latency = Date.now() - startTime;
+        try {
+          providerTelemetryService.recordProviderAttempt("success", latency);
+        } catch {
+          // Safe no-throw
+        }
+
         return {
           response: responseText,
           provider: task.provider,
           model: resolvedModel,
-          latencyMs: Date.now() - startTime
+          latencyMs: latency
         };
       } catch (err: any) {
         clearTimeout(timeoutId);
@@ -999,25 +1007,44 @@ export class AIRouterService {
             clearTimeout(graceTimeoutId);
           } catch (graceErr: any) {
             clearTimeout(graceTimeoutId);
+            const latency = Date.now() - startTime;
+            try {
+              providerTelemetryService.recordProviderAttempt("failed", latency, "provider_timeout");
+            } catch {
+              // Safe no-throw
+            }
             throw graceErr; // Rethrow OrphanedProviderError immediately to stop fallback
           }
         }
 
         if (signal?.aborted) {
+          const latency = Date.now() - startTime;
+          try {
+            providerTelemetryService.recordProviderAttempt("failed", latency, "provider_timeout");
+          } catch {
+            // Safe no-throw
+          }
           throw new Error("Request aborted");
         }
 
         const latency = Date.now() - startTime;
-        const errMsg = err?.message || String(err);
         const status = getErrorStatus(err);
 
         console.warn(`[AIRouter] Task ${i} (${task.provider}) failed. Details redacted. Status: ${status}`);
         this.recordFailure(task.provider, task.model, err);
 
+        const failureCategory = ProviderPolicy.classifyError(err);
+
+        try {
+          providerTelemetryService.recordProviderAttempt("failed", latency, failureCategory);
+        } catch {
+          // Safe no-throw
+        }
+
         // Check for safety refusal
         const nextTask = tasks[i + 1] || null;
         const nextCandidate = nextTask ? APPROVED_PROVIDERS.find(p => p.modelName === nextTask.model) || null : null;
-        if (!ProviderPolicy.shouldFallback(errMsg, dataClassification, nextCandidate)) {
+        if (!ProviderPolicy.shouldFallback(err?.message || String(err), dataClassification, nextCandidate)) {
           console.error("[AIRouter] Non-fallbackable safety/auth error encountered. Details redacted. Aborting race.");
           throw err;
         }

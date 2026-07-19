@@ -163,7 +163,7 @@ function runStaticVerification(): VerificationCheckResult[] {
   localResults.push(lintRes);
 
   // TypeScript typecheck
-  const typecheckRes = runSubprocess("typecheck", "npx", ["tsc", "--noEmit", "--project", "tsconfig.verify.json"]);
+  const typecheckRes = runSubprocess("typecheck", "npx", ["tsc", "--noEmit", "-p", "tsconfig.json"]);
   localResults.push(typecheckRes);
 
   // Vitest UI tests
@@ -173,7 +173,8 @@ function runStaticVerification(): VerificationCheckResult[] {
     "tests/knowledgeGraphExplorer.test.tsx",
     "tests/hydrationAndTiming.test.tsx",
     "tests/graphPerformance.test.tsx",
-    "tests/miasmaticFiltering.test.tsx"
+    "tests/miasmaticFiltering.test.tsx",
+    "tests/providerTelemetryDashboard.test.tsx"
   ]);
   localResults.push(uiTestRes);
 

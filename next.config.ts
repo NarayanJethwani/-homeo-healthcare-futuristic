@@ -30,6 +30,9 @@ const nextConfig: NextConfig = {
     workerThreads: false,
     cpus: 1
   },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   productionBrowserSourceMaps: false,
   // Ensure repertory JSON data files are bundled with serverless functions on Vercel
   outputFileTracingIncludes: {

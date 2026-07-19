@@ -25,6 +25,7 @@ import { RedisRateLimiter } from "../protection/redisLimiter";
 import { OutputValidator } from "../protection/outputValidator";
 import { FAQWhitelistRegistry } from "../config/faqWhitelist";
 import { NodeRedisAdapter } from "../protection/redisAdapter";
+import { providerTelemetryService } from "@/features/ai/services/providerTelemetry";
 
 export interface ConsultAIDependencies {
   aiRouterService: {
@@ -549,7 +550,13 @@ export function createConsultAIHandler(deps: ConsultAIDependencies) {
 
         const cached = await deps.cacheService.get(cacheKey);
         checkDeadline();
+
         if (cached) {
+          try {
+            providerTelemetryService.recordCacheOutcome("hit");
+          } catch {
+            // Safe no-throw
+          }
           await deps.auditLogger.logEvent({
             eventType: "cache_hit",
             correlationId,
@@ -569,6 +576,12 @@ export function createConsultAIHandler(deps: ConsultAIDependencies) {
             },
             { headers }
           );
+        } else {
+          try {
+            providerTelemetryService.recordCacheOutcome("miss");
+          } catch {
+            // Safe no-throw
+          }
         }
       }
 

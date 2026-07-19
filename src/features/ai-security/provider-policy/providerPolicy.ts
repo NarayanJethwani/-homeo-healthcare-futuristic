@@ -1,13 +1,8 @@
 import { ApprovedProviderConfig } from "./approvedProviders";
 
 export class ProviderPolicy {
-  /**
-   * Determine if an error is eligible for fallback based on error class.
-   * Operational errors (timeouts, 429 quota, transient server errors) are eligible.
-   * Safety refusals and authentication failures are NOT eligible.
-   */
-  static isOperationalError(error: any): boolean {
-    if (!error) return false;
+  static classifyError(error: any): "provider_policy" | "provider_auth" | "provider_timeout" | "provider_rate_limited" | "provider_unavailable" | "unknown" {
+    if (!error) return "unknown";
     const msg = typeof error === "string" ? error.toLowerCase() : (error.message || String(error)).toLowerCase();
 
     // 1. Safety refusal checks (prevent provider shopping)
@@ -18,7 +13,7 @@ export class ProviderPolicy {
       msg.includes("candidate was blocked") ||
       msg.includes("violates policy")
     ) {
-      return false;
+      return "provider_policy";
     }
 
     // 2. Authentication/credential errors
@@ -29,25 +24,54 @@ export class ProviderPolicy {
       msg.includes("401") ||
       msg.includes("403")
     ) {
-      return false;
+      return "provider_auth";
     }
 
-    // 3. Operational errors qualify
+    // 3. Rate limiting/quota errors
     if (
       msg.includes("429") ||
       msg.includes("quota") ||
-      msg.includes("too many requests") ||
-      msg.includes("500") ||
-      msg.includes("503") ||
-      msg.includes("timeout") ||
-      msg.includes("deadline exceeded") ||
-      msg.includes("network error") ||
-      msg.includes("service unavailable")
+      msg.includes("too many requests")
     ) {
-      return true;
+      return "provider_rate_limited";
     }
 
-    return false;
+    // 4. Timeout/deadline exceeded
+    if (
+      msg.includes("timeout") ||
+      msg.includes("deadline exceeded") ||
+      error.name === "AbortError" ||
+      error.message === "Timeout"
+    ) {
+      return "provider_timeout";
+    }
+
+    // 5. Server/Network availability
+    if (
+      msg.includes("500") ||
+      msg.includes("503") ||
+      msg.includes("network error") ||
+      msg.includes("service unavailable") ||
+      msg.includes("failed to fetch")
+    ) {
+      return "provider_unavailable";
+    }
+
+    return "unknown";
+  }
+
+  /**
+   * Determine if an error is eligible for fallback based on error class.
+   * Operational errors (timeouts, 429 quota, transient server errors) are eligible.
+   * Safety refusals and authentication failures are NOT eligible.
+   */
+  static isOperationalError(error: any): boolean {
+    const category = this.classifyError(error);
+    return (
+      category === "provider_timeout" ||
+      category === "provider_rate_limited" ||
+      category === "provider_unavailable"
+    );
   }
 
   /**

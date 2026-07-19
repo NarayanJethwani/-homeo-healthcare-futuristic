@@ -1,4 +1,5 @@
 import os from "os";
+import { providerTelemetryService } from "@/features/ai/services/providerTelemetry";
 
 export interface OllamaModelConfig {
   name: string;
@@ -71,8 +72,19 @@ export class OllamaService {
 
       const res = await fetch(`${this.endpoint}/api/tags`, { signal: controller.signal });
       clearTimeout(id);
-      return res.status === 200;
+      const isOnline = res.status === 200;
+      try {
+        providerTelemetryService.recordReadiness(isOnline ? "Healthy" : "Offline");
+      } catch {
+        // Safe no-throw
+      }
+      return isOnline;
     } catch {
+      try {
+        providerTelemetryService.recordReadiness("Offline");
+      } catch {
+        // Safe no-throw
+      }
       return false;
     }
   }
@@ -126,8 +138,18 @@ export class OllamaService {
       }
 
       const data = await res.json();
+      try {
+        providerTelemetryService.recordEmbeddingOutcome("success");
+      } catch {
+        // Safe no-throw
+      }
       return data.embedding || [];
     } catch {
+      try {
+        providerTelemetryService.recordEmbeddingOutcome("failed");
+      } catch {
+        // Safe no-throw
+      }
       console.warn(`Ollama embeddings request failed for model ${model}. Returning mock/dummy vector for safety.`);
       // return a dummy vector matching 1536 dims (or 768 dims for nomic)
       return new Array(768).fill(0.01);

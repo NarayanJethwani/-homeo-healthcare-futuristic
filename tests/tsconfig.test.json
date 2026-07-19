@@ -6,14 +6,18 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "target": "es2020",
-    "baseUrl": "..",
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "server-only": ["./tests/stubs/server-only"]
+      "@/*": ["../src/*"],
+      "server-only": ["./stubs/server-only"]
     }
   },
   "include": [
     "**/*.ts",
     "../src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
   ]
 }
