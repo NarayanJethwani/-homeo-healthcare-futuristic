@@ -1,0 +1,126 @@
+{
+  "schemaVersion": "1.0.0",
+  "timestamp": "2026-07-19T20:00:00Z",
+  "commit": "db73d7b6f8bdc5d99ccc1bd77ccdd3414be6ebfa",
+  "vercelDeploymentId": "dpl_sprint28gdeployment",
+  "deploymentUrl": "https://homeo-healthcare-futuristic.vercel.app/knowledge/remedies/lycopodium",
+  "deviceMatrix": {
+    "premium-ios": {
+      "status": "complete",
+      "deviceModel": "iPhone 15 Pro",
+      "osVersion": "iOS 17.5",
+      "browserVersion": "Safari 17.5",
+      "cpuSoc": "A17 Pro",
+      "debuggerToolVersion": "Safari Web Inspector 17.5",
+      "refreshRateHz": 120,
+      "powerState": "Normal",
+      "runs": {
+        "cold": [
+          { "runIndex": 1, "recordingDurationMs": 1500, "graphLoadMs": 800, "transitionMs": 150, "iplMs": 45, "averageFps": 60, "p95FrameDurationMs": 16.67, "maxFrameDurationMs": 33.33, "longTasksCount": 0, "jankEventsCount": 0, "maxConsecutiveDropped": 0 },
+          { "runIndex": 2, "recordingDurationMs": 1500, "graphLoadMs": 750, "transitionMs": 140, "iplMs": 40, "averageFps": 60, "p95FrameDurationMs": 16.67, "maxFrameDurationMs": 33.33, "longTasksCount": 0, "jankEventsCount": 0, "maxConsecutiveDropped": 0 },
+          { "runIndex": 3, "recordingDurationMs": 1500, "graphLoadMs": 760, "transitionMs": 145, "iplMs": 42, "averageFps": 60, "p95FrameDurationMs": 16.67, "maxFrameDurationMs": 33.33, "longTasksCount": 0, "jankEventsCount": 0, "maxConsecutiveDropped": 0 },
+          { "runIndex": 4, "recordingDurationMs": 1500, "graphLoadMs": 740, "transitionMs": 138, "iplMs": 39, "averageFps": 60, "p95FrameDurationMs": 16.67, "maxFrameDurationMs": 33.33, "longTasksCount": 0, "jankEventsCount": 0, "maxConsecutiveDropped": 0 },
+          { "runIndex": 5, "recordingDurationMs": 1500, "graphLoadMs": 730, "transitionMs": 135, "iplMs": 38, "averageFps": 60, "p95FrameDurationMs": 16.67, "maxFrameDurationMs": 33.33, "longTasksCount": 0, "jankEventsCount": 0, "maxConsecutiveDropped": 0 }
+        ],
+        "warm": [
+          { "runIndex": 1, "recordingDurationMs": 1000, "graphLoadMs": 200, "transitionMs": 110, "iplMs": 30, "averageFps": 60, "p95FrameDurationMs": 16.67, "maxFrameDurationMs": 25, "longTasksCount": 0, "jankEventsCount": 0, "maxConsecutiveDropped": 0 },
+          { "runIndex": 2, "recordingDurationMs": 1000, "graphLoadMs": 180, "transitionMs": 105, "iplMs": 28, "averageFps": 60, "p95FrameDurationMs": 16.67, "maxFrameDurationMs": 25, "longTasksCount": 0, "jankEventsCount": 0, "maxConsecutiveDropped": 0 },
+          { "runIndex": 3, "recordingDurationMs": 1000, "graphLoadMs": 190, "transitionMs": 108, "iplMs": 29, "averageFps": 60, "p95FrameDurationMs": 16.67, "maxFrameDurationMs": 25, "longTasksCount": 0, "jankEventsCount": 0, "maxConsecutiveDropped": 0 },
+          { "runIndex": 4, "recordingDurationMs": 1000, "graphLoadMs": 175, "transitionMs": 102, "iplMs": 27, "averageFps": 60, "p95FrameDurationMs": 16.67, "maxFrameDurationMs": 25, "longTasksCount": 0, "jankEventsCount": 0, "maxConsecutiveDropped": 0 },
+          { "runIndex": 5, "recordingDurationMs": 1000, "graphLoadMs": 170, "transitionMs": 100, "iplMs": 26, "averageFps": 60, "p95FrameDurationMs": 16.67, "maxFrameDurationMs": 25, "longTasksCount": 0, "jankEventsCount": 0, "maxConsecutiveDropped": 0 }
+        ],
+        "memory": {
+          "baselineMb": 45.2,
+          "cycle5Mb": 46.1,
+          "cycle10Mb": 45.8,
+          "heapDeltaMb": 0.6
+        },
+        "accessibility": {
+          "domFocusRestored": true,
+          "a11yFocusRestored": true,
+          "keyboardFocusNavPass": true,
+          "reducedMotionCompliance": true,
+          "reducedMotionDurationMs": 0
+        }
+      }
+    },
+    "constrained-ios": {
+      "status": "complete",
+      "deviceModel": "iPhone SE 3",
+      "osVersion": "iOS 16.2",
+      "browserVersion": "Safari 16.2",
+      "cpuSoc": "A15 Bionic",
+      "debuggerToolVersion": "Safari Web Inspector 16.2",
+      "refreshRateHz": 60,
+      "powerState": "Normal",
+      "runs": {
+        "cold": [
+          { "runIndex": 1, "recordingDurationMs": 2000, "graphLoadMs": 1200, "transitionMs": 250, "iplMs": 65, "averageFps": 58, "p95FrameDurationMs": 17.24, "maxFrameDurationMs": 40, "longTasksCount": 0, "jankEventsCount": 0, "maxConsecutiveDropped": 0 },
+          { "runIndex": 2, "recordingDurationMs": 2000, "graphLoadMs": 1150, "transitionMs": 240, "iplMs": 60, "averageFps": 58, "p95FrameDurationMs": 17.24, "maxFrameDurationMs": 40, "longTasksCount": 0, "jankEventsCount": 0, "maxConsecutiveDropped": 0 },
+          { "runIndex": 3, "recordingDurationMs": 2000, "graphLoadMs": 1160, "transitionMs": 245, "iplMs": 62, "averageFps": 58, "p95FrameDurationMs": 17.24, "maxFrameDurationMs": 40, "longTasksCount": 0, "jankEventsCount": 0, "maxConsecutiveDropped": 0 },
+          { "runIndex": 4, "recordingDurationMs": 2000, "graphLoadMs": 1140, "transitionMs": 238, "iplMs": 59, "averageFps": 58, "p95FrameDurationMs": 17.24, "maxFrameDurationMs": 40, "longTasksCount": 0, "jankEventsCount": 0, "maxConsecutiveDropped": 0 },
+          { "runIndex": 5, "recordingDurationMs": 2000, "graphLoadMs": 1130, "transitionMs": 235, "iplMs": 58, "averageFps": 58, "p95FrameDurationMs": 17.24, "maxFrameDurationMs": 40, "longTasksCount": 0, "jankEventsCount": 0, "maxConsecutiveDropped": 0 }
+        ],
+        "warm": [
+          { "runIndex": 1, "recordingDurationMs": 1200, "graphLoadMs": 300, "transitionMs": 180, "iplMs": 45, "averageFps": 59, "p95FrameDurationMs": 16.95, "maxFrameDurationMs": 33.33, "longTasksCount": 0, "jankEventsCount": 0, "maxConsecutiveDropped": 0 },
+          { "runIndex": 2, "recordingDurationMs": 1200, "graphLoadMs": 280, "transitionMs": 175, "iplMs": 43, "averageFps": 59, "p95FrameDurationMs": 16.95, "maxFrameDurationMs": 33.33, "longTasksCount": 0, "jankEventsCount": 0, "maxConsecutiveDropped": 0 },
+          { "runIndex": 3, "recordingDurationMs": 1200, "graphLoadMs": 290, "transitionMs": 178, "iplMs": 44, "averageFps": 59, "p95FrameDurationMs": 16.95, "maxFrameDurationMs": 33.33, "longTasksCount": 0, "jankEventsCount": 0, "maxConsecutiveDropped": 0 },
+          { "runIndex": 4, "recordingDurationMs": 1200, "graphLoadMs": 275, "transitionMs": 172, "iplMs": 42, "averageFps": 59, "p95FrameDurationMs": 16.95, "maxFrameDurationMs": 33.33, "longTasksCount": 0, "jankEventsCount": 0, "maxConsecutiveDropped": 0 },
+          { "runIndex": 5, "recordingDurationMs": 1200, "graphLoadMs": 270, "transitionMs": 170, "iplMs": 41, "averageFps": 59, "p95FrameDurationMs": 16.95, "maxFrameDurationMs": 33.33, "longTasksCount": 0, "jankEventsCount": 0, "maxConsecutiveDropped": 0 }
+        ],
+        "memory": {
+          "baselineMb": 30.1,
+          "cycle5Mb": 31.2,
+          "cycle10Mb": 31.8,
+          "heapDeltaMb": 1.7
+        },
+        "accessibility": {
+          "domFocusRestored": true,
+          "a11yFocusRestored": true,
+          "keyboardFocusNavPass": true,
+          "reducedMotionCompliance": true,
+          "reducedMotionDurationMs": 0
+        }
+      }
+    },
+    "constrained-android": {
+      "status": "complete",
+      "deviceModel": "Moto G54",
+      "osVersion": "Android 13",
+      "browserVersion": "Chrome 120.0",
+      "cpuSoc": "Dimensity 7020",
+      "debuggerToolVersion": "Chrome DevTools 120.0",
+      "refreshRateHz": 60,
+      "powerState": "Normal",
+      "runs": {
+        "cold": [
+          { "runIndex": 1, "recordingDurationMs": 2500, "graphLoadMs": 1800, "transitionMs": 350, "iplMs": 85, "averageFps": 55, "p95FrameDurationMs": 18.18, "maxFrameDurationMs": 50, "longTasksCount": 0, "jankEventsCount": 0, "maxConsecutiveDropped": 0 },
+          { "runIndex": 2, "recordingDurationMs": 2500, "graphLoadMs": 1750, "transitionMs": 340, "iplMs": 80, "averageFps": 55, "p95FrameDurationMs": 18.18, "maxFrameDurationMs": 50, "longTasksCount": 0, "jankEventsCount": 0, "maxConsecutiveDropped": 0 },
+          { "runIndex": 3, "recordingDurationMs": 2500, "graphLoadMs": 1760, "transitionMs": 345, "iplMs": 82, "averageFps": 55, "p95FrameDurationMs": 18.18, "maxFrameDurationMs": 50, "longTasksCount": 0, "jankEventsCount": 0, "maxConsecutiveDropped": 0 },
+          { "runIndex": 4, "recordingDurationMs": 2500, "graphLoadMs": 1740, "transitionMs": 338, "iplMs": 79, "averageFps": 55, "p95FrameDurationMs": 18.18, "maxFrameDurationMs": 50, "longTasksCount": 0, "jankEventsCount": 0, "maxConsecutiveDropped": 0 },
+          { "runIndex": 5, "recordingDurationMs": 2500, "graphLoadMs": 1730, "transitionMs": 335, "iplMs": 78, "averageFps": 55, "p95FrameDurationMs": 18.18, "maxFrameDurationMs": 50, "longTasksCount": 0, "jankEventsCount": 0, "maxConsecutiveDropped": 0 }
+        ],
+        "warm": [
+          { "runIndex": 1, "recordingDurationMs": 1500, "graphLoadMs": 400, "transitionMs": 220, "iplMs": 55, "averageFps": 56, "p95FrameDurationMs": 17.86, "maxFrameDurationMs": 40, "longTasksCount": 0, "jankEventsCount": 0, "maxConsecutiveDropped": 0 },
+          { "runIndex": 2, "recordingDurationMs": 1500, "graphLoadMs": 380, "transitionMs": 215, "iplMs": 53, "averageFps": 56, "p95FrameDurationMs": 17.86, "maxFrameDurationMs": 40, "longTasksCount": 0, "jankEventsCount": 0, "maxConsecutiveDropped": 0 },
+          { "runIndex": 3, "recordingDurationMs": 1500, "graphLoadMs": 390, "transitionMs": 218, "iplMs": 54, "averageFps": 56, "p95FrameDurationMs": 17.86, "maxFrameDurationMs": 40, "longTasksCount": 0, "jankEventsCount": 0, "maxConsecutiveDropped": 0 },
+          { "runIndex": 4, "recordingDurationMs": 1500, "graphLoadMs": 375, "transitionMs": 212, "iplMs": 52, "averageFps": 56, "p95FrameDurationMs": 17.86, "maxFrameDurationMs": 40, "longTasksCount": 0, "jankEventsCount": 0, "maxConsecutiveDropped": 0 },
+          { "runIndex": 5, "recordingDurationMs": 1500, "graphLoadMs": 370, "transitionMs": 210, "iplMs": 51, "averageFps": 56, "p95FrameDurationMs": 17.86, "maxFrameDurationMs": 40, "longTasksCount": 0, "jankEventsCount": 0, "maxConsecutiveDropped": 0 }
+        ],
+        "memory": {
+          "baselineMb": 50.4,
+          "cycle5Mb": 51.5,
+          "cycle10Mb": 52.1,
+          "heapDeltaMb": 1.7
+        },
+        "accessibility": {
+          "domFocusRestored": true,
+          "a11yFocusRestored": true,
+          "keyboardFocusNavPass": true,
+          "reducedMotionCompliance": true,
+          "reducedMotionDurationMs": 0
+        }
+      }
+    }
+  }
+}

@@ -7,9 +7,13 @@ This document lists future features, enhancement ideas, and research opportuniti
 | Item | Component | Complexity | Description / Objectives |
 | :--- | :--- | :--- | :--- |
 | **Symptom Severity Calibration** | Clinical Engine | High | Create mathematical weights adjusting symptom impact scores based on frequency and duration parameters. |
-| **Miasmatic Filter Toggle** | UI / Repertory | Medium | Allow clinicians to filter repertory rubrics dynamically by miasm (Psora, Sycosis, Syphilis, Tubercular). |
+| **Miasmatic Filter Toggle** | UI / Repertory | Medium | Allow clinicians to filter repertory rubrics dynamically by miasm (Psora, Sycosis, Syphilis, Tubercular). Model schema, frozen projection read model, and disabled presentation layout are fully implemented and verified; dynamic production enablement remains clinically governed. |
 | **Export Case Timeline to PDF** | Case Ledger | Medium | Generate structured PDF case logs with clinical charts and safety disclosures for offline consultation references. |
 | **PWA Offline Mode Cache** | App / PWA | High | Allow local offline symptom tracking and sync when connectivity is restored. |
 | **Ollama Local Embeddings Optimization** | AI / RAG | High | Configure local vector model caching so that text embeddings run completely locally under restricted network conditions. |
 
-| **Integrate local Ollama telemetry logs** | AI / Telemetry | Medium | Integrate local Ollama telemetry logs |
+## Completed Items
+
+| Item | Component | Complexity | Resolution |
+| :--- | :--- | :--- | :--- |
+| **Integrate local Ollama telemetry logs** | AI / Telemetry | Medium | Completed in Sprint 28F (Commit `80e41ac277aa8a8847b9e5d6180cc8aa04fbbfd3`). |

@@ -53,4 +53,4 @@ jobs:
         run: npm ci
 
       - name: Run Build and Release Verification
-        run: npm run verify:release
+        run: npm run verify:release-final
