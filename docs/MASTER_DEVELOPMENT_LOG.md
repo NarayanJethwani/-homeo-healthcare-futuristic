@@ -881,3 +881,34 @@ This document serves as the chronological, single source of truth for all sprint
   - **Deterministic RAG Safety**: Stubbed `ollamaService.checkHealth` and `ollamaService.getEmbeddings` inside RAG performance tests to keep them deterministic regardless of whether local Ollama is offline or online.
   - **Robust Verification Subprocess Test**: Used `child_process.spawnSync` with a large custom `maxBuffer` to run verifier scripts without overflowing stdout buffer limits.
   - **GitHub Actions PR Lineage isolation**: Configured `ci.yml` to run lineage and build checks on independent PR environments.
+
+---
+
+## [2026-07-19] - Sprint 28F: Local Ollama Telemetry & Provider Observability Foundation
+- **Deployment Status**: Merged to `main` (Merge Method: Fast-Forward | Commit HEAD: `80e41ac277aa8a8847b9e5d6180cc8aa04fbbfd3`)
+- **Build Verification**: Passed Next.js build, TypeScript compiler, ESLint, and full verification suite (evidence lineage, governed unit tests, Vercel deployments, and dashboard RTL tests).
+- **Files Changed**:
+  - `next.config.ts`
+  - `package.json`
+  - `scripts/run-unit-tests.ts`
+  - `scripts/verify-production-readiness.ts`
+  - `src/app/admin/observability/page.tsx`
+  - `src/app/api/admin/observability/provider-metrics/route.ts`
+  - `src/features/ai-security/access/consultAIHandler.ts`
+  - `src/features/ai-security/provider-policy/providerPolicy.ts`
+  - `src/features/ai/services/providerTelemetry.ts`
+  - `src/lib/aiRouter.ts`
+  - `src/lib/ollama.ts`
+  - `tests/providerTelemetry.test.ts`
+  - `tests/providerTelemetryDashboard.test.tsx`
+  - `tests/tsconfig.test.json`
+  - `reports/emulator-verification-report.json`
+  - `reports/production-readiness-report.json`
+- **Major Changes**:
+  - **In-Memory Telemetry Aggregation Service**: Designed and implemented `ProviderTelemetryService` storing instance-local, process-isolated provider readiness, attempts, latency, failures, and cache outcome metrics. Returns strict property-by-property copies of the internal state. All counters are protected against overflow using a saturating helper (`Number.MAX_SAFE_INTEGER`).
+  - **Telemetry API Route**: Created `/api/admin/observability/provider-metrics` API route with `GET` (OBSERVABILITY_VIEW role required) and `POST` (RAG_INDEX_MANAGE role required) endpoints. Implemented same-origin CSRF checks, CORS origin verification, content-type checks, and strict Zod validation. Protected against DoS attacks with a 100-byte stream-level payload limit. Audited reset actions through security audit logs.
+  - **Analytics Dashboard UI**: Upgraded the admin page at `/admin/observability` to render high-density charts showing live cache outcomes, provider attempts, and latency distribution buckets. Added a metrics reset button with confirmation modal and CSRF tokens.
+  - **Release-Safe OOM Gating**: Optimized Next.js production builds by configuring `typescript: { ignoreBuildErrors: true }` in `next.config.ts` and updating `package.json`'s build script to sequentially execute `next typegen`, `tsc --noEmit -p tsconfig.json`, and the memory-isolated Next.js build. Offloaded obsolete ESLint options. Updated `verify:release` to typecheck the entire application using the full `tsconfig.json`.
+  - **Functional Telemetry Instrumentation**: Instrumented the cache outcomes inside `consultAIHandler`, individual sequential fallback attempts inside `aiRouter.ts`, and local embedding queries inside `ollama.ts`. Fully isolated telemetry code from frozen patient/clinical domain spaces.
+  - **Comprehensive Test Suites**: Shipped 22/22 telemetry integration tests validating audit logs, safety refusal refractions, cache exceptions, abort signals, and saturating counter boundaries. Added 3 RTL dashboard component verification tests.
+
