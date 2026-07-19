@@ -65,7 +65,8 @@ const unitTests = [
   { path: "tests/evidenceAuditAtomicity.test.ts" },
   { path: "tests/evidencePerformance.test.ts" },
   { path: "tests/clinicalGraph.test.ts" },
-  { path: "tests/providerTelemetry.test.ts" }
+  { path: "tests/providerTelemetry.test.ts" },
+  { path: "tests/physicalDeviceEvidence.test.ts" }
 ];
 
 console.log("🚀 Starting Governed Unit Test Runner...");
