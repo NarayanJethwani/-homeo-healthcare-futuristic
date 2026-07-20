@@ -56,4 +56,5 @@ data/**/rag-documents.json
 firestore-debug.log
 firebase-debug.log
 
-
+# local ollama embeddings cache
+.ollama_cache/
