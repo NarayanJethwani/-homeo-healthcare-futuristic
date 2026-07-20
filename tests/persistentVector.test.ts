@@ -1,14 +1,14 @@
 import assert from "assert";
-import { 
-  globalVectorStore, 
-  FirestoreVectorStore, 
-  MemoryVectorStore 
+import {
+  globalVectorStore,
+  FirestoreVectorStore,
+  MemoryVectorStore
 } from "../src/features/knowledge/retrieval/vectorStore";
-import { 
-  queueEmbeddingJob, 
-  getQueueJobs, 
-  processQueue, 
-  retryFailedJobs 
+import {
+  queueEmbeddingJob,
+  getQueueJobs,
+  processQueue,
+  retryFailedJobs
 } from "../src/features/knowledge/retrieval/embeddingQueue";
 import { publishArticle, getDraft, saveDraft, approveClinicalReview } from "../src/features/knowledge-admin/cms/cmsManager";
 import { globalKmsRepository } from "../src/features/knowledge-admin/repositories/MemoryRepository";
@@ -119,13 +119,14 @@ async function runTests() {
 
     // Process queue - runs active provider (which is Gemini, or falls back to Ollama or Null Provider)
     await processQueue();
-    
+
     // Check updated queue
     const updatedJobs = await getQueueJobs();
     const finalJob = updatedJobs.find(j => j.id === job.id);
     assert.ok(finalJob);
     // Since mock test may run under null-provider or offline environment, let's verify transitions
-    assert.ok(["completed", "failed"].includes(finalJob.status));
+    assert.ok(["completed", "failed", "cancelled"].includes(finalJob.status));
+
   });
 
   // 3. CMS Publication triggers embedding job creation

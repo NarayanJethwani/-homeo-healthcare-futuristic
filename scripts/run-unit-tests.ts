@@ -40,7 +40,8 @@ const unitTests = [
   { path: "tests/editorialWorkflow.test.ts" },
   { path: "tests/editorialCms.test.ts", env: { TS_NODE_COMPILER_OPTIONS: '{"module":"commonjs"}' } },
   { path: "tests/persistentVector.test.ts" },
-  { path: "tests/productionReadiness.test.ts" },
+  { path: "tests/productionReadiness.test.ts", env: { REPERTORY_VERIFICATION_RUNNING: "true" } },
+
   { path: "tests/rbacSecurity.test.ts" },
   { path: "tests/practitionerLifecycle.test.ts" },
   { path: "tests/practitionerProfile.test.ts" },
@@ -66,8 +67,11 @@ const unitTests = [
   { path: "tests/evidencePerformance.test.ts" },
   { path: "tests/clinicalGraph.test.ts" },
   { path: "tests/providerTelemetry.test.ts" },
-  { path: "tests/physicalDeviceEvidence.test.ts" }
+  { path: "tests/physicalDeviceEvidence.test.ts" },
+  { path: "tests/ollamaEmbeddingsCache.test.ts" },
+  { path: "tests/embeddingQueueCacheIntegration.test.ts" }
 ];
+
 
 console.log("🚀 Starting Governed Unit Test Runner...");
 console.log(`Governed Environment: NODE_ENV=${process.env.NODE_ENV}, GCLOUD_PROJECT=${process.env.GCLOUD_PROJECT}, REPERTORY_USE_MOCK_FIRESTORE=${process.env.REPERTORY_USE_MOCK_FIRESTORE}`);
