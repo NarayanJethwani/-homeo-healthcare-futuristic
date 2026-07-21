@@ -232,9 +232,12 @@ async function runLibraryV2Tests() {
     assert.strictEqual(results.length, 0);
   });
 
-  // Test 53: The four dependent feature flags remain disabled
-  await test("Test 53 - The four dependent feature flags remain disabled", () => {
-    assert.strictEqual(featureFlags.MATERIA_MEDICA_READER_V2, false);
+  // Test 53: The governed reader is live while privileged capabilities remain disabled
+  await test("Test 53 - Governed reader is live while privileged capabilities remain disabled", () => {
+    assert.strictEqual(featureFlags.MATERIA_MEDICA_LIBRARY_V2, true);
+    assert.strictEqual(featureFlags.MATERIA_MEDICA_READER_V2, true);
+    assert.strictEqual(featureFlags.MATERIA_MEDICA_SAMPLE_CORPUS, true);
+    assert.strictEqual(featureFlags.MATERIA_MEDICA_LOCAL_SEARCH, true);
     assert.strictEqual(featureFlags.MATERIA_MEDICA_INGESTION_ADMIN, false);
     assert.strictEqual(featureFlags.MATERIA_MEDICA_RAG_INDEXING, false);
     assert.strictEqual(featureFlags.MATERIA_MEDICA_AI_SUMMARIES, false);
