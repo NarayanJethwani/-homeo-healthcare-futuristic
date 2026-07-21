@@ -69,6 +69,7 @@ const unitTests = [
   { path: "tests/providerTelemetry.test.ts" },
   { path: "tests/physicalDeviceEvidence.test.ts" },
   { path: "tests/ollamaEmbeddingsCache.test.ts" },
+  { path: "tests/corpusCacheActivationManifest.test.ts" },
   { path: "tests/embeddingQueueCacheIntegration.test.ts" }
 ];
 

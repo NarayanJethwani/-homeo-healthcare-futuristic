@@ -35,6 +35,7 @@
     "test:repertory-artifact": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertoryArtifactDeployment.test.ts",
     "test:repertory-object-storage": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertoryObjectStorage.test.ts",
     "test:repertory-api-security": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertoryApiSecurity.test.ts",
+    "test:ollama-cache-activation": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/corpusCacheActivationManifest.test.ts",
     "test:repertory-doctor-pilot": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertoryDoctorPilot.test.ts",
     "test:doctor-onboarding": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/onboardDoctorSafety.test.ts",
      "test": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register scripts/run-unit-tests.ts",

@@ -10,7 +10,7 @@ This document lists future features, enhancement ideas, and research opportuniti
 | **Miasmatic Filter Toggle** | UI / Repertory | Medium | Allow clinicians to filter repertory rubrics dynamically by miasm (Psora, Sycosis, Syphilis, Tubercular). Model schema, frozen projection read model, and disabled presentation layout are fully implemented and verified; dynamic production enablement remains clinically governed. |
 | **Export Case Timeline to PDF** | Case Ledger | Medium | Generate structured PDF case logs with clinical charts and safety disclosures for offline consultation references. |
 | **PWA Offline Mode Cache** | App / PWA | High | Allow local offline symptom tracking and sync when connectivity is restored. |
-| **Governed Ollama Cache Activation** | AI / RAG | High | Approve a source-version eligibility read model and a small non-PHI corpus, document local runtime configuration, and complete shadow/rollback validation before enabling the Sprint 28H cache outside tests. |
+| **Governed Ollama Cache Activation** | AI / RAG | High | Strict activation-manifest validation and immutable projection compilation are implemented without runtime activation. Remaining work requires an approved source-version manifest, a small governed non-PHI corpus, and shadow/rollback validation before enabling the Sprint 28H cache outside tests. |
 
 ## Completed Items
 
