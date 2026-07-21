@@ -45,3 +45,19 @@ Disable activation immediately if any of the following occurs:
 5. Record the rollback commit, snapshot version, reason code, and verification evidence without including corpus text or local filesystem paths.
 
 Production or wider corpus activation requires a separate governed pull request and clinical/source approval. This runbook does not authorize activation by itself.
+
+## Activation manifest gate
+
+Sprint 28J adds a non-activating application-layer validator and compiler in `CorpusCacheActivationManifestV1.ts`. A future activation pull request must supply a strict `1.0.0` manifest containing:
+
+- the exact cache snapshot version;
+- UTC approval and expiry timestamps;
+- canonical entity IDs, entity types, and published version IDs;
+- `non-phi` classification and newline-free provenance metadata;
+- `public-domain` or `licensed` rights state;
+- current per-entry review expiry timestamps; and
+- opaque clinical, editorial, and rights approval record IDs.
+
+The gate rejects unknown fields, empty manifests, duplicate entities, stale or future approvals, expired entry reviews, snapshot mismatches, non-canonical entity types, and unapproved rights states. It returns static error codes and does not echo caller-controlled values.
+
+Passing this validator does not activate the cache. The default production eligibility registry remains empty, no manifest is loaded from disk or environment variables, and a separately reviewed activation change must compile a checked-in approved manifest into the production registry.
