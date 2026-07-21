@@ -63,9 +63,9 @@ async function runTests() {
     }
   };
 
-  // 1. Feature flag false preserves legacy reader catalog
-  await test("Test 1 - Feature flag false preserves legacy reader catalog", () => {
-    assert.strictEqual(featureFlags.MATERIA_MEDICA_READER_V2, false);
+  // 1. The governed reader is the production default
+  await test("Test 1 - Governed V2 reader is the production default", () => {
+    assert.strictEqual(featureFlags.MATERIA_MEDICA_READER_V2, true);
   });
 
   // 2. Feature flag true renders the V2 reader shell

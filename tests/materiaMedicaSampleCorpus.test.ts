@@ -130,17 +130,17 @@ async function runTests() {
     assert.strictEqual(indexingRegistryExposed, false);
   });
 
-  // 13. Library and Reader V2 flags alone do not expose the corpus.
-  await test("Test 13 - Enabling Library and Reader V2 does not render sample corpus unless flag is enabled", () => {
+  // 13. The verified bundled corpus is exposed only when the complete safe gate is enabled.
+  await test("Test 13 - Production safe gate exposes the verified bundled corpus", () => {
     const active = featureFlags.MATERIA_MEDICA_LIBRARY_V2 &&
                    featureFlags.MATERIA_MEDICA_READER_V2 &&
                    featureFlags.MATERIA_MEDICA_SAMPLE_CORPUS;
-    assert.strictEqual(active, false);
+    assert.strictEqual(active, true);
   });
 
-  // 14. The sample-corpus flag defaults to false.
-  await test("Test 14 - MATERIA_MEDICA_SAMPLE_CORPUS flag defaults to false", () => {
-    assert.strictEqual(featureFlags.MATERIA_MEDICA_SAMPLE_CORPUS, false);
+  // 14. The verified sample-corpus flag is enabled for the governed production reader.
+  await test("Test 14 - MATERIA_MEDICA_SAMPLE_CORPUS is enabled", () => {
+    assert.strictEqual(featureFlags.MATERIA_MEDICA_SAMPLE_CORPUS, true);
   });
 
   // 15. Unapproved passages remain unreadable.

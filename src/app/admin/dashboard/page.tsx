@@ -1762,7 +1762,7 @@ export default function AdminDashboard() {
   const [isRepertoryLoading, setIsRepertoryLoading] = useState(false);
 
   // Dr. Jethwani's Clinical Repertory State
-  const [repertoryWorkbenchMode, setRepertoryWorkbenchMode] = useState<"classical" | "jethwani">("classical");
+  const [repertoryWorkbenchMode, setRepertoryWorkbenchMode] = useState<"classical" | "jethwani">("jethwani");
   const [selectedJethwaniRubrics, setSelectedJethwaniRubrics] = useState<JethwaniSymptomConfig[]>([]);
   const [activeSymptomConfig, setActiveSymptomConfig] = useState<JethwaniSymptomConfig | null>(null);
   const [nlpQuery, setNlpQuery] = useState("");
