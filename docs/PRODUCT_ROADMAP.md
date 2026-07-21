@@ -18,7 +18,7 @@ This document outlines the strategic milestones and features planned for the Uni
 
 ### Version 2.2 — AI Knowledge Layer
 - **Goals**: Implement semantic search vector retrieval pipelines, automate RAG traversals, index vector embeddings, and introduce automated AI-assisted writing review suggestions.
-- **Status**: Planned (Q3 2026)
+- **Status**: In progress (Q3 2026). RAG security, provider observability, deterministic verification, and the governed local embedding-cache foundation are complete. Source-version eligibility, approved-corpus activation, and editorial source integration remain.
 
 ### Version 2.3 — Clinical OS Integration
 - **Goals**: Enable active cross-referencing between patient records and the Knowledge base, displaying remedy indicators directly inside the Treatment Planner and Lab interpretation panels.

@@ -6,23 +6,41 @@ This guide details all configuration variables used by the Homeo Healthcare Know
 
 ## 1. Firebase & Database Secrets
 
-### `FIREBASE_PROJECT_ID`
-- **Expected Format**: String (e.g., `homeo-healthcare-platform`)
-- **Required**: Yes, for Firestore persistence.
-- **Server/Client**: **Server-only**.
-- **Fallback**: Defaults to standard memory fallback repositories if missing.
+### `NEXT_PUBLIC_FIREBASE_PROJECT_ID`
+- **Expected Format**: Firebase project ID (for example, `homeo-healthcare`).
+- **Required**: Yes for configured Firestore operation.
+- **Server/Client**: **Client-visible identifier**; it is not a secret, but production values are validated server-side.
+- **Safety**: Production use must match the explicit allowlist in `REPERTORY_PRODUCTION_FIREBASE_PROJECT_IDS`.
 
 ### `FIREBASE_CLIENT_EMAIL`
 - **Expected Format**: Email format (e.g., `firebase-adminsdk-xxxxx@homeo-healthcare-platform.iam.gserviceaccount.com`)
-- **Required**: Yes, for service account authentication.
+- **Required**: Required when inline service-account credentials are used; omit when explicitly using ADC.
 - **Server/Client**: **Server-only**. Never expose to client!
-- **Fallback**: Memory fallback.
+- **Fallback**: None. Invalid or incomplete production configuration fails closed.
 
 ### `FIREBASE_PRIVATE_KEY`
 - **Expected Format**: PEM encoded RSA private key (starts with `-----BEGIN PRIVATE KEY-----`)
-- **Required**: Yes, for authenticating server admin commands.
+- **Required**: Required when inline service-account credentials are used; omit when explicitly using ADC.
 - **Server/Client**: **Server-only**. NEVER check this variable into version control.
-- **Fallback**: Graceful fallback to memory mode.
+- **Fallback**: None. Invalid or incomplete production configuration fails closed.
+
+### `REPERTORY_PRODUCTION_FIREBASE_PROJECT_IDS`
+- **Expected Format**: Comma-separated Firebase project IDs.
+- **Required**: Yes for governed production Firestore operation.
+- **Server/Client**: **Server-only**.
+- **Safety**: The active project and credential project must match this allowlist.
+
+### `REPERTORY_USE_ADC`
+- **Expected Format**: Literal `true` to opt into Application Default Credentials.
+- **Required**: Only when ADC is intentionally used instead of inline credentials.
+- **Server/Client**: **Server-only**.
+- **Safety**: `GOOGLE_APPLICATION_CREDENTIALS` is rejected unless this opt-in is present.
+
+### `FIRESTORE_EMULATOR_HOST`
+- **Expected Format**: Loopback host and port only, such as `127.0.0.1:8080`, `localhost:8080`, or `[::1]:8080`.
+- **Required**: Only for emulator-backed tests and local verification.
+- **Server/Client**: **Server-only**.
+- **Safety**: Schemes, paths, wildcard addresses, non-loopback hosts, and invalid ports fail closed.
 
 ---
 
@@ -38,7 +56,27 @@ This guide details all configuration variables used by the Homeo Healthcare Know
 - **Expected Format**: URL (e.g., `http://localhost:11434`)
 - **Required**: Optional, for local development testing with local nomic-embed-text models.
 - **Server/Client**: **Server-only**.
-- **Fallback**: Falls back to mock embedding generator if unreachable.
+- **Fallback**: Provider health failure is surfaced to the governed routing or cache boundary; production code does not silently generate mock embeddings.
+
+### `ENABLE_LOCAL_OLLAMA_EMBED_CACHE`
+- **Expected Format**: Literal `true` to enable the governed on-disk corpus cache.
+- **Required**: No. Defaults to disabled.
+- **Server/Client**: **Server-only**.
+- **Safety**: The cache is bypassed in CI and serverless/Vercel environments. Enabling it does not make an entity eligible; the entity must also exist in the approved non-PHI eligibility projection with an exact published-version match.
+
+### `OLLAMA_CACHE_DIR`
+- **Expected Format**: Path to a local, access-controlled cache directory.
+- **Required**: Required by the activation runbook when `ENABLE_LOCAL_OLLAMA_EMBED_CACHE=true`.
+- **Server/Client**: **Server-only**.
+- **Safety**: Use a dedicated local path with owner-only permissions. Do not point it at a shared, synchronized, web-served, or patient-data directory.
+
+### `OLLAMA_CORPUS_SNAPSHOT_VERSION`
+- **Expected Format**: Governed snapshot version such as `v1.0.0`.
+- **Required**: Recommended for every enabled deployment; defaults to `v1.0.0`.
+- **Server/Client**: **Server-only**.
+- **Safety**: Increment only through a reviewed source-version activation change with rollback evidence.
+
+See `docs/operations/OLLAMA_CACHE_ACTIVATION.md` for mandatory activation, stop, and rollback gates.
 
 ---
 

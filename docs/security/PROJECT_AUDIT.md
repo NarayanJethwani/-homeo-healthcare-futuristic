@@ -1,5 +1,7 @@
 # Project Audit: Dr. Jethwani's Clinical Repertory / Homeo Healthcare
 
+> **Historical snapshot:** This audit records the repository and live-site state observed on 2026-07-03. Later security, authorization, Firestore governance, and release-verification sprints may supersede individual findings. Confirm every item against the current code and `docs/KNOWN_ISSUES_REGISTER.md` before treating it as active.
+
 Audit date: 2026-07-03  
 Repository inspected: `work/homeo-healthcare-futuristic` cloned from `NarayanJethwani/-homeo-healthcare-futuristic`  
 Live site checked: `https://www.homeo.healthcare/admin/dashboard`
@@ -139,4 +141,3 @@ This should be stabilized before adding more AI features. The next stage should 
 - Authenticated dashboard screens could not be inspected without credentials.
 - `https://www.homeo.healthcare/api/repertory/search?q=panic` returned HTTP 200 with 59 rubric records.
 - `https://www.homeo.healthcare/api/repertory` returned HTTP 200 and streamed a very large JSON payload.
-

@@ -10,8 +10,6 @@ import {
 import { generateAutomaticCurationTasks } from "@/features/knowledge-admin/workflow/taskGenerator";
 import { authorizeRequest } from "@/lib/security/apiAuth";
 
-// TODO: Enforce centralized admin auth before exposing workflow mutations in production.
-
 export const dynamic = "force-dynamic";
 
 const ALLOWED_STATUSES = ["backlog", "assigned", "in-progress", "blocked", "ready-for-review", "completed", "cancelled"];

@@ -1793,6 +1793,40 @@ async function runUnitTests() {
     }
   });
 
+  // 28. Production Registry Runtime Immutability
+  await test("28. Production eligibility projection retains no mutable Map and rejects runtime mutation", async () => {
+    const registry = new CorpusEligibilityRegistry([{
+      entityId: "DIS-IMMUTABLE-01",
+      entityType: "disease",
+      publishedVersionId: "1.0.0",
+      dataClassification: "non-phi",
+      provenance: "GOVERNED_TEST_FIXTURE"
+    }]);
+
+    const projection = (registry as any).projection;
+    const entry = registry.getEligibilityEntry("DIS-IMMUTABLE-01");
+
+    assert.ok(projection && typeof projection === "object");
+    assert.strictEqual(projection instanceof Map, false, "Registry must retain no mutable Map reference");
+    assert.strictEqual(Object.getPrototypeOf(projection), null, "Projection must use a pollution-resistant null prototype");
+    assert.strictEqual(Object.isFrozen(projection), true, "Projection must be frozen at runtime");
+    assert.ok(entry);
+    assert.strictEqual(Object.isFrozen(entry), true, "Returned eligibility entries must be frozen at runtime");
+
+    const inserted = Reflect.set(projection, "DIS-IMMUTABLE-02", {
+      entityId: "DIS-IMMUTABLE-02",
+      publishedVersionId: "1.0.0",
+      dataClassification: "non-phi",
+      provenance: "UNAPPROVED"
+    });
+    const altered = Reflect.set(entry as object, "provenance", "UNAPPROVED");
+
+    assert.strictEqual(inserted, false, "Frozen projection must reject new eligibility records");
+    assert.strictEqual(altered, false, "Frozen entry must reject field mutation");
+    assert.strictEqual(registry.getEligibilityEntry("DIS-IMMUTABLE-02"), null);
+    assert.strictEqual(entry?.provenance, "GOVERNED_TEST_FIXTURE");
+  });
+
   console.log(`\n🎉 Governed Ollama Embeddings Cache Unit Tests Completed. Passed: ${passed}, Failed: ${failed}`);
   if (failed > 0) {
     process.exit(1);

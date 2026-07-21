@@ -911,3 +911,29 @@ This document serves as the chronological, single source of truth for all sprint
   - **Release-Safe OOM Gating**: Optimized Next.js production builds by configuring `typescript: { ignoreBuildErrors: true }` in `next.config.ts` and updating `package.json`'s build script to sequentially execute `next typegen`, `tsc --noEmit -p tsconfig.json`, and the memory-isolated Next.js build. Offloaded obsolete ESLint options. Updated `verify:release` to typecheck the entire application using the full `tsconfig.json`.
   - **Functional Telemetry Instrumentation**: Instrumented the cache outcomes inside `consultAIHandler`, individual sequential fallback attempts inside `aiRouter.ts`, and local embedding queries inside `ollama.ts`. Fully isolated telemetry code from frozen patient/clinical domain spaces.
   - **Comprehensive Test Suites**: Shipped 22/22 telemetry integration tests validating audit logs, safety-refusal fallback aborts, cache exceptions, abort signals, and saturating counter boundaries. Added 3 RTL dashboard component verification tests.
+
+---
+
+## [2026-07-19] - Sprint 28G: Physical-Device Performance Evidence Protocol
+- **Deployment Status**: Merged to `main` through PR #40 (Merge commit: `74bc65cb771dc13ec7149e8d1eb58d8fc95005ba`).
+- **Verification Lineage**: Protocol/tests commit `206da6903a475d02d283986ecf0b439d87772fb8`; physical evidence commit `6498335444fc41de8b7bd7d407e3cf656b7343c8`; release evidence commit `9c5a6ab9751a40ab33fe10e9b9346ae3158f720f`.
+- **Build Verification**: Governed unit suites and `verify:release` passed; release reports were regenerated and SHA-bound.
+- **Evidence Verdict**: `incomplete`. Genuine premium iOS, constrained iOS, and constrained Android measurements were unavailable, so KI-002 remained `Mitigated pending physical-device validation`.
+- **Major Changes**:
+  - Added strict complete/incomplete physical-evidence schemas and deterministic verdict precedence.
+  - Added a sanitized Markdown report generator, privacy scanning, forbidden-artifact gates, and final-evidence CI wiring.
+  - Recorded honest incomplete evidence instead of substituting simulated measurements for physical-device results.
+  - Reconciled completed Ollama telemetry work in the future backlog.
+
+---
+
+## [2026-07-21] - Sprint 28H: Governed Non-PHI Local Ollama Embeddings Cache Foundation
+- **Deployment Status**: Merged to `main` through PR #41 (Merge commit: `a617ecee753074b2eb06e799c5d2c2d068a728d1`). Both Vercel production projects reported successful deployments for the merge commit.
+- **Verification Lineage**: Foundation commit `c95c64e`; queue-integration code commit `6bbc19fb3547f3dc800252eae7e045c8f0ea1847`; release evidence commit `4122b6df894b4e44b2322ad2c970d75f2941deba`.
+- **Build Verification**: Focused cache and queue integration tests, the governed unit suite, `verify:release-final`, and evidence-lineage validation passed. GitHub `validate-lineage`, `verify-release`, and both Vercel checks were green before merge.
+- **Activation Status**: Infrastructure only. The on-disk cache remains disabled by default, is bypassed in CI/serverless environments, and the production eligibility projection remains empty pending explicit non-PHI source-version approval.
+- **Major Changes**:
+  - Added canonical non-PHI embedding text construction, eligibility/version checks, bounded sharded storage, integrity validation, TTL and quota enforcement, and PHI-safe telemetry.
+  - Added atomic lock ownership verification, contention polling, expired-lock recovery, tombstone/marker isolation, crash recovery, symlink/path containment, transactional manifest commitment, and bounded disk enumeration.
+  - Integrated the governed cache with the Ollama embedding queue while retaining authoritative server-side entity re-resolution and fail-closed eligibility behavior.
+  - Added deterministic multiprocess contention, crash, lock-race, rollback, corruption, traversal, and privacy tests.
