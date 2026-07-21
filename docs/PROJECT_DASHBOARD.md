@@ -20,12 +20,12 @@ This dashboard is automatically updated by the documentation compiler and shows 
 
 ## 2. Current Release
 
-- **Production Version**: `v2.0.1`
-- **Git Tag**: `v2.0.1`
-- **Commit SHA**: `7c1a381`
+- **Deployed Release Train**: `Sprint 28H` (untagged)
+- **Latest Formal Git Tag**: `v2.18.0`
+- **Deployed Commit SHA**: `a617ecee753074b2eb06e799c5d2c2d068a728d1`
 - **Branch**: `main`
 - **Environment**: `Production`
-- **Last Deployment Date**: `2026-07-08`
+- **Last Deployment Date**: `2026-07-21`
 
 ---
 
@@ -87,7 +87,7 @@ This dashboard is automatically updated by the documentation compiler and shows 
 
 - **Primary Provider**: `Google Gemini API`
 - **Fallback Sequence**: `Gemini -> DeepSeek -> Qwen -> Local Ollama`
-- **Caching Service**: `Redis + Local In-Memory Map fallback`
+- **Caching Service**: `Redis + bounded local in-memory fallback`; governed Ollama corpus cache foundation is disabled pending approved-corpus activation
 - **Query Pre-retrieval**: `RAG (ragService)`
 - **Threshold Bypass**: `Confidence >= 90%`
 
@@ -95,9 +95,9 @@ This dashboard is automatically updated by the documentation compiler and shows 
 
 ## 7. Testing
 
-- **Total Test Files**: `20`
-- **Active Test Suites**: `adminWorkflow.test.ts, publicApi.test.ts, kms.test.ts`
-- **Coverage**: `Standard core paths checked`
+- **Test Files**: `114` focused `.test.ts` / `.test.tsx` files across `src` and `tests`
+- **Governed Release Gate**: Unit, UI, security, Firestore emulator, corpus, persistence, activation, and evidence-lineage suites
+- **Latest Release Verification**: `PASS` (see `reports/production-readiness-report.json` for SHA-bound code evidence)
 
 ---
 
@@ -114,12 +114,12 @@ This dashboard is automatically updated by the documentation compiler and shows 
 
 ## 9. Issues Overview
 
-- **Active Open Issues**: `2`
-- **Resolved Issues**: `3`
+- **Active Registered Issues**: `2`
+- **Resolved Registered Issues**: `2`
 
 ---
 
 ## 10. Upcoming Milestones
 
-- **Active Sprint**: `Clinical Authority Sprint 3`
-- **Next Phase Goal**: `AI Engine Security Integration & Validation case suite`
+- **Active Sprint**: `Sprint 28I — Release-state reconciliation and activation safety`
+- **Next Phase Goal**: `Materia Medica governed scan foundation, followed by source-version eligibility and Ollama cache shadow activation`

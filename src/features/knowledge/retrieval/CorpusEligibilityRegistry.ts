@@ -11,27 +11,31 @@ export interface ICorpusEligibilityRegistry {
   isEligible(entityId: string, publishedVersionId: string, entityType?: string): boolean;
 }
 
+type CorpusEligibilityProjection = Readonly<Record<string, Readonly<CorpusEligibilityEntry>>>;
+
 /**
  * Versioned application-layer eligibility projection for local Ollama embeddings caching.
  * Empty by default until explicit governance approval adds approved entries.
  * Do NOT infer eligibility or alter canonical KMS entity types.
- * Production registry instance is deeply frozen.
+ * Production registry instance retains no mutable Map reference.
  */
-const FROZEN_APPROVED_MAP = Object.freeze(new Map<string, CorpusEligibilityEntry>());
+const EMPTY_APPROVED_PROJECTION: CorpusEligibilityProjection = Object.freeze(
+  Object.create(null) as Record<string, Readonly<CorpusEligibilityEntry>>
+);
 
 export class CorpusEligibilityRegistry implements ICorpusEligibilityRegistry {
   private static testRegistryOverride: ICorpusEligibilityRegistry | null = null;
-  private readonly map: ReadonlyMap<string, CorpusEligibilityEntry>;
+  private readonly projection: CorpusEligibilityProjection;
 
   constructor(entries?: CorpusEligibilityEntry[]) {
     if (entries && entries.length > 0) {
-      const map = new Map<string, CorpusEligibilityEntry>();
+      const projection = Object.create(null) as Record<string, Readonly<CorpusEligibilityEntry>>;
       for (const entry of entries) {
-        map.set(entry.entityId, Object.freeze({ ...entry }));
+        projection[entry.entityId] = Object.freeze({ ...entry });
       }
-      this.map = Object.freeze(map);
+      this.projection = Object.freeze(projection);
     } else {
-      this.map = FROZEN_APPROVED_MAP;
+      this.projection = EMPTY_APPROVED_PROJECTION;
     }
     Object.freeze(this);
   }
@@ -53,7 +57,7 @@ export class CorpusEligibilityRegistry implements ICorpusEligibilityRegistry {
       return CorpusEligibilityRegistry.testRegistryOverride.getEligibilityEntry(entityId);
     }
     if (!entityId || typeof entityId !== "string") return null;
-    return this.map.get(entityId) || null;
+    return this.projection[entityId] || null;
   }
 
   /**

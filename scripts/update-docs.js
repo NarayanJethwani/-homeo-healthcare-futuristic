@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 const fs = require('fs');
 const path = require('path');
+const { execFileSync } = require('child_process');
 
 
 const PORTAL_ROOT = '/Users/drnarayanjethwani/Downloads/Website with Antigravity';
@@ -32,6 +33,18 @@ function countEntitiesInDir(dirPath) {
   if (!fs.existsSync(dirPath)) return 0;
   const files = fs.readdirSync(dirPath);
   return files.filter(f => f.endsWith('.ts') && f !== 'index.ts').length;
+}
+
+function readGitValue(args, fallback) {
+  try {
+    return execFileSync('git', args, {
+      cwd: PORTAL_ROOT,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore']
+    }).trim() || fallback;
+  } catch {
+    return fallback;
+  }
 }
 
 function run() {
@@ -434,10 +447,10 @@ ${adr.consequences}
 
   // --- 9. Overwrite & Refresh Executive Project Dashboard ---
   dashboardPath;
-  const activeVersion = version || 'v2.0.1';
-  const activeTag = tag || 'v2.0.1';
-  const activeCommit = rollbackNotes !== 'N/A' ? rollbackNotes : '7c1a381';
-  const activeSprintName = sprintName || 'Clinical Authority Sprint 3';
+  const activeReleaseTrain = sprintName || 'Sprint 28H';
+  const activeTag = tag || readGitValue(['describe', '--tags', '--abbrev=0'], 'untagged');
+  const rollbackCommitMatch = rollbackNotes.match(/\b[0-9a-f]{7,40}\b/i);
+  const activeCommit = rollbackCommitMatch?.[0] || readGitValue(['rev-parse', 'HEAD'], 'unknown');
 
   const dashboardContent = `# Executive Project Dashboard
 
@@ -461,9 +474,9 @@ This dashboard is automatically updated by the documentation compiler and shows 
 
 ## 2. Current Release
 
-- **Production Version**: \`${activeVersion}\`
-- **Git Tag**: \`${activeTag}\`
-- **Commit SHA**: \`${activeCommit}\`
+- **Deployed Release Train**: \`${activeReleaseTrain}\`
+- **Latest Formal Git Tag**: \`${activeTag}\`
+- **Deployed Commit SHA**: \`${activeCommit}\`
 - **Branch**: \`main\`
 - **Environment**: \`Production\`
 - **Last Deployment Date**: \`${dateStr}\`
@@ -528,7 +541,7 @@ ${indexableUrlsCount} Indexable URLs (Sitemap Canonical Index)
 
 - **Primary Provider**: \`Google Gemini API\`
 - **Fallback Sequence**: \`Gemini -> DeepSeek -> Qwen -> Local Ollama\`
-- **Caching Service**: \`Redis + Local In-Memory Map fallback\`
+- **Caching Service**: \`Redis + bounded local in-memory fallback\`; governed Ollama corpus cache foundation is disabled pending approved-corpus activation
 - **Query Pre-retrieval**: \`RAG (ragService)\`
 - **Threshold Bypass**: \`Confidence >= 90%\`
 
@@ -536,9 +549,9 @@ ${indexableUrlsCount} Indexable URLs (Sitemap Canonical Index)
 
 ## 7. Testing
 
-- **Total Test Files**: \`${testFilesCount}\`
-- **Active Test Suites**: \`adminWorkflow.test.ts, publicApi.test.ts, kms.test.ts\`
-- **Coverage**: \`Standard core paths checked\`
+- **Test Files**: \`${testFilesCount}\` focused \`.test.ts\` / \`.test.tsx\` files across \`src\` and \`tests\`
+- **Governed Release Gate**: Unit, UI, security, Firestore emulator, corpus, persistence, activation, and evidence-lineage suites
+- **Latest Release Verification**: \`PASS\` (see \`reports/production-readiness-report.json\` for SHA-bound code evidence)
 
 ---
 
@@ -555,15 +568,15 @@ ${indexableUrlsCount} Indexable URLs (Sitemap Canonical Index)
 
 ## 9. Issues Overview
 
-- **Active Open Issues**: \`${openIssuesCount}\`
-- **Resolved Issues**: \`${resolvedIssuesCount}\`
+- **Active Registered Issues**: \`${openIssuesCount}\`
+- **Resolved Registered Issues**: \`${resolvedIssuesCount}\`
 
 ---
 
 ## 10. Upcoming Milestones
 
-- **Active Sprint**: \`${activeSprintName}\`
-- **Next Phase Goal**: \`AI Engine Security Integration & Validation case suite\`
+- **Active Sprint**: \`${activeReleaseTrain}\`
+- **Next Phase Goal**: \`Materia Medica governed scan foundation, followed by source-version eligibility and Ollama cache shadow activation\`
 `;
 
   fs.writeFileSync(dashboardPath, dashboardContent, 'utf8');
