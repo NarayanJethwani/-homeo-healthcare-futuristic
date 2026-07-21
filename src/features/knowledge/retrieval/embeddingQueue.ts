@@ -1,6 +1,10 @@
 import type { QueryDocumentSnapshot, DocumentData } from "firebase-admin/firestore";
+
 import { globalVectorStore, VectorRecord } from "./vectorStore";
 import { embeddingManager } from "./embeddingProvider";
+import { globalKmsRepository } from "../../knowledge-admin/repositories/MemoryRepository";
+import { defaultOllamaCorpusEmbeddingCacheService } from "./ollamaCorpusEmbeddingCacheService";
+
 
 export interface EmbeddingJob {
   id: string;
@@ -69,7 +73,7 @@ export async function queueEmbeddingJob(
 
   const db = await getFirestoreDb();
   const now = new Date().toISOString();
-  
+
   // Deduplicate: remove any existing pending or failed jobs for this article
   if (db) {
     try {
@@ -86,7 +90,7 @@ export async function queueEmbeddingJob(
       // Ignore
     }
   }
-  
+
   const existingIdx = memoryQueue.findIndex(j => j.articleId === articleId && (j.status === "pending" || j.status === "failed"));
   if (existingIdx !== -1) {
     memoryQueue.splice(existingIdx, 1);
@@ -158,7 +162,7 @@ export async function retryFailedJobs(): Promise<void> {
     job.error = undefined;
     job.attempts = 0; // Reset attempts to allow fresh retrying
     job.updatedAt = new Date().toISOString();
-    
+
     const db = await getFirestoreDb();
     if (db) {
       try {
@@ -229,26 +233,100 @@ export async function runJob(job: EmbeddingJob): Promise<EmbeddingJobResult> {
       throw new Error("Active embedding provider is offline or null-provider.");
     }
 
-    // Generate embedding
-    const vector = await provider.getEmbeddings(job.contentText);
-    if (!vector || vector.length === 0) {
-      throw new Error("Generated embedding vector is empty.");
-    }
-    dims = vector.length;
+    let vector: number[] = [];
+    let recordTitle = job.title;
+    let recordEntityType = job.entityType;
+    let publishedVersionId = "1.0.0";
 
-    // Compute content hash
-    const textToHash = `${job.title}\n${job.contentText}`;
-    computedHash = Buffer.from(textToHash).toString("base64").slice(0, 16);
+    // 1. Authoritative Server-Side Entity Re-resolution
+    let authEntity: any = null;
+    try {
+      if (globalKmsRepository && typeof globalKmsRepository.getEntity === "function") {
+        authEntity = await globalKmsRepository.getEntity(job.articleId);
+      }
+    } catch (err: any) {
+      // KMS error
+    }
+
+    // 2. Branch based on Active Provider
+    if (providerName.toLowerCase().includes("ollama")) {
+      // Fail closed if server entity lookup failed
+      if (!authEntity) {
+        await updateJobStatus("failed", "REPOSITORY_RESOLUTION_FAILED");
+        return {
+          success: false,
+          jobId: job.id,
+          articleId: job.articleId,
+          vectorUpserted: false,
+          providerUsed: providerName,
+          warnings: [],
+          errors: ["REPOSITORY_RESOLUTION_FAILED"]
+        };
+      }
+
+      recordTitle = typeof authEntity.title === "string" ? authEntity.title : (authEntity.title?.en || "Untitled");
+      recordEntityType = authEntity.entityType || "kms_knowledge";
+      publishedVersionId = authEntity.publishedVersionId || "1.0.0";
+
+      const cacheRes = await defaultOllamaCorpusEmbeddingCacheService.getCorpusEmbedding(job.articleId);
+
+      if ((cacheRes.status === "hit" || cacheRes.status === "generated") && cacheRes.vector) {
+        vector = cacheRes.vector;
+        dims = cacheRes.dims ?? cacheRes.vector.length;
+        computedHash = cacheRes.contentHash ?? "";
+        publishedVersionId = cacheRes.publishedVersionId ?? "1.0.0";
+      } else if (cacheRes.status === "bypass") {
+        if (cacheRes.reasonCode === "NOT_ELIGIBLE") {
+          await updateJobStatus("cancelled", "Entity is not eligible for governed corpus embedding");
+          return {
+            success: false,
+            jobId: job.id,
+            articleId: job.articleId,
+            vectorUpserted: false,
+            providerUsed: providerName,
+            warnings: ["NOT_ELIGIBLE"],
+            errors: []
+          };
+        } else {
+          const reason = cacheRes.reasonCode || "PROVIDER_FAILURE";
+          await updateJobStatus("failed", reason);
+          return {
+            success: false,
+            jobId: job.id,
+            articleId: job.articleId,
+            vectorUpserted: false,
+            providerUsed: providerName,
+            warnings: [],
+            errors: [reason]
+          };
+        }
+      }
+    } else {
+      // Uncached Non-Ollama Path (e.g. Gemini)
+      if (authEntity) {
+        recordTitle = typeof authEntity.title === "string" ? authEntity.title : (authEntity.title?.en || job.title);
+        recordEntityType = authEntity.entityType || job.entityType;
+        publishedVersionId = authEntity.publishedVersionId || "1.0.0";
+      }
+      vector = await provider.getEmbeddings(job.contentText);
+      if (!vector || vector.length === 0) {
+        throw new Error("Generated embedding vector is empty.");
+      }
+      dims = vector.length;
+
+      const textToHash = `${recordTitle}\n${job.contentText}\nv_${publishedVersionId}`;
+      computedHash = Buffer.from(textToHash).toString("base64").slice(0, 16);
+    }
 
     const record: VectorRecord = {
       id: job.articleId,
       articleId: job.articleId,
-      entityType: job.entityType,
-      title: job.title,
+      entityType: recordEntityType,
+      title: recordTitle,
       vector,
       contentHash: computedHash,
-      model: provider.name,
-      dimensions: vector.length,
+      model: providerName,
+      dimensions: dims,
       updatedAt: new Date().toISOString(),
       status: "published"
     };
@@ -284,4 +362,5 @@ export async function runJob(job: EmbeddingJob): Promise<EmbeddingJobResult> {
       errors
     };
   }
+
 }
