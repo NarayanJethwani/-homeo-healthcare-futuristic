@@ -10,6 +10,7 @@ import { REMEDIES_METADATA } from '../../../lib/repertoryData';
 import { resolveCanonicalRemedyId } from '../../../lib/normalizationEngine';
 import { getRuntimeEnvironment } from '../config/runtimeEnv';
 import { getAdminDb } from '../../../lib/firebaseAdmin';
+import v120PublishedManifest from '../../../../data/repertory/published/v1.2.0/manifest.json';
 
 export class IneligibleRepertorySourceError extends Error {
   sourceId: string;
@@ -96,11 +97,14 @@ export class SnapshotPipeline {
     }
 
     const localManifestPath = path.join(this.getPublishedDir(version), "manifest.json");
-    if (!fs.existsSync(localManifestPath)) {
-      throw new Error(`Cannot inspect snapshot version ${version}: Local manifest not found.`);
+    const localManifest = fs.existsSync(localManifestPath)
+      ? JSON.parse(fs.readFileSync(localManifestPath, "utf-8")) as RepertoryPublishedCorpusManifest
+      : version === "v1.2.0"
+        ? v120PublishedManifest as RepertoryPublishedCorpusManifest
+        : null;
+    if (!localManifest) {
+      throw new Error(`Cannot inspect snapshot version ${version}: Approved manifest not found.`);
     }
-
-    const localManifest = JSON.parse(fs.readFileSync(localManifestPath, "utf-8")) as RepertoryPublishedCorpusManifest;
     const remote = await PublishedCorpusRepository.inspectReleaseArtifacts(version);
     const remoteManifest = remote.manifest;
     const manifestValidated = Boolean(
