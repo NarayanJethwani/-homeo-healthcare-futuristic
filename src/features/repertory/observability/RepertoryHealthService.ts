@@ -30,7 +30,9 @@ export function buildRepertoryHealthReport(input: {
     input.manifest &&
       input.manifest.corpusVersion === input.activeVersion &&
       input.manifest.validationStatus === "passed" &&
-      input.manifest.publicationStatus === "active"
+      // Snapshot manifests are immutable release artifacts. The durable active
+      // pointer, not a manifest rewrite, is the source of truth for activation.
+      ["staged", "active"].includes(input.manifest.publicationStatus)
   );
   const sampleIndexReadable = Boolean(input.sampleIndex && typeof input.sampleIndex === "object");
   const success =

@@ -37,6 +37,17 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: true, stats });
     }
 
+    if (action === 'release-readiness') {
+      const version = url.searchParams.get('version') || '';
+      if (!/^v\d+\.\d+\.\d+$/.test(version)) {
+        return NextResponse.json({ success: false, message: 'A semantic corpus version is required.' }, { status: 400 });
+      }
+      const readiness = await SnapshotPipeline.getActivationReadiness(version);
+      return NextResponse.json({ success: true, readiness }, {
+        headers: { 'Cache-Control': 'private, no-store' },
+      });
+    }
+
     // Default queue list
     const currentApproved = await EditorialRepository.getAllCurrentApprovedVersions();
     return NextResponse.json({
