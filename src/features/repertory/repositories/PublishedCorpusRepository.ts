@@ -122,16 +122,16 @@ export class PublishedCorpusRepository {
 
     const manifest = await store.readJson<RepertoryPublishedCorpusManifest>(manifestPath);
     const governedPaths = Object.keys(manifest.artifactChecksums || {}).sort();
-    // This is an operator-only release gate and must finish inside a serverless
-    // request. Object-store existence checks are independent, so perform the
-    // governed inventory concurrently instead of serializing small batches.
-    const artifactResults = await Promise.all(governedPaths.map(async (relativePath) => ({
-      relativePath,
-      exists: await store.exists(path.join(releaseDir, relativePath)),
-    })));
-    const missingArtifacts = artifactResults
-      .filter((result) => !result.exists)
-      .map((result) => result.relativePath);
+    // Object storage can verify the whole governed inventory with one prefix
+    // listing. Custom/legacy stores fall back to concurrent existence checks.
+    const missingArtifacts = store.findMissing
+      ? await store.findMissing(releaseDir, governedPaths)
+      : (await Promise.all(governedPaths.map(async (relativePath) => ({
+          relativePath,
+          exists: await store.exists(path.join(releaseDir, relativePath)),
+        }))))
+          .filter((result) => !result.exists)
+          .map((result) => result.relativePath);
 
     const sampleShard = this.stableHash("fever") % this.lexicalShardCount;
     const samplePath = path.join(

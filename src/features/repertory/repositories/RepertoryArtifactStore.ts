@@ -5,6 +5,7 @@ import type { RepertoryRuntimeEnvironment } from "../config/runtimeEnv";
 export interface RepertoryArtifactStore {
   readJson<T>(filePath: string): Promise<T>;
   exists(filePath: string): Promise<boolean>;
+  findMissing?(directoryPath: string, relativePaths: string[]): Promise<string[]>;
 }
 
 export class LocalRepertoryArtifactStore implements RepertoryArtifactStore {
@@ -18,6 +19,10 @@ export class LocalRepertoryArtifactStore implements RepertoryArtifactStore {
   async exists(filePath: string): Promise<boolean> {
     return fs.existsSync(filePath);
   }
+
+  async findMissing(directoryPath: string, relativePaths: string[]): Promise<string[]> {
+    return relativePaths.filter((relativePath) => !fs.existsSync(path.join(directoryPath, relativePath)));
+  }
 }
 
 type StorageFile = {
@@ -27,6 +32,11 @@ type StorageFile = {
 
 export type RepertoryStorageBucket = {
   file(objectKey: string): StorageFile;
+  getFiles?(options: { prefix: string }): Promise<[
+    Array<StorageFile & { name: string }>,
+    unknown?,
+    unknown?,
+  ]>;
 };
 
 export type ObjectStorageArtifactStoreOptions = {
@@ -93,6 +103,34 @@ export class ObjectStorageRepertoryArtifactStore implements RepertoryArtifactSto
   async exists(filePath: string): Promise<boolean> {
     const [exists] = await this.getFile(filePath).exists();
     return exists;
+  }
+
+  async findMissing(directoryPath: string, relativePaths: string[]): Promise<string[]> {
+    if (!this.options.bucket.getFiles) {
+      const results = await Promise.all(relativePaths.map(async (relativePath) => ({
+        relativePath,
+        exists: await this.exists(path.join(directoryPath, relativePath)),
+      })));
+      return results.filter((result) => !result.exists).map((result) => result.relativePath);
+    }
+
+    const sentinelObjectName = resolveRepertoryObjectName(
+      path.join(directoryPath, "manifest.json"),
+      this.artifactRoot,
+      this.objectPrefix
+    );
+    const directoryPrefix = sentinelObjectName.slice(0, -"manifest.json".length);
+    const [files] = await this.options.bucket.getFiles({ prefix: directoryPrefix });
+    const existingObjectNames = new Set(files.map((file) => file.name));
+
+    return relativePaths.filter((relativePath) => {
+      const objectName = resolveRepertoryObjectName(
+        path.join(directoryPath, relativePath),
+        this.artifactRoot,
+        this.objectPrefix
+      );
+      return !existingObjectNames.has(objectName);
+    });
   }
 }
 
