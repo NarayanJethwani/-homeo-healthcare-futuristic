@@ -122,17 +122,16 @@ export class PublishedCorpusRepository {
 
     const manifest = await store.readJson<RepertoryPublishedCorpusManifest>(manifestPath);
     const governedPaths = Object.keys(manifest.artifactChecksums || {}).sort();
-    const missingArtifacts: string[] = [];
-    const batchSize = 24;
-
-    for (let index = 0; index < governedPaths.length; index += batchSize) {
-      const batch = governedPaths.slice(index, index + batchSize);
-      const results = await Promise.all(batch.map(async (relativePath) => ({
-        relativePath,
-        exists: await store.exists(path.join(releaseDir, relativePath)),
-      })));
-      missingArtifacts.push(...results.filter((result) => !result.exists).map((result) => result.relativePath));
-    }
+    // This is an operator-only release gate and must finish inside a serverless
+    // request. Object-store existence checks are independent, so perform the
+    // governed inventory concurrently instead of serializing small batches.
+    const artifactResults = await Promise.all(governedPaths.map(async (relativePath) => ({
+      relativePath,
+      exists: await store.exists(path.join(releaseDir, relativePath)),
+    })));
+    const missingArtifacts = artifactResults
+      .filter((result) => !result.exists)
+      .map((result) => result.relativePath);
 
     const sampleShard = this.stableHash("fever") % this.lexicalShardCount;
     const samplePath = path.join(
