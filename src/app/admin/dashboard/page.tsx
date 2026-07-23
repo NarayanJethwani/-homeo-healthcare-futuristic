@@ -20,6 +20,7 @@ const CIEWorkspace = dynamic(() => import("./CIEWorkspace"), {
   loading: () => <div className="p-8 text-center text-slate-400">Loading Clinical Intelligence Engine...</div>
 });
 import { REPERTORY_CHAPTERS, REMEDIES_METADATA, Rubric, BOERICKE_CHAPTERS, CLARKE_CHAPTERS, SEARCH_SYNONYMS, getRepertoryData, JETHWANI_SECTIONS, JETHWANI_REPERTORY_DATA as JETHWANI_REPERTORY_DATA_ORIG, JETHWANI_REMEDY_CONFIRMATIONS, calculateClinicalIndices, type JethwaniRubric, type JethwaniSymptomConfig, type ClinicalIndices, setRepertoryData } from "@/lib/repertoryData";
+import { isRubricScoringEnabled } from "@/features/repertory/scoring/repertoryScoringPolicy";
 import { MATERIA_MEDICA_BOOKS, MateriaMedicaBook } from "@/lib/materiaMedicaData";
 import { ORGANON_EDITIONS, ORGANON_KNOWLEDGE_TREE, ORGANON_APHORISMS, ORGANON_CASES, ACTIVE_RECALL_EXERCISES, TIMELINE_STEPS } from "@/lib/organonData";
 import { db, auth } from "@/lib/firebase";
@@ -1886,7 +1887,7 @@ export default function AdminDashboard() {
         }
         if (clarkeRes.status === "fulfilled" && clarkeRes.value.ok) {
           clarkeData = await clarkeRes.value.json();
-          console.log(`Loaded Clarke clinical repertory: ${clarkeData.length} search-only rubrics`);
+          console.log(`Loaded Clarke clinical repertory: ${clarkeData.length} selectable equal-occurrence rubrics`);
         }
         if (jethwaniRes.status === "fulfilled" && jethwaniRes.value.ok) {
           jethwaniData = await jethwaniRes.value.json();
@@ -6830,7 +6831,12 @@ Homeo Healthcare`;
   // Add Rubric to active list
   const addRubric = (rubric: Rubric) => {
     if (selectedRubrics.some((item) => item.rubric.id === rubric.id)) return;
-    setSelectedRubrics([...selectedRubrics, { rubric, grade: 3 }]); // default grade 3
+    const isOccurrenceRubric = rubric.scoringMode === "occurrence";
+    setSelectedRubrics([...selectedRubrics, {
+      rubric,
+      grade: isOccurrenceRubric ? 1 : 3,
+      weightMultiplier: isOccurrenceRubric ? 1 : undefined,
+    }]);
   };
 
   // Remove Rubric from active list
@@ -6869,11 +6875,15 @@ Homeo Healthcare`;
       return;
     }
 
-    // 1. Gather all remedies matching the selected rubrics
+    const scoringRubrics = selectedRubrics.filter(({ rubric }) => isRubricScoringEnabled(rubric));
+
+    // 1. Gather all remedies matching the scoring-enabled selected rubrics
     const remedyList: Record<string, { coverage: number; score: number }> = {};
 
-    selectedRubrics.forEach(({ rubric, grade: userWeight, weightMultiplier }) => {
-      const mult = weightMultiplier || 1;
+    scoringRubrics.forEach(({ rubric, grade: userWeight, weightMultiplier }) => {
+      const occurrenceOnly = rubric.scoringMode === "occurrence";
+      const effectiveUserWeight = occurrenceOnly ? 1 : userWeight;
+      const mult = occurrenceOnly ? 1 : (weightMultiplier || 1);
       Object.entries(rubric.remedies).forEach(([remedy, remGrade]) => {
         // If remedy is contraindicated (-1), skip or penalize
         if (remGrade < 0) return;
@@ -6883,7 +6893,7 @@ Homeo Healthcare`;
         }
         remedyList[remedy].coverage += 1;
         // Score: remedy grade * patient symptom grade (userWeight) * multiplier
-        remedyList[remedy].score += remGrade * userWeight * mult;
+        remedyList[remedy].score += remGrade * effectiveUserWeight * mult;
       });
     });
 
@@ -6892,7 +6902,7 @@ Homeo Healthcare`;
       const stats = remedyList[rem] || { coverage: 0, score: 0 };
       return {
         remedy: rem,
-        coverage: `${stats.coverage}/${selectedRubrics.length}`,
+        coverage: `${stats.coverage}/${scoringRubrics.length}`,
         score: stats.score
       };
     });
@@ -14614,7 +14624,7 @@ ${err.message || err}`);
 
                     {selectedRepertory === "clarke" && (
                       <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-[9px] font-bold leading-relaxed text-amber-900">
-                        Clarke 1904 is live with {getRepertoryData("clarke").length.toLocaleString()} quality-gated rubrics for search and citation only. Its rubrics are intentionally excluded from remedy scoring.
+                        Clarke 1904 is live with {getRepertoryData("clarke").length.toLocaleString()} quality-gated rubrics and source-verified remedy occurrences. Each selected rubric travels with the case and gives one point to every remedy Clarke lists; no unreliable remedy grades are invented.
                       </div>
                     )}
 
@@ -14720,6 +14730,7 @@ ${err.message || err}`);
                         filteredRubrics.map((rub) => {
                           const isKent = rub.source === "kent";
                           const isClarke = rub.source === "clarke";
+                          const canScore = isRubricScoringEnabled(rub);
                           const badgeColor = isKent
                             ? "bg-sky-50 text-sky-700 border-sky-100"
                             : isClarke
@@ -14730,14 +14741,11 @@ ${err.message || err}`);
                           return (
                             <button
                               key={rub.id}
-                              onClick={() => {
-                                if (!isClarke) addRubric(rub);
-                              }}
-                              disabled={isClarke}
-                              title={isClarke ? rub.citation || "Clarke 1904 — search and citation only" : "Add rubric to scoring matrix"}
+                              onClick={() => addRubric(rub)}
+                              title={isClarke ? rub.citation || (canScore ? "Add Clarke symptom to the case" : "Add cited Clarke reference to the case") : "Add rubric to scoring matrix"}
                               className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-200 flex items-center justify-between group border border-transparent border-l-4 bg-white/40 ${
                                 isClarke
-                                  ? "cursor-help border-l-amber-300"
+                                  ? "cursor-pointer border-l-amber-300 hover:bg-amber-50 hover:border-amber-200"
                                   : "cursor-pointer hover:bg-mint/10 hover:text-mint-dark hover:border-mint/20 hover:border-l-mint"
                               }`}
                             >
@@ -14755,7 +14763,10 @@ ${err.message || err}`);
                                 </div>
                               </div>
                               {isClarke ? (
-                                <span className="text-[8px] font-black uppercase tracking-wide text-amber-700">Search only</span>
+                                <span className="flex items-center gap-1 text-[8px] font-black uppercase tracking-wide text-amber-700">
+                                  <Plus className="h-3 w-3" />
+                                  {canScore ? "Add symptom" : "Add reference"}
+                                </span>
                               ) : (
                                 <Plus className="w-3.5 h-3.5 text-mint opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
                               )}
@@ -14802,6 +14813,8 @@ ${err.message || err}`);
                         ) : (
                           selectedRubrics.map(({ rubric, grade, weightMultiplier }) => {
                             const activeWeight = weightMultiplier || 1;
+                            const scoringEnabled = isRubricScoringEnabled(rubric);
+                            const occurrenceOnly = rubric.scoringMode === "occurrence";
                             return (
                               <div
                                 key={rubric.id}
@@ -14812,9 +14825,11 @@ ${err.message || err}`);
                                     <span className={`text-[8px] font-black border rounded px-1.5 py-0.5 flex-shrink-0 font-mono ${
                                       rubric.source === "kent"
                                         ? "bg-sky-50 text-sky-700 border-sky-100"
+                                        : rubric.source === "clarke"
+                                          ? "bg-amber-50 text-amber-700 border-amber-100"
                                         : "bg-emerald-50 text-emerald-700 border-emerald-100"
                                     }`}>
-                                      {rubric.source === "kent" ? "K" : "B"}
+                                      {rubric.source === "kent" ? "K" : rubric.source === "clarke" ? "C" : "B"}
                                     </span>
                                     <span className="text-[8px] text-mint-dark uppercase font-extrabold tracking-widest block font-mono truncate">
                                       {rubric.chapter}
@@ -14825,32 +14840,44 @@ ${err.message || err}`);
                                 
                                 <div className="flex items-center gap-2">
                                   {/* Grade selection */}
-                                  <select
-                                    value={grade}
-                                    onChange={(e) => updateGrade(rubric.id, Number(e.target.value))}
-                                    className="bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg py-1 px-1.5 text-[9px] font-bold text-slate-700 outline-none cursor-pointer transition-colors shadow-2xs"
-                                  >
-                                    <option value="1">Grade 1</option>
-                                    <option value="2">Grade 2</option>
-                                    <option value="3">Grade 3</option>
-                                  </select>
+                                  {occurrenceOnly && scoringEnabled ? (
+                                    <span className="rounded-lg border border-amber-200 bg-amber-50 px-2 py-1 text-[8px] font-black uppercase tracking-wide text-amber-700">
+                                      Equal occurrence · 1
+                                    </span>
+                                  ) : scoringEnabled ? (
+                                    <select
+                                      value={grade}
+                                      onChange={(e) => updateGrade(rubric.id, Number(e.target.value))}
+                                      className="bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg py-1 px-1.5 text-[9px] font-bold text-slate-700 outline-none cursor-pointer transition-colors shadow-2xs"
+                                    >
+                                      <option value="1">Grade 1</option>
+                                      <option value="2">Grade 2</option>
+                                      <option value="3">Grade 3</option>
+                                    </select>
+                                  ) : (
+                                    <span className="rounded-lg border border-amber-200 bg-amber-50 px-2 py-1 text-[8px] font-black uppercase tracking-wide text-amber-700">
+                                      Reference · no score
+                                    </span>
+                                  )}
 
                                   {/* Multiplier weight options: 1x, 2x, 3x */}
-                                  <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200">
-                                    {[1, 2, 3].map((w) => (
-                                      <button
-                                        key={w}
-                                        onClick={() => updateRubricWeight(rubric.id, w)}
-                                        className={`px-1.5 py-0.5 rounded text-[8px] font-black transition-all ${
-                                          activeWeight === w
-                                            ? "bg-gradient-to-r from-mint-dark to-mint text-white shadow-2xs"
-                                            : "text-slate-500 hover:text-slate-800"
-                                        }`}
-                                      >
-                                        {w}x
-                                      </button>
-                                    ))}
-                                  </div>
+                                  {scoringEnabled && !occurrenceOnly && (
+                                    <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200">
+                                      {[1, 2, 3].map((w) => (
+                                        <button
+                                          key={w}
+                                          onClick={() => updateRubricWeight(rubric.id, w)}
+                                          className={`px-1.5 py-0.5 rounded text-[8px] font-black transition-all ${
+                                            activeWeight === w
+                                              ? "bg-gradient-to-r from-mint-dark to-mint text-white shadow-2xs"
+                                              : "text-slate-500 hover:text-slate-800"
+                                          }`}
+                                        >
+                                          {w}x
+                                        </button>
+                                      ))}
+                                    </div>
+                                  )}
 
                                   <button
                                     onClick={() => removeRubric(rubric.id)}
@@ -14944,15 +14971,19 @@ ${err.message || err}`);
                             type="button"
                             onClick={() => {
                               const remedyList: Record<string, { coverage: number; score: number }> = {};
-                              selectedRubrics.forEach(({ rubric, grade: userWeight, weightMultiplier }) => {
-                                const mult = weightMultiplier || 1;
+                              selectedRubrics
+                                .filter(({ rubric }) => isRubricScoringEnabled(rubric))
+                                .forEach(({ rubric, grade: userWeight, weightMultiplier }) => {
+                                const occurrenceOnly = rubric.scoringMode === "occurrence";
+                                const effectiveUserWeight = occurrenceOnly ? 1 : userWeight;
+                                const mult = occurrenceOnly ? 1 : (weightMultiplier || 1);
                                 Object.entries(rubric.remedies).forEach(([remedy, remGrade]) => {
                                   if (remGrade < 0) return;
                                   if (!remedyList[remedy]) {
                                     remedyList[remedy] = { coverage: 0, score: 0 };
                                   }
                                   remedyList[remedy].coverage += 1;
-                                  remedyList[remedy].score += remGrade * userWeight * mult;
+                                  remedyList[remedy].score += remGrade * effectiveUserWeight * mult;
                                 });
                               });
                               const calculatedScores = Object.entries(remedyList).map(([remedy, stats]) => ({
@@ -15062,13 +15093,23 @@ ${err.message || err}`);
                                   <span className="text-slate-800">{rubric.name}</span>
                                 </td>
                                 <td className="p-4 text-center">
-                                  <span className={`px-2.5 py-1 rounded-full text-[9px] font-black tracking-wider ${
-                                    userGrade === 3 ? "bg-rose-50 text-rose-600 border border-rose-100 shadow-2xs" :
-                                    userGrade === 2 ? "bg-amber-50 text-amber-600 border border-amber-100 shadow-2xs" :
-                                    "bg-sky-50 text-sky-600 border border-sky-100 shadow-2xs"
-                                  }`}>
-                                    Grade {userGrade}
-                                  </span>
+                                  {rubric.scoringMode === "occurrence" && isRubricScoringEnabled(rubric) ? (
+                                    <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[8px] font-black uppercase tracking-wide text-amber-700">
+                                      Occurrence · 1
+                                    </span>
+                                  ) : isRubricScoringEnabled(rubric) ? (
+                                    <span className={`px-2.5 py-1 rounded-full text-[9px] font-black tracking-wider ${
+                                      userGrade === 3 ? "bg-rose-50 text-rose-600 border border-rose-100 shadow-2xs" :
+                                      userGrade === 2 ? "bg-amber-50 text-amber-600 border border-amber-100 shadow-2xs" :
+                                      "bg-sky-50 text-sky-600 border border-sky-100 shadow-2xs"
+                                    }`}>
+                                      Grade {userGrade}
+                                    </span>
+                                  ) : (
+                                    <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[8px] font-black uppercase tracking-wide text-amber-700">
+                                      Reference only
+                                    </span>
+                                  )}
                                 </td>
                                 {displayedRemedyColumns.map((rem) => {
                                   const remGrade = rubric.remedies[rem];

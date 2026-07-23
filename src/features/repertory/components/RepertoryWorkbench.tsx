@@ -989,6 +989,21 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
         <span>⚠️ <strong>Clinical Review Required</strong> — This system provides clinical decision support only. Final diagnosis and prescribing remain the responsibility of the clinician.</span>
       </div>
 
+      {/* Release transparency for source-faithful Clarke occurrence scoring. */}
+      <div className="rounded-2xl border border-cyan-200 bg-cyan-50/90 px-4 py-3 text-left text-xs text-cyan-950 shadow-xs">
+        <div className="flex items-start gap-2">
+          <BookOpen className="mt-0.5 h-4 w-4 shrink-0 text-cyan-700" />
+          <div>
+            <p className="font-black uppercase tracking-wider">Expanded repertory release status</p>
+            <p className="mt-1 font-semibold leading-relaxed">
+              Version 1.2.0 is validated and staged with 78,687 rubrics from Kent, Boericke, and Clarke.
+              Clarke rubrics use source-faithful equal-occurrence repertorization: each verified remedy listed
+              under a selected rubric contributes one point. No remedy-grade hierarchy is inferred from OCR.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Case File Management Bar */}
       <div className="bg-slate-900 border border-slate-800 p-4 rounded-3xl shadow-md text-white flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center gap-4">

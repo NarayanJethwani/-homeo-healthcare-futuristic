@@ -2,9 +2,11 @@ export interface Rubric {
   id: string;
   chapter: string;
   name: string;
-  remedies: Record<string, number>; // Maps remedy abbreviation (e.g., "Nux-v") to grade (1, 2, or 3)
+  remedies: Record<string, number>; // Maps a remedy abbreviation to a source grade, or 1 for an ungraded occurrence.
   source?: "kent" | "boericke" | "clarke";
   scoringEnabled?: boolean;
+  scoringMode?: "graded" | "occurrence";
+  occurrenceScoringEnabled?: boolean;
   citation?: string;
 }
 
@@ -1182,4 +1184,3 @@ export function calculateClinicalIndices(symptoms: JethwaniSymptomConfig[]): Cli
 
   return indices;
 }
-
