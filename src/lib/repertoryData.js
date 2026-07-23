@@ -332,7 +332,6 @@ function setRepertoryData(kentData, boerickeData, clarkeData = []) {
         ...rubric,
         source: "clarke",
         scoringEnabled: false,
-        remedies: {},
     })));
     exports.CLARKE_CHAPTERS.length = 0;
     exports.CLARKE_CHAPTERS.push(...Array.from(new Set(exports.CLARKE_REPERTORY_DATA.map((rubric) => rubric.chapter))).sort());
@@ -395,7 +394,6 @@ function getRepertoryData(source) {
         ...r,
         source: 'clarke',
         scoringEnabled: false,
-        remedies: {},
     }));
     if (source === 'kent')
         return kentWithSource;
