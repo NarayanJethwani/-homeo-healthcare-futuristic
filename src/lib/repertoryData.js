@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JETHWANI_REPERTORY_DATA = exports.JETHWANI_REMEDY_CONFIRMATIONS = exports.JETHWANI_SECTIONS = exports.SEARCH_SYNONYMS = exports.BOERICKE_REPERTORY_DATA = exports.BOERICKE_CHAPTERS = exports.REPERTORY_DATA = exports.REPERTORY_CHAPTERS = exports.REMEDIES_METADATA = void 0;
+exports.JETHWANI_REPERTORY_DATA = exports.JETHWANI_REMEDY_CONFIRMATIONS = exports.JETHWANI_SECTIONS = exports.SEARCH_SYNONYMS = exports.CLARKE_CHAPTERS = exports.CLARKE_REPERTORY_DATA = exports.BOERICKE_REPERTORY_DATA = exports.BOERICKE_CHAPTERS = exports.REPERTORY_DATA = exports.REPERTORY_CHAPTERS = exports.REMEDIES_METADATA = void 0;
 exports.setRepertoryData = setRepertoryData;
 exports.getRepertoryData = getRepertoryData;
 exports.calculateClinicalIndices = calculateClinicalIndices;
@@ -320,11 +320,22 @@ exports.BOERICKE_CHAPTERS = [
     "Modalities & Generalities",
 ];
 exports.BOERICKE_REPERTORY_DATA = [];
-function setRepertoryData(kentData, boerickeData) {
+exports.CLARKE_REPERTORY_DATA = [];
+exports.CLARKE_CHAPTERS = [];
+function setRepertoryData(kentData, boerickeData, clarkeData = []) {
     exports.REPERTORY_DATA.length = 0;
     exports.REPERTORY_DATA.push(...kentData);
     exports.BOERICKE_REPERTORY_DATA.length = 0;
     exports.BOERICKE_REPERTORY_DATA.push(...boerickeData);
+    exports.CLARKE_REPERTORY_DATA.length = 0;
+    exports.CLARKE_REPERTORY_DATA.push(...clarkeData.map((rubric) => ({
+        ...rubric,
+        source: "clarke",
+        scoringEnabled: false,
+        remedies: {},
+    })));
+    exports.CLARKE_CHAPTERS.length = 0;
+    exports.CLARKE_CHAPTERS.push(...Array.from(new Set(exports.CLARKE_REPERTORY_DATA.map((rubric) => rubric.chapter))).sort());
 }
 exports.SEARCH_SYNONYMS = {
     "sweat": ["perspir", "diaphor", "sweat", "perspiration", "sweating"],
@@ -380,11 +391,19 @@ exports.SEARCH_SYNONYMS = {
 function getRepertoryData(source) {
     const kentWithSource = exports.REPERTORY_DATA.map(r => ({ ...r, source: 'kent' }));
     const boerickeWithSource = exports.BOERICKE_REPERTORY_DATA.map(r => ({ ...r, source: 'boericke' }));
+    const clarkeWithSource = exports.CLARKE_REPERTORY_DATA.map(r => ({
+        ...r,
+        source: 'clarke',
+        scoringEnabled: false,
+        remedies: {},
+    }));
     if (source === 'kent')
         return kentWithSource;
     if (source === 'boericke')
         return boerickeWithSource;
-    return [...kentWithSource, ...boerickeWithSource];
+    if (source === 'clarke')
+        return clarkeWithSource;
+    return [...kentWithSource, ...boerickeWithSource, ...clarkeWithSource];
 }
 exports.JETHWANI_SECTIONS = {
     "Section A": { name: "Mental & Emotional", icon: "🧠", description: "Modern cognitive, emotional, and neuro-psychological states" },

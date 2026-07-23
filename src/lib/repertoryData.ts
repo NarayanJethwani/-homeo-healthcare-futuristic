@@ -3,7 +3,9 @@ export interface Rubric {
   chapter: string;
   name: string;
   remedies: Record<string, number>; // Maps remedy abbreviation (e.g., "Nux-v") to grade (1, 2, or 3)
-  source?: "kent" | "boericke";
+  source?: "kent" | "boericke" | "clarke";
+  scoringEnabled?: boolean;
+  citation?: string;
 }
 
 export const REMEDIES_METADATA: Record<string, { fullName: string; source: string }> = {
@@ -326,12 +328,23 @@ export const BOERICKE_CHAPTERS = [
 ];
 
 export const BOERICKE_REPERTORY_DATA: Rubric[] = [];
+export const CLARKE_REPERTORY_DATA: Rubric[] = [];
+export const CLARKE_CHAPTERS: string[] = [];
 
-export function setRepertoryData(kentData: Rubric[], boerickeData: Rubric[]) {
+export function setRepertoryData(kentData: Rubric[], boerickeData: Rubric[], clarkeData: Rubric[] = []) {
   REPERTORY_DATA.length = 0;
   REPERTORY_DATA.push(...kentData);
   BOERICKE_REPERTORY_DATA.length = 0;
   BOERICKE_REPERTORY_DATA.push(...boerickeData);
+  CLARKE_REPERTORY_DATA.length = 0;
+  CLARKE_REPERTORY_DATA.push(...clarkeData.map((rubric) => ({
+    ...rubric,
+    source: "clarke" as const,
+    scoringEnabled: false,
+    remedies: {},
+  })));
+  CLARKE_CHAPTERS.length = 0;
+  CLARKE_CHAPTERS.push(...Array.from(new Set(CLARKE_REPERTORY_DATA.map((rubric) => rubric.chapter))).sort());
 }
 
 export const SEARCH_SYNONYMS: Record<string, string[]> = {
@@ -386,13 +399,20 @@ export const SEARCH_SYNONYMS: Record<string, string[]> = {
   "irritability": ["anger", "irritable", "temper", "irritability", "fury", "rage", "cross", "fault-finding"]
 };
 
-export function getRepertoryData(source: 'kent' | 'boericke' | 'combined'): Rubric[] {
+export function getRepertoryData(source: 'kent' | 'boericke' | 'clarke' | 'combined'): Rubric[] {
   const kentWithSource = REPERTORY_DATA.map(r => ({ ...r, source: 'kent' as const }));
   const boerickeWithSource = BOERICKE_REPERTORY_DATA.map(r => ({ ...r, source: 'boericke' as const }));
+  const clarkeWithSource = CLARKE_REPERTORY_DATA.map(r => ({
+    ...r,
+    source: 'clarke' as const,
+    scoringEnabled: false,
+    remedies: {},
+  }));
   
   if (source === 'kent') return kentWithSource;
   if (source === 'boericke') return boerickeWithSource;
-  return [...kentWithSource, ...boerickeWithSource];
+  if (source === 'clarke') return clarkeWithSource;
+  return [...kentWithSource, ...boerickeWithSource, ...clarkeWithSource];
 }
 
 // =========================================================================
@@ -1162,5 +1182,4 @@ export function calculateClinicalIndices(symptoms: JethwaniSymptomConfig[]): Cli
 
   return indices;
 }
-
 

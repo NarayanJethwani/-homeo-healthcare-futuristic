@@ -19,7 +19,7 @@ const CIEWorkspace = dynamic(() => import("./CIEWorkspace"), {
   ssr: false,
   loading: () => <div className="p-8 text-center text-slate-400">Loading Clinical Intelligence Engine...</div>
 });
-import { REPERTORY_CHAPTERS, REMEDIES_METADATA, Rubric, BOERICKE_CHAPTERS, SEARCH_SYNONYMS, getRepertoryData, JETHWANI_SECTIONS, JETHWANI_REPERTORY_DATA as JETHWANI_REPERTORY_DATA_ORIG, JETHWANI_REMEDY_CONFIRMATIONS, calculateClinicalIndices, type JethwaniRubric, type JethwaniSymptomConfig, type ClinicalIndices, setRepertoryData } from "@/lib/repertoryData";
+import { REPERTORY_CHAPTERS, REMEDIES_METADATA, Rubric, BOERICKE_CHAPTERS, CLARKE_CHAPTERS, SEARCH_SYNONYMS, getRepertoryData, JETHWANI_SECTIONS, JETHWANI_REPERTORY_DATA as JETHWANI_REPERTORY_DATA_ORIG, JETHWANI_REMEDY_CONFIRMATIONS, calculateClinicalIndices, type JethwaniRubric, type JethwaniSymptomConfig, type ClinicalIndices, setRepertoryData } from "@/lib/repertoryData";
 import { MATERIA_MEDICA_BOOKS, MateriaMedicaBook } from "@/lib/materiaMedicaData";
 import { ORGANON_EDITIONS, ORGANON_KNOWLEDGE_TREE, ORGANON_APHORISMS, ORGANON_CASES, ACTIVE_RECALL_EXERCISES, TIMELINE_STEPS } from "@/lib/organonData";
 import { db, auth } from "@/lib/firebase";
@@ -1750,7 +1750,7 @@ export default function AdminDashboard() {
   };
   
   // Repertory State
-  const [selectedRepertory, setSelectedRepertory] = useState<'kent' | 'boericke' | 'combined'>("kent");
+  const [selectedRepertory, setSelectedRepertory] = useState<'kent' | 'boericke' | 'clarke' | 'combined'>("kent");
   const [searchAllChapters, setSearchAllChapters] = useState(false);
   const [selectedChapter, setSelectedChapter] = useState(REPERTORY_CHAPTERS[0]);
   const [rubricSearch, setRubricSearch] = useState("");
@@ -1836,7 +1836,8 @@ export default function AdminDashboard() {
   const getActiveChapters = () => {
     if (selectedRepertory === "kent") return REPERTORY_CHAPTERS;
     if (selectedRepertory === "boericke") return BOERICKE_CHAPTERS;
-    return Array.from(new Set([...REPERTORY_CHAPTERS, ...BOERICKE_CHAPTERS]));
+    if (selectedRepertory === "clarke") return CLARKE_CHAPTERS;
+    return Array.from(new Set([...REPERTORY_CHAPTERS, ...BOERICKE_CHAPTERS, ...CLARKE_CHAPTERS]));
   };
 
   useEffect(() => {
@@ -1844,7 +1845,7 @@ export default function AdminDashboard() {
     if (!chapters.includes(selectedChapter)) {
       setSelectedChapter(chapters[0]);
     }
-  }, [selectedRepertory]);
+  }, [selectedRepertory, isRepertoryLoaded]);
 
   // Fullscreen escape key release and body scroll locking
   useEffect(() => {
@@ -1863,14 +1864,16 @@ export default function AdminDashboard() {
     const hydrateRepertory = async () => {
       setIsRepertoryLoading(true);
       try {
-        const [kentRes, boerickeRes, jethwaniRes] = await Promise.allSettled([
+        const [kentRes, boerickeRes, clarkeRes, jethwaniRes] = await Promise.allSettled([
           fetch("/data/kentRepertoryData.json"),
           fetch("/data/boerickeRepertoryData.json"),
+          fetch("/data/clarkeClinicalRepertoryData.json"),
           fetch("/data/jethwaniRepertoryData.json")
         ]);
 
         let kentData: any[] = [];
         let boerickeData: any[] = [];
+        let clarkeData: any[] = [];
         let jethwaniData: any[] = [];
 
         if (kentRes.status === "fulfilled" && kentRes.value.ok) {
@@ -1880,6 +1883,10 @@ export default function AdminDashboard() {
         if (boerickeRes.status === "fulfilled" && boerickeRes.value.ok) {
           boerickeData = await boerickeRes.value.json();
           console.log(`Loaded Boericke repertory: ${boerickeData.length} rubrics`);
+        }
+        if (clarkeRes.status === "fulfilled" && clarkeRes.value.ok) {
+          clarkeData = await clarkeRes.value.json();
+          console.log(`Loaded Clarke clinical repertory: ${clarkeData.length} search-only rubrics`);
         }
         if (jethwaniRes.status === "fulfilled" && jethwaniRes.value.ok) {
           jethwaniData = await jethwaniRes.value.json();
@@ -1912,7 +1919,7 @@ export default function AdminDashboard() {
           section: r.section || r.category || "Section D"
         }));
 
-        setRepertoryData(kentData, boerickeData);
+        setRepertoryData(kentData, boerickeData, clarkeData);
         if (jethwaniData.length > 0) {
           GLOBAL_JETHWANI_DATA.length = 0;
           GLOBAL_JETHWANI_DATA.push(...jethwaniData);
@@ -14587,6 +14594,7 @@ ${err.message || err}`);
                       {[
                         { id: "kent", label: "Kent's Repertory" },
                         { id: "boericke", label: "Boericke Repertory" },
+                        { id: "clarke", label: "Clarke Clinical" },
                         { id: "combined", label: "Combined Database" }
                       ].map((item) => (
                         <button
@@ -14603,6 +14611,12 @@ ${err.message || err}`);
                         </button>
                       ))}
                     </div>
+
+                    {selectedRepertory === "clarke" && (
+                      <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-[9px] font-bold leading-relaxed text-amber-900">
+                        Clarke 1904 is live for search and citation only. Its rubrics are intentionally excluded from remedy scoring.
+                      </div>
+                    )}
 
                     {/* Case file dropdown */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -14640,7 +14654,7 @@ ${err.message || err}`);
                       {/* Chapter Select */}
                       <div className={`flex flex-col gap-1 ${searchAllChapters ? "opacity-30 pointer-events-none transition-opacity" : "transition-opacity"}`}>
                         <label className="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 font-mono">
-                          {selectedRepertory === "kent" ? "Kentian Chapter" : selectedRepertory === "boericke" ? "Boericke Chapter" : "Unified Chapter"}
+                          {selectedRepertory === "kent" ? "Kentian Chapter" : selectedRepertory === "boericke" ? "Boericke Chapter" : selectedRepertory === "clarke" ? "Clarke Clinical Chapter" : "Unified Chapter"}
                         </label>
                         <select
                           value={selectedChapter}
@@ -14705,16 +14719,27 @@ ${err.message || err}`);
                       ) : (
                         filteredRubrics.map((rub) => {
                           const isKent = rub.source === "kent";
-                          const badgeColor = isKent 
-                            ? "bg-sky-50 text-sky-700 border-sky-100" 
-                            : "bg-emerald-50 text-emerald-700 border-emerald-100";
-                          const badgeText = isKent ? "K" : "B";
+                          const isClarke = rub.source === "clarke";
+                          const badgeColor = isKent
+                            ? "bg-sky-50 text-sky-700 border-sky-100"
+                            : isClarke
+                              ? "bg-amber-50 text-amber-700 border-amber-100"
+                              : "bg-emerald-50 text-emerald-700 border-emerald-100";
+                          const badgeText = isKent ? "K" : isClarke ? "C" : "B";
 
                           return (
                             <button
                               key={rub.id}
-                              onClick={() => addRubric(rub)}
-                              className="w-full text-left px-3 py-2 rounded-xl text-xs hover:bg-mint/10 hover:text-mint-dark font-semibold transition-all duration-200 flex items-center justify-between group cursor-pointer border border-transparent hover:border-mint/20 border-l-4 hover:border-l-mint bg-white/40"
+                              onClick={() => {
+                                if (!isClarke) addRubric(rub);
+                              }}
+                              disabled={isClarke}
+                              title={isClarke ? rub.citation || "Clarke 1904 — search and citation only" : "Add rubric to scoring matrix"}
+                              className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-200 flex items-center justify-between group border border-transparent border-l-4 bg-white/40 ${
+                                isClarke
+                                  ? "cursor-help border-l-amber-300"
+                                  : "cursor-pointer hover:bg-mint/10 hover:text-mint-dark hover:border-mint/20 hover:border-l-mint"
+                              }`}
                             >
                               <div className="flex items-center gap-2.5 min-w-0 flex-grow pr-2">
                                 <span className={`text-[8px] font-black border rounded px-1.5 py-0.5 flex-shrink-0 font-mono tracking-wider shadow-2xs ${badgeColor}`}>
@@ -14729,7 +14754,11 @@ ${err.message || err}`);
                                   )}
                                 </div>
                               </div>
-                              <Plus className="w-3.5 h-3.5 text-mint opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                              {isClarke ? (
+                                <span className="text-[8px] font-black uppercase tracking-wide text-amber-700">Search only</span>
+                              ) : (
+                                <Plus className="w-3.5 h-3.5 text-mint opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                              )}
                             </button>
                           );
                         })
