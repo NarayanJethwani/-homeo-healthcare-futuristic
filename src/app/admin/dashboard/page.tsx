@@ -1868,7 +1868,7 @@ export default function AdminDashboard() {
         const [kentRes, boerickeRes, clarkeRes, jethwaniRes] = await Promise.allSettled([
           fetch("/data/kentRepertoryData.json"),
           fetch("/data/boerickeRepertoryData.json"),
-          fetch("/data/clarkeClinicalRepertoryData.json"),
+          fetch("/data/clarkeClinicalRepertoryData.json?v=clarke-occurrence-2026-07-23"),
           fetch("/data/jethwaniRepertoryData.json")
         ]);
 
