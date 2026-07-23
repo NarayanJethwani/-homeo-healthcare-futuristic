@@ -41,5 +41,9 @@ assert.strictEqual(getRepertoryData("combined").length, clarke.length);
 assert.ok(CLARKE_CHAPTERS.length > 0);
 assert.ok(getRepertoryData("combined").every((rubric) => rubric.scoringEnabled === false));
 assert.ok(getRepertoryData("combined").every((rubric) => rubric.occurrenceScoringEnabled === true));
+assert.deepStrictEqual(
+  getRepertoryData("clarke").find((rubric) => rubric.name === "Acromegaly")?.remedies,
+  { Thyr: 1 }
+);
 
 console.log("Clarke browser asset tests passed.");
