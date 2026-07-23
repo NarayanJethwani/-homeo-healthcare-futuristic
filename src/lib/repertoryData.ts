@@ -3,7 +3,7 @@ export interface Rubric {
   chapter: string;
   name: string;
   remedies: Record<string, number>; // Maps a remedy abbreviation to a source grade, or 1 for an ungraded occurrence.
-  source?: "kent" | "boericke" | "clarke";
+  source?: "kent" | "boericke" | "clarke" | "boger";
   scoringEnabled?: boolean;
   scoringMode?: "graded" | "occurrence";
   occurrenceScoringEnabled?: boolean;
@@ -332,8 +332,15 @@ export const BOERICKE_CHAPTERS = [
 export const BOERICKE_REPERTORY_DATA: Rubric[] = [];
 export const CLARKE_REPERTORY_DATA: Rubric[] = [];
 export const CLARKE_CHAPTERS: string[] = [];
+export const BOGER_REPERTORY_DATA: Rubric[] = [];
+export const BOGER_CHAPTERS: string[] = [];
 
-export function setRepertoryData(kentData: Rubric[], boerickeData: Rubric[], clarkeData: Rubric[] = []) {
+export function setRepertoryData(
+  kentData: Rubric[],
+  boerickeData: Rubric[],
+  clarkeData: Rubric[] = [],
+  bogerData: Rubric[] = []
+) {
   REPERTORY_DATA.length = 0;
   REPERTORY_DATA.push(...kentData);
   BOERICKE_REPERTORY_DATA.length = 0;
@@ -346,6 +353,15 @@ export function setRepertoryData(kentData: Rubric[], boerickeData: Rubric[], cla
   })));
   CLARKE_CHAPTERS.length = 0;
   CLARKE_CHAPTERS.push(...Array.from(new Set(CLARKE_REPERTORY_DATA.map((rubric) => rubric.chapter))).sort());
+  BOGER_REPERTORY_DATA.length = 0;
+  BOGER_REPERTORY_DATA.push(...bogerData.map((rubric) => ({
+    ...rubric,
+    source: "boger" as const,
+    scoringEnabled: true,
+    scoringMode: "graded" as const,
+  })));
+  BOGER_CHAPTERS.length = 0;
+  BOGER_CHAPTERS.push(...Array.from(new Set(BOGER_REPERTORY_DATA.map((rubric) => rubric.chapter))).sort());
 }
 
 export const SEARCH_SYNONYMS: Record<string, string[]> = {
@@ -400,7 +416,7 @@ export const SEARCH_SYNONYMS: Record<string, string[]> = {
   "irritability": ["anger", "irritable", "temper", "irritability", "fury", "rage", "cross", "fault-finding"]
 };
 
-export function getRepertoryData(source: 'kent' | 'boericke' | 'clarke' | 'combined'): Rubric[] {
+export function getRepertoryData(source: 'kent' | 'boericke' | 'clarke' | 'boger' | 'combined'): Rubric[] {
   const kentWithSource = REPERTORY_DATA.map(r => ({ ...r, source: 'kent' as const }));
   const boerickeWithSource = BOERICKE_REPERTORY_DATA.map(r => ({ ...r, source: 'boericke' as const }));
   const clarkeWithSource = CLARKE_REPERTORY_DATA.map(r => ({
@@ -408,11 +424,18 @@ export function getRepertoryData(source: 'kent' | 'boericke' | 'clarke' | 'combi
     source: 'clarke' as const,
     scoringEnabled: false,
   }));
+  const bogerWithSource = BOGER_REPERTORY_DATA.map(r => ({
+    ...r,
+    source: 'boger' as const,
+    scoringEnabled: true,
+    scoringMode: 'graded' as const,
+  }));
   
   if (source === 'kent') return kentWithSource;
   if (source === 'boericke') return boerickeWithSource;
   if (source === 'clarke') return clarkeWithSource;
-  return [...kentWithSource, ...boerickeWithSource, ...clarkeWithSource];
+  if (source === 'boger') return bogerWithSource;
+  return [...kentWithSource, ...boerickeWithSource, ...clarkeWithSource, ...bogerWithSource];
 }
 
 // =========================================================================
