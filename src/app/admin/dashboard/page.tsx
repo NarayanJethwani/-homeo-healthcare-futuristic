@@ -14614,7 +14614,7 @@ ${err.message || err}`);
 
                     {selectedRepertory === "clarke" && (
                       <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-[9px] font-bold leading-relaxed text-amber-900">
-                        Clarke 1904 is live for search and citation only. Its rubrics are intentionally excluded from remedy scoring.
+                        Clarke 1904 is live with {getRepertoryData("clarke").length.toLocaleString()} quality-gated rubrics for search and citation only. Its rubrics are intentionally excluded from remedy scoring.
                       </div>
                     )}
 
