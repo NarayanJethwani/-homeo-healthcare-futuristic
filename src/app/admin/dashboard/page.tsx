@@ -19,7 +19,7 @@ const CIEWorkspace = dynamic(() => import("./CIEWorkspace"), {
   ssr: false,
   loading: () => <div className="p-8 text-center text-slate-400">Loading Clinical Intelligence Engine...</div>
 });
-import { REPERTORY_CHAPTERS, REMEDIES_METADATA, Rubric, BOERICKE_CHAPTERS, CLARKE_CHAPTERS, BOGER_CHAPTERS, SEARCH_SYNONYMS, getRepertoryData, JETHWANI_SECTIONS, JETHWANI_REPERTORY_DATA as JETHWANI_REPERTORY_DATA_ORIG, JETHWANI_REMEDY_CONFIRMATIONS, calculateClinicalIndices, type JethwaniRubric, type JethwaniSymptomConfig, type ClinicalIndices, setRepertoryData } from "@/lib/repertoryData";
+import { REPERTORY_CHAPTERS, REMEDIES_METADATA, Rubric, BOERICKE_CHAPTERS, CLARKE_CHAPTERS, BOGER_CHAPTERS, KNERR_CHAPTERS, SEARCH_SYNONYMS, getRepertoryData, JETHWANI_SECTIONS, JETHWANI_REPERTORY_DATA as JETHWANI_REPERTORY_DATA_ORIG, JETHWANI_REMEDY_CONFIRMATIONS, calculateClinicalIndices, type JethwaniRubric, type JethwaniSymptomConfig, type ClinicalIndices, setRepertoryData } from "@/lib/repertoryData";
 import { isRubricScoringEnabled } from "@/features/repertory/scoring/repertoryScoringPolicy";
 import { MATERIA_MEDICA_BOOKS, MateriaMedicaBook } from "@/lib/materiaMedicaData";
 import { ORGANON_EDITIONS, ORGANON_KNOWLEDGE_TREE, ORGANON_APHORISMS, ORGANON_CASES, ACTIVE_RECALL_EXERCISES, TIMELINE_STEPS } from "@/lib/organonData";
@@ -1751,7 +1751,7 @@ export default function AdminDashboard() {
   };
   
   // Repertory State
-  const [selectedRepertory, setSelectedRepertory] = useState<'kent' | 'boericke' | 'clarke' | 'boger' | 'combined'>("kent");
+  const [selectedRepertory, setSelectedRepertory] = useState<'kent' | 'boericke' | 'clarke' | 'boger' | 'knerr' | 'combined'>("kent");
   const [searchAllChapters, setSearchAllChapters] = useState(false);
   const [selectedChapter, setSelectedChapter] = useState(REPERTORY_CHAPTERS[0]);
   const [rubricSearch, setRubricSearch] = useState("");
@@ -1839,7 +1839,8 @@ export default function AdminDashboard() {
     if (selectedRepertory === "boericke") return BOERICKE_CHAPTERS;
     if (selectedRepertory === "clarke") return CLARKE_CHAPTERS;
     if (selectedRepertory === "boger") return BOGER_CHAPTERS;
-    return Array.from(new Set([...REPERTORY_CHAPTERS, ...BOERICKE_CHAPTERS, ...CLARKE_CHAPTERS, ...BOGER_CHAPTERS]));
+    if (selectedRepertory === "knerr") return KNERR_CHAPTERS;
+    return Array.from(new Set([...REPERTORY_CHAPTERS, ...BOERICKE_CHAPTERS, ...CLARKE_CHAPTERS, ...BOGER_CHAPTERS, ...KNERR_CHAPTERS]));
   };
 
   useEffect(() => {
@@ -1866,11 +1867,12 @@ export default function AdminDashboard() {
     const hydrateRepertory = async () => {
       setIsRepertoryLoading(true);
       try {
-        const [kentRes, boerickeRes, clarkeRes, bogerRes, jethwaniRes] = await Promise.allSettled([
+        const [kentRes, boerickeRes, clarkeRes, bogerRes, knerrRes, jethwaniRes] = await Promise.allSettled([
           fetch("/data/kentRepertoryData.json"),
           fetch("/data/boerickeRepertoryData.json"),
           fetch("/data/clarkeClinicalRepertoryData.json?v=clarke-occurrence-2026-07-23"),
           fetch("/data/bogerBoenninghausenRepertoryData.json?v=boger-graded-1905-2026-07-23"),
+          fetch("/data/knerrHeringRepertoryData.json?v=knerr-graded-1896-2026-07-23"),
           fetch("/data/jethwaniRepertoryData.json")
         ]);
 
@@ -1878,6 +1880,7 @@ export default function AdminDashboard() {
         let boerickeData: any[] = [];
         let clarkeData: any[] = [];
         let bogerData: any[] = [];
+        let knerrData: any[] = [];
         let jethwaniData: any[] = [];
 
         if (kentRes.status === "fulfilled" && kentRes.value.ok) {
@@ -1895,6 +1898,10 @@ export default function AdminDashboard() {
         if (bogerRes.status === "fulfilled" && bogerRes.value.ok) {
           bogerData = await bogerRes.value.json();
           console.log(`Loaded Boger–Boenninghausen repertory: ${bogerData.length} graded rubrics`);
+        }
+        if (knerrRes.status === "fulfilled" && knerrRes.value.ok) {
+          knerrData = await knerrRes.value.json();
+          console.log(`Loaded Knerr's Repertory of Hering's Guiding Symptoms: ${knerrData.length} graded rubrics`);
         }
         if (jethwaniRes.status === "fulfilled" && jethwaniRes.value.ok) {
           jethwaniData = await jethwaniRes.value.json();
@@ -1927,7 +1934,7 @@ export default function AdminDashboard() {
           section: r.section || r.category || "Section D"
         }));
 
-        setRepertoryData(kentData, boerickeData, clarkeData, bogerData);
+        setRepertoryData(kentData, boerickeData, clarkeData, bogerData, knerrData);
         if (jethwaniData.length > 0) {
           GLOBAL_JETHWANI_DATA.length = 0;
           GLOBAL_JETHWANI_DATA.push(...jethwaniData);
@@ -14607,12 +14614,13 @@ ${err.message || err}`);
                       </h3>
                       <span className="text-[9px] font-bold text-mint bg-mint/5 px-2 py-0.5 rounded-full border border-mint/10 font-mono">Active Workbench</span>
                     </div>
-                    <div className="bg-slate-100/80 backdrop-blur-sm border border-slate-200/50 rounded-2xl p-1 grid grid-cols-2 sm:grid-cols-5 gap-1 shadow-inner">
+                    <div className="bg-slate-100/80 backdrop-blur-sm border border-slate-200/50 rounded-2xl p-1 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-1 shadow-inner">
                       {[
                         { id: "kent", label: "Kent's Repertory" },
                         { id: "boericke", label: "Boericke Repertory" },
                         { id: "clarke", label: "Clarke Clinical" },
                         { id: "boger", label: "Boger–Boenninghausen" },
+                        { id: "knerr", label: "Knerr–Hering 1896" },
                         { id: "combined", label: "Combined Database" }
                       ].map((item) => (
                         <button
@@ -14638,6 +14646,11 @@ ${err.message || err}`);
                     {selectedRepertory === "boger" && (
                       <div className="rounded-xl border border-violet-200 bg-violet-50 px-3 py-2 text-[9px] font-bold leading-relaxed text-violet-900">
                         Boger–Boenninghausen 1905 is live with {getRepertoryData("boger").length.toLocaleString()} source-gated rubrics. Printed remedy ranks are preserved exactly: CAPITAL 5, bold 4, italic 3, roman 2, and parenthesized roman 1.
+                      </div>
+                    )}
+                    {selectedRepertory === "knerr" && (
+                      <div className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-[9px] font-bold leading-relaxed text-rose-900">
+                        Knerr 1896 is live with {getRepertoryData("knerr").length.toLocaleString()} source-gated rubrics across 48 original sections. Remedies are fully selectable and scored from the printed distinctions: unmarked occurrence 1, single light 2, double light 3, single heavy 4, and double heavy 5.
                       </div>
                     )}
 
@@ -14677,7 +14690,7 @@ ${err.message || err}`);
                       {/* Chapter Select */}
                       <div className={`flex flex-col gap-1 ${searchAllChapters ? "opacity-30 pointer-events-none transition-opacity" : "transition-opacity"}`}>
                         <label className="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 font-mono">
-                          {selectedRepertory === "kent" ? "Kentian Chapter" : selectedRepertory === "boericke" ? "Boericke Chapter" : selectedRepertory === "clarke" ? "Clarke Clinical Chapter" : selectedRepertory === "boger" ? "Boger–Boenninghausen Chapter" : "Unified Chapter"}
+                          {selectedRepertory === "kent" ? "Kentian Chapter" : selectedRepertory === "boericke" ? "Boericke Chapter" : selectedRepertory === "clarke" ? "Clarke Clinical Chapter" : selectedRepertory === "boger" ? "Boger–Boenninghausen Chapter" : selectedRepertory === "knerr" ? "Knerr–Hering Chapter" : "Unified Chapter"}
                         </label>
                         <select
                           value={selectedChapter}
@@ -14744,6 +14757,7 @@ ${err.message || err}`);
                           const isKent = rub.source === "kent";
                           const isClarke = rub.source === "clarke";
                           const isBoger = rub.source === "boger";
+                          const isKnerr = rub.source === "knerr";
                           const canScore = isRubricScoringEnabled(rub);
                           const badgeColor = isKent
                             ? "bg-sky-50 text-sky-700 border-sky-100"
@@ -14751,8 +14765,10 @@ ${err.message || err}`);
                               ? "bg-amber-50 text-amber-700 border-amber-100"
                               : isBoger
                                 ? "bg-violet-50 text-violet-700 border-violet-100"
+                              : isKnerr
+                                ? "bg-rose-50 text-rose-700 border-rose-100"
                               : "bg-emerald-50 text-emerald-700 border-emerald-100";
-                          const badgeText = isKent ? "K" : isClarke ? "C" : isBoger ? "BB" : "B";
+                          const badgeText = isKent ? "K" : isClarke ? "C" : isBoger ? "BB" : isKnerr ? "KN" : "B";
 
                           return (
                             <button
@@ -14845,9 +14861,11 @@ ${err.message || err}`);
                                           ? "bg-amber-50 text-amber-700 border-amber-100"
                                         : rubric.source === "boger"
                                           ? "bg-violet-50 text-violet-700 border-violet-100"
+                                        : rubric.source === "knerr"
+                                          ? "bg-rose-50 text-rose-700 border-rose-100"
                                         : "bg-emerald-50 text-emerald-700 border-emerald-100"
                                     }`}>
-                                      {rubric.source === "kent" ? "K" : rubric.source === "clarke" ? "C" : rubric.source === "boger" ? "BB" : "B"}
+                                      {rubric.source === "kent" ? "K" : rubric.source === "clarke" ? "C" : rubric.source === "boger" ? "BB" : rubric.source === "knerr" ? "KN" : "B"}
                                     </span>
                                     <span className="text-[8px] text-mint-dark uppercase font-extrabold tracking-widest block font-mono truncate">
                                       {rubric.chapter}
