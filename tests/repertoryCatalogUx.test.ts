@@ -1,4 +1,6 @@
 import assert from "node:assert";
+import fs from "node:fs";
+import path from "node:path";
 import type { Rubric } from "../src/lib/repertoryData";
 import {
   toggleFavouriteRepertory,
@@ -70,5 +72,22 @@ for (const id of ["kent", "clarke", "boger", "knerr", "boenninghausen", "boerick
 assert.deepStrictEqual(recents, ["boericke", "boenninghausen", "knerr", "boger", "clarke"]);
 recents = updateRecentRepertories(recents, "knerr");
 assert.deepStrictEqual(recents, ["knerr", "boericke", "boenninghausen", "boger", "clarke"]);
+
+const globalsCss = fs.readFileSync(path.resolve("src/app/globals.css"), "utf8");
+assert.match(
+  globalsCss,
+  /\.repertory-context-bar\s*{[^}]*z-index:\s*80;/s,
+  "The catalogue context must remain above both workbench panels",
+);
+assert.match(
+  globalsCss,
+  /\.repertory-browser-panel,\s*\.repertorization-panel\s*{[^}]*z-index:\s*1;/s,
+  "Workbench panels must share a lower stacking layer than the catalogue",
+);
+assert.match(
+  globalsCss,
+  /\.repertory-panel-resizer\s*{[^}]*z-index:\s*2;/s,
+  "The resizer must remain below the catalogue context",
+);
 
 console.log("Scalable repertory catalogue and grouped-search UX tests passed.");

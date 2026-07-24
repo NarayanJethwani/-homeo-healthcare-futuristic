@@ -315,7 +315,7 @@ export function RepertoryCatalogSelector({
     .filter((section) => section.items.length > 0);
 
   return (
-    <div ref={containerRef} className="relative min-w-0">
+    <div ref={containerRef} className={`relative min-w-0 ${isOpen ? "z-[120]" : ""}`}>
       <button
         type="button"
         onClick={() => setIsOpen((current) => !current)}
@@ -339,7 +339,7 @@ export function RepertoryCatalogSelector({
         <div
           role="dialog"
           aria-label="Choose a repertory"
-          className="absolute left-0 top-[calc(100%+0.5rem)] z-[120] flex max-h-[min(680px,75vh)] w-[min(620px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
+          className="absolute left-0 top-[calc(100%+0.5rem)] z-[120] flex max-h-[min(680px,75vh)] w-[min(620px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white/95 shadow-[0_24px_80px_rgba(15,23,42,0.22)] ring-1 ring-slate-900/5 backdrop-blur-xl"
         >
           <div className="border-b border-slate-100 p-3">
             <div className="flex items-center justify-between gap-3">

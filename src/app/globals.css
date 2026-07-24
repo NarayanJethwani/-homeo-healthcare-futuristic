@@ -1650,7 +1650,22 @@ html.lenis, html.lenis body {
   min-width: 0;
 }
 
+.repertory-context-bar {
+  position: relative;
+  z-index: 80;
+  overflow: visible;
+  isolation: isolate;
+}
+
+.repertory-browser-panel,
+.repertorization-panel {
+  position: relative;
+  z-index: 1;
+}
+
 .repertory-panel-resizer {
+  position: relative;
+  z-index: 2;
   display: none;
 }
 
