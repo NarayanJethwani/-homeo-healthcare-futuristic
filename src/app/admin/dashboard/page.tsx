@@ -2,7 +2,7 @@
 
 import { CARE_LEVELS_DETAILS, surchargesLookup, normalizeCareLevelName, getCareLevelDisplayName } from "@/lib/pricingConfig";
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import dynamic from "next/dynamic";
@@ -22,6 +22,14 @@ const CIEWorkspace = dynamic(() => import("./CIEWorkspace"), {
 import { REPERTORY_CHAPTERS, REMEDIES_METADATA, Rubric, BOERICKE_CHAPTERS, CLARKE_CHAPTERS, BOGER_CHAPTERS, KNERR_CHAPTERS, BOENNINGHAUSEN_CHAPTERS, SEARCH_SYNONYMS, getRepertoryData, JETHWANI_SECTIONS, JETHWANI_REPERTORY_DATA as JETHWANI_REPERTORY_DATA_ORIG, JETHWANI_REMEDY_CONFIRMATIONS, calculateClinicalIndices, type JethwaniRubric, type JethwaniSymptomConfig, type ClinicalIndices, setRepertoryData } from "@/lib/repertoryData";
 import { isRubricScoringEnabled } from "@/features/repertory/scoring/repertoryScoringPolicy";
 import { getTopWorkbenchRemedyColumns, projectWorkbenchScores } from "@/features/repertory/scoring/repertoryWorkbenchScoring";
+import {
+  RepertoryCatalogSelector,
+  RepertorySourceSummary,
+  repertoryCatalogBase,
+  type ClassicalRepertoryId,
+  type RepertoryCatalogEntry,
+} from "@/features/repertory/components/RepertoryCatalogSelector";
+import { GroupedRepertoryResults } from "@/features/repertory/components/GroupedRepertoryResults";
 import { MATERIA_MEDICA_BOOKS, MateriaMedicaBook } from "@/lib/materiaMedicaData";
 import { ORGANON_EDITIONS, ORGANON_KNOWLEDGE_TREE, ORGANON_APHORISMS, ORGANON_CASES, ACTIVE_RECALL_EXERCISES, TIMELINE_STEPS } from "@/lib/organonData";
 import { db, auth } from "@/lib/firebase";
@@ -1752,7 +1760,7 @@ export default function AdminDashboard() {
   };
   
   // Repertory State
-  const [selectedRepertory, setSelectedRepertory] = useState<'kent' | 'boericke' | 'clarke' | 'boger' | 'knerr' | 'boenninghausen' | 'combined'>("kent");
+  const [selectedRepertory, setSelectedRepertory] = useState<ClassicalRepertoryId>("kent");
   const [searchAllChapters, setSearchAllChapters] = useState(false);
   const [selectedChapter, setSelectedChapter] = useState(REPERTORY_CHAPTERS[0]);
   const [rubricSearch, setRubricSearch] = useState("");
@@ -1762,6 +1770,19 @@ export default function AdminDashboard() {
   const [remedyScores, setRemedyScores] = useState<Array<{ remedy: string; coverage: string; score: number }>>([]);
   const [isRepertoryLoaded, setIsRepertoryLoaded] = useState(false);
   const [isRepertoryLoading, setIsRepertoryLoading] = useState(false);
+  const [expandedRubricGroupKey, setExpandedRubricGroupKey] = useState<string | null>(null);
+  const [rubricPanelWidth, setRubricPanelWidth] = useState(460);
+
+  const repertoryCatalogItems = useMemo<RepertoryCatalogEntry[]>(
+    () => repertoryCatalogBase.map((entry) => ({
+      ...entry,
+      count: getRepertoryData(entry.id).length,
+    })),
+    [isRepertoryLoaded],
+  );
+  const activeRepertoryCatalogItem =
+    repertoryCatalogItems.find((entry) => entry.id === selectedRepertory)
+    || repertoryCatalogItems[0];
 
   // Dr. Jethwani's Clinical Repertory State
   const [repertoryWorkbenchMode, setRepertoryWorkbenchMode] = useState<"classical" | "jethwani">("classical");
@@ -1851,6 +1872,37 @@ export default function AdminDashboard() {
       setSelectedChapter(chapters[0]);
     }
   }, [selectedRepertory, isRepertoryLoaded]);
+
+  useEffect(() => {
+    const savedWidth = Number(window.localStorage.getItem("homeo.classical-repertory-panel-width"));
+    if (Number.isFinite(savedWidth) && savedWidth >= 400 && savedWidth <= 640) {
+      setRubricPanelWidth(savedWidth);
+    }
+  }, []);
+
+  const beginRubricPanelResize = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    if (window.innerWidth < 1280) return;
+    event.preventDefault();
+    const startX = event.clientX;
+    const startWidth = rubricPanelWidth;
+    let finalWidth = startWidth;
+    const handlePointerMove = (moveEvent: PointerEvent) => {
+      const maximumWidth = Math.min(640, Math.floor(window.innerWidth * 0.48));
+      finalWidth = Math.max(400, Math.min(maximumWidth, startWidth + moveEvent.clientX - startX));
+      setRubricPanelWidth(finalWidth);
+    };
+    const handlePointerUp = () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
+      window.localStorage.setItem("homeo.classical-repertory-panel-width", String(finalWidth));
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+    };
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", handlePointerUp);
+  };
 
   // Fullscreen escape key release and body scroll locking
   useEffect(() => {
@@ -6827,8 +6879,14 @@ Homeo Healthcare`;
     );
   };
 
-  // Rubrics filtration
-  const filteredRubrics = getRepertoryData(selectedRepertory).filter((r) => {
+  const multiSourceSearchReady =
+    selectedRepertory !== "combined" || rubricSearch.trim().length >= 2;
+
+  // Rubrics filtration. Combined mode intentionally waits for a meaningful
+  // query so adding more repertories does not flood the browser with tens of
+  // thousands of source-specific rows.
+  const allFilteredRubrics = multiSourceSearchReady
+    ? getRepertoryData(selectedRepertory).filter((r) => {
     const inChapter = searchAllChapters || r.chapter === selectedChapter;
     if (!inChapter) return false;
     if (!rubricSearch) return true;
@@ -6848,7 +6906,13 @@ Homeo Healthcare`;
 
       return false;
     });
-  });
+  })
+    : [];
+  const filteredRubrics = allFilteredRubrics.slice(0, 300);
+
+  useEffect(() => {
+    setExpandedRubricGroupKey(null);
+  }, [selectedRepertory, selectedChapter, searchAllChapters, rubricSearch]);
 
   // Add Rubric to active list
   const addRubric = (rubric: Rubric) => {
@@ -14583,99 +14647,89 @@ ${err.message || err}`);
                 </div>
 
                 {repertoryWorkbenchMode === "classical" ? (
-                  <div className="w-full grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch pb-12">
+                  <div
+                    className="classical-workbench-grid w-full items-stretch pb-12"
+                    style={{ "--repertory-browser-width": `${rubricPanelWidth}px` } as CSSProperties}
+                  >
+                    <div className="repertory-context-bar rounded-3xl border border-white/70 bg-white/65 p-3 shadow-sm backdrop-blur-md">
+                      <div className="mb-2 flex items-center justify-between gap-3 px-1">
+                        <div>
+                          <h3 className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-700">Classical workbench context</h3>
+                          <p className="mt-0.5 text-[8px] font-semibold text-slate-400">
+                            Repertory, case, and source governance stay visible across the complete analysis.
+                          </p>
+                        </div>
+                        <span className="rounded-full border border-teal-100 bg-teal-50 px-2 py-1 font-mono text-[8px] font-black uppercase tracking-wider text-teal-700">
+                          {selectedRepertory === "combined" ? "Multi-source scope" : "Single-source scope"}
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(280px,1.25fr)_minmax(250px,1fr)_minmax(280px,1.15fr)]">
+                        <div className="min-w-0">
+                          <label className="mb-1 block px-1 font-mono text-[8px] font-black uppercase tracking-widest text-slate-400">
+                            Repertory catalogue
+                          </label>
+                          <RepertoryCatalogSelector
+                            items={repertoryCatalogItems}
+                            value={selectedRepertory}
+                            onChange={(value) => {
+                              setSelectedRepertory(value);
+                              if (value === "combined") setSearchAllChapters(true);
+                            }}
+                          />
+                        </div>
+                        <div className="min-w-0">
+                          <label className="mb-1 block px-1 font-mono text-[8px] font-black uppercase tracking-widest text-slate-400">
+                            Active case file
+                          </label>
+                          <div className="flex min-h-[62px] gap-1.5 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm">
+                            <select
+                              value={selectedPatientId}
+                              onChange={(event) => handleSelectPatientForAnalysis(event.target.value)}
+                              className="min-w-0 flex-1 rounded-xl border-none bg-slate-50 px-3 py-2 text-[10px] font-bold text-slate-700 outline-none focus:ring-2 focus:ring-teal-100"
+                            >
+                              <option value="">Custom Workspace (Unlinked)</option>
+                              {patients.map((patient) => (
+                                <option key={patient.id} value={patient.id}>
+                                  👤 {patient.name} ({patient.id})
+                                </option>
+                              ))}
+                            </select>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setImportError("");
+                                setImportSuccess("");
+                                setIsImportModalOpen(true);
+                              }}
+                              className="flex w-10 flex-none items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:border-slate-700 hover:bg-slate-50 hover:text-slate-800"
+                              title="Import patient record"
+                            >
+                              <Upload className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                        <div className="min-w-0">
+                          <label className="mb-1 block px-1 font-mono text-[8px] font-black uppercase tracking-widest text-slate-400">
+                            Source and scoring
+                          </label>
+                          <RepertorySourceSummary item={activeRepertoryCatalogItem} />
+                        </div>
+                      </div>
+                    </div>
                 
                 {/* ZONE 1 (Top Left) - Column Span 5 */}
-                <div className="order-1 xl:order-1 xl:col-span-5 flex flex-col gap-6">
+                <div className="repertory-browser-panel flex min-w-0 flex-col gap-6">
                   
                   {/* ZONE 1: Rubrics & Case Intake */}
                   <div className="glass-panel rounded-3xl border-white/60 p-6 space-y-5 flex flex-col shadow-sm bg-white/60 backdrop-blur-md">
                     <div className="flex items-center justify-between border-b border-slate-900/5 pb-3">
                       <h3 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider flex items-center gap-2">
                         <Sliders className="w-4 h-4 text-mint animate-pulse" />
-                        Zone 1: Rubrics & Case Intake
+                        Zone 1: Rubric Browser
                       </h3>
                       <span className="text-[9px] font-bold text-mint bg-mint/5 px-2 py-0.5 rounded-full border border-mint/10 font-mono">Active Workbench</span>
                     </div>
-                    <div className="bg-slate-100/80 backdrop-blur-sm border border-slate-200/50 rounded-2xl p-1 grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-7 gap-1 shadow-inner">
-                      {[
-                        { id: "kent", label: "Kent's Repertory" },
-                        { id: "boericke", label: "Boericke Repertory" },
-                        { id: "clarke", label: "Clarke Clinical" },
-                        { id: "boger", label: "Boger–Boenninghausen" },
-                        { id: "knerr", label: "Knerr–Hering 1896" },
-                        { id: "boenninghausen", label: "Bönninghausen TPB 1846" },
-                        { id: "combined", label: "Combined Database" }
-                      ].map((item) => (
-                        <button
-                          key={item.id}
-                          onClick={() => setSelectedRepertory(item.id as any)}
-                          type="button"
-                          className={`flex-1 text-center py-2 rounded-xl text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 cursor-pointer border-none ${
-                            selectedRepertory === item.id
-                              ? "bg-gradient-to-r from-mint-dark to-mint text-white shadow-md shadow-mint/20 scale-[1.02]"
-                              : "text-slate-500 hover:text-slate-900 bg-transparent hover:bg-slate-200/50"
-                          }`}
-                        >
-                          {item.label}
-                        </button>
-                      ))}
-                    </div>
-
-                    {selectedRepertory === "clarke" && (
-                      <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-[9px] font-bold leading-relaxed text-amber-900">
-                        Clarke 1904 is live with {getRepertoryData("clarke").length.toLocaleString()} quality-gated rubrics and source-verified remedy occurrences. Each selected rubric travels with the case and gives one point to every remedy Clarke lists; no unreliable remedy grades are invented.
-                      </div>
-                    )}
-                    {selectedRepertory === "boger" && (
-                      <div className="rounded-xl border border-violet-200 bg-violet-50 px-3 py-2 text-[9px] font-bold leading-relaxed text-violet-900">
-                        Boger–Boenninghausen 1905 is live with {getRepertoryData("boger").length.toLocaleString()} source-gated rubrics. Printed remedy ranks are preserved exactly: CAPITAL 5, bold 4, italic 3, roman 2, and parenthesized roman 1.
-                      </div>
-                    )}
-                    {selectedRepertory === "knerr" && (
-                      <div className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-[9px] font-bold leading-relaxed text-rose-900">
-                        Knerr 1896 is live with {getRepertoryData("knerr").length.toLocaleString()} source-gated rubrics across 48 original sections. Remedies are fully selectable and scored from the printed distinctions: unmarked occurrence 1, single light 2, double light 3, single heavy 4, and double heavy 5.
-                      </div>
-                    )}
-                    {selectedRepertory === "boenninghausen" && (
-                      <div className="rounded-xl border border-cyan-200 bg-cyan-50 px-3 py-2 text-[9px] font-bold leading-relaxed text-cyan-900">
-                        Bönninghausen&apos;s Therapeutic Pocket Book (1846) is live with {getRepertoryData("boenninghausen").length.toLocaleString()} source-gated rubrics from the first English edition. Symptoms are fully selectable and scored from the five printed classes: CAPITAL 5, small capitals 4, italic 3, roman 2, and parenthesized roman 1.
-                      </div>
-                    )}
-
-                    {/* Case file dropdown */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="flex flex-col gap-1">
-                        <label className="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 font-mono">
-                          Active Case File
-                        </label>
-                        <div className="flex gap-1.5 relative">
-                          <select
-                            value={selectedPatientId}
-                            onChange={(e) => handleSelectPatientForAnalysis(e.target.value)}
-                            className="flex-1 bg-white/70 backdrop-blur-md border border-slate-200/80 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-mint focus:ring-1 focus:ring-mint focus:bg-white transition-all shadow-sm"
-                          >
-                            <option value="">Custom Workspace (Unlinked)</option>
-                            {patients.map((p) => (
-                              <option key={p.id} value={p.id}>
-                                👤 {p.name} ({p.id})
-                              </option>
-                            ))}
-                          </select>
-                          <button
-                            onClick={() => {
-                              setImportError("");
-                              setImportSuccess("");
-                              setIsImportModalOpen(true);
-                            }}
-                            className="p-2 border border-slate-200 hover:border-slate-800 rounded-xl bg-white hover:bg-slate-50 flex items-center justify-center cursor-pointer transition-colors shadow-sm"
-                            title="Import Patient Record"
-                          >
-                            <Upload className="w-3.5 h-3.5 text-slate-500" />
-                          </button>
-                        </div>
-                      </div>
-
+                    <div className="grid grid-cols-1 gap-4">
                       {/* Chapter Select */}
                       <div className={`flex flex-col gap-1 ${searchAllChapters ? "opacity-30 pointer-events-none transition-opacity" : "transition-opacity"}`}>
                         <label className="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 font-mono">
@@ -14722,6 +14776,18 @@ ${err.message || err}`);
                         />
                         <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
                       </div>
+                      <div className="flex items-center justify-between gap-2 px-1 pt-1 text-[8px] font-semibold text-slate-400">
+                        <span>
+                          {selectedRepertory === "combined"
+                            ? "Equivalent wording is grouped; source grades remain separate."
+                            : `${activeRepertoryCatalogItem.shortLabel} source-specific search`}
+                        </span>
+                        {allFilteredRubrics.length > 300 && (
+                          <span className="flex-none font-mono text-slate-500">
+                            Showing 300 of {allFilteredRubrics.length.toLocaleString()}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
                     {/* Rubrics results list */}
@@ -14735,6 +14801,14 @@ ${err.message || err}`);
                           <p className="text-[10px] font-bold">Hydrating Classic Repertory...</p>
                           <p className="text-[8px] opacity-75 max-w-[160px] mt-0.5 font-bold">Loading 64,000+ clinical rubrics into memory.</p>
                         </div>
+                      ) : !multiSourceSearchReady ? (
+                        <div className="flex flex-col items-center justify-center px-5 py-10 text-center text-slate-400">
+                          <Layers className="mb-2 h-5 w-5 text-teal-400" />
+                          <p className="text-[10px] font-bold text-slate-600">Search all governed sources</p>
+                          <p className="mt-1 max-w-[240px] text-[8px] font-semibold leading-relaxed">
+                            Enter at least two characters. Matching wording will be grouped while every repertory’s grades and citations remain independent.
+                          </p>
+                        </div>
                       ) : filteredRubrics.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-6 text-center text-slate-400">
                           <Search className="w-5 h-5 opacity-40 mb-1" />
@@ -14742,61 +14816,16 @@ ${err.message || err}`);
                           <p className="text-[8px] opacity-75 max-w-[160px] mt-0.5">Try searching across all chapters or check spelling.</p>
                         </div>
                       ) : (
-                        filteredRubrics.map((rub) => {
-                          const isKent = rub.source === "kent";
-                          const isClarke = rub.source === "clarke";
-                          const isBoger = rub.source === "boger";
-                          const isKnerr = rub.source === "knerr";
-                          const isBoenninghausen = rub.source === "boenninghausen";
-                          const canScore = isRubricScoringEnabled(rub);
-                          const badgeColor = isKent
-                            ? "bg-sky-50 text-sky-700 border-sky-100"
-                            : isClarke
-                              ? "bg-amber-50 text-amber-700 border-amber-100"
-                              : isBoger
-                                ? "bg-violet-50 text-violet-700 border-violet-100"
-                              : isKnerr
-                                ? "bg-rose-50 text-rose-700 border-rose-100"
-                              : isBoenninghausen
-                                ? "bg-cyan-50 text-cyan-700 border-cyan-100"
-                              : "bg-emerald-50 text-emerald-700 border-emerald-100";
-                          const badgeText = isKent ? "K" : isClarke ? "C" : isBoger ? "BB" : isKnerr ? "KN" : isBoenninghausen ? "TPB" : "B";
-
-                          return (
-                            <button
-                              key={rub.id}
-                              onClick={() => addRubric(rub)}
-                              title={isClarke ? rub.citation || (canScore ? "Add Clarke symptom to the case" : "Add cited Clarke reference to the case") : "Add rubric to scoring matrix"}
-                              className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-200 flex items-center justify-between group border border-transparent border-l-4 bg-white/40 ${
-                                isClarke
-                                  ? "cursor-pointer border-l-amber-300 hover:bg-amber-50 hover:border-amber-200"
-                                  : "cursor-pointer hover:bg-mint/10 hover:text-mint-dark hover:border-mint/20 hover:border-l-mint"
-                              }`}
-                            >
-                              <div className="flex items-center gap-2.5 min-w-0 flex-grow pr-2">
-                                <span className={`text-[8px] font-black border rounded px-1.5 py-0.5 flex-shrink-0 font-mono tracking-wider shadow-2xs ${badgeColor}`}>
-                                  {badgeText}
-                                </span>
-                                <div className="truncate flex flex-col">
-                                  <span className="truncate text-slate-700 group-hover:text-slate-900">{highlightQuery(rub.name, rubricSearch)}</span>
-                                  {searchAllChapters && (
-                                    <span className="text-[8px] opacity-50 font-mono tracking-wide truncate">
-                                      {rub.chapter}
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                              {isClarke ? (
-                                <span className="flex items-center gap-1 text-[8px] font-black uppercase tracking-wide text-amber-700">
-                                  <Plus className="h-3 w-3" />
-                                  {canScore ? "Add symptom" : "Add reference"}
-                                </span>
-                              ) : (
-                                <Plus className="w-3.5 h-3.5 text-mint opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
-                              )}
-                            </button>
-                          );
-                        })
+                        <GroupedRepertoryResults
+                          rubrics={filteredRubrics}
+                          groupAcrossSources={selectedRepertory === "combined"}
+                          expandedGroupKey={expandedRubricGroupKey}
+                          onToggleGroup={(key) => setExpandedRubricGroupKey((current) => current === key ? null : key)}
+                          onAddRubric={addRubric}
+                          query={rubricSearch}
+                          showChapter={searchAllChapters}
+                          renderHighlighted={highlightQuery}
+                        />
                       )}
                     </div>
 
@@ -14925,8 +14954,20 @@ ${err.message || err}`);
                   </div>
                 </div>
 
+                <button
+                  type="button"
+                  onPointerDown={beginRubricPanelResize}
+                  className="repertory-panel-resizer"
+                  aria-label="Resize rubric browser and repertorization matrix"
+                  title="Drag to resize the rubric browser"
+                >
+                  <span />
+                  <span />
+                  <span />
+                </button>
+
                 {/* ZONE 3 (Top Right) - Column Span 7 */}
-                <div className="order-2 xl:order-2 xl:col-span-7 flex flex-col gap-6">
+                <div className="repertorization-panel flex min-w-0 flex-col gap-6">
                   
                   {/* ZONE 3: Repertorization Engine Matrix */}
                   <div className="glass-panel rounded-3xl border-white/60 p-6 space-y-4 shadow-sm bg-white/60 backdrop-blur-md">
