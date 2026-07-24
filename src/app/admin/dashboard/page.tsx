@@ -14970,9 +14970,9 @@ ${err.message || err}`);
                 <div className="repertorization-panel flex min-w-0 flex-col gap-6">
                   
                   {/* ZONE 3: Repertorization Engine Matrix */}
-                  <div className="glass-panel rounded-3xl border-white/60 p-6 space-y-4 shadow-sm bg-white/60 backdrop-blur-md">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-900/5 pb-3 gap-3">
-                      <div>
+                  <div className="repertory-zone-three-card glass-panel overflow-hidden rounded-3xl border-white/60 bg-white/60 p-4 shadow-sm backdrop-blur-md sm:p-5">
+                    <div className="flex flex-col gap-3 border-b border-slate-900/5 pb-4">
+                      <div className="min-w-0">
                         <h3 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider flex items-center gap-2 font-mono">
                           <Activity className="w-4 h-4 text-mint" />
                           Zone 3: Constitutional Repertorization Matrix
@@ -14981,12 +14981,12 @@ ${err.message || err}`);
                       </div>
 
                       {selectedRubrics.length > 0 && (
-                        <div className="flex items-center gap-2 self-end sm:self-auto">
+                        <div className="repertory-zone-three-toolbar flex w-full flex-wrap items-center gap-2">
                           {/* Send to Sheet */}
                           <button
                             onClick={handleSendRubricsToSheet}
                             disabled={isSyncingRepertory}
-                            className="px-3 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-white rounded-xl text-[10px] font-bold uppercase transition-all duration-300 cursor-pointer shadow-md flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex min-h-9 flex-none items-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-3 py-1.5 text-[10px] font-bold uppercase text-white shadow-md transition-all duration-300 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
                             title="Send selected rubrics directly to the patient's Clinical Sheet"
                           >
                             <FileSpreadsheet className="w-3.5 h-3.5" />
@@ -14998,10 +14998,10 @@ ${err.message || err}`);
                             placeholder="Filter columns..."
                             value={remedyFilter}
                             onChange={(e) => setRemedyFilter(e.target.value)}
-                            className="px-3 py-1.5 border border-slate-200 focus:border-mint outline-none rounded-xl text-[10px] bg-white font-semibold w-24 shadow-sm transition-all"
+                            className="min-h-9 w-28 flex-none rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-[10px] font-semibold shadow-sm outline-none transition-all focus:border-mint"
                           />
                           {/* Custom Remedy Input */}
-                          <div className="flex items-center gap-1">
+                          <div className="flex min-w-[190px] flex-1 items-center gap-1">
                             <input
                               type="text"
                               placeholder="Add remedy (e.g. Thuja)..."
@@ -15019,7 +15019,7 @@ ${err.message || err}`);
                                   }
                                 }
                               }}
-                              className="px-3 py-1.5 border border-slate-200 focus:border-mint outline-none rounded-xl text-[10px] bg-white font-semibold w-36 shadow-sm transition-all"
+                              className="min-h-9 min-w-[145px] flex-1 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-[10px] font-semibold shadow-sm outline-none transition-all focus:border-mint"
                             />
                             <button
                               type="button"
@@ -15032,7 +15032,7 @@ ${err.message || err}`);
                                   setCustomRemedyInput("");
                                 }
                               }}
-                              className="px-2.5 py-1.5 bg-mint hover:bg-mint-dark text-white rounded-xl text-[10px] font-bold uppercase transition-all duration-200 cursor-pointer border-none shadow-sm"
+                              className="min-h-9 flex-none rounded-xl border-none bg-mint px-2.5 py-1.5 text-[10px] font-bold uppercase text-white shadow-sm transition-all duration-200 hover:bg-mint-dark"
                             >
                               Add
                             </button>
@@ -15048,7 +15048,7 @@ ${err.message || err}`);
                                 alert("No matching remedies found to auto-suggest.");
                               }
                             }}
-                            className="px-2.5 py-1.5 border border-mint text-mint hover:bg-mint/5 rounded-xl text-[10px] font-bold uppercase transition-all duration-200 cursor-pointer shadow-sm"
+                            className="min-h-9 flex-none rounded-xl border border-mint px-2.5 py-1.5 text-[10px] font-bold uppercase text-mint shadow-sm transition-all duration-200 hover:bg-mint/5"
                             title="Auto-populate compare grid with the top 10 remedies for active rubrics"
                           >
                             Auto Top 10
@@ -15056,7 +15056,7 @@ ${err.message || err}`);
                           {/* Group by Kingdom */}
                           <button
                             onClick={() => setGroupByKingdom(!groupByKingdom)}
-                            className={`px-3 py-1.5 border rounded-xl text-[10px] font-bold uppercase transition-all duration-300 cursor-pointer shadow-sm ${
+                            className={`min-h-9 flex-none rounded-xl border px-3 py-1.5 text-[10px] font-bold uppercase shadow-sm transition-all duration-300 ${
                               groupByKingdom 
                                 ? "bg-[#0F766E] text-white border-[#0F766E]" 
                                 : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
@@ -15073,7 +15073,7 @@ ${err.message || err}`);
                                 setRemedyColumns([]);
                               }
                             }}
-                            className="px-3 py-1.5 border border-rose-200 bg-rose-50/50 hover:bg-rose-50 text-rose-600 hover:text-rose-700 rounded-xl text-[10px] font-bold uppercase transition-all duration-200 cursor-pointer shadow-sm flex items-center gap-1"
+                            className="flex min-h-9 flex-none items-center gap-1 rounded-xl border border-rose-200 bg-rose-50/50 px-3 py-1.5 text-[10px] font-bold uppercase text-rose-600 shadow-sm transition-all duration-200 hover:bg-rose-50 hover:text-rose-700"
                             title="Clear all selected rubrics and reset remedies to restart new case analysis"
                           >
                             <Trash2 className="w-3.5 h-3.5 text-rose-500" />
@@ -15084,13 +15084,22 @@ ${err.message || err}`);
                     </div>
 
                     {selectedRubrics.length === 0 ? (
-                      <div className="p-12 text-center border border-dashed border-slate-200 rounded-2xl bg-slate-50/20">
+                      <div className="mt-4 rounded-2xl border border-dashed border-slate-200 bg-slate-50/20 p-12 text-center">
                         <p className="text-xs font-bold text-slate-500">Repertorization Grid Offline</p>
                         <p className="text-[10px] text-slate-400 mt-1">Please select symptom rubrics from Zone 1 to activate the grid.</p>
                       </div>
                     ) : (
-                      <div className="overflow-x-auto border border-slate-200/60 rounded-2xl bg-white shadow-md">
-                        <table className="w-full border-collapse text-left text-xs">
+                      <div className="mt-4 min-w-0">
+                        <div className="mb-2 flex flex-wrap items-center justify-between gap-2 px-1">
+                          <span className="font-mono text-[8px] font-black uppercase tracking-widest text-slate-500">
+                            Remedy comparison
+                          </span>
+                          <span className="text-[8px] font-semibold text-slate-400">
+                            Scroll horizontally to compare additional remedies
+                          </span>
+                        </div>
+                        <div className="repertory-matrix-scroll max-w-full overflow-x-auto overscroll-x-contain rounded-2xl border border-slate-200/60 bg-white shadow-md">
+                        <table className="w-max min-w-full border-collapse text-left text-xs">
                           <thead>
                             <tr className="bg-slate-50/80 border-b border-slate-200 text-[9px] font-black uppercase text-slate-500 tracking-wider">
                               <th className="p-4.5 min-w-[200px] align-middle font-mono">Selected Rubric Name</th>
@@ -15219,6 +15228,7 @@ ${err.message || err}`);
                             </tr>
                           </tbody>
                         </table>
+                        </div>
                       </div>
                     )}
                   </div>

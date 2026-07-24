@@ -74,6 +74,7 @@ recents = updateRecentRepertories(recents, "knerr");
 assert.deepStrictEqual(recents, ["knerr", "boericke", "boenninghausen", "boger", "clarke"]);
 
 const globalsCss = fs.readFileSync(path.resolve("src/app/globals.css"), "utf8");
+const dashboardSource = fs.readFileSync(path.resolve("src/app/admin/dashboard/page.tsx"), "utf8");
 assert.match(
   globalsCss,
   /\.repertory-context-bar\s*{[^}]*z-index:\s*80;/s,
@@ -88,6 +89,23 @@ assert.match(
   globalsCss,
   /\.repertory-panel-resizer\s*{[^}]*z-index:\s*2;/s,
   "The resizer must remain below the catalogue context",
+);
+assert.ok(
+  dashboardSource.includes("repertory-zone-three-toolbar flex w-full flex-wrap"),
+  "Zone 3 actions must wrap inside their panel instead of overflowing the viewport",
+);
+assert.ok(
+  dashboardSource.includes("repertory-matrix-scroll max-w-full overflow-x-auto"),
+  "The remedy matrix must scroll within Zone 3",
+);
+assert.ok(
+  dashboardSource.includes('className="w-max min-w-full border-collapse'),
+  "Remedy columns must retain their usable width inside the matrix scroller",
+);
+assert.match(
+  globalsCss,
+  /\.repertory-matrix-scroll\s*{[^}]*scrollbar-width:\s*thin;/s,
+  "The matrix scroller must expose a visible horizontal scrollbar",
 );
 
 console.log("Scalable repertory catalogue and grouped-search UX tests passed.");

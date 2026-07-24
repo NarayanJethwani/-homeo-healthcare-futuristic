@@ -1669,6 +1669,29 @@ html.lenis, html.lenis body {
   display: none;
 }
 
+.repertory-matrix-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(13, 148, 136, 0.45) rgba(226, 232, 240, 0.65);
+}
+
+.repertory-matrix-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+
+.repertory-matrix-scroll::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background: rgba(226, 232, 240, 0.65);
+}
+
+.repertory-matrix-scroll::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(13, 148, 136, 0.45);
+}
+
+.repertory-matrix-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(13, 148, 136, 0.7);
+}
+
 @media (min-width: 1280px) {
   .classical-workbench-grid {
     grid-template-columns:
