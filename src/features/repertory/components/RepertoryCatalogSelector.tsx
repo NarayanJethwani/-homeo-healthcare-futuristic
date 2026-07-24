@@ -22,6 +22,7 @@ export type ClassicalRepertoryId =
   | "boenninghausen"
   | "gentry"
   | "synoptic"
+  | "jahr"
   | "combined";
 
 export type RepertoryCatalogEntry = {
@@ -112,6 +113,18 @@ export const repertoryCatalogBase: Array<Omit<RepertoryCatalogEntry, "count">> =
     description: "Clinical rubrics with source-verified remedy occurrences.",
     scoringLabel: "Occurrence scoring",
     scoringDetail: "Each listed remedy receives one point; unreliable grades are not invented.",
+    accent: "amber",
+  },
+  {
+    id: "jahr",
+    label: "Jahr’s Clinical Guide",
+    shortLabel: "Jahr Clinical",
+    author: "G. H. G. Jahr",
+    year: "1850",
+    group: "Clinical repertories",
+    description: "The English Clinical Guide or Pocket-Repertory arranged by clinical condition.",
+    scoringLabel: "Three-class clinical scoring",
+    scoringDetail: "Source Classes 1, 2 and 3 map to grades 3, 2 and 1; unclassified recommendations remain at grade 1.",
     accent: "amber",
   },
   {

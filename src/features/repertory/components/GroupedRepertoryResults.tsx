@@ -23,6 +23,7 @@ const sourcePresentation: Record<
   boenninghausen: { badge: "TPB", label: "Bönninghausen TPB", className: "bg-cyan-50 text-cyan-700 border-cyan-100" },
   gentry: { badge: "G", label: "Gentry Concordance", className: "bg-slate-50 text-slate-700 border-slate-200" },
   synoptic: { badge: "SK", label: "Boger Synoptic Key", className: "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-100" },
+  jahr: { badge: "J", label: "Jahr Clinical", className: "bg-orange-50 text-orange-700 border-orange-100" },
 };
 
 function normalizeRubricWording(value: string): string {

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JETHWANI_REPERTORY_DATA = exports.JETHWANI_REMEDY_CONFIRMATIONS = exports.JETHWANI_SECTIONS = exports.SEARCH_SYNONYMS = exports.SYNOPTIC_CHAPTERS = exports.SYNOPTIC_REPERTORY_DATA = exports.GENTRY_CHAPTERS = exports.GENTRY_REPERTORY_DATA = exports.BOENNINGHAUSEN_CHAPTERS = exports.BOENNINGHAUSEN_REPERTORY_DATA = exports.KNERR_CHAPTERS = exports.KNERR_REPERTORY_DATA = exports.BOGER_CHAPTERS = exports.BOGER_REPERTORY_DATA = exports.CLARKE_CHAPTERS = exports.CLARKE_REPERTORY_DATA = exports.BOERICKE_REPERTORY_DATA = exports.BOERICKE_CHAPTERS = exports.REPERTORY_DATA = exports.REPERTORY_CHAPTERS = exports.REMEDIES_METADATA = void 0;
+exports.JETHWANI_REPERTORY_DATA = exports.JETHWANI_REMEDY_CONFIRMATIONS = exports.JETHWANI_SECTIONS = exports.SEARCH_SYNONYMS = exports.JAHR_CHAPTERS = exports.JAHR_REPERTORY_DATA = exports.SYNOPTIC_CHAPTERS = exports.SYNOPTIC_REPERTORY_DATA = exports.GENTRY_CHAPTERS = exports.GENTRY_REPERTORY_DATA = exports.BOENNINGHAUSEN_CHAPTERS = exports.BOENNINGHAUSEN_REPERTORY_DATA = exports.KNERR_CHAPTERS = exports.KNERR_REPERTORY_DATA = exports.BOGER_CHAPTERS = exports.BOGER_REPERTORY_DATA = exports.CLARKE_CHAPTERS = exports.CLARKE_REPERTORY_DATA = exports.BOERICKE_REPERTORY_DATA = exports.BOERICKE_CHAPTERS = exports.REPERTORY_DATA = exports.REPERTORY_CHAPTERS = exports.REMEDIES_METADATA = void 0;
 exports.setRepertoryData = setRepertoryData;
 exports.getRepertoryData = getRepertoryData;
 exports.calculateClinicalIndices = calculateClinicalIndices;
@@ -332,7 +332,9 @@ exports.GENTRY_REPERTORY_DATA = [];
 exports.GENTRY_CHAPTERS = [];
 exports.SYNOPTIC_REPERTORY_DATA = [];
 exports.SYNOPTIC_CHAPTERS = [];
-function setRepertoryData(kentData, boerickeData, clarkeData = [], bogerData = [], knerrData = [], boenninghausenData = [], gentryData = [], synopticData = []) {
+exports.JAHR_REPERTORY_DATA = [];
+exports.JAHR_CHAPTERS = [];
+function setRepertoryData(kentData, boerickeData, clarkeData = [], bogerData = [], knerrData = [], boenninghausenData = [], gentryData = [], synopticData = [], jahrData = []) {
     exports.REPERTORY_DATA.length = 0;
     exports.REPERTORY_DATA.push(...kentData);
     exports.BOERICKE_REPERTORY_DATA.length = 0;
@@ -393,6 +395,17 @@ function setRepertoryData(kentData, boerickeData, clarkeData = [], bogerData = [
     })));
     exports.SYNOPTIC_CHAPTERS.length = 0;
     exports.SYNOPTIC_CHAPTERS.push(...Array.from(new Set(exports.SYNOPTIC_REPERTORY_DATA.map((rubric) => rubric.chapter))).sort());
+    exports.JAHR_REPERTORY_DATA.length = 0;
+    for (const rubric of jahrData) {
+        exports.JAHR_REPERTORY_DATA.push({
+            ...rubric,
+            source: "jahr",
+            scoringEnabled: true,
+            scoringMode: "graded",
+        });
+    }
+    exports.JAHR_CHAPTERS.length = 0;
+    exports.JAHR_CHAPTERS.push(...Array.from(new Set(exports.JAHR_REPERTORY_DATA.map((rubric) => rubric.chapter))).sort());
 }
 exports.SEARCH_SYNONYMS = {
     "sweat": ["perspir", "diaphor", "sweat", "perspiration", "sweating"],
@@ -484,6 +497,12 @@ function getRepertoryData(source) {
         scoringEnabled: true,
         scoringMode: 'graded',
     }));
+    const jahrWithSource = exports.JAHR_REPERTORY_DATA.map(r => ({
+        ...r,
+        source: 'jahr',
+        scoringEnabled: true,
+        scoringMode: 'graded',
+    }));
     if (source === 'kent')
         return kentWithSource;
     if (source === 'boericke')
@@ -500,7 +519,9 @@ function getRepertoryData(source) {
         return gentryWithSource;
     if (source === 'synoptic')
         return synopticWithSource;
-    return [...kentWithSource, ...boerickeWithSource, ...clarkeWithSource, ...bogerWithSource, ...knerrWithSource, ...boenninghausenWithSource, ...gentryWithSource, ...synopticWithSource];
+    if (source === 'jahr')
+        return jahrWithSource;
+    return [...kentWithSource, ...boerickeWithSource, ...clarkeWithSource, ...bogerWithSource, ...knerrWithSource, ...boenninghausenWithSource, ...gentryWithSource, ...synopticWithSource, ...jahrWithSource];
 }
 exports.JETHWANI_SECTIONS = {
     "Section A": { name: "Mental & Emotional", icon: "🧠", description: "Modern cognitive, emotional, and neuro-psychological states" },
