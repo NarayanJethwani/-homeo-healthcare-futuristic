@@ -22,6 +22,7 @@ const sourcePresentation: Record<
   knerr: { badge: "KN", label: "Knerr–Hering", className: "bg-rose-50 text-rose-700 border-rose-100" },
   boenninghausen: { badge: "TPB", label: "Bönninghausen TPB", className: "bg-cyan-50 text-cyan-700 border-cyan-100" },
   gentry: { badge: "G", label: "Gentry Concordance", className: "bg-slate-50 text-slate-700 border-slate-200" },
+  synoptic: { badge: "SK", label: "Boger Synoptic Key", className: "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-100" },
 };
 
 function normalizeRubricWording(value: string): string {

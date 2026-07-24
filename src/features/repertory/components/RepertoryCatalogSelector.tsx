@@ -21,6 +21,7 @@ export type ClassicalRepertoryId =
   | "knerr"
   | "boenninghausen"
   | "gentry"
+  | "synoptic"
   | "combined";
 
 export type RepertoryCatalogEntry = {
@@ -123,6 +124,18 @@ export const repertoryCatalogBase: Array<Omit<RepertoryCatalogEntry, "count">> =
     description: "Boger’s synthesis of Bönninghausen’s characteristics and repertory.",
     scoringLabel: "Five-grade scoring",
     scoringDetail: "Printed remedy distinctions are preserved from parenthesized roman 1 through CAPITAL 5.",
+    accent: "violet",
+  },
+  {
+    id: "synoptic",
+    label: "Boger’s Synoptic Key",
+    shortLabel: "Boger Synoptic Key",
+    author: "Cyrus Maxwell Boger",
+    year: "1916",
+    group: "Synthesized repertories",
+    description: "The analytical repertory from Part I of the second-edition Synoptic Key.",
+    scoringLabel: "Four-level printed scoring",
+    scoringDetail: "Underlined bold 4, bold 3, italic 2, roman 1; all source distinctions remain separate.",
     accent: "violet",
   },
   {

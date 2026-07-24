@@ -19,7 +19,7 @@ const CIEWorkspace = dynamic(() => import("./CIEWorkspace"), {
   ssr: false,
   loading: () => <div className="p-8 text-center text-slate-400">Loading Clinical Intelligence Engine...</div>
 });
-import { REPERTORY_CHAPTERS, REMEDIES_METADATA, Rubric, BOERICKE_CHAPTERS, CLARKE_CHAPTERS, BOGER_CHAPTERS, KNERR_CHAPTERS, BOENNINGHAUSEN_CHAPTERS, GENTRY_CHAPTERS, SEARCH_SYNONYMS, getRepertoryData, JETHWANI_SECTIONS, JETHWANI_REPERTORY_DATA as JETHWANI_REPERTORY_DATA_ORIG, JETHWANI_REMEDY_CONFIRMATIONS, calculateClinicalIndices, type JethwaniRubric, type JethwaniSymptomConfig, type ClinicalIndices, setRepertoryData } from "@/lib/repertoryData";
+import { REPERTORY_CHAPTERS, REMEDIES_METADATA, Rubric, BOERICKE_CHAPTERS, CLARKE_CHAPTERS, BOGER_CHAPTERS, KNERR_CHAPTERS, BOENNINGHAUSEN_CHAPTERS, GENTRY_CHAPTERS, SYNOPTIC_CHAPTERS, SEARCH_SYNONYMS, getRepertoryData, JETHWANI_SECTIONS, JETHWANI_REPERTORY_DATA as JETHWANI_REPERTORY_DATA_ORIG, JETHWANI_REMEDY_CONFIRMATIONS, calculateClinicalIndices, type JethwaniRubric, type JethwaniSymptomConfig, type ClinicalIndices, setRepertoryData } from "@/lib/repertoryData";
 import { isRubricScoringEnabled } from "@/features/repertory/scoring/repertoryScoringPolicy";
 import { getTopWorkbenchRemedyColumns, projectWorkbenchScores } from "@/features/repertory/scoring/repertoryWorkbenchScoring";
 import {
@@ -1864,7 +1864,8 @@ export default function AdminDashboard() {
     if (selectedRepertory === "knerr") return KNERR_CHAPTERS;
     if (selectedRepertory === "boenninghausen") return BOENNINGHAUSEN_CHAPTERS;
     if (selectedRepertory === "gentry") return GENTRY_CHAPTERS;
-    return Array.from(new Set([...REPERTORY_CHAPTERS, ...BOERICKE_CHAPTERS, ...CLARKE_CHAPTERS, ...BOGER_CHAPTERS, ...KNERR_CHAPTERS, ...BOENNINGHAUSEN_CHAPTERS, ...GENTRY_CHAPTERS]));
+    if (selectedRepertory === "synoptic") return SYNOPTIC_CHAPTERS;
+    return Array.from(new Set([...REPERTORY_CHAPTERS, ...BOERICKE_CHAPTERS, ...CLARKE_CHAPTERS, ...BOGER_CHAPTERS, ...KNERR_CHAPTERS, ...BOENNINGHAUSEN_CHAPTERS, ...GENTRY_CHAPTERS, ...SYNOPTIC_CHAPTERS]));
   };
 
   useEffect(() => {
@@ -1922,7 +1923,7 @@ export default function AdminDashboard() {
     const hydrateRepertory = async () => {
       setIsRepertoryLoading(true);
       try {
-        const [kentRes, boerickeRes, clarkeRes, bogerRes, knerrRes, boenninghausenRes, gentryRes, jethwaniRes] = await Promise.allSettled([
+        const [kentRes, boerickeRes, clarkeRes, bogerRes, knerrRes, boenninghausenRes, gentryRes, synopticRes, jethwaniRes] = await Promise.allSettled([
           fetch("/data/kentRepertoryData.json"),
           fetch("/data/boerickeRepertoryData.json"),
           fetch("/data/clarkeClinicalRepertoryData.json?v=clarke-occurrence-2026-07-23"),
@@ -1930,6 +1931,7 @@ export default function AdminDashboard() {
           fetch("/data/knerrHeringRepertoryData.json?v=knerr-graded-1896-2026-07-23"),
           fetch("/data/boenninghausenTherapeuticPocketBookData.json?v=boenninghausen-tpb-graded-1846-2026-07-24"),
           fetch("/data/gentryConcordanceRepertoryData.json?v=gentry-occurrence-1890-2026-07-24"),
+          fetch("/data/bogerSynopticKeyRepertoryData.json?v=boger-synoptic-graded-1916-2026-07-24"),
           fetch("/data/jethwaniRepertoryData.json")
         ]);
 
@@ -1940,6 +1942,7 @@ export default function AdminDashboard() {
         let knerrData: any[] = [];
         let boenninghausenData: any[] = [];
         let gentryData: any[] = [];
+        let synopticData: any[] = [];
         let jethwaniData: any[] = [];
 
         if (kentRes.status === "fulfilled" && kentRes.value.ok) {
@@ -1969,6 +1972,10 @@ export default function AdminDashboard() {
         if (gentryRes.status === "fulfilled" && gentryRes.value.ok) {
           gentryData = await gentryRes.value.json();
           console.log(`Loaded Gentry's Concordance Repertory: ${gentryData.length} one-grade rubrics`);
+        }
+        if (synopticRes.status === "fulfilled" && synopticRes.value.ok) {
+          synopticData = await synopticRes.value.json();
+          console.log(`Loaded Boger's Synoptic Key: ${synopticData.length} four-level graded rubrics`);
         }
         if (jethwaniRes.status === "fulfilled" && jethwaniRes.value.ok) {
           jethwaniData = await jethwaniRes.value.json();
@@ -2001,7 +2008,7 @@ export default function AdminDashboard() {
           section: r.section || r.category || "Section D"
         }));
 
-        setRepertoryData(kentData, boerickeData, clarkeData, bogerData, knerrData, boenninghausenData, gentryData);
+        setRepertoryData(kentData, boerickeData, clarkeData, bogerData, knerrData, boenninghausenData, gentryData, synopticData);
         if (jethwaniData.length > 0) {
           GLOBAL_JETHWANI_DATA.length = 0;
           GLOBAL_JETHWANI_DATA.push(...jethwaniData);
@@ -14740,7 +14747,7 @@ ${err.message || err}`);
                       {/* Chapter Select */}
                       <div className={`flex flex-col gap-1 ${searchAllChapters ? "opacity-30 pointer-events-none transition-opacity" : "transition-opacity"}`}>
                         <label className="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 font-mono">
-                          {selectedRepertory === "kent" ? "Kentian Chapter" : selectedRepertory === "boericke" ? "Boericke Chapter" : selectedRepertory === "clarke" ? "Clarke Clinical Chapter" : selectedRepertory === "boger" ? "Boger–Boenninghausen Chapter" : selectedRepertory === "knerr" ? "Knerr–Hering Chapter" : selectedRepertory === "boenninghausen" ? "Bönninghausen TPB Part" : selectedRepertory === "gentry" ? "Gentry Concordance Chapter" : "Unified Chapter"}
+                          {selectedRepertory === "kent" ? "Kentian Chapter" : selectedRepertory === "boericke" ? "Boericke Chapter" : selectedRepertory === "clarke" ? "Clarke Clinical Chapter" : selectedRepertory === "boger" ? "Boger–Boenninghausen Chapter" : selectedRepertory === "knerr" ? "Knerr–Hering Chapter" : selectedRepertory === "boenninghausen" ? "Bönninghausen TPB Part" : selectedRepertory === "gentry" ? "Gentry Concordance Chapter" : selectedRepertory === "synoptic" ? "Boger Synoptic Key Section" : "Unified Chapter"}
                         </label>
                         <select
                           value={selectedChapter}
@@ -14895,9 +14902,11 @@ ${err.message || err}`);
                                           ? "bg-cyan-50 text-cyan-700 border-cyan-100"
                                         : rubric.source === "gentry"
                                           ? "bg-slate-50 text-slate-700 border-slate-200"
+                                        : rubric.source === "synoptic"
+                                          ? "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-100"
                                         : "bg-emerald-50 text-emerald-700 border-emerald-100"
                                     }`}>
-                                      {rubric.source === "kent" ? "K" : rubric.source === "clarke" ? "C" : rubric.source === "boger" ? "BB" : rubric.source === "knerr" ? "KN" : rubric.source === "boenninghausen" ? "TPB" : rubric.source === "gentry" ? "G" : "B"}
+                                      {rubric.source === "kent" ? "K" : rubric.source === "clarke" ? "C" : rubric.source === "boger" ? "BB" : rubric.source === "knerr" ? "KN" : rubric.source === "boenninghausen" ? "TPB" : rubric.source === "gentry" ? "G" : rubric.source === "synoptic" ? "SK" : "B"}
                                     </span>
                                     <span className="text-[8px] text-mint-dark uppercase font-extrabold tracking-widest block font-mono truncate">
                                       {rubric.chapter}
