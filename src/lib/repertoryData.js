@@ -373,13 +373,15 @@ function setRepertoryData(kentData, boerickeData, clarkeData = [], bogerData = [
     exports.BOENNINGHAUSEN_CHAPTERS.length = 0;
     exports.BOENNINGHAUSEN_CHAPTERS.push(...Array.from(new Set(exports.BOENNINGHAUSEN_REPERTORY_DATA.map((rubric) => rubric.chapter))).sort());
     exports.GENTRY_REPERTORY_DATA.length = 0;
-    exports.GENTRY_REPERTORY_DATA.push(...gentryData.map((rubric) => ({
-        ...rubric,
-        source: "gentry",
-        scoringEnabled: true,
-        scoringMode: "occurrence",
-        occurrenceScoringEnabled: true,
-    })));
+    for (const rubric of gentryData) {
+        exports.GENTRY_REPERTORY_DATA.push({
+            ...rubric,
+            source: "gentry",
+            scoringEnabled: true,
+            scoringMode: "occurrence",
+            occurrenceScoringEnabled: true,
+        });
+    }
     exports.GENTRY_CHAPTERS.length = 0;
     exports.GENTRY_CHAPTERS.push(...Array.from(new Set(exports.GENTRY_REPERTORY_DATA.map((rubric) => rubric.chapter))).sort());
     exports.SYNOPTIC_REPERTORY_DATA.length = 0;

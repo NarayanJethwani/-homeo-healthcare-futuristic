@@ -1,7 +1,11 @@
 import assert from "node:assert";
 import fs from "node:fs";
 import path from "node:path";
-import type { Rubric } from "../src/lib/repertoryData";
+import {
+  GENTRY_REPERTORY_DATA,
+  setRepertoryData,
+  type Rubric,
+} from "../src/lib/repertoryData";
 
 const assetPath = path.join(
   process.cwd(),
@@ -29,6 +33,13 @@ assert.ok(gentry.every((rubric) =>
 assert.ok(gentry.every((rubric) =>
   /William D\. Gentry.+1890.+vol\. [1-6]/.test(rubric.citation || "")
 ));
+
+assert.doesNotThrow(() => setRepertoryData([], [], [], [], [], [], gentry));
+assert.strictEqual(
+  GENTRY_REPERTORY_DATA.length,
+  gentry.length,
+  "Large governed corpora must hydrate without overflowing the browser call stack",
+);
 
 const abandoned = gentry.find((rubric) =>
   rubric.chapter === "Mind and Disposition"

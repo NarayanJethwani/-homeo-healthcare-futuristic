@@ -393,13 +393,15 @@ export function setRepertoryData(
   BOENNINGHAUSEN_CHAPTERS.length = 0;
   BOENNINGHAUSEN_CHAPTERS.push(...Array.from(new Set(BOENNINGHAUSEN_REPERTORY_DATA.map((rubric) => rubric.chapter))).sort());
   GENTRY_REPERTORY_DATA.length = 0;
-  GENTRY_REPERTORY_DATA.push(...gentryData.map((rubric) => ({
-    ...rubric,
-    source: "gentry" as const,
-    scoringEnabled: true,
-    scoringMode: "occurrence" as const,
-    occurrenceScoringEnabled: true,
-  })));
+  for (const rubric of gentryData) {
+    GENTRY_REPERTORY_DATA.push({
+      ...rubric,
+      source: "gentry" as const,
+      scoringEnabled: true,
+      scoringMode: "occurrence" as const,
+      occurrenceScoringEnabled: true,
+    });
+  }
   GENTRY_CHAPTERS.length = 0;
   GENTRY_CHAPTERS.push(...Array.from(new Set(GENTRY_REPERTORY_DATA.map((rubric) => rubric.chapter))).sort());
   SYNOPTIC_REPERTORY_DATA.length = 0;
