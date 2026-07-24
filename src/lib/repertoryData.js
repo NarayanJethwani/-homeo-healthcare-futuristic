@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JETHWANI_REPERTORY_DATA = exports.JETHWANI_REMEDY_CONFIRMATIONS = exports.JETHWANI_SECTIONS = exports.SEARCH_SYNONYMS = exports.LIPPE_CHAPTERS = exports.LIPPE_REPERTORY_DATA = exports.JAHR_CHAPTERS = exports.JAHR_REPERTORY_DATA = exports.SYNOPTIC_CHAPTERS = exports.SYNOPTIC_REPERTORY_DATA = exports.GENTRY_CHAPTERS = exports.GENTRY_REPERTORY_DATA = exports.BOENNINGHAUSEN_CHAPTERS = exports.BOENNINGHAUSEN_REPERTORY_DATA = exports.KNERR_CHAPTERS = exports.KNERR_REPERTORY_DATA = exports.BOGER_CHAPTERS = exports.BOGER_REPERTORY_DATA = exports.CLARKE_CHAPTERS = exports.CLARKE_REPERTORY_DATA = exports.BOERICKE_REPERTORY_DATA = exports.BOERICKE_CHAPTERS = exports.REPERTORY_DATA = exports.REPERTORY_CHAPTERS = exports.REMEDIES_METADATA = void 0;
+exports.JETHWANI_REPERTORY_DATA = exports.JETHWANI_REMEDY_CONFIRMATIONS = exports.JETHWANI_SECTIONS = exports.SEARCH_SYNONYMS = exports.HERING_SPECIALIZED_CHAPTERS = exports.HERING_SPECIALIZED_REPERTORY_DATA = exports.LIPPE_CHAPTERS = exports.LIPPE_REPERTORY_DATA = exports.JAHR_CHAPTERS = exports.JAHR_REPERTORY_DATA = exports.SYNOPTIC_CHAPTERS = exports.SYNOPTIC_REPERTORY_DATA = exports.GENTRY_CHAPTERS = exports.GENTRY_REPERTORY_DATA = exports.BOENNINGHAUSEN_CHAPTERS = exports.BOENNINGHAUSEN_REPERTORY_DATA = exports.KNERR_CHAPTERS = exports.KNERR_REPERTORY_DATA = exports.BOGER_CHAPTERS = exports.BOGER_REPERTORY_DATA = exports.CLARKE_CHAPTERS = exports.CLARKE_REPERTORY_DATA = exports.BOERICKE_REPERTORY_DATA = exports.BOERICKE_CHAPTERS = exports.REPERTORY_DATA = exports.REPERTORY_CHAPTERS = exports.REMEDIES_METADATA = void 0;
 exports.setRepertoryData = setRepertoryData;
 exports.getRepertoryData = getRepertoryData;
 exports.calculateClinicalIndices = calculateClinicalIndices;
@@ -336,7 +336,9 @@ exports.JAHR_REPERTORY_DATA = [];
 exports.JAHR_CHAPTERS = [];
 exports.LIPPE_REPERTORY_DATA = [];
 exports.LIPPE_CHAPTERS = [];
-function setRepertoryData(kentData, boerickeData, clarkeData = [], bogerData = [], knerrData = [], boenninghausenData = [], gentryData = [], synopticData = [], jahrData = [], lippeData = []) {
+exports.HERING_SPECIALIZED_REPERTORY_DATA = [];
+exports.HERING_SPECIALIZED_CHAPTERS = [];
+function setRepertoryData(kentData, boerickeData, clarkeData = [], bogerData = [], knerrData = [], boenninghausenData = [], gentryData = [], synopticData = [], jahrData = [], lippeData = [], heringSpecializedData = []) {
     exports.REPERTORY_DATA.length = 0;
     exports.REPERTORY_DATA.push(...kentData);
     exports.BOERICKE_REPERTORY_DATA.length = 0;
@@ -417,6 +419,16 @@ function setRepertoryData(kentData, boerickeData, clarkeData = [], bogerData = [
     })));
     exports.LIPPE_CHAPTERS.length = 0;
     exports.LIPPE_CHAPTERS.push(...Array.from(new Set(exports.LIPPE_REPERTORY_DATA.map((rubric) => rubric.chapter))).sort());
+    exports.HERING_SPECIALIZED_REPERTORY_DATA.length = 0;
+    exports.HERING_SPECIALIZED_REPERTORY_DATA.push(...heringSpecializedData.map((rubric) => ({
+        ...rubric,
+        source: "hering-specialized",
+        scoringEnabled: true,
+        scoringMode: "occurrence",
+        occurrenceScoringEnabled: true,
+    })));
+    exports.HERING_SPECIALIZED_CHAPTERS.length = 0;
+    exports.HERING_SPECIALIZED_CHAPTERS.push(...Array.from(new Set(exports.HERING_SPECIALIZED_REPERTORY_DATA.map((rubric) => rubric.chapter))).sort());
 }
 exports.SEARCH_SYNONYMS = {
     "sweat": ["perspir", "diaphor", "sweat", "perspiration", "sweating"],
@@ -520,6 +532,13 @@ function getRepertoryData(source) {
         scoringEnabled: true,
         scoringMode: 'graded',
     }));
+    const heringSpecializedWithSource = exports.HERING_SPECIALIZED_REPERTORY_DATA.map(r => ({
+        ...r,
+        source: 'hering-specialized',
+        scoringEnabled: true,
+        scoringMode: 'occurrence',
+        occurrenceScoringEnabled: true,
+    }));
     if (source === 'kent')
         return kentWithSource;
     if (source === 'boericke')
@@ -540,7 +559,9 @@ function getRepertoryData(source) {
         return jahrWithSource;
     if (source === 'lippe')
         return lippeWithSource;
-    return [...kentWithSource, ...boerickeWithSource, ...clarkeWithSource, ...bogerWithSource, ...knerrWithSource, ...boenninghausenWithSource, ...gentryWithSource, ...synopticWithSource, ...jahrWithSource, ...lippeWithSource];
+    if (source === 'hering-specialized')
+        return heringSpecializedWithSource;
+    return [...kentWithSource, ...boerickeWithSource, ...clarkeWithSource, ...bogerWithSource, ...knerrWithSource, ...boenninghausenWithSource, ...gentryWithSource, ...synopticWithSource, ...jahrWithSource, ...lippeWithSource, ...heringSpecializedWithSource];
 }
 exports.JETHWANI_SECTIONS = {
     "Section A": { name: "Mental & Emotional", icon: "🧠", description: "Modern cognitive, emotional, and neuro-psychological states" },

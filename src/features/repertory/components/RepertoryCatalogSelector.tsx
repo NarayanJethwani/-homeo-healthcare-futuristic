@@ -24,6 +24,7 @@ export type ClassicalRepertoryId =
   | "synoptic"
   | "jahr"
   | "lippe"
+  | "hering-specialized"
   | "combined";
 
 export type RepertoryCatalogEntry = {
@@ -115,6 +116,18 @@ export const repertoryCatalogBase: Array<Omit<RepertoryCatalogEntry, "count">> =
     scoringLabel: "Two-grade typographic scoring",
     scoringDetail: "Italic remedies retain source grade 2; ordinary roman remedies retain source grade 1.",
     accent: "rose",
+  },
+  {
+    id: "hering-specialized",
+    label: "Hering’s Specialized Repertories",
+    shortLabel: "Hering Specialized",
+    author: "Homœopathic Medical Society of Pennsylvania",
+    year: "1889",
+    group: "Foundational repertories",
+    description: "Nine compiler-revised specialist repertories to Hering’s Condensed Materia Medica.",
+    scoringLabel: "One-grade occurrence scoring",
+    scoringDetail: "Every source-listed remedy contributes one equal point; typography grades are not invented.",
+    accent: "cyan",
   },
   {
     id: "clarke",

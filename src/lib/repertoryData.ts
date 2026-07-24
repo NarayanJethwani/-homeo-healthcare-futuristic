@@ -3,7 +3,7 @@ export interface Rubric {
   chapter: string;
   name: string;
   remedies: Record<string, number>; // Maps a remedy abbreviation to a source grade, or 1 for an ungraded occurrence.
-  source?: "kent" | "boericke" | "clarke" | "boger" | "knerr" | "boenninghausen" | "gentry" | "synoptic" | "jahr" | "lippe";
+  source?: "kent" | "boericke" | "clarke" | "boger" | "knerr" | "boenninghausen" | "gentry" | "synoptic" | "jahr" | "lippe" | "hering-specialized";
   scoringEnabled?: boolean;
   scoringMode?: "graded" | "occurrence";
   occurrenceScoringEnabled?: boolean;
@@ -346,6 +346,8 @@ export const JAHR_REPERTORY_DATA: Rubric[] = [];
 export const JAHR_CHAPTERS: string[] = [];
 export const LIPPE_REPERTORY_DATA: Rubric[] = [];
 export const LIPPE_CHAPTERS: string[] = [];
+export const HERING_SPECIALIZED_REPERTORY_DATA: Rubric[] = [];
+export const HERING_SPECIALIZED_CHAPTERS: string[] = [];
 
 export function setRepertoryData(
   kentData: Rubric[],
@@ -357,7 +359,8 @@ export function setRepertoryData(
   gentryData: Rubric[] = [],
   synopticData: Rubric[] = [],
   jahrData: Rubric[] = [],
-  lippeData: Rubric[] = []
+  lippeData: Rubric[] = [],
+  heringSpecializedData: Rubric[] = []
 ) {
   REPERTORY_DATA.length = 0;
   REPERTORY_DATA.push(...kentData);
@@ -439,6 +442,18 @@ export function setRepertoryData(
   })));
   LIPPE_CHAPTERS.length = 0;
   LIPPE_CHAPTERS.push(...Array.from(new Set(LIPPE_REPERTORY_DATA.map((rubric) => rubric.chapter))).sort());
+  HERING_SPECIALIZED_REPERTORY_DATA.length = 0;
+  HERING_SPECIALIZED_REPERTORY_DATA.push(...heringSpecializedData.map((rubric) => ({
+    ...rubric,
+    source: "hering-specialized" as const,
+    scoringEnabled: true,
+    scoringMode: "occurrence" as const,
+    occurrenceScoringEnabled: true,
+  })));
+  HERING_SPECIALIZED_CHAPTERS.length = 0;
+  HERING_SPECIALIZED_CHAPTERS.push(
+    ...Array.from(new Set(HERING_SPECIALIZED_REPERTORY_DATA.map((rubric) => rubric.chapter))).sort(),
+  );
 }
 
 export const SEARCH_SYNONYMS: Record<string, string[]> = {
@@ -493,7 +508,7 @@ export const SEARCH_SYNONYMS: Record<string, string[]> = {
   "irritability": ["anger", "irritable", "temper", "irritability", "fury", "rage", "cross", "fault-finding"]
 };
 
-export function getRepertoryData(source: 'kent' | 'boericke' | 'clarke' | 'boger' | 'knerr' | 'boenninghausen' | 'gentry' | 'synoptic' | 'jahr' | 'lippe' | 'combined'): Rubric[] {
+export function getRepertoryData(source: 'kent' | 'boericke' | 'clarke' | 'boger' | 'knerr' | 'boenninghausen' | 'gentry' | 'synoptic' | 'jahr' | 'lippe' | 'hering-specialized' | 'combined'): Rubric[] {
   const kentWithSource = REPERTORY_DATA.map(r => ({ ...r, source: 'kent' as const }));
   const boerickeWithSource = BOERICKE_REPERTORY_DATA.map(r => ({ ...r, source: 'boericke' as const }));
   const clarkeWithSource = CLARKE_REPERTORY_DATA.map(r => ({
@@ -544,6 +559,13 @@ export function getRepertoryData(source: 'kent' | 'boericke' | 'clarke' | 'boger
     scoringEnabled: true,
     scoringMode: 'graded' as const,
   }));
+  const heringSpecializedWithSource = HERING_SPECIALIZED_REPERTORY_DATA.map(r => ({
+    ...r,
+    source: 'hering-specialized' as const,
+    scoringEnabled: true,
+    scoringMode: 'occurrence' as const,
+    occurrenceScoringEnabled: true,
+  }));
   
   if (source === 'kent') return kentWithSource;
   if (source === 'boericke') return boerickeWithSource;
@@ -555,7 +577,8 @@ export function getRepertoryData(source: 'kent' | 'boericke' | 'clarke' | 'boger
   if (source === 'synoptic') return synopticWithSource;
   if (source === 'jahr') return jahrWithSource;
   if (source === 'lippe') return lippeWithSource;
-  return [...kentWithSource, ...boerickeWithSource, ...clarkeWithSource, ...bogerWithSource, ...knerrWithSource, ...boenninghausenWithSource, ...gentryWithSource, ...synopticWithSource, ...jahrWithSource, ...lippeWithSource];
+  if (source === 'hering-specialized') return heringSpecializedWithSource;
+  return [...kentWithSource, ...boerickeWithSource, ...clarkeWithSource, ...bogerWithSource, ...knerrWithSource, ...boenninghausenWithSource, ...gentryWithSource, ...synopticWithSource, ...jahrWithSource, ...lippeWithSource, ...heringSpecializedWithSource];
 }
 
 // =========================================================================
