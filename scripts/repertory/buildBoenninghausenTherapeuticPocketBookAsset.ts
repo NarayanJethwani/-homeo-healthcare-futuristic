@@ -192,7 +192,7 @@ function plainText(chars: StyledChar[]): string {
   return chars.map((char) => char.value).join("").replace(/\s+/g, " ").trim();
 }
 
-function normalizeHeading(value: string): string {
+function legacyNormalizedHeading(value: string): string {
   const normalized = value
     .replace(/^[*†"'“”‘’\s]+/, "")
     .replace(/\s+/g, " ")
@@ -205,6 +205,111 @@ function normalizeHeading(value: string): string {
     "ffladaess": "Madness",
   };
   return sourceVerifiedCorrections[normalized] || normalized;
+}
+
+function normalizeHeading(value: string): string {
+  const normalized = legacyNormalizedHeading(value);
+  const sourceVerifiedCorrections: Record<string, string> = {
+    "Duriaig the fever": "During the fever",
+    "After tlic fever": "After the fever",
+    "f at;»:•.! morning": "In the morning",
+    "In tlie afternoon": "In the afternoon",
+    "fa the evening*": "In the evening",
+    "In tfhc ni£ht": "In the night",
+    "witBi anxiety": "with anxiety",
+    "witli siSent grief and sorrow": "with silent grief and sorrow",
+    "I>iiroiglitedne*s": "Vanishing of sight",
+    "Blood v.,,. I": "Bloody",
+    "With:i variegated cuticle on its surface": "With a variegated cuticle on its surface",
+    "8>!lrlt* A AIM'": "Dark",
+    "Blood-vessel^ burning sensation in the": "Blood-vessels, burning sensation in the",
+    "pulsations of tlu>": "pulsations of the",
+    "after <lifting the": "after cutting the",
+    "without liii^k-": "without husks",
+    "!>©Baa slacking llae gum": "From sucking the gums",
+    "Fa'oan the saaaa bEisruaiaag": "From the sun burning",
+    "the part affected.]": "the part affected",
+    "Warm, the air l> ing": "Warm, the air being",
+  };
+  const corrected = sourceVerifiedCorrections[normalized] || normalized;
+  const cleaned = corrected
+    .replace(/\bni£ht\b/gi, "night")
+    .replace(/\b(?:tlie|tfhc|tlic)\b/gi, "the")
+    .replace(/\bHie\b/g, "the")
+    .replace(/\bwitBi\b/g, "with")
+    .replace(/\bsiSent\b/g, "silent")
+    .replace(/©f|o[£€]/g, "of")
+    .replace(/§/g, "s")
+    .replace(/[■•]/g, "")
+    .replace(/\s*\*+\s*$/, "")
+    .replace(/\s+/g, " ")
+    .replace(/\s+([,.;:!?])/g, "$1")
+    .trim();
+  const twoSourceCorrections: Record<string, string> = {
+    "CLOUDINESS. o->": "Cloudiness",
+    "Ey<'ball in ffeneraL": "Eyeball in general",
+    "Rainl>o\\v-«'Olors": "Rainbow-colors",
+    "Before the «':irs": "Before the ears",
+    "\\oi»c;is from fluttering": "Noise as from fluttering",
+    "Wiiiir* of lli<' nose": "Wings of the nose",
+    "« oloui. rod": "Colour, red",
+    "Rcfr<'shiii^ tiling": "Refreshing things",
+    "NAUSEA. g9": "Nausea",
+    "of what has i»een eaten": "of what has been eaten",
+    "\\ omiting, sour": "Vomiting, sour",
+    "Of \\l oralis": "Of worms",
+    "Upper abdoill«'ll (epigastrium)": "Upper abdomen (epigastrium)",
+    "S 11^11:11:11 ring": "Inguinal ring",
+    "Jons v<>ii<>ri<<": "Mons veneris",
+    "Stool, fr«tliy": "Stool, frothy",
+    "II'rgina- ineffectual^": "Urging, ineffectual",
+    ".11 ilk-coloured": "Milk-coloured",
+    "URINE. g7": "Urine",
+    "Y<>llow": "Yellow",
+    "by <lrop%": "by drops",
+    "GENJ i \\L>": "Genitals",
+    "©varia": "Ovaria",
+    "di«.trt'«>siiij": "distressing",
+    "Discharge of l>laotl before tin; proper period": "Discharge of blood before the proper period",
+    "X^eucorrhoea purulent": "Leucorrhoea, purulent",
+    "Inner che*t": "Inner chest",
+    "BACK. 12l": "Back",
+    "ARM. j05": "Arm",
+    "ri«'sii as it' beaten uflr t ii<> bones": "Flesh as if beaten off the bones",
+    "Fat, tendency I© get": "Fat, tendency to get",
+    "pain in inner part1": "pain in inner parts",
+    "Sensation as of a lm;»p in inner parts": "Sensation as of a lump in inner parts",
+    "Mobility to© great": "Mobility too great",
+    "iTIoiio» convulsive": "Motion, convulsive",
+    "Fain, corrj>sivc": "Pain, corrosive",
+    "in the n©ii«'>": "in the bones",
+    "« iHi tearing, in the joints": "with tearing, in the joints",
+    "-» in the joints": "in the joints",
+    "ticking in the bone<": "sticking in the bones",
+    "\\ version tO Washing": "Aversion to washing",
+    "with pn'^iin-": "with pressure",
+    "Itching: after scratching: thickening of llu> skin": "Itching after scratching; thickening of the skin",
+    "Ulcers, with flesh in tli<\" ulcer": "Ulcers, with flesh in the ulcer",
+    "\\\\ aking too early": "Waking too early",
+    "Sleep sound (de«p)": "Sleep, sound (deep)",
+    "< hillillpss of singlp purls": "Chilliness of single parts",
+    "Concomitant coinj>Saml,<": "Concomitant complaints",
+    "^liudderins; in general": "Shuddering in general",
+    "on the back part of the J>ody": "on the back part of the body",
+    "with aversion to uncover or nndi-cs* one's *«'ll\"": "with aversion to uncover or undress oneself",
+    "From di*awing-in the belly": "From drawing-in the belly",
+    "With children <partioHlariyj)": "With children (particularly)",
+    "From crossing the liml>s": "From crossing the limbs",
+    "Hands froan working «itii the": "Hands, from working with the",
+    "Hang (lowii^from letting the limb": "Hang down, from letting the limb",
+    "From \\Uv light of a eandle or a lamp": "From the light of a candle or a lamp",
+    "Hie eyes": "the eyes",
+    "©11 going up (ascending.)": "On going up (ascending)",
+    "Blood-vessel^ burning sensation in the": "Blood-vessels, burning sensation in the",
+    "!>©Baa slacking llae gum": "From sucking the gums",
+    "Warm, the air l> ing": "Warm, the air being",
+  };
+  return twoSourceCorrections[cleaned] || cleaned;
 }
 
 function normalizeToken(value: string): string {
@@ -393,14 +498,19 @@ function buildRubrics(lines: SourceLine[]): {
 } {
   const rubrics: BrowserRubric[] = [];
   const unresolved = new Map<string, number>();
-  let current: { heading: string; page: number; remedyChars: StyledChar[] } | null = null;
+  let current: {
+    heading: string;
+    legacyIdHeading: string;
+    page: number;
+    remedyChars: StyledChar[];
+  } | null = null;
   const finish = () => {
     if (!current) return;
     const remedies = parseRemedies(current.remedyChars, unresolved);
     if (Object.keys(remedies).length > 0) {
       const chapter = chapterForPage(current.page);
       rubrics.push({
-        id: `boenninghausen-scan-${current.page}-${slug(chapter)}-${slug(current.heading)}-${rubrics.length + 1}`,
+        id: `boenninghausen-scan-${current.page}-${slug(chapter)}-${slug(current.legacyIdHeading)}-${rubrics.length + 1}`,
         chapter,
         name: current.heading,
         remedies,
@@ -420,7 +530,12 @@ function buildRubrics(lines: SourceLine[]): {
     if (isRunningHeader(text) || isSectionHeading(text)) continue;
     if (isRubricHeading(lines, index)) {
       finish();
-      current = { heading: normalizeHeading(text), page: line.page, remedyChars: [] };
+      current = {
+        heading: normalizeHeading(text),
+        legacyIdHeading: legacyNormalizedHeading(text),
+        page: line.page,
+        remedyChars: [],
+      };
       continue;
     }
     if (!current) continue;
@@ -434,10 +549,40 @@ function buildRubrics(lines: SourceLine[]): {
   return { rubrics, unresolved };
 }
 
+const continuationHeaderNames = new Set([
+  "«fi BRINE",
+  "SENSATIONS. lg5",
+  "j 94 SENSATION",
+  "SENSATIONS. jgj",
+  "SENSATIONS. j q«",
+  "SENSATIONS. 20g",
+  "278 PBVBIt",
+  ";j|-2 AGGRAVATION ACCORDING TO",
+  "3-26 m.cij WAiioN uvokding to",
+  "35G AMELIORATION iT",
+]);
+
+function mergePageHeaderContinuations(rubrics: BrowserRubric[]): BrowserRubric[] {
+  const merged: BrowserRubric[] = [];
+  for (const rubric of rubrics) {
+    if (!continuationHeaderNames.has(rubric.name)) {
+      merged.push(rubric);
+      continue;
+    }
+    const previous = merged.at(-1);
+    if (!previous) continue;
+    for (const [remedy, grade] of Object.entries(rubric.remedies)) {
+      previous.remedies[remedy] = Math.max(previous.remedies[remedy] || 0, grade);
+    }
+  }
+  return merged;
+}
+
 async function main() {
   const compressedXml = await readSource();
   const lines = await parseLines(compressedXml);
-  const { rubrics, unresolved } = buildRubrics(lines);
+  const { rubrics: parsedRubrics, unresolved } = buildRubrics(lines);
+  const rubrics = mergePageHeaderContinuations(parsedRubrics);
   const occurrenceCount = rubrics.reduce((sum, rubric) => sum + Object.keys(rubric.remedies).length, 0);
   const gradeCounts = rubrics.reduce<Record<number, number>>((counts, rubric) => {
     for (const grade of Object.values(rubric.remedies)) counts[grade] = (counts[grade] || 0) + 1;

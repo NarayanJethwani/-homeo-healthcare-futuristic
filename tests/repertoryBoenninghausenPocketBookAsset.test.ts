@@ -34,6 +34,39 @@ assert.ok(pocketBook.every((rubric) =>
 ));
 assert.deepStrictEqual(Array.from(grades).sort(), [1, 2, 3, 4, 5]);
 
+// Rubric headings are reconciled against two independent scans of the 1847
+// Hempel edition. Running page headers must never surface as selectable rubrics.
+const inTheMorning = pocketBook.find((rubric) => rubric.name === "In the morning");
+assert.ok(inTheMorning);
+assert.strictEqual(
+  inTheMorning?.id,
+  "boenninghausen-scan-292-alterations-of-the-state-of-health-f-at-morning-1847",
+);
+assert.strictEqual(Object.keys(inTheMorning?.remedies || {}).length, 106);
+assert.strictEqual(inTheMorning?.remedies.Acon, 4);
+assert.strictEqual(inTheMorning?.remedies["Am-m"], 5);
+
+for (const heading of [
+  "Vanishing of sight",
+  "Bloody",
+  "Dark",
+  "Blood-vessels, burning sensation in the",
+  "pulsations of the",
+  "after cutting the",
+  "without husks",
+  "From sucking the gums",
+  "From the sun burning",
+  "Warm, the air being",
+]) {
+  assert.ok(pocketBook.some((rubric) => rubric.name === heading), `Missing corrected heading: ${heading}`);
+}
+
+const severeOcrArtifact = /^f at|Duriag|\b(?:tlic|tlie|tfhc)\b|ni£ht|witBi|siSent|llae|saaaa|PBVBIt|WAiioN|[§£©€■•]/i;
+assert.ok(pocketBook.every((rubric) => !severeOcrArtifact.test(rubric.name)));
+assert.ok(pocketBook.every((rubric) =>
+  !/(?:SENSATIONS?|AGGRAVATION ACCORDING TO|AMELIORATION)\D*\d/i.test(rubric.name)
+));
+
 // This is the grading example Bönninghausen gives in his own preface.
 const covetousness = pocketBook.find((rubric) => rubric.name === "Covetousness");
 assert.ok(covetousness);
