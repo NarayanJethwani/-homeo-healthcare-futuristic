@@ -21,6 +21,7 @@ const CIEWorkspace = dynamic(() => import("./CIEWorkspace"), {
 });
 import { REPERTORY_CHAPTERS, REMEDIES_METADATA, Rubric, BOERICKE_CHAPTERS, CLARKE_CHAPTERS, BOGER_CHAPTERS, KNERR_CHAPTERS, SEARCH_SYNONYMS, getRepertoryData, JETHWANI_SECTIONS, JETHWANI_REPERTORY_DATA as JETHWANI_REPERTORY_DATA_ORIG, JETHWANI_REMEDY_CONFIRMATIONS, calculateClinicalIndices, type JethwaniRubric, type JethwaniSymptomConfig, type ClinicalIndices, setRepertoryData } from "@/lib/repertoryData";
 import { isRubricScoringEnabled } from "@/features/repertory/scoring/repertoryScoringPolicy";
+import { getTopWorkbenchRemedyColumns, projectWorkbenchScores } from "@/features/repertory/scoring/repertoryWorkbenchScoring";
 import { MATERIA_MEDICA_BOOKS, MateriaMedicaBook } from "@/lib/materiaMedicaData";
 import { ORGANON_EDITIONS, ORGANON_KNOWLEDGE_TREE, ORGANON_APHORISMS, ORGANON_CASES, ACTIVE_RECALL_EXERCISES, TIMELINE_STEPS } from "@/lib/organonData";
 import { db, auth } from "@/lib/firebase";
@@ -1756,7 +1757,7 @@ export default function AdminDashboard() {
   const [selectedChapter, setSelectedChapter] = useState(REPERTORY_CHAPTERS[0]);
   const [rubricSearch, setRubricSearch] = useState("");
   const [selectedRubrics, setSelectedRubrics] = useState<Array<{ rubric: Rubric; grade: number; weightMultiplier?: number }>>([]);
-  const [remedyColumns, setRemedyColumns] = useState<string[]>(["Nux-v", "Lyc", "Ars", "Puls", "Sulph", "Rhus-t", "Calc", "Sil", "Nat-m", "Ign", "Sep"]);
+  const [remedyColumns, setRemedyColumns] = useState<string[]>([]);
   const [customRemedyInput, setCustomRemedyInput] = useState("");
   const [remedyScores, setRemedyScores] = useState<Array<{ remedy: string; coverage: string; score: number }>>([]);
   const [isRepertoryLoaded, setIsRepertoryLoaded] = useState(false);
@@ -6853,6 +6854,13 @@ Homeo Healthcare`;
     }]);
   };
 
+  // Rebuild the comparison grid from the active case whenever its rubric set,
+  // importance, or weighting changes. This prevents static default remedies
+  // from persisting across unrelated symptom selections.
+  useEffect(() => {
+    setRemedyColumns(getTopWorkbenchRemedyColumns(selectedRubrics));
+  }, [selectedRubrics]);
+
   // Remove Rubric from active list
   const removeRubric = (id: string) => {
     setSelectedRubrics(selectedRubrics.filter((item) => item.rubric.id !== id));
@@ -6889,39 +6897,7 @@ Homeo Healthcare`;
       return;
     }
 
-    const scoringRubrics = selectedRubrics.filter(({ rubric }) => isRubricScoringEnabled(rubric));
-
-    // 1. Gather all remedies matching the scoring-enabled selected rubrics
-    const remedyList: Record<string, { coverage: number; score: number }> = {};
-
-    scoringRubrics.forEach(({ rubric, grade: userWeight, weightMultiplier }) => {
-      const occurrenceOnly = rubric.scoringMode === "occurrence";
-      const effectiveUserWeight = occurrenceOnly ? 1 : userWeight;
-      const mult = occurrenceOnly ? 1 : (weightMultiplier || 1);
-      Object.entries(rubric.remedies).forEach(([remedy, remGrade]) => {
-        // If remedy is contraindicated (-1), skip or penalize
-        if (remGrade < 0) return;
-
-        if (!remedyList[remedy]) {
-          remedyList[remedy] = { coverage: 0, score: 0 };
-        }
-        remedyList[remedy].coverage += 1;
-        // Score: remedy grade * patient symptom grade (userWeight) * multiplier
-        remedyList[remedy].score += remGrade * effectiveUserWeight * mult;
-      });
-    });
-
-    // 2. Format scores for current remedyColumns
-    const calculatedScores = remedyColumns.map((rem) => {
-      const stats = remedyList[rem] || { coverage: 0, score: 0 };
-      return {
-        remedy: rem,
-        coverage: `${stats.coverage}/${scoringRubrics.length}`,
-        score: stats.score
-      };
-    });
-
-    setRemedyScores(calculatedScores);
+    setRemedyScores(projectWorkbenchScores(selectedRubrics, remedyColumns));
   }, [selectedRubrics, remedyColumns]);
 
   // Pre-fill active rubrics and complaint based on patient selection
@@ -14820,7 +14796,7 @@ ${err.message || err}`);
                             onClick={() => {
                               if (confirm("Are you sure you want to clear all selected rubrics and restart case analysis?")) {
                                 setSelectedRubrics([]);
-                                setRemedyColumns(["Nux-v", "Lyc", "Ars", "Puls", "Sulph", "Rhus-t", "Calc", "Sil", "Nat-m", "Ign", "Sep"]);
+                                setRemedyColumns([]);
                               }
                             }}
                             className="text-[9px] font-black text-rose-500 hover:text-rose-700 uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1 bg-none border-none p-0"
@@ -15006,29 +14982,7 @@ ${err.message || err}`);
                           <button
                             type="button"
                             onClick={() => {
-                              const remedyList: Record<string, { coverage: number; score: number }> = {};
-                              selectedRubrics
-                                .filter(({ rubric }) => isRubricScoringEnabled(rubric))
-                                .forEach(({ rubric, grade: userWeight, weightMultiplier }) => {
-                                const occurrenceOnly = rubric.scoringMode === "occurrence";
-                                const effectiveUserWeight = occurrenceOnly ? 1 : userWeight;
-                                const mult = occurrenceOnly ? 1 : (weightMultiplier || 1);
-                                Object.entries(rubric.remedies).forEach(([remedy, remGrade]) => {
-                                  if (remGrade < 0) return;
-                                  if (!remedyList[remedy]) {
-                                    remedyList[remedy] = { coverage: 0, score: 0 };
-                                  }
-                                  remedyList[remedy].coverage += 1;
-                                  remedyList[remedy].score += remGrade * effectiveUserWeight * mult;
-                                });
-                              });
-                              const calculatedScores = Object.entries(remedyList).map(([remedy, stats]) => ({
-                                remedy,
-                                coverage: stats.coverage,
-                                score: stats.score
-                              }));
-                              calculatedScores.sort((a, b) => b.score - a.score || b.coverage - a.coverage);
-                              const topRemedies = calculatedScores.slice(0, 10).map(s => s.remedy);
+                              const topRemedies = getTopWorkbenchRemedyColumns(selectedRubrics);
                               if (topRemedies.length > 0) {
                                 setRemedyColumns(topRemedies);
                               } else {
@@ -15057,7 +15011,7 @@ ${err.message || err}`);
                             onClick={() => {
                               if (confirm("Are you sure you want to clear all selected rubrics and restart case analysis?")) {
                                 setSelectedRubrics([]);
-                                setRemedyColumns(["Nux-v", "Lyc", "Ars", "Puls", "Sulph", "Rhus-t", "Calc", "Sil", "Nat-m", "Ign", "Sep"]);
+                                setRemedyColumns([]);
                               }
                             }}
                             className="px-3 py-1.5 border border-rose-200 bg-rose-50/50 hover:bg-rose-50 text-rose-600 hover:text-rose-700 rounded-xl text-[10px] font-bold uppercase transition-all duration-200 cursor-pointer shadow-sm flex items-center gap-1"
