@@ -15,7 +15,7 @@ const remedyOccurrences = jahr.reduce(
   0,
 );
 
-assert.ok(jahr.length >= 3_300, "The governed clinical corpus must not silently shrink.");
+assert.ok(jahr.length >= 3_150, "The governed clinical corpus must not silently shrink.");
 assert.ok(remedyOccurrences >= 32_000, "The governed remedy relationships must remain complete.");
 assert.strictEqual(new Set(jahr.map((rubric) => rubric.id)).size, jahr.length);
 assert.strictEqual(new Set(jahr.map((rubric) => rubric.chapter)).size, 8);
@@ -24,6 +24,9 @@ assert.ok(jahr.every((rubric) => rubric.scoringEnabled === true));
 assert.ok(jahr.every((rubric) => rubric.scoringMode === "graded"));
 assert.ok(jahr.every((rubric) => rubric.citation?.includes("Clinical Guide or Pocket-Repertory (1850)")));
 assert.ok(jahr.every((rubric) => !/[»^<>]/.test(rubric.name)));
+assert.ok(jahr.every((rubric) =>
+  !/ — (?:Mercurius|Belladonna|Sepia|Cuprum|Veratrum|Nux vom|Pulsatilla|Sulphur)$/.test(rubric.name)
+), "Remedy-description headings must not be exposed as symptom rubrics.");
 
 const amenia = jahr.find((rubric) => rubric.name === "Amenia");
 assert.ok(amenia);

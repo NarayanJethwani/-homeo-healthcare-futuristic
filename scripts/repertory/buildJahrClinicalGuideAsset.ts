@@ -41,6 +41,8 @@ function slug(value: string): string {
 }
 
 const canonicalRemedyByKey = new Map<string, string>();
+const remedyHeadingKeys = new Set<string>();
+const remedyFullNameKeys = new Set<string>();
 for (const relativePath of [
   "src/lib/remedyDataPack.json",
   "public/data/kentRepertoryData.json",
@@ -55,6 +57,12 @@ for (const relativePath of [
   for (const item of parsed) {
     if (item && typeof item === "object" && "abbr" in item && typeof item.abbr === "string") {
       canonicalRemedyByKey.set(remedyKey(item.abbr), item.abbr);
+      remedyHeadingKeys.add(remedyKey(item.abbr));
+      if ("name" in item && typeof item.name === "string") {
+        const fullNameKey = remedyKey(item.name);
+        remedyFullNameKeys.add(fullNameKey);
+        remedyHeadingKeys.add(remedyKey(item.name.split(/\s+/)[0]));
+      }
     }
     if (item && typeof item === "object" && "remedies" in item && item.remedies && typeof item.remedies === "object") {
       for (const abbreviation of Object.keys(item.remedies)) {
@@ -134,6 +142,18 @@ const aliases: Record<string, string> = {
   zinc: "Zinc",
 };
 for (const [key, value] of Object.entries(aliases)) canonicalRemedyByKey.set(key, value);
+for (const key of Object.keys(aliases)) remedyHeadingKeys.add(key);
+for (const heading of [
+  "Aconite", "Aconitum", "Antimonium", "Arnica", "Arsenicum", "Belladonna",
+  "Bryonia", "Calcarea", "Carbo veg", "Chamomilla", "China", "Cicuta", "Cina",
+  "Cocculus", "Coffea", "Colocynthis", "Cuprum", "Dulcamara", "Ferrum",
+  "Graphites", "Hepar", "Hyoscyamus", "Ignatia", "Ipecacuanha", "Kali carb",
+  "Lachesis", "Lycopodium", "Mercurius", "Natrum", "Natrum mur", "Nux vom",
+  "Opium", "Phosphorus", "Pulsatilla", "Rhus tox", "Sepia", "Silicea",
+  "Spongia", "Sulphur", "Veratrum",
+]) {
+  remedyHeadingKeys.add(remedyKey(heading));
+}
 
 function normalizeSource(value: string): string {
   return value
@@ -151,12 +171,26 @@ function cleanLabel(value: string): string {
     .replace(/\btiie\b/gi, "the")
     .replace(/\btlie\b/gi, "the")
     .replace(/\beverting\b/gi, "evening")
+    .replace(/\bMee\.cue\.ius\b/gi, "Mercurius")
+    .replace(/\bMercuuius\b/gi, "Mercurius")
+    .replace(/\bBelladonxa\b/gi, "Belladonna")
+    .replace(/\bChamo\.yiilla\b/gi, "Chamomilla")
+    .replace(/\bAntjmonium\b/gi, "Antimonium")
     .replace(/^\s*(?:§\s*\d+\.?|[a-z]\)|\d+\))\s*/i, "")
     .replace(/\b(?:give|use|require|requires|required|principally|especially)\s*$/i, "")
     .replace(/\s+/g, " ")
     .replace(/\s+([,.;:])/g, "$1")
     .replace(/^[,.;:\s-]+|[,.;:\s-]+$/g, "")
     .trim();
+}
+
+function isRemedyHeading(value: string): boolean {
+  const key = remedyKey(value);
+  if (key.length < 3) return false;
+  if (remedyHeadingKeys.has(key)) return true;
+  if (key.length < 4) return false;
+  return [...remedyFullNameKeys].some((fullNameKey) =>
+    fullNameKey.startsWith(key) || key.startsWith(fullNameKey));
 }
 
 function titleCase(value: string): string {
@@ -280,6 +314,7 @@ function parseCorpus(rawSource: string): BrowserRubric[] {
         || /^(?:we may )?(?:use|give)$/i.test(before);
       const articlePrefix = new RegExp(`^${article.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}[.,:—\\s-]*`, "i");
       const specificLabel = before.replace(articlePrefix, "").trim();
+      if (specificLabel && isRemedyHeading(specificLabel)) continue;
       let name = genericLabel || !specificLabel ? article : `${article} — ${specificLabel}`;
       name = name
         .replace(/\s+/g, " ")
