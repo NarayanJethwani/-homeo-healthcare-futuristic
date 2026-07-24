@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JETHWANI_REPERTORY_DATA = exports.JETHWANI_REMEDY_CONFIRMATIONS = exports.JETHWANI_SECTIONS = exports.SEARCH_SYNONYMS = exports.JAHR_CHAPTERS = exports.JAHR_REPERTORY_DATA = exports.SYNOPTIC_CHAPTERS = exports.SYNOPTIC_REPERTORY_DATA = exports.GENTRY_CHAPTERS = exports.GENTRY_REPERTORY_DATA = exports.BOENNINGHAUSEN_CHAPTERS = exports.BOENNINGHAUSEN_REPERTORY_DATA = exports.KNERR_CHAPTERS = exports.KNERR_REPERTORY_DATA = exports.BOGER_CHAPTERS = exports.BOGER_REPERTORY_DATA = exports.CLARKE_CHAPTERS = exports.CLARKE_REPERTORY_DATA = exports.BOERICKE_REPERTORY_DATA = exports.BOERICKE_CHAPTERS = exports.REPERTORY_DATA = exports.REPERTORY_CHAPTERS = exports.REMEDIES_METADATA = void 0;
+exports.JETHWANI_REPERTORY_DATA = exports.JETHWANI_REMEDY_CONFIRMATIONS = exports.JETHWANI_SECTIONS = exports.SEARCH_SYNONYMS = exports.LIPPE_CHAPTERS = exports.LIPPE_REPERTORY_DATA = exports.JAHR_CHAPTERS = exports.JAHR_REPERTORY_DATA = exports.SYNOPTIC_CHAPTERS = exports.SYNOPTIC_REPERTORY_DATA = exports.GENTRY_CHAPTERS = exports.GENTRY_REPERTORY_DATA = exports.BOENNINGHAUSEN_CHAPTERS = exports.BOENNINGHAUSEN_REPERTORY_DATA = exports.KNERR_CHAPTERS = exports.KNERR_REPERTORY_DATA = exports.BOGER_CHAPTERS = exports.BOGER_REPERTORY_DATA = exports.CLARKE_CHAPTERS = exports.CLARKE_REPERTORY_DATA = exports.BOERICKE_REPERTORY_DATA = exports.BOERICKE_CHAPTERS = exports.REPERTORY_DATA = exports.REPERTORY_CHAPTERS = exports.REMEDIES_METADATA = void 0;
 exports.setRepertoryData = setRepertoryData;
 exports.getRepertoryData = getRepertoryData;
 exports.calculateClinicalIndices = calculateClinicalIndices;
@@ -334,7 +334,9 @@ exports.SYNOPTIC_REPERTORY_DATA = [];
 exports.SYNOPTIC_CHAPTERS = [];
 exports.JAHR_REPERTORY_DATA = [];
 exports.JAHR_CHAPTERS = [];
-function setRepertoryData(kentData, boerickeData, clarkeData = [], bogerData = [], knerrData = [], boenninghausenData = [], gentryData = [], synopticData = [], jahrData = []) {
+exports.LIPPE_REPERTORY_DATA = [];
+exports.LIPPE_CHAPTERS = [];
+function setRepertoryData(kentData, boerickeData, clarkeData = [], bogerData = [], knerrData = [], boenninghausenData = [], gentryData = [], synopticData = [], jahrData = [], lippeData = []) {
     exports.REPERTORY_DATA.length = 0;
     exports.REPERTORY_DATA.push(...kentData);
     exports.BOERICKE_REPERTORY_DATA.length = 0;
@@ -406,6 +408,15 @@ function setRepertoryData(kentData, boerickeData, clarkeData = [], bogerData = [
     }
     exports.JAHR_CHAPTERS.length = 0;
     exports.JAHR_CHAPTERS.push(...Array.from(new Set(exports.JAHR_REPERTORY_DATA.map((rubric) => rubric.chapter))).sort());
+    exports.LIPPE_REPERTORY_DATA.length = 0;
+    exports.LIPPE_REPERTORY_DATA.push(...lippeData.map((rubric) => ({
+        ...rubric,
+        source: "lippe",
+        scoringEnabled: true,
+        scoringMode: "graded",
+    })));
+    exports.LIPPE_CHAPTERS.length = 0;
+    exports.LIPPE_CHAPTERS.push(...Array.from(new Set(exports.LIPPE_REPERTORY_DATA.map((rubric) => rubric.chapter))).sort());
 }
 exports.SEARCH_SYNONYMS = {
     "sweat": ["perspir", "diaphor", "sweat", "perspiration", "sweating"],
@@ -503,6 +514,12 @@ function getRepertoryData(source) {
         scoringEnabled: true,
         scoringMode: 'graded',
     }));
+    const lippeWithSource = exports.LIPPE_REPERTORY_DATA.map(r => ({
+        ...r,
+        source: 'lippe',
+        scoringEnabled: true,
+        scoringMode: 'graded',
+    }));
     if (source === 'kent')
         return kentWithSource;
     if (source === 'boericke')
@@ -521,7 +538,9 @@ function getRepertoryData(source) {
         return synopticWithSource;
     if (source === 'jahr')
         return jahrWithSource;
-    return [...kentWithSource, ...boerickeWithSource, ...clarkeWithSource, ...bogerWithSource, ...knerrWithSource, ...boenninghausenWithSource, ...gentryWithSource, ...synopticWithSource, ...jahrWithSource];
+    if (source === 'lippe')
+        return lippeWithSource;
+    return [...kentWithSource, ...boerickeWithSource, ...clarkeWithSource, ...bogerWithSource, ...knerrWithSource, ...boenninghausenWithSource, ...gentryWithSource, ...synopticWithSource, ...jahrWithSource, ...lippeWithSource];
 }
 exports.JETHWANI_SECTIONS = {
     "Section A": { name: "Mental & Emotional", icon: "🧠", description: "Modern cognitive, emotional, and neuro-psychological states" },

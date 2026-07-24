@@ -66,12 +66,12 @@ favourites = toggleFavouriteRepertory(favourites, "kent");
 assert.deepStrictEqual(favourites, ["boenninghausen"]);
 
 let recents: ClassicalRepertoryId[] = [];
-for (const id of ["kent", "clarke", "boger", "knerr", "boenninghausen", "gentry", "synoptic", "jahr", "boericke"] as ClassicalRepertoryId[]) {
+for (const id of ["kent", "clarke", "boger", "knerr", "boenninghausen", "gentry", "synoptic", "jahr", "lippe", "boericke"] as ClassicalRepertoryId[]) {
   recents = updateRecentRepertories(recents, id);
 }
-assert.deepStrictEqual(recents, ["boericke", "jahr", "synoptic", "gentry", "boenninghausen"]);
+assert.deepStrictEqual(recents, ["boericke", "lippe", "jahr", "synoptic", "gentry"]);
 recents = updateRecentRepertories(recents, "knerr");
-assert.deepStrictEqual(recents, ["knerr", "boericke", "jahr", "synoptic", "gentry"]);
+assert.deepStrictEqual(recents, ["knerr", "boericke", "lippe", "jahr", "synoptic"]);
 
 const globalsCss = fs.readFileSync(path.resolve("src/app/globals.css"), "utf8");
 const dashboardSource = fs.readFileSync(path.resolve("src/app/admin/dashboard/page.tsx"), "utf8");

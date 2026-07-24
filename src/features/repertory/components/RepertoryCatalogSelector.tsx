@@ -23,6 +23,7 @@ export type ClassicalRepertoryId =
   | "gentry"
   | "synoptic"
   | "jahr"
+  | "lippe"
   | "combined";
 
 export type RepertoryCatalogEntry = {
@@ -102,6 +103,18 @@ export const repertoryCatalogBase: Array<Omit<RepertoryCatalogEntry, "count">> =
     scoringLabel: "One-grade occurrence scoring",
     scoringDetail: "Every source-listed remedy contributes one equal point; typography grades are not invented.",
     accent: "slate",
+  },
+  {
+    id: "lippe",
+    label: "Lippe’s Characteristic Repertory",
+    shortLabel: "Lippe Characteristic",
+    author: "Constantine Lippe",
+    year: "1879",
+    group: "Foundational repertories",
+    description: "A repertory to the more characteristic symptoms of the materia medica.",
+    scoringLabel: "Two-grade typographic scoring",
+    scoringDetail: "Italic remedies retain source grade 2; ordinary roman remedies retain source grade 1.",
+    accent: "rose",
   },
   {
     id: "clarke",
