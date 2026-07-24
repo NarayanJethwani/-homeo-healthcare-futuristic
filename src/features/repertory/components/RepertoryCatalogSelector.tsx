@@ -20,6 +20,7 @@ export type ClassicalRepertoryId =
   | "boger"
   | "knerr"
   | "boenninghausen"
+  | "gentry"
   | "combined";
 
 export type RepertoryCatalogEntry = {
@@ -87,6 +88,18 @@ export const repertoryCatalogBase: Array<Omit<RepertoryCatalogEntry, "count">> =
     scoringLabel: "Five-grade scoring",
     scoringDetail: "Printed distinctions are preserved from unmarked occurrence 1 through double heavy 5.",
     accent: "rose",
+  },
+  {
+    id: "gentry",
+    label: "Gentry’s Concordance Repertory",
+    shortLabel: "Gentry Concordance",
+    author: "William D. Gentry",
+    year: "1890",
+    group: "Foundational repertories",
+    description: "Six-volume concordance of characteristic and clinically verified materia medica symptoms.",
+    scoringLabel: "One-grade occurrence scoring",
+    scoringDetail: "Every source-listed remedy contributes one equal point; typography grades are not invented.",
+    accent: "slate",
   },
   {
     id: "clarke",

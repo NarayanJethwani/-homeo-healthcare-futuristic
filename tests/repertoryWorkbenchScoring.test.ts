@@ -44,6 +44,14 @@ const sourceCases: Array<{ source: NonNullable<Rubric["source"]>; expected: stri
   { source: "boger", expected: "Bry", rubrics: [selected("boger-a", "boger", { Bry: 5, Nux: 2 })] },
   { source: "knerr", expected: "Puls", rubrics: [selected("knerr-a", "knerr", { Puls: 5, Sep: 2 })] },
   { source: "boenninghausen", expected: "Ars", rubrics: [selected("boenninghausen-a", "boenninghausen", { Ars: 5, Calc: 2 })] },
+  {
+    source: "gentry",
+    expected: "Acon",
+    rubrics: [
+      selected("gentry-a", "gentry", { Acon: 1, Bell: 1 }, { scoringMode: "occurrence", occurrenceScoringEnabled: true }),
+      selected("gentry-b", "gentry", { Acon: 1, Puls: 1 }, { scoringMode: "occurrence", occurrenceScoringEnabled: true }),
+    ],
+  },
 ];
 
 for (const sourceCase of sourceCases) {
@@ -83,6 +91,7 @@ const productionAssets = [
   "bogerBoenninghausenRepertoryData.json",
   "knerrHeringRepertoryData.json",
   "boenninghausenTherapeuticPocketBookData.json",
+  "gentryConcordanceRepertoryData.json",
 ];
 const productionSelections: SelectedWorkbenchRubric[] = [];
 
@@ -103,7 +112,7 @@ for (const filename of productionAssets) {
 
 assert.ok(calculateWorkbenchRemedyRankings(productionSelections).length > 10);
 
-console.log("Shared repertory workbench scoring tests passed for all six sources and combined mode.");
+console.log("Shared repertory workbench scoring tests passed for all seven sources and combined mode.");
 
 function isScoringReady(rubric: Rubric): boolean {
   if (rubric.source !== "clarke") return rubric.scoringEnabled !== false;

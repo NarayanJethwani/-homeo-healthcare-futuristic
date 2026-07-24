@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JETHWANI_REPERTORY_DATA = exports.JETHWANI_REMEDY_CONFIRMATIONS = exports.JETHWANI_SECTIONS = exports.SEARCH_SYNONYMS = exports.BOENNINGHAUSEN_CHAPTERS = exports.BOENNINGHAUSEN_REPERTORY_DATA = exports.KNERR_CHAPTERS = exports.KNERR_REPERTORY_DATA = exports.BOGER_CHAPTERS = exports.BOGER_REPERTORY_DATA = exports.CLARKE_CHAPTERS = exports.CLARKE_REPERTORY_DATA = exports.BOERICKE_REPERTORY_DATA = exports.BOERICKE_CHAPTERS = exports.REPERTORY_DATA = exports.REPERTORY_CHAPTERS = exports.REMEDIES_METADATA = void 0;
+exports.JETHWANI_REPERTORY_DATA = exports.JETHWANI_REMEDY_CONFIRMATIONS = exports.JETHWANI_SECTIONS = exports.SEARCH_SYNONYMS = exports.GENTRY_CHAPTERS = exports.GENTRY_REPERTORY_DATA = exports.BOENNINGHAUSEN_CHAPTERS = exports.BOENNINGHAUSEN_REPERTORY_DATA = exports.KNERR_CHAPTERS = exports.KNERR_REPERTORY_DATA = exports.BOGER_CHAPTERS = exports.BOGER_REPERTORY_DATA = exports.CLARKE_CHAPTERS = exports.CLARKE_REPERTORY_DATA = exports.BOERICKE_REPERTORY_DATA = exports.BOERICKE_CHAPTERS = exports.REPERTORY_DATA = exports.REPERTORY_CHAPTERS = exports.REMEDIES_METADATA = void 0;
 exports.setRepertoryData = setRepertoryData;
 exports.getRepertoryData = getRepertoryData;
 exports.calculateClinicalIndices = calculateClinicalIndices;
@@ -328,7 +328,9 @@ exports.KNERR_REPERTORY_DATA = [];
 exports.KNERR_CHAPTERS = [];
 exports.BOENNINGHAUSEN_REPERTORY_DATA = [];
 exports.BOENNINGHAUSEN_CHAPTERS = [];
-function setRepertoryData(kentData, boerickeData, clarkeData = [], bogerData = [], knerrData = [], boenninghausenData = []) {
+exports.GENTRY_REPERTORY_DATA = [];
+exports.GENTRY_CHAPTERS = [];
+function setRepertoryData(kentData, boerickeData, clarkeData = [], bogerData = [], knerrData = [], boenninghausenData = [], gentryData = []) {
     exports.REPERTORY_DATA.length = 0;
     exports.REPERTORY_DATA.push(...kentData);
     exports.BOERICKE_REPERTORY_DATA.length = 0;
@@ -368,6 +370,16 @@ function setRepertoryData(kentData, boerickeData, clarkeData = [], bogerData = [
     })));
     exports.BOENNINGHAUSEN_CHAPTERS.length = 0;
     exports.BOENNINGHAUSEN_CHAPTERS.push(...Array.from(new Set(exports.BOENNINGHAUSEN_REPERTORY_DATA.map((rubric) => rubric.chapter))).sort());
+    exports.GENTRY_REPERTORY_DATA.length = 0;
+    exports.GENTRY_REPERTORY_DATA.push(...gentryData.map((rubric) => ({
+        ...rubric,
+        source: "gentry",
+        scoringEnabled: true,
+        scoringMode: "occurrence",
+        occurrenceScoringEnabled: true,
+    })));
+    exports.GENTRY_CHAPTERS.length = 0;
+    exports.GENTRY_CHAPTERS.push(...Array.from(new Set(exports.GENTRY_REPERTORY_DATA.map((rubric) => rubric.chapter))).sort());
 }
 exports.SEARCH_SYNONYMS = {
     "sweat": ["perspir", "diaphor", "sweat", "perspiration", "sweating"],
@@ -446,6 +458,13 @@ function getRepertoryData(source) {
         scoringEnabled: true,
         scoringMode: 'graded',
     }));
+    const gentryWithSource = exports.GENTRY_REPERTORY_DATA.map(r => ({
+        ...r,
+        source: 'gentry',
+        scoringEnabled: true,
+        scoringMode: 'occurrence',
+        occurrenceScoringEnabled: true,
+    }));
     if (source === 'kent')
         return kentWithSource;
     if (source === 'boericke')
@@ -458,7 +477,9 @@ function getRepertoryData(source) {
         return knerrWithSource;
     if (source === 'boenninghausen')
         return boenninghausenWithSource;
-    return [...kentWithSource, ...boerickeWithSource, ...clarkeWithSource, ...bogerWithSource, ...knerrWithSource, ...boenninghausenWithSource];
+    if (source === 'gentry')
+        return gentryWithSource;
+    return [...kentWithSource, ...boerickeWithSource, ...clarkeWithSource, ...bogerWithSource, ...knerrWithSource, ...boenninghausenWithSource, ...gentryWithSource];
 }
 exports.JETHWANI_SECTIONS = {
     "Section A": { name: "Mental & Emotional", icon: "🧠", description: "Modern cognitive, emotional, and neuro-psychological states" },
