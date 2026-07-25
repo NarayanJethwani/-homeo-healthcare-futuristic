@@ -12,6 +12,7 @@ import {
 
 class MemoryBucket implements RepertoryStorageBucket {
   readonly requestedKeys: string[] = [];
+  readonly requestedPrefixes: string[] = [];
 
   constructor(private readonly objects: Map<string, Buffer>) {}
 
@@ -25,6 +26,16 @@ class MemoryBucket implements RepertoryStorageBucket {
       },
       exists: async (): Promise<[boolean]> => [this.objects.has(objectKey)],
     };
+  }
+
+  async getFiles(options: { prefix: string }): Promise<[
+    Array<ReturnType<MemoryBucket["file"]> & { name: string }>,
+  ]> {
+    this.requestedPrefixes.push(options.prefix);
+    const files = [...this.objects.keys()]
+      .filter((key) => key.startsWith(options.prefix))
+      .map((key) => ({ ...this.file(key), name: key }));
+    return [files];
   }
 }
 
@@ -46,6 +57,11 @@ async function run() {
   assert.strictEqual(await store.exists(manifestPath), true);
   assert.deepStrictEqual(await store.readJson(manifestPath), { corpusVersion: "v1.2.0" });
   assert.ok(bucket.requestedKeys.every((key) => key === manifestKey));
+  assert.deepStrictEqual(
+    await store.findMissing(path.dirname(manifestPath), ["manifest.json", "missing.json"]),
+    ["missing.json"]
+  );
+  assert.deepStrictEqual(bucket.requestedPrefixes, ["governed/repertory/published/v1.2.0/"]);
 
   assert.throws(
     () => resolveRepertoryObjectName(path.join(artifactRoot, "..", "private.json"), artifactRoot),

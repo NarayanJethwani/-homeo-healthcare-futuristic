@@ -1,0 +1,237 @@
+{
+  "timestamp": "2026-07-25T15:13:26.479Z",
+  "totalQuarantined": 15,
+  "riskBreakdown": {
+    "critical": 0,
+    "high": 0,
+    "medium": 5,
+    "low": 10
+  },
+  "blockersBreakdown": {
+    "phase2BBlockers": 0,
+    "phase3Blockers": 5,
+    "futureRagBlockers": 0,
+    "productionBlockers": 0
+  },
+  "reactivatedDatabaseSuites": [
+    "tests/firestoreEmulatorFailClosed.test.ts (3 assertions pass)",
+    "tests/firestoreRulesClient.test.ts (4 assertions pass)",
+    "tests/materiaMedicaPersistence.test.ts (10 assertions pass)",
+    "tests/repertoryApprovalPersistence.test.ts (3 assertions pass)",
+    "tests/repertoryDurableConsistency.test.ts (4 assertions pass)",
+    "tests/repertoryProductionActivationGate.test.ts (5 assertions pass)",
+    "tests/phase2-2bGovernancePersistence.test.ts (20 assertions pass)"
+  ],
+  "quarantineRiskTriageList": [
+    {
+      "path": "src/features/dashboard/__tests__/alerts.test.tsx",
+      "requirementCategories": [
+        "ui-rendering",
+        "ui-accessibility"
+      ],
+      "riskLevel": "low",
+      "blocksPhase2B": false,
+      "blocksPhase3": false,
+      "blocksFutureRag": false,
+      "blocksProduction": false,
+      "runnerEnvironment": "vitest-jsdom",
+      "riskJustification": "UI rendering and React component test; requires browser DOM environment (Vitest/jsdom). Does not block server governance or persistence."
+    },
+    {
+      "path": "src/features/dashboard/__tests__/commandPalette.test.tsx",
+      "requirementCategories": [
+        "ui-rendering",
+        "ui-accessibility"
+      ],
+      "riskLevel": "low",
+      "blocksPhase2B": false,
+      "blocksPhase3": false,
+      "blocksFutureRag": false,
+      "blocksProduction": false,
+      "runnerEnvironment": "vitest-jsdom",
+      "riskJustification": "UI rendering and React component test; requires browser DOM environment (Vitest/jsdom). Does not block server governance or persistence."
+    },
+    {
+      "path": "src/features/dashboard/__tests__/overview.test.tsx",
+      "requirementCategories": [
+        "ui-rendering",
+        "ui-accessibility"
+      ],
+      "riskLevel": "low",
+      "blocksPhase2B": false,
+      "blocksPhase3": false,
+      "blocksFutureRag": false,
+      "blocksProduction": false,
+      "runnerEnvironment": "vitest-jsdom",
+      "riskJustification": "UI rendering and React component test; requires browser DOM environment (Vitest/jsdom). Does not block server governance or persistence."
+    },
+    {
+      "path": "src/features/dashboard/__tests__/queue.test.tsx",
+      "requirementCategories": [
+        "ui-rendering",
+        "ui-accessibility"
+      ],
+      "riskLevel": "low",
+      "blocksPhase2B": false,
+      "blocksPhase3": false,
+      "blocksFutureRag": false,
+      "blocksProduction": false,
+      "runnerEnvironment": "vitest-jsdom",
+      "riskJustification": "UI rendering and React component test; requires browser DOM environment (Vitest/jsdom). Does not block server governance or persistence."
+    },
+    {
+      "path": "src/features/dashboard/__tests__/sidebar.test.tsx",
+      "requirementCategories": [
+        "ui-rendering",
+        "ui-accessibility"
+      ],
+      "riskLevel": "low",
+      "blocksPhase2B": false,
+      "blocksPhase3": false,
+      "blocksFutureRag": false,
+      "blocksProduction": false,
+      "runnerEnvironment": "vitest-jsdom",
+      "riskJustification": "UI rendering and React component test; requires browser DOM environment (Vitest/jsdom). Does not block server governance or persistence."
+    },
+    {
+      "path": "tests/graphPerformance.test.tsx",
+      "requirementCategories": [
+        "ui-rendering",
+        "ui-accessibility"
+      ],
+      "riskLevel": "low",
+      "blocksPhase2B": false,
+      "blocksPhase3": false,
+      "blocksFutureRag": false,
+      "blocksProduction": false,
+      "runnerEnvironment": "vitest-jsdom",
+      "riskJustification": "UI rendering and React component test; requires browser DOM environment (Vitest/jsdom). Does not block server governance or persistence."
+    },
+    {
+      "path": "tests/hydrationAndTiming.test.tsx",
+      "requirementCategories": [
+        "ui-rendering",
+        "ui-accessibility"
+      ],
+      "riskLevel": "low",
+      "blocksPhase2B": false,
+      "blocksPhase3": false,
+      "blocksFutureRag": false,
+      "blocksProduction": false,
+      "runnerEnvironment": "vitest-jsdom",
+      "riskJustification": "UI rendering and React component test; requires browser DOM environment (Vitest/jsdom). Does not block server governance or persistence."
+    },
+    {
+      "path": "tests/knowledgeGraphExplorer.test.tsx",
+      "requirementCategories": [
+        "ui-rendering",
+        "ui-accessibility"
+      ],
+      "riskLevel": "low",
+      "blocksPhase2B": false,
+      "blocksPhase3": false,
+      "blocksFutureRag": false,
+      "blocksProduction": false,
+      "runnerEnvironment": "vitest-jsdom",
+      "riskJustification": "UI rendering and React component test; requires browser DOM environment (Vitest/jsdom). Does not block server governance or persistence."
+    },
+    {
+      "path": "tests/miasmaticFiltering.test.tsx",
+      "requirementCategories": [
+        "ui-rendering",
+        "ui-accessibility"
+      ],
+      "riskLevel": "low",
+      "blocksPhase2B": false,
+      "blocksPhase3": false,
+      "blocksFutureRag": false,
+      "blocksProduction": false,
+      "runnerEnvironment": "vitest-jsdom",
+      "riskJustification": "UI rendering and React component test; requires browser DOM environment (Vitest/jsdom). Does not block server governance or persistence."
+    },
+    {
+      "path": "tests/providerTelemetryDashboard.test.tsx",
+      "requirementCategories": [
+        "ui-rendering",
+        "ui-accessibility"
+      ],
+      "riskLevel": "low",
+      "blocksPhase2B": false,
+      "blocksPhase3": false,
+      "blocksFutureRag": false,
+      "blocksProduction": false,
+      "runnerEnvironment": "vitest-jsdom",
+      "riskJustification": "UI rendering and React component test; requires browser DOM environment (Vitest/jsdom). Does not block server governance or persistence."
+    },
+    {
+      "path": "src/features/repertory/__tests__/clinicalRepertorizationEngine.test.ts",
+      "requirementCategories": [
+        "repertory",
+        "legacy-feature"
+      ],
+      "riskLevel": "medium",
+      "blocksPhase2B": false,
+      "blocksPhase3": true,
+      "blocksFutureRag": false,
+      "blocksProduction": false,
+      "runnerEnvironment": "module-migration",
+      "riskJustification": "Legacy repertory engine assertion mismatch; targeted for Phase 3 clinical remediation."
+    },
+    {
+      "path": "src/features/repertory/__tests__/clinicalRubricIntelligence.test.ts",
+      "requirementCategories": [
+        "repertory",
+        "legacy-feature"
+      ],
+      "riskLevel": "medium",
+      "blocksPhase2B": false,
+      "blocksPhase3": true,
+      "blocksFutureRag": false,
+      "blocksProduction": false,
+      "runnerEnvironment": "module-migration",
+      "riskJustification": "Legacy repertory engine assertion mismatch; targeted for Phase 3 clinical remediation."
+    },
+    {
+      "path": "src/features/repertory/__tests__/clinicalSearchEngine.test.ts",
+      "requirementCategories": [
+        "repertory",
+        "legacy-feature"
+      ],
+      "riskLevel": "medium",
+      "blocksPhase2B": false,
+      "blocksPhase3": true,
+      "blocksFutureRag": false,
+      "blocksProduction": false,
+      "runnerEnvironment": "module-migration",
+      "riskJustification": "Legacy repertory engine assertion mismatch; targeted for Phase 3 clinical remediation."
+    },
+    {
+      "path": "src/features/repertory/__tests__/repertory.test.ts",
+      "requirementCategories": [
+        "repertory",
+        "legacy-feature"
+      ],
+      "riskLevel": "medium",
+      "blocksPhase2B": false,
+      "blocksPhase3": true,
+      "blocksFutureRag": false,
+      "blocksProduction": false,
+      "runnerEnvironment": "module-migration",
+      "riskJustification": "Legacy repertory engine assertion mismatch; targeted for Phase 3 clinical remediation."
+    },
+    {
+      "path": "tests/repertory/repertoryRetrieval.test.ts",
+      "requirementCategories": [
+        "repertory",
+        "legacy-feature"
+      ],
+      "riskLevel": "medium",
+      "blocksPhase2B": false,
+      "blocksPhase3": true,
+      "blocksFutureRag": false,
+      "blocksProduction": false,
+      "runnerEnvironment": "module-migration",
+      "riskJustification": "Legacy repertory engine assertion mismatch; targeted for Phase 3 clinical remediation."
+    }
+  ]
+}

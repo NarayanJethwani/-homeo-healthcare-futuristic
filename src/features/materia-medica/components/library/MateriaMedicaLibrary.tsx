@@ -12,7 +12,14 @@ import { MateriaMedicaSearchPanel } from "../search/MateriaMedicaSearchPanel";
 import { RemedyComparison } from "../remedies/RemedyComparison";
 import { MateriaMedicaReader } from "../reader/MateriaMedicaReader";
 import { ComparisonSelection } from "../../search/localSearchTypes";
-import { Search } from "lucide-react";
+import {
+  INGESTED_SOURCE_VOLUME_COUNT,
+  MACHINE_VALIDATED_BOOK_COUNT,
+  MACHINE_VALIDATED_CHARACTER_COUNT,
+  MACHINE_VALIDATED_CHUNK_COUNT,
+  VERIFIED_PASSAGE_COUNT,
+  getBookContentInventory,
+} from "../../data/contentInventory";
 
 type FilterState = {
   author: string;
@@ -109,6 +116,11 @@ export const MateriaMedicaLibrary: React.FC = () => {
     return Array.from(new Set(MATERIA_MEDICA_REGISTRY.map((b) => b.year))).sort((a, b) => a - b);
   }, []);
 
+  const readableBooksCount = useMemo(
+    () => MATERIA_MEDICA_REGISTRY.filter((book) => getBookContentInventory(book.id).machineChunkCount > 0).length,
+    []
+  );
+
   // Filter book collection
   const filteredBooks = useMemo(() => {
     return MATERIA_MEDICA_REGISTRY.filter((book) => {
@@ -172,22 +184,15 @@ export const MateriaMedicaLibrary: React.FC = () => {
     };
 
     filteredBooks.forEach((book) => {
-      // Rights review overrides sections if unverified or requested
+      // Every work belongs to exactly one section so catalog totals remain honest.
       if (book.rightsStatus === "rights-review-required") {
         groups.rightsReview.push(book);
         return;
       }
 
-      // Category grouping based on historical usage
-      if (
-        book.id === "james-tyler-kent" ||
-        book.id === "samuel-hahnemann-organon" ||
-        book.id === "constantine-hering-guiding"
-      ) {
+      if (book.id === "james-tyler-kent" || book.id === "constantine-hering-guiding") {
         groups.foundational.push(book);
-      }
-      
-      if (book.id === "samuel-hahnemann-organon") {
+      } else if (book.id === "samuel-hahnemann-organon") {
         groups.pure.push(book);
       } else if (book.id === "henry-c-allen" || book.id === "adolf-zur-lippe") {
         groups.keynotes.push(book);
@@ -200,7 +205,6 @@ export const MateriaMedicaLibrary: React.FC = () => {
       } else if (book.id === "cyrus-maxwell-boger" || book.id === "benoit-mure") {
         groups.comparative.push(book);
       } else {
-        // Fallback catch-all
         groups.clinical.push(book);
       }
     });
@@ -247,7 +251,17 @@ export const MateriaMedicaLibrary: React.FC = () => {
         onSearchChange={setSearchTerm}
         totalBooks={MATERIA_MEDICA_REGISTRY.length}
         filteredCount={filteredBooks.length}
+        readableBooksCount={readableBooksCount}
       />
+
+      <section className="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-5 py-4" aria-label="Content ingestion audit">
+        <h2 className="text-sm font-bold text-amber-300">Verified content audit</h2>
+        <p className="mt-1 text-sm leading-relaxed text-slate-300">
+          All {MACHINE_VALIDATED_BOOK_COUNT} registered books are readable: {INGESTED_SOURCE_VOLUME_COUNT} source volumes,
+          {" "}{MACHINE_VALIDATED_CHUNK_COUNT.toLocaleString()} checksum-verified sections and {MACHINE_VALIDATED_CHARACTER_COUNT.toLocaleString()} OCR characters.
+          {" "}{VERIFIED_PASSAGE_COUNT} Kent passages have additional human editorial approval; the remaining OCR is clearly marked as awaiting editorial review.
+        </p>
+      </section>
 
       {/* Tabs navigation */}
       <div className="flex border-b border-slate-800 gap-6 select-none">
@@ -259,7 +273,7 @@ export const MateriaMedicaLibrary: React.FC = () => {
               : "border-transparent text-slate-500 hover:text-slate-350"
           }`}
         >
-          Book Catalog
+          Browse Books
         </button>
 
         {canUseMateriaMedicaLocalSearch() && (
@@ -271,7 +285,7 @@ export const MateriaMedicaLibrary: React.FC = () => {
                 : "border-transparent text-slate-500 hover:text-slate-350"
             }`}
           >
-            Search Proving Text
+            Search 3 Verified Remedies
           </button>
         )}
 

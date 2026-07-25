@@ -7,10 +7,15 @@ import { ReaderToolbar } from "./ReaderToolbar";
 import { ReaderIndexPanel } from "./ReaderIndexPanel";
 import { ReaderContentView } from "./ReaderContentView";
 import { ReaderKeyboardShortcuts } from "./ReaderKeyboardShortcuts";
-import { ReaderUnavailableState } from "./ReaderUnavailableState";
 import { LegacyMateriaMedicaContentAdapter, LegacyRemedyEntry } from "./LegacyMateriaMedicaContentAdapter";
 import { GovernedMateriaMedicaRepository } from "../../services/GovernedMateriaMedicaRepository";
 import { computeSha256Browser } from "../../services/checksum/checksum.browser";
+import {
+  MachineCorpusChunk,
+  MachineCorpusChunkIndex,
+  MachineCorpusManifest,
+  MachineValidatedCorpusRepository,
+} from "../../services/MachineValidatedCorpusRepository";
 import { getRegistryBook } from "../../data/registry";
 import { featureFlags } from "../../../dashboard/constants/featureFlags";
 import Portal from "@/components/Portal";
@@ -42,6 +47,32 @@ type PassageLoadState =
   | { status: "verified"; passage: SampleMateriaMedicaPassage }
   | { status: "failed"; reason: "checksum" | "unapproved" | "deprecated" | "missing" };
 
+type MachineChunkLoadState =
+  | { status: "idle" }
+  | { status: "loading" | "verifying" }
+  | { status: "verified"; chunk: MachineCorpusChunk }
+  | { status: "failed"; reason: "checksum" | "missing" };
+
+type ReaderIndexEntry = {
+  name: string;
+  path: string;
+  passageId?: string;
+  contentKind: "human-reviewed" | "machine-ocr" | "legacy";
+};
+
+function machineTextToHtml(text: string): string {
+  const escaped = text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+  return escaped
+    .split(/\n\s*\n/)
+    .map((paragraph) => `<p>${paragraph.replace(/\n/g, "<br />")}</p>`)
+    .join("\n");
+}
+
 export const MateriaMedicaReader: React.FC<MateriaMedicaReaderProps> = ({
   selection,
   onBack,
@@ -67,7 +98,8 @@ export const MateriaMedicaReader: React.FC<MateriaMedicaReaderProps> = ({
   }, [selection]);
   
   // Dynamic lists for legacy or governed books
-  const [remedies, setRemedies] = useState<Array<{ name: string; path: string; passageId?: string }>>([]);
+  const [remedies, setRemedies] = useState<ReaderIndexEntry[]>([]);
+  const [machineManifest, setMachineManifest] = useState<MachineCorpusManifest | null>(null);
   const [selectedPath, setSelectedPath] = useState<string | null>(initialRemedyPath || null);
 
   useEffect(() => {
@@ -81,6 +113,7 @@ export const MateriaMedicaReader: React.FC<MateriaMedicaReaderProps> = ({
 
   // Governed selected remedy passage state machine
   const [passageState, setPassageState] = useState<PassageLoadState>({ status: "idle" });
+  const [machineChunkState, setMachineChunkState] = useState<MachineChunkLoadState>({ status: "idle" });
 
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoadingIndex, setIsLoadingIndex] = useState(false);
@@ -227,28 +260,44 @@ export const MateriaMedicaReader: React.FC<MateriaMedicaReaderProps> = ({
       setErrorIndex(null);
       try {
         if (selection.type === "governed") {
-          // Check flag
-          if (!isSampleCorpusActive) {
-            if (active) setRemedies([]);
-            return;
-          }
-
-          // Discover through repository layer
-          const approvedPassages = await GovernedMateriaMedicaRepository.listApprovedPassages(book.id);
+          const [manifest, approvedPassages] = await Promise.all([
+            MachineValidatedCorpusRepository.getManifest(book.id),
+            isSampleCorpusActive
+              ? GovernedMateriaMedicaRepository.listApprovedPassages(book.id)
+              : Promise.resolve([]),
+          ]);
           if (active) {
-            setRemedies(
-              approvedPassages.map((p) => ({
+            setMachineManifest(manifest);
+            const reviewedEntries: ReaderIndexEntry[] = approvedPassages.map((p) => ({
                 name: `${p.remedyDisplayName} (Pages ${p.sourcePageRange.printedPageStart}-${p.sourcePageRange.printedPageEnd})`,
                 path: p.remedyId,
                 passageId: p.id,
-              }))
-            );
+                contentKind: "human-reviewed",
+              }));
+            const seenMachineHeadings = new Set<string>();
+            const machineEntries: ReaderIndexEntry[] = (manifest?.chunks ?? []).flatMap((chunk) => {
+              const headings = chunk.indexHeadings?.length ? chunk.indexHeadings : [chunk.title];
+              return headings.flatMap((heading, headingIndex) => {
+                // Keep numeric identifiers so numbered works (for example Organon
+                // aphorisms §1–§291) do not collapse into a single index entry.
+                const normalizedHeading = heading.toUpperCase().replace(/[^A-Z0-9]/g, "");
+                if (!normalizedHeading || seenMachineHeadings.has(normalizedHeading)) return [];
+                seenMachineHeadings.add(normalizedHeading);
+                return [{
+                  name: heading,
+                  path: `ocr:${chunk.id}:${headingIndex}`,
+                  passageId: chunk.id,
+                  contentKind: "machine-ocr" as const,
+                }];
+              });
+            });
+            setRemedies([...reviewedEntries, ...machineEntries]);
           }
         } else {
           // Legacy content adapter
           const legacyIndex = await LegacyMateriaMedicaContentAdapter.fetchRemediesIndex(book.id);
           if (active) {
-            setRemedies(legacyIndex.map((r) => ({ name: r.name, path: r.path })));
+            setRemedies(legacyIndex.map((r) => ({ name: r.name, path: r.path, contentKind: "legacy" })));
           }
         }
       } catch (err: any) {
@@ -270,6 +319,7 @@ export const MateriaMedicaReader: React.FC<MateriaMedicaReaderProps> = ({
       setLegacyTitle(null);
       setLegacyContent(null);
       setPassageState({ status: "idle" });
+      setMachineChunkState({ status: "idle" });
       return;
     }
 
@@ -285,6 +335,27 @@ export const MateriaMedicaReader: React.FC<MateriaMedicaReaderProps> = ({
             if (active) setPassageState({ status: "failed", reason: "missing" });
             return;
           }
+
+          if (matchingRemedy.contentKind === "machine-ocr") {
+            setPassageState({ status: "idle" });
+            setMachineChunkState({ status: "loading" });
+            const chunkIndex = machineManifest?.chunks.find((chunk) => chunk.id === matchingRemedy.passageId);
+            if (!chunkIndex) {
+              if (active) setMachineChunkState({ status: "failed", reason: "missing" });
+              return;
+            }
+            const chunk = await MachineValidatedCorpusRepository.getChunk(book.id, chunkIndex as MachineCorpusChunkIndex);
+            if (active) setMachineChunkState({ status: "verifying" });
+            const computedHash = await computeSha256Browser(chunk.text);
+            if (computedHash !== chunk.sha256 || computedHash !== chunkIndex.sha256) {
+              if (active) setMachineChunkState({ status: "failed", reason: "checksum" });
+              return;
+            }
+            if (active) setMachineChunkState({ status: "verified", chunk });
+            return;
+          }
+
+          setMachineChunkState({ status: "idle" });
 
           const passage = await GovernedMateriaMedicaRepository.getApprovedPassage(matchingRemedy.passageId);
           if (!passage) {
@@ -322,7 +393,11 @@ export const MateriaMedicaReader: React.FC<MateriaMedicaReaderProps> = ({
       } catch (err: any) {
         if (active) {
           if (selection.type === "governed") {
-            setPassageState({ status: "failed", reason: "checksum" });
+            if (selectedPath.startsWith("ocr:")) {
+              setMachineChunkState({ status: "failed", reason: "checksum" });
+            } else {
+              setPassageState({ status: "failed", reason: "checksum" });
+            }
           } else {
             setLegacyTitle("Error");
             setLegacyContent(`<p class="text-rose-500 font-bold">${err.message || "Failed to load remedy proving content."}</p>`);
@@ -337,7 +412,7 @@ export const MateriaMedicaReader: React.FC<MateriaMedicaReaderProps> = ({
     return () => {
       active = false;
     };
-  }, [selection.type, book, selectedPath, remedies]);
+  }, [selection.type, book, selectedPath, remedies, machineManifest]);
 
   // Body scroll lock on fullscreen
   useEffect(() => {
@@ -350,16 +425,12 @@ export const MateriaMedicaReader: React.FC<MateriaMedicaReaderProps> = ({
   }, [isFullscreen]);
 
   const handleJumpToLetter = (letter: string) => {
-    const el = document.getElementById(`remedy-letter-${letter.toLowerCase()}`);
+    const group = letter.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    const el = document.getElementById(`remedy-group-${group}`);
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
-
-  // If governed and sample corpus is disabled OR no approved passages exist, show unavailable state
-  if (selection.type === "governed" && (!isSampleCorpusActive || remedies.length === 0)) {
-    return <ReaderUnavailableState book={book} onBack={onBack} />;
-  }
 
   const handleToggleFullscreen = () => {
     if (isFullscreen) {
@@ -375,16 +446,52 @@ export const MateriaMedicaReader: React.FC<MateriaMedicaReaderProps> = ({
   const themeVars = THEME_CSS_VARIABLES[preferences.theme];
   const scopedStyles = {
     "--reader-bg": themeVars.bg,
+    "--reader-surface": themeVars.surface,
+    "--reader-control": themeVars.control,
     "--reader-text": themeVars.text,
+    "--reader-muted": themeVars.muted,
+    "--reader-subtle": themeVars.subtle,
     "--reader-border": themeVars.border,
+    "--reader-accent": themeVars.accent,
+    "--reader-accent-surface": themeVars.accentSurface,
     background: "var(--reader-bg)",
     color: "var(--reader-text)",
     borderColor: "var(--reader-border)",
   } as React.CSSProperties;
 
+  const selectedIndexEntry = remedies.find((entry) => entry.path === selectedPath);
+
   // Render passage content based on verification status
   const renderPassageView = () => {
     if (selection.type === "governed") {
+      if (machineChunkState.status === "loading" || machineChunkState.status === "verifying") {
+        return (
+          <div className="flex-grow flex flex-col items-center justify-center min-h-[300px] gap-2 text-[var(--reader-muted)] bg-[var(--reader-surface)] border border-[var(--reader-border)] rounded-3xl">
+            <Loader2 size={32} className="animate-spin text-[var(--reader-accent)]" />
+            <span className="text-xs font-bold">Verifying OCR section integrity...</span>
+          </div>
+        );
+      }
+      if (machineChunkState.status === "failed") {
+        return (
+          <div className="flex-grow flex flex-col items-center justify-center p-8 text-center border border-rose-500/30 bg-rose-950/10 rounded-3xl min-h-[300px]">
+            <AlertTriangle size={36} className="text-rose-500 mb-3" />
+            <h4 className="text-rose-400 font-bold text-sm">OCR section unavailable — integrity verification failed.</h4>
+          </div>
+        );
+      }
+      if (machineChunkState.status === "verified") {
+        return (
+          <ReaderContentView
+            selectedRemedyTitle={selectedIndexEntry?.name || machineChunkState.chunk.title}
+            selectedRemedyContent={machineTextToHtml(machineChunkState.chunk.text)}
+            preferences={preferences}
+            bookTitle={book.title}
+            bookAuthor={book.author}
+            bookYear={Number(book.year)}
+          />
+        );
+      }
       switch (passageState.status) {
         case "loading":
         case "verifying":
@@ -501,7 +608,7 @@ export const MateriaMedicaReader: React.FC<MateriaMedicaReaderProps> = ({
           </button>
           <div>
             <h2 className="text-lg font-serif font-bold leading-tight">{book.title}</h2>
-            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">
+            <span className="text-[10px] text-[var(--reader-muted)] font-bold uppercase tracking-wider">
               By {book.author} · Published {book.year}
             </span>
           </div>
@@ -537,6 +644,13 @@ export const MateriaMedicaReader: React.FC<MateriaMedicaReaderProps> = ({
         </div>
       </div>
 
+      {machineManifest && (
+        <div className="rounded-2xl border border-amber-500/35 bg-amber-500/10 px-4 py-3 text-sm text-[var(--reader-text)]" role="status">
+          <span className="font-bold text-amber-500">Complete machine-validated OCR edition.</span>{" "}
+          All {machineManifest.chunkCount.toLocaleString()} sections are source-checksummed and verified again before display. OCR transcription errors may remain; human editorial review is pending.
+        </div>
+      )}
+
       {/* Main Content Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch pb-12">
         
@@ -552,7 +666,7 @@ export const MateriaMedicaReader: React.FC<MateriaMedicaReaderProps> = ({
                 }`}
               >
                 <Book size={14} />
-                Remedy Index
+                Book Sections
               </button>
               <button
                 onClick={() => setSidebarTab("workspace")}
@@ -625,6 +739,8 @@ export const MateriaMedicaReader: React.FC<MateriaMedicaReaderProps> = ({
                   <h2 id="fullscreen-dialog-title" className="font-serif text-lg font-bold mt-0.5">
                     {selection.type === "governed" && passageState.status === "verified"
                       ? passageState.passage.remedyDisplayName
+                      : machineChunkState.status === "verified"
+                        ? selectedIndexEntry?.name || machineChunkState.chunk.title
                       : legacyTitle}
                   </h2>
                 </div>
@@ -660,7 +776,9 @@ export const MateriaMedicaReader: React.FC<MateriaMedicaReaderProps> = ({
 
               <div className="p-4 border-t border-slate-800 bg-slate-950/20 text-[10px] text-slate-500 text-right italic font-mono pr-8">
                 {selection.type === "governed"
-                  ? `* Governed local sample corpus. Source Version: ${book.versionId || "unknown"}`
+                  ? machineChunkState.status === "verified"
+                    ? `Machine-validated OCR · SHA-256 verified · Editorial review pending`
+                    : `Human-reviewed governed passage · Source Version: ${book.versionId || "unknown"}`
                   : "* Sourced from free library at materiamedica.info. Provided without warranty."}
               </div>
             </motion.div>

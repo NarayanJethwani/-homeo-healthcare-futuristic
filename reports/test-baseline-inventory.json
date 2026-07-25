@@ -1,0 +1,31 @@
+{
+  "timestamp": "2026-07-25T13:39:04.234Z",
+  "totalSuitesDiscovered": 132,
+  "activeValidSuites": 20,
+  "retiredSuites": 26,
+  "quarantinedSuites": 0,
+  "subdomainSuites": 86,
+  "exitCode": 0,
+  "activeSuitesList": [
+    "tests/clinicalGraph.test.ts",
+    "tests/clinicalOsIntegration.test.ts",
+    "tests/corpusCacheActivationManifest.test.ts",
+    "tests/editorialPriorityService.test.ts",
+    "tests/editorialWorkflow.test.ts",
+    "tests/evidenceContexts.test.ts",
+    "tests/evidenceDates.test.ts",
+    "tests/evidenceFirestoreRules.test.ts",
+    "tests/evidenceScoring.test.ts",
+    "tests/knowledgeAnalyticsPrivacy.test.ts",
+    "tests/observabilityAdapters.test.ts",
+    "tests/observabilityAnalytics.test.ts",
+    "tests/persistentVector.test.ts",
+    "tests/phase2-1GovernancePersistence.test.ts",
+    "tests/phase2GovernanceSchema.test.ts",
+    "tests/physicalDeviceEvidence.test.ts",
+    "tests/productionReadiness.test.ts",
+    "tests/publicationGuardSafety.test.ts",
+    "tests/repertoryPerformanceSafety.test.ts",
+    "tests/runnerIntegritySelfTest.test.ts"
+  ]
+}

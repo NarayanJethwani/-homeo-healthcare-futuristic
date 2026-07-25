@@ -1636,3 +1636,117 @@ html.lenis, html.lenis body {
 .wp-timeline-step {
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
+
+/* Scalable classical repertory workbench */
+.classical-workbench-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+}
+
+.repertory-context-bar,
+.repertory-browser-panel,
+.repertorization-panel {
+  min-width: 0;
+}
+
+.repertory-context-bar {
+  position: relative;
+  z-index: 80;
+  overflow: visible;
+  isolation: isolate;
+}
+
+.repertory-browser-panel,
+.repertorization-panel {
+  position: relative;
+  z-index: 1;
+}
+
+.repertory-panel-resizer {
+  position: relative;
+  z-index: 2;
+  display: none;
+}
+
+.repertory-matrix-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(13, 148, 136, 0.45) rgba(226, 232, 240, 0.65);
+}
+
+.repertory-matrix-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+
+.repertory-matrix-scroll::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background: rgba(226, 232, 240, 0.65);
+}
+
+.repertory-matrix-scroll::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(13, 148, 136, 0.45);
+}
+
+.repertory-matrix-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(13, 148, 136, 0.7);
+}
+
+@media (min-width: 1280px) {
+  .classical-workbench-grid {
+    grid-template-columns:
+      minmax(400px, var(--repertory-browser-width, 460px))
+      14px
+      minmax(0, 1fr);
+    column-gap: 0.75rem;
+    row-gap: 1.5rem;
+  }
+
+  .repertory-context-bar {
+    grid-column: 1 / -1;
+  }
+
+  .repertory-browser-panel {
+    grid-column: 1;
+  }
+
+  .repertorization-panel {
+    grid-column: 3;
+  }
+
+  .repertory-panel-resizer {
+    align-self: stretch;
+    display: flex;
+    grid-column: 2;
+    min-height: 160px;
+    cursor: col-resize;
+    touch-action: none;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    transition: background-color 160ms ease;
+  }
+
+  .repertory-panel-resizer:hover,
+  .repertory-panel-resizer:focus-visible {
+    background: rgba(20, 184, 166, 0.08);
+    outline: none;
+  }
+
+  .repertory-panel-resizer span {
+    width: 2px;
+    height: 24px;
+    border-radius: 999px;
+    background: rgba(100, 116, 139, 0.3);
+    transition: background-color 160ms ease, height 160ms ease;
+  }
+
+  .repertory-panel-resizer:hover span,
+  .repertory-panel-resizer:focus-visible span {
+    height: 34px;
+    background: rgba(13, 148, 136, 0.65);
+  }
+}

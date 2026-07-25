@@ -11,40 +11,25 @@ interface EditorialConfidenceBadgeProps {
   reviewedDate: string;
 }
 
+import { evaluatePublicationEligibility } from "../governance/publicationGuard";
+
 export default function EditorialConfidenceBadge({ entity, reviewedDate }: EditorialConfidenceBadgeProps) {
   const [expanded, setExpanded] = useState(false);
+  const eligibility = evaluatePublicationEligibility(entity);
   
   // Format Date
   const formattedDate = formatMedicalDateLong(reviewedDate);
 
-  // Clinical Confidence Stars
-  // Determine stars based on evidenceLevel
-  const starsCount = entity.evidenceLevel === "Level-A" 
-    ? 5 
-    : entity.evidenceLevel === "Level-B" 
-    ? 5 
-    : entity.evidenceLevel === "Level-C" || entity.evidenceLevel === "Traditional-Literature"
-    ? 4 
-    : 3;
+  // Clinical Confidence Stars based on governance status and evidenceLevel
+  const isFullyReviewed = eligibility.publicationStatus === "published" && eligibility.clinicalReviewStatus === "approved";
+  const starsCount = !isFullyReviewed
+    ? 2
+    : entity.evidenceLevel === "Level-A" || entity.evidenceLevel === "Level-B"
+    ? 5
+    : 4;
 
-  // Priority Pages List
-  const prioritySlugs = [
-    "hypothyroidism", "tsh", "anti-tpo-antibodies", "weight-gain", 
-    "gerd", "ibs", "migraine", "psoriasis", "eczema", "cbc", 
-    "nux-vomica", "lycopodium", "sulphur"
-  ];
-  const isPriority = prioritySlugs.includes(entity.slug);
-
-  // Compute graph completeness
-  const rels = getEntityRelationships(entity.id);
-  const relsCount = rels.length;
-  const graphPercent = isPriority ? 95 : Math.min(60 + relsCount * 5, 90);
-
-  // Editorial completeness
-  const editorialPercent = isPriority ? 98 : 82;
-
-  // Reference Count
-  const refsCount = entity.content?.references?.length || 0;
+  const reviewBadgeText = eligibility.reviewLabel;
+  const isWithdrawn = eligibility.publicationStatus === "withdrawn";
 
   return (
     <div className="w-full border border-neutral-200 dark:border-neutral-850 rounded-2xl bg-white/40 dark:bg-neutral-900/40 backdrop-blur-sm transition-all overflow-hidden shadow-sm">
@@ -54,11 +39,11 @@ export default function EditorialConfidenceBadge({ entity, reviewedDate }: Edito
         className="flex items-center justify-between p-4 cursor-pointer hover:bg-neutral-100/30 dark:hover:bg-neutral-900/30 transition-colors"
       >
         <div className="flex items-center gap-3">
-          <ShieldCheck className="h-5 w-5 text-emerald-500 shrink-0" />
+          <ShieldCheck className={`h-5 w-5 shrink-0 ${isWithdrawn ? "text-rose-500" : isFullyReviewed ? "text-emerald-500" : "text-amber-500"}`} />
           <div>
             <div className="flex items-center gap-2">
               <span className="text-[10px] uppercase font-extrabold text-neutral-400 dark:text-neutral-500 tracking-wider">
-                Clinical Confidence
+                {reviewBadgeText}
               </span>
               <div className="flex text-amber-500">
                 {Array.from({ length: 5 }).map((_, i) => (
@@ -70,13 +55,19 @@ export default function EditorialConfidenceBadge({ entity, reviewedDate }: Edito
               </div>
             </div>
             <p className="text-xs text-neutral-600 dark:text-neutral-400">
-              Verified by <strong className="font-semibold text-neutral-750 dark:text-neutral-200">{entity.reviewer.name}, {entity.reviewer.credentials}</strong>
+              {isFullyReviewed ? (
+                <>Verified by <strong className="font-semibold text-neutral-750 dark:text-neutral-200">{entity.reviewer.name}, {entity.reviewer.credentials}</strong></>
+              ) : isWithdrawn ? (
+                <span className="text-rose-400 font-medium">Undergoing independent safety & content review</span>
+              ) : (
+                <span className="text-amber-400 font-medium">Independent clinical review pending</span>
+              )}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-bold text-teal-650 dark:text-teal-400 uppercase tracking-widest bg-teal-500/10 px-2 py-0.5 rounded-md border border-teal-500/20">
-            {isPriority ? "Flagship" : "Core"}
+          <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md border ${isWithdrawn ? "bg-rose-500/10 text-rose-400 border-rose-500/20" : isFullyReviewed ? "bg-teal-500/10 text-teal-400 border-teal-500/20" : "bg-amber-500/10 text-amber-400 border-amber-500/20"}`}>
+            {isWithdrawn ? "Withdrawn" : isFullyReviewed ? "Flagship" : "Unverified"}
           </span>
           {expanded ? <ChevronUp className="h-4 w-4 text-neutral-400" /> : <ChevronDown className="h-4 w-4 text-neutral-400" />}
         </div>

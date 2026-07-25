@@ -1,5 +1,5 @@
 import { MetadataRoute } from "next";
-import { getAllKnowledgeEntities, getEntityUrl } from "@/features/knowledge";
+import { getAllKnowledgeEntities, getEntityUrl, isEntityEligibleForSitemap } from "@/features/knowledge";
 import { CURATED_COLLECTIONS } from "@/features/knowledge/collections/collectionsRegistry";
 import { COMPARISONS } from "@/features/knowledge/comparisons/comparisonRegistry";
 
@@ -41,9 +41,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // 2. Dynamic knowledge entity details routes
   try {
-    const entities = getAllKnowledgeEntities().filter(
-      (e) => e.editorialStatus === "published"
-    );
+    const entities = getAllKnowledgeEntities().filter(isEntityEligibleForSitemap);
 
     for (const entity of entities) {
       const entityRoute = getEntityUrl(entity.entityType, entity.slug);

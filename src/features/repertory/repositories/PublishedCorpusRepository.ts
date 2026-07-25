@@ -98,6 +98,64 @@ export class PublishedCorpusRepository {
   private static remedyShardCount = 32;
   private static conceptShardCount = 32;
 
+  static async inspectReleaseArtifacts(version: string): Promise<{
+    manifest: RepertoryPublishedCorpusManifest | null;
+    governedArtifactCount: number;
+    missingArtifacts: string[];
+    sampleIndexReadable: boolean;
+  }> {
+    if (!/^v[a-zA-Z0-9._-]{1,64}$/.test(version)) {
+      throw new Error("Corpus version is invalid.");
+    }
+
+    const releaseDir = this.getPublishedDir(version);
+    const store = await this.getArtifactStore();
+    const manifestPath = path.join(releaseDir, "manifest.json");
+    if (!(await store.exists(manifestPath))) {
+      return {
+        manifest: null,
+        governedArtifactCount: 0,
+        missingArtifacts: ["manifest.json"],
+        sampleIndexReadable: false,
+      };
+    }
+
+    const manifest = await store.readJson<RepertoryPublishedCorpusManifest>(manifestPath);
+    const governedPaths = Object.keys(manifest.artifactChecksums || {}).sort();
+    // Object storage can verify the whole governed inventory with one prefix
+    // listing. Custom/legacy stores fall back to concurrent existence checks.
+    const missingArtifacts = store.findMissing
+      ? await store.findMissing(releaseDir, governedPaths)
+      : (await Promise.all(governedPaths.map(async (relativePath) => ({
+          relativePath,
+          exists: await store.exists(path.join(releaseDir, relativePath)),
+        }))))
+          .filter((result) => !result.exists)
+          .map((result) => result.relativePath);
+
+    const sampleShard = this.stableHash("fever") % this.lexicalShardCount;
+    const samplePath = path.join(
+      releaseDir,
+      "indexes",
+      "lexical",
+      `term-${sampleShard.toString().padStart(2, "0")}.json`
+    );
+    let sampleIndexReadable = false;
+    try {
+      const sampleIndex = await store.readJson<unknown>(samplePath);
+      sampleIndexReadable = Boolean(sampleIndex && typeof sampleIndex === "object");
+    } catch {
+      sampleIndexReadable = false;
+    }
+
+    return {
+      manifest,
+      governedArtifactCount: governedPaths.length,
+      missingArtifacts,
+      sampleIndexReadable,
+    };
+  }
+
   // Track cache statistics
   private static hitCount = 0;
   private static missCount = 0;

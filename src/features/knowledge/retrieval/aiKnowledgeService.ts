@@ -1,6 +1,15 @@
 import { getAllKnowledgeEntities } from "../index";
 import { KNOWLEDGE_RELATIONSHIPS } from "../graph/entityRelationships";
 import { KnowledgeEntity } from "../types";
+import { isEntityEligibleForRetrieval } from "./eligibilityService";
+
+/**
+ * Returns all knowledge entities that are fully eligible for RAG grounding / retrieval corpus.
+ */
+export function getEligibleAIArticlesForRAG(): KnowledgeEntity[] {
+  const entities = getAllKnowledgeEntities();
+  return entities.filter(e => isEntityEligibleForRetrieval(e));
+}
 
 /**
  * AI-ready Article Schema for RAG pipelines and vector DB indexing.

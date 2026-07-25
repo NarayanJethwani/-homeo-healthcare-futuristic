@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { SYMPTOMS } from "@/features/knowledge/content/symptoms";
+import { serializePublishedKnowledgeEntities } from "@/features/knowledge/public/publicKnowledgeEntityDTO";
 
 export async function GET() {
-  const published = SYMPTOMS.filter(s => s.editorialStatus === "published");
-  return NextResponse.json(published);
+  return NextResponse.json(serializePublishedKnowledgeEntities(SYMPTOMS));
 }

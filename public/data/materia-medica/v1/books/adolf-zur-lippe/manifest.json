@@ -1,0 +1,196 @@
+{
+  "schemaVersion": 1,
+  "bookId": "adolf-zur-lippe",
+  "corpusStatus": "machine-validated",
+  "correctionStatus": "raw-ocr",
+  "editorialStatus": "needs-review",
+  "generatedAt": "2026-07-21T10:23:10.704Z",
+  "sourceCount": 1,
+  "chunkCount": 11,
+  "characterCount": 288968,
+  "downloadedByteCount": 316163,
+  "sources": [
+    {
+      "identifier": "64320760R.nlm.nih.gov",
+      "label": "Complete volume",
+      "sourceUrl": "https://archive.org/details/64320760R.nlm.nih.gov",
+      "sourceType": "internet-archive-ocr",
+      "assetName": "64320760R_djvu.txt",
+      "archiveMd5": "3a057dd8e103cb6c3d8f46db7596b82f",
+      "archiveSha1": "40a98a976175616390e5a4db783d0f471c9cac87",
+      "downloadedByteCount": 316163,
+      "sourceSha256": "1bee422598226abf25919bcac3262bcacc3382a763c7484897ab7e58ebf2336d",
+      "normalizedSha256": "82829c8c863afacece0ba000f77c298b0379062b01f2874041794c59655de7be",
+      "normalizedCharacterCount": 304484,
+      "chunkCount": 11,
+      "sourcePageCount": null
+    }
+  ],
+  "chunks": [
+    {
+      "id": "64320760R.nlm.nih.gov-0001",
+      "sourceIdentifier": "64320760R.nlm.nih.gov",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 1,
+      "label": "Complete volume",
+      "title": "Aconitum Napellus",
+      "indexHeadings": [
+        "Aconitum Napellus"
+      ],
+      "sectionUrl": "https://archive.org/details/64320760R.nlm.nih.gov",
+      "characterCount": 13352,
+      "sha256": "27a803ec70b9c99273f8f1aadfb3a52dbc2d349077127a0c380c3528dda3c367",
+      "file": "0001.json"
+    },
+    {
+      "id": "64320760R.nlm.nih.gov-0002",
+      "sourceIdentifier": "64320760R.nlm.nih.gov",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 2,
+      "label": "Complete volume",
+      "title": "Sulphur",
+      "indexHeadings": [
+        "Sulphur"
+      ],
+      "sectionUrl": "https://archive.org/details/64320760R.nlm.nih.gov",
+      "characterCount": 37936,
+      "sha256": "b3b2ba2b398beb2126f58bdf49adfe715b41d23fe48d2a3859b3b8569fedf3bf",
+      "file": "0002.json"
+    },
+    {
+      "id": "64320760R.nlm.nih.gov-0003",
+      "sourceIdentifier": "64320760R.nlm.nih.gov",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 3,
+      "label": "Complete volume",
+      "title": "Arsenicum album",
+      "indexHeadings": [
+        "Arsenicum album"
+      ],
+      "sectionUrl": "https://archive.org/details/64320760R.nlm.nih.gov",
+      "characterCount": 26581,
+      "sha256": "88271a637efbc20a5fde86fd8dd0d830fccad313c00683502ce7ffad33aeea38",
+      "file": "0003.json"
+    },
+    {
+      "id": "64320760R.nlm.nih.gov-0004",
+      "sourceIdentifier": "64320760R.nlm.nih.gov",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 4,
+      "label": "Complete volume",
+      "title": "Phosphorus",
+      "indexHeadings": [
+        "Phosphorus"
+      ],
+      "sectionUrl": "https://archive.org/details/64320760R.nlm.nih.gov",
+      "characterCount": 22653,
+      "sha256": "10b66d8501ae4b7e0f9946d272bf0c91937fa2609c56e2c437dcf92ee38a7599",
+      "file": "0004.json"
+    },
+    {
+      "id": "64320760R.nlm.nih.gov-0005",
+      "sourceIdentifier": "64320760R.nlm.nih.gov",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 5,
+      "label": "Complete volume",
+      "title": "Belladonna",
+      "indexHeadings": [
+        "Belladonna"
+      ],
+      "sectionUrl": "https://archive.org/details/64320760R.nlm.nih.gov",
+      "characterCount": 43942,
+      "sha256": "32b8bfed3f334669166fc1b5b7417f1776dc43b7a33be7000738fc98bc7cb6a4",
+      "file": "0005.json"
+    },
+    {
+      "id": "64320760R.nlm.nih.gov-0006",
+      "sourceIdentifier": "64320760R.nlm.nih.gov",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 6,
+      "label": "Complete volume",
+      "title": "Calcarea carbonica",
+      "indexHeadings": [
+        "Calcarea carbonica"
+      ],
+      "sectionUrl": "https://archive.org/details/64320760R.nlm.nih.gov",
+      "characterCount": 37144,
+      "sha256": "11ce94e9a647d733f83ba0515b5a08b9018f7cc9b2cf4a7e8b8ad4e6d4ea392b",
+      "file": "0006.json"
+    },
+    {
+      "id": "64320760R.nlm.nih.gov-0007",
+      "sourceIdentifier": "64320760R.nlm.nih.gov",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 7,
+      "label": "Complete volume",
+      "title": "Pulsatilla pratensis",
+      "indexHeadings": [
+        "Pulsatilla pratensis"
+      ],
+      "sectionUrl": "https://archive.org/details/64320760R.nlm.nih.gov",
+      "characterCount": 33262,
+      "sha256": "50aefd8db12db2675e9f177e47a4fab36d64cd433b9c6b33df053f448a65a751",
+      "file": "0007.json"
+    },
+    {
+      "id": "64320760R.nlm.nih.gov-0008",
+      "sourceIdentifier": "64320760R.nlm.nih.gov",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 8,
+      "label": "Complete volume",
+      "title": "Tilia europaea",
+      "indexHeadings": [
+        "Tilia europaea"
+      ],
+      "sectionUrl": "https://archive.org/details/64320760R.nlm.nih.gov",
+      "characterCount": 7478,
+      "sha256": "b97ff19c64bd3722771dc361edb9c9efb0904481e00db71dd21308462d24d406",
+      "file": "0008.json"
+    },
+    {
+      "id": "64320760R.nlm.nih.gov-0009",
+      "sourceIdentifier": "64320760R.nlm.nih.gov",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 9,
+      "label": "Complete volume",
+      "title": "Sepia",
+      "indexHeadings": [
+        "Sepia"
+      ],
+      "sectionUrl": "https://archive.org/details/64320760R.nlm.nih.gov",
+      "characterCount": 33786,
+      "sha256": "f6885247904f9fda06cd70ccdaac6d38b69458e741aa7a379bf817997bb6a298",
+      "file": "0009.json"
+    },
+    {
+      "id": "64320760R.nlm.nih.gov-0010",
+      "sourceIdentifier": "64320760R.nlm.nih.gov",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 10,
+      "label": "Complete volume",
+      "title": "Agaricus muscarius",
+      "indexHeadings": [
+        "Agaricus muscarius"
+      ],
+      "sectionUrl": "https://archive.org/details/64320760R.nlm.nih.gov",
+      "characterCount": 6557,
+      "sha256": "a947e9548a8f819a8225a2d2db32cbb0e3c971d48a4dbd2b8243d555afd63cfa",
+      "file": "0010.json"
+    },
+    {
+      "id": "64320760R.nlm.nih.gov-0011",
+      "sourceIdentifier": "64320760R.nlm.nih.gov",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 11,
+      "label": "Complete volume",
+      "title": "Rhus toxicodendron",
+      "indexHeadings": [
+        "Rhus toxicodendron"
+      ],
+      "sectionUrl": "https://archive.org/details/64320760R.nlm.nih.gov",
+      "characterCount": 26277,
+      "sha256": "00855a7c60c05c9732a1d5b8fd126060d6a8f1f83c6e1d4e498b9ee5f38b1846",
+      "file": "0011.json"
+    }
+  ]
+}

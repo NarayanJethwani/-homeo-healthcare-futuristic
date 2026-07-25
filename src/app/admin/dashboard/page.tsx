@@ -2,7 +2,7 @@
 
 import { CARE_LEVELS_DETAILS, surchargesLookup, normalizeCareLevelName, getCareLevelDisplayName } from "@/lib/pricingConfig";
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import dynamic from "next/dynamic";
@@ -19,7 +19,17 @@ const CIEWorkspace = dynamic(() => import("./CIEWorkspace"), {
   ssr: false,
   loading: () => <div className="p-8 text-center text-slate-400">Loading Clinical Intelligence Engine...</div>
 });
-import { REPERTORY_CHAPTERS, REMEDIES_METADATA, Rubric, BOERICKE_CHAPTERS, SEARCH_SYNONYMS, getRepertoryData, JETHWANI_SECTIONS, JETHWANI_REPERTORY_DATA as JETHWANI_REPERTORY_DATA_ORIG, JETHWANI_REMEDY_CONFIRMATIONS, calculateClinicalIndices, type JethwaniRubric, type JethwaniSymptomConfig, type ClinicalIndices, setRepertoryData } from "@/lib/repertoryData";
+import { REPERTORY_CHAPTERS, REMEDIES_METADATA, Rubric, BOERICKE_CHAPTERS, CLARKE_CHAPTERS, BOGER_CHAPTERS, KNERR_CHAPTERS, BOENNINGHAUSEN_CHAPTERS, GENTRY_CHAPTERS, SYNOPTIC_CHAPTERS, JAHR_CHAPTERS, LIPPE_CHAPTERS, HERING_SPECIALIZED_CHAPTERS, SEARCH_SYNONYMS, getRepertoryData, JETHWANI_SECTIONS, JETHWANI_REPERTORY_DATA as JETHWANI_REPERTORY_DATA_ORIG, JETHWANI_REMEDY_CONFIRMATIONS, calculateClinicalIndices, type JethwaniRubric, type JethwaniSymptomConfig, type ClinicalIndices, setRepertoryData } from "@/lib/repertoryData";
+import { isRubricScoringEnabled } from "@/features/repertory/scoring/repertoryScoringPolicy";
+import { getTopWorkbenchRemedyColumns, projectWorkbenchScores } from "@/features/repertory/scoring/repertoryWorkbenchScoring";
+import {
+  RepertoryCatalogSelector,
+  RepertorySourceSummary,
+  repertoryCatalogBase,
+  type ClassicalRepertoryId,
+  type RepertoryCatalogEntry,
+} from "@/features/repertory/components/RepertoryCatalogSelector";
+import { GroupedRepertoryResults } from "@/features/repertory/components/GroupedRepertoryResults";
 import { MATERIA_MEDICA_BOOKS, MateriaMedicaBook } from "@/lib/materiaMedicaData";
 import { ORGANON_EDITIONS, ORGANON_KNOWLEDGE_TREE, ORGANON_APHORISMS, ORGANON_CASES, ACTIVE_RECALL_EXERCISES, TIMELINE_STEPS } from "@/lib/organonData";
 import { db, auth } from "@/lib/firebase";
@@ -1750,19 +1760,32 @@ export default function AdminDashboard() {
   };
   
   // Repertory State
-  const [selectedRepertory, setSelectedRepertory] = useState<'kent' | 'boericke' | 'combined'>("kent");
+  const [selectedRepertory, setSelectedRepertory] = useState<ClassicalRepertoryId>("kent");
   const [searchAllChapters, setSearchAllChapters] = useState(false);
   const [selectedChapter, setSelectedChapter] = useState(REPERTORY_CHAPTERS[0]);
   const [rubricSearch, setRubricSearch] = useState("");
   const [selectedRubrics, setSelectedRubrics] = useState<Array<{ rubric: Rubric; grade: number; weightMultiplier?: number }>>([]);
-  const [remedyColumns, setRemedyColumns] = useState<string[]>(["Nux-v", "Lyc", "Ars", "Puls", "Sulph", "Rhus-t", "Calc", "Sil", "Nat-m", "Ign", "Sep"]);
+  const [remedyColumns, setRemedyColumns] = useState<string[]>([]);
   const [customRemedyInput, setCustomRemedyInput] = useState("");
   const [remedyScores, setRemedyScores] = useState<Array<{ remedy: string; coverage: string; score: number }>>([]);
   const [isRepertoryLoaded, setIsRepertoryLoaded] = useState(false);
   const [isRepertoryLoading, setIsRepertoryLoading] = useState(false);
+  const [expandedRubricGroupKey, setExpandedRubricGroupKey] = useState<string | null>(null);
+  const [rubricPanelWidth, setRubricPanelWidth] = useState(460);
+
+  const repertoryCatalogItems = useMemo<RepertoryCatalogEntry[]>(
+    () => repertoryCatalogBase.map((entry) => ({
+      ...entry,
+      count: getRepertoryData(entry.id).length,
+    })),
+    [isRepertoryLoaded],
+  );
+  const activeRepertoryCatalogItem =
+    repertoryCatalogItems.find((entry) => entry.id === selectedRepertory)
+    || repertoryCatalogItems[0];
 
   // Dr. Jethwani's Clinical Repertory State
-  const [repertoryWorkbenchMode, setRepertoryWorkbenchMode] = useState<"classical" | "jethwani">("classical");
+  const [repertoryWorkbenchMode, setRepertoryWorkbenchMode] = useState<"classical" | "jethwani">("jethwani");
   const [selectedJethwaniRubrics, setSelectedJethwaniRubrics] = useState<JethwaniSymptomConfig[]>([]);
   const [activeSymptomConfig, setActiveSymptomConfig] = useState<JethwaniSymptomConfig | null>(null);
   const [nlpQuery, setNlpQuery] = useState("");
@@ -1836,7 +1859,16 @@ export default function AdminDashboard() {
   const getActiveChapters = () => {
     if (selectedRepertory === "kent") return REPERTORY_CHAPTERS;
     if (selectedRepertory === "boericke") return BOERICKE_CHAPTERS;
-    return Array.from(new Set([...REPERTORY_CHAPTERS, ...BOERICKE_CHAPTERS]));
+    if (selectedRepertory === "clarke") return CLARKE_CHAPTERS;
+    if (selectedRepertory === "boger") return BOGER_CHAPTERS;
+    if (selectedRepertory === "knerr") return KNERR_CHAPTERS;
+    if (selectedRepertory === "boenninghausen") return BOENNINGHAUSEN_CHAPTERS;
+    if (selectedRepertory === "gentry") return GENTRY_CHAPTERS;
+    if (selectedRepertory === "synoptic") return SYNOPTIC_CHAPTERS;
+    if (selectedRepertory === "jahr") return JAHR_CHAPTERS;
+    if (selectedRepertory === "lippe") return LIPPE_CHAPTERS;
+    if (selectedRepertory === "hering-specialized") return HERING_SPECIALIZED_CHAPTERS;
+    return Array.from(new Set([...REPERTORY_CHAPTERS, ...BOERICKE_CHAPTERS, ...CLARKE_CHAPTERS, ...BOGER_CHAPTERS, ...KNERR_CHAPTERS, ...BOENNINGHAUSEN_CHAPTERS, ...GENTRY_CHAPTERS, ...SYNOPTIC_CHAPTERS, ...JAHR_CHAPTERS, ...LIPPE_CHAPTERS, ...HERING_SPECIALIZED_CHAPTERS]));
   };
 
   useEffect(() => {
@@ -1844,7 +1876,38 @@ export default function AdminDashboard() {
     if (!chapters.includes(selectedChapter)) {
       setSelectedChapter(chapters[0]);
     }
-  }, [selectedRepertory]);
+  }, [selectedRepertory, isRepertoryLoaded]);
+
+  useEffect(() => {
+    const savedWidth = Number(window.localStorage.getItem("homeo.classical-repertory-panel-width"));
+    if (Number.isFinite(savedWidth) && savedWidth >= 400 && savedWidth <= 640) {
+      setRubricPanelWidth(savedWidth);
+    }
+  }, []);
+
+  const beginRubricPanelResize = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    if (window.innerWidth < 1280) return;
+    event.preventDefault();
+    const startX = event.clientX;
+    const startWidth = rubricPanelWidth;
+    let finalWidth = startWidth;
+    const handlePointerMove = (moveEvent: PointerEvent) => {
+      const maximumWidth = Math.min(640, Math.floor(window.innerWidth * 0.48));
+      finalWidth = Math.max(400, Math.min(maximumWidth, startWidth + moveEvent.clientX - startX));
+      setRubricPanelWidth(finalWidth);
+    };
+    const handlePointerUp = () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
+      window.localStorage.setItem("homeo.classical-repertory-panel-width", String(finalWidth));
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+    };
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", handlePointerUp);
+  };
 
   // Fullscreen escape key release and body scroll locking
   useEffect(() => {
@@ -1863,14 +1926,32 @@ export default function AdminDashboard() {
     const hydrateRepertory = async () => {
       setIsRepertoryLoading(true);
       try {
-        const [kentRes, boerickeRes, jethwaniRes] = await Promise.allSettled([
+        const [kentRes, boerickeRes, clarkeRes, bogerRes, knerrRes, boenninghausenRes, gentryRes, synopticRes, jahrRes, lippeRes, heringSpecializedRes, jethwaniRes] = await Promise.allSettled([
           fetch("/data/kentRepertoryData.json"),
           fetch("/data/boerickeRepertoryData.json"),
+          fetch("/data/clarkeClinicalRepertoryData.json?v=clarke-occurrence-2026-07-23"),
+          fetch("/data/bogerBoenninghausenRepertoryData.json?v=boger-graded-1905-2026-07-23"),
+          fetch("/data/knerrHeringRepertoryData.json?v=knerr-graded-1896-2026-07-23"),
+          fetch("/data/boenninghausenTherapeuticPocketBookData.json?v=boenninghausen-tpb-graded-1846-2026-07-24"),
+          fetch("/data/gentryConcordanceRepertoryData.json?v=gentry-occurrence-1890-2026-07-24"),
+          fetch("/data/bogerSynopticKeyRepertoryData.json?v=boger-synoptic-graded-1916-2026-07-24"),
+          fetch("/data/jahrClinicalGuideRepertoryData.json?v=jahr-clinical-graded-1850-2026-07-24"),
+          fetch("/data/lippeCharacteristicRepertoryData.json?v=lippe-characteristic-graded-1879-2026-07-24"),
+          fetch("/data/heringSpecializedRepertoriesData.json?v=hering-specialized-occurrence-1889-2026-07-25"),
           fetch("/data/jethwaniRepertoryData.json")
         ]);
 
         let kentData: any[] = [];
         let boerickeData: any[] = [];
+        let clarkeData: any[] = [];
+        let bogerData: any[] = [];
+        let knerrData: any[] = [];
+        let boenninghausenData: any[] = [];
+        let gentryData: any[] = [];
+        let synopticData: any[] = [];
+        let jahrData: any[] = [];
+        let lippeData: any[] = [];
+        let heringSpecializedData: any[] = [];
         let jethwaniData: any[] = [];
 
         if (kentRes.status === "fulfilled" && kentRes.value.ok) {
@@ -1880,6 +1961,42 @@ export default function AdminDashboard() {
         if (boerickeRes.status === "fulfilled" && boerickeRes.value.ok) {
           boerickeData = await boerickeRes.value.json();
           console.log(`Loaded Boericke repertory: ${boerickeData.length} rubrics`);
+        }
+        if (clarkeRes.status === "fulfilled" && clarkeRes.value.ok) {
+          clarkeData = await clarkeRes.value.json();
+          console.log(`Loaded Clarke clinical repertory: ${clarkeData.length} selectable equal-occurrence rubrics`);
+        }
+        if (bogerRes.status === "fulfilled" && bogerRes.value.ok) {
+          bogerData = await bogerRes.value.json();
+          console.log(`Loaded Boger–Boenninghausen repertory: ${bogerData.length} graded rubrics`);
+        }
+        if (knerrRes.status === "fulfilled" && knerrRes.value.ok) {
+          knerrData = await knerrRes.value.json();
+          console.log(`Loaded Knerr's Repertory of Hering's Guiding Symptoms: ${knerrData.length} graded rubrics`);
+        }
+        if (boenninghausenRes.status === "fulfilled" && boenninghausenRes.value.ok) {
+          boenninghausenData = await boenninghausenRes.value.json();
+          console.log(`Loaded Bönninghausen Therapeutic Pocket Book: ${boenninghausenData.length} graded rubrics`);
+        }
+        if (gentryRes.status === "fulfilled" && gentryRes.value.ok) {
+          gentryData = await gentryRes.value.json();
+          console.log(`Loaded Gentry's Concordance Repertory: ${gentryData.length} one-grade rubrics`);
+        }
+        if (synopticRes.status === "fulfilled" && synopticRes.value.ok) {
+          synopticData = await synopticRes.value.json();
+          console.log(`Loaded Boger's Synoptic Key: ${synopticData.length} four-level graded rubrics`);
+        }
+        if (jahrRes.status === "fulfilled" && jahrRes.value.ok) {
+          jahrData = await jahrRes.value.json();
+          console.log(`Loaded Jahr's Clinical Guide: ${jahrData.length} governed clinical rubrics`);
+        }
+        if (lippeRes.status === "fulfilled" && lippeRes.value.ok) {
+          lippeData = await lippeRes.value.json();
+          console.log(`Loaded Lippe's Characteristic Repertory: ${lippeData.length} two-grade rubrics`);
+        }
+        if (heringSpecializedRes.status === "fulfilled" && heringSpecializedRes.value.ok) {
+          heringSpecializedData = await heringSpecializedRes.value.json();
+          console.log(`Loaded Hering's Specialized Repertories: ${heringSpecializedData.length} one-grade rubrics across nine sections`);
         }
         if (jethwaniRes.status === "fulfilled" && jethwaniRes.value.ok) {
           jethwaniData = await jethwaniRes.value.json();
@@ -1912,7 +2029,7 @@ export default function AdminDashboard() {
           section: r.section || r.category || "Section D"
         }));
 
-        setRepertoryData(kentData, boerickeData);
+        setRepertoryData(kentData, boerickeData, clarkeData, bogerData, knerrData, boenninghausenData, gentryData, synopticData, jahrData, lippeData, heringSpecializedData);
         if (jethwaniData.length > 0) {
           GLOBAL_JETHWANI_DATA.length = 0;
           GLOBAL_JETHWANI_DATA.push(...jethwaniData);
@@ -6797,8 +6914,14 @@ Homeo Healthcare`;
     );
   };
 
-  // Rubrics filtration
-  const filteredRubrics = getRepertoryData(selectedRepertory).filter((r) => {
+  const multiSourceSearchReady =
+    selectedRepertory !== "combined" || rubricSearch.trim().length >= 2;
+
+  // Rubrics filtration. Combined mode intentionally waits for a meaningful
+  // query so adding more repertories does not flood the browser with tens of
+  // thousands of source-specific rows.
+  const allFilteredRubrics = multiSourceSearchReady
+    ? getRepertoryData(selectedRepertory).filter((r) => {
     const inChapter = searchAllChapters || r.chapter === selectedChapter;
     if (!inChapter) return false;
     if (!rubricSearch) return true;
@@ -6818,13 +6941,31 @@ Homeo Healthcare`;
 
       return false;
     });
-  });
+  })
+    : [];
+  const filteredRubrics = allFilteredRubrics.slice(0, 300);
+
+  useEffect(() => {
+    setExpandedRubricGroupKey(null);
+  }, [selectedRepertory, selectedChapter, searchAllChapters, rubricSearch]);
 
   // Add Rubric to active list
   const addRubric = (rubric: Rubric) => {
     if (selectedRubrics.some((item) => item.rubric.id === rubric.id)) return;
-    setSelectedRubrics([...selectedRubrics, { rubric, grade: 3 }]); // default grade 3
+    const isOccurrenceRubric = rubric.scoringMode === "occurrence";
+    setSelectedRubrics([...selectedRubrics, {
+      rubric,
+      grade: isOccurrenceRubric ? 1 : 3,
+      weightMultiplier: isOccurrenceRubric ? 1 : undefined,
+    }]);
   };
+
+  // Rebuild the comparison grid from the active case whenever its rubric set,
+  // importance, or weighting changes. This prevents static default remedies
+  // from persisting across unrelated symptom selections.
+  useEffect(() => {
+    setRemedyColumns(getTopWorkbenchRemedyColumns(selectedRubrics));
+  }, [selectedRubrics]);
 
   // Remove Rubric from active list
   const removeRubric = (id: string) => {
@@ -6862,35 +7003,7 @@ Homeo Healthcare`;
       return;
     }
 
-    // 1. Gather all remedies matching the selected rubrics
-    const remedyList: Record<string, { coverage: number; score: number }> = {};
-
-    selectedRubrics.forEach(({ rubric, grade: userWeight, weightMultiplier }) => {
-      const mult = weightMultiplier || 1;
-      Object.entries(rubric.remedies).forEach(([remedy, remGrade]) => {
-        // If remedy is contraindicated (-1), skip or penalize
-        if (remGrade < 0) return;
-
-        if (!remedyList[remedy]) {
-          remedyList[remedy] = { coverage: 0, score: 0 };
-        }
-        remedyList[remedy].coverage += 1;
-        // Score: remedy grade * patient symptom grade (userWeight) * multiplier
-        remedyList[remedy].score += remGrade * userWeight * mult;
-      });
-    });
-
-    // 2. Format scores for current remedyColumns
-    const calculatedScores = remedyColumns.map((rem) => {
-      const stats = remedyList[rem] || { coverage: 0, score: 0 };
-      return {
-        remedy: rem,
-        coverage: `${stats.coverage}/${selectedRubrics.length}`,
-        score: stats.score
-      };
-    });
-
-    setRemedyScores(calculatedScores);
+    setRemedyScores(projectWorkbenchScores(selectedRubrics, remedyColumns));
   }, [selectedRubrics, remedyColumns]);
 
   // Pre-fill active rubrics and complaint based on patient selection
@@ -14569,78 +14682,93 @@ ${err.message || err}`);
                 </div>
 
                 {repertoryWorkbenchMode === "classical" ? (
-                  <div className="w-full grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch pb-12">
+                  <div
+                    className="classical-workbench-grid w-full items-stretch pb-12"
+                    style={{ "--repertory-browser-width": `${rubricPanelWidth}px` } as CSSProperties}
+                  >
+                    <div className="repertory-context-bar rounded-3xl border border-white/70 bg-white/65 p-3 shadow-sm backdrop-blur-md">
+                      <div className="mb-2 flex items-center justify-between gap-3 px-1">
+                        <div>
+                          <h3 className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-700">Classical workbench context</h3>
+                          <p className="mt-0.5 text-[8px] font-semibold text-slate-400">
+                            Repertory, case, and source governance stay visible across the complete analysis.
+                          </p>
+                        </div>
+                        <span className="rounded-full border border-teal-100 bg-teal-50 px-2 py-1 font-mono text-[8px] font-black uppercase tracking-wider text-teal-700">
+                          {selectedRepertory === "combined" ? "Multi-source scope" : "Single-source scope"}
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(280px,1.25fr)_minmax(250px,1fr)_minmax(280px,1.15fr)]">
+                        <div className="min-w-0">
+                          <label className="mb-1 block px-1 font-mono text-[8px] font-black uppercase tracking-widest text-slate-400">
+                            Repertory catalogue
+                          </label>
+                          <RepertoryCatalogSelector
+                            items={repertoryCatalogItems}
+                            value={selectedRepertory}
+                            onChange={(value) => {
+                              setSelectedRepertory(value);
+                              if (value === "combined") setSearchAllChapters(true);
+                            }}
+                          />
+                        </div>
+                        <div className="min-w-0">
+                          <label className="mb-1 block px-1 font-mono text-[8px] font-black uppercase tracking-widest text-slate-400">
+                            Active case file
+                          </label>
+                          <div className="flex min-h-[62px] gap-1.5 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm">
+                            <select
+                              value={selectedPatientId}
+                              onChange={(event) => handleSelectPatientForAnalysis(event.target.value)}
+                              className="min-w-0 flex-1 rounded-xl border-none bg-slate-50 px-3 py-2 text-[10px] font-bold text-slate-700 outline-none focus:ring-2 focus:ring-teal-100"
+                            >
+                              <option value="">Custom Workspace (Unlinked)</option>
+                              {patients.map((patient) => (
+                                <option key={patient.id} value={patient.id}>
+                                  👤 {patient.name} ({patient.id})
+                                </option>
+                              ))}
+                            </select>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setImportError("");
+                                setImportSuccess("");
+                                setIsImportModalOpen(true);
+                              }}
+                              className="flex w-10 flex-none items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:border-slate-700 hover:bg-slate-50 hover:text-slate-800"
+                              title="Import patient record"
+                            >
+                              <Upload className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                        <div className="min-w-0">
+                          <label className="mb-1 block px-1 font-mono text-[8px] font-black uppercase tracking-widest text-slate-400">
+                            Source and scoring
+                          </label>
+                          <RepertorySourceSummary item={activeRepertoryCatalogItem} />
+                        </div>
+                      </div>
+                    </div>
                 
                 {/* ZONE 1 (Top Left) - Column Span 5 */}
-                <div className="order-1 xl:order-1 xl:col-span-5 flex flex-col gap-6">
+                <div className="repertory-browser-panel flex min-w-0 flex-col gap-6">
                   
                   {/* ZONE 1: Rubrics & Case Intake */}
                   <div className="glass-panel rounded-3xl border-white/60 p-6 space-y-5 flex flex-col shadow-sm bg-white/60 backdrop-blur-md">
                     <div className="flex items-center justify-between border-b border-slate-900/5 pb-3">
                       <h3 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider flex items-center gap-2">
                         <Sliders className="w-4 h-4 text-mint animate-pulse" />
-                        Zone 1: Rubrics & Case Intake
+                        Zone 1: Rubric Browser
                       </h3>
                       <span className="text-[9px] font-bold text-mint bg-mint/5 px-2 py-0.5 rounded-full border border-mint/10 font-mono">Active Workbench</span>
                     </div>
-                    <div className="bg-slate-100/80 backdrop-blur-sm border border-slate-200/50 rounded-2xl p-1 flex gap-1 shadow-inner">
-                      {[
-                        { id: "kent", label: "Kent's Repertory" },
-                        { id: "boericke", label: "Boericke Repertory" },
-                        { id: "combined", label: "Combined Database" }
-                      ].map((item) => (
-                        <button
-                          key={item.id}
-                          onClick={() => setSelectedRepertory(item.id as any)}
-                          type="button"
-                          className={`flex-1 text-center py-2 rounded-xl text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 cursor-pointer border-none ${
-                            selectedRepertory === item.id
-                              ? "bg-gradient-to-r from-mint-dark to-mint text-white shadow-md shadow-mint/20 scale-[1.02]"
-                              : "text-slate-500 hover:text-slate-900 bg-transparent hover:bg-slate-200/50"
-                          }`}
-                        >
-                          {item.label}
-                        </button>
-                      ))}
-                    </div>
-
-                    {/* Case file dropdown */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="flex flex-col gap-1">
-                        <label className="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 font-mono">
-                          Active Case File
-                        </label>
-                        <div className="flex gap-1.5 relative">
-                          <select
-                            value={selectedPatientId}
-                            onChange={(e) => handleSelectPatientForAnalysis(e.target.value)}
-                            className="flex-1 bg-white/70 backdrop-blur-md border border-slate-200/80 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-mint focus:ring-1 focus:ring-mint focus:bg-white transition-all shadow-sm"
-                          >
-                            <option value="">Custom Workspace (Unlinked)</option>
-                            {patients.map((p) => (
-                              <option key={p.id} value={p.id}>
-                                👤 {p.name} ({p.id})
-                              </option>
-                            ))}
-                          </select>
-                          <button
-                            onClick={() => {
-                              setImportError("");
-                              setImportSuccess("");
-                              setIsImportModalOpen(true);
-                            }}
-                            className="p-2 border border-slate-200 hover:border-slate-800 rounded-xl bg-white hover:bg-slate-50 flex items-center justify-center cursor-pointer transition-colors shadow-sm"
-                            title="Import Patient Record"
-                          >
-                            <Upload className="w-3.5 h-3.5 text-slate-500" />
-                          </button>
-                        </div>
-                      </div>
-
+                    <div className="grid grid-cols-1 gap-4">
                       {/* Chapter Select */}
                       <div className={`flex flex-col gap-1 ${searchAllChapters ? "opacity-30 pointer-events-none transition-opacity" : "transition-opacity"}`}>
                         <label className="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 font-mono">
-                          {selectedRepertory === "kent" ? "Kentian Chapter" : selectedRepertory === "boericke" ? "Boericke Chapter" : "Unified Chapter"}
+                          {selectedRepertory === "kent" ? "Kentian Chapter" : selectedRepertory === "boericke" ? "Boericke Chapter" : selectedRepertory === "clarke" ? "Clarke Clinical Chapter" : selectedRepertory === "boger" ? "Boger–Boenninghausen Chapter" : selectedRepertory === "knerr" ? "Knerr–Hering Chapter" : selectedRepertory === "boenninghausen" ? "Bönninghausen TPB Part" : selectedRepertory === "gentry" ? "Gentry Concordance Chapter" : selectedRepertory === "synoptic" ? "Boger Synoptic Key Section" : selectedRepertory === "jahr" ? "Jahr Clinical Section" : selectedRepertory === "lippe" ? "Lippe Characteristic Section" : selectedRepertory === "hering-specialized" ? "Hering Specialist Section" : "Unified Chapter"}
                         </label>
                         <select
                           value={selectedChapter}
@@ -14683,6 +14811,18 @@ ${err.message || err}`);
                         />
                         <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
                       </div>
+                      <div className="flex items-center justify-between gap-2 px-1 pt-1 text-[8px] font-semibold text-slate-400">
+                        <span>
+                          {selectedRepertory === "combined"
+                            ? "Equivalent wording is grouped; source grades remain separate."
+                            : `${activeRepertoryCatalogItem.shortLabel} source-specific search`}
+                        </span>
+                        {allFilteredRubrics.length > 300 && (
+                          <span className="flex-none font-mono text-slate-500">
+                            Showing 300 of {allFilteredRubrics.length.toLocaleString()}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
                     {/* Rubrics results list */}
@@ -14696,6 +14836,14 @@ ${err.message || err}`);
                           <p className="text-[10px] font-bold">Hydrating Classic Repertory...</p>
                           <p className="text-[8px] opacity-75 max-w-[160px] mt-0.5 font-bold">Loading 64,000+ clinical rubrics into memory.</p>
                         </div>
+                      ) : !multiSourceSearchReady ? (
+                        <div className="flex flex-col items-center justify-center px-5 py-10 text-center text-slate-400">
+                          <Layers className="mb-2 h-5 w-5 text-teal-400" />
+                          <p className="text-[10px] font-bold text-slate-600">Search all governed sources</p>
+                          <p className="mt-1 max-w-[240px] text-[8px] font-semibold leading-relaxed">
+                            Enter at least two characters. Matching wording will be grouped while every repertory’s grades and citations remain independent.
+                          </p>
+                        </div>
                       ) : filteredRubrics.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-6 text-center text-slate-400">
                           <Search className="w-5 h-5 opacity-40 mb-1" />
@@ -14703,36 +14851,16 @@ ${err.message || err}`);
                           <p className="text-[8px] opacity-75 max-w-[160px] mt-0.5">Try searching across all chapters or check spelling.</p>
                         </div>
                       ) : (
-                        filteredRubrics.map((rub) => {
-                          const isKent = rub.source === "kent";
-                          const badgeColor = isKent 
-                            ? "bg-sky-50 text-sky-700 border-sky-100" 
-                            : "bg-emerald-50 text-emerald-700 border-emerald-100";
-                          const badgeText = isKent ? "K" : "B";
-
-                          return (
-                            <button
-                              key={rub.id}
-                              onClick={() => addRubric(rub)}
-                              className="w-full text-left px-3 py-2 rounded-xl text-xs hover:bg-mint/10 hover:text-mint-dark font-semibold transition-all duration-200 flex items-center justify-between group cursor-pointer border border-transparent hover:border-mint/20 border-l-4 hover:border-l-mint bg-white/40"
-                            >
-                              <div className="flex items-center gap-2.5 min-w-0 flex-grow pr-2">
-                                <span className={`text-[8px] font-black border rounded px-1.5 py-0.5 flex-shrink-0 font-mono tracking-wider shadow-2xs ${badgeColor}`}>
-                                  {badgeText}
-                                </span>
-                                <div className="truncate flex flex-col">
-                                  <span className="truncate text-slate-700 group-hover:text-slate-900">{highlightQuery(rub.name, rubricSearch)}</span>
-                                  {searchAllChapters && (
-                                    <span className="text-[8px] opacity-50 font-mono tracking-wide truncate">
-                                      {rub.chapter}
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                              <Plus className="w-3.5 h-3.5 text-mint opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
-                            </button>
-                          );
-                        })
+                        <GroupedRepertoryResults
+                          rubrics={filteredRubrics}
+                          groupAcrossSources={selectedRepertory === "combined"}
+                          expandedGroupKey={expandedRubricGroupKey}
+                          onToggleGroup={(key) => setExpandedRubricGroupKey((current) => current === key ? null : key)}
+                          onAddRubric={addRubric}
+                          query={rubricSearch}
+                          showChapter={searchAllChapters}
+                          renderHighlighted={highlightQuery}
+                        />
                       )}
                     </div>
 
@@ -14748,7 +14876,7 @@ ${err.message || err}`);
                             onClick={() => {
                               if (confirm("Are you sure you want to clear all selected rubrics and restart case analysis?")) {
                                 setSelectedRubrics([]);
-                                setRemedyColumns(["Nux-v", "Lyc", "Ars", "Puls", "Sulph", "Rhus-t", "Calc", "Sil", "Nat-m", "Ign", "Sep"]);
+                                setRemedyColumns([]);
                               }
                             }}
                             className="text-[9px] font-black text-rose-500 hover:text-rose-700 uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1 bg-none border-none p-0"
@@ -14773,6 +14901,8 @@ ${err.message || err}`);
                         ) : (
                           selectedRubrics.map(({ rubric, grade, weightMultiplier }) => {
                             const activeWeight = weightMultiplier || 1;
+                            const scoringEnabled = isRubricScoringEnabled(rubric);
+                            const occurrenceOnly = rubric.scoringMode === "occurrence";
                             return (
                               <div
                                 key={rubric.id}
@@ -14783,9 +14913,27 @@ ${err.message || err}`);
                                     <span className={`text-[8px] font-black border rounded px-1.5 py-0.5 flex-shrink-0 font-mono ${
                                       rubric.source === "kent"
                                         ? "bg-sky-50 text-sky-700 border-sky-100"
+                                        : rubric.source === "clarke"
+                                          ? "bg-amber-50 text-amber-700 border-amber-100"
+                                        : rubric.source === "boger"
+                                          ? "bg-violet-50 text-violet-700 border-violet-100"
+                                        : rubric.source === "knerr"
+                                          ? "bg-rose-50 text-rose-700 border-rose-100"
+                                        : rubric.source === "boenninghausen"
+                                          ? "bg-cyan-50 text-cyan-700 border-cyan-100"
+                                        : rubric.source === "gentry"
+                                          ? "bg-slate-50 text-slate-700 border-slate-200"
+                                        : rubric.source === "synoptic"
+                                          ? "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-100"
+                                        : rubric.source === "jahr"
+                                          ? "bg-orange-50 text-orange-700 border-orange-100"
+                                        : rubric.source === "lippe"
+                                          ? "bg-pink-50 text-pink-700 border-pink-100"
+                                        : rubric.source === "hering-specialized"
+                                          ? "bg-teal-50 text-teal-700 border-teal-100"
                                         : "bg-emerald-50 text-emerald-700 border-emerald-100"
                                     }`}>
-                                      {rubric.source === "kent" ? "K" : "B"}
+                                      {rubric.source === "kent" ? "K" : rubric.source === "clarke" ? "C" : rubric.source === "boger" ? "BB" : rubric.source === "knerr" ? "KN" : rubric.source === "boenninghausen" ? "TPB" : rubric.source === "gentry" ? "G" : rubric.source === "synoptic" ? "SK" : rubric.source === "jahr" ? "J" : rubric.source === "lippe" ? "L" : rubric.source === "hering-specialized" ? "HS" : "B"}
                                     </span>
                                     <span className="text-[8px] text-mint-dark uppercase font-extrabold tracking-widest block font-mono truncate">
                                       {rubric.chapter}
@@ -14796,32 +14944,44 @@ ${err.message || err}`);
                                 
                                 <div className="flex items-center gap-2">
                                   {/* Grade selection */}
-                                  <select
-                                    value={grade}
-                                    onChange={(e) => updateGrade(rubric.id, Number(e.target.value))}
-                                    className="bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg py-1 px-1.5 text-[9px] font-bold text-slate-700 outline-none cursor-pointer transition-colors shadow-2xs"
-                                  >
-                                    <option value="1">Grade 1</option>
-                                    <option value="2">Grade 2</option>
-                                    <option value="3">Grade 3</option>
-                                  </select>
+                                  {occurrenceOnly && scoringEnabled ? (
+                                    <span className="rounded-lg border border-amber-200 bg-amber-50 px-2 py-1 text-[8px] font-black uppercase tracking-wide text-amber-700">
+                                      Equal occurrence · 1
+                                    </span>
+                                  ) : scoringEnabled ? (
+                                    <select
+                                      value={grade}
+                                      onChange={(e) => updateGrade(rubric.id, Number(e.target.value))}
+                                      className="bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg py-1 px-1.5 text-[9px] font-bold text-slate-700 outline-none cursor-pointer transition-colors shadow-2xs"
+                                    >
+                                      <option value="1">Grade 1</option>
+                                      <option value="2">Grade 2</option>
+                                      <option value="3">Grade 3</option>
+                                    </select>
+                                  ) : (
+                                    <span className="rounded-lg border border-amber-200 bg-amber-50 px-2 py-1 text-[8px] font-black uppercase tracking-wide text-amber-700">
+                                      Reference · no score
+                                    </span>
+                                  )}
 
                                   {/* Multiplier weight options: 1x, 2x, 3x */}
-                                  <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200">
-                                    {[1, 2, 3].map((w) => (
-                                      <button
-                                        key={w}
-                                        onClick={() => updateRubricWeight(rubric.id, w)}
-                                        className={`px-1.5 py-0.5 rounded text-[8px] font-black transition-all ${
-                                          activeWeight === w
-                                            ? "bg-gradient-to-r from-mint-dark to-mint text-white shadow-2xs"
-                                            : "text-slate-500 hover:text-slate-800"
-                                        }`}
-                                      >
-                                        {w}x
-                                      </button>
-                                    ))}
-                                  </div>
+                                  {scoringEnabled && !occurrenceOnly && (
+                                    <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200">
+                                      {[1, 2, 3].map((w) => (
+                                        <button
+                                          key={w}
+                                          onClick={() => updateRubricWeight(rubric.id, w)}
+                                          className={`px-1.5 py-0.5 rounded text-[8px] font-black transition-all ${
+                                            activeWeight === w
+                                              ? "bg-gradient-to-r from-mint-dark to-mint text-white shadow-2xs"
+                                              : "text-slate-500 hover:text-slate-800"
+                                          }`}
+                                        >
+                                          {w}x
+                                        </button>
+                                      ))}
+                                    </div>
+                                  )}
 
                                   <button
                                     onClick={() => removeRubric(rubric.id)}
@@ -14839,13 +14999,25 @@ ${err.message || err}`);
                   </div>
                 </div>
 
+                <button
+                  type="button"
+                  onPointerDown={beginRubricPanelResize}
+                  className="repertory-panel-resizer"
+                  aria-label="Resize rubric browser and repertorization matrix"
+                  title="Drag to resize the rubric browser"
+                >
+                  <span />
+                  <span />
+                  <span />
+                </button>
+
                 {/* ZONE 3 (Top Right) - Column Span 7 */}
-                <div className="order-2 xl:order-2 xl:col-span-7 flex flex-col gap-6">
+                <div className="repertorization-panel flex min-w-0 flex-col gap-6">
                   
                   {/* ZONE 3: Repertorization Engine Matrix */}
-                  <div className="glass-panel rounded-3xl border-white/60 p-6 space-y-4 shadow-sm bg-white/60 backdrop-blur-md">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-900/5 pb-3 gap-3">
-                      <div>
+                  <div className="repertory-zone-three-card glass-panel overflow-hidden rounded-3xl border-white/60 bg-white/60 p-4 shadow-sm backdrop-blur-md sm:p-5">
+                    <div className="flex flex-col gap-3 border-b border-slate-900/5 pb-4">
+                      <div className="min-w-0">
                         <h3 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider flex items-center gap-2 font-mono">
                           <Activity className="w-4 h-4 text-mint" />
                           Zone 3: Constitutional Repertorization Matrix
@@ -14854,12 +15026,12 @@ ${err.message || err}`);
                       </div>
 
                       {selectedRubrics.length > 0 && (
-                        <div className="flex items-center gap-2 self-end sm:self-auto">
+                        <div className="repertory-zone-three-toolbar flex w-full flex-wrap items-center gap-2">
                           {/* Send to Sheet */}
                           <button
                             onClick={handleSendRubricsToSheet}
                             disabled={isSyncingRepertory}
-                            className="px-3 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-white rounded-xl text-[10px] font-bold uppercase transition-all duration-300 cursor-pointer shadow-md flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex min-h-9 flex-none items-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-3 py-1.5 text-[10px] font-bold uppercase text-white shadow-md transition-all duration-300 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
                             title="Send selected rubrics directly to the patient's Clinical Sheet"
                           >
                             <FileSpreadsheet className="w-3.5 h-3.5" />
@@ -14871,10 +15043,10 @@ ${err.message || err}`);
                             placeholder="Filter columns..."
                             value={remedyFilter}
                             onChange={(e) => setRemedyFilter(e.target.value)}
-                            className="px-3 py-1.5 border border-slate-200 focus:border-mint outline-none rounded-xl text-[10px] bg-white font-semibold w-24 shadow-sm transition-all"
+                            className="min-h-9 w-28 flex-none rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-[10px] font-semibold shadow-sm outline-none transition-all focus:border-mint"
                           />
                           {/* Custom Remedy Input */}
-                          <div className="flex items-center gap-1">
+                          <div className="flex min-w-[190px] flex-1 items-center gap-1">
                             <input
                               type="text"
                               placeholder="Add remedy (e.g. Thuja)..."
@@ -14892,7 +15064,7 @@ ${err.message || err}`);
                                   }
                                 }
                               }}
-                              className="px-3 py-1.5 border border-slate-200 focus:border-mint outline-none rounded-xl text-[10px] bg-white font-semibold w-36 shadow-sm transition-all"
+                              className="min-h-9 min-w-[145px] flex-1 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-[10px] font-semibold shadow-sm outline-none transition-all focus:border-mint"
                             />
                             <button
                               type="button"
@@ -14905,7 +15077,7 @@ ${err.message || err}`);
                                   setCustomRemedyInput("");
                                 }
                               }}
-                              className="px-2.5 py-1.5 bg-mint hover:bg-mint-dark text-white rounded-xl text-[10px] font-bold uppercase transition-all duration-200 cursor-pointer border-none shadow-sm"
+                              className="min-h-9 flex-none rounded-xl border-none bg-mint px-2.5 py-1.5 text-[10px] font-bold uppercase text-white shadow-sm transition-all duration-200 hover:bg-mint-dark"
                             >
                               Add
                             </button>
@@ -14914,32 +15086,14 @@ ${err.message || err}`);
                           <button
                             type="button"
                             onClick={() => {
-                              const remedyList: Record<string, { coverage: number; score: number }> = {};
-                              selectedRubrics.forEach(({ rubric, grade: userWeight, weightMultiplier }) => {
-                                const mult = weightMultiplier || 1;
-                                Object.entries(rubric.remedies).forEach(([remedy, remGrade]) => {
-                                  if (remGrade < 0) return;
-                                  if (!remedyList[remedy]) {
-                                    remedyList[remedy] = { coverage: 0, score: 0 };
-                                  }
-                                  remedyList[remedy].coverage += 1;
-                                  remedyList[remedy].score += remGrade * userWeight * mult;
-                                });
-                              });
-                              const calculatedScores = Object.entries(remedyList).map(([remedy, stats]) => ({
-                                remedy,
-                                coverage: stats.coverage,
-                                score: stats.score
-                              }));
-                              calculatedScores.sort((a, b) => b.score - a.score || b.coverage - a.coverage);
-                              const topRemedies = calculatedScores.slice(0, 10).map(s => s.remedy);
+                              const topRemedies = getTopWorkbenchRemedyColumns(selectedRubrics);
                               if (topRemedies.length > 0) {
                                 setRemedyColumns(topRemedies);
                               } else {
                                 alert("No matching remedies found to auto-suggest.");
                               }
                             }}
-                            className="px-2.5 py-1.5 border border-mint text-mint hover:bg-mint/5 rounded-xl text-[10px] font-bold uppercase transition-all duration-200 cursor-pointer shadow-sm"
+                            className="min-h-9 flex-none rounded-xl border border-mint px-2.5 py-1.5 text-[10px] font-bold uppercase text-mint shadow-sm transition-all duration-200 hover:bg-mint/5"
                             title="Auto-populate compare grid with the top 10 remedies for active rubrics"
                           >
                             Auto Top 10
@@ -14947,7 +15101,7 @@ ${err.message || err}`);
                           {/* Group by Kingdom */}
                           <button
                             onClick={() => setGroupByKingdom(!groupByKingdom)}
-                            className={`px-3 py-1.5 border rounded-xl text-[10px] font-bold uppercase transition-all duration-300 cursor-pointer shadow-sm ${
+                            className={`min-h-9 flex-none rounded-xl border px-3 py-1.5 text-[10px] font-bold uppercase shadow-sm transition-all duration-300 ${
                               groupByKingdom 
                                 ? "bg-[#0F766E] text-white border-[#0F766E]" 
                                 : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
@@ -14961,10 +15115,10 @@ ${err.message || err}`);
                             onClick={() => {
                               if (confirm("Are you sure you want to clear all selected rubrics and restart case analysis?")) {
                                 setSelectedRubrics([]);
-                                setRemedyColumns(["Nux-v", "Lyc", "Ars", "Puls", "Sulph", "Rhus-t", "Calc", "Sil", "Nat-m", "Ign", "Sep"]);
+                                setRemedyColumns([]);
                               }
                             }}
-                            className="px-3 py-1.5 border border-rose-200 bg-rose-50/50 hover:bg-rose-50 text-rose-600 hover:text-rose-700 rounded-xl text-[10px] font-bold uppercase transition-all duration-200 cursor-pointer shadow-sm flex items-center gap-1"
+                            className="flex min-h-9 flex-none items-center gap-1 rounded-xl border border-rose-200 bg-rose-50/50 px-3 py-1.5 text-[10px] font-bold uppercase text-rose-600 shadow-sm transition-all duration-200 hover:bg-rose-50 hover:text-rose-700"
                             title="Clear all selected rubrics and reset remedies to restart new case analysis"
                           >
                             <Trash2 className="w-3.5 h-3.5 text-rose-500" />
@@ -14975,13 +15129,22 @@ ${err.message || err}`);
                     </div>
 
                     {selectedRubrics.length === 0 ? (
-                      <div className="p-12 text-center border border-dashed border-slate-200 rounded-2xl bg-slate-50/20">
+                      <div className="mt-4 rounded-2xl border border-dashed border-slate-200 bg-slate-50/20 p-12 text-center">
                         <p className="text-xs font-bold text-slate-500">Repertorization Grid Offline</p>
                         <p className="text-[10px] text-slate-400 mt-1">Please select symptom rubrics from Zone 1 to activate the grid.</p>
                       </div>
                     ) : (
-                      <div className="overflow-x-auto border border-slate-200/60 rounded-2xl bg-white shadow-md">
-                        <table className="w-full border-collapse text-left text-xs">
+                      <div className="mt-4 min-w-0">
+                        <div className="mb-2 flex flex-wrap items-center justify-between gap-2 px-1">
+                          <span className="font-mono text-[8px] font-black uppercase tracking-widest text-slate-500">
+                            Remedy comparison
+                          </span>
+                          <span className="text-[8px] font-semibold text-slate-400">
+                            Scroll horizontally to compare additional remedies
+                          </span>
+                        </div>
+                        <div className="repertory-matrix-scroll max-w-full overflow-x-auto overscroll-x-contain rounded-2xl border border-slate-200/60 bg-white shadow-md">
+                        <table className="w-max min-w-full border-collapse text-left text-xs">
                           <thead>
                             <tr className="bg-slate-50/80 border-b border-slate-200 text-[9px] font-black uppercase text-slate-500 tracking-wider">
                               <th className="p-4.5 min-w-[200px] align-middle font-mono">Selected Rubric Name</th>
@@ -15033,13 +15196,23 @@ ${err.message || err}`);
                                   <span className="text-slate-800">{rubric.name}</span>
                                 </td>
                                 <td className="p-4 text-center">
-                                  <span className={`px-2.5 py-1 rounded-full text-[9px] font-black tracking-wider ${
-                                    userGrade === 3 ? "bg-rose-50 text-rose-600 border border-rose-100 shadow-2xs" :
-                                    userGrade === 2 ? "bg-amber-50 text-amber-600 border border-amber-100 shadow-2xs" :
-                                    "bg-sky-50 text-sky-600 border border-sky-100 shadow-2xs"
-                                  }`}>
-                                    Grade {userGrade}
-                                  </span>
+                                  {rubric.scoringMode === "occurrence" && isRubricScoringEnabled(rubric) ? (
+                                    <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[8px] font-black uppercase tracking-wide text-amber-700">
+                                      Occurrence · 1
+                                    </span>
+                                  ) : isRubricScoringEnabled(rubric) ? (
+                                    <span className={`px-2.5 py-1 rounded-full text-[9px] font-black tracking-wider ${
+                                      userGrade === 3 ? "bg-rose-50 text-rose-600 border border-rose-100 shadow-2xs" :
+                                      userGrade === 2 ? "bg-amber-50 text-amber-600 border border-amber-100 shadow-2xs" :
+                                      "bg-sky-50 text-sky-600 border border-sky-100 shadow-2xs"
+                                    }`}>
+                                      Grade {userGrade}
+                                    </span>
+                                  ) : (
+                                    <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[8px] font-black uppercase tracking-wide text-amber-700">
+                                      Reference only
+                                    </span>
+                                  )}
                                 </td>
                                 {displayedRemedyColumns.map((rem) => {
                                   const remGrade = rubric.remedies[rem];
@@ -15100,6 +15273,7 @@ ${err.message || err}`);
                             </tr>
                           </tbody>
                         </table>
+                        </div>
                       </div>
                     )}
                   </div>

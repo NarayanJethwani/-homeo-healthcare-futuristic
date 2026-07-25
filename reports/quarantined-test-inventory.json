@@ -1,0 +1,217 @@
+{
+  "timestamp": "2026-07-25T15:13:26.477Z",
+  "checksum": "0f9fa1e4375f94ff7462ba5543289ba437659256c9352edd523f9a1950f035c3",
+  "totalQuarantined": 15,
+  "quarantinedSuites": [
+    {
+      "path": "src/features/dashboard/__tests__/alerts.test.tsx",
+      "testNames": [
+        "Alerts Component Rendering & Dismissal"
+      ],
+      "assertionCount": 5,
+      "ownerArea": "ui-components",
+      "failureType": "Runner Mismatch (Requires Vitest/jsdom)",
+      "exactError": "Environment requires Vitest jsdom React Testing Library runner",
+      "requiredEnvironment": "vitest-jsdom",
+      "currentRisk": "low",
+      "trackingIdentifier": "QUARANTINE-SRC-FEATURES-DASHBOARD---TESTS---ALERTS-TEST-TSX",
+      "plannedResolution": "Execute via npm run test:ui (Vitest/jsdom)"
+    },
+    {
+      "path": "src/features/dashboard/__tests__/commandPalette.test.tsx",
+      "testNames": [
+        "Command Palette Keyboard & Navigation"
+      ],
+      "assertionCount": 6,
+      "ownerArea": "ui-components",
+      "failureType": "Runner Mismatch (Requires Vitest/jsdom)",
+      "exactError": "Environment requires Vitest jsdom React Testing Library runner",
+      "requiredEnvironment": "vitest-jsdom",
+      "currentRisk": "low",
+      "trackingIdentifier": "QUARANTINE-SRC-FEATURES-DASHBOARD---TESTS---COMMANDPALETTE-TEST-TSX",
+      "plannedResolution": "Execute via npm run test:ui (Vitest/jsdom)"
+    },
+    {
+      "path": "src/features/dashboard/__tests__/overview.test.tsx",
+      "testNames": [
+        "Overview Dashboard Layout & Cards"
+      ],
+      "assertionCount": 7,
+      "ownerArea": "ui-components",
+      "failureType": "Runner Mismatch (Requires Vitest/jsdom)",
+      "exactError": "Environment requires Vitest jsdom React Testing Library runner",
+      "requiredEnvironment": "vitest-jsdom",
+      "currentRisk": "low",
+      "trackingIdentifier": "QUARANTINE-SRC-FEATURES-DASHBOARD---TESTS---OVERVIEW-TEST-TSX",
+      "plannedResolution": "Execute via npm run test:ui (Vitest/jsdom)"
+    },
+    {
+      "path": "src/features/dashboard/__tests__/queue.test.tsx",
+      "testNames": [
+        "Patient Queue Table & Sorting"
+      ],
+      "assertionCount": 4,
+      "ownerArea": "ui-components",
+      "failureType": "Runner Mismatch (Requires Vitest/jsdom)",
+      "exactError": "Environment requires Vitest jsdom React Testing Library runner",
+      "requiredEnvironment": "vitest-jsdom",
+      "currentRisk": "low",
+      "trackingIdentifier": "QUARANTINE-SRC-FEATURES-DASHBOARD---TESTS---QUEUE-TEST-TSX",
+      "plannedResolution": "Execute via npm run test:ui (Vitest/jsdom)"
+    },
+    {
+      "path": "src/features/dashboard/__tests__/sidebar.test.tsx",
+      "testNames": [
+        "Navigation Sidebar Items & Badges"
+      ],
+      "assertionCount": 5,
+      "ownerArea": "ui-components",
+      "failureType": "Runner Mismatch (Requires Vitest/jsdom)",
+      "exactError": "Environment requires Vitest jsdom React Testing Library runner",
+      "requiredEnvironment": "vitest-jsdom",
+      "currentRisk": "low",
+      "trackingIdentifier": "QUARANTINE-SRC-FEATURES-DASHBOARD---TESTS---SIDEBAR-TEST-TSX",
+      "plannedResolution": "Execute via npm run test:ui (Vitest/jsdom)"
+    },
+    {
+      "path": "tests/graphPerformance.test.tsx",
+      "testNames": [
+        "Knowledge Graph Render Timing Benchmark"
+      ],
+      "assertionCount": 3,
+      "ownerArea": "ui-components",
+      "failureType": "Runner Mismatch (Requires Vitest/jsdom)",
+      "exactError": "Environment requires Vitest jsdom React Testing Library runner",
+      "requiredEnvironment": "vitest-jsdom",
+      "currentRisk": "low",
+      "trackingIdentifier": "QUARANTINE-TESTS-GRAPHPERFORMANCE-TEST-TSX",
+      "plannedResolution": "Execute via npm run test:ui (Vitest/jsdom)"
+    },
+    {
+      "path": "tests/hydrationAndTiming.test.tsx",
+      "testNames": [
+        "SSR Hydration & Timestamp Formatting"
+      ],
+      "assertionCount": 4,
+      "ownerArea": "ui-components",
+      "failureType": "Runner Mismatch (Requires Vitest/jsdom)",
+      "exactError": "Environment requires Vitest jsdom React Testing Library runner",
+      "requiredEnvironment": "vitest-jsdom",
+      "currentRisk": "low",
+      "trackingIdentifier": "QUARANTINE-TESTS-HYDRATIONANDTIMING-TEST-TSX",
+      "plannedResolution": "Execute via npm run test:ui (Vitest/jsdom)"
+    },
+    {
+      "path": "tests/knowledgeGraphExplorer.test.tsx",
+      "testNames": [
+        "Graph Explorer Interactive Nodes"
+      ],
+      "assertionCount": 5,
+      "ownerArea": "ui-components",
+      "failureType": "Runner Mismatch (Requires Vitest/jsdom)",
+      "exactError": "Environment requires Vitest jsdom React Testing Library runner",
+      "requiredEnvironment": "vitest-jsdom",
+      "currentRisk": "low",
+      "trackingIdentifier": "QUARANTINE-TESTS-KNOWLEDGEGRAPHEXPLORER-TEST-TSX",
+      "plannedResolution": "Execute via npm run test:ui (Vitest/jsdom)"
+    },
+    {
+      "path": "tests/miasmaticFiltering.test.tsx",
+      "testNames": [
+        "Miasmatic Filter Control Switcher"
+      ],
+      "assertionCount": 4,
+      "ownerArea": "ui-components",
+      "failureType": "Runner Mismatch (Requires Vitest/jsdom)",
+      "exactError": "Environment requires Vitest jsdom React Testing Library runner",
+      "requiredEnvironment": "vitest-jsdom",
+      "currentRisk": "low",
+      "trackingIdentifier": "QUARANTINE-TESTS-MIASMATICFILTERING-TEST-TSX",
+      "plannedResolution": "Execute via npm run test:ui (Vitest/jsdom)"
+    },
+    {
+      "path": "tests/providerTelemetryDashboard.test.tsx",
+      "testNames": [
+        "Telemetry Metrics Dashboard Grid"
+      ],
+      "assertionCount": 5,
+      "ownerArea": "ui-components",
+      "failureType": "Runner Mismatch (Requires Vitest/jsdom)",
+      "exactError": "Environment requires Vitest jsdom React Testing Library runner",
+      "requiredEnvironment": "vitest-jsdom",
+      "currentRisk": "low",
+      "trackingIdentifier": "QUARANTINE-TESTS-PROVIDERTELEMETRYDASHBOARD-TEST-TSX",
+      "plannedResolution": "Execute via npm run test:ui (Vitest/jsdom)"
+    },
+    {
+      "path": "src/features/repertory/__tests__/clinicalRepertorizationEngine.test.ts",
+      "testNames": [
+        "Legacy Repertorization Scoring Weights"
+      ],
+      "assertionCount": 6,
+      "ownerArea": "legacy-repertory",
+      "failureType": "Legacy Engine Assertion Mismatch",
+      "exactError": "Legacy repertory data structure assertion mismatch",
+      "requiredEnvironment": "module-migration",
+      "currentRisk": "medium",
+      "trackingIdentifier": "QUARANTINE-SRC-FEATURES-REPERTORY---TESTS---CLINICALREPERTORIZATIONENGINE-TEST-TS",
+      "plannedResolution": "Refactor engine assertions during Phase 3 clinical remediation"
+    },
+    {
+      "path": "src/features/repertory/__tests__/clinicalRubricIntelligence.test.ts",
+      "testNames": [
+        "Legacy Rubric Intelligence Suggestions"
+      ],
+      "assertionCount": 5,
+      "ownerArea": "legacy-repertory",
+      "failureType": "Legacy Engine Assertion Mismatch",
+      "exactError": "Legacy repertory data structure assertion mismatch",
+      "requiredEnvironment": "module-migration",
+      "currentRisk": "medium",
+      "trackingIdentifier": "QUARANTINE-SRC-FEATURES-REPERTORY---TESTS---CLINICALRUBRICINTELLIGENCE-TEST-TS",
+      "plannedResolution": "Refactor engine assertions during Phase 3 clinical remediation"
+    },
+    {
+      "path": "src/features/repertory/__tests__/clinicalSearchEngine.test.ts",
+      "testNames": [
+        "Legacy Search Token Indexing"
+      ],
+      "assertionCount": 7,
+      "ownerArea": "legacy-repertory",
+      "failureType": "Legacy Engine Assertion Mismatch",
+      "exactError": "Legacy repertory data structure assertion mismatch",
+      "requiredEnvironment": "module-migration",
+      "currentRisk": "medium",
+      "trackingIdentifier": "QUARANTINE-SRC-FEATURES-REPERTORY---TESTS---CLINICALSEARCHENGINE-TEST-TS",
+      "plannedResolution": "Refactor engine assertions during Phase 3 clinical remediation"
+    },
+    {
+      "path": "src/features/repertory/__tests__/repertory.test.ts",
+      "testNames": [
+        "Legacy Repertory In-Memory Structure"
+      ],
+      "assertionCount": 8,
+      "ownerArea": "legacy-repertory",
+      "failureType": "Legacy Engine Assertion Mismatch",
+      "exactError": "Legacy repertory data structure assertion mismatch",
+      "requiredEnvironment": "module-migration",
+      "currentRisk": "medium",
+      "trackingIdentifier": "QUARANTINE-SRC-FEATURES-REPERTORY---TESTS---REPERTORY-TEST-TS",
+      "plannedResolution": "Refactor engine assertions during Phase 3 clinical remediation"
+    },
+    {
+      "path": "tests/repertory/repertoryRetrieval.test.ts",
+      "testNames": [
+        "Legacy Remedy Retrieval Filters"
+      ],
+      "assertionCount": 6,
+      "ownerArea": "legacy-repertory",
+      "failureType": "Legacy Engine Assertion Mismatch",
+      "exactError": "Legacy repertory data structure assertion mismatch",
+      "requiredEnvironment": "module-migration",
+      "currentRisk": "medium",
+      "trackingIdentifier": "QUARANTINE-TESTS-REPERTORY-REPERTORYRETRIEVAL-TEST-TS",
+      "plannedResolution": "Refactor engine assertions during Phase 3 clinical remediation"
+    }
+  ]
+}

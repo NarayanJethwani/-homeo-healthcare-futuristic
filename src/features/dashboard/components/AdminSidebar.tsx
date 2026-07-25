@@ -233,18 +233,20 @@ export default function AdminSidebar({
             aria-hidden="true"
           />
         )}
-        <button
-          onClick={() => {
-            setActiveTab(tabId);
-          }}
+        <div
           className={`group flex w-full items-center justify-between pl-4 pr-3 py-2.5 rounded-xl cursor-pointer text-left focus-visible:ring-2 focus-visible:ring-teal-555 outline-none transition-all bg-transparent ${
             isActive
               ? "bg-teal-50/70 dark:bg-teal-950/30 text-teal-650 dark:text-teal-400 font-bold border border-teal-100/50 dark:border-teal-900/30 shadow-xs"
               : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 border border-transparent"
           }`}
-          title={isCollapsed ? meta.label : undefined}
         >
-          <div className="flex items-center gap-3 min-w-0 flex-grow">
+          <button
+            type="button"
+            onClick={() => setActiveTab(tabId)}
+            className="flex items-center gap-3 min-w-0 flex-grow border-none bg-transparent p-0 text-inherit text-left cursor-pointer focus-visible:ring-2 focus-visible:ring-teal-555 outline-none rounded"
+            title={isCollapsed ? meta.label : undefined}
+            aria-current={isActive ? "page" : undefined}
+          >
             <div className="relative shrink-0">
               <div className={`shrink-0 ${isActive ? "text-teal-555" : "text-slate-400 group-hover:text-slate-605 dark:group-hover:text-slate-300"}`}>
                 <Icon className="w-4 h-4" />
@@ -259,7 +261,7 @@ export default function AdminSidebar({
                 {hasDot}
               </div>
             )}
-          </div>
+          </button>
 
           {!isCollapsed && (
             <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
@@ -275,7 +277,7 @@ export default function AdminSidebar({
               </button>
             </div>
           )}
-        </button>
+        </div>
       </div>
     );
   };

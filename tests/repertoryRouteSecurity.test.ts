@@ -8,7 +8,10 @@ import * as practitionerRepo from "../src/features/admin-users/practitionerRepos
 import * as doctorEntitlementRepo from "../src/features/repertory/access/DoctorEntitlementRepository";
 
 // Force mock firestore environment
+process.env.NODE_ENV = "test";
 process.env.REPERTORY_USE_MOCK_FIRESTORE = "true";
+process.env.GCLOUD_PROJECT = "test-project-id";
+process.env.FIRESTORE_PROJECT_ID = "test-project-id";
 process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID = "test-project-id";
 process.env.ADMIN_SESSION_SECRET = "homeo-healthcare-test-session-secret-xyz123";
 process.env.ALLOWED_ORIGINS = "http://localhost:3000,https://homeo.healthcare,https://www.homeo.healthcare";

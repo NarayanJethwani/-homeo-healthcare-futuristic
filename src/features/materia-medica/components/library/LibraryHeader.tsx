@@ -6,6 +6,7 @@ type LibraryHeaderProps = {
   onSearchChange: (val: string) => void;
   totalBooks: number;
   filteredCount: number;
+  readableBooksCount: number;
 };
 
 export const LibraryHeader: React.FC<LibraryHeaderProps> = ({
@@ -13,6 +14,7 @@ export const LibraryHeader: React.FC<LibraryHeaderProps> = ({
   onSearchChange,
   totalBooks,
   filteredCount,
+  readableBooksCount,
 }) => {
   return (
     <header className="relative flex flex-col gap-6 p-8 bg-slate-950/80 backdrop-blur-lg border border-slate-800 rounded-3xl shadow-3xl mb-8 overflow-hidden">
@@ -31,7 +33,7 @@ export const LibraryHeader: React.FC<LibraryHeaderProps> = ({
             </h1>
           </div>
           <p className="text-slate-400 text-sm max-w-2xl leading-relaxed">
-            Access governed, verified public domain and licensed historical homeopathic reference literature. Each work undergoes a strict licensing, checksum, and editorial approval workflow prior to ingestion.
+            Read checksum-verified public-domain historical homeopathic reference literature. Machine-validated OCR and human-reviewed passages are identified separately.
           </p>
         </div>
 
@@ -43,7 +45,7 @@ export const LibraryHeader: React.FC<LibraryHeaderProps> = ({
           <div>
             <h4 className="text-xs font-semibold text-slate-200">Editorial Provenance</h4>
             <p className="text-[11px] text-slate-400 mt-0.5 leading-snug">
-              Every registry record maps directly to audited public domain archives. No unverified third-party scraping permitted.
+              Every readable section maps to a registered source asset and is verified again in your browser before display.
             </p>
           </div>
         </div>
@@ -66,12 +68,14 @@ export const LibraryHeader: React.FC<LibraryHeaderProps> = ({
         </div>
 
         {/* Library Stats */}
-        <div className="flex items-center gap-2 text-xs font-mono text-slate-400 bg-slate-900/30 border border-slate-800/40 rounded-lg px-3 py-1.5 self-start sm:self-auto">
+        <div className="flex flex-wrap items-center gap-2 text-xs font-mono text-slate-400 bg-slate-900/30 border border-slate-800/40 rounded-lg px-3 py-1.5 self-start sm:self-auto">
           <Layers size={14} className="text-amber-500/70" />
-          <span>Catalog:</span>
+          <span>Showing</span>
           <span className="text-amber-400 font-semibold">{filteredCount}</span>
           <span className="text-slate-600">/</span>
-          <span className="text-slate-400">{totalBooks} works</span>
+          <span className="text-slate-400">{totalBooks} registered</span>
+          <span className="text-slate-700">•</span>
+          <span className="text-emerald-400 font-semibold">{readableBooksCount} fully ingested</span>
         </div>
       </div>
     </header>

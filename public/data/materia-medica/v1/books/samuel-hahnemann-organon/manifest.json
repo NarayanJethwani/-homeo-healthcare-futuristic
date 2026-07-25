@@ -1,0 +1,4396 @@
+{
+  "schemaVersion": 1,
+  "bookId": "samuel-hahnemann-organon",
+  "corpusStatus": "machine-validated",
+  "correctionStatus": "raw-ocr",
+  "editorialStatus": "needs-review",
+  "generatedAt": "2026-07-21T10:23:11.946Z",
+  "sourceCount": 1,
+  "chunkCount": 291,
+  "characterCount": 512508,
+  "downloadedByteCount": 637876,
+  "sources": [
+    {
+      "identifier": "homeoint-organon-sixth",
+      "label": "Sixth-edition aphorisms",
+      "sourceUrl": "http://homeoint.org/books/hahorgan/index.htm",
+      "sourceType": "public-web-transcription",
+      "assetName": "structured-public-web-edition",
+      "archiveMd5": null,
+      "archiveSha1": null,
+      "downloadedByteCount": 637876,
+      "sourceSha256": "c980a135bca686175e9ba748ff6d6c7b1570767a61f5b79b74b05b58845e1445",
+      "normalizedSha256": "64e84d48ec8fe36a15653c2f2829520ec0df93e24f71d684a2331a2aefe118b4",
+      "normalizedCharacterCount": 513088,
+      "chunkCount": 291,
+      "sourcePageCount": 15
+    }
+  ],
+  "chunks": [
+    {
+      "id": "homeoint-organon-sixth-0001",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 1,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 1",
+      "indexHeadings": [
+        "Aphorism § 1"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ001.htm#P1",
+      "characterCount": 1286,
+      "sha256": "437f478663c3b6baf7d1fb7e55f4a84dc077aa4d4789707b9e0fd792adaf7312",
+      "file": "0001.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0002",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 2,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 2",
+      "indexHeadings": [
+        "Aphorism § 2"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ001.htm#P2",
+      "characterCount": 266,
+      "sha256": "04173ad780163927cd3932507c29b7d6db0359efc307c50e8c3c556704fd6bbd",
+      "file": "0002.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0003",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 3,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 3",
+      "indexHeadings": [
+        "Aphorism § 3"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ001.htm#P3",
+      "characterCount": 1191,
+      "sha256": "614f26fde78ca47fdc4dd8716be69d1ab34c32e240a76673839cbb81d96400f0",
+      "file": "0003.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0004",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 4,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 4",
+      "indexHeadings": [
+        "Aphorism § 4"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ001.htm#P4",
+      "characterCount": 162,
+      "sha256": "916fa5ed1522b8e010790ea285286db5228b89f6b9e5b6bc0e8099162bb9ef57",
+      "file": "0004.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0005",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 5,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 5",
+      "indexHeadings": [
+        "Aphorism § 5"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ001.htm#P5",
+      "characterCount": 3488,
+      "sha256": "f500a2e203ea2b683e08b53c9c089eb1022aac75a4084ac27ee763a894b02229",
+      "file": "0005.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0006",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 6,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 6",
+      "indexHeadings": [
+        "Aphorism § 6"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ001.htm#P6E6",
+      "characterCount": 2379,
+      "sha256": "a43667af281b16302e04121fa003df8553f65865d195dd74248dfee221bc74d0",
+      "file": "0006.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0007",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 7,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 7",
+      "indexHeadings": [
+        "Aphorism § 7"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ001.htm#P7",
+      "characterCount": 2915,
+      "sha256": "ffeb3e90724594701d4b065ca2f4a57b62dbd9e8cda51ab220d52a4b30c1bae5",
+      "file": "0007.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0008",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 8,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 8",
+      "indexHeadings": [
+        "Aphorism § 8"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ001.htm#P8",
+      "characterCount": 1831,
+      "sha256": "f3e3673c5ffd909266c9c19a6005a59c3607d1ba8f626a8642a9651cc5a6a26d",
+      "file": "0008.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0009",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 9,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 9",
+      "indexHeadings": [
+        "Aphorism § 9"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ001.htm#P9",
+      "characterCount": 973,
+      "sha256": "ab4a2b57d224c488762e29ccb61c38312715ec4ff2a94681c771f394e4d48677",
+      "file": "0009.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0010",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 10,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 10",
+      "indexHeadings": [
+        "Aphorism § 10"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ001.htm#P10E6",
+      "characterCount": 1428,
+      "sha256": "9ac415dd90ff805f7cb88a8642c75d57155371569183d0e79b04de2060d360ed",
+      "file": "0010.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0011",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 11,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 11",
+      "indexHeadings": [
+        "Aphorism § 11"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ001.htm#P11E6",
+      "characterCount": 8604,
+      "sha256": "0865ce0faf9ea1959ff5f8f2eda59b34035e0e6fcdfc35499c76dd65a4109f3d",
+      "file": "0011.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0012",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 12,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 12",
+      "indexHeadings": [
+        "Aphorism § 12"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ001.htm#P12E6",
+      "characterCount": 1103,
+      "sha256": "bc97646156337789c364ce7c1d01b72075ebc1ded263680409891f9f67986547",
+      "file": "0012.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0013",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 13,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 13",
+      "indexHeadings": [
+        "Aphorism § 13"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ001.htm#P13",
+      "characterCount": 581,
+      "sha256": "711f55a19cec26a923bcc1b6284e1a0504bb884c3868a7c6e4a5971112995999",
+      "file": "0013.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0014",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 14,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 14",
+      "indexHeadings": [
+        "Aphorism § 14"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ001.htm#P14",
+      "characterCount": 1204,
+      "sha256": "1bbdccf4a8aaa7ebb380b34f13ffe3b0e436af4edd2aee4fad834eb9e4c42ae9",
+      "file": "0014.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0015",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 15,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 15",
+      "indexHeadings": [
+        "Aphorism § 15"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ001.htm#P15E6",
+      "characterCount": 2118,
+      "sha256": "44cec8b5da5cf615673dd2a15f63e16a6f3a111f32bba7c55955b0746d67df15",
+      "file": "0015.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0016",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 16,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 16",
+      "indexHeadings": [
+        "Aphorism § 16"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ001.htm#P16E6",
+      "characterCount": 3850,
+      "sha256": "a26db4241a32217552f241242cd3abf8983f0951c5cebb1f3d9f08002631989a",
+      "file": "0016.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0017",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 17,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 17",
+      "indexHeadings": [
+        "Aphorism § 17"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ001.htm#P17E6",
+      "characterCount": 2952,
+      "sha256": "ce1ca2ba6f54bf40017b734a603e3c611a07ab1045541082d9bcb8bd12de122c",
+      "file": "0017.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0018",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 18,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 18",
+      "indexHeadings": [
+        "Aphorism § 18"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ001.htm#P18E6",
+      "characterCount": 486,
+      "sha256": "40d3d09aac4bdc1467c9dbea4277fea9c582722029b86ba4499c818ce025bde3",
+      "file": "0018.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0019",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 19,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 19",
+      "indexHeadings": [
+        "Aphorism § 19"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ001.htm#P19",
+      "characterCount": 700,
+      "sha256": "1cfe3717222ad29b9d85c1ff327e62dbb6d174ecd288177405caf4486a6b2140",
+      "file": "0019.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0020",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 20,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 20",
+      "indexHeadings": [
+        "Aphorism § 20"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ020.htm#P20E6",
+      "characterCount": 404,
+      "sha256": "e6a7a7987d1eda6ce833a2a19678a1796d229f08bfd8c4cccda88f62c6301ae3",
+      "file": "0020.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0021",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 21,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 21",
+      "indexHeadings": [
+        "Aphorism § 21"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ020.htm#P21",
+      "characterCount": 3867,
+      "sha256": "24abc083b6132f406886d96df5de85310fdbf4591f037b8995e583d8ba7b830d",
+      "file": "0021.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0022",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 22,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 22",
+      "indexHeadings": [
+        "Aphorism § 22"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ020.htm#P22E6",
+      "characterCount": 3586,
+      "sha256": "c1a75a9ca70ce5fcf963689dce826ddcacfaf9d248a87125f8d5318c470cac2d",
+      "file": "0022.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0023",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 23,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 23",
+      "indexHeadings": [
+        "Aphorism § 23"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ020.htm#P23",
+      "characterCount": 463,
+      "sha256": "12d69ef084bbd5ca32b247ce331b92f45d2f9f7942a0b21d0e246630301ae42f",
+      "file": "0023.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0024",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 24,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 24",
+      "indexHeadings": [
+        "Aphorism § 24"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ020.htm#P24",
+      "characterCount": 523,
+      "sha256": "733c39a26b4a8bc23b5fb264723c40c9eb4f582b571f4d4b0b2205580e1581d2",
+      "file": "0024.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0025",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 25,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 25",
+      "indexHeadings": [
+        "Aphorism § 25"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ020.htm#P25",
+      "characterCount": 1881,
+      "sha256": "f439afb62fe54b89133810efeffb080e3c8169f353e50d3399140e46b618e9ea",
+      "file": "0025.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0026",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 26,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 26",
+      "indexHeadings": [
+        "Aphorism § 26"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ020.htm#P26",
+      "characterCount": 2391,
+      "sha256": "8b39454d4dcf0d0d35416790b754ad3857d858e5967908b81bceefa6fdb2dfbb",
+      "file": "0026.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0027",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 27,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 27",
+      "indexHeadings": [
+        "Aphorism § 27"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ020.htm#P27",
+      "characterCount": 496,
+      "sha256": "0c6445b15a576a9fc8d005e4c22d081852da958e89cb3eb35ee677b64674fbbf",
+      "file": "0027.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0028",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 28,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 28",
+      "indexHeadings": [
+        "Aphorism § 28"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ020.htm#P28",
+      "characterCount": 3210,
+      "sha256": "1ae70e1f0ad5965f7980e8040609293cd2c330d3e8a32f5bf8c19ad068a6f0fb",
+      "file": "0028.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0029",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 29,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 29",
+      "indexHeadings": [
+        "Aphorism § 29"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ020.htm#P29E6",
+      "characterCount": 1415,
+      "sha256": "ab395b9b9743a37aa6a32987116ea4cb55a7cb730ca1fab0e595041fc89a9ab1",
+      "file": "0029.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0030",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 30,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 30",
+      "indexHeadings": [
+        "Aphorism § 30"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ020.htm#P30E6",
+      "characterCount": 1200,
+      "sha256": "b6465a7de90456c2ed4c64550728c6ebd81804ecf5bbef7a10ed4a32c06192ad",
+      "file": "0030.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0031",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 31,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 31",
+      "indexHeadings": [
+        "Aphorism § 31"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ020.htm#P31",
+      "characterCount": 1215,
+      "sha256": "a4188789f3b7714000ca6f7de8b3e31a7356d5313a4a677aa456d9f4ce3206f0",
+      "file": "0031.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0032",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 32,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 32",
+      "indexHeadings": [
+        "Aphorism § 32"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ020.htm#P32",
+      "characterCount": 602,
+      "sha256": "e0c5ff2caa8160ddd3fd55c9da49350c8df3aecc2097fa5347ec8e464e29ce53",
+      "file": "0032.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0033",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 33,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 33",
+      "indexHeadings": [
+        "Aphorism § 33"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ020.htm#P33",
+      "characterCount": 2268,
+      "sha256": "8caf5a12eb2b8a7d41aacf22ff136a471b54f1ff807aa6645333eb3ddd64e5f3",
+      "file": "0033.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0034",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 34,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 34",
+      "indexHeadings": [
+        "Aphorism § 34"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ020.htm#P34E6",
+      "characterCount": 1064,
+      "sha256": "87300f02297ccf146e338aae115a4744b3058d58d588e048b691f0a5a0be7852",
+      "file": "0034.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0035",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 35,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 35",
+      "indexHeadings": [
+        "Aphorism § 35"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ020.htm#P35",
+      "characterCount": 735,
+      "sha256": "eab2e007be775e752103872955ad1da38d4a9333d0eaade728512bd0ffd08111",
+      "file": "0035.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0036",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 36,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 36",
+      "indexHeadings": [
+        "Aphorism § 36"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ020.htm#P36",
+      "characterCount": 1466,
+      "sha256": "ef49e670923af761262af6da4ad54b104a00c21e444da5bc67bc9bac54cb38da",
+      "file": "0036.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0037",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 37,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 37",
+      "indexHeadings": [
+        "Aphorism § 37"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ020.htm#P37E6",
+      "characterCount": 700,
+      "sha256": "da6c53cb0a44b2867f1ec62d5d0c5227ef74922f4f38542d6dff0d9dc4fd72ed",
+      "file": "0037.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0038",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 38,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 38",
+      "indexHeadings": [
+        "Aphorism § 38"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ020.htm#P38",
+      "characterCount": 5217,
+      "sha256": "7070aa1813135309e93726e3c86085041083296f7590f890156222a90875309e",
+      "file": "0038.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0039",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 39,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 39",
+      "indexHeadings": [
+        "Aphorism § 39"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ020.htm#P39",
+      "characterCount": 3549,
+      "sha256": "2747ea76f416417cf51e0fb5138fb03d46730f7a4fc5d2241a1dbcf61ae1ad1a",
+      "file": "0039.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0040",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 40,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 40",
+      "indexHeadings": [
+        "Aphorism § 40"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ040.htm#P40",
+      "characterCount": 5833,
+      "sha256": "acb3c2613a252549e1e9ed008e95c7280897cda243aa67a59047439d931ee665",
+      "file": "0040.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0041",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 41,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 41",
+      "indexHeadings": [
+        "Aphorism § 41"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ040.htm#P41E6",
+      "characterCount": 2514,
+      "sha256": "257a25e1ca92e4209d313755de7fb21d57696ad97f57097ca56c8ea0ea965c02",
+      "file": "0041.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0042",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 42,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 42",
+      "indexHeadings": [
+        "Aphorism § 42"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ040.htm#P42",
+      "characterCount": 750,
+      "sha256": "d33ffd40b366633e4fb7568b4fdbd8ad052d6168d5e3b7f40eb3f982cae6284f",
+      "file": "0042.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0043",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 43,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 43",
+      "indexHeadings": [
+        "Aphorism § 43"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ040.htm#P43",
+      "characterCount": 876,
+      "sha256": "5f9413bd3acb16f1f66d2c892e3486832fc7eac2be11258d3ed5beb9ddc6a9ac",
+      "file": "0043.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0044",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 44,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 44",
+      "indexHeadings": [
+        "Aphorism § 44"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ040.htm#P44E6",
+      "characterCount": 1893,
+      "sha256": "5bb35186cb230829674c071630ed4d3e17c28872ba227498f64c7158dbac22d5",
+      "file": "0044.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0045",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 45,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 45",
+      "indexHeadings": [
+        "Aphorism § 45"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ040.htm#P45E6",
+      "characterCount": 1401,
+      "sha256": "7cbb19c6098b36c0ba14cc911f17cbbb72883029977735923e8335061f4e2920",
+      "file": "0045.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0046",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 46,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 46",
+      "indexHeadings": [
+        "Aphorism § 46"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ040.htm#P46",
+      "characterCount": 6812,
+      "sha256": "14455bc056ad8095f19711b8269674d3e66dc8530a173c3cb6b49950195113d8",
+      "file": "0046.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0047",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 47,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 47",
+      "indexHeadings": [
+        "Aphorism § 47"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ040.htm#P47",
+      "characterCount": 309,
+      "sha256": "8da0c9a46a3cae995a0d6c0d036a9f7dd066487bcaa16a5749ea572c5bb8a986",
+      "file": "0047.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0048",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 48,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 48",
+      "indexHeadings": [
+        "Aphorism § 48"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ040.htm#P48",
+      "characterCount": 432,
+      "sha256": "3d114be44e40d374882642ebbcb74438f65a836b9464acf153f9e219cf74e3ca",
+      "file": "0048.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0049",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 49,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 49",
+      "indexHeadings": [
+        "Aphorism § 49"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ040.htm#P49",
+      "characterCount": 306,
+      "sha256": "cd26511a7c6ab73648e87fd9b5efb5e9999c2af8fa265dea9b3fee922025c780",
+      "file": "0049.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0050",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 50,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 50",
+      "indexHeadings": [
+        "Aphorism § 50"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ040.htm#P50",
+      "characterCount": 1734,
+      "sha256": "d14ec103f720f3972a90e992aac9ce94fddd10c546e59c8d1724a4cdc9162e02",
+      "file": "0050.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0051",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 51,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 51",
+      "indexHeadings": [
+        "Aphorism § 51"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ040.htm#P51",
+      "characterCount": 4504,
+      "sha256": "6798f2de0aabf5491105e28ce8af7c502e124f63db47adce38130ac169d0e8dd",
+      "file": "0051.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0052",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 52,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 52",
+      "indexHeadings": [
+        "Aphorism § 52"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ040.htm#P52E6",
+      "characterCount": 1152,
+      "sha256": "35f07cdad67e1efce4a8326c6b620ac336cedb1d973f0f89a7a9d37841b54d15",
+      "file": "0052.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0053",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 53,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 53",
+      "indexHeadings": [
+        "Aphorism § 53"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ040.htm#P53E6",
+      "characterCount": 1178,
+      "sha256": "0ebf80c4b373e55c380736c302e494f608b2b3d3f027fc838da32b2817fe09b0",
+      "file": "0053.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0054",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 54,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 54",
+      "indexHeadings": [
+        "Aphorism § 54"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ040.htm#P54E6",
+      "characterCount": 2850,
+      "sha256": "da5ed0272377b5a3c23ac8bbf658c798a3dabdf75a4b35b9d189e3835958c5b9",
+      "file": "0054.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0055",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 55,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 55",
+      "indexHeadings": [
+        "Aphorism § 55"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ040.htm#P55E6",
+      "characterCount": 2176,
+      "sha256": "2d3c2d6103944660be486ba04848ad32b60369a8a98de9420c871cb6ca2506e4",
+      "file": "0055.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0056",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 56,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 56",
+      "indexHeadings": [
+        "Aphorism § 56"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ040.htm#P56E6",
+      "characterCount": 2739,
+      "sha256": "bf3889cfd49077bcc906999fb8c642c017675e6b14d19b70836789eeaea4714c",
+      "file": "0056.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0057",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 57,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 57",
+      "indexHeadings": [
+        "Aphorism § 57"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ040.htm#P57",
+      "characterCount": 1757,
+      "sha256": "17ee3987c456297c0c7827483a80be9ca3b563f5d234a367036e96a69ec9c6f3",
+      "file": "0057.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0058",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 58,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 58",
+      "indexHeadings": [
+        "Aphorism § 58"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ040.htm#P58",
+      "characterCount": 2579,
+      "sha256": "12d38bbd27dd589eebb503786a1ab0bb5ab2f7c61f95d14f076c35aad1dfd8aa",
+      "file": "0058.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0059",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 59,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 59",
+      "indexHeadings": [
+        "Aphorism § 59"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ040.htm#P59",
+      "characterCount": 6373,
+      "sha256": "7f7bd383d102360d585e79be4bc1e58eb8c2748006b23a91bfedd37bff5427b0",
+      "file": "0059.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0060",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 60,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 60",
+      "indexHeadings": [
+        "Aphorism § 60"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ060.htm#P60E6",
+      "characterCount": 6067,
+      "sha256": "a9d05155534465c59ed2e13e63f22edc12852fd5c7617dcf7e2cdebc43278ac3",
+      "file": "0060.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0061",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 61,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 61",
+      "indexHeadings": [
+        "Aphorism § 61"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ060.htm#P61",
+      "characterCount": 1548,
+      "sha256": "306e369916c7c65e793615050f6496efe24ecff305d246bdfa0f20b867cefd63",
+      "file": "0061.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0062",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 62,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 62",
+      "indexHeadings": [
+        "Aphorism § 62"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ060.htm#P62",
+      "characterCount": 408,
+      "sha256": "9e55ee610444efc0f18ffb0069378d59dd918a4f1ce7e8e9e718e5eeac25f79d",
+      "file": "0062.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0063",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 63,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 63",
+      "indexHeadings": [
+        "Aphorism § 63"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ060.htm#P63",
+      "characterCount": 624,
+      "sha256": "8584637398548df40979d2debfdf19b0a287067a754bb40c7c88c3ce368b7294",
+      "file": "0063.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0064",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 64,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 64",
+      "indexHeadings": [
+        "Aphorism § 64"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ060.htm#P64",
+      "characterCount": 1226,
+      "sha256": "082dbe5bfe62060dd658f09ce4feab48e4ef5340d3a58f99048d84a9ea9fc088",
+      "file": "0064.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0065",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 65,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 65",
+      "indexHeadings": [
+        "Aphorism § 65"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ060.htm#P65",
+      "characterCount": 2064,
+      "sha256": "cdac27bbdcf965161e1a80435e0f51732fa97ad983a2a393b320ef06c953181a",
+      "file": "0065.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0066",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 66,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 66",
+      "indexHeadings": [
+        "Aphorism § 66"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ060.htm#P66",
+      "characterCount": 3558,
+      "sha256": "f2f04fc98c104bffb8901e85f3a22a43f0e0b3623ed7b80ae7b760f026ae8479",
+      "file": "0066.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0067",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 67,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 67",
+      "indexHeadings": [
+        "Aphorism § 67"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ060.htm#P67E6",
+      "characterCount": 3984,
+      "sha256": "39a59904b61e7409fd4d34186767ffe155e2ab9b76320337b95e068aa94b7880",
+      "file": "0067.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0068",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 68,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 68",
+      "indexHeadings": [
+        "Aphorism § 68"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ060.htm#P68E6",
+      "characterCount": 6847,
+      "sha256": "d23125aeddc2bf2604d017007ff6a3ee4dc2d53ffcfb0870355d438604ac0ed4",
+      "file": "0068.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0069",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 69,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 69",
+      "indexHeadings": [
+        "Aphorism § 69"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ060.htm#P69E6",
+      "characterCount": 8953,
+      "sha256": "9a16ce582117eecb8a11bf754e61a01cf9c81ff3bfeee6cb21dc345d6f0c2f77",
+      "file": "0069.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0070",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 70,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 70",
+      "indexHeadings": [
+        "Aphorism § 70"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ060.htm#P70E6",
+      "characterCount": 3235,
+      "sha256": "7eb43fa0d0ff306e54cdf793a400825a0718182d059799b81166b274cbcdb7a5",
+      "file": "0070.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0071",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 71,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 71",
+      "indexHeadings": [
+        "Aphorism § 71"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ060.htm#P71",
+      "characterCount": 845,
+      "sha256": "8e559b3c8a953873244bf754b143b9fab2bcbb031c38d258cd2f5fe888b56060",
+      "file": "0071.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0072",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 72,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 72",
+      "indexHeadings": [
+        "Aphorism § 72"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ060.htm#P72",
+      "characterCount": 1176,
+      "sha256": "4fa2f7e573e30c2899f0bcecc6b773134aae5387a8dfc023397adbf3a0545216",
+      "file": "0072.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0073",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 73,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 73",
+      "indexHeadings": [
+        "Aphorism § 73"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ060.htm#P73",
+      "characterCount": 5474,
+      "sha256": "6303b155e619e25e70ea1f716ecdd864383b8ebfe219c09b083669a82750c0ac",
+      "file": "0073.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0074",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 74,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 74",
+      "indexHeadings": [
+        "Aphorism § 74"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ060.htm#P74E6",
+      "characterCount": 4535,
+      "sha256": "2f5a5400967a1372c6c892618e61bbaf411d8a017dfa43fde47f3dacc2cb13f2",
+      "file": "0074.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0075",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 75,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 75",
+      "indexHeadings": [
+        "Aphorism § 75"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ060.htm#P75",
+      "characterCount": 1276,
+      "sha256": "d7fffa543f641f4b3d6f86f17bb74368bd89d42b51a897c3cc32c16e27c62367",
+      "file": "0075.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0076",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 76,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 76",
+      "indexHeadings": [
+        "Aphorism § 76"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ060.htm#P76E6",
+      "characterCount": 1973,
+      "sha256": "c062b9ec353335c3f8934bafb0c5b662976e1f42ea434eba07f063d6569fe34c",
+      "file": "0076.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0077",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 77,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 77",
+      "indexHeadings": [
+        "Aphorism § 77"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ060.htm#P77",
+      "characterCount": 1614,
+      "sha256": "2209b0e75fbbe82eb7f30236c7f68ac69ccc80841990bd88b443af2f89733cb4",
+      "file": "0077.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0078",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 78,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 78",
+      "indexHeadings": [
+        "Aphorism § 78"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ060.htm#P78E6",
+      "characterCount": 1512,
+      "sha256": "ac39873816e6d8bdfcd84e41075fa75cb1882e3961a858883326619694197ae2",
+      "file": "0078.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0079",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 79,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 79",
+      "indexHeadings": [
+        "Aphorism § 79"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ060.htm#P79",
+      "characterCount": 650,
+      "sha256": "28ab7f3192e9b080ff1e48691c9f15f77b6216a58bcab8205102e9d7b0275de3",
+      "file": "0079.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0080",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 80,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 80",
+      "indexHeadings": [
+        "Aphorism § 80"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ080.htm#P80",
+      "characterCount": 3541,
+      "sha256": "a60ba6a42d39183d66e18e0ee56dd8a03a884d483d553dd0ee2bf9d2c6260f43",
+      "file": "0080.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0081",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 81,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 81",
+      "indexHeadings": [
+        "Aphorism § 81"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ080.htm#P81",
+      "characterCount": 6564,
+      "sha256": "4727ac9cbc9d7de7d39f938b0c7ff80ae155a20f9da2b68fff7315ec15d104e5",
+      "file": "0081.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0082",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 82,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 82",
+      "indexHeadings": [
+        "Aphorism § 82"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ080.htm#P82",
+      "characterCount": 1525,
+      "sha256": "175dd433da9cc944112bd0f4cd05c3201ab481fc172b1c7063d23b603b85a3f2",
+      "file": "0082.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0083",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 83,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 83",
+      "indexHeadings": [
+        "Aphorism § 83"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ080.htm#P83",
+      "characterCount": 412,
+      "sha256": "194c920aa101f7fd03125401d513ab15a622eaea4519e19cce36638e7c3de1fe",
+      "file": "0083.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0084",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 84,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 84",
+      "indexHeadings": [
+        "Aphorism § 84"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ080.htm#P84",
+      "characterCount": 995,
+      "sha256": "c06609e319cce4f5d6fc83bf7bf1ae74e0f4ebc6e515674c691af30f87d3c5a9",
+      "file": "0084.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0085",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 85,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 85",
+      "indexHeadings": [
+        "Aphorism § 85"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ080.htm#P85",
+      "characterCount": 334,
+      "sha256": "450fe400916df77710eff71f73af3dd5f8db9868b9a80df7980557f63f69e222",
+      "file": "0085.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0086",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 86,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 86",
+      "indexHeadings": [
+        "Aphorism § 86"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ080.htm#P86",
+      "characterCount": 1062,
+      "sha256": "f2aac671f3c4d5e0addfd248de196925843df9a9b84a9954e22c10c8173bf3f7",
+      "file": "0086.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0087",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 87,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 87",
+      "indexHeadings": [
+        "Aphorism § 87"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ080.htm#P87",
+      "characterCount": 827,
+      "sha256": "3c2a770371f4433b5fefc66ddd2b1aaef53808e29941b098b2da7e533ad7e0e0",
+      "file": "0087.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0088",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 88,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 88",
+      "indexHeadings": [
+        "Aphorism § 88"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ080.htm#P88",
+      "characterCount": 1014,
+      "sha256": "abf7985b567b3f293d8693fdf010e3811858c73ba660f78812c68f581e9ae496",
+      "file": "0088.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0089",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 89,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 89",
+      "indexHeadings": [
+        "Aphorism § 89"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ080.htm#P89",
+      "characterCount": 3082,
+      "sha256": "ce969825373f07dae0b29e53e19e679394db3d04eb8504bf76bbb3df161b6f37",
+      "file": "0089.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0090",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 90,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 90",
+      "indexHeadings": [
+        "Aphorism § 90"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ080.htm#P90",
+      "characterCount": 1477,
+      "sha256": "a3148f7ee7ef50032c0debe98ae3e81b442d258f87da4a76390912d25acad627",
+      "file": "0090.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0091",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 91,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 91",
+      "indexHeadings": [
+        "Aphorism § 91"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ080.htm#P91",
+      "characterCount": 1004,
+      "sha256": "6be56d1d8072adcd65ea514bffca0ed90f11d0fb21e7706f7549dc3830a0731a",
+      "file": "0091.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0092",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 92,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 92",
+      "indexHeadings": [
+        "Aphorism § 92"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ080.htm#P92",
+      "characterCount": 979,
+      "sha256": "40e85f91d7a99c4188ff40be0403f7dfcb815abbd2518e910196f890245e2b9d",
+      "file": "0092.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0093",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 93,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 93",
+      "indexHeadings": [
+        "Aphorism § 93"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ080.htm#P93",
+      "characterCount": 1229,
+      "sha256": "7c488451c2467a76708c95a846a15ed8faf6b4ac219be2722240ce81be99defd",
+      "file": "0093.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0094",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 94,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 94",
+      "indexHeadings": [
+        "Aphorism § 94"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ080.htm#P94",
+      "characterCount": 1379,
+      "sha256": "0a2ddc174fecbe3bdbe216b5816f15dea88b92798eef2c5a8cd45b8a67ce4e75",
+      "file": "0094.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0095",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 95,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 95",
+      "indexHeadings": [
+        "Aphorism § 95"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ080.htm#P95",
+      "characterCount": 1150,
+      "sha256": "c3814eff31dfd59281507cd5e6fb46d1eb6ca1456d73a5fd656804067c05ddfb",
+      "file": "0095.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0096",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 96,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 96",
+      "indexHeadings": [
+        "Aphorism § 96"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ080.htm#P96",
+      "characterCount": 1117,
+      "sha256": "c5461a1ba98d7cc84c0b905893f5a54884bd77f337e6a9464a281c9cc404d26a",
+      "file": "0096.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0097",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 97,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 97",
+      "indexHeadings": [
+        "Aphorism § 97"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ080.htm#P97",
+      "characterCount": 337,
+      "sha256": "5f42ca239809325b603d0935f510f57e0e3a6ec0bc9599c38f049ce797dca821",
+      "file": "0097.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0098",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 98,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 98",
+      "indexHeadings": [
+        "Aphorism § 98"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ080.htm#P98",
+      "characterCount": 699,
+      "sha256": "24031c2ab47f235c36e859b0cb1e25c52904eaa993b98d61d5863df7f8300452",
+      "file": "0098.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0099",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 99,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 99",
+      "indexHeadings": [
+        "Aphorism § 99"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ080.htm#P99",
+      "characterCount": 592,
+      "sha256": "18cd3a0f3f8be309e294e9816b941594ad58e8cf224254464438157507a0702a",
+      "file": "0099.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0100",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 100,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 100",
+      "indexHeadings": [
+        "Aphorism § 100"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ100.htm#P100",
+      "characterCount": 1329,
+      "sha256": "46ccfd778203b9180ca78a5a17834cfa350fdb81b73eb75273c1d8605d73aee5",
+      "file": "0100.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0101",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 101,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 101",
+      "indexHeadings": [
+        "Aphorism § 101"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ100.htm#P101",
+      "characterCount": 722,
+      "sha256": "c8c49d9e97ff2dd547aef0f54793b508747e87e2c79ca879f4e3315a747a08b5",
+      "file": "0101.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0102",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 102,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 102",
+      "indexHeadings": [
+        "Aphorism § 102"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ100.htm#P102",
+      "characterCount": 1756,
+      "sha256": "7edcf2ee11af0e26bad385f3d525295607a55bf6e04bd0311dd102d1fb17ff8e",
+      "file": "0102.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0103",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 103,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 103",
+      "indexHeadings": [
+        "Aphorism § 103"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ100.htm#P103",
+      "characterCount": 1320,
+      "sha256": "1f8c7dfb7e6dcda80d7e14c8c877cbc47a032a378fa169b80e0d511c381d8b45",
+      "file": "0103.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0104",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 104,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 104",
+      "indexHeadings": [
+        "Aphorism § 104"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ100.htm#P104",
+      "characterCount": 3309,
+      "sha256": "b368cb429eb24ec1114b1420a2fe176858e92f8424311a08f0514eefc219fec6",
+      "file": "0104.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0105",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 105,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 105",
+      "indexHeadings": [
+        "Aphorism § 105"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ100.htm#P105",
+      "characterCount": 524,
+      "sha256": "df1253b5a81c6ba76d739e9ea5b4c2d99cac52387f11951b501e36f7d2964442",
+      "file": "0105.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0106",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 106,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 106",
+      "indexHeadings": [
+        "Aphorism § 106"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ100.htm#P106",
+      "characterCount": 447,
+      "sha256": "83322fc367323a865dcbc5f9e69120d071342875da836c1cdda28545fad62903",
+      "file": "0106.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0107",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 107,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 107",
+      "indexHeadings": [
+        "Aphorism § 107"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ100.htm#P107",
+      "characterCount": 397,
+      "sha256": "4d9b38011a9e05b0c7837b2a9d4bf68166385f4c018c63c5fe052f7d77c46bbd",
+      "file": "0107.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0108",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 108,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 108",
+      "indexHeadings": [
+        "Aphorism § 108"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ100.htm#P108",
+      "characterCount": 1888,
+      "sha256": "e94731078a6ca04968cf0ff5c014301ef35db886e471e465ad9d2a924f138cac",
+      "file": "0108.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0109",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 109,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 109",
+      "indexHeadings": [
+        "Aphorism § 109"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ100.htm#P109",
+      "characterCount": 2176,
+      "sha256": "759d8718bd9000ca9cc6e7f89ffad1fe82cce67290f2bb549ad5fde54fc19fa8",
+      "file": "0109.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0110",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 110,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 110",
+      "indexHeadings": [
+        "Aphorism § 110"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ100.htm#P110",
+      "characterCount": 2600,
+      "sha256": "445b5f46934a7f40fd5879abc51491b3ef5e63c777c484657a254c0deb6d544d",
+      "file": "0110.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0111",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 111,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 111",
+      "indexHeadings": [
+        "Aphorism § 111"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ100.htm#P111",
+      "characterCount": 612,
+      "sha256": "ddab02ebd7ff83f300e9cae3b118d9d1652ae85434e0e44ea30750260d351a68",
+      "file": "0111.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0112",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 112,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 112",
+      "indexHeadings": [
+        "Aphorism § 112"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ100.htm#P112",
+      "characterCount": 928,
+      "sha256": "510712e15d1f1afc4fb3f80c8283b488f8f009c78fafd93e5da937cf621e6f83",
+      "file": "0112.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0113",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 113,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 113",
+      "indexHeadings": [
+        "Aphorism § 113"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ100.htm#P113",
+      "characterCount": 398,
+      "sha256": "cdb0574f32e154cd3f88828c86142bcb06033791f56ae3276aac9b53e600db57",
+      "file": "0113.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0114",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 114,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 114",
+      "indexHeadings": [
+        "Aphorism § 114"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ100.htm#P114",
+      "characterCount": 340,
+      "sha256": "8bc89279a43a24da963f735caecc9d96122e117246b09d0c54c4c9a46219fee2",
+      "file": "0114.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0115",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 115,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 115",
+      "indexHeadings": [
+        "Aphorism § 115"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ100.htm#P115",
+      "characterCount": 508,
+      "sha256": "c5ed10e40de4c507ee24efab949c9e4b3d7ae1b87c874a442909b4fcb23bd090",
+      "file": "0115.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0116",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 116,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 116",
+      "indexHeadings": [
+        "Aphorism § 116"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ100.htm#P116",
+      "characterCount": 203,
+      "sha256": "0d3146da3e8360ce2b9e549bc7615b79043a914c745e8a19c439b60e89fd3889",
+      "file": "0116.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0117",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 117,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 117",
+      "indexHeadings": [
+        "Aphorism § 117"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ100.htm#P117",
+      "characterCount": 2201,
+      "sha256": "22319c03439bbb733d48a60a61c76775e68b11080795b8b359d43d35ebed2874",
+      "file": "0117.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0118",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 118,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 118",
+      "indexHeadings": [
+        "Aphorism § 118"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ100.htm#P118",
+      "characterCount": 496,
+      "sha256": "47cc3f0cb50131be8dbde1280c722ffc99568b42c5eb13e297c8e8d68a33ab3e",
+      "file": "0118.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0119",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 119,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 119",
+      "indexHeadings": [
+        "Aphorism § 119"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ100.htm#P119",
+      "characterCount": 3889,
+      "sha256": "5d4fcee67bf6b4487abb0d11715034f92bb3d4528aa8acd97cc0070fba876c3d",
+      "file": "0119.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0120",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 120,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 120",
+      "indexHeadings": [
+        "Aphorism § 120"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ120.htm#P120",
+      "characterCount": 647,
+      "sha256": "981eb937a90c1921af1bbf1cf78c6af03fd8fe6027a0153ff0cfe7f18c86a820",
+      "file": "0120.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0121",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 121,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 121",
+      "indexHeadings": [
+        "Aphorism § 121"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ120.htm#P121",
+      "characterCount": 560,
+      "sha256": "f399e868c1fe58be151bd76c73ecd60d72c4c3e9755a6ce09775c4b7c9510a09",
+      "file": "0121.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0122",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 122,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 122",
+      "indexHeadings": [
+        "Aphorism § 122"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ120.htm#P122",
+      "characterCount": 321,
+      "sha256": "c859a532ebf0eb338975db53aeea67d440345bf7193e0c117635015fa1057cab",
+      "file": "0122.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0123",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 123,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 123",
+      "indexHeadings": [
+        "Aphorism § 123"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ120.htm#P123",
+      "characterCount": 1128,
+      "sha256": "df9fa4c75a882e95e2d343703c69ce8968bdc707238361a2d2eb7749f2c88c51",
+      "file": "0123.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0124",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 124,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 124",
+      "indexHeadings": [
+        "Aphorism § 124"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ120.htm#P124",
+      "characterCount": 356,
+      "sha256": "0c55af44bc806c9d6aeeed254e9ffc71de1f492861433411c43c0c191aa7d8e1",
+      "file": "0124.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0125",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 125,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 125",
+      "indexHeadings": [
+        "Aphorism § 125"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ120.htm#P125",
+      "characterCount": 1543,
+      "sha256": "32a8bbb92bf8892999fea62ca594ea09dff9e6b1a205b982af09e0aab975efd6",
+      "file": "0125.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0126",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 126,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 126",
+      "indexHeadings": [
+        "Aphorism § 126"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ120.htm#P126E6",
+      "characterCount": 646,
+      "sha256": "37519d1caa6f978eb1275509934b026a312b38406246517f8cfda47107b7a450",
+      "file": "0126.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0127",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 127,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 127",
+      "indexHeadings": [
+        "Aphorism § 127"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ120.htm#P127",
+      "characterCount": 1191,
+      "sha256": "92f3ac92d0dcdbe92af60fdbffc2855648258bbc323c3ea9f503b888e55581e5",
+      "file": "0127.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0128",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 128,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 128",
+      "indexHeadings": [
+        "Aphorism § 128"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ120.htm#P128E6",
+      "characterCount": 1067,
+      "sha256": "2a392afd83bb56ce71fe8699eaf784ca90b86dbb4b8fbd2c58875aaa3f4d0efe",
+      "file": "0128.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0129",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 129,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 129",
+      "indexHeadings": [
+        "Aphorism § 129"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ120.htm#P129",
+      "characterCount": 1046,
+      "sha256": "61201f30c1f85f2bfb59dfef485e0a2d862e7989d5f5a652a0571d4cc07be45a",
+      "file": "0129.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0130",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 130,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 130",
+      "indexHeadings": [
+        "Aphorism § 130"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ120.htm#P130",
+      "characterCount": 836,
+      "sha256": "6ab421d67f28b6b1f0b5c92c2061cae8ab99ee28f7bea0c22b2b555a4e7589f4",
+      "file": "0130.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0131",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 131,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 131",
+      "indexHeadings": [
+        "Aphorism § 131"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ120.htm#P131",
+      "characterCount": 797,
+      "sha256": "5341a244c8d2280e18b2814d039c223bcb22a608e68c402368f50fc15d8d10bf",
+      "file": "0131.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0132",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 132,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 132",
+      "indexHeadings": [
+        "Aphorism § 132"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ120.htm#P132",
+      "characterCount": 534,
+      "sha256": "9e960679f390481b2bafbbe5fc987c634d937163b699da6638279bf92b540ef9",
+      "file": "0132.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0133",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 133,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 133",
+      "indexHeadings": [
+        "Aphorism § 133"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ120.htm#P133",
+      "characterCount": 884,
+      "sha256": "cbb35781dbacf97ea0d7f0926e227b266d23b04c549383bf7f0deb53acfd4a7d",
+      "file": "0133.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0134",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 134,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 134",
+      "indexHeadings": [
+        "Aphorism § 134"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ120.htm#P134",
+      "characterCount": 754,
+      "sha256": "c68c66d6ca227433f98f89948887222a0cdd06084d52ac9910f9d80cc7147e16",
+      "file": "0134.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0135",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 135,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 135",
+      "indexHeadings": [
+        "Aphorism § 135"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ120.htm#P135",
+      "characterCount": 637,
+      "sha256": "65c361aa2fa385a0b1e966208fe2ebb3d1063dd36526a20a1ea29f94e6f371c2",
+      "file": "0135.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0136",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 136,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 136",
+      "indexHeadings": [
+        "Aphorism § 136"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ120.htm#P136",
+      "characterCount": 1022,
+      "sha256": "c8559995cc45dfd4f344447b4f9c38bf9823c922fc4c20d8e5a792ed7d982927",
+      "file": "0136.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0137",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 137,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 137",
+      "indexHeadings": [
+        "Aphorism § 137"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ120.htm#P137",
+      "characterCount": 1406,
+      "sha256": "9ac7ddcaa4f4a3cfaa462d705271a9bf4fdc92adf64f7cb5ba43ce422f4f964a",
+      "file": "0137.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0138",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 138,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 138",
+      "indexHeadings": [
+        "Aphorism § 138"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ120.htm#P138",
+      "characterCount": 1022,
+      "sha256": "612cefa5ffc2b21e041aef3cfc0a1207ea45da3a80f91f731409b2c04c22a605",
+      "file": "0138.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0139",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 139,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 139",
+      "indexHeadings": [
+        "Aphorism § 139"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ120.htm#P139",
+      "characterCount": 1209,
+      "sha256": "7723a972977141473aaf1fe997438d96a831d3d7c0b3b5f181502f002a6a232b",
+      "file": "0139.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0140",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 140,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 140",
+      "indexHeadings": [
+        "Aphorism § 140"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ140.htm#P140",
+      "characterCount": 632,
+      "sha256": "ca1c2ab3d23121efb9d147311e285f4b636d23ff39e91f1b09e4f39b296ae6ce",
+      "file": "0140.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0141",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 141,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 141",
+      "indexHeadings": [
+        "Aphorism § 141"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ140.htm#P141",
+      "characterCount": 3258,
+      "sha256": "cd3d1d75deac879696c87c28ac386f89f796e91ec2cb1880e8c90f8b93dd89f1",
+      "file": "0141.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0142",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 142,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 142",
+      "indexHeadings": [
+        "Aphorism § 142"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ140.htm#P142",
+      "characterCount": 603,
+      "sha256": "4674d9dc167148d306f08c63e59ffb39d7d25a0cf896f1d5da2411426051015c",
+      "file": "0142.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0143",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 143,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 143",
+      "indexHeadings": [
+        "Aphorism § 143"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ140.htm#P143",
+      "characterCount": 1601,
+      "sha256": "38cfefb19b799e14d3ed8734a73eb28292054bce4f682d1ee65cbe88a733b408",
+      "file": "0143.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0144",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 144,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 144",
+      "indexHeadings": [
+        "Aphorism § 144"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ140.htm#P144",
+      "characterCount": 2372,
+      "sha256": "76db5727602ea22563c1be24aa80b295a5ae20cf3b0a57f3d47b39bff8490cdc",
+      "file": "0144.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0145",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 145,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 145",
+      "indexHeadings": [
+        "Aphorism § 145"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ140.htm#P145E6",
+      "characterCount": 2176,
+      "sha256": "3829f124f7266c8943f4e303c1a47f658736ae45188d0217537a88977d7730e3",
+      "file": "0145.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0146",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 146,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 146",
+      "indexHeadings": [
+        "Aphorism § 146"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ140.htm#P146",
+      "characterCount": 310,
+      "sha256": "4bc9760a7c1eddb401ed3ee915c29762396632a81a941afa9b4e8ee02cfa6265",
+      "file": "0146.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0147",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 147,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 147",
+      "indexHeadings": [
+        "Aphorism § 147"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ140.htm#P147",
+      "characterCount": 1637,
+      "sha256": "30e56c0482de19141e27dc4c42e58d6f5d250ccc64a17909847801795c7332dd",
+      "file": "0147.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0148",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 148,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 148",
+      "indexHeadings": [
+        "Aphorism § 148"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ140.htm#P148E6",
+      "characterCount": 6055,
+      "sha256": "6e4d550bf4770ba152dc433edd8a44eb8decc4d636b6d6de9333db0e296715b8",
+      "file": "0148.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0149",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 149,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 149",
+      "indexHeadings": [
+        "Aphorism § 149"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ140.htm#P149E6",
+      "characterCount": 900,
+      "sha256": "a61ec082c1cce1b622c749796337eda0395e25d2abe8993bde54c9bd3599d90e",
+      "file": "0149.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0150",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 150,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 150",
+      "indexHeadings": [
+        "Aphorism § 150"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ140.htm#P150",
+      "characterCount": 345,
+      "sha256": "d0dad7751f35f8fa1f276eaa3f9f175a938e06638b61265faaa4f7ea5639ca62",
+      "file": "0150.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0151",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 151,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 151",
+      "indexHeadings": [
+        "Aphorism § 151"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ140.htm#P151",
+      "characterCount": 252,
+      "sha256": "f1b9b92865f4bbf7ca1cf1a1affdc499ad60b4fa6c943df0b61d90eb4af924d4",
+      "file": "0151.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0152",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 152,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 152",
+      "indexHeadings": [
+        "Aphorism § 152"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ140.htm#P152",
+      "characterCount": 2480,
+      "sha256": "0ba38bdb341bb637b303527dcbcb260ac6e581b3d0e6e40a46693209f82ddf3e",
+      "file": "0152.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0153",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 153,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 153",
+      "indexHeadings": [
+        "Aphorism § 153"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ140.htm#P153E6",
+      "characterCount": 1378,
+      "sha256": "b439ff8f01f4741a301a5389d11c3c7da6e997004d5337b96678d19c56dcdef3",
+      "file": "0153.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0154",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 154,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 154",
+      "indexHeadings": [
+        "Aphorism § 154"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ140.htm#P154",
+      "characterCount": 1904,
+      "sha256": "a6c68163d97279174f2c8323f713a083baba53a91b6c9f0dd496c5defcc31b02",
+      "file": "0154.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0155",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 155,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 155",
+      "indexHeadings": [
+        "Aphorism § 155"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ140.htm#P155E6",
+      "characterCount": 1345,
+      "sha256": "fbfe9017489c24f722a018b44479a3f03ec5cef96498109cd6617a7b2aa44e8b",
+      "file": "0155.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0156",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 156,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 156",
+      "indexHeadings": [
+        "Aphorism § 156"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ140.htm#P156",
+      "characterCount": 1929,
+      "sha256": "da7a08d20ad0123b21bd731fc2664d9d7e7a8aadbc7f801499d1eb0dc15f5026",
+      "file": "0156.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0157",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 157,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 157",
+      "indexHeadings": [
+        "Aphorism § 157"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ140.htm#P157E6",
+      "characterCount": 961,
+      "sha256": "8e5f28b88c1d413eb131d90da127389e7cefd3178889969c894b67612a3740c9",
+      "file": "0157.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0158",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 158,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 158",
+      "indexHeadings": [
+        "Aphorism § 158"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ140.htm#P158",
+      "characterCount": 697,
+      "sha256": "63fd80b7a678f57b9633a545059733fe4808876f6f2d970c4c5c26b38465d2d3",
+      "file": "0158.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0159",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 159,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 159",
+      "indexHeadings": [
+        "Aphorism § 159"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ140.htm#P159E6",
+      "characterCount": 266,
+      "sha256": "fdfa10fcaede43b9e004c5ff764942114a7d5b4186409babbfec57817364b960",
+      "file": "0159.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0160",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 160,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 160",
+      "indexHeadings": [
+        "Aphorism § 160"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ160.htm#P160",
+      "characterCount": 3170,
+      "sha256": "19b32f2d1a12d6bb628ee4a156a287e2e34678a78899dbf6e981101eb62e0fc4",
+      "file": "0160.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0161",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 161,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 161",
+      "indexHeadings": [
+        "Aphorism § 161"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ160.htm#P161E6",
+      "characterCount": 925,
+      "sha256": "2aa9a063c64ba780a9902e2722b4f882f66e3bf141d14f6d9d4763f6ed666154",
+      "file": "0161.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0162",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 162,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 162",
+      "indexHeadings": [
+        "Aphorism § 162"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ160.htm#P162",
+      "characterCount": 405,
+      "sha256": "9b534c583e7f10b929a396fca5cc0ae01f985ae5ceab56650ef2f2f0d7b503ab",
+      "file": "0162.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0163",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 163,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 163",
+      "indexHeadings": [
+        "Aphorism § 163"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ160.htm#P163",
+      "characterCount": 700,
+      "sha256": "12c18586c1fe979ca70f6d330c3a2ed374e8903d00d7b9ae2e5a8a47fd145af5",
+      "file": "0163.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0164",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 164,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 164",
+      "indexHeadings": [
+        "Aphorism § 164"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ160.htm#P164",
+      "characterCount": 375,
+      "sha256": "28b0493c315697295769ad6352c15da59e551ad32e56ffd3dff6706da2d6e5e3",
+      "file": "0164.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0165",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 165,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 165",
+      "indexHeadings": [
+        "Aphorism § 165"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ160.htm#P165",
+      "characterCount": 611,
+      "sha256": "5b4dbe1ce2b3a0b2cffa10294693fabe5534e5d6f91d173494e2e11cc19580b8",
+      "file": "0165.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0166",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 166,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 166",
+      "indexHeadings": [
+        "Aphorism § 166"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ160.htm#P166",
+      "characterCount": 304,
+      "sha256": "f80ed0924ca7b2b9e925b003aa33c6715f923d0f862b669ad8b5617bd17e5e38",
+      "file": "0166.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0167",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 167,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 167",
+      "indexHeadings": [
+        "Aphorism § 167"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ160.htm#P167",
+      "characterCount": 535,
+      "sha256": "91c1485cf81b473c8bd8e6c1730cb22790d183bacb2c305ced0ae91519f495de",
+      "file": "0167.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0168",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 168,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 168",
+      "indexHeadings": [
+        "Aphorism § 168"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ160.htm#P168",
+      "characterCount": 1768,
+      "sha256": "c36593d5470ab02597fbe22439380f271dbc844d7576523a352dc41d1b47eff7",
+      "file": "0168.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0169",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 169,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 169",
+      "indexHeadings": [
+        "Aphorism § 169"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ160.htm#P169E6",
+      "characterCount": 1176,
+      "sha256": "d47c5994545833f26746f0ebbc39ae2dc3cd80d19995a415951096e45aa4dd97",
+      "file": "0169.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0170",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 170,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 170",
+      "indexHeadings": [
+        "Aphorism § 170"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ160.htm#P170",
+      "characterCount": 1198,
+      "sha256": "104f92d9cb7fa3afb2e7f5109022f192c601dcf91e14efaf87298391aeffc645",
+      "file": "0170.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0171",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 171,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 171",
+      "indexHeadings": [
+        "Aphorism § 171"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ160.htm#P171E6",
+      "characterCount": 380,
+      "sha256": "a5147ee7e1f719a2b90473ba49414c982a84cee60137d96f6f2e1d7faadc2aa0",
+      "file": "0171.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0172",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 172,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 172",
+      "indexHeadings": [
+        "Aphorism § 172"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ160.htm#P172",
+      "characterCount": 421,
+      "sha256": "c9c6bb35e0e52a1f9a42e2f7236f0375b6468b6f62063df058852e3525d23f2e",
+      "file": "0172.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0173",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 173,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 173",
+      "indexHeadings": [
+        "Aphorism § 173"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ160.htm#P173",
+      "characterCount": 329,
+      "sha256": "ffd4cee8d4e016df5567f40c68da2006c9858730ccc210e29217c6ddd5b1733f",
+      "file": "0173.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0174",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 174,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 174",
+      "indexHeadings": [
+        "Aphorism § 174"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ160.htm#P174",
+      "characterCount": 345,
+      "sha256": "7232dae55690535c66e111459386eb5bae0b11e00b8531ef931227e95c1f6a7e",
+      "file": "0174.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0175",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 175,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 175",
+      "indexHeadings": [
+        "Aphorism § 175"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ160.htm#P175",
+      "characterCount": 293,
+      "sha256": "30f2c4f6a2e0dd79cfab81558ea2d588f33efcc634ad4f79d07d43670475416d",
+      "file": "0175.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0176",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 176,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 176",
+      "indexHeadings": [
+        "Aphorism § 176"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ160.htm#P176",
+      "characterCount": 236,
+      "sha256": "021701656a610de1299d9190fc68a8fbe1bf07fb6f31e2bbb988511e4f444414",
+      "file": "0176.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0177",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 177,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 177",
+      "indexHeadings": [
+        "Aphorism § 177"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ160.htm#P177",
+      "characterCount": 260,
+      "sha256": "b13605958e8e669279c5cced394d65333b539bb978f029d686fb520085c570f8",
+      "file": "0177.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0178",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 178,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 178",
+      "indexHeadings": [
+        "Aphorism § 178"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ160.htm#P178",
+      "characterCount": 404,
+      "sha256": "84166038311efa53a25a8ce782a2cbdb10f1a3e8b10afa265430b6a4f5dbe42c",
+      "file": "0178.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0179",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 179,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 179",
+      "indexHeadings": [
+        "Aphorism § 179"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ160.htm#P179",
+      "characterCount": 280,
+      "sha256": "96a9687e41a81d7333d91da85ce0855c0e9e97bed7c73595fd37113f723c316a",
+      "file": "0179.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0180",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 180,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 180",
+      "indexHeadings": [
+        "Aphorism § 180"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ180.htm#P180",
+      "characterCount": 868,
+      "sha256": "7e3ccb57c536adb4cbbd4c5049be1b36bb8e24c929d96f3da81f1b680c38fb3c",
+      "file": "0180.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0181",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 181,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 181",
+      "indexHeadings": [
+        "Aphorism § 181"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ180.htm#P181",
+      "characterCount": 972,
+      "sha256": "150d0b4be75ed1683b1aeaf4f5a03232d752affc350729880b07dce766ea92eb",
+      "file": "0181.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0182",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 182,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 182",
+      "indexHeadings": [
+        "Aphorism § 182"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ180.htm#P182",
+      "characterCount": 351,
+      "sha256": "b6c908c80ea473f8cce69dbace088535ebbd15a1b6d297d738cad4525f75b2a2",
+      "file": "0182.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0183",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 183,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 183",
+      "indexHeadings": [
+        "Aphorism § 183"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ180.htm#P183",
+      "characterCount": 1662,
+      "sha256": "f1c33411d57d0906643bbbe14c1972a635cd87ea0500213d40c53fd5329c335e",
+      "file": "0183.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0184",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 184,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 184",
+      "indexHeadings": [
+        "Aphorism § 184"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ180.htm#P184E6",
+      "characterCount": 434,
+      "sha256": "11653057b1d05bf9e551f1a1b544c0285f86ea70cfc4318b916b10debbea26e5",
+      "file": "0184.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0185",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 185,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 185",
+      "indexHeadings": [
+        "Aphorism § 185"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ180.htm#P185",
+      "characterCount": 2402,
+      "sha256": "656f070cc579013106835b0b10416701de73f9f9e016d2a7643141bfc93d666a",
+      "file": "0185.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0186",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 186,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 186",
+      "indexHeadings": [
+        "Aphorism § 186"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ180.htm#P186E6",
+      "characterCount": 1988,
+      "sha256": "0867f2c5c19c319927945d93884db579753b2f8c2f629e98b59ceeaaf0f0f0ed",
+      "file": "0186.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0187",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 187,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 187",
+      "indexHeadings": [
+        "Aphorism § 187"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ180.htm#P187",
+      "characterCount": 606,
+      "sha256": "537bf5e7cdb4f2540a922218bdb81f2bb6e4f53955f3f7ac52dbfb4811aebde9",
+      "file": "0187.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0188",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 188,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 188",
+      "indexHeadings": [
+        "Aphorism § 188"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ180.htm#P188",
+      "characterCount": 439,
+      "sha256": "7b851a16e98e32d2958a105723e2201f6f0dab059de614fe1176b9cb8a379d74",
+      "file": "0188.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0189",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 189,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 189",
+      "indexHeadings": [
+        "Aphorism § 189"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ180.htm#P189",
+      "characterCount": 998,
+      "sha256": "7190ba58a904ffe37f541b21a8312eede812829c498733c7c4553ac5b616fe7d",
+      "file": "0189.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0190",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 190,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 190",
+      "indexHeadings": [
+        "Aphorism § 190"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ180.htm#P190",
+      "characterCount": 405,
+      "sha256": "40edb4a5a7a5b9f33422902ff3f161a8b04e995a8e2751fc2db7d9fb38903634",
+      "file": "0190.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0191",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 191,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 191",
+      "indexHeadings": [
+        "Aphorism § 191"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ180.htm#P191",
+      "characterCount": 799,
+      "sha256": "0f34e9329a393d4f2d82f3d4852196efcd0a78c45648617ec9a44edd1567b166",
+      "file": "0191.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0192",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 192,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 192",
+      "indexHeadings": [
+        "Aphorism § 192"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ180.htm#P192",
+      "characterCount": 611,
+      "sha256": "4ee586111097c321977ff4892372ce6ef3a9ec1a6adf45cdebc9cd2de2a046c1",
+      "file": "0192.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0193",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 193,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 193",
+      "indexHeadings": [
+        "Aphorism § 193"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ180.htm#P193",
+      "characterCount": 558,
+      "sha256": "41dbef4688159da96365fc346cb41d9940985a6e49f6232a06f66a346a93c06b",
+      "file": "0193.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0194",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 194,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 194",
+      "indexHeadings": [
+        "Aphorism § 194"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ180.htm#P194",
+      "characterCount": 1506,
+      "sha256": "ec7e76a272a9593aff827ed217c79d342c728fd96cab674d04b1b0d5eebf6729",
+      "file": "0194.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0195",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 195,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 195",
+      "indexHeadings": [
+        "Aphorism § 195"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ180.htm#P195",
+      "characterCount": 527,
+      "sha256": "a6fd17626e89e299a8e23c4333e8c53d6377c5eab16f911175d7f42b9870d280",
+      "file": "0195.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0196",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 196,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 196",
+      "indexHeadings": [
+        "Aphorism § 196"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ180.htm#P196",
+      "characterCount": 1370,
+      "sha256": "b794554ac20a33841bbef99cad7fc9fbec225e6cfa4024268bd05777ecb571d6",
+      "file": "0196.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0197",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 197,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 197",
+      "indexHeadings": [
+        "Aphorism § 197"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ180.htm#P197E6",
+      "characterCount": 1033,
+      "sha256": "f9901f31d78f431adc419cb16ccb6305d480839a30d592b0f12699ebadc68cf6",
+      "file": "0197.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0198",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 198,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 198",
+      "indexHeadings": [
+        "Aphorism § 198"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ180.htm#P198",
+      "characterCount": 822,
+      "sha256": "9462c5fc210075fc887a0c7e71bebdd4678c9a5f3af19d9d0ce4c54a648f8444",
+      "file": "0198.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0199",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 199,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 199",
+      "indexHeadings": [
+        "Aphorism § 199"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ180.htm#P199",
+      "characterCount": 892,
+      "sha256": "9370ae8fe5705d30ae7b8f9a74cedbe1dcc8aeb5fb7eceac9130b77aa06a8a15",
+      "file": "0199.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0200",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 200,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 200",
+      "indexHeadings": [
+        "Aphorism § 200"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ200.htm#P200E6",
+      "characterCount": 2958,
+      "sha256": "103b21b7fa5d5dd4dedf342922631ef64e4edf9ba8707a2a56676c4bec5dbab7",
+      "file": "0200.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0201",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 201,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 201",
+      "indexHeadings": [
+        "Aphorism § 201"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ200.htm#P201E6",
+      "characterCount": 2577,
+      "sha256": "6f123f845c82d0b255fb461e3174cf57833563d787d1440319f23658dc97b6a5",
+      "file": "0201.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0202",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 202,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 202",
+      "indexHeadings": [
+        "Aphorism § 202"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ200.htm#P202",
+      "characterCount": 620,
+      "sha256": "bcb68a98a3cd6876c4e379280dbeddcc2baf3ef004210142ef3484aab41be35e",
+      "file": "0202.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0203",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 203,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 203",
+      "indexHeadings": [
+        "Aphorism § 203"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ200.htm#P203",
+      "characterCount": 2884,
+      "sha256": "625b3393f485b3982ca07814fa1d5d294724a038b43d77b181985c6c95685fa0",
+      "file": "0203.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0204",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 204,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 204",
+      "indexHeadings": [
+        "Aphorism § 204"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ200.htm#P204E6",
+      "characterCount": 4738,
+      "sha256": "a203bd5cbab6f7ffe7f479bea6b98aca8620bac78b3da1e01122bdf1383ed26f",
+      "file": "0204.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0205",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 205,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 205",
+      "indexHeadings": [
+        "Aphorism § 205"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ200.htm#P205E6",
+      "characterCount": 5660,
+      "sha256": "a90009c62374b0411d94015777ca12a85621840dbc125765f59b07cbd6711922",
+      "file": "0205.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0206",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 206,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 206",
+      "indexHeadings": [
+        "Aphorism § 206"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ200.htm#P206E6",
+      "characterCount": 2486,
+      "sha256": "ea657853cabfd09c8ff686355fb8140d50bea80d6f314b0dcb2034a6ef95655a",
+      "file": "0206.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0207",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 207,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 207",
+      "indexHeadings": [
+        "Aphorism § 207"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ200.htm#P207",
+      "characterCount": 694,
+      "sha256": "ffc2917f99c146a95c57ef61f6297b0d2d1025b3d699bea914e02504e29ad57c",
+      "file": "0207.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0208",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 208,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 208",
+      "indexHeadings": [
+        "Aphorism § 208"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ200.htm#P208",
+      "characterCount": 545,
+      "sha256": "d791ef1d372817933ef2f9e51d4bee61d104d9f883c8258372da76b00c38d021",
+      "file": "0208.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0209",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 209,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 209",
+      "indexHeadings": [
+        "Aphorism § 209"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ200.htm#P209",
+      "characterCount": 518,
+      "sha256": "aeb727566ebbff7c329ad6865d9bca57925058bb1f7b96dfb108a336168a0cb2",
+      "file": "0209.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0210",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 210,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 210",
+      "indexHeadings": [
+        "Aphorism § 210"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ200.htm#P210",
+      "characterCount": 2060,
+      "sha256": "df77fda71b86fb737a663d480dde18e53fe468ec87bc6d43dca5ff370a16ef2c",
+      "file": "0210.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0211",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 211,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 211",
+      "indexHeadings": [
+        "Aphorism § 211"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ200.htm#P211",
+      "characterCount": 315,
+      "sha256": "66ff52b28991615cdfc33d5a7bfc05ddcc561d45e20680f6b6290067cad69ac6",
+      "file": "0211.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0212",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 212,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 212",
+      "indexHeadings": [
+        "Aphorism § 212"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ200.htm#P212",
+      "characterCount": 419,
+      "sha256": "b96dd6738f4b43fc5262c85ab832318fdb10de33ee512040ec54178f753d9f5d",
+      "file": "0212.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0213",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 213,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 213",
+      "indexHeadings": [
+        "Aphorism § 213"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ200.htm#P213",
+      "characterCount": 996,
+      "sha256": "9858c119086ec4fced67a4d41caee505c4e7e31afe2b4f031ba62b4eb154accd",
+      "file": "0213.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0214",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 214,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 214",
+      "indexHeadings": [
+        "Aphorism § 214"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ200.htm#P214",
+      "characterCount": 459,
+      "sha256": "98d5a244a19993821820aeca0ac8415707da2d6f82d0d58f341fea409d174c1d",
+      "file": "0214.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0215",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 215,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 215",
+      "indexHeadings": [
+        "Aphorism § 215"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ200.htm#P215",
+      "characterCount": 476,
+      "sha256": "e62680ca24b321e0ded67f8c0d863d290eaf41cf3effbbd5cdcbcc1461421072",
+      "file": "0215.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0216",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 216,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 216",
+      "indexHeadings": [
+        "Aphorism § 216"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ200.htm#P216",
+      "characterCount": 1388,
+      "sha256": "99d270478b3bb4fa9c0baf9ac0da9fc111e6d2b35ce0e0bfa8d540edbba43107",
+      "file": "0216.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0217",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 217,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 217",
+      "indexHeadings": [
+        "Aphorism § 217"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ200.htm#P217",
+      "characterCount": 865,
+      "sha256": "9522444e7bfdc8c8f36bc593b55090dc48ff336ea473644ec83ffcb13a893b9b",
+      "file": "0217.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0218",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 218,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 218",
+      "indexHeadings": [
+        "Aphorism § 218"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ200.htm#P218",
+      "characterCount": 382,
+      "sha256": "b2fdaee160ae570c16673af94695eb0694e48e6a637c522e2941fe07207de4d3",
+      "file": "0218.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0219",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 219,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 219",
+      "indexHeadings": [
+        "Aphorism § 219"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ200.htm#P219",
+      "characterCount": 433,
+      "sha256": "b8815ec44d4e895f69eb32e517064ba4f3764c6080f98f29ed95147ec039eb2c",
+      "file": "0219.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0220",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 220,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 220",
+      "indexHeadings": [
+        "Aphorism § 220"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ220.htm#P220",
+      "characterCount": 535,
+      "sha256": "46ef012fa79bb457b1846d805e45c553c10eff389036ca5fc6c4b86ff1084473",
+      "file": "0220.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0221",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 221,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 221",
+      "indexHeadings": [
+        "Aphorism § 221"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ220.htm#P221",
+      "characterCount": 816,
+      "sha256": "7b8422ff54c2ade1ccf4da23c668faa7c6db035be3894fd79085df3cf168821f",
+      "file": "0221.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0222",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 222,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 222",
+      "indexHeadings": [
+        "Aphorism § 222"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ220.htm#P222",
+      "characterCount": 1787,
+      "sha256": "9124b5d4d2c39efdabee153d10efade0f6b1547a4eb9c415e1856c1f51ae4217",
+      "file": "0222.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0223",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 223,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 223",
+      "indexHeadings": [
+        "Aphorism § 223"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ220.htm#P223",
+      "characterCount": 454,
+      "sha256": "f0c85bf47ebab59c2d96ac5505ea1e2a27dcbf4ccb71fb6a3539cdce45d11b5c",
+      "file": "0223.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0224",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 224,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 224",
+      "indexHeadings": [
+        "Aphorism § 224"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ220.htm#P224",
+      "characterCount": 1356,
+      "sha256": "74f41787b0bef60eaa505d01893f787587fb9f669eaac94b25e66554baa7e831",
+      "file": "0224.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0225",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 225,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 225",
+      "indexHeadings": [
+        "Aphorism § 225"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ220.htm#P225",
+      "characterCount": 539,
+      "sha256": "a94c93b2cbd68c99320624d627bb9cd4783cf5885da14b70a7a3968b1c419139",
+      "file": "0225.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0226",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 226,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 226",
+      "indexHeadings": [
+        "Aphorism § 226"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ220.htm#P226",
+      "characterCount": 581,
+      "sha256": "5e6ae0e398eca3b687e30ac84bf216f0c8e3bba62487f1839900536485deca73",
+      "file": "0226.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0227",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 227,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 227",
+      "indexHeadings": [
+        "Aphorism § 227"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ220.htm#P227",
+      "characterCount": 369,
+      "sha256": "0e0c33577377986d34ed0a0ed909a47fb63e1491d759f4228dd9bafbf2811d80",
+      "file": "0227.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0228",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 228,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 228",
+      "indexHeadings": [
+        "Aphorism § 228"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ220.htm#P228",
+      "characterCount": 2582,
+      "sha256": "0583719fef5808b72f9af6fa9b7a3462f2151d6fa37af31943efc581f78b60c5",
+      "file": "0228.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0229",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 229,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 229",
+      "indexHeadings": [
+        "Aphorism § 229"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ220.htm#P229",
+      "characterCount": 1316,
+      "sha256": "df55faa599d803d03c7076fa9de41e99079a61c3dd59c0f47d0898f5d815590d",
+      "file": "0229.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0230",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 230,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 230",
+      "indexHeadings": [
+        "Aphorism § 230"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ220.htm#P230",
+      "characterCount": 1274,
+      "sha256": "35f0167b0ad44e457b7cc72bb9ef63e910ef7636b4dbfa1d349606ce8fe1e536",
+      "file": "0230.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0231",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 231,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 231",
+      "indexHeadings": [
+        "Aphorism § 231"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ220.htm#P231",
+      "characterCount": 410,
+      "sha256": "accde59125461319ad6d0f1a24ab9193a405caa85bf72ab461d689ffa68c6b75",
+      "file": "0231.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0232",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 232,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 232",
+      "indexHeadings": [
+        "Aphorism § 232"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ220.htm#P232",
+      "characterCount": 2154,
+      "sha256": "ef2ebd6edffedabe8d813ef8c6d7f70e1638748688caa72929bec881195f18e4",
+      "file": "0232.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0233",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 233,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 233",
+      "indexHeadings": [
+        "Aphorism § 233"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ220.htm#P233",
+      "characterCount": 505,
+      "sha256": "c5ae22e33f935aed7512097c10088d4c464e7108a9922f33966a3f26a217cc4c",
+      "file": "0233.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0234",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 234,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 234",
+      "indexHeadings": [
+        "Aphorism § 234"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ220.htm#P234",
+      "characterCount": 610,
+      "sha256": "563ff387c2c9c02e3cf75edc63e002bf30da511fb39036db30afe2d3d46d94d0",
+      "file": "0234.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0235",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 235,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 235",
+      "indexHeadings": [
+        "Aphorism § 235"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ220.htm#P235",
+      "characterCount": 4793,
+      "sha256": "ec00fde94c2e14568325d4ffd7d5e23732690e854759e6ac3501249d81e58083",
+      "file": "0235.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0236",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 236,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 236",
+      "indexHeadings": [
+        "Aphorism § 236"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ220.htm#P236",
+      "characterCount": 1425,
+      "sha256": "8c48af2c8127d4708b4ec43f4c2355fa010026f8e1eb3282bfcb8092e715d3e9",
+      "file": "0236.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0237",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 237,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 237",
+      "indexHeadings": [
+        "Aphorism § 237"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ220.htm#P237",
+      "characterCount": 1224,
+      "sha256": "1c976f6a8e2ecc2b165ea375fa26e3786246b33fba16c885728c3bf0f5f542e4",
+      "file": "0237.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0238",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 238,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 238",
+      "indexHeadings": [
+        "Aphorism § 238"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ220.htm#P238E6",
+      "characterCount": 1174,
+      "sha256": "3a41fce4c0af45a9457acaddfe7c998a38768d90420d6b4632f380a2924fdf78",
+      "file": "0238.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0239",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 239,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 239",
+      "indexHeadings": [
+        "Aphorism § 239"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ220.htm#P239",
+      "characterCount": 570,
+      "sha256": "9cd9400145984dca5e6aa107dcb49e19743d4616a9b4d7506dc6b9e22d81c55c",
+      "file": "0239.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0240",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 240,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 240",
+      "indexHeadings": [
+        "Aphorism § 240"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ240.htm#P240",
+      "characterCount": 424,
+      "sha256": "6d21bafda1c84a1153a3183ee9e7b91f6671a4929fd62facba961fdcc09473b9",
+      "file": "0240.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0241",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 241,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 241",
+      "indexHeadings": [
+        "Aphorism § 241"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ240.htm#P241",
+      "characterCount": 693,
+      "sha256": "7d6f08ce190bc613904e40e0bdda9e5f34133c9e697d3245dce55cc9241f0dba",
+      "file": "0241.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0242",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 242,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 242",
+      "indexHeadings": [
+        "Aphorism § 242"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ240.htm#P242",
+      "characterCount": 828,
+      "sha256": "ff4b7f4169b4401240db8c6f346183521a4515259e111c67c2d562728c01f1b3",
+      "file": "0242.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0243",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 243,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 243",
+      "indexHeadings": [
+        "Aphorism § 243"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ240.htm#P243",
+      "characterCount": 2728,
+      "sha256": "6b0edde4fadbf09712b66a5fb68567743f9e3fbcfd5b66614ba23a0ef7039d72",
+      "file": "0243.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0244",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 244,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 244",
+      "indexHeadings": [
+        "Aphorism § 244"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ240.htm#P244E6",
+      "characterCount": 2505,
+      "sha256": "28229593c2c6369db6f535db1aa2fc93af8e127ec944b157e00305d5c8d77f4a",
+      "file": "0244.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0245",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 245,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 245",
+      "indexHeadings": [
+        "Aphorism § 245"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ240.htm#P245E6",
+      "characterCount": 15058,
+      "sha256": "d373381ecd1ef077d35067bf520cc6df76200b69525957345eac10f2971c65fd",
+      "file": "0245.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0246",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 246,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 246",
+      "indexHeadings": [
+        "Aphorism § 246"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ240.htm#P246E6",
+      "characterCount": 3441,
+      "sha256": "25b36de43d29266ee3b9f7c42cf003fa4b19966d7600f1954d01c9f596cec64f",
+      "file": "0246.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0247",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 247,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 247",
+      "indexHeadings": [
+        "Aphorism § 247"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ240.htm#P247E6",
+      "characterCount": 2904,
+      "sha256": "3f3479d71363789a041f00b0b2d12bbd07815b1687cc3527d547e3be080c344e",
+      "file": "0247.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0248",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 248,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 248",
+      "indexHeadings": [
+        "Aphorism § 248"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ240.htm#P248E6",
+      "characterCount": 3868,
+      "sha256": "839e3fa1607f8721761dc94410388f8c1a70e113e631fbc431afa5356c8e434a",
+      "file": "0248.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0249",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 249,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 249",
+      "indexHeadings": [
+        "Aphorism § 249"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ240.htm#P249",
+      "characterCount": 1965,
+      "sha256": "a843636683f2058ee235c899ff3b8e1d1e92af5e9d4963ba6438ddc7204f303a",
+      "file": "0249.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0250",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 250,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 250",
+      "indexHeadings": [
+        "Aphorism § 250"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ240.htm#P250",
+      "characterCount": 709,
+      "sha256": "0cada27815013be6f1263dd9eb264382542346be398d6150dad93950b9d148a6",
+      "file": "0250.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0251",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 251,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 251",
+      "indexHeadings": [
+        "Aphorism § 251"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ240.htm#P251",
+      "characterCount": 733,
+      "sha256": "c3f0d9dd87cc1e5fc2f1f15651cf509abaf86ea9f616ec2b1b18de4f641c69b8",
+      "file": "0251.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0252",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 252,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 252",
+      "indexHeadings": [
+        "Aphorism § 252"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ240.htm#P252",
+      "characterCount": 531,
+      "sha256": "a5e9296e33cc00f1a98f08ee5c119f3ced853601ecaf7076ee936ea9af781685",
+      "file": "0252.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0253",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 253,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 253",
+      "indexHeadings": [
+        "Aphorism § 253"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ240.htm#P253",
+      "characterCount": 2055,
+      "sha256": "8a25e98235e2a978aa975930a5ff3431b85d1fd5869fa4b0713a033a786adae8",
+      "file": "0253.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0254",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 254,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 254",
+      "indexHeadings": [
+        "Aphorism § 254"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ240.htm#P254",
+      "characterCount": 1461,
+      "sha256": "ef48731ae4823a0a25629267906bf6860b794819fd6592c1da007b3038a79af1",
+      "file": "0254.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0255",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 255,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 255",
+      "indexHeadings": [
+        "Aphorism § 255"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ240.htm#P255E6",
+      "characterCount": 1294,
+      "sha256": "2137d7190a300bda901e0bac90b262342395c8a5aec0799c0715468132ed823d",
+      "file": "0255.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0256",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 256,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 256",
+      "indexHeadings": [
+        "Aphorism § 256"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ240.htm#P256E6",
+      "characterCount": 510,
+      "sha256": "bb3f242dba3cf65c7307d69627451f100f13147b7ff742d44e39c4d21bb0a801",
+      "file": "0256.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0257",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 257,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 257",
+      "indexHeadings": [
+        "Aphorism § 257"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ240.htm#P257",
+      "characterCount": 415,
+      "sha256": "2e22476d0fbc855ee8d990112599be9b7906bbc00c3f777d2207b87baec9866d",
+      "file": "0257.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0258",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 258,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 258",
+      "indexHeadings": [
+        "Aphorism § 258"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ240.htm#P258",
+      "characterCount": 736,
+      "sha256": "c6c69e6a41622b110c9e809fbabc430dee4c8ba092b8bc1295dba5a9a72c9262",
+      "file": "0258.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0259",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 259,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 259",
+      "indexHeadings": [
+        "Aphorism § 259"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ240.htm#P259",
+      "characterCount": 736,
+      "sha256": "b76b7477d643ab403b2cd893c5d41b5463f24e1570b9617781bbbfc2b225e26f",
+      "file": "0259.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0260",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 260,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 260",
+      "indexHeadings": [
+        "Aphorism § 260"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ260.htm#P260E6",
+      "characterCount": 2541,
+      "sha256": "eeea48f540af9d6509c3f6cb849b016f23402f1dcd6f47138aff84f226fc5605",
+      "file": "0260.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0261",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 261,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 261",
+      "indexHeadings": [
+        "Aphorism § 261"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ260.htm#P261",
+      "characterCount": 431,
+      "sha256": "c49aeef9fa1f4314e925c1ebb027bb48f439b1fbbb854e462fd39dcb48350b55",
+      "file": "0261.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0262",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 262,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 262",
+      "indexHeadings": [
+        "Aphorism § 262"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ260.htm#P262",
+      "characterCount": 509,
+      "sha256": "69f7f95d6b7dff69049fba7f1858f2ff4477311d0352361810d268a9bb58544a",
+      "file": "0262.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0263",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 263,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 263",
+      "indexHeadings": [
+        "Aphorism § 263"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ260.htm#P263",
+      "characterCount": 1247,
+      "sha256": "59969b228ccda0f1234b7f735e46726e9666958946ba90a209bae3ca15557a5c",
+      "file": "0263.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0264",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 264,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 264",
+      "indexHeadings": [
+        "Aphorism § 264"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ260.htm#P264",
+      "characterCount": 405,
+      "sha256": "fafe0e8d19a2f0d935a99e6cedbc0bf2f47c7efaf1a6a50c5f56e85f424b9f0d",
+      "file": "0264.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0265",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 265,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 265",
+      "indexHeadings": [
+        "Aphorism § 265"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ260.htm#P265E6",
+      "characterCount": 279,
+      "sha256": "de956d37aba8794a7e28dd342b3b90d6fe367ef9f147a6af271648fe8192cb51",
+      "file": "0265.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0266",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 266,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 266",
+      "indexHeadings": [
+        "Aphorism § 266"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ260.htm#P266",
+      "characterCount": 2577,
+      "sha256": "ae6cc39e9bf7a737b69ca476417bb3f5bf03847de0b18f2ec9352f3d38555e04",
+      "file": "0266.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0267",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 267,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 267",
+      "indexHeadings": [
+        "Aphorism § 267"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ260.htm#P267",
+      "characterCount": 3075,
+      "sha256": "401ea1d03ee527e59620e364cfed8f07ebcca6840bc19ab75c75fbe9af87bd53",
+      "file": "0267.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0268",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 268,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 268",
+      "indexHeadings": [
+        "Aphorism § 268"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ260.htm#P268",
+      "characterCount": 2906,
+      "sha256": "3fca122f756735adc04b1289fb192f222c4393a334edcf9ba560cc3eac9cf1b3",
+      "file": "0268.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0269",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 269,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 269",
+      "indexHeadings": [
+        "Aphorism § 269"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ260.htm#P269E6",
+      "characterCount": 6811,
+      "sha256": "d5c846e28b87d5bc3f6f6363479b894b89dcc255cc25264bbdbc8f3a571da65e",
+      "file": "0269.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0270",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 270,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 270",
+      "indexHeadings": [
+        "Aphorism § 270"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ260.htm#P270E6",
+      "characterCount": 11310,
+      "sha256": "62be25f68e56aaaeca6d33321da436b12654b85ba9f1c8e327f9140d6cc03343",
+      "file": "0270.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0271",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 271,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 271",
+      "indexHeadings": [
+        "Aphorism § 271"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ260.htm#P271E6",
+      "characterCount": 1861,
+      "sha256": "cb735c3bad41d8d42495881ad8cb3e38a10faff2841030d13ec62dd7f41f0a1f",
+      "file": "0271.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0272",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 272,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 272",
+      "indexHeadings": [
+        "Aphorism § 272"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ260.htm#P272E6",
+      "characterCount": 951,
+      "sha256": "c8e9d6920b916416b2b88666893a0e0a2d313a0b4bea0d7dee12e0ccd5be84fd",
+      "file": "0272.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0273",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 273,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 273",
+      "indexHeadings": [
+        "Aphorism § 273"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ260.htm#P273E6",
+      "characterCount": 1829,
+      "sha256": "e4e68182914cdf5494dff8799512c8f9d9367fd80ee8f84a47785356f58aefe0",
+      "file": "0273.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0274",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 274,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 274",
+      "indexHeadings": [
+        "Aphorism § 274"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ260.htm#P274",
+      "characterCount": 2008,
+      "sha256": "05e330e941c64bdd3f0f59de67c0334860729851ed760bfe9c47d04492006561",
+      "file": "0274.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0275",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 275,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 275",
+      "indexHeadings": [
+        "Aphorism § 275"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ260.htm#P275",
+      "characterCount": 2472,
+      "sha256": "b232afc589cc13b3e441104674582f92e70372e5b68c2dd184e2425293a0077a",
+      "file": "0275.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0276",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 276,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 276",
+      "indexHeadings": [
+        "Aphorism § 276"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ260.htm#P276E6",
+      "characterCount": 2878,
+      "sha256": "f697c8de7a0176aff06741540caecb4e5f75354e9fe9bdf15352ccc90e1148ad",
+      "file": "0276.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0277",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 277,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 277",
+      "indexHeadings": [
+        "Aphorism § 277"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ260.htm#P277",
+      "characterCount": 1725,
+      "sha256": "3a21a9270f08a329a2bbac4229662c6bcef22a04a7a9dc4fe4502f55dcbf4312",
+      "file": "0277.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0278",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 278,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 278",
+      "indexHeadings": [
+        "Aphorism § 278"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ260.htm#P278E6",
+      "characterCount": 2231,
+      "sha256": "61bee6b54f222cd7b8457e152cfc804fe3dc59e1667732069f836b99f10b4171",
+      "file": "0278.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0279",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 279,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 279",
+      "indexHeadings": [
+        "Aphorism § 279"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ260.htm#P279E6",
+      "characterCount": 876,
+      "sha256": "45d326b11a3852602687a3c1387beb3a8811f2959b9ee39a5a2b827ce0877fb3",
+      "file": "0279.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0280",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 280,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 280",
+      "indexHeadings": [
+        "Aphorism § 280"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ280.htm#P280E6",
+      "characterCount": 1645,
+      "sha256": "6c10a39ad53e9cd0c75bd7a6b604d22c7f31ba4392fa65ce73ddf73e54db233d",
+      "file": "0280.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0281",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 281,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 281",
+      "indexHeadings": [
+        "Aphorism § 281"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ280.htm#P281E6",
+      "characterCount": 2445,
+      "sha256": "0fadf3f19ff59c5528f2167284456a5e5e684216c82fedf8deb8d449d9c6b937",
+      "file": "0281.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0282",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 282,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 282",
+      "indexHeadings": [
+        "Aphorism § 282"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ280.htm#P282E6",
+      "characterCount": 4399,
+      "sha256": "843a45c2d43c0737916916d008cb232d8b04ef8bc13bbb592e18eab5c855e419",
+      "file": "0282.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0283",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 283,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 283",
+      "indexHeadings": [
+        "Aphorism § 283"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ280.htm#P283E6",
+      "characterCount": 2444,
+      "sha256": "ab93c353c8ca9148a0a17ebb59bfa52c82f49d68d5614bc31b039297ae2a0029",
+      "file": "0283.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0284",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 284,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 284",
+      "indexHeadings": [
+        "Aphorism § 284"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ280.htm#P284E6",
+      "characterCount": 3367,
+      "sha256": "bba0d176c27ace595b40e2a2b7a3d74944f481ab3d3d277981bc45637ce408e1",
+      "file": "0284.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0285",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 285,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 285",
+      "indexHeadings": [
+        "Aphorism § 285"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ280.htm#P285E6",
+      "characterCount": 4248,
+      "sha256": "d17688725eeab734eed3d7d35a8103af6bdd92540f0f22d3ef22f9576ca2d5b2",
+      "file": "0285.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0286",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 286,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 286",
+      "indexHeadings": [
+        "Aphorism § 286"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ280.htm#P286E6",
+      "characterCount": 4366,
+      "sha256": "106fbb1abee69613e3000d0f209f70914a6b1193e71eda85dc3628db8821556d",
+      "file": "0286.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0287",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 287,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 287",
+      "indexHeadings": [
+        "Aphorism § 287"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ280.htm#P287E6",
+      "characterCount": 4349,
+      "sha256": "bb3c905eebd695349f3306567d32c7e4549fd74c13a97520471aef00c9df53aa",
+      "file": "0287.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0288",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 288,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 288",
+      "indexHeadings": [
+        "Aphorism § 288"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ280.htm#P288E6",
+      "characterCount": 3361,
+      "sha256": "da663c8f7f1e406c925937bee96f14d9d53206c704d2ae16f56f16ce5a1487fe",
+      "file": "0288.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0289",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 289,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 289",
+      "indexHeadings": [
+        "Aphorism § 289"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ280.htm#P289E6",
+      "characterCount": 4177,
+      "sha256": "02812f83e80f8064ac6fbb7b20184b9373c61bf2d28c1ac387587cfc71821fe3",
+      "file": "0289.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0290",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 290,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 290",
+      "indexHeadings": [
+        "Aphorism § 290"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ280.htm#P290E6",
+      "characterCount": 983,
+      "sha256": "df17c63504d421e52682eeb377a5ccfc3b8da113dc3a83ab9792134bd074a5f7",
+      "file": "0290.json"
+    },
+    {
+      "id": "homeoint-organon-sixth-0291",
+      "sourceIdentifier": "homeoint-organon-sixth",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 291,
+      "label": "Sixth-edition aphorisms",
+      "title": "Aphorism § 291",
+      "indexHeadings": [
+        "Aphorism § 291"
+      ],
+      "sectionUrl": "http://homeoint.org/books/hahorgan/organ280.htm#P291E6",
+      "characterCount": 11328,
+      "sha256": "89e11d9a07723761ca0fdbfd888f6d014cffdad8dc33011a76fde1040b99e6f3",
+      "file": "0291.json"
+    }
+  ]
+}

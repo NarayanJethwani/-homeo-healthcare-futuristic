@@ -129,7 +129,9 @@ async function main() {
   if (!bucketName) throw new Error("REPERTORY_ARTIFACT_BUCKET is required for remote operations.");
   const prefix = safePrefix(process.env.REPERTORY_ARTIFACT_PREFIX || "repertory");
 
-  await import("../../src/lib/firebaseAdmin");
+  const { getAdminDb } = await import("../../src/lib/firebaseAdmin");
+  // Initialize the default Admin app before requesting its Storage service.
+  getAdminDb();
   const { getStorage } = await import("firebase-admin/storage");
   const bucket = getStorage().bucket(bucketName);
 
