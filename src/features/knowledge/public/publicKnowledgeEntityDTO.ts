@@ -55,10 +55,13 @@ function serializeLocalizedString(value: LocalizedString): LocalizedString {
   };
 }
 
+import { evaluatePublicationEligibility } from "@/features/knowledge/governance/publicationGuard";
+
 export function serializePublicKnowledgeEntity(
   entity: KnowledgeEntity,
 ): PublicKnowledgeEntityDTO | null {
-  if (entity.editorialStatus !== "published") {
+  const eligibility = evaluatePublicationEligibility(entity);
+  if (eligibility.publicationStatus !== "published" || !eligibility.eligibleForIndexing) {
     return null;
   }
 

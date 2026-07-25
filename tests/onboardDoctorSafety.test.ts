@@ -1,3 +1,7 @@
+process.env.NODE_ENV = "test";
+process.env.REPERTORY_USE_MOCK_FIRESTORE = "true";
+process.env.GCLOUD_PROJECT = "mock-project-id";
+
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";

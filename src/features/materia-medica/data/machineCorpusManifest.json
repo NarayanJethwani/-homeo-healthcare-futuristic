@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-21T10:23:20.206Z",
+  "corpusStatus": "machine-validated",
+  "editorialStatus": "needs-review",
+  "books": [
+    {
+      "bookId": "james-tyler-kent",
+      "manifestUrl": "/data/materia-medica/v1/books/james-tyler-kent/manifest.json",
+      "sourceCount": 1,
+      "chunkCount": 189,
+      "characterCount": 2971544,
+      "downloadedByteCount": 4752367,
+      "corpusStatus": "machine-validated",
+      "correctionStatus": "raw-ocr",
+      "editorialStatus": "needs-review"
+    },
+    {
+      "bookId": "william-boericke",
+      "manifestUrl": "/data/materia-medica/v1/books/william-boericke/manifest.json",
+      "sourceCount": 1,
+      "chunkCount": 688,
+      "characterCount": 1612541,
+      "downloadedByteCount": 3170663,
+      "corpusStatus": "machine-validated",
+      "correctionStatus": "raw-ocr",
+      "editorialStatus": "needs-review"
+    },
+    {
+      "bookId": "john-henry-clarke",
+      "manifestUrl": "/data/materia-medica/v1/books/john-henry-clarke/manifest.json",
+      "sourceCount": 1,
+      "chunkCount": 1024,
+      "characterCount": 9343176,
+      "downloadedByteCount": 14130790,
+      "corpusStatus": "machine-validated",
+      "correctionStatus": "raw-ocr",
+      "editorialStatus": "needs-review"
+    },
+    {
+      "bookId": "henry-c-allen",
+      "manifestUrl": "/data/materia-medica/v1/books/henry-c-allen/manifest.json",
+      "sourceCount": 1,
+      "chunkCount": 185,
+      "characterCount": 419356,
+      "downloadedByteCount": 560588,
+      "corpusStatus": "machine-validated",
+      "correctionStatus": "raw-ocr",
+      "editorialStatus": "needs-review"
+    },
+    {
+      "bookId": "benoit-mure",
+      "manifestUrl": "/data/materia-medica/v1/books/benoit-mure/manifest.json",
+      "sourceCount": 1,
+      "chunkCount": 39,
+      "characterCount": 474693,
+      "downloadedByteCount": 488293,
+      "corpusStatus": "machine-validated",
+      "correctionStatus": "raw-ocr",
+      "editorialStatus": "needs-review"
+    },
+    {
+      "bookId": "cyrus-maxwell-boger",
+      "manifestUrl": "/data/materia-medica/v1/books/cyrus-maxwell-boger/manifest.json",
+      "sourceCount": 1,
+      "chunkCount": 13,
+      "characterCount": 630592,
+      "downloadedByteCount": 2640736,
+      "corpusStatus": "machine-validated",
+      "correctionStatus": "raw-ocr",
+      "editorialStatus": "needs-review"
+    },
+    {
+      "bookId": "adolf-zur-lippe",
+      "manifestUrl": "/data/materia-medica/v1/books/adolf-zur-lippe/manifest.json",
+      "sourceCount": 1,
+      "chunkCount": 11,
+      "characterCount": 288968,
+      "downloadedByteCount": 316163,
+      "corpusStatus": "machine-validated",
+      "correctionStatus": "raw-ocr",
+      "editorialStatus": "needs-review"
+    },
+    {
+      "bookId": "william-boericke-short",
+      "manifestUrl": "/data/materia-medica/v1/books/william-boericke-short/manifest.json",
+      "sourceCount": 1,
+      "chunkCount": 688,
+      "characterCount": 1612541,
+      "downloadedByteCount": 3170663,
+      "corpusStatus": "machine-validated",
+      "correctionStatus": "raw-ocr",
+      "editorialStatus": "needs-review"
+    },
+    {
+      "bookId": "samuel-hahnemann-organon",
+      "manifestUrl": "/data/materia-medica/v1/books/samuel-hahnemann-organon/manifest.json",
+      "sourceCount": 1,
+      "chunkCount": 291,
+      "characterCount": 512508,
+      "downloadedByteCount": 637876,
+      "corpusStatus": "machine-validated",
+      "correctionStatus": "raw-ocr",
+      "editorialStatus": "needs-review"
+    },
+    {
+      "bookId": "constantine-hering-guiding",
+      "manifestUrl": "/data/materia-medica/v1/books/constantine-hering-guiding/manifest.json",
+      "sourceCount": 10,
+      "chunkCount": 291,
+      "characterCount": 14222236,
+      "downloadedByteCount": 14563242,
+      "corpusStatus": "machine-validated",
+      "correctionStatus": "raw-ocr",
+      "editorialStatus": "needs-review"
+    }
+  ]
+}

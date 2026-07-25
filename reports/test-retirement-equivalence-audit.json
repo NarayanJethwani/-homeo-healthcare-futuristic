@@ -1,0 +1,369 @@
+{
+  "timestamp": "2026-07-25T13:48:56.404Z",
+  "totalDiscoveredSuites": 132,
+  "activeManifestCount": 108,
+  "quarantinedCount": 24,
+  "retiredApprovedCount": 0,
+  "retiredPendingApprovalCount": 0,
+  "equivalenceMatrix": [
+    {
+      "quarantinedSuitePath": "src/features/dashboard/__tests__/alerts.test.tsx",
+      "failureType": "Runtime/Assertion failure",
+      "errorSummary": "ReferenceError: describe is not defined",
+      "replacementEquivalent": false,
+      "uncoveredRequirements": [
+        "renders alerts list correctly"
+      ],
+      "activeCoveragePath": "tests/publicationGuardSafety.test.ts"
+    },
+    {
+      "quarantinedSuitePath": "src/features/dashboard/__tests__/commandPalette.test.tsx",
+      "failureType": "Runtime/Assertion failure",
+      "errorSummary": "ReferenceError: describe is not defined",
+      "replacementEquivalent": false,
+      "uncoveredRequirements": [
+        "renders when open is true"
+      ],
+      "activeCoveragePath": "tests/publicationGuardSafety.test.ts"
+    },
+    {
+      "quarantinedSuitePath": "src/features/dashboard/__tests__/overview.test.tsx",
+      "failureType": "Runtime/Assertion failure",
+      "errorSummary": "ReferenceError: describe is not defined",
+      "replacementEquivalent": false,
+      "uncoveredRequirements": [
+        "renders metrics indicators"
+      ],
+      "activeCoveragePath": "tests/publicationGuardSafety.test.ts"
+    },
+    {
+      "quarantinedSuitePath": "src/features/dashboard/__tests__/queue.test.tsx",
+      "failureType": "Runtime/Assertion failure",
+      "errorSummary": "ReferenceError: describe is not defined",
+      "replacementEquivalent": false,
+      "uncoveredRequirements": [
+        "renders patient queue headers correctly"
+      ],
+      "activeCoveragePath": "tests/publicationGuardSafety.test.ts"
+    },
+    {
+      "quarantinedSuitePath": "src/features/dashboard/__tests__/sidebar.test.tsx",
+      "failureType": "Runtime/Assertion failure",
+      "errorSummary": "ReferenceError: describe is not defined",
+      "replacementEquivalent": false,
+      "uncoveredRequirements": [
+        "renders sidebar sections properly"
+      ],
+      "activeCoveragePath": "tests/publicationGuardSafety.test.ts"
+    },
+    {
+      "quarantinedSuitePath": "src/features/repertory/__tests__/clinicalRepertorizationEngine.test.ts",
+      "failureType": "Runtime/Assertion failure",
+      "errorSummary": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:",
+      "replacementEquivalent": false,
+      "uncoveredRequirements": [],
+      "activeCoveragePath": "tests/clinicalGraph.test.ts"
+    },
+    {
+      "quarantinedSuitePath": "src/features/repertory/__tests__/clinicalRubricIntelligence.test.ts",
+      "failureType": "Runtime/Assertion failure",
+      "errorSummary": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:",
+      "replacementEquivalent": false,
+      "uncoveredRequirements": [],
+      "activeCoveragePath": "tests/clinicalGraph.test.ts"
+    },
+    {
+      "quarantinedSuitePath": "src/features/repertory/__tests__/clinicalSearchEngine.test.ts",
+      "failureType": "Runtime/Assertion failure",
+      "errorSummary": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:",
+      "replacementEquivalent": false,
+      "uncoveredRequirements": [],
+      "activeCoveragePath": "tests/clinicalGraph.test.ts"
+    },
+    {
+      "quarantinedSuitePath": "src/features/repertory/__tests__/repertory.test.ts",
+      "failureType": "Runtime/Assertion failure",
+      "errorSummary": "  ❌ FAILED: Prohibited-Claims Validator - regex scans must detect cures/guarantees | AssertionError [ERR_ASSERTION]: Seed database must pass validation and have zero safety claims violations.",
+      "replacementEquivalent": false,
+      "uncoveredRequirements": [
+        "Search Ranking - exact title matches must rank higher than synonym matches",
+        "Synonym Matching - search should expand to synonyms",
+        "Scoring Output & Grade 4 Handling - weighted scoring matches expected boosts",
+        "Prohibited-Claims Validator - regex scans must detect cures/guarantees",
+        "Graph Traversal - find differentiating rubrics between remedies",
+        "Export Adapters - verify that NTriples output produces valid triples",
+        "Database Validator - audit weak or empty differential notes",
+        "Clinical Case Scenarios - validate NLP matching and remedy ranking of 12 cases",
+        "Clinical Reasoning Engine - generate reasoning summary",
+        "Ingestion Pipeline - blocked copyrighted source",
+        "Ingestion Pipeline - abbreviation cleanup and metadata preservation",
+        "Repertorization Scoring - balanced scoring check"
+      ],
+      "activeCoveragePath": "tests/clinicalGraph.test.ts"
+    },
+    {
+      "quarantinedSuitePath": "tests/aiSecurityBoundary.test.ts",
+      "failureType": "Runtime/Assertion failure",
+      "errorSummary": "❌ TEST FAILED: 49. RAG Grounding Draft Isolation Integration | AssertionError [ERR_ASSERTION]: Published entity must be retrieved in grounding search",
+      "replacementEquivalent": false,
+      "uncoveredRequirements": [
+        "1. CORS mismatch must block request with 403 status",
+        "2. CSRF host checks must block request with 403 status on mismatched host",
+        "3. Payload size check must measure exact UTF-8 bytes and block size > 16 KB with 413",
+        "4. Payload size check must count multi-byte characters (emojis/Devanagari) properly",
+        "5. IP Rate Limiter must deny excessive requests with 429 status",
+        "6. Ambiguous session state must return 400 status with explicit message",
+        "7. Zod schemas must be strict and reject extra parameters with 400",
+        "8. Escalation to doctor mode from public/patient must return 403 status",
+        "9. Backward compatibility alias maps unauthenticated patient mode requests to public",
+        "10. Doctor context authorization must enforce clinic check and return 403 on clinic mismatch",
+        "11. Doctor context authorization must link check encounterId and patientContextId",
+        "12. Clinical context requests (PHI) must verify consent and return 403 if missing",
+        "13. Clinical context requests (PHI) must verify consent and return 403 if withdrawn",
+        "14. Clinical context requests (PHI) must disable cache reads/writes completely",
+        "15. Adversarial crisis inputs must trigger immediate response with Tele-MANAS lifelines",
+        "16. Crisis possible safety concern must deterministically return safe message and bypass AI",
+        "17. Prompt Injection must return natural explain query without throwing errors",
+        "18. Server exceptions must be masked to client and log allowlisted error code",
+        "19. Central-router PHI cache read/write bypass",
+        "20. PHI log redaction across every error path",
+        "21. Trusted-IP resolver behavior",
+        "22. Redis IP rate limits and Retry-After",
+        "ip",
+        "23. Concurrency lease acquisition, success, exception, and release paths",
+        "24. Bounded local fallback rate limiter",
+        "25. Missing pseudonymization secret validation",
+        "26. AI entitlement org/clinic check fails closed",
+        "27. Exact CSRF host matching",
+        "28. Output validator rule checks for public/patient mode",
+        "29. No eligible PHI provider fails closed",
+        "30. FAQ Whitelist Exact Match",
+        "31. Doctor Free-text PHI without a context ID",
+        "32. CORS Preflight Options rejection for disallowed origins",
+        "33. CSRF failure blocks before lease acquisition",
+        "34. Concurrency Lease release across all exit paths",
+        "35. Timeout deadline actively aborts and settles before lease reacquisition",
+        "36. Sequential fallback race prevents overlap and aborts on safety refusal",
+        "37. Redis Client adapter provider, ready check and options translations",
+        "38. OrphanedProviderError survives the consultAI() catch boundary",
+        "39. An orphaned lease remains quarantined and is not released by finally",
+        "40. PHI editorial content is neither cached nor written to logs",
+        "41. A deadline exceeded during pre-provider authorization prevents any provider call",
+        "42. Admin routes require articleId and reject raw text",
+        "43. Local IP Limiter Capacity Cap: limiter size cannot exceed 1000 and new IPs fail closed",
+        "44. Local IP Limiter Expiration Reclamation: expired entries are pruned when map is full",
+        "45. Existing IP Accounting at Capacity: existing IPs can make requests successfully even when map is full",
+        "46. Health Endpoint Authorization Boundaries (401 vs 403)",
+        "47. Disallowed Origin CORS blocks",
+        "48. PHI Sentinel Redaction in Observability and Logs",
+        "49. RAG Grounding Draft Isolation Integration",
+        "50. Disallowed origin POST check on RAG health route does not execute mutations",
+        "51. Consult AI API CORS regression: OPTIONS only permits POST and OPTIONS",
+        "52. Local IP Limiter Bounded Rotating Pruning prevents starvation in mixed active/expired map"
+      ],
+      "activeCoveragePath": "tests/publicationGuardSafety.test.ts"
+    },
+    {
+      "quarantinedSuitePath": "tests/firestoreRulesClient.test.ts",
+      "failureType": "Runtime/Assertion failure",
+      "errorSummary": "❌ Firestore Rules Client Test Failed: Error: Configuration Error: Rules test project ID mock-project-id does not match synthetic pattern.",
+      "replacementEquivalent": false,
+      "uncoveredRequirements": [],
+      "activeCoveragePath": "tests/publicationGuardSafety.test.ts"
+    },
+    {
+      "quarantinedSuitePath": "tests/graphPerformance.test.tsx",
+      "failureType": "Runtime/Assertion failure",
+      "errorSummary": "Error: Vitest cannot be imported in a CommonJS module using require(). Please use \"import\" instead.",
+      "replacementEquivalent": false,
+      "uncoveredRequirements": [
+        "should profile React render cycles and tab interaction times"
+      ],
+      "activeCoveragePath": "tests/publicationGuardSafety.test.ts"
+    },
+    {
+      "quarantinedSuitePath": "tests/hydrationAndTiming.test.tsx",
+      "failureType": "Runtime/Assertion failure",
+      "errorSummary": "TSError: ⨯ Unable to compile TypeScript:",
+      "replacementEquivalent": false,
+      "uncoveredRequirements": [
+        "should format valid dates correctly preserving styles and day digits",
+        "should parse leap year dates correctly",
+        "should return empty string for invalid or impossible dates",
+        "should reject invalid/malformed ISO timestamps (negative tests)",
+        "should remain timezone invariant",
+        "should prove regression sensitivity: legacy formatter fails, invariant formatter succeeds",
+        "should hydrate all date components without warnings",
+        "should not use THREE.Clock and must use THREE.Timer in AntigravityBackground.tsx"
+      ],
+      "activeCoveragePath": "tests/publicationGuardSafety.test.ts"
+    },
+    {
+      "quarantinedSuitePath": "tests/knowledgeEditorial.test.ts",
+      "failureType": "Runtime/Assertion failure",
+      "errorSummary": "❌ TEST FAILED: 3. Invalid skipped stages must fail | AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:",
+      "replacementEquivalent": false,
+      "uncoveredRequirements": [
+        "1. Complete forward lifecycle (draft -> medical-review -> editorial-review -> approved -> published)",
+        "2. Backward transitions require a non-empty reason",
+        "3. Invalid skipped stages must fail",
+        "4. Editor role cannot perform clinical approval or publish action",
+        "5. Version pointers are set correctly and independent",
+        "6. Optimistic concurrency control rejects stale revision writes",
+        "7. Retrieval eligibility filters out draft, review, and legacy-unverified content",
+        "8. Legacy migration dry-run performs no writes, run mode is idempotent"
+      ],
+      "activeCoveragePath": "tests/publicationGuardSafety.test.ts"
+    },
+    {
+      "quarantinedSuitePath": "tests/knowledgeGraphExplorer.test.tsx",
+      "failureType": "Runtime/Assertion failure",
+      "errorSummary": "TSError: ⨯ Unable to compile TypeScript:",
+      "replacementEquivalent": false,
+      "uncoveredRequirements": [
+        "should output correct href paths matching specific entity type routes",
+        "should open tooltip details and attach aria-describedby on keyboard focus",
+        "should wrap focus inside the fullscreen modal on tab/shift-tab",
+        "should restore focus to trigger element when closing fullscreen explorer",
+        "should close fullscreen modal when pressing Escape",
+        "should only render exactly one graph instance workspace and unmount inline workspace when fullscreen is active",
+        "should unlock body overflow and cleanup capture-phase event listeners when component unmounts",
+        "should include Tailwind motion-reduce:transition-none classes on transition elements",
+        "should transfer focus to close button via fake timer and cancel timer on unmount"
+      ],
+      "activeCoveragePath": "tests/publicationGuardSafety.test.ts"
+    },
+    {
+      "quarantinedSuitePath": "tests/materiaMedicaPersistence.test.ts",
+      "failureType": "Runtime/Assertion failure",
+      "errorSummary": "Failed to initialize RulesTestEnvironment. Is the Firestore emulator running on port 8080? [TypeError: fetch failed] { |   [cause]: Error: connect ECONNREFUSED 127.0.0.1:8080",
+      "replacementEquivalent": false,
+      "uncoveredRequirements": [
+        "Test 1 - Unauthenticated users cannot read/write practitioner subcollections",
+        "Test 2 - Practitioner A cannot read or write Practitioner B",
+        "Test 3 - Practitioner A can write their own annotation with a valid schema",
+        "Test 4 - Note text exceeding 2000 characters is rejected",
+        "Test 5 - Invalid annotation category is rejected",
+        "Test 6 - Invalid offsets (negative or end < start) are rejected",
+        "Test 7 - Bookmark schema validation checks",
+        "Test 8 - Reader Position schema validation checks",
+        "Test 9 - Annotation source anchors are immutable and revisions increment exactly once",
+        "Test 10 - Cross-practitioner bookmark and reader-position access is denied"
+      ],
+      "activeCoveragePath": "tests/publicationGuardSafety.test.ts"
+    },
+    {
+      "quarantinedSuitePath": "tests/miasmaticFiltering.test.tsx",
+      "failureType": "Runtime/Assertion failure",
+      "errorSummary": "TSError: ⨯ Unable to compile TypeScript:",
+      "replacementEquivalent": false,
+      "uncoveredRequirements": [
+        "should assert the production corpus is completely empty and deeply frozen",
+        "should verify filter controls are hidden in production environment even if enabling prop is true",
+        "should strictly validate mappings using isolated test fixtures",
+        "should perform filtering in-memory with zero side-effects to writes, router, local storage, fetches, and delta service counts",
+        "should reset filter selection when patient or session UID changes independently",
+        "should prove that toggling filters leaves active case selections and computed scores completely identical",
+        "should support full keyboard focus, arrow key navigation, Space/Enter activation, and motion safety controls"
+      ],
+      "activeCoveragePath": "tests/publicationGuardSafety.test.ts"
+    },
+    {
+      "quarantinedSuitePath": "tests/providerTelemetryDashboard.test.tsx",
+      "failureType": "Runtime/Assertion failure",
+      "errorSummary": "TSError: ⨯ Unable to compile TypeScript:",
+      "replacementEquivalent": false,
+      "uncoveredRequirements": [
+        "renders the dashboard page, showing health status and loaded telemetry values",
+        "handles the reset telemetry metrics flow correctly with verification",
+        "aborts reset request early if user cancels prompt"
+      ],
+      "activeCoveragePath": "tests/publicationGuardSafety.test.ts"
+    },
+    {
+      "quarantinedSuitePath": "tests/publicApi.test.ts",
+      "failureType": "Runtime/Assertion failure",
+      "errorSummary": "  ❌ FAILED: GET /api/public/knowledge/faqs - returns the exact public DTO | AssertionError [ERR_ASSERTION]: Should have at least one faqs record",
+      "replacementEquivalent": false,
+      "uncoveredRequirements": [
+        "GET /api/public/knowledge/${name} - returns the exact public DTO",
+        "public serializer strips future private fields and copies nested values",
+        "searchKnowledgeBase - public search filters out non-published items"
+      ],
+      "activeCoveragePath": "tests/publicationGuardSafety.test.ts"
+    },
+    {
+      "quarantinedSuitePath": "tests/repertory/repertoryRetrieval.test.ts",
+      "failureType": "Runtime/Assertion failure",
+      "errorSummary": "❌ TEST SUITE RUN ENCOUNTERED A FAILURE: | Error: Artifact store file not found: /var/folders/fb/rwphgj91565cst_g6prnwnc80000gn/T/homeo-repertory-tests/test-run-1784987188718-87ynm/published/sources/kent_1908/chapters/0e4a84ded3ffd5319f81-0001.json",
+      "replacementEquivalent": false,
+      "uncoveredRequirements": [],
+      "activeCoveragePath": "tests/clinicalGraph.test.ts"
+    },
+    {
+      "quarantinedSuitePath": "tests/repertoryApprovalPersistence.test.ts",
+      "failureType": "Runtime/Assertion failure",
+      "errorSummary": "❌ Approval Persistence Test Failed: Error: Harness Error: FIRESTORE_EMULATOR_HOST must be set.",
+      "replacementEquivalent": false,
+      "uncoveredRequirements": [],
+      "activeCoveragePath": "tests/clinicalGraph.test.ts"
+    },
+    {
+      "quarantinedSuitePath": "tests/repertoryDurableConsistency.test.ts",
+      "failureType": "Runtime/Assertion failure",
+      "errorSummary": "❌ Multi-Process Consistency Test Failed: Error: Harness Error: FIRESTORE_EMULATOR_HOST must be set.",
+      "replacementEquivalent": false,
+      "uncoveredRequirements": [
+        "\\n"
+      ],
+      "activeCoveragePath": "tests/clinicalGraph.test.ts"
+    },
+    {
+      "quarantinedSuitePath": "tests/repertoryProductionActivationGate.test.ts",
+      "failureType": "Runtime/Assertion failure",
+      "errorSummary": "❌ Activation Gate Test Failed: Error: Harness Error: FIRESTORE_EMULATOR_HOST must be set.",
+      "replacementEquivalent": false,
+      "uncoveredRequirements": [],
+      "activeCoveragePath": "tests/clinicalGraph.test.ts"
+    },
+    {
+      "quarantinedSuitePath": "tests/repertoryRouteSecurity.test.ts",
+      "failureType": "Runtime/Assertion failure",
+      "errorSummary": "Error: Configuration Error: Conflicting project ID variables.",
+      "replacementEquivalent": false,
+      "uncoveredRequirements": [
+        "POST save rejects disallowed origin before auth and writes",
+        "OPTIONS save returns valid CORS headers for allowed origin",
+        "POST save returns 401 for unauthenticated client",
+        "POST save allows editor role to write",
+        "POST save denies pilot doctor (insufficient permissions for admin write)",
+        "POST save rejects overwriting standard published rubrics",
+        "POST delete rejects deletion of standard published rubrics",
+        "POST save rejects oversized request and cancels stream",
+        "Stream limits enforce exact boundaries",
+        "Content-Length header is not trusted for size enforcement (bypass prevention)",
+        "Oversized multibyte UTF-8 bodies are blocked",
+        "POST save rejects wrong payload combination",
+        "POST feedback fully bounds and validates arrays and rejects malformed IDs",
+        "POST seed returns 409 and executes zero writes on second attempt",
+        "Atomic concurrency: concurrent seed requests trigger conflict safety",
+        "All exceptions are generic and log no sensitive sentinels",
+        "Blocked unauthorized calls consume no rate limit slot for the same user identity",
+        "GET seed/live/compare return 405 Method Not Allowed",
+        "OPTIONS compare/live/feedback/seed return valid preflights",
+        "V2 Compare endpoint contract matches UI expectation",
+        "V2 Live endpoint contract matches UI expectation",
+        "V2 Feedback endpoint contract matches UI expectation",
+        "Seed fails closed with 409 on arbitrary pre-existing data",
+        "All routes return status 500 on database/dependency failures",
+        "POST feedback rejects unknown / forged rubric and remedy identifiers with 400",
+        "EMR entitlement repository lookup exceptions are caught and masked to 500",
+        "POST v2-compare and v2-live enforce 16 KB body limits",
+        "Per-route exceptions redact unique sensitive sentinels from response and console",
+        "Practitioner profile status lookup failure fails closed with 500 and redacts sentinel",
+        "POST feedback rejects existing custom patient-derived rubric ID"
+      ],
+      "activeCoveragePath": "tests/clinicalGraph.test.ts"
+    }
+  ]
+}

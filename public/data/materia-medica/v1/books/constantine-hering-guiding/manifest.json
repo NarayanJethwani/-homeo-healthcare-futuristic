@@ -1,0 +1,4508 @@
+{
+  "schemaVersion": 1,
+  "bookId": "constantine-hering-guiding",
+  "corpusStatus": "machine-validated",
+  "correctionStatus": "raw-ocr",
+  "editorialStatus": "needs-review",
+  "generatedAt": "2026-07-21T10:23:20.202Z",
+  "sourceCount": 10,
+  "chunkCount": 291,
+  "characterCount": 14222236,
+  "downloadedByteCount": 14563242,
+  "sources": [
+    {
+      "identifier": "guidingsymptomso00heri",
+      "label": "Volume 1 of 10",
+      "sourceUrl": "https://archive.org/details/guidingsymptomso00heri",
+      "sourceType": "internet-archive-ocr",
+      "assetName": "guidingsymptomso00heri_djvu.txt",
+      "archiveMd5": "34290254b8d07cc11cbcd9fa0404125f",
+      "archiveSha1": "123ea22f63cb9e0509b5fb98e04c4ab7a64ffc92",
+      "downloadedByteCount": 1313421,
+      "sourceSha256": "b7737b6715e440c917e14d30072e6f937a7395b83870d9d37b62a72556022843",
+      "normalizedSha256": "86312f2e06ccb7bcacc6a5e992dad5687317d564a84f863b7fd0460274c69de0",
+      "normalizedCharacterCount": 1282054,
+      "chunkCount": 26,
+      "sourcePageCount": null
+    },
+    {
+      "identifier": "guidingsymptomso00heri2",
+      "label": "Volume 2 of 10",
+      "sourceUrl": "https://archive.org/details/guidingsymptomso00heri2",
+      "sourceType": "internet-archive-ocr",
+      "assetName": "guidingsymptomso00heri2_djvu.txt",
+      "archiveMd5": "9ed1e64d3012437a42448833ddf2338c",
+      "archiveSha1": "861623b6c7b67ce56d34229bb0e8dc3c8432c2b3",
+      "downloadedByteCount": 1288403,
+      "sourceSha256": "f9453232b14fa17538218347d6d0f9b04f7454d2d8452883a0b45e1f4160a4d1",
+      "normalizedSha256": "36714ddabadbe7c277c6bfb6ec034a8d4807bbcb9fa9a171fe42589eac497d9c",
+      "normalizedCharacterCount": 1256594,
+      "chunkCount": 26,
+      "sourcePageCount": null
+    },
+    {
+      "identifier": "guidingsymptomso00heri3",
+      "label": "Volume 3 of 10",
+      "sourceUrl": "https://archive.org/details/guidingsymptomso00heri3",
+      "sourceType": "internet-archive-ocr",
+      "assetName": "guidingsymptomso00heri3_djvu.txt",
+      "archiveMd5": "56f48d5b7090d16286c76a49f13b2011",
+      "archiveSha1": "9381faf0ad5ecba355fc9de433aaae01e75597d6",
+      "downloadedByteCount": 1279201,
+      "sourceSha256": "fd135e000fad234f25d45646ffb65d4d7fdfff2f1c7c2afc14e8a1ef7962b937",
+      "normalizedSha256": "545a81cc6913c02e38ccd66e0a5d8d58fc84b6f89ac30104150a2bfa2f87917a",
+      "normalizedCharacterCount": 1246733,
+      "chunkCount": 25,
+      "sourcePageCount": null
+    },
+    {
+      "identifier": "guidingsymptomso00heri4",
+      "label": "Volume 4 of 10",
+      "sourceUrl": "https://archive.org/details/guidingsymptomso00heri4",
+      "sourceType": "internet-archive-ocr",
+      "assetName": "guidingsymptomso00heri4_djvu.txt",
+      "archiveMd5": "0435bc27de4bb6771c290dc643b86e79",
+      "archiveSha1": "5c369e0d72cf46f407fb12e18ddd37ea29ea39fc",
+      "downloadedByteCount": 1326387,
+      "sourceSha256": "f121090898f2a7c39e83e224d2a0f721550f721e17d6fbaac981aa4bfa82c211",
+      "normalizedSha256": "8dcb5cebf0ea4ba313e8378a51feb10421eb104bf83b38de504bb2c523da8916",
+      "normalizedCharacterCount": 1293315,
+      "chunkCount": 26,
+      "sourcePageCount": null
+    },
+    {
+      "identifier": "guidingsymptomso00heri5",
+      "label": "Volume 5 of 10",
+      "sourceUrl": "https://archive.org/details/guidingsymptomso00heri5",
+      "sourceType": "internet-archive-ocr",
+      "assetName": "guidingsymptomso00heri5_djvu.txt",
+      "archiveMd5": "14cc730c1bb3583666d2d2a5ba7308ba",
+      "archiveSha1": "54d354740a25442ed3d3e148ad8f106931ca9085",
+      "downloadedByteCount": 1393486,
+      "sourceSha256": "e1e6086a295f8601dda47fd84ea2cf78caa45302131fd9bb04d5a095de673da3",
+      "normalizedSha256": "ba1e717ca5ff351ed9105b6801a4924a7e2665eef85f4e43df700004eb3ff730",
+      "normalizedCharacterCount": 1359236,
+      "chunkCount": 28,
+      "sourcePageCount": null
+    },
+    {
+      "identifier": "guidingsymptomso00heri6",
+      "label": "Volume 6 of 10",
+      "sourceUrl": "https://archive.org/details/guidingsymptomso00heri6",
+      "sourceType": "internet-archive-ocr",
+      "assetName": "guidingsymptomso00heri6_djvu.txt",
+      "archiveMd5": "db7104b3752f9a8bbddbd589e1ae4f3d",
+      "archiveSha1": "60038cb9072be3f9a57f44890c68c58584168849",
+      "downloadedByteCount": 1715394,
+      "sourceSha256": "8ac16100f3807601caf809d8ab7f7bd2362993ab6ac6550468c5412e0be2ed53",
+      "normalizedSha256": "28fc6e76112e0c5256a0e544663c4f1372524cbceb9a678c402df7373189999d",
+      "normalizedCharacterCount": 1673566,
+      "chunkCount": 34,
+      "sourcePageCount": null
+    },
+    {
+      "identifier": "guidingsymptomso00heri7",
+      "label": "Volume 7 of 10",
+      "sourceUrl": "https://archive.org/details/guidingsymptomso00heri7",
+      "sourceType": "internet-archive-ocr",
+      "assetName": "guidingsymptomso00heri7_djvu.txt",
+      "archiveMd5": "b526014a269637720e609ab48087c374",
+      "archiveSha1": "2e676021f61a77ade0767bdfee28293b12218ca7",
+      "downloadedByteCount": 1580559,
+      "sourceSha256": "9e7a15798fc5f53c6081e28d875da33f6985c8789f7e0a425812c885d7f662e0",
+      "normalizedSha256": "cba7049e7a62b15db2016fc5c3ee57961eb140feb00302f924c3ca50a7902dcb",
+      "normalizedCharacterCount": 1543606,
+      "chunkCount": 32,
+      "sourcePageCount": null
+    },
+    {
+      "identifier": "guidingsymptomso00heri8",
+      "label": "Volume 8 of 10",
+      "sourceUrl": "https://archive.org/details/guidingsymptomso00heri8",
+      "sourceType": "internet-archive-ocr",
+      "assetName": "guidingsymptomso00heri8_djvu.txt",
+      "archiveMd5": "419e1b77230beb6ffa2526904700408f",
+      "archiveSha1": "81085141355628fb4e19b6b2cb1d6788fc655bc4",
+      "downloadedByteCount": 1743645,
+      "sourceSha256": "1b296b16dec3e5dfe15d8d903bb0d2ce6c88dc5f92b3b53acedb241d83e861b4",
+      "normalizedSha256": "72806d9a30b049607c4b03d556ab2f70b630f3713927976bb58e3b4f3beb1236",
+      "normalizedCharacterCount": 1705356,
+      "chunkCount": 35,
+      "sourcePageCount": null
+    },
+    {
+      "identifier": "guidingsymptomso00heri9",
+      "label": "Volume 9 of 10",
+      "sourceUrl": "https://archive.org/details/guidingsymptomso00heri9",
+      "sourceType": "internet-archive-ocr",
+      "assetName": "guidingsymptomso00heri9_djvu.txt",
+      "archiveMd5": "83a7b17774d2e9cbe998bc2cc29ceca9",
+      "archiveSha1": "0ac817ff1367f37037deadeb716d5235a31eec39",
+      "downloadedByteCount": 1384330,
+      "sourceSha256": "a26523a577d5e308b8d3d71f7b3a3a06e00b8d98298e62c33788ed21da9a9806",
+      "normalizedSha256": "55bed595980fb6315a31cc6936c3adc92d3e722c6e4a46768140d66d889e986a",
+      "normalizedCharacterCount": 1354806,
+      "chunkCount": 28,
+      "sourcePageCount": null
+    },
+    {
+      "identifier": "guidingsymptomso00heri10",
+      "label": "Volume 10 of 10",
+      "sourceUrl": "https://archive.org/details/guidingsymptomso00heri10",
+      "sourceType": "internet-archive-ocr",
+      "assetName": "guidingsymptomso00heri10_djvu.txt",
+      "archiveMd5": "007166a62e95dcbfa610a55376397c6b",
+      "archiveSha1": "02bc63bfdd11c5258093e35e6c74238a70b5cbda",
+      "downloadedByteCount": 1538416,
+      "sourceSha256": "6d14357980e3ebb45c30fa83668bfce88301b2d2f88eaf1fda3c854d5bc4c918",
+      "normalizedSha256": "8962bbc7aa88e51ddc808823d4bd6a3f9f16dbc5e807a0278929ff6319f58b36",
+      "normalizedCharacterCount": 1506970,
+      "chunkCount": 31,
+      "sourcePageCount": null
+    }
+  ],
+  "chunks": [
+    {
+      "id": "guidingsymptomso00heri-001",
+      "sourceIdentifier": "guidingsymptomso00heri",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 1,
+      "label": "Volume 1 of 10",
+      "title": "Volume 1 of 10 · Section 1 — COLUMBIAN NATURAL CLASP NO. ION",
+      "indexHeadings": [
+        "COLUMBIAN NATURAL CLASP NO. ION",
+        "THE UNITED STATES ENVELOPE CO. SPRINGFIELD,MASS",
+        "THE",
+        "GUIDING SYMPTOMS",
+        "OF OUR",
+        "MATERIA MEDIOA",
+        "VOLUME I",
+        "PHILADELPHIA",
+        "THE AMERICAN HOMCEOPATHIC PUBLISHING SOCIETY",
+        "J. ]yE. STODD^RT & CO",
+        "PRESS OF GLOBE PRINTING HOUSE, PHILADELPHIA",
+        "PREFACE",
+        "V PREFACE",
+        "PREFACE. - vi",
+        "ix PREFACE",
+        "CONSTANTII^E HeRING",
+        "THE ARRANGEMENT",
+        "ABIES NIGRA",
+        "ABROTANUM",
+        "ABSINTHIUM",
+        "ACALYPHA INDICA",
+        "ACETICUM ACIDUM",
+        "ACONITUM NAPELLUS"
+      ],
+      "characterCount": 49949,
+      "sha256": "006593a64bb693e8321d4f98c1490d364b61d4746bf3fea6fb1dffaf62784c8f",
+      "file": "0001.json"
+    },
+    {
+      "id": "guidingsymptomso00heri-002",
+      "sourceIdentifier": "guidingsymptomso00heri",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 2,
+      "label": "Volume 1 of 10",
+      "title": "Volume 1 of 10 · Section 2",
+      "indexHeadings": [],
+      "characterCount": 49982,
+      "sha256": "1fa49186dc442629f02813cdb74839e3c8be8753d22c5e3a751c1cd25f32a543",
+      "file": "0002.json"
+    },
+    {
+      "id": "guidingsymptomso00heri-003",
+      "sourceIdentifier": "guidingsymptomso00heri",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 3,
+      "label": "Volume 1 of 10",
+      "title": "Volume 1 of 10 · Section 3 — ACTEA RACEMOSA.*",
+      "indexHeadings": [
+        "ACTEA RACEMOSA.*",
+        "ACTEA SPICATA",
+        "AESCULUS GLABRA",
+        "iECDLUS HIPPOCASTANUM"
+      ],
+      "characterCount": 49966,
+      "sha256": "6fdb991563ffb952a9c58af208debb303e2d60956ba9a40361fef026af451c5e",
+      "file": "0003.json"
+    },
+    {
+      "id": "guidingsymptomso00heri-004",
+      "sourceIdentifier": "guidingsymptomso00heri",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 4,
+      "label": "Volume 1 of 10",
+      "title": "Volume 1 of 10 · Section 4 — iETHUSA CYNAPIUM",
+      "indexHeadings": [
+        "iETHUSA CYNAPIUM"
+      ],
+      "characterCount": 49959,
+      "sha256": "fdff541ccfa2220fc80ceb02df5655816568a160204808dd00bc0b6748ffe984",
+      "file": "0004.json"
+    },
+    {
+      "id": "guidingsymptomso00heri-005",
+      "sourceIdentifier": "guidingsymptomso00heri",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 5,
+      "label": "Volume 1 of 10",
+      "title": "Volume 1 of 10 · Section 5 — AGNUS CASTUS",
+      "indexHeadings": [
+        "AGNUS CASTUS",
+        "AILANTUS GLANDULOSA",
+        "ALETRIS FARINOSA",
+        "ALLIUM SATIVUM"
+      ],
+      "characterCount": 49593,
+      "sha256": "af3189308fc7ab733eee4a71c502a09676378688ac51191bdf7a70910910542e",
+      "file": "0005.json"
+    },
+    {
+      "id": "guidingsymptomso00heri-006",
+      "sourceIdentifier": "guidingsymptomso00heri",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 6,
+      "label": "Volume 1 of 10",
+      "title": "Volume 1 of 10 · Section 6 — ALOE SOCOTRINA",
+      "indexHeadings": [
+        "ALOE SOCOTRINA",
+        "Ill ALOE SOCOTRINA",
+        "ALUMEN"
+      ],
+      "characterCount": 50000,
+      "sha256": "970546e3e21a75afed7f1ab14126c789e952f48b85f1256f64e3a5f53a0dd99f",
+      "file": "0006.json"
+    },
+    {
+      "id": "guidingsymptomso00heri-007",
+      "sourceIdentifier": "guidingsymptomso00heri",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 7,
+      "label": "Volume 1 of 10",
+      "title": "Volume 1 of 10 · Section 7 — ALUMINA, OR ARGILLA",
+      "indexHeadings": [
+        "ALUMINA, OR ARGILLA"
+      ],
+      "characterCount": 49912,
+      "sha256": "57c5c6762b40d02050a67c49a3b10d07c25df3b6948a342728f0c7e12ba6a87c",
+      "file": "0007.json"
+    },
+    {
+      "id": "guidingsymptomso00heri-008",
+      "sourceIdentifier": "guidingsymptomso00heri",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 8,
+      "label": "Volume 1 of 10",
+      "title": "Volume 1 of 10 · Section 8 — AMANITA, OR AGARICUS fflUSCARIUS",
+      "indexHeadings": [
+        "AMANITA, OR AGARICUS fflUSCARIUS"
+      ],
+      "characterCount": 49958,
+      "sha256": "34983a4496c7c35850da992d9a2f4d96f56f0ea4e216dec6bd1e76d4ab1f05c5",
+      "file": "0008.json"
+    },
+    {
+      "id": "guidingsymptomso00heri-009",
+      "sourceIdentifier": "guidingsymptomso00heri",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 9,
+      "label": "Volume 1 of 10",
+      "title": "Volume 1 of 10 · Section 9",
+      "indexHeadings": [],
+      "characterCount": 49982,
+      "sha256": "cb8a4b74a1eb4f1de4e34ecd7eefc282d42f474261e4c109df1d77a939fb851b",
+      "file": "0009.json"
+    },
+    {
+      "id": "guidingsymptomso00heri-010",
+      "sourceIdentifier": "guidingsymptomso00heri",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 10,
+      "label": "Volume 1 of 10",
+      "title": "Volume 1 of 10 · Section 10 — AMBRA GRISEA",
+      "indexHeadings": [
+        "AMBRA GRISEA",
+        "AMMONIUM BENZOICUM",
+        "AMMONIUM BROMIDUM",
+        "AMMONIUM CARBONICUM"
+      ],
+      "characterCount": 49994,
+      "sha256": "b06c4afd65bad1445f24479dc4db50bc09cfc2dd1db6ce81ab6939d55a3d9325",
+      "file": "0010.json"
+    },
+    {
+      "id": "guidingsymptomso00heri-011",
+      "sourceIdentifier": "guidingsymptomso00heri",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 11,
+      "label": "Volume 1 of 10",
+      "title": "Volume 1 of 10 · Section 11 — AMMONIUM MURIATICUM",
+      "indexHeadings": [
+        "AMMONIUM MURIATICUM"
+      ],
+      "characterCount": 49951,
+      "sha256": "8b60ded303776a9dd4613898142b755f3425d7b6a9f63a94739a87a104fb5c17",
+      "file": "0011.json"
+    },
+    {
+      "id": "guidingsymptomso00heri-012",
+      "sourceIdentifier": "guidingsymptomso00heri",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 12,
+      "label": "Volume 1 of 10",
+      "title": "Volume 1 of 10 · Section 12 — AMMONIACUM",
+      "indexHeadings": [
+        "AMMONIACUM",
+        "AMYGDALA AMARA",
+        "AMYLENUM NITROSUM"
+      ],
+      "characterCount": 49939,
+      "sha256": "186875aed4c8db997eb324a69cbcf29490a6717146f5af6c847673a159501671",
+      "file": "0012.json"
+    },
+    {
+      "id": "guidingsymptomso00heri-013",
+      "sourceIdentifier": "guidingsymptomso00heri",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 13,
+      "label": "Volume 1 of 10",
+      "title": "Volume 1 of 10 · Section 13 — ANACARDIUM OCCIDENTALE",
+      "indexHeadings": [
+        "ANACARDIUM OCCIDENTALE",
+        "ANACARDIUM ORIENTALE"
+      ],
+      "characterCount": 49999,
+      "sha256": "310d0e8d4b73c71ef078cdc9c8218a042563e6006dd7f487f7f394ca6900c152",
+      "file": "0013.json"
+    },
+    {
+      "id": "guidingsymptomso00heri-014",
+      "sourceIdentifier": "guidingsymptomso00heri",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 14,
+      "label": "Volume 1 of 10",
+      "title": "Volume 1 of 10 · Section 14 — ANAGALLIS ARVENSIS",
+      "indexHeadings": [
+        "ANAGALLIS ARVENSIS",
+        "ANANTHERUM MURICATUM"
+      ],
+      "characterCount": 49594,
+      "sha256": "8423839d4de930450005595a113c2341a43377bf547efb7b75aabacfdce3fd21",
+      "file": "0014.json"
+    },
+    {
+      "id": "guidingsymptomso00heri-015",
+      "sourceIdentifier": "guidingsymptomso00heri",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 15,
+      "label": "Volume 1 of 10",
+      "title": "Volume 1 of 10 · Section 15 — ANGUSTURA",
+      "indexHeadings": [
+        "ANGUSTURA",
+        "ANTHRACINUM"
+      ],
+      "characterCount": 49948,
+      "sha256": "866598e3099e2bd2a87d5117d54236c46802075b7c1c75f103c66a5961f44259",
+      "file": "0015.json"
+    },
+    {
+      "id": "guidingsymptomso00heri-016",
+      "sourceIdentifier": "guidingsymptomso00heri",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 16,
+      "label": "Volume 1 of 10",
+      "title": "Volume 1 of 10 · Section 16 — ^^^ ANTHRACINUM",
+      "indexHeadings": [
+        "^^^ ANTHRACINUM",
+        "ANTHROKOKALI",
+        "ANTIMONIUM ARSENITUffl",
+        "ANTIMONIUM CHLORIDUM",
+        "ANTIfflONlUM CRUDUM"
+      ],
+      "characterCount": 49963,
+      "sha256": "d3bb40951fd786289e57ff7f34f0e38c8aa0d8d18f483ab0926ddf1f4cba3495",
+      "file": "0016.json"
+    },
+    {
+      "id": "guidingsymptomso00heri-017",
+      "sourceIdentifier": "guidingsymptomso00heri",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 17,
+      "label": "Volume 1 of 10",
+      "title": "Volume 1 of 10 · Section 17 — ANTIMONIUM SULPH. AURATUM",
+      "indexHeadings": [
+        "ANTIMONIUM SULPH. AURATUM",
+        "ANTIMONIUM TARTARICUM"
+      ],
+      "characterCount": 49987,
+      "sha256": "ac0a57778bf3bcc248a18d84d56a8eca1da8367146e9364312d25974cc2694ec",
+      "file": "0017.json"
+    },
+    {
+      "id": "guidingsymptomso00heri-018",
+      "sourceIdentifier": "guidingsymptomso00heri",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 18,
+      "label": "Volume 1 of 10",
+      "title": "Volume 1 of 10 · Section 18",
+      "indexHeadings": [],
+      "characterCount": 49948,
+      "sha256": "fe6e13e37530167203f83546a0a1585c0bb917efad8bcfb9a0afdec6d5e25758",
+      "file": "0018.json"
+    },
+    {
+      "id": "guidingsymptomso00heri-019",
+      "sourceIdentifier": "guidingsymptomso00heri",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 19,
+      "label": "Volume 1 of 10",
+      "title": "Volume 1 of 10 · Section 19 — APHIS CHENOPODII GLAUCI",
+      "indexHeadings": [
+        "APHIS CHENOPODII GLAUCI",
+        "APIS"
+      ],
+      "characterCount": 49903,
+      "sha256": "29fe0062b85986247885c9dfa908e045be364706af6a90b674ba27ae093a0d91",
+      "file": "0019.json"
+    },
+    {
+      "id": "guidingsymptomso00heri-020",
+      "sourceIdentifier": "guidingsymptomso00heri",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 20,
+      "label": "Volume 1 of 10",
+      "title": "Volume 1 of 10 · Section 20 — ^^'^ APIS",
+      "indexHeadings": [
+        "^^'^ APIS"
+      ],
+      "characterCount": 49976,
+      "sha256": "8c145582bc70a0492bf9e4e7aa9a5caf01a0a25bf109e7cd4d17671c19f6c961",
+      "file": "0020.json"
+    },
+    {
+      "id": "guidingsymptomso00heri-021",
+      "sourceIdentifier": "guidingsymptomso00heri",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 21,
+      "label": "Volume 1 of 10",
+      "title": "Volume 1 of 10 · Section 21 — APIS",
+      "indexHeadings": [
+        "APIS"
+      ],
+      "characterCount": 49845,
+      "sha256": "a97031df8cb358856b6ad4ae2737ef81313d4bb8792a7a6bc148d8214d44c385",
+      "file": "0021.json"
+    },
+    {
+      "id": "guidingsymptomso00heri-022",
+      "sourceIdentifier": "guidingsymptomso00heri",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 22,
+      "label": "Volume 1 of 10",
+      "title": "Volume 1 of 10 · Section 22 — ^^'^ APIS",
+      "indexHeadings": [
+        "^^'^ APIS"
+      ],
+      "characterCount": 49930,
+      "sha256": "da673f7482569b77bcb68a001e70994cec076106119a61dbea76940f05fb54d7",
+      "file": "0022.json"
+    },
+    {
+      "id": "guidingsymptomso00heri-023",
+      "sourceIdentifier": "guidingsymptomso00heri",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 23,
+      "label": "Volume 1 of 10",
+      "title": "Volume 1 of 10 · Section 23 — APOCYNUM CANNABINUM",
+      "indexHeadings": [
+        "APOCYNUM CANNABINUM",
+        "ARGENTUM METALLICUM"
+      ],
+      "characterCount": 49953,
+      "sha256": "958464e5d0c3fac4ccc8ea118b42c472acf869a3ad362490da51d54913c485e8",
+      "file": "0023.json"
+    },
+    {
+      "id": "guidingsymptomso00heri-024",
+      "sourceIdentifier": "guidingsymptomso00heri",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 24,
+      "label": "Volume 1 of 10",
+      "title": "Volume 1 of 10 · Section 24 — ARGENTUM NITRICUM",
+      "indexHeadings": [
+        "ARGENTUM NITRICUM"
+      ],
+      "characterCount": 49933,
+      "sha256": "36e8d04548e73b37c48e159f82e404e206c3ad3d118bdc6a4d6d879ba910fc7f",
+      "file": "0024.json"
+    },
+    {
+      "id": "guidingsymptomso00heri-025",
+      "sourceIdentifier": "guidingsymptomso00heri",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 25,
+      "label": "Volume 1 of 10",
+      "title": "Volume 1 of 10 · Section 25 — ARMORACEA SATIVA",
+      "indexHeadings": [
+        "ARMORACEA SATIVA"
+      ],
+      "characterCount": 49871,
+      "sha256": "508934b825f62425315121dcbdf6969f632a2ab3d1d73e00c00c7d02b0424730",
+      "file": "0025.json"
+    },
+    {
+      "id": "guidingsymptomso00heri-026",
+      "sourceIdentifier": "guidingsymptomso00heri",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 26,
+      "label": "Volume 1 of 10",
+      "title": "Volume 1 of 10 · Section 26 — FIRST ANNUAL REPORT",
+      "indexHeadings": [
+        "FIRST ANNUAL REPORT",
+        "OF THE",
+        "BOARD OF DIRECTORS",
+        "AMERICAN HOMCEOPATHIC",
+        "PUBLISHING SOCIETY",
+        "TO THE",
+        "STOCKHOLDERS",
+        "PHILADELPHIA",
+        "DR. CONSTANTINE HERING",
+        "DR. ADOLPH LIPPE",
+        "DR. HENRY N. GUERNSEY",
+        "DR. JOHN K. LEE",
+        "DR. THOMAS MOORE",
+        "DR. JOHN MALIN",
+        "DR. JOSEPH C. GUERNSEY",
+        "COMMITTEES",
+        "ON PUBLICATION",
+        "DR. A. LIPPE",
+        "DR. H. N. GUERNSEY",
+        "DR. THOS. MOORE",
+        "DR. J. C. GUERNSEY",
+        "DR. J. K. LEE",
+        "ON FINANCE",
+        "BOARD or DIRECTORS TO THE STOCKHOLDERS",
+        "CHARTER",
+        "JOHN F. HARTRANFT",
+        "BY-LAWS",
+        "ARTICLE I",
+        "ARTICLE II",
+        "ARTICLE III",
+        "ARTICLE IV",
+        "ARTICLE V",
+        "BY-LAWS FOR THE BOARD OF DIRECTORS",
+        "ARTICLE VI",
+        "ARTICLE VII",
+        "ARTICLE VIIL",
+        "ARTICLE IX",
+        "DR. W. P. WESSELHCEFT, Boston",
+        "DR. S. LILIENTHAL, New York. '",
+        "DR. W. C. GOODNO",
+        "DR. C. B. KNERR",
+        "DR. S. LILIENTHAL",
+        "DR. W. P. WESSELHCEFT",
+        "DR. C. MOHR",
+        "AMERICAN",
+        "HOMCEOPATHIC PUBLISHING SOCIETY",
+        "ANNOUNCEMENT",
+        "GUIDING SYIWPTOIVJS OF OUR WIATERIA WIEOICA",
+        "J. M, STODDART & CO",
+        "GUIDING SYMPTOMS",
+        "OF OUR",
+        "ARNICA MONTANA (RADIX)",
+        "^ ARNICA MONTANA",
+        "i^S^^^^^^^-SS^iSKSKi^S^^Si^JSSiSiSSSiKSSSSN^^^"
+      ],
+      "characterCount": 34019,
+      "sha256": "d1a102707d19d60da1385e450432e10ad872214968106f95a8b1fa10c37b73ea",
+      "file": "0026.json"
+    },
+    {
+      "id": "guidingsymptomso00heri2-001",
+      "sourceIdentifier": "guidingsymptomso00heri2",
+      "sourceIndex": 2,
+      "sourceChunkIndex": 1,
+      "label": "Volume 2 of 10",
+      "title": "Volume 2 of 10 · Section 1 — THE",
+      "indexHeadings": [
+        "THE",
+        "GUIDING SYMPTOMS",
+        "OF OUR",
+        "C. HERING, M. D",
+        "VOLUME II",
+        "PHILADELPHIA",
+        "THE AMEEICAN HOMCEOPATHIC PUBLISHING SOCIETY",
+        "ARNICA MONTANA (RADIX)",
+        "ARNICA MONTANA",
+        "I ARNICA MONTANA"
+      ],
+      "characterCount": 49835,
+      "sha256": "37a7bf250c11c86eb560e83b21d07313684f2529f8a5f4d15796ec6e9910000b",
+      "file": "0027.json"
+    },
+    {
+      "id": "guidingsymptomso00heri2-002",
+      "sourceIdentifier": "guidingsymptomso00heri2",
+      "sourceIndex": 2,
+      "sourceChunkIndex": 2,
+      "label": "Volume 2 of 10",
+      "title": "Volume 2 of 10 · Section 2 — ARSENICUM ALBUM",
+      "indexHeadings": [
+        "ARSENICUM ALBUM"
+      ],
+      "characterCount": 49932,
+      "sha256": "b85f7e3778c39debde625dc86655d4dba8bae707b166abffbcb24f0b2f974aae",
+      "file": "0028.json"
+    },
+    {
+      "id": "guidingsymptomso00heri2-003",
+      "sourceIdentifier": "guidingsymptomso00heri2",
+      "sourceIndex": 2,
+      "sourceChunkIndex": 3,
+      "label": "Volume 2 of 10",
+      "title": "Volume 2 of 10 · Section 3",
+      "indexHeadings": [],
+      "characterCount": 49980,
+      "sha256": "f7c8b148bbf6c4f2b75b0d790b98354cfe25b4e6a9d4ef050434ebe821984f59",
+      "file": "0029.json"
+    },
+    {
+      "id": "guidingsymptomso00heri2-004",
+      "sourceIdentifier": "guidingsymptomso00heri2",
+      "sourceIndex": 2,
+      "sourceChunkIndex": 4,
+      "label": "Volume 2 of 10",
+      "title": "Volume 2 of 10 · Section 4",
+      "indexHeadings": [],
+      "characterCount": 49961,
+      "sha256": "8d26300436e2af277bdb0ee69ae729275b16ec0f412f1bc86276fdead367669b",
+      "file": "0030.json"
+    },
+    {
+      "id": "guidingsymptomso00heri2-005",
+      "sourceIdentifier": "guidingsymptomso00heri2",
+      "sourceIndex": 2,
+      "sourceChunkIndex": 5,
+      "label": "Volume 2 of 10",
+      "title": "Volume 2 of 10 · Section 5",
+      "indexHeadings": [],
+      "characterCount": 49648,
+      "sha256": "1e81ac5dd3f5169967f80f858ef0047af8b20c0ff4bc558d0c125ead338606ae",
+      "file": "0031.json"
+    },
+    {
+      "id": "guidingsymptomso00heri2-006",
+      "sourceIdentifier": "guidingsymptomso00heri2",
+      "sourceIndex": 2,
+      "sourceChunkIndex": 6,
+      "label": "Volume 2 of 10",
+      "title": "Volume 2 of 10 · Section 6 — ARSENICUM HYDROGENISATUM",
+      "indexHeadings": [
+        "ARSENICUM HYDROGENISATUM",
+        "Ill ARSENICUM HYDROGENISATUM"
+      ],
+      "characterCount": 49846,
+      "sha256": "73d8c91a1d60bf1e8816f76d7e7240f4e108f5bef7e9af083f5dd7063e121440",
+      "file": "0032.json"
+    },
+    {
+      "id": "guidingsymptomso00heri2-007",
+      "sourceIdentifier": "guidingsymptomso00heri2",
+      "sourceIndex": 2,
+      "sourceChunkIndex": 7,
+      "label": "Volume 2 of 10",
+      "title": "Volume 2 of 10 · Section 7 — ARSENICUM IdDATUM",
+      "indexHeadings": [
+        "ARSENICUM IdDATUM",
+        "ARSENICUM METALLICUM"
+      ],
+      "characterCount": 49859,
+      "sha256": "35e8975d4dd00a765e2c1af5f7febf788e0a44a76e14eaef3090b39f0b48f95e",
+      "file": "0033.json"
+    },
+    {
+      "id": "guidingsymptomso00heri2-008",
+      "sourceIdentifier": "guidingsymptomso00heri2",
+      "sourceIndex": 2,
+      "sourceChunkIndex": 8,
+      "label": "Volume 2 of 10",
+      "title": "Volume 2 of 10 · Section 8 — ARSENICUM SULPHURATUM FLAVUM",
+      "indexHeadings": [
+        "ARSENICUM SULPHURATUM FLAVUM",
+        "ARSENICUM SULPHURATUM RUBRUM",
+        "ARTEMISIA VULGARIS",
+        "ARUM DRACONTIUM"
+      ],
+      "characterCount": 49921,
+      "sha256": "a303e0a720c49f4e7a69fdf5d1836b72689dabdb790e5309b06c16599f583f0a",
+      "file": "0034.json"
+    },
+    {
+      "id": "guidingsymptomso00heri2-009",
+      "sourceIdentifier": "guidingsymptomso00heri2",
+      "sourceIndex": 2,
+      "sourceChunkIndex": 9,
+      "label": "Volume 2 of 10",
+      "title": "Volume 2 of 10 · Section 9 — ARUM MACULATUM",
+      "indexHeadings": [
+        "ARUM MACULATUM",
+        "ARUM TRIPHYLLUM",
+        "ARUNDO MAURITANICA"
+      ],
+      "characterCount": 50002,
+      "sha256": "8d0eda6ee251f34fd011d2ba8bff5829f0015bd402005d49178c58202a476b43",
+      "file": "0035.json"
+    },
+    {
+      "id": "guidingsymptomso00heri2-010",
+      "sourceIdentifier": "guidingsymptomso00heri2",
+      "sourceIndex": 2,
+      "sourceChunkIndex": 10,
+      "label": "Volume 2 of 10",
+      "title": "Volume 2 of 10 · Section 10 — ASAF(ETIDA",
+      "indexHeadings": [
+        "ASAF(ETIDA",
+        "ASARUM EUROPAEUM"
+      ],
+      "characterCount": 49952,
+      "sha256": "1638d0d80077bbaa92231e789aa841b3e436daa416d9c908983e26a033e22dcc",
+      "file": "0036.json"
+    },
+    {
+      "id": "guidingsymptomso00heri2-011",
+      "sourceIdentifier": "guidingsymptomso00heri2",
+      "sourceIndex": 2,
+      "sourceChunkIndex": 11,
+      "label": "Volume 2 of 10",
+      "title": "Volume 2 of 10 · Section 11 — ASCLEPIAS SYRIACA",
+      "indexHeadings": [
+        "ASCLEPIAS SYRIACA",
+        "ASCLEPiAS TUBEROSA",
+        "ASIMINA TRILOBA"
+      ],
+      "characterCount": 49956,
+      "sha256": "b1f49599c93ef4974a36a8acce061fd808a47a25d2dc836390275217e5e70382",
+      "file": "0037.json"
+    },
+    {
+      "id": "guidingsymptomso00heri2-012",
+      "sourceIdentifier": "guidingsymptomso00heri2",
+      "sourceIndex": 2,
+      "sourceChunkIndex": 12,
+      "label": "Volume 2 of 10",
+      "title": "Volume 2 of 10 · Section 12 — ASPARAGUS OFFICINALIS",
+      "indexHeadings": [
+        "ASPARAGUS OFFICINALIS",
+        "ASTACUS FLUVIATILIS",
+        "ASTERIAS RUBENS"
+      ],
+      "characterCount": 49997,
+      "sha256": "3b2a08d13192f389629316aa749767955b148940348e26053a26fae892736166",
+      "file": "0038.json"
+    },
+    {
+      "id": "guidingsymptomso00heri2-013",
+      "sourceIdentifier": "guidingsymptomso00heri2",
+      "sourceIndex": 2,
+      "sourceChunkIndex": 13,
+      "label": "Volume 2 of 10",
+      "title": "Volume 2 of 10 · Section 13 — ATROPINUM",
+      "indexHeadings": [
+        "ATROPINUM",
+        "ATROPINUM SULPHURICUM",
+        "AURANTIUM",
+        "AURUM METALLICUM"
+      ],
+      "characterCount": 49989,
+      "sha256": "554c9494d873022b10bfcdf8ad33933c313f1805b9f6a8f1ae9cbd519495795b",
+      "file": "0039.json"
+    },
+    {
+      "id": "guidingsymptomso00heri2-014",
+      "sourceIdentifier": "guidingsymptomso00heri2",
+      "sourceIndex": 2,
+      "sourceChunkIndex": 14,
+      "label": "Volume 2 of 10",
+      "title": "Volume 2 of 10 · Section 14 — AURUM fflURIATlCUM",
+      "indexHeadings": [
+        "AURUM fflURIATlCUM"
+      ],
+      "characterCount": 49991,
+      "sha256": "9c76f1e57b264545d9d7478e07f3eae5d97fdb93cfca6920558f09f43d8c90ff",
+      "file": "0040.json"
+    },
+    {
+      "id": "guidingsymptomso00heri2-015",
+      "sourceIdentifier": "guidingsymptomso00heri2",
+      "sourceIndex": 2,
+      "sourceChunkIndex": 15,
+      "label": "Volume 2 of 10",
+      "title": "Volume 2 of 10 · Section 15 — AURUM MURIATICUM NATRONATUM",
+      "indexHeadings": [
+        "AURUM MURIATICUM NATRONATUM",
+        "BADIAGA",
+        "BAPTISIA TINCTORIA"
+      ],
+      "characterCount": 49960,
+      "sha256": "59f3fc2631eb723aaa49ff892eb8a3e96cc6fc90898e532bd28b013c5201c545",
+      "file": "0041.json"
+    },
+    {
+      "id": "guidingsymptomso00heri2-016",
+      "sourceIdentifier": "guidingsymptomso00heri2",
+      "sourceIndex": 2,
+      "sourceChunkIndex": 16,
+      "label": "Volume 2 of 10",
+      "title": "Volume 2 of 10 · Section 16 — BARYTA CARBONICA",
+      "indexHeadings": [
+        "BARYTA CARBONICA"
+      ],
+      "characterCount": 49953,
+      "sha256": "064414ca010899d2f06e75591524815f09812b931aa419c502b77e385c6c933d",
+      "file": "0042.json"
+    },
+    {
+      "id": "guidingsymptomso00heri2-017",
+      "sourceIdentifier": "guidingsymptomso00heri2",
+      "sourceIndex": 2,
+      "sourceChunkIndex": 17,
+      "label": "Volume 2 of 10",
+      "title": "Volume 2 of 10 · Section 17",
+      "indexHeadings": [],
+      "characterCount": 50000,
+      "sha256": "bc05ec1dcd9f5d2e3ac8a0c6387f28a6f6d28a3d8ade2e500aef5486a8baae46",
+      "file": "0043.json"
+    },
+    {
+      "id": "guidingsymptomso00heri2-018",
+      "sourceIdentifier": "guidingsymptomso00heri2",
+      "sourceIndex": 2,
+      "sourceChunkIndex": 18,
+      "label": "Volume 2 of 10",
+      "title": "Volume 2 of 10 · Section 18 — BARYTA MURIATICA",
+      "indexHeadings": [
+        "BARYTA MURIATICA",
+        "BELLADONNA"
+      ],
+      "characterCount": 49939,
+      "sha256": "cf998caa7267be278c890cde2859df2ac28eb14c14f860ecbeca88db43c9464b",
+      "file": "0044.json"
+    },
+    {
+      "id": "guidingsymptomso00heri2-019",
+      "sourceIdentifier": "guidingsymptomso00heri2",
+      "sourceIndex": 2,
+      "sourceChunkIndex": 19,
+      "label": "Volume 2 of 10",
+      "title": "Volume 2 of 10 · Section 19",
+      "indexHeadings": [],
+      "characterCount": 49972,
+      "sha256": "815f92f1bfce2663cae24b76f77c22bc06130543e89af13352e7cd38d6c9dfcf",
+      "file": "0045.json"
+    },
+    {
+      "id": "guidingsymptomso00heri2-020",
+      "sourceIdentifier": "guidingsymptomso00heri2",
+      "sourceIndex": 2,
+      "sourceChunkIndex": 20,
+      "label": "Volume 2 of 10",
+      "title": "Volume 2 of 10 · Section 20",
+      "indexHeadings": [],
+      "characterCount": 49976,
+      "sha256": "fb275fbbe948e48ab45e5e13d77e2339ac253576012d8917091bd95872d40623",
+      "file": "0046.json"
+    },
+    {
+      "id": "guidingsymptomso00heri2-021",
+      "sourceIdentifier": "guidingsymptomso00heri2",
+      "sourceIndex": 2,
+      "sourceChunkIndex": 21,
+      "label": "Volume 2 of 10",
+      "title": "Volume 2 of 10 · Section 21 — BENZOIC ACID",
+      "indexHeadings": [
+        "BENZOIC ACID",
+        "BERBERIS"
+      ],
+      "characterCount": 49996,
+      "sha256": "090299ea41d0a3bc74471d13068bb63cb9889aebbcfb9273985500e8dfe0d77a",
+      "file": "0047.json"
+    },
+    {
+      "id": "guidingsymptomso00heri2-022",
+      "sourceIdentifier": "guidingsymptomso00heri2",
+      "sourceIndex": 2,
+      "sourceChunkIndex": 22,
+      "label": "Volume 2 of 10",
+      "title": "Volume 2 of 10 · Section 22",
+      "indexHeadings": [],
+      "characterCount": 49987,
+      "sha256": "b4a02dddedb5acf50020398af258dccdeca1a0d1e5d82064ea35fe1e67db617e",
+      "file": "0048.json"
+    },
+    {
+      "id": "guidingsymptomso00heri2-023",
+      "sourceIdentifier": "guidingsymptomso00heri2",
+      "sourceIndex": 2,
+      "sourceChunkIndex": 23,
+      "label": "Volume 2 of 10",
+      "title": "Volume 2 of 10 · Section 23 — BISMUTHUM",
+      "indexHeadings": [
+        "BISMUTHUM",
+        "BORAX"
+      ],
+      "characterCount": 49965,
+      "sha256": "429f0a7ad894f2ad108b2aabf29bce8b65bad5dc0070c063833269bc46b6d2b8",
+      "file": "0049.json"
+    },
+    {
+      "id": "guidingsymptomso00heri2-024",
+      "sourceIdentifier": "guidingsymptomso00heri2",
+      "sourceIndex": 2,
+      "sourceChunkIndex": 24,
+      "label": "Volume 2 of 10",
+      "title": "Volume 2 of 10 · Section 24 — BOVISTA",
+      "indexHeadings": [
+        "BOVISTA",
+        "BRACHYGLOTTIS REPENS"
+      ],
+      "characterCount": 49968,
+      "sha256": "6c4a7100cf1b813a9db14c129c2c66bfdaeeeac94b74d2dab6bf19bfde9cf003",
+      "file": "0050.json"
+    },
+    {
+      "id": "guidingsymptomso00heri2-025",
+      "sourceIdentifier": "guidingsymptomso00heri2",
+      "sourceIndex": 2,
+      "sourceChunkIndex": 25,
+      "label": "Volume 2 of 10",
+      "title": "Volume 2 of 10 · Section 25 — BROMIUM",
+      "indexHeadings": [
+        "BROMIUM"
+      ],
+      "characterCount": 49876,
+      "sha256": "b0fc7f2d442167dc52caf2f0854bc89461a4d28282df4df973f12d763cba10df",
+      "file": "0051.json"
+    },
+    {
+      "id": "guidingsymptomso00heri2-026",
+      "sourceIdentifier": "guidingsymptomso00heri2",
+      "sourceIndex": 2,
+      "sourceChunkIndex": 26,
+      "label": "Volume 2 of 10",
+      "title": "Volume 2 of 10 · Section 26 — COUNT WAY LIBRARY OF MEDICINE",
+      "indexHeadings": [
+        "COUNT WAY LIBRARY OF MEDICINE"
+      ],
+      "characterCount": 8133,
+      "sha256": "3d3a42a5b1573410c5894d91a6e5441007d0a95a2cf586cc945f143a646856d1",
+      "file": "0052.json"
+    },
+    {
+      "id": "guidingsymptomso00heri3-001",
+      "sourceIdentifier": "guidingsymptomso00heri3",
+      "sourceIndex": 3,
+      "sourceChunkIndex": 1,
+      "label": "Volume 3 of 10",
+      "title": "Volume 3 of 10 · Section 1 — COLUMBIAN NATURAL CLASP NO. ION",
+      "indexHeadings": [
+        "COLUMBIAN NATURAL CLASP NO. ION",
+        "THE UNITED STATES ENVELOPE CO. SPRING.nELD,MASS",
+        "THE",
+        "GUIDING SYMPTOMS",
+        "OF OUE",
+        "VOLUME III",
+        "PHILADELPHIA",
+        "THE AMERICAN HOMCEOPATHIC PUBLISHING SOCIETY",
+        "PRESS OF GLOBE PRINTING HOUSE",
+        "DEDICATED",
+        "BROOKLYN, N. Y",
+        "PREFACE",
+        "PREFACE. VI",
+        "DR. P. P. WELLS",
+        "CARROLL DUNHAM",
+        "Vll PEEFACE",
+        "a MOHK, J",
+        "OF OUR",
+        "BRYONIA ALBA"
+      ],
+      "characterCount": 49915,
+      "sha256": "282e59f29f6388b391887e1a61a53c835187383e791b838371e62c5e53446cb3",
+      "file": "0053.json"
+    },
+    {
+      "id": "guidingsymptomso00heri3-002",
+      "sourceIdentifier": "guidingsymptomso00heri3",
+      "sourceIndex": 3,
+      "sourceChunkIndex": 2,
+      "label": "Volume 3 of 10",
+      "title": "Volume 3 of 10 · Section 2",
+      "indexHeadings": [],
+      "characterCount": 49967,
+      "sha256": "ec42d0b326f87bcf36420c3189ada4ec45dd6de0e81d1fc43c3106b7225ab591",
+      "file": "0054.json"
+    },
+    {
+      "id": "guidingsymptomso00heri3-003",
+      "sourceIdentifier": "guidingsymptomso00heri3",
+      "sourceIndex": 3,
+      "sourceChunkIndex": 3,
+      "label": "Volume 3 of 10",
+      "title": "Volume 3 of 10 · Section 3 — BUFONES",
+      "indexHeadings": [
+        "BUFONES",
+        "CACTUS GRANDIFLORUS"
+      ],
+      "characterCount": 49360,
+      "sha256": "1293ffbe06bc681bb7c406ca19dabfb80f3120850326f8ac2a7d3ecd28454827",
+      "file": "0055.json"
+    },
+    {
+      "id": "guidingsymptomso00heri3-004",
+      "sourceIdentifier": "guidingsymptomso00heri3",
+      "sourceIndex": 3,
+      "sourceChunkIndex": 4,
+      "label": "Volume 3 of 10",
+      "title": "Volume 3 of 10 · Section 4",
+      "indexHeadings": [],
+      "characterCount": 49988,
+      "sha256": "b143e955f19cf95605b784e55f3abbc165d54b8a4d2a174e9bd0e84d2b409502",
+      "file": "0056.json"
+    },
+    {
+      "id": "guidingsymptomso00heri3-005",
+      "sourceIdentifier": "guidingsymptomso00heri3",
+      "sourceIndex": 3,
+      "sourceChunkIndex": 5,
+      "label": "Volume 3 of 10",
+      "title": "Volume 3 of 10 · Section 5 — CADMIUM SULFURATUM",
+      "indexHeadings": [
+        "CADMIUM SULFURATUM",
+        "CAINCA",
+        "CALABAR"
+      ],
+      "characterCount": 49923,
+      "sha256": "8465ccb700e296092a01546929da938af82e8a2a6de8f37e6edbc0fdcde9c184",
+      "file": "0057.json"
+    },
+    {
+      "id": "guidingsymptomso00heri3-006",
+      "sourceIdentifier": "guidingsymptomso00heri3",
+      "sourceIndex": 3,
+      "sourceChunkIndex": 6,
+      "label": "Volume 3 of 10",
+      "title": "Volume 3 of 10 · Section 6 — CALADIUM",
+      "indexHeadings": [
+        "CALADIUM",
+        "Ill CALADIUM"
+      ],
+      "characterCount": 49977,
+      "sha256": "844c0a3cf75ca9d5d71c94f04941e321a7792cc3b9ab0855740fdb90b031357c",
+      "file": "0058.json"
+    },
+    {
+      "id": "guidingsymptomso00heri3-007",
+      "sourceIdentifier": "guidingsymptomso00heri3",
+      "sourceIndex": 3,
+      "sourceChunkIndex": 7,
+      "label": "Volume 3 of 10",
+      "title": "Volume 3 of 10 · Section 7 — CALCAREA ARSENICA",
+      "indexHeadings": [
+        "CALCAREA ARSENICA",
+        "CALCAREA FLUORICA",
+        "CALCAREA OSTREARUM"
+      ],
+      "characterCount": 49946,
+      "sha256": "ccd2911f5fd9fd66d89762651285475331d1929d446f5e8753fe8905c946f450",
+      "file": "0059.json"
+    },
+    {
+      "id": "guidingsymptomso00heri3-008",
+      "sourceIdentifier": "guidingsymptomso00heri3",
+      "sourceIndex": 3,
+      "sourceChunkIndex": 8,
+      "label": "Volume 3 of 10",
+      "title": "Volume 3 of 10 · Section 8",
+      "indexHeadings": [],
+      "characterCount": 49993,
+      "sha256": "31a08a2cf1c4f7f0cbd2a885b501d8275d5e6e36c283ae46c6d10577f6a903aa",
+      "file": "0060.json"
+    },
+    {
+      "id": "guidingsymptomso00heri3-009",
+      "sourceIdentifier": "guidingsymptomso00heri3",
+      "sourceIndex": 3,
+      "sourceChunkIndex": 9,
+      "label": "Volume 3 of 10",
+      "title": "Volume 3 of 10 · Section 9",
+      "indexHeadings": [],
+      "characterCount": 49996,
+      "sha256": "da5af7516d100e3793f276566716589ea1696703fa8f1823b8101e36a8ef93f8",
+      "file": "0061.json"
+    },
+    {
+      "id": "guidingsymptomso00heri3-010",
+      "sourceIdentifier": "guidingsymptomso00heri3",
+      "sourceIndex": 3,
+      "sourceChunkIndex": 10,
+      "label": "Volume 3 of 10",
+      "title": "Volume 3 of 10 · Section 10",
+      "indexHeadings": [],
+      "characterCount": 49935,
+      "sha256": "2f7e12eb6b74f555ca7c3b0a1b7d23f49024212d1fbe1d17ad8c01d3634a80b2",
+      "file": "0062.json"
+    },
+    {
+      "id": "guidingsymptomso00heri3-011",
+      "sourceIdentifier": "guidingsymptomso00heri3",
+      "sourceIndex": 3,
+      "sourceChunkIndex": 11,
+      "label": "Volume 3 of 10",
+      "title": "Volume 3 of 10 · Section 11 — CALCAREA PHOSPHORICA",
+      "indexHeadings": [
+        "CALCAREA PHOSPHORICA"
+      ],
+      "characterCount": 49958,
+      "sha256": "634bd437d5a263c92cbc62fe359708c0585ca99992ff6dcee3acea9dd8b41216",
+      "file": "0063.json"
+    },
+    {
+      "id": "guidingsymptomso00heri3-012",
+      "sourceIdentifier": "guidingsymptomso00heri3",
+      "sourceIndex": 3,
+      "sourceChunkIndex": 12,
+      "label": "Volume 3 of 10",
+      "title": "Volume 3 of 10 · Section 12 — CALCAREA SULPHURICA",
+      "indexHeadings": [
+        "CALCAREA SULPHURICA",
+        "CALENDULA"
+      ],
+      "characterCount": 49997,
+      "sha256": "f44f60e32cd7d7c7fe320a5b2703676478a75ef5302774693f8ff1785adac138",
+      "file": "0064.json"
+    },
+    {
+      "id": "guidingsymptomso00heri3-013",
+      "sourceIdentifier": "guidingsymptomso00heri3",
+      "sourceIndex": 3,
+      "sourceChunkIndex": 13,
+      "label": "Volume 3 of 10",
+      "title": "Volume 3 of 10 · Section 13 — CAMPHORA",
+      "indexHeadings": [
+        "CAMPHORA"
+      ],
+      "characterCount": 49989,
+      "sha256": "ea9a19afeb3dbeda513689e02ff0c768646e8f792dd7ec90a1c607b234bfefd7",
+      "file": "0065.json"
+    },
+    {
+      "id": "guidingsymptomso00heri3-014",
+      "sourceIdentifier": "guidingsymptomso00heri3",
+      "sourceIndex": 3,
+      "sourceChunkIndex": 14,
+      "label": "Volume 3 of 10",
+      "title": "Volume 3 of 10 · Section 14 — CANNABIS SATIVA",
+      "indexHeadings": [
+        "CANNABIS SATIVA"
+      ],
+      "characterCount": 49962,
+      "sha256": "76b0b3cb212c69c0b72bd5a7faa749b75f9594468dba7be7284850a7f349fd58",
+      "file": "0066.json"
+    },
+    {
+      "id": "guidingsymptomso00heri3-015",
+      "sourceIdentifier": "guidingsymptomso00heri3",
+      "sourceIndex": 3,
+      "sourceChunkIndex": 15,
+      "label": "Volume 3 of 10",
+      "title": "Volume 3 of 10 · Section 15 — CANTHARIDES",
+      "indexHeadings": [
+        "CANTHARIDES",
+        "CAPSICUM"
+      ],
+      "characterCount": 49993,
+      "sha256": "bee651f7216889ceada9572c43ab22db72951fe1ad50d86fbd6f380c87adf00b",
+      "file": "0067.json"
+    },
+    {
+      "id": "guidingsymptomso00heri3-016",
+      "sourceIdentifier": "guidingsymptomso00heri3",
+      "sourceIndex": 3,
+      "sourceChunkIndex": 16,
+      "label": "Volume 3 of 10",
+      "title": "Volume 3 of 10 · Section 16 — CAPSICUM. SOS",
+      "indexHeadings": [
+        "CAPSICUM. SOS",
+        "CARBO ANIMALIS"
+      ],
+      "characterCount": 49987,
+      "sha256": "7e4d1d4896f8abafa54ad7d5e9ddd9870ff09302f064a22a5eafab68b7a0129e",
+      "file": "0068.json"
+    },
+    {
+      "id": "guidingsymptomso00heri3-017",
+      "sourceIdentifier": "guidingsymptomso00heri3",
+      "sourceIndex": 3,
+      "sourceChunkIndex": 17,
+      "label": "Volume 3 of 10",
+      "title": "Volume 3 of 10 · Section 17 — CARBO VEGETABILIS",
+      "indexHeadings": [
+        "CARBO VEGETABILIS"
+      ],
+      "characterCount": 49892,
+      "sha256": "f1203f21d5ed8b9fca083666371e2b08e588c1752cb0330906aa5f1ee1ca450c",
+      "file": "0069.json"
+    },
+    {
+      "id": "guidingsymptomso00heri3-018",
+      "sourceIdentifier": "guidingsymptomso00heri3",
+      "sourceIndex": 3,
+      "sourceChunkIndex": 18,
+      "label": "Volume 3 of 10",
+      "title": "Volume 3 of 10 · Section 18 — CARBOLIC ACID",
+      "indexHeadings": [
+        "CARBOLIC ACID"
+      ],
+      "characterCount": 49922,
+      "sha256": "157f45c61c700e803e543815551ba37997e1c402a5fee68ee3ed878456801c66",
+      "file": "0070.json"
+    },
+    {
+      "id": "guidingsymptomso00heri3-019",
+      "sourceIdentifier": "guidingsymptomso00heri3",
+      "sourceIndex": 3,
+      "sourceChunkIndex": 19,
+      "label": "Volume 3 of 10",
+      "title": "Volume 3 of 10 · Section 19 — CARBONEUM SULFURATUM",
+      "indexHeadings": [
+        "CARBONEUM SULFURATUM",
+        "CARDUUS MARIANUS"
+      ],
+      "characterCount": 49910,
+      "sha256": "acea1a4e31d9d430efe0178a06bd8e2660aa7f891d434d09d4bc8419cc388a23",
+      "file": "0071.json"
+    },
+    {
+      "id": "guidingsymptomso00heri3-020",
+      "sourceIdentifier": "guidingsymptomso00heri3",
+      "sourceIndex": 3,
+      "sourceChunkIndex": 20,
+      "label": "Volume 3 of 10",
+      "title": "Volume 3 of 10 · Section 20 — CASCARILLA",
+      "indexHeadings": [
+        "CASCARILLA",
+        "CASTANEA VESCA",
+        "CASTOREUffl",
+        "CASTOR EQUORUM",
+        "CAULOPHYLLUM THALICTROIDES",
+        "CAUSTICUM"
+      ],
+      "characterCount": 49995,
+      "sha256": "2d106feb784f5a1d4e9bf2dc06838146d60a49b34f98cd245fb42a3f5ae35810",
+      "file": "0072.json"
+    },
+    {
+      "id": "guidingsymptomso00heri3-021",
+      "sourceIdentifier": "guidingsymptomso00heri3",
+      "sourceIndex": 3,
+      "sourceChunkIndex": 21,
+      "label": "Volume 3 of 10",
+      "title": "Volume 3 of 10 · Section 21",
+      "indexHeadings": [],
+      "characterCount": 49982,
+      "sha256": "590bdea4d8345aa7c06e700cfd6bc353f14abad04182580ecdb2723bcf7a087f",
+      "file": "0073.json"
+    },
+    {
+      "id": "guidingsymptomso00heri3-022",
+      "sourceIdentifier": "guidingsymptomso00heri3",
+      "sourceIndex": 3,
+      "sourceChunkIndex": 22,
+      "label": "Volume 3 of 10",
+      "title": "Volume 3 of 10 · Section 22 — CEANOTHUS AMERICANUS",
+      "indexHeadings": [
+        "CEANOTHUS AMERICANUS",
+        "CEDRON"
+      ],
+      "characterCount": 49992,
+      "sha256": "4ba8b2b208d66fb34c84b77dd0dd63dcdef99aa5d0a67ae601210a77563ad7e4",
+      "file": "0074.json"
+    },
+    {
+      "id": "guidingsymptomso00heri3-023",
+      "sourceIdentifier": "guidingsymptomso00heri3",
+      "sourceIndex": 3,
+      "sourceChunkIndex": 23,
+      "label": "Volume 3 of 10",
+      "title": "Volume 3 of 10 · Section 23 — CEPA (ALLIUM)",
+      "indexHeadings": [
+        "CEPA (ALLIUM)"
+      ],
+      "characterCount": 49965,
+      "sha256": "9a8d184e5bfd09b77042f9436e4bcc87e48c2a4731a488f4b33c0467fa1f30cd",
+      "file": "0075.json"
+    },
+    {
+      "id": "guidingsymptomso00heri3-024",
+      "sourceIdentifier": "guidingsymptomso00heri3",
+      "sourceIndex": 3,
+      "sourceChunkIndex": 24,
+      "label": "Volume 3 of 10",
+      "title": "Volume 3 of 10 · Section 24 — CETRARIA ISLANDICA",
+      "indexHeadings": [
+        "CETRARIA ISLANDICA",
+        "CHAMOMILLA"
+      ],
+      "characterCount": 49970,
+      "sha256": "8cdf0d545d15e131c1069a123f8695bffd7d923fdba12d1e9a3c2777c419339a",
+      "file": "0076.json"
+    },
+    {
+      "id": "guidingsymptomso00heri3-025",
+      "sourceIdentifier": "guidingsymptomso00heri3",
+      "sourceIndex": 3,
+      "sourceChunkIndex": 25,
+      "label": "Volume 3 of 10",
+      "title": "Volume 3 of 10 · Section 25 — FVSj",
+      "indexHeadings": [
+        "FVSj",
+        "COUNTWAY LIBRARY OF MEDICINE",
+        "RARE BOOKS DEPARTMENT"
+      ],
+      "characterCount": 48219,
+      "sha256": "c8ed8311eb6f460196158cf5543ef51d2dbea964d438e841e45a52edf08cb86e",
+      "file": "0077.json"
+    },
+    {
+      "id": "guidingsymptomso00heri4-001",
+      "sourceIdentifier": "guidingsymptomso00heri4",
+      "sourceIndex": 4,
+      "sourceChunkIndex": 1,
+      "label": "Volume 4 of 10",
+      "title": "Volume 4 of 10 · Section 1 — COLUMBIAN NATURAL CLASP NO. lONi",
+      "indexHeadings": [
+        "COLUMBIAN NATURAL CLASP NO. lONi",
+        "THE",
+        "GUIDING SYMPTOMS",
+        "MATERIA MEDIOA",
+        "C. HERING, M. D",
+        "VOLUME lY",
+        "PHILADELPHIA",
+        "THE AMERICAN HOMCEOPATHIC PUBLISHING SOCIETY",
+        "PRESS.OF GLOBE PRINTING HOUSE, PHILADELPHIA",
+        "PREFACE",
+        "OF OUR",
+        "CHELIDONIUM MAJUS"
+      ],
+      "characterCount": 49990,
+      "sha256": "80cfe91955e06446c3476604d887b4dcacd7efc6b74914b373fcc07eec98b006",
+      "file": "0078.json"
+    },
+    {
+      "id": "guidingsymptomso00heri4-002",
+      "sourceIdentifier": "guidingsymptomso00heri4",
+      "sourceIndex": 4,
+      "sourceChunkIndex": 2,
+      "label": "Volume 4 of 10",
+      "title": "Volume 4 of 10 · Section 2 — CHENOPODIUM ANTHELMINTICUM",
+      "indexHeadings": [
+        "CHENOPODIUM ANTHELMINTICUM"
+      ],
+      "characterCount": 49011,
+      "sha256": "9ccacd3208e1f2079299b1b42074ee922940dde52040f56383628ab939193899",
+      "file": "0079.json"
+    },
+    {
+      "id": "guidingsymptomso00heri4-003",
+      "sourceIdentifier": "guidingsymptomso00heri4",
+      "sourceIndex": 4,
+      "sourceChunkIndex": 3,
+      "label": "Volume 4 of 10",
+      "title": "Volume 4 of 10 · Section 3 — CHENOPODII GLAUCI APHIS",
+      "indexHeadings": [
+        "CHENOPODII GLAUCI APHIS",
+        "CHENOPODIUM VULVARIA",
+        "CHIMOPHILA MACULATA.*",
+        "CHIMOPHILA UMBELLATA",
+        "CHININUM ARSENICOSUM"
+      ],
+      "characterCount": 49954,
+      "sha256": "ad137738fb059cf69dd29a71a5b7e51280558678eb954186e06ffda2d367c448",
+      "file": "0080.json"
+    },
+    {
+      "id": "guidingsymptomso00heri4-004",
+      "sourceIdentifier": "guidingsymptomso00heri4",
+      "sourceIndex": 4,
+      "sourceChunkIndex": 4,
+      "label": "Volume 4 of 10",
+      "title": "Volume 4 of 10 · Section 4 — CHININUM MURIATICUM",
+      "indexHeadings": [
+        "CHININUM MURIATICUM",
+        "CHININUM SULFURICUM",
+        "CHIONANTHUS VIRGINICA"
+      ],
+      "characterCount": 49916,
+      "sha256": "e6e4a956059734182d049613ca26d252a4cca79ebbb02b5cfc36eb7dee9ca71a",
+      "file": "0081.json"
+    },
+    {
+      "id": "guidingsymptomso00heri4-005",
+      "sourceIdentifier": "guidingsymptomso00heri4",
+      "sourceIndex": 4,
+      "sourceChunkIndex": 5,
+      "label": "Volume 4 of 10",
+      "title": "Volume 4 of 10 · Section 5 — CHLORALUM",
+      "indexHeadings": [
+        "CHLORALUM",
+        "CHLORUM"
+      ],
+      "characterCount": 49965,
+      "sha256": "425b1239022c80727cc84f616a18c452f3f64a1789137be5ea9467a4dde851a2",
+      "file": "0082.json"
+    },
+    {
+      "id": "guidingsymptomso00heri4-006",
+      "sourceIdentifier": "guidingsymptomso00heri4",
+      "sourceIndex": 4,
+      "sourceChunkIndex": 6,
+      "label": "Volume 4 of 10",
+      "title": "Volume 4 of 10 · Section 6 — CHROMICUM ACIDUM",
+      "indexHeadings": [
+        "CHROMICUM ACIDUM",
+        "Ill CHROMICUM ACIDUM",
+        "CICUTA VIROSA"
+      ],
+      "characterCount": 49994,
+      "sha256": "d14408489456cee8344b9581a6605f1b8d3098251101c04c33e5569e1f6b4fc8",
+      "file": "0083.json"
+    },
+    {
+      "id": "guidingsymptomso00heri4-007",
+      "sourceIdentifier": "guidingsymptomso00heri4",
+      "sourceIndex": 4,
+      "sourceChunkIndex": 7,
+      "label": "Volume 4 of 10",
+      "title": "Volume 4 of 10 · Section 7 — CIMEX LECTULARIUS",
+      "indexHeadings": [
+        "CIMEX LECTULARIUS",
+        "CINA"
+      ],
+      "characterCount": 49151,
+      "sha256": "0095d24f8e1c8ddb9033b326c758ac7aeedb181cadc7613e7963aa455cc33eb1",
+      "file": "0084.json"
+    },
+    {
+      "id": "guidingsymptomso00heri4-008",
+      "sourceIdentifier": "guidingsymptomso00heri4",
+      "sourceIndex": 4,
+      "sourceChunkIndex": 8,
+      "label": "Volume 4 of 10",
+      "title": "Volume 4 of 10 · Section 8 — CINCHONA BOLIVIANA",
+      "indexHeadings": [
+        "CINCHONA BOLIVIANA",
+        "CINCHONA OFFICINALIS (<'hma)"
+      ],
+      "characterCount": 49349,
+      "sha256": "bace7475261c173882f6aa923ac2b5bc66294bd7562d6426f456404e9dcdd2f5",
+      "file": "0085.json"
+    },
+    {
+      "id": "guidingsymptomso00heri4-009",
+      "sourceIdentifier": "guidingsymptomso00heri4",
+      "sourceIndex": 4,
+      "sourceChunkIndex": 9,
+      "label": "Volume 4 of 10",
+      "title": "Volume 4 of 10 · Section 9",
+      "indexHeadings": [],
+      "characterCount": 49953,
+      "sha256": "20608882b13c734189112fe83dcf3c7cc9c3342e65cc19328a815ff3bbd77f55",
+      "file": "0086.json"
+    },
+    {
+      "id": "guidingsymptomso00heri4-010",
+      "sourceIdentifier": "guidingsymptomso00heri4",
+      "sourceIndex": 4,
+      "sourceChunkIndex": 10,
+      "label": "Volume 4 of 10",
+      "title": "Volume 4 of 10 · Section 10 — CINNABARIS",
+      "indexHeadings": [
+        "CINNABARIS"
+      ],
+      "characterCount": 49933,
+      "sha256": "81a821c131d0327f9b2d278bbc534e46b905566d08b080f3cc44f9bb3b9c604b",
+      "file": "0087.json"
+    },
+    {
+      "id": "guidingsymptomso00heri4-011",
+      "sourceIdentifier": "guidingsymptomso00heri4",
+      "sourceIndex": 4,
+      "sourceChunkIndex": 11,
+      "label": "Volume 4 of 10",
+      "title": "Volume 4 of 10 · Section 11 — CINNAMOMUM",
+      "indexHeadings": [
+        "CINNAMOMUM",
+        "CISTUS CANADENSIS",
+        "CITRUS LIMONUM"
+      ],
+      "characterCount": 49755,
+      "sha256": "a97af1d2c6340efdb4c20d3a03f78d60ff179867bb721e20f5a801c244fa25c6",
+      "file": "0088.json"
+    },
+    {
+      "id": "guidingsymptomso00heri4-012",
+      "sourceIdentifier": "guidingsymptomso00heri4",
+      "sourceIndex": 4,
+      "sourceChunkIndex": 12,
+      "label": "Volume 4 of 10",
+      "title": "Volume 4 of 10 · Section 12 — CLEMATIS ERECTA",
+      "indexHeadings": [
+        "CLEMATIS ERECTA",
+        "ERYTHROXYLON COCA"
+      ],
+      "characterCount": 50001,
+      "sha256": "3cce03cc69f3aa4e2f03942f45c38a4b8d5fa0ca8384328d8b4542192e3e0663",
+      "file": "0089.json"
+    },
+    {
+      "id": "guidingsymptomso00heri4-013",
+      "sourceIdentifier": "guidingsymptomso00heri4",
+      "sourceIndex": 4,
+      "sourceChunkIndex": 13,
+      "label": "Volume 4 of 10",
+      "title": "Volume 4 of 10 · Section 13 — COCCINELLA SEPTEMPUNCTATA",
+      "indexHeadings": [
+        "COCCINELLA SEPTEMPUNCTATA",
+        "COCCULUS"
+      ],
+      "characterCount": 49893,
+      "sha256": "388621fe241837ee402f79b014f1bc39e403233ef1b49c46f31d0dd98d3e2207",
+      "file": "0090.json"
+    },
+    {
+      "id": "guidingsymptomso00heri4-014",
+      "sourceIdentifier": "guidingsymptomso00heri4",
+      "sourceIndex": 4,
+      "sourceChunkIndex": 14,
+      "label": "Volume 4 of 10",
+      "title": "Volume 4 of 10 · Section 14",
+      "indexHeadings": [],
+      "characterCount": 49896,
+      "sha256": "1a6e062eb53f164fe56a1065f3a2af7ce8a1ae811fd42ae4f8bced7c00d58d44",
+      "file": "0091.json"
+    },
+    {
+      "id": "guidingsymptomso00heri4-015",
+      "sourceIdentifier": "guidingsymptomso00heri4",
+      "sourceIndex": 4,
+      "sourceChunkIndex": 15,
+      "label": "Volume 4 of 10",
+      "title": "Volume 4 of 10 · Section 15 — COCCUS CACTI",
+      "indexHeadings": [
+        "COCCUS CACTI",
+        "COCHLEARIA",
+        "CODEINUM",
+        "COFFEA CRUDA"
+      ],
+      "characterCount": 49619,
+      "sha256": "f3e4271b5571f55e9fd6bc21094a74e93e13a3a1b5d17c4780591e0bfe9a4234",
+      "file": "0092.json"
+    },
+    {
+      "id": "guidingsymptomso00heri4-016",
+      "sourceIdentifier": "guidingsymptomso00heri4",
+      "sourceIndex": 4,
+      "sourceChunkIndex": 16,
+      "label": "Volume 4 of 10",
+      "title": "Volume 4 of 10 · Section 16 — COFFEA TOSTA",
+      "indexHeadings": [
+        "COFFEA TOSTA"
+      ],
+      "characterCount": 49482,
+      "sha256": "d2edf74379186080227757c985b1ee4df46765fbd74b0e3534f0f24f7ebddb59",
+      "file": "0093.json"
+    },
+    {
+      "id": "guidingsymptomso00heri4-017",
+      "sourceIdentifier": "guidingsymptomso00heri4",
+      "sourceIndex": 4,
+      "sourceChunkIndex": 17,
+      "label": "Volume 4 of 10",
+      "title": "Volume 4 of 10 · Section 17 — COLCHICUM AUTUMNALE",
+      "indexHeadings": [
+        "COLCHICUM AUTUMNALE"
+      ],
+      "characterCount": 49782,
+      "sha256": "a1c8e4189e4364fd51cb3062cdd8f1fbf0371d25f643173058568b3ca3dfb0d9",
+      "file": "0094.json"
+    },
+    {
+      "id": "guidingsymptomso00heri4-018",
+      "sourceIdentifier": "guidingsymptomso00heri4",
+      "sourceIndex": 4,
+      "sourceChunkIndex": 18,
+      "label": "Volume 4 of 10",
+      "title": "Volume 4 of 10 · Section 18 — COLLINSONIA CANADENSIS",
+      "indexHeadings": [
+        "COLLINSONIA CANADENSIS",
+        "COLOCYNTHIS"
+      ],
+      "characterCount": 49998,
+      "sha256": "6fe62cc49b14bdf206cd00d9503c47d30926df399abb81cb3d972ab1c5349f6e",
+      "file": "0095.json"
+    },
+    {
+      "id": "guidingsymptomso00heri4-019",
+      "sourceIdentifier": "guidingsymptomso00heri4",
+      "sourceIndex": 4,
+      "sourceChunkIndex": 19,
+      "label": "Volume 4 of 10",
+      "title": "Volume 4 of 10 · Section 19",
+      "indexHeadings": [],
+      "characterCount": 49940,
+      "sha256": "a281e41f4caa0e96882ff59e9a83399c9d569a88c7a0a16f27f0e59e4c831258",
+      "file": "0096.json"
+    },
+    {
+      "id": "guidingsymptomso00heri4-020",
+      "sourceIdentifier": "guidingsymptomso00heri4",
+      "sourceIndex": 4,
+      "sourceChunkIndex": 20,
+      "label": "Volume 4 of 10",
+      "title": "Volume 4 of 10 · Section 20 — COMOCLADIA DENTATA",
+      "indexHeadings": [
+        "COMOCLADIA DENTATA",
+        "CONIUM MACULATUM"
+      ],
+      "characterCount": 49951,
+      "sha256": "78b8fae35d0e0ddc2f9ab38053ef574ed6f83346e360cfe50cac085122de2946",
+      "file": "0097.json"
+    },
+    {
+      "id": "guidingsymptomso00heri4-021",
+      "sourceIdentifier": "guidingsymptomso00heri4",
+      "sourceIndex": 4,
+      "sourceChunkIndex": 21,
+      "label": "Volume 4 of 10",
+      "title": "Volume 4 of 10 · Section 21",
+      "indexHeadings": [],
+      "characterCount": 49890,
+      "sha256": "7dd8499f8e13762c1b4f50d884eb1d8d3a76ddb6950016f3b0702e1a574580e4",
+      "file": "0098.json"
+    },
+    {
+      "id": "guidingsymptomso00heri4-022",
+      "sourceIdentifier": "guidingsymptomso00heri4",
+      "sourceIndex": 4,
+      "sourceChunkIndex": 22,
+      "label": "Volume 4 of 10",
+      "title": "Volume 4 of 10 · Section 22 — COPAIVA",
+      "indexHeadings": [
+        "COPAIVA"
+      ],
+      "characterCount": 49869,
+      "sha256": "315c8d68abad934f995179cbbced62eda6c49ec32dd0409d784e960f00c3370f",
+      "file": "0099.json"
+    },
+    {
+      "id": "guidingsymptomso00heri4-023",
+      "sourceIdentifier": "guidingsymptomso00heri4",
+      "sourceIndex": 4,
+      "sourceChunkIndex": 23,
+      "label": "Volume 4 of 10",
+      "title": "Volume 4 of 10 · Section 23 — CORALLIUM RUBRUM",
+      "indexHeadings": [
+        "CORALLIUM RUBRUM",
+        "CORNUS CIRCINATA AND FLORIDA"
+      ],
+      "characterCount": 49920,
+      "sha256": "206f661fe4d4b189f1a3d3ac136c5d9cd31be2aec7f18d1568e18bbd81b3d90d",
+      "file": "0100.json"
+    },
+    {
+      "id": "guidingsymptomso00heri4-024",
+      "sourceIdentifier": "guidingsymptomso00heri4",
+      "sourceIndex": 4,
+      "sourceChunkIndex": 24,
+      "label": "Volume 4 of 10",
+      "title": "Volume 4 of 10 · Section 24 — CROCUS SATIVUS",
+      "indexHeadings": [
+        "CROCUS SATIVUS",
+        "CROTALUS HORRIDUS"
+      ],
+      "characterCount": 49963,
+      "sha256": "365ec1ec13d4c424cba0bf2d257e1f54ce1b4702c838182968d06818688cff72",
+      "file": "0101.json"
+    },
+    {
+      "id": "guidingsymptomso00heri4-025",
+      "sourceIdentifier": "guidingsymptomso00heri4",
+      "sourceIndex": 4,
+      "sourceChunkIndex": 25,
+      "label": "Volume 4 of 10",
+      "title": "Volume 4 of 10 · Section 25",
+      "indexHeadings": [],
+      "characterCount": 49614,
+      "sha256": "df8c19134f0469cb42eaa91f0f456767f9f3db38f475a4d9919a2e25e9a09c05",
+      "file": "0102.json"
+    },
+    {
+      "id": "guidingsymptomso00heri4-026",
+      "sourceIdentifier": "guidingsymptomso00heri4",
+      "sourceIndex": 4,
+      "sourceChunkIndex": 26,
+      "label": "Volume 4 of 10",
+      "title": "Volume 4 of 10 · Section 26 — CROTON TIGLIUM",
+      "indexHeadings": [
+        "CROTON TIGLIUM",
+        "CUBEBA"
+      ],
+      "characterCount": 48526,
+      "sha256": "413605732bd53eb016ef401809b4358909fcc7253275852bfe28e2f9ea673fa6",
+      "file": "0103.json"
+    },
+    {
+      "id": "guidingsymptomso00heri5-001",
+      "sourceIdentifier": "guidingsymptomso00heri5",
+      "sourceIndex": 5,
+      "sourceChunkIndex": 1,
+      "label": "Volume 5 of 10",
+      "title": "Volume 5 of 10 · Section 1 — THE",
+      "indexHeadings": [
+        "THE",
+        "GUIDING SYMPTOMS",
+        "OF OUR",
+        "MATERIA MEDIOA",
+        "C. HERING, M. D",
+        "VOLUME Y",
+        "PHILADELPHIA",
+        "PUBLISHED BY THE ESTATE OF CONSTANTINE HERING",
+        "PREFACE",
+        "C. MOHR",
+        "OP OUR",
+        "CUNDURANGO",
+        "CUPRUM ACETICUM",
+        "CUPRUM ARSENICOSUM"
+      ],
+      "characterCount": 49966,
+      "sha256": "fd9793642f4aedb9231bcab99520b2f1c72ae7bb332f8e655a20f91f7c9f9c6f",
+      "file": "0104.json"
+    },
+    {
+      "id": "guidingsymptomso00heri5-002",
+      "sourceIdentifier": "guidingsymptomso00heri5",
+      "sourceIndex": 5,
+      "sourceChunkIndex": 2,
+      "label": "Volume 5 of 10",
+      "title": "Volume 5 of 10 · Section 2 — CUPRUM METALLICUM",
+      "indexHeadings": [
+        "CUPRUM METALLICUM",
+        "CUPRUM METALLICUM. SS"
+      ],
+      "characterCount": 49648,
+      "sha256": "ad6d639ab72e496c633135eec5a97fed3166df522fc5f736f8318b9027d9c053",
+      "file": "0105.json"
+    },
+    {
+      "id": "guidingsymptomso00heri5-003",
+      "sourceIdentifier": "guidingsymptomso00heri5",
+      "sourceIndex": 5,
+      "sourceChunkIndex": 3,
+      "label": "Volume 5 of 10",
+      "title": "Volume 5 of 10 · Section 3 — CUPRUM SULFURICUM",
+      "indexHeadings": [
+        "CUPRUM SULFURICUM",
+        "CURARA"
+      ],
+      "characterCount": 49951,
+      "sha256": "63042041a7274c98b18fa8d53688768c07070b8a221c62de242f7c47bbc0a1d2",
+      "file": "0106.json"
+    },
+    {
+      "id": "guidingsymptomso00heri5-004",
+      "sourceIdentifier": "guidingsymptomso00heri5",
+      "sourceIndex": 5,
+      "sourceChunkIndex": 4,
+      "label": "Volume 5 of 10",
+      "title": "Volume 5 of 10 · Section 4 — CYCLAMEN EUROP>EUM",
+      "indexHeadings": [
+        "CYCLAMEN EUROP>EUM",
+        "CYPRIPEDIUM",
+        "DAPHNE ODORA"
+      ],
+      "characterCount": 49998,
+      "sha256": "936a7ea9b6ce1c14aea5f5650acd137dea9b4094e002159c1be610096ef4d443",
+      "file": "0107.json"
+    },
+    {
+      "id": "guidingsymptomso00heri5-005",
+      "sourceIdentifier": "guidingsymptomso00heri5",
+      "sourceIndex": 5,
+      "sourceChunkIndex": 5,
+      "label": "Volume 5 of 10",
+      "title": "Volume 5 of 10 · Section 5 — DIADEMA ARANEA",
+      "indexHeadings": [
+        "DIADEMA ARANEA",
+        "DIGITALIS PURPUREA"
+      ],
+      "characterCount": 49606,
+      "sha256": "3c2163bb95c7c00d649ee936cc82fbe96847599d0aada8e7e62d7867dc9348e4",
+      "file": "0108.json"
+    },
+    {
+      "id": "guidingsymptomso00heri5-006",
+      "sourceIdentifier": "guidingsymptomso00heri5",
+      "sourceIndex": 5,
+      "sourceChunkIndex": 6,
+      "label": "Volume 5 of 10",
+      "title": "Volume 5 of 10 · Section 6 — Ill DIGITALIS PURPUREA",
+      "indexHeadings": [
+        "Ill DIGITALIS PURPUREA",
+        "DIGITALIS PURPUREA. llg"
+      ],
+      "characterCount": 49518,
+      "sha256": "df9d963a60c9e104649d0efba3dfb5c9912d7d417aa8b2fdd5011b10fa7de6f9",
+      "file": "0109.json"
+    },
+    {
+      "id": "guidingsymptomso00heri5-007",
+      "sourceIdentifier": "guidingsymptomso00heri5",
+      "sourceIndex": 5,
+      "sourceChunkIndex": 7,
+      "label": "Volume 5 of 10",
+      "title": "Volume 5 of 10 · Section 7 — DIOSCOREA VILLOSA",
+      "indexHeadings": [
+        "DIOSCOREA VILLOSA"
+      ],
+      "characterCount": 49577,
+      "sha256": "f63340ca5677f2afcecf1de6ae59323eff8a413993d140768da0bee4f6833e3f",
+      "file": "0110.json"
+    },
+    {
+      "id": "guidingsymptomso00heri5-008",
+      "sourceIdentifier": "guidingsymptomso00heri5",
+      "sourceIndex": 5,
+      "sourceChunkIndex": 8,
+      "label": "Volume 5 of 10",
+      "title": "Volume 5 of 10 · Section 8 — DOUCHOS PRURIENS",
+      "indexHeadings": [
+        "DOUCHOS PRURIENS",
+        "DORYPHORA DECEMLINEATA",
+        "DROSERA ROTUNDIFOLIA"
+      ],
+      "characterCount": 49881,
+      "sha256": "4fbe6c2a0271138291647f1dd3aae62ac423ba899c293e9fd3c49aba21a00f70",
+      "file": "0111.json"
+    },
+    {
+      "id": "guidingsymptomso00heri5-009",
+      "sourceIdentifier": "guidingsymptomso00heri5",
+      "sourceIndex": 5,
+      "sourceChunkIndex": 9,
+      "label": "Volume 5 of 10",
+      "title": "Volume 5 of 10 · Section 9 — DULCAMARA",
+      "indexHeadings": [
+        "DULCAMARA"
+      ],
+      "characterCount": 49571,
+      "sha256": "47525e85e55cfedce3d76a456ea25f233ade124c89c747755113958c45131495",
+      "file": "0112.json"
+    },
+    {
+      "id": "guidingsymptomso00heri5-010",
+      "sourceIdentifier": "guidingsymptomso00heri5",
+      "sourceIndex": 5,
+      "sourceChunkIndex": 10,
+      "label": "Volume 5 of 10",
+      "title": "Volume 5 of 10 · Section 10 — ELAPS CORALLINUS",
+      "indexHeadings": [
+        "ELAPS CORALLINUS",
+        "ELATERIUM"
+      ],
+      "characterCount": 49769,
+      "sha256": "2edf5ee2fca490e8dc56573b7101e3fac71303f6efa6461eaa8fa6a2915caa88",
+      "file": "0113.json"
+    },
+    {
+      "id": "guidingsymptomso00heri5-011",
+      "sourceIdentifier": "guidingsymptomso00heri5",
+      "sourceIndex": 5,
+      "sourceChunkIndex": 11,
+      "label": "Volume 5 of 10",
+      "title": "Volume 5 of 10 · Section 11 — EQUISETUM HYEMALE",
+      "indexHeadings": [
+        "EQUISETUM HYEMALE",
+        "ERIGERON",
+        "ERYNGIUM AQUATICUM",
+        "EUCALYPTUS GLOBULUS",
+        "EUGENIA JAMBOS",
+        "EUPATORIUM PERFOLIATUM"
+      ],
+      "characterCount": 49947,
+      "sha256": "b1cb46611ef3381cd1b80545ee050ae64cd3c8c3d6020f04b6060f416089a7c7",
+      "file": "0114.json"
+    },
+    {
+      "id": "guidingsymptomso00heri5-012",
+      "sourceIdentifier": "guidingsymptomso00heri5",
+      "sourceIndex": 5,
+      "sourceChunkIndex": 12,
+      "label": "Volume 5 of 10",
+      "title": "Volume 5 of 10 · Section 12 — EUPATOREUM PURPUREUM",
+      "indexHeadings": [
+        "EUPATOREUM PURPUREUM"
+      ],
+      "characterCount": 49894,
+      "sha256": "a95c01a739527723dbb36340d03038df5499700cdd6a35f60abee0b746a3a976",
+      "file": "0115.json"
+    },
+    {
+      "id": "guidingsymptomso00heri5-013",
+      "sourceIdentifier": "guidingsymptomso00heri5",
+      "sourceIndex": 5,
+      "sourceChunkIndex": 13,
+      "label": "Volume 5 of 10",
+      "title": "Volume 5 of 10 · Section 13 — EUPHORBIUIW",
+      "indexHeadings": [
+        "EUPHORBIUIW",
+        "EUPHRASIA"
+      ],
+      "characterCount": 49941,
+      "sha256": "0ab2af977510a0ab20aa71c0e2cc45dff99fd576c89700707f927f413144acf2",
+      "file": "0116.json"
+    },
+    {
+      "id": "guidingsymptomso00heri5-014",
+      "sourceIdentifier": "guidingsymptomso00heri5",
+      "sourceIndex": 5,
+      "sourceChunkIndex": 14,
+      "label": "Volume 5 of 10",
+      "title": "Volume 5 of 10 · Section 14 — FERRUM",
+      "indexHeadings": [
+        "FERRUM"
+      ],
+      "characterCount": 49889,
+      "sha256": "149f28ebe4609ac4b22e602aa32de6e4aec07bf983ca7315dbc95f8a7d17c53f",
+      "file": "0117.json"
+    },
+    {
+      "id": "guidingsymptomso00heri5-015",
+      "sourceIdentifier": "guidingsymptomso00heri5",
+      "sourceIndex": 5,
+      "sourceChunkIndex": 15,
+      "label": "Volume 5 of 10",
+      "title": "Volume 5 of 10 · Section 15 — FERRUM",
+      "indexHeadings": [
+        "FERRUM",
+        "FERRUM lODATUM"
+      ],
+      "characterCount": 49998,
+      "sha256": "0118c0387c66bb16ce95ce9cd7303a62cb0804319564e951d17f46e02df02e2d",
+      "file": "0118.json"
+    },
+    {
+      "id": "guidingsymptomso00heri5-016",
+      "sourceIdentifier": "guidingsymptomso00heri5",
+      "sourceIndex": 5,
+      "sourceChunkIndex": 16,
+      "label": "Volume 5 of 10",
+      "title": "Volume 5 of 10 · Section 16 — FERRUM MURIATICUM",
+      "indexHeadings": [
+        "FERRUM MURIATICUM",
+        "FERRUM PHOSPHORICUM",
+        "FERRUM SULPHURICUM"
+      ],
+      "characterCount": 49808,
+      "sha256": "74a962d3940fdd2e793d83a93fd69fd236df7fd61602e1311b223b10d88661e5",
+      "file": "0119.json"
+    },
+    {
+      "id": "guidingsymptomso00heri5-017",
+      "sourceIdentifier": "guidingsymptomso00heri5",
+      "sourceIndex": 5,
+      "sourceChunkIndex": 17,
+      "label": "Volume 5 of 10",
+      "title": "Volume 5 of 10 · Section 17 — FILIX MAS",
+      "indexHeadings": [
+        "FILIX MAS",
+        "FLUORICUM ACIDUM",
+        "FORMICA RUFA"
+      ],
+      "characterCount": 49103,
+      "sha256": "420e07c3dc10dc95d1d63e186228537b2df3261079694cf7a186120f386432c3",
+      "file": "0120.json"
+    },
+    {
+      "id": "guidingsymptomso00heri5-018",
+      "sourceIdentifier": "guidingsymptomso00heri5",
+      "sourceIndex": 5,
+      "sourceChunkIndex": 18,
+      "label": "Volume 5 of 10",
+      "title": "Volume 5 of 10 · Section 18 — GELSEMIUM",
+      "indexHeadings": [
+        "GELSEMIUM"
+      ],
+      "characterCount": 48416,
+      "sha256": "863d9acdcd52301a775c42f0f46ce3b50e41564316251bfce1e98e88a2534fb3",
+      "file": "0121.json"
+    },
+    {
+      "id": "guidingsymptomso00heri5-019",
+      "sourceIdentifier": "guidingsymptomso00heri5",
+      "sourceIndex": 5,
+      "sourceChunkIndex": 19,
+      "label": "Volume 5 of 10",
+      "title": "Volume 5 of 10 · Section 19",
+      "indexHeadings": [],
+      "characterCount": 49981,
+      "sha256": "439424891e8aca36461b028423ec55c3f80e736349bb98a114e2a284b13fa054",
+      "file": "0122.json"
+    },
+    {
+      "id": "guidingsymptomso00heri5-020",
+      "sourceIdentifier": "guidingsymptomso00heri5",
+      "sourceIndex": 5,
+      "sourceChunkIndex": 20,
+      "label": "Volume 5 of 10",
+      "title": "Volume 5 of 10 · Section 20",
+      "indexHeadings": [],
+      "characterCount": 49881,
+      "sha256": "6ccb357e7dc3ec6bba56f2e32b6901845cbe08a350ee3cfef9c4040944a337ae",
+      "file": "0123.json"
+    },
+    {
+      "id": "guidingsymptomso00heri5-021",
+      "sourceIdentifier": "guidingsymptomso00heri5",
+      "sourceIndex": 5,
+      "sourceChunkIndex": 21,
+      "label": "Volume 5 of 10",
+      "title": "Volume 5 of 10 · Section 21 — GLONOINUM",
+      "indexHeadings": [
+        "GLONOINUM"
+      ],
+      "characterCount": 49932,
+      "sha256": "18d603e958cb5a2d38598826185a82720af11b9a6625d1da31a6ff9c469323aa",
+      "file": "0124.json"
+    },
+    {
+      "id": "guidingsymptomso00heri5-022",
+      "sourceIdentifier": "guidingsymptomso00heri5",
+      "sourceIndex": 5,
+      "sourceChunkIndex": 22,
+      "label": "Volume 5 of 10",
+      "title": "Volume 5 of 10 · Section 22 — GNAPHALIUM POLYCEPHALUM",
+      "indexHeadings": [
+        "GNAPHALIUM POLYCEPHALUM",
+        "GOSSYPIUM HERBACEUM",
+        "GRAPHITES"
+      ],
+      "characterCount": 49965,
+      "sha256": "ca2ce653c03f3a938f81e88ad9a48e3d23533565c5538d2654abe24528bf673c",
+      "file": "0125.json"
+    },
+    {
+      "id": "guidingsymptomso00heri5-023",
+      "sourceIdentifier": "guidingsymptomso00heri5",
+      "sourceIndex": 5,
+      "sourceChunkIndex": 23,
+      "label": "Volume 5 of 10",
+      "title": "Volume 5 of 10 · Section 23",
+      "indexHeadings": [],
+      "characterCount": 49813,
+      "sha256": "e056ec6b72c44cdc789c2f10f7d3fe4388698140fce75ae520abad10ccfdcfe0",
+      "file": "0126.json"
+    },
+    {
+      "id": "guidingsymptomso00heri5-024",
+      "sourceIdentifier": "guidingsymptomso00heri5",
+      "sourceIndex": 5,
+      "sourceChunkIndex": 24,
+      "label": "Volume 5 of 10",
+      "title": "Volume 5 of 10 · Section 24 — GRATIOLA OFFICINALIS",
+      "indexHeadings": [
+        "GRATIOLA OFFICINALIS"
+      ],
+      "characterCount": 49915,
+      "sha256": "326444d5ae3847d1e6c6ab82a777d86381b051a9d4c2b5a8b43d2df1f8ca7989",
+      "file": "0127.json"
+    },
+    {
+      "id": "guidingsymptomso00heri5-025",
+      "sourceIdentifier": "guidingsymptomso00heri5",
+      "sourceIndex": 5,
+      "sourceChunkIndex": 25,
+      "label": "Volume 5 of 10",
+      "title": "Volume 5 of 10 · Section 25 — GRINDELIA ROBUSTA",
+      "indexHeadings": [
+        "GRINDELIA ROBUSTA",
+        "GUAIACUM",
+        "GUARANA",
+        "GUAREA TRICHILIOIDES",
+        "GYMNOCLADUS CANADENSIS",
+        "HAMAMELIS VIRGINICA"
+      ],
+      "characterCount": 47860,
+      "sha256": "ae26a5344aec459408be847d1927f774e4c0652a154254768fb3827e5bfc483f",
+      "file": "0128.json"
+    },
+    {
+      "id": "guidingsymptomso00heri5-026",
+      "sourceIdentifier": "guidingsymptomso00heri5",
+      "sourceIndex": 5,
+      "sourceChunkIndex": 26,
+      "label": "Volume 5 of 10",
+      "title": "Volume 5 of 10 · Section 26 — HEKLA LAVA",
+      "indexHeadings": [
+        "HEKLA LAVA"
+      ],
+      "characterCount": 48533,
+      "sha256": "1e925cc85d64c0c794005113bdb6654f5ecd7db7af372c8a34e1256e9521950a",
+      "file": "0129.json"
+    },
+    {
+      "id": "guidingsymptomso00heri5-027",
+      "sourceIdentifier": "guidingsymptomso00heri5",
+      "sourceIndex": 5,
+      "sourceChunkIndex": 27,
+      "label": "Volume 5 of 10",
+      "title": "Volume 5 of 10 · Section 27 — HELLEBORUS",
+      "indexHeadings": [
+        "HELLEBORUS",
+        "mi HELLEBORUS",
+        "HELONIAS DIOICA"
+      ],
+      "characterCount": 49530,
+      "sha256": "54c7a05a931f82061d7d8e0faeb4d846f445325f5ae7da62c4136f0845d178e7",
+      "file": "0130.json"
+    },
+    {
+      "id": "guidingsymptomso00heri5-028",
+      "sourceIdentifier": "guidingsymptomso00heri5",
+      "sourceIndex": 5,
+      "sourceChunkIndex": 28,
+      "label": "Volume 5 of 10",
+      "title": "Volume 5 of 10 · Section 28",
+      "indexHeadings": [],
+      "characterCount": 19345,
+      "sha256": "21ba232deed29d345e042eb81e3cb0ef72cbf3a2f5ec77fbe7e81a6df6f94c30",
+      "file": "0131.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-001",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 1,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 1 — COLUMBIAN NATURAL CLASP NO. ijh",
+      "indexHeadings": [
+        "COLUMBIAN NATURAL CLASP NO. ijh",
+        "THE",
+        "GUIDING SYMPTOMS",
+        "OF OUR",
+        "C. HERING, M. n",
+        "VOLUME VI",
+        "PHILADELPHIA",
+        "PUBLISHED BY THE ESTATE OF CONSTANTTNE HERING",
+        "PREFACE",
+        "PREFACE. iv",
+        "HEPAR SULPH. CALC"
+      ],
+      "characterCount": 49980,
+      "sha256": "135777ce7349f32d5417027a0432173f33f04239853ef858d12b393686ae1617",
+      "file": "0132.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-002",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 2,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 2 — HEPAP. SULPH. CALC",
+      "indexHeadings": [
+        "HEPAP. SULPH. CALC"
+      ],
+      "characterCount": 50001,
+      "sha256": "27ae0fba09fe75f3ba6dbbd3c22405b33f4d5b145fbd14918bd585ba32f94ecc",
+      "file": "0133.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-003",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 3,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 3 — HIPPOMANES",
+      "indexHeadings": [
+        "HIPPOMANES",
+        "HIPPOZiENIN",
+        "HIPPOZ^NIN",
+        "HYDRASTIS CANADENSIS"
+      ],
+      "characterCount": 49940,
+      "sha256": "657aaedbf61ad9530996547d885c7238ee30221ded0b1b61d9c5a94d883ebadd",
+      "file": "0134.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-004",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 4,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 4",
+      "indexHeadings": [],
+      "characterCount": 49923,
+      "sha256": "facb63b054e729eb7a79603daa9e63ad66984baa94f6512faac870dd4b380444",
+      "file": "0135.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-005",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 5,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 5 — HYDROCOTYLE ASIATICA",
+      "indexHeadings": [
+        "HYDROCOTYLE ASIATICA",
+        "HYDROCYANIC ACID",
+        "HYOSCYAMUS NIGER"
+      ],
+      "characterCount": 49783,
+      "sha256": "24af84ec9d246c3c9dc35442888957b470e24d94aca5abf546923bdedea4b4cf",
+      "file": "0136.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-006",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 6,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 6 — HYOSCYAMUS NIGER",
+      "indexHeadings": [
+        "HYOSCYAMUS NIGER",
+        "Ill HYOSCYAMUS NIGER",
+        "HYPERICUM PERFORATUM"
+      ],
+      "characterCount": 48812,
+      "sha256": "f04f7402b168ca2c4ab2cb723cfc05399afb635c14766f45c18045add470c8f6",
+      "file": "0137.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-007",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 7,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 7 — IBERIS AMARA",
+      "indexHeadings": [
+        "IBERIS AMARA",
+        "ICTODES F(ETIDA"
+      ],
+      "characterCount": 49867,
+      "sha256": "d154e99aec52729fb7e482f697a91129b7bc16bda6bbb8a9eec32676cf17387a",
+      "file": "0138.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-008",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 8,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 8 — IGNATIA",
+      "indexHeadings": [
+        "IGNATIA"
+      ],
+      "characterCount": 49978,
+      "sha256": "c655b17b2bfdc3142c3adb4d20de1372340c4d573eec393d93350694e85fe1d9",
+      "file": "0139.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-009",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 9,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 9",
+      "indexHeadings": [],
+      "characterCount": 49901,
+      "sha256": "63decf41886571e7966067cd9d13d1aaaf01d1c1576e2d8bbf1f99a4be012194",
+      "file": "0140.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-010",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 10,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 10 — ILLICIUM ANISATUM",
+      "indexHeadings": [
+        "ILLICIUM ANISATUM",
+        "INDIGO",
+        "INDIUM METALLICUM",
+        "INULA"
+      ],
+      "characterCount": 49675,
+      "sha256": "cd9d2b98b5138060f1b569c2f7f25bdfa71ed4ebf0e48a991f8d14436208cd16",
+      "file": "0141.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-011",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 11,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 11 — lODOFORMUM",
+      "indexHeadings": [
+        "lODOFORMUM",
+        "lODUM"
+      ],
+      "characterCount": 49938,
+      "sha256": "0ce1355390cff45714e600391246262ca79cb29c6057cfc4343650867c033aba",
+      "file": "0142.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-012",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 12,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 12 — IPECACUANHA",
+      "indexHeadings": [
+        "IPECACUANHA"
+      ],
+      "characterCount": 49926,
+      "sha256": "509f8611d969001bddf89b6ef63859eb7d7038d65517954656d79e68b68cb051",
+      "file": "0143.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-013",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 13,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 13",
+      "indexHeadings": [],
+      "characterCount": 49911,
+      "sha256": "79e65f61db8a1a3685dedb649c55ce1180bf0071e64073962b110a9700446867",
+      "file": "0144.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-014",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 14,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 14 — IPOMCEA",
+      "indexHeadings": [
+        "IPOMCEA",
+        "IRIDIUM",
+        "IRIS VERSICOLOR"
+      ],
+      "characterCount": 50001,
+      "sha256": "244c45eb6723bd88dde3982f009b0009e92b5658a38fd5141e15995511931c14",
+      "file": "0145.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-015",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 15,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 15 — JABORANDI",
+      "indexHeadings": [
+        "JABORANDI",
+        "JACARANDA CAROBA",
+        "JALAPA",
+        "JAMBOS EUGENIA"
+      ],
+      "characterCount": 49933,
+      "sha256": "e4022f350b10209f88eb07db822deebb05e9379ded477045913620e4f5448635",
+      "file": "0146.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-016",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 16,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 16 — JATROPHA",
+      "indexHeadings": [
+        "JATROPHA",
+        "JUGLANS CINEREA",
+        "KALI ARSENICOSUM",
+        "KALI BICHROMICUM"
+      ],
+      "characterCount": 49799,
+      "sha256": "b95245eabd6e4696c417d92fe8a0e0bdc6fa2963e030d3bf3f90f0ee37ccb3be",
+      "file": "0147.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-017",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 17,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 17",
+      "indexHeadings": [],
+      "characterCount": 49752,
+      "sha256": "ebc86e9eaf278951ee84336e753860814d4bb59b3a3331550646df50c38d2373",
+      "file": "0148.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-018",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 18,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 18",
+      "indexHeadings": [],
+      "characterCount": 49999,
+      "sha256": "48e5fd01e21ae524487f28041f771dedad362f1dbde24182572b2291238bfcda",
+      "file": "0149.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-019",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 19,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 19 — KALI BROMATUM",
+      "indexHeadings": [
+        "KALI BROMATUM"
+      ],
+      "characterCount": 49819,
+      "sha256": "beb0d002b1e9a281ec372e89e0100965cf593e136a854c44a7bf973635c59617",
+      "file": "0150.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-020",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 20,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 20 — KALI CARBONICUM",
+      "indexHeadings": [
+        "KALI CARBONICUM"
+      ],
+      "characterCount": 49990,
+      "sha256": "5dd45322132fd0b1573f7dca7fad8ee3b2366237ede773bf10ef681b7c451442",
+      "file": "0151.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-021",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 21,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 21",
+      "indexHeadings": [],
+      "characterCount": 48870,
+      "sha256": "cb477ade1a66e0c6501c1b71dcc3d72f0925c1e5ce53b0eb691c8307516e3a3f",
+      "file": "0152.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-022",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 22,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 22 — KALI CYANATUM",
+      "indexHeadings": [
+        "KALI CYANATUM",
+        "KALI FERROCYANATUM",
+        "KALI lODATUM (HYDRIODICUM.)"
+      ],
+      "characterCount": 49910,
+      "sha256": "9861e24394d5f9eb9e9d0a64410dba0b4cc328e681a84bc93740e0bada66ba69",
+      "file": "0153.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-023",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 23,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 23 — KALI MURIATICUM",
+      "indexHeadings": [
+        "KALI MURIATICUM"
+      ],
+      "characterCount": 49825,
+      "sha256": "50a8bc7a0dd106ad7479e1203b72a2d702697c0eec83a73c24fa22801c46f989",
+      "file": "0154.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-024",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 24,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 24 — KALI NITRICUM",
+      "indexHeadings": [
+        "KALI NITRICUM",
+        "KALI PERMANGANICUM",
+        "KALI PHOSPHORICUM",
+        "KALI SULPHURICUM"
+      ],
+      "characterCount": 49807,
+      "sha256": "1d388c3534669f9203340c6a86006e5006e47ffb331e934d6918f42cdcf58669",
+      "file": "0155.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-025",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 25,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 25 — KAOLIN",
+      "indexHeadings": [
+        "KAOLIN",
+        "KALMIA LATIFOLIA",
+        "KOBALTUM"
+      ],
+      "characterCount": 49755,
+      "sha256": "017c890276f75fa707e58d799103f02fcc88dfcf69349c5555cbce59cff01b68",
+      "file": "0156.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-026",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 26,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 26 — KREOSOTUM",
+      "indexHeadings": [
+        "KREOSOTUM"
+      ],
+      "characterCount": 49963,
+      "sha256": "18c6cf8a162c63a164e6c68c34e27c0f6c7de3832d2b723b3924b543d50142df",
+      "file": "0157.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-027",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 27,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 27 — LAC CANINUM",
+      "indexHeadings": [
+        "LAC CANINUM",
+        "^l'' LAC CANINUM"
+      ],
+      "characterCount": 49965,
+      "sha256": "f1d7491a1d7b31f523406af53e0a310448a271fcabf35adccde7b66a8c0f2714",
+      "file": "0158.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-028",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 28,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 28 — ^^^' LAC CANINUM",
+      "indexHeadings": [
+        "^^^' LAC CANINUM",
+        "LAC VACCINUM DEFLORATUM"
+      ],
+      "characterCount": 49910,
+      "sha256": "a1004832fc5e0b585c65829be021479a86712d895f4630f47d6cbe695508ef51",
+      "file": "0159.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-029",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 29,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 29 — ^^^ LAC DEFLORATUM",
+      "indexHeadings": [
+        "^^^ LAC DEFLORATUM",
+        "LACHESIS"
+      ],
+      "characterCount": 49859,
+      "sha256": "e5ed4a7b8ea87035b000a9e4875788c6e4ad3fefff1ca571fd7313eac69cbdf6",
+      "file": "0160.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-030",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 30,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 30 — ^^^ LACHESIS",
+      "indexHeadings": [
+        "^^^ LACHESIS"
+      ],
+      "characterCount": 49876,
+      "sha256": "993de188a31d80ffe4eec6cc8afbf4190648d4c93a13359acfd30df96d52d6d7",
+      "file": "0161.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-031",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 31,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 31 — LACHESIS",
+      "indexHeadings": [
+        "LACHESIS",
+        "GOl LACHESIS"
+      ],
+      "characterCount": 49954,
+      "sha256": "d89dad74119e7cdb142105f05f5c1bda85ed07e389cd6cff4334acb536c375c9",
+      "file": "0162.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-032",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 32,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 32 — ^^^ LACHESIS",
+      "indexHeadings": [
+        "^^^ LACHESIS"
+      ],
+      "characterCount": 49993,
+      "sha256": "4ca0ad19845551e2eb0b160b3a45c6124d7fef4f9a171cd15915647e7cd097df",
+      "file": "0163.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-033",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 33,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 33",
+      "indexHeadings": [],
+      "characterCount": 49696,
+      "sha256": "96fd6b3d4910a22f8220430016e3bf750191468308aa274c389700bec1cd342f",
+      "file": "0164.json"
+    },
+    {
+      "id": "guidingsymptomso00heri6-034",
+      "sourceIdentifier": "guidingsymptomso00heri6",
+      "sourceIndex": 6,
+      "sourceChunkIndex": 34,
+      "label": "Volume 6 of 10",
+      "title": "Volume 6 of 10 · Section 34",
+      "indexHeadings": [],
+      "characterCount": 29255,
+      "sha256": "ba824079945e6d6ed94e579a89ec82168d3cbb50c3d3e4e12b5612986e3eb290",
+      "file": "0165.json"
+    },
+    {
+      "id": "guidingsymptomso00heri7-001",
+      "sourceIdentifier": "guidingsymptomso00heri7",
+      "sourceIndex": 7,
+      "sourceChunkIndex": 1,
+      "label": "Volume 7 of 10",
+      "title": "Volume 7 of 10 · Section 1 — THE UNITED STATES FHVELCFE CO. SPRINGFIELD MASS",
+      "indexHeadings": [
+        "THE UNITED STATES FHVELCFE CO. SPRINGFIELD MASS",
+        "THE",
+        "GUIDING SYMPTOMS",
+        "OF OUR",
+        "C. HERING, M. D",
+        "VOLUME YII",
+        "PHILADELPHIA",
+        "PUBLISHED BY THE ESTATE OF CONSTANTINE HEEING",
+        "LACHNANTHES TINCTORIA",
+        "LACTIC ACID",
+        "U LACTIC ACID",
+        "LACTUCA VIROSA"
+      ],
+      "characterCount": 49740,
+      "sha256": "d92e954b0d29dbb0fdc98ba9c34940de314fbf24f1c46753ede07e3b78f7182f",
+      "file": "0166.json"
+    },
+    {
+      "id": "guidingsymptomso00heri7-002",
+      "sourceIdentifier": "guidingsymptomso00heri7",
+      "sourceIndex": 7,
+      "sourceChunkIndex": 2,
+      "label": "Volume 7 of 10",
+      "title": "Volume 7 of 10 · Section 2 — LAPIS ALBUS",
+      "indexHeadings": [
+        "LAPIS ALBUS",
+        "LAUROCERASUS",
+        "LEDUM PALUSTRE"
+      ],
+      "characterCount": 49943,
+      "sha256": "27656b03272d512998af63c8cadf34e97c6a89df717b5420cf50a29a67492a27",
+      "file": "0167.json"
+    },
+    {
+      "id": "guidingsymptomso00heri7-003",
+      "sourceIdentifier": "guidingsymptomso00heri7",
+      "sourceIndex": 7,
+      "sourceChunkIndex": 3,
+      "label": "Volume 7 of 10",
+      "title": "Volume 7 of 10 · Section 3 — LEPTANDRA",
+      "indexHeadings": [
+        "LEPTANDRA",
+        "VOL. VII. — i",
+        "LILIUM TIGRINUM"
+      ],
+      "characterCount": 49669,
+      "sha256": "7e8455df3e71919376aad455cbcf6c6bd6e0419df27341433647d456084dcda7",
+      "file": "0168.json"
+    },
+    {
+      "id": "guidingsymptomso00heri7-004",
+      "sourceIdentifier": "guidingsymptomso00heri7",
+      "sourceIndex": 7,
+      "sourceChunkIndex": 4,
+      "label": "Volume 7 of 10",
+      "title": "Volume 7 of 10 · Section 4 — LITHIUM CARBONICUM",
+      "indexHeadings": [
+        "LITHIUM CARBONICUM",
+        "LOBELIA INFLATA"
+      ],
+      "characterCount": 49919,
+      "sha256": "677a5d3b41f9081d42b8c799fd9d8ad6917b4ff1c824afd1f867d7308092fcf9",
+      "file": "0169.json"
+    },
+    {
+      "id": "guidingsymptomso00heri7-005",
+      "sourceIdentifier": "guidingsymptomso00heri7",
+      "sourceIndex": 7,
+      "sourceChunkIndex": 5,
+      "label": "Volume 7 of 10",
+      "title": "Volume 7 of 10 · Section 5 — gy LOBELIA INFLATA",
+      "indexHeadings": [
+        "gy LOBELIA INFLATA",
+        "LYCOPODIUM"
+      ],
+      "characterCount": 49945,
+      "sha256": "5d643d151d3ccded2d13e58dacac85708c4f4a152854d86abe0147eb08445727",
+      "file": "0170.json"
+    },
+    {
+      "id": "guidingsymptomso00heri7-006",
+      "sourceIdentifier": "guidingsymptomso00heri7",
+      "sourceIndex": 7,
+      "sourceChunkIndex": 6,
+      "label": "Volume 7 of 10",
+      "title": "Volume 7 of 10 · Section 6 — Ill LYCOPODIUM",
+      "indexHeadings": [
+        "Ill LYCOPODIUM"
+      ],
+      "characterCount": 49996,
+      "sha256": "b7978b87e49ac197f739e00abc537948cb2b9cdc2a9d2882890f6368797300f0",
+      "file": "0171.json"
+    },
+    {
+      "id": "guidingsymptomso00heri7-007",
+      "sourceIdentifier": "guidingsymptomso00heri7",
+      "sourceIndex": 7,
+      "sourceChunkIndex": 7,
+      "label": "Volume 7 of 10",
+      "title": "Volume 7 of 10 · Section 7",
+      "indexHeadings": [],
+      "characterCount": 48610,
+      "sha256": "5a3bc91c2c085c2b9b4f3accb2270ac69572e213a7942c469d75dfd7494a2cae",
+      "file": "0172.json"
+    },
+    {
+      "id": "guidingsymptomso00heri7-008",
+      "sourceIdentifier": "guidingsymptomso00heri7",
+      "sourceIndex": 7,
+      "sourceChunkIndex": 8,
+      "label": "Volume 7 of 10",
+      "title": "Volume 7 of 10 · Section 8 — LYCOPUS VIRGINICUS",
+      "indexHeadings": [
+        "LYCOPUS VIRGINICUS"
+      ],
+      "characterCount": 48464,
+      "sha256": "30bfc1fd1b410fe7b14f80fff2c1fa09fb593c5da95b1f43f8c7c69b60898933",
+      "file": "0173.json"
+    },
+    {
+      "id": "guidingsymptomso00heri7-009",
+      "sourceIdentifier": "guidingsymptomso00heri7",
+      "sourceIndex": 7,
+      "sourceChunkIndex": 9,
+      "label": "Volume 7 of 10",
+      "title": "Volume 7 of 10 · Section 9",
+      "indexHeadings": [],
+      "characterCount": 49899,
+      "sha256": "4e71afa32497ae3d09d2842867b3cbcfa365f70883d82404a01d5befb5e4a9cc",
+      "file": "0174.json"
+    },
+    {
+      "id": "guidingsymptomso00heri7-010",
+      "sourceIdentifier": "guidingsymptomso00heri7",
+      "sourceIndex": 7,
+      "sourceChunkIndex": 10,
+      "label": "Volume 7 of 10",
+      "title": "Volume 7 of 10 · Section 10 — LYSSIN",
+      "indexHeadings": [
+        "LYSSIN"
+      ],
+      "characterCount": 49952,
+      "sha256": "2570cd6970a1e58c0ed40358fa89dc674df1a49c4eb9f48f3c1778ab6fd8d332",
+      "file": "0175.json"
+    },
+    {
+      "id": "guidingsymptomso00heri7-011",
+      "sourceIdentifier": "guidingsymptomso00heri7",
+      "sourceIndex": 7,
+      "sourceChunkIndex": 11,
+      "label": "Volume 7 of 10",
+      "title": "Volume 7 of 10 · Section 11",
+      "indexHeadings": [],
+      "characterCount": 48127,
+      "sha256": "56f4633896b22a89ee6b3457c0bddaf7a9a273e772ff3c74c7d32c6805e1c69b",
+      "file": "0176.json"
+    },
+    {
+      "id": "guidingsymptomso00heri7-012",
+      "sourceIdentifier": "guidingsymptomso00heri7",
+      "sourceIndex": 7,
+      "sourceChunkIndex": 12,
+      "label": "Volume 7 of 10",
+      "title": "Volume 7 of 10 · Section 12 — MAGNESIA CARBONICA",
+      "indexHeadings": [
+        "MAGNESIA CARBONICA"
+      ],
+      "characterCount": 49980,
+      "sha256": "6e5794dcbad359b55baf8dc8a56c1d289f2b0dc7b795377ef16182aac85e2cfc",
+      "file": "0177.json"
+    },
+    {
+      "id": "guidingsymptomso00heri7-013",
+      "sourceIdentifier": "guidingsymptomso00heri7",
+      "sourceIndex": 7,
+      "sourceChunkIndex": 13,
+      "label": "Volume 7 of 10",
+      "title": "Volume 7 of 10 · Section 13 — MAGNESIA MURIATICA",
+      "indexHeadings": [
+        "MAGNESIA MURIATICA",
+        "MAGNESIA PHOSPHORICA"
+      ],
+      "characterCount": 49988,
+      "sha256": "8fa81502b9443eaf42b148e1c51125d78445619f1beab38ce3dad221dada946b",
+      "file": "0178.json"
+    },
+    {
+      "id": "guidingsymptomso00heri7-014",
+      "sourceIdentifier": "guidingsymptomso00heri7",
+      "sourceIndex": 7,
+      "sourceChunkIndex": 14,
+      "label": "Volume 7 of 10",
+      "title": "Volume 7 of 10 · Section 14 — MAGNESIA SULPHURICA",
+      "indexHeadings": [
+        "MAGNESIA SULPHURICA",
+        "MANCINELLA",
+        "MANGANUM"
+      ],
+      "characterCount": 49400,
+      "sha256": "07efd06e8b5aa59292fc13f148bff8f54b39ec0bad4cd16db1df2c9cf5c8cfe2",
+      "file": "0179.json"
+    },
+    {
+      "id": "guidingsymptomso00heri7-015",
+      "sourceIdentifier": "guidingsymptomso00heri7",
+      "sourceIndex": 7,
+      "sourceChunkIndex": 15,
+      "label": "Volume 7 of 10",
+      "title": "Volume 7 of 10 · Section 15 — MEDORRHINUM",
+      "indexHeadings": [
+        "MEDORRHINUM"
+      ],
+      "characterCount": 49584,
+      "sha256": "7815954b391eae5606601b6bebf50fdb33d838d49fe2f8342952d5869886108c",
+      "file": "0180.json"
+    },
+    {
+      "id": "guidingsymptomso00heri7-016",
+      "sourceIdentifier": "guidingsymptomso00heri7",
+      "sourceIndex": 7,
+      "sourceChunkIndex": 16,
+      "label": "Volume 7 of 10",
+      "title": "Volume 7 of 10 · Section 16",
+      "indexHeadings": [],
+      "characterCount": 49963,
+      "sha256": "95716980e837d2bf88f73f9760d39dc504789fc8747bccfac7b707a39f572999",
+      "file": "0181.json"
+    },
+    {
+      "id": "guidingsymptomso00heri7-017",
+      "sourceIdentifier": "guidingsymptomso00heri7",
+      "sourceIndex": 7,
+      "sourceChunkIndex": 17,
+      "label": "Volume 7 of 10",
+      "title": "Volume 7 of 10 · Section 17 — MELILOTUS",
+      "indexHeadings": [
+        "MELILOTUS",
+        "MENYANTHES TRIFOLIATA"
+      ],
+      "characterCount": 49974,
+      "sha256": "99bd72df1622f200a68391474c7ddeef229c8d865cf6dffda09b0abc5bdd316b",
+      "file": "0182.json"
+    },
+    {
+      "id": "guidingsymptomso00heri7-018",
+      "sourceIdentifier": "guidingsymptomso00heri7",
+      "sourceIndex": 7,
+      "sourceChunkIndex": 18,
+      "label": "Volume 7 of 10",
+      "title": "Volume 7 of 10 · Section 18 — MEPHITIS PUTORIUS",
+      "indexHeadings": [
+        "MEPHITIS PUTORIUS",
+        "HARD",
+        "MERCURIALIS PERENNIS",
+        "MERCURIUS"
+      ],
+      "characterCount": 49739,
+      "sha256": "a547bcc1279abc619336abf0858642da469357c47eddbf654780b2e844be289e",
+      "file": "0183.json"
+    },
+    {
+      "id": "guidingsymptomso00heri7-019",
+      "sourceIdentifier": "guidingsymptomso00heri7",
+      "sourceIndex": 7,
+      "sourceChunkIndex": 19,
+      "label": "Volume 7 of 10",
+      "title": "Volume 7 of 10 · Section 19",
+      "indexHeadings": [],
+      "characterCount": 49389,
+      "sha256": "f9187c6342b7304bc66948e20588c02bd0b285b089503d3538b3a82d936b0804",
+      "file": "0184.json"
+    },
+    {
+      "id": "guidingsymptomso00heri7-020",
+      "sourceIdentifier": "guidingsymptomso00heri7",
+      "sourceIndex": 7,
+      "sourceChunkIndex": 20,
+      "label": "Volume 7 of 10",
+      "title": "Volume 7 of 10 · Section 20",
+      "indexHeadings": [],
+      "characterCount": 49889,
+      "sha256": "ef44d57cf80d3ea98801c425546e9ec4d513374a747160d23929c55fa78811fb",
+      "file": "0185.json"
+    },
+    {
+      "id": "guidingsymptomso00heri7-021",
+      "sourceIdentifier": "guidingsymptomso00heri7",
+      "sourceIndex": 7,
+      "sourceChunkIndex": 21,
+      "label": "Volume 7 of 10",
+      "title": "Volume 7 of 10 · Section 21",
+      "indexHeadings": [],
+      "characterCount": 49898,
+      "sha256": "db4bdd711f8bf305a3f02a4c44942cccdda283544dcd59ee1344cbdaf446d971",
+      "file": "0186.json"
+    },
+    {
+      "id": "guidingsymptomso00heri7-022",
+      "sourceIdentifier": "guidingsymptomso00heri7",
+      "sourceIndex": 7,
+      "sourceChunkIndex": 22,
+      "label": "Volume 7 of 10",
+      "title": "Volume 7 of 10 · Section 22 — MERCURIUS CORROSIVUS",
+      "indexHeadings": [
+        "MERCURIUS CORROSIVUS",
+        "MERCURIUS CYANATUS"
+      ],
+      "characterCount": 49926,
+      "sha256": "c992cfc3ff7d9e579aeaf1cac25f2518f3014cd3510586c9d917fcfaf6cf63c6",
+      "file": "0187.json"
+    },
+    {
+      "id": "guidingsymptomso00heri7-023",
+      "sourceIdentifier": "guidingsymptomso00heri7",
+      "sourceIndex": 7,
+      "sourceChunkIndex": 23,
+      "label": "Volume 7 of 10",
+      "title": "Volume 7 of 10 · Section 23 — MERCURIUS DULCIS",
+      "indexHeadings": [
+        "MERCURIUS DULCIS",
+        "MERCURIUS lODATUS FLAVUS",
+        "MERCURIUS lODATOS RUBER"
+      ],
+      "characterCount": 49781,
+      "sha256": "c100478d98ad8fbdae5076ef6c981841f163e2e35e2c37abcbd0ec5de1540615",
+      "file": "0188.json"
+    },
+    {
+      "id": "guidingsymptomso00heri7-024",
+      "sourceIdentifier": "guidingsymptomso00heri7",
+      "sourceIndex": 7,
+      "sourceChunkIndex": 24,
+      "label": "Volume 7 of 10",
+      "title": "Volume 7 of 10 · Section 24 — MERCURIUS SULPHURICUS (Turpethum)",
+      "indexHeadings": [
+        "MERCURIUS SULPHURICUS (Turpethum)",
+        "MEZEREUM"
+      ],
+      "characterCount": 49943,
+      "sha256": "260b73a61aa42724677b4ad4c3b71bb1a9dd6a3f0476099a6d1258f6ce3f07d9",
+      "file": "0189.json"
+    },
+    {
+      "id": "guidingsymptomso00heri7-025",
+      "sourceIdentifier": "guidingsymptomso00heri7",
+      "sourceIndex": 7,
+      "sourceChunkIndex": 25,
+      "label": "Volume 7 of 10",
+      "title": "Volume 7 of 10 · Section 25 — MILLEFOLIUM",
+      "indexHeadings": [
+        "MILLEFOLIUM"
+      ],
+      "characterCount": 49926,
+      "sha256": "7956290a03d0be3e21913f764b8478547e6c8e5fede9972ba94e5b396053f291",
+      "file": "0190.json"
+    },
+    {
+      "id": "guidingsymptomso00heri7-026",
+      "sourceIdentifier": "guidingsymptomso00heri7",
+      "sourceIndex": 7,
+      "sourceChunkIndex": 26,
+      "label": "Volume 7 of 10",
+      "title": "Volume 7 of 10 · Section 26 — MITCHELLA REPENS",
+      "indexHeadings": [
+        "MITCHELLA REPENS",
+        "MOSCHUS",
+        "MORPHINUM SULPHURICUM",
+        "MUREX PURPUREA"
+      ],
+      "characterCount": 49952,
+      "sha256": "d4851e070447c40ed42e955cdb7517964f2c6ee355c0d1b23505c99166b24d72",
+      "file": "0191.json"
+    },
+    {
+      "id": "guidingsymptomso00heri7-027",
+      "sourceIdentifier": "guidingsymptomso00heri7",
+      "sourceIndex": 7,
+      "sourceChunkIndex": 27,
+      "label": "Volume 7 of 10",
+      "title": "Volume 7 of 10 · Section 27 — MURIATICUM ACIDUM",
+      "indexHeadings": [
+        "MURIATICUM ACIDUM",
+        "MYGALE",
+        "MYOSOTIS",
+        "MYRICA CERIFERA"
+      ],
+      "characterCount": 49902,
+      "sha256": "2c062930a4956906f8cf6bd192c8636119f3640a223ddfe347b61c989016ce62",
+      "file": "0192.json"
+    },
+    {
+      "id": "guidingsymptomso00heri7-028",
+      "sourceIdentifier": "guidingsymptomso00heri7",
+      "sourceIndex": 7,
+      "sourceChunkIndex": 28,
+      "label": "Volume 7 of 10",
+      "title": "Volume 7 of 10 · Section 28 — MYRTUS COMMUNIS",
+      "indexHeadings": [
+        "MYRTUS COMMUNIS",
+        "NAJA TRIPUDIANS",
+        "NATRUM ARSENICATUM",
+        "NATRUM CARBONICUM"
+      ],
+      "characterCount": 49948,
+      "sha256": "9f67c775c5d8bca9b331fcf37d26ec1a11b6ae092287f9c0d38c5186bbf326e3",
+      "file": "0193.json"
+    },
+    {
+      "id": "guidingsymptomso00heri7-029",
+      "sourceIdentifier": "guidingsymptomso00heri7",
+      "sourceIndex": 7,
+      "sourceChunkIndex": 29,
+      "label": "Volume 7 of 10",
+      "title": "Volume 7 of 10 · Section 29 — NATRUM fflURIATICDM",
+      "indexHeadings": [
+        "NATRUM fflURIATICDM"
+      ],
+      "characterCount": 49968,
+      "sha256": "03ee36a578c73b6d6608b43571ed7b63c1019cf08a9b177a88f4be00f0e62e40",
+      "file": "0194.json"
+    },
+    {
+      "id": "guidingsymptomso00heri7-030",
+      "sourceIdentifier": "guidingsymptomso00heri7",
+      "sourceIndex": 7,
+      "sourceChunkIndex": 30,
+      "label": "Volume 7 of 10",
+      "title": "Volume 7 of 10 · Section 30",
+      "indexHeadings": [],
+      "characterCount": 49949,
+      "sha256": "40d6d96a1107a041210291d6b3d1e9b9d69431bfe0af4a5d36002241ff097a4a",
+      "file": "0195.json"
+    },
+    {
+      "id": "guidingsymptomso00heri7-031",
+      "sourceIdentifier": "guidingsymptomso00heri7",
+      "sourceIndex": 7,
+      "sourceChunkIndex": 31,
+      "label": "Volume 7 of 10",
+      "title": "Volume 7 of 10 · Section 31",
+      "indexHeadings": [],
+      "characterCount": 49879,
+      "sha256": "945948f608952d1bbe81a0ab273a244d7b8861d58a32f0c5093e1d5e7e679a40",
+      "file": "0196.json"
+    },
+    {
+      "id": "guidingsymptomso00heri7-032",
+      "sourceIdentifier": "guidingsymptomso00heri7",
+      "sourceIndex": 7,
+      "sourceChunkIndex": 32,
+      "label": "Volume 7 of 10",
+      "title": "Volume 7 of 10 · Section 32",
+      "indexHeadings": [],
+      "characterCount": 2364,
+      "sha256": "68ec43e0bef5b383db6b46ff66f276d756593a520551a6df8e91f6443146d644",
+      "file": "0197.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-001",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 1,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 1 — COLUMBIAN NATURAL CLASP NO. ION",
+      "indexHeadings": [
+        "COLUMBIAN NATURAL CLASP NO. ION",
+        "M UNITED STATES EN'VELDPE CO. SPRINGFIELIMASS",
+        "THE",
+        "GUIDING SYMPTOMS",
+        "OF OUR",
+        "VOLUME YIII",
+        "PHILADELPHIA",
+        "PUBLISHED BY THE EStATE OF CONSTANTINE HEEING^",
+        "PRESS OF GLOBE PRINTING HOUSE, PHILADELPHIA",
+        "NATRUM PHOSPHORICUM",
+        "NATRUM PHOSPHORlCUffl",
+        "NATRUM SULFURICUM"
+      ],
+      "characterCount": 49834,
+      "sha256": "417ec86ac136a3c7f22ad68fb564a5a7303a33d1348073f40fafe79903eea154",
+      "file": "0198.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-002",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 2,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 2 — NICCOLUM",
+      "indexHeadings": [
+        "NICCOLUM",
+        "NITRI SPIRITUS DULCIS"
+      ],
+      "characterCount": 49934,
+      "sha256": "0cd2b85a8f297a49ccad99c67af756eebfd9df407ffddf606e7b553cd888af7a",
+      "file": "0199.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-003",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 3,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 3 — NITRIC ACID",
+      "indexHeadings": [
+        "NITRIC ACID"
+      ],
+      "characterCount": 49984,
+      "sha256": "189b3d5bb853e6ce3175ee7cff78df0211ba5313f2ab760fc758b101390f5d60",
+      "file": "0200.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-004",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 4,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 4 — NUPHAR LUTEUM",
+      "indexHeadings": [
+        "NUPHAR LUTEUM",
+        "NUX MOSCHATA"
+      ],
+      "characterCount": 49913,
+      "sha256": "8d35044687a0ff36e02a7380c867b2ca81fbf004b93cae3eb57d02d729cbb4b7",
+      "file": "0201.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-005",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 5,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 5",
+      "indexHeadings": [],
+      "characterCount": 49076,
+      "sha256": "89dc196f6d777eb0feca1c486f2f37710a2ff29757f0094e3ac0bf35b53b70b5",
+      "file": "0202.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-006",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 6,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 6 — NUX VOMICA",
+      "indexHeadings": [
+        "NUX VOMICA",
+        "Ill NUX VOMICA"
+      ],
+      "characterCount": 49859,
+      "sha256": "9ac692a7e53a2dec9e1e4082ba816ba57114b9cb6f66ca53e35039e25be48933",
+      "file": "0203.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-007",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 7,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 7",
+      "indexHeadings": [],
+      "characterCount": 48306,
+      "sha256": "d353a318843b94b9026c7e6340f4e5b5672511390e99774246822ad2bfcb55c1",
+      "file": "0204.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-008",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 8,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 8",
+      "indexHeadings": [],
+      "characterCount": 49878,
+      "sha256": "ae4f8cdfc82e7599b6c700300455e7bca4f554d547dc7216820842e9c29e4385",
+      "file": "0205.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-009",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 9,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 9",
+      "indexHeadings": [],
+      "characterCount": 49970,
+      "sha256": "f1b40b36f90425ff61a15aea4daf64c5dab0c185982639e97a0eab0d29c3a9c5",
+      "file": "0206.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-010",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 10,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 10 — CENANTHE CROCATA",
+      "indexHeadings": [
+        "CENANTHE CROCATA",
+        "OLEANDER",
+        "OLEUM ANIMALE"
+      ],
+      "characterCount": 49851,
+      "sha256": "f5671c8ecf7aaf0009e3a452f4303c1d1418de70d80c202eb4d641ff56ae4007",
+      "file": "0207.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-011",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 11,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 11 — OLEUM CAJEPUTI",
+      "indexHeadings": [
+        "OLEUM CAJEPUTI",
+        "OLEUM JECORIS ASELLL",
+        "OPIUM"
+      ],
+      "characterCount": 49792,
+      "sha256": "aaea4e597ca6f428a15f2d1ab6ab2160a79f1b5c981eff587eece8d5873b3360",
+      "file": "0208.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-012",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 12,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 12 — ORIGANUM",
+      "indexHeadings": [
+        "ORIGANUM",
+        "OSMIUM",
+        "OXALICUM ACIDUM"
+      ],
+      "characterCount": 49845,
+      "sha256": "a1dc47f91ac18f056c5c90c211d97da0985e1a2c0af09bebd8319970981c936f",
+      "file": "0209.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-013",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 13,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 13 — PiCONIA",
+      "indexHeadings": [
+        "PiCONIA",
+        "PALLADIUM"
+      ],
+      "characterCount": 49737,
+      "sha256": "d41e11b03eab7bc2261614dccb3836cbf68c7d572eecc4c04fa54ecdd7f3cd16",
+      "file": "0210.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-014",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 14,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 14 — PAREIRA BRAVA",
+      "indexHeadings": [
+        "PAREIRA BRAVA",
+        "PARIS QUADRIFOLIA"
+      ],
+      "characterCount": 49993,
+      "sha256": "7d6f68cff7d364db85799811006f91e4a92bae6141d61fe577da084086d75e44",
+      "file": "0211.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-015",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 15,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 15 — PETROLEUM",
+      "indexHeadings": [
+        "PETROLEUM"
+      ],
+      "characterCount": 49684,
+      "sha256": "2e000f254ee4cc031a2b5dbb911b5963dedd7eee191a788a7de5c4203b89f4e6",
+      "file": "0212.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-016",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 16,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 16 — PETROSELINUM",
+      "indexHeadings": [
+        "PETROSELINUM",
+        "PHELLANDRIUM",
+        "PHOSPHORICUM ACIDUM",
+        "^^^ PHOSPHORICTJM ACIDUM"
+      ],
+      "characterCount": 49946,
+      "sha256": "e1ee552af7c5e3f261541557ea415437fbc0171ab3e6a906065a727845c5726f",
+      "file": "0213.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-017",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 17,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 17 — PHOSPHORUS",
+      "indexHeadings": [
+        "PHOSPHORUS"
+      ],
+      "characterCount": 48448,
+      "sha256": "0fac21b65cf104a43cac295a0ab269a86a027f09bc0c355763e21d34f00173be",
+      "file": "0214.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-018",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 18,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 18 — ^'^^ PHOSPHORUS",
+      "indexHeadings": [
+        "^'^^ PHOSPHORUS",
+        "S'^^ PHOSPHORUS"
+      ],
+      "characterCount": 49555,
+      "sha256": "645aeb1ae7ca73eb2f2571b29447bdc0946859544e8b37e8d6f95638b20443fb",
+      "file": "0215.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-019",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 19,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 19 — ^^^ PHOSPHORUS",
+      "indexHeadings": [
+        "^^^ PHOSPHORUS"
+      ],
+      "characterCount": 49805,
+      "sha256": "b3702b49396f518de5ba2317721d1e81d2b48482066c3b348817208193d5b66b",
+      "file": "0216.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-020",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 20,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 20",
+      "indexHeadings": [],
+      "characterCount": 49645,
+      "sha256": "d13c108a1a29cd7263d37905443d73994b8b6ad9282802c6cbfb82d07a1e2b66",
+      "file": "0217.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-021",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 21,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 21",
+      "indexHeadings": [],
+      "characterCount": 49957,
+      "sha256": "dbac5fdcfc7bbbc4795bad9a9a34cd83d5ae64b7f635a643010630c7c26852e8",
+      "file": "0218.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-022",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 22,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 22 — PHYSOSTIGMA",
+      "indexHeadings": [
+        "PHYSOSTIGMA",
+        "PHYTOLACCA"
+      ],
+      "characterCount": 49858,
+      "sha256": "f5579adfbbe759d711d328c5088b11c78b7f28091cd97f81be39af38418979f7",
+      "file": "0219.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-023",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 23,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 23 — PICRIC ACID",
+      "indexHeadings": [
+        "PICRIC ACID"
+      ],
+      "characterCount": 49544,
+      "sha256": "3850e23e0c02056b6b7306f9de17553a61caf1f9575a90850491c83bd0cba9a3",
+      "file": "0220.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-024",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 24,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 24 — PIX LIQUIDA",
+      "indexHeadings": [
+        "PIX LIQUIDA",
+        "PLANTAGO MAJOR",
+        "PLATINUM"
+      ],
+      "characterCount": 49943,
+      "sha256": "618fe148cbf5ac3c1107bcdfd5cf92d708e34c86018fbdd0ded439e62cb5d417",
+      "file": "0221.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-025",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 25,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 25 — PLUMBUM",
+      "indexHeadings": [
+        "PLUMBUM"
+      ],
+      "characterCount": 49968,
+      "sha256": "5703e1ab920def479f1293959be3a8c645da6a7deff529db6054729a8f2b5d47",
+      "file": "0222.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-026",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 26,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 26 — QISGRSGS",
+      "indexHeadings": [
+        "QISGRSGS"
+      ],
+      "characterCount": 49929,
+      "sha256": "beeff330633f92432bcfcb1396edc73a887d7fb9f1261a06457d82c961e4c916",
+      "file": "0223.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-027",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 27,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 27 — PODOPHYLLUM PELTATUM",
+      "indexHeadings": [
+        "PODOPHYLLUM PELTATUM"
+      ],
+      "characterCount": 49963,
+      "sha256": "56390b96ee83bb6fc2bc9b5549ae5ef5c6616a9aae13979cdd6fe3277aa6f4be",
+      "file": "0224.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-028",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 28,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 28 — POLYGONUM",
+      "indexHeadings": [
+        "POLYGONUM",
+        "POLYPORUS OFFICINALIS",
+        "PRUNUS SPINOSA",
+        "PSORINUM"
+      ],
+      "characterCount": 49883,
+      "sha256": "51811ece5c8973032851c1cc14d916b458a53ec396c9eaffb361c3e218f28df5",
+      "file": "0225.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-029",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 29,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 29",
+      "indexHeadings": [],
+      "characterCount": 49874,
+      "sha256": "2aa11fb24b78581e4637669450497e9b5d7f5189bfd12ab2bfcb7154a803b1e2",
+      "file": "0226.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-030",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 30,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 30 — PTELEA TRIFOLIATA",
+      "indexHeadings": [
+        "PTELEA TRIFOLIATA",
+        "PULSATILLA"
+      ],
+      "characterCount": 48598,
+      "sha256": "70473efe966f7642b1a5ad829dba5c5e4154a2e2806d08f5c839f56fb6a07b77",
+      "file": "0227.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-031",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 31,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 31",
+      "indexHeadings": [],
+      "characterCount": 49975,
+      "sha256": "7c56a5c779b20d0afef5b6ec1dde99430e7ae713c76c3b7a0f84e822da8a0c0d",
+      "file": "0228.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-032",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 32,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 32",
+      "indexHeadings": [],
+      "characterCount": 49521,
+      "sha256": "be003f8e99c06806e1f7756b39019be8580e0e35205e0c1c8b2be688604a90e4",
+      "file": "0229.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-033",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 33,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 33",
+      "indexHeadings": [],
+      "characterCount": 49944,
+      "sha256": "ede9f83a4ba2845c5e9af79f9c9a5551959a8c34ac893ce94c3a4d80cfa5a4e3",
+      "file": "0230.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-034",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 34,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 34",
+      "indexHeadings": [],
+      "characterCount": 49959,
+      "sha256": "ab35f7d84955596ef50dadf3cc4a0db4bb57944c4ac74edf19b69b3e7da7ef37",
+      "file": "0231.json"
+    },
+    {
+      "id": "guidingsymptomso00heri8-035",
+      "sourceIdentifier": "guidingsymptomso00heri8",
+      "sourceIndex": 8,
+      "sourceChunkIndex": 35,
+      "label": "Volume 8 of 10",
+      "title": "Volume 8 of 10 · Section 35",
+      "indexHeadings": [],
+      "characterCount": 15385,
+      "sha256": "3bb2356cfdeaa02ad3b2c9e66fcc100c53cb6d5f47879518ad54022f3a128440",
+      "file": "0232.json"
+    },
+    {
+      "id": "guidingsymptomso00heri9-001",
+      "sourceIdentifier": "guidingsymptomso00heri9",
+      "sourceIndex": 9,
+      "sourceChunkIndex": 1,
+      "label": "Volume 9 of 10",
+      "title": "Volume 9 of 10 · Section 1 — COLUMBIAN i.AT'JRAL CLASP NO. lON^",
+      "indexHeadings": [
+        "COLUMBIAN i.AT'JRAL CLASP NO. lON^",
+        "THE UNITED STATFS ENVELOPE CO. SPRINGFIELO,MASS",
+        "THE",
+        "GUIDING SYMPTOMS",
+        "MATERIA MEDIOA",
+        "O. HERING, M. D",
+        "VOLUME IX",
+        "PHILADELPHIA",
+        "PUBLISHED BY THE ESTATE OF CONSTANTINE HERING",
+        "PRESS OF QLOBE PRINTING HOUSE. PHILADELPHIA",
+        "OF OUR",
+        "RANUNCULUS BULBOSUS",
+        "RANUNCULUS SCELERATUS",
+        "RAPHANUS SATIVUS"
+      ],
+      "characterCount": 49919,
+      "sha256": "1a42847ba69961aee7e5ed006a79463121be5c74e94482dedbe72ff6a9bf30da",
+      "file": "0233.json"
+    },
+    {
+      "id": "guidingsymptomso00heri9-002",
+      "sourceIdentifier": "guidingsymptomso00heri9",
+      "sourceIndex": 9,
+      "sourceChunkIndex": 2,
+      "label": "Volume 9 of 10",
+      "title": "Volume 9 of 10 · Section 2 — RATANHIA",
+      "indexHeadings": [
+        "RATANHIA",
+        "RHEUM",
+        "RHODODENDRON"
+      ],
+      "characterCount": 49993,
+      "sha256": "389b5135a75d21effc3877fbfd78551e6ec45c2c396f48d20da49c228b0e9ccc",
+      "file": "0234.json"
+    },
+    {
+      "id": "guidingsymptomso00heri9-003",
+      "sourceIdentifier": "guidingsymptomso00heri9",
+      "sourceIndex": 9,
+      "sourceChunkIndex": 3,
+      "label": "Volume 9 of 10",
+      "title": "Volume 9 of 10 · Section 3 — RHUS TOXICODENDRON",
+      "indexHeadings": [
+        "RHUS TOXICODENDRON",
+        "RHUS TOXICODENDRON. SG"
+      ],
+      "characterCount": 49999,
+      "sha256": "3e5fe389936a99151725390a901944384a5db58f1718dbb69312aeb171658512",
+      "file": "0235.json"
+    },
+    {
+      "id": "guidingsymptomso00heri9-004",
+      "sourceIdentifier": "guidingsymptomso00heri9",
+      "sourceIndex": 9,
+      "sourceChunkIndex": 4,
+      "label": "Volume 9 of 10",
+      "title": "Volume 9 of 10 · Section 4 — RHUS TOXICODENDRON. QQ",
+      "indexHeadings": [
+        "RHUS TOXICODENDRON. QQ"
+      ],
+      "characterCount": 49929,
+      "sha256": "1aab2a1418388849172a57389b518b238cf29b735f55854ab1a672bc7b9c6b20",
+      "file": "0236.json"
+    },
+    {
+      "id": "guidingsymptomso00heri9-005",
+      "sourceIdentifier": "guidingsymptomso00heri9",
+      "sourceIndex": 9,
+      "sourceChunkIndex": 5,
+      "label": "Volume 9 of 10",
+      "title": "Volume 9 of 10 · Section 5",
+      "indexHeadings": [],
+      "characterCount": 48060,
+      "sha256": "1353d9e8846ce5b46e4f018f063abe943d9bd0d0b117122cd2dcdf15eaead047",
+      "file": "0237.json"
+    },
+    {
+      "id": "guidingsymptomso00heri9-006",
+      "sourceIdentifier": "guidingsymptomso00heri9",
+      "sourceIndex": 9,
+      "sourceChunkIndex": 6,
+      "label": "Volume 9 of 10",
+      "title": "Volume 9 of 10 · Section 6 — Ill RHUS TOXICODENDRON",
+      "indexHeadings": [
+        "Ill RHUS TOXICODENDRON"
+      ],
+      "characterCount": 49870,
+      "sha256": "7699ae8e78051d23affdb0f87248a4fef158a1512b7a9c4cc6ccb7b76109f84b",
+      "file": "0238.json"
+    },
+    {
+      "id": "guidingsymptomso00heri9-007",
+      "sourceIdentifier": "guidingsymptomso00heri9",
+      "sourceIndex": 9,
+      "sourceChunkIndex": 7,
+      "label": "Volume 9 of 10",
+      "title": "Volume 9 of 10 · Section 7 — ROBINIA",
+      "indexHeadings": [
+        "ROBINIA",
+        "RUMEX CRISPUS"
+      ],
+      "characterCount": 49729,
+      "sha256": "456036159795cfe44a4ac98293a42b7cb588f6164032144a59ced10f7c7bab36",
+      "file": "0239.json"
+    },
+    {
+      "id": "guidingsymptomso00heri9-008",
+      "sourceIdentifier": "guidingsymptomso00heri9",
+      "sourceIndex": 9,
+      "sourceChunkIndex": 8,
+      "label": "Volume 9 of 10",
+      "title": "Volume 9 of 10 · Section 8 — RUTA GRAVEOLENS",
+      "indexHeadings": [
+        "RUTA GRAVEOLENS",
+        "SABADILLA"
+      ],
+      "characterCount": 49996,
+      "sha256": "c41add2b00b54863193f060642876b62520be115b5554e2c106f5cf5b03cb593",
+      "file": "0240.json"
+    },
+    {
+      "id": "guidingsymptomso00heri9-009",
+      "sourceIdentifier": "guidingsymptomso00heri9",
+      "sourceIndex": 9,
+      "sourceChunkIndex": 9,
+      "label": "Volume 9 of 10",
+      "title": "Volume 9 of 10 · Section 9 — SABINA",
+      "indexHeadings": [
+        "SABINA"
+      ],
+      "characterCount": 49941,
+      "sha256": "0652fe607599d4c390f62940795a937bccd8c95d3f2e6914761c9e6d369875d9",
+      "file": "0241.json"
+    },
+    {
+      "id": "guidingsymptomso00heri9-010",
+      "sourceIdentifier": "guidingsymptomso00heri9",
+      "sourceIndex": 9,
+      "sourceChunkIndex": 10,
+      "label": "Volume 9 of 10",
+      "title": "Volume 9 of 10 · Section 10 — SALICYLICUM ACIDUWI",
+      "indexHeadings": [
+        "SALICYLICUM ACIDUWI",
+        "SAMBUCUS NIGRA"
+      ],
+      "characterCount": 49981,
+      "sha256": "89f50068d27315bf8b96db996713c0fecdd85e983d718d5d03657eaff25c509f",
+      "file": "0242.json"
+    },
+    {
+      "id": "guidingsymptomso00heri9-011",
+      "sourceIdentifier": "guidingsymptomso00heri9",
+      "sourceIndex": 9,
+      "sourceChunkIndex": 11,
+      "label": "Volume 9 of 10",
+      "title": "Volume 9 of 10 · Section 11 — SANGUINARIA CANADENSIS",
+      "indexHeadings": [
+        "SANGUINARIA CANADENSIS"
+      ],
+      "characterCount": 49822,
+      "sha256": "c8bea6c6e6d01c7f065f9f4008390953428a8faa4253f34ae496b07064b22350",
+      "file": "0243.json"
+    },
+    {
+      "id": "guidingsymptomso00heri9-012",
+      "sourceIdentifier": "guidingsymptomso00heri9",
+      "sourceIndex": 9,
+      "sourceChunkIndex": 12,
+      "label": "Volume 9 of 10",
+      "title": "Volume 9 of 10 · Section 12 — SARRACENIA PURPUREA",
+      "indexHeadings": [
+        "SARRACENIA PURPUREA",
+        "SARSAPARILLA"
+      ],
+      "characterCount": 49954,
+      "sha256": "7c47c51974632630fac30e76340710e6291ee46f83e3d823c696381084ea1c53",
+      "file": "0244.json"
+    },
+    {
+      "id": "guidingsymptomso00heri9-013",
+      "sourceIdentifier": "guidingsymptomso00heri9",
+      "sourceIndex": 9,
+      "sourceChunkIndex": 13,
+      "label": "Volume 9 of 10",
+      "title": "Volume 9 of 10 · Section 13 — SECALE CORNUTUM",
+      "indexHeadings": [
+        "SECALE CORNUTUM"
+      ],
+      "characterCount": 49524,
+      "sha256": "968c6c108013e7c7d0362186f87c4ab6556437b7c13f3481c29f94e178ed986e",
+      "file": "0245.json"
+    },
+    {
+      "id": "guidingsymptomso00heri9-014",
+      "sourceIdentifier": "guidingsymptomso00heri9",
+      "sourceIndex": 9,
+      "sourceChunkIndex": 14,
+      "label": "Volume 9 of 10",
+      "title": "Volume 9 of 10 · Section 14 — SELENIUM",
+      "indexHeadings": [
+        "SELENIUM"
+      ],
+      "characterCount": 49960,
+      "sha256": "c16ceeb0568bda13fa5126316a2fc3eb905754b8aebd8c28b728f490d7a8c3c5",
+      "file": "0246.json"
+    },
+    {
+      "id": "guidingsymptomso00heri9-015",
+      "sourceIdentifier": "guidingsymptomso00heri9",
+      "sourceIndex": 9,
+      "sourceChunkIndex": 15,
+      "label": "Volume 9 of 10",
+      "title": "Volume 9 of 10 · Section 15 — SENECIO",
+      "indexHeadings": [
+        "SENECIO",
+        "SENEGA",
+        "SEPIA"
+      ],
+      "characterCount": 49862,
+      "sha256": "5ed57eb693a333073ba66a96b63031bc602efc7beba49c05b9f7ab0ef9f576b9",
+      "file": "0247.json"
+    },
+    {
+      "id": "guidingsymptomso00heri9-016",
+      "sourceIdentifier": "guidingsymptomso00heri9",
+      "sourceIndex": 9,
+      "sourceChunkIndex": 16,
+      "label": "Volume 9 of 10",
+      "title": "Volume 9 of 10 · Section 16 — ^^^ SEPIA",
+      "indexHeadings": [
+        "^^^ SEPIA"
+      ],
+      "characterCount": 49492,
+      "sha256": "4bad410f1e61211731d984dd57f59c85e3abcb824edc3b8ac2eccbf66267368c",
+      "file": "0248.json"
+    },
+    {
+      "id": "guidingsymptomso00heri9-017",
+      "sourceIdentifier": "guidingsymptomso00heri9",
+      "sourceIndex": 9,
+      "sourceChunkIndex": 17,
+      "label": "Volume 9 of 10",
+      "title": "Volume 9 of 10 · Section 17",
+      "indexHeadings": [],
+      "characterCount": 49613,
+      "sha256": "1fdbbcda42b8db3180c04aef7430a0a26ca9db1d0090a3619a1f31e79f1f3b7a",
+      "file": "0249.json"
+    },
+    {
+      "id": "guidingsymptomso00heri9-018",
+      "sourceIdentifier": "guidingsymptomso00heri9",
+      "sourceIndex": 9,
+      "sourceChunkIndex": 18,
+      "label": "Volume 9 of 10",
+      "title": "Volume 9 of 10 · Section 18",
+      "indexHeadings": [],
+      "characterCount": 48914,
+      "sha256": "3e9b96d219500d44b7de63512c9ba64f4ab57db53192347ed874e87542e6a934",
+      "file": "0250.json"
+    },
+    {
+      "id": "guidingsymptomso00heri9-019",
+      "sourceIdentifier": "guidingsymptomso00heri9",
+      "sourceIndex": 9,
+      "sourceChunkIndex": 19,
+      "label": "Volume 9 of 10",
+      "title": "Volume 9 of 10 · Section 19 — SILICA",
+      "indexHeadings": [
+        "SILICA"
+      ],
+      "characterCount": 49862,
+      "sha256": "9af8ac88245d95ba9fd3f641775a84839988cfd60c3ac2fba3e039a71629a731",
+      "file": "0251.json"
+    },
+    {
+      "id": "guidingsymptomso00heri9-020",
+      "sourceIdentifier": "guidingsymptomso00heri9",
+      "sourceIndex": 9,
+      "sourceChunkIndex": 20,
+      "label": "Volume 9 of 10",
+      "title": "Volume 9 of 10 · Section 20",
+      "indexHeadings": [],
+      "characterCount": 49972,
+      "sha256": "eb9a3559b3525a4b789cd8d259d9197b63f7892769d020755e67deb179a2471a",
+      "file": "0252.json"
+    },
+    {
+      "id": "guidingsymptomso00heri9-021",
+      "sourceIdentifier": "guidingsymptomso00heri9",
+      "sourceIndex": 9,
+      "sourceChunkIndex": 21,
+      "label": "Volume 9 of 10",
+      "title": "Volume 9 of 10 · Section 21",
+      "indexHeadings": [],
+      "characterCount": 49956,
+      "sha256": "7fdfcb9539250e6891475b6c40d74b52961f8d44fb4b2b61f5393f957c817340",
+      "file": "0253.json"
+    },
+    {
+      "id": "guidingsymptomso00heri9-022",
+      "sourceIdentifier": "guidingsymptomso00heri9",
+      "sourceIndex": 9,
+      "sourceChunkIndex": 22,
+      "label": "Volume 9 of 10",
+      "title": "Volume 9 of 10 · Section 22",
+      "indexHeadings": [],
+      "characterCount": 49903,
+      "sha256": "cb24cd50f098619def46272989735c0034e101cad0c6606a33b8f28489ea9b73",
+      "file": "0254.json"
+    },
+    {
+      "id": "guidingsymptomso00heri9-023",
+      "sourceIdentifier": "guidingsymptomso00heri9",
+      "sourceIndex": 9,
+      "sourceChunkIndex": 23,
+      "label": "Volume 9 of 10",
+      "title": "Volume 9 of 10 · Section 23 — SINAPIS NIGRA ET ALBA",
+      "indexHeadings": [
+        "SINAPIS NIGRA ET ALBA",
+        "SPIGELIA"
+      ],
+      "characterCount": 49996,
+      "sha256": "46e65525ae96d723b852866ffe6bdcfaa7020adc8ba37a650c9759e88a3b2e5d",
+      "file": "0255.json"
+    },
+    {
+      "id": "guidingsymptomso00heri9-024",
+      "sourceIdentifier": "guidingsymptomso00heri9",
+      "sourceIndex": 9,
+      "sourceChunkIndex": 24,
+      "label": "Volume 9 of 10",
+      "title": "Volume 9 of 10 · Section 24 — SPONGIA TOSTA",
+      "indexHeadings": [
+        "SPONGIA TOSTA"
+      ],
+      "characterCount": 49916,
+      "sha256": "4d69b21822e5ef8658ee3c68c48170f15061164ea2fac0421be8a965f31cefb1",
+      "file": "0256.json"
+    },
+    {
+      "id": "guidingsymptomso00heri9-025",
+      "sourceIdentifier": "guidingsymptomso00heri9",
+      "sourceIndex": 9,
+      "sourceChunkIndex": 25,
+      "label": "Volume 9 of 10",
+      "title": "Volume 9 of 10 · Section 25",
+      "indexHeadings": [],
+      "characterCount": 49981,
+      "sha256": "2ed170fc3715d6ad88aa7272c9e6204c7324318146ce6578a50ecbb36543a884",
+      "file": "0257.json"
+    },
+    {
+      "id": "guidingsymptomso00heri9-026",
+      "sourceIdentifier": "guidingsymptomso00heri9",
+      "sourceIndex": 9,
+      "sourceChunkIndex": 26,
+      "label": "Volume 9 of 10",
+      "title": "Volume 9 of 10 · Section 26 — SQUILLA",
+      "indexHeadings": [
+        "SQUILLA"
+      ],
+      "characterCount": 49631,
+      "sha256": "8453ccb7a3951b21c2658f35322d85fa2527631a0714c02aa11412178d2f2cbf",
+      "file": "0258.json"
+    },
+    {
+      "id": "guidingsymptomso00heri9-027",
+      "sourceIdentifier": "guidingsymptomso00heri9",
+      "sourceIndex": 9,
+      "sourceChunkIndex": 27,
+      "label": "Volume 9 of 10",
+      "title": "Volume 9 of 10 · Section 27 — STANNUM",
+      "indexHeadings": [
+        "STANNUM"
+      ],
+      "characterCount": 49966,
+      "sha256": "10aba4f6e87bf0de1d93ff1a17f010c6246f2fafcd315b3c6a9ee08851b5d396",
+      "file": "0259.json"
+    },
+    {
+      "id": "guidingsymptomso00heri9-028",
+      "sourceIdentifier": "guidingsymptomso00heri9",
+      "sourceIndex": 9,
+      "sourceChunkIndex": 28,
+      "label": "Volume 9 of 10",
+      "title": "Volume 9 of 10 · Section 28",
+      "indexHeadings": [],
+      "characterCount": 11065,
+      "sha256": "6b8362fceada79808f43a8e19ef7ad020453463ee979852243131760fb090bce",
+      "file": "0260.json"
+    },
+    {
+      "id": "guidingsymptomso00heri10-001",
+      "sourceIdentifier": "guidingsymptomso00heri10",
+      "sourceIndex": 10,
+      "sourceChunkIndex": 1,
+      "label": "Volume 10 of 10",
+      "title": "Volume 10 of 10 · Section 1 — THE",
+      "indexHeadings": [
+        "THE",
+        "GUIDING SYMPTOMS",
+        "OF OUR",
+        "VOLUME X",
+        "PHILADELPHIA",
+        "rUJ?LISHEl) BY THE ESTATE OF CONSTANTINE IIEEING^",
+        "PRESS OF GLOBE PRINTING HOUSE, PHILADELPHIA",
+        "PREFACE",
+        "THERESE HERING",
+        "STAPHISAGRIA"
+      ],
+      "characterCount": 49933,
+      "sha256": "f51e0e948bcb3d86538f22a42a970757696a4868102549262a18db8d504562ad",
+      "file": "0261.json"
+    },
+    {
+      "id": "guidingsymptomso00heri10-002",
+      "sourceIdentifier": "guidingsymptomso00heri10",
+      "sourceIndex": 10,
+      "sourceChunkIndex": 2,
+      "label": "Volume 10 of 10",
+      "title": "Volume 10 of 10 · Section 2 — STICTA PULMONARIA",
+      "indexHeadings": [
+        "STICTA PULMONARIA",
+        "STILLINGIA SYLVATICA",
+        "STRAMONIUM"
+      ],
+      "characterCount": 49911,
+      "sha256": "cf884583b59a3d256988924e3db8e19e2a4e8cfb03781f6650fdaea1070e634c",
+      "file": "0262.json"
+    },
+    {
+      "id": "guidingsymptomso00heri10-003",
+      "sourceIdentifier": "guidingsymptomso00heri10",
+      "sourceIndex": 10,
+      "sourceChunkIndex": 3,
+      "label": "Volume 10 of 10",
+      "title": "Volume 10 of 10 · Section 3 — ^^ STRAMONIUM",
+      "indexHeadings": [
+        "^^ STRAMONIUM"
+      ],
+      "characterCount": 49947,
+      "sha256": "dfed1f7df7fca9106fd7f0705ef10daa6ff9b1eac6a1f9b3b9307f63587fd422",
+      "file": "0263.json"
+    },
+    {
+      "id": "guidingsymptomso00heri10-004",
+      "sourceIdentifier": "guidingsymptomso00heri10",
+      "sourceIndex": 10,
+      "sourceChunkIndex": 4,
+      "label": "Volume 10 of 10",
+      "title": "Volume 10 of 10 · Section 4",
+      "indexHeadings": [],
+      "characterCount": 49984,
+      "sha256": "fc9960de437c5bbe950354033e814273716a4e3e749ef29db5c006d6fbfd7e97",
+      "file": "0264.json"
+    },
+    {
+      "id": "guidingsymptomso00heri10-005",
+      "sourceIdentifier": "guidingsymptomso00heri10",
+      "sourceIndex": 10,
+      "sourceChunkIndex": 5,
+      "label": "Volume 10 of 10",
+      "title": "Volume 10 of 10 · Section 5 — ^^ STRAMONIUM",
+      "indexHeadings": [
+        "^^ STRAMONIUM",
+        "STRONTIANA CARBONICA",
+        "R. A. M. L",
+        "SULPHUR"
+      ],
+      "characterCount": 49942,
+      "sha256": "e00b18d153289a8ddcc2dd9a46d3b79e0989670f370773b3d1050296d3ad56e8",
+      "file": "0265.json"
+    },
+    {
+      "id": "guidingsymptomso00heri10-006",
+      "sourceIdentifier": "guidingsymptomso00heri10",
+      "sourceIndex": 10,
+      "sourceChunkIndex": 6,
+      "label": "Volume 10 of 10",
+      "title": "Volume 10 of 10 · Section 6 — Ill ' SULPHUR",
+      "indexHeadings": [
+        "Ill ' SULPHUR"
+      ],
+      "characterCount": 49960,
+      "sha256": "2beccd7ed1803bd787cd54e64d2d5d0c4789ffd39b114f9db2a4abb57f3559dc",
+      "file": "0266.json"
+    },
+    {
+      "id": "guidingsymptomso00heri10-007",
+      "sourceIdentifier": "guidingsymptomso00heri10",
+      "sourceIndex": 10,
+      "sourceChunkIndex": 7,
+      "label": "Volume 10 of 10",
+      "title": "Volume 10 of 10 · Section 7 — IIQ SULPHUR",
+      "indexHeadings": [
+        "IIQ SULPHUR"
+      ],
+      "characterCount": 49978,
+      "sha256": "5edebdd66b4d346be2d583411bac6cf1a2f7953fc3353e47e9720120c53c3df4",
+      "file": "0267.json"
+    },
+    {
+      "id": "guidingsymptomso00heri10-008",
+      "sourceIdentifier": "guidingsymptomso00heri10",
+      "sourceIndex": 10,
+      "sourceChunkIndex": 8,
+      "label": "Volume 10 of 10",
+      "title": "Volume 10 of 10 · Section 8 — SULPHUR. no",
+      "indexHeadings": [
+        "SULPHUR. no"
+      ],
+      "characterCount": 49802,
+      "sha256": "8bcf09ae5494b2bbb19fe384896a266ca6d702457cd5f910b38c2d44bd188334",
+      "file": "0268.json"
+    },
+    {
+      "id": "guidingsymptomso00heri10-009",
+      "sourceIdentifier": "guidingsymptomso00heri10",
+      "sourceIndex": 10,
+      "sourceChunkIndex": 9,
+      "label": "Volume 10 of 10",
+      "title": "Volume 10 of 10 · Section 9 — SULPHUR",
+      "indexHeadings": [
+        "SULPHUR"
+      ],
+      "characterCount": 49350,
+      "sha256": "9b15c64d2adcad89ad49b1e8fa80554f8515da97b3bdc47a5257836f4829004c",
+      "file": "0269.json"
+    },
+    {
+      "id": "guidingsymptomso00heri10-010",
+      "sourceIdentifier": "guidingsymptomso00heri10",
+      "sourceIndex": 10,
+      "sourceChunkIndex": 10,
+      "label": "Volume 10 of 10",
+      "title": "Volume 10 of 10 · Section 10",
+      "indexHeadings": [],
+      "characterCount": 49934,
+      "sha256": "b9dde6d1fb8d1e2b7c2630aeae8e5f5a6c4f51bc9e77b1d1bf7106ad634930a1",
+      "file": "0270.json"
+    },
+    {
+      "id": "guidingsymptomso00heri10-011",
+      "sourceIdentifier": "guidingsymptomso00heri10",
+      "sourceIndex": 10,
+      "sourceChunkIndex": 11,
+      "label": "Volume 10 of 10",
+      "title": "Volume 10 of 10 · Section 11 — SULPHURICUM ACIDUM",
+      "indexHeadings": [
+        "SULPHURICUM ACIDUM",
+        "SUMBUL",
+        "SYMPHYTUM"
+      ],
+      "characterCount": 49842,
+      "sha256": "1463b68276d63557f100a181763f5d91fa86ecdbc3e07a647739726b61579754",
+      "file": "0271.json"
+    },
+    {
+      "id": "guidingsymptomso00heri10-012",
+      "sourceIdentifier": "guidingsymptomso00heri10",
+      "sourceIndex": 10,
+      "sourceChunkIndex": 12,
+      "label": "Volume 10 of 10",
+      "title": "Volume 10 of 10 · Section 12",
+      "indexHeadings": [],
+      "characterCount": 49641,
+      "sha256": "cabcc9054d861f6c539ada427bfafd5706a67e3f161bc991abf1adf739084edd",
+      "file": "0272.json"
+    },
+    {
+      "id": "guidingsymptomso00heri10-013",
+      "sourceIdentifier": "guidingsymptomso00heri10",
+      "sourceIndex": 10,
+      "sourceChunkIndex": 13,
+      "label": "Volume 10 of 10",
+      "title": "Volume 10 of 10 · Section 13 — TABACUM",
+      "indexHeadings": [
+        "TABACUM",
+        "TARAXACUM",
+        "TARENTULA"
+      ],
+      "characterCount": 49823,
+      "sha256": "84f9335b28f4d930263b3cd00aff882adf256148346d05d04c083d73de436c92",
+      "file": "0273.json"
+    },
+    {
+      "id": "guidingsymptomso00heri10-014",
+      "sourceIdentifier": "guidingsymptomso00heri10",
+      "sourceIndex": 10,
+      "sourceChunkIndex": 14,
+      "label": "Volume 10 of 10",
+      "title": "Volume 10 of 10 · Section 14 — TELLURIUM",
+      "indexHeadings": [
+        "TELLURIUM"
+      ],
+      "characterCount": 49975,
+      "sha256": "c71d73651addd69d7a0e6b7bf9033bbc60953c23996e1c9543bbdb24fe2d3c8f",
+      "file": "0274.json"
+    },
+    {
+      "id": "guidingsymptomso00heri10-015",
+      "sourceIdentifier": "guidingsymptomso00heri10",
+      "sourceIndex": 10,
+      "sourceChunkIndex": 15,
+      "label": "Volume 10 of 10",
+      "title": "Volume 10 of 10 · Section 15 — TEREBINTHINA",
+      "indexHeadings": [
+        "TEREBINTHINA"
+      ],
+      "characterCount": 49968,
+      "sha256": "9345c39efc159595ef69659dc2452d0671f0e41373c8c66a680f78e607654d9c",
+      "file": "0275.json"
+    },
+    {
+      "id": "guidingsymptomso00heri10-016",
+      "sourceIdentifier": "guidingsymptomso00heri10",
+      "sourceIndex": 10,
+      "sourceChunkIndex": 16,
+      "label": "Volume 10 of 10",
+      "title": "Volume 10 of 10 · Section 16 — THERIDION CURASSAVICUM",
+      "indexHeadings": [
+        "THERIDION CURASSAVICUM",
+        "THLASPI BURSA PASTORIS",
+        "THUJA"
+      ],
+      "characterCount": 49945,
+      "sha256": "b016d16f5c01306fdf4f92bcc8ff7beded362ae8e04548db7259c401cf3c3208",
+      "file": "0276.json"
+    },
+    {
+      "id": "guidingsymptomso00heri10-017",
+      "sourceIdentifier": "guidingsymptomso00heri10",
+      "sourceIndex": 10,
+      "sourceChunkIndex": 17,
+      "label": "Volume 10 of 10",
+      "title": "Volume 10 of 10 · Section 17 — ^^^ THUJA",
+      "indexHeadings": [
+        "^^^ THUJA"
+      ],
+      "characterCount": 49828,
+      "sha256": "4e16cad700fd8e2737a953a9f88f10619cef61dc1b946c3dbcd424e77e07f938",
+      "file": "0277.json"
+    },
+    {
+      "id": "guidingsymptomso00heri10-018",
+      "sourceIdentifier": "guidingsymptomso00heri10",
+      "sourceIndex": 10,
+      "sourceChunkIndex": 18,
+      "label": "Volume 10 of 10",
+      "title": "Volume 10 of 10 · Section 18 — TRILLIUM PENDULUM",
+      "indexHeadings": [
+        "TRILLIUM PENDULUM",
+        "TROMBIDIUffl"
+      ],
+      "characterCount": 49993,
+      "sha256": "d8a6446251313f9baf5e6b3237d88bd31722511788e351fd1b744b61252bb5e7",
+      "file": "0278.json"
+    },
+    {
+      "id": "guidingsymptomso00heri10-019",
+      "sourceIdentifier": "guidingsymptomso00heri10",
+      "sourceIndex": 10,
+      "sourceChunkIndex": 19,
+      "label": "Volume 10 of 10",
+      "title": "Volume 10 of 10 · Section 19 — TUBERCULINUM",
+      "indexHeadings": [
+        "TUBERCULINUM",
+        "URANIUM NITRICUM",
+        "URTICA URENS",
+        "USTILAGO"
+      ],
+      "characterCount": 49822,
+      "sha256": "97e2002026ae5fffe53adabcb55a02af36a6b0229afed1d3944180d6352d61c2",
+      "file": "0279.json"
+    },
+    {
+      "id": "guidingsymptomso00heri10-020",
+      "sourceIdentifier": "guidingsymptomso00heri10",
+      "sourceIndex": 10,
+      "sourceChunkIndex": 20,
+      "label": "Volume 10 of 10",
+      "title": "Volume 10 of 10 · Section 20 — UVA URSI",
+      "indexHeadings": [
+        "UVA URSI",
+        "VACCININUM AND VARIOLINUM",
+        "VALERIANA"
+      ],
+      "characterCount": 50001,
+      "sha256": "0de246a6d5d6aa8064b832f47e38adcf9ae66eba2daf028a7d2c8e4d1958ff8f",
+      "file": "0280.json"
+    },
+    {
+      "id": "guidingsymptomso00heri10-021",
+      "sourceIdentifier": "guidingsymptomso00heri10",
+      "sourceIndex": 10,
+      "sourceChunkIndex": 21,
+      "label": "Volume 10 of 10",
+      "title": "Volume 10 of 10 · Section 21 — VERATRUM ALBUWI",
+      "indexHeadings": [
+        "VERATRUM ALBUWI"
+      ],
+      "characterCount": 49858,
+      "sha256": "cea808ad175c0846f4fe63caf3aa4cdd282c01efd74ac233e9ab671e52482a8f",
+      "file": "0281.json"
+    },
+    {
+      "id": "guidingsymptomso00heri10-022",
+      "sourceIdentifier": "guidingsymptomso00heri10",
+      "sourceIndex": 10,
+      "sourceChunkIndex": 22,
+      "label": "Volume 10 of 10",
+      "title": "Volume 10 of 10 · Section 22 — VERATRUM VIRIDE",
+      "indexHeadings": [
+        "VERATRUM VIRIDE"
+      ],
+      "characterCount": 49791,
+      "sha256": "267415e97167de86783ef3614f4e1d837a8dcbe51d097a7da8b957f5d50faeb7",
+      "file": "0282.json"
+    },
+    {
+      "id": "guidingsymptomso00heri10-023",
+      "sourceIdentifier": "guidingsymptomso00heri10",
+      "sourceIndex": 10,
+      "sourceChunkIndex": 23,
+      "label": "Volume 10 of 10",
+      "title": "Volume 10 of 10 · Section 23 — VERBASCUM THAPSUS",
+      "indexHeadings": [
+        "VERBASCUM THAPSUS"
+      ],
+      "characterCount": 49971,
+      "sha256": "a1345cf2ca252447cec2ed458cb692e98b0010b1e71e1a871434e3ec78f7b02f",
+      "file": "0283.json"
+    },
+    {
+      "id": "guidingsymptomso00heri10-024",
+      "sourceIdentifier": "guidingsymptomso00heri10",
+      "sourceIndex": 10,
+      "sourceChunkIndex": 24,
+      "label": "Volume 10 of 10",
+      "title": "Volume 10 of 10 · Section 24 — VESPA",
+      "indexHeadings": [
+        "VESPA",
+        "VIBURNUM OPULUS"
+      ],
+      "characterCount": 49956,
+      "sha256": "c46ecb06ec4788093c6b6280b40385749b69a918805785137f7a54545a15fc76",
+      "file": "0284.json"
+    },
+    {
+      "id": "guidingsymptomso00heri10-025",
+      "sourceIdentifier": "guidingsymptomso00heri10",
+      "sourceIndex": 10,
+      "sourceChunkIndex": 25,
+      "label": "Volume 10 of 10",
+      "title": "Volume 10 of 10 · Section 25 — VINCA MINOR",
+      "indexHeadings": [
+        "VINCA MINOR",
+        "VIOLA ODORATA",
+        "XANTHOXYLUM",
+        "ZINCUM"
+      ],
+      "characterCount": 49435,
+      "sha256": "b4c03ac3bc213af18540c5e731e94cdae36164fb35394597d927c505115f473b",
+      "file": "0285.json"
+    },
+    {
+      "id": "guidingsymptomso00heri10-026",
+      "sourceIdentifier": "guidingsymptomso00heri10",
+      "sourceIndex": 10,
+      "sourceChunkIndex": 26,
+      "label": "Volume 10 of 10",
+      "title": "Volume 10 of 10 · Section 26",
+      "indexHeadings": [],
+      "characterCount": 49968,
+      "sha256": "7482102270eff3170d32c1752c9330a34330964d1c4f77b16a57ce02af1e02a3",
+      "file": "0286.json"
+    },
+    {
+      "id": "guidingsymptomso00heri10-027",
+      "sourceIdentifier": "guidingsymptomso00heri10",
+      "sourceIndex": 10,
+      "sourceChunkIndex": 27,
+      "label": "Volume 10 of 10",
+      "title": "Volume 10 of 10 · Section 27 — ZINCUM",
+      "indexHeadings": [
+        "ZINCUM"
+      ],
+      "characterCount": 49991,
+      "sha256": "550a132a86d7d8ef8c8e91f8897d3414dae73da75eb75d0a9681212907a357e2",
+      "file": "0287.json"
+    },
+    {
+      "id": "guidingsymptomso00heri10-028",
+      "sourceIdentifier": "guidingsymptomso00heri10",
+      "sourceIndex": 10,
+      "sourceChunkIndex": 28,
+      "label": "Volume 10 of 10",
+      "title": "Volume 10 of 10 · Section 28 — ^^^ ZINCUM",
+      "indexHeadings": [
+        "^^^ ZINCUM"
+      ],
+      "characterCount": 49985,
+      "sha256": "5663d2037b1c9194905a98558a1566af98d5395c97e7b673fd16e748eb2aa78c",
+      "file": "0288.json"
+    },
+    {
+      "id": "guidingsymptomso00heri10-029",
+      "sourceIdentifier": "guidingsymptomso00heri10",
+      "sourceIndex": 10,
+      "sourceChunkIndex": 29,
+      "label": "Volume 10 of 10",
+      "title": "Volume 10 of 10 · Section 29",
+      "indexHeadings": [],
+      "characterCount": 49985,
+      "sha256": "c9879f2b0437b239403caf90ead1535e9c3b03a5cabf212aaeef03067c85d181",
+      "file": "0289.json"
+    },
+    {
+      "id": "guidingsymptomso00heri10-030",
+      "sourceIdentifier": "guidingsymptomso00heri10",
+      "sourceIndex": 10,
+      "sourceChunkIndex": 30,
+      "label": "Volume 10 of 10",
+      "title": "Volume 10 of 10 · Section 30 — ZINGIBER",
+      "indexHeadings": [
+        "ZINGIBER",
+        "ZIZIA"
+      ],
+      "characterCount": 49972,
+      "sha256": "a9b6b1f738d301a2590a7c0cbcf573cefbcfec4a93128cd657c095e87628a270",
+      "file": "0290.json"
+    },
+    {
+      "id": "guidingsymptomso00heri10-031",
+      "sourceIdentifier": "guidingsymptomso00heri10",
+      "sourceIndex": 10,
+      "sourceChunkIndex": 31,
+      "label": "Volume 10 of 10",
+      "title": "Volume 10 of 10 · Section 31",
+      "indexHeadings": [],
+      "characterCount": 10479,
+      "sha256": "2958314aa38b00c5729e367b6fcc4b20848131b9f3544f9221584b83d91b9167",
+      "file": "0291.json"
+    }
+  ]
+}

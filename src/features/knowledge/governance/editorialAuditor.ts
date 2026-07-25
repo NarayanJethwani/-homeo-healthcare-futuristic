@@ -187,5 +187,10 @@ if (require.main === module) {
     summary.issues.slice(0, 15).forEach(iss => {
       console.log(`[${iss.type.toUpperCase()}] ${iss.entityId} (${iss.title}) - [${iss.category}]: ${iss.message}`);
     });
+    console.error(`\n❌ EDITORIAL AUDIT FAILED: ${summary.totalIssuesCount} quality issues detected.`);
+    process.exit(1);
+  } else {
+    console.log("\n✅ EDITORIAL AUDIT PASSED: Zero quality issues detected.");
+    process.exit(0);
   }
 }

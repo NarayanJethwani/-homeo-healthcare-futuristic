@@ -27,13 +27,13 @@ async function runEvidenceRegressionTests() {
 
     const testDraft: CmsArticleDraft = {
       id: "draft-reg-1",
-      articleId: "art-reg-1",
-      title: "Arnica for Pediatric Trauma",
-      slug: "arnica-ped-trauma",
+      articleId: "rem_sulphur",
+      title: "Sulphur Remedy",
+      slug: "sulphur",
       entityType: "remedy",
       status: "published",
-      draftContent: "Arnica pediatric trauma notes",
-      references: ["Reference 1"],
+      draftContent: "Sulphur remedy overview and keynotes",
+      references: ["CIT-001"],
       reviewer: "Dr. Narayan Jethwani",
       reviewerRole: "MD(Hom)",
       clinicalReviewDate: "2026-07-11T00:00:00.000Z",
@@ -68,8 +68,8 @@ async function runEvidenceRegressionTests() {
       relatedEntities: [],
       lastReviewed: testDraft.clinicalReviewDate,
       lastUpdated: new Date().toISOString(),
-      author: { name: "Dr. Narayan Jethwani" },
-      reviewer: { name: "Dr. Narayan Jethwani", specialty: "MD(Hom)" },
+      author: { id: "CONTRIB-AUTH-01", name: "Dr. Narayan Jethwani" },
+      reviewer: { id: "CONTRIB-REV-01", name: "Dr. Second Reviewer", specialty: "MD(Hom)" },
       reviewerRole: "MD(Hom)",
       lastClinicalReview: testDraft.clinicalReviewDate,
       nextClinicalReview: testDraft.nextReviewDate,
@@ -78,9 +78,10 @@ async function runEvidenceRegressionTests() {
       isCornerstone: false,
       evidenceLevel: "Level-A",
       tags: [],
-      canonicalUrl: `https://homeo.healthcare/knowledge/${testDraft.entityType}s/${testDraft.slug}`,
-      editorialStatus: "published",
-      nextReviewDate: testDraft.nextReviewDate,
+      canonicalUrl: "https://homeo.healthcare/knowledge/remedies/sulphur",
+      readingTimeMinutes: 5,
+      audience: "practitioner",
+      license: "CC-BY-4.0",
       versionInfo: {
         version: "1.0.0",
         created: testDraft.createdAt,
@@ -97,14 +98,14 @@ async function runEvidenceRegressionTests() {
     await globalKmsRepository.saveEntity(publicEntity as any, "Dr. Narayan Jethwani", "Administrator", "Initial publish");
 
     featureFlags.knowledgeEvidenceScoringEnabled = false;
-    const resultsFlagOff = await ragService.hybridSearch("Arnica", "public-search");
-    const itemOff = resultsFlagOff.find(r => r.document.id === testDraft.articleId);
+    const resultsFlagOff = await ragService.hybridSearch("Sulphur", "public-search");
+    const itemOff = resultsFlagOff.find(r => r.document.id === testDraft.articleId || r.document.id.includes(testDraft.articleId));
     assert.ok(itemOff);
     assert.ok(!itemOff.rankingExplanation);
 
     featureFlags.knowledgeEvidenceScoringEnabled = true;
-    const resultsFlagOn = await ragService.hybridSearch("Arnica", "public-search");
-    const itemOn = resultsFlagOn.find(r => r.document.id === testDraft.articleId);
+    const resultsFlagOn = await ragService.hybridSearch("Sulphur", "public-search");
+    const itemOn = resultsFlagOn.find(r => r.document.id === testDraft.articleId || r.document.id.includes(testDraft.articleId));
     assert.ok(itemOn);
     assert.ok(itemOn.rankingExplanation);
     assert.ok(itemOn.rankingExplanation.evidencePriorityScore !== undefined);

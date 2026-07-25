@@ -47,15 +47,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return generateMedicalMetadata(remedy);
 }
 
+import { evaluatePublicationEligibility } from "@/features/knowledge/governance/publicationGuard";
+
 export default async function RemedyDetailPage({ params }: PageProps) {
   const { slug } = await params;
   const remedy = REMEDIES.find(r => r.slug === slug);
 
-  if (!remedy || remedy.editorialStatus !== "published") {
+  if (!remedy) {
     notFound();
   }
 
-  const schemaJson = generateMedicalWebPageSchema(remedy);
+  const eligibility = evaluatePublicationEligibility(remedy);
+  if (eligibility.publicationStatus === "draft" || eligibility.publicationStatus === "archived") {
+    notFound();
+  }
+
   const title = typeof remedy.title === "string" ? remedy.title : (remedy.title?.en || "");
   const summary = typeof remedy.summary === "string" ? remedy.summary : (remedy.summary?.en || "");
   const content = remedy.content;
@@ -64,6 +70,33 @@ export default async function RemedyDetailPage({ params }: PageProps) {
     { name: "Remedies", item: "https://homeo.healthcare/knowledge/remedies" },
     { name: title, item: remedy.canonicalUrl },
   ];
+
+  if (eligibility.publicationStatus === "withdrawn") {
+    return (
+      <KnowledgePageLayout
+        title={title}
+        subtitle={summary}
+        backLink="/knowledge/remedies"
+        backText="Back to Remedies"
+        headerBadges={<span className="text-xs bg-rose-500/10 text-rose-400 px-2.5 py-1 rounded-md font-bold border border-rose-500/20">Under Clinical Review</span>}
+        entityId={remedy.id}
+        entityType={remedy.entityType}
+      >
+        <Breadcrumbs crumbs={crumbs} />
+        <EditorialConfidenceBadge entity={remedy} reviewedDate={remedy.versionInfo.reviewed} />
+        <div className="p-8 my-8 border border-amber-500/20 bg-amber-500/5 rounded-2xl text-center space-y-4">
+          <div className="inline-flex items-center justify-center p-3 bg-amber-500/10 rounded-full text-amber-500">
+            <ShieldAlert className="h-8 w-8 text-amber-400" />
+          </div>
+          <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">Content Under Clinical Review</h2>
+          <p className="text-sm text-neutral-600 dark:text-neutral-300 max-w-xl mx-auto leading-relaxed">
+            This clinical remedy entry is currently undergoing independent clinical review to ensure source taxonomy, safety boundaries, and evidence alignment. Body content is temporarily unavailable.
+          </p>
+        </div>
+        <MedicalDisclaimer />
+      </KnowledgePageLayout>
+    );
+  }
 
   const tocItems = [
     { id: "overview", label: "Overview & Source" },

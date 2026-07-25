@@ -89,10 +89,10 @@ export const ReaderContentView: React.FC<ReaderContentViewProps> = ({
 
   if (!selectedRemedyTitle || !selectedRemedyContent) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-slate-900/10 border border-slate-800 rounded-3xl min-h-[350px]">
-        <span className="text-xl font-serif text-slate-400 font-bold">Select a remedy to begin reading</span>
-        <p className="text-xs text-slate-500 max-w-sm mt-2 leading-relaxed">
-          Choose a remedy from the alphabetical list on the left to view James Tyler Kent's lectures and clinical provings.
+      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-[var(--reader-surface)] border border-[var(--reader-border)] rounded-3xl min-h-[350px] shadow-sm">
+        <span className="text-xl font-serif text-[var(--reader-text)] font-bold">Select a section to begin reading</span>
+        <p className="text-sm text-[var(--reader-muted)] max-w-sm mt-2 leading-relaxed">
+          Choose a section from the index on the left to open the source-verified text from {bookTitle}.
         </p>
       </div>
     );
@@ -188,13 +188,13 @@ export const ReaderContentView: React.FC<ReaderContentViewProps> = ({
   const sanitized = sanitizeHtml(selectedRemedyContent);
 
   return (
-    <div className="flex-1 flex flex-col p-6 md:p-8 bg-slate-900/10 border border-slate-800 rounded-3xl min-h-[400px]">
+    <div className="flex-1 flex flex-col p-6 md:p-8 bg-[var(--reader-surface)] border border-[var(--reader-border)] rounded-3xl min-h-[400px] shadow-sm">
       <article className="prose prose-slate mx-auto w-full" style={contentStyle}>
-        <div className="border-b border-slate-800/60 pb-6 mb-6">
-          <h1 className="text-3xl font-serif font-bold text-amber-500 mb-2 leading-tight">
+        <div className="border-b border-[var(--reader-border)] pb-6 mb-6">
+          <h1 className="text-3xl font-serif font-bold text-[var(--reader-accent)] mb-2 leading-tight">
             {selectedRemedyTitle}
           </h1>
-          <div className="flex flex-wrap gap-x-3 gap-y-1 text-slate-500 font-mono text-[10px] uppercase tracking-wider">
+          <div className="flex flex-wrap gap-x-3 gap-y-1 text-[var(--reader-muted)] font-mono text-[10px] uppercase tracking-wider">
             <span>{bookTitle}</span>
             <span>·</span>
             <span>By {bookAuthor} ({bookYear})</span>
@@ -202,7 +202,7 @@ export const ReaderContentView: React.FC<ReaderContentViewProps> = ({
         </div>
 
         {isWorkspaceEnabled && blocks.length > 0 ? (
-          <div className="reader-proving-content font-serif text-slate-300 leading-relaxed space-y-6">
+          <div className="reader-proving-content font-serif text-[var(--reader-text)] leading-relaxed space-y-6">
             {blocks.map((block, idx) => {
               const blockId = getDeterministicBlockId(idx, block.text);
               const isBookmarkedFlag = bookmarks.some(b => b.blockId === blockId || (!b.blockId && block.type === "heading"));
@@ -216,11 +216,11 @@ export const ReaderContentView: React.FC<ReaderContentViewProps> = ({
                 <div key={blockId} className="group relative block-container pr-8 hover:bg-slate-950/20 rounded p-2 transition-all">
                   {/* Block content */}
                   {isHeading ? (
-                    <h3 className="text-xl font-bold text-slate-100">{block.text}</h3>
+                    <h3 className="text-xl font-bold text-[var(--reader-text)]">{block.text}</h3>
                   ) : isSectionLabel ? (
-                    <h4 className="text-md font-bold text-slate-400 mt-4 mb-2">{block.text}</h4>
+                    <h4 className="text-md font-bold text-[var(--reader-muted)] mt-4 mb-2">{block.text}</h4>
                   ) : (
-                    <p className="text-slate-300 text-sm leading-relaxed">{block.text}</p>
+                    <p className="text-[var(--reader-text)] text-sm leading-relaxed">{block.text}</p>
                   )}
 
                   {/* Actions (Bookmark + Notes) */}
@@ -410,7 +410,7 @@ export const ReaderContentView: React.FC<ReaderContentViewProps> = ({
           </div>
         ) : (
           <div
-            className="reader-proving-content font-serif text-slate-300 leading-relaxed space-y-6"
+            className="reader-proving-content font-serif text-[var(--reader-text)] leading-relaxed space-y-6 [&_h3]:text-[var(--reader-text)] [&_h4]:text-[var(--reader-muted)] [&_p]:text-[var(--reader-text)]"
             dangerouslySetInnerHTML={{ __html: sanitized }}
           />
         )}

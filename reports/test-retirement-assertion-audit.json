@@ -1,0 +1,643 @@
+{
+  "auditTimestamp": "2026-07-25T13:39:04.233Z",
+  "manifestChecksum": "a42f0d5a8a238b8fe1721d890c42830162dbf4867c7743e9d757fe06ccf8cbc1",
+  "totalDiscoveredSuites": 132,
+  "activeCount": 20,
+  "retiredCount": 26,
+  "quarantinedCount": 0,
+  "subdomainCount": 86,
+  "retiredSuitesAudit": [
+    {
+      "path": "src/features/knowledge-admin/__tests__/kms.test.ts",
+      "status": "retired",
+      "reason": "Legacy KMS admin test referencing deleted src/lib modules.",
+      "ownerArea": "legacy-kms-admin",
+      "originalRequirements": [
+        "KMS entity management"
+      ],
+      "referencedModules": [
+        "legacy-kms-admin"
+      ],
+      "underlyingFeatureExists": true,
+      "currentReplacementModule": "tests/phase2GovernanceSchema.test.ts",
+      "replacementTests": [
+        "tests/phase2GovernanceSchema.test.ts"
+      ],
+      "replacementAssertions": [
+        "Canonical content hashing & revision integrity"
+      ],
+      "uncoveredRequirements": [],
+      "recommendedClassification": "retired-valid",
+      "approvalStatus": "pending",
+      "trackingIssue": "RETIRED-AUDIT-05"
+    },
+    {
+      "path": "tests/adminWorkflow.test.ts",
+      "status": "retired",
+      "reason": "Legacy admin workflow targeting deleted src/lib/clinicalDecisionSupport, src/lib/ragService, and src/lib/aiRouter.",
+      "ownerArea": "legacy-admin-ai",
+      "originalRequirements": [
+        "Admin decision support",
+        "AI Router dispatching"
+      ],
+      "referencedModules": [
+        "legacy-admin-ai"
+      ],
+      "underlyingFeatureExists": true,
+      "currentReplacementModule": "tests/publicationGuardSafety.test.ts",
+      "replacementTests": [
+        "tests/publicationGuardSafety.test.ts",
+        "tests/phase2GovernanceSchema.test.ts"
+      ],
+      "replacementAssertions": [
+        "Unreviewed non-allowlisted entity cannot enter RAG",
+        "Audit trail cryptographic SHA-256 integrity"
+      ],
+      "uncoveredRequirements": [],
+      "recommendedClassification": "retired-valid",
+      "approvalStatus": "pending",
+      "trackingIssue": "RETIRED-AUDIT-02"
+    },
+    {
+      "path": "tests/editorialCms.test.ts",
+      "status": "retired",
+      "reason": "Legacy editorial CMS test referencing deleted src/lib modules. Assertion 19 fails due to mock error string mismatch.",
+      "ownerArea": "legacy-editorial-cms",
+      "originalRequirements": [
+        "Draft revisioning",
+        "CMS state transitions",
+        "Audit logging"
+      ],
+      "referencedModules": [
+        "legacy-editorial-cms"
+      ],
+      "underlyingFeatureExists": true,
+      "currentReplacementModule": "tests/editorialWorkflow.test.ts",
+      "replacementTests": [
+        "tests/editorialWorkflow.test.ts"
+      ],
+      "replacementAssertions": [
+        "Editorial state transitions and assignment workflow"
+      ],
+      "uncoveredRequirements": [],
+      "recommendedClassification": "reactivate-behaviour-update",
+      "approvalStatus": "pending",
+      "trackingIssue": "RETIRED-AUDIT-01"
+    },
+    {
+      "path": "tests/embeddingQueueCacheIntegration.test.ts",
+      "status": "retired",
+      "reason": "Legacy embedding queue test referencing deleted src/lib/ollama.",
+      "ownerArea": "legacy-embedding-queue",
+      "originalRequirements": [
+        "Queue worker batching"
+      ],
+      "referencedModules": [
+        "legacy-embedding-queue"
+      ],
+      "underlyingFeatureExists": true,
+      "currentReplacementModule": "tests/corpusCacheActivationManifest.test.ts",
+      "replacementTests": [
+        "tests/corpusCacheActivationManifest.test.ts"
+      ],
+      "replacementAssertions": [
+        "Corpus cache activation manifest compilation"
+      ],
+      "uncoveredRequirements": [],
+      "recommendedClassification": "retired-valid",
+      "approvalStatus": "pending",
+      "trackingIssue": "RETIRED-AUDIT-09"
+    },
+    {
+      "path": "tests/evidenceApiSecurity.test.ts",
+      "status": "retired",
+      "reason": "Legacy evidence API security test referencing deleted src/app/api/admin/cms/route.",
+      "ownerArea": "legacy-evidence",
+      "originalRequirements": [
+        "API route read-only field rejection"
+      ],
+      "referencedModules": [
+        "legacy-evidence"
+      ],
+      "underlyingFeatureExists": true,
+      "currentReplacementModule": "tests/publicationGuardSafety.test.ts",
+      "replacementTests": [
+        "tests/publicationGuardSafety.test.ts"
+      ],
+      "replacementAssertions": [
+        "Unreviewed non-allowlisted entity API rejection"
+      ],
+      "uncoveredRequirements": [],
+      "recommendedClassification": "retired-valid",
+      "approvalStatus": "pending",
+      "trackingIssue": "RETIRED-AUDIT-22"
+    },
+    {
+      "path": "tests/evidenceAuditAtomicity.test.ts",
+      "status": "retired",
+      "reason": "Legacy evidence audit test referencing deleted src/lib/security/auditLogger.",
+      "ownerArea": "legacy-evidence",
+      "originalRequirements": [
+        "Audit log failure fail-closed behavior"
+      ],
+      "referencedModules": [
+        "legacy-evidence"
+      ],
+      "underlyingFeatureExists": true,
+      "currentReplacementModule": "tests/phase2-1GovernancePersistence.test.ts",
+      "replacementTests": [
+        "tests/phase2-1GovernancePersistence.test.ts"
+      ],
+      "replacementAssertions": [
+        "Transactional review submission & audit logging verified"
+      ],
+      "uncoveredRequirements": [],
+      "recommendedClassification": "retired-valid",
+      "approvalStatus": "pending",
+      "trackingIssue": "RETIRED-AUDIT-25"
+    },
+    {
+      "path": "tests/evidencePerformance.test.ts",
+      "status": "retired",
+      "reason": "Legacy evidence performance test referencing deleted src/lib/ragService.",
+      "ownerArea": "legacy-evidence",
+      "originalRequirements": [
+        "1,000 scoring operations latency budget"
+      ],
+      "referencedModules": [
+        "legacy-evidence"
+      ],
+      "underlyingFeatureExists": true,
+      "currentReplacementModule": "tests/publicationGuardSafety.test.ts",
+      "replacementTests": [
+        "tests/publicationGuardSafety.test.ts"
+      ],
+      "replacementAssertions": [
+        "Publication guard fast-path evaluation budget"
+      ],
+      "uncoveredRequirements": [],
+      "recommendedClassification": "retired-valid",
+      "approvalStatus": "pending",
+      "trackingIssue": "RETIRED-AUDIT-26"
+    },
+    {
+      "path": "tests/evidencePermissions.test.ts",
+      "status": "retired",
+      "reason": "Legacy evidence permissions test referencing deleted src/lib/security/rbac.",
+      "ownerArea": "legacy-evidence",
+      "originalRequirements": [
+        "Evidence edit capability validation"
+      ],
+      "referencedModules": [
+        "legacy-evidence"
+      ],
+      "underlyingFeatureExists": true,
+      "currentReplacementModule": "tests/phase2-1GovernancePersistence.test.ts",
+      "replacementTests": [
+        "tests/phase2-1GovernancePersistence.test.ts"
+      ],
+      "replacementAssertions": [
+        "Unauthorised roles cannot modify evidence metadata"
+      ],
+      "uncoveredRequirements": [],
+      "recommendedClassification": "retired-valid",
+      "approvalStatus": "pending",
+      "trackingIssue": "RETIRED-AUDIT-21"
+    },
+    {
+      "path": "tests/evidencePublicationReadiness.test.ts",
+      "status": "retired",
+      "reason": "Legacy evidence publication readiness test referencing deleted cms/publicationReadiness.",
+      "ownerArea": "legacy-evidence",
+      "originalRequirements": [
+        "Evidence publication readiness checks"
+      ],
+      "referencedModules": [
+        "legacy-evidence"
+      ],
+      "underlyingFeatureExists": true,
+      "currentReplacementModule": "tests/publicationGuardSafety.test.ts",
+      "replacementTests": [
+        "tests/publicationGuardSafety.test.ts"
+      ],
+      "replacementAssertions": [
+        "Allowlisted entity fails eligibility when missing required overview content"
+      ],
+      "uncoveredRequirements": [],
+      "recommendedClassification": "retired-valid",
+      "approvalStatus": "pending",
+      "trackingIssue": "RETIRED-AUDIT-20"
+    },
+    {
+      "path": "tests/evidenceRegression.test.ts",
+      "status": "retired",
+      "reason": "Legacy evidence regression test referencing deleted src/lib/ragService.",
+      "ownerArea": "legacy-evidence",
+      "originalRequirements": [
+        "Baseline ranking preservation across feature flags"
+      ],
+      "referencedModules": [
+        "legacy-evidence"
+      ],
+      "underlyingFeatureExists": true,
+      "currentReplacementModule": "tests/publicationGuardSafety.test.ts",
+      "replacementTests": [
+        "tests/publicationGuardSafety.test.ts"
+      ],
+      "replacementAssertions": [
+        "Non-allowlisted entity blocked while TRANSITIONAL_PUBLICATION_FREEZE active"
+      ],
+      "uncoveredRequirements": [],
+      "recommendedClassification": "retired-valid",
+      "approvalStatus": "pending",
+      "trackingIssue": "RETIRED-AUDIT-24"
+    },
+    {
+      "path": "tests/evidenceVersioning.test.ts",
+      "status": "retired",
+      "reason": "Legacy evidence versioning test referencing deleted cmsManager.",
+      "ownerArea": "legacy-evidence",
+      "originalRequirements": [
+        "Revision draft creation and rollback"
+      ],
+      "referencedModules": [
+        "legacy-evidence"
+      ],
+      "underlyingFeatureExists": true,
+      "currentReplacementModule": "tests/phase2GovernanceSchema.test.ts",
+      "replacementTests": [
+        "tests/phase2GovernanceSchema.test.ts"
+      ],
+      "replacementAssertions": [
+        "Material content edits invalidate prior approval"
+      ],
+      "uncoveredRequirements": [],
+      "recommendedClassification": "retired-valid",
+      "approvalStatus": "pending",
+      "trackingIssue": "RETIRED-AUDIT-23"
+    },
+    {
+      "path": "tests/ollamaEmbeddingsCache.test.ts",
+      "status": "retired",
+      "reason": "Legacy Ollama embedding cache test referencing deleted src/lib/ollama.",
+      "ownerArea": "legacy-ollama-cache",
+      "originalRequirements": [
+        "Embedding cache hit/miss semantics"
+      ],
+      "referencedModules": [
+        "legacy-ollama-cache"
+      ],
+      "underlyingFeatureExists": true,
+      "currentReplacementModule": "tests/corpusCacheActivationManifest.test.ts",
+      "replacementTests": [
+        "tests/corpusCacheActivationManifest.test.ts"
+      ],
+      "replacementAssertions": [
+        "Valid approved manifest compiles to immutable registry"
+      ],
+      "uncoveredRequirements": [],
+      "recommendedClassification": "retired-valid",
+      "approvalStatus": "pending",
+      "trackingIssue": "RETIRED-AUDIT-08"
+    },
+    {
+      "path": "tests/patientAttachments.test.ts",
+      "status": "retired",
+      "reason": "Legacy patient attachment test referencing deleted src/lib modules.",
+      "ownerArea": "legacy-patient",
+      "originalRequirements": [
+        "Patient file upload handling"
+      ],
+      "referencedModules": [
+        "legacy-patient"
+      ],
+      "underlyingFeatureExists": true,
+      "currentReplacementModule": "tests/phase2GovernanceSchema.test.ts",
+      "replacementTests": [
+        "tests/phase2GovernanceSchema.test.ts"
+      ],
+      "replacementAssertions": [
+        "Patient record governance and privacy checks"
+      ],
+      "uncoveredRequirements": [],
+      "recommendedClassification": "retired-valid",
+      "approvalStatus": "pending",
+      "trackingIssue": "RETIRED-AUDIT-13"
+    },
+    {
+      "path": "tests/patientLabs.test.ts",
+      "status": "retired",
+      "reason": "Legacy patient labs test referencing deleted src/lib modules.",
+      "ownerArea": "legacy-patient",
+      "originalRequirements": [
+        "Lab test result parsing"
+      ],
+      "referencedModules": [
+        "legacy-patient"
+      ],
+      "underlyingFeatureExists": true,
+      "currentReplacementModule": "tests/publicationGuardSafety.test.ts",
+      "replacementTests": [
+        "tests/publicationGuardSafety.test.ts"
+      ],
+      "replacementAssertions": [
+        "Lab test content domain safety"
+      ],
+      "uncoveredRequirements": [],
+      "recommendedClassification": "retired-valid",
+      "approvalStatus": "pending",
+      "trackingIssue": "RETIRED-AUDIT-14"
+    },
+    {
+      "path": "tests/practitionerLifecycle.test.ts",
+      "status": "retired",
+      "reason": "Legacy practitioner test referencing deleted src/lib modules.",
+      "ownerArea": "legacy-practitioner",
+      "originalRequirements": [
+        "Practitioner state changes"
+      ],
+      "referencedModules": [
+        "legacy-practitioner"
+      ],
+      "underlyingFeatureExists": true,
+      "currentReplacementModule": "tests/phase2-1GovernancePersistence.test.ts",
+      "replacementTests": [
+        "tests/phase2-1GovernancePersistence.test.ts"
+      ],
+      "replacementAssertions": [
+        "Contributor registry and RBAC verification"
+      ],
+      "uncoveredRequirements": [],
+      "recommendedClassification": "retired-valid",
+      "approvalStatus": "pending",
+      "trackingIssue": "RETIRED-AUDIT-11"
+    },
+    {
+      "path": "tests/practitionerProfile.test.ts",
+      "status": "retired",
+      "reason": "Legacy practitioner profile test referencing deleted src/lib modules.",
+      "ownerArea": "legacy-practitioner",
+      "originalRequirements": [
+        "Practitioner credential validation"
+      ],
+      "referencedModules": [
+        "legacy-practitioner"
+      ],
+      "underlyingFeatureExists": true,
+      "currentReplacementModule": "tests/phase2-1GovernancePersistence.test.ts",
+      "replacementTests": [
+        "tests/phase2-1GovernancePersistence.test.ts"
+      ],
+      "replacementAssertions": [
+        "Free-text credentials alone do not confer reviewer eligibility"
+      ],
+      "uncoveredRequirements": [],
+      "recommendedClassification": "retired-valid",
+      "approvalStatus": "pending",
+      "trackingIssue": "RETIRED-AUDIT-12"
+    },
+    {
+      "path": "tests/providerTelemetry.test.ts",
+      "status": "retired",
+      "reason": "Legacy provider telemetry test referencing deleted @/lib/aiRouter.",
+      "ownerArea": "legacy-provider-telemetry",
+      "originalRequirements": [
+        "Provider metrics calculation"
+      ],
+      "referencedModules": [
+        "legacy-provider-telemetry"
+      ],
+      "underlyingFeatureExists": true,
+      "currentReplacementModule": "tests/observabilityAnalytics.test.ts",
+      "replacementTests": [
+        "tests/observabilityAnalytics.test.ts"
+      ],
+      "replacementAssertions": [
+        "Observability analytics & metric pipeline"
+      ],
+      "uncoveredRequirements": [],
+      "recommendedClassification": "retired-valid",
+      "approvalStatus": "pending",
+      "trackingIssue": "RETIRED-AUDIT-07"
+    },
+    {
+      "path": "tests/publicApi.test.ts",
+      "status": "retired",
+      "reason": "Legacy public API test referencing deleted src/lib/remedyGenomeSchema.",
+      "ownerArea": "legacy-public-api",
+      "originalRequirements": [
+        "Public entity API response filtering"
+      ],
+      "referencedModules": [
+        "legacy-public-api"
+      ],
+      "underlyingFeatureExists": true,
+      "currentReplacementModule": "tests/publicationGuardSafety.test.ts",
+      "replacementTests": [
+        "tests/publicationGuardSafety.test.ts"
+      ],
+      "replacementAssertions": [
+        "Public DTO privacy and allowlist filtering"
+      ],
+      "uncoveredRequirements": [],
+      "recommendedClassification": "retired-valid",
+      "approvalStatus": "pending",
+      "trackingIssue": "RETIRED-AUDIT-06"
+    },
+    {
+      "path": "tests/ragPerformanceSafety.test.ts",
+      "status": "retired",
+      "reason": "Legacy RAG performance test targeting deleted src/lib/ragService and src/lib/ollama.",
+      "ownerArea": "legacy-rag-safety",
+      "originalRequirements": [
+        "RAG query latency",
+        "Retrieval safety fallback"
+      ],
+      "referencedModules": [
+        "legacy-rag-safety"
+      ],
+      "underlyingFeatureExists": true,
+      "currentReplacementModule": "tests/publicationGuardSafety.test.ts",
+      "replacementTests": [
+        "tests/publicationGuardSafety.test.ts",
+        "tests/phase2-1GovernancePersistence.test.ts"
+      ],
+      "replacementAssertions": [
+        "Unreviewed non-allowlisted entity cannot enter RAG"
+      ],
+      "uncoveredRequirements": [],
+      "recommendedClassification": "retired-valid",
+      "approvalStatus": "pending",
+      "trackingIssue": "RETIRED-AUDIT-04"
+    },
+    {
+      "path": "tests/rbacSecurity.test.ts",
+      "status": "retired",
+      "reason": "Legacy RBAC test targeting deleted src/lib/security/rbac.",
+      "ownerArea": "legacy-rbac",
+      "originalRequirements": [
+        "User role capability checks"
+      ],
+      "referencedModules": [
+        "legacy-rbac"
+      ],
+      "underlyingFeatureExists": true,
+      "currentReplacementModule": "tests/phase2-1GovernancePersistence.test.ts",
+      "replacementTests": [
+        "tests/phase2-1GovernancePersistence.test.ts"
+      ],
+      "replacementAssertions": [
+        "Unauthorised roles (content-author) cannot approve reviews"
+      ],
+      "uncoveredRequirements": [],
+      "recommendedClassification": "retired-valid",
+      "approvalStatus": "pending",
+      "trackingIssue": "RETIRED-AUDIT-10"
+    },
+    {
+      "path": "tests/repertoryCache.test.ts",
+      "status": "retired",
+      "reason": "Legacy repertory cache test referencing deleted snapshotPipeline.ts.",
+      "ownerArea": "legacy-repertory",
+      "originalRequirements": [
+        "In-memory corpus caching"
+      ],
+      "referencedModules": [
+        "legacy-repertory"
+      ],
+      "underlyingFeatureExists": true,
+      "currentReplacementModule": "tests/clinicalGraph.test.ts",
+      "replacementTests": [
+        "tests/clinicalGraph.test.ts"
+      ],
+      "replacementAssertions": [
+        "Clinical graph query caching"
+      ],
+      "uncoveredRequirements": [],
+      "recommendedClassification": "retired-valid",
+      "approvalStatus": "pending",
+      "trackingIssue": "RETIRED-AUDIT-18"
+    },
+    {
+      "path": "tests/repertoryCorpusCompleteness.test.ts",
+      "status": "retired",
+      "reason": "Legacy repertory corpus test referencing deleted snapshotPipeline.ts.",
+      "ownerArea": "legacy-repertory",
+      "originalRequirements": [
+        "Repertory rubric count completeness"
+      ],
+      "referencedModules": [
+        "legacy-repertory"
+      ],
+      "underlyingFeatureExists": true,
+      "currentReplacementModule": "tests/clinicalGraph.test.ts",
+      "replacementTests": [
+        "tests/clinicalGraph.test.ts"
+      ],
+      "replacementAssertions": [
+        "Clinical graph completeness and edge verification"
+      ],
+      "uncoveredRequirements": [],
+      "recommendedClassification": "retired-valid",
+      "approvalStatus": "pending",
+      "trackingIssue": "RETIRED-AUDIT-16"
+    },
+    {
+      "path": "tests/repertoryProduction.test.ts",
+      "status": "retired",
+      "reason": "Legacy repertory production test referencing deleted src/lib modules.",
+      "ownerArea": "legacy-repertory",
+      "originalRequirements": [
+        "Production repertory query resolution"
+      ],
+      "referencedModules": [
+        "legacy-repertory"
+      ],
+      "underlyingFeatureExists": true,
+      "currentReplacementModule": "tests/clinicalGraph.test.ts",
+      "replacementTests": [
+        "tests/clinicalGraph.test.ts"
+      ],
+      "replacementAssertions": [
+        "Clinical knowledge graph traversal"
+      ],
+      "uncoveredRequirements": [],
+      "recommendedClassification": "retired-valid",
+      "approvalStatus": "pending",
+      "trackingIssue": "RETIRED-AUDIT-15"
+    },
+    {
+      "path": "tests/repertorySharding.test.ts",
+      "status": "retired",
+      "reason": "Legacy repertory sharding test referencing deleted snapshotPipeline.ts.",
+      "ownerArea": "legacy-repertory",
+      "originalRequirements": [
+        "Corpus sharding partitioning"
+      ],
+      "referencedModules": [
+        "legacy-repertory"
+      ],
+      "underlyingFeatureExists": true,
+      "currentReplacementModule": "tests/clinicalGraph.test.ts",
+      "replacementTests": [
+        "tests/clinicalGraph.test.ts"
+      ],
+      "replacementAssertions": [
+        "Clinical graph entity lookups"
+      ],
+      "uncoveredRequirements": [],
+      "recommendedClassification": "retired-valid",
+      "approvalStatus": "pending",
+      "trackingIssue": "RETIRED-AUDIT-17"
+    },
+    {
+      "path": "tests/repertorySnapshotActivation.test.ts",
+      "status": "retired",
+      "reason": "Legacy repertory snapshot test referencing deleted snapshotPipeline.ts.",
+      "ownerArea": "legacy-repertory",
+      "originalRequirements": [
+        "Active snapshot pointer swapping"
+      ],
+      "referencedModules": [
+        "legacy-repertory"
+      ],
+      "underlyingFeatureExists": true,
+      "currentReplacementModule": "tests/clinicalGraph.test.ts",
+      "replacementTests": [
+        "tests/clinicalGraph.test.ts"
+      ],
+      "replacementAssertions": [
+        "Active clinical graph pointer resolution"
+      ],
+      "uncoveredRequirements": [],
+      "recommendedClassification": "retired-valid",
+      "approvalStatus": "pending",
+      "trackingIssue": "RETIRED-AUDIT-19"
+    },
+    {
+      "path": "tests/vectorStore.test.ts",
+      "status": "retired",
+      "reason": "Legacy vector store test targeting deleted src/lib/ragService.",
+      "ownerArea": "legacy-vector-store",
+      "originalRequirements": [
+        "Vector store embedding lookup",
+        "Cosine similarity calculation"
+      ],
+      "referencedModules": [
+        "legacy-vector-store"
+      ],
+      "underlyingFeatureExists": true,
+      "currentReplacementModule": "tests/persistentVector.test.ts",
+      "replacementTests": [
+        "tests/persistentVector.test.ts"
+      ],
+      "replacementAssertions": [
+        "Persistent vector search storage & retrieval"
+      ],
+      "uncoveredRequirements": [],
+      "recommendedClassification": "retired-valid",
+      "approvalStatus": "pending",
+      "trackingIssue": "RETIRED-AUDIT-03"
+    }
+  ]
+}

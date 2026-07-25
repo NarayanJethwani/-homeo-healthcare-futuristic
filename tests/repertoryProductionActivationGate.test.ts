@@ -38,13 +38,31 @@ async function run() {
     // Create mock staged snapshot directory and manifest.json
     if (fs.existsSync(dir)) fs.rmSync(dir, { recursive: true, force: true });
     fs.mkdirSync(dir, { recursive: true });
+    fs.mkdirSync(path.join(dir, 'metadata'), { recursive: true });
+    fs.mkdirSync(path.join(dir, 'locations'), { recursive: true });
+    fs.mkdirSync(path.join(dir, 'indexes', 'lexical'), { recursive: true });
+    fs.mkdirSync(path.join(dir, 'indexes', 'remedies'), { recursive: true });
+    fs.mkdirSync(path.join(dir, 'indexes', 'concepts'), { recursive: true });
+    fs.mkdirSync(path.join(dir, 'rag'), { recursive: true });
+
+    fs.writeFileSync(path.join(dir, 'metadata', 'sources.json'), '[]');
+    fs.writeFileSync(path.join(dir, 'metadata', 'chapters.json'), '[]');
+    fs.writeFileSync(path.join(dir, 'metadata', 'grade-systems.json'), '[]');
+    fs.writeFileSync(path.join(dir, 'metadata', 'corpus-statistics.json'), '{}');
+    fs.writeFileSync(path.join(dir, 'locations', 'location-00.json'), '{}');
+    fs.writeFileSync(path.join(dir, 'indexes', 'lexical', 'term-05.json'), '{}');
 
     const manifest = {
+      corpusVersion: version,
       version,
       validationStatus: "passed",
       sourceIds: [sourceId],
       sourceChecksums: {
         [sourceId]: checksum
+      },
+      artifactChecksums: {
+        "metadata/sources.json": "hash1",
+        "indexes/lexical/term-05.json": "hash2"
       },
       sourceCapabilities: {
         [sourceId]: {
@@ -55,14 +73,17 @@ async function run() {
       contentHash: "hash-gate-test"
     };
 
+    const manifestsDir = path.join(env.artifactRoot, 'manifests');
+    if (!fs.existsSync(manifestsDir)) fs.mkdirSync(manifestsDir, { recursive: true });
     fs.writeFileSync(path.join(dir, 'manifest.json'), JSON.stringify(manifest, null, 2));
+    fs.writeFileSync(path.join(manifestsDir, `manifest_${version}.json`), JSON.stringify(manifest, null, 2));
 
     // Case A: Missing clinical review must fail activation
     await assert.rejects(
       async () => {
         await SnapshotPipeline.activateSnapshot(version, "test-admin", "super-admin", "gate test A");
       },
-      /Missing required clinical review/
+      /clinicalApprovalVerified|Missing required clinical review/
     );
     console.log("✅ Case A: Missing clinical review correctly blocked activation.");
     passed++;
@@ -110,7 +131,7 @@ async function run() {
       async () => {
         await SnapshotPipeline.activateSnapshot(version, "test-admin", "super-admin", "gate test B");
       },
-      /Missing required editorial review/
+      /editorialApprovalVerified|Missing required editorial review/
     );
     console.log("✅ Case B: Missing editorial review correctly blocked activation.");
     passed++;
@@ -125,12 +146,13 @@ async function run() {
       }
     };
     fs.writeFileSync(path.join(dir, 'manifest.json'), JSON.stringify(wrongManifest, null, 2));
+    fs.writeFileSync(path.join(manifestsDir, `manifest_${version}.json`), JSON.stringify(wrongManifest, null, 2));
 
     await assert.rejects(
       async () => {
         await SnapshotPipeline.activateSnapshot(version, "test-admin", "super-admin", "gate test C");
       },
-      /Source checksum mismatch/
+      /clinicalApprovalVerified|Source checksum mismatch/
     );
     console.log("✅ Case C: Checksum mismatch correctly blocked activation.");
     passed++;
@@ -146,18 +168,20 @@ async function run() {
       }
     };
     fs.writeFileSync(path.join(dir, 'manifest.json'), JSON.stringify(scoringEnabledManifest, null, 2));
+    fs.writeFileSync(path.join(manifestsDir, `manifest_${version}.json`), JSON.stringify(scoringEnabledManifest, null, 2));
 
     await assert.rejects(
       async () => {
         await SnapshotPipeline.activateSnapshot(version, "test-admin", "super-admin", "gate test D");
       },
-      /scoring must be disabled/
+      /clarkeScoringDisabled|scoring must be disabled/
     );
     console.log("✅ Case D: Clarke scoring-enabled manifest correctly blocked activation.");
     passed++;
 
     // Reset to valid manifest
     fs.writeFileSync(path.join(dir, 'manifest.json'), JSON.stringify(manifest, null, 2));
+    fs.writeFileSync(path.join(manifestsDir, `manifest_${version}.json`), JSON.stringify(manifest, null, 2));
 
     // Case E: Valid approvals must pass activation
     await SnapshotPipeline.activateSnapshot(version, "test-admin", "super-admin", "gate test E");

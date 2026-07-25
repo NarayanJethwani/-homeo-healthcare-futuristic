@@ -1,10 +1,11 @@
 import { sanitizeHtml } from "../src/features/materia-medica/components/reader/ReaderContentView";
 import assert from "assert";
 import { featureFlags } from "../src/features/dashboard/constants/featureFlags";
-import { DEFAULT_PREFERENCES, THEME_CSS_VARIABLES, FONT_SIZE_MAPPING, LINE_HEIGHT_MAPPING, COLUMN_WIDTH_MAPPING } from "../src/features/materia-medica/reader/preferences";
+import { DEFAULT_PREFERENCES, THEME_CSS_VARIABLES, FONT_SIZE_MAPPING, LINE_HEIGHT_MAPPING, COLUMN_WIDTH_MAPPING, validatePreferences } from "../src/features/materia-medica/reader/preferences";
 import { readerPreferenceStorage } from "../src/features/materia-medica/services/readerPreferenceStorage";
 import { LegacyMateriaMedicaContentAdapter } from "../src/features/materia-medica/components/reader/LegacyMateriaMedicaContentAdapter";
 import { MATERIA_MEDICA_REGISTRY } from "../src/features/materia-medica/data/registry";
+import { getMachineChunkUrl } from "../src/features/materia-medica/services/MachineValidatedCorpusRepository";
 
 // Mock localStorage for the test runner environment
 const mockLocalStorage: Record<string, string> = {};
@@ -63,9 +64,9 @@ async function runTests() {
     }
   };
 
-  // 1. Feature flag false preserves legacy reader catalog
-  await test("Test 1 - Feature flag false preserves legacy reader catalog", () => {
-    assert.strictEqual(featureFlags.MATERIA_MEDICA_READER_V2, false);
+  // 1. The governed reader is the production default
+  await test("Test 1 - Governed V2 reader is the production default", () => {
+    assert.strictEqual(featureFlags.MATERIA_MEDICA_READER_V2, true);
   });
 
   // 2. Feature flag true renders the V2 reader shell
@@ -130,7 +131,7 @@ async function runTests() {
 
     const mockShortcuts = (keyEvent: any) => {
       if (keyEvent.key === "t" || keyEvent.key === "T") {
-        const themes = ["light", "sepia", "dark"];
+        const themes = ["light", "sepia", "forest", "dark"];
         const nextIdx = (themes.indexOf(currentTheme) + 1) % themes.length;
         onPreferenceChange({ theme: themes[nextIdx] });
       }
@@ -139,7 +140,11 @@ async function runTests() {
     mockShortcuts({ key: "t" });
     assert.strictEqual(currentTheme, "sepia");
     mockShortcuts({ key: "T" });
+    assert.strictEqual(currentTheme, "forest");
+    mockShortcuts({ key: "T" });
     assert.strictEqual(currentTheme, "dark");
+    mockShortcuts({ key: "T" });
+    assert.strictEqual(currentTheme, "light");
   });
 
   // 9. Index search filters remedies list correctly
@@ -218,6 +223,25 @@ async function runTests() {
     assert.strictEqual(networkFetchTriggered, false);
 
     global.fetch = originalFetch;
+  });
+
+  await test("Machine OCR chunk URLs are content-addressed to prevent stale cache mismatches", () => {
+    const url = getMachineChunkUrl("henry-c-allen", {
+      id: "homeoint-allen-keynotes-0005",
+      sourceIdentifier: "homeoint-allen-keynotes",
+      sourceIndex: 1,
+      sourceChunkIndex: 5,
+      label: "Remedy edition",
+      title: "Aesculus Hippocastanum",
+      characterCount: 2171,
+      sha256: "f775b089679923cdf82c43c513ef2e36dc9095a8767370bcab896e04ed84ad5f",
+      file: "0005.json",
+    });
+
+    assert.strictEqual(
+      url,
+      "/data/materia-medica/v1/books/henry-c-allen/0005.json?sha256=f775b089679923cdf82c43c513ef2e36dc9095a8767370bcab896e04ed84ad5f",
+    );
   });
 
   // 16. Metadata-only governed books cannot open the reader
@@ -342,6 +366,14 @@ async function runTests() {
       "--reader-border": THEME_CSS_VARIABLES[theme].border,
     };
     assert.strictEqual(scopedStyles["--reader-bg"], "#FAF7F0");
+  });
+
+  await test("Forest theme is validated, persisted, and supplies a complete low-glare palette", () => {
+    const forestPreferences = validatePreferences({ ...DEFAULT_PREFERENCES, theme: "forest" });
+    assert.strictEqual(forestPreferences.theme, "forest");
+    assert.strictEqual(THEME_CSS_VARIABLES.forest.bg, "#10231B");
+    assert.strictEqual(THEME_CSS_VARIABLES.forest.text, "#EDF7F0");
+    assert.ok(THEME_CSS_VARIABLES.forest.accent);
   });
 
   // 26. Font changes do not affect dashboard layout
