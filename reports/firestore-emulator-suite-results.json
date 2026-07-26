@@ -1,52 +1,58 @@
 {
-  "timestamp": "2026-07-25T15:37:24.757Z",
+  "timestamp": "2026-07-26T02:43:00.476Z",
   "emulatorHost": "127.0.0.1:8080",
   "projectId": "hh-test-1234567890ab",
-  "totalSuites": 7,
-  "passedSuites": 7,
+  "totalSuites": 8,
+  "passedSuites": 8,
   "failedSuites": 0,
-  "durationMs": 33460,
+  "durationMs": 34945,
   "results": [
     {
       "suite": "tests/firestoreEmulatorFailClosed.test.ts",
       "passed": true,
-      "durationMs": 4780,
+      "durationMs": 4368,
       "exitCode": 0
     },
     {
       "suite": "tests/firestoreRulesClient.test.ts",
       "passed": true,
-      "durationMs": 4780,
+      "durationMs": 4368,
       "exitCode": 0
     },
     {
       "suite": "tests/materiaMedicaPersistence.test.ts",
       "passed": true,
-      "durationMs": 4780,
+      "durationMs": 4368,
       "exitCode": 0
     },
     {
       "suite": "tests/repertoryApprovalPersistence.test.ts",
       "passed": true,
-      "durationMs": 4780,
+      "durationMs": 4368,
       "exitCode": 0
     },
     {
       "suite": "tests/repertoryDurableConsistency.test.ts",
       "passed": true,
-      "durationMs": 4780,
+      "durationMs": 4368,
       "exitCode": 0
     },
     {
       "suite": "tests/repertoryProductionActivationGate.test.ts",
       "passed": true,
-      "durationMs": 4780,
+      "durationMs": 4368,
       "exitCode": 0
     },
     {
       "suite": "tests/phase2-2bGovernancePersistence.test.ts",
       "passed": true,
-      "durationMs": 4780,
+      "durationMs": 4368,
+      "exitCode": 0
+    },
+    {
+      "suite": "tests/governanceFirestoreRules.test.ts",
+      "passed": true,
+      "durationMs": 4368,
       "exitCode": 0
     }
   ]
