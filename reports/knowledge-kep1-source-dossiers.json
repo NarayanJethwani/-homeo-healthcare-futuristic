@@ -1,0 +1,783 @@
+{
+  "schemaVersion": "1.0.0",
+  "programId": "KEP-1",
+  "asOfDate": "2026-07-26",
+  "status": "planning-review-required",
+  "sources": [
+    {
+      "id": "SRC-KEP1-NICE-CG184",
+      "title": "Gastro-oesophageal reflux disease and dyspepsia in adults: investigation and management",
+      "sourceType": "clinical-guideline",
+      "publisherOrCustodian": "National Institute for Health and Care Excellence",
+      "canonicalUrl": "https://www.nice.org.uk/guidance/cg184",
+      "editionOrVersion": "CG184; updated 2019; minor safety update 2024",
+      "accessedAt": "2026-07-26",
+      "sourceVersion": "CG184-2024",
+      "verifiedAt": "2026-07-26",
+      "licence": {
+        "status": "restricted",
+        "permitsExtraction": false,
+        "permitsDerivedData": false,
+        "permitsPublicDisplay": false
+      },
+      "ingestionStatus": "registered",
+      "usePolicy": "citation-only",
+      "coverageDomains": [
+        "definition-and-scope",
+        "symptoms-and-differential",
+        "red-flags-and-escalation",
+        "diagnostic-interpretation",
+        "conventional-care",
+        "evidence-limitations"
+      ]
+    },
+    {
+      "id": "SRC-KEP1-NIDDK-GERD",
+      "title": "Acid Reflux (GER and GERD) in Adults",
+      "sourceType": "reference-standard",
+      "publisherOrCustodian": "National Institute of Diabetes and Digestive and Kidney Diseases",
+      "canonicalUrl": "https://www.niddk.nih.gov/health-information/digestive-diseases/acid-reflux-ger-gerd-adults",
+      "accessedAt": "2026-07-26",
+      "sourceVersion": "accessed-2026-07-26",
+      "verifiedAt": "2026-07-26",
+      "licence": {
+        "status": "restricted",
+        "permitsExtraction": false,
+        "permitsDerivedData": false,
+        "permitsPublicDisplay": false
+      },
+      "ingestionStatus": "registered",
+      "usePolicy": "citation-only",
+      "coverageDomains": [
+        "definition-and-scope",
+        "symptoms-and-differential",
+        "red-flags-and-escalation",
+        "diagnostic-interpretation",
+        "conventional-care",
+        "evidence-limitations"
+      ]
+    },
+    {
+      "id": "SRC-KEP1-NICE-CG57",
+      "title": "Atopic eczema in under 12s: diagnosis and management",
+      "sourceType": "clinical-guideline",
+      "publisherOrCustodian": "National Institute for Health and Care Excellence",
+      "canonicalUrl": "https://www.nice.org.uk/guidance/cg57",
+      "editionOrVersion": "CG57; updated 2025",
+      "accessedAt": "2026-07-26",
+      "sourceVersion": "CG57-2025",
+      "verifiedAt": "2026-07-26",
+      "licence": {
+        "status": "restricted",
+        "permitsExtraction": false,
+        "permitsDerivedData": false,
+        "permitsPublicDisplay": false
+      },
+      "ingestionStatus": "registered",
+      "usePolicy": "citation-only",
+      "coverageDomains": [
+        "definition-and-scope",
+        "symptoms-and-differential",
+        "red-flags-and-escalation",
+        "conventional-care",
+        "evidence-limitations"
+      ]
+    },
+    {
+      "id": "SRC-KEP1-MEDLINE-RASH",
+      "title": "Rash Evaluation",
+      "sourceType": "reference-standard",
+      "publisherOrCustodian": "U.S. National Library of Medicine",
+      "canonicalUrl": "https://medlineplus.gov/lab-tests/rash-evaluation/",
+      "accessedAt": "2026-07-26",
+      "sourceVersion": "accessed-2026-07-26",
+      "verifiedAt": "2026-07-26",
+      "licence": {
+        "status": "restricted",
+        "permitsExtraction": false,
+        "permitsDerivedData": false,
+        "permitsPublicDisplay": false
+      },
+      "ingestionStatus": "registered",
+      "usePolicy": "citation-only",
+      "coverageDomains": [
+        "definition-and-scope",
+        "symptoms-and-differential",
+        "red-flags-and-escalation",
+        "diagnostic-interpretation",
+        "evidence-limitations"
+      ]
+    },
+    {
+      "id": "SRC-KEP1-MEDLINE-CBC",
+      "title": "Complete Blood Count (CBC)",
+      "sourceType": "reference-standard",
+      "publisherOrCustodian": "U.S. National Library of Medicine",
+      "canonicalUrl": "https://medlineplus.gov/lab-tests/complete-blood-count-cbc/",
+      "editionOrVersion": "updated 2024-10-15",
+      "accessedAt": "2026-07-26",
+      "sourceVersion": "2024-10-15",
+      "verifiedAt": "2026-07-26",
+      "licence": {
+        "status": "restricted",
+        "permitsExtraction": false,
+        "permitsDerivedData": false,
+        "permitsPublicDisplay": false
+      },
+      "ingestionStatus": "registered",
+      "usePolicy": "citation-only",
+      "coverageDomains": [
+        "definition-and-scope",
+        "diagnostic-interpretation",
+        "evidence-limitations"
+      ]
+    },
+    {
+      "id": "SRC-KEP1-MEDLINE-TSH",
+      "title": "TSH (Thyroid-stimulating hormone) Test",
+      "sourceType": "reference-standard",
+      "publisherOrCustodian": "U.S. National Library of Medicine",
+      "canonicalUrl": "https://medlineplus.gov/lab-tests/tsh-thyroid-stimulating-hormone-test/",
+      "accessedAt": "2026-07-26",
+      "sourceVersion": "accessed-2026-07-26",
+      "verifiedAt": "2026-07-26",
+      "licence": {
+        "status": "restricted",
+        "permitsExtraction": false,
+        "permitsDerivedData": false,
+        "permitsPublicDisplay": false
+      },
+      "ingestionStatus": "registered",
+      "usePolicy": "citation-only",
+      "coverageDomains": [
+        "definition-and-scope",
+        "diagnostic-interpretation",
+        "evidence-limitations"
+      ]
+    },
+    {
+      "id": "SRC-KEP1-NICE-NG145",
+      "title": "Thyroid disease: assessment and management",
+      "sourceType": "clinical-guideline",
+      "publisherOrCustodian": "National Institute for Health and Care Excellence",
+      "canonicalUrl": "https://www.nice.org.uk/guidance/ng145",
+      "editionOrVersion": "NG145; updated 2023; reviewed 2025",
+      "accessedAt": "2026-07-26",
+      "sourceVersion": "NG145-2025-review",
+      "verifiedAt": "2026-07-26",
+      "licence": {
+        "status": "restricted",
+        "permitsExtraction": false,
+        "permitsDerivedData": false,
+        "permitsPublicDisplay": false
+      },
+      "ingestionStatus": "registered",
+      "usePolicy": "citation-only",
+      "coverageDomains": [
+        "diagnostic-interpretation",
+        "red-flags-and-escalation",
+        "conventional-care",
+        "evidence-limitations"
+      ]
+    },
+    {
+      "id": "SRC-KEP1-NCCIH-HOMEOPATHY",
+      "title": "Homeopathy: What You Need To Know",
+      "sourceType": "reference-standard",
+      "publisherOrCustodian": "National Center for Complementary and Integrative Health",
+      "canonicalUrl": "https://www.nccih.nih.gov/health/homeopathy",
+      "accessedAt": "2026-07-26",
+      "sourceVersion": "accessed-2026-07-26",
+      "verifiedAt": "2026-07-26",
+      "licence": {
+        "status": "restricted",
+        "permitsExtraction": false,
+        "permitsDerivedData": false,
+        "permitsPublicDisplay": false
+      },
+      "ingestionStatus": "registered",
+      "usePolicy": "citation-only",
+      "coverageDomains": [
+        "regulatory-and-product-safety",
+        "evidence-limitations"
+      ]
+    },
+    {
+      "id": "SRC-KEP1-FDA-HOMEOPATHY",
+      "title": "Homeopathic Products",
+      "sourceType": "reference-standard",
+      "publisherOrCustodian": "U.S. Food and Drug Administration",
+      "canonicalUrl": "https://www.fda.gov/drugs/information-drug-class/homeopathic-products",
+      "editionOrVersion": "includes 2022 final enforcement guidance",
+      "accessedAt": "2026-07-26",
+      "sourceVersion": "accessed-2026-07-26",
+      "verifiedAt": "2026-07-26",
+      "licence": {
+        "status": "restricted",
+        "permitsExtraction": false,
+        "permitsDerivedData": false,
+        "permitsPublicDisplay": false
+      },
+      "ingestionStatus": "registered",
+      "usePolicy": "citation-only",
+      "coverageDomains": [
+        "regulatory-and-product-safety",
+        "red-flags-and-escalation",
+        "evidence-limitations"
+      ]
+    },
+    {
+      "id": "SRC-KEP1-KENT-1905",
+      "title": "Lectures on Homoeopathic Materia Medica",
+      "sourceType": "classical-homeopathic-literature",
+      "publisherOrCustodian": "Internet Archive",
+      "canonicalUrl": "https://archive.org/details/lecturesonhomoeo00kent",
+      "editionOrVersion": "1905 edition",
+      "accessedAt": "2026-07-26",
+      "sourceVersion": "james-tyler-kent-v1",
+      "verifiedAt": "2026-07-26",
+      "licence": {
+        "status": "public-domain",
+        "evidenceLocation": "src/features/materia-medica/data/registry.ts",
+        "permitsExtraction": true,
+        "permitsDerivedData": true,
+        "permitsPublicDisplay": true
+      },
+      "ingestionStatus": "licence-verified",
+      "usePolicy": "governed-extraction",
+      "coverageDomains": [
+        "traditional-source-description"
+      ]
+    },
+    {
+      "id": "SRC-KEP1-BOERICKE-1901",
+      "title": "Pocket Manual of Homoeopathic Materia Medica with Repertory",
+      "sourceType": "classical-homeopathic-literature",
+      "publisherOrCustodian": "Internet Archive",
+      "canonicalUrl": "https://archive.org/details/pocketmanualofho00boer",
+      "editionOrVersion": "1901 edition",
+      "accessedAt": "2026-07-26",
+      "sourceVersion": "william-boericke-v1",
+      "verifiedAt": "2026-07-26",
+      "licence": {
+        "status": "public-domain",
+        "evidenceLocation": "src/features/materia-medica/data/registry.ts",
+        "permitsExtraction": true,
+        "permitsDerivedData": true,
+        "permitsPublicDisplay": true
+      },
+      "ingestionStatus": "licence-verified",
+      "usePolicy": "governed-extraction",
+      "coverageDomains": [
+        "traditional-source-description"
+      ]
+    }
+  ],
+  "dossiers": [
+    {
+      "schemaVersion": "1.0.0",
+      "dossierId": "KEP1-DOSSIER-D0001",
+      "entityId": "D0001",
+      "entityType": "disease",
+      "title": "Gastroesophageal Reflux Disease (GERD)",
+      "asOfDate": "2026-07-26",
+      "status": "sources-registered-review-blocked",
+      "sourceIds": [
+        "SRC-KEP1-NICE-CG184",
+        "SRC-KEP1-NIDDK-GERD"
+      ],
+      "requiredCoverageDomains": [
+        "definition-and-scope",
+        "symptoms-and-differential",
+        "red-flags-and-escalation",
+        "diagnostic-interpretation",
+        "conventional-care",
+        "evidence-limitations"
+      ],
+      "prohibitedClaimPatterns": [
+        "guaranteed diagnosis",
+        "guaranteed cure",
+        "replace urgent or conventional care",
+        "patient-specific treatment recommendation",
+        "potency or dosing instruction"
+      ],
+      "assignments": [
+        {
+          "role": "clinical-author",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "independent-clinical-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "evidence-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "rights-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        }
+      ],
+      "evaluationQuestionTarget": 20,
+      "governedRelationshipTarget": {
+        "minimum": 5,
+        "maximum": 10
+      },
+      "stateBoundaries": {
+        "contentState": "planning-only",
+        "evidenceState": "unapproved",
+        "clinicalReviewState": "unassigned",
+        "publicationState": "unchanged",
+        "ragState": "inactive"
+      }
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "dossierId": "KEP1-DOSSIER-D0002",
+      "entityId": "D0002",
+      "entityType": "disease",
+      "title": "Eczema (Atopic Dermatitis)",
+      "asOfDate": "2026-07-26",
+      "status": "sources-registered-review-blocked",
+      "sourceIds": [
+        "SRC-KEP1-NICE-CG57",
+        "SRC-KEP1-MEDLINE-RASH"
+      ],
+      "requiredCoverageDomains": [
+        "definition-and-scope",
+        "symptoms-and-differential",
+        "red-flags-and-escalation",
+        "diagnostic-interpretation",
+        "conventional-care",
+        "evidence-limitations"
+      ],
+      "prohibitedClaimPatterns": [
+        "guaranteed diagnosis",
+        "guaranteed cure",
+        "replace urgent or conventional care",
+        "patient-specific treatment recommendation",
+        "potency or dosing instruction"
+      ],
+      "assignments": [
+        {
+          "role": "clinical-author",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "independent-clinical-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "evidence-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "rights-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        }
+      ],
+      "evaluationQuestionTarget": 20,
+      "governedRelationshipTarget": {
+        "minimum": 5,
+        "maximum": 10
+      },
+      "stateBoundaries": {
+        "contentState": "planning-only",
+        "evidenceState": "unapproved",
+        "clinicalReviewState": "unassigned",
+        "publicationState": "unchanged",
+        "ragState": "inactive"
+      }
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "dossierId": "KEP1-DOSSIER-S0001",
+      "entityId": "S0001",
+      "entityType": "symptom",
+      "title": "Heartburn",
+      "asOfDate": "2026-07-26",
+      "status": "sources-registered-review-blocked",
+      "sourceIds": [
+        "SRC-KEP1-NICE-CG184",
+        "SRC-KEP1-NIDDK-GERD"
+      ],
+      "requiredCoverageDomains": [
+        "definition-and-scope",
+        "symptoms-and-differential",
+        "red-flags-and-escalation",
+        "diagnostic-interpretation",
+        "conventional-care",
+        "evidence-limitations"
+      ],
+      "prohibitedClaimPatterns": [
+        "guaranteed diagnosis",
+        "guaranteed cure",
+        "replace urgent or conventional care",
+        "patient-specific treatment recommendation",
+        "potency or dosing instruction"
+      ],
+      "assignments": [
+        {
+          "role": "clinical-author",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "independent-clinical-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "evidence-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "rights-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        }
+      ],
+      "evaluationQuestionTarget": 20,
+      "governedRelationshipTarget": {
+        "minimum": 5,
+        "maximum": 10
+      },
+      "stateBoundaries": {
+        "contentState": "planning-only",
+        "evidenceState": "unapproved",
+        "clinicalReviewState": "unassigned",
+        "publicationState": "unchanged",
+        "ragState": "inactive"
+      }
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "dossierId": "KEP1-DOSSIER-S0002",
+      "entityId": "S0002",
+      "entityType": "symptom",
+      "title": "Skin Eruptions",
+      "asOfDate": "2026-07-26",
+      "status": "sources-registered-review-blocked",
+      "sourceIds": [
+        "SRC-KEP1-MEDLINE-RASH",
+        "SRC-KEP1-NICE-CG57"
+      ],
+      "requiredCoverageDomains": [
+        "definition-and-scope",
+        "symptoms-and-differential",
+        "red-flags-and-escalation",
+        "diagnostic-interpretation",
+        "conventional-care",
+        "evidence-limitations"
+      ],
+      "prohibitedClaimPatterns": [
+        "guaranteed diagnosis",
+        "guaranteed cure",
+        "replace urgent or conventional care",
+        "patient-specific treatment recommendation",
+        "potency or dosing instruction"
+      ],
+      "assignments": [
+        {
+          "role": "clinical-author",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "independent-clinical-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "evidence-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "rights-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        }
+      ],
+      "evaluationQuestionTarget": 20,
+      "governedRelationshipTarget": {
+        "minimum": 5,
+        "maximum": 10
+      },
+      "stateBoundaries": {
+        "contentState": "planning-only",
+        "evidenceState": "unapproved",
+        "clinicalReviewState": "unassigned",
+        "publicationState": "unchanged",
+        "ragState": "inactive"
+      }
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "dossierId": "KEP1-DOSSIER-R0001",
+      "entityId": "R0001",
+      "entityType": "remedy",
+      "title": "Sulphur",
+      "asOfDate": "2026-07-26",
+      "status": "sources-registered-review-blocked",
+      "sourceIds": [
+        "SRC-KEP1-KENT-1905",
+        "SRC-KEP1-BOERICKE-1901",
+        "SRC-KEP1-NCCIH-HOMEOPATHY",
+        "SRC-KEP1-FDA-HOMEOPATHY"
+      ],
+      "requiredCoverageDomains": [
+        "traditional-source-description",
+        "regulatory-and-product-safety",
+        "evidence-limitations",
+        "red-flags-and-escalation"
+      ],
+      "prohibitedClaimPatterns": [
+        "guaranteed diagnosis",
+        "guaranteed cure",
+        "replace urgent or conventional care",
+        "patient-specific treatment recommendation",
+        "potency or dosing instruction"
+      ],
+      "assignments": [
+        {
+          "role": "clinical-author",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "independent-clinical-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "evidence-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "rights-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        }
+      ],
+      "evaluationQuestionTarget": 20,
+      "governedRelationshipTarget": {
+        "minimum": 5,
+        "maximum": 10
+      },
+      "stateBoundaries": {
+        "contentState": "planning-only",
+        "evidenceState": "unapproved",
+        "clinicalReviewState": "unassigned",
+        "publicationState": "unchanged",
+        "ragState": "inactive"
+      }
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "dossierId": "KEP1-DOSSIER-R0002",
+      "entityId": "R0002",
+      "entityType": "remedy",
+      "title": "Nux Vomica",
+      "asOfDate": "2026-07-26",
+      "status": "sources-registered-review-blocked",
+      "sourceIds": [
+        "SRC-KEP1-KENT-1905",
+        "SRC-KEP1-BOERICKE-1901",
+        "SRC-KEP1-NCCIH-HOMEOPATHY",
+        "SRC-KEP1-FDA-HOMEOPATHY"
+      ],
+      "requiredCoverageDomains": [
+        "traditional-source-description",
+        "regulatory-and-product-safety",
+        "evidence-limitations",
+        "red-flags-and-escalation"
+      ],
+      "prohibitedClaimPatterns": [
+        "guaranteed diagnosis",
+        "guaranteed cure",
+        "replace urgent or conventional care",
+        "patient-specific treatment recommendation",
+        "potency or dosing instruction"
+      ],
+      "assignments": [
+        {
+          "role": "clinical-author",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "independent-clinical-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "evidence-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "rights-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        }
+      ],
+      "evaluationQuestionTarget": 20,
+      "governedRelationshipTarget": {
+        "minimum": 5,
+        "maximum": 10
+      },
+      "stateBoundaries": {
+        "contentState": "planning-only",
+        "evidenceState": "unapproved",
+        "clinicalReviewState": "unassigned",
+        "publicationState": "unchanged",
+        "ragState": "inactive"
+      }
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "dossierId": "KEP1-DOSSIER-L0001",
+      "entityId": "L0001",
+      "entityType": "lab-test",
+      "title": "Complete Blood Count (CBC)",
+      "asOfDate": "2026-07-26",
+      "status": "sources-registered-review-blocked",
+      "sourceIds": [
+        "SRC-KEP1-MEDLINE-CBC"
+      ],
+      "requiredCoverageDomains": [
+        "definition-and-scope",
+        "diagnostic-interpretation",
+        "evidence-limitations"
+      ],
+      "prohibitedClaimPatterns": [
+        "guaranteed diagnosis",
+        "guaranteed cure",
+        "replace urgent or conventional care",
+        "patient-specific treatment recommendation",
+        "potency or dosing instruction"
+      ],
+      "assignments": [
+        {
+          "role": "clinical-author",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "independent-clinical-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "evidence-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "rights-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        }
+      ],
+      "evaluationQuestionTarget": 20,
+      "governedRelationshipTarget": {
+        "minimum": 5,
+        "maximum": 10
+      },
+      "stateBoundaries": {
+        "contentState": "planning-only",
+        "evidenceState": "unapproved",
+        "clinicalReviewState": "unassigned",
+        "publicationState": "unchanged",
+        "ragState": "inactive"
+      }
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "dossierId": "KEP1-DOSSIER-L0002",
+      "entityId": "L0002",
+      "entityType": "lab-test",
+      "title": "Thyroid Stimulating Hormone (TSH)",
+      "asOfDate": "2026-07-26",
+      "status": "sources-registered-review-blocked",
+      "sourceIds": [
+        "SRC-KEP1-MEDLINE-TSH",
+        "SRC-KEP1-NICE-NG145"
+      ],
+      "requiredCoverageDomains": [
+        "definition-and-scope",
+        "diagnostic-interpretation",
+        "evidence-limitations"
+      ],
+      "prohibitedClaimPatterns": [
+        "guaranteed diagnosis",
+        "guaranteed cure",
+        "replace urgent or conventional care",
+        "patient-specific treatment recommendation",
+        "potency or dosing instruction"
+      ],
+      "assignments": [
+        {
+          "role": "clinical-author",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "independent-clinical-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "evidence-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "rights-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        }
+      ],
+      "evaluationQuestionTarget": 20,
+      "governedRelationshipTarget": {
+        "minimum": 5,
+        "maximum": 10
+      },
+      "stateBoundaries": {
+        "contentState": "planning-only",
+        "evidenceState": "unapproved",
+        "clinicalReviewState": "unassigned",
+        "publicationState": "unchanged",
+        "ragState": "inactive"
+      }
+    }
+  ],
+  "summary": {
+    "sourceCount": 11,
+    "dossierCount": 8,
+    "assignedRoles": 0,
+    "unassignedRoles": 32,
+    "productionRagEntities": 0,
+    "approvedEvidenceProfiles": 0,
+    "approvedClinicalReviews": 0
+  },
+  "invariants": {
+    "automaticAssignmentForbidden": true,
+    "automaticApprovalForbidden": true,
+    "citationOnlySourcesCannotBeExtracted": true,
+    "authorReviewerIdentitySeparationRequired": true,
+    "publicationFreezeRemainsActive": true
+  }
+}

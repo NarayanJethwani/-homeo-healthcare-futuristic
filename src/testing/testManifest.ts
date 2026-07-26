@@ -1169,5 +1169,12 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "ownerArea": "governance",
     "testLayer": "security",
     "reason": "Phase 2.2C Fail-Closed Environment Safety test suite"
+  },
+  {
+    "path": "tests/knowledgeKEP1SourceDossiers.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "governance",
+    "reason": "KEP-1 source rights, editorial assignment, and zero-RAG gate"
   }
 ];
