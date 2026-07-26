@@ -1,0 +1,191 @@
+{
+  "schemaVersion": "1.0.0",
+  "pilotId": "KEP-1",
+  "asOfDate": "2026-07-26",
+  "status": "planned",
+  "entities": [
+    {
+      "entityId": "D0001",
+      "title": "Gastroesophageal Reflux Disease (GERD)",
+      "entityType": "disease",
+      "workPackage": {
+        "topicSpecificRewrite": true,
+        "redFlagsOrSafetyBoundary": true,
+        "conventionalCareContext": true,
+        "draftEvidenceProfile": true,
+        "claimLevelCitations": true,
+        "independentReview": true,
+        "governedGraphRelationshipsTarget": 5,
+        "offlineEvaluationQuestionsTarget": 20
+      },
+      "stateBoundaries": {
+        "publicIndexState": "preserve-existing-exception",
+        "evidenceApprovalState": "draft-only",
+        "clinicalApprovalState": "unchanged",
+        "ragState": "inactive"
+      }
+    },
+    {
+      "entityId": "D0002",
+      "title": "Atopic Dermatitis (Eczema)",
+      "entityType": "disease",
+      "workPackage": {
+        "topicSpecificRewrite": true,
+        "redFlagsOrSafetyBoundary": true,
+        "conventionalCareContext": true,
+        "draftEvidenceProfile": true,
+        "claimLevelCitations": true,
+        "independentReview": true,
+        "governedGraphRelationshipsTarget": 5,
+        "offlineEvaluationQuestionsTarget": 20
+      },
+      "stateBoundaries": {
+        "publicIndexState": "preserve-existing-exception",
+        "evidenceApprovalState": "draft-only",
+        "clinicalApprovalState": "unchanged",
+        "ragState": "inactive"
+      }
+    },
+    {
+      "entityId": "S0001",
+      "title": "Heartburn / Acid Regurgitation",
+      "entityType": "symptom",
+      "workPackage": {
+        "topicSpecificRewrite": true,
+        "redFlagsOrSafetyBoundary": true,
+        "conventionalCareContext": true,
+        "draftEvidenceProfile": true,
+        "claimLevelCitations": true,
+        "independentReview": true,
+        "governedGraphRelationshipsTarget": 5,
+        "offlineEvaluationQuestionsTarget": 20
+      },
+      "stateBoundaries": {
+        "publicIndexState": "preserve-existing-exception",
+        "evidenceApprovalState": "draft-only",
+        "clinicalApprovalState": "unchanged",
+        "ragState": "inactive"
+      }
+    },
+    {
+      "entityId": "S0002",
+      "title": "Skin Eruptions (Dermatosis)",
+      "entityType": "symptom",
+      "workPackage": {
+        "topicSpecificRewrite": true,
+        "redFlagsOrSafetyBoundary": true,
+        "conventionalCareContext": true,
+        "draftEvidenceProfile": true,
+        "claimLevelCitations": true,
+        "independentReview": true,
+        "governedGraphRelationshipsTarget": 5,
+        "offlineEvaluationQuestionsTarget": 20
+      },
+      "stateBoundaries": {
+        "publicIndexState": "preserve-existing-exception",
+        "evidenceApprovalState": "draft-only",
+        "clinicalApprovalState": "unchanged",
+        "ragState": "inactive"
+      }
+    },
+    {
+      "entityId": "R0001",
+      "title": "Sulphur (Sublimed Sulphur)",
+      "entityType": "remedy",
+      "workPackage": {
+        "topicSpecificRewrite": true,
+        "redFlagsOrSafetyBoundary": true,
+        "conventionalCareContext": true,
+        "draftEvidenceProfile": true,
+        "claimLevelCitations": true,
+        "independentReview": true,
+        "governedGraphRelationshipsTarget": 5,
+        "offlineEvaluationQuestionsTarget": 20
+      },
+      "stateBoundaries": {
+        "publicIndexState": "preserve-existing-exception",
+        "evidenceApprovalState": "draft-only",
+        "clinicalApprovalState": "unchanged",
+        "ragState": "inactive"
+      }
+    },
+    {
+      "entityId": "R0002",
+      "title": "Nux Vomica (Poison Nut)",
+      "entityType": "remedy",
+      "workPackage": {
+        "topicSpecificRewrite": true,
+        "redFlagsOrSafetyBoundary": true,
+        "conventionalCareContext": true,
+        "draftEvidenceProfile": true,
+        "claimLevelCitations": true,
+        "independentReview": true,
+        "governedGraphRelationshipsTarget": 5,
+        "offlineEvaluationQuestionsTarget": 20
+      },
+      "stateBoundaries": {
+        "publicIndexState": "preserve-existing-exception",
+        "evidenceApprovalState": "draft-only",
+        "clinicalApprovalState": "unchanged",
+        "ragState": "inactive"
+      }
+    },
+    {
+      "entityId": "L0001",
+      "title": "Complete Blood Count (CBC)",
+      "entityType": "lab-test",
+      "workPackage": {
+        "topicSpecificRewrite": true,
+        "redFlagsOrSafetyBoundary": true,
+        "conventionalCareContext": true,
+        "draftEvidenceProfile": true,
+        "claimLevelCitations": true,
+        "independentReview": true,
+        "governedGraphRelationshipsTarget": 5,
+        "offlineEvaluationQuestionsTarget": 20
+      },
+      "stateBoundaries": {
+        "publicIndexState": "preserve-existing-exception",
+        "evidenceApprovalState": "draft-only",
+        "clinicalApprovalState": "unchanged",
+        "ragState": "inactive"
+      }
+    },
+    {
+      "entityId": "L0002",
+      "title": "Thyroid Stimulating Hormone (TSH)",
+      "entityType": "lab-test",
+      "workPackage": {
+        "topicSpecificRewrite": true,
+        "redFlagsOrSafetyBoundary": true,
+        "conventionalCareContext": true,
+        "draftEvidenceProfile": true,
+        "claimLevelCitations": true,
+        "independentReview": true,
+        "governedGraphRelationshipsTarget": 5,
+        "offlineEvaluationQuestionsTarget": 20
+      },
+      "stateBoundaries": {
+        "publicIndexState": "preserve-existing-exception",
+        "evidenceApprovalState": "draft-only",
+        "clinicalApprovalState": "unchanged",
+        "ragState": "inactive"
+      }
+    }
+  ],
+  "targets": {
+    "entityCount": 8,
+    "minimumGovernedRelationships": 40,
+    "maximumGovernedRelationships": 80,
+    "minimumOfflineEvaluationQuestions": 160
+  },
+  "invariants": {
+    "publicationFreezeRemainsActive": true,
+    "automaticPublicationForbidden": true,
+    "automaticClinicalApprovalForbidden": true,
+    "automaticEvidenceApprovalForbidden": true,
+    "automaticGraphAcceptanceForbidden": true,
+    "productionRagEntities": 0,
+    "withdrawnEntitiesRemainExcluded": true
+  }
+}

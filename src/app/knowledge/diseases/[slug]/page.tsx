@@ -13,7 +13,6 @@ import ReferencesList from "@/features/knowledge/components/ReferencesList";
 import AICitationBlock from "@/features/knowledge/components/AICitationBlock";
 import RelatedEverything from "@/features/knowledge/components/RelatedEverything";
 import Breadcrumbs from "@/features/knowledge/components/Breadcrumbs";
-import CollapsibleSection from "@/features/knowledge/components/CollapsibleSection";
 import AnalyticsTrigger from "@/features/knowledge/components/AnalyticsTrigger";
 import TimelineHistory from "@/features/knowledge/components/TimelineHistory";
 import PatientFriendlyText from "@/features/knowledge/components/PatientFriendlyText";
@@ -29,7 +28,7 @@ import HomeopathicPerspective from "@/features/knowledge/components/HomeopathicP
 import RedFlagBox from "@/features/knowledge/components/RedFlagBox";
 import MedicalIllustration from "@/features/knowledge/components/MedicalIllustration";
 import InteractiveTimeline from "@/features/knowledge/components/InteractiveTimeline";
-import { ShieldAlert, Info, ListChecks, Stethoscope, AlertTriangle, BookOpen, Activity } from "lucide-react";
+import { ShieldAlert, Info, ListChecks, Stethoscope, Activity } from "lucide-react";
 
 import { evaluatePublicationEligibility } from "@/features/knowledge/governance/publicationGuard";
 

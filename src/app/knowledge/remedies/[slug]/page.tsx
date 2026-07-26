@@ -26,9 +26,8 @@ import EvidenceSummaryPanel from "@/features/knowledge/components/EvidenceSummar
 import VisualBodySystemCard from "@/features/knowledge/components/VisualBodySystemCard";
 import DifferentialDiagnosisTable from "@/features/knowledge/components/DifferentialDiagnosisTable";
 import HomeopathicPerspective from "@/features/knowledge/components/HomeopathicPerspective";
-import RedFlagBox from "@/features/knowledge/components/RedFlagBox";
 import MedicalIllustration from "@/features/knowledge/components/MedicalIllustration";
-import { ShieldAlert, Info, ListChecks, Heart, Beaker, HelpCircle, Activity } from "lucide-react";
+import { ShieldAlert, Info, ListChecks, Heart, Activity } from "lucide-react";
 
 interface PageProps {
   params: Promise<{ slug: string }>;

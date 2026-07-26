@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Star, ShieldCheck, Calendar, BookOpen, GitBranch, FileCheck, ChevronDown, ChevronUp } from "lucide-react";
+import { Star, ShieldCheck, Calendar, BookOpen, FileCheck, ChevronDown, ChevronUp } from "lucide-react";
 import { KnowledgeEntity } from "../types";
-import { getEntityRelationships } from "../graph/knowledgeGraph";
 import { formatMedicalDateLong } from "../utils/dateFormatter";
 
 interface EditorialConfidenceBadgeProps {
