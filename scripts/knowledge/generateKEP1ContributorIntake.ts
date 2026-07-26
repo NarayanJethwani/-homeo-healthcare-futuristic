@@ -1,0 +1,44 @@
+import fs from "fs";
+import path from "path";
+import { buildKEP1ContributorIntakeManifest } from "../../src/features/knowledge/expansion/kep1ContributorIntake";
+
+function readAsOfDate(argv: string[]): string {
+  const index = argv.indexOf("--as-of");
+  const value = index >= 0 ? argv[index + 1] : undefined;
+  if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    throw new Error(
+      "A deterministic --as-of YYYY-MM-DD argument is required."
+    );
+  }
+  return value;
+}
+
+export function generateKEP1ContributorIntakeArtifact(
+  asOfDate: string,
+  outputPath = path.resolve(
+    __dirname,
+    "../../reports/knowledge-kep1-contributor-intake.json"
+  )
+): string {
+  const manifest = buildKEP1ContributorIntakeManifest();
+  if (manifest.asOfDate !== asOfDate) {
+    throw new Error(
+      `Requested as-of date does not match governed manifest: ${asOfDate}`
+    );
+  }
+  fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+  fs.writeFileSync(
+    outputPath,
+    `${JSON.stringify(manifest, null, 2)}\n`,
+    "utf8"
+  );
+  return outputPath;
+}
+
+if (require.main === module) {
+  const asOfDate = readAsOfDate(process.argv.slice(2));
+  const outputPath = generateKEP1ContributorIntakeArtifact(asOfDate);
+  console.log(
+    `Generated governed KEP-1 contributor intake artifact:\n- ${outputPath}`
+  );
+}

@@ -48,6 +48,7 @@
     "test:all": "npm run test:manifest-audit && npm run test:unit && npm run test:security && npm run test:integration && npm run test:emulator && npm run test:performance",
     "knowledge:expansion-inventory": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register scripts/knowledge/generateExpansionInventory.ts",
     "knowledge:kep1-source-dossiers": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register scripts/knowledge/generateKEP1SourceDossiers.ts",
+    "knowledge:kep1-contributor-intake": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register scripts/knowledge/generateKEP1ContributorIntake.ts",
      "test:retired-diagnostic": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register scripts/retired-diagnostic.ts",
     "materia-medica:generate-sample-corpus": "node scratch/extract-sample.js",
     "materia-medica:verify-sample-corpus": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/materiaMedicaSampleCorpus.test.ts",

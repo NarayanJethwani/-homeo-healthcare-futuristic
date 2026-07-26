@@ -1,5 +1,7 @@
 import { validateKnowledgeSourceRegistration } from "./sourceRegistry";
+import { evaluateKEP1ContributorIntake } from "./kep1ContributorIntake";
 import type {
+  KEP1ContributorIntakeManifest,
   KEP1FlagshipSourceDossier,
   KEP1SourceDossierManifest,
 } from "./types";
@@ -45,7 +47,8 @@ function validateDossierAssignments(
 }
 
 export function evaluateKEP1AssignmentReadiness(
-  manifest: KEP1SourceDossierManifest
+  manifest: KEP1SourceDossierManifest,
+  contributorIntake?: KEP1ContributorIntakeManifest
 ): KEP1AssignmentGateResult {
   const errors: string[] = [];
   const sourceIds = new Set(manifest.sources.map((source) => source.id));
@@ -91,6 +94,51 @@ export function evaluateKEP1AssignmentReadiness(
     manifest.summary.approvedClinicalReviews !== 0
   ) {
     errors.push("approval-or-rag-state-must-remain-zero");
+  }
+
+  const recordedAssignments = manifest.dossiers.flatMap(
+    (dossier) => dossier.assignments
+  );
+  if (
+    recordedAssignments.some(
+      (assignment) =>
+        assignment.status === "assigned" || Boolean(assignment.contributorId)
+    )
+  ) {
+    if (!contributorIntake) {
+      errors.push("verified-contributor-intake-required");
+    } else {
+      const intakeResult = evaluateKEP1ContributorIntake(contributorIntake);
+      errors.push(
+        ...intakeResult.errors.map((error) => `contributor-intake:${error}`)
+      );
+      if (
+        contributorIntake.programId !== manifest.programId ||
+        contributorIntake.asOfDate !== manifest.asOfDate
+      ) {
+        errors.push("contributor-intake-manifest-mismatch");
+      }
+      if (intakeResult.ready) {
+        for (const dossier of manifest.dossiers) {
+          for (const assignment of dossier.assignments) {
+            const approved = contributorIntake.assignments.find(
+              (candidate) =>
+                candidate.entityId === dossier.entityId &&
+                candidate.role === assignment.role &&
+                candidate.status === "approved"
+            );
+            if (
+              !approved?.contributorId ||
+              approved.contributorId !== assignment.contributorId
+            ) {
+              errors.push(
+                `${dossier.entityId}:${assignment.role}:approved-assignment-mismatch`
+              );
+            }
+          }
+        }
+      }
+    }
   }
 
   return { ready: errors.length === 0, errors };
