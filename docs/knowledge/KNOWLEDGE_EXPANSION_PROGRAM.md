@@ -1,0 +1,134 @@
+# Knowledge Expansion Program
+
+**Program ID:** KEP
+**Status:** Active foundation; clinical expansion not yet approved
+**Initial cohort:** Eight flagship entities
+**Production RAG posture:** Inactive
+
+## Purpose
+
+The Knowledge Expansion Program grows the platform through governed evidence,
+clinical review, provenance, graph curation, and retrieval evaluation. Increasing
+the number of articles is not itself an expansion success criterion.
+
+The program keeps three knowledge planes separate:
+
+1. public clinical education;
+2. classical homeopathic literature and repertory;
+3. AI retrieval corpora.
+
+Presence in one plane never grants eligibility in another.
+
+## Non-negotiable boundaries
+
+- The transitional publication freeze remains active.
+- Expansion work cannot approve or publish itself.
+- Draft evidence profiles are not approved evidence.
+- Resolvable bibliography entries are not claim-level citation proof.
+- AI-generated graph relationships remain proposals.
+- Production RAG remains empty until separately approved.
+- Withdrawn entities remain excluded until explicit human restoration approval.
+- Expansion must occur through Knowledge services and read models; frozen domain
+  entities are not modified.
+
+## Milestones
+
+### KEP-0 — Inventory and prioritisation
+
+Generate a deterministic record for all 343 entities covering:
+
+- safety withdrawal;
+- content structure and generic-template signals;
+- citation resolution;
+- governed evidence-profile presence;
+- claim-level citation assessment;
+- independent-review identity;
+- graph isolation, broken links, and duplicate rows;
+- public-index and RAG eligibility;
+- transparent prioritisation reasons.
+
+Artifacts:
+
+- `reports/knowledge-expansion-inventory.json`
+- `reports/knowledge-flagship-pilot-manifest.json`
+
+### KEP-1 — Eight-entity flagship pilot
+
+The pilot cohort is:
+
+- `D0001` — GERD
+- `D0002` — Eczema
+- `S0001` — Heartburn
+- `S0002` — Skin Eruptions
+- `R0001` — Sulphur
+- `R0002` — Nux Vomica
+- `L0001` — CBC
+- `L0002` — TSH
+
+Each work package requires topic-specific content, safety boundaries, conventional
+care context, draft evidence profiles, claim-level citations, independent review,
+5–10 governed graph relationships, and at least 20 offline retrieval questions.
+
+Existing public-index exceptions are preserved during the pilot. They are neither
+expanded nor treated as proof of independent review. RAG eligibility remains false.
+
+### KEP-2 — Withdrawn-entity remediation
+
+The safety remediation cohort remains separate:
+
+- `D0007` — Asthma
+- `R0006` — Arsenicum Album
+- `FAQ-safety` — Homeopathy Safety and Efficacy FAQ
+
+Rewritten content does not restore publication or retrieval eligibility. Restoration
+requires independent review, regression tests, and explicit human approval.
+
+### KEP-3 — Controlled cohort expansion
+
+After KEP-1 passes, expand in batches of no more than 25 entities, selected using
+clinical importance, safety sensitivity, actual search demand, source availability,
+graph value, and reviewer capacity.
+
+### KEP-4 — Governed offline retrieval
+
+Build real, dimension-validated embeddings and an offline evaluation corpus before
+any production activation. Evaluation must cover retrieval relevance, citation
+precision, unsupported claims, emergency escalation, abstention, stale revisions,
+cross-entity confusion, and withdrawn-content leakage.
+
+## KEP-1 acceptance gates
+
+```text
+8/8 entities structurally complete
+100% material clinical claims mapped to citations
+100% safety and emergency claims independently reviewed
+0 unresolved citation identifiers
+0 generic-template findings in the completed pilot content
+0 duplicate pilot graph relationships
+0 author/reviewer identity conflicts
+0 withdrawn-content leakage
+0 production RAG entities
+0 automatic approval transitions
+all provenance and revision fields populated
+all required CI and deployment checks green
+```
+
+## Source registration
+
+Every new source must record title, source type, custodian, edition or version,
+licence status, permitted uses, and provenance evidence. A source with pending or
+restricted rights cannot progress to extraction unless the recorded licence
+explicitly permits that operation.
+
+## Operational sequence
+
+1. Merge the governance-hardening baseline after CI, deployment, and independent
+   review gates pass.
+2. Run and review KEP-0 inventory.
+3. Approve the KEP-1 editorial assignments.
+4. Draft content, evidence profiles, claims, and graph proposals.
+5. Complete independent clinical and evidence review.
+6. Run offline retrieval evaluation.
+7. Record a human go/no-go decision.
+
+No step in this sequence authorises production migration or RAG activation.

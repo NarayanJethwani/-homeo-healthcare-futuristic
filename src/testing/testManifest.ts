@@ -463,6 +463,13 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "reason": "Active passing Node test suite"
   },
   {
+    "path": "tests/knowledgeExpansionInventory.test.ts",
+    "status": "active",
+    "ownerArea": "canonical-test",
+    "testLayer": "governance",
+    "reason": "Governed KEP-0 inventory, flagship pilot, licensing, and offline retrieval boundary tests"
+  },
+  {
     "path": "tests/knowledgeGraphExplorer.test.tsx",
     "status": "quarantined",
     "ownerArea": "ui-components",

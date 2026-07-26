@@ -1,6 +1,5 @@
 import { spawnSync } from "child_process";
 import fs from "fs";
-import path from "path";
 
 async function runEmulatorSuites() {
   console.log("🚀 Starting Governed Firestore Emulator Suite Runner...");
@@ -20,7 +19,7 @@ async function runEmulatorSuites() {
   // Ensure port 8080 is clear before starting
   try {
     spawnSync("lsof -ti :8080 | xargs kill -9", { shell: true });
-  } catch (e) {}
+  } catch {}
 
   const dbSuites = [
     "tests/firestoreEmulatorFailClosed.test.ts",
