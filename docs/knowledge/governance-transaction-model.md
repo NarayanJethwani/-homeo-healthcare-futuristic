@@ -29,6 +29,7 @@ A clinical review submission atomically executes the following sequence inside `
 │ 8. Insert immutable ClinicalReviewRecord (knowledgeGovernanceReviews)  │
 │ 9. Update EntityGovernanceState projection                              │
 │ 10. Append GovernanceAuditEvent (knowledgeGovernanceAuditEvents)       │
+│ 11. Update Audit Chain Head (knowledgeGovernanceAuditChainHeads)       │
 ├────────────────────────────────────────────────────────────────────────┤
 │                      Firestore Transaction Commit                      │
 └────────────────────────────────────────────────────────────────────────┘

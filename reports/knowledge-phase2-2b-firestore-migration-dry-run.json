@@ -1,8 +1,15 @@
 {
-  "timestamp": "2026-07-25T15:37:23.748Z",
+  "timestamp": "2026-07-25T00:00:00.000Z",
   "dryRunMode": true,
   "productionWritesExecuted": false,
   "totalEntitiesAudited": 343,
+  "canonicalChecksum": "ab015a3bbd50f91b63e51a4fc8c2e588747e6f643a9d5b01392a25173d694da0",
+  "canonicalByteLength": 1611,
+  "workingTreeClean": false,
+  "approvalEligible": false,
+  "approvalIneligibilityReasons": [
+    "dirty-working-tree"
+  ],
   "proposedWrites": {
     "contributors": 1,
     "authorshipRecords": 343,
@@ -20,6 +27,13 @@
     "aiApprovedEntities": 0,
     "activeRagCorpusEntities": 0,
     "withdrawnSafetyEntities": 3
+  },
+  "componentChecksums": {
+    "migrationScript": "872b7a66848701b6f6d6b9682e2cb987ddbbf13e8c2edb17a2588ba687b3ad9c",
+    "environmentValidator": "4b33754f804712f9e8d4b0cf96a269903edd91e7fc390cbb36d4bf9eb060c493",
+    "governanceSchema": "fe76ace8106a73ecb322ea712d6cdb3bb51d53eeee466a93f655a148fcc061e8",
+    "publicationGuard": "be8e3f7b26cc939f2a2b4c12934f3c8012696806ef61b7a4eab28989dcdbb082",
+    "packageLock": "ad047818f1a0f547601966b589391dc78732b000f14398aeb14b6dfc90d78fe4"
   },
   "batchingAndCheckpoints": {
     "batchCount": 7,
@@ -61,21 +75,5 @@
         "checkpointId": "CHECKPOINT_BATCH_7"
       }
     ]
-  },
-  "rollbackStrategy": {
-    "type": "Compensating Transaction & Delete Migration Collections",
-    "targetCollections": [
-      "knowledgeGovernanceContributors",
-      "knowledgeGovernanceQualifications",
-      "knowledgeGovernanceAuthorship",
-      "knowledgeGovernanceRevisions",
-      "knowledgeGovernanceReviews",
-      "knowledgeGovernanceEvidenceProfiles",
-      "knowledgeGovernanceClaims",
-      "knowledgeGovernanceAiApprovals",
-      "knowledgeGovernanceAuditEvents",
-      "knowledgeGovernanceEntityState"
-    ],
-    "idempotencyKey": "SHA256(entityId + contentHash)"
   }
 }

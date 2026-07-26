@@ -3,6 +3,7 @@
  */
 
 import assert from "node:assert/strict";
+import crypto from "node:crypto";
 import {
   evaluateMigrationConflict,
   toCanonicalJson,
@@ -290,6 +291,64 @@ async function run() {
 
     assert.strictEqual(res.authorized, false);
     assert.ok(res.reason?.includes("explicitCommandFlag"));
+  });
+
+  await test("18. Canonical exact-byte checksum sensitivity and mismatch detection", () => {
+    const { toCanonicalJson, computeCanonicalChecksum } = require("../scripts/run-phase2-2b-firestore-migration-dry-run");
+
+    const basePayload = {
+      alpha: "value_a",
+      beta: [1, 2, 3],
+      gamma: { nested: true }
+    };
+
+    const baseCanonicalStr = toCanonicalJson(basePayload);
+    const { checksum: baseChecksum } = computeCanonicalChecksum(basePayload);
+
+    // 1. One changed byte alters checksum
+    const singleByteChanged = baseCanonicalStr.replace("value_a", "value_b");
+    const singleByteHash = crypto.createHash("sha256").update(singleByteChanged).digest("hex");
+    assert.notStrictEqual(singleByteHash, baseChecksum);
+
+    // 2. Truncated output alters checksum
+    const truncatedStr = baseCanonicalStr.slice(0, -1);
+    const truncatedHash = crypto.createHash("sha256").update(truncatedStr).digest("hex");
+    assert.notStrictEqual(truncatedHash, baseChecksum);
+
+    // 3. Appended newline alters checksum
+    const newlineStr = baseCanonicalStr + "\n";
+    const newlineHash = crypto.createHash("sha256").update(newlineStr).digest("hex");
+    assert.notStrictEqual(newlineHash, baseChecksum);
+
+    // 4. Key ordering sensitivity
+    const unorderedJsonStr = JSON.stringify({ gamma: { nested: true }, beta: [1, 2, 3], alpha: "value_a" });
+    const unorderedHash = crypto.createHash("sha256").update(unorderedJsonStr).digest("hex");
+    assert.notStrictEqual(unorderedHash, baseChecksum);
+
+    // 5. Array ordering sensitivity
+    const reorderedArrayPayload = { alpha: "value_a", beta: [2, 1, 3], gamma: { nested: true } };
+    const { checksum: reorderedArrayHash } = computeCanonicalChecksum(reorderedArrayPayload);
+    assert.notStrictEqual(reorderedArrayHash, baseChecksum);
+
+    // 6. Manifest checksum mismatch rejection in authorization validator
+    const res = validateMigrationExecutionAuthorization({
+      environment: "production",
+      projectId: "homeo-healthcare-prod",
+      confirmationToken: "CONFIRM_PRODUCTION_MIGRATION_EXECUTION",
+      humanAuthorizerId: "ADMIN-CONTRIB-001",
+      explicitCommandFlag: true,
+      approvalStatus: "approved",
+      approvalEligible: true,
+      commitHash: "378d465c05667c178958dd703bfb365245c28293",
+      approvedCommitHash: "378d465c05667c178958dd703bfb365245c28293",
+      canonicalPayloadChecksum: baseChecksum,
+      approvedChecksum: singleByteHash, // Mismatched checksum
+      backupConfirmationId: "DRILL-VERIFIED-001",
+      stageSelection: "stage-0-readonly"
+    }, { NODE_ENV: "production", NEXT_PUBLIC_FIREBASE_PROJECT_ID: "homeo-healthcare-prod", ADMIN_SESSION_SECRET: "a_very_long_secure_production_secret_32_chars_min" });
+
+    assert.strictEqual(res.authorized, false);
+    assert.ok(res.reason?.includes("Canonical payload checksum mismatch"));
   });
 
   console.log("🎉 Governance Migration Safety, Component Checksums & Manifest Integrity Tests Passed 100%!");

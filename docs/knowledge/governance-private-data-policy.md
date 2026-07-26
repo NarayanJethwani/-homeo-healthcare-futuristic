@@ -31,4 +31,6 @@ Contributor data is classified into two distinct fields:
 
 All public-facing API routes must pass contributor entities through `serializePublicContributor()`.
 
-Direct exposure of `Contributor` database documents via public APIs is strictly prohibited. Unit tests in `tests/governanceAuthBoundary.test.ts` verify that private fields are omitted during serialization.
+`serializePublicContributor()` constructs the public DTO strictly using explicit property allowlists. It does NOT rely on deleting keys from source objects. Unexpected future fields (e.g. `personalEmail`, `paymentDetails`, `identityDocument`) are automatically excluded.
+
+Direct exposure of `Contributor` database documents via public APIs is strictly prohibited. Unit tests verify that private fields are omitted during serialization.

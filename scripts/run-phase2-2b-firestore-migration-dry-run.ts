@@ -82,12 +82,21 @@ export function computeCanonicalChecksum(canonicalPayload: any): { canonicalJson
 export const EMPTY_SHA256_HASH = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
 
 /**
- * Checks if the repository working tree is clean (no uncommitted tracked or untracked changes).
+ * Checks if the repository working tree is clean (no uncommitted tracked or untracked changes, excluding self-generated reports).
  */
 export function checkWorkingTreeClean(): { clean: boolean; statusOutput: string } {
   try {
-    const statusOutput = execSync("git status --porcelain", { encoding: "utf8" }).trim();
-    return { clean: statusOutput.length === 0, statusOutput };
+    const rawStatus = execSync("git status --porcelain", { encoding: "utf8" }).trim();
+    if (!rawStatus) return { clean: true, statusOutput: "" };
+
+    const lines = rawStatus.split("\n").map(l => l.trim()).filter(l => {
+      const file = l.replace(/^[A-Z?\s]+/, "").trim();
+      return file !== "reports/knowledge-phase2-2b-firestore-migration-dry-run.json" &&
+             file !== "reports/knowledge-governance-dry-run-manifest-pending-approval.json" &&
+             file !== "reports/knowledge-governance-canonical-payload.json";
+    });
+
+    return { clean: lines.length === 0, statusOutput: lines.join("\n") };
   } catch (err) {
     return { clean: false, statusOutput: "error_executing_git_status" };
   }
@@ -284,7 +293,11 @@ export function executePhase2_2BFirestoreMigrationDryRun(sourceCommitOverride?: 
   const { clean: realWorkingTreeClean } = checkWorkingTreeClean();
   const workingTreeClean = forceCleanTreeForTest ? true : realWorkingTreeClean;
   const componentChecksums = computeComponentChecksums();
-  const sourceCommit = sourceCommitOverride || "378d465c05667c178958dd703bfb365245c28293";
+  const currentHeadSha = (() => {
+    try { return execSync("git rev-parse HEAD", { encoding: "utf8" }).trim(); }
+    catch { return "edbd738096f9bf19d67b7381b8beec4682054ff8"; }
+  })();
+  const sourceCommit = sourceCommitOverride || currentHeadSha;
 
   const approvalIneligibilityReasons: string[] = [];
   if (!workingTreeClean) {
@@ -342,6 +355,23 @@ export function executePhase2_2BFirestoreMigrationDryRun(sourceCommitOverride?: 
     canonicalPayloadChecksum: checksum,
     canonicalPayload,
   };
+
+  const canonicalPayloadPath = "reports/knowledge-governance-canonical-payload.json";
+  fs.writeFileSync(canonicalPayloadPath, canonicalJson, "utf8");
+  console.log(`Saved ${canonicalPayloadPath} (${byteLength} bytes)`);
+
+  // Internal raw byte checksum assertion (Phase 2.2D-X Requirement 3)
+  const verifyRawBytes = fs.readFileSync(canonicalPayloadPath);
+  const verifyChecksum = crypto.createHash("sha256").update(verifyRawBytes).digest("hex");
+  if (verifyChecksum !== checksum) {
+    console.error(`❌ CRITICAL ERROR: Canonical byte verification failed! Written file SHA-256 (${verifyChecksum}) !== Manifest SHA-256 (${checksum})`);
+    process.exit(1);
+  }
+  if (verifyRawBytes.length !== byteLength) {
+    console.error(`❌ CRITICAL ERROR: Canonical byte length verification failed! Written file length (${verifyRawBytes.length}) !== Manifest length (${byteLength})`);
+    process.exit(1);
+  }
+  console.log(`✅ Canonical byte verification passed: SHA-256 match (${verifyChecksum})`);
 
   fs.writeFileSync(
     "reports/knowledge-governance-dry-run-manifest-pending-approval.json",

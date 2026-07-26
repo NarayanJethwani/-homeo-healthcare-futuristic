@@ -135,7 +135,7 @@ async function runTests() {
   });
 
   await test("Kent source transcription checksum matches the governed source version", () => {
-    const sourcePath = path.join(process.cwd(), "scratch", "kents-lectures.txt");
+    const sourcePath = path.join(process.cwd(), "tests", "fixtures", "materia-medica", "kents-lectures.txt");
     const source = fs.readFileSync(sourcePath, "utf8");
     assert.strictEqual(sha256(source), sampleCorpus.passages[0].sourceFileChecksum);
   });

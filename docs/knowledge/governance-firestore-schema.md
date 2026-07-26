@@ -24,12 +24,14 @@ Knowledge Governance persistence is strictly isolated in 10 dedicated collection
 | `knowledgeGovernanceEvidenceProfiles` | `EVD-{entityId}-{revisionId}` | `id`, `entityId`, `revisionId` | **DENIED** (`allow read, write: if false`) |
 | `knowledgeGovernanceClaims` | `CLM-{entityId}-{claimIndex}` | `id`, `entityId`, `revisionId` | **DENIED** (`allow read, write: if false`) |
 | `knowledgeGovernanceAiApprovals` | `AI-APP-{entityId}-{revisionId}` | **Entire Record Insert-Only** | **DENIED** (`allow read, write: if false`) |
-| `knowledgeGovernanceAuditEvents` | `AUD-{timestamp}-{hash:0:5}` | **Entire Record Insert-Only** | **DENIED** (`allow read, write: if false`) |
+| `knowledgeGovernanceAuditEvents` | `AUD-{entityId}-{seq}-{timestamp}` | **Entire Record Insert-Only** | **DENIED** (`allow read, write: if false`) |
+| `knowledgeGovernanceAuditChainHeads` | `{entityId}` | `entityId` | **DENIED** (`allow read, write: if false`) |
 | `knowledgeGovernanceEntityState` | `{entityId}` | `entityId` | **DENIED** (`allow read, write: if false`) |
 
 ---
 
 ## 3. Deletion & Modification Policy
 
-1. **Insert-Only Collections**: `knowledgeGovernanceReviews`, `knowledgeGovernanceAuditEvents`, `knowledgeGovernanceAiApprovals`. Updates and deletes are prohibited at both database security rules level and application API level.
+1. **Insert-Only Collections**: `knowledgeGovernanceReviews`, `knowledgeGovernanceAuditEvents`, `knowledgeGovernanceAiApprovals`, `knowledgeGovernanceQualifications`. Updates and deletes are prohibited at both database security rules level and application API level. Duplicate inserts with changed content fail with `RECORD_IMMUTABLE_CONFLICT`.
 2. **Superseding Corrections**: Review corrections MUST issue a new review record containing `supersedesReviewId`, `correctionReason`, and fresh `reviewedAt` timestamp. Original review records are never updated in place.
+3. **Entity-Scoped Linear Audit Chains**: `knowledgeGovernanceAuditChainHeads/{entityId}` tracks the current linear sequence (`sequenceNumber`, `eventHash`) updated inside Firestore transactions to prevent audit chain forks under multi-client concurrency.

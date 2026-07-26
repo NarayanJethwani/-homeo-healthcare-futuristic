@@ -50,3 +50,9 @@ Withdrawn safety entities: 3 (Asthma, Arsenicum Album, FAQ-safety)
 
 1. **10 UI Component Suites (Low Risk)**: Requires Vitest jsdom React Testing Library runner (`npm run test:ui`).
 2. **5 Legacy Repertory Engine Suites (Medium Risk)**: Legacy repertory engine assertion mismatch. Targeted for Phase 3 clinical refactoring.
+
+---
+
+## 5. Transition to Phase 2.2C
+
+Phase 2.2B commit `bd9347fff165206d8ecf62bb3c9c471058a85fec` has been merged into `main` (commit `378d465c05667c178958dd703bfb365245c28293`). Phase 2.2C evaluates production readiness and migration safety.
