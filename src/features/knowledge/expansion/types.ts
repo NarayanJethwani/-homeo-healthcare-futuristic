@@ -272,3 +272,100 @@ export interface KEP1SourceDossierManifest {
     publicationFreezeRemainsActive: true;
   };
 }
+
+export type KEP1ExpertiseDomain =
+  | "gastroenterology"
+  | "dermatology"
+  | "laboratory-medicine"
+  | "homeopathy-subject-matter"
+  | "evidence-methodology"
+  | "source-rights";
+
+export type KEP1IdentityScheme = "staff-id" | "orcid" | "github";
+
+export interface KEP1ContributorCredential {
+  credentialId: string;
+  title: string;
+  issuer: string;
+  verificationStatus: "pending" | "verified" | "rejected" | "expired";
+  evidenceLocation: string | null;
+  verifiedAt: string | null;
+  expiresAt: string | null;
+}
+
+export interface KEP1ContributorRecord {
+  contributorId: string;
+  fullName: string;
+  status: "invited" | "verification-pending" | "eligible" | "suspended";
+  identity: {
+    scheme: KEP1IdentityScheme;
+    value: string;
+    verificationStatus: "pending" | "verified" | "rejected";
+    verifiedAt: string | null;
+    verifiedBy: string | null;
+  };
+  eligibleRoles: KEP1EditorialRole[];
+  expertiseDomains: KEP1ExpertiseDomain[];
+  credentials: KEP1ContributorCredential[];
+  attestations: {
+    conflictOfInterestDeclared: boolean;
+    editorialIndependenceAccepted: boolean;
+    aiAssistanceDisclosureAccepted: boolean;
+    sourceUsePolicyAccepted: boolean;
+  };
+}
+
+export interface KEP1ProgramOwnerRecord {
+  approverId: string;
+  fullName: string;
+  status: "active" | "suspended";
+  identity: {
+    scheme: KEP1IdentityScheme;
+    value: string;
+    verificationStatus: "pending" | "verified" | "rejected";
+    verifiedAt: string | null;
+    verifiedBy: string | null;
+  };
+}
+
+export interface KEP1ContributorAssignmentDecision {
+  entityId: string;
+  role: KEP1EditorialRole;
+  contributorId: string | null;
+  status: "unassigned" | "proposed" | "approved" | "rejected";
+  proposedBy: string | null;
+  proposedAt: string | null;
+  ownerApproval: {
+    status: "pending" | "approved" | "rejected";
+    approverId: string | null;
+    decidedAt: string | null;
+  };
+}
+
+export interface KEP1ContributorIntakeManifest {
+  schemaVersion: "1.0.0";
+  programId: "KEP-1";
+  asOfDate: string;
+  status: "contributor-intake-required" | "assignments-approved";
+  contributors: KEP1ContributorRecord[];
+  programOwners: KEP1ProgramOwnerRecord[];
+  assignments: KEP1ContributorAssignmentDecision[];
+  summary: {
+    contributorCount: number;
+    eligibleContributorCount: number;
+    activeProgramOwnerCount: number;
+    assignmentCount: 32;
+    approvedAssignmentCount: number;
+    pendingAssignmentCount: number;
+  };
+  invariants: {
+    automaticIdentityVerificationForbidden: true;
+    automaticCredentialApprovalForbidden: true;
+    automaticAssignmentApprovalForbidden: true;
+    immutableContributorIdentityRequired: true;
+    authorReviewerIdentitySeparationRequired: true;
+    conflictDeclarationRequired: true;
+    programOwnerApprovalRequired: true;
+    publicationAndRagAuthorizationGranted: false;
+  };
+}

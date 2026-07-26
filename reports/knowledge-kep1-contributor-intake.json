@@ -1,0 +1,444 @@
+{
+  "schemaVersion": "1.0.0",
+  "programId": "KEP-1",
+  "asOfDate": "2026-07-26",
+  "status": "contributor-intake-required",
+  "contributors": [],
+  "programOwners": [],
+  "assignments": [
+    {
+      "entityId": "D0001",
+      "role": "clinical-author",
+      "contributorId": null,
+      "status": "unassigned",
+      "proposedBy": null,
+      "proposedAt": null,
+      "ownerApproval": {
+        "status": "pending",
+        "approverId": null,
+        "decidedAt": null
+      }
+    },
+    {
+      "entityId": "D0001",
+      "role": "independent-clinical-reviewer",
+      "contributorId": null,
+      "status": "unassigned",
+      "proposedBy": null,
+      "proposedAt": null,
+      "ownerApproval": {
+        "status": "pending",
+        "approverId": null,
+        "decidedAt": null
+      }
+    },
+    {
+      "entityId": "D0001",
+      "role": "evidence-reviewer",
+      "contributorId": null,
+      "status": "unassigned",
+      "proposedBy": null,
+      "proposedAt": null,
+      "ownerApproval": {
+        "status": "pending",
+        "approverId": null,
+        "decidedAt": null
+      }
+    },
+    {
+      "entityId": "D0001",
+      "role": "rights-reviewer",
+      "contributorId": null,
+      "status": "unassigned",
+      "proposedBy": null,
+      "proposedAt": null,
+      "ownerApproval": {
+        "status": "pending",
+        "approverId": null,
+        "decidedAt": null
+      }
+    },
+    {
+      "entityId": "D0002",
+      "role": "clinical-author",
+      "contributorId": null,
+      "status": "unassigned",
+      "proposedBy": null,
+      "proposedAt": null,
+      "ownerApproval": {
+        "status": "pending",
+        "approverId": null,
+        "decidedAt": null
+      }
+    },
+    {
+      "entityId": "D0002",
+      "role": "independent-clinical-reviewer",
+      "contributorId": null,
+      "status": "unassigned",
+      "proposedBy": null,
+      "proposedAt": null,
+      "ownerApproval": {
+        "status": "pending",
+        "approverId": null,
+        "decidedAt": null
+      }
+    },
+    {
+      "entityId": "D0002",
+      "role": "evidence-reviewer",
+      "contributorId": null,
+      "status": "unassigned",
+      "proposedBy": null,
+      "proposedAt": null,
+      "ownerApproval": {
+        "status": "pending",
+        "approverId": null,
+        "decidedAt": null
+      }
+    },
+    {
+      "entityId": "D0002",
+      "role": "rights-reviewer",
+      "contributorId": null,
+      "status": "unassigned",
+      "proposedBy": null,
+      "proposedAt": null,
+      "ownerApproval": {
+        "status": "pending",
+        "approverId": null,
+        "decidedAt": null
+      }
+    },
+    {
+      "entityId": "S0001",
+      "role": "clinical-author",
+      "contributorId": null,
+      "status": "unassigned",
+      "proposedBy": null,
+      "proposedAt": null,
+      "ownerApproval": {
+        "status": "pending",
+        "approverId": null,
+        "decidedAt": null
+      }
+    },
+    {
+      "entityId": "S0001",
+      "role": "independent-clinical-reviewer",
+      "contributorId": null,
+      "status": "unassigned",
+      "proposedBy": null,
+      "proposedAt": null,
+      "ownerApproval": {
+        "status": "pending",
+        "approverId": null,
+        "decidedAt": null
+      }
+    },
+    {
+      "entityId": "S0001",
+      "role": "evidence-reviewer",
+      "contributorId": null,
+      "status": "unassigned",
+      "proposedBy": null,
+      "proposedAt": null,
+      "ownerApproval": {
+        "status": "pending",
+        "approverId": null,
+        "decidedAt": null
+      }
+    },
+    {
+      "entityId": "S0001",
+      "role": "rights-reviewer",
+      "contributorId": null,
+      "status": "unassigned",
+      "proposedBy": null,
+      "proposedAt": null,
+      "ownerApproval": {
+        "status": "pending",
+        "approverId": null,
+        "decidedAt": null
+      }
+    },
+    {
+      "entityId": "S0002",
+      "role": "clinical-author",
+      "contributorId": null,
+      "status": "unassigned",
+      "proposedBy": null,
+      "proposedAt": null,
+      "ownerApproval": {
+        "status": "pending",
+        "approverId": null,
+        "decidedAt": null
+      }
+    },
+    {
+      "entityId": "S0002",
+      "role": "independent-clinical-reviewer",
+      "contributorId": null,
+      "status": "unassigned",
+      "proposedBy": null,
+      "proposedAt": null,
+      "ownerApproval": {
+        "status": "pending",
+        "approverId": null,
+        "decidedAt": null
+      }
+    },
+    {
+      "entityId": "S0002",
+      "role": "evidence-reviewer",
+      "contributorId": null,
+      "status": "unassigned",
+      "proposedBy": null,
+      "proposedAt": null,
+      "ownerApproval": {
+        "status": "pending",
+        "approverId": null,
+        "decidedAt": null
+      }
+    },
+    {
+      "entityId": "S0002",
+      "role": "rights-reviewer",
+      "contributorId": null,
+      "status": "unassigned",
+      "proposedBy": null,
+      "proposedAt": null,
+      "ownerApproval": {
+        "status": "pending",
+        "approverId": null,
+        "decidedAt": null
+      }
+    },
+    {
+      "entityId": "R0001",
+      "role": "clinical-author",
+      "contributorId": null,
+      "status": "unassigned",
+      "proposedBy": null,
+      "proposedAt": null,
+      "ownerApproval": {
+        "status": "pending",
+        "approverId": null,
+        "decidedAt": null
+      }
+    },
+    {
+      "entityId": "R0001",
+      "role": "independent-clinical-reviewer",
+      "contributorId": null,
+      "status": "unassigned",
+      "proposedBy": null,
+      "proposedAt": null,
+      "ownerApproval": {
+        "status": "pending",
+        "approverId": null,
+        "decidedAt": null
+      }
+    },
+    {
+      "entityId": "R0001",
+      "role": "evidence-reviewer",
+      "contributorId": null,
+      "status": "unassigned",
+      "proposedBy": null,
+      "proposedAt": null,
+      "ownerApproval": {
+        "status": "pending",
+        "approverId": null,
+        "decidedAt": null
+      }
+    },
+    {
+      "entityId": "R0001",
+      "role": "rights-reviewer",
+      "contributorId": null,
+      "status": "unassigned",
+      "proposedBy": null,
+      "proposedAt": null,
+      "ownerApproval": {
+        "status": "pending",
+        "approverId": null,
+        "decidedAt": null
+      }
+    },
+    {
+      "entityId": "R0002",
+      "role": "clinical-author",
+      "contributorId": null,
+      "status": "unassigned",
+      "proposedBy": null,
+      "proposedAt": null,
+      "ownerApproval": {
+        "status": "pending",
+        "approverId": null,
+        "decidedAt": null
+      }
+    },
+    {
+      "entityId": "R0002",
+      "role": "independent-clinical-reviewer",
+      "contributorId": null,
+      "status": "unassigned",
+      "proposedBy": null,
+      "proposedAt": null,
+      "ownerApproval": {
+        "status": "pending",
+        "approverId": null,
+        "decidedAt": null
+      }
+    },
+    {
+      "entityId": "R0002",
+      "role": "evidence-reviewer",
+      "contributorId": null,
+      "status": "unassigned",
+      "proposedBy": null,
+      "proposedAt": null,
+      "ownerApproval": {
+        "status": "pending",
+        "approverId": null,
+        "decidedAt": null
+      }
+    },
+    {
+      "entityId": "R0002",
+      "role": "rights-reviewer",
+      "contributorId": null,
+      "status": "unassigned",
+      "proposedBy": null,
+      "proposedAt": null,
+      "ownerApproval": {
+        "status": "pending",
+        "approverId": null,
+        "decidedAt": null
+      }
+    },
+    {
+      "entityId": "L0001",
+      "role": "clinical-author",
+      "contributorId": null,
+      "status": "unassigned",
+      "proposedBy": null,
+      "proposedAt": null,
+      "ownerApproval": {
+        "status": "pending",
+        "approverId": null,
+        "decidedAt": null
+      }
+    },
+    {
+      "entityId": "L0001",
+      "role": "independent-clinical-reviewer",
+      "contributorId": null,
+      "status": "unassigned",
+      "proposedBy": null,
+      "proposedAt": null,
+      "ownerApproval": {
+        "status": "pending",
+        "approverId": null,
+        "decidedAt": null
+      }
+    },
+    {
+      "entityId": "L0001",
+      "role": "evidence-reviewer",
+      "contributorId": null,
+      "status": "unassigned",
+      "proposedBy": null,
+      "proposedAt": null,
+      "ownerApproval": {
+        "status": "pending",
+        "approverId": null,
+        "decidedAt": null
+      }
+    },
+    {
+      "entityId": "L0001",
+      "role": "rights-reviewer",
+      "contributorId": null,
+      "status": "unassigned",
+      "proposedBy": null,
+      "proposedAt": null,
+      "ownerApproval": {
+        "status": "pending",
+        "approverId": null,
+        "decidedAt": null
+      }
+    },
+    {
+      "entityId": "L0002",
+      "role": "clinical-author",
+      "contributorId": null,
+      "status": "unassigned",
+      "proposedBy": null,
+      "proposedAt": null,
+      "ownerApproval": {
+        "status": "pending",
+        "approverId": null,
+        "decidedAt": null
+      }
+    },
+    {
+      "entityId": "L0002",
+      "role": "independent-clinical-reviewer",
+      "contributorId": null,
+      "status": "unassigned",
+      "proposedBy": null,
+      "proposedAt": null,
+      "ownerApproval": {
+        "status": "pending",
+        "approverId": null,
+        "decidedAt": null
+      }
+    },
+    {
+      "entityId": "L0002",
+      "role": "evidence-reviewer",
+      "contributorId": null,
+      "status": "unassigned",
+      "proposedBy": null,
+      "proposedAt": null,
+      "ownerApproval": {
+        "status": "pending",
+        "approverId": null,
+        "decidedAt": null
+      }
+    },
+    {
+      "entityId": "L0002",
+      "role": "rights-reviewer",
+      "contributorId": null,
+      "status": "unassigned",
+      "proposedBy": null,
+      "proposedAt": null,
+      "ownerApproval": {
+        "status": "pending",
+        "approverId": null,
+        "decidedAt": null
+      }
+    }
+  ],
+  "summary": {
+    "contributorCount": 0,
+    "eligibleContributorCount": 0,
+    "activeProgramOwnerCount": 0,
+    "assignmentCount": 32,
+    "approvedAssignmentCount": 0,
+    "pendingAssignmentCount": 32
+  },
+  "invariants": {
+    "automaticIdentityVerificationForbidden": true,
+    "automaticCredentialApprovalForbidden": true,
+    "automaticAssignmentApprovalForbidden": true,
+    "immutableContributorIdentityRequired": true,
+    "authorReviewerIdentitySeparationRequired": true,
+    "conflictDeclarationRequired": true,
+    "programOwnerApprovalRequired": true,
+    "publicationAndRagAuthorizationGranted": false
+  }
+}

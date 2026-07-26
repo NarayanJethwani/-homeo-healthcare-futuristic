@@ -86,10 +86,11 @@ export function runKnowledgeKEP1SourceDossierTests(): void {
   }
   assigned.summary.assignedRoles = 32;
   assigned.summary.unassignedRoles = 0;
-  assert.deepStrictEqual(evaluateKEP1AssignmentReadiness(assigned), {
-    ready: true,
-    errors: [],
-  });
+  assert.ok(
+    evaluateKEP1AssignmentReadiness(assigned).errors.includes(
+      "verified-contributor-intake-required"
+    )
+  );
 
   const conflicted = cloneManifest(assigned);
   const conflictAssignments = conflicted.dossiers[0].assignments;
