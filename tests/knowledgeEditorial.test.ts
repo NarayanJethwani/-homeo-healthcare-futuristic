@@ -17,6 +17,7 @@ import { isEntityEligibleForRetrieval } from "../src/features/knowledge/retrieva
 import { runLegacyMigration } from "../src/features/knowledge/versioning/migration";
 import { globalKmsRepository } from "../src/features/knowledge-admin/repositories/MemoryRepository";
 import { featureFlags } from "../src/features/dashboard/constants/featureFlags";
+import { evaluatePublicationEligibility } from "../src/features/knowledge/governance/publicationGuard";
 
 async function runTests() {
   console.log("🚀 Starting V2.14.0-A Editorial Governance Foundation Test Suite...");
@@ -260,7 +261,6 @@ async function runTests() {
     entity.reviewer = { name: "Dr. Amit Patel" };
     entity.references = [{ citation: "Clinical Source 2026", url: "https://doi.org/10.1000/1" }];
     entity.legacyVerificationStatus = "verified-published";
-    const { evaluatePublicationEligibility } = require("../src/features/knowledge/governance/publicationGuard");
     const evalRes = evaluatePublicationEligibility(entity);
     console.log("REASON LIST:", evalRes.reasons, "INDEXING:", evalRes.eligibleForIndexing);
     assert.strictEqual(evalRes.eligibleForPublicDisplay, true);

@@ -30,6 +30,9 @@ export default function EditorialConfidenceBadge({ entity, reviewedDate }: Edito
 
   const reviewBadgeText = eligibility.reviewLabel;
   const isWithdrawn = eligibility.publicationStatus === "withdrawn";
+  const refsCount = Array.isArray(entity.content?.references)
+    ? entity.content.references.length
+    : 0;
 
   return (
     <div className="w-full border border-neutral-200 dark:border-neutral-850 rounded-2xl bg-white/40 dark:bg-neutral-900/40 backdrop-blur-sm transition-all overflow-hidden shadow-sm">

@@ -66,6 +66,7 @@ export default async function DiseaseDetailPage({ params }: PageProps) {
   const title = typeof disease.title === "string" ? disease.title : (disease.title?.en || "");
   const summary = typeof disease.summary === "string" ? disease.summary : (disease.summary?.en || "");
   const content = disease.content;
+  const schemaJson = generateMedicalWebPageSchema(disease);
 
   const crumbs = [
     { name: "Diseases", item: "https://homeo.healthcare/knowledge/diseases" },
@@ -114,7 +115,7 @@ export default async function DiseaseDetailPage({ params }: PageProps) {
       {/* Inject Structured Data */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaJson) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaJson).replace(/</g, "\\u003c") }}
       />
 
       <AnalyticsTrigger entityId={disease.id} slug={disease.slug} entityType={disease.entityType} />

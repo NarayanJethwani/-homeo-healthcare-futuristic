@@ -39,7 +39,8 @@ async function run() {
   console.log(`ℹ️ Testing dynamic Client SDK enforcement against Firestore Emulator at ${emulatorHost}...`);
 
   try {
-    const { initializeTestEnvironment, assertFails, assertSucceeds } = require("@firebase/rules-unit-testing");
+    const { initializeTestEnvironment, assertFails, assertSucceeds } =
+      await import("@firebase/rules-unit-testing");
     const hostParts = emulatorHost.split(":");
     const testEnv = await initializeTestEnvironment({
       projectId: "hh-test-rules-22d",

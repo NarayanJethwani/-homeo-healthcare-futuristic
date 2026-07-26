@@ -33,7 +33,7 @@ async function runEmulatorSuites() {
     "tests/governanceFirestoreRules.test.ts"
   ];
 
-  const envVars = {
+  const envVars: NodeJS.ProcessEnv = {
     ...process.env,
     NODE_ENV: "test",
     REPERTORY_ENV: "emulator",
@@ -53,7 +53,7 @@ async function runEmulatorSuites() {
   const execCmd = `npx -y firebase-tools emulators:exec --only firestore "${tsNodeCmds}"`;
 
   const startTime = Date.now();
-  const res = spawnSync(execCmd, {
+  const res = spawnSync(execCmd, [], {
     shell: true,
     cwd: process.cwd(),
     encoding: "utf8",

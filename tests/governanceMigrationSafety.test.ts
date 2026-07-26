@@ -294,8 +294,6 @@ async function run() {
   });
 
   await test("18. Canonical exact-byte checksum sensitivity and mismatch detection", () => {
-    const { toCanonicalJson, computeCanonicalChecksum } = require("../scripts/run-phase2-2b-firestore-migration-dry-run");
-
     const basePayload = {
       alpha: "value_a",
       beta: [1, 2, 3],
