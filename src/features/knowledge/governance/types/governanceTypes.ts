@@ -149,12 +149,30 @@ export interface GovernanceAuditEvent {
   entityId: string;
   revisionId?: string;
   actorId: ContributorId;
+  role?: string;
   action: string;
   previousState?: string;
   newState?: string;
   reason?: string;
   createdAt: string;
+  sequenceNumber?: number;
+  previousEventHash?: string;
+  eventHash?: string;
   metadata?: Record<string, any>;
+}
+
+export interface ReviewerQualificationDecision {
+  id: string;
+  contributorId: ContributorId;
+  scope?: string;
+  reviewScopes?: string[];
+  qualificationType?: string;
+  status: "qualified" | "verified" | "pending" | "rejected" | "suspended" | "revoked" | "expired";
+  verifiedBy?: ContributorId;
+  verifiedAt?: string;
+  qualifiedAt?: string;
+  expiresAt?: string;
+  verificationNotes?: string;
 }
 
 export interface ExtendedPublicationEvaluation {

@@ -1120,5 +1120,47 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "ownerArea": "canonical-test",
     "testLayer": "unit",
     "reason": "Active passing Node test suite"
+  },
+  {
+    "path": "tests/governanceProductionAuth.test.ts",
+    "status": "active",
+    "ownerArea": "governance",
+    "testLayer": "security",
+    "reason": "Phase 2.2C Production Governance Auth test suite"
+  },
+  {
+    "path": "tests/governanceFirestoreRules.test.ts",
+    "status": "active",
+    "ownerArea": "governance",
+    "testLayer": "security",
+    "reason": "Phase 2.2C Firestore Rules Security test suite"
+  },
+  {
+    "path": "tests/governanceImmutability.test.ts",
+    "status": "active",
+    "ownerArea": "governance",
+    "testLayer": "governance",
+    "reason": "Phase 2.2C Immutability & Record Integrity test suite"
+  },
+  {
+    "path": "tests/governanceAuditConcurrency.test.ts",
+    "status": "active",
+    "ownerArea": "governance",
+    "testLayer": "governance",
+    "reason": "Phase 2.2C Audit Chain Concurrency test suite"
+  },
+  {
+    "path": "tests/governanceMigrationSafety.test.ts",
+    "status": "active",
+    "ownerArea": "governance",
+    "testLayer": "governance",
+    "reason": "Phase 2.2C Migration Shell & Conflict Matrix test suite"
+  },
+  {
+    "path": "tests/governanceEnvironmentSafety.test.ts",
+    "status": "active",
+    "ownerArea": "governance",
+    "testLayer": "security",
+    "reason": "Phase 2.2C Fail-Closed Environment Safety test suite"
   }
 ];

@@ -138,8 +138,13 @@ export function sanitizeGovernanceRequestBody<T extends Record<string, any>>(bod
   const sanitized = { ...body };
   delete sanitized.actorId;
   delete sanitized.contributorId;
+  delete sanitized.reviewerId;
+  delete sanitized.accountId;
   delete sanitized.roles;
   delete sanitized.permissions;
+  delete sanitized.admin;
+  delete sanitized.isAdmin;
+  delete sanitized.actingUser;
   delete sanitized.accountOverride;
   return sanitized;
 }

@@ -29,7 +29,8 @@ async function runEmulatorSuites() {
     "tests/repertoryApprovalPersistence.test.ts",
     "tests/repertoryDurableConsistency.test.ts",
     "tests/repertoryProductionActivationGate.test.ts",
-    "tests/phase2-2bGovernancePersistence.test.ts"
+    "tests/phase2-2bGovernancePersistence.test.ts",
+    "tests/governanceFirestoreRules.test.ts"
   ];
 
   const envVars = {

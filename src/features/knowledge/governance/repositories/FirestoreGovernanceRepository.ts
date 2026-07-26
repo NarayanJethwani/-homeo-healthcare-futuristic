@@ -234,9 +234,17 @@ export class FirestoreGovernanceRepository implements GovernanceRepository {
           firestoreTx.set(ref, record);
         },
         createClinicalReview: async (record) => {
-          const docId = `REV-${record.entityId}-${record.reviewerId}-${Date.now()}`;
+          const docId = record.id || `REV-${record.entityId}-${record.reviewerId}-${record.reviewedVersion}`;
           const ref = this.db().collection(GOVERNANCE_COLLECTIONS.REVIEWS).doc(docId);
-          firestoreTx.set(ref, record);
+          const snap = await firestoreTx.get(ref);
+          if (snap.exists) {
+            const existing = snap.data();
+            if (JSON.stringify(existing) === JSON.stringify(record)) {
+              return; // Idempotent duplicate insert
+            }
+            throw new Error(`RECORD_IMMUTABLE_CONFLICT: Review record ${docId} already exists with different content`);
+          }
+          firestoreTx.set(ref, { ...record, id: docId });
         },
         createEvidenceProfile: async (profile) => {
           const ref = this.db().collection(GOVERNANCE_COLLECTIONS.EVIDENCE_PROFILES).doc(profile.id);
@@ -249,11 +257,49 @@ export class FirestoreGovernanceRepository implements GovernanceRepository {
         createAiIngestionApproval: async (approval) => {
           const docId = `AI-APP-${approval.entityId}-${approval.revisionId}`;
           const ref = this.db().collection(GOVERNANCE_COLLECTIONS.AI_APPROVALS).doc(docId);
+          const snap = await firestoreTx.get(ref);
+          if (snap.exists) {
+            const existing = snap.data();
+            if (JSON.stringify(existing) === JSON.stringify(approval)) {
+              return;
+            }
+            throw new Error(`RECORD_IMMUTABLE_CONFLICT: AI Approval record ${docId} already exists with different content`);
+          }
           firestoreTx.set(ref, approval);
         },
         appendAuditEvent: async (event) => {
-          const ref = this.db().collection(GOVERNANCE_COLLECTIONS.AUDIT_EVENTS).doc(event.id);
-          firestoreTx.set(ref, event);
+          const entityId = event.entityId || 'GLOBAL';
+          const chainHeadRef = this.db().collection('knowledgeGovernanceAuditChainHeads').doc(entityId);
+          const chainSnap = await firestoreTx.get(chainHeadRef);
+
+          const currentSeq = chainSnap.exists ? (chainSnap.data().sequenceNumber || 0) : 0;
+          const prevHash = chainSnap.exists ? (chainSnap.data().eventHash || 'GENESIS') : 'GENESIS';
+
+          const nextSeq = currentSeq + 1;
+          const updatedEvent: GovernanceAuditEvent = {
+            ...event,
+            sequenceNumber: nextSeq,
+            previousEventHash: prevHash,
+            id: event.id || `AUD-${entityId}-${nextSeq}-${Date.now()}`
+          };
+
+          const eventRef = this.db().collection(GOVERNANCE_COLLECTIONS.AUDIT_EVENTS).doc(updatedEvent.id);
+          const eventSnap = await firestoreTx.get(eventRef);
+          if (eventSnap.exists) {
+            const existing = eventSnap.data();
+            if (JSON.stringify(existing) === JSON.stringify(updatedEvent)) {
+              return;
+            }
+            throw new Error(`RECORD_IMMUTABLE_CONFLICT: Audit event record ${updatedEvent.id} already exists with different content`);
+          }
+
+          firestoreTx.set(eventRef, updatedEvent);
+          firestoreTx.set(chainHeadRef, {
+            entityId,
+            sequenceNumber: nextSeq,
+            eventHash: updatedEvent.eventHash || 'GENESIS',
+            updatedAt: new Date().toISOString()
+          });
         },
         updateEntityGovernanceState: async (state) => {
           const ref = this.db().collection(GOVERNANCE_COLLECTIONS.ENTITY_STATE).doc(state.entityId);
@@ -312,6 +358,8 @@ export class MemoryGovernanceRepository implements GovernanceRepository {
   private auditEvents = new Map<string, GovernanceAuditEvent>();
   private entityStates = new Map<string, EntityGovernanceState>();
 
+  private auditChainHeads = new Map<string, { sequenceNumber: number; eventHash: string }>();
+
   async createContributor(record: Contributor): Promise<void> {
     this.contributors.set(record.id, { ...record });
   }
@@ -322,6 +370,11 @@ export class MemoryGovernanceRepository implements GovernanceRepository {
   }
 
   async createQualificationDecision(decision: ReviewerQualificationDecision): Promise<void> {
+    const existing = this.qualifications.get(decision.id);
+    if (existing) {
+      if (JSON.stringify(existing) === JSON.stringify(decision)) return;
+      throw new Error(`RECORD_IMMUTABLE_CONFLICT: Qualification ${decision.id} already exists with different content`);
+    }
     this.qualifications.set(decision.id, { ...decision });
   }
 
@@ -357,8 +410,13 @@ export class MemoryGovernanceRepository implements GovernanceRepository {
   }
 
   async createClinicalReview(record: ClinicalReviewRecord & { entityId: string }): Promise<void> {
-    const docId = `REV-${record.entityId}-${record.reviewerId}-${Date.now()}-${Math.random()}`;
-    this.reviews.set(docId, { ...record });
+    const docId = record.id || `REV-${record.entityId}-${record.reviewerId}-${record.reviewedVersion}`;
+    const existing = this.reviews.get(docId);
+    if (existing) {
+      if (JSON.stringify(existing) === JSON.stringify(record)) return;
+      throw new Error(`RECORD_IMMUTABLE_CONFLICT: Review ${docId} already exists with different content`);
+    }
+    this.reviews.set(docId, { ...record, id: docId });
   }
 
   async listClinicalReviews(entityId: string, revisionId?: string): Promise<ClinicalReviewRecord[]> {
@@ -392,6 +450,11 @@ export class MemoryGovernanceRepository implements GovernanceRepository {
 
   async createAiIngestionApproval(approval: AiIngestionApproval): Promise<void> {
     const docId = `AI-APP-${approval.entityId}-${approval.revisionId}`;
+    const existing = this.aiApprovals.get(docId);
+    if (existing) {
+      if (JSON.stringify(existing) === JSON.stringify(approval)) return;
+      throw new Error(`RECORD_IMMUTABLE_CONFLICT: AI Approval ${docId} already exists with different content`);
+    }
     this.aiApprovals.set(docId, { ...approval });
   }
 
@@ -402,7 +465,24 @@ export class MemoryGovernanceRepository implements GovernanceRepository {
   }
 
   async appendAuditEvent(event: GovernanceAuditEvent): Promise<void> {
-    this.auditEvents.set(event.id, { ...event });
+    const entityId = event.entityId || 'GLOBAL';
+    const head = this.auditChainHeads.get(entityId) || { sequenceNumber: 0, eventHash: 'GENESIS' };
+    const nextSeq = head.sequenceNumber + 1;
+    const updatedEvent: GovernanceAuditEvent = {
+      ...event,
+      sequenceNumber: nextSeq,
+      previousEventHash: head.eventHash,
+      id: event.id || `AUD-${entityId}-${nextSeq}-${Date.now()}`
+    };
+
+    const existing = this.auditEvents.get(updatedEvent.id);
+    if (existing) {
+      if (JSON.stringify(existing) === JSON.stringify(updatedEvent)) return;
+      throw new Error(`RECORD_IMMUTABLE_CONFLICT: Audit event ${updatedEvent.id} already exists with different content`);
+    }
+
+    this.auditEvents.set(updatedEvent.id, updatedEvent);
+    this.auditChainHeads.set(entityId, { sequenceNumber: nextSeq, eventHash: updatedEvent.eventHash || 'GENESIS' });
   }
 
   async listAuditEvents(entityId: string): Promise<GovernanceAuditEvent[]> {
