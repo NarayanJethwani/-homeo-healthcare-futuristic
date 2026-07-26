@@ -1,0 +1,2806 @@
+{
+  "schemaVersion": 1,
+  "bookId": "henry-c-allen",
+  "corpusStatus": "machine-validated",
+  "correctionStatus": "raw-ocr",
+  "editorialStatus": "needs-review",
+  "generatedAt": "2026-07-21T10:23:08.447Z",
+  "sourceCount": 1,
+  "chunkCount": 185,
+  "characterCount": 419356,
+  "downloadedByteCount": 560588,
+  "sources": [
+    {
+      "identifier": "homeoint-allen-keynotes",
+      "label": "Remedy edition",
+      "sourceUrl": "http://homeoint.org/books/allkeyn/index.htm",
+      "sourceType": "public-web-transcription",
+      "assetName": "structured-public-web-edition",
+      "archiveMd5": null,
+      "archiveSha1": null,
+      "downloadedByteCount": 560588,
+      "sourceSha256": "f36601f89210080ad816f78a33c8a4aaa1992d7afba9e31bd5646cc374f8e4a8",
+      "normalizedSha256": "fa8c931a5bc60489f1954a8c0ee159ca4f54319686a3eb1a2777072303496879",
+      "normalizedCharacterCount": 419724,
+      "chunkCount": 185,
+      "sourcePageCount": 12
+    }
+  ],
+  "chunks": [
+    {
+      "id": "homeoint-allen-keynotes-0001",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 1,
+      "label": "Remedy edition",
+      "title": "Abrotanum",
+      "indexHeadings": [
+        "Abrotanum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyaa.htm#Abrot",
+      "characterCount": 1324,
+      "sha256": "e7af1a378b67dfd532d83c4ba71205df81e18a69b33659e312c9a16a86c76202",
+      "file": "0001.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0002",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 2,
+      "label": "Remedy edition",
+      "title": "Acetic Acid",
+      "indexHeadings": [
+        "Acetic Acid"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyaa.htm#AcetAc",
+      "characterCount": 1738,
+      "sha256": "b927baece70c7f4c06058c0290fa86dc54fc9162233a091b1cac515ebb9402b2",
+      "file": "0002.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0003",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 3,
+      "label": "Remedy edition",
+      "title": "Aconitum Napellus",
+      "indexHeadings": [
+        "Aconitum Napellus"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyaa.htm#Aco",
+      "characterCount": 3440,
+      "sha256": "66a104672ad5a56866870b7c1d77bde969826b638d1ae9ea9374889a95463e5f",
+      "file": "0003.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0004",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 4,
+      "label": "Remedy edition",
+      "title": "Actaea Racemosa",
+      "indexHeadings": [
+        "Actaea Racemosa"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyaa.htm#ActR",
+      "characterCount": 2318,
+      "sha256": "6ef1965029dc5485e068321b0a83a78f1fc92384319a8c3eba1b29eabc891a7b",
+      "file": "0004.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0005",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 5,
+      "label": "Remedy edition",
+      "title": "Aesculus Hippocastanum",
+      "indexHeadings": [
+        "Aesculus Hippocastanum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyaa.htm#Aesc",
+      "characterCount": 2171,
+      "sha256": "f775b089679923cdf82c43c513ef2e36dc9095a8767370bcab896e04ed84ad5f",
+      "file": "0005.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0006",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 6,
+      "label": "Remedy edition",
+      "title": "Aethusa Cynapium",
+      "indexHeadings": [
+        "Aethusa Cynapium"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyaa.htm#Aeth",
+      "characterCount": 1494,
+      "sha256": "451119dc7e51574be72c08268333d57c11403ec81b5055340a7acf9d80995bb8",
+      "file": "0006.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0007",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 7,
+      "label": "Remedy edition",
+      "title": "Agaricus Muscarius",
+      "indexHeadings": [
+        "Agaricus Muscarius"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyaa.htm#Agar",
+      "characterCount": 2283,
+      "sha256": "a587fb4bbaca9b2f278e6397a5045ab195684d7fa9fdecedcbdb171d89ede269",
+      "file": "0007.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0008",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 8,
+      "label": "Remedy edition",
+      "title": "Agnus Castus",
+      "indexHeadings": [
+        "Agnus Castus"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyaa.htm#Agn",
+      "characterCount": 1317,
+      "sha256": "e4bfe18026c34965f3f1a92ba7d93c52c75085ca6046602789fa6c14cc9bf8fd",
+      "file": "0008.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0009",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 9,
+      "label": "Remedy edition",
+      "title": "Allium Cepa",
+      "indexHeadings": [
+        "Allium Cepa"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyaa.htm#AllC",
+      "characterCount": 2087,
+      "sha256": "8de3775d99e83c1996ad7e578f4cca51b18cf8f6ea2044a159276650eaabc738",
+      "file": "0009.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0010",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 10,
+      "label": "Remedy edition",
+      "title": "Aloe Socotrina",
+      "indexHeadings": [
+        "Aloe Socotrina"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyaa.htm#Aloe",
+      "characterCount": 2434,
+      "sha256": "6ef931f84af2311ae6dee0d1a1070ab1e780b5c2c65d4de5e216756eca2a3415",
+      "file": "0010.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0011",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 11,
+      "label": "Remedy edition",
+      "title": "Alumina",
+      "indexHeadings": [
+        "Alumina"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyaa.htm#Alu",
+      "characterCount": 2538,
+      "sha256": "eec5bd9870b312805640e9ba60a44a32005e47e4f0a2fd2182955a63fb1e21dd",
+      "file": "0011.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0012",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 12,
+      "label": "Remedy edition",
+      "title": "Ambra Grisea",
+      "indexHeadings": [
+        "Ambra Grisea"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyaa.htm#Ambr",
+      "characterCount": 1413,
+      "sha256": "a9c1469bcce890862cd105f3c5b7681e5d8fca8675c4cd62367208357d45cc1d",
+      "file": "0012.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0013",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 13,
+      "label": "Remedy edition",
+      "title": "Ammonium Carbonicum",
+      "indexHeadings": [
+        "Ammonium Carbonicum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyaa.htm#AmmC",
+      "characterCount": 2622,
+      "sha256": "fd0c248ffde865f47093a919d46780ac8ef73ee6e623b992c47be6075bb095a7",
+      "file": "0013.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0014",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 14,
+      "label": "Remedy edition",
+      "title": "Ammonium Muriaticum",
+      "indexHeadings": [
+        "Ammonium Muriaticum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyaa.htm#AmmM",
+      "characterCount": 1273,
+      "sha256": "de59acbe465774831d802ca50951a3e3abfa256dc2c71911bfb16102bdc8093e",
+      "file": "0014.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0015",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 15,
+      "label": "Remedy edition",
+      "title": "Amylenum Nitrosum",
+      "indexHeadings": [
+        "Amylenum Nitrosum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyaa.htm#Amyl",
+      "characterCount": 1794,
+      "sha256": "23f951c015dee814f9a9823ed6e871c072ebbfbb43e227e62940070707d065e7",
+      "file": "0015.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0016",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 16,
+      "label": "Remedy edition",
+      "title": "Anacardium Orientale",
+      "indexHeadings": [
+        "Anacardium Orientale"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyaa.htm#Anac",
+      "characterCount": 2030,
+      "sha256": "9b40bb154efa1f7dc67e3a1ae3f69ddd55ca6982cda1f3a9f508dda71b573361",
+      "file": "0016.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0017",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 17,
+      "label": "Remedy edition",
+      "title": "Anthracinum",
+      "indexHeadings": [
+        "Anthracinum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyaa.htm#Anthr",
+      "characterCount": 2001,
+      "sha256": "baf2b1ced6483aca0b43e2363c5c01bb8a970775a487c06cfcffc744cdefc7b6",
+      "file": "0017.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0018",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 18,
+      "label": "Remedy edition",
+      "title": "Antimony Crudum",
+      "indexHeadings": [
+        "Antimony Crudum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyaa.htm#AntC",
+      "characterCount": 3115,
+      "sha256": "9e6cf3c562f7c896620e9ecef8dc4be0e294ddd1142fe2c807193b0cce47eb47",
+      "file": "0018.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0019",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 19,
+      "label": "Remedy edition",
+      "title": "Antimonium Tartaricum",
+      "indexHeadings": [
+        "Antimonium Tartaricum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyaa.htm#AntT",
+      "characterCount": 2752,
+      "sha256": "57c6c2451b1c1ec572df93e1d6e9d8b3f54956a52f78cd2af63c0ef9ccc71d02",
+      "file": "0019.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0020",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 20,
+      "label": "Remedy edition",
+      "title": "Apis Mellifica",
+      "indexHeadings": [
+        "Apis Mellifica"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyab.htm#Apis",
+      "characterCount": 2442,
+      "sha256": "72d52ea47f9a119786e46457126e751cbfdb5f8f402ef198e84c53b7c9d71c46",
+      "file": "0020.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0021",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 21,
+      "label": "Remedy edition",
+      "title": "Apocynum Cannabinum",
+      "indexHeadings": [
+        "Apocynum Cannabinum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyab.htm#Apoc",
+      "characterCount": 1190,
+      "sha256": "1ffa7784ce8d82398dbfce5b3fd81b727c5b288b251591f813743e2cb79472ce",
+      "file": "0021.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0022",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 22,
+      "label": "Remedy edition",
+      "title": "Argentum Metallicum",
+      "indexHeadings": [
+        "Argentum Metallicum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyab.htm#Arg",
+      "characterCount": 1511,
+      "sha256": "ec03cf647d86f2dbeaf3afbd218175df43c892998807a923ef5a4f2f8bb5d949",
+      "file": "0022.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0023",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 23,
+      "label": "Remedy edition",
+      "title": "Argentum Nitricum",
+      "indexHeadings": [
+        "Argentum Nitricum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyab.htm#ArgN",
+      "characterCount": 3638,
+      "sha256": "b97a70f302f91260970e81d7ce86538cd58863ff8d74046f924cfdb8c845bd2b",
+      "file": "0023.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0024",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 24,
+      "label": "Remedy edition",
+      "title": "Arnica Montana",
+      "indexHeadings": [
+        "Arnica Montana"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyab.htm#Arn",
+      "characterCount": 3476,
+      "sha256": "1f8561f2e4c304ff2397582de2f8dd86d67a2dc686c3d5b2a08f232740e0bce8",
+      "file": "0024.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0025",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 25,
+      "label": "Remedy edition",
+      "title": "Arsenic Album",
+      "indexHeadings": [
+        "Arsenic Album"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyab.htm#Ars",
+      "characterCount": 3615,
+      "sha256": "bb2200174105d972bd4cf43c18e2078d675cb28d07b97fadb7ddd77f6d045869",
+      "file": "0025.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0026",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 26,
+      "label": "Remedy edition",
+      "title": "Arum Triphyllum",
+      "indexHeadings": [
+        "Arum Triphyllum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyab.htm#Arum",
+      "characterCount": 1840,
+      "sha256": "5e3b346d965d786d7e1986ef47b1b9e731ceb752c800a5f13ece8dace8374315",
+      "file": "0026.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0027",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 27,
+      "label": "Remedy edition",
+      "title": "Asarum Europaeum",
+      "indexHeadings": [
+        "Asarum Europaeum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyab.htm#Asar",
+      "characterCount": 1434,
+      "sha256": "1479b7ebc09acb0fe93b1249bdc42949d2b253aee964fa8fd98b23021d3ad456",
+      "file": "0027.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0028",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 28,
+      "label": "Remedy edition",
+      "title": "Asterias Rubens",
+      "indexHeadings": [
+        "Asterias Rubens"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyab.htm#AstR",
+      "characterCount": 1276,
+      "sha256": "ccaab552405b4bd9a77ef068e0d0b503c5a694c4e7634c55149178310bd4754f",
+      "file": "0028.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0029",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 29,
+      "label": "Remedy edition",
+      "title": "Aurum Metallicum",
+      "indexHeadings": [
+        "Aurum Metallicum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyab.htm#Aur",
+      "characterCount": 2599,
+      "sha256": "e68b640658da3d803c29250780413c0b3b53a316d3f73600aaa60b2c2fe8c094",
+      "file": "0029.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0030",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 30,
+      "label": "Remedy edition",
+      "title": "Baptisia Tinctoria",
+      "indexHeadings": [
+        "Baptisia Tinctoria"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyab.htm#Bapt",
+      "characterCount": 2085,
+      "sha256": "282a98ab725059ab9c9ce3d0a1ea6628a9915849c3038f6282afce5bc58bb5ab",
+      "file": "0030.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0031",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 31,
+      "label": "Remedy edition",
+      "title": "Baryta Carbonica",
+      "indexHeadings": [
+        "Baryta Carbonica"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyab.htm#Baryt",
+      "characterCount": 2198,
+      "sha256": "806eaea2ee802f6e01f62a17da24248542917e0ab18dff5532a6dd8529298955",
+      "file": "0031.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0032",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 32,
+      "label": "Remedy edition",
+      "title": "Belladonna",
+      "indexHeadings": [
+        "Belladonna"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyab.htm#Bell",
+      "characterCount": 3327,
+      "sha256": "19aaf667445ca4ea6c499955d17f5c099059e990350824a98f3c3c337f4e7091",
+      "file": "0032.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0033",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 33,
+      "label": "Remedy edition",
+      "title": "Benzoic Acid",
+      "indexHeadings": [
+        "Benzoic Acid"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyab.htm#BenzAc",
+      "characterCount": 1290,
+      "sha256": "51785261ad3a98ed532cd0cb7a88c445585a78d106564840a45bd2cc4982dcc6",
+      "file": "0033.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0034",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 34,
+      "label": "Remedy edition",
+      "title": "Berberis Vulgaris",
+      "indexHeadings": [
+        "Berberis Vulgaris"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyab.htm#Berb",
+      "characterCount": 1511,
+      "sha256": "0b2df832d5f23d2bb4f14f505d12ca33ba4a27339bda94d1d856730bcb80e21c",
+      "file": "0034.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0035",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 35,
+      "label": "Remedy edition",
+      "title": "Bismuth",
+      "indexHeadings": [
+        "Bismuth"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyab.htm#Bism",
+      "characterCount": 1206,
+      "sha256": "95640f1fb2eff2b5e125d0b816c25167edee469c18ea13a3bb78afbd24e8068c",
+      "file": "0035.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0036",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 36,
+      "label": "Remedy edition",
+      "title": "Borax",
+      "indexHeadings": [
+        "Borax"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyab.htm#Bor",
+      "characterCount": 2402,
+      "sha256": "5c059908e9048dc6ee08b680dc442c01d9e2b1f85bf91bdc28f6e3b696d3f7c8",
+      "file": "0036.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0037",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 37,
+      "label": "Remedy edition",
+      "title": "Bovista",
+      "indexHeadings": [
+        "Bovista"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyab.htm#Bov",
+      "characterCount": 1323,
+      "sha256": "35bb650d94442a261aeba3f34d8009fd5a37975afc3e4a4dad9ffd36e252986c",
+      "file": "0037.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0038",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 38,
+      "label": "Remedy edition",
+      "title": "Bromium",
+      "indexHeadings": [
+        "Bromium"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyab.htm#Brom",
+      "characterCount": 1934,
+      "sha256": "d7391b451ea7d94146174530c38a6fcb76924b3f4d79f21ccfdf234724ec2ae8",
+      "file": "0038.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0039",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 39,
+      "label": "Remedy edition",
+      "title": "Bryonia Alba",
+      "indexHeadings": [
+        "Bryonia Alba"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyab.htm#Bry",
+      "characterCount": 3920,
+      "sha256": "7ee08d254a68f8fa9915e50055fe1d5eea29fec02b42cdce1cd825f97d83c72f",
+      "file": "0039.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0040",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 40,
+      "label": "Remedy edition",
+      "title": "Cactus Grandiflorus",
+      "indexHeadings": [
+        "Cactus Grandiflorus"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeycc.htm#Cact",
+      "characterCount": 1580,
+      "sha256": "65c2df0d8b19f0a7d7a61a3d497a53896ae2fd1db4383c017a3f11eee14f6ecf",
+      "file": "0040.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0041",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 41,
+      "label": "Remedy edition",
+      "title": "Caladium",
+      "indexHeadings": [
+        "Caladium"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeycc.htm#Calad",
+      "characterCount": 809,
+      "sha256": "947aff0f10bec5301b283fa8c047813ff31620eb30fb56f00f3164ad39081036",
+      "file": "0041.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0042",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 42,
+      "label": "Remedy edition",
+      "title": "Calcarea Arsenica",
+      "indexHeadings": [
+        "Calcarea Arsenica"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeycc.htm#CalcArs",
+      "characterCount": 593,
+      "sha256": "39e0c32ccfadd053b460d1fe9ab82a8596fcfd616f8b8908120c24340ac27bba",
+      "file": "0042.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0043",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 43,
+      "label": "Remedy edition",
+      "title": "Calcarea Ostrearum",
+      "indexHeadings": [
+        "Calcarea Ostrearum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeycc.htm#CalcO",
+      "characterCount": 4000,
+      "sha256": "6a5c3d42ec16149fc862ea7894f4cabf17b64bebcbe3f824cc1a76d71f69e60f",
+      "file": "0043.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0044",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 44,
+      "label": "Remedy edition",
+      "title": "Calcarea Phosphorica",
+      "indexHeadings": [
+        "Calcarea Phosphorica"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeycc.htm#CalcP",
+      "characterCount": 2047,
+      "sha256": "054a5b0fe9ec9fc2aaa867d86a38c41b54e99d15d767257e4e9f0df0cb67603f",
+      "file": "0044.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0045",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 45,
+      "label": "Remedy edition",
+      "title": "Calendula",
+      "indexHeadings": [
+        "Calendula"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeycc.htm#Calend",
+      "characterCount": 1778,
+      "sha256": "1021b7b7bc7f4470949c078920d091f0aa543a92654af77bafdceb99fafcd690",
+      "file": "0045.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0046",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 46,
+      "label": "Remedy edition",
+      "title": "Camphora",
+      "indexHeadings": [
+        "Camphora"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeycc.htm#Camph",
+      "characterCount": 1728,
+      "sha256": "b66dadcfc1339747a0d9c37b75417a2de46ae79319a8adce17f5d6ef362ac287",
+      "file": "0046.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0047",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 47,
+      "label": "Remedy edition",
+      "title": "Cannabis Indica",
+      "indexHeadings": [
+        "Cannabis Indica"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeycc.htm#CannI",
+      "characterCount": 988,
+      "sha256": "7d59234e0e44f02de11f57d9208dd8b9fb5dfb5125a29c00e4a8526371fa0526",
+      "file": "0047.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0048",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 48,
+      "label": "Remedy edition",
+      "title": "Cannabis Sativa",
+      "indexHeadings": [
+        "Cannabis Sativa"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeycc.htm#CannS",
+      "characterCount": 1055,
+      "sha256": "ed94c043456392bdd611c1a052e146c3051451e72f07121a47a701e856840174",
+      "file": "0048.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0049",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 49,
+      "label": "Remedy edition",
+      "title": "Cantharides",
+      "indexHeadings": [
+        "Cantharides"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeycc.htm#Canth",
+      "characterCount": 1870,
+      "sha256": "db0ad9bf5a1dd7d5c5dca2faa943b75b523046801dc931e70002a93484017951",
+      "file": "0049.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0050",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 50,
+      "label": "Remedy edition",
+      "title": "Capsicum",
+      "indexHeadings": [
+        "Capsicum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeycc.htm#Caps",
+      "characterCount": 1787,
+      "sha256": "06a574dff51715a7ce62fd44ca67625bc848a8d904740444362ac75194b6f13c",
+      "file": "0050.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0051",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 51,
+      "label": "Remedy edition",
+      "title": "Carbo Animalis",
+      "indexHeadings": [
+        "Carbo Animalis"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeycc.htm#CarbAn",
+      "characterCount": 1543,
+      "sha256": "b5d29a4c03b8d7e6f3a05adc33eb302da7916cffafdb25fd9f8fd456925ad7be",
+      "file": "0051.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0052",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 52,
+      "label": "Remedy edition",
+      "title": "Carbo Vegetabilis",
+      "indexHeadings": [
+        "Carbo Vegetabilis"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeycc.htm#CarbV",
+      "characterCount": 3245,
+      "sha256": "fe9b68da2a2582c7433b3a7a31228542bc8e5331c150e66e31d1028538694d80",
+      "file": "0052.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0053",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 53,
+      "label": "Remedy edition",
+      "title": "Carbolic Acid",
+      "indexHeadings": [
+        "Carbolic Acid"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeycc.htm#CarbAc",
+      "characterCount": 1737,
+      "sha256": "9b7f6240ef868538e826d69872f7f18be8cc55f03fce1ae592977f91cd9d2b5f",
+      "file": "0053.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0054",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 54,
+      "label": "Remedy edition",
+      "title": "Caulophyllum",
+      "indexHeadings": [
+        "Caulophyllum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeycc.htm#Caul",
+      "characterCount": 1673,
+      "sha256": "18a769f6428d9419814d4428956a24f350f1b2c772bb6db39a926bbf9f207f42",
+      "file": "0054.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0055",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 55,
+      "label": "Remedy edition",
+      "title": "Causticum",
+      "indexHeadings": [
+        "Causticum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeycc.htm#Caust",
+      "characterCount": 3971,
+      "sha256": "38c188fe160079f879acd87c89f80ff99857c527b649f1ba679f22ae915172ff",
+      "file": "0055.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0056",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 56,
+      "label": "Remedy edition",
+      "title": "Chamomilla",
+      "indexHeadings": [
+        "Chamomilla"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeycc.htm#Cham",
+      "characterCount": 2807,
+      "sha256": "2384d45ba8c02c1b48641d5d8c5ef0650d97327379e399ae53c2deffde0f8a0f",
+      "file": "0056.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0057",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 57,
+      "label": "Remedy edition",
+      "title": "Chelidonium Majus",
+      "indexHeadings": [
+        "Chelidonium Majus"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeycc.htm#ChelM",
+      "characterCount": 2040,
+      "sha256": "f87edfdb7d8246f40efc160e4932c97778b8d7b2c86e6b690886a530eeeb6809",
+      "file": "0057.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0058",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 58,
+      "label": "Remedy edition",
+      "title": "Cicuta Virosa",
+      "indexHeadings": [
+        "Cicuta Virosa"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeycc.htm#CicV",
+      "characterCount": 1738,
+      "sha256": "6950dab27c8da0106f302097cf86559078f93ecf6b6709f62ff9ff9378f80a7e",
+      "file": "0058.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0059",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 59,
+      "label": "Remedy edition",
+      "title": "Cina",
+      "indexHeadings": [
+        "Cina"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeycc.htm#Cina",
+      "characterCount": 1795,
+      "sha256": "d107cf1d159ff72b92e02e2d77e8781598c0fa45c134dab1848efc7fbfbeb5ee",
+      "file": "0059.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0060",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 60,
+      "label": "Remedy edition",
+      "title": "Cinchona (China)",
+      "indexHeadings": [
+        "Cinchona (China)"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeycc.htm#Cinch",
+      "characterCount": 3004,
+      "sha256": "adc155ef0a777e6addeb18a44cbf4d33c51127fa66c028ecf1af113b32176ba1",
+      "file": "0060.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0061",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 61,
+      "label": "Remedy edition",
+      "title": "Coca",
+      "indexHeadings": [
+        "Coca"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyce.htm#Coca",
+      "characterCount": 1111,
+      "sha256": "9058c8e327d11af09f09494a50fa3d6b8471f87c2cc1d299ba778af3f9d52ba0",
+      "file": "0061.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0062",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 62,
+      "label": "Remedy edition",
+      "title": "Cocculus",
+      "indexHeadings": [
+        "Cocculus"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyce.htm#Cocc",
+      "characterCount": 2442,
+      "sha256": "bce1311e0921122b4e21a7a5879de9a3cf61db93393e37fcf2ce9312b443378f",
+      "file": "0062.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0063",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 63,
+      "label": "Remedy edition",
+      "title": "Coffee Cruda",
+      "indexHeadings": [
+        "Coffee Cruda"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyce.htm#Coff",
+      "characterCount": 1534,
+      "sha256": "796b705386fb4bf75b42f4bd7032fc822db94c612c0019a480c6ca7ce8097d41",
+      "file": "0063.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0064",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 64,
+      "label": "Remedy edition",
+      "title": "Colchicum Autumnale",
+      "indexHeadings": [
+        "Colchicum Autumnale"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyce.htm#Colch",
+      "characterCount": 1933,
+      "sha256": "5067339dce77e4220ade2a5f08d6c9916756d0f40715dfd508773d94411d95de",
+      "file": "0064.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0065",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 65,
+      "label": "Remedy edition",
+      "title": "Collinsonia Canadensis",
+      "indexHeadings": [
+        "Collinsonia Canadensis"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyce.htm#Coll",
+      "characterCount": 1228,
+      "sha256": "ca68a377bbaba2006f1d15819b72cbbc0b13c06f4bd1c104b0b8e2e69df04d2b",
+      "file": "0065.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0066",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 66,
+      "label": "Remedy edition",
+      "title": "Colocynthis",
+      "indexHeadings": [
+        "Colocynthis"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyce.htm#Coloc",
+      "characterCount": 1577,
+      "sha256": "170eea7851bb9826f7b5a96cecdcd0a23e7f2400aaaf663276eb1ce1db5fd984",
+      "file": "0066.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0067",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 67,
+      "label": "Remedy edition",
+      "title": "Conium Maculatum",
+      "indexHeadings": [
+        "Conium Maculatum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyce.htm#Con",
+      "characterCount": 2965,
+      "sha256": "ab15a4aba2fb7b7597f5b335d5ecff1a057e7ca90a7d017636d7da7539d071dc",
+      "file": "0067.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0068",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 68,
+      "label": "Remedy edition",
+      "title": "Crocus Sativus",
+      "indexHeadings": [
+        "Crocus Sativus"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyce.htm#Croc",
+      "characterCount": 1690,
+      "sha256": "f3bd3b6766d5fb765d34e3e1a7dd7c7a38972e973efcd9ad09a750ea7de6149f",
+      "file": "0068.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0069",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 69,
+      "label": "Remedy edition",
+      "title": "Crotalus Horridus",
+      "indexHeadings": [
+        "Crotalus Horridus"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyce.htm#CrotH",
+      "characterCount": 2351,
+      "sha256": "db80ac35080bbe935e8b519b7eb4210e17f024c56caf5fea38069cb49dc025fa",
+      "file": "0069.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0070",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 70,
+      "label": "Remedy edition",
+      "title": "Croton Tiglium",
+      "indexHeadings": [
+        "Croton Tiglium"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyce.htm#Crot",
+      "characterCount": 1583,
+      "sha256": "9b2ad018d9a751b0388757249af838bc4c35cbf5714dc909b61d9fb486f7270b",
+      "file": "0070.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0071",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 71,
+      "label": "Remedy edition",
+      "title": "Cuprum Metallicum",
+      "indexHeadings": [
+        "Cuprum Metallicum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyce.htm#CupM",
+      "characterCount": 2380,
+      "sha256": "265e57b7174daf35c642fb2537cbdc27a427dd99c65e6d72a090f8ec67acc790",
+      "file": "0071.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0072",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 72,
+      "label": "Remedy edition",
+      "title": "Cyclamen Europaeum",
+      "indexHeadings": [
+        "Cyclamen Europaeum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyce.htm#Cycl",
+      "characterCount": 1798,
+      "sha256": "047308824f2a40415684dcd506f0ea8e968e3acd40af59c7b4cb414636e4701c",
+      "file": "0072.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0073",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 73,
+      "label": "Remedy edition",
+      "title": "Digitalis Purpurea",
+      "indexHeadings": [
+        "Digitalis Purpurea"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyce.htm#Digit",
+      "characterCount": 1619,
+      "sha256": "3f9941f1a106731749a012733d236a6d168badbc46e8a29a8f5fd029b78189df",
+      "file": "0073.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0074",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 74,
+      "label": "Remedy edition",
+      "title": "Dioscorea Villosa",
+      "indexHeadings": [
+        "Dioscorea Villosa"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyce.htm#Dios",
+      "characterCount": 1036,
+      "sha256": "acd9703844eda2b066fa10539e11e453f2f04aec95611db5afa40cf2fa7494bc",
+      "file": "0074.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0075",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 75,
+      "label": "Remedy edition",
+      "title": "Diphtherinum",
+      "indexHeadings": [
+        "Diphtherinum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyce.htm#Diph",
+      "characterCount": 2733,
+      "sha256": "06f4d5b244cebe1d3458ebd0cbc0c5a373c4a683d8cde85545dca6669033b66b",
+      "file": "0075.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0076",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 76,
+      "label": "Remedy edition",
+      "title": "Drosera Rotundifolia",
+      "indexHeadings": [
+        "Drosera Rotundifolia"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyce.htm#Dros",
+      "characterCount": 2078,
+      "sha256": "4cd4a4988e069cb47669ce9e5ce652d15e02503eb4595b5a29314b31d7ce4dd8",
+      "file": "0076.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0077",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 77,
+      "label": "Remedy edition",
+      "title": "Dulcamara",
+      "indexHeadings": [
+        "Dulcamara"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyce.htm#Dulc",
+      "characterCount": 2111,
+      "sha256": "08b5072c0afa56e53279cc3333227c5242854f8fe8a54fab15403549ca39dd0e",
+      "file": "0077.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0078",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 78,
+      "label": "Remedy edition",
+      "title": "Equisetum Hyemale",
+      "indexHeadings": [
+        "Equisetum Hyemale"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyce.htm#Equis",
+      "characterCount": 692,
+      "sha256": "15954907b9231e74bb2f15bd1848797acb6fcf44751f3af6aafe2e6d8cb3c17a",
+      "file": "0078.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0079",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 79,
+      "label": "Remedy edition",
+      "title": "Eupatorium Perfoliatum",
+      "indexHeadings": [
+        "Eupatorium Perfoliatum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyce.htm#EupPer",
+      "characterCount": 1625,
+      "sha256": "b85df2d0a00ff946a287c42dbdb6ebd581effa312a3f959a798af283e319c5fa",
+      "file": "0079.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0080",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 80,
+      "label": "Remedy edition",
+      "title": "Euphrasia",
+      "indexHeadings": [
+        "Euphrasia"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyce.htm#Euphr",
+      "characterCount": 1393,
+      "sha256": "a5ca6f64c53a830192569f525f151b834af21838a6c02c2a8abc4997c33c1fed",
+      "file": "0080.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0081",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 81,
+      "label": "Remedy edition",
+      "title": "Ferrum Metallicum",
+      "indexHeadings": [
+        "Ferrum Metallicum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyfi.htm#FerM",
+      "characterCount": 2789,
+      "sha256": "b317833254abe0ae013d98fef562e8937533050fc079e1dcd3cb74b4a5c468fa",
+      "file": "0081.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0082",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 82,
+      "label": "Remedy edition",
+      "title": "Fluoric Acid",
+      "indexHeadings": [
+        "Fluoric Acid"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyfi.htm#FluAc",
+      "characterCount": 1302,
+      "sha256": "3f01d4a5bdfca374a45a131411654a7ac863bbfb76d8ab31eaf6050a8974495d",
+      "file": "0082.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0083",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 83,
+      "label": "Remedy edition",
+      "title": "Gelsemium",
+      "indexHeadings": [
+        "Gelsemium"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyfi.htm#Gels",
+      "characterCount": 2449,
+      "sha256": "8c5a59f0bf25153cbfa540585e7a77a11dfbfcf3e7ea465a5667467d407611bf",
+      "file": "0083.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0084",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 84,
+      "label": "Remedy edition",
+      "title": "Glonoine",
+      "indexHeadings": [
+        "Glonoine"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyfi.htm#Glon",
+      "characterCount": 2001,
+      "sha256": "e043befada59c3f0c74f7e4e2b1566f441f3fd252f66ad18343f9a494cae794b",
+      "file": "0084.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0085",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 85,
+      "label": "Remedy edition",
+      "title": "Graphites",
+      "indexHeadings": [
+        "Graphites"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyfi.htm#Graph",
+      "characterCount": 3078,
+      "sha256": "b7d61b3b0e6bb5dbd965e63244f3cddad8c28d11fe710524f7606f70d52afd01",
+      "file": "0085.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0086",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 86,
+      "label": "Remedy edition",
+      "title": "Hamamelis Virginica",
+      "indexHeadings": [
+        "Hamamelis Virginica"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyfi.htm#HamV",
+      "characterCount": 2479,
+      "sha256": "ba6e6d748796e7ca67dc13d0bd29b4bf00525830921def467e5001d2856044ca",
+      "file": "0086.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0087",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 87,
+      "label": "Remedy edition",
+      "title": "Helleborus Niger",
+      "indexHeadings": [
+        "Helleborus Niger"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyfi.htm#HellN",
+      "characterCount": 2206,
+      "sha256": "e0771e1c3e133d9cbeb4da8eaacbbfdda75c4edffa8fcdfbca31d2a9b9c09aa4",
+      "file": "0087.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0088",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 88,
+      "label": "Remedy edition",
+      "title": "Helonias Dioica",
+      "indexHeadings": [
+        "Helonias Dioica"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyfi.htm#Helon",
+      "characterCount": 1554,
+      "sha256": "4c4b9e603dc77cc5db4fdfc8cd4b269f74b0541a347628c8f123145e527f7b06",
+      "file": "0088.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0089",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 89,
+      "label": "Remedy edition",
+      "title": "Hepar Sulphuris",
+      "indexHeadings": [
+        "Hepar Sulphuris"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyfi.htm#HepS",
+      "characterCount": 3646,
+      "sha256": "dd6ff4163a4dd388ae11b2d0b000c273e05334c52bebc1b15090aadddcfd8e61",
+      "file": "0089.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0090",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 90,
+      "label": "Remedy edition",
+      "title": "Hyoscyamus Niger",
+      "indexHeadings": [
+        "Hyoscyamus Niger"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyfi.htm#HyosN",
+      "characterCount": 2533,
+      "sha256": "7946bc8b88695d6eee048bdb01649b0c93bd68cabfd81d78a71a24e8347a3d35",
+      "file": "0090.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0091",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 91,
+      "label": "Remedy edition",
+      "title": "Hypericum Perforatum",
+      "indexHeadings": [
+        "Hypericum Perforatum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyfi.htm#HypPer",
+      "characterCount": 1737,
+      "sha256": "8164cbc73184ebff3c3d06c72dd803f189d29009cf2490149cf157532181f4d3",
+      "file": "0091.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0092",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 92,
+      "label": "Remedy edition",
+      "title": "Ignatia",
+      "indexHeadings": [
+        "Ignatia"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyfi.htm#Ign",
+      "characterCount": 3677,
+      "sha256": "e06fc75066503f2243b2fba36ba770817d98599cb692a9e0a1f109273e6dcfd5",
+      "file": "0092.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0093",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 93,
+      "label": "Remedy edition",
+      "title": "Iodum",
+      "indexHeadings": [
+        "Iodum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyfi.htm#Iod",
+      "characterCount": 2407,
+      "sha256": "dc83819bcbbcb2920dbb1cbdd6288411c092f693bda96e21ae1b65200c5a14e0",
+      "file": "0093.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0094",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 94,
+      "label": "Remedy edition",
+      "title": "Ipecacuanha",
+      "indexHeadings": [
+        "Ipecacuanha"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyfi.htm#Ipec",
+      "characterCount": 2412,
+      "sha256": "1feb428c5199a9945cb51f022c7abcfc9f0709007f59e99de192cbf30d12605b",
+      "file": "0094.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0095",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 95,
+      "label": "Remedy edition",
+      "title": "Kali Bichromicum",
+      "indexHeadings": [
+        "Kali Bichromicum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeykl.htm#KaliBi",
+      "characterCount": 3029,
+      "sha256": "1f1bda47727c4dce29b90aa8f91c04dd07e6c5b41d933e88135767294a141766",
+      "file": "0095.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0096",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 96,
+      "label": "Remedy edition",
+      "title": "Kali Bromatum",
+      "indexHeadings": [
+        "Kali Bromatum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeykl.htm#KaliBr",
+      "characterCount": 2101,
+      "sha256": "75587a9872b840c1a4642a882f5ec74de955b36b74b9029aa76a1f64a3cd03bf",
+      "file": "0096.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0097",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 97,
+      "label": "Remedy edition",
+      "title": "Kali Carbonicum",
+      "indexHeadings": [
+        "Kali Carbonicum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeykl.htm#KaliC",
+      "characterCount": 2498,
+      "sha256": "a57d50c6951f318d2455453ad125209e0728116fae939f0293b77ea853ddfa9a",
+      "file": "0097.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0098",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 98,
+      "label": "Remedy edition",
+      "title": "Kalmia Latifolia",
+      "indexHeadings": [
+        "Kalmia Latifolia"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeykl.htm#KalmL",
+      "characterCount": 1118,
+      "sha256": "2a2a6db8bbaf9e0b065e390951eaeccd8552ceb4b274263f1214fb8c57841862",
+      "file": "0098.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0099",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 99,
+      "label": "Remedy edition",
+      "title": "Kreosotum",
+      "indexHeadings": [
+        "Kreosotum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeykl.htm#Kreos",
+      "characterCount": 2556,
+      "sha256": "334cb5420c3f702ff881c330d7a97120c8344c6a3172287aecd722f9235e0dd1",
+      "file": "0099.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0100",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 100,
+      "label": "Remedy edition",
+      "title": "Lachesis",
+      "indexHeadings": [
+        "Lachesis"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeykl.htm#Lach",
+      "characterCount": 4798,
+      "sha256": "010d28b3801735438a8fa7ef5f4c497e723426871aa9ff6b5438e5e9e03a985f",
+      "file": "0100.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0101",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 101,
+      "label": "Remedy edition",
+      "title": "Lac Caninum",
+      "indexHeadings": [
+        "Lac Caninum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeykl.htm#LacC",
+      "characterCount": 4107,
+      "sha256": "713eb4c3e12bb26b17d63d2ac63282336bc95414c7b43803b01c3443e7cce217",
+      "file": "0101.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0102",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 102,
+      "label": "Remedy edition",
+      "title": "Lac Defloratum",
+      "indexHeadings": [
+        "Lac Defloratum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeykl.htm#LacD",
+      "characterCount": 2125,
+      "sha256": "8bb8021301a2a3a6e0d3a8441334b590548d53e717e6315b904224196d64cae0",
+      "file": "0102.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0103",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 103,
+      "label": "Remedy edition",
+      "title": "Ledum Palustre",
+      "indexHeadings": [
+        "Ledum Palustre"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeykl.htm#LedP",
+      "characterCount": 2098,
+      "sha256": "ca28d6e6d1a4a72c34c711bbbdc30eb87b67ddecdd1fe15f5aba42ea579c1786",
+      "file": "0103.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0104",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 104,
+      "label": "Remedy edition",
+      "title": "Lilium Tigrinum",
+      "indexHeadings": [
+        "Lilium Tigrinum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeykl.htm#LilT",
+      "characterCount": 2666,
+      "sha256": "4c99fb30f70f4cc93cb8696feaf14341e9c2cd94b5642ad9137a8868a40003b4",
+      "file": "0104.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0105",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 105,
+      "label": "Remedy edition",
+      "title": "Lobelia Inflata",
+      "indexHeadings": [
+        "Lobelia Inflata"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeykl.htm#LobI",
+      "characterCount": 1946,
+      "sha256": "93f29063b14bfad94ccda589ae88d35b7d2b97e4916b770fc44c33e6f6533d50",
+      "file": "0105.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0106",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 106,
+      "label": "Remedy edition",
+      "title": "Lycopodium Clavatum",
+      "indexHeadings": [
+        "Lycopodium Clavatum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeykl.htm#Lyc",
+      "characterCount": 4342,
+      "sha256": "9152e36a39ce49ec986e606918f812af908fd066477da10538092a7e06cc3bdd",
+      "file": "0106.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0107",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 107,
+      "label": "Remedy edition",
+      "title": "Lyssin",
+      "indexHeadings": [
+        "Lyssin"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeykl.htm#Lyss",
+      "characterCount": 1631,
+      "sha256": "e599fce863c208765bc7fc760a1a6468d77be96f3095712a71ab86e923643cdc",
+      "file": "0107.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0108",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 108,
+      "label": "Remedy edition",
+      "title": "Magnesia Carbonica",
+      "indexHeadings": [
+        "Magnesia Carbonica"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeym.htm#MagC",
+      "characterCount": 1911,
+      "sha256": "d5f45a97b43af34cb07a747b88545efa72432c5a78550ff738c364fe561bca9c",
+      "file": "0108.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0109",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 109,
+      "label": "Remedy edition",
+      "title": "Magnesia Muratica",
+      "indexHeadings": [
+        "Magnesia Muratica"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeym.htm#MagM",
+      "characterCount": 1949,
+      "sha256": "b65a978588c50dd001693fb47c2340802abca031fca31b192c810538c8540583",
+      "file": "0109.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0110",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 110,
+      "label": "Remedy edition",
+      "title": "Magnesia Phosphorica",
+      "indexHeadings": [
+        "Magnesia Phosphorica"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeym.htm#MagP",
+      "characterCount": 2643,
+      "sha256": "93b651570948c5ef4c13c26ad2944bb307310ac3438d49399a2d1210002f70da",
+      "file": "0110.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0111",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 111,
+      "label": "Remedy edition",
+      "title": "Medorrhinum",
+      "indexHeadings": [
+        "Medorrhinum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeym.htm#Med",
+      "characterCount": 8129,
+      "sha256": "2e6b8b00f7ae9e9242bde6bbcc2e73726f0eebe699759d1c88a90f83ff0f3365",
+      "file": "0111.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0112",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 112,
+      "label": "Remedy edition",
+      "title": "Melilotus Alba",
+      "indexHeadings": [
+        "Melilotus Alba"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeym.htm#Melil",
+      "characterCount": 1125,
+      "sha256": "021bc66a7e6365fb0090a616e4f7447d98086dac67c3a4237607637a0db9c4b4",
+      "file": "0112.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0113",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 113,
+      "label": "Remedy edition",
+      "title": "Menyanthes Trifoliata",
+      "indexHeadings": [
+        "Menyanthes Trifoliata"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeym.htm#MenyT",
+      "characterCount": 951,
+      "sha256": "61767646246be63abfbd4d8038479fa6037a2383827f7399f1a1f6bd4b27e8dd",
+      "file": "0113.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0114",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 114,
+      "label": "Remedy edition",
+      "title": "Mercurius",
+      "indexHeadings": [
+        "Mercurius"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeym.htm#Merc",
+      "characterCount": 4190,
+      "sha256": "372f1f228398bcbd61b391a37c39a633b080ab5213e98187ca73728777ce851c",
+      "file": "0114.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0115",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 115,
+      "label": "Remedy edition",
+      "title": "Mercurius Corrosivus",
+      "indexHeadings": [
+        "Mercurius Corrosivus"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeym.htm#MercC",
+      "characterCount": 778,
+      "sha256": "4a673774e00c0e1bbc006d1cee34ef378baebf3021bc26709c05f89f66b7144a",
+      "file": "0115.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0116",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 116,
+      "label": "Remedy edition",
+      "title": "Mercurius Cyanide",
+      "indexHeadings": [
+        "Mercurius Cyanide"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeym.htm#MercCy",
+      "characterCount": 542,
+      "sha256": "1426372b08a611be6bc0b74e783e12227dffef5e1e1bb1e4a5f9adaf475cc69b",
+      "file": "0116.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0117",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 117,
+      "label": "Remedy edition",
+      "title": "Mercurius Dulcis",
+      "indexHeadings": [
+        "Mercurius Dulcis"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeym.htm#MercD",
+      "characterCount": 600,
+      "sha256": "0eb2e6fa4518120b96eb561012700fef54e0750118e65464be4e713d542c8e7f",
+      "file": "0117.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0118",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 118,
+      "label": "Remedy edition",
+      "title": "Mercurius Proto Iodide",
+      "indexHeadings": [
+        "Mercurius Proto Iodide"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeym.htm#MercPrIo",
+      "characterCount": 689,
+      "sha256": "032bcfb911c83bfe6b3ccb6b70b3ff204077c43252ffb70980215db48b153d4f",
+      "file": "0118.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0119",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 119,
+      "label": "Remedy edition",
+      "title": "Mercurius Biniodide",
+      "indexHeadings": [
+        "Mercurius Biniodide"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeym.htm#MercBi",
+      "characterCount": 2051,
+      "sha256": "032a617617f9311ccf3abf26535cd4167ee46a6eb8330d7ff4aeadf2e873636b",
+      "file": "0119.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0120",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 120,
+      "label": "Remedy edition",
+      "title": "Mercurius Sulphuricus",
+      "indexHeadings": [
+        "Mercurius Sulphuricus"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeym.htm#MercSul",
+      "characterCount": 531,
+      "sha256": "25f6dd610bd7290ac8e299e294d2db76b4f837ba5698279493f93e34d83d9220",
+      "file": "0120.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0121",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 121,
+      "label": "Remedy edition",
+      "title": "Mezereum",
+      "indexHeadings": [
+        "Mezereum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeym.htm#Mez",
+      "characterCount": 2040,
+      "sha256": "4a82baa73218ae9151c0afa82c61a71f0e76226ac1454a3092517df71a6fba62",
+      "file": "0121.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0122",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 122,
+      "label": "Remedy edition",
+      "title": "Millefolium",
+      "indexHeadings": [
+        "Millefolium"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeym.htm#Mill",
+      "characterCount": 1318,
+      "sha256": "ddc2743453ac80b5aa48f80bd49e292b0c3dc32aad8f3e576d9ca47ff6d4c1fd",
+      "file": "0122.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0123",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 123,
+      "label": "Remedy edition",
+      "title": "Muratic Acid",
+      "indexHeadings": [
+        "Muratic Acid"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeym.htm#MurAc",
+      "characterCount": 2043,
+      "sha256": "307ff52760cc02ced46b62030aa361588618e6d2e3575003a67c33184f372d5e",
+      "file": "0123.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0124",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 124,
+      "label": "Remedy edition",
+      "title": "Murex Purpurea",
+      "indexHeadings": [
+        "Murex Purpurea"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeym.htm#MurP",
+      "characterCount": 997,
+      "sha256": "2881e5f8a43055159707129eba85d4e81802ca5866afd44c7448c52ca6ed8b42",
+      "file": "0124.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0125",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 125,
+      "label": "Remedy edition",
+      "title": "Naja Tripudians",
+      "indexHeadings": [
+        "Naja Tripudians"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyno.htm#Naja",
+      "characterCount": 835,
+      "sha256": "0de1329955998d3cdd05d7b091275acd2b8587002c01aa456a03c6e33c64415b",
+      "file": "0125.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0126",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 126,
+      "label": "Remedy edition",
+      "title": "Natrum Carbonicum",
+      "indexHeadings": [
+        "Natrum Carbonicum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyno.htm#NatC",
+      "characterCount": 2232,
+      "sha256": "9d0417f8de853ad75c4b4c1096f714abbfb3f7e3f13ea1bae6565b1c38f3405e",
+      "file": "0126.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0127",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 127,
+      "label": "Remedy edition",
+      "title": "Natrum Muriaticum",
+      "indexHeadings": [
+        "Natrum Muriaticum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyno.htm#NatM",
+      "characterCount": 4903,
+      "sha256": "7a6fda2774176e447b163fe7541992d18efca70570c845bfc581ed0de3839d9c",
+      "file": "0127.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0128",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 128,
+      "label": "Remedy edition",
+      "title": "Natrum Sulphuricum",
+      "indexHeadings": [
+        "Natrum Sulphuricum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyno.htm#NatS",
+      "characterCount": 2605,
+      "sha256": "4c725fdbf1d274177a21ccc916fa925473d63721ae2a595c38b20a2a7d02bd96",
+      "file": "0128.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0129",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 129,
+      "label": "Remedy edition",
+      "title": "Nitric Acid",
+      "indexHeadings": [
+        "Nitric Acid"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyno.htm#NitAc",
+      "characterCount": 3960,
+      "sha256": "94ec87c92c86ff987f89aed9246d0d19c1770ab5d23410ca16124a5cba002517",
+      "file": "0129.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0130",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 130,
+      "label": "Remedy edition",
+      "title": "Nux Moschata",
+      "indexHeadings": [
+        "Nux Moschata"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyno.htm#NuxM",
+      "characterCount": 3363,
+      "sha256": "65a82606ce7fc7635a3ce0a316859d10557c9a4f21cdc3ca4afcd410141621ca",
+      "file": "0130.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0131",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 131,
+      "label": "Remedy edition",
+      "title": "Nux Vomica",
+      "indexHeadings": [
+        "Nux Vomica"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyno.htm#NuxV",
+      "characterCount": 5042,
+      "sha256": "0f9aa376789456706c3b67ce4a4a99b6cd25c0965c09dd51d443b6f84e408703",
+      "file": "0131.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0132",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 132,
+      "label": "Remedy edition",
+      "title": "Opium",
+      "indexHeadings": [
+        "Opium"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyno.htm#Op",
+      "characterCount": 3610,
+      "sha256": "633e94f023dd438c1cc0c949ce0cb6d0297ccc81cfd65ab21e9852ff62485fa8",
+      "file": "0132.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0133",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 133,
+      "label": "Remedy edition",
+      "title": "Petroleum",
+      "indexHeadings": [
+        "Petroleum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyp.htm#Petrol",
+      "characterCount": 2279,
+      "sha256": "e208d0876ea9b0ba157d9edeeea1fa814731acf19a80bb5a59a175ae788167be",
+      "file": "0133.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0134",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 134,
+      "label": "Remedy edition",
+      "title": "Petroselinum",
+      "indexHeadings": [
+        "Petroselinum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyp.htm#Petros",
+      "characterCount": 937,
+      "sha256": "b88185c8a263c073bcd2e63ff3e6e5dbf87f1180aaa8fbc3430fdcd14d14026e",
+      "file": "0134.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0135",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 135,
+      "label": "Remedy edition",
+      "title": "Phosphoric Acid",
+      "indexHeadings": [
+        "Phosphoric Acid"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyp.htm#PhoAc",
+      "characterCount": 3471,
+      "sha256": "9893b168602ce1bc26303f0459063729984365d6a9c680ab2431d285b4247101",
+      "file": "0135.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0136",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 136,
+      "label": "Remedy edition",
+      "title": "Phosphorus",
+      "indexHeadings": [
+        "Phosphorus"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyp.htm#Pho",
+      "characterCount": 4174,
+      "sha256": "878b6710f5a448a28e327031d86d85cfb88eef051bc55f47b56202fedc649f5f",
+      "file": "0136.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0137",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 137,
+      "label": "Remedy edition",
+      "title": "Physostigma",
+      "indexHeadings": [
+        "Physostigma"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyp.htm#Phys",
+      "characterCount": 699,
+      "sha256": "ab80abb30a464929565211efc49904742476465639b727d743bf902dfa7f9e53",
+      "file": "0137.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0138",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 138,
+      "label": "Remedy edition",
+      "title": "Phytolacca",
+      "indexHeadings": [
+        "Phytolacca"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyp.htm#Phyt",
+      "characterCount": 2428,
+      "sha256": "3ce58b4213998cea6956b6ba0f9cfc4d7589ccbc2c0748af42cc829a8e4fd5fb",
+      "file": "0138.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0139",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 139,
+      "label": "Remedy edition",
+      "title": "Picric Acid",
+      "indexHeadings": [
+        "Picric Acid"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyp.htm#PicAc",
+      "characterCount": 1305,
+      "sha256": "fda3b833dcc349d6883081d0bc2a92ec138745f7d21ce622898e4574f036130c",
+      "file": "0139.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0140",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 140,
+      "label": "Remedy edition",
+      "title": "Platina",
+      "indexHeadings": [
+        "Platina"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyp.htm#Plat",
+      "characterCount": 2295,
+      "sha256": "b95a07d2545abcd7f87a2e4da0cdcafd8d8b6c80afc2f53dbec7a3de20e83f12",
+      "file": "0140.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0141",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 141,
+      "label": "Remedy edition",
+      "title": "Plumbum",
+      "indexHeadings": [
+        "Plumbum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyp.htm#Plumb",
+      "characterCount": 2449,
+      "sha256": "1a048f37f37b8cd71d33d1730f4272b4e007cf2104d457fff03db8a19eb7dd91",
+      "file": "0141.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0142",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 142,
+      "label": "Remedy edition",
+      "title": "Podophyllum",
+      "indexHeadings": [
+        "Podophyllum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyp.htm#Podo",
+      "characterCount": 2385,
+      "sha256": "bff55b3e9b958b88f92077cfaaeebe2367a1c5997fe6770758210d4e8a2db37e",
+      "file": "0142.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0143",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 143,
+      "label": "Remedy edition",
+      "title": "Psorinum",
+      "indexHeadings": [
+        "Psorinum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyp.htm#Psor",
+      "characterCount": 6118,
+      "sha256": "b98cb03259c57e0bb60b399010b12ae092857a09bcfbe24a8dfa6b7116479f9b",
+      "file": "0143.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0144",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 144,
+      "label": "Remedy edition",
+      "title": "Pulsatilla",
+      "indexHeadings": [
+        "Pulsatilla"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyp.htm#Puls",
+      "characterCount": 4158,
+      "sha256": "95111751f2f0efa54e6523c1f61d234d7bcf5eed59b81d071cb7adb021e3018b",
+      "file": "0144.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0145",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 145,
+      "label": "Remedy edition",
+      "title": "Pyrogen",
+      "indexHeadings": [
+        "Pyrogen"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyp.htm#Pyrog",
+      "characterCount": 2535,
+      "sha256": "749949fabed43d32ac1c923609920629c9b166c03ee4a3567f907b42a3e5de87",
+      "file": "0145.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0146",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 146,
+      "label": "Remedy edition",
+      "title": "Ranunculus Bulbosus",
+      "indexHeadings": [
+        "Ranunculus Bulbosus"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyrs.htm#RanB",
+      "characterCount": 1363,
+      "sha256": "c00878c1dfc42598294be9dbbe88d28cf1282684aa824f6b72c213493354adbb",
+      "file": "0146.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0147",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 147,
+      "label": "Remedy edition",
+      "title": "Ratanhia",
+      "indexHeadings": [
+        "Ratanhia"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyrs.htm#Ratan",
+      "characterCount": 755,
+      "sha256": "5d121db9526de347ac8d19ca53a937f06995db114b6eada9da26c40e7d9b62ef",
+      "file": "0147.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0148",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 148,
+      "label": "Remedy edition",
+      "title": "Rheum",
+      "indexHeadings": [
+        "Rheum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyrs.htm#Rheum",
+      "characterCount": 1181,
+      "sha256": "5895f890b1d7d59a4d50b951f0aeaaa1ce9782636f9a5df7a16be1998be10e68",
+      "file": "0148.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0149",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 149,
+      "label": "Remedy edition",
+      "title": "Rhododendron",
+      "indexHeadings": [
+        "Rhododendron"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyrs.htm#Rhod",
+      "characterCount": 1343,
+      "sha256": "d6f28be7323af04fe5e1b6f80c811c71d3892e80ceea7ee559491f6a06a4a101",
+      "file": "0149.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0150",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 150,
+      "label": "Remedy edition",
+      "title": "Rhus Toxicodendron",
+      "indexHeadings": [
+        "Rhus Toxicodendron"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyrs.htm#RhusT",
+      "characterCount": 3903,
+      "sha256": "7c5bee47b306e5796783565ac21e6dd2abbb6494ee3497e8919b9724197890f8",
+      "file": "0150.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0151",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 151,
+      "label": "Remedy edition",
+      "title": "Rumex Crispus",
+      "indexHeadings": [
+        "Rumex Crispus"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyrs.htm#Rum",
+      "characterCount": 1542,
+      "sha256": "9ecc46f622c19a0711d0e53b296981c6d1a9643174753634cd3ed5abf0040442",
+      "file": "0151.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0152",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 152,
+      "label": "Remedy edition",
+      "title": "Ruta Graveolens",
+      "indexHeadings": [
+        "Ruta Graveolens"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyrs.htm#Rut",
+      "characterCount": 2009,
+      "sha256": "77acd9248460648221a357cc9afcdf68a0d870d7d9dfb98f6ad27f412ef70aae",
+      "file": "0152.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0153",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 153,
+      "label": "Remedy edition",
+      "title": "Sabadilla",
+      "indexHeadings": [
+        "Sabadilla"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyrs.htm#Sabad",
+      "characterCount": 1301,
+      "sha256": "ca4c5d39a459f328ac33fcbd9beb4774299804f1a0d30e3aca83a433183f4462",
+      "file": "0153.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0154",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 154,
+      "label": "Remedy edition",
+      "title": "Sabina",
+      "indexHeadings": [
+        "Sabina"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyrs.htm#Sabin",
+      "characterCount": 1697,
+      "sha256": "14c678bd63b664ff2895c3ba42e9ec45a86c9db93a751fd176d5c7724b99e704",
+      "file": "0154.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0155",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 155,
+      "label": "Remedy edition",
+      "title": "Sambucus Nigra",
+      "indexHeadings": [
+        "Sambucus Nigra"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyrs.htm#SambN",
+      "characterCount": 1954,
+      "sha256": "0fbc9aaf584c4c95db7aafc2933198b120d69d9a8f713b8fd90a0ba84013c1c2",
+      "file": "0155.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0156",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 156,
+      "label": "Remedy edition",
+      "title": "Sanguinaria",
+      "indexHeadings": [
+        "Sanguinaria"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyrs.htm#Sang",
+      "characterCount": 2150,
+      "sha256": "a682425b9f8d7d710c1cb5d3497a99ce9a8745a70c1a50bb972e57bc5d80d4fd",
+      "file": "0156.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0157",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 157,
+      "label": "Remedy edition",
+      "title": "Sanicula",
+      "indexHeadings": [
+        "Sanicula"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyrs.htm#Sanic",
+      "characterCount": 2715,
+      "sha256": "0785bca34b0ee6987e30e6860c4965196c9d5ffa193abbc0bad4ce6adde15028",
+      "file": "0157.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0158",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 158,
+      "label": "Remedy edition",
+      "title": "Sarsaparilla",
+      "indexHeadings": [
+        "Sarsaparilla"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyrs.htm#Sars",
+      "characterCount": 2073,
+      "sha256": "ef7e83adfdaba0be446413ff71b876d06333c716cad24abe95f8289702b103fa",
+      "file": "0158.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0159",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 159,
+      "label": "Remedy edition",
+      "title": "Secale Cornutum",
+      "indexHeadings": [
+        "Secale Cornutum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyrs.htm#SecC",
+      "characterCount": 2972,
+      "sha256": "459958f8d501438dcb4b221c67f32025b10c76ae1bc02d24942d3ce1e4501f1e",
+      "file": "0159.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0160",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 160,
+      "label": "Remedy edition",
+      "title": "Selenium",
+      "indexHeadings": [
+        "Selenium"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyrs.htm#Sel",
+      "characterCount": 2343,
+      "sha256": "166a2958f93b638bb11dd697ff5b2dae97086db66de89e9cb9a6a2641aeeca31",
+      "file": "0160.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0161",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 161,
+      "label": "Remedy edition",
+      "title": "Sepia",
+      "indexHeadings": [
+        "Sepia"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyss.htm#Sep",
+      "characterCount": 5305,
+      "sha256": "738af1872510d4a5911992dad29b659682f1a0c8677f1eaab926242d38713f5d",
+      "file": "0161.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0162",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 162,
+      "label": "Remedy edition",
+      "title": "Silicea",
+      "indexHeadings": [
+        "Silicea"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyss.htm#Sil",
+      "characterCount": 4290,
+      "sha256": "3f6dac6a88fc496ab8dba3c2b9b8a39e38fe0c1c8e4c9106ee8e9f52c2914f08",
+      "file": "0162.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0163",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 163,
+      "label": "Remedy edition",
+      "title": "Spigelia",
+      "indexHeadings": [
+        "Spigelia"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyss.htm#Spig",
+      "characterCount": 2673,
+      "sha256": "ccd9c0dc4cb76e68d83c2246389fc526a523e08f6333d0d24de6c9ac641ac02c",
+      "file": "0163.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0164",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 164,
+      "label": "Remedy edition",
+      "title": "Spongia Tosta",
+      "indexHeadings": [
+        "Spongia Tosta"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyss.htm#Spong",
+      "characterCount": 1948,
+      "sha256": "2ead463aa8061d3bcdbafe87a19b732e628fe5951df63877f18d0be1b2da0f7b",
+      "file": "0164.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0165",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 165,
+      "label": "Remedy edition",
+      "title": "Stannum (Tin)",
+      "indexHeadings": [
+        "Stannum (Tin)"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyss.htm#Stan",
+      "characterCount": 2336,
+      "sha256": "1022e87c7f7c64d0a4d13e2060780c5406755729c47b26879a3549aa97b9f80e",
+      "file": "0165.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0166",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 166,
+      "label": "Remedy edition",
+      "title": "Staphisagria",
+      "indexHeadings": [
+        "Staphisagria"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyss.htm#Staph",
+      "characterCount": 3996,
+      "sha256": "fa396cd4438f67396c2f28e367ac3e5155fa35f5e4cf15f6289523610dd91657",
+      "file": "0166.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0167",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 167,
+      "label": "Remedy edition",
+      "title": "Stramonium",
+      "indexHeadings": [
+        "Stramonium"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyss.htm#Stram",
+      "characterCount": 2735,
+      "sha256": "0daa78291e424abb01fbb15c4d815fb6fc326bea3a008a79067effa2d423c731",
+      "file": "0167.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0168",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 168,
+      "label": "Remedy edition",
+      "title": "Sulphur",
+      "indexHeadings": [
+        "Sulphur"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyss.htm#Sul",
+      "characterCount": 5344,
+      "sha256": "4ea1cc667172ce310550f55c2266345a6237cf096f968210fc5b837c64126b14",
+      "file": "0168.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0169",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 169,
+      "label": "Remedy edition",
+      "title": "Sulphuric Acid",
+      "indexHeadings": [
+        "Sulphuric Acid"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyss.htm#SulAc",
+      "characterCount": 2246,
+      "sha256": "4d754076062d3792cc636eec263b7b1e75fdc308078653b0bc65d8eaef49e699",
+      "file": "0169.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0170",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 170,
+      "label": "Remedy edition",
+      "title": "Symphytum",
+      "indexHeadings": [
+        "Symphytum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyss.htm#Symph",
+      "characterCount": 754,
+      "sha256": "e33340a49a4da8440ddf5fc1bca98f05e6da7f33049b664eed50501af9fe869c",
+      "file": "0170.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0171",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 171,
+      "label": "Remedy edition",
+      "title": "Syphillinum",
+      "indexHeadings": [
+        "Syphillinum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeyss.htm#Syph",
+      "characterCount": 2916,
+      "sha256": "ed6849fa5389a925aabfbf244b0b341837dbb9a8bde6dd160bbdcdf97a20bd07",
+      "file": "0171.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0172",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 172,
+      "label": "Remedy edition",
+      "title": "Tabacum",
+      "indexHeadings": [
+        "Tabacum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeytz.htm#Tab",
+      "characterCount": 3332,
+      "sha256": "fe73f2e31d50a47521507870037cb4d15a2f7777266913b553fe94df74b752f3",
+      "file": "0172.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0173",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 173,
+      "label": "Remedy edition",
+      "title": "Taraxacum",
+      "indexHeadings": [
+        "Taraxacum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeytz.htm#Tarax",
+      "characterCount": 780,
+      "sha256": "ac8d6520831c18c9e63f2cb2d42104efcd996121fc7a60c6e57b62c28bdf9cf5",
+      "file": "0173.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0174",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 174,
+      "label": "Remedy edition",
+      "title": "Tarentula",
+      "indexHeadings": [
+        "Tarentula"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeytz.htm#Tarent",
+      "characterCount": 1803,
+      "sha256": "cfebe1a1acae633b76d1ca04f28e024ee27b4c3b01dcc78db45ef493bd5f98bc",
+      "file": "0174.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0175",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 175,
+      "label": "Remedy edition",
+      "title": "Terebinth",
+      "indexHeadings": [
+        "Terebinth"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeytz.htm#Ter",
+      "characterCount": 2142,
+      "sha256": "3b1eab9f2f76550b931d85408dd2cfd8284939146500bed88c5eeebc93752fb6",
+      "file": "0175.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0176",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 176,
+      "label": "Remedy edition",
+      "title": "Theridion Curassavicum",
+      "indexHeadings": [
+        "Theridion Curassavicum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeytz.htm#Ther",
+      "characterCount": 1823,
+      "sha256": "ad558022b6ce374bcc8b418062130ddf3b3442462716d6df7f7220e9569a9a96",
+      "file": "0176.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0177",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 177,
+      "label": "Remedy edition",
+      "title": "Thlaspi Bursa Pastoris",
+      "indexHeadings": [
+        "Thlaspi Bursa Pastoris"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeytz.htm#Thlaspi",
+      "characterCount": 866,
+      "sha256": "04bb69322c885d4959b6260e3afbc7aa2a957cd7944c39a34a0f5b0061227f63",
+      "file": "0177.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0178",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 178,
+      "label": "Remedy edition",
+      "title": "Thuja Occidentalis",
+      "indexHeadings": [
+        "Thuja Occidentalis"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeytz.htm#Thuj",
+      "characterCount": 4443,
+      "sha256": "4ea2afa89be55b58398ca40f5f495f4985076d40153f003a381a6e523e04479f",
+      "file": "0178.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0179",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 179,
+      "label": "Remedy edition",
+      "title": "Trillium Pendulum",
+      "indexHeadings": [
+        "Trillium Pendulum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeytz.htm#Tril",
+      "characterCount": 1457,
+      "sha256": "d20b60149b2b10ec2eaf60e224b521cc8112a7ad1ab803838ebe3d8f22f80be8",
+      "file": "0179.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0180",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 180,
+      "label": "Remedy edition",
+      "title": "Tuberculinum-Bacillinum",
+      "indexHeadings": [
+        "Tuberculinum-Bacillinum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeytz.htm#Tub",
+      "characterCount": 3436,
+      "sha256": "047599be276a5dfdaff2c62331d6b05c46942ef9a3ac947148d6675e0e2312e9",
+      "file": "0180.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0181",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 181,
+      "label": "Remedy edition",
+      "title": "Valeriana",
+      "indexHeadings": [
+        "Valeriana"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeytz.htm#Valer",
+      "characterCount": 1088,
+      "sha256": "d95547e574f6af02344bb03d3379862c0cb716078802c6899e511be728857e59",
+      "file": "0181.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0182",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 182,
+      "label": "Remedy edition",
+      "title": "Variolinum",
+      "indexHeadings": [
+        "Variolinum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeytz.htm#Variol",
+      "characterCount": 1038,
+      "sha256": "1ff2bb011a5ca149110e601f4a371487260930db505f4da27539f9b37dd13de5",
+      "file": "0182.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0183",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 183,
+      "label": "Remedy edition",
+      "title": "Veratrum Album",
+      "indexHeadings": [
+        "Veratrum Album"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeytz.htm#VerA",
+      "characterCount": 3401,
+      "sha256": "79ad5f98b93cebdeec2ebe483bef837fe342e991b17bfe3e71a24a9dc5970fa3",
+      "file": "0183.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0184",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 184,
+      "label": "Remedy edition",
+      "title": "Veratrum Viride",
+      "indexHeadings": [
+        "Veratrum Viride"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeytz.htm#VerV",
+      "characterCount": 1559,
+      "sha256": "0fc9bc1da97b270f8797bff01e8adc31e001fdd48ff422905331091c075b77ec",
+      "file": "0184.json"
+    },
+    {
+      "id": "homeoint-allen-keynotes-0185",
+      "sourceIdentifier": "homeoint-allen-keynotes",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 185,
+      "label": "Remedy edition",
+      "title": "Zincum Metallicum",
+      "indexHeadings": [
+        "Zincum Metallicum"
+      ],
+      "sectionUrl": "http://homeoint.org/books/allkeyn/allkeytz.htm#Zin",
+      "characterCount": 2761,
+      "sha256": "96732b4db0b862f0fae472460137fabe680100bf8c291de76d454937c329cf5f",
+      "file": "0185.json"
+    }
+  ]
+}

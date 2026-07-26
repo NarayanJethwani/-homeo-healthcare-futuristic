@@ -41,22 +41,13 @@
     "confidence": 0.9,
     "author": "William Boericke",
     "reviewer": "CIE Editorial Reviewer",
-    "lastUpdated": "2026-07-10T13:18:07.078Z",
+    "lastUpdated": "2026-07-25T14:26:00.442Z",
     "relatedRemedies": [
       {
         "remedyId": "Aeth",
         "remedyName": "Aethusa Cynapium",
         "grade": 2,
         "confidence": 1,
-        "keynoteReason": "Graded in Boericke Repertory",
-        "sourceReference": "Pocket Manual of Homoeopathic Materia Medica with Repertory",
-        "clinicalExperienceWeight": 0.8
-      },
-      {
-        "remedyId": "Tar-h",
-        "remedyName": "Tar-h",
-        "grade": 1,
-        "confidence": 0.5,
         "keynoteReason": "Graded in Boericke Repertory",
         "sourceReference": "Pocket Manual of Homoeopathic Materia Medica with Repertory",
         "clinicalExperienceWeight": 0.8
@@ -91,8 +82,8 @@
     "language": "en",
     "evidenceStatus": "source-verified",
     "editorialStatus": "draft",
-    "createdAt": "2026-07-10T13:18:07.078Z",
-    "updatedAt": "2026-07-10T13:18:07.078Z",
+    "createdAt": "2026-07-25T14:26:00.442Z",
+    "updatedAt": "2026-07-25T14:26:00.442Z",
     "sourceCitation": "William Boericke, Pocket Manual of Homoeopathic Materia Medica with Repertory (1927)"
   }
 ]

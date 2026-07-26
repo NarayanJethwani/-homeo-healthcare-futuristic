@@ -1,6 +1,8 @@
 import React from "react";
 import { BookOpen, User, Calendar, Database, Lock, CheckCircle2, AlertCircle } from "lucide-react";
 import { MateriaMedicaBook } from "../../types";
+import { getBookContentInventory } from "../../data/contentInventory";
+import { getVerifiedArchiveSource } from "../../data/sourceVerification";
 
 type BookCardProps = {
   book: MateriaMedicaBook;
@@ -16,14 +18,16 @@ export const BookCard: React.FC<BookCardProps> = ({
   onRead,
 }) => {
   // Parse source provider host
+  const verifiedSource = getVerifiedArchiveSource(book.id);
+  const effectiveSourceUrl = verifiedSource?.sourceUrl ?? book.sourceUrl;
   const provider = React.useMemo(() => {
     try {
-      const url = new URL(book.sourceUrl);
+      const url = new URL(effectiveSourceUrl);
       return url.hostname.replace("www.", "");
     } catch {
       return "Unknown Registry Source";
     }
-  }, [book.sourceUrl]);
+  }, [effectiveSourceUrl]);
 
   // Color schemes for rights badges
   const rightsColors = {
@@ -40,7 +44,8 @@ export const BookCard: React.FC<BookCardProps> = ({
     rejected: "bg-rose-500/10 border-rose-500/20 text-rose-400",
   };
 
-  const isAvailable = book.ingestionStatus === "approved";
+  const inventory = getBookContentInventory(book.id);
+  const isAvailable = inventory.machineChunkCount > 0 || inventory.verifiedPassageCount > 0;
   const isRestricted = book.rightsStatus === "restricted";
 
   return (
@@ -97,7 +102,9 @@ export const BookCard: React.FC<BookCardProps> = ({
           {isAvailable ? (
             <>
               <CheckCircle2 size={13} className="text-emerald-400" />
-              <span className="text-emerald-400 font-semibold font-mono">AVAILABLE TO READ</span>
+              <span className="text-emerald-400 font-semibold font-mono">
+                {inventory.machineChunkCount} SECTIONS · FULL OCR EDITION
+              </span>
             </>
           ) : isRestricted ? (
             <>
@@ -107,7 +114,7 @@ export const BookCard: React.FC<BookCardProps> = ({
           ) : (
             <>
               <AlertCircle size={13} className="text-slate-500 animate-pulse" />
-              <span className="text-slate-400 font-mono font-medium">Content preparation pending</span>
+              <span className="text-slate-400 font-mono font-medium">CATALOGUE RECORD · CONTENT NOT INGESTED</span>
             </>
           )}
         </div>
@@ -130,7 +137,7 @@ export const BookCard: React.FC<BookCardProps> = ({
             </button>
           ) : (
             <a
-              href={book.sourceUrl}
+              href={effectiveSourceUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="flex-1 py-2 bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-850 hover:border-slate-700 text-xs font-medium rounded-lg text-center flex items-center justify-center gap-1 focus:outline-none focus:ring-1 focus:ring-slate-700 min-h-[38px]"

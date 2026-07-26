@@ -1,0 +1,616 @@
+{
+  "schemaVersion": 1,
+  "bookId": "benoit-mure",
+  "corpusStatus": "machine-validated",
+  "correctionStatus": "raw-ocr",
+  "editorialStatus": "needs-review",
+  "generatedAt": "2026-07-21T10:23:10.049Z",
+  "sourceCount": 1,
+  "chunkCount": 39,
+  "characterCount": 474693,
+  "downloadedByteCount": 488293,
+  "sources": [
+    {
+      "identifier": "materiamedicaorp00murerich",
+      "label": "Complete volume",
+      "sourceUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "sourceType": "internet-archive-ocr",
+      "assetName": "materiamedicaorp00murerich_djvu.txt",
+      "archiveMd5": "ae6a9233788e10b895eb199ff83080a5",
+      "archiveSha1": "df74f96b756adc6e8bd80270ff45b0c1d6c7a2bd",
+      "downloadedByteCount": 488293,
+      "sourceSha256": "d6300104e724bc9a466e37c9072a132ca0fd15a3a4d08a69780289cd1bac16d0",
+      "normalizedSha256": "82bbdfaed4453820e611acdf2fa6d07852f768f652aff38f672272575436847d",
+      "normalizedCharacterCount": 479327,
+      "chunkCount": 39,
+      "sourcePageCount": null
+    }
+  ],
+  "chunks": [
+    {
+      "id": "materiamedicaorp00murerich-0001",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 1,
+      "label": "Complete volume",
+      "title": "Crotalus Cascavella",
+      "indexHeadings": [
+        "Crotalus Cascavella"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 42363,
+      "sha256": "f65e7a49397ad8b073383426a0a17c3ec26512eff451420374b4d4a36092f38d",
+      "file": "0001.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0002",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 2,
+      "label": "Complete volume",
+      "title": "Elaps Corallinus",
+      "indexHeadings": [
+        "Elaps Corallinus"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 45221,
+      "sha256": "7a2398331a9ead21fd0e3ac09482a04dffc6870abc2e455abfe74046783cb3a2",
+      "file": "0002.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0003",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 3,
+      "label": "Complete volume",
+      "title": "Pediculus Capitis",
+      "indexHeadings": [
+        "Pediculus Capitis"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 10406,
+      "sha256": "06e2f6c3bad6b97befc16d36f3be4877ace87f045853bcdcb7735885bbd3391b",
+      "file": "0003.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0004",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 4,
+      "label": "Complete volume",
+      "title": "Eleis Guineensis",
+      "indexHeadings": [
+        "Eleis Guineensis"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 7809,
+      "sha256": "e6244eafb7a7e8c9d15808e7c2d0a824695f3fc69b439e18d5ff009ea45833d2",
+      "file": "0004.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0005",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 5,
+      "label": "Complete volume",
+      "title": "Mimosa Humilis",
+      "indexHeadings": [
+        "Mimosa Humilis"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 3409,
+      "sha256": "589b1e68b561ed5088bcf23cf61a877e77099ff41ed1256e5c550df742b98e35",
+      "file": "0005.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0006",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 6,
+      "label": "Complete volume",
+      "title": "Cervus Brazilicus",
+      "indexHeadings": [
+        "Cervus Brazilicus"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 6762,
+      "sha256": "100b9b5c5f110b1fe9498639c1e5961871301a7bc0ae9c8a07ac9e704af8644b",
+      "file": "0006.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0007",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 7,
+      "label": "Complete volume",
+      "title": "Guano Australis",
+      "indexHeadings": [
+        "Guano Australis"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 6590,
+      "sha256": "dbab303bc26aa6bc52f25f5b2b6a9407931a1e9698205ab94524473db4234684",
+      "file": "0007.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0008",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 8,
+      "label": "Complete volume",
+      "title": "Hippomane Mancinella",
+      "indexHeadings": [
+        "Hippomane Mancinella"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 16542,
+      "sha256": "f3d47d8b8206e2d5ed00e16e21c9933f867c61fdef6c9297f6697b352498732a",
+      "file": "0008.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0009",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 9,
+      "label": "Complete volume",
+      "title": "Hura Braziliensis",
+      "indexHeadings": [
+        "Hura Braziliensis"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 49978,
+      "sha256": "3fcc6ab68da167eddc382ec92574f26af78239a718d4670db52a124b564c2d6e",
+      "file": "0009.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0010",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 10,
+      "label": "Complete volume",
+      "title": "Hura Braziliensis · Part 2",
+      "indexHeadings": [
+        "Hura Braziliensis · Part 2"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 38396,
+      "sha256": "da2420bd962a4afa0810baca65992d3ec1eab7f89e4004acc1726a7299e46f0c",
+      "file": "0010.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0011",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 11,
+      "label": "Complete volume",
+      "title": "Lepidium Bonariense",
+      "indexHeadings": [
+        "Lepidium Bonariense"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 31762,
+      "sha256": "cd6a09c7023137c81d2f626bad3225698865edc1b8b765fedfa0197de3573ad6",
+      "file": "0011.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0012",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 12,
+      "label": "Complete volume",
+      "title": "Panacea",
+      "indexHeadings": [
+        "Panacea"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 4568,
+      "sha256": "3c3c29605348374509f644e0a5f301d7ce9e230ae99075c79d37d2de9c05d5ae",
+      "file": "0012.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0013",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 13,
+      "label": "Complete volume",
+      "title": "Solanum Tuberosum Ægrotans",
+      "indexHeadings": [
+        "Solanum Tuberosum Ægrotans"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 48861,
+      "sha256": "5d2d039c92823e596b68096e863b90867d96b3289e6eb73c0d2848ea332aec84",
+      "file": "0013.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0014",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 14,
+      "label": "Complete volume",
+      "title": "Plumbago Littoralis",
+      "indexHeadings": [
+        "Plumbago Littoralis"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 9538,
+      "sha256": "0fe753589ebf161b19c4d36c9a9ec090de99a6c214ccde158b1838bda9231289",
+      "file": "0014.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0015",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 15,
+      "label": "Complete volume",
+      "title": "Solanum Oleraceum",
+      "indexHeadings": [
+        "Solanum Oleraceum"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 2325,
+      "sha256": "3a9394e281ffd9638a6889a3f0130cc1e0a484c5292ec29af41579cd8cd7db81",
+      "file": "0015.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0016",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 16,
+      "label": "Complete volume",
+      "title": "Paullinia Pinnata",
+      "indexHeadings": [
+        "Paullinia Pinnata"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 15648,
+      "sha256": "635f0b4b5e4a03892fa866586e29927e0c92e00cb121c4f83dac1de1000b97ec",
+      "file": "0016.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0017",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 17,
+      "label": "Complete volume",
+      "title": "Blatta Americana",
+      "indexHeadings": [
+        "Blatta Americana"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 4817,
+      "sha256": "fc671b7710f203983c0dbe4810e47304c5ab815cffb8cfa3773c6f9102930ce3",
+      "file": "0017.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0018",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 18,
+      "label": "Complete volume",
+      "title": "Delphinus Amazonicus",
+      "indexHeadings": [
+        "Delphinus Amazonicus"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 2477,
+      "sha256": "38880e04b8e6d754e0c187ebd3f7e680528ac5804711def6f4b1a724c1d75ad8",
+      "file": "0018.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0019",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 19,
+      "label": "Complete volume",
+      "title": "Amphisboena Vermicularis",
+      "indexHeadings": [
+        "Amphisboena Vermicularis"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 3870,
+      "sha256": "35e4fdea1c6b50fba979e5f199b672dbc097f1b341cb86713a9b9a76bbce7357",
+      "file": "0019.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0020",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 20,
+      "label": "Complete volume",
+      "title": "Aristolochia Milhomens",
+      "indexHeadings": [
+        "Aristolochia Milhomens"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 12823,
+      "sha256": "f7c666d74cfdf52860e2fd7f5067065b332d59bb854504ce6fa95b7d24e385a1",
+      "file": "0020.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0021",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 21,
+      "label": "Complete volume",
+      "title": "Resina Itu",
+      "indexHeadings": [
+        "Resina Itu"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 5571,
+      "sha256": "18e21a2e09fa93eee92fcadc56134dc916e95f6e5de048f193204b457a40d375",
+      "file": "0021.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0022",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 22,
+      "label": "Complete volume",
+      "title": "Tradescantia Diuretica",
+      "indexHeadings": [
+        "Tradescantia Diuretica"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 1539,
+      "sha256": "ef2e7c25a177c1c6296e0b9435274ee38971da9d4cd1e6ac78e74eba1a09c855",
+      "file": "0022.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0023",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 23,
+      "label": "Complete volume",
+      "title": "Murure Leite",
+      "indexHeadings": [
+        "Murure Leite"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 2163,
+      "sha256": "c68a4b16b44c9226e1b4d587190862f57fbc6a71c310fbefececf12036e1dc2f",
+      "file": "0023.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0024",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 24,
+      "label": "Complete volume",
+      "title": "Cannabis Indica",
+      "indexHeadings": [
+        "Cannabis Indica"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 2123,
+      "sha256": "88dc6bd072c5bf31472c08bf87a4584615f08b13ccf40d049b0d1d1d8ec39eed",
+      "file": "0024.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0025",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 25,
+      "label": "Complete volume",
+      "title": "Petiveria Tetrandra",
+      "indexHeadings": [
+        "Petiveria Tetrandra"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 27542,
+      "sha256": "775f647f5f4d5bbf0a4cb893c85d677af683d8ee70aab026d83760d74b571d71",
+      "file": "0025.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0026",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 26,
+      "label": "Complete volume",
+      "title": "Janipha Manihot",
+      "indexHeadings": [
+        "Janipha Manihot"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 6121,
+      "sha256": "2b077fbabc3f112013d85fe4a7f7e7bf780cec60c844f0afbbe4f45101dca154",
+      "file": "0026.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0027",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 27,
+      "label": "Complete volume",
+      "title": "Melastoma Ackermani",
+      "indexHeadings": [
+        "Melastoma Ackermani"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 2588,
+      "sha256": "00b96ab3c732c0352ba0b9b4f345e0964bd8904bb01febc31e175c3f706ad66c",
+      "file": "0027.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0028",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 28,
+      "label": "Complete volume",
+      "title": "Sedinha",
+      "indexHeadings": [
+        "Sedinha"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 2493,
+      "sha256": "75e2a9d415021afe2071aa0a05004f73d53bae337530d691d85062e6dfcf6242",
+      "file": "0028.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0029",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 29,
+      "label": "Complete volume",
+      "title": "Spiggurus Martini",
+      "indexHeadings": [
+        "Spiggurus Martini"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 8220,
+      "sha256": "70b9e1e2fab3759c9d1fc1b28be52a0c866206834ac219b453f32fbb13d98ced",
+      "file": "0029.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0030",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 30,
+      "label": "Complete volume",
+      "title": "Convolvulus Duartinus",
+      "indexHeadings": [
+        "Convolvulus Duartinus"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 5478,
+      "sha256": "4ac1e55f4fbd38686b509e43f464f21aa87a1a79cbe3f91907a3e764d4a7073b",
+      "file": "0030.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0031",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 31,
+      "label": "Complete volume",
+      "title": "Bufo Sahytiensis",
+      "indexHeadings": [
+        "Bufo Sahytiensis"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 7913,
+      "sha256": "a09e602f3804f81de7b138de4681e3a58918bc4064b2ba2452c19e938ff15596",
+      "file": "0031.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0032",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 32,
+      "label": "Complete volume",
+      "title": "Jacaranda Caroba",
+      "indexHeadings": [
+        "Jacaranda Caroba"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 22777,
+      "sha256": "63a666915be0d64190febf4418578b18f1c5b53cd723aaa8158b22dc9b537615",
+      "file": "0032.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0033",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 33,
+      "label": "Complete volume",
+      "title": "Canna Angustifolia",
+      "indexHeadings": [
+        "Canna Angustifolia"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 1588,
+      "sha256": "3c00beff2c771605bd51f40d67a783c88fca930d2f37c0fc346b6154749e8a02",
+      "file": "0033.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0034",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 34,
+      "label": "Complete volume",
+      "title": "Hedysarum Ildefonsianum",
+      "indexHeadings": [
+        "Hedysarum Ildefonsianum"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 294,
+      "sha256": "697382e07a9b4549f08a99be44f6a5aa5d290ef1b72a3d65f3d4767455d706dd",
+      "file": "0034.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0035",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 35,
+      "label": "Complete volume",
+      "title": "Myristica Sebifera",
+      "indexHeadings": [
+        "Myristica Sebifera"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 6667,
+      "sha256": "0e65abdcca5dc22bf8e9a859b499ce1f210239ebcdb05d99f03d7cced98ab7d3",
+      "file": "0035.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0036",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 36,
+      "label": "Complete volume",
+      "title": "Ocimum Canum",
+      "indexHeadings": [
+        "Ocimum Canum"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 2567,
+      "sha256": "80e87c06647cc68210d807b21ea7796d42b40bbb1b0bfd62e456aacc7953d624",
+      "file": "0036.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0037",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 37,
+      "label": "Complete volume",
+      "title": "Solanum Arrebenta",
+      "indexHeadings": [
+        "Solanum Arrebenta"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 1741,
+      "sha256": "c75eab0e66ba767624e9dda3bd3eb122c08c3af6668a479f242b5e858d0b0215",
+      "file": "0037.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0038",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 38,
+      "label": "Complete volume",
+      "title": "Illicium Anisatum",
+      "indexHeadings": [
+        "Illicium Anisatum"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 1505,
+      "sha256": "a9c09a81d07bf7c8bd17e282eb3c59597aeb6dc8931f46e0961cd386498db391",
+      "file": "0038.json"
+    },
+    {
+      "id": "materiamedicaorp00murerich-0039",
+      "sourceIdentifier": "materiamedicaorp00murerich",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 39,
+      "label": "Complete volume",
+      "title": "Millefolium",
+      "indexHeadings": [
+        "Millefolium"
+      ],
+      "sectionUrl": "https://archive.org/details/materiamedicaorp00murerich",
+      "characterCount": 1638,
+      "sha256": "eefa3ca767207fab6cbc350a1564b84585ef37847aa777b1342c2f1f240e5bae",
+      "file": "0039.json"
+    }
+  ]
+}

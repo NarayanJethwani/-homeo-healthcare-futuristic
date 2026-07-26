@@ -4,6 +4,12 @@ import { GET as getRemedies } from "../src/app/api/public/knowledge/remedies/rou
 import { GET as getSymptoms } from "../src/app/api/public/knowledge/symptoms/route";
 import { GET as getLabTests } from "../src/app/api/public/knowledge/lab-tests/route";
 import { GET as getFaqs } from "../src/app/api/public/knowledge/faqs/route";
+import {
+  PUBLIC_KNOWLEDGE_ENTITY_KEYS,
+  PUBLIC_LOCALIZED_STRING_KEYS,
+  serializePublicKnowledgeEntity,
+} from "../src/features/knowledge/public/publicKnowledgeEntityDTO";
+import type { KnowledgeEntity } from "../src/features/knowledge/types";
 import { searchKnowledgeBase } from "../src/features/knowledge/search/knowledgeIndex";
 
 async function runPublicApiTests() {
@@ -28,63 +34,94 @@ async function runPublicApiTests() {
     return await response.json();
   }
 
+  const expectedEntityKeys = [...PUBLIC_KNOWLEDGE_ENTITY_KEYS].sort();
+  const expectedLocalizedKeys = [...PUBLIC_LOCALIZED_STRING_KEYS].sort();
+  const forbiddenPublicKeys = [
+    "content",
+    "author",
+    "reviewer",
+    "versionInfo",
+    "changeLog",
+    "aiKnowledge",
+    "aiReadiness",
+    "knowledgeEmbedding",
+    "editorialNotes",
+    "currentDraftVersionId",
+    "approvedVersionId",
+    "publishedVersionId",
+    "clinicalChangesSinceLastRevision",
+  ];
+
+  function assertPublicKnowledgeDTO(item: any): void {
+    assert.deepStrictEqual(
+      Object.keys(item).sort(),
+      expectedEntityKeys,
+      `Public DTO keys changed for ${item.id}`,
+    );
+    assert.deepStrictEqual(Object.keys(item.title).sort(), expectedLocalizedKeys);
+    assert.deepStrictEqual(Object.keys(item.summary).sort(), expectedLocalizedKeys);
+    assert.strictEqual(item.editorialStatus, "published");
+    forbiddenPublicKeys.forEach((key) => {
+      assert.ok(!(key in item), `Private field ${key} leaked for ${item.id}`);
+    });
+  }
+
   // --- Tests ---
 
-  await test("GET /api/public/knowledge/diseases - exposes only published records", async () => {
-    const res = await getDiseases();
-    const list = await getResponseJson(res);
-    
-    assert.ok(Array.isArray(list), "Response must be an array");
-    assert.ok(list.length > 0, "Should have at least one disease");
-    
-    list.forEach((item: any) => {
-      assert.strictEqual(item.editorialStatus, "published", `Entity ${item.id} is not published`);
-      assert.ok(!item.editorialNotes, `Private notes leaked in public disease API: ${item.id}`);
-    });
-  });
+  const publicRoutes = [
+    ["diseases", getDiseases],
+    ["remedies", getRemedies],
+    ["symptoms", getSymptoms],
+    ["lab-tests", getLabTests],
+    ["faqs", getFaqs],
+  ] as const;
 
-  await test("GET /api/public/knowledge/remedies - exposes only published records", async () => {
-    const res = await getRemedies();
-    const list = await getResponseJson(res);
-    
-    assert.ok(Array.isArray(list));
-    list.forEach((item: any) => {
-      assert.strictEqual(item.editorialStatus, "published");
-      assert.ok(!item.editorialNotes);
+  for (const [name, handler] of publicRoutes) {
+    await test(`GET /api/public/knowledge/${name} - returns the exact public DTO`, async () => {
+      const list = await getResponseJson(await handler());
+      assert.ok(Array.isArray(list), "Response must be an array");
+      if (name !== "faqs") {
+        assert.ok(list.length > 0, `Should have at least one ${name} record`);
+      }
+      list.forEach(assertPublicKnowledgeDTO);
     });
-  });
+  }
 
-  await test("GET /api/public/knowledge/symptoms - exposes only published records", async () => {
-    const res = await getSymptoms();
-    const list = await getResponseJson(res);
-    
-    assert.ok(Array.isArray(list));
-    list.forEach((item: any) => {
-      assert.strictEqual(item.editorialStatus, "published");
-      assert.ok(!item.editorialNotes);
-    });
-  });
+  await test("public serializer strips future private fields and copies nested values", () => {
+    const sentinel = "PRIVATE_SENTINEL_MUST_NOT_LEAK";
+    const entity = {
+      id: "D0001",
+      slug: "test-disease",
+      entityType: "disease",
+      editorialStatus: "published",
+      versionInfo: {
+        version: "1.0.0",
+        created: "2026-01-01T00:00:00Z",
+        updated: "2026-01-01T00:00:00Z",
+        reviewed: "2026-01-01T00:00:00Z",
+      },
+      title: { en: "Test", hi: "", gu: "", mr: "", es: "", ar: "" },
+      summary: { en: "Summary", hi: "", gu: "", mr: "", es: "", ar: "" },
+      content: { overview: "GERD public overview content long enough for validation", references: ["CIT-0001"] },
+      author: { id: "auth-001", name: "System Admin" },
+      reviewer: { id: "rev-001", name: "Dr. Amit Patel" },
+      evidenceLevel: "level-1" as any,
+      tags: ["test"],
+      canonicalUrl: "https://homeo.healthcare/knowledge/diseases/test-disease",
+      readingTimeMinutes: 1,
+      audience: "patient" as any,
+      license: "Test license",
+      editorialNotes: sentinel,
+      futureInternalField: sentinel,
+    } as any;
 
-  await test("GET /api/public/knowledge/lab-tests - exposes only published records", async () => {
-    const res = await getLabTests();
-    const list = await getResponseJson(res);
-    
-    assert.ok(Array.isArray(list));
-    list.forEach((item: any) => {
-      assert.strictEqual(item.editorialStatus, "published");
-      assert.ok(!item.editorialNotes);
-    });
-  });
-
-  await test("GET /api/public/knowledge/faqs - exposes only published records", async () => {
-    const res = await getFaqs();
-    const list = await getResponseJson(res);
-    
-    assert.ok(Array.isArray(list));
-    list.forEach((item: any) => {
-      assert.strictEqual(item.editorialStatus, "published");
-      assert.ok(!item.editorialNotes);
-    });
+    const serialized = serializePublicKnowledgeEntity(entity);
+    assert.ok(serialized);
+    assertPublicKnowledgeDTO(serialized);
+    assert.ok(!JSON.stringify(serialized).includes(sentinel));
+    assert.notStrictEqual(serialized.title, entity.title);
+    assert.notStrictEqual(serialized.summary, entity.summary);
+    assert.notStrictEqual(serialized.tags, entity.tags);
   });
 
   await test("searchKnowledgeBase - public search filters out non-published items", () => {

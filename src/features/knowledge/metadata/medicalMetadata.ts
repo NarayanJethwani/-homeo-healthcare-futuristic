@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { KnowledgeEntity } from "../types";
+import { isEntityIndexable } from "../governance/publicationGuard";
 
 /**
  * Generates SEO/GEO metadata for a given Knowledge Entity.
@@ -10,8 +11,8 @@ export function generateMedicalMetadata(entity: KnowledgeEntity): Metadata {
 
   const fullTitle = `${title} | Homeo Healthcare Clinical Platform`;
   
-  // Safeguard: Only published entities are crawlable
-  const isCrawlable = entity.editorialStatus === "published";
+  // Safeguard: Only governed, published, indexable entities are crawlable
+  const isCrawlable = isEntityIndexable(entity);
   
   return {
     title: fullTitle,
@@ -21,11 +22,11 @@ export function generateMedicalMetadata(entity: KnowledgeEntity): Metadata {
     },
     robots: {
       index: isCrawlable,
-      follow: isCrawlable,
+      follow: true,
       nocache: !isCrawlable,
       googleBot: {
         index: isCrawlable,
-        follow: isCrawlable,
+        follow: true,
       },
     },
     openGraph: {

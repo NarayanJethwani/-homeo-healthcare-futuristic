@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import { X, ShieldCheck, FileText, ExternalLink, Calendar } from "lucide-react";
 import { MateriaMedicaBook } from "../../types";
+import { getBookContentInventory } from "../../data/contentInventory";
+import { getVerifiedArchiveSource } from "../../data/sourceVerification";
 
 type BookProvenancePanelProps = {
   book: MateriaMedicaBook | null;
@@ -11,16 +13,19 @@ export const BookProvenancePanel: React.FC<BookProvenancePanelProps> = ({
   book,
   onClose,
 }) => {
+  const verifiedSource = book ? getVerifiedArchiveSource(book.id) : null;
+  const inventory = book ? getBookContentInventory(book.id) : null;
+  const effectiveSourceUrl = verifiedSource?.sourceUrl ?? book?.sourceUrl ?? "";
   // Split source provider host
   const provider = React.useMemo(() => {
     if (!book) return "Unknown Registry Provider";
     try {
-      const url = new URL(book.sourceUrl);
+      const url = new URL(effectiveSourceUrl);
       return url.hostname.replace("www.", "");
     } catch {
       return "Unknown Registry Provider";
     }
-  }, [book]);
+  }, [book, effectiveSourceUrl]);
 
   // Escape key close behavior & body-scroll locking
   useEffect(() => {
@@ -130,7 +135,7 @@ export const BookProvenancePanel: React.FC<BookProvenancePanelProps> = ({
               <span className="text-slate-400 font-medium">Registry URL</span>
               <span className="col-span-2">
                 <a
-                  href={book.sourceUrl}
+                  href={effectiveSourceUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 text-amber-400 hover:text-amber-300 hover:underline truncate max-w-full font-medium"
@@ -141,6 +146,15 @@ export const BookProvenancePanel: React.FC<BookProvenancePanelProps> = ({
               </span>
             </div>
           </div>
+
+          {verifiedSource && (
+            <div className="p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-2xl">
+              <h4 className="text-xs font-bold text-emerald-300">Live source independently confirmed</h4>
+              <p className="mt-1 text-xs leading-relaxed text-slate-300">{verifiedSource.archiveTitle}</p>
+              <p className="mt-1 text-[11px] leading-relaxed text-slate-400">{verifiedSource.editionCoverage}</p>
+              <p className="mt-2 text-[10px] font-mono text-slate-500">Archive ID: {verifiedSource.identifier} · checked {verifiedSource.verifiedAt}</p>
+            </div>
+          )}
 
           {/* Legal Rights Basis */}
           <div className="p-4 bg-slate-950/20 border border-slate-800/60 rounded-2xl">
@@ -159,7 +173,7 @@ export const BookProvenancePanel: React.FC<BookProvenancePanelProps> = ({
             <div>
               <h4 className="text-xs font-semibold text-slate-200">Ingestion Audit</h4>
               <p className="text-[11px] text-slate-400 mt-1 leading-snug">
-                Last reviewed on <span className="font-semibold text-slate-300">{book.lastUpdated.split("T")[0]}</span>. This record serves as a validated metadata schema stub. No external scraping, OCR extraction, or indexing occurs without active permissions checks.
+                Registry last updated on <span className="font-semibold text-slate-300">{book.lastUpdated.split("T")[0]}</span>. Actual library coverage: <span className="font-semibold text-slate-300">{inventory?.sourceVolumeCount ?? 0} source volume(s), {inventory?.machineChunkCount ?? 0} checksum-verified OCR sections</span>. Editorial status: <span className="font-semibold text-amber-300">human review pending</span>{inventory?.verifiedPassageCount ? ` (${inventory.verifiedPassageCount} passages already human-approved)` : ""}.
               </p>
             </div>
           </div>

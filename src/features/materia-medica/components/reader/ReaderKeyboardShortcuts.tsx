@@ -55,7 +55,7 @@ export const ReaderKeyboardShortcuts: React.FC<ReaderKeyboardShortcutsProps> = (
         case "t":
         case "T":
           e.preventDefault();
-          const themes: ReaderTheme[] = ["light", "sepia", "dark"];
+          const themes: ReaderTheme[] = ["light", "sepia", "forest", "dark"];
           const nextThemeIdx = (themes.indexOf(preferences.theme) + 1) % themes.length;
           onPreferenceChange((prev) => ({ ...prev, theme: themes[nextThemeIdx] }));
           break;

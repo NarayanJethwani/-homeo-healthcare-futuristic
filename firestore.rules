@@ -250,5 +250,20 @@ service cloud.firestore {
         && request.auth.uid == practitionerId
         && resource.data.practitionerId == practitionerId;
     }
+
+    // ─── Knowledge Governance Collections ─────────────────────────────────
+    // Direct Client Web/Mobile SDK access denied (Fail-Closed).
+    // Access permitted ONLY through authenticated Firebase Admin SDK server context.
+    match /knowledgeGovernanceContributors/{docId} { allow read, write: if false; }
+    match /knowledgeGovernanceQualifications/{docId} { allow read, write: if false; }
+    match /knowledgeGovernanceAuthorship/{docId} { allow read, write: if false; }
+    match /knowledgeGovernanceRevisions/{docId} { allow read, write: if false; }
+    match /knowledgeGovernanceReviews/{docId} { allow read, write: if false; }
+    match /knowledgeGovernanceEvidenceProfiles/{docId} { allow read, write: if false; }
+    match /knowledgeGovernanceClaims/{docId} { allow read, write: if false; }
+    match /knowledgeGovernanceAiApprovals/{docId} { allow read, write: if false; }
+    match /knowledgeGovernanceAuditEvents/{docId} { allow read, write: if false; }
+    match /knowledgeGovernanceEntityState/{docId} { allow read, write: if false; }
+    match /knowledgeGovernanceAuditChainHeads/{docId} { allow read, write: if false; }
   }
 }

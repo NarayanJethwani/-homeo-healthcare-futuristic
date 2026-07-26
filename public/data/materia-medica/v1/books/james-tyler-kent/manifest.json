@@ -1,0 +1,2866 @@
+{
+  "schemaVersion": 1,
+  "bookId": "james-tyler-kent",
+  "corpusStatus": "machine-validated",
+  "correctionStatus": "raw-ocr",
+  "editorialStatus": "needs-review",
+  "generatedAt": "2026-07-21T10:23:04.119Z",
+  "sourceCount": 1,
+  "chunkCount": 189,
+  "characterCount": 2971544,
+  "downloadedByteCount": 4752367,
+  "sources": [
+    {
+      "identifier": "homeoint-kent-materia-medica",
+      "label": "Remedy edition",
+      "sourceUrl": "http://homeoint.org/books3/kentmm/index.htm",
+      "sourceType": "public-web-transcription",
+      "assetName": "structured-public-web-edition",
+      "archiveMd5": null,
+      "archiveSha1": null,
+      "downloadedByteCount": 4752367,
+      "sourceSha256": "ac7bcefb71899c3e31eb7600260b4182cdd45bd0390e5a4829cf1f67a237502d",
+      "normalizedSha256": "854bcccdc1414f2c61d51c414d21d68feb92e940da8c9171691f68feba05f933",
+      "normalizedCharacterCount": 2971908,
+      "chunkCount": 189,
+      "sourcePageCount": 183
+    }
+  ],
+  "chunks": [
+    {
+      "id": "homeoint-kent-materia-medica-0001",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 1,
+      "label": "Remedy edition",
+      "title": "Abrotanum",
+      "indexHeadings": [
+        "Abrotanum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/abrot.htm",
+      "characterCount": 2700,
+      "sha256": "4b45c538ecd98e4e268f7bf1085f3e11690f9593da679568bc09f42d4e62a746",
+      "file": "0001.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0002",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 2,
+      "label": "Remedy edition",
+      "title": "Acetic Acidum",
+      "indexHeadings": [
+        "Acetic Acidum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/acet-ac.htm",
+      "characterCount": 3644,
+      "sha256": "e98b2829a58dc6d310c11e2d4be273a475994bf272ff408d9a1a33671019deec",
+      "file": "0002.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0003",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 3,
+      "label": "Remedy edition",
+      "title": "Aconitum Napellus",
+      "indexHeadings": [
+        "Aconitum Napellus"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/acon.htm",
+      "characterCount": 40181,
+      "sha256": "b9a78371d541ae5a1fc82d017d31d26cac711c010ef40e375c8719efee0a40b9",
+      "file": "0003.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0004",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 4,
+      "label": "Remedy edition",
+      "title": "Actea Racemosa (Black Cohosh)",
+      "indexHeadings": [
+        "Actea Racemosa (Black Cohosh)"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/act-r.htm",
+      "characterCount": 15458,
+      "sha256": "acee12fffb2b0301d3156c1e5c329f4d2c8be6f5a746483533418e1c2e204266",
+      "file": "0004.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0005",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 5,
+      "label": "Remedy edition",
+      "title": "Aesculus Hippocastanum",
+      "indexHeadings": [
+        "Aesculus Hippocastanum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/aesc-hip.htm",
+      "characterCount": 15833,
+      "sha256": "1b952a82f6758a3eaead2a37c232ca27859440d2934cf3ace49cc8d5a8e07fde",
+      "file": "0005.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0006",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 6,
+      "label": "Remedy edition",
+      "title": "Aethusa Cynapium",
+      "indexHeadings": [
+        "Aethusa Cynapium"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/aethus.htm",
+      "characterCount": 7040,
+      "sha256": "d362271eb38593ecb87d2b26b5a015b4788ad6eb5c22225e42b83e07e415939f",
+      "file": "0006.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0007",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 7,
+      "label": "Remedy edition",
+      "title": "Agaricus Muscarius",
+      "indexHeadings": [
+        "Agaricus Muscarius"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/agar.htm",
+      "characterCount": 20734,
+      "sha256": "bb7dcdff693516cf2ea9657e7393e3706a5e7a904f5e25df0eb3b9e14dbc0256",
+      "file": "0007.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0008",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 8,
+      "label": "Remedy edition",
+      "title": "Agnus Castus",
+      "indexHeadings": [
+        "Agnus Castus"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/agn-c.htm",
+      "characterCount": 3095,
+      "sha256": "463659ccad6a212d2984bd1ac83445924dfd66b0560f727f5ceaf90b882cece6",
+      "file": "0008.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0009",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 9,
+      "label": "Remedy edition",
+      "title": "Ailanthus Glandulosa",
+      "indexHeadings": [
+        "Ailanthus Glandulosa"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/ailanth.htm",
+      "characterCount": 13468,
+      "sha256": "7ad00e6f82692f06baa31a8e4c4ca6ebec8843f74ff7e21f23f0517ed7afcb41",
+      "file": "0009.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0010",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 10,
+      "label": "Remedy edition",
+      "title": "Allium Cepa",
+      "indexHeadings": [
+        "Allium Cepa"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/all-cep.htm",
+      "characterCount": 11731,
+      "sha256": "f6fb59d5fb9c912ad49ef36ade91fb001a253bc0384f1292fa2c0f3a8e642561",
+      "file": "0010.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0011",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 11,
+      "label": "Remedy edition",
+      "title": "Alumina",
+      "indexHeadings": [
+        "Alumina"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/alm.htm",
+      "characterCount": 40792,
+      "sha256": "3c5827722378a7ff36378f9c37d98dcaf77a3897f19dc93eff81db0cd7dd937d",
+      "file": "0011.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0012",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 12,
+      "label": "Remedy edition",
+      "title": "Aloe",
+      "indexHeadings": [
+        "Aloe"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/aloe.htm",
+      "characterCount": 14121,
+      "sha256": "1faff6b7e0b4e7e090499d118cb392f1218a5727f13b8be05aa158c962b6afbe",
+      "file": "0012.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0013",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 13,
+      "label": "Remedy edition",
+      "title": "Alumen",
+      "indexHeadings": [
+        "Alumen"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/alum.htm",
+      "characterCount": 15059,
+      "sha256": "f0dfb9b502d61ec518ee202928c671650663dc136367d91ff3b676560e4b867c",
+      "file": "0013.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0014",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 14,
+      "label": "Remedy edition",
+      "title": "Ambra Grisea",
+      "indexHeadings": [
+        "Ambra Grisea"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/ambra.htm",
+      "characterCount": 16681,
+      "sha256": "681df6b4025b4825d89e55d7134cf80f744e34a245947a29e32ae1a203cae0ef",
+      "file": "0014.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0015",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 15,
+      "label": "Remedy edition",
+      "title": "Ammonium Carbonicum",
+      "indexHeadings": [
+        "Ammonium Carbonicum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/amm-carb.htm",
+      "characterCount": 16350,
+      "sha256": "fc08d95d744c0be71a8c54d565e48016b67d716fe19028b082940d3915649403",
+      "file": "0015.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0016",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 16,
+      "label": "Remedy edition",
+      "title": "Ammonium Muriaticum",
+      "indexHeadings": [
+        "Ammonium Muriaticum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/amm-mur.htm",
+      "characterCount": 5368,
+      "sha256": "0de6723ceb9fc083e93bd156967b0c2e0f8692f19af76d8b0eab9835b489e63a",
+      "file": "0016.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0017",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 17,
+      "label": "Remedy edition",
+      "title": "Anacardium Orientale",
+      "indexHeadings": [
+        "Anacardium Orientale"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/anac.htm",
+      "characterCount": 7312,
+      "sha256": "22bceced473c3bf7fbc0f5a6b49a169afe1a0a13a388e24d77fa4de2c1d9d172",
+      "file": "0017.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0018",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 18,
+      "label": "Remedy edition",
+      "title": "Antimonium Crudum",
+      "indexHeadings": [
+        "Antimonium Crudum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/antim-crud.htm",
+      "characterCount": 14164,
+      "sha256": "b55d9e0ccd705498f97f488b609e23445769bca012396c5c174d685ceb1e6a78",
+      "file": "0018.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0019",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 19,
+      "label": "Remedy edition",
+      "title": "Antimonium Tartaricum",
+      "indexHeadings": [
+        "Antimonium Tartaricum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/antim-tart.htm",
+      "characterCount": 19618,
+      "sha256": "daa542368fa8bb93ba48da4017eb36ab6136f9385c4da5bfc01022a101ee38ad",
+      "file": "0019.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0020",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 20,
+      "label": "Remedy edition",
+      "title": "Apis Mellifica",
+      "indexHeadings": [
+        "Apis Mellifica"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/apis.htm",
+      "characterCount": 26440,
+      "sha256": "5a48bd51bc924f5b2cd1d3b8506cabed6b071ce73fa351af0b83fff469ea7ce0",
+      "file": "0020.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0021",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 21,
+      "label": "Remedy edition",
+      "title": "Apocynum cannabinum",
+      "indexHeadings": [
+        "Apocynum cannabinum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/apoc-c.htm",
+      "characterCount": 18984,
+      "sha256": "e5e0c3fadff7b966fe8390c53ea2f95a78b3025c4b3d0c4b2fd0c28aabb61540",
+      "file": "0021.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0022",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 22,
+      "label": "Remedy edition",
+      "title": "Argentum Nitricum",
+      "indexHeadings": [
+        "Argentum Nitricum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/arg-n.htm",
+      "characterCount": 21663,
+      "sha256": "5d59e5225863b42b5c221300fe1fedd6790c68cbfcda437565fe7f01fdffc462",
+      "file": "0022.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0023",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 23,
+      "label": "Remedy edition",
+      "title": "Argentum Metallicum",
+      "indexHeadings": [
+        "Argentum Metallicum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/arg.htm",
+      "characterCount": 25180,
+      "sha256": "f661718082d24ffa13e813a903615de12707d05ed49ca79e9142c95d75180eba",
+      "file": "0023.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0024",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 24,
+      "label": "Remedy edition",
+      "title": "Arnica Montana",
+      "indexHeadings": [
+        "Arnica Montana"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/arn.htm",
+      "characterCount": 20903,
+      "sha256": "2db8719e69063e1384026ef2dba5e976007c02657db80c3d8d0558e99e45ab59",
+      "file": "0024.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0025",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 25,
+      "label": "Remedy edition",
+      "title": "Arsenicum Iodatum",
+      "indexHeadings": [
+        "Arsenicum Iodatum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/ars-iod.htm",
+      "characterCount": 17823,
+      "sha256": "44c586182b158ac8d082a20e493287b9f804b190550eaf3d26cf1fbdf858c2ad",
+      "file": "0025.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0026",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 26,
+      "label": "Remedy edition",
+      "title": "Arsenicum Album",
+      "indexHeadings": [
+        "Arsenicum Album"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/ars.htm",
+      "characterCount": 49864,
+      "sha256": "7c4307d706a93d115ecb5558dba9fa1cfbe6e9aea18b3f5cd0c1fc00c07558e6",
+      "file": "0026.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0027",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 27,
+      "label": "Remedy edition",
+      "title": "Arsenicum Album · Part 2",
+      "indexHeadings": [
+        "Arsenicum Album · Part 2"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/ars.htm",
+      "characterCount": 9061,
+      "sha256": "3611d3a7aae9a4daf190b546a333f4f1ca8147dfa2587fac76d145b94107216f",
+      "file": "0027.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0028",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 28,
+      "label": "Remedy edition",
+      "title": "Arum Triphyllum",
+      "indexHeadings": [
+        "Arum Triphyllum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/arum-tri.htm",
+      "characterCount": 14771,
+      "sha256": "408792ab5eea0ac3d9a45c868c79f6ceb8f59c26697068a9c11a9df43574504f",
+      "file": "0028.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0029",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 29,
+      "label": "Remedy edition",
+      "title": "Asa Foetida",
+      "indexHeadings": [
+        "Asa Foetida"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/asaf.htm",
+      "characterCount": 13214,
+      "sha256": "79cadd2eb9cc835526f1e4d2d0156a747be5d7460c0b24e231a4db1fbebb01bb",
+      "file": "0029.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0030",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 30,
+      "label": "Remedy edition",
+      "title": "Aurum Muriaticum",
+      "indexHeadings": [
+        "Aurum Muriaticum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/aur-mur.htm",
+      "characterCount": 10474,
+      "sha256": "b408a15396e06a0b950bffebd4aa40fcc7dfe4fd00b59427d3927702deb15ca8",
+      "file": "0030.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0031",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 31,
+      "label": "Remedy edition",
+      "title": "Aurum Metallicum",
+      "indexHeadings": [
+        "Aurum Metallicum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/aur.htm",
+      "characterCount": 25811,
+      "sha256": "eaffb3c8c377cad43b567e8fbe0a2fccbad6b16d611966d97c7e14ae70d51c1b",
+      "file": "0031.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0032",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 32,
+      "label": "Remedy edition",
+      "title": "Baptisia",
+      "indexHeadings": [
+        "Baptisia"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/bapt.htm",
+      "characterCount": 17294,
+      "sha256": "c1891cf9528f30844b0faffd10e7582b67533df0a430b5ed66c564807af4e963",
+      "file": "0032.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0033",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 33,
+      "label": "Remedy edition",
+      "title": "Baryta Carbonica",
+      "indexHeadings": [
+        "Baryta Carbonica"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/bar-carb.htm",
+      "characterCount": 28062,
+      "sha256": "238097cb106dcde9c617abe228a39bfd82f4db4b70e5a08256107dbd859fc513",
+      "file": "0033.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0034",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 34,
+      "label": "Remedy edition",
+      "title": "Baryta muriatica",
+      "indexHeadings": [
+        "Baryta muriatica"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/bar-mur.htm",
+      "characterCount": 13755,
+      "sha256": "944323e9ff9fca9bca0a3cecc63f4bfe6b85e518693bda53a4ce3c56f34b04e3",
+      "file": "0034.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0035",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 35,
+      "label": "Remedy edition",
+      "title": "Belladonna",
+      "indexHeadings": [
+        "Belladonna"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/bell.htm",
+      "characterCount": 49998,
+      "sha256": "c26a4835a1ff50e217bfc02e63f2001a555bcd57b2e404c84407f3973f435f1e",
+      "file": "0035.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0036",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 36,
+      "label": "Remedy edition",
+      "title": "Belladonna · Part 2",
+      "indexHeadings": [
+        "Belladonna · Part 2"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/bell.htm",
+      "characterCount": 28719,
+      "sha256": "a35675003baa791b9f2d2fa54b32fca237b372b9095c0d5666448f49e7803bac",
+      "file": "0036.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0037",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 37,
+      "label": "Remedy edition",
+      "title": "Benzoïcum Acidum",
+      "indexHeadings": [
+        "Benzoïcum Acidum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/benz-ac.htm",
+      "characterCount": 14832,
+      "sha256": "50aae8b6df37cd8875941449fbb8cc3d43bd4471a5ec349f5e63bc32b76429da",
+      "file": "0037.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0038",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 38,
+      "label": "Remedy edition",
+      "title": "Berberis",
+      "indexHeadings": [
+        "Berberis"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/berb.htm",
+      "characterCount": 16113,
+      "sha256": "730ac961afe0d651a5286a5bcaaefcec85e27314bca6fdef74e4c17c42a65c86",
+      "file": "0038.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0039",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 39,
+      "label": "Remedy edition",
+      "title": "Borax",
+      "indexHeadings": [
+        "Borax"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/borax.htm",
+      "characterCount": 16385,
+      "sha256": "43806edf0e9055b461500687c5d90033a6189441751eec5cbbcd7b6500014b61",
+      "file": "0039.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0040",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 40,
+      "label": "Remedy edition",
+      "title": "Bromium",
+      "indexHeadings": [
+        "Bromium"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/brom.htm",
+      "characterCount": 17962,
+      "sha256": "31f9d8881c43b0c4a27d09b6db8ddc40b9202ff8c88af46e09ec6153f49b47a4",
+      "file": "0040.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0041",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 41,
+      "label": "Remedy edition",
+      "title": "Bryonia Alba",
+      "indexHeadings": [
+        "Bryonia Alba"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/bry.htm",
+      "characterCount": 49835,
+      "sha256": "593d4d44611869fa164ac2b5c7dfb871d7b49b29c93bf0a478308a49f0f38173",
+      "file": "0041.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0042",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 42,
+      "label": "Remedy edition",
+      "title": "Bryonia Alba · Part 2",
+      "indexHeadings": [
+        "Bryonia Alba · Part 2"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/bry.htm",
+      "characterCount": 3867,
+      "sha256": "064963254578808566b9b46aaf5a101b4b6b9c971662db2b100f123af6cbd2ca",
+      "file": "0042.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0043",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 43,
+      "label": "Remedy edition",
+      "title": "Bufo",
+      "indexHeadings": [
+        "Bufo"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/buf.htm",
+      "characterCount": 19206,
+      "sha256": "8be70c1501e230a7e61c2279ad97b7d86201f8c248986cbd292343097543373e",
+      "file": "0043.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0044",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 44,
+      "label": "Remedy edition",
+      "title": "Cactus Grandiflorus",
+      "indexHeadings": [
+        "Cactus Grandiflorus"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/cact.htm",
+      "characterCount": 21174,
+      "sha256": "073d749ee873d09ff2bec1e4cfce4aaa856b74eafde43b581ed0e3b1a4010771",
+      "file": "0044.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0045",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 45,
+      "label": "Remedy edition",
+      "title": "Cadmium Sulphuricum",
+      "indexHeadings": [
+        "Cadmium Sulphuricum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/cad-s.htm",
+      "characterCount": 8634,
+      "sha256": "78eead972af1397f2a5d2a46186919f903584ddffdb2650f9b2eae8e517d9d4b",
+      "file": "0045.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0046",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 46,
+      "label": "Remedy edition",
+      "title": "Caladium",
+      "indexHeadings": [
+        "Caladium"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/calad.htm",
+      "characterCount": 9969,
+      "sha256": "6a4fbc9d6a577fdcbc8de87652ff476e242ebecdfc71a881666239e0b0357b73",
+      "file": "0046.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0047",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 47,
+      "label": "Remedy edition",
+      "title": "Calcarea Arsenicosa",
+      "indexHeadings": [
+        "Calcarea Arsenicosa"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/calc-ars.htm",
+      "characterCount": 5792,
+      "sha256": "f9065c7c64245f5faab0e6be1a12741b94f55140a30fe94721970654897cd926",
+      "file": "0047.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0048",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 48,
+      "label": "Remedy edition",
+      "title": "Calcarea Fluorica",
+      "indexHeadings": [
+        "Calcarea Fluorica"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/calc-fluor.htm",
+      "characterCount": 3701,
+      "sha256": "aef8dce7365ceb1a60c4de0e134e8252609d92f4337afec8cf94867484d79085",
+      "file": "0048.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0049",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 49,
+      "label": "Remedy edition",
+      "title": "Calcarea Phosphorica",
+      "indexHeadings": [
+        "Calcarea Phosphorica"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/calc-phos.htm",
+      "characterCount": 11539,
+      "sha256": "167a3d956b5440cc1a7a9597a6865acb50ed7fe1417baaf7be6e2af150c90022",
+      "file": "0049.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0050",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 50,
+      "label": "Remedy edition",
+      "title": "Calcarea Sulphurica",
+      "indexHeadings": [
+        "Calcarea Sulphurica"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/calc-sulph.htm",
+      "characterCount": 23342,
+      "sha256": "d298095ea0cf26a3d401fe516d9db516968096e39fab06f55c03dd65b92882f4",
+      "file": "0050.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0051",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 51,
+      "label": "Remedy edition",
+      "title": "Calcarea carbonica",
+      "indexHeadings": [
+        "Calcarea carbonica"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/calc.htm",
+      "characterCount": 49895,
+      "sha256": "4d444cc4e0f3a907f65f29f24c2afc1a32ec0eee77196c25c957c5d2958c95eb",
+      "file": "0051.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0052",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 52,
+      "label": "Remedy edition",
+      "title": "Calcarea carbonica · Part 2",
+      "indexHeadings": [
+        "Calcarea carbonica · Part 2"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/calc.htm",
+      "characterCount": 12490,
+      "sha256": "1a1a91c2052ef56aad945834251ae3a0ef870178a4b8f056091227b379bba3b7",
+      "file": "0052.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0053",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 53,
+      "label": "Remedy edition",
+      "title": "Camphor",
+      "indexHeadings": [
+        "Camphor"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/camph.htm",
+      "characterCount": 11710,
+      "sha256": "978d3710b372fdb69a6f16064a119ed32bec9202e5f1bd1affcf1531a7da2772",
+      "file": "0053.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0054",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 54,
+      "label": "Remedy edition",
+      "title": "Cannabis Indica",
+      "indexHeadings": [
+        "Cannabis Indica"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/can-ind.htm",
+      "characterCount": 4438,
+      "sha256": "4ece804791afacae6672ac908956eb95e55a3524acbace55746dec59661791cc",
+      "file": "0054.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0055",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 55,
+      "label": "Remedy edition",
+      "title": "Cannabis Sativa",
+      "indexHeadings": [
+        "Cannabis Sativa"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/can-sat.htm",
+      "characterCount": 3622,
+      "sha256": "8382804e635e562e16e49e3448f78f35a67a21c12e9aea8707e867d460a0fd45",
+      "file": "0055.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0056",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 56,
+      "label": "Remedy edition",
+      "title": "Cantharis",
+      "indexHeadings": [
+        "Cantharis"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/canth.htm",
+      "characterCount": 9868,
+      "sha256": "246748476384f57af54a763375eac8af4e431c2eefe17c6009c6405b3d511940",
+      "file": "0056.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0057",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 57,
+      "label": "Remedy edition",
+      "title": "Capsicum",
+      "indexHeadings": [
+        "Capsicum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/caps.htm",
+      "characterCount": 12902,
+      "sha256": "6b0975b68ecfccf69587834077a2097bd15d2dd8d6e49190d6d3fc0dca9e017a",
+      "file": "0057.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0058",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 58,
+      "label": "Remedy edition",
+      "title": "Carbo Animalis",
+      "indexHeadings": [
+        "Carbo Animalis"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/carb-an.htm",
+      "characterCount": 8860,
+      "sha256": "6f044d5d75a6af343a2b8d85cefdb6bcd415772b3453ca73a794f594231480f6",
+      "file": "0058.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0059",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 59,
+      "label": "Remedy edition",
+      "title": "Carbo Vegetabilis",
+      "indexHeadings": [
+        "Carbo Vegetabilis"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/carb-veg.htm",
+      "characterCount": 49783,
+      "sha256": "e2aae2e4d6424e8af7b30820b92252692f86f51b5ba4cb6dab0747d441f9242b",
+      "file": "0059.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0060",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 60,
+      "label": "Remedy edition",
+      "title": "Carbo Vegetabilis · Part 2",
+      "indexHeadings": [
+        "Carbo Vegetabilis · Part 2"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/carb-veg.htm",
+      "characterCount": 4596,
+      "sha256": "d97ee07876cdab06c0c08a6f146d66cee0a07d06b07ba8a3cb89647caf304324",
+      "file": "0060.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0061",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 61,
+      "label": "Remedy edition",
+      "title": "Carboneum Sulphuratum",
+      "indexHeadings": [
+        "Carboneum Sulphuratum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/carbo-sul.htm",
+      "characterCount": 32961,
+      "sha256": "38dc497aa6426d242c9ca4aabdd55693b19217fab9a4d632a904684d6961c072",
+      "file": "0061.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0062",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 62,
+      "label": "Remedy edition",
+      "title": "Carduus Marianus",
+      "indexHeadings": [
+        "Carduus Marianus"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/card-m.htm",
+      "characterCount": 3536,
+      "sha256": "0b44fbf937e4f8c0d02b9dd566fbb7c33a2c8bcbdb995c46a91c0165c08e0fa2",
+      "file": "0062.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0063",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 63,
+      "label": "Remedy edition",
+      "title": "Causticum",
+      "indexHeadings": [
+        "Causticum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/caust.htm",
+      "characterCount": 20296,
+      "sha256": "68628ffae5cf5b42a409753dfa8dce72abb6362a1097fdb5d10a219b6f3e2efe",
+      "file": "0063.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0064",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 64,
+      "label": "Remedy edition",
+      "title": "Chamomilla",
+      "indexHeadings": [
+        "Chamomilla"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/cham.htm",
+      "characterCount": 32116,
+      "sha256": "a0180cd18976d9a6aedb53fdbb0be4f09e898a236adb21fd605bca039b5518fa",
+      "file": "0064.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0065",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 65,
+      "label": "Remedy edition",
+      "title": "Chelidonium",
+      "indexHeadings": [
+        "Chelidonium"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/chel.htm",
+      "characterCount": 12327,
+      "sha256": "d80e2eb540cc3a2d6b82aea363a2dbf4eb5a58e32e2082bf6db7746a450daecf",
+      "file": "0065.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0066",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 66,
+      "label": "Remedy edition",
+      "title": "Chininum Arsenicosum",
+      "indexHeadings": [
+        "Chininum Arsenicosum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/chin-ars.htm",
+      "characterCount": 16948,
+      "sha256": "ae8a7bd80de473f8b5c375d8efe26400a39e35c7c59681371622797aeaa4dbfa",
+      "file": "0066.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0067",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 67,
+      "label": "Remedy edition",
+      "title": "Cinchona (China)",
+      "indexHeadings": [
+        "Cinchona (China)"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/china.htm",
+      "characterCount": 16640,
+      "sha256": "071ac7361a49b9469cf798d4c85664b23810106031fdbc3a193f3dd3041a94f6",
+      "file": "0067.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0068",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 68,
+      "label": "Remedy edition",
+      "title": "Cicuta Virosa",
+      "indexHeadings": [
+        "Cicuta Virosa"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/cic-v.htm",
+      "characterCount": 10018,
+      "sha256": "f1a5a497608c5bc8f32847ce2f704358a02dbee5925626f4db409dd7d2e62724",
+      "file": "0068.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0069",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 69,
+      "label": "Remedy edition",
+      "title": "Cina",
+      "indexHeadings": [
+        "Cina"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/cina.htm",
+      "characterCount": 8435,
+      "sha256": "99f6e6bd35758495d4335ba77a6f95f0db429525deeb0c15ae8dba69ed710d4a",
+      "file": "0069.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0070",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 70,
+      "label": "Remedy edition",
+      "title": "Cinnabaris (Red Sulphide of Mercury.)",
+      "indexHeadings": [
+        "Cinnabaris (Red Sulphide of Mercury.)"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/cinnab.htm",
+      "characterCount": 4349,
+      "sha256": "32b24e8ae8baaa0f5a1f3742a3e137e9666ee9552437e7f0e365288290953447",
+      "file": "0070.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0071",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 71,
+      "label": "Remedy edition",
+      "title": "Cistus Canadensis (see too Salts of Mercurius)",
+      "indexHeadings": [
+        "Cistus Canadensis (see too Salts of Mercurius)"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/cistus.htm",
+      "characterCount": 8377,
+      "sha256": "8908402c9c9d3b7f3aa1957f367981824016645e427c93021185741cfb6af35c",
+      "file": "0071.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0072",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 72,
+      "label": "Remedy edition",
+      "title": "Clematis Erecta",
+      "indexHeadings": [
+        "Clematis Erecta"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/clem.htm",
+      "characterCount": 8821,
+      "sha256": "91a93585dab2c23fc419aaeda02a3cdc571e89448cb5bda850027c129af14c7d",
+      "file": "0072.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0073",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 73,
+      "label": "Remedy edition",
+      "title": "Coccus Cacti",
+      "indexHeadings": [
+        "Coccus Cacti"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/coc-c.htm",
+      "characterCount": 10163,
+      "sha256": "2d3d17e9bf82acab828c9cbcfe3d57be55741f6d8edf674506e275956c81379c",
+      "file": "0073.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0074",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 74,
+      "label": "Remedy edition",
+      "title": "Cocculus Indicus",
+      "indexHeadings": [
+        "Cocculus Indicus"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/coccul.htm",
+      "characterCount": 14686,
+      "sha256": "8f9f7c98b5855b63460acca8dd13bce2f326af8e161c32bfb15bbb828c04e3f6",
+      "file": "0074.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0075",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 75,
+      "label": "Remedy edition",
+      "title": "Coffea",
+      "indexHeadings": [
+        "Coffea"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/coff.htm",
+      "characterCount": 13211,
+      "sha256": "1a90bd58d4a0ed54a9fd5c9ec8c652d1fd816586d4dd021a90099fa6e01b512f",
+      "file": "0075.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0076",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 76,
+      "label": "Remedy edition",
+      "title": "Colchicum",
+      "indexHeadings": [
+        "Colchicum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/colch.htm",
+      "characterCount": 16069,
+      "sha256": "746452184ca5ecd9486b81bb4120f5ca8489eba98565cd5db423eb0e43519972",
+      "file": "0076.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0077",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 77,
+      "label": "Remedy edition",
+      "title": "Colocynthis",
+      "indexHeadings": [
+        "Colocynthis"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/coloc.htm",
+      "characterCount": 9713,
+      "sha256": "4f51924a171b427cd3a9ad9686e492ddfbd459185a5bc8c4f46bf4777ed3aabe",
+      "file": "0077.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0078",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 78,
+      "label": "Remedy edition",
+      "title": "CONCLUSION",
+      "indexHeadings": [
+        "CONCLUSION"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/conclusion.htm",
+      "characterCount": 2264,
+      "sha256": "2ff892e3192c24f9b27c653e3b1fc1f9a20fd4aee592078eeab820f01b3c65a2",
+      "file": "0078.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0079",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 79,
+      "label": "Remedy edition",
+      "title": "Conium Maculatum",
+      "indexHeadings": [
+        "Conium Maculatum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/conium.htm",
+      "characterCount": 19279,
+      "sha256": "aedd570291287460e9482bd4cb119c048ed00f4d27223e974e92a6fb76cacff8",
+      "file": "0079.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0080",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 80,
+      "label": "Remedy edition",
+      "title": "Crotalus Horridus (Rattlesnake)",
+      "indexHeadings": [
+        "Crotalus Horridus (Rattlesnake)"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/crot-h.htm",
+      "characterCount": 17688,
+      "sha256": "9d5bb8b1c47f677514bbdc3e2c6daa2e156f1a8a0e25de2ebf93f7f9cf918987",
+      "file": "0080.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0081",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 81,
+      "label": "Remedy edition",
+      "title": "Croton Tiglium",
+      "indexHeadings": [
+        "Croton Tiglium"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/croton-tig.htm",
+      "characterCount": 15240,
+      "sha256": "60758823c6bf31cf59ea1e56eca4c46bc73f1f65fd5dc7def23dd70356a10be2",
+      "file": "0081.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0082",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 82,
+      "label": "Remedy edition",
+      "title": "Cuprum Metallicum",
+      "indexHeadings": [
+        "Cuprum Metallicum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/cupr.htm",
+      "characterCount": 25413,
+      "sha256": "8b05c35fceab2d5de9579e9aefb2405aa74025af4839345f5070e048eaa0efb4",
+      "file": "0082.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0083",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 83,
+      "label": "Remedy edition",
+      "title": "Cyclamen",
+      "indexHeadings": [
+        "Cyclamen"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/cycl.htm",
+      "characterCount": 9444,
+      "sha256": "1f8b93d93510e175f6be0d15c493bd8983a0f8850d583994f09a0d3d7e52a494",
+      "file": "0083.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0084",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 84,
+      "label": "Remedy edition",
+      "title": "Digitalis",
+      "indexHeadings": [
+        "Digitalis"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/digital.htm",
+      "characterCount": 11810,
+      "sha256": "3663e02e228634181f9a5d26dc697b359cabc97b4ff2d8c40105703a009b5844",
+      "file": "0084.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0085",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 85,
+      "label": "Remedy edition",
+      "title": "Drosera Rotundifolia",
+      "indexHeadings": [
+        "Drosera Rotundifolia"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/dros.htm",
+      "characterCount": 7338,
+      "sha256": "705e4b0ce029c83e910d87e36894ef68a47c9d9abc03045f41c456ae534ee6e8",
+      "file": "0085.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0086",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 86,
+      "label": "Remedy edition",
+      "title": "Dulcamara - Bitter Sweet",
+      "indexHeadings": [
+        "Dulcamara - Bitter Sweet"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/dulc.htm",
+      "characterCount": 24836,
+      "sha256": "a6731a65a40f112e0a911d21d4b18343834258788d0173dc1ef32a56780112ed",
+      "file": "0086.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0087",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 87,
+      "label": "Remedy edition",
+      "title": "Eupatorium Perfoliatum (Boneset)",
+      "indexHeadings": [
+        "Eupatorium Perfoliatum (Boneset)"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/eupat-perf.htm",
+      "characterCount": 18778,
+      "sha256": "7f92430516e929e3c03bfc6b2f352c4b43b0d8e29326ad5efd7bf3340a7a5cce",
+      "file": "0087.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0088",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 88,
+      "label": "Remedy edition",
+      "title": "Euphrasia",
+      "indexHeadings": [
+        "Euphrasia"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/euphr.htm",
+      "characterCount": 5807,
+      "sha256": "c74bdbd07bd65567f92e55b1b0e08e045bbf7ba1f150e6efd506434fef79548f",
+      "file": "0088.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0089",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 89,
+      "label": "Remedy edition",
+      "title": "Ferrum Phosphoricum",
+      "indexHeadings": [
+        "Ferrum Phosphoricum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/fer-phos.htm",
+      "characterCount": 18828,
+      "sha256": "a44021e6fa1c8f158523f5f1602008e7f21f5c7a34a9400f47b1114c845a8b36",
+      "file": "0089.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0090",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 90,
+      "label": "Remedy edition",
+      "title": "Ferrum Metallicum",
+      "indexHeadings": [
+        "Ferrum Metallicum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/ferrum.htm",
+      "characterCount": 17345,
+      "sha256": "fdd42bb85f6ec13c415e1d12a021f4997fcb1e149637156f90232b95ec58c9f1",
+      "file": "0090.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0091",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 91,
+      "label": "Remedy edition",
+      "title": "Fluoricum Acidum",
+      "indexHeadings": [
+        "Fluoricum Acidum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/fluor-ac.htm",
+      "characterCount": 20268,
+      "sha256": "f9a4c67829f98423ac8fdee77d13cb523500868949d632a5dee6d840171b3521",
+      "file": "0091.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0092",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 92,
+      "label": "Remedy edition",
+      "title": "Gelsemium",
+      "indexHeadings": [
+        "Gelsemium"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/gels.htm",
+      "characterCount": 16111,
+      "sha256": "fd630599a1b7bc020dd1d2954bc981949e657042a4b06a2fd055ec1442211fa7",
+      "file": "0092.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0093",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 93,
+      "label": "Remedy edition",
+      "title": "Glonoinum",
+      "indexHeadings": [
+        "Glonoinum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/glon.htm",
+      "characterCount": 17421,
+      "sha256": "26272b9888dd847ccf9f375fc351527380ad96dd96752a706310531373479fe4",
+      "file": "0093.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0094",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 94,
+      "label": "Remedy edition",
+      "title": "Graphites",
+      "indexHeadings": [
+        "Graphites"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/graph.htm",
+      "characterCount": 22801,
+      "sha256": "32d8c4238c7eaccbaa4c2e24bfc3ddab901d2c61cebb9fd67dcfd72f4614366b",
+      "file": "0094.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0095",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 95,
+      "label": "Remedy edition",
+      "title": "Gratiola",
+      "indexHeadings": [
+        "Gratiola"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/grat.htm",
+      "characterCount": 5637,
+      "sha256": "b3f5e7b9b4db664984f17547db5958c476b75d4b96ec12e97817256597fb58d9",
+      "file": "0095.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0096",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 96,
+      "label": "Remedy edition",
+      "title": "Guaiacum",
+      "indexHeadings": [
+        "Guaiacum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/guai.htm",
+      "characterCount": 6278,
+      "sha256": "439e8a320b33fff95de264bb3ccff8ab0cccf04f6c551572efe6bcd944e408ae",
+      "file": "0096.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0097",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 97,
+      "label": "Remedy edition",
+      "title": "Helleborus Niger",
+      "indexHeadings": [
+        "Helleborus Niger"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/hell-n.htm",
+      "characterCount": 14643,
+      "sha256": "81a834a074adf105d4a6d921ae01f917c34504edb28d0e17f835a2e4857aab56",
+      "file": "0097.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0098",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 98,
+      "label": "Remedy edition",
+      "title": "Hepar Sulphur",
+      "indexHeadings": [
+        "Hepar Sulphur"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/hepar.htm",
+      "characterCount": 26127,
+      "sha256": "561af86fab30cae732623baa3c22a4037a59548f8392a1a940b09c133b1da7d9",
+      "file": "0098.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0099",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 99,
+      "label": "Remedy edition",
+      "title": "Hydrastis Canadensis",
+      "indexHeadings": [
+        "Hydrastis Canadensis"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/hydrastis.htm",
+      "characterCount": 7827,
+      "sha256": "214dcb0bfab9b809af690be9eb4a7cc0f9a44830bddb69e804563fe59609dc2b",
+      "file": "0099.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0100",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 100,
+      "label": "Remedy edition",
+      "title": "Hyoscyamus",
+      "indexHeadings": [
+        "Hyoscyamus"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/hyo.htm",
+      "characterCount": 25864,
+      "sha256": "c5929a0db1ecd720712db3068c2861f457a1d8cf0613394a2c18597008969c19",
+      "file": "0100.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0101",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 101,
+      "label": "Remedy edition",
+      "title": "Hypericum",
+      "indexHeadings": [
+        "Hypericum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/hyp.htm",
+      "characterCount": 15322,
+      "sha256": "ed1ae04f5f0e5d35769015b273f5d0ba38e77c59770444cbf61feffa740d2788",
+      "file": "0101.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0102",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 102,
+      "label": "Remedy edition",
+      "title": "Ignatia",
+      "indexHeadings": [
+        "Ignatia"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/ign.htm",
+      "characterCount": 17265,
+      "sha256": "e1695a18d90e0872f1d08807dac4ed17f7859cda0677d2f376bc39e10ea9e5fa",
+      "file": "0102.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0103",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 103,
+      "label": "Remedy edition",
+      "title": "Introduction by Dr Robert Séror (French)",
+      "indexHeadings": [
+        "Introduction by Dr Robert Séror (French)"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/intro.htm",
+      "characterCount": 7646,
+      "sha256": "23fb31efe4b74548135e53c31414d6c7efcd53b41befa949688afeb75dccac47",
+      "file": "0103.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0104",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 104,
+      "label": "Remedy edition",
+      "title": "Iodine",
+      "indexHeadings": [
+        "Iodine"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/iod.htm",
+      "characterCount": 22181,
+      "sha256": "98123f9a8a1c36e78c70b3d2ff9f2cb3c1acf3f49cfa9fa621f97c8fce77feea",
+      "file": "0104.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0105",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 105,
+      "label": "Remedy edition",
+      "title": "Ipeca",
+      "indexHeadings": [
+        "Ipeca"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/ipec.htm",
+      "characterCount": 17950,
+      "sha256": "5ba271586581823e18ae68c11ee06161289d07aa06cc99e2a3e2f1be5b27f9c5",
+      "file": "0105.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0106",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 106,
+      "label": "Remedy edition",
+      "title": "Kalium Bichromicum",
+      "indexHeadings": [
+        "Kalium Bichromicum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/kali-bi.htm",
+      "characterCount": 21517,
+      "sha256": "d3953fcaecb163ffe5c47e5eacef2d4ceac36d2c3e90cbd249dcc4ed09d6147d",
+      "file": "0106.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0107",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 107,
+      "label": "Remedy edition",
+      "title": "Kalium Carbonicum",
+      "indexHeadings": [
+        "Kalium Carbonicum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/kali-ca.htm",
+      "characterCount": 42526,
+      "sha256": "9501c9f05e75f90c19609a20f729f1d7aa16c89a230656d0c02457a88033b503",
+      "file": "0107.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0108",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 108,
+      "label": "Remedy edition",
+      "title": "Kalium Iodatum",
+      "indexHeadings": [
+        "Kalium Iodatum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/kali-iod.htm",
+      "characterCount": 14347,
+      "sha256": "215c2c9f6ad1ef1e699a075b3cfbb8dca9732600fdc83e349ab255f0ff67c5cb",
+      "file": "0108.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0109",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 109,
+      "label": "Remedy edition",
+      "title": "Kalium Phosphoricum",
+      "indexHeadings": [
+        "Kalium Phosphoricum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/kali-ph.htm",
+      "characterCount": 27583,
+      "sha256": "651cb852a0fd790a132815cf6009f8feebf7f63d089313f096d2ec6ce0037248",
+      "file": "0109.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0110",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 110,
+      "label": "Remedy edition",
+      "title": "Kalium Sulphuricum",
+      "indexHeadings": [
+        "Kalium Sulphuricum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/kali-sul.htm",
+      "characterCount": 22076,
+      "sha256": "a9a2f7f805f61e9b3185908db6e6bd00946f13fa70a7d0d19cf448b9b1f03be1",
+      "file": "0110.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0111",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 111,
+      "label": "Remedy edition",
+      "title": "Kalmia Latifolia",
+      "indexHeadings": [
+        "Kalmia Latifolia"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/kalm.htm",
+      "characterCount": 13017,
+      "sha256": "45f0d5da176b2d4930b91a8a9ad9fd168d4959e6c9e404bc423d4bf5b6da429f",
+      "file": "0111.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0112",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 112,
+      "label": "Remedy edition",
+      "title": "Kreosotum",
+      "indexHeadings": [
+        "Kreosotum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/kre.htm",
+      "characterCount": 11889,
+      "sha256": "d98a4fb8d2d33dedb53035ef8c4f3323e992444ce3e334bda755ed1398a5f588",
+      "file": "0112.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0113",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 113,
+      "label": "Remedy edition",
+      "title": "Lac Caninum",
+      "indexHeadings": [
+        "Lac Caninum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/lac-can.htm",
+      "characterCount": 11549,
+      "sha256": "476079542d9755e844d4af4ce6f5768fd7e0148d42be07a54733611688f59650",
+      "file": "0113.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0114",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 114,
+      "label": "Remedy edition",
+      "title": "Lac Vaccinum Defloratum",
+      "indexHeadings": [
+        "Lac Vaccinum Defloratum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/lac-v-def.htm",
+      "characterCount": 13000,
+      "sha256": "519e2e80a8e0f9bf218e02f7b0feedb7e4682dfa8462789806e3b4c71474a5e5",
+      "file": "0114.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0115",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 115,
+      "label": "Remedy edition",
+      "title": "Lachesis",
+      "indexHeadings": [
+        "Lachesis"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/lach.htm",
+      "characterCount": 39886,
+      "sha256": "2288aa9aadba0ae74bc3680381d19ffd2d382d1ede43177842ecf9b2714fe336",
+      "file": "0115.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0116",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 116,
+      "label": "Remedy edition",
+      "title": "Laurocerasus",
+      "indexHeadings": [
+        "Laurocerasus"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/lauro.htm",
+      "characterCount": 5042,
+      "sha256": "f1802615abe69f49c42c9cbece3abd4a51777780aa6a9c1be8e9b7b41e7565de",
+      "file": "0116.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0117",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 117,
+      "label": "Remedy edition",
+      "title": "Ledum Palustre",
+      "indexHeadings": [
+        "Ledum Palustre"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/led.htm",
+      "characterCount": 13706,
+      "sha256": "3ee41844667307b9927a7af2e5492bef6c60f549b857f944fca7e94a2e9ad6b5",
+      "file": "0117.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0118",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 118,
+      "label": "Remedy edition",
+      "title": "Lilium Tigrinum",
+      "indexHeadings": [
+        "Lilium Tigrinum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/lil-t.htm",
+      "characterCount": 12250,
+      "sha256": "ddb692cda6787a65f09b19f12e8d030aa8481911b20f74dfbb9b3a13587c118e",
+      "file": "0118.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0119",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 119,
+      "label": "Remedy edition",
+      "title": "Lycopodium",
+      "indexHeadings": [
+        "Lycopodium"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/lyc.htm",
+      "characterCount": 36778,
+      "sha256": "dc580ccb0e23a567e2e2baa57c461bb6882e14efa4933f3d29c9a1291f528308",
+      "file": "0119.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0120",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 120,
+      "label": "Remedy edition",
+      "title": "Magnesia Carbonica",
+      "indexHeadings": [
+        "Magnesia Carbonica"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/mag-c.htm",
+      "characterCount": 11699,
+      "sha256": "d87593aafb339b11096b5ce9495106058dc330abe5eb2633ed800ee55a0ea4b1",
+      "file": "0120.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0121",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 121,
+      "label": "Remedy edition",
+      "title": "Magnesia Muriatica",
+      "indexHeadings": [
+        "Magnesia Muriatica"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/mag-m.htm",
+      "characterCount": 9116,
+      "sha256": "68dee33966a61a64223855fc42a1a3ee580c85eceaebcb3c576782de73f79d2e",
+      "file": "0121.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0122",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 122,
+      "label": "Remedy edition",
+      "title": "Magnesia Phosphorica",
+      "indexHeadings": [
+        "Magnesia Phosphorica"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/mag-p.htm",
+      "characterCount": 6259,
+      "sha256": "c263b08c7e3bafe0adec499e166a7c0b3e4b43d8ccdaac1c1d68820534b891fe",
+      "file": "0122.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0123",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 123,
+      "label": "Remedy edition",
+      "title": "Manganum",
+      "indexHeadings": [
+        "Manganum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/mang.htm",
+      "characterCount": 17011,
+      "sha256": "230f505d6f3892452a7d444e848280d238746ae7d2c8f9928f97afcb57357450",
+      "file": "0123.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0124",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 124,
+      "label": "Remedy edition",
+      "title": "Medorrhinum",
+      "indexHeadings": [
+        "Medorrhinum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/medorrh.htm",
+      "characterCount": 15579,
+      "sha256": "ea974b4a9bc3ea86c7635dd353deea1e3d4c0126c1254ea77ab4ea23052213ee",
+      "file": "0124.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0125",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 125,
+      "label": "Remedy edition",
+      "title": "Mercurius Corrosivus",
+      "indexHeadings": [
+        "Mercurius Corrosivus"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/merc-cor.htm",
+      "characterCount": 3127,
+      "sha256": "3338544a512cfa6ede23d47654371f0d85247328806dd08ceabb46e1a88467fc",
+      "file": "0125.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0126",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 126,
+      "label": "Remedy edition",
+      "title": "Mercurius Cyanatus",
+      "indexHeadings": [
+        "Mercurius Cyanatus"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/merc-cy.htm",
+      "characterCount": 788,
+      "sha256": "4cf49db654986e5c864cd434ac900f42b8f0008b8dea0e410f09015dcfd0d7a2",
+      "file": "0126.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0127",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 127,
+      "label": "Remedy edition",
+      "title": "Mercurius Iodatus Ruber (Bin-iodide of Mercury.)",
+      "indexHeadings": [
+        "Mercurius Iodatus Ruber (Bin-iodide of Mercury.)"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/merc-iod-r.htm",
+      "characterCount": 907,
+      "sha256": "fd14a2850f2a14932383c33e85a954cdd4d22f6341ea4c8e0f447f15a8fb17df",
+      "file": "0127.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0128",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 128,
+      "label": "Remedy edition",
+      "title": "Mercurius Iodatus Flavus (Proto-iodide of Mercury.)",
+      "indexHeadings": [
+        "Mercurius Iodatus Flavus (Proto-iodide of Mercury.)"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/merc-iod.htm",
+      "characterCount": 1387,
+      "sha256": "04217a67e3935cf8eb06c62157089547844e63a665890c3d5c17c65556c83ced",
+      "file": "0128.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0129",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 129,
+      "label": "Remedy edition",
+      "title": "Mercurius sulphuricus (Sulphate of Mercury. Turpeth mineral.)",
+      "indexHeadings": [
+        "Mercurius sulphuricus (Sulphate of Mercury. Turpeth mineral.)"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/merc-sul.htm",
+      "characterCount": 896,
+      "sha256": "747a02e678c483a25b6a1437bab1808cf671748d3444c7435db92d6c1a960735",
+      "file": "0129.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0130",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 130,
+      "label": "Remedy edition",
+      "title": "Mercurius",
+      "indexHeadings": [
+        "Mercurius"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/merc.htm",
+      "characterCount": 37041,
+      "sha256": "3c04b52d9a29c4a4fbb796dacbc630ffb6a7b8430a1afca3d00c2539cb32f4f8",
+      "file": "0130.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0131",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 131,
+      "label": "Remedy edition",
+      "title": "Mezereum",
+      "indexHeadings": [
+        "Mezereum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/mez.htm",
+      "characterCount": 8914,
+      "sha256": "8f50b81b58199256c2d32b43dc57f9992706bc0d998a7f417ca159eaa43f6001",
+      "file": "0131.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0132",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 132,
+      "label": "Remedy edition",
+      "title": "Millefolium",
+      "indexHeadings": [
+        "Millefolium"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/mill.htm",
+      "characterCount": 4049,
+      "sha256": "0f650c79179a46adba843f917ba8059330059f2abd16ad3e7914037c1f70a747",
+      "file": "0132.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0133",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 133,
+      "label": "Remedy edition",
+      "title": "Moschus",
+      "indexHeadings": [
+        "Moschus"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/mosch.htm",
+      "characterCount": 6982,
+      "sha256": "068c74add84e67c3a36f57e055af1dc1939078e2ea61030b95f0d74e19948160",
+      "file": "0133.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0134",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 134,
+      "label": "Remedy edition",
+      "title": "Muriaticum acidum",
+      "indexHeadings": [
+        "Muriaticum acidum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/mur-ac.htm",
+      "characterCount": 6885,
+      "sha256": "8f652614fdea1df3795309d776015476130e09fb10bb76f531a76e8aac647c0a",
+      "file": "0134.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0135",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 135,
+      "label": "Remedy edition",
+      "title": "Naja",
+      "indexHeadings": [
+        "Naja"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/naja.htm",
+      "characterCount": 8128,
+      "sha256": "bb2222fc5b4e5989110a83083d14d172b45911d5fe3dbfac97ef7c21737be21f",
+      "file": "0135.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0136",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 136,
+      "label": "Remedy edition",
+      "title": "Natrum Arsenicosum",
+      "indexHeadings": [
+        "Natrum Arsenicosum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/nat-ars.htm",
+      "characterCount": 19325,
+      "sha256": "a76cf5bad1e10fe65b4cadd3417036df16f3ceeaec1c459cc6e6eed0bb4114c7",
+      "file": "0136.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0137",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 137,
+      "label": "Remedy edition",
+      "title": "Natrum Carbonicum",
+      "indexHeadings": [
+        "Natrum Carbonicum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/nat-carb.htm",
+      "characterCount": 11344,
+      "sha256": "cd701cc2c10c8e031839bd6f730fce266e849496519e499ba79f9ba7e4559c33",
+      "file": "0137.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0138",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 138,
+      "label": "Remedy edition",
+      "title": "Natrum Muriaticum",
+      "indexHeadings": [
+        "Natrum Muriaticum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/nat-m.htm",
+      "characterCount": 21947,
+      "sha256": "d6e3e036f3acd75fd9b31abffbf433535cce7c1183ce6bfa6db65c222e0aca8a",
+      "file": "0138.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0139",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 139,
+      "label": "Remedy edition",
+      "title": "Natrum Phosphoricum",
+      "indexHeadings": [
+        "Natrum Phosphoricum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/nat-phos.htm",
+      "characterCount": 20829,
+      "sha256": "e2ac9806b40710cf4d9991b23ecf12fb51d5450754cf77826ef67e4688b09d68",
+      "file": "0139.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0140",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 140,
+      "label": "Remedy edition",
+      "title": "Natrum sulfuricum",
+      "indexHeadings": [
+        "Natrum sulfuricum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/nat-sul.htm",
+      "characterCount": 17833,
+      "sha256": "d5b858e3ea2ce0e636fc6a2d9b9e8c67500e0965eedd62bc58a0e4bb7f0ea22b",
+      "file": "0140.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0141",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 141,
+      "label": "Remedy edition",
+      "title": "Nitricum Acidum",
+      "indexHeadings": [
+        "Nitricum Acidum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/nit-ac.htm",
+      "characterCount": 18768,
+      "sha256": "21b46d0f0206090fcd03aef4b8489ecfa7ded4c7f7ca3446ccb18b07f6ba2449",
+      "file": "0141.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0142",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 142,
+      "label": "Remedy edition",
+      "title": "Nux Moschata",
+      "indexHeadings": [
+        "Nux Moschata"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/nux-m.htm",
+      "characterCount": 5934,
+      "sha256": "149119c47beda633a22babdb4c12d2e565cabf8b174fedb82c699573ffdf509e",
+      "file": "0142.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0143",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 143,
+      "label": "Remedy edition",
+      "title": "Nux Vomica",
+      "indexHeadings": [
+        "Nux Vomica"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/nux-v.htm",
+      "characterCount": 19871,
+      "sha256": "724b7ea363e85abb859e8ad7852cfbac0628acd4c215255fbb988cc5859cb41a",
+      "file": "0143.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0144",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 144,
+      "label": "Remedy edition",
+      "title": "Opium",
+      "indexHeadings": [
+        "Opium"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/op.htm",
+      "characterCount": 11455,
+      "sha256": "5a246d6b1543053f1c4b3ac93dbbfa4f41baa0d26b46056a9a48d3e81fe9af20",
+      "file": "0144.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0145",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 145,
+      "label": "Remedy edition",
+      "title": "Oxalicum Acidum",
+      "indexHeadings": [
+        "Oxalicum Acidum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/oxal-ac.htm",
+      "characterCount": 9101,
+      "sha256": "d72ca4891768b763243a1bbb81bca9a2fbbeb8adc195ac6ade079da1a9370a7d",
+      "file": "0145.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0146",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 146,
+      "label": "Remedy edition",
+      "title": "Petroleum",
+      "indexHeadings": [
+        "Petroleum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/petrol.htm",
+      "characterCount": 13523,
+      "sha256": "bf3ad550ec74c05db972a7a6d055ba57f780a8e6ef2e7c5714e51416e7397aac",
+      "file": "0146.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0147",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 147,
+      "label": "Remedy edition",
+      "title": "Phosphoricum Acidum",
+      "indexHeadings": [
+        "Phosphoricum Acidum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/pho-ac.htm",
+      "characterCount": 14301,
+      "sha256": "9f1ca296130d2d3f3ba8e61c2cffa156f746b962a2b448c8955bc752b75f07cf",
+      "file": "0147.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0148",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 148,
+      "label": "Remedy edition",
+      "title": "Phosphorus",
+      "indexHeadings": [
+        "Phosphorus"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/pho.htm",
+      "characterCount": 40907,
+      "sha256": "f530390ef7f869341d32a20ed7bcf8df9e4f16152f989929362716fb58b7fa5c",
+      "file": "0148.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0149",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 149,
+      "label": "Remedy edition",
+      "title": "Phytolacca",
+      "indexHeadings": [
+        "Phytolacca"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/phyt.htm",
+      "characterCount": 10112,
+      "sha256": "0451bff1eca58f8624da37999490efecc162d48473a08d47d9ff7457c6564032",
+      "file": "0149.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0150",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 150,
+      "label": "Remedy edition",
+      "title": "Picricum Acidum",
+      "indexHeadings": [
+        "Picricum Acidum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/pic-ac.htm",
+      "characterCount": 6166,
+      "sha256": "8003bb084688a1d853b18411dccfb4bc1a53179891be397e84487b24c934420e",
+      "file": "0150.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0151",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 151,
+      "label": "Remedy edition",
+      "title": "Platinum",
+      "indexHeadings": [
+        "Platinum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/plat.htm",
+      "characterCount": 9933,
+      "sha256": "3c14722cbf4cbb5086af5185e411c30f8d83fbe1ad1ba50a8c5b18ef4655daa2",
+      "file": "0151.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0152",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 152,
+      "label": "Remedy edition",
+      "title": "Plumbum Metallicum",
+      "indexHeadings": [
+        "Plumbum Metallicum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/plumb.htm",
+      "characterCount": 13618,
+      "sha256": "82d52dd390e56f2814293165b0b395600b652d517c08ce16b07f96a2bf9939aa",
+      "file": "0152.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0153",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 153,
+      "label": "Remedy edition",
+      "title": "Podophyllum",
+      "indexHeadings": [
+        "Podophyllum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/pod.htm",
+      "characterCount": 11117,
+      "sha256": "e08c6f7cc758728b792c04f31aaf2b21f1ba92f033ac7afe16e2fee89720bbd5",
+      "file": "0153.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0154",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 154,
+      "label": "Remedy edition",
+      "title": "Preface",
+      "indexHeadings": [
+        "Preface"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/preface.htm",
+      "characterCount": 6522,
+      "sha256": "43236dac7d38630201e05e1c4226e297fed1353074761c55bb71e4272ea33d17",
+      "file": "0154.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0155",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 155,
+      "label": "Remedy edition",
+      "title": "Psorinum",
+      "indexHeadings": [
+        "Psorinum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/pso.htm",
+      "characterCount": 18185,
+      "sha256": "be907840d3fa9d3eef11c8f7004166282e075b56ec5f5dd89661c4071b04ab8f",
+      "file": "0155.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0156",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 156,
+      "label": "Remedy edition",
+      "title": "Pulsatilla",
+      "indexHeadings": [
+        "Pulsatilla"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/puls.htm",
+      "characterCount": 49201,
+      "sha256": "ecbad14c9ad98596e999c49a9d7cf54b4093d2e76916ab0ef99aa1831180208e",
+      "file": "0156.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0157",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 157,
+      "label": "Remedy edition",
+      "title": "Pyrogenium",
+      "indexHeadings": [
+        "Pyrogenium"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/pyro.htm",
+      "characterCount": 8191,
+      "sha256": "2088898a7ea9bd404e63f7ca5b973bdf997d2e932596e0072cbc998ccff95320",
+      "file": "0157.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0158",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 158,
+      "label": "Remedy edition",
+      "title": "Ranunculus Bulbosus",
+      "indexHeadings": [
+        "Ranunculus Bulbosus"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/ran-bulb.htm",
+      "characterCount": 8595,
+      "sha256": "87ebfb3739a6717f0cd0a8dc7b51e39c338ac5253fc830909bea00a352e98bfd",
+      "file": "0158.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0159",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 159,
+      "label": "Remedy edition",
+      "title": "Rhus Toxicodendron",
+      "indexHeadings": [
+        "Rhus Toxicodendron"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/rh-t.htm",
+      "characterCount": 22375,
+      "sha256": "e4fb5d391acf595595386c1d0724cd09353bcd21a22a610e5d43a36291f7600b",
+      "file": "0159.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0160",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 160,
+      "label": "Remedy edition",
+      "title": "Rhododendron",
+      "indexHeadings": [
+        "Rhododendron"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/rhod.htm",
+      "characterCount": 4722,
+      "sha256": "d3b0d284899bf23535d914b01bf3e497047e75b4ec069f349d4b9b87487df2c9",
+      "file": "0160.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0161",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 161,
+      "label": "Remedy edition",
+      "title": "Ruta Graveolens",
+      "indexHeadings": [
+        "Ruta Graveolens"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/ruta.htm",
+      "characterCount": 10414,
+      "sha256": "63b512ef1eeb662edc12d8f6ac9f267222b35a9c749fb2a25ed98088ff57aeae",
+      "file": "0161.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0162",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 162,
+      "label": "Remedy edition",
+      "title": "Rumex Crispus",
+      "indexHeadings": [
+        "Rumex Crispus"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/rx-c.htm",
+      "characterCount": 14329,
+      "sha256": "0b4035839aa0cff6d7e7611d9aa30a2762ae067f2e7ad56cf26b53fb0ea7ba2b",
+      "file": "0162.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0163",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 163,
+      "label": "Remedy edition",
+      "title": "Sabadilla",
+      "indexHeadings": [
+        "Sabadilla"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/saba.htm",
+      "characterCount": 12507,
+      "sha256": "61f80910e52f5bc67a9e94992700cf700538f424cad2784dbf9d60041095af5b",
+      "file": "0163.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0164",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 164,
+      "label": "Remedy edition",
+      "title": "Sabina",
+      "indexHeadings": [
+        "Sabina"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/sabi.htm",
+      "characterCount": 12067,
+      "sha256": "529c27980cc85e5be5ec62b98917038bc13ece14cf7120bfbed3d8dfcfd92d37",
+      "file": "0164.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0165",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 165,
+      "label": "Remedy edition",
+      "title": "Sanguinaria",
+      "indexHeadings": [
+        "Sanguinaria"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/sang.htm",
+      "characterCount": 14674,
+      "sha256": "c237049e2d95cdc35b2bd7c961aa209976fd9cfab7570bf723f8b8a20c87ef1d",
+      "file": "0165.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0166",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 166,
+      "label": "Remedy edition",
+      "title": "Sarsaparilla",
+      "indexHeadings": [
+        "Sarsaparilla"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/sars.htm",
+      "characterCount": 9435,
+      "sha256": "bed192eecf4ae49d4ba58f233f88791624948628402b013f79d99d274570b2d3",
+      "file": "0166.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0167",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 167,
+      "label": "Remedy edition",
+      "title": "Secale Cornutum",
+      "indexHeadings": [
+        "Secale Cornutum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/sec.htm",
+      "characterCount": 9318,
+      "sha256": "e25a720c143eab5bf92044d71200c4873fd9fb2e0369fd207bf7f76dd4ca25dc",
+      "file": "0167.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0168",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 168,
+      "label": "Remedy edition",
+      "title": "Selenium",
+      "indexHeadings": [
+        "Selenium"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/sel.htm",
+      "characterCount": 7210,
+      "sha256": "9ad7f14bfb58fbc76e8478cf0b2c3ef086716f6c323d187f35d54c16f27c65fd",
+      "file": "0168.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0169",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 169,
+      "label": "Remedy edition",
+      "title": "Senecio Aureus",
+      "indexHeadings": [
+        "Senecio Aureus"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/senec.htm",
+      "characterCount": 4839,
+      "sha256": "493af5bcc72991d51816d5f0dec58599887577ae1669f46ed2ede0535028f015",
+      "file": "0169.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0170",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 170,
+      "label": "Remedy edition",
+      "title": "Senega",
+      "indexHeadings": [
+        "Senega"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/seneg.htm",
+      "characterCount": 10121,
+      "sha256": "d150c82b10e93cd79fab25b23008b31df1fef58a9116d7064fa782b602f59ee4",
+      "file": "0170.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0171",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 171,
+      "label": "Remedy edition",
+      "title": "Sepia",
+      "indexHeadings": [
+        "Sepia"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/sep.htm",
+      "characterCount": 29408,
+      "sha256": "31a9ec19250982533da5900aafacd5c3431fcabfd4890ea6f4c29d91c0686a0a",
+      "file": "0171.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0172",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 172,
+      "label": "Remedy edition",
+      "title": "Silicea",
+      "indexHeadings": [
+        "Silicea"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/sil.htm",
+      "characterCount": 30773,
+      "sha256": "6f13e36757118b6fce94722d62d300e455b4431aa29d9fa1c1b043f80356242d",
+      "file": "0172.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0173",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 173,
+      "label": "Remedy edition",
+      "title": "Spigelia Anthelmintica",
+      "indexHeadings": [
+        "Spigelia Anthelmintica"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/spi.htm",
+      "characterCount": 9362,
+      "sha256": "001df34850f26c4526b543382e2bb2ae1b2783ddb40a4115aafc963adc2bb33f",
+      "file": "0173.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0174",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 174,
+      "label": "Remedy edition",
+      "title": "Spongia Tosta",
+      "indexHeadings": [
+        "Spongia Tosta"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/spo.htm",
+      "characterCount": 9999,
+      "sha256": "df3a5bc366cc748f260bffbbe2bef6e97c6d8669bfd03b1eff07bab25d45ca03",
+      "file": "0174.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0175",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 175,
+      "label": "Remedy edition",
+      "title": "Squilla",
+      "indexHeadings": [
+        "Squilla"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/squil.htm",
+      "characterCount": 4155,
+      "sha256": "256706cc0719db6de68461c87b4a6117c2c1efd5459093d08fb8ea306632eeb4",
+      "file": "0175.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0176",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 176,
+      "label": "Remedy edition",
+      "title": "Stannum Metallicum",
+      "indexHeadings": [
+        "Stannum Metallicum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/stan.htm",
+      "characterCount": 9011,
+      "sha256": "1047912bf5c52f2b58e2b297bf213339b1f69d66dcc1dad261062f504dd4407d",
+      "file": "0176.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0177",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 177,
+      "label": "Remedy edition",
+      "title": "Staphysagria",
+      "indexHeadings": [
+        "Staphysagria"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/staph.htm",
+      "characterCount": 11648,
+      "sha256": "45d7434529ba79b05a45017bc3c76a2a0a62755e7ae70764cee6569afaeba933",
+      "file": "0177.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0178",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 178,
+      "label": "Remedy edition",
+      "title": "Stramonium",
+      "indexHeadings": [
+        "Stramonium"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/stram.htm",
+      "characterCount": 8620,
+      "sha256": "0798d376b4398c1555cfd86f074f809b14ca7d8a0c8d8f13659a2324c9450176",
+      "file": "0178.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0179",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 179,
+      "label": "Remedy edition",
+      "title": "Sulphuricum Acidum",
+      "indexHeadings": [
+        "Sulphuricum Acidum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/sul-ac.htm",
+      "characterCount": 11754,
+      "sha256": "f8494b84debb359897c197de83945da2b6e43ebeee8b037f49430c265d197795",
+      "file": "0179.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0180",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 180,
+      "label": "Remedy edition",
+      "title": "Sulphur",
+      "indexHeadings": [
+        "Sulphur"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/sul.htm",
+      "characterCount": 49496,
+      "sha256": "018d1549d2196cecaff1a3da33a2c8434b007ce5db3167b05192585105855ee4",
+      "file": "0180.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0181",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 181,
+      "label": "Remedy edition",
+      "title": "Sulphur · Part 2",
+      "indexHeadings": [
+        "Sulphur · Part 2"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/sul.htm",
+      "characterCount": 35759,
+      "sha256": "632a1945897bef81818af528e9549fa995ce9290cc724d23acdc72198a671897",
+      "file": "0181.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0182",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 182,
+      "label": "Remedy edition",
+      "title": "Syphilinum",
+      "indexHeadings": [
+        "Syphilinum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/syph.htm",
+      "characterCount": 13804,
+      "sha256": "1d2323622bde6bf4a681766a43fb3c8ff264ed11492faedda88b57bb57a4990c",
+      "file": "0182.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0183",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 183,
+      "label": "Remedy edition",
+      "title": "Tarentula Hispanica",
+      "indexHeadings": [
+        "Tarentula Hispanica"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/tarent-h.htm",
+      "characterCount": 14881,
+      "sha256": "616eeffa8d3a253d8c516ebabf7a312d607cced114d0fe55c7ed080db45b0056",
+      "file": "0183.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0184",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 184,
+      "label": "Remedy edition",
+      "title": "Theridion",
+      "indexHeadings": [
+        "Theridion"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/therid.htm",
+      "characterCount": 5285,
+      "sha256": "06219fd64654009cfcb7ad7723603dd566ad35be50dcbb3f5e7fe7a65e00b977",
+      "file": "0184.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0185",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 185,
+      "label": "Remedy edition",
+      "title": "Thuja Occidentalis",
+      "indexHeadings": [
+        "Thuja Occidentalis"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/thu.htm",
+      "characterCount": 14653,
+      "sha256": "30a98194234379ab491f8a27f204dad8936265f78aad355b6f4371ab42c20891",
+      "file": "0185.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0186",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 186,
+      "label": "Remedy edition",
+      "title": "Tuberculinum Bovinum",
+      "indexHeadings": [
+        "Tuberculinum Bovinum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/tub.htm",
+      "characterCount": 22786,
+      "sha256": "29b8d7f75b91442cf987bf8ed7890c6a921e8a53e66cfe78c12aa733348930d1",
+      "file": "0186.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0187",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 187,
+      "label": "Remedy edition",
+      "title": "Valeriana",
+      "indexHeadings": [
+        "Valeriana"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/val.htm",
+      "characterCount": 6015,
+      "sha256": "55eecdb12da896dc4cd61d7e2d905e96a29dca5e377a5fb37a49c5a2f3848198",
+      "file": "0187.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0188",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 188,
+      "label": "Remedy edition",
+      "title": "Veratrum Album",
+      "indexHeadings": [
+        "Veratrum Album"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/ver-a.htm",
+      "characterCount": 7846,
+      "sha256": "15a710c179cf1d14a6fd0231ab4833ca107bfbfebf0bd8d01631daffeab2a38f",
+      "file": "0188.json"
+    },
+    {
+      "id": "homeoint-kent-materia-medica-0189",
+      "sourceIdentifier": "homeoint-kent-materia-medica",
+      "sourceIndex": 1,
+      "sourceChunkIndex": 189,
+      "label": "Remedy edition",
+      "title": "Zincum Metallicum",
+      "indexHeadings": [
+        "Zincum Metallicum"
+      ],
+      "sectionUrl": "http://homeoint.org/books3/kentmm/zinc.htm",
+      "characterCount": 11609,
+      "sha256": "ef0c19a0dbbfcb30bfbc53b91d1f5785b70b2f62e8a3359227994cfa48a650a3",
+      "file": "0189.json"
+    }
+  ]
+}

@@ -8,13 +8,16 @@
     "target": "es2020",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["../src/*"],
+      "@/features/knowledge/content/*": ["../src/features/knowledge/content/*/index.ts", "../src/features/knowledge/content/*"],
+      "@/*": ["../src/*", "../src/*/index.ts"],
       "server-only": ["./stubs/server-only"]
     }
   },
   "include": [
     "**/*.ts",
-    "../src/**/*.ts"
+    "**/*.tsx",
+    "../src/**/*.ts",
+    "../src/**/*.tsx"
   ],
   "exclude": [
     "node_modules",

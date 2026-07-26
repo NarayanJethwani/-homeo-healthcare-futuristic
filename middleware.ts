@@ -42,7 +42,13 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  return NextResponse.next();
+  const response = NextResponse.next();
+  if (!pathname.startsWith("/api/")) {
+    response.headers.set("Cache-Control", "private, no-store, no-cache, must-revalidate");
+    response.headers.set("Pragma", "no-cache");
+    response.headers.set("Expires", "0");
+  }
+  return response;
 }
 
 export const config = {

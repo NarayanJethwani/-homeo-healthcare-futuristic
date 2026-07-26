@@ -29,13 +29,16 @@ export const featureFlags = {
   unifiedClinicalSearchEnabled: false,
   knowledgeQualityDashboardEnabled: false,
   knowledgeContinuousLearningEnabled: false,
-  MATERIA_MEDICA_LIBRARY_V2: false,
-  MATERIA_MEDICA_READER_V2: false,
+  // The governed, bundled reader is the production-safe Materia Medica path.
+  // The retired legacy scraper is intentionally disabled server-side and must
+  // not be selected as the default UI.
+  MATERIA_MEDICA_LIBRARY_V2: true,
+  MATERIA_MEDICA_READER_V2: true,
   MATERIA_MEDICA_INGESTION_ADMIN: false,
   MATERIA_MEDICA_RAG_INDEXING: false,
   MATERIA_MEDICA_AI_SUMMARIES: false,
-  MATERIA_MEDICA_SAMPLE_CORPUS: false,
-  MATERIA_MEDICA_LOCAL_SEARCH: false,
+  MATERIA_MEDICA_SAMPLE_CORPUS: true,
+  MATERIA_MEDICA_LOCAL_SEARCH: true,
   MATERIA_MEDICA_REMEDY_COMPARISON: false,
   MATERIA_MEDICA_PRIVATE_WORKSPACE: false,
   MATERIA_MEDICA_SCAN_SPLIT_READER: false,

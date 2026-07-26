@@ -2,8 +2,12 @@ export interface Rubric {
   id: string;
   chapter: string;
   name: string;
-  remedies: Record<string, number>; // Maps remedy abbreviation (e.g., "Nux-v") to grade (1, 2, or 3)
-  source?: "kent" | "boericke";
+  remedies: Record<string, number>; // Maps a remedy abbreviation to a source grade, or 1 for an ungraded occurrence.
+  source?: "kent" | "boericke" | "clarke" | "boger" | "knerr" | "boenninghausen" | "gentry" | "synoptic" | "jahr" | "lippe" | "hering-specialized";
+  scoringEnabled?: boolean;
+  scoringMode?: "graded" | "occurrence";
+  occurrenceScoringEnabled?: boolean;
+  citation?: string;
 }
 
 export const REMEDIES_METADATA: Record<string, { fullName: string; source: string }> = {
@@ -326,12 +330,130 @@ export const BOERICKE_CHAPTERS = [
 ];
 
 export const BOERICKE_REPERTORY_DATA: Rubric[] = [];
+export const CLARKE_REPERTORY_DATA: Rubric[] = [];
+export const CLARKE_CHAPTERS: string[] = [];
+export const BOGER_REPERTORY_DATA: Rubric[] = [];
+export const BOGER_CHAPTERS: string[] = [];
+export const KNERR_REPERTORY_DATA: Rubric[] = [];
+export const KNERR_CHAPTERS: string[] = [];
+export const BOENNINGHAUSEN_REPERTORY_DATA: Rubric[] = [];
+export const BOENNINGHAUSEN_CHAPTERS: string[] = [];
+export const GENTRY_REPERTORY_DATA: Rubric[] = [];
+export const GENTRY_CHAPTERS: string[] = [];
+export const SYNOPTIC_REPERTORY_DATA: Rubric[] = [];
+export const SYNOPTIC_CHAPTERS: string[] = [];
+export const JAHR_REPERTORY_DATA: Rubric[] = [];
+export const JAHR_CHAPTERS: string[] = [];
+export const LIPPE_REPERTORY_DATA: Rubric[] = [];
+export const LIPPE_CHAPTERS: string[] = [];
+export const HERING_SPECIALIZED_REPERTORY_DATA: Rubric[] = [];
+export const HERING_SPECIALIZED_CHAPTERS: string[] = [];
 
-export function setRepertoryData(kentData: Rubric[], boerickeData: Rubric[]) {
+export function setRepertoryData(
+  kentData: Rubric[],
+  boerickeData: Rubric[],
+  clarkeData: Rubric[] = [],
+  bogerData: Rubric[] = [],
+  knerrData: Rubric[] = [],
+  boenninghausenData: Rubric[] = [],
+  gentryData: Rubric[] = [],
+  synopticData: Rubric[] = [],
+  jahrData: Rubric[] = [],
+  lippeData: Rubric[] = [],
+  heringSpecializedData: Rubric[] = []
+) {
   REPERTORY_DATA.length = 0;
   REPERTORY_DATA.push(...kentData);
   BOERICKE_REPERTORY_DATA.length = 0;
   BOERICKE_REPERTORY_DATA.push(...boerickeData);
+  CLARKE_REPERTORY_DATA.length = 0;
+  CLARKE_REPERTORY_DATA.push(...clarkeData.map((rubric) => ({
+    ...rubric,
+    source: "clarke" as const,
+    scoringEnabled: false,
+  })));
+  CLARKE_CHAPTERS.length = 0;
+  CLARKE_CHAPTERS.push(...Array.from(new Set(CLARKE_REPERTORY_DATA.map((rubric) => rubric.chapter))).sort());
+  BOGER_REPERTORY_DATA.length = 0;
+  BOGER_REPERTORY_DATA.push(...bogerData.map((rubric) => ({
+    ...rubric,
+    source: "boger" as const,
+    scoringEnabled: true,
+    scoringMode: "graded" as const,
+  })));
+  BOGER_CHAPTERS.length = 0;
+  BOGER_CHAPTERS.push(...Array.from(new Set(BOGER_REPERTORY_DATA.map((rubric) => rubric.chapter))).sort());
+  KNERR_REPERTORY_DATA.length = 0;
+  KNERR_REPERTORY_DATA.push(...knerrData.map((rubric) => ({
+    ...rubric,
+    source: "knerr" as const,
+    scoringEnabled: true,
+    scoringMode: "graded" as const,
+  })));
+  KNERR_CHAPTERS.length = 0;
+  KNERR_CHAPTERS.push(...Array.from(new Set(KNERR_REPERTORY_DATA.map((rubric) => rubric.chapter))).sort());
+  BOENNINGHAUSEN_REPERTORY_DATA.length = 0;
+  BOENNINGHAUSEN_REPERTORY_DATA.push(...boenninghausenData.map((rubric) => ({
+    ...rubric,
+    source: "boenninghausen" as const,
+    scoringEnabled: true,
+    scoringMode: "graded" as const,
+  })));
+  BOENNINGHAUSEN_CHAPTERS.length = 0;
+  BOENNINGHAUSEN_CHAPTERS.push(...Array.from(new Set(BOENNINGHAUSEN_REPERTORY_DATA.map((rubric) => rubric.chapter))).sort());
+  GENTRY_REPERTORY_DATA.length = 0;
+  for (const rubric of gentryData) {
+    GENTRY_REPERTORY_DATA.push({
+      ...rubric,
+      source: "gentry" as const,
+      scoringEnabled: true,
+      scoringMode: "occurrence" as const,
+      occurrenceScoringEnabled: true,
+    });
+  }
+  GENTRY_CHAPTERS.length = 0;
+  GENTRY_CHAPTERS.push(...Array.from(new Set(GENTRY_REPERTORY_DATA.map((rubric) => rubric.chapter))).sort());
+  SYNOPTIC_REPERTORY_DATA.length = 0;
+  SYNOPTIC_REPERTORY_DATA.push(...synopticData.map((rubric) => ({
+    ...rubric,
+    source: "synoptic" as const,
+    scoringEnabled: true,
+    scoringMode: "graded" as const,
+  })));
+  SYNOPTIC_CHAPTERS.length = 0;
+  SYNOPTIC_CHAPTERS.push(...Array.from(new Set(SYNOPTIC_REPERTORY_DATA.map((rubric) => rubric.chapter))).sort());
+  JAHR_REPERTORY_DATA.length = 0;
+  for (const rubric of jahrData) {
+    JAHR_REPERTORY_DATA.push({
+      ...rubric,
+      source: "jahr" as const,
+      scoringEnabled: true,
+      scoringMode: "graded" as const,
+    });
+  }
+  JAHR_CHAPTERS.length = 0;
+  JAHR_CHAPTERS.push(...Array.from(new Set(JAHR_REPERTORY_DATA.map((rubric) => rubric.chapter))).sort());
+  LIPPE_REPERTORY_DATA.length = 0;
+  LIPPE_REPERTORY_DATA.push(...lippeData.map((rubric) => ({
+    ...rubric,
+    source: "lippe" as const,
+    scoringEnabled: true,
+    scoringMode: "graded" as const,
+  })));
+  LIPPE_CHAPTERS.length = 0;
+  LIPPE_CHAPTERS.push(...Array.from(new Set(LIPPE_REPERTORY_DATA.map((rubric) => rubric.chapter))).sort());
+  HERING_SPECIALIZED_REPERTORY_DATA.length = 0;
+  HERING_SPECIALIZED_REPERTORY_DATA.push(...heringSpecializedData.map((rubric) => ({
+    ...rubric,
+    source: "hering-specialized" as const,
+    scoringEnabled: true,
+    scoringMode: "occurrence" as const,
+    occurrenceScoringEnabled: true,
+  })));
+  HERING_SPECIALIZED_CHAPTERS.length = 0;
+  HERING_SPECIALIZED_CHAPTERS.push(
+    ...Array.from(new Set(HERING_SPECIALIZED_REPERTORY_DATA.map((rubric) => rubric.chapter))).sort(),
+  );
 }
 
 export const SEARCH_SYNONYMS: Record<string, string[]> = {
@@ -386,13 +508,77 @@ export const SEARCH_SYNONYMS: Record<string, string[]> = {
   "irritability": ["anger", "irritable", "temper", "irritability", "fury", "rage", "cross", "fault-finding"]
 };
 
-export function getRepertoryData(source: 'kent' | 'boericke' | 'combined'): Rubric[] {
+export function getRepertoryData(source: 'kent' | 'boericke' | 'clarke' | 'boger' | 'knerr' | 'boenninghausen' | 'gentry' | 'synoptic' | 'jahr' | 'lippe' | 'hering-specialized' | 'combined'): Rubric[] {
   const kentWithSource = REPERTORY_DATA.map(r => ({ ...r, source: 'kent' as const }));
   const boerickeWithSource = BOERICKE_REPERTORY_DATA.map(r => ({ ...r, source: 'boericke' as const }));
+  const clarkeWithSource = CLARKE_REPERTORY_DATA.map(r => ({
+    ...r,
+    source: 'clarke' as const,
+    scoringEnabled: false,
+  }));
+  const bogerWithSource = BOGER_REPERTORY_DATA.map(r => ({
+    ...r,
+    source: 'boger' as const,
+    scoringEnabled: true,
+    scoringMode: 'graded' as const,
+  }));
+  const knerrWithSource = KNERR_REPERTORY_DATA.map(r => ({
+    ...r,
+    source: 'knerr' as const,
+    scoringEnabled: true,
+    scoringMode: 'graded' as const,
+  }));
+  const boenninghausenWithSource = BOENNINGHAUSEN_REPERTORY_DATA.map(r => ({
+    ...r,
+    source: 'boenninghausen' as const,
+    scoringEnabled: true,
+    scoringMode: 'graded' as const,
+  }));
+  const gentryWithSource = GENTRY_REPERTORY_DATA.map(r => ({
+    ...r,
+    source: 'gentry' as const,
+    scoringEnabled: true,
+    scoringMode: 'occurrence' as const,
+    occurrenceScoringEnabled: true,
+  }));
+  const synopticWithSource = SYNOPTIC_REPERTORY_DATA.map(r => ({
+    ...r,
+    source: 'synoptic' as const,
+    scoringEnabled: true,
+    scoringMode: 'graded' as const,
+  }));
+  const jahrWithSource = JAHR_REPERTORY_DATA.map(r => ({
+    ...r,
+    source: 'jahr' as const,
+    scoringEnabled: true,
+    scoringMode: 'graded' as const,
+  }));
+  const lippeWithSource = LIPPE_REPERTORY_DATA.map(r => ({
+    ...r,
+    source: 'lippe' as const,
+    scoringEnabled: true,
+    scoringMode: 'graded' as const,
+  }));
+  const heringSpecializedWithSource = HERING_SPECIALIZED_REPERTORY_DATA.map(r => ({
+    ...r,
+    source: 'hering-specialized' as const,
+    scoringEnabled: true,
+    scoringMode: 'occurrence' as const,
+    occurrenceScoringEnabled: true,
+  }));
   
   if (source === 'kent') return kentWithSource;
   if (source === 'boericke') return boerickeWithSource;
-  return [...kentWithSource, ...boerickeWithSource];
+  if (source === 'clarke') return clarkeWithSource;
+  if (source === 'boger') return bogerWithSource;
+  if (source === 'knerr') return knerrWithSource;
+  if (source === 'boenninghausen') return boenninghausenWithSource;
+  if (source === 'gentry') return gentryWithSource;
+  if (source === 'synoptic') return synopticWithSource;
+  if (source === 'jahr') return jahrWithSource;
+  if (source === 'lippe') return lippeWithSource;
+  if (source === 'hering-specialized') return heringSpecializedWithSource;
+  return [...kentWithSource, ...boerickeWithSource, ...clarkeWithSource, ...bogerWithSource, ...knerrWithSource, ...boenninghausenWithSource, ...gentryWithSource, ...synopticWithSource, ...jahrWithSource, ...lippeWithSource, ...heringSpecializedWithSource];
 }
 
 // =========================================================================
@@ -1162,5 +1348,3 @@ export function calculateClinicalIndices(symptoms: JethwaniSymptomConfig[]): Cli
 
   return indices;
 }
-
-

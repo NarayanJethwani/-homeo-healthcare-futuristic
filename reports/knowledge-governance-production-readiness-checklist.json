@@ -1,0 +1,106 @@
+{
+  "phase": "2.2D",
+  "generatedAt": "2026-07-26T07:30:00.000Z",
+  "overallPosture": "CONDITIONAL GO — EXTERNAL ACTIONS REMAIN",
+  "commitBaseline": {
+    "branch": "main",
+    "phase2bMergeCommit": "378d465c05667c178958dd703bfb365245c28293",
+    "phase2cStartingCommit": "378d465c05667c178958dd703bfb365245c28293",
+    "headCommit": "378d465c05667c178958dd703bfb365245c28293"
+  },
+  "readinessItems": [
+    {
+      "id": "ENV_VALIDATOR",
+      "description": "Fail-closed environment isolation & migration authorization validator",
+      "classification": "implemented-and-tested",
+      "passed": true
+    },
+    {
+      "id": "AUTH_BOUNDARY",
+      "description": "Authenticated server context & body identity purge",
+      "classification": "implemented-and-tested",
+      "passed": true
+    },
+    {
+      "id": "IMMUTABILITY_RULES",
+      "description": "Immutable collections & RECORD_IMMUTABLE_CONFLICT handling",
+      "classification": "implemented-and-tested",
+      "passed": true
+    },
+    {
+      "id": "AUDIT_CHAIN_HEADS",
+      "description": "Entity-scoped linear audit chain heads in transactions",
+      "classification": "implemented-and-tested",
+      "passed": true
+    },
+    {
+      "id": "MIGRATION_CONFLICT_MATRIX",
+      "description": "Migration dry-run payload formatting and 5-policy conflict matrix evaluator",
+      "classification": "implemented-and-tested",
+      "passed": true
+    },
+    {
+      "id": "FIRESTORE_RULES_CLIENT_DENIAL",
+      "description": "Firestore security rules deny-all client access across 11 collections",
+      "classification": "implemented-and-tested",
+      "passed": true
+    },
+    {
+      "id": "EMULATOR_COLLECTIONS",
+      "description": "10 isolated Knowledge governance collections in Firestore emulator",
+      "classification": "emulator-verified",
+      "passed": true
+    },
+    {
+      "id": "COMPOSITE_INDEXES",
+      "description": "Composite index declarations in firestore.indexes.json",
+      "classification": "configuration-reviewed",
+      "passed": true
+    },
+    {
+      "id": "IAM_SPECIFICATION",
+      "description": "IAM role mappings and least privilege specification",
+      "classification": "configuration-reviewed",
+      "passed": true
+    },
+    {
+      "id": "PRODUCTION_MIGRATION_RUNBOOK",
+      "description": "Controlled multi-phase production migration runbook",
+      "classification": "runbook-only",
+      "passed": true
+    },
+    {
+      "id": "MONITORING_SPECIFICATION",
+      "description": "Monitoring and synthetic alert definitions",
+      "classification": "runbook-only",
+      "passed": true
+    },
+    {
+      "id": "PRODUCTION_INDEX_DEPLOYMENT",
+      "description": "Production index deployment in live GCP project",
+      "classification": "requires-production-administrator",
+      "passed": false
+    },
+    {
+      "id": "PRODUCTION_IAM_BINDINGS",
+      "description": "Production IAM custom role bindings in live GCP project",
+      "classification": "requires-production-administrator",
+      "passed": false
+    },
+    {
+      "id": "DISASTER_RECOVERY_DRILL",
+      "description": "Point-in-time recovery and GCS backup restore verification exercise",
+      "classification": "requires-non-production-restore-exercise",
+      "passed": false
+    }
+  ],
+  "safetyInvariants": {
+    "independentlyApprovedEntities": 0,
+    "approvedEvidenceProfiles": 0,
+    "aiApprovedEntities": 0,
+    "activeRagCorpusEntities": 0,
+    "withdrawnSafetyEntities": 3,
+    "uiQuarantinedSuites": 10,
+    "legacyRepertoryQuarantinedSuites": 5
+  }
+}

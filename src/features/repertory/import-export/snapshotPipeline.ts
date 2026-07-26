@@ -10,6 +10,7 @@ import { REMEDIES_METADATA } from '../../../lib/repertoryData';
 import { resolveCanonicalRemedyId } from '../../../lib/normalizationEngine';
 import { getRuntimeEnvironment } from '../config/runtimeEnv';
 import { getAdminDb } from '../../../lib/firebaseAdmin';
+import v120PublishedManifest from '../../../../data/repertory/published/v1.2.0/manifest.json';
 
 export class IneligibleRepertorySourceError extends Error {
   sourceId: string;
@@ -71,6 +72,111 @@ export class SnapshotPipeline {
   private static stableHash(str: string): number {
     const hash = crypto.createHash('md5').update(str).digest('hex');
     return parseInt(hash.slice(0, 8), 16);
+  }
+
+  private static getApprovedManifest(version: string): RepertoryPublishedCorpusManifest | null {
+    const manifestPath = path.join(this.getPublishedDir(version), "manifest.json");
+    if (fs.existsSync(manifestPath)) {
+      return JSON.parse(fs.readFileSync(manifestPath, "utf-8")) as RepertoryPublishedCorpusManifest;
+    }
+    if (version === "v1.2.0") {
+      return v120PublishedManifest as RepertoryPublishedCorpusManifest;
+    }
+    return null;
+  }
+
+  static async getActivationReadiness(version: string): Promise<{
+    ready: boolean;
+    version: string;
+    activeVersion: string;
+    totalRubrics: number;
+    totalSources: number;
+    governedArtifactCount: number;
+    missingArtifactCount: number;
+    sampleIndexReadable: boolean;
+    checks: {
+      manifestValidated: boolean;
+      localAndRemoteManifestMatch: boolean;
+      governedArtifactsPresent: boolean;
+      clinicalApprovalVerified: boolean;
+      editorialApprovalVerified: boolean;
+      clarkeScoringDisabled: boolean;
+    };
+  }> {
+    if (!/^v[a-zA-Z0-9._-]{1,64}$/.test(version)) {
+      throw new Error("Corpus version is invalid.");
+    }
+
+    const localManifest = this.getApprovedManifest(version);
+    if (!localManifest) {
+      throw new Error(`Cannot inspect snapshot version ${version}: Approved manifest not found.`);
+    }
+    const remote = await PublishedCorpusRepository.inspectReleaseArtifacts(version);
+    const remoteManifest = remote.manifest;
+    const manifestValidated = Boolean(
+      remoteManifest &&
+      remoteManifest.corpusVersion === version &&
+      remoteManifest.validationStatus === "passed"
+    );
+    const localAndRemoteManifestMatch = Boolean(
+      remoteManifest &&
+      (remoteManifest as any).contentHash &&
+      (remoteManifest as any).contentHash === (localManifest as any).contentHash
+    );
+
+    let clinicalApprovalVerified = !localManifest.sourceIds.includes("clarke_clinical_1904");
+    let editorialApprovalVerified = clinicalApprovalVerified;
+    const clarkeCapabilities = localManifest.sourceCapabilities?.clarke_clinical_1904;
+    const clarkeScoringDisabled = !localManifest.sourceIds.includes("clarke_clinical_1904") || Boolean(
+      clarkeCapabilities && !clarkeCapabilities.scoringEnabled
+    );
+    const env = getRuntimeEnvironment();
+
+    if (localManifest.sourceIds.includes("clarke_clinical_1904") &&
+        (env.mode === "emulator" || env.activePointerRepositoryAdapter === "firestore")) {
+      const db = getAdminDb();
+      const [clinicalSnap, editorialSnap] = await Promise.all([
+        db.collection("repertorySourceReviews").doc("rev_clinical_clarke_1904").get(),
+        db.collection("repertorySourceReviews").doc("rev_editorial_clarke_1904").get(),
+      ]);
+      const expectedChecksum = localManifest.sourceChecksums.clarke_clinical_1904;
+      const clinical = clinicalSnap.exists ? clinicalSnap.data() as any : null;
+      const editorial = editorialSnap.exists ? editorialSnap.data() as any : null;
+      clinicalApprovalVerified = Boolean(
+        clinical &&
+        clinical.decision === "approved-with-restrictions" &&
+        Array.isArray(clinical.restrictions) &&
+        clinical.restrictions.includes("search-only") &&
+        clinical.restrictions.includes("scoring-disabled") &&
+        clinical.sourceChecksum === expectedChecksum
+      );
+      editorialApprovalVerified = Boolean(
+        editorial &&
+        editorial.decision === "approved" &&
+        editorial.sourceChecksum === expectedChecksum
+      );
+    }
+
+    const checks = {
+      manifestValidated,
+      localAndRemoteManifestMatch,
+      governedArtifactsPresent: remote.missingArtifacts.length === 0 && remote.governedArtifactCount > 0,
+      clinicalApprovalVerified,
+      editorialApprovalVerified,
+      clarkeScoringDisabled,
+    };
+
+    return {
+      ready: Object.values(checks).every(Boolean) && remote.sampleIndexReadable,
+      version,
+      activeVersion: await PublishedCorpusRepository.getActiveVersion(),
+      totalRubrics: remoteManifest?.totalRubrics || 0,
+      totalSources: remoteManifest?.totalSources || 0,
+      governedArtifactCount: remote.governedArtifactCount,
+      missingArtifactCount: remote.missingArtifacts.length,
+      sampleIndexReadable: remote.sampleIndexReadable,
+      checks,
+    };
   }
 
   static async buildSnapshot(options: {
@@ -749,14 +855,20 @@ export class SnapshotPipeline {
   }
 
   static async activateSnapshot(version: string, actorUid: string, actorRole: string, reason: string): Promise<void> {
-    const dir = this.getPublishedDir(version);
-    if (!fs.existsSync(dir) || !fs.existsSync(path.join(dir, 'manifest.json'))) {
-      throw new Error(`Cannot activate snapshot version ${version}: Manifest not found.`);
+    const readiness = await this.getActivationReadiness(version);
+    if (!readiness.ready) {
+      const failedChecks = Object.entries(readiness.checks)
+        .filter(([, passed]) => !passed)
+        .map(([name]) => name);
+      if (!readiness.sampleIndexReadable) failedChecks.push("sampleIndexReadable");
+      throw new Error(`Cannot activate snapshot version ${version}: Release readiness failed (${failedChecks.join(", ")}).`);
     }
 
-    const manifest: RepertoryPublishedCorpusManifest = JSON.parse(
-      fs.readFileSync(path.join(dir, 'manifest.json'), 'utf-8')
-    );
+    const dir = this.getPublishedDir(version);
+    const manifest = this.getApprovedManifest(version);
+    if (!manifest) {
+      throw new Error(`Cannot activate snapshot version ${version}: Approved manifest not found.`);
+    }
 
     if (manifest.validationStatus !== 'passed') {
       throw new Error(`Cannot activate snapshot version ${version}: Snapshot failed validation.`);
@@ -806,7 +918,10 @@ export class SnapshotPipeline {
     const currentActive = await PublishedCorpusRepository.getActiveVersion();
     if (currentActive && currentActive !== version) {
       manifest.previousCorpusVersion = currentActive;
-      writeDeterministicJson(path.join(dir, 'manifest.json'), manifest);
+      const localManifestPath = path.join(dir, 'manifest.json');
+      if (fs.existsSync(localManifestPath)) {
+        writeDeterministicJson(localManifestPath, manifest);
+      }
       const manifestDest = path.join(env.artifactRoot, 'manifests', `manifest_${version}.json`);
       if (fs.existsSync(manifestDest)) {
         writeDeterministicJson(manifestDest, manifest);

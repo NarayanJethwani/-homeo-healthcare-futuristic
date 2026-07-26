@@ -1,4 +1,5 @@
 import { featureFlags } from "@/features/dashboard/constants/featureFlags";
+import { isEntityEligibleForRag } from "@/features/knowledge/governance/publicationGuard";
 
 /**
  * Centrally determines if a governed knowledge entity is eligible for AI retrieval.
@@ -7,9 +8,9 @@ import { featureFlags } from "@/features/dashboard/constants/featureFlags";
 export function isEntityEligibleForRetrieval(entity: any): boolean {
   if (!entity) return false;
 
-  // 1. If the editorial workflow feature flag is disabled, default to simple published check
-  if (!featureFlags.knowledgeEditorialWorkflowEnabled) {
-    return entity.editorialStatus === "published";
+  // Enforce central RAG eligibility (handles transitional freeze, withdrawn status, safety issues)
+  if (!isEntityEligibleForRag(entity)) {
+    return false;
   }
 
   // 2. Must carry active "published" status

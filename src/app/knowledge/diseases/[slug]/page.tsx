@@ -31,6 +31,8 @@ import MedicalIllustration from "@/features/knowledge/components/MedicalIllustra
 import InteractiveTimeline from "@/features/knowledge/components/InteractiveTimeline";
 import { ShieldAlert, Info, ListChecks, Stethoscope, AlertTriangle, BookOpen, Activity } from "lucide-react";
 
+import { evaluatePublicationEligibility } from "@/features/knowledge/governance/publicationGuard";
+
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
@@ -52,19 +54,51 @@ export default async function DiseaseDetailPage({ params }: PageProps) {
   const { slug } = await params;
   const disease = DISEASES.find(d => d.slug === slug);
 
-  if (!disease || disease.editorialStatus !== "published") {
+  if (!disease) {
     notFound();
   }
 
-  const schemaJson = generateMedicalWebPageSchema(disease);
+  const eligibility = evaluatePublicationEligibility(disease);
+  if (eligibility.publicationStatus === "draft" || eligibility.publicationStatus === "archived") {
+    notFound();
+  }
+
   const title = typeof disease.title === "string" ? disease.title : (disease.title?.en || "");
   const summary = typeof disease.summary === "string" ? disease.summary : (disease.summary?.en || "");
   const content = disease.content;
+  const schemaJson = generateMedicalWebPageSchema(disease);
 
   const crumbs = [
     { name: "Diseases", item: "https://homeo.healthcare/knowledge/diseases" },
     { name: title, item: disease.canonicalUrl },
   ];
+
+  if (eligibility.publicationStatus === "withdrawn") {
+    return (
+      <KnowledgePageLayout
+        title={title}
+        subtitle={summary}
+        backLink="/knowledge/diseases"
+        backText="Back to Diseases"
+        headerBadges={<span className="text-xs bg-rose-500/10 text-rose-400 px-2.5 py-1 rounded-md font-bold border border-rose-500/20">Under Clinical Review</span>}
+        entityId={disease.id}
+        entityType={disease.entityType}
+      >
+        <Breadcrumbs crumbs={crumbs} />
+        <EditorialConfidenceBadge entity={disease} reviewedDate={disease.versionInfo.reviewed} />
+        <div className="p-8 my-8 border border-amber-500/20 bg-amber-500/5 rounded-2xl text-center space-y-4">
+          <div className="inline-flex items-center justify-center p-3 bg-amber-500/10 rounded-full text-amber-500">
+            <ShieldAlert className="h-8 w-8 text-amber-400" />
+          </div>
+          <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">Content Under Clinical Review</h2>
+          <p className="text-sm text-neutral-600 dark:text-neutral-300 max-w-xl mx-auto leading-relaxed">
+            This clinical entry is currently undergoing independent clinical review to ensure medical precision, safety boundaries, and evidence alignment. Body content is temporarily unavailable.
+          </p>
+        </div>
+        <MedicalDisclaimer />
+      </KnowledgePageLayout>
+    );
+  }
 
   const tocItems = [
     { id: "overview", label: "Overview & Definition" },
@@ -81,7 +115,7 @@ export default async function DiseaseDetailPage({ params }: PageProps) {
       {/* Inject Structured Data */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaJson) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaJson).replace(/</g, "\\u003c") }}
       />
 
       <AnalyticsTrigger entityId={disease.id} slug={disease.slug} entityType={disease.entityType} />
