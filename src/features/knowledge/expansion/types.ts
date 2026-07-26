@@ -192,3 +192,83 @@ export interface RegisteredKnowledgeSource {
     | "claims-identified"
     | "review-pending";
 }
+
+export type KEP1CoverageDomain =
+  | "definition-and-scope"
+  | "symptoms-and-differential"
+  | "red-flags-and-escalation"
+  | "diagnostic-interpretation"
+  | "conventional-care"
+  | "traditional-source-description"
+  | "regulatory-and-product-safety"
+  | "evidence-limitations";
+
+export interface KEP1SourceRecord extends RegisteredKnowledgeSource {
+  sourceVersion: string;
+  verifiedAt: string;
+  usePolicy: "citation-only" | "governed-extraction";
+  coverageDomains: KEP1CoverageDomain[];
+}
+
+export type KEP1EditorialRole =
+  | "clinical-author"
+  | "independent-clinical-reviewer"
+  | "evidence-reviewer"
+  | "rights-reviewer";
+
+export interface KEP1EditorialAssignment {
+  role: KEP1EditorialRole;
+  contributorId: string | null;
+  status: "unassigned" | "assigned";
+}
+
+export interface KEP1FlagshipSourceDossier {
+  schemaVersion: "1.0.0";
+  dossierId: string;
+  entityId: string;
+  entityType: EntityType;
+  title: string;
+  asOfDate: string;
+  status: "sources-registered-review-blocked";
+  sourceIds: string[];
+  requiredCoverageDomains: KEP1CoverageDomain[];
+  prohibitedClaimPatterns: string[];
+  assignments: KEP1EditorialAssignment[];
+  evaluationQuestionTarget: 20;
+  governedRelationshipTarget: {
+    minimum: 5;
+    maximum: 10;
+  };
+  stateBoundaries: {
+    contentState: "planning-only";
+    evidenceState: "unapproved";
+    clinicalReviewState: "unassigned";
+    publicationState: "unchanged";
+    ragState: "inactive";
+  };
+}
+
+export interface KEP1SourceDossierManifest {
+  schemaVersion: "1.0.0";
+  programId: "KEP-1";
+  asOfDate: string;
+  status: "planning-review-required";
+  sources: KEP1SourceRecord[];
+  dossiers: KEP1FlagshipSourceDossier[];
+  summary: {
+    sourceCount: number;
+    dossierCount: 8;
+    assignedRoles: number;
+    unassignedRoles: number;
+    productionRagEntities: 0;
+    approvedEvidenceProfiles: 0;
+    approvedClinicalReviews: 0;
+  };
+  invariants: {
+    automaticAssignmentForbidden: true;
+    automaticApprovalForbidden: true;
+    citationOnlySourcesCannotBeExtracted: true;
+    authorReviewerIdentitySeparationRequired: true;
+    publicationFreezeRemainsActive: true;
+  };
+}
