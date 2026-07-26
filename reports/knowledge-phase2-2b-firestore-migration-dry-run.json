@@ -3,13 +3,11 @@
   "dryRunMode": true,
   "productionWritesExecuted": false,
   "totalEntitiesAudited": 343,
-  "canonicalChecksum": "ab015a3bbd50f91b63e51a4fc8c2e588747e6f643a9d5b01392a25173d694da0",
-  "canonicalByteLength": 1611,
-  "workingTreeClean": false,
-  "approvalEligible": false,
-  "approvalIneligibilityReasons": [
-    "dirty-working-tree"
-  ],
+  "canonicalChecksum": "6b47a49d5a1a3f93f84ee4e4e288cf723d75c7706932aaa4951b8e717e21d9a5",
+  "canonicalByteLength": 1589,
+  "workingTreeClean": true,
+  "approvalEligible": true,
+  "approvalIneligibilityReasons": [],
   "proposedWrites": {
     "contributors": 1,
     "authorshipRecords": 343,
@@ -29,7 +27,7 @@
     "withdrawnSafetyEntities": 3
   },
   "componentChecksums": {
-    "migrationScript": "872b7a66848701b6f6d6b9682e2cb987ddbbf13e8c2edb17a2588ba687b3ad9c",
+    "migrationScript": "3d1f01b9c022bc8b86ea11024525181d8df79403e36f610d253131bb71603369",
     "environmentValidator": "4b33754f804712f9e8d4b0cf96a269903edd91e7fc390cbb36d4bf9eb060c493",
     "governanceSchema": "fe76ace8106a73ecb322ea712d6cdb3bb51d53eeee466a93f655a148fcc061e8",
     "publicationGuard": "be8e3f7b26cc939f2a2b4c12934f3c8012696806ef61b7a4eab28989dcdbb082",

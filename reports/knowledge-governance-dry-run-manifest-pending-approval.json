@@ -1,0 +1,83 @@
+{
+  "approvalStatus": "pending",
+  "approvedBy": null,
+  "approvedAt": null,
+  "approvalReference": null,
+  "hashAlgorithm": "SHA-256",
+  "canonicalPayloadByteLength": 1589,
+  "canonicalPayloadChecksum": "6b47a49d5a1a3f93f84ee4e4e288cf723d75c7706932aaa4951b8e717e21d9a5",
+  "canonicalPayload": {
+    "schemaVersion": "1",
+    "migrationToolVersion": "2.2D-T-dry-run-v1",
+    "sourceCommit": "5c1ab2944cbec5aa0f68bc513cb58b63b164e727",
+    "inputDatasetChecksum": "07f4dd1246354bd9c3b68fa82df0d0fa095efdd43b486fe9453fb3927d634e0d",
+    "componentChecksums": {
+      "migrationScript": "3d1f01b9c022bc8b86ea11024525181d8df79403e36f610d253131bb71603369",
+      "environmentValidator": "4b33754f804712f9e8d4b0cf96a269903edd91e7fc390cbb36d4bf9eb060c493",
+      "governanceSchema": "fe76ace8106a73ecb322ea712d6cdb3bb51d53eeee466a93f655a148fcc061e8",
+      "publicationGuard": "be8e3f7b26cc939f2a2b4c12934f3c8012696806ef61b7a4eab28989dcdbb082",
+      "packageLock": "ad047818f1a0f547601966b589391dc78732b000f14398aeb14b6dfc90d78fe4"
+    },
+    "workingTreeClean": true,
+    "approvalEligible": true,
+    "approvalIneligibilityReasons": [],
+    "totalEntities": 343,
+    "proposedWrites": {
+      "contributors": 1,
+      "authorshipRecords": 343,
+      "contentRevisions": 343,
+      "historicalSelfReviewRecords": 343,
+      "evidenceProfiles": 343,
+      "placeholderClaims": 343,
+      "independentlyApprovedReviews": 0,
+      "approvedEvidenceProfiles": 0,
+      "aiIngestionApprovals": 0
+    },
+    "conflicts": [],
+    "excludedEntities": [],
+    "batchBoundaries": [
+      {
+        "batchIndex": 1,
+        "startEntity": 1,
+        "endEntity": 50
+      },
+      {
+        "batchIndex": 2,
+        "startEntity": 51,
+        "endEntity": 100
+      },
+      {
+        "batchIndex": 3,
+        "startEntity": 101,
+        "endEntity": 150
+      },
+      {
+        "batchIndex": 4,
+        "startEntity": 151,
+        "endEntity": 200
+      },
+      {
+        "batchIndex": 5,
+        "startEntity": 201,
+        "endEntity": 250
+      },
+      {
+        "batchIndex": 6,
+        "startEntity": 251,
+        "endEntity": 300
+      },
+      {
+        "batchIndex": 7,
+        "startEntity": 301,
+        "endEntity": 343
+      }
+    ],
+    "safetyInvariants": {
+      "independentlyApprovedEntities": 0,
+      "approvedEvidenceProfiles": 0,
+      "aiApprovedEntities": 0,
+      "activeRagCorpusEntities": 0,
+      "withdrawnSafetyEntities": 3
+    }
+  }
+}
