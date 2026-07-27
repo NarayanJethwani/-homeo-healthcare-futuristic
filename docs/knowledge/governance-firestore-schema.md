@@ -37,11 +37,14 @@ Knowledge Governance persistence is strictly isolated in dedicated collections. 
 | `knowledgeGovernanceKep1SourceArtifacts` | `{jobId}-ART-{sha256:0:16}` | **Entire Record Insert-Only** | **DENIED** (`allow read, write: if false`) |
 | `knowledgeGovernanceKep1ArtifactVerifications` | `{artifactId}-VERIFY-1` | **Entire Record Insert-Only** | **DENIED** (`allow read, write: if false`) |
 | `knowledgeGovernanceKep1AcquisitionJobAuditEvents` | `{entityId}-{version}-{action}` | **Entire Record Insert-Only** | **DENIED** (`allow read, write: if false`) |
+| `knowledgeGovernanceKep1DraftHeads` | `KEP1-DRAFT-{entityId}` | `draftId`, `entityId`, `currentRevisionId`, `currentRevisionNumber` | **DENIED** (`allow read, write: if false`) |
+| `knowledgeGovernanceKep1DraftRevisions` | `KEP1-DRAFT-{entityId}-V{revisionNumber}` | **Entire Record Insert-Only** | **DENIED** (`allow read, write: if false`) |
+| `knowledgeGovernanceKep1DraftAuditEvents` | `KEP1-DRAFT-AUD-{entityId}-V{revisionNumber}` | **Entire Record Insert-Only** | **DENIED** (`allow read, write: if false`) |
 
 ---
 
 ## 3. Deletion & Modification Policy
 
-1. **Insert-Only Collections**: `knowledgeGovernanceReviews`, `knowledgeGovernanceAuditEvents`, `knowledgeGovernanceAiApprovals`, `knowledgeGovernanceQualifications`, `knowledgeGovernanceKep1SourceArtifacts`, `knowledgeGovernanceKep1ArtifactVerifications`, and both KEP-1 audit-event collections. Updates and deletes are prohibited at both database security rules level and application API level. Duplicate inserts with changed content fail closed.
+1. **Insert-Only Collections**: `knowledgeGovernanceReviews`, `knowledgeGovernanceAuditEvents`, `knowledgeGovernanceAiApprovals`, `knowledgeGovernanceQualifications`, `knowledgeGovernanceKep1SourceArtifacts`, `knowledgeGovernanceKep1ArtifactVerifications`, `knowledgeGovernanceKep1DraftRevisions`, and all KEP-1 audit-event collections. Updates and deletes are prohibited at both database security rules level and application API level. Duplicate inserts with changed content fail closed.
 2. **Superseding Corrections**: Review corrections MUST issue a new review record containing `supersedesReviewId`, `correctionReason`, and fresh `reviewedAt` timestamp. Original review records are never updated in place.
 3. **Entity-Scoped Linear Audit Chains**: `knowledgeGovernanceAuditChainHeads/{entityId}` tracks the current linear sequence (`sequenceNumber`, `eventHash`) updated inside Firestore transactions to prevent audit chain forks under multi-client concurrency.
