@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "NODE_OPTIONS='--max-old-space-size=5120' next dev --webpack",
-    "build": "next typegen && NODE_OPTIONS='--max-old-space-size=5120' tsc --noEmit -p tsconfig.json && NODE_OPTIONS='--max-old-space-size=5120' next build --webpack",
+    "build": "next typegen && NODE_OPTIONS='--max-old-space-size=5120' tsc --noEmit -p tsconfig.json && NODE_OPTIONS='--max-old-space-size=4096' next build --webpack",
     "start": "next start",
     "lint": "eslint",
     "docs:update": "node scripts/update-docs.js",
