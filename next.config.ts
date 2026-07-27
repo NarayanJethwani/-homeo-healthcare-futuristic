@@ -28,7 +28,8 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["firebase-admin"],
   experimental: {
     workerThreads: false,
-    cpus: 1
+    cpus: 1,
+    webpackMemoryOptimizations: true,
   },
   typescript: {
     ignoreBuildErrors: true,

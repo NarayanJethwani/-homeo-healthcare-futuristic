@@ -110,6 +110,18 @@ See `docs/operations/OLLAMA_CACHE_ACTIVATION.md` for mandatory activation, stop,
 - **Server/Client**: **Server-only**.
 - **Fallback**: Locks editorial access until set.
 
+### `GOVERNANCE_IDENTITY_HASH_SECRET`
+- **Expected Format**: High-entropy string of at least 32 characters, managed by the deployment secret store.
+- **Required**: Yes for KEP-1 private contributor onboarding mutations.
+- **Server/Client**: **Server-only**. Never expose, log, or prefix with `NEXT_PUBLIC_`.
+- **Safety**: Used as the HMAC key for normalized identity values. Missing or short values fail closed. Rotation requires a governed identity-lock migration because existing hashes are immutable.
+
+### `NEXT_PUBLIC_ALLOW_DEV_ADMIN_BYPASS`
+- **Expected Format**: Literal `true`, only when the server-side `ALLOW_DEV_ADMIN_BYPASS` flag is also enabled.
+- **Required**: No; local browser validation only.
+- **Server/Client**: Client-visible. It only bypasses the legacy local-storage navigation check; the server remains the authorization authority.
+- **Production Rule**: Must remain unset.
+
 ---
 
 ## 5. Security Restrictions

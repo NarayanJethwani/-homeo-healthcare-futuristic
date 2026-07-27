@@ -7,6 +7,7 @@ export type AdminRole =
   | "read-only-admin";
 
 export type KnowledgeCapability =
+  | "knowledge.contributor.manage"
   | "knowledge.create"
   | "knowledge.editDraft"
   | "knowledge.submitMedicalReview"
@@ -93,6 +94,7 @@ const ROLE_PERMISSIONS: Record<AdminRole, Permission[]> = {
     "OBSERVABILITY_VIEW",
     "USER_MANAGE",
     "SUBSCRIPTION_MANAGE",
+    "knowledge.contributor.manage",
     "knowledge.create",
     "knowledge.editDraft",
     "knowledge.submitMedicalReview",
