@@ -275,5 +275,8 @@ service cloud.firestore {
     match /knowledgeGovernanceKep1SourceArtifacts/{docId} { allow read, write: if false; }
     match /knowledgeGovernanceKep1ArtifactVerifications/{docId} { allow read, write: if false; }
     match /knowledgeGovernanceKep1AcquisitionJobAuditEvents/{docId} { allow read, write: if false; }
+    match /knowledgeGovernanceKep1DraftHeads/{docId} { allow read, write: if false; }
+    match /knowledgeGovernanceKep1DraftRevisions/{docId} { allow read, write: if false; }
+    match /knowledgeGovernanceKep1DraftAuditEvents/{docId} { allow read, write: if false; }
   }
 }

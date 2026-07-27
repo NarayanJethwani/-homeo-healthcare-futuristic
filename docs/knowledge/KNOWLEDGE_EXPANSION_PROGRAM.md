@@ -135,7 +135,9 @@ explicitly permits that operation.
    source-artifact metadata, and verify SHA-256 plus exact byte length through
    the KEP-1 acquisition-job workspace. Actual transfer remains separately
    controlled and no extraction is automatic.
-7. Draft content, evidence profiles, claims, and graph proposals.
+7. Create immutable, passage-provenance-bound content revisions, draft evidence
+   profiles, claim mappings, and graph proposals through the private KEP-1
+   drafting workbench. These records remain unapproved and non-public.
 8. Complete independent clinical and evidence review.
 9. Run offline retrieval evaluation.
 10. Record a human go/no-go decision.

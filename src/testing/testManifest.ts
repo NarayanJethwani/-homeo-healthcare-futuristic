@@ -1211,5 +1211,12 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "ownerArea": "knowledge-expansion",
     "testLayer": "security",
     "reason": "KEP-1 rights-bound acquisition jobs, maker-checker approval, immutable source artifacts, independent checksum verification, privacy, and zero-publication/RAG gate"
+  },
+  {
+    "path": "tests/knowledgeKEP1DraftingWorkbench.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "security",
+    "reason": "KEP-1 verified-artifact lineage, current rights, approved-author drafting, immutable revisions, passage hashes, traditional-use boundaries, privacy, and zero-approval/publication/RAG gate"
   }
 ];
