@@ -12,7 +12,7 @@ import {
   EditorialRole,
   RoleBadge
 } from "@/features/knowledge-admin";
-import { LayoutDashboard, Database, BookOpen, ChevronLeft, Shield } from "lucide-react";
+import { LayoutDashboard, Database, BookOpen, ChevronLeft, Shield, UsersRound } from "lucide-react";
 
 import { normalizeRole } from "@/lib/security/rbac";
 
@@ -183,6 +183,15 @@ export default function AdminKmsPage() {
                   </button>
                 );
               })}
+              {isSuperAdmin && (
+                <button
+                  onClick={() => router.push("/admin/knowledge-onboarding")}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-emerald-400 hover:bg-emerald-500/10 border border-transparent hover:border-emerald-500/20 transition-all"
+                >
+                  <UsersRound className="h-3.5 w-3.5" />
+                  Onboarding
+                </button>
+              )}
             </div>
           )}
         </div>

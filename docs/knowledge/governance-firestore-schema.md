@@ -27,6 +27,9 @@ Knowledge Governance persistence is strictly isolated in 10 dedicated collection
 | `knowledgeGovernanceAuditEvents` | `AUD-{entityId}-{seq}-{timestamp}` | **Entire Record Insert-Only** | **DENIED** (`allow read, write: if false`) |
 | `knowledgeGovernanceAuditChainHeads` | `{entityId}` | `entityId` | **DENIED** (`allow read, write: if false`) |
 | `knowledgeGovernanceEntityState` | `{entityId}` | `entityId` | **DENIED** (`allow read, write: if false`) |
+| `knowledgeGovernanceOnboardingRecords` | `{recordId}` | `recordId`, immutable identity hash, `version` | **DENIED** (`allow read, write: if false`) |
+| `knowledgeGovernanceOnboardingIdentityLocks` | `{identityHash}` | `recordId`, `createdAt` | **DENIED** (`allow read, write: if false`) |
+| `knowledgeGovernanceOnboardingAuditEvents` | `{eventId}` | `recordId`, `action`, `actorId`, `recordVersion` | **DENIED** (`allow read, write: if false`) |
 
 ---
 

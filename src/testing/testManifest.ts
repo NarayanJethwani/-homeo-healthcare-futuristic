@@ -1190,5 +1190,12 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "ownerArea": "knowledge-expansion",
     "testLayer": "governance",
     "reason": "KEP-1 privacy-safe staffing coverage, distinct-seat capacity, and zero-authority gate"
+  },
+  {
+    "path": "tests/knowledgeKEP1PrivateOnboarding.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "security",
+    "reason": "KEP-1 private onboarding RBAC, maker-checker, keyed identity hashing, immutable versioning, privacy, and zero-authority gate"
   }
 ];
