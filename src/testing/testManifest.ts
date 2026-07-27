@@ -1183,5 +1183,12 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "ownerArea": "knowledge-expansion",
     "testLayer": "governance",
     "reason": "KEP-1 verified contributor, credential, expertise, conflict, and program-owner approval gate"
+  },
+  {
+    "path": "tests/knowledgeKEP1OnboardingOperations.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "governance",
+    "reason": "KEP-1 privacy-safe staffing coverage, distinct-seat capacity, and zero-authority gate"
   }
 ];

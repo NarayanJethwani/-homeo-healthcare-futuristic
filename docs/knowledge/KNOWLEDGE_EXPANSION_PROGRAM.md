@@ -125,10 +125,13 @@ explicitly permits that operation.
 1. Merge the governance-hardening baseline after CI, deployment, and independent
    review gates pass.
 2. Run and review KEP-0 inventory.
-3. Approve the KEP-1 editorial assignments.
-4. Draft content, evidence profiles, claims, and graph proposals.
-5. Complete independent clinical and evidence review.
-6. Run offline retrieval evaluation.
-7. Record a human go/no-go decision.
+3. Fill the eleven-seat KEP-1 operating roster through the private governance
+   registry and review the privacy-safe onboarding operations report.
+4. Approve all 32 KEP-1 editorial assignments through the verified contributor
+   intake gate.
+5. Draft content, evidence profiles, claims, and graph proposals.
+6. Complete independent clinical and evidence review.
+7. Run offline retrieval evaluation.
+8. Record a human go/no-go decision.
 
 No step in this sequence authorises production migration or RAG activation.

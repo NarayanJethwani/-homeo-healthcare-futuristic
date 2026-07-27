@@ -1,0 +1,199 @@
+{
+  "schemaVersion": "1.0.0",
+  "programId": "KEP-1",
+  "asOfDate": "2026-07-26",
+  "status": "roster-incomplete",
+  "seats": [
+    {
+      "seatId": "AUTHOR-GASTROENTEROLOGY",
+      "role": "clinical-author",
+      "expertiseDomain": "gastroenterology",
+      "entityIds": [
+        "D0001",
+        "S0001"
+      ],
+      "requiredPeople": 1,
+      "eligibleCandidateCount": 0,
+      "status": "unfilled"
+    },
+    {
+      "seatId": "AUTHOR-DERMATOLOGY",
+      "role": "clinical-author",
+      "expertiseDomain": "dermatology",
+      "entityIds": [
+        "D0002",
+        "S0002"
+      ],
+      "requiredPeople": 1,
+      "eligibleCandidateCount": 0,
+      "status": "unfilled"
+    },
+    {
+      "seatId": "AUTHOR-LABORATORY-MEDICINE",
+      "role": "clinical-author",
+      "expertiseDomain": "laboratory-medicine",
+      "entityIds": [
+        "L0001",
+        "L0002"
+      ],
+      "requiredPeople": 1,
+      "eligibleCandidateCount": 0,
+      "status": "unfilled"
+    },
+    {
+      "seatId": "AUTHOR-HOMEOPATHY-SUBJECT-MATTER",
+      "role": "clinical-author",
+      "expertiseDomain": "homeopathy-subject-matter",
+      "entityIds": [
+        "R0001",
+        "R0002"
+      ],
+      "requiredPeople": 1,
+      "eligibleCandidateCount": 0,
+      "status": "unfilled"
+    },
+    {
+      "seatId": "REVIEWER-GASTROENTEROLOGY",
+      "role": "independent-clinical-reviewer",
+      "expertiseDomain": "gastroenterology",
+      "entityIds": [
+        "D0001",
+        "S0001"
+      ],
+      "requiredPeople": 1,
+      "eligibleCandidateCount": 0,
+      "status": "unfilled"
+    },
+    {
+      "seatId": "REVIEWER-DERMATOLOGY",
+      "role": "independent-clinical-reviewer",
+      "expertiseDomain": "dermatology",
+      "entityIds": [
+        "D0002",
+        "S0002"
+      ],
+      "requiredPeople": 1,
+      "eligibleCandidateCount": 0,
+      "status": "unfilled"
+    },
+    {
+      "seatId": "REVIEWER-LABORATORY-MEDICINE",
+      "role": "independent-clinical-reviewer",
+      "expertiseDomain": "laboratory-medicine",
+      "entityIds": [
+        "L0001",
+        "L0002"
+      ],
+      "requiredPeople": 1,
+      "eligibleCandidateCount": 0,
+      "status": "unfilled"
+    },
+    {
+      "seatId": "REVIEWER-HOMEOPATHY-SUBJECT-MATTER",
+      "role": "independent-clinical-reviewer",
+      "expertiseDomain": "homeopathy-subject-matter",
+      "entityIds": [
+        "R0001",
+        "R0002"
+      ],
+      "requiredPeople": 1,
+      "eligibleCandidateCount": 0,
+      "status": "unfilled"
+    },
+    {
+      "seatId": "REVIEWER-EVIDENCE-METHODOLOGY",
+      "role": "evidence-reviewer",
+      "expertiseDomain": "evidence-methodology",
+      "entityIds": [
+        "D0001",
+        "D0002",
+        "S0001",
+        "S0002",
+        "R0001",
+        "R0002",
+        "L0001",
+        "L0002"
+      ],
+      "requiredPeople": 1,
+      "eligibleCandidateCount": 0,
+      "status": "unfilled"
+    },
+    {
+      "seatId": "REVIEWER-SOURCE-RIGHTS",
+      "role": "rights-reviewer",
+      "expertiseDomain": "source-rights",
+      "entityIds": [
+        "D0001",
+        "D0002",
+        "S0001",
+        "S0002",
+        "R0001",
+        "R0002",
+        "L0001",
+        "L0002"
+      ],
+      "requiredPeople": 1,
+      "eligibleCandidateCount": 0,
+      "status": "unfilled"
+    },
+    {
+      "seatId": "PROGRAM-OWNER",
+      "role": "program-owner",
+      "expertiseDomain": null,
+      "entityIds": [],
+      "requiredPeople": 1,
+      "eligibleCandidateCount": 0,
+      "status": "unfilled"
+    }
+  ],
+  "summary": {
+    "requiredOperatingSeats": 11,
+    "coveredOperatingSeats": 0,
+    "unfilledOperatingSeats": 11,
+    "requiredEditorialAssignmentSlots": 32,
+    "qualifiedAssignmentSlotsCovered": 0,
+    "privateContributorRecordsAssessed": 0,
+    "privateProgramOwnerRecordsAssessed": 0,
+    "intakeGateReady": false
+  },
+  "requiredEvidence": [
+    "verified immutable identity",
+    "current role-appropriate credential with private evidence location",
+    "documented specialty and role eligibility",
+    "conflict-of-interest declaration",
+    "editorial-independence attestation",
+    "AI-assistance disclosure agreement",
+    "source-use policy agreement",
+    "verified program-owner approval for every assignment"
+  ],
+  "nextHumanActions": [
+    "fill-and-verify:AUTHOR-GASTROENTEROLOGY",
+    "fill-and-verify:AUTHOR-DERMATOLOGY",
+    "fill-and-verify:AUTHOR-LABORATORY-MEDICINE",
+    "fill-and-verify:AUTHOR-HOMEOPATHY-SUBJECT-MATTER",
+    "fill-and-verify:REVIEWER-GASTROENTEROLOGY",
+    "fill-and-verify:REVIEWER-DERMATOLOGY",
+    "fill-and-verify:REVIEWER-LABORATORY-MEDICINE",
+    "fill-and-verify:REVIEWER-HOMEOPATHY-SUBJECT-MATTER",
+    "fill-and-verify:REVIEWER-EVIDENCE-METHODOLOGY",
+    "fill-and-verify:REVIEWER-SOURCE-RIGHTS",
+    "fill-and-verify:PROGRAM-OWNER"
+  ],
+  "privacy": {
+    "publicArtifactContainsPersonalData": false,
+    "namesExcluded": true,
+    "identityValuesExcluded": true,
+    "credentialEvidenceLocationsExcluded": true,
+    "privateGovernanceRegistryRequired": true
+  },
+  "invariants": {
+    "automaticInvitationForbidden": true,
+    "automaticIdentityVerificationForbidden": true,
+    "automaticCredentialApprovalForbidden": true,
+    "automaticAssignmentApprovalForbidden": true,
+    "onePersonPerOperatingSeatRequired": true,
+    "onboardingReportGrantsDraftingAuthority": false,
+    "publicationAuthorityGranted": false,
+    "productionRagAuthorityGranted": false
+  }
+}
