@@ -138,7 +138,10 @@ explicitly permits that operation.
 7. Create immutable, passage-provenance-bound content revisions, draft evidence
    profiles, claim mappings, and graph proposals through the private KEP-1
    drafting workbench. These records remain unapproved and non-public.
-8. Complete independent clinical and evidence review.
+8. Record immutable independent clinical and evidence decisions against the
+   exact current draft SHA-256. Two distinct, currently eligible assigned
+   reviewers and complete claim-level coverage are required for review
+   readiness; this does not grant publication or RAG authority.
 9. Run offline retrieval evaluation.
 10. Record a human go/no-go decision.
 

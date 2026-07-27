@@ -1218,5 +1218,12 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "ownerArea": "knowledge-expansion",
     "testLayer": "security",
     "reason": "KEP-1 verified-artifact lineage, current rights, approved-author drafting, immutable revisions, passage hashes, traditional-use boundaries, privacy, and zero-approval/publication/RAG gate"
+  },
+  {
+    "path": "tests/knowledgeKEP1IndependentReview.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "security",
+    "reason": "KEP-1 exact-current-hash clinical and evidence decisions, complete coverage, reviewer qualification and separation, immutable audit, revision invalidation, privacy, and zero-publication/RAG gate"
   }
 ];

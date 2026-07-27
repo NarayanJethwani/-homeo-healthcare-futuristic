@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
+  ClipboardCheck,
   FilePenLine,
   Fingerprint,
   Loader2,
@@ -253,12 +254,20 @@ export default function DraftingWorkspace() {
               Nothing here approves, publishes, indexes, or activates RAG.
             </p>
           </div>
-          <button
-            onClick={() => void load()}
-            className="flex items-center gap-2 rounded-xl border border-slate-700 px-4 py-2 text-sm"
-          >
-            <RefreshCw className="h-4 w-4" /> Refresh
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => router.push("/admin/knowledge-review")}
+              className="flex items-center gap-2 rounded-xl border border-emerald-500/40 px-4 py-2 text-sm text-emerald-200"
+            >
+              <ClipboardCheck className="h-4 w-4" /> Independent review
+            </button>
+            <button
+              onClick={() => void load()}
+              className="flex items-center gap-2 rounded-xl border border-slate-700 px-4 py-2 text-sm"
+            >
+              <RefreshCw className="h-4 w-4" /> Refresh
+            </button>
+          </div>
         </header>
 
         {error && (
