@@ -8,7 +8,7 @@
 
 ## 1. Overview & Isolation Rules
 
-Knowledge Governance persistence is strictly isolated in 10 dedicated collections. Governance records are never co-mingled with clinical repertory data (`rubrics`, `sources`) or practitioner workspace data (`practitioners/{uid}/...`).
+Knowledge Governance persistence is strictly isolated in dedicated collections. Governance records are never co-mingled with clinical repertory data (`rubrics`, `sources`) or practitioner workspace data (`practitioners/{uid}/...`).
 
 ---
 
@@ -30,6 +30,9 @@ Knowledge Governance persistence is strictly isolated in 10 dedicated collection
 | `knowledgeGovernanceOnboardingRecords` | `{recordId}` | `recordId`, immutable identity hash, `version` | **DENIED** (`allow read, write: if false`) |
 | `knowledgeGovernanceOnboardingIdentityLocks` | `{identityHash}` | `recordId`, `createdAt` | **DENIED** (`allow read, write: if false`) |
 | `knowledgeGovernanceOnboardingAuditEvents` | `{eventId}` | `recordId`, `action`, `actorId`, `recordVersion` | **DENIED** (`allow read, write: if false`) |
+| `knowledgeGovernanceKep1Assignments` | `{entityId}:{role}` | `assignmentId`, `entityId`, `role`, `version` | **DENIED** (`allow read, write: if false`) |
+| `knowledgeGovernanceKep1SourceAcquisition` | `{sourceId}` | `sourceId`, `version` | **DENIED** (`allow read, write: if false`) |
+| `knowledgeGovernanceKep1AcquisitionAuditEvents` | `{eventId}` | **Entire Record Insert-Only** | **DENIED** (`allow read, write: if false`) |
 
 ---
 

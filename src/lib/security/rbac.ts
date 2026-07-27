@@ -8,6 +8,7 @@ export type AdminRole =
 
 export type KnowledgeCapability =
   | "knowledge.contributor.manage"
+  | "knowledge.expansion.manage"
   | "knowledge.create"
   | "knowledge.editDraft"
   | "knowledge.submitMedicalReview"
@@ -95,6 +96,7 @@ const ROLE_PERMISSIONS: Record<AdminRole, Permission[]> = {
     "USER_MANAGE",
     "SUBSCRIPTION_MANAGE",
     "knowledge.contributor.manage",
+    "knowledge.expansion.manage",
     "knowledge.create",
     "knowledge.editDraft",
     "knowledge.submitMedicalReview",

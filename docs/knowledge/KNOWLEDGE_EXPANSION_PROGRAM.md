@@ -129,9 +129,13 @@ explicitly permits that operation.
    registry and review the privacy-safe onboarding operations report.
 4. Approve all 32 KEP-1 editorial assignments through the verified contributor
    intake gate.
-5. Draft content, evidence profiles, claims, and graph proposals.
-6. Complete independent clinical and evidence review.
-7. Run offline retrieval evaluation.
-8. Record a human go/no-go decision.
+5. Record source-rights decisions through the controlled KEP-1 acquisition
+   workspace; citation-only sources remain non-extractable.
+6. Execute separately approved acquisition jobs and verify immutable source
+   artifacts.
+7. Draft content, evidence profiles, claims, and graph proposals.
+8. Complete independent clinical and evidence review.
+9. Run offline retrieval evaluation.
+10. Record a human go/no-go decision.
 
 No step in this sequence authorises production migration or RAG activation.
