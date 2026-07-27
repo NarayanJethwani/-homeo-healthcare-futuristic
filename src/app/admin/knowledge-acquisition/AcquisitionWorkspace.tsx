@@ -272,12 +272,20 @@ export default function AcquisitionWorkspace() {
               publication, public indexing, and production RAG remain disabled.
             </p>
           </div>
-          <button
-            onClick={() => void loadWorkspace()}
-            className="flex items-center gap-2 rounded-xl border border-slate-700 px-4 py-2 text-sm"
-          >
-            <RefreshCw className="h-4 w-4" /> Refresh
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => router.push("/admin/knowledge-acquisition-jobs")}
+              className="flex items-center gap-2 rounded-xl border border-violet-500/40 px-4 py-2 text-sm text-violet-200"
+            >
+              <FileCheck2 className="h-4 w-4" /> Acquisition jobs
+            </button>
+            <button
+              onClick={() => void loadWorkspace()}
+              className="flex items-center gap-2 rounded-xl border border-slate-700 px-4 py-2 text-sm"
+            >
+              <RefreshCw className="h-4 w-4" /> Refresh
+            </button>
+          </div>
         </header>
 
         {error && (

@@ -1204,5 +1204,12 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "ownerArea": "knowledge-expansion",
     "testLayer": "security",
     "reason": "KEP-1 assignment approval, source-rights acquisition, privacy, immutable audit, and zero-publication/RAG gate"
+  },
+  {
+    "path": "tests/knowledgeKEP1AcquisitionJobs.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "security",
+    "reason": "KEP-1 rights-bound acquisition jobs, maker-checker approval, immutable source artifacts, independent checksum verification, privacy, and zero-publication/RAG gate"
   }
 ];
