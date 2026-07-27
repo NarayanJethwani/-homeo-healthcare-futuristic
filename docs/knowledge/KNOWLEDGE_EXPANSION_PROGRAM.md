@@ -131,8 +131,10 @@ explicitly permits that operation.
    intake gate.
 5. Record source-rights decisions through the controlled KEP-1 acquisition
    workspace; citation-only sources remain non-extractable.
-6. Execute separately approved acquisition jobs and verify immutable source
-   artifacts.
+6. Propose and independently approve acquisition envelopes, record immutable
+   source-artifact metadata, and verify SHA-256 plus exact byte length through
+   the KEP-1 acquisition-job workspace. Actual transfer remains separately
+   controlled and no extraction is automatic.
 7. Draft content, evidence profiles, claims, and graph proposals.
 8. Complete independent clinical and evidence review.
 9. Run offline retrieval evaluation.
