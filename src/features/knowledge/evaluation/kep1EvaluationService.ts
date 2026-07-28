@@ -427,7 +427,11 @@ export async function getKEP1EvaluationWorkspace(
   draftingRepository: KEP1DraftingRepository,
   reviewRepository: KEP1ReviewRepository
 ) {
-  const evaluations = await evaluationRepository.listEvaluations();
+  const evaluations = (await evaluationRepository.listEvaluations()).sort(
+    (a, b) =>
+      b.executedAt.localeCompare(a.executedAt) ||
+      b.evaluationId.localeCompare(a.evaluationId)
+  );
   let currentCorpus: KEP1EvaluationCorpusEntry[] = [];
   let prerequisiteCode: string | null = null;
   try {
@@ -443,12 +447,11 @@ export async function getKEP1EvaluationWorkspace(
     currentCorpus.length === KEP1_PILOT_ENTITY_IDS.length
       ? kep1CorpusManifestSha256(currentCorpus)
       : null;
-  const currentPassingEvaluation =
+  const currentEvaluation =
     currentManifestSha256 === null
       ? null
       : evaluations.find(
           (evaluation) =>
-            evaluation.status === "passed" &&
             evaluation.corpusManifestSha256 === currentManifestSha256
         ) || null;
   return {
@@ -464,14 +467,15 @@ export async function getKEP1EvaluationWorkspace(
       evaluationId: evaluation.evaluationId,
       status: evaluation.status,
       corpusManifestSha256: evaluation.corpusManifestSha256,
+      querySetSha256: evaluation.querySetSha256,
       querySetVersion: evaluation.querySetVersion,
       retrievalSystemName: evaluation.retrievalSystemName,
       retrievalSystemVersion: evaluation.retrievalSystemVersion,
       metrics: evaluation.metrics,
       executedAt: evaluation.executedAt,
-      current: evaluation.corpusManifestSha256 === currentManifestSha256,
+      current: evaluation.evaluationId === currentEvaluation?.evaluationId,
     })),
-    readiness: currentPassingEvaluation
+    readiness: currentEvaluation?.status === "passed"
       ? "offline-evaluation-passed"
       : "offline-evaluation-pending",
     authority: {

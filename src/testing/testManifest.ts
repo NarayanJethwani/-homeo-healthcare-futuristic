@@ -1232,5 +1232,12 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "ownerArea": "knowledge-expansion",
     "testLayer": "security",
     "reason": "KEP-1 exact reviewed-corpus and query-set hashing, 20-case-per-entity and eight-dimension coverage, server-recomputed quality and safety thresholds, immutable audit, private storage, and zero-production-RAG gate"
+  },
+  {
+    "path": "tests/knowledgeKEP1GoNoGoDecision.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "security",
+    "reason": "KEP-1 exact latest passing evaluation binding, eligible program-owner decision, evaluator/decider separation, complete go attestations, explicit no-go blockers, immutable audit, invalidation, and zero-publication/RAG authority"
   }
 ];
