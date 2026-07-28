@@ -147,6 +147,10 @@ explicitly permits that operation.
    entity, full coverage of all eight retrieval and safety dimensions, and
    server-recomputed pass thresholds with zero safety leakage. This does not
    write embeddings or activate production retrieval.
-10. Record a human go/no-go decision.
+10. Record an immutable human program-owner go/no-go decision against the
+    exact latest passing evaluation, with actor separation, complete final
+    attestations, explicit risks or blockers, private evidence references, and
+    a high-friction confirmation phrase. A go closes KEP-1 and permits
+    controlled expansion planning only; it does not publish or activate RAG.
 
 No step in this sequence authorises production migration or RAG activation.

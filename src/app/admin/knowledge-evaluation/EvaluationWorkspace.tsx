@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   FlaskConical,
+  Gavel,
   Loader2,
   RefreshCw,
   ShieldCheck,
@@ -163,12 +164,20 @@ export default function EvaluationWorkspace() {
               content controls. This is an offline gate only.
             </p>
           </div>
-          <button
-            onClick={() => void load()}
-            className="flex items-center gap-2 rounded-xl border border-slate-700 px-4 py-2 text-sm"
-          >
-            <RefreshCw className="h-4 w-4" /> Refresh
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => router.push("/admin/knowledge-decision")}
+              className="flex items-center gap-2 rounded-xl border border-cyan-500/40 px-4 py-2 text-sm text-cyan-200"
+            >
+              <Gavel className="h-4 w-4" /> Human decision
+            </button>
+            <button
+              onClick={() => void load()}
+              className="flex items-center gap-2 rounded-xl border border-slate-700 px-4 py-2 text-sm"
+            >
+              <RefreshCw className="h-4 w-4" /> Refresh
+            </button>
+          </div>
         </header>
 
         {error && (
