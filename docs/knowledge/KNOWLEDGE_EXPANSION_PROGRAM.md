@@ -142,7 +142,11 @@ explicitly permits that operation.
    exact current draft SHA-256. Two distinct, currently eligible assigned
    reviewers and complete claim-level coverage are required for review
    readiness; this does not grant publication or RAG authority.
-9. Run offline retrieval evaluation.
+9. Record an immutable offline retrieval evaluation against the exact
+   independently reviewed eight-entity manifest. Require at least 20 cases per
+   entity, full coverage of all eight retrieval and safety dimensions, and
+   server-recomputed pass thresholds with zero safety leakage. This does not
+   write embeddings or activate production retrieval.
 10. Record a human go/no-go decision.
 
 No step in this sequence authorises production migration or RAG activation.

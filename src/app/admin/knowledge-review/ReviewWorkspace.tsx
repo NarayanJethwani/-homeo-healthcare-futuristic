@@ -6,6 +6,7 @@ import {
   ArrowLeft,
   CheckCircle2,
   ClipboardCheck,
+  FlaskConical,
   Loader2,
   RefreshCw,
   ShieldCheck,
@@ -236,12 +237,20 @@ export default function ReviewWorkspace() {
               draft hash. Review completion never publishes or activates RAG.
             </p>
           </div>
-          <button
-            onClick={() => void load()}
-            className="flex items-center gap-2 rounded-xl border border-slate-700 px-4 py-2 text-sm"
-          >
-            <RefreshCw className="h-4 w-4" /> Refresh
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => router.push("/admin/knowledge-evaluation")}
+              className="flex items-center gap-2 rounded-xl border border-emerald-500/40 px-4 py-2 text-sm text-emerald-200"
+            >
+              <FlaskConical className="h-4 w-4" /> Offline evaluation
+            </button>
+            <button
+              onClick={() => void load()}
+              className="flex items-center gap-2 rounded-xl border border-slate-700 px-4 py-2 text-sm"
+            >
+              <RefreshCw className="h-4 w-4" /> Refresh
+            </button>
+          </div>
         </header>
 
         {error && (
