@@ -1239,5 +1239,12 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "ownerArea": "knowledge-expansion",
     "testLayer": "security",
     "reason": "KEP-1 exact latest passing evaluation binding, eligible program-owner decision, evaluator/decider separation, complete go attestations, explicit no-go blockers, immutable audit, invalidation, and zero-publication/RAG authority"
+  },
+  {
+    "path": "tests/knowledgeKEP3CohortPlanning.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "security",
+    "reason": "KEP-3 exact current-go and inventory binding, transparent five-factor scoring, 25-entity cap, withdrawn/flagship exclusion, capacity evidence, immutable audit, drift invalidation, and zero-assignment/publication/RAG authority"
   }
 ];

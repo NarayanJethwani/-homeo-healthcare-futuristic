@@ -87,7 +87,10 @@ requires independent review, regression tests, and explicit human approval.
 
 After KEP-1 passes, expand in batches of no more than 25 entities, selected using
 clinical importance, safety sensitivity, actual search demand, source availability,
-graph value, and reviewer capacity.
+graph value, and reviewer capacity. The first KEP-3 control records an immutable,
+evidence-bound planning proposal against the exact current inventory and current
+KEP-1 go decision. A planning proposal cannot assign contributors, approve
+content, publish, index, embed, migrate, or activate retrieval.
 
 ### KEP-4 — Governed offline retrieval
 
@@ -152,5 +155,11 @@ explicitly permits that operation.
     attestations, explicit risks or blockers, private evidence references, and
     a high-friction confirmation phrase. A go closes KEP-1 and permits
     controlled expansion planning only; it does not publish or activate RAG.
+11. Record an immutable KEP-3 cohort planning proposal for no more than 25
+    non-withdrawn, non-flagship entities. Bind it to the exact current KEP-1 go
+    decision and deterministic inventory SHA-256; require evidence-backed
+    five-factor scoring, sufficient capacity evidence for all four operating
+    roles, residual risks, and an explicit authority-boundary confirmation.
+    This is planning evidence only and creates no assignments or release rights.
 
 No step in this sequence authorises production migration or RAG activation.

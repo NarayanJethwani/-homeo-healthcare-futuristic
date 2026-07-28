@@ -462,6 +462,16 @@ export default function DecisionWorkspace() {
                     <p className="mt-2 text-xs text-emerald-100/70">
                       {currentDecision.decisionId}
                     </p>
+                    {currentDecision.decision === "go" && (
+                      <button
+                        onClick={() =>
+                          router.push("/admin/knowledge-cohort-planning")
+                        }
+                        className="mt-4 rounded-xl bg-emerald-300 px-4 py-2 text-sm font-bold text-slate-950"
+                      >
+                        Open controlled cohort planning
+                      </button>
+                    )}
                   </div>
                 )}
               </div>
