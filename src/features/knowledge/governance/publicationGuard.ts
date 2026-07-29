@@ -172,7 +172,7 @@ export function evaluatePublicationEligibility(
   const clinicalReviewStatus: ClinicalReviewStatus = !isSelfReviewed && !hasCriticalContentFailures ? "approved" : "pending";
 
   const reviewLabel = isSelfReviewed
-    ? "Editorially reviewed — independent clinical review pending"
+    ? "Editorial review complete — independent clinical validation pending"
     : clinicalReviewStatus === "approved"
     ? "Reviewed"
     : "Clinical Review Pending";
@@ -373,7 +373,7 @@ export function evaluatePublicationGovernance(params: {
   const reviewLabel = reviewEval.isIndependentApproved
     ? "Reviewed"
     : isPublicIndexAllowlisted
-    ? "Editorially reviewed — independent clinical review pending"
+    ? "Editorial review complete — independent clinical validation pending"
     : "Clinical Review Pending";
 
   return {
