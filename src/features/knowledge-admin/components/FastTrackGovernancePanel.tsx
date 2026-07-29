@@ -104,13 +104,15 @@ function Metric({
 }
 
 function initialForm(
-  assessment: FastTrackDecisionAssessment
+  assessment: FastTrackDecisionAssessment,
+  outcome?: FastTrackDecisionOutcome
 ): DecisionFormState {
   return {
     outcome:
-      assessment.lane === "blocked"
+      outcome ||
+      (assessment.lane === "blocked"
         ? "safety-block-maintained"
-        : "approved-reviewed",
+        : "approved-reviewed"),
     rationale: "",
     citationIds: [...assessment.availableCitationIds],
     citationsChecked: false,
@@ -125,13 +127,15 @@ function initialForm(
 function DecisionCard({
   assessment,
   entity,
+  canResolveSafetyWithdrawal,
   onReview,
   onDecide,
 }: {
   assessment: FastTrackDecisionAssessment;
   entity: KmsKnowledgeEntity;
+  canResolveSafetyWithdrawal: boolean;
   onReview: () => void;
-  onDecide: () => void;
+  onDecide: (outcome: FastTrackDecisionOutcome) => void;
 }) {
   const blocked = assessment.lane === "blocked";
   const decision = assessment.currentDecision;
@@ -186,13 +190,43 @@ function DecisionCard({
           >
             Review article <ChevronRight className="h-3.5 w-3.5" />
           </button>
-          <button
-            type="button"
-            onClick={onDecide}
-            className="rounded-xl bg-cyan-400 px-3 py-2 text-xs font-black text-slate-950 transition hover:bg-cyan-300"
-          >
-            {decision ? "Update decision" : "Record decision"}
-          </button>
+          {blocked ? (
+            <>
+              <button
+                type="button"
+                onClick={() => onDecide("safety-block-maintained")}
+                className="rounded-xl bg-rose-400 px-3 py-2 text-xs font-black text-slate-950 transition hover:bg-rose-300"
+              >
+                Keep blocked
+              </button>
+              {canResolveSafetyWithdrawal && (
+                <button
+                  type="button"
+                  onClick={() => onDecide("safety-resolution-recorded")}
+                  className="rounded-xl border border-rose-500/40 px-3 py-2 text-xs font-bold text-rose-200 transition hover:bg-rose-500/10"
+                >
+                  Record safety resolution
+                </button>
+              )}
+            </>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={() => onDecide("approved-reviewed")}
+                className="rounded-xl bg-emerald-400 px-3 py-2 text-xs font-black text-slate-950 transition hover:bg-emerald-300"
+              >
+                Approve
+              </button>
+              <button
+                type="button"
+                onClick={() => onDecide("correction-requested")}
+                className="rounded-xl border border-amber-500/40 px-3 py-2 text-xs font-bold text-amber-200 transition hover:bg-amber-500/10"
+              >
+                Request correction
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -301,9 +335,12 @@ export default function FastTrackGovernancePanel({
     }
   }
 
-  function beginDecision(assessment: FastTrackDecisionAssessment) {
+  function beginDecision(
+    assessment: FastTrackDecisionAssessment,
+    outcome: FastTrackDecisionOutcome
+  ) {
     setSelected(assessment);
-    setForm(initialForm(assessment));
+    setForm(initialForm(assessment, outcome));
     setError("");
   }
 
@@ -535,8 +572,13 @@ export default function FastTrackGovernancePanel({
                     key={assessment.entityId}
                     assessment={assessment}
                     entity={entity}
+                    canResolveSafetyWithdrawal={
+                      canResolveSafetyWithdrawal
+                    }
                     onReview={() => onReviewEntity(entity)}
-                    onDecide={() => beginDecision(assessment)}
+                    onDecide={(outcome) =>
+                      beginDecision(assessment, outcome)
+                    }
                   />
                 );
               })}

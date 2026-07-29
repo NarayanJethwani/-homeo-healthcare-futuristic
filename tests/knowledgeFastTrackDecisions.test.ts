@@ -301,8 +301,10 @@ async function run() {
     "utf8"
   );
   for (const control of [
+    "Approve",
     "Approve reviewed revision",
     "Request correction",
+    "Keep blocked",
     "Keep safety block",
     "Record safety resolution",
     "Record accountable decision",
