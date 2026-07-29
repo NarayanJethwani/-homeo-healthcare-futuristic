@@ -498,6 +498,13 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "reason": "Canonical source identifiers, URL integrity, internal-source boundaries, and staging-only expansion tests"
   },
   {
+    "path": "tests/knowledgeSourceIntegrityDashboard.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-governance",
+    "testLayer": "security",
+    "reason": "Authenticated no-store source-integrity dashboard route and zero publication/RAG authority tests"
+  },
+  {
     "path": "tests/knowledgeGraphExplorer.test.tsx",
     "status": "quarantined",
     "ownerArea": "ui-components",
