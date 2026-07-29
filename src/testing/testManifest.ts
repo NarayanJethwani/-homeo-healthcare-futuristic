@@ -463,6 +463,13 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "reason": "Active passing Node test suite"
   },
   {
+    "path": "tests/knowledgeFastTrackPolicy.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-governance",
+    "testLayer": "governance",
+    "reason": "Citation-first fast-track classification, exception routing, and medical safety blocking tests"
+  },
+  {
     "path": "tests/knowledgeExpansionInventory.test.ts",
     "status": "active",
     "ownerArea": "canonical-test",
