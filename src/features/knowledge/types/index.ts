@@ -147,6 +147,12 @@ export interface CitationRecord {
   year: number;
   citationStyle: string; // e.g. "AMA"
   category?: CitationCategory;
+  canonicalUrl?: string;
+  sourceIdentifier?: string;
+  sourceAuthority?: "external-authoritative" | "external-secondary" | "internal-context";
+  verificationStatus?: "verified" | "pending" | "internal-only" | "disputed";
+  verifiedAt?: string;
+  scopeTags?: string[];
 }
 
 // Remedy content type with all requested clinical fields

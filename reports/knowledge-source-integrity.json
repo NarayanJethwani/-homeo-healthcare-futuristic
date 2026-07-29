@@ -1,0 +1,299 @@
+{
+  "schemaVersion": "1.0.0",
+  "asOfDate": "2026-07-29",
+  "status": "staging-only",
+  "summary": {
+    "citationsAudited": 22,
+    "sourcesAudited": 11,
+    "eligibleCitationRecords": 2,
+    "eligibleRegisteredSources": 11,
+    "blockerCount": 14,
+    "reviewCount": 20
+  },
+  "eligibleCitationIds": [
+    "CIT-0017",
+    "CIT-0018"
+  ],
+  "eligibleSourceIds": [
+    "SRC-KEP1-BOERICKE-1901",
+    "SRC-KEP1-FDA-HOMEOPATHY",
+    "SRC-KEP1-KENT-1905",
+    "SRC-KEP1-MEDLINE-CBC",
+    "SRC-KEP1-MEDLINE-RASH",
+    "SRC-KEP1-MEDLINE-TSH",
+    "SRC-KEP1-NCCIH-HOMEOPATHY",
+    "SRC-KEP1-NICE-CG184",
+    "SRC-KEP1-NICE-CG57",
+    "SRC-KEP1-NICE-NG145",
+    "SRC-KEP1-NIDDK-GERD"
+  ],
+  "quarantinedCitationIds": [
+    "CIT-0001",
+    "CIT-0002",
+    "CIT-0003",
+    "CIT-0004",
+    "CIT-0005",
+    "CIT-0006",
+    "CIT-0007",
+    "CIT-0008",
+    "CIT-0009",
+    "CIT-0010",
+    "CIT-0011",
+    "CIT-0012",
+    "CIT-0013",
+    "CIT-0014",
+    "CIT-0015",
+    "CIT-0016",
+    "CIT-0019",
+    "CIT-0020",
+    "CIT-0021",
+    "CIT-0022"
+  ],
+  "quarantinedSourceIds": [],
+  "issues": [
+    {
+      "severity": "review",
+      "code": "legacy-citation-metadata-incomplete",
+      "recordType": "citation",
+      "recordId": "CIT-0001",
+      "detail": "Source authority and verification metadata must be completed before new claim mapping."
+    },
+    {
+      "severity": "review",
+      "code": "legacy-citation-metadata-incomplete",
+      "recordType": "citation",
+      "recordId": "CIT-0002",
+      "detail": "Source authority and verification metadata must be completed before new claim mapping."
+    },
+    {
+      "severity": "review",
+      "code": "legacy-citation-metadata-incomplete",
+      "recordType": "citation",
+      "recordId": "CIT-0003",
+      "detail": "Source authority and verification metadata must be completed before new claim mapping."
+    },
+    {
+      "severity": "review",
+      "code": "legacy-citation-metadata-incomplete",
+      "recordType": "citation",
+      "recordId": "CIT-0004",
+      "detail": "Source authority and verification metadata must be completed before new claim mapping."
+    },
+    {
+      "severity": "review",
+      "code": "legacy-citation-metadata-incomplete",
+      "recordType": "citation",
+      "recordId": "CIT-0005",
+      "detail": "Source authority and verification metadata must be completed before new claim mapping."
+    },
+    {
+      "severity": "review",
+      "code": "legacy-citation-metadata-incomplete",
+      "recordType": "citation",
+      "recordId": "CIT-0006",
+      "detail": "Source authority and verification metadata must be completed before new claim mapping."
+    },
+    {
+      "severity": "review",
+      "code": "legacy-citation-metadata-incomplete",
+      "recordType": "citation",
+      "recordId": "CIT-0007",
+      "detail": "Source authority and verification metadata must be completed before new claim mapping."
+    },
+    {
+      "severity": "review",
+      "code": "legacy-citation-metadata-incomplete",
+      "recordType": "citation",
+      "recordId": "CIT-0008",
+      "detail": "Source authority and verification metadata must be completed before new claim mapping."
+    },
+    {
+      "severity": "review",
+      "code": "legacy-citation-metadata-incomplete",
+      "recordType": "citation",
+      "recordId": "CIT-0009",
+      "detail": "Source authority and verification metadata must be completed before new claim mapping."
+    },
+    {
+      "severity": "review",
+      "code": "legacy-citation-metadata-incomplete",
+      "recordType": "citation",
+      "recordId": "CIT-0010",
+      "detail": "Source authority and verification metadata must be completed before new claim mapping."
+    },
+    {
+      "severity": "review",
+      "code": "legacy-citation-metadata-incomplete",
+      "recordType": "citation",
+      "recordId": "CIT-0011",
+      "detail": "Source authority and verification metadata must be completed before new claim mapping."
+    },
+    {
+      "severity": "blocker",
+      "code": "guideline-canonical-url-required",
+      "recordType": "citation",
+      "recordId": "CIT-0012",
+      "detail": "A guideline must have a canonical source URL."
+    },
+    {
+      "severity": "blocker",
+      "code": "guideline-source-identifier-required",
+      "recordType": "citation",
+      "recordId": "CIT-0012",
+      "detail": "A guideline must have a stable source identifier."
+    },
+    {
+      "severity": "review",
+      "code": "legacy-citation-metadata-incomplete",
+      "recordType": "citation",
+      "recordId": "CIT-0012",
+      "detail": "Source authority and verification metadata must be completed before new claim mapping."
+    },
+    {
+      "severity": "blocker",
+      "code": "guideline-canonical-url-required",
+      "recordType": "citation",
+      "recordId": "CIT-0013",
+      "detail": "A guideline must have a canonical source URL."
+    },
+    {
+      "severity": "blocker",
+      "code": "guideline-source-identifier-required",
+      "recordType": "citation",
+      "recordId": "CIT-0013",
+      "detail": "A guideline must have a stable source identifier."
+    },
+    {
+      "severity": "review",
+      "code": "legacy-citation-metadata-incomplete",
+      "recordType": "citation",
+      "recordId": "CIT-0013",
+      "detail": "Source authority and verification metadata must be completed before new claim mapping."
+    },
+    {
+      "severity": "blocker",
+      "code": "guideline-canonical-url-required",
+      "recordType": "citation",
+      "recordId": "CIT-0014",
+      "detail": "A guideline must have a canonical source URL."
+    },
+    {
+      "severity": "blocker",
+      "code": "guideline-source-identifier-required",
+      "recordType": "citation",
+      "recordId": "CIT-0014",
+      "detail": "A guideline must have a stable source identifier."
+    },
+    {
+      "severity": "review",
+      "code": "legacy-citation-metadata-incomplete",
+      "recordType": "citation",
+      "recordId": "CIT-0014",
+      "detail": "Source authority and verification metadata must be completed before new claim mapping."
+    },
+    {
+      "severity": "blocker",
+      "code": "guideline-canonical-url-required",
+      "recordType": "citation",
+      "recordId": "CIT-0015",
+      "detail": "A guideline must have a canonical source URL."
+    },
+    {
+      "severity": "blocker",
+      "code": "guideline-source-identifier-required",
+      "recordType": "citation",
+      "recordId": "CIT-0015",
+      "detail": "A guideline must have a stable source identifier."
+    },
+    {
+      "severity": "review",
+      "code": "legacy-citation-metadata-incomplete",
+      "recordType": "citation",
+      "recordId": "CIT-0015",
+      "detail": "Source authority and verification metadata must be completed before new claim mapping."
+    },
+    {
+      "severity": "review",
+      "code": "legacy-citation-metadata-incomplete",
+      "recordType": "citation",
+      "recordId": "CIT-0016",
+      "detail": "Source authority and verification metadata must be completed before new claim mapping."
+    },
+    {
+      "severity": "blocker",
+      "code": "guideline-canonical-url-required",
+      "recordType": "citation",
+      "recordId": "CIT-0019",
+      "detail": "A guideline must have a canonical source URL."
+    },
+    {
+      "severity": "blocker",
+      "code": "guideline-source-identifier-required",
+      "recordType": "citation",
+      "recordId": "CIT-0019",
+      "detail": "A guideline must have a stable source identifier."
+    },
+    {
+      "severity": "review",
+      "code": "legacy-citation-metadata-incomplete",
+      "recordType": "citation",
+      "recordId": "CIT-0019",
+      "detail": "Source authority and verification metadata must be completed before new claim mapping."
+    },
+    {
+      "severity": "blocker",
+      "code": "guideline-canonical-url-required",
+      "recordType": "citation",
+      "recordId": "CIT-0020",
+      "detail": "A guideline must have a canonical source URL."
+    },
+    {
+      "severity": "blocker",
+      "code": "guideline-source-identifier-required",
+      "recordType": "citation",
+      "recordId": "CIT-0020",
+      "detail": "A guideline must have a stable source identifier."
+    },
+    {
+      "severity": "review",
+      "code": "legacy-citation-metadata-incomplete",
+      "recordType": "citation",
+      "recordId": "CIT-0020",
+      "detail": "Source authority and verification metadata must be completed before new claim mapping."
+    },
+    {
+      "severity": "blocker",
+      "code": "guideline-canonical-url-required",
+      "recordType": "citation",
+      "recordId": "CIT-0021",
+      "detail": "A guideline must have a canonical source URL."
+    },
+    {
+      "severity": "blocker",
+      "code": "guideline-source-identifier-required",
+      "recordType": "citation",
+      "recordId": "CIT-0021",
+      "detail": "A guideline must have a stable source identifier."
+    },
+    {
+      "severity": "review",
+      "code": "legacy-citation-metadata-incomplete",
+      "recordType": "citation",
+      "recordId": "CIT-0021",
+      "detail": "Source authority and verification metadata must be completed before new claim mapping."
+    },
+    {
+      "severity": "review",
+      "code": "internal-source-context-only",
+      "recordType": "citation",
+      "recordId": "CIT-0022",
+      "detail": "Internal material may provide context but cannot independently validate a medical claim."
+    }
+  ],
+  "invariants": {
+    "publicationState": "unchanged",
+    "ragState": "inactive",
+    "automaticClinicalApprovalForbidden": true,
+    "internalSourcesCannotIndependentlyValidateMedicalClaims": true
+  }
+}
