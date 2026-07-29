@@ -10,6 +10,7 @@ import {
   FastTrackGovernancePanel,
   ControlledReleasePanel,
   ControlledReleaseExecutionPanel,
+  SourceIntegrityPanel,
   globalKmsRepository,
   KmsKnowledgeEntity,
   EditorialRole
@@ -233,6 +234,7 @@ export default function AdminKmsPage() {
 
             {activeTab === "governance" && (
               <>
+                {isSuperAdmin && <SourceIntegrityPanel />}
                 <FastTrackGovernancePanel
                   entities={allEntities}
                   canResolveSafetyWithdrawal={Boolean(isSuperAdmin)}

@@ -25,6 +25,7 @@ export { default as DashboardHealthCard } from "./components/DashboardHealthCard
 export { default as FastTrackGovernancePanel } from "./components/FastTrackGovernancePanel";
 export { default as ControlledReleasePanel } from "./components/ControlledReleasePanel";
 export { default as ControlledReleaseExecutionPanel } from "./components/ControlledReleaseExecutionPanel";
+export { default as SourceIntegrityPanel } from "./components/SourceIntegrityPanel";
 export { Badge, EditorialStatusBadge, EvidenceBadge, RoleBadge } from "./components/Badge";
 export * from "./services/editorialPriorityService";
 export * from "./workflow/types";
