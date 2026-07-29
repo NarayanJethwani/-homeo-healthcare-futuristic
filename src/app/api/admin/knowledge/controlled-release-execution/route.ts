@@ -4,19 +4,17 @@ import { logSecurityEvent } from "@/lib/security/auditLogger";
 import { hasPermission } from "@/lib/security/rbac";
 import { readAndBoundRequestBody } from "@/features/repertory/security/RepertoryApiSecurity";
 import { globalKmsRepository } from "@/features/knowledge-admin/repositories/MemoryRepository";
-import { FirestoreFastTrackDecisionRepository } from "@/features/knowledge/governance/fastTrackDecisionFirestoreRepository";
 import { FirestoreControlledReleaseRepository } from "@/features/knowledge/governance/controlledReleaseFirestoreRepository";
 import { FirestoreControlledReleaseExecutionRepository } from "@/features/knowledge/governance/controlledReleaseExecutionFirestoreRepository";
-import { controlledReleaseActionSchema } from "@/features/knowledge/governance/controlledReleaseSchemas";
+import { controlledReleaseExecutionActionSchema } from "@/features/knowledge/governance/controlledReleaseExecutionSchemas";
 import {
-  getControlledReleaseWorkspace,
-  recordControlledReleaseAction,
-} from "@/features/knowledge/governance/controlledReleaseService";
+  getControlledReleaseExecutionWorkspace,
+  recordControlledReleaseExecution,
+} from "@/features/knowledge/governance/controlledReleaseExecutionService";
 
 export const dynamic = "force-dynamic";
 
 const MAX_BODY_BYTES = 16 * 1024;
-const decisionRepository = new FirestoreFastTrackDecisionRepository();
 const releaseRepository = new FirestoreControlledReleaseRepository();
 const executionRepository =
   new FirestoreControlledReleaseExecutionRepository();
@@ -51,15 +49,12 @@ function sameOrigin(request: NextRequest): boolean {
 }
 
 function statusFor(code: string): number {
-  if (code === "CONTROLLED_RELEASE_PAYLOAD_TOO_LARGE") return 413;
-  if (code === "CONTROLLED_RELEASE_UNSUPPORTED_CONTENT_TYPE") return 415;
-  if (
-    code === "CONTROLLED_RELEASE_FORBIDDEN" ||
-    code === "CONTROLLED_RELEASE_CHANNEL_FORBIDDEN"
-  ) {
-    return 403;
+  if (code === "CONTROLLED_EXECUTION_PAYLOAD_TOO_LARGE") return 413;
+  if (code === "CONTROLLED_EXECUTION_UNSUPPORTED_CONTENT_TYPE") {
+    return 415;
   }
-  if (code === "CONTROLLED_RELEASE_ENTITY_NOT_FOUND") return 404;
+  if (code === "CONTROLLED_EXECUTION_FORBIDDEN") return 403;
+  if (code === "CONTROLLED_EXECUTION_ENTITY_NOT_FOUND") return 404;
   if (
     code.includes("CONFLICT") ||
     code.includes("IMMUTABLE") ||
@@ -68,7 +63,7 @@ function statusFor(code: string): number {
   ) {
     return 409;
   }
-  if (code.startsWith("CONTROLLED_RELEASE_")) return 400;
+  if (code.startsWith("CONTROLLED_EXECUTION_")) return 400;
   return 500;
 }
 
@@ -76,7 +71,7 @@ async function authorize(request: NextRequest) {
   return authorizeRequest(
     request,
     "knowledge.publish",
-    "KNOWLEDGE_CONTROLLED_RELEASE"
+    "KNOWLEDGE_CONTROLLED_RELEASE_EXECUTION"
   );
 }
 
@@ -92,9 +87,8 @@ export async function GET(request: NextRequest) {
     const entities = await globalKmsRepository.getEntities();
     return response({
       ok: true,
-      workspace: await getControlledReleaseWorkspace(
+      workspace: await getControlledReleaseExecutionWorkspace(
         entities,
-        decisionRepository,
         releaseRepository,
         executionRepository
       ),
@@ -103,7 +97,7 @@ export async function GET(request: NextRequest) {
     return response(
       {
         ok: false,
-        error: { code: "CONTROLLED_RELEASE_WORKSPACE_READ_FAILED" },
+        error: { code: "CONTROLLED_EXECUTION_WORKSPACE_READ_FAILED" },
       },
       500
     );
@@ -113,7 +107,10 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   if (!sameOrigin(request)) {
     return response(
-      { ok: false, error: { code: "CONTROLLED_RELEASE_CSRF_REJECTED" } },
+      {
+        ok: false,
+        error: { code: "CONTROLLED_EXECUTION_CSRF_REJECTED" },
+      },
       403
     );
   }
@@ -123,42 +120,43 @@ export async function POST(request: NextRequest) {
   try {
     const contentType = request.headers.get("content-type") || "";
     if (!contentType.includes("application/json")) {
-      throw new Error("CONTROLLED_RELEASE_UNSUPPORTED_CONTENT_TYPE");
+      throw new Error(
+        "CONTROLLED_EXECUTION_UNSUPPORTED_CONTENT_TYPE"
+      );
     }
-    const raw = await readAndBoundRequestBody(request, MAX_BODY_BYTES);
+    const raw = await readAndBoundRequestBody(
+      request,
+      MAX_BODY_BYTES
+    );
     let parsed: unknown;
     try {
       parsed = JSON.parse(raw);
     } catch {
-      throw new Error("CONTROLLED_RELEASE_MALFORMED_JSON");
+      throw new Error("CONTROLLED_EXECUTION_MALFORMED_JSON");
     }
-    const input = controlledReleaseActionSchema.parse(parsed);
+    const input =
+      controlledReleaseExecutionActionSchema.parse(parsed);
     const entities = await globalKmsRepository.getEntities();
     const now = new Date().toISOString();
-    const release = await recordControlledReleaseAction(
+    const execution = await recordControlledReleaseExecution(
       entities,
-      decisionRepository,
       releaseRepository,
+      executionRepository,
       input,
       {
         actorId: auth.session.uid,
         actorName: auth.session.name,
         actorRole: auth.session.role,
-        canAuthorizePublication: hasPermission(
+        canExecutePublication: hasPermission(
           auth.session.role,
           "knowledge.publish"
-        ),
-        canAuthorizeRag: hasPermission(
-          auth.session.role,
-          "RAG_INDEX_MANAGE"
         ),
         canBypassSafetyWithdrawal: hasPermission(
           auth.session.role,
           "knowledge.bypassReview"
         ),
       },
-      now,
-      executionRepository
+      now
     );
 
     try {
@@ -166,38 +164,41 @@ export async function POST(request: NextRequest) {
         userId: auth.session.uid,
         userEmail: auth.session.email,
         userRole: auth.session.role,
-        action: `knowledge_controlled_release_${release.outcome}`,
-        resource: "KNOWLEDGE_CONTROLLED_RELEASE",
+        action: `knowledge_controlled_execution_${execution.outcome}`,
+        resource: "KNOWLEDGE_CONTROLLED_RELEASE_EXECUTION",
         status: "success",
         timestamp: now,
         details: {
-          releaseId: release.releaseId,
-          entityId: release.entityId,
-          entityRevisionSha256: release.entityRevisionSha256,
-          publicationReleaseAuthorized:
-            release.publicationReleaseAuthorized,
-          ragReleaseAuthorized: release.ragReleaseAuthorized,
-          executionApplied: false,
+          executionId: execution.executionId,
+          releaseId: execution.releaseId,
+          entityId: execution.entityId,
+          entityRevisionSha256:
+            execution.entityRevisionSha256,
+          publicationApplied: execution.publicationApplied,
+          ragApplied: false,
         },
       });
     } catch {
       console.error(
-        "Controlled-release security-log mirror failed after durable audit."
+        "Controlled-execution security-log mirror failed after durable audit."
       );
     }
 
-    return response({ ok: true, result: { release } });
+    return response({ ok: true, result: { execution } });
   } catch (error) {
     const rawCode =
       error instanceof Error && /^[A-Z0-9_]+$/.test(error.message)
         ? error.message
-        : "CONTROLLED_RELEASE_INVALID_INPUT";
+        : "CONTROLLED_EXECUTION_INVALID_INPUT";
     const code =
       rawCode === "PAYLOAD_TOO_LARGE"
-        ? "CONTROLLED_RELEASE_PAYLOAD_TOO_LARGE"
+        ? "CONTROLLED_EXECUTION_PAYLOAD_TOO_LARGE"
         : rawCode === "STREAM_READ_FAILED"
-          ? "CONTROLLED_RELEASE_BODY_READ_FAILED"
+          ? "CONTROLLED_EXECUTION_BODY_READ_FAILED"
           : rawCode;
-    return response({ ok: false, error: { code } }, statusFor(code));
+    return response(
+      { ok: false, error: { code } },
+      statusFor(code)
+    );
   }
 }
