@@ -15,6 +15,15 @@ import {
   recordControlledReleaseAction,
 } from "../src/features/knowledge/governance/controlledReleaseService";
 import { controlledReleaseActionSchema } from "../src/features/knowledge/governance/controlledReleaseSchemas";
+import { MemoryControlledReleaseExecutionRepository } from "../src/features/knowledge/governance/controlledReleaseExecutionRepository";
+import {
+  getActiveControlledPublicationOverride,
+  getControlledReleaseExecutionWorkspace,
+  recordControlledReleaseExecution,
+} from "../src/features/knowledge/governance/controlledReleaseExecutionService";
+import { controlledReleaseExecutionActionSchema } from "../src/features/knowledge/governance/controlledReleaseExecutionSchemas";
+import { evaluatePublicationEligibility } from "../src/features/knowledge/governance/publicationGuard";
+import { FaqSafetyEntity } from "../src/features/knowledge/content/faqs";
 
 function entity(
   id: "FAQ-safety" | "D0007" | "R0006",
@@ -146,6 +155,8 @@ async function run() {
   const entities = [faq, asthma, arsenicum];
   const decisionRepository = new MemoryFastTrackDecisionRepository();
   const releaseRepository = new MemoryControlledReleaseRepository();
+  const executionRepository =
+    new MemoryControlledReleaseExecutionRepository();
 
   const faqDecision = await recordSafetyResolution(
     decisionRepository,
@@ -237,6 +248,82 @@ async function run() {
   assert.equal(canaryAuthorization.ragReleaseAuthorized, false);
   assert.equal(canaryAuthorization.executionApplied, false);
 
+  const executableWorkspace =
+    await getControlledReleaseExecutionWorkspace(
+      entities,
+      releaseRepository,
+      executionRepository
+    );
+  const executableFaq = executableWorkspace.candidates.find(
+    (candidate) => candidate.entityId === faq.id
+  );
+  assert.equal(executableFaq?.canExecute, true);
+  const canaryExecution = await recordControlledReleaseExecution(
+    entities,
+    releaseRepository,
+    executionRepository,
+    {
+      action: "execute-publication-canary",
+      requestId: "45454545-4545-4545-8545-454545454545",
+      entityId: faq.id,
+      expectedRevisionSha256:
+        computeFastTrackEntityRevisionSha256(faq),
+      expectedReleaseId: canaryAuthorization.releaseId,
+      expectedPreviousExecutionId: null,
+      rationale:
+        "Execute the exact authorized FAQ revision as a monitored publication-only canary.",
+      channels: { publication: true, rag: false },
+    },
+    {
+      actorId: actor.actorId,
+      actorName: actor.actorName,
+      actorRole: actor.actorRole,
+      canExecutePublication: true,
+      canBypassSafetyWithdrawal: true,
+    },
+    "2026-07-29T10:01:00.000Z"
+  );
+  assert.equal(canaryExecution.publicationApplied, true);
+  assert.equal(canaryExecution.ragApplied, false);
+  assert.equal(
+    canaryExecution.observationEligibleAt,
+    "2026-07-30T10:01:00.000Z"
+  );
+  const activeOverride =
+    await getActiveControlledPublicationOverride(
+      faq,
+      releaseRepository,
+      executionRepository,
+      "2026-07-29T10:02:00.000Z"
+    );
+  assert.ok(activeOverride);
+  const controlledEligibility = evaluatePublicationEligibility(
+    FaqSafetyEntity,
+    activeOverride
+  );
+  assert.equal(controlledEligibility.publicationStatus, "published");
+  assert.equal(controlledEligibility.eligibleForIndexing, true);
+  assert.equal(
+    controlledEligibility.eligibleForAiIngestion,
+    false,
+    "controlled publication must never enable RAG"
+  );
+  assert.equal(
+    controlledReleaseExecutionActionSchema.safeParse({
+      action: "execute-publication-canary",
+      requestId: "46464646-4646-4646-8646-464646464646",
+      entityId: faq.id,
+      expectedRevisionSha256:
+        computeFastTrackEntityRevisionSha256(faq),
+      expectedReleaseId: canaryAuthorization.releaseId,
+      expectedPreviousExecutionId: null,
+      rationale:
+        "Attempt to enable a prohibited retrieval channel during canary execution.",
+      channels: { publication: true, rag: true },
+    }).success,
+    false
+  );
+
   const observationInput = {
       action: "record-canary-observation",
       requestId: "55555555-5555-4555-8555-555555555555",
@@ -266,13 +353,27 @@ async function run() {
       "2026-07-29T11:00:00.000Z"
     )
   );
+  await expectCode(
+    "CONTROLLED_RELEASE_OBSERVATION_WINDOW_INCOMPLETE",
+    () =>
+      recordControlledReleaseAction(
+        entities,
+        decisionRepository,
+        releaseRepository,
+        observationInput,
+        actor,
+        "2026-07-30T10:00:00.000Z",
+        executionRepository
+      )
+  );
   const observation = await recordControlledReleaseAction(
     entities,
     decisionRepository,
     releaseRepository,
     observationInput,
     actor,
-    "2026-07-30T10:00:00.000Z"
+    "2026-07-30T10:01:00.000Z",
+    executionRepository
   );
   assert.equal(observation.outcome, "canary-observation-passed");
 
@@ -359,6 +460,22 @@ async function run() {
   assert.ok(routeSource.includes("sameOrigin(request)"));
   assert.ok(routeSource.includes("readAndBoundRequestBody"));
 
+  const executionRouteSource = fs.readFileSync(
+    path.join(
+      process.cwd(),
+      "src/app/api/admin/knowledge/controlled-release-execution/route.ts"
+    ),
+    "utf8"
+  );
+  assert.ok(executionRouteSource.includes('"knowledge.publish"'));
+  assert.ok(
+    executionRouteSource.includes('"knowledge.bypassReview"')
+  );
+  assert.ok(executionRouteSource.includes("sameOrigin(request)"));
+  assert.ok(
+    executionRouteSource.includes("readAndBoundRequestBody")
+  );
+
   const panelSource = fs.readFileSync(
     path.join(
       process.cwd(),
@@ -376,7 +493,24 @@ async function run() {
   ]) {
     assert.ok(panelSource.includes(control));
   }
-  assert.ok(panelSource.includes("execution not applied"));
+  assert.ok(panelSource.includes("candidate.executionApplied"));
+
+  const executionPanelSource = fs.readFileSync(
+    path.join(
+      process.cwd(),
+      "src/features/knowledge-admin/components/ControlledReleaseExecutionPanel.tsx"
+    ),
+    "utf8"
+  );
+  for (const control of [
+    "Check executable releases",
+    "Execute publication canary",
+    "RAG blocked",
+    "Roll back now",
+    "Execute and start monitoring",
+  ]) {
+    assert.ok(executionPanelSource.includes(control));
+  }
 
   const rules = fs.readFileSync(
     path.join(process.cwd(), "firestore.rules"),
@@ -386,6 +520,9 @@ async function run() {
     "knowledgeGovernanceControlledReleases",
     "knowledgeGovernanceControlledReleaseAuditEvents",
     "knowledgeGovernanceControlledReleaseHeads",
+    "knowledgeGovernanceControlledReleaseExecutions",
+    "knowledgeGovernanceControlledReleaseExecutionAuditEvents",
+    "knowledgeGovernanceControlledReleaseExecutionHeads",
   ]) {
     assert.ok(
       rules.includes(

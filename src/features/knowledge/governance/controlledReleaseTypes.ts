@@ -87,6 +87,10 @@ export interface ControlledReleaseCandidate {
   blockingReasons: string[];
   recommendedCanary: boolean;
   currentRelease: ControlledReleaseRecord | null;
+  executionApplied: boolean;
+  currentExecutionId: string | null;
+  observationEligibleAt: string | null;
+  observationWindowComplete: boolean;
 }
 
 export interface ControlledReleaseWorkspace {
@@ -95,7 +99,7 @@ export interface ControlledReleaseWorkspace {
   canaryEntityId: string | null;
   authorizedCount: number;
   rolledBackCount: number;
-  executionAppliedCount: 0;
+  executionAppliedCount: number;
 }
 
 export interface ControlledReleaseActor {

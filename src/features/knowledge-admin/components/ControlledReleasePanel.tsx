@@ -29,6 +29,8 @@ const ERRORS: Record<string, string> = {
     "Complete the 24-hour canary observation before broader release.",
   CONTROLLED_RELEASE_OBSERVATION_WINDOW_INCOMPLETE:
     "The canary has not completed the required 24-hour observation window.",
+  CONTROLLED_RELEASE_CANARY_EXECUTION_REQUIRED:
+    "Execute the publication canary before recording its 24-hour observation.",
   CONTROLLED_RELEASE_REVISION_HASH_MISMATCH:
     "The article changed. Refresh and review its new revision.",
   CONTROLLED_RELEASE_SAFETY_DECISION_STALE:
@@ -247,7 +249,9 @@ export default function ControlledReleasePanel() {
                 (workspace.canaryPassed || candidate.recommendedCanary);
               const canObserve =
                 current?.phase === "canary" &&
-                current.outcome === "release-authorized";
+                current.outcome === "release-authorized" &&
+                candidate.executionApplied &&
+                candidate.observationWindowComplete;
               const canRollback = Boolean(
                 current?.publicationReleaseAuthorized ||
                   current?.ragReleaseAuthorized
@@ -344,7 +348,10 @@ export default function ControlledReleasePanel() {
                       {current.ragReleaseAuthorized
                         ? "authorized"
                         : "blocked"}{" "}
-                      · execution not applied
+                      · execution{" "}
+                      {candidate.executionApplied
+                        ? "applied"
+                        : "not applied"}
                     </p>
                   )}
                 </article>

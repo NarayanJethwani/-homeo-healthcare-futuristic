@@ -56,11 +56,16 @@ function serializeLocalizedString(value: LocalizedString): LocalizedString {
 }
 
 import { evaluatePublicationEligibility } from "@/features/knowledge/governance/publicationGuard";
+import type { ControlledPublicationOverride } from "@/features/knowledge/governance/controlledReleaseExecutionTypes";
 
 export function serializePublicKnowledgeEntity(
   entity: KnowledgeEntity,
+  controlledOverride: ControlledPublicationOverride | null = null,
 ): PublicKnowledgeEntityDTO | null {
-  const eligibility = evaluatePublicationEligibility(entity);
+  const eligibility = evaluatePublicationEligibility(
+    entity,
+    controlledOverride
+  );
   if (eligibility.publicationStatus !== "published" || !eligibility.eligibleForIndexing) {
     return null;
   }
@@ -83,9 +88,16 @@ export function serializePublicKnowledgeEntity(
 
 export function serializePublishedKnowledgeEntities(
   entities: readonly KnowledgeEntity[],
+  controlledOverrides: ReadonlyMap<
+    string,
+    ControlledPublicationOverride
+  > = new Map(),
 ): PublicKnowledgeEntityDTO[] {
   return entities.flatMap((entity) => {
-    const serialized = serializePublicKnowledgeEntity(entity);
+    const serialized = serializePublicKnowledgeEntity(
+      entity,
+      controlledOverrides.get(entity.id) || null
+    );
     return serialized ? [serialized] : [];
   });
 }

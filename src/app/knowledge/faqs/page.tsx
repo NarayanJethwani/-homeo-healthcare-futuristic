@@ -5,6 +5,10 @@ import KnowledgePageLayout from "@/features/knowledge/components/KnowledgePageLa
 import FAQBlock from "@/features/knowledge/components/FAQBlock";
 import MedicalDisclaimer from "@/features/knowledge/components/MedicalDisclaimer";
 import ReviewedBy from "@/features/knowledge/components/ReviewedBy";
+import { loadActiveControlledPublicationOverride } from "@/features/knowledge/governance/activeControlledPublication";
+import { evaluatePublicationEligibility } from "@/features/knowledge/governance/publicationGuard";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Clinical FAQs | Homeo Healthcare",
@@ -14,7 +18,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function FaqsPage() {
+export default async function FaqsPage() {
   const reviewer = {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)",
@@ -22,8 +26,17 @@ export default function FaqsPage() {
     institution: "Homeo Healthcare Clinic",
   };
 
-  // Extract all localized faqs list items from the content collection
-  const allFaqItems = FAQS.flatMap(entity => entity.content.faqsList || []);
+  const controlledOverride =
+    await loadActiveControlledPublicationOverride("FAQ-safety");
+  const allFaqItems = FAQS.filter((entity) => {
+    const eligibility = evaluatePublicationEligibility(
+      entity,
+      entity.id === controlledOverride?.entityId
+        ? controlledOverride
+        : null
+    );
+    return eligibility.publicationStatus === "published";
+  }).flatMap((entity) => entity.content.faqsList || []);
 
   return (
     <KnowledgePageLayout

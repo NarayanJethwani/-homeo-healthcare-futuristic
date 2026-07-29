@@ -1,5 +1,6 @@
 import { KnowledgeEntity } from "../types";
 import { CITATIONS } from "../content/citations";
+import type { ControlledPublicationOverride } from "./controlledReleaseExecutionTypes";
 
 export type PublicationStatus = "published" | "review-required" | "withdrawn" | "draft" | "archived";
 export type ClinicalReviewStatus = "approved" | "pending" | "under-review" | "unverified";
@@ -66,7 +67,10 @@ export const WITHDRAWN_SAFETY_ENTITIES: ReadonlySet<string> = new Set([
 /**
  * Centrally evaluates publication and governance eligibility for any Knowledge entity.
  */
-export function evaluatePublicationEligibility(entity: KnowledgeEntity | any): PublicationEligibilityResult {
+export function evaluatePublicationEligibility(
+  entity: KnowledgeEntity | any,
+  controlledOverride: ControlledPublicationOverride | null = null
+): PublicationEligibilityResult {
   if (!entity) {
     return {
       eligibleForPublicDisplay: false,
@@ -84,9 +88,31 @@ export function evaluatePublicationEligibility(entity: KnowledgeEntity | any): P
 
   const reasons: string[] = [];
   const entityId = entity.id;
+  const controlledPublicationActive =
+    controlledOverride !== null &&
+    controlledOverride.entityId === entityId &&
+    controlledOverride.publicationApplied === true &&
+    controlledOverride.ragApplied === false;
 
   // 1. Check for immediate safety withdrawals
   if (WITHDRAWN_SAFETY_ENTITIES.has(entityId) || entity.publicationStatus === "withdrawn" || entity.editorialStatus === "withdrawn") {
+    if (controlledPublicationActive) {
+      return {
+        eligibleForPublicDisplay: true,
+        eligibleForIndexing: true,
+        eligibleForSitemap: true,
+        eligibleForAiIngestion: false,
+        eligibleByClinicalGovernance: true,
+        eligibleByTemporaryPublicIndexException: false,
+        publicationStatus: "published",
+        clinicalReviewStatus: "approved",
+        reviewLabel: "Controlled publication canary",
+        reasons: [
+          "controlled-publication-canary-active",
+          "rag-ingestion-unauthorized",
+        ],
+      };
+    }
     reasons.push("safety-withdrawal-active");
     return {
       eligibleForPublicDisplay: true, // Remains accessible at route to show neutral notice
@@ -363,4 +389,3 @@ export function evaluatePublicationGovernance(params: {
     warnings,
   };
 }
-

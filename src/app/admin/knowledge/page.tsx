@@ -9,6 +9,7 @@ import {
   KnowledgeEditor,
   FastTrackGovernancePanel,
   ControlledReleasePanel,
+  ControlledReleaseExecutionPanel,
   globalKmsRepository,
   KmsKnowledgeEntity,
   EditorialRole
@@ -237,7 +238,12 @@ export default function AdminKmsPage() {
                   canResolveSafetyWithdrawal={Boolean(isSuperAdmin)}
                   onReviewEntity={handleEditEntity}
                 />
-                {isSuperAdmin && <ControlledReleasePanel />}
+                {isSuperAdmin && (
+                  <>
+                    <ControlledReleasePanel />
+                    <ControlledReleaseExecutionPanel />
+                  </>
+                )}
               </>
             )}
           </div>

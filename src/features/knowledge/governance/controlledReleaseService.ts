@@ -15,6 +15,7 @@ import type {
   ControlledReleaseRepository,
   ControlledReleaseWorkspace,
 } from "./controlledReleaseTypes";
+import type { ControlledReleaseExecutionRepository } from "./controlledReleaseExecutionTypes";
 
 function canaryRank(candidate: ControlledReleaseCandidate): number {
   const rank: Record<string, number> = {
@@ -70,17 +71,26 @@ function candidateFor(
     blockingReasons,
     recommendedCanary: false,
     currentRelease,
+    executionApplied: false,
+    currentExecutionId: null,
+    observationEligibleAt: null,
+    observationWindowComplete: false,
   };
 }
 
 export async function getControlledReleaseWorkspace(
   entities: readonly KmsKnowledgeEntity[],
   decisionRepository: FastTrackDecisionRepository,
-  releaseRepository: ControlledReleaseRepository
+  releaseRepository: ControlledReleaseRepository,
+  executionRepository?: ControlledReleaseExecutionRepository,
+  now = new Date().toISOString()
 ): Promise<ControlledReleaseWorkspace> {
-  const [decisions, releases] = await Promise.all([
+  const [decisions, releases, executions] = await Promise.all([
     decisionRepository.listDecisions(),
     releaseRepository.listReleases(),
+    executionRepository
+      ? executionRepository.listExecutions()
+      : Promise.resolve([]),
   ]);
   const latestReleaseByEntity = new Map<string, ControlledReleaseRecord>();
   for (const release of releases) {
@@ -129,6 +139,33 @@ export async function getControlledReleaseWorkspace(
         left.title.localeCompare(right.title)
     );
 
+  const latestExecutionByEntity = new Map<
+    string,
+    (typeof executions)[number]
+  >();
+  for (const execution of executions) {
+    if (!latestExecutionByEntity.has(execution.entityId)) {
+      latestExecutionByEntity.set(execution.entityId, execution);
+    }
+  }
+  for (const candidate of candidates) {
+    const execution = latestExecutionByEntity.get(candidate.entityId);
+    if (
+      execution?.outcome === "publication-canary-executed" &&
+      execution.releaseId === candidate.currentRelease?.releaseId
+    ) {
+      candidate.executionApplied = true;
+      candidate.currentExecutionId = execution.executionId;
+      candidate.observationEligibleAt =
+        execution.observationEligibleAt;
+      candidate.observationWindowComplete = Boolean(
+        execution.observationEligibleAt &&
+          Date.parse(now) >=
+            Date.parse(execution.observationEligibleAt)
+      );
+    }
+  }
+
   const currentReleases = [...latestReleaseByEntity.values()];
   const canaryPassed = currentReleases.some(
     (release) =>
@@ -163,7 +200,9 @@ export async function getControlledReleaseWorkspace(
     rolledBackCount: currentReleases.filter(
       (release) => release.outcome === "release-rolled-back"
     ).length,
-    executionAppliedCount: 0,
+    executionAppliedCount: candidates.filter(
+      (candidate) => candidate.executionApplied
+    ).length,
   };
 }
 
@@ -179,7 +218,8 @@ export async function recordControlledReleaseAction(
   releaseRepository: ControlledReleaseRepository,
   input: ControlledReleaseActionInput,
   actor: ControlledReleaseActor,
-  now: string
+  now: string,
+  executionRepository?: ControlledReleaseExecutionRepository
 ): Promise<ControlledReleaseRecord> {
   if (!actor.canBypassSafetyWithdrawal) {
     throw new Error("CONTROLLED_RELEASE_FORBIDDEN");
@@ -279,6 +319,35 @@ export async function recordControlledReleaseAction(
       current.channels.rag
     ) {
       throw new Error("CONTROLLED_RELEASE_CANARY_AUTHORIZATION_REQUIRED");
+    }
+    if (executionRepository) {
+      const executionHead = await executionRepository.getHead(entity.id);
+      const execution = executionHead
+        ? await executionRepository.getExecution(
+            executionHead.executionId
+          )
+        : null;
+      if (
+        !execution ||
+        execution.outcome !== "publication-canary-executed" ||
+        execution.releaseId !== current.releaseId ||
+        !execution.publicationApplied ||
+        execution.ragApplied
+      ) {
+        throw new Error(
+          "CONTROLLED_RELEASE_CANARY_EXECUTION_REQUIRED"
+        );
+      }
+      const executionElapsed =
+        Date.parse(now) - Date.parse(execution.executedAt);
+      if (
+        !Number.isFinite(executionElapsed) ||
+        executionElapsed < 24 * 60 * 60 * 1_000
+      ) {
+        throw new Error(
+          "CONTROLLED_RELEASE_OBSERVATION_WINDOW_INCOMPLETE"
+        );
+      }
     }
     const elapsedMilliseconds =
       Date.parse(now) - Date.parse(current.recordedAt);
