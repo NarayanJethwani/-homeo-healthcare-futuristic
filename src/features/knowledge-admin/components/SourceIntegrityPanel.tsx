@@ -31,6 +31,7 @@ function issueTitle(issue: SourceIntegrityIssue): string {
     "citation-canonical-url-invalid": "Correct the source URL",
     "nice-identifier-url-mismatch": "Identifier and NICE URL do not match",
     "authoritative-source-not-verified": "Verify the authoritative source",
+    "citation-identity-disputed": "Citation identity does not match",
     "internal-source-context-only": "Keep this internal source context-only",
     "legacy-citation-metadata-incomplete": "Complete legacy source metadata",
     "duplicate-citation-canonical-url": "Resolve the duplicate citation",
@@ -133,7 +134,7 @@ export default function SourceIntegrityPanel() {
             {[
               ["Citations audited", report.summary.citationsAudited, "text-cyan-300"],
               ["Sources eligible", report.summary.eligibleRegisteredSources, "text-emerald-300"],
-              ["Claim-ready citations", report.summary.eligibleCitationRecords, "text-emerald-300"],
+              ["Metadata-ready citations", report.summary.eligibleCitationRecords, "text-emerald-300"],
               ["Must fix", report.summary.blockerCount, "text-rose-300"],
               ["Metadata review", report.summary.reviewCount, "text-amber-300"],
             ].map(([label, value, colour]) => (

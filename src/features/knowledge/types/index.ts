@@ -152,6 +152,8 @@ export interface CitationRecord {
   sourceAuthority?: "external-authoritative" | "external-secondary" | "internal-context";
   verificationStatus?: "verified" | "pending" | "internal-only" | "disputed";
   verifiedAt?: string;
+  verificationEvidenceUrl?: string;
+  verificationNotes?: string;
   scopeTags?: string[];
 }
 
