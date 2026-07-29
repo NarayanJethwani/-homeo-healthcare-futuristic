@@ -36,7 +36,7 @@ interface DecisionFormState {
   conventionalCareBoundaryChecked: boolean;
   conflictOfInterestDeclared: boolean;
   safetyCauseResolved: boolean;
-  safetyConfirmation: string;
+  safetyAccountabilityAccepted: boolean;
 }
 
 const RULES = [
@@ -72,7 +72,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   FAST_TRACK_SAFETY_RESOLUTION_FORBIDDEN:
     "Only a super administrator can record a safety-withdrawal resolution.",
   FAST_TRACK_SAFETY_CONFIRMATION_REQUIRED:
-    "Complete the safety attestation and enter the exact accountability phrase.",
+    "Accept clinical accountability before recording a safety resolution.",
   UNAUTHORIZED: "Your administrator session has expired. Sign in again.",
   FORBIDDEN: "Your account does not have clinical decision authority.",
 };
@@ -120,7 +120,7 @@ function initialForm(
     conventionalCareBoundaryChecked: false,
     conflictOfInterestDeclared: false,
     safetyCauseResolved: false,
-    safetyConfirmation: "",
+    safetyAccountabilityAccepted: false,
   };
 }
 
@@ -293,6 +293,8 @@ export default function FastTrackGovernancePanel({
   const [selected, setSelected] =
     useState<FastTrackDecisionAssessment | null>(null);
   const [form, setForm] = useState<DecisionFormState | null>(null);
+  const [confirmSafetyResolution, setConfirmSafetyResolution] =
+    useState(false);
 
   const entityById = useMemo(
     () => new Map(entities.map((entity) => [entity.id, entity])),
@@ -341,6 +343,7 @@ export default function FastTrackGovernancePanel({
   ) {
     setSelected(assessment);
     setForm(initialForm(assessment, outcome));
+    setConfirmSafetyResolution(false);
     setError("");
   }
 
@@ -374,7 +377,11 @@ export default function FastTrackGovernancePanel({
                 form.conflictOfInterestDeclared,
               safetyCauseResolved: form.safetyCauseResolved,
             },
-            safetyConfirmation: form.safetyConfirmation || undefined,
+            safetyConfirmation:
+              form.outcome === "safety-resolution-recorded" &&
+              form.safetyAccountabilityAccepted
+                ? SAFETY_CONFIRMATION
+                : undefined,
           }),
         }
       );
@@ -385,6 +392,7 @@ export default function FastTrackGovernancePanel({
       }
       setSelected(null);
       setForm(null);
+      setConfirmSafetyResolution(false);
       await loadWorkspace();
     } catch (caught) {
       const code =
@@ -413,7 +421,7 @@ export default function FastTrackGovernancePanel({
     (!citationRequired || Boolean(form?.citationIds.length)) &&
     (!safetyResolution ||
       (form?.safetyCauseResolved &&
-        form.safetyConfirmation === SAFETY_CONFIRMATION));
+        form.safetyAccountabilityAccepted));
 
   return (
     <section className="space-y-6">
@@ -616,6 +624,7 @@ export default function FastTrackGovernancePanel({
                 onClick={() => {
                   setSelected(null);
                   setForm(null);
+                  setConfirmSafetyResolution(false);
                   setError("");
                 }}
                 className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-800 hover:text-white"
@@ -646,10 +655,10 @@ export default function FastTrackGovernancePanel({
                       outcome === "safety-resolution-recorded"
                         ? form.safetyCauseResolved
                         : false,
-                    safetyConfirmation:
+                    safetyAccountabilityAccepted:
                       outcome === "safety-resolution-recorded"
-                        ? form.safetyConfirmation
-                        : "",
+                        ? form.safetyAccountabilityAccepted
+                        : false,
                   });
                 }}
                 className="mt-2 w-full rounded-xl border border-neutral-700 bg-neutral-950 px-3 py-3 text-sm text-white"
@@ -795,19 +804,20 @@ export default function FastTrackGovernancePanel({
                   I verified that the underlying safety cause has been corrected
                   or is no longer applicable.
                 </label>
-                <label className="mt-3 block text-[10px] font-bold uppercase tracking-wider text-neutral-400">
-                  Type the accountability phrase
+                <label className="mt-3 flex items-start gap-3 rounded-xl border border-rose-500/20 bg-black/20 p-3 text-xs leading-5 text-neutral-200">
                   <input
-                    value={form.safetyConfirmation}
+                    type="checkbox"
+                    checked={form.safetyAccountabilityAccepted}
                     onChange={(event) =>
                       setForm({
                         ...form,
-                        safetyConfirmation: event.target.value,
+                        safetyAccountabilityAccepted: event.target.checked,
                       })
                     }
-                    placeholder={SAFETY_CONFIRMATION}
-                    className="mt-2 w-full rounded-xl border border-rose-500/30 bg-neutral-950 px-3 py-3 text-xs normal-case tracking-normal text-white"
+                    className="mt-1"
                   />
+                  I accept clinical accountability for recording this safety
+                  resolution.
                 </label>
               </div>
             )}
@@ -820,11 +830,72 @@ export default function FastTrackGovernancePanel({
               <button
                 type="button"
                 disabled={!formReady || saving}
-                onClick={submitDecision}
+                onClick={() => {
+                  if (safetyResolution) {
+                    setConfirmSafetyResolution(true);
+                    return;
+                  }
+                  void submitDecision();
+                }}
                 className="flex items-center gap-2 rounded-xl bg-cyan-400 px-5 py-3 text-sm font-black text-slate-950 transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {saving && <Loader2 className="h-4 w-4 animate-spin" />}
-                Record accountable decision
+                {safetyResolution
+                  ? "Continue to final confirmation"
+                  : "Record accountable decision"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {confirmSafetyResolution && selected && form && (
+        <div
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="fast-track-safety-confirmation-title"
+          aria-describedby="fast-track-safety-confirmation-description"
+          className="fixed inset-0 z-[60] grid place-items-center bg-black/85 p-4 backdrop-blur-sm"
+        >
+          <div className="w-full max-w-lg rounded-3xl border border-rose-500/30 bg-[#0d1422] p-6 shadow-2xl">
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-rose-300">
+              Final safety confirmation
+            </p>
+            <h2
+              id="fast-track-safety-confirmation-title"
+              className="mt-2 text-xl font-black text-white"
+            >
+              Record this safety resolution?
+            </h2>
+            <p
+              id="fast-track-safety-confirmation-description"
+              className="mt-3 text-sm leading-6 text-neutral-300"
+            >
+              You are recording your clinical judgment for the current
+              revision of {selected.title}. This action is attributed to your
+              account and preserved in the immutable audit trail.
+            </p>
+            <p className="mt-3 rounded-xl border border-rose-500/20 bg-rose-500/10 p-3 text-xs leading-5 text-rose-100">
+              This does not publish the article or enable it for RAG. Those
+              controls remain blocked pending a separate controlled release.
+            </p>
+            <div className="mt-6 flex flex-wrap justify-end gap-3">
+              <button
+                type="button"
+                disabled={saving}
+                onClick={() => setConfirmSafetyResolution(false)}
+                className="rounded-xl border border-neutral-700 px-4 py-3 text-sm font-bold text-neutral-200 hover:bg-neutral-800 disabled:opacity-40"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={saving}
+                onClick={() => void submitDecision()}
+                className="flex items-center gap-2 rounded-xl bg-rose-400 px-4 py-3 text-sm font-black text-slate-950 hover:bg-rose-300 disabled:opacity-40"
+              >
+                {saving && <Loader2 className="h-4 w-4 animate-spin" />}
+                Confirm and record
               </button>
             </div>
           </div>
