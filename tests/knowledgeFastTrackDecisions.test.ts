@@ -316,6 +316,14 @@ async function run() {
       "This decision grants neither publication authority nor RAG"
     )
   );
+  assert.ok(
+    panelSource.includes(
+      "I accept clinical accountability for recording this safety"
+    )
+  );
+  assert.ok(panelSource.includes("Final safety confirmation"));
+  assert.ok(panelSource.includes("Confirm and record"));
+  assert.ok(!panelSource.includes("Type the accountability phrase"));
 
   const rules = fs.readFileSync(
     path.join(process.cwd(), "firestore.rules"),
