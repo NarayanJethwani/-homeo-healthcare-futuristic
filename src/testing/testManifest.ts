@@ -477,6 +477,13 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "reason": "Revision-bound human decisions, immutable audit, RBAC, citations, concurrency, and zero publication/RAG authority tests"
   },
   {
+    "path": "tests/knowledgeControlledRelease.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-governance",
+    "testLayer": "governance",
+    "reason": "Canary-first controlled release, channel separation, observation, rollback, immutable audit, RBAC, and zero direct execution tests"
+  },
+  {
     "path": "tests/knowledgeExpansionInventory.test.ts",
     "status": "active",
     "ownerArea": "canonical-test",
