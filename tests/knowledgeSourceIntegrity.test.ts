@@ -16,9 +16,9 @@ export function runKnowledgeSourceIntegrityTests(): void {
   assert.strictEqual(report.status, "staging-only");
   assert.strictEqual(report.invariants.publicationState, "unchanged");
   assert.strictEqual(report.invariants.ragState, "inactive");
-  assert.strictEqual(report.summary.eligibleCitationRecords, 9);
-  assert.strictEqual(report.summary.blockerCount, 7);
-  assert.strictEqual(report.summary.reviewCount, 10);
+  assert.strictEqual(report.summary.eligibleCitationRecords, 19);
+  assert.strictEqual(report.summary.blockerCount, 3);
+  assert.strictEqual(report.summary.reviewCount, 7);
   assert.ok(report.eligibleCitationIds.includes("CIT-0017"));
   assert.ok(report.eligibleCitationIds.includes("CIT-0018"));
   assert.ok(report.eligibleCitationIds.includes("CIT-0012"));
@@ -26,6 +26,16 @@ export function runKnowledgeSourceIntegrityTests(): void {
   assert.ok(report.eligibleCitationIds.includes("CIT-0019"));
   assert.ok(report.eligibleCitationIds.includes("CIT-0020"));
   assert.ok(report.eligibleCitationIds.includes("CIT-0021"));
+  assert.ok(report.eligibleCitationIds.includes("CIT-0014"));
+  assert.ok(report.eligibleCitationIds.includes("CIT-0015"));
+  assert.ok(report.eligibleCitationIds.includes("CIT-0016"));
+  assert.ok(report.eligibleCitationIds.includes("CIT-0023"));
+  assert.ok(report.eligibleCitationIds.includes("CIT-0024"));
+  assert.ok(report.eligibleCitationIds.includes("CIT-0025"));
+  assert.ok(report.eligibleCitationIds.includes("CIT-0026"));
+  assert.ok(report.eligibleCitationIds.includes("CIT-0027"));
+  assert.ok(report.eligibleCitationIds.includes("CIT-0028"));
+  assert.ok(report.eligibleCitationIds.includes("CIT-0029"));
   assert.ok(report.quarantinedCitationIds.includes("CIT-0001"));
   assert.ok(report.quarantinedCitationIds.includes("CIT-0002"));
   assert.ok(report.quarantinedCitationIds.includes("CIT-0003"));
@@ -40,6 +50,18 @@ export function runKnowledgeSourceIntegrityTests(): void {
   assert.strictEqual(
     report.summary.eligibleRegisteredSources,
     KEP1_SOURCES.length
+  );
+  assert.ok(
+    KEP1_SOURCES.every((source) =>
+      report.eligibleCitationIds.includes(source.citationId)
+    )
+  );
+  assert.deepStrictEqual(
+    report.issues
+      .filter((issue) => issue.severity === "blocker")
+      .map((issue) => issue.recordId)
+      .sort(),
+    ["CIT-0001", "CIT-0002", "CIT-0003"]
   );
 
   const mismatched = buildKnowledgeSourceIntegrityReport({
@@ -58,6 +80,23 @@ export function runKnowledgeSourceIntegrityTests(): void {
     )
   );
   assert.ok(mismatched.quarantinedCitationIds.includes("CIT-0017"));
+
+  const unlinkedSource = buildKnowledgeSourceIntegrityReport({
+    citations: CITATIONS,
+    sources: [
+      {
+        ...KEP1_SOURCES[0],
+        citationId: "CIT-MISSING",
+      },
+    ],
+    asOfDate: "2026-07-29",
+  });
+  assert.ok(
+    unlinkedSource.issues.some(
+      (issue) => issue.code === "registered-source-citation-not-found"
+    )
+  );
+  assert.ok(unlinkedSource.quarantinedSourceIds.includes(KEP1_SOURCES[0].id));
 
   const clinicalClaim = evaluateClaimCitationStaging({
     claimId: "CLAIM-ASTHMA-DIAGNOSIS",
@@ -117,6 +156,24 @@ export function runKnowledgeSourceIntegrityTests(): void {
       "CLAIM-HYPERTHYROID-DIAGNOSIS:citation-scope-mismatch"
     )
   );
+
+  const productSafetyClaim = evaluateClaimCitationStaging({
+    claimId: "CLAIM-HOMEOPATHY-PRODUCT-SAFETY",
+    claimType: "safety",
+    citationIds: ["CIT-0024"],
+    citations: CITATIONS,
+    requiredScopeTags: ["product-safety"],
+  });
+  assert.strictEqual(productSafetyClaim.eligibleForStaging, true);
+
+  const cbcInterpretationClaim = evaluateClaimCitationStaging({
+    claimId: "CLAIM-CBC-INTERPRETATION",
+    claimType: "laboratory-interpretation",
+    citationIds: ["CIT-0016"],
+    citations: CITATIONS,
+    requiredScopeTags: ["cbc"],
+  });
+  assert.strictEqual(cbcInterpretationClaim.eligibleForStaging, true);
 
   console.log(
     "✅ Knowledge expansion source identifiers, canonical URLs, internal-source boundaries, and staging-only invariants verified."

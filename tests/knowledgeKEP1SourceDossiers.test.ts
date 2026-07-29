@@ -34,6 +34,49 @@ export function runKnowledgeKEP1SourceDossierTests(): void {
   assert.strictEqual(manifest.summary.productionRagEntities, 0);
   assert.strictEqual(manifest.summary.approvedEvidenceProfiles, 0);
   assert.strictEqual(manifest.summary.approvedClinicalReviews, 0);
+  assert.strictEqual(manifest.summary.claimEvidencePlanCount, 24);
+  assert.strictEqual(
+    manifest.summary.stagingEligibleClaimEvidencePlanCount,
+    24
+  );
+  const claimPlans = manifest.dossiers.flatMap(
+    (dossier) => dossier.claimEvidencePlans
+  );
+  assert.strictEqual(claimPlans.length, 24);
+  assert.ok(
+    claimPlans.every(
+      (plan) =>
+        plan.stagingEvaluation.eligibleForStaging === true &&
+        plan.stagingEvaluation.errors.length === 0 &&
+        plan.stateBoundaries.clinicalApprovalState === "unapproved" &&
+        plan.stateBoundaries.publicationState === "unchanged" &&
+        plan.stateBoundaries.ragState === "inactive"
+    )
+  );
+  assert.strictEqual(new Set(claimPlans.map((plan) => plan.claimId)).size, 24);
+  assert.ok(
+    manifest.dossiers
+      .filter((dossier) => dossier.entityType === "remedy")
+      .every((dossier) =>
+        dossier.claimEvidencePlans.some(
+          (plan) =>
+            plan.claimType === "traditional-use" &&
+            plan.citationIds.includes("CIT-0005") &&
+            plan.citationIds.includes("CIT-0006")
+        )
+      )
+  );
+  assert.ok(
+    manifest.dossiers
+      .filter((dossier) => dossier.entityType === "remedy")
+      .every((dossier) =>
+        dossier.claimEvidencePlans.some(
+          (plan) =>
+            plan.claimType === "safety" &&
+            plan.citationIds.includes("CIT-0024")
+        )
+      )
+  );
   assert.ok(
     manifest.dossiers.every(
       (dossier) =>

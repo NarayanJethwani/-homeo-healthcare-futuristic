@@ -317,6 +317,45 @@ export function buildKnowledgeSourceIntegrityReport(input: {
     ...input.citations.flatMap(validateCitation),
     ...input.sources.flatMap(validateRegisteredSource),
   ];
+  const citationById = new Map(
+    input.citations.map((citation) => [citation.id, citation])
+  );
+
+  for (const source of input.sources) {
+    const citation = citationById.get(source.citationId);
+    if (!citation) {
+      issues.push({
+        severity: "blocker",
+        code: "registered-source-citation-not-found",
+        recordType: "source",
+        recordId: source.id,
+        detail: `Registered source citation ${source.citationId} does not exist.`,
+      });
+      continue;
+    }
+    if (citation.verificationStatus !== "verified") {
+      issues.push({
+        severity: "blocker",
+        code: "registered-source-citation-not-verified",
+        recordType: "source",
+        recordId: source.id,
+        detail: `Registered source citation ${source.citationId} is not verified.`,
+      });
+    }
+    if (
+      source.canonicalUrl &&
+      citation.canonicalUrl &&
+      normaliseUrl(source.canonicalUrl) !== normaliseUrl(citation.canonicalUrl)
+    ) {
+      issues.push({
+        severity: "blocker",
+        code: "registered-source-citation-url-mismatch",
+        recordType: "source",
+        recordId: source.id,
+        detail: `Registered source URL does not match citation ${source.citationId}.`,
+      });
+    }
+  }
 
   const canonicalOwners = new Map<string, string>();
   for (const citation of input.citations) {
