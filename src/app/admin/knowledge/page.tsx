@@ -7,12 +7,12 @@ import {
   EntityRegistry, 
   CitationLibrary, 
   KnowledgeEditor,
+  FastTrackGovernancePanel,
   globalKmsRepository,
   KmsKnowledgeEntity,
-  EditorialRole,
-  RoleBadge
+  EditorialRole
 } from "@/features/knowledge-admin";
-import { LayoutDashboard, Database, BookOpen, ChevronLeft, Shield, UsersRound, FileCheck2 } from "lucide-react";
+import { LayoutDashboard, Database, BookOpen, ChevronLeft, ShieldCheck, FileCheck2 } from "lucide-react";
 
 import { normalizeRole } from "@/lib/security/rbac";
 
@@ -27,8 +27,8 @@ export default function AdminKmsPage() {
   const router = useRouter();
   const [session, setSession] = useState<UserSession | null>(null);
   
-  // Tabs: dashboard | registry | citations
-  const [activeTab, setActiveTab] = useState<"dashboard" | "registry" | "citations">("dashboard");
+  // Tabs: dashboard | registry | citations | governance
+  const [activeTab, setActiveTab] = useState<"dashboard" | "registry" | "citations" | "governance">("dashboard");
   const [activeEditEntity, setActiveEditEntity] = useState<KmsKnowledgeEntity | null>(null);
   const [allEntities, setAllEntities] = useState<KmsKnowledgeEntity[]>([]);
 
@@ -164,7 +164,8 @@ export default function AdminKmsPage() {
               {[
                 { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
                 { id: "registry", label: "Registry", icon: Database },
-                { id: "citations", label: "Citations", icon: BookOpen }
+                { id: "citations", label: "Citations", icon: BookOpen },
+                { id: "governance", label: "AI Governance", icon: ShieldCheck }
               ].map(tab => {
                 const Icon = tab.icon;
                 const isSelected = activeTab === tab.id;
@@ -185,13 +186,6 @@ export default function AdminKmsPage() {
               })}
               {isSuperAdmin && (
                 <>
-                  <button
-                    onClick={() => router.push("/admin/knowledge-onboarding")}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-emerald-400 hover:bg-emerald-500/10 border border-transparent hover:border-emerald-500/20 transition-all"
-                  >
-                    <UsersRound className="h-3.5 w-3.5" />
-                    Onboarding
-                  </button>
                   <button
                     onClick={() => router.push("/admin/knowledge-acquisition")}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-cyan-400 hover:bg-cyan-500/10 border border-transparent hover:border-cyan-500/20 transition-all"
@@ -233,6 +227,13 @@ export default function AdminKmsPage() {
 
             {activeTab === "citations" && (
               <CitationLibrary />
+            )}
+
+            {activeTab === "governance" && (
+              <FastTrackGovernancePanel
+                entities={allEntities}
+                onReviewEntity={handleEditEntity}
+              />
             )}
           </div>
         )}
