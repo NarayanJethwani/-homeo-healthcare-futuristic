@@ -6,33 +6,51 @@ export const CITATIONS: CitationRecord[] = [
     title: "Efficacy of Constitutional Homeopathy in Gastroesophageal Reflux Disease (GERD)",
     authors: ["Jethwani N.", "Sharma R."],
     journal: "International Journal of Homeopathic Research",
-    doi: "10.1007/s11938-024-00123-x",
-    pubmedId: "34892019",
     year: 2024,
     citationStyle: "AMA",
-    category: "Primary-Research"
+    category: "Primary-Research",
+    sourceIdentifier: "UNVERIFIED-CIT-0001",
+    sourceAuthority: "external-secondary",
+    verificationStatus: "disputed",
+    verifiedAt: "2026-07-29",
+    verificationEvidenceUrl: "https://pubmed.ncbi.nlm.nih.gov/34892019/",
+    verificationNotes:
+      "The stored PubMed identifier resolves to an unrelated neuroimaging paper, and the stored DOI could not be matched in PubMed.",
+    scopeTags: ["gerd", "homeopathy", "unverified-research"]
   },
   {
     id: "CIT-0002",
     title: "Individualized Homeopathic Treatment for Atopic Dermatitis: A Cohort Study",
     authors: ["Witt C. M.", "Lüdtke R."],
     journal: "Complementary Medicine Research",
-    doi: "10.1159/000235948",
-    pubmedId: "19816024",
     year: 2019,
     citationStyle: "AMA",
-    category: "Primary-Research"
+    category: "Primary-Research",
+    sourceIdentifier: "UNVERIFIED-CIT-0002",
+    sourceAuthority: "external-secondary",
+    verificationStatus: "disputed",
+    verifiedAt: "2026-07-29",
+    verificationEvidenceUrl: "https://pubmed.ncbi.nlm.nih.gov/19729965/",
+    verificationNotes:
+      "The stored DOI resolves to an unrelated nephrology paper and the stored PubMed identifier resolves to an unrelated fetal-anemia paper.",
+    scopeTags: ["atopic-dermatitis", "homeopathy", "unverified-research"]
   },
   {
     id: "CIT-0003",
     title: "TSH Reference Intervals and Homeopathic Prescribing Mappings",
     authors: ["Miller D."],
     journal: "Clinical Endocrinology Review",
-    doi: "10.1111/cen.14582",
-    pubmedId: "28910482",
     year: 2021,
     citationStyle: "AMA",
-    category: "Primary-Research"
+    category: "Primary-Research",
+    sourceIdentifier: "UNVERIFIED-CIT-0003",
+    sourceAuthority: "external-secondary",
+    verificationStatus: "disputed",
+    verifiedAt: "2026-07-29",
+    verificationEvidenceUrl: "https://pubmed.ncbi.nlm.nih.gov/34490640/",
+    verificationNotes:
+      "The stored DOI resolves to an unrelated neonatal bone-mass paper and the stored PubMed identifier resolves to an unrelated outbreak report.",
+    scopeTags: ["thyroid", "homeopathy", "unverified-research"]
   },
   {
     id: "CIT-0004",
@@ -50,7 +68,17 @@ export const CITATIONS: CitationRecord[] = [
     journal: "Boericke & Tafel",
     year: 1905,
     citationStyle: "Traditional",
-    category: "Materia-Medica"
+    category: "Materia-Medica",
+    canonicalUrl: "https://archive.org/details/lecturesonhomoeo00kent",
+    sourceIdentifier: "IA-LECTURESONHOMOEO00KENT",
+    sourceAuthority: "external-secondary",
+    verificationStatus: "verified",
+    verifiedAt: "2026-07-29",
+    verificationEvidenceUrl:
+      "https://archive.org/details/lecturesonhomoeo00kent",
+    verificationNotes:
+      "Bibliographic identity is verified for traditional-source description only; it is not modern clinical efficacy evidence.",
+    scopeTags: ["traditional-use", "materia-medica", "kent"]
   },
   {
     id: "CIT-0006",
@@ -59,7 +87,17 @@ export const CITATIONS: CitationRecord[] = [
     journal: "Boericke & Runyon",
     year: 1901,
     citationStyle: "Traditional",
-    category: "Materia-Medica"
+    category: "Materia-Medica",
+    canonicalUrl: "https://archive.org/details/pocketmanualofho00boer",
+    sourceIdentifier: "IA-POCKETMANUALOFHO00BOER",
+    sourceAuthority: "external-secondary",
+    verificationStatus: "verified",
+    verifiedAt: "2026-07-29",
+    verificationEvidenceUrl:
+      "https://archive.org/details/pocketmanualofho00boer",
+    verificationNotes:
+      "Bibliographic identity is verified for traditional-source description only; it is not modern clinical efficacy evidence.",
+    scopeTags: ["traditional-use", "materia-medica", "boericke"]
   },
   {
     id: "CIT-0007",
@@ -112,10 +150,17 @@ export const CITATIONS: CitationRecord[] = [
     authors: ["Jonklaas J.", "Bianco A. C.", "Bauer A. J.", "et al."],
     journal: "Thyroid",
     doi: "10.1089/thy.2014.0028",
-    pubmedId: "25266245",
+    pubmedId: "25266247",
     year: 2014,
     citationStyle: "AMA",
-    category: "Clinical-Guidelines"
+    category: "Clinical-Guidelines",
+    canonicalUrl: "https://pubmed.ncbi.nlm.nih.gov/25266247/",
+    sourceIdentifier: "PMID-25266247",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-07-29",
+    verificationEvidenceUrl: "https://pubmed.ncbi.nlm.nih.gov/25266247/",
+    scopeTags: ["hypothyroidism", "thyroid-hormone-replacement", "adult"]
   },
   {
     id: "CIT-0013",
@@ -123,10 +168,17 @@ export const CITATIONS: CitationRecord[] = [
     authors: ["Garber J. R.", "Cobin R. H.", "Gharib H.", "et al."],
     journal: "Endocrine Practice",
     doi: "10.4158/EP12280.GL",
-    pubmedId: "23120101",
+    pubmedId: "23246686",
     year: 2012,
     citationStyle: "AMA",
-    category: "Clinical-Guidelines"
+    category: "Clinical-Guidelines",
+    canonicalUrl: "https://pubmed.ncbi.nlm.nih.gov/23246686/",
+    sourceIdentifier: "PMID-23246686",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-07-29",
+    verificationEvidenceUrl: "https://pubmed.ncbi.nlm.nih.gov/23246686/",
+    scopeTags: ["hypothyroidism", "diagnosis", "adult"]
   },
   {
     id: "CIT-0014",
@@ -187,12 +239,19 @@ export const CITATIONS: CitationRecord[] = [
   },
   {
     id: "CIT-0019",
-    title: "Atopic Eczema in Children: NICE Clinical Guideline 57",
+    title: "Atopic eczema in under 12s: diagnosis and management",
     authors: ["NICE"],
     journal: "NICE Guideline CG57",
     year: 2007,
     citationStyle: "AMA",
-    category: "Clinical-Guidelines"
+    category: "Clinical-Guidelines",
+    canonicalUrl: "https://www.nice.org.uk/guidance/cg57",
+    sourceIdentifier: "NICE-CG57",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-07-29",
+    verificationEvidenceUrl: "https://www.nice.org.uk/guidance/cg57",
+    scopeTags: ["atopic-eczema", "children-under-12", "diagnosis", "treatment"]
   },
   {
     id: "CIT-0020",
@@ -201,18 +260,34 @@ export const CITATIONS: CitationRecord[] = [
     journal: "National Heart, Lung, and Blood Institute (NHLBI)",
     year: 2007,
     citationStyle: "AMA",
-    category: "Clinical-Guidelines"
+    category: "Clinical-Guidelines",
+    canonicalUrl:
+      "https://www.nhlbi.nih.gov/health-topics/guidelines-for-diagnosis-management-of-asthma",
+    sourceIdentifier: "NHLBI-EPR-3-2007",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-07-29",
+    verificationEvidenceUrl:
+      "https://www.nhlbi.nih.gov/health-topics/guidelines-for-diagnosis-management-of-asthma",
+    scopeTags: ["asthma", "diagnosis", "management", "exacerbation"]
   },
   {
     id: "CIT-0021",
-    title: "Allergic Rhinitis and its Impact on Asthma (ARIA) 2018 Revision",
-    authors: ["Bousquet J.", "Schünemann H. J.", "Togias A.", "et al."],
+    title: "Allergic Rhinitis and its Impact on Asthma (ARIA) guidelines—2016 revision",
+    authors: ["Brożek J. L.", "Bousquet J.", "Agache I.", "et al."],
     journal: "Journal of Allergy and Clinical Immunology",
-    doi: "10.1016/j.jaci.2018.06.011",
-    pubmedId: "30030095",
-    year: 2018,
+    doi: "10.1016/j.jaci.2017.03.050",
+    pubmedId: "28602936",
+    year: 2017,
     citationStyle: "AMA",
-    category: "Clinical-Guidelines"
+    category: "Clinical-Guidelines",
+    canonicalUrl: "https://pubmed.ncbi.nlm.nih.gov/28602936/",
+    sourceIdentifier: "PMID-28602936",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-07-29",
+    verificationEvidenceUrl: "https://pubmed.ncbi.nlm.nih.gov/28602936/",
+    scopeTags: ["allergic-rhinitis", "asthma", "treatment", "guideline"]
   },
   {
     id: "CIT-0022",

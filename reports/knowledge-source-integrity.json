@@ -5,14 +5,21 @@
   "summary": {
     "citationsAudited": 22,
     "sourcesAudited": 11,
-    "eligibleCitationRecords": 2,
+    "eligibleCitationRecords": 9,
     "eligibleRegisteredSources": 11,
-    "blockerCount": 14,
-    "reviewCount": 20
+    "blockerCount": 7,
+    "reviewCount": 10
   },
   "eligibleCitationIds": [
+    "CIT-0005",
+    "CIT-0006",
+    "CIT-0012",
+    "CIT-0013",
     "CIT-0017",
-    "CIT-0018"
+    "CIT-0018",
+    "CIT-0019",
+    "CIT-0020",
+    "CIT-0021"
   ],
   "eligibleSourceIds": [
     "SRC-KEP1-BOERICKE-1901",
@@ -32,65 +39,44 @@
     "CIT-0002",
     "CIT-0003",
     "CIT-0004",
-    "CIT-0005",
-    "CIT-0006",
     "CIT-0007",
     "CIT-0008",
     "CIT-0009",
     "CIT-0010",
     "CIT-0011",
-    "CIT-0012",
-    "CIT-0013",
     "CIT-0014",
     "CIT-0015",
     "CIT-0016",
-    "CIT-0019",
-    "CIT-0020",
-    "CIT-0021",
     "CIT-0022"
   ],
   "quarantinedSourceIds": [],
   "issues": [
     {
-      "severity": "review",
-      "code": "legacy-citation-metadata-incomplete",
+      "severity": "blocker",
+      "code": "citation-identity-disputed",
       "recordType": "citation",
       "recordId": "CIT-0001",
-      "detail": "Source authority and verification metadata must be completed before new claim mapping."
+      "detail": "The stored PubMed identifier resolves to an unrelated neuroimaging paper, and the stored DOI could not be matched in PubMed."
     },
     {
-      "severity": "review",
-      "code": "legacy-citation-metadata-incomplete",
+      "severity": "blocker",
+      "code": "citation-identity-disputed",
       "recordType": "citation",
       "recordId": "CIT-0002",
-      "detail": "Source authority and verification metadata must be completed before new claim mapping."
+      "detail": "The stored DOI resolves to an unrelated nephrology paper and the stored PubMed identifier resolves to an unrelated fetal-anemia paper."
     },
     {
-      "severity": "review",
-      "code": "legacy-citation-metadata-incomplete",
+      "severity": "blocker",
+      "code": "citation-identity-disputed",
       "recordType": "citation",
       "recordId": "CIT-0003",
-      "detail": "Source authority and verification metadata must be completed before new claim mapping."
+      "detail": "The stored DOI resolves to an unrelated neonatal bone-mass paper and the stored PubMed identifier resolves to an unrelated outbreak report."
     },
     {
       "severity": "review",
       "code": "legacy-citation-metadata-incomplete",
       "recordType": "citation",
       "recordId": "CIT-0004",
-      "detail": "Source authority and verification metadata must be completed before new claim mapping."
-    },
-    {
-      "severity": "review",
-      "code": "legacy-citation-metadata-incomplete",
-      "recordType": "citation",
-      "recordId": "CIT-0005",
-      "detail": "Source authority and verification metadata must be completed before new claim mapping."
-    },
-    {
-      "severity": "review",
-      "code": "legacy-citation-metadata-incomplete",
-      "recordType": "citation",
-      "recordId": "CIT-0006",
       "detail": "Source authority and verification metadata must be completed before new claim mapping."
     },
     {
@@ -126,48 +112,6 @@
       "code": "legacy-citation-metadata-incomplete",
       "recordType": "citation",
       "recordId": "CIT-0011",
-      "detail": "Source authority and verification metadata must be completed before new claim mapping."
-    },
-    {
-      "severity": "blocker",
-      "code": "guideline-canonical-url-required",
-      "recordType": "citation",
-      "recordId": "CIT-0012",
-      "detail": "A guideline must have a canonical source URL."
-    },
-    {
-      "severity": "blocker",
-      "code": "guideline-source-identifier-required",
-      "recordType": "citation",
-      "recordId": "CIT-0012",
-      "detail": "A guideline must have a stable source identifier."
-    },
-    {
-      "severity": "review",
-      "code": "legacy-citation-metadata-incomplete",
-      "recordType": "citation",
-      "recordId": "CIT-0012",
-      "detail": "Source authority and verification metadata must be completed before new claim mapping."
-    },
-    {
-      "severity": "blocker",
-      "code": "guideline-canonical-url-required",
-      "recordType": "citation",
-      "recordId": "CIT-0013",
-      "detail": "A guideline must have a canonical source URL."
-    },
-    {
-      "severity": "blocker",
-      "code": "guideline-source-identifier-required",
-      "recordType": "citation",
-      "recordId": "CIT-0013",
-      "detail": "A guideline must have a stable source identifier."
-    },
-    {
-      "severity": "review",
-      "code": "legacy-citation-metadata-incomplete",
-      "recordType": "citation",
-      "recordId": "CIT-0013",
       "detail": "Source authority and verification metadata must be completed before new claim mapping."
     },
     {
@@ -217,69 +161,6 @@
       "code": "legacy-citation-metadata-incomplete",
       "recordType": "citation",
       "recordId": "CIT-0016",
-      "detail": "Source authority and verification metadata must be completed before new claim mapping."
-    },
-    {
-      "severity": "blocker",
-      "code": "guideline-canonical-url-required",
-      "recordType": "citation",
-      "recordId": "CIT-0019",
-      "detail": "A guideline must have a canonical source URL."
-    },
-    {
-      "severity": "blocker",
-      "code": "guideline-source-identifier-required",
-      "recordType": "citation",
-      "recordId": "CIT-0019",
-      "detail": "A guideline must have a stable source identifier."
-    },
-    {
-      "severity": "review",
-      "code": "legacy-citation-metadata-incomplete",
-      "recordType": "citation",
-      "recordId": "CIT-0019",
-      "detail": "Source authority and verification metadata must be completed before new claim mapping."
-    },
-    {
-      "severity": "blocker",
-      "code": "guideline-canonical-url-required",
-      "recordType": "citation",
-      "recordId": "CIT-0020",
-      "detail": "A guideline must have a canonical source URL."
-    },
-    {
-      "severity": "blocker",
-      "code": "guideline-source-identifier-required",
-      "recordType": "citation",
-      "recordId": "CIT-0020",
-      "detail": "A guideline must have a stable source identifier."
-    },
-    {
-      "severity": "review",
-      "code": "legacy-citation-metadata-incomplete",
-      "recordType": "citation",
-      "recordId": "CIT-0020",
-      "detail": "Source authority and verification metadata must be completed before new claim mapping."
-    },
-    {
-      "severity": "blocker",
-      "code": "guideline-canonical-url-required",
-      "recordType": "citation",
-      "recordId": "CIT-0021",
-      "detail": "A guideline must have a canonical source URL."
-    },
-    {
-      "severity": "blocker",
-      "code": "guideline-source-identifier-required",
-      "recordType": "citation",
-      "recordId": "CIT-0021",
-      "detail": "A guideline must have a stable source identifier."
-    },
-    {
-      "severity": "review",
-      "code": "legacy-citation-metadata-incomplete",
-      "recordType": "citation",
-      "recordId": "CIT-0021",
       "detail": "Source authority and verification metadata must be completed before new claim mapping."
     },
     {

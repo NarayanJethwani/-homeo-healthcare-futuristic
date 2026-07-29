@@ -1,4 +1,5 @@
 import type { CitationRecord } from "../types";
+import type { ClaimType } from "../governance/types/governanceTypes";
 import type { KEP1SourceRecord } from "./types";
 import { validateKnowledgeSourceRegistration } from "./sourceRegistry";
 
@@ -34,6 +35,124 @@ export interface KnowledgeSourceIntegrityReport {
     ragState: "inactive";
     automaticClinicalApprovalForbidden: true;
     internalSourcesCannotIndependentlyValidateMedicalClaims: true;
+  };
+}
+
+export interface ClaimCitationStagingEvaluation {
+  eligibleForStaging: boolean;
+  errors: string[];
+  eligibleCitationIds: string[];
+  boundaries: {
+    clinicalApprovalState: "unapproved";
+    publicationState: "unchanged";
+    ragState: "inactive";
+  };
+}
+
+const TRADITIONAL_CATEGORIES = new Set([
+  "Classical-Homeopathic-Literature",
+  "Materia-Medica",
+  "Organon",
+  "Historical-References",
+]);
+
+const HIGH_RISK_CLAIM_TYPES = new Set<ClaimType>([
+  "diagnosis",
+  "treatment",
+  "safety",
+  "emergency",
+  "laboratory-interpretation",
+]);
+
+export function evaluateClaimCitationStaging(input: {
+  claimId: string;
+  claimType: ClaimType;
+  citationIds: readonly string[];
+  citations: readonly CitationRecord[];
+  requiredScopeTags?: readonly string[];
+}): ClaimCitationStagingEvaluation {
+  const errors: string[] = [];
+  const citationById = new Map(
+    input.citations.map((citation) => [citation.id, citation])
+  );
+  const resolved = input.citationIds
+    .map((citationId) => citationById.get(citationId))
+    .filter((citation): citation is CitationRecord => Boolean(citation));
+
+  if (input.citationIds.length === 0) {
+    errors.push(`${input.claimId}:citation-required`);
+  }
+  for (const citationId of input.citationIds) {
+    if (!citationById.has(citationId)) {
+      errors.push(`${input.claimId}:citation-not-found:${citationId}`);
+    }
+  }
+  for (const citation of resolved) {
+    if (citation.verificationStatus !== "verified") {
+      errors.push(
+        `${input.claimId}:citation-not-verified:${citation.id}:${citation.verificationStatus || "missing"}`
+      );
+    }
+    if (citation.sourceAuthority === "internal-context") {
+      errors.push(`${input.claimId}:internal-citation-context-only:${citation.id}`);
+    }
+  }
+
+  const verified = resolved.filter(
+    (citation) =>
+      citation.verificationStatus === "verified" &&
+      citation.sourceAuthority !== "internal-context"
+  );
+  const traditional = verified.filter((citation) =>
+    citation.category ? TRADITIONAL_CATEGORIES.has(citation.category) : false
+  );
+  const clinical = verified.filter(
+    (citation) =>
+      !citation.category || !TRADITIONAL_CATEGORIES.has(citation.category)
+  );
+
+  if (input.claimType === "traditional-use") {
+    if (traditional.length === 0) {
+      errors.push(`${input.claimId}:verified-traditional-source-required`);
+    }
+  } else if (clinical.length === 0) {
+    errors.push(`${input.claimId}:verified-clinical-source-required`);
+  }
+
+  if (
+    HIGH_RISK_CLAIM_TYPES.has(input.claimType) &&
+    !clinical.some(
+      (citation) => citation.sourceAuthority === "external-authoritative"
+    )
+  ) {
+    errors.push(
+      `${input.claimId}:authoritative-clinical-source-required:${input.claimType}`
+    );
+  }
+
+  const requiredScopeTags = (input.requiredScopeTags || []).map((tag) =>
+    tag.trim().toLowerCase()
+  );
+  if (
+    requiredScopeTags.length > 0 &&
+    !verified.some((citation) =>
+      (citation.scopeTags || []).some((tag) =>
+        requiredScopeTags.includes(tag.trim().toLowerCase())
+      )
+    )
+  ) {
+    errors.push(`${input.claimId}:citation-scope-mismatch`);
+  }
+
+  return {
+    eligibleForStaging: errors.length === 0,
+    errors,
+    eligibleCitationIds: verified.map((citation) => citation.id).sort(),
+    boundaries: {
+      clinicalApprovalState: "unapproved",
+      publicationState: "unchanged",
+      ragState: "inactive",
+    },
   };
 }
 
@@ -108,6 +227,15 @@ function validateCitation(citation: CitationRecord): SourceIntegrityIssue[] {
     citation.verificationStatus !== "verified"
   ) {
     issue("blocker", "authoritative-source-not-verified", "Authoritative evidence must be explicitly verified.");
+  }
+
+  if (citation.verificationStatus === "disputed") {
+    issue(
+      "blocker",
+      "citation-identity-disputed",
+      citation.verificationNotes ||
+        "The stored citation identity could not be verified against authoritative records."
+    );
   }
 
   if (citation.sourceAuthority === "internal-context") {
