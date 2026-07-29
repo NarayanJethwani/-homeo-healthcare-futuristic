@@ -286,5 +286,7 @@ service cloud.firestore {
     match /knowledgeGovernanceKep1DecisionAuditEvents/{docId} { allow read, write: if false; }
     match /knowledgeGovernanceKep3CohortProposals/{docId} { allow read, write: if false; }
     match /knowledgeGovernanceKep3CohortPlanningAuditEvents/{docId} { allow read, write: if false; }
+    match /knowledgeGovernanceKep3CohortAuthorizations/{docId} { allow read, write: if false; }
+    match /knowledgeGovernanceKep3CohortAuthorizationAuditEvents/{docId} { allow read, write: if false; }
   }
 }
