@@ -3,23 +3,33 @@
   "asOfDate": "2026-07-29",
   "status": "staging-only",
   "summary": {
-    "citationsAudited": 22,
+    "citationsAudited": 29,
     "sourcesAudited": 11,
-    "eligibleCitationRecords": 9,
+    "eligibleCitationRecords": 19,
     "eligibleRegisteredSources": 11,
-    "blockerCount": 7,
-    "reviewCount": 10
+    "blockerCount": 3,
+    "reviewCount": 7
   },
   "eligibleCitationIds": [
     "CIT-0005",
     "CIT-0006",
     "CIT-0012",
     "CIT-0013",
+    "CIT-0014",
+    "CIT-0015",
+    "CIT-0016",
     "CIT-0017",
     "CIT-0018",
     "CIT-0019",
     "CIT-0020",
-    "CIT-0021"
+    "CIT-0021",
+    "CIT-0023",
+    "CIT-0024",
+    "CIT-0025",
+    "CIT-0026",
+    "CIT-0027",
+    "CIT-0028",
+    "CIT-0029"
   ],
   "eligibleSourceIds": [
     "SRC-KEP1-BOERICKE-1901",
@@ -44,9 +54,6 @@
     "CIT-0009",
     "CIT-0010",
     "CIT-0011",
-    "CIT-0014",
-    "CIT-0015",
-    "CIT-0016",
     "CIT-0022"
   ],
   "quarantinedSourceIds": [],
@@ -112,55 +119,6 @@
       "code": "legacy-citation-metadata-incomplete",
       "recordType": "citation",
       "recordId": "CIT-0011",
-      "detail": "Source authority and verification metadata must be completed before new claim mapping."
-    },
-    {
-      "severity": "blocker",
-      "code": "guideline-canonical-url-required",
-      "recordType": "citation",
-      "recordId": "CIT-0014",
-      "detail": "A guideline must have a canonical source URL."
-    },
-    {
-      "severity": "blocker",
-      "code": "guideline-source-identifier-required",
-      "recordType": "citation",
-      "recordId": "CIT-0014",
-      "detail": "A guideline must have a stable source identifier."
-    },
-    {
-      "severity": "review",
-      "code": "legacy-citation-metadata-incomplete",
-      "recordType": "citation",
-      "recordId": "CIT-0014",
-      "detail": "Source authority and verification metadata must be completed before new claim mapping."
-    },
-    {
-      "severity": "blocker",
-      "code": "guideline-canonical-url-required",
-      "recordType": "citation",
-      "recordId": "CIT-0015",
-      "detail": "A guideline must have a canonical source URL."
-    },
-    {
-      "severity": "blocker",
-      "code": "guideline-source-identifier-required",
-      "recordType": "citation",
-      "recordId": "CIT-0015",
-      "detail": "A guideline must have a stable source identifier."
-    },
-    {
-      "severity": "review",
-      "code": "legacy-citation-metadata-incomplete",
-      "recordType": "citation",
-      "recordId": "CIT-0015",
-      "detail": "Source authority and verification metadata must be completed before new claim mapping."
-    },
-    {
-      "severity": "review",
-      "code": "legacy-citation-metadata-incomplete",
-      "recordType": "citation",
-      "recordId": "CIT-0016",
       "detail": "Source authority and verification metadata must be completed before new claim mapping."
     },
     {

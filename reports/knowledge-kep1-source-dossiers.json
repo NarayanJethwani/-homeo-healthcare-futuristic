@@ -6,6 +6,7 @@
   "sources": [
     {
       "id": "SRC-KEP1-NICE-CG184",
+      "citationId": "CIT-0017",
       "title": "Gastro-oesophageal reflux disease and dyspepsia in adults: investigation and management",
       "sourceType": "clinical-guideline",
       "publisherOrCustodian": "National Institute for Health and Care Excellence",
@@ -33,6 +34,7 @@
     },
     {
       "id": "SRC-KEP1-NIDDK-GERD",
+      "citationId": "CIT-0025",
       "title": "Acid Reflux (GER and GERD) in Adults",
       "sourceType": "reference-standard",
       "publisherOrCustodian": "National Institute of Diabetes and Digestive and Kidney Diseases",
@@ -59,6 +61,7 @@
     },
     {
       "id": "SRC-KEP1-NICE-CG57",
+      "citationId": "CIT-0019",
       "title": "Atopic eczema in under 12s: diagnosis and management",
       "sourceType": "clinical-guideline",
       "publisherOrCustodian": "National Institute for Health and Care Excellence",
@@ -85,6 +88,7 @@
     },
     {
       "id": "SRC-KEP1-MEDLINE-RASH",
+      "citationId": "CIT-0026",
       "title": "Rash Evaluation",
       "sourceType": "reference-standard",
       "publisherOrCustodian": "U.S. National Library of Medicine",
@@ -110,6 +114,7 @@
     },
     {
       "id": "SRC-KEP1-MEDLINE-CBC",
+      "citationId": "CIT-0027",
       "title": "Complete Blood Count (CBC)",
       "sourceType": "reference-standard",
       "publisherOrCustodian": "U.S. National Library of Medicine",
@@ -134,6 +139,7 @@
     },
     {
       "id": "SRC-KEP1-MEDLINE-TSH",
+      "citationId": "CIT-0028",
       "title": "TSH (Thyroid-stimulating hormone) Test",
       "sourceType": "reference-standard",
       "publisherOrCustodian": "U.S. National Library of Medicine",
@@ -157,6 +163,7 @@
     },
     {
       "id": "SRC-KEP1-NICE-NG145",
+      "citationId": "CIT-0029",
       "title": "Thyroid disease: assessment and management",
       "sourceType": "clinical-guideline",
       "publisherOrCustodian": "National Institute for Health and Care Excellence",
@@ -182,6 +189,7 @@
     },
     {
       "id": "SRC-KEP1-NCCIH-HOMEOPATHY",
+      "citationId": "CIT-0023",
       "title": "Homeopathy: What You Need To Know",
       "sourceType": "reference-standard",
       "publisherOrCustodian": "National Center for Complementary and Integrative Health",
@@ -204,10 +212,11 @@
     },
     {
       "id": "SRC-KEP1-FDA-HOMEOPATHY",
+      "citationId": "CIT-0024",
       "title": "Homeopathic Products",
       "sourceType": "reference-standard",
       "publisherOrCustodian": "U.S. Food and Drug Administration",
-      "canonicalUrl": "https://www.fda.gov/drugs/information-drug-class/homeopathic-products",
+      "canonicalUrl": "https://www.fda.gov/drugs/understanding-over-counter-medicines/homeopathic-products",
       "editionOrVersion": "includes 2022 final enforcement guidance",
       "accessedAt": "2026-07-26",
       "sourceVersion": "accessed-2026-07-26",
@@ -228,6 +237,7 @@
     },
     {
       "id": "SRC-KEP1-KENT-1905",
+      "citationId": "CIT-0005",
       "title": "Lectures on Homoeopathic Materia Medica",
       "sourceType": "classical-homeopathic-literature",
       "publisherOrCustodian": "Internet Archive",
@@ -251,6 +261,7 @@
     },
     {
       "id": "SRC-KEP1-BOERICKE-1901",
+      "citationId": "CIT-0006",
       "title": "Pocket Manual of Homoeopathic Materia Medica with Repertory",
       "sourceType": "classical-homeopathic-literature",
       "publisherOrCustodian": "Internet Archive",
@@ -285,6 +296,67 @@
       "sourceIds": [
         "SRC-KEP1-NICE-CG184",
         "SRC-KEP1-NIDDK-GERD"
+      ],
+      "claimEvidencePlans": [
+        {
+          "claimId": "KEP1-D0001-DEFINITION",
+          "claimType": "definition",
+          "citationIds": [
+            "CIT-0017",
+            "CIT-0025"
+          ],
+          "requiredScopeTags": [
+            "gerd"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        },
+        {
+          "claimId": "KEP1-D0001-DIAGNOSIS",
+          "claimType": "diagnosis",
+          "citationIds": [
+            "CIT-0017",
+            "CIT-0025"
+          ],
+          "requiredScopeTags": [
+            "gerd"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        },
+        {
+          "claimId": "KEP1-D0001-SAFETY",
+          "claimType": "safety",
+          "citationIds": [
+            "CIT-0017"
+          ],
+          "requiredScopeTags": [
+            "gerd"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        }
       ],
       "requiredCoverageDomains": [
         "definition-and-scope",
@@ -348,6 +420,67 @@
         "SRC-KEP1-NICE-CG57",
         "SRC-KEP1-MEDLINE-RASH"
       ],
+      "claimEvidencePlans": [
+        {
+          "claimId": "KEP1-D0002-DEFINITION",
+          "claimType": "definition",
+          "citationIds": [
+            "CIT-0019",
+            "CIT-0026"
+          ],
+          "requiredScopeTags": [
+            "atopic-eczema"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        },
+        {
+          "claimId": "KEP1-D0002-DIAGNOSIS",
+          "claimType": "diagnosis",
+          "citationIds": [
+            "CIT-0019",
+            "CIT-0026"
+          ],
+          "requiredScopeTags": [
+            "atopic-eczema"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        },
+        {
+          "claimId": "KEP1-D0002-TREATMENT",
+          "claimType": "treatment",
+          "citationIds": [
+            "CIT-0019"
+          ],
+          "requiredScopeTags": [
+            "atopic-eczema"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        }
+      ],
       "requiredCoverageDomains": [
         "definition-and-scope",
         "symptoms-and-differential",
@@ -410,6 +543,67 @@
         "SRC-KEP1-NICE-CG184",
         "SRC-KEP1-NIDDK-GERD"
       ],
+      "claimEvidencePlans": [
+        {
+          "claimId": "KEP1-S0001-DEFINITION",
+          "claimType": "definition",
+          "citationIds": [
+            "CIT-0017",
+            "CIT-0025"
+          ],
+          "requiredScopeTags": [
+            "gerd"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        },
+        {
+          "claimId": "KEP1-S0001-DIFFERENTIAL",
+          "claimType": "diagnosis",
+          "citationIds": [
+            "CIT-0017",
+            "CIT-0025"
+          ],
+          "requiredScopeTags": [
+            "gerd"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        },
+        {
+          "claimId": "KEP1-S0001-ESCALATION",
+          "claimType": "emergency",
+          "citationIds": [
+            "CIT-0017"
+          ],
+          "requiredScopeTags": [
+            "gerd"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        }
+      ],
       "requiredCoverageDomains": [
         "definition-and-scope",
         "symptoms-and-differential",
@@ -471,6 +665,67 @@
       "sourceIds": [
         "SRC-KEP1-MEDLINE-RASH",
         "SRC-KEP1-NICE-CG57"
+      ],
+      "claimEvidencePlans": [
+        {
+          "claimId": "KEP1-S0002-DEFINITION",
+          "claimType": "definition",
+          "citationIds": [
+            "CIT-0019",
+            "CIT-0026"
+          ],
+          "requiredScopeTags": [
+            "atopic-eczema"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        },
+        {
+          "claimId": "KEP1-S0002-DIFFERENTIAL",
+          "claimType": "diagnosis",
+          "citationIds": [
+            "CIT-0019",
+            "CIT-0026"
+          ],
+          "requiredScopeTags": [
+            "atopic-eczema"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        },
+        {
+          "claimId": "KEP1-S0002-ESCALATION",
+          "claimType": "emergency",
+          "citationIds": [
+            "CIT-0026"
+          ],
+          "requiredScopeTags": [
+            "emergency"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        }
       ],
       "requiredCoverageDomains": [
         "definition-and-scope",
@@ -536,6 +791,66 @@
         "SRC-KEP1-NCCIH-HOMEOPATHY",
         "SRC-KEP1-FDA-HOMEOPATHY"
       ],
+      "claimEvidencePlans": [
+        {
+          "claimId": "KEP1-R0001-TRADITIONAL",
+          "claimType": "traditional-use",
+          "citationIds": [
+            "CIT-0005",
+            "CIT-0006"
+          ],
+          "requiredScopeTags": [
+            "traditional-use"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        },
+        {
+          "claimId": "KEP1-R0001-EVIDENCE-BOUNDARY",
+          "claimType": "safety",
+          "citationIds": [
+            "CIT-0023"
+          ],
+          "requiredScopeTags": [
+            "evidence-limitations"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        },
+        {
+          "claimId": "KEP1-R0001-PRODUCT-SAFETY",
+          "claimType": "safety",
+          "citationIds": [
+            "CIT-0024"
+          ],
+          "requiredScopeTags": [
+            "product-safety"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        }
+      ],
       "requiredCoverageDomains": [
         "traditional-source-description",
         "regulatory-and-product-safety",
@@ -598,6 +913,66 @@
         "SRC-KEP1-NCCIH-HOMEOPATHY",
         "SRC-KEP1-FDA-HOMEOPATHY"
       ],
+      "claimEvidencePlans": [
+        {
+          "claimId": "KEP1-R0002-TRADITIONAL",
+          "claimType": "traditional-use",
+          "citationIds": [
+            "CIT-0005",
+            "CIT-0006"
+          ],
+          "requiredScopeTags": [
+            "traditional-use"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        },
+        {
+          "claimId": "KEP1-R0002-EVIDENCE-BOUNDARY",
+          "claimType": "safety",
+          "citationIds": [
+            "CIT-0023"
+          ],
+          "requiredScopeTags": [
+            "evidence-limitations"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        },
+        {
+          "claimId": "KEP1-R0002-PRODUCT-SAFETY",
+          "claimType": "safety",
+          "citationIds": [
+            "CIT-0024"
+          ],
+          "requiredScopeTags": [
+            "product-safety"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        }
+      ],
       "requiredCoverageDomains": [
         "traditional-source-description",
         "regulatory-and-product-safety",
@@ -656,6 +1031,65 @@
       "status": "sources-registered-review-blocked",
       "sourceIds": [
         "SRC-KEP1-MEDLINE-CBC"
+      ],
+      "claimEvidencePlans": [
+        {
+          "claimId": "KEP1-L0001-DEFINITION",
+          "claimType": "definition",
+          "citationIds": [
+            "CIT-0027"
+          ],
+          "requiredScopeTags": [
+            "cbc"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        },
+        {
+          "claimId": "KEP1-L0001-INTERPRETATION",
+          "claimType": "laboratory-interpretation",
+          "citationIds": [
+            "CIT-0027"
+          ],
+          "requiredScopeTags": [
+            "cbc"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        },
+        {
+          "claimId": "KEP1-L0001-INTERPRETATION-BOUNDARY",
+          "claimType": "risk",
+          "citationIds": [
+            "CIT-0027"
+          ],
+          "requiredScopeTags": [
+            "cbc"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        }
       ],
       "requiredCoverageDomains": [
         "definition-and-scope",
@@ -716,6 +1150,67 @@
         "SRC-KEP1-MEDLINE-TSH",
         "SRC-KEP1-NICE-NG145"
       ],
+      "claimEvidencePlans": [
+        {
+          "claimId": "KEP1-L0002-DEFINITION",
+          "claimType": "definition",
+          "citationIds": [
+            "CIT-0028"
+          ],
+          "requiredScopeTags": [
+            "tsh"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        },
+        {
+          "claimId": "KEP1-L0002-INTERPRETATION",
+          "claimType": "laboratory-interpretation",
+          "citationIds": [
+            "CIT-0028",
+            "CIT-0029"
+          ],
+          "requiredScopeTags": [
+            "thyroid"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        },
+        {
+          "claimId": "KEP1-L0002-MONITORING",
+          "claimType": "laboratory-interpretation",
+          "citationIds": [
+            "CIT-0028",
+            "CIT-0029"
+          ],
+          "requiredScopeTags": [
+            "monitoring"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        }
+      ],
       "requiredCoverageDomains": [
         "definition-and-scope",
         "diagnostic-interpretation",
@@ -767,6 +1262,8 @@
   "summary": {
     "sourceCount": 11,
     "dossierCount": 8,
+    "claimEvidencePlanCount": 24,
+    "stagingEligibleClaimEvidencePlanCount": 24,
     "assignedRoles": 0,
     "unassignedRoles": 32,
     "productionRagEntities": 0,

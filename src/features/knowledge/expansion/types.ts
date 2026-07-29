@@ -1,4 +1,5 @@
 import type { EntityType } from "../types";
+import type { ClaimType } from "../governance/types/governanceTypes";
 
 export type ExpansionRiskTier = "critical" | "high" | "medium" | "low";
 
@@ -204,6 +205,7 @@ export type KEP1CoverageDomain =
   | "evidence-limitations";
 
 export interface KEP1SourceRecord extends RegisteredKnowledgeSource {
+  citationId: string;
   sourceVersion: string;
   verifiedAt: string;
   usePolicy: "citation-only" | "governed-extraction";
@@ -222,6 +224,22 @@ export interface KEP1EditorialAssignment {
   status: "unassigned" | "assigned";
 }
 
+export interface KEP1ClaimEvidencePlan {
+  claimId: string;
+  claimType: ClaimType;
+  citationIds: string[];
+  requiredScopeTags: string[];
+  stagingEvaluation: {
+    eligibleForStaging: boolean;
+    errors: string[];
+  };
+  stateBoundaries: {
+    clinicalApprovalState: "unapproved";
+    publicationState: "unchanged";
+    ragState: "inactive";
+  };
+}
+
 export interface KEP1FlagshipSourceDossier {
   schemaVersion: "1.0.0";
   dossierId: string;
@@ -231,6 +249,7 @@ export interface KEP1FlagshipSourceDossier {
   asOfDate: string;
   status: "sources-registered-review-blocked";
   sourceIds: string[];
+  claimEvidencePlans: KEP1ClaimEvidencePlan[];
   requiredCoverageDomains: KEP1CoverageDomain[];
   prohibitedClaimPatterns: string[];
   assignments: KEP1EditorialAssignment[];
@@ -258,6 +277,8 @@ export interface KEP1SourceDossierManifest {
   summary: {
     sourceCount: number;
     dossierCount: 8;
+    claimEvidencePlanCount: number;
+    stagingEligibleClaimEvidencePlanCount: number;
     assignedRoles: number;
     unassignedRoles: number;
     productionRagEntities: 0;
