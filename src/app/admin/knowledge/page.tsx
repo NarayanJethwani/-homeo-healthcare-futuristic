@@ -232,6 +232,7 @@ export default function AdminKmsPage() {
             {activeTab === "governance" && (
               <FastTrackGovernancePanel
                 entities={allEntities}
+                canResolveSafetyWithdrawal={Boolean(isSuperAdmin)}
                 onReviewEntity={handleEditEntity}
               />
             )}

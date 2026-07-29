@@ -470,6 +470,13 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "reason": "Citation-first fast-track classification, exception routing, and medical safety blocking tests"
   },
   {
+    "path": "tests/knowledgeFastTrackDecisions.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-governance",
+    "testLayer": "governance",
+    "reason": "Revision-bound human decisions, immutable audit, RBAC, citations, concurrency, and zero publication/RAG authority tests"
+  },
+  {
     "path": "tests/knowledgeExpansionInventory.test.ts",
     "status": "active",
     "ownerArea": "canonical-test",
