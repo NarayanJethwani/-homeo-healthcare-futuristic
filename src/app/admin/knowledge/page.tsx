@@ -8,6 +8,7 @@ import {
   CitationLibrary, 
   KnowledgeEditor,
   FastTrackGovernancePanel,
+  ControlledReleasePanel,
   globalKmsRepository,
   KmsKnowledgeEntity,
   EditorialRole
@@ -230,11 +231,14 @@ export default function AdminKmsPage() {
             )}
 
             {activeTab === "governance" && (
-              <FastTrackGovernancePanel
-                entities={allEntities}
-                canResolveSafetyWithdrawal={Boolean(isSuperAdmin)}
-                onReviewEntity={handleEditEntity}
-              />
+              <>
+                <FastTrackGovernancePanel
+                  entities={allEntities}
+                  canResolveSafetyWithdrawal={Boolean(isSuperAdmin)}
+                  onReviewEntity={handleEditEntity}
+                />
+                {isSuperAdmin && <ControlledReleasePanel />}
+              </>
             )}
           </div>
         )}

@@ -291,5 +291,8 @@ service cloud.firestore {
     match /knowledgeGovernanceFastTrackDecisions/{docId} { allow read, write: if false; }
     match /knowledgeGovernanceFastTrackDecisionAuditEvents/{docId} { allow read, write: if false; }
     match /knowledgeGovernanceFastTrackDecisionHeads/{docId} { allow read, write: if false; }
+    match /knowledgeGovernanceControlledReleases/{docId} { allow read, write: if false; }
+    match /knowledgeGovernanceControlledReleaseAuditEvents/{docId} { allow read, write: if false; }
+    match /knowledgeGovernanceControlledReleaseHeads/{docId} { allow read, write: if false; }
   }
 }
