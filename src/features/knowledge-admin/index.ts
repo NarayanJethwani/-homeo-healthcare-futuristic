@@ -22,6 +22,7 @@ export { default as RelationshipGraph } from "./components/RelationshipGraph";
 export { default as QualityGatePanel } from "./components/QualityGatePanel";
 export { default as VersionTimeline } from "./components/VersionTimeline";
 export { default as DashboardHealthCard } from "./components/DashboardHealthCard";
+export { default as FastTrackGovernancePanel } from "./components/FastTrackGovernancePanel";
 export { Badge, EditorialStatusBadge, EvidenceBadge, RoleBadge } from "./components/Badge";
 export * from "./services/editorialPriorityService";
 export * from "./workflow/types";

@@ -13,6 +13,7 @@ export * from "./versioning/contentVersion";
 export * from "./versioning/migration";
 export * from "./governance/clinicalOsIntegration";
 export * from "./governance/publicationGuard";
+export * from "./governance/fastTrackPolicy";
 
 import { DISEASES } from "./content/diseases";
 import { SYMPTOMS } from "./content/symptoms";
@@ -104,4 +105,3 @@ export function getEntityUrl(entityType: EntityType, slug: string): string {
       return `/knowledge`;
   }
 }
-
