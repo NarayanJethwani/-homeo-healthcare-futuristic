@@ -48,11 +48,13 @@ Knowledge Governance persistence is strictly isolated in dedicated collections. 
 | `knowledgeGovernanceKep1DecisionAuditEvents` | `{decisionId}-AUD` | **Entire Record Insert-Only** | **DENIED** (`allow read, write: if false`) |
 | `knowledgeGovernanceKep3CohortProposals` | `KEP3-PLAN-{proposalSha256:0:24}` | **Entire Record Insert-Only** | **DENIED** (`allow read, write: if false`) |
 | `knowledgeGovernanceKep3CohortPlanningAuditEvents` | `{proposalId}-AUD` | **Entire Record Insert-Only** | **DENIED** (`allow read, write: if false`) |
+| `knowledgeGovernanceKep3CohortAuthorizations` | `KEP3-AUTH-{proposalId}` | **Entire Record Insert-Only** | **DENIED** (`allow read, write: if false`) |
+| `knowledgeGovernanceKep3CohortAuthorizationAuditEvents` | `{authorizationId}-AUD` | **Entire Record Insert-Only** | **DENIED** (`allow read, write: if false`) |
 
 ---
 
 ## 3. Deletion & Modification Policy
 
-1. **Insert-Only Collections**: `knowledgeGovernanceReviews`, `knowledgeGovernanceAuditEvents`, `knowledgeGovernanceAiApprovals`, `knowledgeGovernanceQualifications`, `knowledgeGovernanceKep1SourceArtifacts`, `knowledgeGovernanceKep1ArtifactVerifications`, `knowledgeGovernanceKep1DraftRevisions`, `knowledgeGovernanceKep1IndependentReviews`, `knowledgeGovernanceKep1OfflineEvaluations`, `knowledgeGovernanceKep1GoNoGoDecisions`, `knowledgeGovernanceKep3CohortProposals`, and all KEP-1/KEP-3 audit-event collections. Updates and deletes are prohibited at both database security rules level and application API level. Duplicate inserts with changed content fail closed.
+1. **Insert-Only Collections**: `knowledgeGovernanceReviews`, `knowledgeGovernanceAuditEvents`, `knowledgeGovernanceAiApprovals`, `knowledgeGovernanceQualifications`, `knowledgeGovernanceKep1SourceArtifacts`, `knowledgeGovernanceKep1ArtifactVerifications`, `knowledgeGovernanceKep1DraftRevisions`, `knowledgeGovernanceKep1IndependentReviews`, `knowledgeGovernanceKep1OfflineEvaluations`, `knowledgeGovernanceKep1GoNoGoDecisions`, `knowledgeGovernanceKep3CohortProposals`, `knowledgeGovernanceKep3CohortAuthorizations`, and all KEP-1/KEP-3 audit-event collections. Updates and deletes are prohibited at both database security rules level and application API level. Duplicate inserts with changed content fail closed.
 2. **Superseding Corrections**: Review corrections MUST issue a new review record containing `supersedesReviewId`, `correctionReason`, and fresh `reviewedAt` timestamp. Original review records are never updated in place.
 3. **Entity-Scoped Linear Audit Chains**: `knowledgeGovernanceAuditChainHeads/{entityId}` tracks the current linear sequence (`sequenceNumber`, `eventHash`) updated inside Firestore transactions to prevent audit chain forks under multi-client concurrency.

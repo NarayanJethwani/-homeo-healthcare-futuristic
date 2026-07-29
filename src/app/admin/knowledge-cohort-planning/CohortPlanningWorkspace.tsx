@@ -575,6 +575,18 @@ export default function CohortPlanningWorkspace() {
                 <div className="mt-1 font-mono text-xs text-slate-500">
                   {proposal.proposalId} · {proposal.selectedEntityCount} entities
                 </div>
+                {proposal.current && (
+                  <button
+                    onClick={() =>
+                      router.push(
+                        "/admin/knowledge-cohort-authorization"
+                      )
+                    }
+                    className="mt-3 rounded-xl bg-cyan-400 px-4 py-2 text-sm font-bold text-slate-950"
+                  >
+                    Open independent authorization
+                  </button>
+                )}
               </div>
             ))}
             {workspace?.proposals.length === 0 && (

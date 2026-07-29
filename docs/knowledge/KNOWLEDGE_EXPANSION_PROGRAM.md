@@ -161,5 +161,12 @@ explicitly permits that operation.
     five-factor scoring, sufficient capacity evidence for all four operating
     roles, residual risks, and an explicit authority-boundary confirmation.
     This is planning evidence only and creates no assignments or release rights.
+12. Record an immutable independent approve/reject decision against the exact
+    latest KEP-3 proposal SHA-256. Require proposer/authorizer separation, a
+    currently eligible program owner, complete evidence and risk attestations,
+    explicit reject blockers, and a high-friction confirmation phrase. Approval
+    permits controlled cohort preparation only; contributor assignment,
+    editorial approval, publication, indexing, embedding, migration, and RAG
+    remain separately prohibited.
 
 No step in this sequence authorises production migration or RAG activation.
