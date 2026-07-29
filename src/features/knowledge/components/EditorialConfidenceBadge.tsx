@@ -1,7 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
-import { Star, ShieldCheck, Calendar, BookOpen, FileCheck, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  ShieldCheck,
+  Calendar,
+  BookOpen,
+  FileCheck,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 import { KnowledgeEntity } from "../types";
 import { formatMedicalDateLong } from "../utils/dateFormatter";
 
@@ -19,19 +26,41 @@ export default function EditorialConfidenceBadge({ entity, reviewedDate }: Edito
   // Format Date
   const formattedDate = formatMedicalDateLong(reviewedDate);
 
-  // Clinical Confidence Stars based on governance status and evidenceLevel
   const isFullyReviewed = eligibility.publicationStatus === "published" && eligibility.clinicalReviewStatus === "approved";
-  const starsCount = !isFullyReviewed
-    ? 2
-    : entity.evidenceLevel === "Level-A" || entity.evidenceLevel === "Level-B"
-    ? 5
-    : 4;
-
-  const reviewBadgeText = eligibility.reviewLabel;
   const isWithdrawn = eligibility.publicationStatus === "withdrawn";
   const refsCount = Array.isArray(entity.content?.references)
     ? entity.content.references.length
     : 0;
+  const statusHeading = isWithdrawn
+    ? "Clinical safety review in progress"
+    : isFullyReviewed
+      ? "Independent clinical review complete"
+      : "Editorial review complete";
+  const statusDetail = isWithdrawn
+    ? "This entry is being reassessed for clinical safety and accuracy."
+    : isFullyReviewed
+      ? `Clinically reviewed by ${entity.reviewer.name}, ${entity.reviewer.credentials}`
+      : "Independent clinical validation is pending.";
+  const statusPill = isWithdrawn
+    ? "Under review"
+    : isFullyReviewed
+      ? "Clinically reviewed"
+      : "Validation pending";
+  const statusTone = isWithdrawn
+    ? "border-rose-500/20 bg-rose-500/10 text-rose-500"
+    : isFullyReviewed
+      ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+      : "border-sky-500/20 bg-sky-500/10 text-sky-700 dark:text-sky-300";
+  const iconTone = isWithdrawn
+    ? "text-rose-500"
+    : isFullyReviewed
+      ? "text-emerald-500"
+      : "text-sky-600 dark:text-sky-400";
+  const clinicalReviewDetail = isWithdrawn
+    ? "Safety reassessment underway"
+    : isFullyReviewed
+      ? "Independent review complete"
+      : "Independent validation pending";
 
   return (
     <div className="w-full border border-neutral-200 dark:border-neutral-850 rounded-2xl bg-white/40 dark:bg-neutral-900/40 backdrop-blur-sm transition-all overflow-hidden shadow-sm">
@@ -41,35 +70,19 @@ export default function EditorialConfidenceBadge({ entity, reviewedDate }: Edito
         className="flex items-center justify-between p-4 cursor-pointer hover:bg-neutral-100/30 dark:hover:bg-neutral-900/30 transition-colors"
       >
         <div className="flex items-center gap-3">
-          <ShieldCheck className={`h-5 w-5 shrink-0 ${isWithdrawn ? "text-rose-500" : isFullyReviewed ? "text-emerald-500" : "text-amber-500"}`} />
+          <ShieldCheck className={`h-5 w-5 shrink-0 ${iconTone}`} />
           <div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] uppercase font-extrabold text-neutral-400 dark:text-neutral-500 tracking-wider">
-                {reviewBadgeText}
-              </span>
-              <div className="flex text-amber-500">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star 
-                    key={i} 
-                    className={`h-3 w-3 ${i < starsCount ? "fill-amber-500 text-amber-500" : "text-neutral-350 dark:text-neutral-700"}`} 
-                  />
-                ))}
-              </div>
-            </div>
-            <p className="text-xs text-neutral-600 dark:text-neutral-400">
-              {isFullyReviewed ? (
-                <>Verified by <strong className="font-semibold text-neutral-750 dark:text-neutral-200">{entity.reviewer.name}, {entity.reviewer.credentials}</strong></>
-              ) : isWithdrawn ? (
-                <span className="text-rose-400 font-medium">Undergoing independent safety & content review</span>
-              ) : (
-                <span className="text-amber-400 font-medium">Independent clinical review pending</span>
-              )}
+            <p className="text-[11px] font-extrabold uppercase tracking-wider text-neutral-700 dark:text-neutral-200">
+              {statusHeading}
+            </p>
+            <p className="mt-0.5 text-xs text-neutral-600 dark:text-neutral-400">
+              {statusDetail}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md border ${isWithdrawn ? "bg-rose-500/10 text-rose-400 border-rose-500/20" : isFullyReviewed ? "bg-teal-500/10 text-teal-400 border-teal-500/20" : "bg-amber-500/10 text-amber-400 border-amber-500/20"}`}>
-            {isWithdrawn ? "Withdrawn" : isFullyReviewed ? "Flagship" : "Unverified"}
+          <span className={`rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${statusTone}`}>
+            {statusPill}
           </span>
           {expanded ? <ChevronUp className="h-4 w-4 text-neutral-400" /> : <ChevronDown className="h-4 w-4 text-neutral-400" />}
         </div>
@@ -80,10 +93,10 @@ export default function EditorialConfidenceBadge({ entity, reviewedDate }: Edito
         <div className="border-t border-neutral-200 dark:border-neutral-850 p-4 bg-neutral-50/50 dark:bg-neutral-950/20 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
           <div className="space-y-1">
             <span className="text-[9px] uppercase font-extrabold text-neutral-400 dark:text-neutral-500 block tracking-wider">
-              Medically Reviewed
+              Clinical Validation
             </span>
             <span className="font-semibold text-neutral-850 dark:text-neutral-200">
-              Dr. Verified
+              {clinicalReviewDetail}
             </span>
           </div>
 

@@ -160,7 +160,10 @@ async function runTests() {
     assert.strictEqual(eligibility.eligibleByClinicalGovernance, false);
     assert.strictEqual(eligibility.eligibleByTemporaryPublicIndexException, true);
     assert.ok(eligibility.reasons.includes("temporary-editorial-index-exception"));
-    assert.strictEqual(eligibility.reviewLabel, "Editorially reviewed — independent clinical review pending");
+    assert.strictEqual(
+      eligibility.reviewLabel,
+      "Editorial review complete — independent clinical validation pending"
+    );
   });
 
   // 10. Safety & governance audit failure CLI execution returns non-zero process exit status

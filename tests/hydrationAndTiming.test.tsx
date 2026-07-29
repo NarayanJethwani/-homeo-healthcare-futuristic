@@ -131,6 +131,21 @@ describe("React Hydration & Timezone-Invariance Verification", () => {
     canonicalUrl: "https://homeo.healthcare/knowledge/diseases/gerd"
   };
 
+  it("presents pending clinical validation without an unverified label", () => {
+    const html = ReactDOMServer.renderToString(
+      <EditorialConfidenceBadge
+        entity={mockEntity}
+        reviewedDate="2026-06-30T01:00:00Z"
+      />
+    );
+
+    expect(html).toContain("Editorial review complete");
+    expect(html).toContain("Validation pending");
+    expect(html).toContain("Independent clinical validation is pending");
+    expect(html).not.toContain("Unverified");
+    expect(html).not.toContain("Dr. Verified");
+  });
+
   it("should prove regression sensitivity: legacy formatter fails, invariant formatter succeeds", () => {
     const legacyErrors: any[] = [];
     const invariantErrors: any[] = [];
