@@ -491,6 +491,13 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "reason": "Governed KEP-0 inventory, flagship pilot, licensing, and offline retrieval boundary tests"
   },
   {
+    "path": "tests/knowledgeSourceIntegrity.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-governance",
+    "testLayer": "governance",
+    "reason": "Canonical source identifiers, URL integrity, internal-source boundaries, and staging-only expansion tests"
+  },
+  {
     "path": "tests/knowledgeGraphExplorer.test.tsx",
     "status": "quarantined",
     "ownerArea": "ui-components",

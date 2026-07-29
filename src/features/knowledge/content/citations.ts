@@ -157,12 +157,18 @@ export const CITATIONS: CitationRecord[] = [
   },
   {
     id: "CIT-0017",
-    title: "National Institute for Health and Care Excellence (NICE) Guideline: Gastroesophageal Reflux Disease and Dyspepsia in Adults",
+    title: "Gastro-oesophageal reflux disease and dyspepsia in adults: investigation and management",
     authors: ["NICE"],
-    journal: "NICE Guideline NG90",
-    year: 2018,
+    journal: "NICE Clinical Guideline CG184",
+    year: 2014,
     citationStyle: "AMA",
-    category: "Clinical-Guidelines"
+    category: "Clinical-Guidelines",
+    canonicalUrl: "https://www.nice.org.uk/guidance/cg184",
+    sourceIdentifier: "NICE-CG184",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-07-29",
+    scopeTags: ["gerd", "dyspepsia", "adult", "diagnosis", "conventional-management"]
   },
   {
     id: "CIT-0018",
@@ -171,7 +177,13 @@ export const CITATIONS: CitationRecord[] = [
     journal: "NICE Guideline CG61",
     year: 2008,
     citationStyle: "AMA",
-    category: "Clinical-Guidelines"
+    category: "Clinical-Guidelines",
+    canonicalUrl: "https://www.nice.org.uk/guidance/cg61",
+    sourceIdentifier: "NICE-CG61",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-07-29",
+    scopeTags: ["irritable-bowel-syndrome", "adult", "diagnosis", "conventional-management"]
   },
   {
     id: "CIT-0019",
@@ -209,7 +221,12 @@ export const CITATIONS: CitationRecord[] = [
     journal: "Homeo Healthcare Internal Review Series",
     year: 2026,
     citationStyle: "Clinical-Review",
-    category: "Clinical-Review"
+    category: "Clinical-Review",
+    sourceIdentifier: "INTERNAL-CLINICAL-REVIEW-0022",
+    sourceAuthority: "internal-context",
+    verificationStatus: "internal-only",
+    verifiedAt: "2026-07-29",
+    scopeTags: ["laboratory-reference", "internal-context"]
   }
 ];
 
