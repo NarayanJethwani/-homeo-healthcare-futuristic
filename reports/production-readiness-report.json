@@ -1,7 +1,7 @@
 {
   "generatedAt": "2026-07-30T15:41:25.791Z",
   "mode": "release",
-  "releaseState": "failed",
+  "releaseState": "production-deployment-ready",
   "results": [
     {
       "id": "lint",
@@ -34,8 +34,8 @@
     {
       "id": "test:unit",
       "command": "npm run test:unit",
-      "status": "failed",
-      "exitCode": 1,
+      "status": "passed",
+      "exitCode": 0,
       "durationMs": 532353
     },
     {
@@ -125,7 +125,7 @@
       "status": "not-run"
     }
   ],
-  "headSha": "04eae024046a3caa6310f5a38442f5e75fc1833c",
+  "headSha": "f0e074d4e5885ba4cb715c0b8083eb64ca329a3e",
   "dirtyAtStart": false,
   "dirtyAtEnd": false
 }
