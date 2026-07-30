@@ -470,6 +470,13 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "reason": "Citation-first fast-track classification, exception routing, and medical safety blocking tests"
   },
   {
+    "path": "tests/knowledgeAuthorityLedExpansionPolicy.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-governance",
+    "testLayer": "governance",
+    "reason": "Risk-tiered authority-led expansion, independent clinical escalation, and zero AI self-approval tests"
+  },
+  {
     "path": "tests/knowledgeFastTrackDecisions.test.ts",
     "status": "active",
     "ownerArea": "knowledge-governance",

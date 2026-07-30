@@ -1,7 +1,7 @@
 # Knowledge Database Expansion Milestones
 
 **Program:** Knowledge Expansion Program (KEP)
-**Roadmap version:** 1.0
+**Roadmap version:** 1.1
 **Baseline date:** 2026-07-30
 **Current production RAG posture:** Inactive
 
@@ -19,8 +19,10 @@ Current readiness is:
 
 - 8 flagship entities planned;
 - 24/24 flagship claim plans eligible for staging;
-- 0/11 flagship operating seats filled;
-- 0/32 flagship editorial assignments approved;
+- 1 accountable program-owner authority to be confirmed for the authority-led
+  expansion lane;
+- independent clinical capacity engaged on demand for elevated and critical
+  items rather than through 32 permanent assignments;
 - 0 independently reviewed entities;
 - 5 priority disease evidence-preparation dossiers with 15/15 eligible claim
   plans;
@@ -74,19 +76,27 @@ Flagship:
 - L0002 TSH
 
 AI may summarize sources, prepare citation maps, draft text, propose graph edges,
-and generate evaluation cases. AI cannot verify contributor identity, approve a
-credential, accept a clinical claim, or serve as the independent reviewer.
+generate evaluation cases, and assemble the final authorization packet. The
+authenticated program owner is the final decision-maker. One independent
+clinical checker is added only for elevated or critical items. AI cannot accept
+a clinical claim or grant itself publication or RAG authority.
 
 Exit gate:
 
 ```text
-11/11 operating seats covered
-32/32 editorial assignments approved
-100% required credentials current
-author and reviewer identities separated
+1/1 authenticated program-owner authority active
+100% routine items routed directly to owner final authorization
+100% elevated and critical items routed through one independent clinical check
+100% engaged human credentials current
 all source-rights decisions current
 0 publication or RAG authority changes
 ```
+
+The detailed operating policy is defined in
+`docs/knowledge/AUTHORITY_LED_EXPANSION_WORKFLOW.md`. The earlier eleven-seat
+model remains historical KEP-1 evidence and may still be selected as an
+institutional high-assurance option, but it is no longer the universal entry
+gate for new expansion work.
 
 ### M2 — Flagship content and graph completion
 

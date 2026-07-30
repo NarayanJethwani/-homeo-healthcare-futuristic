@@ -5,6 +5,7 @@ import {
   assessKnowledgeEntityForFastTrack,
   buildFastTrackSummary,
 } from "./fastTrackPolicy";
+import { getAuthorityLedDecisionRequirement } from "./authorityLedExpansionPolicy";
 import type { RecordFastTrackDecisionInput } from "./fastTrackDecisionSchemas";
 import type {
   FastTrackDecisionActor,
@@ -84,6 +85,8 @@ export async function getFastTrackDecisionWorkspace(
     const isException = assessment.lane !== "background-monitoring";
     return {
       ...assessment,
+      authorityRequirement:
+        getAuthorityLedDecisionRequirement(assessment),
       entityRevisionSha256,
       availableCitationIds: entityReferences(entity),
       currentDecision,

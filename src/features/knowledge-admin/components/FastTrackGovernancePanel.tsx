@@ -41,10 +41,10 @@ interface DecisionFormState {
 
 const RULES = [
   "Keep existing independently reviewed content available under background monitoring.",
-  "Require a registered citation for every new or changed medical article.",
-  "Send new, unverified, conflicting, withdrawn, or high-risk claims to human review.",
-  "Let AI summarize evidence and draft corrections, but never grant itself clinical approval.",
-  "Immediately block unsafe treatment-replacement and prohibited cure claims.",
+  "Let AI prepare sources, citation maps, safety checks, summaries, and draft corrections.",
+  "Send cited, low-risk new or changed revisions directly to the program owner for final authorization.",
+  "Add one independent clinical check only for elevated, conflicting, uncited, or high-risk claims.",
+  "Immediately block unsafe treatment-replacement and prohibited cure claims behind controlled release.",
   "Preserve a human-readable reason and audit trail for every exception.",
 ];
 
@@ -124,6 +124,21 @@ function initialForm(
   };
 }
 
+function authorityLabel(
+  assessment: FastTrackDecisionAssessment
+): string {
+  switch (assessment.authorityRequirement.requirement) {
+    case "owner-final-authorization":
+      return "Final owner authorization";
+    case "owner-plus-independent-clinical-check":
+      return "Independent check + final authorization";
+    case "controlled-safety-release":
+      return "Controlled safety release";
+    default:
+      return "Background monitoring";
+  }
+}
+
 function DecisionCard({
   assessment,
   entity,
@@ -168,9 +183,7 @@ function DecisionCard({
             >
               {decision
                 ? "Decision recorded"
-                : blocked
-                  ? "Blocked"
-                  : "Human review"}
+                : authorityLabel(assessment)}
             </span>
           </div>
           <h3 className="mt-2 font-bold text-neutral-100">
@@ -216,7 +229,7 @@ function DecisionCard({
                 onClick={() => onDecide("approved-reviewed")}
                 className="rounded-xl bg-emerald-400 px-3 py-2 text-xs font-black text-slate-950 transition hover:bg-emerald-300"
               >
-                Approve
+                Final authorize
               </button>
               <button
                 type="button"
@@ -266,9 +279,10 @@ function DecisionCard({
           )}
         </div>
       ) : (
-        <p className="mt-3 text-xs leading-5 text-neutral-500">
-          {assessment.recommendation}
-        </p>
+        <div className="mt-3 space-y-2 text-xs leading-5 text-neutral-500">
+          <p>{assessment.authorityRequirement.explanation}</p>
+          <p>{assessment.recommendation}</p>
+        </div>
       )}
       <span className="sr-only">{entity.id}</span>
     </article>
@@ -438,9 +452,10 @@ export default function FastTrackGovernancePanel({
               Review exceptions, not the entire encyclopedia
             </h2>
             <p className="mt-2 text-sm leading-6 text-neutral-400">
-              Decisions are bound to the exact article revision and preserved
-              in an immutable audit trail. No decision here publishes content
-              or grants RAG authority.
+              AI prepares the evidence packet. You make the final decision;
+              a second clinical check is requested only for elevated or
+              critical risk. No decision here publishes content or grants RAG
+              authority.
             </p>
           </div>
           <button
@@ -525,8 +540,9 @@ export default function FastTrackGovernancePanel({
               <p className="text-xs font-bold">Accountability principle</p>
             </div>
             <p className="mt-2 text-xs leading-5 text-neutral-400">
-              Approval records clinical judgment for one immutable revision.
-              Any later content change automatically makes that decision stale.
+              You are the accountable program owner and final decision-maker.
+              Authorization is bound to one immutable revision; any later
+              content change automatically makes it stale.
             </p>
           </div>
         </div>
@@ -538,7 +554,7 @@ export default function FastTrackGovernancePanel({
                 Medical exception queue
               </h2>
               <p className="mt-1 text-xs text-neutral-500">
-                Review findings and record the accountable human decision.
+                Review the AI-prepared packet and record your final decision.
               </p>
             </div>
             {workspace && (
@@ -566,7 +582,7 @@ export default function FastTrackGovernancePanel({
               <div>
                 <CheckCircle2 className="mx-auto h-8 w-8 text-emerald-300" />
                 <p className="mt-3 text-sm font-bold text-emerald-200">
-                  No exceptions need human review.
+                  No items need your authorization.
                 </p>
               </div>
             </div>
@@ -606,7 +622,7 @@ export default function FastTrackGovernancePanel({
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">
-                  Revision-bound human decision
+                  {authorityLabel(selected)}
                 </p>
                 <h2
                   id="fast-track-decision-title"

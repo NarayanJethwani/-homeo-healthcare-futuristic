@@ -2,6 +2,7 @@ import type {
   FastTrackAssessment,
   FastTrackSummary,
 } from "./fastTrackPolicy";
+import type { AuthorityLedDecisionRequirement } from "./authorityLedExpansionPolicy";
 
 export type FastTrackDecisionOutcome =
   | "approved-reviewed"
@@ -67,6 +68,7 @@ export interface FastTrackDecisionRepository {
 }
 
 export interface FastTrackDecisionAssessment extends FastTrackAssessment {
+  authorityRequirement: AuthorityLedDecisionRequirement;
   entityRevisionSha256: string;
   availableCitationIds: string[];
   currentDecision: FastTrackDecisionRecord | null;
