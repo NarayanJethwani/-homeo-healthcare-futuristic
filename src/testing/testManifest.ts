@@ -1234,6 +1234,20 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "reason": "M2 GERD and Heartburn source-bound content, claim provenance, governed relationship proposals, and human final-authorization boundary"
   },
   {
+    "path": "tests/knowledgeGERDHeartburnOfflineEval.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "governance",
+    "reason": "M2 GERD and Heartburn 40-case offline retrieval evaluation, 8 evaluation dimensions, 100% emergency recall, and zero-production-RAG gate"
+  },
+  {
+    "path": "tests/knowledgeEczemaSkinEruptionsFlagshipPackage.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "governance",
+    "reason": "M2 Eczema and Skin Eruptions v1.1.0 source-bound content, claim provenance, governed relationship proposals, and human final-authorization boundary"
+  },
+  {
     "path": "tests/knowledgeKEP1ContributorIntake.test.ts",
     "status": "active",
     "ownerArea": "knowledge-expansion",

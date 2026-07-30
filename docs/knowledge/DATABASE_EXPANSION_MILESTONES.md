@@ -130,11 +130,18 @@ Delivery order:
 Current delivery:
 
 - GERD + Heartburn revision `1.1.0` prepared on 2026-07-30;
-- 14 material claim groups mapped to four verified sources;
-- 10 unique governed relationship proposals, all draft-only;
-- revision-bound authorization packet approved by the program owner on
-  2026-07-30 through PR #74;
-- no automatic graph acceptance, publication execution, or RAG activation.
+- 14 material claim groups mapped to four verified sources (`CIT-0017`, `CIT-0023`, `CIT-0025`, `CIT-0036`);
+- 10 unique governed relationship proposals for GERD/Heartburn, all draft-only;
+- Revision-bound authorization packet approved by the program owner on 2026-07-30 through PR #74;
+- **M2 Governed Offline Retrieval Evaluation** executed for GERD + Heartburn on 2026-07-30:
+  - 40 test cases across 8 evaluation dimensions (20 for `D0001` GERD, 20 for `S0001` Heartburn);
+  - 100% pass rate: 0 unsupported claim failures, 100% emergency escalation recall, 100% citation precision;
+  - Evaluation report published to `reports/knowledge-m2-gerd-heartburn-offline-evaluation.md`.
+- **Eczema + Skin Eruptions** flagship package revision `1.1.0` prepared on 2026-07-30:
+  - `D0002` Eczema and `S0002` Skin Eruptions upgraded to `v1.1.0` with claim-level citations (`CIT-0019` NICE CG57, `CIT-0022`, `CIT-0023`, `CIT-0024`);
+  - 10 unique governed relationship proposals for Eczema/Skin Eruptions, all draft-only;
+  - Authorization packet built in `reports/knowledge-m2-eczema-skin-eruptions-authorization.json`.
+- Production RAG remains strictly inactive across all entities.
 
 Exit gate:
 
