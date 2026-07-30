@@ -656,26 +656,56 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
     try {
       const results = await clinicalRepertoryService.current.parseAIIntakeText(nlpInput);
       
+      if (!results || !Array.isArray(results.matchedRubrics) || results.matchedRubrics.length === 0) {
+        alert("No matching rubrics found for the entered clinical text. Try describing symptoms like 'anxious', 'chilly', 'headache at 3am'.");
+        return;
+      }
+
       // Map results back to selected rubrics
       const incoming = results.matchedRubrics.map((m: { rubricId: string; suggestedSeverity: number }) => ({
         rubricId: m.rubricId,
-        severity: m.suggestedSeverity,
+        severity: m.suggestedSeverity || 5,
         frequency: 'frequent' as const,
         impact: 'moderate' as const
       }));
 
-      // Merge with existing
+      // Immediately update selected rubrics state
       setSelectedRubrics(prev => {
         const filtered = prev.filter(s => !incoming.some((i: { rubricId: string }) => i.rubricId === s.rubricId));
         return [...filtered, ...incoming];
       });
 
+      // Clear input box
       setNlpInput('');
-      alert(`Intake processing complete! Matched ${results.matchedRubrics.length} clinical indicators with active weights.`);
-    } catch (e) {
+
+      // Background non-blocking hydration of rubric titles
+      const missingRubricIds = results.matchedRubrics
+        .map((m: { rubricId: string }) => m.rubricId)
+        .filter((id: string) => id && !rubrics.some(r => r.rubricId === id))
+        .slice(0, 20);
+
+      if (missingRubricIds.length > 0) {
+        Promise.all(
+          missingRubricIds.map((id: string) =>
+            clinicalRepertoryService.current.getRubricById(id).catch(() => null)
+          )
+        ).then(fetched => {
+          const valid = fetched.filter(Boolean);
+          if (valid.length > 0) {
+            setRubrics(prev => {
+              const existingIds = new Set(prev.map(r => r.rubricId));
+              const newItems = valid.filter(r => !existingIds.has(r.rubricId));
+              return [...prev, ...newItems];
+            });
+          }
+        });
+      }
+    } catch (e: any) {
       console.error("AI Intake mapping failed:", e);
+      alert(`AI Intake mapping failed: ${e.message || e}`);
+    } finally {
+      setParsingIntake(false);
     }
-    setParsingIntake(false);
   };
 
   // Run Database Quality Audit

@@ -170,7 +170,7 @@ export function createClinicalRepertoryService(
     },
 
     async parseAIIntakeText(intakeText: string): Promise<AIIntakeMappingResult> {
-      const response = await fetch("/api/intake", {
+      const response = await fetch("/api/repertory/parse-intake", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -178,6 +178,10 @@ export function createClinicalRepertoryService(
         body: JSON.stringify({ text: intakeText })
       });
       const data = await response.json();
+      if (!response.ok || !data.success) {
+        const errorMsg = data.message || data.error?.message || `HTTP ${response.status}: Failed to parse intake text.`;
+        throw new Error(errorMsg);
+      }
       return data as AIIntakeMappingResult;
     },
 
