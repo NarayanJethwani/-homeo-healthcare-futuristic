@@ -135,10 +135,11 @@ explicitly permits that operation.
 1. Merge the governance-hardening baseline after CI, deployment, and independent
    review gates pass.
 2. Run and review KEP-0 inventory.
-3. Fill the eleven-seat KEP-1 operating roster through the private governance
-   registry and review the privacy-safe onboarding operations report.
-4. Approve all 32 KEP-1 editorial assignments through the verified contributor
-   intake gate.
+3. Confirm one authenticated program owner as the accountable final authority
+   for the authority-led expansion lane.
+4. Route citation-complete, low-risk revisions directly to the program owner;
+   engage one independent clinical checker only for elevated or critical
+   items, as defined in `AUTHORITY_LED_EXPANSION_WORKFLOW.md`.
 5. Record source-rights decisions through the controlled KEP-1 acquisition
    workspace; citation-only sources remain non-extractable.
 6. Propose and independently approve acquisition envelopes, record immutable
