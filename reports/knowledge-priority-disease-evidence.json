@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "programId": "KEP-2-PRIORITY-DISEASE-EVIDENCE",
+  "programId": "KEP-PREP-1-PRIORITY-DISEASE-EVIDENCE",
   "asOfDate": "2026-07-30",
   "status": "sources-registered-review-blocked",
   "selectionBasis": {
@@ -11,7 +11,7 @@
   },
   "sources": [
     {
-      "id": "SRC-KEP2-NICE-NG136",
+      "id": "SRC-PREP1-NICE-NG136",
       "citationId": "CIT-0030",
       "title": "Hypertension in adults: diagnosis and management",
       "sourceType": "clinical-guideline",
@@ -39,7 +39,7 @@
       ]
     },
     {
-      "id": "SRC-KEP2-WHO-HYPERTENSION-2021",
+      "id": "SRC-PREP1-WHO-HYPERTENSION-2021",
       "citationId": "CIT-0031",
       "title": "Guideline for the pharmacological treatment of hypertension in adults",
       "sourceType": "clinical-guideline",
@@ -65,7 +65,7 @@
       ]
     },
     {
-      "id": "SRC-KEP2-NICE-NG28",
+      "id": "SRC-PREP1-NICE-NG28",
       "citationId": "CIT-0032",
       "title": "Type 2 diabetes in adults: management",
       "sourceType": "clinical-guideline",
@@ -89,7 +89,7 @@
       ]
     },
     {
-      "id": "SRC-KEP2-NIDDK-DIABETES-OVERVIEW",
+      "id": "SRC-PREP1-NIDDK-DIABETES-OVERVIEW",
       "citationId": "CIT-0033",
       "title": "Diabetes Overview",
       "sourceType": "reference-standard",
@@ -114,7 +114,7 @@
       ]
     },
     {
-      "id": "SRC-KEP2-NIDDK-DIABETES-DIAGNOSIS",
+      "id": "SRC-PREP1-NIDDK-DIABETES-DIAGNOSIS",
       "citationId": "CIT-0034",
       "title": "Diabetes Tests & Diagnosis",
       "sourceType": "reference-standard",
@@ -138,7 +138,7 @@
       ]
     },
     {
-      "id": "SRC-KEP2-MEDLINE-ALLERGIC-RHINITIS",
+      "id": "SRC-PREP1-MEDLINE-ALLERGIC-RHINITIS",
       "citationId": "CIT-0035",
       "title": "Allergic rhinitis",
       "sourceType": "reference-standard",
@@ -165,7 +165,7 @@
       ]
     },
     {
-      "id": "SRC-KEP2-ARIA-2016",
+      "id": "SRC-PREP1-ARIA-2016",
       "citationId": "CIT-0021",
       "title": "Allergic Rhinitis and its Impact on Asthma (ARIA) guidelines—2016 revision",
       "sourceType": "clinical-guideline",
@@ -191,7 +191,7 @@
       ]
     },
     {
-      "id": "SRC-KEP2-NICE-NG145",
+      "id": "SRC-PREP1-NICE-NG145",
       "citationId": "CIT-0029",
       "title": "Thyroid disease: assessment and management",
       "sourceType": "clinical-guideline",
@@ -219,7 +219,7 @@
       ]
     },
     {
-      "id": "SRC-KEP2-MEDLINE-TSH",
+      "id": "SRC-PREP1-MEDLINE-TSH",
       "citationId": "CIT-0028",
       "title": "TSH (Thyroid-stimulating hormone) Test",
       "sourceType": "reference-standard",
@@ -244,7 +244,7 @@
       ]
     },
     {
-      "id": "SRC-KEP2-ATA-HYPOTHYROIDISM-2014",
+      "id": "SRC-PREP1-ATA-HYPOTHYROIDISM-2014",
       "citationId": "CIT-0012",
       "title": "Guidelines for the Treatment of Hypothyroidism",
       "sourceType": "clinical-guideline",
@@ -268,7 +268,7 @@
       ]
     },
     {
-      "id": "SRC-KEP2-AACE-ATA-HYPOTHYROIDISM-2012",
+      "id": "SRC-PREP1-AACE-ATA-HYPOTHYROIDISM-2012",
       "citationId": "CIT-0013",
       "title": "Clinical Practice Guidelines for Hypothyroidism in Adults",
       "sourceType": "clinical-guideline",
@@ -293,7 +293,7 @@
       ]
     },
     {
-      "id": "SRC-KEP2-WHO-ANAEMIA-2017",
+      "id": "SRC-PREP1-WHO-ANAEMIA-2017",
       "citationId": "CIT-0015",
       "title": "Nutritional anaemias: tools for effective prevention and control",
       "sourceType": "clinical-guideline",
@@ -318,7 +318,7 @@
       ]
     },
     {
-      "id": "SRC-KEP2-MSD-ANEMIA",
+      "id": "SRC-PREP1-MSD-ANEMIA",
       "citationId": "CIT-0016",
       "title": "Evaluation of Anemia",
       "sourceType": "reference-standard",
@@ -349,19 +349,19 @@
   "dossiers": [
     {
       "schemaVersion": "1.0.0",
-      "dossierId": "KEP2-DOSSIER-D0005",
+      "dossierId": "PREP1-DOSSIER-D0005",
       "entityId": "D0005",
       "entityType": "disease",
       "title": "Allergic Rhinitis",
       "asOfDate": "2026-07-30",
       "status": "sources-registered-review-blocked",
       "sourceIds": [
-        "SRC-KEP2-MEDLINE-ALLERGIC-RHINITIS",
-        "SRC-KEP2-ARIA-2016"
+        "SRC-PREP1-MEDLINE-ALLERGIC-RHINITIS",
+        "SRC-PREP1-ARIA-2016"
       ],
       "claimEvidencePlans": [
         {
-          "claimId": "KEP2-D0005-DEFINITION",
+          "claimId": "PREP1-D0005-DEFINITION",
           "claimType": "definition",
           "citationIds": [
             "CIT-0035"
@@ -380,7 +380,7 @@
           }
         },
         {
-          "claimId": "KEP2-D0005-DIAGNOSIS",
+          "claimId": "PREP1-D0005-DIAGNOSIS",
           "claimType": "diagnosis",
           "citationIds": [
             "CIT-0035",
@@ -400,7 +400,7 @@
           }
         },
         {
-          "claimId": "KEP2-D0005-TREATMENT",
+          "claimId": "PREP1-D0005-TREATMENT",
           "claimType": "treatment",
           "citationIds": [
             "CIT-0021",
@@ -472,19 +472,19 @@
     },
     {
       "schemaVersion": "1.0.0",
-      "dossierId": "KEP2-DOSSIER-D0009",
+      "dossierId": "PREP1-DOSSIER-D0009",
       "entityId": "D0009",
       "entityType": "disease",
       "title": "Hypertension",
       "asOfDate": "2026-07-30",
       "status": "sources-registered-review-blocked",
       "sourceIds": [
-        "SRC-KEP2-NICE-NG136",
-        "SRC-KEP2-WHO-HYPERTENSION-2021"
+        "SRC-PREP1-NICE-NG136",
+        "SRC-PREP1-WHO-HYPERTENSION-2021"
       ],
       "claimEvidencePlans": [
         {
-          "claimId": "KEP2-D0009-DIAGNOSIS",
+          "claimId": "PREP1-D0009-DIAGNOSIS",
           "claimType": "diagnosis",
           "citationIds": [
             "CIT-0030"
@@ -503,7 +503,7 @@
           }
         },
         {
-          "claimId": "KEP2-D0009-TREATMENT",
+          "claimId": "PREP1-D0009-TREATMENT",
           "claimType": "treatment",
           "citationIds": [
             "CIT-0030",
@@ -523,7 +523,7 @@
           }
         },
         {
-          "claimId": "KEP2-D0009-MONITORING",
+          "claimId": "PREP1-D0009-MONITORING",
           "claimType": "safety",
           "citationIds": [
             "CIT-0030"
@@ -594,20 +594,20 @@
     },
     {
       "schemaVersion": "1.0.0",
-      "dossierId": "KEP2-DOSSIER-D0010",
+      "dossierId": "PREP1-DOSSIER-D0010",
       "entityId": "D0010",
       "entityType": "disease",
       "title": "Diabetes Mellitus",
       "asOfDate": "2026-07-30",
       "status": "sources-registered-review-blocked",
       "sourceIds": [
-        "SRC-KEP2-NICE-NG28",
-        "SRC-KEP2-NIDDK-DIABETES-OVERVIEW",
-        "SRC-KEP2-NIDDK-DIABETES-DIAGNOSIS"
+        "SRC-PREP1-NICE-NG28",
+        "SRC-PREP1-NIDDK-DIABETES-OVERVIEW",
+        "SRC-PREP1-NIDDK-DIABETES-DIAGNOSIS"
       ],
       "claimEvidencePlans": [
         {
-          "claimId": "KEP2-D0010-DEFINITION",
+          "claimId": "PREP1-D0010-DEFINITION",
           "claimType": "definition",
           "citationIds": [
             "CIT-0033"
@@ -626,7 +626,7 @@
           }
         },
         {
-          "claimId": "KEP2-D0010-DIAGNOSIS",
+          "claimId": "PREP1-D0010-DIAGNOSIS",
           "claimType": "diagnosis",
           "citationIds": [
             "CIT-0034"
@@ -645,7 +645,7 @@
           }
         },
         {
-          "claimId": "KEP2-D0010-TREATMENT",
+          "claimId": "PREP1-D0010-TREATMENT",
           "claimType": "treatment",
           "citationIds": [
             "CIT-0032",
@@ -717,21 +717,21 @@
     },
     {
       "schemaVersion": "1.0.0",
-      "dossierId": "KEP2-DOSSIER-D0011",
+      "dossierId": "PREP1-DOSSIER-D0011",
       "entityId": "D0011",
       "entityType": "disease",
       "title": "Hypothyroidism",
       "asOfDate": "2026-07-30",
       "status": "sources-registered-review-blocked",
       "sourceIds": [
-        "SRC-KEP2-NICE-NG145",
-        "SRC-KEP2-MEDLINE-TSH",
-        "SRC-KEP2-ATA-HYPOTHYROIDISM-2014",
-        "SRC-KEP2-AACE-ATA-HYPOTHYROIDISM-2012"
+        "SRC-PREP1-NICE-NG145",
+        "SRC-PREP1-MEDLINE-TSH",
+        "SRC-PREP1-ATA-HYPOTHYROIDISM-2014",
+        "SRC-PREP1-AACE-ATA-HYPOTHYROIDISM-2012"
       ],
       "claimEvidencePlans": [
         {
-          "claimId": "KEP2-D0011-DIAGNOSIS",
+          "claimId": "PREP1-D0011-DIAGNOSIS",
           "claimType": "diagnosis",
           "citationIds": [
             "CIT-0029",
@@ -751,7 +751,7 @@
           }
         },
         {
-          "claimId": "KEP2-D0011-TREATMENT",
+          "claimId": "PREP1-D0011-TREATMENT",
           "claimType": "treatment",
           "citationIds": [
             "CIT-0012",
@@ -771,7 +771,7 @@
           }
         },
         {
-          "claimId": "KEP2-D0011-MONITORING",
+          "claimId": "PREP1-D0011-MONITORING",
           "claimType": "laboratory-interpretation",
           "citationIds": [
             "CIT-0028",
@@ -843,19 +843,19 @@
     },
     {
       "schemaVersion": "1.0.0",
-      "dossierId": "KEP2-DOSSIER-D0051",
+      "dossierId": "PREP1-DOSSIER-D0051",
       "entityId": "D0051",
       "entityType": "disease",
       "title": "Anemia",
       "asOfDate": "2026-07-30",
       "status": "sources-registered-review-blocked",
       "sourceIds": [
-        "SRC-KEP2-WHO-ANAEMIA-2017",
-        "SRC-KEP2-MSD-ANEMIA"
+        "SRC-PREP1-WHO-ANAEMIA-2017",
+        "SRC-PREP1-MSD-ANEMIA"
       ],
       "claimEvidencePlans": [
         {
-          "claimId": "KEP2-D0051-DEFINITION",
+          "claimId": "PREP1-D0051-DEFINITION",
           "claimType": "definition",
           "citationIds": [
             "CIT-0015",
@@ -875,7 +875,7 @@
           }
         },
         {
-          "claimId": "KEP2-D0051-DIAGNOSIS",
+          "claimId": "PREP1-D0051-DIAGNOSIS",
           "claimType": "diagnosis",
           "citationIds": [
             "CIT-0016"
@@ -894,7 +894,7 @@
           }
         },
         {
-          "claimId": "KEP2-D0051-INTERPRETATION",
+          "claimId": "PREP1-D0051-INTERPRETATION",
           "claimType": "laboratory-interpretation",
           "citationIds": [
             "CIT-0016"

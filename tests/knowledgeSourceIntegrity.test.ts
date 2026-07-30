@@ -5,12 +5,12 @@ import {
   evaluateClaimCitationStaging,
 } from "../src/features/knowledge/expansion/sourceIntegrity";
 import { KEP1_SOURCES } from "../src/features/knowledge/expansion/kep1SourceDossiers";
-import { KEP2_PRIORITY_DISEASE_SOURCES } from "../src/features/knowledge/expansion/kep2PriorityDiseaseEvidence";
+import { PRIORITY_DISEASE_SOURCES } from "../src/features/knowledge/expansion/priorityDiseaseEvidence";
 
 export function runKnowledgeSourceIntegrityTests(): void {
   const report = buildKnowledgeSourceIntegrityReport({
     citations: CITATIONS,
-    sources: [...KEP1_SOURCES, ...KEP2_PRIORITY_DISEASE_SOURCES],
+    sources: [...KEP1_SOURCES, ...PRIORITY_DISEASE_SOURCES],
     asOfDate: "2026-07-30",
   });
 
@@ -71,7 +71,7 @@ export function runKnowledgeSourceIntegrityTests(): void {
   );
   assert.strictEqual(
     report.summary.eligibleRegisteredSources,
-    KEP1_SOURCES.length + KEP2_PRIORITY_DISEASE_SOURCES.length
+    KEP1_SOURCES.length + PRIORITY_DISEASE_SOURCES.length
   );
   assert.ok(
     KEP1_SOURCES.every((source) =>
@@ -79,7 +79,7 @@ export function runKnowledgeSourceIntegrityTests(): void {
     )
   );
   assert.ok(
-    KEP2_PRIORITY_DISEASE_SOURCES.every((source) =>
+    PRIORITY_DISEASE_SOURCES.every((source) =>
       report.eligibleCitationIds.includes(source.citationId)
     )
   );

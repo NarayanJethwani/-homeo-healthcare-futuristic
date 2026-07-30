@@ -1213,11 +1213,11 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "reason": "KEP-1 source rights, editorial assignment, and zero-RAG gate"
   },
   {
-    "path": "tests/knowledgeKEP2PriorityDiseaseEvidence.test.ts",
+    "path": "tests/knowledgePriorityDiseaseEvidence.test.ts",
     "status": "active",
     "ownerArea": "knowledge-expansion",
     "testLayer": "governance",
-    "reason": "KEP-2 clinical-risk selection, authoritative citation registration, withdrawal exclusion, mock-analytics exclusion, and zero-publication/RAG gate"
+    "reason": "Pre-cohort clinical-risk selection, authoritative citation registration, withdrawal exclusion, mock-analytics exclusion, and zero-publication/RAG gate"
   },
   {
     "path": "tests/knowledgeKEP1ContributorIntake.test.ts",
