@@ -1,7 +1,7 @@
 # Knowledge Database Expansion Milestones
 
 **Program:** Knowledge Expansion Program (KEP)
-**Roadmap version:** 1.0
+**Roadmap version:** 1.1
 **Baseline date:** 2026-07-30
 **Current production RAG posture:** Inactive
 
@@ -75,8 +75,10 @@ Flagship:
 - L0002 TSH
 
 AI may summarize sources, prepare citation maps, draft text, propose graph edges,
-and generate evaluation cases. AI cannot accept a clinical claim or make the
-final authorization decision.
+generate evaluation cases, and assemble the final authorization packet. The
+authenticated program owner is the final decision-maker. One independent
+clinical checker is added only for elevated or critical items. AI cannot accept
+a clinical claim or grant itself publication or RAG authority.
 
 Decision lanes:
 
@@ -89,13 +91,21 @@ Decision lanes:
 Exit gate:
 
 ```text
-1 recorded program-owner final authority
+1/1 authenticated program-owner authority active
 100% revisions assigned to a risk lane
+100% routine items routed directly to owner final authorization
 100% elevated and critical revisions have one independent clinical check
+100% engaged human credentials current
 all source-rights decisions current
 0 AI or automatic final approvals
 0 publication or RAG authority changes
 ```
+
+The detailed operating policy is defined in
+`docs/knowledge/AUTHORITY_LED_EXPANSION_WORKFLOW.md`. The earlier eleven-seat
+model remains historical KEP-1 evidence and may still be selected as an
+institutional high-assurance option, but it is no longer the universal entry
+gate for new expansion work.
 
 ### M2 — Flagship content and graph completion
 
