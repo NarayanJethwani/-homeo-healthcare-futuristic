@@ -1220,6 +1220,13 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "reason": "Pre-cohort clinical-risk selection, authoritative citation registration, withdrawal exclusion, mock-analytics exclusion, and zero-publication/RAG gate"
   },
   {
+    "path": "tests/knowledgeGERDHeartburnFlagshipPackage.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "governance",
+    "reason": "M2 GERD and Heartburn source-bound content, claim provenance, governed relationship proposals, and human final-authorization boundary"
+  },
+  {
     "path": "tests/knowledgeKEP1ContributorIntake.test.ts",
     "status": "active",
     "ownerArea": "knowledge-expansion",

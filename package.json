@@ -50,6 +50,7 @@
     "knowledge:source-integrity": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register scripts/knowledge/generateSourceIntegrityReport.ts",
     "knowledge:kep1-source-dossiers": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register scripts/knowledge/generateKEP1SourceDossiers.ts",
     "knowledge:priority-disease-evidence": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register scripts/knowledge/generatePriorityDiseaseEvidence.ts",
+    "knowledge:m2-gerd-heartburn": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register scripts/knowledge/generateGERDHeartburnFlagshipPackage.ts",
     "knowledge:kep1-contributor-intake": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register scripts/knowledge/generateKEP1ContributorIntake.ts",
     "knowledge:kep1-onboarding-operations": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register scripts/knowledge/generateKEP1OnboardingOperations.ts",
      "test:retired-diagnostic": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register scripts/retired-diagnostic.ts",

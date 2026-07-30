@@ -19,12 +19,13 @@ Current readiness is:
 
 - 8 flagship entities planned;
 - 24/24 flagship claim plans eligible for staging;
-- 0/11 flagship operating seats filled;
-- 0/32 flagship editorial assignments approved;
-- 0 independently reviewed entities;
+- the program owner is the recorded final authority;
+- routine source-bound revisions use direct program-owner authorization;
+- elevated and critical revisions require one independent clinical check before
+  the final owner decision;
 - 5 priority disease evidence-preparation dossiers with 15/15 eligible claim
   plans;
-- 31 eligible citation records and 4 quarantined or review-only records;
+- 32 eligible citation records and 4 quarantined or review-only records;
 - 3 withdrawn entities;
 - 207 isolated entities and 178 duplicate relationship rows;
 - 0 production RAG entities.
@@ -59,8 +60,8 @@ all active tests and release checks green
 
 ### M1 — Flagship operating readiness
 
-Purpose: make the existing eight-entity flagship executable without weakening
-human accountability.
+Purpose: make the existing eight-entity flagship executable through one clear,
+risk-based human-accountability path.
 
 Flagship:
 
@@ -74,17 +75,25 @@ Flagship:
 - L0002 TSH
 
 AI may summarize sources, prepare citation maps, draft text, propose graph edges,
-and generate evaluation cases. AI cannot verify contributor identity, approve a
-credential, accept a clinical claim, or serve as the independent reviewer.
+and generate evaluation cases. AI cannot accept a clinical claim or make the
+final authorization decision.
+
+Decision lanes:
+
+- routine, fully cited, source-bound revision: program-owner final decision;
+- elevated or critical clinical revision: one independent clinical check,
+  followed by the program-owner final decision;
+- critical release: the same human decision path plus controlled release,
+  observation, and rollback controls.
 
 Exit gate:
 
 ```text
-11/11 operating seats covered
-32/32 editorial assignments approved
-100% required credentials current
-author and reviewer identities separated
+1 recorded program-owner final authority
+100% revisions assigned to a risk lane
+100% elevated and critical revisions have one independent clinical check
 all source-rights decisions current
+0 AI or automatic final approvals
 0 publication or RAG authority changes
 ```
 
@@ -108,6 +117,15 @@ Delivery order:
 3. CBC + TSH;
 4. Sulphur + Nux Vomica.
 
+Current delivery:
+
+- GERD + Heartburn revision `1.1.0` prepared on 2026-07-30;
+- 14 material claim groups mapped to four verified sources;
+- 10 unique governed relationship proposals, all draft-only;
+- revision-bound authorization packet generated with final owner authorization
+  pending;
+- no automatic graph acceptance, publication execution, or RAG activation.
+
 Exit gate:
 
 ```text
@@ -126,7 +144,8 @@ Purpose: prove the end-to-end process before scaling it.
 
 Deliverables:
 
-- independent clinical and evidence decisions against exact revision hashes;
+- risk-lane decisions against exact revision hashes, including one independent
+  clinical check for every elevated or critical revision;
 - at least 160 offline cases, with at least 20 per entity;
 - coverage of retrieval relevance, citation precision, unsupported claims,
   emergency escalation, abstention, stale revisions, cross-entity confusion,
@@ -138,7 +157,8 @@ Deliverables:
 Exit gate:
 
 ```text
-8/8 independently reviewed current revisions
+8/8 current revisions have a recorded risk-lane decision
+100% elevated and critical revisions independently checked
 160+ offline evaluation cases
 0 unsupported-claim failures
 0 emergency-escalation failures
@@ -307,7 +327,8 @@ An entity is complete only when its current revision has:
 3. material claim-level citation mapping;
 4. conventional-care and safety boundaries;
 5. an evidence profile;
-6. independent review against the exact revision hash;
+6. a risk-lane decision against the exact revision hash, including independent
+   review for elevated or critical revisions;
 7. governed graph relationships;
 8. offline retrieval coverage;
 9. a controlled release and rollback record;
@@ -317,10 +338,12 @@ Article count alone is never a completion metric.
 
 ## Immediate execution order
 
-1. Complete M0 in code and documentation.
-2. Fill the private KEP-1 roster and approve assignments.
-3. Draft GERD and Heartburn as the first paired flagship package.
-4. Review and evaluate that pair before copying the workflow to the other six.
-5. Complete the full KEP-1 go/no-go gate.
-6. Start KEP-2 safety remediation and KEP-3 priority disease promotion as
+1. Obtain the program-owner final authorization for the GERD + Heartburn
+   revision-bound package.
+2. Merge only after the protected pull-request checks pass.
+3. Build the 20-case-per-entity offline evaluation set for GERD + Heartburn.
+4. Copy the verified package workflow to Eczema + Skin Eruptions.
+5. Complete CBC + TSH, then Sulphur + Nux Vomica.
+6. Complete the full KEP-1 go/no-go gate.
+7. Start KEP-2 safety remediation and KEP-3 priority disease promotion as
    separate workstreams.

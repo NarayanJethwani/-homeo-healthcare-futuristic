@@ -731,6 +731,42 @@ export const CITATIONS: CitationRecord[] = [
       "treatment",
       "red-flags"
     ]
+  },
+  {
+    id: "CIT-0036",
+    title:
+      "ACG Clinical Guideline for the Diagnosis and Management of Gastroesophageal Reflux Disease",
+    authors: [
+      "Katz P. O.",
+      "Dunbar K. B.",
+      "Schnoll-Sussman F. H.",
+      "Greer K. B.",
+      "Yadlapati R.",
+      "Spechler S. J."
+    ],
+    journal: "American Journal of Gastroenterology",
+    doi: "10.14309/ajg.0000000000001538",
+    pubmedId: "34807007",
+    year: 2022,
+    citationStyle: "AMA",
+    category: "Clinical-Guidelines",
+    canonicalUrl: "https://pubmed.ncbi.nlm.nih.gov/34807007/",
+    sourceIdentifier: "PMID-34807007",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-07-30",
+    verificationEvidenceUrl: "https://pubmed.ncbi.nlm.nih.gov/34807007/",
+    verificationNotes:
+      "Peer-reviewed American College of Gastroenterology guideline registered for adult GERD definition, diagnostic strategy, conventional management, reflux monitoring, and endoscopy boundaries.",
+    scopeTags: [
+      "gerd",
+      "adult",
+      "diagnosis",
+      "conventional-management",
+      "ppi",
+      "reflux-monitoring",
+      "endoscopy"
+    ]
   }
 ];
 
