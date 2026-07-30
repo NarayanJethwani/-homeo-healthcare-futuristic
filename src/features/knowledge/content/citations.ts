@@ -575,6 +575,162 @@ export const CITATIONS: CitationRecord[] = [
       "monitoring",
       "conventional-management"
     ]
+  },
+  {
+    id: "CIT-0030",
+    title: "Hypertension in adults: diagnosis and management",
+    authors: ["National Institute for Health and Care Excellence"],
+    journal: "NICE Guideline NG136",
+    year: 2019,
+    citationStyle: "AMA",
+    category: "Clinical-Guidelines",
+    canonicalUrl: "https://www.nice.org.uk/guidance/ng136",
+    sourceIdentifier: "NICE-NG136",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-07-30",
+    verificationEvidenceUrl: "https://www.nice.org.uk/guidance/ng136",
+    verificationNotes:
+      "Official NICE guideline, last updated February 26, 2026. Scope includes adult diagnosis, monitoring, referral, and treatment. Citation registration does not grant extraction or publication rights.",
+    scopeTags: [
+      "hypertension",
+      "diagnosis",
+      "treatment",
+      "monitoring",
+      "referral",
+      "conventional-management"
+    ]
+  },
+  {
+    id: "CIT-0031",
+    title: "Guideline for the pharmacological treatment of hypertension in adults",
+    authors: ["World Health Organization"],
+    journal: "World Health Organization",
+    year: 2021,
+    citationStyle: "AMA",
+    category: "Clinical-Guidelines",
+    canonicalUrl: "https://www.who.int/publications/i/item/9789240033986",
+    sourceIdentifier: "WHO-ISBN-9789240033986",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-07-30",
+    verificationEvidenceUrl:
+      "https://www.who.int/publications/i/item/9789240033986",
+    verificationNotes:
+      "Official WHO guideline for pharmacological treatment of hypertension in non-pregnant adults. Registered citation-only despite the source's CC BY-NC-SA 3.0 IGO licence.",
+    scopeTags: [
+      "hypertension",
+      "adult",
+      "treatment",
+      "pharmacological-treatment",
+      "conventional-management"
+    ]
+  },
+  {
+    id: "CIT-0032",
+    title: "Type 2 diabetes in adults: management",
+    authors: ["National Institute for Health and Care Excellence"],
+    journal: "NICE Guideline NG28",
+    year: 2015,
+    citationStyle: "AMA",
+    category: "Clinical-Guidelines",
+    canonicalUrl: "https://www.nice.org.uk/guidance/ng28",
+    sourceIdentifier: "NICE-NG28",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-07-30",
+    verificationEvidenceUrl: "https://www.nice.org.uk/guidance/ng28",
+    verificationNotes:
+      "Official NICE guideline, last updated February 18, 2026. Scope is management of type 2 diabetes in adults. Citation registration does not grant extraction or publication rights.",
+    scopeTags: [
+      "type-2-diabetes",
+      "diabetes",
+      "adult",
+      "treatment",
+      "monitoring",
+      "conventional-management"
+    ]
+  },
+  {
+    id: "CIT-0033",
+    title: "Diabetes Overview",
+    authors: [
+      "National Institute of Diabetes and Digestive and Kidney Diseases"
+    ],
+    journal: "National Institutes of Health",
+    year: 2026,
+    citationStyle: "AMA",
+    category: "Clinical-Review",
+    canonicalUrl:
+      "https://www.niddk.nih.gov/health-information/diabetes/overview",
+    sourceIdentifier: "NIDDK-DIABETES-OVERVIEW-2026",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-07-30",
+    verificationEvidenceUrl:
+      "https://www.niddk.nih.gov/health-information/diabetes/overview",
+    verificationNotes:
+      "Official NIDDK diabetes information hub. Registered for definition, types, health effects, and conventional-care boundaries; it is not a substitute for patient-specific diagnosis.",
+    scopeTags: [
+      "diabetes",
+      "definition",
+      "health-effects",
+      "conventional-care-boundary"
+    ]
+  },
+  {
+    id: "CIT-0034",
+    title: "Diabetes Tests & Diagnosis",
+    authors: [
+      "National Institute of Diabetes and Digestive and Kidney Diseases"
+    ],
+    journal: "National Institutes of Health",
+    year: 2026,
+    citationStyle: "AMA",
+    category: "Clinical-Review",
+    canonicalUrl:
+      "https://www.niddk.nih.gov/health-information/diabetes/overview/tests-diagnosis",
+    sourceIdentifier: "NIDDK-DIABETES-TESTS-DIAGNOSIS-2026",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-07-30",
+    verificationEvidenceUrl:
+      "https://www.niddk.nih.gov/health-information/diabetes/overview/tests-diagnosis",
+    verificationNotes:
+      "Official NIDDK overview of diabetes and prediabetes testing and diagnosis. Individual results require clinical interpretation.",
+    scopeTags: [
+      "diabetes",
+      "prediabetes",
+      "diagnosis",
+      "laboratory",
+      "monitoring"
+    ]
+  },
+  {
+    id: "CIT-0035",
+    title: "Allergic rhinitis",
+    authors: ["U.S. National Library of Medicine"],
+    journal: "MedlinePlus Medical Encyclopedia",
+    year: 2026,
+    citationStyle: "AMA",
+    category: "Clinical-Review",
+    canonicalUrl: "https://medlineplus.gov/ency/article/000813.htm",
+    sourceIdentifier: "MEDLINEPLUS-ALLERGIC-RHINITIS-000813",
+    sourceAuthority: "external-authoritative",
+    verificationStatus: "verified",
+    verifiedAt: "2026-07-30",
+    verificationEvidenceUrl:
+      "https://medlineplus.gov/ency/article/000813.htm",
+    verificationNotes:
+      "Official MedlinePlus Medical Encyclopedia article. Registered for definition, symptoms, diagnostic context, treatment overview, and escalation boundaries.",
+    scopeTags: [
+      "allergic-rhinitis",
+      "definition",
+      "symptoms",
+      "diagnosis",
+      "treatment",
+      "red-flags"
+    ]
   }
 ];
 

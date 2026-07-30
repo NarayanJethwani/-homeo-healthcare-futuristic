@@ -3,10 +3,10 @@
   "asOfDate": "2026-07-30",
   "status": "staging-only",
   "summary": {
-    "citationsAudited": 29,
-    "sourcesAudited": 11,
-    "eligibleCitationRecords": 25,
-    "eligibleRegisteredSources": 11,
+    "citationsAudited": 35,
+    "sourcesAudited": 24,
+    "eligibleCitationRecords": 31,
+    "eligibleRegisteredSources": 24,
     "blockerCount": 3,
     "reviewCount": 1
   },
@@ -35,7 +35,13 @@
     "CIT-0026",
     "CIT-0027",
     "CIT-0028",
-    "CIT-0029"
+    "CIT-0029",
+    "CIT-0030",
+    "CIT-0031",
+    "CIT-0032",
+    "CIT-0033",
+    "CIT-0034",
+    "CIT-0035"
   ],
   "eligibleSourceIds": [
     "SRC-KEP1-BOERICKE-1901",
@@ -48,7 +54,20 @@
     "SRC-KEP1-NICE-CG184",
     "SRC-KEP1-NICE-CG57",
     "SRC-KEP1-NICE-NG145",
-    "SRC-KEP1-NIDDK-GERD"
+    "SRC-KEP1-NIDDK-GERD",
+    "SRC-KEP2-AACE-ATA-HYPOTHYROIDISM-2012",
+    "SRC-KEP2-ARIA-2016",
+    "SRC-KEP2-ATA-HYPOTHYROIDISM-2014",
+    "SRC-KEP2-MEDLINE-ALLERGIC-RHINITIS",
+    "SRC-KEP2-MEDLINE-TSH",
+    "SRC-KEP2-MSD-ANEMIA",
+    "SRC-KEP2-NICE-NG136",
+    "SRC-KEP2-NICE-NG145",
+    "SRC-KEP2-NICE-NG28",
+    "SRC-KEP2-NIDDK-DIABETES-DIAGNOSIS",
+    "SRC-KEP2-NIDDK-DIABETES-OVERVIEW",
+    "SRC-KEP2-WHO-ANAEMIA-2017",
+    "SRC-KEP2-WHO-HYPERTENSION-2021"
   ],
   "quarantinedCitationIds": [
     "CIT-0001",

@@ -294,6 +294,44 @@ export interface KEP1SourceDossierManifest {
   };
 }
 
+export interface KEP2PriorityDiseaseEvidenceManifest {
+  schemaVersion: "1.0.0";
+  programId: "KEP-2-PRIORITY-DISEASE-EVIDENCE";
+  asOfDate: string;
+  status: "sources-registered-review-blocked";
+  selectionBasis: {
+    method: "clinical-risk-and-evidence-gap";
+    liveTrafficTelemetryUsed: false;
+    mockAnalyticsExcluded: true;
+    sourceInventoryAsOfDate: string;
+  };
+  sources: KEP1SourceRecord[];
+  dossiers: KEP1FlagshipSourceDossier[];
+  summary: {
+    sourceCount: number;
+    dossierCount: 5;
+    claimEvidencePlanCount: number;
+    stagingEligibleClaimEvidencePlanCount: number;
+    withdrawnEntitiesExcluded: number;
+    productionRagEntities: 0;
+    approvedEvidenceProfiles: 0;
+    approvedClinicalReviews: 0;
+  };
+  exclusions: Array<{
+    entityId: string;
+    reason: "active-safety-withdrawal";
+    requiredPath: "withdrawn-safety-remediation";
+  }>;
+  invariants: {
+    automaticApprovalForbidden: true;
+    citationOnlySourcesCannotBeExtracted: true;
+    mockAnalyticsCannotConferPriorityOrAuthority: true;
+    publicationState: "unchanged";
+    ragState: "inactive";
+    withdrawnEntitiesRemainExcluded: true;
+  };
+}
+
 export type KEP1ExpertiseDomain =
   | "gastroenterology"
   | "dermatology"

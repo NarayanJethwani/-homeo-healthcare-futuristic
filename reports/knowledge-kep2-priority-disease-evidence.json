@@ -1,0 +1,992 @@
+{
+  "schemaVersion": "1.0.0",
+  "programId": "KEP-2-PRIORITY-DISEASE-EVIDENCE",
+  "asOfDate": "2026-07-30",
+  "status": "sources-registered-review-blocked",
+  "selectionBasis": {
+    "method": "clinical-risk-and-evidence-gap",
+    "liveTrafficTelemetryUsed": false,
+    "mockAnalyticsExcluded": true,
+    "sourceInventoryAsOfDate": "2026-07-30"
+  },
+  "sources": [
+    {
+      "id": "SRC-KEP2-NICE-NG136",
+      "citationId": "CIT-0030",
+      "title": "Hypertension in adults: diagnosis and management",
+      "sourceType": "clinical-guideline",
+      "publisherOrCustodian": "National Institute for Health and Care Excellence",
+      "canonicalUrl": "https://www.nice.org.uk/guidance/ng136",
+      "editionOrVersion": "NG136; updated 2026-02-26",
+      "accessedAt": "2026-07-30",
+      "sourceVersion": "NG136-2026-02-26",
+      "verifiedAt": "2026-07-30",
+      "licence": {
+        "status": "restricted",
+        "permitsExtraction": false,
+        "permitsDerivedData": false,
+        "permitsPublicDisplay": false
+      },
+      "ingestionStatus": "registered",
+      "usePolicy": "citation-only",
+      "coverageDomains": [
+        "definition-and-scope",
+        "symptoms-and-differential",
+        "red-flags-and-escalation",
+        "diagnostic-interpretation",
+        "conventional-care",
+        "evidence-limitations"
+      ]
+    },
+    {
+      "id": "SRC-KEP2-WHO-HYPERTENSION-2021",
+      "citationId": "CIT-0031",
+      "title": "Guideline for the pharmacological treatment of hypertension in adults",
+      "sourceType": "clinical-guideline",
+      "publisherOrCustodian": "World Health Organization",
+      "canonicalUrl": "https://www.who.int/publications/i/item/9789240033986",
+      "editionOrVersion": "ISBN 978-92-4-003398-6",
+      "accessedAt": "2026-07-30",
+      "sourceVersion": "WHO-HYPERTENSION-2021",
+      "verifiedAt": "2026-07-30",
+      "licence": {
+        "status": "verified",
+        "identifier": "CC BY-NC-SA 3.0 IGO",
+        "evidenceLocation": "https://www.who.int/publications/i/item/9789240033986",
+        "permitsExtraction": false,
+        "permitsDerivedData": false,
+        "permitsPublicDisplay": false
+      },
+      "ingestionStatus": "registered",
+      "usePolicy": "citation-only",
+      "coverageDomains": [
+        "conventional-care",
+        "evidence-limitations"
+      ]
+    },
+    {
+      "id": "SRC-KEP2-NICE-NG28",
+      "citationId": "CIT-0032",
+      "title": "Type 2 diabetes in adults: management",
+      "sourceType": "clinical-guideline",
+      "publisherOrCustodian": "National Institute for Health and Care Excellence",
+      "canonicalUrl": "https://www.nice.org.uk/guidance/ng28",
+      "editionOrVersion": "NG28; updated 2026-02-18",
+      "accessedAt": "2026-07-30",
+      "sourceVersion": "NG28-2026-02-18",
+      "verifiedAt": "2026-07-30",
+      "licence": {
+        "status": "restricted",
+        "permitsExtraction": false,
+        "permitsDerivedData": false,
+        "permitsPublicDisplay": false
+      },
+      "ingestionStatus": "registered",
+      "usePolicy": "citation-only",
+      "coverageDomains": [
+        "conventional-care",
+        "evidence-limitations"
+      ]
+    },
+    {
+      "id": "SRC-KEP2-NIDDK-DIABETES-OVERVIEW",
+      "citationId": "CIT-0033",
+      "title": "Diabetes Overview",
+      "sourceType": "reference-standard",
+      "publisherOrCustodian": "National Institute of Diabetes and Digestive and Kidney Diseases",
+      "canonicalUrl": "https://www.niddk.nih.gov/health-information/diabetes/overview",
+      "accessedAt": "2026-07-30",
+      "sourceVersion": "accessed-2026-07-30",
+      "verifiedAt": "2026-07-30",
+      "licence": {
+        "status": "restricted",
+        "permitsExtraction": false,
+        "permitsDerivedData": false,
+        "permitsPublicDisplay": false
+      },
+      "ingestionStatus": "registered",
+      "usePolicy": "citation-only",
+      "coverageDomains": [
+        "definition-and-scope",
+        "symptoms-and-differential",
+        "conventional-care",
+        "evidence-limitations"
+      ]
+    },
+    {
+      "id": "SRC-KEP2-NIDDK-DIABETES-DIAGNOSIS",
+      "citationId": "CIT-0034",
+      "title": "Diabetes Tests & Diagnosis",
+      "sourceType": "reference-standard",
+      "publisherOrCustodian": "National Institute of Diabetes and Digestive and Kidney Diseases",
+      "canonicalUrl": "https://www.niddk.nih.gov/health-information/diabetes/overview/tests-diagnosis",
+      "accessedAt": "2026-07-30",
+      "sourceVersion": "accessed-2026-07-30",
+      "verifiedAt": "2026-07-30",
+      "licence": {
+        "status": "restricted",
+        "permitsExtraction": false,
+        "permitsDerivedData": false,
+        "permitsPublicDisplay": false
+      },
+      "ingestionStatus": "registered",
+      "usePolicy": "citation-only",
+      "coverageDomains": [
+        "diagnostic-interpretation",
+        "conventional-care",
+        "evidence-limitations"
+      ]
+    },
+    {
+      "id": "SRC-KEP2-MEDLINE-ALLERGIC-RHINITIS",
+      "citationId": "CIT-0035",
+      "title": "Allergic rhinitis",
+      "sourceType": "reference-standard",
+      "publisherOrCustodian": "U.S. National Library of Medicine",
+      "canonicalUrl": "https://medlineplus.gov/ency/article/000813.htm",
+      "accessedAt": "2026-07-30",
+      "sourceVersion": "accessed-2026-07-30",
+      "verifiedAt": "2026-07-30",
+      "licence": {
+        "status": "restricted",
+        "permitsExtraction": false,
+        "permitsDerivedData": false,
+        "permitsPublicDisplay": false
+      },
+      "ingestionStatus": "registered",
+      "usePolicy": "citation-only",
+      "coverageDomains": [
+        "definition-and-scope",
+        "symptoms-and-differential",
+        "red-flags-and-escalation",
+        "diagnostic-interpretation",
+        "conventional-care",
+        "evidence-limitations"
+      ]
+    },
+    {
+      "id": "SRC-KEP2-ARIA-2016",
+      "citationId": "CIT-0021",
+      "title": "Allergic Rhinitis and its Impact on Asthma (ARIA) guidelines—2016 revision",
+      "sourceType": "clinical-guideline",
+      "publisherOrCustodian": "U.S. National Library of Medicine",
+      "canonicalUrl": "https://pubmed.ncbi.nlm.nih.gov/28602936/",
+      "editionOrVersion": "2016 revision; published 2017",
+      "accessedAt": "2026-07-30",
+      "sourceVersion": "PMID-28602936",
+      "verifiedAt": "2026-07-30",
+      "licence": {
+        "status": "restricted",
+        "permitsExtraction": false,
+        "permitsDerivedData": false,
+        "permitsPublicDisplay": false
+      },
+      "ingestionStatus": "registered",
+      "usePolicy": "citation-only",
+      "coverageDomains": [
+        "symptoms-and-differential",
+        "diagnostic-interpretation",
+        "conventional-care",
+        "evidence-limitations"
+      ]
+    },
+    {
+      "id": "SRC-KEP2-NICE-NG145",
+      "citationId": "CIT-0029",
+      "title": "Thyroid disease: assessment and management",
+      "sourceType": "clinical-guideline",
+      "publisherOrCustodian": "National Institute for Health and Care Excellence",
+      "canonicalUrl": "https://www.nice.org.uk/guidance/ng145",
+      "editionOrVersion": "NG145; updated 2023; reviewed 2025",
+      "accessedAt": "2026-07-30",
+      "sourceVersion": "NG145-2025-review",
+      "verifiedAt": "2026-07-30",
+      "licence": {
+        "status": "restricted",
+        "permitsExtraction": false,
+        "permitsDerivedData": false,
+        "permitsPublicDisplay": false
+      },
+      "ingestionStatus": "registered",
+      "usePolicy": "citation-only",
+      "coverageDomains": [
+        "definition-and-scope",
+        "symptoms-and-differential",
+        "red-flags-and-escalation",
+        "diagnostic-interpretation",
+        "conventional-care",
+        "evidence-limitations"
+      ]
+    },
+    {
+      "id": "SRC-KEP2-MEDLINE-TSH",
+      "citationId": "CIT-0028",
+      "title": "TSH (Thyroid-stimulating hormone) Test",
+      "sourceType": "reference-standard",
+      "publisherOrCustodian": "U.S. National Library of Medicine",
+      "canonicalUrl": "https://medlineplus.gov/lab-tests/tsh-thyroid-stimulating-hormone-test/",
+      "editionOrVersion": "updated 2024-10-30",
+      "accessedAt": "2026-07-30",
+      "sourceVersion": "2024-10-30",
+      "verifiedAt": "2026-07-30",
+      "licence": {
+        "status": "restricted",
+        "permitsExtraction": false,
+        "permitsDerivedData": false,
+        "permitsPublicDisplay": false
+      },
+      "ingestionStatus": "registered",
+      "usePolicy": "citation-only",
+      "coverageDomains": [
+        "definition-and-scope",
+        "diagnostic-interpretation",
+        "evidence-limitations"
+      ]
+    },
+    {
+      "id": "SRC-KEP2-ATA-HYPOTHYROIDISM-2014",
+      "citationId": "CIT-0012",
+      "title": "Guidelines for the Treatment of Hypothyroidism",
+      "sourceType": "clinical-guideline",
+      "publisherOrCustodian": "U.S. National Library of Medicine",
+      "canonicalUrl": "https://pubmed.ncbi.nlm.nih.gov/25266247/",
+      "editionOrVersion": "2014 ATA Task Force guideline",
+      "accessedAt": "2026-07-30",
+      "sourceVersion": "PMID-25266247",
+      "verifiedAt": "2026-07-30",
+      "licence": {
+        "status": "restricted",
+        "permitsExtraction": false,
+        "permitsDerivedData": false,
+        "permitsPublicDisplay": false
+      },
+      "ingestionStatus": "registered",
+      "usePolicy": "citation-only",
+      "coverageDomains": [
+        "conventional-care",
+        "evidence-limitations"
+      ]
+    },
+    {
+      "id": "SRC-KEP2-AACE-ATA-HYPOTHYROIDISM-2012",
+      "citationId": "CIT-0013",
+      "title": "Clinical Practice Guidelines for Hypothyroidism in Adults",
+      "sourceType": "clinical-guideline",
+      "publisherOrCustodian": "U.S. National Library of Medicine",
+      "canonicalUrl": "https://pubmed.ncbi.nlm.nih.gov/23246686/",
+      "editionOrVersion": "2012 AACE/ATA guideline",
+      "accessedAt": "2026-07-30",
+      "sourceVersion": "PMID-23246686",
+      "verifiedAt": "2026-07-30",
+      "licence": {
+        "status": "restricted",
+        "permitsExtraction": false,
+        "permitsDerivedData": false,
+        "permitsPublicDisplay": false
+      },
+      "ingestionStatus": "registered",
+      "usePolicy": "citation-only",
+      "coverageDomains": [
+        "diagnostic-interpretation",
+        "conventional-care",
+        "evidence-limitations"
+      ]
+    },
+    {
+      "id": "SRC-KEP2-WHO-ANAEMIA-2017",
+      "citationId": "CIT-0015",
+      "title": "Nutritional anaemias: tools for effective prevention and control",
+      "sourceType": "clinical-guideline",
+      "publisherOrCustodian": "World Health Organization",
+      "canonicalUrl": "https://www.who.int/publications/i/item/9789241513067",
+      "editionOrVersion": "ISBN 978-92-4-151306-7",
+      "accessedAt": "2026-07-30",
+      "sourceVersion": "WHO-ANAEMIA-2017",
+      "verifiedAt": "2026-07-30",
+      "licence": {
+        "status": "restricted",
+        "permitsExtraction": false,
+        "permitsDerivedData": false,
+        "permitsPublicDisplay": false
+      },
+      "ingestionStatus": "registered",
+      "usePolicy": "citation-only",
+      "coverageDomains": [
+        "definition-and-scope",
+        "conventional-care",
+        "evidence-limitations"
+      ]
+    },
+    {
+      "id": "SRC-KEP2-MSD-ANEMIA",
+      "citationId": "CIT-0016",
+      "title": "Evaluation of Anemia",
+      "sourceType": "reference-standard",
+      "publisherOrCustodian": "MSD Manual Professional Edition",
+      "canonicalUrl": "https://www.msdmanuals.com/professional/hematology-and-oncology/approach-to-the-patient-with-anemia/evaluation-of-anemia",
+      "editionOrVersion": "reviewed/revised 2024",
+      "accessedAt": "2026-07-30",
+      "sourceVersion": "MSD-MANUAL-v968575",
+      "verifiedAt": "2026-07-30",
+      "licence": {
+        "status": "restricted",
+        "permitsExtraction": false,
+        "permitsDerivedData": false,
+        "permitsPublicDisplay": false
+      },
+      "ingestionStatus": "registered",
+      "usePolicy": "citation-only",
+      "coverageDomains": [
+        "definition-and-scope",
+        "symptoms-and-differential",
+        "red-flags-and-escalation",
+        "diagnostic-interpretation",
+        "conventional-care",
+        "evidence-limitations"
+      ]
+    }
+  ],
+  "dossiers": [
+    {
+      "schemaVersion": "1.0.0",
+      "dossierId": "KEP2-DOSSIER-D0005",
+      "entityId": "D0005",
+      "entityType": "disease",
+      "title": "Allergic Rhinitis",
+      "asOfDate": "2026-07-30",
+      "status": "sources-registered-review-blocked",
+      "sourceIds": [
+        "SRC-KEP2-MEDLINE-ALLERGIC-RHINITIS",
+        "SRC-KEP2-ARIA-2016"
+      ],
+      "claimEvidencePlans": [
+        {
+          "claimId": "KEP2-D0005-DEFINITION",
+          "claimType": "definition",
+          "citationIds": [
+            "CIT-0035"
+          ],
+          "requiredScopeTags": [
+            "allergic-rhinitis"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        },
+        {
+          "claimId": "KEP2-D0005-DIAGNOSIS",
+          "claimType": "diagnosis",
+          "citationIds": [
+            "CIT-0035",
+            "CIT-0021"
+          ],
+          "requiredScopeTags": [
+            "allergic-rhinitis"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        },
+        {
+          "claimId": "KEP2-D0005-TREATMENT",
+          "claimType": "treatment",
+          "citationIds": [
+            "CIT-0021",
+            "CIT-0035"
+          ],
+          "requiredScopeTags": [
+            "allergic-rhinitis"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        }
+      ],
+      "requiredCoverageDomains": [
+        "definition-and-scope",
+        "symptoms-and-differential",
+        "red-flags-and-escalation",
+        "diagnostic-interpretation",
+        "conventional-care",
+        "evidence-limitations"
+      ],
+      "prohibitedClaimPatterns": [
+        "guaranteed diagnosis",
+        "guaranteed cure",
+        "replace urgent or conventional care",
+        "patient-specific treatment recommendation",
+        "potency or dosing instruction"
+      ],
+      "assignments": [
+        {
+          "role": "clinical-author",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "independent-clinical-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "evidence-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "rights-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        }
+      ],
+      "evaluationQuestionTarget": 20,
+      "governedRelationshipTarget": {
+        "minimum": 5,
+        "maximum": 10
+      },
+      "stateBoundaries": {
+        "contentState": "planning-only",
+        "evidenceState": "unapproved",
+        "clinicalReviewState": "unassigned",
+        "publicationState": "unchanged",
+        "ragState": "inactive"
+      }
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "dossierId": "KEP2-DOSSIER-D0009",
+      "entityId": "D0009",
+      "entityType": "disease",
+      "title": "Hypertension",
+      "asOfDate": "2026-07-30",
+      "status": "sources-registered-review-blocked",
+      "sourceIds": [
+        "SRC-KEP2-NICE-NG136",
+        "SRC-KEP2-WHO-HYPERTENSION-2021"
+      ],
+      "claimEvidencePlans": [
+        {
+          "claimId": "KEP2-D0009-DIAGNOSIS",
+          "claimType": "diagnosis",
+          "citationIds": [
+            "CIT-0030"
+          ],
+          "requiredScopeTags": [
+            "hypertension"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        },
+        {
+          "claimId": "KEP2-D0009-TREATMENT",
+          "claimType": "treatment",
+          "citationIds": [
+            "CIT-0030",
+            "CIT-0031"
+          ],
+          "requiredScopeTags": [
+            "hypertension"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        },
+        {
+          "claimId": "KEP2-D0009-MONITORING",
+          "claimType": "safety",
+          "citationIds": [
+            "CIT-0030"
+          ],
+          "requiredScopeTags": [
+            "monitoring"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        }
+      ],
+      "requiredCoverageDomains": [
+        "definition-and-scope",
+        "symptoms-and-differential",
+        "red-flags-and-escalation",
+        "diagnostic-interpretation",
+        "conventional-care",
+        "evidence-limitations"
+      ],
+      "prohibitedClaimPatterns": [
+        "guaranteed diagnosis",
+        "guaranteed cure",
+        "replace urgent or conventional care",
+        "patient-specific treatment recommendation",
+        "potency or dosing instruction"
+      ],
+      "assignments": [
+        {
+          "role": "clinical-author",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "independent-clinical-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "evidence-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "rights-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        }
+      ],
+      "evaluationQuestionTarget": 20,
+      "governedRelationshipTarget": {
+        "minimum": 5,
+        "maximum": 10
+      },
+      "stateBoundaries": {
+        "contentState": "planning-only",
+        "evidenceState": "unapproved",
+        "clinicalReviewState": "unassigned",
+        "publicationState": "unchanged",
+        "ragState": "inactive"
+      }
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "dossierId": "KEP2-DOSSIER-D0010",
+      "entityId": "D0010",
+      "entityType": "disease",
+      "title": "Diabetes Mellitus",
+      "asOfDate": "2026-07-30",
+      "status": "sources-registered-review-blocked",
+      "sourceIds": [
+        "SRC-KEP2-NICE-NG28",
+        "SRC-KEP2-NIDDK-DIABETES-OVERVIEW",
+        "SRC-KEP2-NIDDK-DIABETES-DIAGNOSIS"
+      ],
+      "claimEvidencePlans": [
+        {
+          "claimId": "KEP2-D0010-DEFINITION",
+          "claimType": "definition",
+          "citationIds": [
+            "CIT-0033"
+          ],
+          "requiredScopeTags": [
+            "diabetes"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        },
+        {
+          "claimId": "KEP2-D0010-DIAGNOSIS",
+          "claimType": "diagnosis",
+          "citationIds": [
+            "CIT-0034"
+          ],
+          "requiredScopeTags": [
+            "diabetes"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        },
+        {
+          "claimId": "KEP2-D0010-TREATMENT",
+          "claimType": "treatment",
+          "citationIds": [
+            "CIT-0032",
+            "CIT-0033"
+          ],
+          "requiredScopeTags": [
+            "diabetes"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        }
+      ],
+      "requiredCoverageDomains": [
+        "definition-and-scope",
+        "symptoms-and-differential",
+        "red-flags-and-escalation",
+        "diagnostic-interpretation",
+        "conventional-care",
+        "evidence-limitations"
+      ],
+      "prohibitedClaimPatterns": [
+        "guaranteed diagnosis",
+        "guaranteed cure",
+        "replace urgent or conventional care",
+        "patient-specific treatment recommendation",
+        "potency or dosing instruction"
+      ],
+      "assignments": [
+        {
+          "role": "clinical-author",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "independent-clinical-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "evidence-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "rights-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        }
+      ],
+      "evaluationQuestionTarget": 20,
+      "governedRelationshipTarget": {
+        "minimum": 5,
+        "maximum": 10
+      },
+      "stateBoundaries": {
+        "contentState": "planning-only",
+        "evidenceState": "unapproved",
+        "clinicalReviewState": "unassigned",
+        "publicationState": "unchanged",
+        "ragState": "inactive"
+      }
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "dossierId": "KEP2-DOSSIER-D0011",
+      "entityId": "D0011",
+      "entityType": "disease",
+      "title": "Hypothyroidism",
+      "asOfDate": "2026-07-30",
+      "status": "sources-registered-review-blocked",
+      "sourceIds": [
+        "SRC-KEP2-NICE-NG145",
+        "SRC-KEP2-MEDLINE-TSH",
+        "SRC-KEP2-ATA-HYPOTHYROIDISM-2014",
+        "SRC-KEP2-AACE-ATA-HYPOTHYROIDISM-2012"
+      ],
+      "claimEvidencePlans": [
+        {
+          "claimId": "KEP2-D0011-DIAGNOSIS",
+          "claimType": "diagnosis",
+          "citationIds": [
+            "CIT-0029",
+            "CIT-0013"
+          ],
+          "requiredScopeTags": [
+            "diagnosis"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        },
+        {
+          "claimId": "KEP2-D0011-TREATMENT",
+          "claimType": "treatment",
+          "citationIds": [
+            "CIT-0012",
+            "CIT-0029"
+          ],
+          "requiredScopeTags": [
+            "hypothyroidism"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        },
+        {
+          "claimId": "KEP2-D0011-MONITORING",
+          "claimType": "laboratory-interpretation",
+          "citationIds": [
+            "CIT-0028",
+            "CIT-0029"
+          ],
+          "requiredScopeTags": [
+            "monitoring"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        }
+      ],
+      "requiredCoverageDomains": [
+        "definition-and-scope",
+        "symptoms-and-differential",
+        "red-flags-and-escalation",
+        "diagnostic-interpretation",
+        "conventional-care",
+        "evidence-limitations"
+      ],
+      "prohibitedClaimPatterns": [
+        "guaranteed diagnosis",
+        "guaranteed cure",
+        "replace urgent or conventional care",
+        "patient-specific treatment recommendation",
+        "potency or dosing instruction"
+      ],
+      "assignments": [
+        {
+          "role": "clinical-author",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "independent-clinical-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "evidence-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "rights-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        }
+      ],
+      "evaluationQuestionTarget": 20,
+      "governedRelationshipTarget": {
+        "minimum": 5,
+        "maximum": 10
+      },
+      "stateBoundaries": {
+        "contentState": "planning-only",
+        "evidenceState": "unapproved",
+        "clinicalReviewState": "unassigned",
+        "publicationState": "unchanged",
+        "ragState": "inactive"
+      }
+    },
+    {
+      "schemaVersion": "1.0.0",
+      "dossierId": "KEP2-DOSSIER-D0051",
+      "entityId": "D0051",
+      "entityType": "disease",
+      "title": "Anemia",
+      "asOfDate": "2026-07-30",
+      "status": "sources-registered-review-blocked",
+      "sourceIds": [
+        "SRC-KEP2-WHO-ANAEMIA-2017",
+        "SRC-KEP2-MSD-ANEMIA"
+      ],
+      "claimEvidencePlans": [
+        {
+          "claimId": "KEP2-D0051-DEFINITION",
+          "claimType": "definition",
+          "citationIds": [
+            "CIT-0015",
+            "CIT-0016"
+          ],
+          "requiredScopeTags": [
+            "anaemia"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        },
+        {
+          "claimId": "KEP2-D0051-DIAGNOSIS",
+          "claimType": "diagnosis",
+          "citationIds": [
+            "CIT-0016"
+          ],
+          "requiredScopeTags": [
+            "anaemia"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        },
+        {
+          "claimId": "KEP2-D0051-INTERPRETATION",
+          "claimType": "laboratory-interpretation",
+          "citationIds": [
+            "CIT-0016"
+          ],
+          "requiredScopeTags": [
+            "cbc"
+          ],
+          "stagingEvaluation": {
+            "eligibleForStaging": true,
+            "errors": []
+          },
+          "stateBoundaries": {
+            "clinicalApprovalState": "unapproved",
+            "publicationState": "unchanged",
+            "ragState": "inactive"
+          }
+        }
+      ],
+      "requiredCoverageDomains": [
+        "definition-and-scope",
+        "symptoms-and-differential",
+        "red-flags-and-escalation",
+        "diagnostic-interpretation",
+        "conventional-care",
+        "evidence-limitations"
+      ],
+      "prohibitedClaimPatterns": [
+        "guaranteed diagnosis",
+        "guaranteed cure",
+        "replace urgent or conventional care",
+        "patient-specific treatment recommendation",
+        "potency or dosing instruction"
+      ],
+      "assignments": [
+        {
+          "role": "clinical-author",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "independent-clinical-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "evidence-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        },
+        {
+          "role": "rights-reviewer",
+          "contributorId": null,
+          "status": "unassigned"
+        }
+      ],
+      "evaluationQuestionTarget": 20,
+      "governedRelationshipTarget": {
+        "minimum": 5,
+        "maximum": 10
+      },
+      "stateBoundaries": {
+        "contentState": "planning-only",
+        "evidenceState": "unapproved",
+        "clinicalReviewState": "unassigned",
+        "publicationState": "unchanged",
+        "ragState": "inactive"
+      }
+    }
+  ],
+  "summary": {
+    "sourceCount": 13,
+    "dossierCount": 5,
+    "claimEvidencePlanCount": 15,
+    "stagingEligibleClaimEvidencePlanCount": 15,
+    "withdrawnEntitiesExcluded": 1,
+    "productionRagEntities": 0,
+    "approvedEvidenceProfiles": 0,
+    "approvedClinicalReviews": 0
+  },
+  "exclusions": [
+    {
+      "entityId": "D0007",
+      "reason": "active-safety-withdrawal",
+      "requiredPath": "withdrawn-safety-remediation"
+    }
+  ],
+  "invariants": {
+    "automaticApprovalForbidden": true,
+    "citationOnlySourcesCannotBeExtracted": true,
+    "mockAnalyticsCannotConferPriorityOrAuthority": true,
+    "publicationState": "unchanged",
+    "ragState": "inactive",
+    "withdrawnEntitiesRemainExcluded": true
+  }
+}

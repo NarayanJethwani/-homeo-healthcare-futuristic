@@ -5,18 +5,19 @@ import {
   evaluateClaimCitationStaging,
 } from "../src/features/knowledge/expansion/sourceIntegrity";
 import { KEP1_SOURCES } from "../src/features/knowledge/expansion/kep1SourceDossiers";
+import { KEP2_PRIORITY_DISEASE_SOURCES } from "../src/features/knowledge/expansion/kep2PriorityDiseaseEvidence";
 
 export function runKnowledgeSourceIntegrityTests(): void {
   const report = buildKnowledgeSourceIntegrityReport({
     citations: CITATIONS,
-    sources: KEP1_SOURCES,
+    sources: [...KEP1_SOURCES, ...KEP2_PRIORITY_DISEASE_SOURCES],
     asOfDate: "2026-07-30",
   });
 
   assert.strictEqual(report.status, "staging-only");
   assert.strictEqual(report.invariants.publicationState, "unchanged");
   assert.strictEqual(report.invariants.ragState, "inactive");
-  assert.strictEqual(report.summary.eligibleCitationRecords, 25);
+  assert.strictEqual(report.summary.eligibleCitationRecords, 31);
   assert.strictEqual(report.summary.blockerCount, 3);
   assert.strictEqual(report.summary.reviewCount, 1);
   for (const citationId of [
@@ -47,6 +48,16 @@ export function runKnowledgeSourceIntegrityTests(): void {
   assert.ok(report.eligibleCitationIds.includes("CIT-0027"));
   assert.ok(report.eligibleCitationIds.includes("CIT-0028"));
   assert.ok(report.eligibleCitationIds.includes("CIT-0029"));
+  for (const citationId of [
+    "CIT-0030",
+    "CIT-0031",
+    "CIT-0032",
+    "CIT-0033",
+    "CIT-0034",
+    "CIT-0035",
+  ]) {
+    assert.ok(report.eligibleCitationIds.includes(citationId));
+  }
   assert.ok(report.quarantinedCitationIds.includes("CIT-0001"));
   assert.ok(report.quarantinedCitationIds.includes("CIT-0002"));
   assert.ok(report.quarantinedCitationIds.includes("CIT-0003"));
@@ -60,10 +71,15 @@ export function runKnowledgeSourceIntegrityTests(): void {
   );
   assert.strictEqual(
     report.summary.eligibleRegisteredSources,
-    KEP1_SOURCES.length
+    KEP1_SOURCES.length + KEP2_PRIORITY_DISEASE_SOURCES.length
   );
   assert.ok(
     KEP1_SOURCES.every((source) =>
+      report.eligibleCitationIds.includes(source.citationId)
+    )
+  );
+  assert.ok(
+    KEP2_PRIORITY_DISEASE_SOURCES.every((source) =>
       report.eligibleCitationIds.includes(source.citationId)
     )
   );
