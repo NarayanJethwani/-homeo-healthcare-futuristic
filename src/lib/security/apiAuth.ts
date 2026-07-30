@@ -35,7 +35,7 @@ export async function authorizeRequest(
   }
 
   // Local development bypass support
-  if (!session && process.env.NODE_ENV !== "production") {
+  if (!session && process.env.NODE_ENV !== "production" && process.env.ALLOW_DEV_ADMIN_BYPASS === "true") {
     session = {
       uid: "dev-bypass-uid",
       email: "dev-bypass@homeo.healthcare",

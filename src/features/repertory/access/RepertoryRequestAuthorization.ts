@@ -38,16 +38,7 @@ export async function authorizeRepertoryRequest(
   resource: string,
 ): Promise<AuthorizedRepertoryRequest | DeniedRepertoryRequest> {
   const cookieValue = request.cookies.get(ADMIN_SESSION_COOKIE)?.value;
-  let verified = await verifyAdminSessionCookie(cookieValue);
-
-  if (!verified && process.env.NODE_ENV !== "production") {
-    verified = {
-      uid: "dev-bypass-uid",
-      email: "dev-bypass@homeo.healthcare",
-      role: "super-admin",
-      exp: Math.floor(Date.now() / 1000) + 86400,
-    };
-  }
+  const verified = await verifyAdminSessionCookie(cookieValue);
 
   if (!verified) {
     await logSecurityEvent({

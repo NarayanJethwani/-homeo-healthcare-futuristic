@@ -1,6 +1,5 @@
 import { SEARCH_SYNONYMS } from '../../../lib/repertoryData';
 import { repertoryRepository } from '../database/repertoryDb';
-import { PublishedCorpusRepository } from '../repositories/PublishedCorpusRepository';
 import { RepertoryRubric, AIIntakeMappingResult, AIIntakeMatch } from '../types';
 import { RepertoryGraph } from '../graph/repertoryGraph';
 
@@ -24,44 +23,7 @@ export class RepertorySearch {
     boostRelationships: boolean = false,
     enableSemanticExpansion: boolean = false
   ): Promise<Array<{ rubric: RepertoryRubric; score: number }>> {
-    const normalizedQuery = queryText.toLowerCase().trim();
-
-    if (!normalizedQuery) {
-      let rubrics = await repertoryRepository.getRubrics(filters);
-      return rubrics.map(r => ({ rubric: r, score: 0 }));
-    }
-
-    const STOP_WORDS = new Set([
-      'and', 'the', 'for', 'with', 'from', 'that', 'this', 'have', 'has', 'had', 'been', 'was', 'were', 'about', 'some', 'any', 'but', 'not', 'when', 'where', 'who', 'how', 'why', 'what', 'you', 'your', 'his', 'her', 'their', 'them', 'they', 'our', 'after', 'before', 'since',
-      'feel', 'feels', 'felt', 'feeling', 'want', 'wants', 'wanted'
-    ]);
-
-    // Tokenize query, splitting hyphenated/punctuation to check individual words
-    const queryTokens = normalizedQuery
-      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, " ")
-      .split(/\s+/)
-      .filter(t => t.length > 2 && !STOP_WORDS.has(t));
-
-    // Retrieve candidate rubrics across full corpus instead of bounding to first 100
-    let rubrics: RepertoryRubric[] = [];
-    try {
-      const candidateMap = new Map<string, RepertoryRubric>();
-      const searchHits = await PublishedCorpusRepository.searchRubrics(normalizedQuery, filters);
-      searchHits.forEach(r => candidateMap.set(r.rubricId, r));
-
-      for (const token of queryTokens) {
-        const tokenHits = await PublishedCorpusRepository.searchRubrics(token, filters);
-        tokenHits.forEach(r => candidateMap.set(r.rubricId, r));
-      }
-
-      rubrics = Array.from(candidateMap.values());
-    } catch (e) {
-      rubrics = await repertoryRepository.getRubrics(filters);
-    }
-
-    if (rubrics.length === 0) {
-      rubrics = await repertoryRepository.getRubrics(filters);
-    }
+    let rubrics = await repertoryRepository.getRubrics(filters);
 
     // Apply additional corpus-aware filters
     if (filters) {
@@ -82,6 +44,23 @@ export class RepertorySearch {
       // By default exclude drafts
       rubrics = rubrics.filter(r => r.editorialStatus === undefined || r.editorialStatus === "approved" || r.editorialStatus === "published");
     }
+
+    const normalizedQuery = queryText.toLowerCase().trim();
+    
+    if (!normalizedQuery) {
+      return rubrics.map(r => ({ rubric: r, score: 0 }));
+    }
+
+    const STOP_WORDS = new Set([
+      'and', 'the', 'for', 'with', 'from', 'that', 'this', 'have', 'has', 'had', 'been', 'was', 'were', 'about', 'some', 'any', 'but', 'not', 'when', 'where', 'who', 'how', 'why', 'what', 'you', 'your', 'his', 'her', 'their', 'them', 'they', 'our', 'after', 'before', 'since',
+      'feel', 'feels', 'felt', 'feeling', 'want', 'wants', 'wanted'
+    ]);
+
+    // Tokenize query, splitting hyphenated/punctuation to check individual words
+    const queryTokens = normalizedQuery
+      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, " ")
+      .split(/\s+/)
+      .filter(t => t.length > 2 && !STOP_WORDS.has(t));
 
     const scoredList = rubrics.map(rubric => {
       let score = 0;
@@ -227,7 +206,7 @@ export class RepertorySearch {
     const phrases = intakeText
       .split(/[.,;\n]+/)
       .map(p => p.trim())
-      .filter(p => p.length > 2);
+      .filter(p => p.length > 5);
 
     const rubricMatchesMap = new Map<string, AIIntakeMatch>();
 
@@ -236,7 +215,7 @@ export class RepertorySearch {
       if (searchResults.length > 0) {
         const topScore = searchResults[0].score;
         // Keep all matches that are close to the top match and meet threshold
-        const validHits = searchResults.filter(hit => hit.score >= 20 && hit.score >= topScore * 0.4);
+        const validHits = searchResults.filter(hit => hit.score >= 35 && hit.score >= topScore * 0.5);
 
         for (const hit of validHits) {
           const rubricId = hit.rubric.rubricId;
