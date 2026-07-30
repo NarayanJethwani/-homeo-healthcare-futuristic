@@ -6,7 +6,7 @@ export const GerdDisease: KnowledgeEntity = {
   id: "D0001",
   slug: "gastroesophageal-reflux-disease",
   entityType: "disease",
-  editorialStatus: "medical-review",
+  editorialStatus: "published",
   legacyVerificationStatus: "review-required",
   versionInfo: {
     version: "1.1.0",
@@ -199,6 +199,7 @@ export const GerdDisease: KnowledgeEntity = {
       "esophageal acid exposure",
       "reflux disease",
     ],
+    icd: "K21.9",
     bodySystem: "Gastrointestinal",
     urgency: "monitor",
   },

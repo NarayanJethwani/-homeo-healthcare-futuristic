@@ -6,7 +6,7 @@ export const HeartburnSymptom: KnowledgeEntity = {
   id: "S0001",
   slug: "heartburn",
   entityType: "symptom",
-  editorialStatus: "medical-review",
+  editorialStatus: "published",
   legacyVerificationStatus: "review-required",
   versionInfo: {
     version: "1.1.0",
@@ -158,6 +158,7 @@ export const HeartburnSymptom: KnowledgeEntity = {
       "Heartburn and regurgitation are typical reflux symptoms; persistent symptoms, alarm features, or uncertain diagnosis require targeted evaluation.",
     keywords: ["heartburn", "acid reflux", "regurgitation", "chest burning"],
     semanticKeywords: ["retrosternal burning", "pyrosis", "reflux symptom"],
+    icd: "R12",
     bodySystem: "Gastrointestinal",
     urgency: "monitor",
   },

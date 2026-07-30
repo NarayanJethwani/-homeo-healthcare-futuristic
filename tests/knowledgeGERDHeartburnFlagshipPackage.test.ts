@@ -56,7 +56,7 @@ export function runKnowledgeGERDHeartburnFlagshipPackageTests(): void {
     assert.strictEqual(entity.contentCompleteness, 100);
     assert.strictEqual(entity.citationHealth, "complete");
     assert.strictEqual(entity.evidenceProfile?.citationCompleteness, 1);
-    assert.strictEqual(entity.editorialStatus, "medical-review");
+    assert.strictEqual(entity.editorialStatus, "published");
     assert.strictEqual(entity.legacyVerificationStatus, "review-required");
     assert.strictEqual(
       entity.reviewStatus,

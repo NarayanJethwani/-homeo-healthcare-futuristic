@@ -370,7 +370,7 @@
       "entityType": "disease",
       "title": "Gastroesophageal Reflux Disease (GERD)",
       "audience": "patient",
-      "editorialStatus": "medical-review",
+      "editorialStatus": "published",
       "evidenceLevel": "Consensus-Guidance",
       "safety": {
         "withdrawn": false,
@@ -529,7 +529,7 @@
       "entityType": "symptom",
       "title": "Heartburn / Acid Regurgitation",
       "audience": "patient",
-      "editorialStatus": "medical-review",
+      "editorialStatus": "published",
       "evidenceLevel": "Consensus-Guidance",
       "safety": {
         "withdrawn": false,
