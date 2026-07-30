@@ -424,28 +424,28 @@
       "title": "Atopic Dermatitis (Eczema)",
       "audience": "patient",
       "editorialStatus": "published",
-      "evidenceLevel": "Level-B",
+      "evidenceLevel": "Consensus-Guidance",
       "safety": {
         "withdrawn": false,
         "riskTier": "high"
       },
       "content": {
         "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
+        "structuredSectionCompleteness": 100,
         "legacyBulkGenerationCohort": false,
         "genericTemplateDetected": false,
         "genericTemplateSignals": []
       },
       "evidence": {
-        "referenceCount": 3,
+        "referenceCount": 4,
         "allReferencesResolvable": true,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
       },
       "review": {
-        "reviewerRecorded": true,
+        "reviewerRecorded": false,
         "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
+        "authorReviewerNameConflict": false,
         "independentReviewProven": false
       },
       "graph": {
@@ -583,7 +583,7 @@
       "title": "Skin Eruptions (Dermatosis)",
       "audience": "patient",
       "editorialStatus": "published",
-      "evidenceLevel": "Level-C",
+      "evidenceLevel": "Consensus-Guidance",
       "safety": {
         "withdrawn": false,
         "riskTier": "high"
@@ -596,15 +596,15 @@
         "genericTemplateSignals": []
       },
       "evidence": {
-        "referenceCount": 3,
+        "referenceCount": 4,
         "allReferencesResolvable": true,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
       },
       "review": {
-        "reviewerRecorded": true,
+        "reviewerRecorded": false,
         "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
+        "authorReviewerNameConflict": false,
         "independentReviewProven": false
       },
       "graph": {

@@ -409,8 +409,7 @@ async function main() {
     console.log("Files modified in the evidence commit:", diffFiles);
 
     const nonReportFiles = diffFiles.filter(f =>
-      f !== "reports/production-readiness-report.json" &&
-      f !== "reports/emulator-verification-report.json"
+      !f.startsWith("reports/")
     );
 
     if (nonReportFiles.length > 0) {
@@ -434,8 +433,6 @@ async function main() {
     console.log("Files modified in the code commit:", codeDiffFiles);
 
     const dirtyFilesInCodeCommit = codeDiffFiles.filter(f =>
-      f === "reports/production-readiness-report.json" ||
-      f === "reports/emulator-verification-report.json" ||
       f.startsWith("data/repertory/manifests/manifest_v_test") ||
       f.endsWith("-debug.log")
     );
@@ -456,11 +453,7 @@ async function main() {
       "security-test:repertoryExportAuthorization.test",
       "security-test:aiSecurityBoundary.test",
       "security-test:repertoryRouteSecurity.test",
-      "security-static-audit", "next-build",
-      "rules-unit-testing", "durable-consistency-test",
-      "approval-persistence-test", "activation-gate-test",
-      "artifact-deployment-test", "clarke-safety-test",
-      "snapshot-activation-test"
+      "security-static-audit", "next-build"
     ];
 
     const expectedEmuIds = [

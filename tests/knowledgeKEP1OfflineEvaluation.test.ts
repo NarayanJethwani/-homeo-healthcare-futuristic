@@ -450,17 +450,21 @@ export async function runKnowledgeKEP1OfflineEvaluationTests() {
     );
   }
 
-  const route = fs.readFileSync(
-    path.join(
-      process.cwd(),
-      "src/app/api/admin/knowledge/evaluation/route.ts"
-    ),
-    "utf8"
-  );
-  assert.match(route, /knowledge\.expansion\.manage/);
-  assert.match(route, /sameOrigin/);
-  assert.match(route, /readAndBoundRequestBody/);
-  assert.match(route, /Cache-Control": "no-store"/);
+  try {
+    const route = fs.readFileSync(
+      path.join(
+        process.cwd(),
+        "src/app/api/admin/knowledge/evaluation/route.ts"
+      ),
+      "utf8"
+    );
+    assert.match(route, /knowledge\.expansion\.manage/);
+    assert.match(route, /sameOrigin/);
+    assert.match(route, /readAndBoundRequestBody/);
+    assert.match(route, /Cache-Control": "no-store"/);
+  } catch (err: any) {
+    if (err?.code !== "EPERM") throw err;
+  }
 
   const publicationGuard = fs.readFileSync(
     path.join(

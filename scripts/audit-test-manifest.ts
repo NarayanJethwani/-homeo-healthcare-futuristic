@@ -5,17 +5,25 @@ import { TEST_SUITE_MANIFEST, TestSuiteManifestEntry } from "../src/testing/test
 function walkDir(dir: string): string[] {
   let results: string[] = [];
   if (!fs.existsSync(dir)) return results;
-  const list = fs.readdirSync(dir);
-  for (const file of list) {
-    const filePath = path.join(dir, file);
-    const stat = fs.statSync(filePath);
-    if (stat && stat.isDirectory()) {
-      results = results.concat(walkDir(filePath));
-    } else {
-      if (file.endsWith(".test.ts") || file.endsWith(".test.tsx")) {
-        results.push(filePath);
+  try {
+    const list = fs.readdirSync(dir);
+    for (const file of list) {
+      const filePath = path.join(dir, file);
+      try {
+        const stat = fs.statSync(filePath);
+        if (stat && stat.isDirectory()) {
+          results = results.concat(walkDir(filePath));
+        } else {
+          if (file.endsWith(".test.ts") || file.endsWith(".test.tsx")) {
+            results.push(filePath);
+          }
+        }
+      } catch {
+        // Skip unreadable paths
       }
     }
+  } catch {
+    // Skip unreadable directories
   }
   return results;
 }
