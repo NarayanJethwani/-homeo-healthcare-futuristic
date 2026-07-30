@@ -7,7 +7,7 @@ import { buildKnowledgeSourceIntegrityReport } from "../../src/features/knowledg
 const report = buildKnowledgeSourceIntegrityReport({
   citations: CITATIONS,
   sources: KEP1_SOURCES,
-  asOfDate: "2026-07-29",
+  asOfDate: "2026-07-30",
 });
 const outputPath = path.resolve(
   process.cwd(),

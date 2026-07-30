@@ -10,15 +10,26 @@ export function runKnowledgeSourceIntegrityTests(): void {
   const report = buildKnowledgeSourceIntegrityReport({
     citations: CITATIONS,
     sources: KEP1_SOURCES,
-    asOfDate: "2026-07-29",
+    asOfDate: "2026-07-30",
   });
 
   assert.strictEqual(report.status, "staging-only");
   assert.strictEqual(report.invariants.publicationState, "unchanged");
   assert.strictEqual(report.invariants.ragState, "inactive");
-  assert.strictEqual(report.summary.eligibleCitationRecords, 19);
+  assert.strictEqual(report.summary.eligibleCitationRecords, 25);
   assert.strictEqual(report.summary.blockerCount, 3);
-  assert.strictEqual(report.summary.reviewCount, 7);
+  assert.strictEqual(report.summary.reviewCount, 1);
+  for (const citationId of [
+    "CIT-0004",
+    "CIT-0007",
+    "CIT-0008",
+    "CIT-0009",
+    "CIT-0010",
+    "CIT-0011",
+  ]) {
+    assert.ok(report.eligibleCitationIds.includes(citationId));
+    assert.ok(!report.quarantinedCitationIds.includes(citationId));
+  }
   assert.ok(report.eligibleCitationIds.includes("CIT-0017"));
   assert.ok(report.eligibleCitationIds.includes("CIT-0018"));
   assert.ok(report.eligibleCitationIds.includes("CIT-0012"));
@@ -72,7 +83,7 @@ export function runKnowledgeSourceIntegrityTests(): void {
       },
     ],
     sources: KEP1_SOURCES,
-    asOfDate: "2026-07-29",
+    asOfDate: "2026-07-30",
   });
   assert.ok(
     mismatched.issues.some(
@@ -89,7 +100,7 @@ export function runKnowledgeSourceIntegrityTests(): void {
         citationId: "CIT-MISSING",
       },
     ],
-    asOfDate: "2026-07-29",
+    asOfDate: "2026-07-30",
   });
   assert.ok(
     unlinkedSource.issues.some(
@@ -142,6 +153,38 @@ export function runKnowledgeSourceIntegrityTests(): void {
       "CLAIM-KENT-TREATMENT:authoritative-clinical-source-required:treatment"
     )
   );
+
+  for (const citationId of [
+    "CIT-0004",
+    "CIT-0007",
+    "CIT-0008",
+    "CIT-0009",
+    "CIT-0010",
+    "CIT-0011",
+  ]) {
+    const traditionalUse = evaluateClaimCitationStaging({
+      claimId: `CLAIM-${citationId}-TRADITIONAL`,
+      claimType: "traditional-use",
+      citationIds: [citationId],
+      citations: CITATIONS,
+    });
+    assert.strictEqual(traditionalUse.eligibleForStaging, true);
+    assert.strictEqual(traditionalUse.boundaries.publicationState, "unchanged");
+    assert.strictEqual(traditionalUse.boundaries.ragState, "inactive");
+
+    const clinicalTreatment = evaluateClaimCitationStaging({
+      claimId: `CLAIM-${citationId}-TREATMENT`,
+      claimType: "treatment",
+      citationIds: [citationId],
+      citations: CITATIONS,
+    });
+    assert.strictEqual(clinicalTreatment.eligibleForStaging, false);
+    assert.ok(
+      clinicalTreatment.errors.includes(
+        `CLAIM-${citationId}-TREATMENT:authoritative-clinical-source-required:treatment`
+      )
+    );
+  }
 
   const wrongConditionScope = evaluateClaimCitationStaging({
     claimId: "CLAIM-HYPERTHYROID-DIAGNOSIS",

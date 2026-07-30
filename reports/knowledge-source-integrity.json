@@ -1,18 +1,24 @@
 {
   "schemaVersion": "1.0.0",
-  "asOfDate": "2026-07-29",
+  "asOfDate": "2026-07-30",
   "status": "staging-only",
   "summary": {
     "citationsAudited": 29,
     "sourcesAudited": 11,
-    "eligibleCitationRecords": 19,
+    "eligibleCitationRecords": 25,
     "eligibleRegisteredSources": 11,
     "blockerCount": 3,
-    "reviewCount": 7
+    "reviewCount": 1
   },
   "eligibleCitationIds": [
+    "CIT-0004",
     "CIT-0005",
     "CIT-0006",
+    "CIT-0007",
+    "CIT-0008",
+    "CIT-0009",
+    "CIT-0010",
+    "CIT-0011",
     "CIT-0012",
     "CIT-0013",
     "CIT-0014",
@@ -48,12 +54,6 @@
     "CIT-0001",
     "CIT-0002",
     "CIT-0003",
-    "CIT-0004",
-    "CIT-0007",
-    "CIT-0008",
-    "CIT-0009",
-    "CIT-0010",
-    "CIT-0011",
     "CIT-0022"
   ],
   "quarantinedSourceIds": [],
@@ -78,48 +78,6 @@
       "recordType": "citation",
       "recordId": "CIT-0003",
       "detail": "The stored DOI resolves to an unrelated neonatal bone-mass paper and the stored PubMed identifier resolves to an unrelated outbreak report."
-    },
-    {
-      "severity": "review",
-      "code": "legacy-citation-metadata-incomplete",
-      "recordType": "citation",
-      "recordId": "CIT-0004",
-      "detail": "Source authority and verification metadata must be completed before new claim mapping."
-    },
-    {
-      "severity": "review",
-      "code": "legacy-citation-metadata-incomplete",
-      "recordType": "citation",
-      "recordId": "CIT-0007",
-      "detail": "Source authority and verification metadata must be completed before new claim mapping."
-    },
-    {
-      "severity": "review",
-      "code": "legacy-citation-metadata-incomplete",
-      "recordType": "citation",
-      "recordId": "CIT-0008",
-      "detail": "Source authority and verification metadata must be completed before new claim mapping."
-    },
-    {
-      "severity": "review",
-      "code": "legacy-citation-metadata-incomplete",
-      "recordType": "citation",
-      "recordId": "CIT-0009",
-      "detail": "Source authority and verification metadata must be completed before new claim mapping."
-    },
-    {
-      "severity": "review",
-      "code": "legacy-citation-metadata-incomplete",
-      "recordType": "citation",
-      "recordId": "CIT-0010",
-      "detail": "Source authority and verification metadata must be completed before new claim mapping."
-    },
-    {
-      "severity": "review",
-      "code": "legacy-citation-metadata-incomplete",
-      "recordType": "citation",
-      "recordId": "CIT-0011",
-      "detail": "Source authority and verification metadata must be completed before new claim mapping."
     },
     {
       "severity": "review",

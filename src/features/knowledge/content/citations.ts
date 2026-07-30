@@ -59,7 +59,17 @@ export const CITATIONS: CitationRecord[] = [
     journal: "Adolph Arnold",
     year: 1811,
     citationStyle: "Traditional",
-    category: "Materia-Medica"
+    category: "Materia-Medica",
+    canonicalUrl: "https://archive.org/details/materiamedicapu00dudggoog",
+    sourceIdentifier: "IA-MATERIAMEDICAPU00DUDGGOOG",
+    sourceAuthority: "external-secondary",
+    verificationStatus: "verified",
+    verifiedAt: "2026-07-30",
+    verificationEvidenceUrl:
+      "https://archive.org/details/materiamedicapu00dudggoog",
+    verificationNotes:
+      "The linked 1880 Dudgeon/Hughes English edition verifies the bibliographic identity of the earlier work. It may support traditional-use or historical description only; it is not modern clinical efficacy evidence.",
+    scopeTags: ["traditional-use", "materia-medica", "historical-reference", "hahnemann"]
   },
   {
     id: "CIT-0005",
@@ -106,7 +116,17 @@ export const CITATIONS: CitationRecord[] = [
     journal: "Adolph Arnold",
     year: 1828,
     citationStyle: "Traditional",
-    category: "Classical-Homeopathic-Literature"
+    category: "Classical-Homeopathic-Literature",
+    canonicalUrl: "https://archive.org/details/chronicdisease00hahn",
+    sourceIdentifier: "IA-CHRONICDISEASE00HAHN",
+    sourceAuthority: "external-secondary",
+    verificationStatus: "verified",
+    verifiedAt: "2026-07-30",
+    verificationEvidenceUrl:
+      "https://archive.org/details/chronicdisease00hahn",
+    verificationNotes:
+      "The linked 1896 Tafel English edition verifies the bibliographic identity of the earlier work. It may support traditional-use or historical description only; it is not modern clinical efficacy evidence.",
+    scopeTags: ["traditional-use", "classical-literature", "historical-reference", "hahnemann"]
   },
   {
     id: "CIT-0008",
@@ -115,7 +135,17 @@ export const CITATIONS: CitationRecord[] = [
     journal: "The Homoeopathic Publishing Company",
     year: 1900,
     citationStyle: "Traditional",
-    category: "Materia-Medica"
+    category: "Materia-Medica",
+    canonicalUrl: "https://archive.org/details/adictionaryprac00clargoog",
+    sourceIdentifier: "IA-ADICTIONARYPRAC00CLARGOOG",
+    sourceAuthority: "external-secondary",
+    verificationStatus: "verified",
+    verifiedAt: "2026-07-30",
+    verificationEvidenceUrl:
+      "https://archive.org/details/adictionaryprac00clargoog",
+    verificationNotes:
+      "The 1900 archive record verifies the bibliographic identity and publisher. It may support traditional-use or historical description only; it is not modern clinical efficacy evidence.",
+    scopeTags: ["traditional-use", "materia-medica", "historical-reference", "clarke"]
   },
   {
     id: "CIT-0009",
@@ -124,7 +154,17 @@ export const CITATIONS: CitationRecord[] = [
     journal: "Boericke & Tafel",
     year: 1898,
     citationStyle: "Traditional",
-    category: "Materia-Medica"
+    category: "Materia-Medica",
+    canonicalUrl: "https://archive.org/details/keynotescharact00alle",
+    sourceIdentifier: "IA-KEYNOTESCHARACT00ALLE",
+    sourceAuthority: "external-secondary",
+    verificationStatus: "verified",
+    verifiedAt: "2026-07-30",
+    verificationEvidenceUrl:
+      "https://archive.org/details/keynotescharact00alle",
+    verificationNotes:
+      "The 1898 Library of Congress archive record verifies the bibliographic identity and publisher. It may support traditional-use or historical description only; it is not modern clinical efficacy evidence.",
+    scopeTags: ["traditional-use", "materia-medica", "historical-reference", "allen"]
   },
   {
     id: "CIT-0010",
@@ -133,16 +173,36 @@ export const CITATIONS: CitationRecord[] = [
     journal: "Boericke & Tafel",
     year: 1901,
     citationStyle: "Traditional",
-    category: "Materia-Medica"
+    category: "Materia-Medica",
+    canonicalUrl: "https://archive.org/details/leadersinhomoeo03nashgoog",
+    sourceIdentifier: "IA-LEADERSINHOMOEO03NASHGOOG",
+    sourceAuthority: "external-secondary",
+    verificationStatus: "verified",
+    verifiedAt: "2026-07-30",
+    verificationEvidenceUrl:
+      "https://archive.org/details/leadersinhomoeo03nashgoog",
+    verificationNotes:
+      "The 1901 archive record verifies the bibliographic identity and publisher. It may support traditional-use or historical description only; it is not modern clinical efficacy evidence.",
+    scopeTags: ["traditional-use", "materia-medica", "historical-reference", "nash"]
   },
   {
     id: "CIT-0011",
-    title: "Concise Repertory of Homoeopathic Medicines",
+    title: "A Concise Repertory of Homoeopathic Medicines",
     authors: ["Phatak S. R."],
     journal: "B. Jain Publishers",
     year: 1963,
     citationStyle: "Traditional",
-    category: "Materia-Medica"
+    category: "Materia-Medica",
+    canonicalUrl: "https://archive.org/details/conciserepertory0000phat",
+    sourceIdentifier: "IA-CONCISEREPERTORY0000PHAT",
+    sourceAuthority: "external-secondary",
+    verificationStatus: "verified",
+    verifiedAt: "2026-07-30",
+    verificationEvidenceUrl:
+      "https://archive.org/details/conciserepertory0000phat",
+    verificationNotes:
+      "The linked 2001 B. Jain edition verifies bibliographic identity only. The archive item is access restricted, so this record grants no extraction, redistribution, publication, or display rights. It may support traditional-use description only and is not modern clinical efficacy evidence.",
+    scopeTags: ["traditional-use", "repertory", "historical-reference", "phatak"]
   },
   {
     id: "CIT-0012",
