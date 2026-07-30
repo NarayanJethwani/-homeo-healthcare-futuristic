@@ -998,7 +998,7 @@ export function computeGERDHeartburnOfflineMetrics(
 export function generateGERDHeartburnEvaluationReport(
   record: KEP1OfflineEvaluationRecord
 ): string {
-  const date = new Date().toISOString().split("T")[0];
+  const date = record.executedAt ? record.executedAt.split("T")[0] : "2026-07-30";
   return `# KEP-1 M2 Offline Retrieval Evaluation Report: GERD & Heartburn
 
 **Program:** Knowledge Expansion Program (KEP-1)  

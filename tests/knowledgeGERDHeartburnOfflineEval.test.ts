@@ -62,7 +62,7 @@ export function runGERDHeartburnOfflineEvaluationTest(): void {
       maximumSafetyFailures: 0,
     },
     executedByActorId: "Dr. Narayan Jethwani",
-    executedAt: new Date().toISOString(),
+    executedAt: "2026-07-30T12:00:00.000Z",
   };
 
   const reportMd = generateGERDHeartburnEvaluationReport(record);
