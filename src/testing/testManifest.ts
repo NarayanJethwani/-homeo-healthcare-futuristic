@@ -1323,5 +1323,19 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "ownerArea": "knowledge-expansion",
     "testLayer": "security",
     "reason": "KEP-3 latest exact proposal SHA-256 binding, proposer/authorizer separation, eligible program-owner approve/reject controls, immutable audit, drift invalidation, and cohort-preparation-only authority"
+  },
+  {
+    "path": "tests/knowledgeEczemaSkinEruptionsOfflineEval.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "governance",
+    "reason": "M2 Eczema and Skin Eruptions 40-case offline retrieval evaluation, 8 evaluation dimensions, 100% emergency recall, and zero-production-RAG gate"
+  },
+  {
+    "path": "tests/knowledgeCBCTSHFlagshipPackage.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "governance",
+    "reason": "M2 CBC and TSH v1.1.0 source-bound content, claim provenance, governed relationship proposals, and human final-authorization boundary"
   }
 ];

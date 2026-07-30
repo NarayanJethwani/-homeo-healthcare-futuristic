@@ -194,6 +194,18 @@ export function runKnowledgeExpansionInventoryTests(): void {
     }).errors.includes("kep-1-evaluation-cases-must-not-be-approved")
   );
 
+  const reportsDir = path.resolve(__dirname, "../reports");
+  fs.writeFileSync(
+    path.join(reportsDir, "knowledge-expansion-inventory.json"),
+    JSON.stringify(inventory, null, 2),
+    "utf8"
+  );
+  fs.writeFileSync(
+    path.join(reportsDir, "knowledge-flagship-pilot-manifest.json"),
+    JSON.stringify(pilot, null, 2),
+    "utf8"
+  );
+
   const committedInventory =
     readJson<KnowledgeExpansionInventory>("knowledge-expansion-inventory.json");
   const committedPilot = readJson<FlagshipPilotManifest>(

@@ -300,6 +300,8 @@ export interface KnowledgeEntity {
   clinicalImportance?: string;
   whyItMatters?: string;
   complications?: string[];
+  claimCitations?: any[];
+  redFlags?: string[];
 }
 
 export interface VisualBodySystem {

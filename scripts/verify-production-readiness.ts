@@ -22,8 +22,7 @@ function captureGitState(): { sha: string; isDirty: boolean; statusLines: string
       const match = line.match(/^\s*([A-Z?!]{1,2})\s+(.*)$/);
       if (!match) return true;
       const filePath = match[2].replace(/^"|"$/g, '').trim();
-      const isReport = filePath === "reports/production-readiness-report.json" ||
-                       filePath === "reports/emulator-verification-report.json";
+      const isReport = filePath.startsWith("reports/");
       return !isReport;
     });
 
