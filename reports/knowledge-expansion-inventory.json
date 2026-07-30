@@ -371,28 +371,28 @@
       "title": "Gastroesophageal Reflux Disease (GERD)",
       "audience": "patient",
       "editorialStatus": "published",
-      "evidenceLevel": "Level-A",
+      "evidenceLevel": "Consensus-Guidance",
       "safety": {
         "withdrawn": false,
         "riskTier": "high"
       },
       "content": {
         "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
+        "structuredSectionCompleteness": 100,
         "legacyBulkGenerationCohort": false,
         "genericTemplateDetected": false,
         "genericTemplateSignals": []
       },
       "evidence": {
-        "referenceCount": 3,
+        "referenceCount": 4,
         "allReferencesResolvable": true,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
       },
       "review": {
-        "reviewerRecorded": true,
+        "reviewerRecorded": false,
         "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
+        "authorReviewerNameConflict": false,
         "independentReviewProven": false
       },
       "graph": {
@@ -530,7 +530,7 @@
       "title": "Heartburn / Acid Regurgitation",
       "audience": "patient",
       "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
+      "evidenceLevel": "Consensus-Guidance",
       "safety": {
         "withdrawn": false,
         "riskTier": "high"
@@ -543,15 +543,15 @@
         "genericTemplateSignals": []
       },
       "evidence": {
-        "referenceCount": 3,
+        "referenceCount": 4,
         "allReferencesResolvable": true,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
       },
       "review": {
-        "reviewerRecorded": true,
+        "reviewerRecorded": false,
         "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
+        "authorReviewerNameConflict": false,
         "independentReviewProven": false
       },
       "graph": {

@@ -3,9 +3,9 @@
   "asOfDate": "2026-07-30",
   "status": "staging-only",
   "summary": {
-    "citationsAudited": 35,
+    "citationsAudited": 36,
     "sourcesAudited": 24,
-    "eligibleCitationRecords": 31,
+    "eligibleCitationRecords": 32,
     "eligibleRegisteredSources": 24,
     "blockerCount": 3,
     "reviewCount": 1
@@ -41,7 +41,8 @@
     "CIT-0032",
     "CIT-0033",
     "CIT-0034",
-    "CIT-0035"
+    "CIT-0035",
+    "CIT-0036"
   ],
   "eligibleSourceIds": [
     "SRC-KEP1-BOERICKE-1901",

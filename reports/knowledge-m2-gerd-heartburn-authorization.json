@@ -1,0 +1,258 @@
+{
+  "schemaVersion": "1.0.0",
+  "packageId": "KEP-M2-GERD-HEARTBURN",
+  "generatedAt": "2026-07-30",
+  "status": "authorized",
+  "decisionOwnerRole": "program-owner",
+  "decisionLane": "owner-final-source-bound",
+  "entityRevisions": [
+    {
+      "entityId": "D0001",
+      "version": "1.1.0",
+      "revisionHash": "e14e9c3e37008afb742b2e5f56cda21a32f2f29db6c388ccd7a5419934a2ed51",
+      "materialClaimCount": 8,
+      "citationIds": [
+        "CIT-0017",
+        "CIT-0023",
+        "CIT-0025",
+        "CIT-0036"
+      ],
+      "governedRelationshipProposalCount": 5
+    },
+    {
+      "entityId": "S0001",
+      "version": "1.1.0",
+      "revisionHash": "f1deec8d474ab7d424f71c69fa70aecdd6424a76bfc2b05f9a15876fa3192f46",
+      "materialClaimCount": 6,
+      "citationIds": [
+        "CIT-0017",
+        "CIT-0023",
+        "CIT-0025",
+        "CIT-0036"
+      ],
+      "governedRelationshipProposalCount": 5
+    }
+  ],
+  "relationshipProposals": [
+    {
+      "proposalId": "M2-GH-EDGE-001",
+      "sourceEntityId": "D0001",
+      "sourceNodeType": "condition",
+      "targetId": "S0001",
+      "targetNodeType": "symptom",
+      "relationshipType": "condition-associated-with-symptom",
+      "citationIds": [
+        "CIT-0025",
+        "CIT-0036"
+      ],
+      "passage": "D0001.content.symptoms",
+      "rationale": "Heartburn is a typical symptom associated with GERD; the edge does not by itself establish a diagnosis.",
+      "clinicalReviewRequired": true,
+      "status": "draft",
+      "sourceRevision": "1.1.0",
+      "publicationEligible": false,
+      "ragEligible": false
+    },
+    {
+      "proposalId": "M2-GH-EDGE-002",
+      "sourceEntityId": "D0001",
+      "sourceNodeType": "condition",
+      "targetId": "CIT-0017",
+      "targetNodeType": "publication",
+      "relationshipType": "supported-by",
+      "citationIds": [
+        "CIT-0017"
+      ],
+      "passage": "D0001.content.diagnosis; D0001.content.conventionalManagement",
+      "rationale": "NICE CG184 supports the adult diagnostic and conventional-management passages.",
+      "clinicalReviewRequired": false,
+      "status": "draft",
+      "sourceRevision": "1.1.0",
+      "publicationEligible": false,
+      "ragEligible": false
+    },
+    {
+      "proposalId": "M2-GH-EDGE-003",
+      "sourceEntityId": "D0001",
+      "sourceNodeType": "condition",
+      "targetId": "CIT-0025",
+      "targetNodeType": "publication",
+      "relationshipType": "supported-by",
+      "citationIds": [
+        "CIT-0025"
+      ],
+      "passage": "D0001.content.overview; D0001.content.lifestyleAdvice",
+      "rationale": "Official NIDDK information supports the patient-facing definition, symptoms, diagnosis, and lifestyle passages.",
+      "clinicalReviewRequired": false,
+      "status": "draft",
+      "sourceRevision": "1.1.0",
+      "publicationEligible": false,
+      "ragEligible": false
+    },
+    {
+      "proposalId": "M2-GH-EDGE-004",
+      "sourceEntityId": "D0001",
+      "sourceNodeType": "condition",
+      "targetId": "CIT-0036",
+      "targetNodeType": "publication",
+      "relationshipType": "supported-by",
+      "citationIds": [
+        "CIT-0036"
+      ],
+      "passage": "D0001.content",
+      "rationale": "The current ACG guideline supports the adult GERD diagnostic and management framework.",
+      "clinicalReviewRequired": false,
+      "status": "draft",
+      "sourceRevision": "1.1.0",
+      "publicationEligible": false,
+      "ragEligible": false
+    },
+    {
+      "proposalId": "M2-GH-EDGE-005",
+      "sourceEntityId": "D0001",
+      "sourceNodeType": "condition",
+      "targetId": "CIT-0023",
+      "targetNodeType": "publication",
+      "relationshipType": "references",
+      "citationIds": [
+        "CIT-0023"
+      ],
+      "passage": "D0001.content.homeopathicApproach",
+      "rationale": "NCCIH is referenced only for evidence limitations, product safety, and the conventional-care boundary.",
+      "clinicalReviewRequired": false,
+      "status": "draft",
+      "sourceRevision": "1.1.0",
+      "publicationEligible": false,
+      "ragEligible": false
+    },
+    {
+      "proposalId": "M2-GH-EDGE-007",
+      "sourceEntityId": "S0001",
+      "sourceNodeType": "symptom",
+      "targetId": "D0001",
+      "targetNodeType": "condition",
+      "relationshipType": "related-to",
+      "citationIds": [
+        "CIT-0025",
+        "CIT-0036"
+      ],
+      "passage": "S0001.content.clinicalMeaning",
+      "rationale": "Heartburn is commonly associated with GERD, while the loose relationship avoids asserting that the symptom alone diagnoses the condition.",
+      "clinicalReviewRequired": false,
+      "status": "draft",
+      "sourceRevision": "1.1.0",
+      "publicationEligible": false,
+      "ragEligible": false
+    },
+    {
+      "proposalId": "M2-GH-EDGE-008",
+      "sourceEntityId": "S0001",
+      "sourceNodeType": "symptom",
+      "targetId": "CIT-0017",
+      "targetNodeType": "publication",
+      "relationshipType": "supported-by",
+      "citationIds": [
+        "CIT-0017"
+      ],
+      "passage": "S0001.content.differentialDiagnosis; S0001.content.redFlags",
+      "rationale": "NICE CG184 supports the adult reflux assessment and escalation context.",
+      "clinicalReviewRequired": false,
+      "status": "draft",
+      "sourceRevision": "1.1.0",
+      "publicationEligible": false,
+      "ragEligible": false
+    },
+    {
+      "proposalId": "M2-GH-EDGE-009",
+      "sourceEntityId": "S0001",
+      "sourceNodeType": "symptom",
+      "targetId": "CIT-0025",
+      "targetNodeType": "publication",
+      "relationshipType": "supported-by",
+      "citationIds": [
+        "CIT-0025"
+      ],
+      "passage": "S0001.content.definition; S0001.content.lifestyleAdvice",
+      "rationale": "Official NIDDK information supports the symptom definition and patient self-care boundary.",
+      "clinicalReviewRequired": false,
+      "status": "draft",
+      "sourceRevision": "1.1.0",
+      "publicationEligible": false,
+      "ragEligible": false
+    },
+    {
+      "proposalId": "M2-GH-EDGE-010",
+      "sourceEntityId": "S0001",
+      "sourceNodeType": "symptom",
+      "targetId": "CIT-0036",
+      "targetNodeType": "publication",
+      "relationshipType": "supported-by",
+      "citationIds": [
+        "CIT-0036"
+      ],
+      "passage": "S0001.content",
+      "rationale": "The ACG guideline supports the symptom, differential, diagnostic, and management context.",
+      "clinicalReviewRequired": false,
+      "status": "draft",
+      "sourceRevision": "1.1.0",
+      "publicationEligible": false,
+      "ragEligible": false
+    },
+    {
+      "proposalId": "M2-GH-EDGE-011",
+      "sourceEntityId": "S0001",
+      "sourceNodeType": "symptom",
+      "targetId": "CIT-0023",
+      "targetNodeType": "publication",
+      "relationshipType": "references",
+      "citationIds": [
+        "CIT-0023"
+      ],
+      "passage": "S0001.content.faqs[2]",
+      "rationale": "NCCIH is referenced only for the complementary-care evidence and safety boundary.",
+      "clinicalReviewRequired": false,
+      "status": "draft",
+      "sourceRevision": "1.1.0",
+      "publicationEligible": false,
+      "ragEligible": false
+    }
+  ],
+  "sourceVerification": [
+    {
+      "citationId": "CIT-0017",
+      "sourceIdentifier": "NICE-CG184",
+      "verificationStatus": "verified"
+    },
+    {
+      "citationId": "CIT-0023",
+      "sourceIdentifier": "NCCIH-HOMEOPATHY-2021",
+      "verificationStatus": "verified"
+    },
+    {
+      "citationId": "CIT-0025",
+      "sourceIdentifier": "NIDDK-GERD-ADULTS-2020",
+      "verificationStatus": "verified"
+    },
+    {
+      "citationId": "CIT-0036",
+      "sourceIdentifier": "PMID-34807007",
+      "verificationStatus": "verified"
+    }
+  ],
+  "invariants": {
+    "automaticApprovalForbidden": true,
+    "finalDecisionMustBeHuman": true,
+    "relationshipAcceptanceAutomatic": false,
+    "productionPublicationOnPackageBuild": false,
+    "productionRagActivation": false,
+    "frozenDomainMutationCount": 0
+  },
+  "releaseDecision": {
+    "requestedDecision": "authorize-pr",
+    "approved": true,
+    "approvedBy": "Dr. Narayan Jethwani",
+    "approvedAt": "2026-07-30",
+    "decisionReference": "PR-74-owner-authorization"
+  },
+  "packageHash": "136dff3415fc5b5e9cb55948e18d6e211017f7fa550ccf0c21bca5936d5ecdcd"
+}

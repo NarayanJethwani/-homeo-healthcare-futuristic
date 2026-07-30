@@ -17,7 +17,7 @@ export function runKnowledgeSourceIntegrityTests(): void {
   assert.strictEqual(report.status, "staging-only");
   assert.strictEqual(report.invariants.publicationState, "unchanged");
   assert.strictEqual(report.invariants.ragState, "inactive");
-  assert.strictEqual(report.summary.eligibleCitationRecords, 31);
+  assert.strictEqual(report.summary.eligibleCitationRecords, 32);
   assert.strictEqual(report.summary.blockerCount, 3);
   assert.strictEqual(report.summary.reviewCount, 1);
   for (const citationId of [
@@ -55,6 +55,7 @@ export function runKnowledgeSourceIntegrityTests(): void {
     "CIT-0033",
     "CIT-0034",
     "CIT-0035",
+    "CIT-0036",
   ]) {
     assert.ok(report.eligibleCitationIds.includes(citationId));
   }
