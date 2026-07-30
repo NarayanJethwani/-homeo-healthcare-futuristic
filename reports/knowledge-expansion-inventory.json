@@ -20,7 +20,7 @@
     "withdrawnEntities": 3,
     "flagshipEntities": 8,
     "legacyBulkGeneratedEntities": 256,
-    "genericSignalEntities": 260,
+    "genericSignalEntities": 259,
     "independentlyReviewedEntities": 0,
     "governedEvidenceProfiles": 0,
     "claimCitationCompleteEntities": 0,
@@ -193,62 +193,6 @@
           "active-safety-withdrawal",
           "independent-review-unproven",
           "graph-isolated"
-        ]
-      }
-    },
-    {
-      "entityId": "L0001",
-      "slug": "cbc",
-      "entityType": "lab-test",
-      "title": "Complete Blood Count (CBC)",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Level-A",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": false,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a blood panel parameter or cell count analysis designed to evaluate"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 3,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 17,
-        "duplicateRelationshipRows": 15,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": true,
-        "eligibleForIndexing": true,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 110,
-        "recommendation": "flagship-pilot",
-        "reasons": [
-          "flagship-pilot-cohort",
-          "generic-template-detected",
-          "independent-review-unproven",
-          "clinical-interpretation-content"
         ]
       }
     },
@@ -471,6 +415,59 @@
       }
     },
     {
+      "entityId": "L0001",
+      "slug": "cbc",
+      "entityType": "lab-test",
+      "title": "Complete Blood Count (CBC)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Level-A",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": false,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 5,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 17,
+        "duplicateRelationshipRows": 15,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": true,
+        "eligibleForIndexing": true,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 90,
+        "recommendation": "flagship-pilot",
+        "reasons": [
+          "flagship-pilot-cohort",
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
       "entityId": "L0002",
       "slug": "tsh",
       "entityType": "lab-test",
@@ -490,7 +487,7 @@
         "genericTemplateSignals": []
       },
       "evidence": {
-        "referenceCount": 3,
+        "referenceCount": 5,
         "allReferencesResolvable": true,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
