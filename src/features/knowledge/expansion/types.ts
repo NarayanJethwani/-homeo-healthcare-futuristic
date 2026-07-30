@@ -294,9 +294,9 @@ export interface KEP1SourceDossierManifest {
   };
 }
 
-export interface KEP2PriorityDiseaseEvidenceManifest {
+export interface PriorityDiseaseEvidenceManifest {
   schemaVersion: "1.0.0";
-  programId: "KEP-2-PRIORITY-DISEASE-EVIDENCE";
+  programId: "KEP-PREP-1-PRIORITY-DISEASE-EVIDENCE";
   asOfDate: string;
   status: "sources-registered-review-blocked";
   selectionBasis: {

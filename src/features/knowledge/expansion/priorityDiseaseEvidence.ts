@@ -7,7 +7,7 @@ import type {
   KEP1EditorialAssignment,
   KEP1FlagshipSourceDossier,
   KEP1SourceRecord,
-  KEP2PriorityDiseaseEvidenceManifest,
+  PriorityDiseaseEvidenceManifest,
 } from "./types";
 
 const AS_OF_DATE = "2026-07-30";
@@ -40,9 +40,9 @@ const GENERAL_PROHIBITED_CLAIMS = [
   "potency or dosing instruction",
 ];
 
-export const KEP2_PRIORITY_DISEASE_SOURCES: KEP1SourceRecord[] = [
+export const PRIORITY_DISEASE_SOURCES: KEP1SourceRecord[] = [
   {
-    id: "SRC-KEP2-NICE-NG136",
+    id: "SRC-PREP1-NICE-NG136",
     citationId: "CIT-0030",
     title: "Hypertension in adults: diagnosis and management",
     sourceType: "clinical-guideline",
@@ -63,7 +63,7 @@ export const KEP2_PRIORITY_DISEASE_SOURCES: KEP1SourceRecord[] = [
     coverageDomains: CLINICAL_DOMAINS,
   },
   {
-    id: "SRC-KEP2-WHO-HYPERTENSION-2021",
+    id: "SRC-PREP1-WHO-HYPERTENSION-2021",
     citationId: "CIT-0031",
     title: "Guideline for the pharmacological treatment of hypertension in adults",
     sourceType: "clinical-guideline",
@@ -87,7 +87,7 @@ export const KEP2_PRIORITY_DISEASE_SOURCES: KEP1SourceRecord[] = [
     coverageDomains: ["conventional-care", "evidence-limitations"],
   },
   {
-    id: "SRC-KEP2-NICE-NG28",
+    id: "SRC-PREP1-NICE-NG28",
     citationId: "CIT-0032",
     title: "Type 2 diabetes in adults: management",
     sourceType: "clinical-guideline",
@@ -108,7 +108,7 @@ export const KEP2_PRIORITY_DISEASE_SOURCES: KEP1SourceRecord[] = [
     coverageDomains: ["conventional-care", "evidence-limitations"],
   },
   {
-    id: "SRC-KEP2-NIDDK-DIABETES-OVERVIEW",
+    id: "SRC-PREP1-NIDDK-DIABETES-OVERVIEW",
     citationId: "CIT-0033",
     title: "Diabetes Overview",
     sourceType: "reference-standard",
@@ -135,7 +135,7 @@ export const KEP2_PRIORITY_DISEASE_SOURCES: KEP1SourceRecord[] = [
     ],
   },
   {
-    id: "SRC-KEP2-NIDDK-DIABETES-DIAGNOSIS",
+    id: "SRC-PREP1-NIDDK-DIABETES-DIAGNOSIS",
     citationId: "CIT-0034",
     title: "Diabetes Tests & Diagnosis",
     sourceType: "reference-standard",
@@ -161,7 +161,7 @@ export const KEP2_PRIORITY_DISEASE_SOURCES: KEP1SourceRecord[] = [
     ],
   },
   {
-    id: "SRC-KEP2-MEDLINE-ALLERGIC-RHINITIS",
+    id: "SRC-PREP1-MEDLINE-ALLERGIC-RHINITIS",
     citationId: "CIT-0035",
     title: "Allergic rhinitis",
     sourceType: "reference-standard",
@@ -181,7 +181,7 @@ export const KEP2_PRIORITY_DISEASE_SOURCES: KEP1SourceRecord[] = [
     coverageDomains: CLINICAL_DOMAINS,
   },
   {
-    id: "SRC-KEP2-ARIA-2016",
+    id: "SRC-PREP1-ARIA-2016",
     citationId: "CIT-0021",
     title: "Allergic Rhinitis and its Impact on Asthma (ARIA) guidelines—2016 revision",
     sourceType: "clinical-guideline",
@@ -207,7 +207,7 @@ export const KEP2_PRIORITY_DISEASE_SOURCES: KEP1SourceRecord[] = [
     ],
   },
   {
-    id: "SRC-KEP2-NICE-NG145",
+    id: "SRC-PREP1-NICE-NG145",
     citationId: "CIT-0029",
     title: "Thyroid disease: assessment and management",
     sourceType: "clinical-guideline",
@@ -228,7 +228,7 @@ export const KEP2_PRIORITY_DISEASE_SOURCES: KEP1SourceRecord[] = [
     coverageDomains: CLINICAL_DOMAINS,
   },
   {
-    id: "SRC-KEP2-MEDLINE-TSH",
+    id: "SRC-PREP1-MEDLINE-TSH",
     citationId: "CIT-0028",
     title: "TSH (Thyroid-stimulating hormone) Test",
     sourceType: "reference-standard",
@@ -254,7 +254,7 @@ export const KEP2_PRIORITY_DISEASE_SOURCES: KEP1SourceRecord[] = [
     ],
   },
   {
-    id: "SRC-KEP2-ATA-HYPOTHYROIDISM-2014",
+    id: "SRC-PREP1-ATA-HYPOTHYROIDISM-2014",
     citationId: "CIT-0012",
     title: "Guidelines for the Treatment of Hypothyroidism",
     sourceType: "clinical-guideline",
@@ -275,7 +275,7 @@ export const KEP2_PRIORITY_DISEASE_SOURCES: KEP1SourceRecord[] = [
     coverageDomains: ["conventional-care", "evidence-limitations"],
   },
   {
-    id: "SRC-KEP2-AACE-ATA-HYPOTHYROIDISM-2012",
+    id: "SRC-PREP1-AACE-ATA-HYPOTHYROIDISM-2012",
     citationId: "CIT-0013",
     title: "Clinical Practice Guidelines for Hypothyroidism in Adults",
     sourceType: "clinical-guideline",
@@ -300,7 +300,7 @@ export const KEP2_PRIORITY_DISEASE_SOURCES: KEP1SourceRecord[] = [
     ],
   },
   {
-    id: "SRC-KEP2-WHO-ANAEMIA-2017",
+    id: "SRC-PREP1-WHO-ANAEMIA-2017",
     citationId: "CIT-0015",
     title: "Nutritional anaemias: tools for effective prevention and control",
     sourceType: "clinical-guideline",
@@ -325,7 +325,7 @@ export const KEP2_PRIORITY_DISEASE_SOURCES: KEP1SourceRecord[] = [
     ],
   },
   {
-    id: "SRC-KEP2-MSD-ANEMIA",
+    id: "SRC-PREP1-MSD-ANEMIA",
     citationId: "CIT-0016",
     title: "Evaluation of Anemia",
     sourceType: "reference-standard",
@@ -360,13 +360,13 @@ function dossier(input: {
   }>;
 }): KEP1FlagshipSourceDossier {
   const registeredCitationIds = new Set(
-    KEP2_PRIORITY_DISEASE_SOURCES.filter((source) =>
+    PRIORITY_DISEASE_SOURCES.filter((source) =>
       input.sourceIds.includes(source.id)
     ).map((source) => source.citationId)
   );
   const claimEvidencePlans: KEP1ClaimEvidencePlan[] = input.claimPlans.map(
     (plan) => {
-      const claimId = `KEP2-${input.entityId}-${plan.suffix}`;
+      const claimId = `PREP1-${input.entityId}-${plan.suffix}`;
       const evaluation = evaluateClaimCitationStaging({
         claimId,
         claimType: plan.claimType,
@@ -397,7 +397,7 @@ function dossier(input: {
 
   return {
     schemaVersion: "1.0.0",
-    dossierId: `KEP2-DOSSIER-${input.entityId}`,
+    dossierId: `PREP1-DOSSIER-${input.entityId}`,
     entityId: input.entityId,
     entityType: "disease",
     title: input.title,
@@ -422,13 +422,13 @@ function dossier(input: {
   };
 }
 
-export const KEP2_PRIORITY_DISEASE_DOSSIERS: KEP1FlagshipSourceDossier[] = [
+export const PRIORITY_DISEASE_DOSSIERS: KEP1FlagshipSourceDossier[] = [
   dossier({
     entityId: "D0005",
     title: "Allergic Rhinitis",
     sourceIds: [
-      "SRC-KEP2-MEDLINE-ALLERGIC-RHINITIS",
-      "SRC-KEP2-ARIA-2016",
+      "SRC-PREP1-MEDLINE-ALLERGIC-RHINITIS",
+      "SRC-PREP1-ARIA-2016",
     ],
     claimPlans: [
       {
@@ -455,8 +455,8 @@ export const KEP2_PRIORITY_DISEASE_DOSSIERS: KEP1FlagshipSourceDossier[] = [
     entityId: "D0009",
     title: "Hypertension",
     sourceIds: [
-      "SRC-KEP2-NICE-NG136",
-      "SRC-KEP2-WHO-HYPERTENSION-2021",
+      "SRC-PREP1-NICE-NG136",
+      "SRC-PREP1-WHO-HYPERTENSION-2021",
     ],
     claimPlans: [
       {
@@ -483,9 +483,9 @@ export const KEP2_PRIORITY_DISEASE_DOSSIERS: KEP1FlagshipSourceDossier[] = [
     entityId: "D0010",
     title: "Diabetes Mellitus",
     sourceIds: [
-      "SRC-KEP2-NICE-NG28",
-      "SRC-KEP2-NIDDK-DIABETES-OVERVIEW",
-      "SRC-KEP2-NIDDK-DIABETES-DIAGNOSIS",
+      "SRC-PREP1-NICE-NG28",
+      "SRC-PREP1-NIDDK-DIABETES-OVERVIEW",
+      "SRC-PREP1-NIDDK-DIABETES-DIAGNOSIS",
     ],
     claimPlans: [
       {
@@ -512,10 +512,10 @@ export const KEP2_PRIORITY_DISEASE_DOSSIERS: KEP1FlagshipSourceDossier[] = [
     entityId: "D0011",
     title: "Hypothyroidism",
     sourceIds: [
-      "SRC-KEP2-NICE-NG145",
-      "SRC-KEP2-MEDLINE-TSH",
-      "SRC-KEP2-ATA-HYPOTHYROIDISM-2014",
-      "SRC-KEP2-AACE-ATA-HYPOTHYROIDISM-2012",
+      "SRC-PREP1-NICE-NG145",
+      "SRC-PREP1-MEDLINE-TSH",
+      "SRC-PREP1-ATA-HYPOTHYROIDISM-2014",
+      "SRC-PREP1-AACE-ATA-HYPOTHYROIDISM-2012",
     ],
     claimPlans: [
       {
@@ -541,7 +541,7 @@ export const KEP2_PRIORITY_DISEASE_DOSSIERS: KEP1FlagshipSourceDossier[] = [
   dossier({
     entityId: "D0051",
     title: "Anemia",
-    sourceIds: ["SRC-KEP2-WHO-ANAEMIA-2017", "SRC-KEP2-MSD-ANEMIA"],
+    sourceIds: ["SRC-PREP1-WHO-ANAEMIA-2017", "SRC-PREP1-MSD-ANEMIA"],
     claimPlans: [
       {
         suffix: "DEFINITION",
@@ -565,13 +565,13 @@ export const KEP2_PRIORITY_DISEASE_DOSSIERS: KEP1FlagshipSourceDossier[] = [
   }),
 ];
 
-export function buildKEP2PriorityDiseaseEvidenceManifest(): KEP2PriorityDiseaseEvidenceManifest {
-  const claimEvidencePlans = KEP2_PRIORITY_DISEASE_DOSSIERS.flatMap(
+export function buildPriorityDiseaseEvidenceManifest(): PriorityDiseaseEvidenceManifest {
+  const claimEvidencePlans = PRIORITY_DISEASE_DOSSIERS.flatMap(
     (item) => item.claimEvidencePlans
   );
   return {
     schemaVersion: "1.0.0",
-    programId: "KEP-2-PRIORITY-DISEASE-EVIDENCE",
+    programId: "KEP-PREP-1-PRIORITY-DISEASE-EVIDENCE",
     asOfDate: AS_OF_DATE,
     status: "sources-registered-review-blocked",
     selectionBasis: {
@@ -580,12 +580,12 @@ export function buildKEP2PriorityDiseaseEvidenceManifest(): KEP2PriorityDiseaseE
       mockAnalyticsExcluded: true,
       sourceInventoryAsOfDate: AS_OF_DATE,
     },
-    sources: KEP2_PRIORITY_DISEASE_SOURCES.map((source) => ({
+    sources: PRIORITY_DISEASE_SOURCES.map((source) => ({
       ...source,
       licence: { ...source.licence },
       coverageDomains: [...source.coverageDomains],
     })),
-    dossiers: KEP2_PRIORITY_DISEASE_DOSSIERS.map((item) => ({
+    dossiers: PRIORITY_DISEASE_DOSSIERS.map((item) => ({
       ...item,
       sourceIds: [...item.sourceIds],
       claimEvidencePlans: item.claimEvidencePlans.map((plan) => ({
@@ -605,7 +605,7 @@ export function buildKEP2PriorityDiseaseEvidenceManifest(): KEP2PriorityDiseaseE
       stateBoundaries: { ...item.stateBoundaries },
     })),
     summary: {
-      sourceCount: KEP2_PRIORITY_DISEASE_SOURCES.length,
+      sourceCount: PRIORITY_DISEASE_SOURCES.length,
       dossierCount: 5,
       claimEvidencePlanCount: claimEvidencePlans.length,
       stagingEligibleClaimEvidencePlanCount: claimEvidencePlans.filter(

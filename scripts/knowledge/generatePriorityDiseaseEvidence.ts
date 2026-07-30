@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { buildKEP2PriorityDiseaseEvidenceManifest } from "../../src/features/knowledge/expansion/kep2PriorityDiseaseEvidence";
+import { buildPriorityDiseaseEvidenceManifest } from "../../src/features/knowledge/expansion/priorityDiseaseEvidence";
 
 function readAsOfDate(argv: string[]): string {
   const index = argv.indexOf("--as-of");
@@ -13,14 +13,14 @@ function readAsOfDate(argv: string[]): string {
   return value;
 }
 
-export function generateKEP2PriorityDiseaseEvidenceArtifact(
+export function generatePriorityDiseaseEvidenceArtifact(
   asOfDate: string,
   outputPath = path.resolve(
     __dirname,
-    "../../reports/knowledge-kep2-priority-disease-evidence.json"
+    "../../reports/knowledge-priority-disease-evidence.json"
   )
 ): string {
-  const manifest = buildKEP2PriorityDiseaseEvidenceManifest();
+  const manifest = buildPriorityDiseaseEvidenceManifest();
   if (manifest.asOfDate !== asOfDate) {
     throw new Error(
       `Requested as-of date does not match governed manifest: ${asOfDate}`
@@ -38,8 +38,8 @@ export function generateKEP2PriorityDiseaseEvidenceArtifact(
 if (require.main === module) {
   const asOfDate = readAsOfDate(process.argv.slice(2));
   const outputPath =
-    generateKEP2PriorityDiseaseEvidenceArtifact(asOfDate);
+    generatePriorityDiseaseEvidenceArtifact(asOfDate);
   console.log(
-    `Generated governed KEP-2 priority disease evidence artifact:\n- ${outputPath}`
+    `Generated governed priority disease evidence preparation artifact:\n- ${outputPath}`
   );
 }

@@ -1,16 +1,16 @@
 import assert from "assert";
 import { CITATIONS } from "../src/features/knowledge/content/citations";
 import {
-  buildKEP2PriorityDiseaseEvidenceManifest,
-  KEP2_PRIORITY_DISEASE_DOSSIERS,
-  KEP2_PRIORITY_DISEASE_SOURCES,
-} from "../src/features/knowledge/expansion/kep2PriorityDiseaseEvidence";
+  buildPriorityDiseaseEvidenceManifest,
+  PRIORITY_DISEASE_DOSSIERS,
+  PRIORITY_DISEASE_SOURCES,
+} from "../src/features/knowledge/expansion/priorityDiseaseEvidence";
 
-export function runKnowledgeKEP2PriorityDiseaseEvidenceTests(): void {
-  const manifest = buildKEP2PriorityDiseaseEvidenceManifest();
+export function runKnowledgePriorityDiseaseEvidenceTests(): void {
+  const manifest = buildPriorityDiseaseEvidenceManifest();
   const citationIds = new Set(CITATIONS.map((citation) => citation.id));
   const sourceById = new Map(
-    KEP2_PRIORITY_DISEASE_SOURCES.map((source) => [source.id, source])
+    PRIORITY_DISEASE_SOURCES.map((source) => [source.id, source])
   );
   const entityIds = manifest.dossiers.map((dossier) => dossier.entityId);
 
@@ -52,7 +52,7 @@ export function runKnowledgeKEP2PriorityDiseaseEvidenceTests(): void {
     assert.ok(citationIds.has(source.citationId));
   }
 
-  for (const dossier of KEP2_PRIORITY_DISEASE_DOSSIERS) {
+  for (const dossier of PRIORITY_DISEASE_DOSSIERS) {
     assert.strictEqual(dossier.stateBoundaries.contentState, "planning-only");
     assert.strictEqual(dossier.stateBoundaries.evidenceState, "unapproved");
     assert.strictEqual(dossier.stateBoundaries.clinicalReviewState, "unassigned");
@@ -83,10 +83,10 @@ export function runKnowledgeKEP2PriorityDiseaseEvidenceTests(): void {
   }
 
   console.log(
-    "✅ KEP-2 priority disease evidence cohort, source registration, withdrawal exclusion, and zero-authority boundaries verified."
+    "✅ Priority disease evidence preparation cohort, source registration, withdrawal exclusion, and zero-authority boundaries verified."
   );
 }
 
 if (require.main === module) {
-  runKnowledgeKEP2PriorityDiseaseEvidenceTests();
+  runKnowledgePriorityDiseaseEvidenceTests();
 }

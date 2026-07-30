@@ -5,6 +5,9 @@
 **Initial cohort:** Eight flagship entities
 **Production RAG posture:** Inactive
 
+The quantitative delivery roadmap and current baseline are maintained in
+`docs/knowledge/DATABASE_EXPANSION_MILESTONES.md`.
+
 ## Purpose
 
 The Knowledge Expansion Program grows the platform through governed evidence,
@@ -82,6 +85,10 @@ The safety remediation cohort remains separate:
 
 Rewritten content does not restore publication or retrieval eligibility. Restoration
 requires independent review, regression tests, and explicit human approval.
+
+The five priority disease source dossiers are pre-cohort preparation records
+under `KEP-PREP-1-PRIORITY-DISEASE-EVIDENCE`. They do not belong to KEP-2 and
+cannot enter formal KEP-3 execution until KEP-1 has a current human go decision.
 
 ### KEP-3 — Controlled cohort expansion
 
