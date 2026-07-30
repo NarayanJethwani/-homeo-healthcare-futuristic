@@ -122,8 +122,8 @@ Current delivery:
 - GERD + Heartburn revision `1.1.0` prepared on 2026-07-30;
 - 14 material claim groups mapped to four verified sources;
 - 10 unique governed relationship proposals, all draft-only;
-- revision-bound authorization packet generated with final owner authorization
-  pending;
+- revision-bound authorization packet approved by the program owner on
+  2026-07-30 through PR #74;
 - no automatic graph acceptance, publication execution, or RAG activation.
 
 Exit gate:
@@ -338,12 +338,11 @@ Article count alone is never a completion metric.
 
 ## Immediate execution order
 
-1. Obtain the program-owner final authorization for the GERD + Heartburn
-   revision-bound package.
-2. Merge only after the protected pull-request checks pass.
-3. Build the 20-case-per-entity offline evaluation set for GERD + Heartburn.
-4. Copy the verified package workflow to Eczema + Skin Eruptions.
-5. Complete CBC + TSH, then Sulphur + Nux Vomica.
-6. Complete the full KEP-1 go/no-go gate.
-7. Start KEP-2 safety remediation and KEP-3 priority disease promotion as
+1. Merge the authorized GERD + Heartburn package after protected pull-request
+   checks pass.
+2. Build the 20-case-per-entity offline evaluation set for GERD + Heartburn.
+3. Copy the verified package workflow to Eczema + Skin Eruptions.
+4. Complete CBC + TSH, then Sulphur + Nux Vomica.
+5. Complete the full KEP-1 go/no-go gate.
+6. Start KEP-2 safety remediation and KEP-3 priority disease promotion as
    separate workstreams.

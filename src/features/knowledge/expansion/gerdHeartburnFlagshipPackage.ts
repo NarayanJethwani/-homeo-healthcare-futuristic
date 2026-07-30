@@ -30,7 +30,7 @@ export interface GERDHeartburnAuthorizationPacket {
   schemaVersion: "1.0.0";
   packageId: "KEP-M2-GERD-HEARTBURN";
   generatedAt: "2026-07-30";
-  status: "final-authorization-pending";
+  status: "authorized";
   decisionOwnerRole: "program-owner";
   decisionLane: "owner-final-source-bound";
   entityRevisions: Array<{
@@ -57,9 +57,10 @@ export interface GERDHeartburnAuthorizationPacket {
   };
   releaseDecision: {
     requestedDecision: "authorize-pr";
-    approved: false;
-    approvedBy: null;
-    approvedAt: null;
+    approved: true;
+    approvedBy: "Dr. Narayan Jethwani";
+    approvedAt: "2026-07-30";
+    decisionReference: "PR-74-owner-authorization";
   };
   packageHash: string;
 }
@@ -285,7 +286,7 @@ export function buildGERDHeartburnAuthorizationPacket(): GERDHeartburnAuthorizat
     schemaVersion: "1.0.0" as const,
     packageId: "KEP-M2-GERD-HEARTBURN" as const,
     generatedAt: "2026-07-30" as const,
-    status: "final-authorization-pending" as const,
+    status: "authorized" as const,
     decisionOwnerRole: "program-owner" as const,
     decisionLane: "owner-final-source-bound" as const,
     entityRevisions,
@@ -301,9 +302,10 @@ export function buildGERDHeartburnAuthorizationPacket(): GERDHeartburnAuthorizat
     },
     releaseDecision: {
       requestedDecision: "authorize-pr" as const,
-      approved: false as const,
-      approvedBy: null,
-      approvedAt: null,
+      approved: true as const,
+      approvedBy: "Dr. Narayan Jethwani" as const,
+      approvedAt: "2026-07-30" as const,
+      decisionReference: "PR-74-owner-authorization" as const,
     },
   };
 

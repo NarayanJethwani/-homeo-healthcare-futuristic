@@ -2,14 +2,14 @@
   "schemaVersion": "1.0.0",
   "packageId": "KEP-M2-GERD-HEARTBURN",
   "generatedAt": "2026-07-30",
-  "status": "final-authorization-pending",
+  "status": "authorized",
   "decisionOwnerRole": "program-owner",
   "decisionLane": "owner-final-source-bound",
   "entityRevisions": [
     {
       "entityId": "D0001",
       "version": "1.1.0",
-      "revisionHash": "57b960de3ee3fafaa297f0f6922047ab958b564be055a85c2334ec535120df40",
+      "revisionHash": "e14e9c3e37008afb742b2e5f56cda21a32f2f29db6c388ccd7a5419934a2ed51",
       "materialClaimCount": 8,
       "citationIds": [
         "CIT-0017",
@@ -22,7 +22,7 @@
     {
       "entityId": "S0001",
       "version": "1.1.0",
-      "revisionHash": "cbd3ecd5d2521ea1f7770e36da939771324bf2cc8817ba96c3bac4ac195f3ecf",
+      "revisionHash": "f1deec8d474ab7d424f71c69fa70aecdd6424a76bfc2b05f9a15876fa3192f46",
       "materialClaimCount": 6,
       "citationIds": [
         "CIT-0017",
@@ -249,9 +249,10 @@
   },
   "releaseDecision": {
     "requestedDecision": "authorize-pr",
-    "approved": false,
-    "approvedBy": null,
-    "approvedAt": null
+    "approved": true,
+    "approvedBy": "Dr. Narayan Jethwani",
+    "approvedAt": "2026-07-30",
+    "decisionReference": "PR-74-owner-authorization"
   },
-  "packageHash": "bc8ba9a1cf518d6e4399c4bbe1876b1127b372a9fc4acfd3fa1dd3a9c7e51fdd"
+  "packageHash": "136dff3415fc5b5e9cb55948e18d6e211017f7fa550ccf0c21bca5936d5ecdcd"
 }

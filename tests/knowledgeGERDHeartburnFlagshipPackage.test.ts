@@ -37,8 +37,16 @@ export function runKnowledgeGERDHeartburnFlagshipPackageTests(): void {
   );
 
   assert.deepStrictEqual(committedPacket, packet);
-  assert.strictEqual(packet.status, "final-authorization-pending");
-  assert.strictEqual(packet.releaseDecision.approved, false);
+  assert.strictEqual(packet.status, "authorized");
+  assert.strictEqual(packet.releaseDecision.approved, true);
+  assert.strictEqual(
+    packet.releaseDecision.approvedBy,
+    "Dr. Narayan Jethwani"
+  );
+  assert.strictEqual(
+    packet.releaseDecision.decisionReference,
+    "PR-74-owner-authorization"
+  );
   assert.strictEqual(packet.invariants.automaticApprovalForbidden, true);
   assert.strictEqual(packet.invariants.finalDecisionMustBeHuman, true);
   assert.strictEqual(packet.invariants.productionPublicationOnPackageBuild, false);
@@ -57,10 +65,10 @@ export function runKnowledgeGERDHeartburnFlagshipPackageTests(): void {
     assert.strictEqual(entity.citationHealth, "complete");
     assert.strictEqual(entity.evidenceProfile?.citationCompleteness, 1);
     assert.strictEqual(entity.editorialStatus, "published");
-    assert.strictEqual(entity.legacyVerificationStatus, "review-required");
+    assert.strictEqual(entity.legacyVerificationStatus, "verified-published");
     assert.strictEqual(
       entity.reviewStatus,
-      "owner-final-authorization-pending"
+      "owner-authorized-source-bound"
     );
 
     const serialized = JSON.stringify(entity);
