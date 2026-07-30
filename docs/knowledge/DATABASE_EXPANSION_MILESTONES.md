@@ -140,7 +140,12 @@ Current delivery:
 - **Eczema + Skin Eruptions** flagship package revision `1.1.0` prepared on 2026-07-30:
   - `D0002` Eczema and `S0002` Skin Eruptions upgraded to `v1.1.0` with claim-level citations (`CIT-0019` NICE CG57, `CIT-0022`, `CIT-0023`, `CIT-0024`);
   - 10 unique governed relationship proposals for Eczema/Skin Eruptions, all draft-only;
-  - Authorization packet built in `reports/knowledge-m2-eczema-skin-eruptions-authorization.json`.
+  - Authorization packet built in `reports/knowledge-m2-eczema-skin-eruptions-authorization.json`;
+  - **M2 Governed Offline Retrieval Evaluation** executed for Eczema + Skin Eruptions on 2026-07-30: 40 cases across 8 dimensions (20 for `D0002`, 20 for `S0002`), 100% pass rate, 100% emergency recall (eczema herpeticum, erythroderma >90% BSA, SJS/TEN); evaluation report published to `reports/knowledge-m2-eczema-skin-eruptions-offline-evaluation.md`.
+- **CBC + TSH** flagship package revision `1.1.0` prepared on 2026-07-30:
+  - `L0001` CBC and `L0002` TSH upgraded to `v1.1.0` with passage-level claim citations, emergency critical value panic boundaries, and explicit homeopathy non-replacement boundaries;
+  - 10 unique governed relationship proposals for CBC/TSH, all draft-only;
+  - Authorization packet built in `reports/knowledge-m2-cbc-tsh-authorization.json`.
 - Production RAG remains strictly inactive across all entities.
 
 Exit gate:

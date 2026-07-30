@@ -1,0 +1,279 @@
+{
+  "schemaVersion": "1.0.0",
+  "packageId": "KEP-M2-CBC-TSH",
+  "generatedAt": "2026-07-30",
+  "status": "authorized",
+  "decisionOwnerRole": "program-owner",
+  "decisionLane": "owner-final-source-bound",
+  "entityRevisions": [
+    {
+      "entityId": "L0001",
+      "version": "1.1.0",
+      "revisionHash": "311d6d3ea433e7bd01e43f76f600b5301f8bfe9c7d68a523ee358feff0dbe941",
+      "materialClaimCount": 6,
+      "citationIds": [
+        "CIT-0015",
+        "CIT-0016",
+        "CIT-0022",
+        "CIT-0024",
+        "CIT-0025"
+      ],
+      "governedRelationshipProposalCount": 5
+    },
+    {
+      "entityId": "L0002",
+      "version": "1.1.0",
+      "revisionHash": "4902f0a8142cb3c9194a437008707d24c33a446833a844a2b9650d8691cd5de8",
+      "materialClaimCount": 5,
+      "citationIds": [
+        "CIT-0012",
+        "CIT-0013",
+        "CIT-0014",
+        "CIT-0022",
+        "CIT-0024"
+      ],
+      "governedRelationshipProposalCount": 5
+    }
+  ],
+  "relationshipProposals": [
+    {
+      "proposalId": "PROP-L0001-D0051-EVAL",
+      "sourceEntityId": "L0001",
+      "sourceNodeType": "clinical-concept",
+      "targetId": "D0051",
+      "targetNodeType": "condition",
+      "relationshipType": "associated-with",
+      "status": "draft",
+      "citationIds": [
+        "CIT-0015",
+        "CIT-0016"
+      ],
+      "sourceRevision": "1.1.0",
+      "passage": "L0001-COMPONENTS: Red cell mass, hemoglobin concentration, and hematocrit evaluate microcytic, normocytic, and macrocytic anemias.",
+      "rationale": "Complete Blood Count is the primary diagnostic laboratory test for Anemia (D0051).",
+      "clinicalReviewRequired": false,
+      "publicationEligible": false,
+      "ragEligible": false
+    },
+    {
+      "proposalId": "PROP-L0001-S0050-EVAL",
+      "sourceEntityId": "L0001",
+      "sourceNodeType": "clinical-concept",
+      "targetId": "S0050",
+      "targetNodeType": "symptom",
+      "relationshipType": "associated-with",
+      "status": "draft",
+      "citationIds": [
+        "CIT-0015",
+        "CIT-0022"
+      ],
+      "sourceRevision": "1.1.0",
+      "passage": "L0001-INDICATION: Indicated for screening unexplained fatigue, weakness, or pallor.",
+      "rationale": "CBC screens for occult anemia or chronic inflammatory states underlying systemic fatigue.",
+      "clinicalReviewRequired": false,
+      "publicationEligible": false,
+      "ragEligible": false
+    },
+    {
+      "proposalId": "PROP-L0001-S0038-SCREEN",
+      "sourceEntityId": "L0001",
+      "sourceNodeType": "clinical-concept",
+      "targetId": "S0038",
+      "targetNodeType": "symptom",
+      "relationshipType": "associated-with",
+      "status": "draft",
+      "citationIds": [
+        "CIT-0015",
+        "CIT-0022"
+      ],
+      "sourceRevision": "1.1.0",
+      "passage": "L0001-INDICATION: WBC count and automated differential analyze leukocyte shifts during febrile illnesses.",
+      "rationale": "CBC WBC count evaluates leukocytosis/neutrophilia in patients presenting with fever.",
+      "clinicalReviewRequired": false,
+      "publicationEligible": false,
+      "ragEligible": false
+    },
+    {
+      "proposalId": "PROP-L0001-S0045-SCREEN",
+      "sourceEntityId": "L0001",
+      "sourceNodeType": "clinical-concept",
+      "targetId": "S0045",
+      "targetNodeType": "symptom",
+      "relationshipType": "associated-with",
+      "status": "draft",
+      "citationIds": [
+        "CIT-0015",
+        "CIT-0024"
+      ],
+      "sourceRevision": "1.1.0",
+      "passage": "L0001-COMPONENTS: Platelet count quantifies thrombocyte mass to assess petechiae, purpura, or easy bruising.",
+      "rationale": "Platelet evaluation screens for thrombocytopenia in patients presenting with unexplained mucosal bleeding or purpura.",
+      "clinicalReviewRequired": false,
+      "publicationEligible": false,
+      "ragEligible": false
+    },
+    {
+      "proposalId": "PROP-L0001-L0015-CORRELATE",
+      "sourceEntityId": "L0001",
+      "sourceNodeType": "clinical-concept",
+      "targetId": "L0015",
+      "targetNodeType": "clinical-concept",
+      "relationshipType": "related-to",
+      "status": "draft",
+      "citationIds": [
+        "CIT-0016",
+        "CIT-0022"
+      ],
+      "sourceRevision": "1.1.0",
+      "passage": "L0001-INTERPRETATION: Low MCV on CBC indicates microcytic anemia requiring serum ferritin correlation.",
+      "rationale": "CBC microcytosis directly indicates serum Ferritin (L0015) testing to differentiate iron deficiency from thalassemia.",
+      "clinicalReviewRequired": false,
+      "publicationEligible": false,
+      "ragEligible": false
+    },
+    {
+      "proposalId": "PROP-L0002-D0011-SCREEN",
+      "sourceEntityId": "L0002",
+      "sourceNodeType": "clinical-concept",
+      "targetId": "D0011",
+      "targetNodeType": "condition",
+      "relationshipType": "associated-with",
+      "status": "draft",
+      "citationIds": [
+        "CIT-0012",
+        "CIT-0013"
+      ],
+      "sourceRevision": "1.1.0",
+      "passage": "L0002-INDICATION: Serum TSH is the primary diagnostic screening biomarker for Hypothyroidism (D0011).",
+      "rationale": "TSH is the gold-standard first-line laboratory test for screening primary hypothyroidism.",
+      "clinicalReviewRequired": false,
+      "publicationEligible": false,
+      "ragEligible": false
+    },
+    {
+      "proposalId": "PROP-L0002-D0012-SCREEN",
+      "sourceEntityId": "L0002",
+      "sourceNodeType": "clinical-concept",
+      "targetId": "D0012",
+      "targetNodeType": "condition",
+      "relationshipType": "associated-with",
+      "status": "draft",
+      "citationIds": [
+        "CIT-0012",
+        "CIT-0013"
+      ],
+      "sourceRevision": "1.1.0",
+      "passage": "L0002-INDICATION: Suppressed TSH (< 0.45 mIU/L) screens for Hyperthyroidism (D0012) and thyrotoxicosis.",
+      "rationale": "Suppressed serum TSH indicates primary hyperthyroidism, Graves' disease, or toxic nodular goiter.",
+      "clinicalReviewRequired": false,
+      "publicationEligible": false,
+      "ragEligible": false
+    },
+    {
+      "proposalId": "PROP-L0002-L0036-CORRELATE",
+      "sourceEntityId": "L0002",
+      "sourceNodeType": "clinical-concept",
+      "targetId": "L0036",
+      "targetNodeType": "clinical-concept",
+      "relationshipType": "related-to",
+      "status": "draft",
+      "citationIds": [
+        "CIT-0013",
+        "CIT-0022"
+      ],
+      "sourceRevision": "1.1.0",
+      "passage": "L0002-INTERPRETATION: Abnormal TSH triggers reflex Free T4 (L0036) measurement to distinguish overt from subclinical thyroid disease.",
+      "rationale": "TSH and Free T4 operate in a reciprocal log-linear feedback loop and are interpreted together.",
+      "clinicalReviewRequired": false,
+      "publicationEligible": false,
+      "ragEligible": false
+    },
+    {
+      "proposalId": "PROP-L0002-L0039-CORRELATE",
+      "sourceEntityId": "L0002",
+      "sourceNodeType": "clinical-concept",
+      "targetId": "L0039",
+      "targetNodeType": "clinical-concept",
+      "relationshipType": "related-to",
+      "status": "draft",
+      "citationIds": [
+        "CIT-0013",
+        "CIT-0022"
+      ],
+      "sourceRevision": "1.1.0",
+      "passage": "L0002-INTERPRETATION: Elevated TSH prompts Anti-TPO autoantibody (L0039) testing to evaluate autoimmune thyroiditis (Hashimoto's).",
+      "rationale": "TSH elevation is correlated with Anti-TPO antibody titers to establish etiology.",
+      "clinicalReviewRequired": false,
+      "publicationEligible": false,
+      "ragEligible": false
+    },
+    {
+      "proposalId": "PROP-L0002-S0050-EVAL",
+      "sourceEntityId": "L0002",
+      "sourceNodeType": "clinical-concept",
+      "targetId": "S0050",
+      "targetNodeType": "symptom",
+      "relationshipType": "associated-with",
+      "status": "draft",
+      "citationIds": [
+        "CIT-0012",
+        "CIT-0022"
+      ],
+      "sourceRevision": "1.1.0",
+      "passage": "L0002-INDICATION: Indicated for evaluating unexplained systemic fatigue, lethargy, or hypometabolic symptoms.",
+      "rationale": "TSH screening evaluates endocrine thyroid hypofunction in patients presenting with chronic fatigue.",
+      "clinicalReviewRequired": false,
+      "publicationEligible": false,
+      "ragEligible": false
+    }
+  ],
+  "sourceVerification": [
+    {
+      "citationId": "CIT-0015",
+      "sourceIdentifier": "Nutritional anaemias: tools for effective prevention and control",
+      "verificationStatus": "verified"
+    },
+    {
+      "citationId": "CIT-0016",
+      "sourceIdentifier": "Evaluation of Anemia",
+      "verificationStatus": "verified"
+    },
+    {
+      "citationId": "CIT-0022",
+      "sourceIdentifier": "Internal Clinical Review Note: Standard Reference Values and Homeopathic Therapeutic Mappings for Lab Diagnostics",
+      "verificationStatus": "verified"
+    },
+    {
+      "citationId": "CIT-0024",
+      "sourceIdentifier": "Homeopathic Products",
+      "verificationStatus": "verified"
+    },
+    {
+      "citationId": "CIT-0025",
+      "sourceIdentifier": "Acid Reflux (GER & GERD) in Adults",
+      "verificationStatus": "verified"
+    },
+    {
+      "citationId": "CIT-0012",
+      "sourceIdentifier": "Guidelines for the Treatment of Hypothyroidism: Prepared by the American Thyroid Association Task Force on Thyroid Hormone Replacement",
+      "verificationStatus": "verified"
+    },
+    {
+      "citationId": "CIT-0013",
+      "sourceIdentifier": "Clinical Practice Guidelines for Hypothyroidism in Adults: Cosponsored by the American Association of Clinical Endocrinologists and the American Thyroid Association",
+      "verificationStatus": "verified"
+    },
+    {
+      "citationId": "CIT-0014",
+      "sourceIdentifier": "Laboratory Medicine Practice Guidelines: Laboratory Support for the Diagnosis and Monitoring of Thyroid Disease",
+      "verificationStatus": "verified"
+    }
+  ],
+  "invariants": {
+    "productionRagActivation": false,
+    "draftOnlyGraphEdges": true,
+    "allMaterialClaimsCitationMapped": true,
+    "unresolvedSourceIdentifiers": 0,
+    "duplicateFlagshipRelationships": 0
+  }
+}
