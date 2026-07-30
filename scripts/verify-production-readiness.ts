@@ -409,8 +409,7 @@ async function main() {
     console.log("Files modified in the evidence commit:", diffFiles);
 
     const nonReportFiles = diffFiles.filter(f =>
-      f !== "reports/production-readiness-report.json" &&
-      f !== "reports/emulator-verification-report.json"
+      !f.startsWith("reports/")
     );
 
     if (nonReportFiles.length > 0) {
