@@ -246,6 +246,41 @@ function validateCitation(citation: CitationRecord): SourceIntegrityIssue[] {
     );
   }
 
+  const isTraditional = citation.category
+    ? TRADITIONAL_CATEGORIES.has(citation.category)
+    : false;
+  if (citation.verificationStatus === "verified" && isTraditional) {
+    if (!citation.canonicalUrl || !citation.sourceIdentifier || !citation.verificationEvidenceUrl) {
+      issue(
+        "blocker",
+        "traditional-source-provenance-required",
+        "A verified traditional source requires a canonical URL, stable identifier, and verification evidence."
+      );
+    }
+    if (
+      !(citation.scopeTags || []).some(
+        (tag) => tag.trim().toLowerCase() === "traditional-use"
+      )
+    ) {
+      issue(
+        "blocker",
+        "traditional-use-scope-required",
+        "A verified traditional source must be explicitly limited to traditional-use claims."
+      );
+    }
+    if (
+      !citation.verificationNotes
+        ?.toLowerCase()
+        .includes("not modern clinical efficacy evidence")
+    ) {
+      issue(
+        "blocker",
+        "traditional-clinical-evidence-boundary-required",
+        "A verified traditional source must state that it is not modern clinical efficacy evidence."
+      );
+    }
+  }
+
   if (!citation.sourceAuthority || !citation.verificationStatus) {
     issue(
       "review",
