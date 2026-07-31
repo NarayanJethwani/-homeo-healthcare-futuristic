@@ -1372,5 +1372,12 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "ownerArea": "knowledge-expansion",
     "testLayer": "governance",
     "reason": "M4 KEP-2 Withdrawn-Entity Remediation (Asthma, Arsenicum Album, Safety FAQ) v1.1.0 rewrites, 30-case offline evaluation, and human restore-or-remain-withdrawn authorization boundary"
+  },
+  {
+    "path": "tests/knowledgeKEP3ControlledDiseaseCohort.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "governance",
+    "reason": "M5 KEP-3 First Controlled Disease Cohort (Allergic Rhinitis, Hypertension, Diabetes Mellitus, Hypothyroidism, Anemia) v1.1.0 upgrades, 25 draft graph proposals, 50-case offline evaluation, and human cohort promotion authorization boundary"
   }
 ];
