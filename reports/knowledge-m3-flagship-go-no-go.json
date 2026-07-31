@@ -11,7 +11,7 @@
       "entityId": "D0001",
       "entityName": "Gastroesophageal Reflux Disease (GERD)",
       "revisionId": "KEP1-DRAFT-D0001-V1.1.0",
-      "contentSha256": "e64ca72924d0af90782756ac8f0a5aa8bbe9415b97412a58a146f5529853a9ad",
+      "contentSha256": "9a3c129141b8f5ddcc0ee17dbdd2cfd11ae717065ca11e6334c6583d36b44075",
       "riskLane": "elevated",
       "independentClinicalCheckPerformed": true,
       "clinicalReviewerActorId": "Dr. Narayan Jethwani",
