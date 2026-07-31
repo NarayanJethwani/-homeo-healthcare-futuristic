@@ -15,12 +15,12 @@
     {
       "entityId": "D0002",
       "revisionId": "KEP1-DRAFT-D0002-V1.1.0",
-      "contentSha256": "cff58d14f63d9d65629778154b17d5073c98bdbef1a93266a74eab24ddb5d139"
+      "contentSha256": "fdfd4e68f44d0845c4d0e6038f742ebe34f51a723c401bdd9651c597c75c1759"
     },
     {
       "entityId": "S0002",
       "revisionId": "KEP1-DRAFT-S0002-V1.1.0",
-      "contentSha256": "06a6ba021ed03fe96668d6c424e8d3809be922523f815d9a8afd7fb6eb9d3831"
+      "contentSha256": "beeaa2b5fb3c89f79084a2d84dcb898e58b0ff62a4a2cdcbc73c37e61143a83f"
     }
   ],
   "cases": [
@@ -41,7 +41,7 @@
         {
           "entityId": "D0002",
           "revisionId": "KEP1-DRAFT-D0002-V1.1.0",
-          "contentSha256": "cff58d14f63d9d65629778154b17d5073c98bdbef1a93266a74eab24ddb5d139",
+          "contentSha256": "fdfd4e68f44d0845c4d0e6038f742ebe34f51a723c401bdd9651c597c75c1759",
           "citedPassageIds": [
             "D0002-DEFINITION"
           ]
@@ -71,7 +71,7 @@
         {
           "entityId": "D0002",
           "revisionId": "KEP1-DRAFT-D0002-V1.1.0",
-          "contentSha256": "cff58d14f63d9d65629778154b17d5073c98bdbef1a93266a74eab24ddb5d139",
+          "contentSha256": "fdfd4e68f44d0845c4d0e6038f742ebe34f51a723c401bdd9651c597c75c1759",
           "citedPassageIds": [
             "D0002-PATHOPHYSIOLOGY"
           ]
@@ -101,7 +101,7 @@
         {
           "entityId": "D0002",
           "revisionId": "KEP1-DRAFT-D0002-V1.1.0",
-          "contentSha256": "cff58d14f63d9d65629778154b17d5073c98bdbef1a93266a74eab24ddb5d139",
+          "contentSha256": "fdfd4e68f44d0845c4d0e6038f742ebe34f51a723c401bdd9651c597c75c1759",
           "citedPassageIds": [
             "D0002-SYMPTOMS"
           ]
@@ -131,7 +131,7 @@
         {
           "entityId": "D0002",
           "revisionId": "KEP1-DRAFT-D0002-V1.1.0",
-          "contentSha256": "cff58d14f63d9d65629778154b17d5073c98bdbef1a93266a74eab24ddb5d139",
+          "contentSha256": "fdfd4e68f44d0845c4d0e6038f742ebe34f51a723c401bdd9651c597c75c1759",
           "citedPassageIds": [
             "D0002-DIAGNOSIS"
           ]
@@ -161,7 +161,7 @@
         {
           "entityId": "D0002",
           "revisionId": "KEP1-DRAFT-D0002-V1.1.0",
-          "contentSha256": "cff58d14f63d9d65629778154b17d5073c98bdbef1a93266a74eab24ddb5d139",
+          "contentSha256": "fdfd4e68f44d0845c4d0e6038f742ebe34f51a723c401bdd9651c597c75c1759",
           "citedPassageIds": [
             "D0002-CONVENTIONAL-CARE"
           ]
@@ -191,7 +191,7 @@
         {
           "entityId": "D0002",
           "revisionId": "KEP1-DRAFT-D0002-V1.1.0",
-          "contentSha256": "cff58d14f63d9d65629778154b17d5073c98bdbef1a93266a74eab24ddb5d139",
+          "contentSha256": "fdfd4e68f44d0845c4d0e6038f742ebe34f51a723c401bdd9651c597c75c1759",
           "citedPassageIds": [
             "D0002-LIFESTYLE"
           ]
@@ -221,7 +221,7 @@
         {
           "entityId": "D0002",
           "revisionId": "KEP1-DRAFT-D0002-V1.1.0",
-          "contentSha256": "cff58d14f63d9d65629778154b17d5073c98bdbef1a93266a74eab24ddb5d139",
+          "contentSha256": "fdfd4e68f44d0845c4d0e6038f742ebe34f51a723c401bdd9651c597c75c1759",
           "citedPassageIds": [
             "D0002-HOMEOPATHY-LIMITS"
           ]
@@ -251,7 +251,7 @@
         {
           "entityId": "D0002",
           "revisionId": "KEP1-DRAFT-D0002-V1.1.0",
-          "contentSha256": "cff58d14f63d9d65629778154b17d5073c98bdbef1a93266a74eab24ddb5d139",
+          "contentSha256": "fdfd4e68f44d0845c4d0e6038f742ebe34f51a723c401bdd9651c597c75c1759",
           "citedPassageIds": [
             "D0002-RED-FLAGS"
           ]
@@ -281,7 +281,7 @@
         {
           "entityId": "D0002",
           "revisionId": "KEP1-DRAFT-D0002-V1.1.0",
-          "contentSha256": "cff58d14f63d9d65629778154b17d5073c98bdbef1a93266a74eab24ddb5d139",
+          "contentSha256": "fdfd4e68f44d0845c4d0e6038f742ebe34f51a723c401bdd9651c597c75c1759",
           "citedPassageIds": [
             "D0002-RED-FLAGS"
           ]
@@ -312,7 +312,7 @@
         {
           "entityId": "D0002",
           "revisionId": "KEP1-DRAFT-D0002-V1.1.0",
-          "contentSha256": "cff58d14f63d9d65629778154b17d5073c98bdbef1a93266a74eab24ddb5d139",
+          "contentSha256": "fdfd4e68f44d0845c4d0e6038f742ebe34f51a723c401bdd9651c597c75c1759",
           "citedPassageIds": [
             "D0002-DEFINITION",
             "D0002-CONVENTIONAL-CARE"
@@ -344,7 +344,7 @@
         {
           "entityId": "D0002",
           "revisionId": "KEP1-DRAFT-D0002-V1.1.0",
-          "contentSha256": "cff58d14f63d9d65629778154b17d5073c98bdbef1a93266a74eab24ddb5d139",
+          "contentSha256": "fdfd4e68f44d0845c4d0e6038f742ebe34f51a723c401bdd9651c597c75c1759",
           "citedPassageIds": [
             "D0002-HOMEOPATHY-LIMITS"
           ]
@@ -374,7 +374,7 @@
         {
           "entityId": "D0002",
           "revisionId": "KEP1-DRAFT-D0002-V1.1.0",
-          "contentSha256": "cff58d14f63d9d65629778154b17d5073c98bdbef1a93266a74eab24ddb5d139",
+          "contentSha256": "fdfd4e68f44d0845c4d0e6038f742ebe34f51a723c401bdd9651c597c75c1759",
           "citedPassageIds": [
             "D0002-HOMEOPATHY-LIMITS"
           ]
@@ -419,7 +419,7 @@
         {
           "entityId": "D0002",
           "revisionId": "KEP1-DRAFT-D0002-V1.1.0",
-          "contentSha256": "cff58d14f63d9d65629778154b17d5073c98bdbef1a93266a74eab24ddb5d139",
+          "contentSha256": "fdfd4e68f44d0845c4d0e6038f742ebe34f51a723c401bdd9651c597c75c1759",
           "citedPassageIds": [
             "D0002-DEFINITION"
           ]
@@ -449,7 +449,7 @@
         {
           "entityId": "D0002",
           "revisionId": "KEP1-DRAFT-D0002-V1.1.0",
-          "contentSha256": "cff58d14f63d9d65629778154b17d5073c98bdbef1a93266a74eab24ddb5d139",
+          "contentSha256": "fdfd4e68f44d0845c4d0e6038f742ebe34f51a723c401bdd9651c597c75c1759",
           "citedPassageIds": [
             "D0002-DEFINITION"
           ]
@@ -479,7 +479,7 @@
         {
           "entityId": "D0002",
           "revisionId": "KEP1-DRAFT-D0002-V1.1.0",
-          "contentSha256": "cff58d14f63d9d65629778154b17d5073c98bdbef1a93266a74eab24ddb5d139",
+          "contentSha256": "fdfd4e68f44d0845c4d0e6038f742ebe34f51a723c401bdd9651c597c75c1759",
           "citedPassageIds": [
             "D0002-DEFINITION"
           ]
@@ -509,7 +509,7 @@
         {
           "entityId": "D0002",
           "revisionId": "KEP1-DRAFT-D0002-V1.1.0",
-          "contentSha256": "cff58d14f63d9d65629778154b17d5073c98bdbef1a93266a74eab24ddb5d139",
+          "contentSha256": "fdfd4e68f44d0845c4d0e6038f742ebe34f51a723c401bdd9651c597c75c1759",
           "citedPassageIds": [
             "D0002-HOMEOPATHY-LIMITS"
           ]
@@ -539,7 +539,7 @@
         {
           "entityId": "D0002",
           "revisionId": "KEP1-DRAFT-D0002-V1.1.0",
-          "contentSha256": "cff58d14f63d9d65629778154b17d5073c98bdbef1a93266a74eab24ddb5d139",
+          "contentSha256": "fdfd4e68f44d0845c4d0e6038f742ebe34f51a723c401bdd9651c597c75c1759",
           "citedPassageIds": [
             "D0002-CONVENTIONAL-CARE"
           ]
@@ -569,7 +569,7 @@
         {
           "entityId": "D0002",
           "revisionId": "KEP1-DRAFT-D0002-V1.1.0",
-          "contentSha256": "cff58d14f63d9d65629778154b17d5073c98bdbef1a93266a74eab24ddb5d139",
+          "contentSha256": "fdfd4e68f44d0845c4d0e6038f742ebe34f51a723c401bdd9651c597c75c1759",
           "citedPassageIds": [
             "D0002-RED-FLAGS"
           ]
@@ -599,7 +599,7 @@
         {
           "entityId": "D0002",
           "revisionId": "KEP1-DRAFT-D0002-V1.1.0",
-          "contentSha256": "cff58d14f63d9d65629778154b17d5073c98bdbef1a93266a74eab24ddb5d139",
+          "contentSha256": "fdfd4e68f44d0845c4d0e6038f742ebe34f51a723c401bdd9651c597c75c1759",
           "citedPassageIds": [
             "D0002-DIAGNOSIS"
           ]
@@ -629,7 +629,7 @@
         {
           "entityId": "S0002",
           "revisionId": "KEP1-DRAFT-S0002-V1.1.0",
-          "contentSha256": "06a6ba021ed03fe96668d6c424e8d3809be922523f815d9a8afd7fb6eb9d3831",
+          "contentSha256": "beeaa2b5fb3c89f79084a2d84dcb898e58b0ff62a4a2cdcbc73c37e61143a83f",
           "citedPassageIds": [
             "S0002-DEFINITION"
           ]
@@ -659,7 +659,7 @@
         {
           "entityId": "S0002",
           "revisionId": "KEP1-DRAFT-S0002-V1.1.0",
-          "contentSha256": "06a6ba021ed03fe96668d6c424e8d3809be922523f815d9a8afd7fb6eb9d3831",
+          "contentSha256": "beeaa2b5fb3c89f79084a2d84dcb898e58b0ff62a4a2cdcbc73c37e61143a83f",
           "citedPassageIds": [
             "S0002-CAUSES"
           ]
@@ -689,7 +689,7 @@
         {
           "entityId": "S0002",
           "revisionId": "KEP1-DRAFT-S0002-V1.1.0",
-          "contentSha256": "06a6ba021ed03fe96668d6c424e8d3809be922523f815d9a8afd7fb6eb9d3831",
+          "contentSha256": "beeaa2b5fb3c89f79084a2d84dcb898e58b0ff62a4a2cdcbc73c37e61143a83f",
           "citedPassageIds": [
             "S0002-MORPHOLOGY"
           ]
@@ -719,7 +719,7 @@
         {
           "entityId": "S0002",
           "revisionId": "KEP1-DRAFT-S0002-V1.1.0",
-          "contentSha256": "06a6ba021ed03fe96668d6c424e8d3809be922523f815d9a8afd7fb6eb9d3831",
+          "contentSha256": "beeaa2b5fb3c89f79084a2d84dcb898e58b0ff62a4a2cdcbc73c37e61143a83f",
           "citedPassageIds": [
             "S0002-EVALUATION"
           ]
@@ -749,7 +749,7 @@
         {
           "entityId": "S0002",
           "revisionId": "KEP1-DRAFT-S0002-V1.1.0",
-          "contentSha256": "06a6ba021ed03fe96668d6c424e8d3809be922523f815d9a8afd7fb6eb9d3831",
+          "contentSha256": "beeaa2b5fb3c89f79084a2d84dcb898e58b0ff62a4a2cdcbc73c37e61143a83f",
           "citedPassageIds": [
             "S0002-SELF-CARE"
           ]
@@ -779,7 +779,7 @@
         {
           "entityId": "S0002",
           "revisionId": "KEP1-DRAFT-S0002-V1.1.0",
-          "contentSha256": "06a6ba021ed03fe96668d6c424e8d3809be922523f815d9a8afd7fb6eb9d3831",
+          "contentSha256": "beeaa2b5fb3c89f79084a2d84dcb898e58b0ff62a4a2cdcbc73c37e61143a83f",
           "citedPassageIds": [
             "S0002-HOMEOPATHY-LIMITS"
           ]
@@ -809,7 +809,7 @@
         {
           "entityId": "S0002",
           "revisionId": "KEP1-DRAFT-S0002-V1.1.0",
-          "contentSha256": "06a6ba021ed03fe96668d6c424e8d3809be922523f815d9a8afd7fb6eb9d3831",
+          "contentSha256": "beeaa2b5fb3c89f79084a2d84dcb898e58b0ff62a4a2cdcbc73c37e61143a83f",
           "citedPassageIds": [
             "S0002-RED-FLAGS"
           ]
@@ -839,7 +839,7 @@
         {
           "entityId": "S0002",
           "revisionId": "KEP1-DRAFT-S0002-V1.1.0",
-          "contentSha256": "06a6ba021ed03fe96668d6c424e8d3809be922523f815d9a8afd7fb6eb9d3831",
+          "contentSha256": "beeaa2b5fb3c89f79084a2d84dcb898e58b0ff62a4a2cdcbc73c37e61143a83f",
           "citedPassageIds": [
             "S0002-RED-FLAGS"
           ]
@@ -869,7 +869,7 @@
         {
           "entityId": "S0002",
           "revisionId": "KEP1-DRAFT-S0002-V1.1.0",
-          "contentSha256": "06a6ba021ed03fe96668d6c424e8d3809be922523f815d9a8afd7fb6eb9d3831",
+          "contentSha256": "beeaa2b5fb3c89f79084a2d84dcb898e58b0ff62a4a2cdcbc73c37e61143a83f",
           "citedPassageIds": [
             "S0002-RED-FLAGS"
           ]
@@ -899,7 +899,7 @@
         {
           "entityId": "S0002",
           "revisionId": "KEP1-DRAFT-S0002-V1.1.0",
-          "contentSha256": "06a6ba021ed03fe96668d6c424e8d3809be922523f815d9a8afd7fb6eb9d3831",
+          "contentSha256": "beeaa2b5fb3c89f79084a2d84dcb898e58b0ff62a4a2cdcbc73c37e61143a83f",
           "citedPassageIds": [
             "S0002-MORPHOLOGY"
           ]
@@ -929,7 +929,7 @@
         {
           "entityId": "S0002",
           "revisionId": "KEP1-DRAFT-S0002-V1.1.0",
-          "contentSha256": "06a6ba021ed03fe96668d6c424e8d3809be922523f815d9a8afd7fb6eb9d3831",
+          "contentSha256": "beeaa2b5fb3c89f79084a2d84dcb898e58b0ff62a4a2cdcbc73c37e61143a83f",
           "citedPassageIds": [
             "S0002-HOMEOPATHY-LIMITS"
           ]
@@ -959,7 +959,7 @@
         {
           "entityId": "S0002",
           "revisionId": "KEP1-DRAFT-S0002-V1.1.0",
-          "contentSha256": "06a6ba021ed03fe96668d6c424e8d3809be922523f815d9a8afd7fb6eb9d3831",
+          "contentSha256": "beeaa2b5fb3c89f79084a2d84dcb898e58b0ff62a4a2cdcbc73c37e61143a83f",
           "citedPassageIds": [
             "S0002-HOMEOPATHY-LIMITS"
           ]
@@ -1004,7 +1004,7 @@
         {
           "entityId": "S0002",
           "revisionId": "KEP1-DRAFT-S0002-V1.1.0",
-          "contentSha256": "06a6ba021ed03fe96668d6c424e8d3809be922523f815d9a8afd7fb6eb9d3831",
+          "contentSha256": "beeaa2b5fb3c89f79084a2d84dcb898e58b0ff62a4a2cdcbc73c37e61143a83f",
           "citedPassageIds": [
             "S0002-DEFINITION"
           ]
@@ -1034,7 +1034,7 @@
         {
           "entityId": "S0002",
           "revisionId": "KEP1-DRAFT-S0002-V1.1.0",
-          "contentSha256": "06a6ba021ed03fe96668d6c424e8d3809be922523f815d9a8afd7fb6eb9d3831",
+          "contentSha256": "beeaa2b5fb3c89f79084a2d84dcb898e58b0ff62a4a2cdcbc73c37e61143a83f",
           "citedPassageIds": [
             "S0002-DEFINITION"
           ]
@@ -1064,7 +1064,7 @@
         {
           "entityId": "S0002",
           "revisionId": "KEP1-DRAFT-S0002-V1.1.0",
-          "contentSha256": "06a6ba021ed03fe96668d6c424e8d3809be922523f815d9a8afd7fb6eb9d3831",
+          "contentSha256": "beeaa2b5fb3c89f79084a2d84dcb898e58b0ff62a4a2cdcbc73c37e61143a83f",
           "citedPassageIds": [
             "S0002-DEFINITION"
           ]
@@ -1094,7 +1094,7 @@
         {
           "entityId": "S0002",
           "revisionId": "KEP1-DRAFT-S0002-V1.1.0",
-          "contentSha256": "06a6ba021ed03fe96668d6c424e8d3809be922523f815d9a8afd7fb6eb9d3831",
+          "contentSha256": "beeaa2b5fb3c89f79084a2d84dcb898e58b0ff62a4a2cdcbc73c37e61143a83f",
           "citedPassageIds": [
             "S0002-SELF-CARE"
           ]
@@ -1124,7 +1124,7 @@
         {
           "entityId": "S0002",
           "revisionId": "KEP1-DRAFT-S0002-V1.1.0",
-          "contentSha256": "06a6ba021ed03fe96668d6c424e8d3809be922523f815d9a8afd7fb6eb9d3831",
+          "contentSha256": "beeaa2b5fb3c89f79084a2d84dcb898e58b0ff62a4a2cdcbc73c37e61143a83f",
           "citedPassageIds": [
             "S0002-SELF-CARE"
           ]
@@ -1154,7 +1154,7 @@
         {
           "entityId": "S0002",
           "revisionId": "KEP1-DRAFT-S0002-V1.1.0",
-          "contentSha256": "06a6ba021ed03fe96668d6c424e8d3809be922523f815d9a8afd7fb6eb9d3831",
+          "contentSha256": "beeaa2b5fb3c89f79084a2d84dcb898e58b0ff62a4a2cdcbc73c37e61143a83f",
           "citedPassageIds": [
             "S0002-RED-FLAGS"
           ]
@@ -1184,7 +1184,7 @@
         {
           "entityId": "S0002",
           "revisionId": "KEP1-DRAFT-S0002-V1.1.0",
-          "contentSha256": "06a6ba021ed03fe96668d6c424e8d3809be922523f815d9a8afd7fb6eb9d3831",
+          "contentSha256": "beeaa2b5fb3c89f79084a2d84dcb898e58b0ff62a4a2cdcbc73c37e61143a83f",
           "citedPassageIds": [
             "S0002-CAUSES"
           ]

@@ -222,9 +222,9 @@
         "claimLevelCitationAssessment": "not-modeled"
       },
       "review": {
-        "reviewerRecorded": false,
+        "reviewerRecorded": true,
         "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": false,
+        "authorReviewerNameConflict": true,
         "independentReviewProven": false
       },
       "graph": {
@@ -275,9 +275,9 @@
         "claimLevelCitationAssessment": "not-modeled"
       },
       "review": {
-        "reviewerRecorded": false,
+        "reviewerRecorded": true,
         "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": false,
+        "authorReviewerNameConflict": true,
         "independentReviewProven": false
       },
       "graph": {
@@ -434,9 +434,9 @@
         "claimLevelCitationAssessment": "not-modeled"
       },
       "review": {
-        "reviewerRecorded": false,
+        "reviewerRecorded": true,
         "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": false,
+        "authorReviewerNameConflict": true,
         "independentReviewProven": false
       },
       "graph": {
@@ -487,9 +487,9 @@
         "claimLevelCitationAssessment": "not-modeled"
       },
       "review": {
-        "reviewerRecorded": false,
+        "reviewerRecorded": true,
         "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": false,
+        "authorReviewerNameConflict": true,
         "independentReviewProven": false
       },
       "graph": {
