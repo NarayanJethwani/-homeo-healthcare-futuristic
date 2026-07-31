@@ -14,6 +14,14 @@ export function generateMedicalMetadata(entity: KnowledgeEntity): Metadata {
   // Safeguard: Only governed, published, indexable entities are crawlable
   const isCrawlable = isEntityIndexable(entity);
   
+  const reviewerName = typeof entity.reviewer === "string"
+    ? entity.reviewer
+    : entity.reviewer?.name || entity.author?.name || "Clinical Review Board";
+
+  const reviewerSpecialty = typeof entity.reviewer === "object" && entity.reviewer?.specialty
+    ? entity.reviewer.specialty
+    : entity.reviewerRole || "Clinical Reviewer";
+
   return {
     title: fullTitle,
     description: summary,
@@ -38,18 +46,18 @@ export function generateMedicalMetadata(entity: KnowledgeEntity): Metadata {
       type: "article",
       publishedTime: entity.versionInfo.created,
       modifiedTime: entity.versionInfo.updated,
-      authors: [entity.author.name],
+      authors: [entity.author?.name || "Homeo Healthcare"],
       tags: entity.tags,
     },
     twitter: {
       card: "summary_large_image",
       title: fullTitle,
       description: summary,
-      creator: entity.author.name,
+      creator: entity.author?.name || "Homeo Healthcare",
     },
     other: {
-      "medical-reviewer": entity.reviewer.name,
-      "reviewer-specialty": entity.reviewer.specialty,
+      "medical-reviewer": reviewerName,
+      "reviewer-specialty": reviewerSpecialty,
       "evidence-level": entity.evidenceLevel,
       "last-reviewed": entity.versionInfo.reviewed,
       "audience-type": entity.audience,

@@ -1358,5 +1358,12 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "ownerArea": "knowledge-expansion",
     "testLayer": "governance",
     "reason": "M2 Sulphur and Nux Vomica 40-case offline retrieval evaluation, 8 evaluation dimensions, 100% emergency recall, and zero-production-RAG gate"
+  },
+  {
+    "path": "tests/knowledgeFlagshipM3GoNoGo.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "governance",
+    "reason": "M3 Flagship Independent Review, risk-lane verification, aggregated 160-case offline evaluation, canary/rollback exercise, and human Go/No-Go decision boundary"
   }
 ];

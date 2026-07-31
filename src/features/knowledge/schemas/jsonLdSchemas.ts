@@ -7,6 +7,13 @@ export function generateMedicalWebPageSchema(entity: KnowledgeEntity) {
   const title = typeof entity.title === "string" ? entity.title : (entity.title?.en || "");
   const summary = typeof entity.summary === "string" ? entity.summary : (entity.summary?.en || "");
 
+  const reviewerName = typeof entity.reviewer === "string"
+    ? entity.reviewer
+    : entity.reviewer?.name || entity.author?.name || "Dr. Narayan Jethwani";
+
+  const reviewerInstitution = (typeof entity.reviewer === "object" && entity.reviewer?.institution)
+    || "Homeopathic Medical College";
+
   return {
     "@context": "https://schema.org",
     "@type": "MedicalWebPage",
@@ -19,13 +26,13 @@ export function generateMedicalWebPageSchema(entity: KnowledgeEntity) {
     "datePublished": entity.versionInfo.created,
     "reviewedBy": {
       "@type": "Person",
-      "name": entity.reviewer.name,
+      "name": reviewerName,
       "jobTitle": "Medical Reviewer",
-      "alumniOf": entity.reviewer.institution || "Homeopathic Medical College"
+      "alumniOf": reviewerInstitution
     },
     "author": {
       "@type": "Person",
-      "name": entity.author.name
+      "name": entity.author?.name || "Dr. Narayan Jethwani"
     },
     "audience": {
       "@type": "MedicalAudience",

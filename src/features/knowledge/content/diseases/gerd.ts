@@ -136,6 +136,12 @@ export const GerdDisease: KnowledgeEntity = {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)",
   },
+  reviewer: {
+    name: "Dr. Narayan Jethwani",
+    credentials: "MD (Hom)",
+    specialty: "Clinical Homeopathy & Internal Medicine",
+    institution: "Homeo Healthcare Clinical Board",
+  },
   reviewerRole: "Program-owner final authorization",
   lastClinicalReview: "2026-07-30",
   nextClinicalReview: "2027-07-30",
