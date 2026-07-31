@@ -1351,5 +1351,12 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "ownerArea": "knowledge-expansion",
     "testLayer": "governance",
     "reason": "M2 Sulphur and Nux Vomica v1.1.0 source-bound content, claim provenance, strychnine toxicity warnings, governed relationship proposals, and human final-authorization boundary"
+  },
+  {
+    "path": "tests/knowledgeSulphurNuxVomicaOfflineEval.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "governance",
+    "reason": "M2 Sulphur and Nux Vomica 40-case offline retrieval evaluation, 8 evaluation dimensions, 100% emergency recall, and zero-production-RAG gate"
   }
 ];

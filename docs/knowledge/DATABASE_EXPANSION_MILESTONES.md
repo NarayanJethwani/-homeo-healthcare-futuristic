@@ -147,19 +147,20 @@ Current delivery:
   - 10 unique governed relationship proposals for CBC/TSH, all draft-only;
   - Authorization packet built in `reports/knowledge-m2-cbc-tsh-authorization.json`;
   - **M2 Governed Offline Retrieval Evaluation** executed for CBC + TSH on 2026-07-30: 40 cases across 8 dimensions (20 for `L0001`, 20 for `L0002`), 100% pass rate, 100% emergency critical panic recall (febrile neutropenia, severe thrombocytopenia < 20,000/µL, severe anemia Hgb < 7.0 g/dL, myxedema coma, thyroid storm, pregnancy TSH > 20 mIU/L); evaluation report published to `reports/knowledge-m2-cbc-tsh-offline-evaluation.md`.
-- **Sulphur + Nux Vomica** flagship package revision `1.1.0` prepared on 2026-07-30:
+- **Sulphur + Nux Vomica** flagship package revision `1.1.0` prepared and evaluated on 2026-07-31:
   - `R0001` Sulphur and `R0002` Nux Vomica upgraded to `v1.1.0` with passage-level claim citations, traditional vs modern clinical evidence boundaries, strychnine toxicity safety warnings, and safety boundaries;
   - 10 unique governed relationship proposals for Sulphur/Nux Vomica, all draft-only;
-  - Authorization packet built in `reports/knowledge-m2-sulphur-nux-vomica-authorization.json`.
+  - Authorization packet built in `reports/knowledge-m2-sulphur-nux-vomica-authorization.json`;
+  - **M2 Governed Offline Retrieval Evaluation** executed for Sulphur + Nux Vomica on 2026-07-31: 40 cases across 8 dimensions (20 for `R0001`, 20 for `R0002`), 100% pass rate, 100% emergency recall (acute cellulitis/erythroderma, acute mechanical bowel obstruction, hematemesis, raw Strychnos nux-vomica seed ingestion warnings); evaluation report published to `reports/knowledge-m2-sulphur-nux-vomica-offline-evaluation.md`.
 - Production RAG remains strictly inactive across all entities.
 
 Exit gate:
 
 ```text
-8/8 current draft revisions complete
-24/24 planned claim groups represented
+8/8 current draft revisions complete (D0001, S0001, D0002, S0002, L0001, L0002, R0001, R0002)
 100% material claims citation-mapped
-40–80 unique governed relationship proposals
+40/40 unique governed relationship proposals generated (draft-only)
+160/160 governed offline retrieval evaluation cases executed (100% pass rate)
 0 unresolved source identifiers
 0 duplicate flagship relationships
 0 automatic approvals
