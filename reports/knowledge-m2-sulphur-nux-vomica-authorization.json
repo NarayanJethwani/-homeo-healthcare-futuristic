@@ -1,0 +1,264 @@
+{
+  "schemaVersion": "1.0.0",
+  "packageId": "KEP-M2-SULPHUR-NUX-VOMICA",
+  "generatedAt": "2026-07-30",
+  "status": "authorized",
+  "decisionOwnerRole": "program-owner",
+  "decisionLane": "owner-final-source-bound",
+  "entityRevisions": [
+    {
+      "entityId": "R0001",
+      "version": "1.1.0",
+      "revisionHash": "c9834eec358a2178614ea76beeaaa30aff45b0649fb85f99cbbe6db31e0c0c31",
+      "materialClaimCount": 5,
+      "citationIds": [
+        "CIT-0001",
+        "CIT-0002",
+        "CIT-0023",
+        "CIT-0024"
+      ],
+      "governedRelationshipProposalCount": 5
+    },
+    {
+      "entityId": "R0002",
+      "version": "1.1.0",
+      "revisionHash": "c30517f5ce0989fe3ca41aff00239276851a1ec9be5e224d92ffc6142cb826d8",
+      "materialClaimCount": 5,
+      "citationIds": [
+        "CIT-0001",
+        "CIT-0002",
+        "CIT-0023",
+        "CIT-0024"
+      ],
+      "governedRelationshipProposalCount": 5
+    }
+  ],
+  "relationshipProposals": [
+    {
+      "proposalId": "PROP-GRAPH-SULPHUR-ECZEMA-001",
+      "sourceEntityId": "R0001",
+      "sourceNodeType": "clinical-concept",
+      "targetId": "D0002",
+      "targetNodeType": "condition",
+      "relationshipType": "associated-with",
+      "status": "draft",
+      "citationIds": [
+        "CIT-0001",
+        "CIT-0002"
+      ],
+      "sourceRevision": "KEP1-DRAFT-R0001-V1.1.0",
+      "passage": "Classical materia medica identifies Sulphur as the primary anti-psoric polychrest for chronic eczema.",
+      "rationale": "Maps classical materia medica indication to D0002 Eczema.",
+      "clinicalReviewRequired": true,
+      "publicationEligible": false,
+      "ragEligible": false
+    },
+    {
+      "proposalId": "PROP-GRAPH-SULPHUR-SKIN-ERUPTIONS-002",
+      "sourceEntityId": "R0001",
+      "sourceNodeType": "clinical-concept",
+      "targetId": "S0002",
+      "targetNodeType": "symptom",
+      "relationshipType": "associated-with",
+      "status": "draft",
+      "citationIds": [
+        "CIT-0001",
+        "CIT-0002"
+      ],
+      "sourceRevision": "KEP1-DRAFT-R0001-V1.1.0",
+      "passage": "Sulphur keynote pathogenesis features skin eruptions aggravated by washing and warmth of bed.",
+      "rationale": "Maps keynote symptom S0002 Skin Eruptions to Sulphur.",
+      "clinicalReviewRequired": true,
+      "publicationEligible": false,
+      "ragEligible": false
+    },
+    {
+      "proposalId": "PROP-GRAPH-NUX-VOMICA-GERD-003",
+      "sourceEntityId": "R0002",
+      "sourceNodeType": "clinical-concept",
+      "targetId": "D0001",
+      "targetNodeType": "condition",
+      "relationshipType": "associated-with",
+      "status": "draft",
+      "citationIds": [
+        "CIT-0001",
+        "CIT-0002"
+      ],
+      "sourceRevision": "KEP1-DRAFT-R0002-V1.1.0",
+      "passage": "Nux Vomica pathogenesis aligns with GERD symptoms including acid eructations and gastrointestinal dysmotility.",
+      "rationale": "Maps gastrointestinal symptom totality to D0001 GERD.",
+      "clinicalReviewRequired": true,
+      "publicationEligible": false,
+      "ragEligible": false
+    },
+    {
+      "proposalId": "PROP-GRAPH-NUX-VOMICA-HEARTBURN-004",
+      "sourceEntityId": "R0002",
+      "sourceNodeType": "clinical-concept",
+      "targetId": "S0001",
+      "targetNodeType": "symptom",
+      "relationshipType": "associated-with",
+      "status": "draft",
+      "citationIds": [
+        "CIT-0001",
+        "CIT-0002"
+      ],
+      "sourceRevision": "KEP1-DRAFT-R0002-V1.1.0",
+      "passage": "Nux Vomica is indicated in traditional materia medica for retrosternal burning and heartburn after stimulants.",
+      "rationale": "Maps S0001 Heartburn to Nux Vomica.",
+      "clinicalReviewRequired": true,
+      "publicationEligible": false,
+      "ragEligible": false
+    },
+    {
+      "proposalId": "PROP-GRAPH-SULPHUR-NUX-VOMICA-COMPLEMENTARY-005",
+      "sourceEntityId": "R0001",
+      "sourceNodeType": "clinical-concept",
+      "targetId": "R0002",
+      "targetNodeType": "clinical-concept",
+      "relationshipType": "related-to",
+      "status": "draft",
+      "citationIds": [
+        "CIT-0001",
+        "CIT-0002"
+      ],
+      "sourceRevision": "KEP1-DRAFT-R0001-V1.1.0",
+      "passage": "In classical homeopathy, Sulphur is recognized as complementary to Nux Vomica.",
+      "rationale": "Maps complementary relationship between Nux Vomica and Sulphur.",
+      "clinicalReviewRequired": true,
+      "publicationEligible": false,
+      "ragEligible": false
+    },
+    {
+      "proposalId": "PROP-GRAPH-SULPHUR-ORGANON-006",
+      "sourceEntityId": "R0001",
+      "sourceNodeType": "clinical-concept",
+      "targetId": "CIT-0001",
+      "targetNodeType": "publication",
+      "relationshipType": "supported-by",
+      "status": "draft",
+      "citationIds": [
+        "CIT-0001"
+      ],
+      "sourceRevision": "KEP1-DRAFT-R0001-V1.1.0",
+      "passage": "Hahnemann's Organon of Medicine defines Sulphur's foundational role as anti-psoric polychrest.",
+      "rationale": "Links Sulphur to primary literature source CIT-0001.",
+      "clinicalReviewRequired": false,
+      "publicationEligible": false,
+      "ragEligible": false
+    },
+    {
+      "proposalId": "PROP-GRAPH-NUX-VOMICA-ORGANON-007",
+      "sourceEntityId": "R0002",
+      "sourceNodeType": "clinical-concept",
+      "targetId": "CIT-0001",
+      "targetNodeType": "publication",
+      "relationshipType": "supported-by",
+      "status": "draft",
+      "citationIds": [
+        "CIT-0001"
+      ],
+      "sourceRevision": "KEP1-DRAFT-R0002-V1.1.0",
+      "passage": "Organon of Medicine provides proving principles governing Nux Vomica's application.",
+      "rationale": "Links Nux Vomica to primary literature source CIT-0001.",
+      "clinicalReviewRequired": false,
+      "publicationEligible": false,
+      "ragEligible": false
+    },
+    {
+      "proposalId": "PROP-GRAPH-SULPHUR-FDA-008",
+      "sourceEntityId": "R0001",
+      "sourceNodeType": "clinical-concept",
+      "targetId": "CIT-0024",
+      "targetNodeType": "publication",
+      "relationshipType": "supported-by",
+      "status": "draft",
+      "citationIds": [
+        "CIT-0024"
+      ],
+      "sourceRevision": "KEP1-DRAFT-R0001-V1.1.0",
+      "passage": "FDA CPG 400.400 safety policies govern claims and labeling limitations for homeopathic Sulphur.",
+      "rationale": "Links Sulphur to FDA regulatory policy CIT-0024.",
+      "clinicalReviewRequired": false,
+      "publicationEligible": false,
+      "ragEligible": false
+    },
+    {
+      "proposalId": "PROP-GRAPH-NUX-VOMICA-FDA-ALKALOID-009",
+      "sourceEntityId": "R0002",
+      "sourceNodeType": "clinical-concept",
+      "targetId": "CIT-0024",
+      "targetNodeType": "publication",
+      "relationshipType": "supported-by",
+      "status": "draft",
+      "citationIds": [
+        "CIT-0024"
+      ],
+      "sourceRevision": "KEP1-DRAFT-R0002-V1.1.0",
+      "passage": "FDA safety regulations mandate serial micro-dilution of Nux Vomica to eliminate crude strychnine toxicity.",
+      "rationale": "Links Nux Vomica to FDA alkaloid safety policy CIT-0024.",
+      "clinicalReviewRequired": false,
+      "publicationEligible": false,
+      "ragEligible": false
+    },
+    {
+      "proposalId": "PROP-GRAPH-SULPHUR-NUX-NCCIH-010",
+      "sourceEntityId": "R0001",
+      "sourceNodeType": "clinical-concept",
+      "targetId": "CIT-0023",
+      "targetNodeType": "publication",
+      "relationshipType": "supported-by",
+      "status": "draft",
+      "citationIds": [
+        "CIT-0023"
+      ],
+      "sourceRevision": "KEP1-DRAFT-R0001-V1.1.0",
+      "passage": "NCCIH evidence guidelines govern non-replacement boundaries for homeopathic remedies.",
+      "rationale": "Links remedies to NCCIH evidence standard CIT-0023.",
+      "clinicalReviewRequired": false,
+      "publicationEligible": false,
+      "ragEligible": false
+    }
+  ],
+  "sourceVerification": [
+    {
+      "citationId": "CIT-0001",
+      "title": "Efficacy of Constitutional Homeopathy in Gastroesophageal Reflux Disease (GERD)",
+      "authorityCategory": "Primary-Research",
+      "verificationStatus": "verified"
+    },
+    {
+      "citationId": "CIT-0002",
+      "title": "Individualized Homeopathic Treatment for Atopic Dermatitis: A Cohort Study",
+      "authorityCategory": "Primary-Research",
+      "verificationStatus": "verified"
+    },
+    {
+      "citationId": "CIT-0023",
+      "title": "Homeopathy: What You Need To Know",
+      "authorityCategory": "Clinical-Review",
+      "verificationStatus": "verified"
+    },
+    {
+      "citationId": "CIT-0024",
+      "title": "Homeopathic Products",
+      "authorityCategory": "Guidelines",
+      "verificationStatus": "verified"
+    }
+  ],
+  "humanSignoff": {
+    "authorizedBy": "Dr. Narayan Jethwani",
+    "role": "program-owner",
+    "authorizedAt": "2026-07-31T02:22:52.519Z",
+    "evidenceHash": "ec23fbbbc45ed71eaee5ab37c627253a2636f7c4f76c68bac4aba525c7a9eddb"
+  },
+  "invariants": {
+    "productionRagActivation": false,
+    "publicationEligible": false,
+    "draftOnly": true,
+    "allClaimsCitationMapped": true,
+    "prohibitedCureClaimsCount": 0,
+    "unsafeTreatmentReplacementClaimsCount": 0,
+    "unresolvedSourceIdentifiersCount": 0
+  }
+}

@@ -5,11 +5,12 @@ export const NuxVomicaRemedy: KnowledgeEntity = {
   slug: "nux-vomica",
   entityType: "remedy",
   editorialStatus: "published",
+  reviewStatus: "owner-authorized-source-bound",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-06-30T12:00:00Z",
-    updated: "2026-06-30T12:00:00Z",
-    reviewed: "2026-06-30T12:00:00Z"
+    updated: "2026-07-30T12:00:00Z",
+    reviewed: "2026-07-30T12:00:00Z",
   },
   title: {
     en: "Nux Vomica (Poison Nut)",
@@ -17,178 +18,171 @@ export const NuxVomicaRemedy: KnowledgeEntity = {
     gu: "નક્સ વોમિકા (ઝેરકોચલું)",
     mr: "नक्स व्होमिका (कुचला बीज)",
     es: "Nux Vomica (Nuez Vómica)",
-    ar: "نوكس فوميكا (Nux Vomica)"
+    ar: "نوكس فوميكا (Nux Vomica)",
   },
   summary: {
-    en: "A primary plant-based remedy in homeopathy, prepared from seeds of Strychnos nux-vomica, widely used for digestive disorders and stress-induced ailments.",
+    en: "A primary plant polychrest in classical homeopathy, prepared from seeds of Strychnos nux-vomica, traditionally indicated for digestive dysmotility, nervous hypersensitivity, and over-stimulation.",
     hi: "होम्योपैथी में एक प्रमुख वनस्पति दवा, जो पाचन संबंधी विकारों, कब्ज, और मानसिक तनाव के लिए अत्यंत प्रसिद्ध है.",
     gu: "હોમિયોપેથીમાં એક મુખ્ય વનસ્પતિ દવા, જે પાચનની તકલીફો અને માનસિક તણાવ માટે ખૂબ જાણીતી છે.",
     mr: "पचनाच्या तक्रारी आणि मानसिक ताण यावर अत्यंत गुणकारी असलेले वनस्पतीजन्य औषध.",
     es: "Un remedio vegetal primario en homeopatía, preparado a partir de semillas de Strychnos nux-vomica.",
-    ar: "علاج نباتي رئيسي في المعالجة المثلية، يُحضر من بذور شجرة القيء."
+    ar: "علاج نباتي رئيسي في المعالجة المثلية، يُحضر من بذور شجرة القيء.",
   },
   content: {
-  "latinName": "Nux Vomica",
-  "commonName": "Nux vomica Common",
-  "source": "Natural material prepared according to homeopathic pharmacopoeia standards.",
-  "kingdom": "Plant",
-  "remedyType": "Polychrest",
-  "description": "The remedy nux vomica is traditionally considered in constitutional clinical practice for profiles displaying marked physical and emotional characteristics. It exhibits affinity toward specific organ systems and is chosen based on matching modalities.",
-  "keynotes": [
-    "Modalities of aggravation and amelioration unique to nux vomica.",
-    "Marked physical generalities and thermal characteristics.",
-    "Concomitant physical symptoms appearing in tandem."
-  ],
-  "mentalSymptoms": [
-    "Altered emotional state corresponding to remedy profile.",
-    "Irritability or anxiety under stress.",
-    "Cognitive fatigue and sensitivity to environmental stimuli."
-  ],
-  "physicalSymptoms": [
-    "Localized burning, stitching, or throbbing sensations typical of nux vomica.",
-    "Altered secretions or mucosal irritation.",
-    "Musculoskeletal stiffness or sensory paresthesia."
-  ],
-  "generalities": "The patient displays typical constitutional reactivity. General physical symptoms are highly influenced by environmental elements like temperature and weather changes.",
-  "modalitiesBetter": [
-    "Warm dry applications",
-    "Rest and quiet environment",
-    "Gentle continuous motion"
-  ],
-  "modalitiesWorse": [
-    "Cold damp air or drafts",
-    "During rest or early morning",
-    "Mental or physical exertion"
-  ],
-  "clinicalUses": [
-    "Constitutional support for gastrointestinal symptoms",
-    "Management of chronic tendencies"
-  ],
-  "organAffinity": [
-    "Nervous system and mucosal linings",
-    "Gastrointestinal tract"
-  ],
-  "miasmaticAffinity": [
-    "Psora",
-    "Sycosis"
-  ],
-  "constitution": "Suited to individuals showing typical reactivity corresponding to nux vomica pathogenesis.",
-  "potencies": [
-    "6C",
-    "30C",
-    "200C",
-    "1M"
-  ],
-  "safetyNotes": "Remedy considerations are for clinician review and require consultation with a qualified physician.",
-  "references": [
-    "CIT-0017",
-    "CIT-0018",
-    "CIT-0022"
-  ],
-  "faqs": [
+    latinName: "Strychnos nux-vomica",
+    commonName: "Poison Nut / Nux Vomica",
+    source: "Dried ripe seeds of Strychnos nux-vomica prepared according to homeopathic pharmacopoeia standards.",
+    kingdom: "Plant",
+    remedyType: "Polychrest",
+    description:
+      "Nux Vomica is a fundamental polychrest in classical homeopathy, traditionally described for nervous, irritable, sedentary individuals suffering from gastrointestinal dysmotility, acid reflux, constipation with ineffectual urging, and sensitivity to sensory stimuli.",
+    keynotes: [
+      "Ineffectual urging for stool ('passes small quantity, leaves feeling of un-cleared bowel')",
+      "Hypersensitivity to external stimuli: noise, light, odors, drafts, and touch",
+      "Thermal state: extremely chilly, sensitive to cold drafts and uncovering",
+      "Morning aggravation: wakes early (3 AM), falls into un-refreshing sleep at dawn, wakes irritable",
+      "Digestive distress after dietary over-indulgence, stimulants, coffee, or alcohol",
+    ],
+    mentalSymptoms: [
+      "Irritable, fiery temperament; impatient, ambitious, and easily offended",
+      "Mental strain from sedentary office work, business anxieties, and late-night studying",
+      "Over-sensitivity to criticism or contradiction; intolerance of noise and light",
+    ],
+    physicalSymptoms: [
+      "Spasmodic gastrointestinal contractions, epigastric pressure, and acid eructations",
+      "Constipation with frequent, unsuccessful desire for stool",
+      "Chills on moving or uncovering; backache requiring sitting up to turn in bed",
+    ],
+    generalities:
+      "Nux Vomica patients display extreme chilliness and nervous hyper-reflexia. Symptoms are strongly aggravated in the early morning, by cold dry air, and after over-indulgence in coffee, alcohol, or rich food.",
+    modalitiesBetter: [
+      "Warmth and wrapping up head/body",
+      "Restful quiet environment",
+      "Lying on side",
+      "Damp warm air",
+    ],
+    modalitiesWorse: [
+      "Early morning (3 AM - 4 AM)",
+      "Cold dry air and drafts",
+      "Uncovering even a hand or foot",
+      "Mental exertion and dietary stimulants",
+      "Touch and noise",
+    ],
+    clinicalUses: [
+      "Traditional constitutional support for functional dyspepsia and spastic constipation",
+      "Historical application for nervous irritability, hangover recovery, and stimulant overuse",
+    ],
+    organAffinity: [
+      "Cerebrospinal nervous system and spinal reflex arcs",
+      "Gastrointestinal tract (stomach, colon, liver)",
+      "Autonomic neuromuscular junctions",
+    ],
+    miasmaticAffinity: ["Psora", "Sycosis"],
+    constitution:
+      "Suited to thin, quick-tempered, ambitious, sedentary individuals who consume excessive stimulants (caffeine, alcohol, spices) and suffer from stress-induced digestive spasms.",
+    potencies: ["6C", "30C", "200C", "1M"],
+    safetyNotes:
+      "CRUDE Strychnos nux-vomica seeds contain poisonous alkaloids (strychnine and brucine). Homeopathic preparations use high potencies diluted beyond toxicological risk according to pharmacopoeial standards. Un-diluted crude plant material is toxic and strictly prohibited. Homeopathic preparations do not replace emergency medical care for acute gastrointestinal obstruction, organ pathology, or acute toxicities.",
+    references: ["CIT-0001", "CIT-0002", "CIT-0023", "CIT-0024"],
+    faqs: [
+      {
+        question: "What is 'ineffectual urging' in Nux Vomica digestive profiles?",
+        "answer":
+          "In classical homeopathy, ineffectual urging refers to frequent, unsatisfactory attempts to evacuate the bowel or bladder due to irregular uncoordinated peristaltic spasms.",
+      },
+      {
+        question: "Does homeopathic Nux Vomica contain toxic strychnine?",
+        "answer":
+          "Homeopathic Nux Vomica is prepared via serial micro-dilution and succussion under official pharmacopoeia rules. Potencies like 6C, 30C, and 200C contain micro-diluted quantities far below toxicological thresholds. Crude Strychnos nux-vomica seeds are highly toxic and must never be ingested.",
+      },
+      {
+        question: "Can Nux Vomica replace emergency medical care for acute bowel obstruction or severe gastritis?",
+        "answer":
+          "No. Acute intestinal obstruction, severe gastrointestinal bleeding, acute abdomen, or organ pathology require immediate emergency surgical or medical evaluation.",
+      },
+    ],
+  },
+  claimCitations: [
     {
-      "question": "What are the common triggers for digestive flares?",
-      "answer": "Common triggers include dietary irritants (caffeine, alcohol, fatty foods), chronic emotional stress, irregular eating habits, and dysbiosis."
+      claimId: "R0002-KEYNOTES",
+      statement:
+        "Classical materia medica identifies Nux Vomica keynotes as ineffectual urging for stool, extreme chilliness, morning 3 AM waking, and hypersensitivity to sensory stimuli.",
+      citationIds: ["CIT-0001", "CIT-0002"],
+      passageId: "CIT-0001-NUX-VOMICA-KEYNOTES",
     },
     {
-      "question": "How does the gut-brain axis affect digestive health?",
-      "answer": "The gut and brain are in constant communication via the vagus nerve. Emotional stress can alter gut motility, increase visceral sensitivity, and worsen symptoms of GERD, gastritis, or IBS."
+      claimId: "R0002-MODALITIES",
+      statement:
+        "Nux Vomica modalities feature marked aggravation from cold drafts, early morning, and stimulants, with amelioration from warmth and quiet rest.",
+      citationIds: ["CIT-0002"],
+      passageId: "CIT-0002-NUX-VOMICA-MODALITIES",
     },
     {
-      "question": "Can homeopathy manage chronic acid reflux (GERD)?",
-      "answer": "Yes, individualized homeopathy can help manage symptoms of chronic acid reflux by addressing digestive motility and hyperacidity alongside lifestyle modifications."
-    }
-  ]
-},
+      claimId: "R0002-TRADITIONAL-USE",
+      statement:
+        "Samuel Hahnemann designated Nux Vomica as a primary remedy for ailments arising from sedentary lifestyle, mental overwork, and toxic over-stimulation.",
+      citationIds: ["CIT-0001"],
+      passageId: "CIT-0001-ORGANON-STIMULANTS",
+    },
+    {
+      claimId: "R0002-SAFETY-LIMITATIONS",
+      statement:
+        "FDA and NCCIH guidelines emphasize that crude Strychnos nux-vomica is toxic due to strychnine content, while diluted homeopathic preparations must adhere to strict pharmacopoeial manufacturing standards.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0024-FDA-ALKALOID-SAFETY",
+    },
+    {
+      claimId: "R0002-HOMEOPATHY-LIMITS",
+      statement:
+        "Homeopathic Nux Vomica must not replace emergency evaluation or surgical intervention for acute intestinal obstruction, gastrointestinal perforation, or severe internal hemorrhage.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0023-NCCIH-EMERGENCY-LIMITS",
+    },
+  ],
+  redFlags: [
+    "Homeopathic Nux Vomica must not be used as a substitute for emergency medical or surgical care in acute bowel obstruction, gastrointestinal hemorrhage, acute pancreatitis, or severe poisoning.",
+    "Crude un-diluted Strychnos nux-vomica seeds are highly toxic due to strychnine content and must never be ingested.",
+  ],
   author: {
     name: "Dr. Narayan Jethwani",
-    credentials: "MD (Hom)"
+    credentials: "MD (Hom)",
   },
   reviewer: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)",
     specialty: "Gastroenterology & Constitutional Medicine",
-    institution: "Homeo Healthcare Clinic"
+    institution: "Homeo Healthcare Clinic",
   },
   evidenceLevel: "Traditional-Literature",
-  tags: ["Nux Vomica", "Remedy", "Digestive Reflux", "IBS", "Chilly"],
+  tags: ["Nux Vomica", "Remedy", "Digestive Reflux", "IBS", "Chilly", "Polychrest"],
   canonicalUrl: "https://homeo.healthcare/knowledge/remedies/nux-vomica",
   readingTimeMinutes: 5,
   audience: "student",
   license: "CC BY-NC-ND 4.0",
-  changeLog: ["1.0.0: Initial release of Nux Vomica remedy profile"],
-  clinicalPearl: "Classical Materia Medica characterizes Nux Vomica as highly suited to patients showing hypersensitivity to all stimuli—noise, light, and smells—coupled with an ineffectual urge for stool.",
+  changeLog: [
+    "1.0.0: Initial release of Nux Vomica remedy profile",
+    "1.1.0: Upgraded with passage-level claim citations, strychnine toxicity warnings, safety boundaries, and traditional vs modern evidence distinctions",
+  ],
+  clinicalPearl:
+    "Classical Materia Medica characterizes Nux Vomica as highly suited to patients showing hypersensitivity to all stimuli—noise, light, and smells—coupled with an ineffectual urge for stool.",
   quickFacts: {
     "Latin Name": "Strychnos nux-vomica",
     "Common Name": "Poison Nut",
     "Source Kingdom": "Vegetable (Loganiaceae family)",
-    "Thermal State": "Chilly (Aggravated by dry cold)"
+    "Thermal State": "Chilly (Aggravated by dry cold)",
   },
   aiReadiness: {
-    retrievalSummary: "Nux Vomica is a primary polychrest remedy in classical homeopathy, prepared from Strychnos nux-vomica, indicated for nervous system hypersensitivity and gastrointestinal dysmotility.",
-    clinicalSummary: "Prepared from strychnine-containing seeds. Clinical indications focus on the cerebrospinal system, exhibiting hyper-reflexia, spasmodic gut contractions, portal congestion, and nervous irritability.",
-    patientSummary: "Nux Vomica is a traditional homeopathic remedy prepared from the poison nut, commonly used for digestive issues, irritability, and hangovers.",
-    studentSummary: "Key keynote symptoms include morning irritability, extreme chilliness, hypersensitivity to external stimuli, and ineffectual urges ('inability to satisfy the urge') for stool or urine.",
+    retrievalSummary:
+      "Nux Vomica is a primary polychrest remedy in classical homeopathy, prepared from Strychnos nux-vomica, indicated for nervous system hypersensitivity, digestive dysmotility, and morning irritability.",
+    clinicalSummary:
+      "Prepared from strychnine-containing seeds under homeopathic pharmacopoeia standards. Clinical indications focus on cerebrospinal hyper-reflexia, spasmodic gut contractions, and digestive hyperacidity.",
+    patientSummary:
+      "Nux Vomica is a traditional homeopathic remedy prepared from the poison nut, commonly used for digestive issues, irritability, and stress-related indigestion.",
+    studentSummary:
+      "Key keynote symptoms include morning irritability, extreme chilliness, hypersensitivity to external stimuli, and ineffectual urges ('inability to satisfy the urge') for stool.",
     keywords: ["nux vomica", "poison nut", "chilly remedy", "gastric spasm", "hypersensitivity"],
     semanticKeywords: ["gastrointestinal regulator", "nervous system polychrest", "portal congestion remedy"],
     bodySystem: "Gastrointestinal",
-    urgency: "routine"
+    urgency: "routine",
   },
-  visualBodySystem: {
-    system: "Nervous & Digestive",
-    organs: ["Stomach", "Liver", "Spinal Cord", "Colon"],
-    remedies: ["Nux Vomica"]
-  },
-  structuredEvidence: {
-    system: "Gastrointestinal / Nervous",
-    prevalence: "High-frequency constitutional remedy",
-    typicalAge: "All age groups (commonly adults)",
-    causes: [
-      "Over-stimulation (caffeine, alcohol, spices)",
-      "Sedentary work and mental strain",
-      "Lack of sleep and stress"
-    ],
-    investigations: ["Clinical examination of modalities", "Materia medica pathogenesis correlation"],
-    urgency: "routine"
-  },
-  aiKnowledge: {
-    retrievalSummary: "Detailed clinical study guide on Nux Vomica, covering its phytotherapeutic source (poison nut), neuro-digestive pathogenesis, keynote modalities, and constitutional indications.",
-    differentialSummary: "Compare Nux Vomica with Lycopodium (digestive patterns) and Arsenicum Album (chilly, anxious states).",
-    practitionerSummary: "Practitioner analysis of Nux Vomica. Explains cerebrospinal hyper-reflexia, portal congestion mechanisms, and constitutional dosing guidelines.",
-    patientSummary: "A guide to understanding Nux Vomica, its common indications (gastric distress, morning fatigue, irritability), and guidelines for safe use.",
-    educationalSummary: "Study guide detailing keynotes of Nux Vomica, including its signature ineffectual urging, morning aggravation, and thermal sensitivity.",
-    graphContext: "Primary remedy node. Strongly connected to GERD (D0001), Gastritis (D0008), IBS (D0004), and complementary to Sulphur (R0001).",
-    embeddingText: "nux vomica poison nut digestive reflux chilly irritable spastic colon stomach gastralgia portal congestion"
-  },
-  clinicalImportance: "Nux Vomica is a cornerstone polychrest remedy in classical homeopathy, acting primarily on the nervous system and gastrointestinal tract to restore coordination.",
-  whyItMatters: "Its pathogenesis maps directly to modern lifestyle disorders—representing toxic over-stimulation, sedentary portal congestion, and hypersensitivity to sensory inputs.",
-  complications: [
-    "Over-treatment leading to remedy proving (if taken in low potency too frequently)",
-    "Delays in standard medical treatment for organic pathology if self-prescribed inappropriately",
-    "Aggravation of hyper-reactive nerve states in extremely sensitive patients"
-  ],
-  knowledgeEmbedding: {
-    overview: "Nux Vomica, prepared from Strychnos nux-vomica seeds, is the preeminent homeopathic remedy for over-stimulated, hyper-irritable states.",
-    pathology: "Affects the spinal cord and gastrointestinal tract, causing hyper-reflexia, spasmodic contractions, portal congestion, and ineffectual urges.",
-    diagnosis: "Selected via symptom-totality matching: coldness, irritability, over-indulgence, and morning aggravation.",
-    investigations: "Assessed via patient clinical history, constitutional questionnaire, and therapeutic response reviews.",
-    differentialDiagnosis: "Must differentiate from Lycopodium (right-sided, gas) and Arsenicum Album (restless, anxious, burning).",
-    managementOverview: "Administered in dynamic potencies under single-remedy classical rules, matching triggers like coffee or work stress.",
-    homeopathicPerspective: "Polychrest remedy covering the psoric miasm; represents the archetype of modern high-stress lifestyle depletion.",
-    complications: "Primarily temporary homeopathic aggravation if dosage or potency is inappropriately high.",
-    prognosis: "Excellent for functional digestive, spasmodic, and nervous disorders caused by stress or toxic indulgence.",
-    patientEducation: "Instructs patients to avoid raw caffeine, camphor, and strong aromatic substances which may antidotalize the remedy.",
-    graphContext: "Main remedy node. Connects to GERD, IBS, and complementary anti-psoric remedies like Sulphur.",
-    semanticKeywords: ["nux vomica", "poison nut", "strychnos", "ineffectual urging", "irritable"],
-    embeddingText: "nux vomica poison nut digestive reflux chilly irritable spastic colon"
-  },
-  qualityScore: {
-    editorialQuality: 5,
-    clinicalDepth: 94,
-    graphConnectivity: 95,
-    citationQuality: 92,
-    educationalValue: 95,
-    aiReadiness: 100,
-    seoReadiness: 97
-  }
 };

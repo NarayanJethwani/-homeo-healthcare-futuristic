@@ -142,10 +142,15 @@ Current delivery:
   - 10 unique governed relationship proposals for Eczema/Skin Eruptions, all draft-only;
   - Authorization packet built in `reports/knowledge-m2-eczema-skin-eruptions-authorization.json`;
   - **M2 Governed Offline Retrieval Evaluation** executed for Eczema + Skin Eruptions on 2026-07-30: 40 cases across 8 dimensions (20 for `D0002`, 20 for `S0002`), 100% pass rate, 100% emergency recall (eczema herpeticum, erythroderma >90% BSA, SJS/TEN); evaluation report published to `reports/knowledge-m2-eczema-skin-eruptions-offline-evaluation.md`.
-- **CBC + TSH** flagship package revision `1.1.0` prepared on 2026-07-30:
+- **CBC + TSH** flagship package revision `1.1.0` prepared and evaluated on 2026-07-30:
   - `L0001` CBC and `L0002` TSH upgraded to `v1.1.0` with passage-level claim citations, emergency critical value panic boundaries, and explicit homeopathy non-replacement boundaries;
   - 10 unique governed relationship proposals for CBC/TSH, all draft-only;
-  - Authorization packet built in `reports/knowledge-m2-cbc-tsh-authorization.json`.
+  - Authorization packet built in `reports/knowledge-m2-cbc-tsh-authorization.json`;
+  - **M2 Governed Offline Retrieval Evaluation** executed for CBC + TSH on 2026-07-30: 40 cases across 8 dimensions (20 for `L0001`, 20 for `L0002`), 100% pass rate, 100% emergency critical panic recall (febrile neutropenia, severe thrombocytopenia < 20,000/µL, severe anemia Hgb < 7.0 g/dL, myxedema coma, thyroid storm, pregnancy TSH > 20 mIU/L); evaluation report published to `reports/knowledge-m2-cbc-tsh-offline-evaluation.md`.
+- **Sulphur + Nux Vomica** flagship package revision `1.1.0` prepared on 2026-07-30:
+  - `R0001` Sulphur and `R0002` Nux Vomica upgraded to `v1.1.0` with passage-level claim citations, traditional vs modern clinical evidence boundaries, strychnine toxicity safety warnings, and safety boundaries;
+  - 10 unique governed relationship proposals for Sulphur/Nux Vomica, all draft-only;
+  - Authorization packet built in `reports/knowledge-m2-sulphur-nux-vomica-authorization.json`.
 - Production RAG remains strictly inactive across all entities.
 
 Exit gate:
