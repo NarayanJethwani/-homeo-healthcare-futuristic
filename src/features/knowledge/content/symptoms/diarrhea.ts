@@ -6,48 +6,69 @@ export const DiarrheaSymptom: KnowledgeEntity = {
   entityType: "symptom",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-07-31T19:50:00Z",
+    reviewed: "2026-07-31T19:50:00Z"
   },
   title: {
     en: "Diarrhea",
-    hi: "Diarrhea",
-    gu: "Diarrhea",
-    mr: "Diarrhea",
-    es: "Diarrhea",
-    ar: "Diarrhea"
+    hi: "दस्त (Diarrhea)",
+    gu: "ઝાડા (Diarrhea)",
+    mr: "अतिसार (Diarrhea)",
+    es: "Diarrea (Diarrhea)",
+    ar: "الإسهال (Diarrhea)"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Diarrhea.",
-    hi: "Diarrhea के लक्षण की नैदानिक समझ.",
-    gu: "Diarrhea ના લક્ષણ ની સમજણ.",
-    mr: "Diarrhea चे लक्षण आणि उपचार.",
-    es: "Definición clínica y significado de Diarrhea.",
-    ar: "التعريف السريري والأهمية لـ Diarrhea."
+    en: "Clinical triage, fluid rehydration, and diagnostic management of Diarrhea under IDSA 2021 standards.",
+    hi: "दस्त के लक्षण की नैदानिक समझ और आपातकालीन खतरे के संकेत.",
+    gu: "ઝાડાના લક્ષણ ની સમજણ અને ઇમરજન્સી ફ્લેગ્સ.",
+    mr: "अतिसाराचे लक्षण आणि तातडीचे रेड फ्लॅग्स.",
+    es: "Triaje clínico y rehidratación de la diarrea según las guías IDSA 2021.",
+    ar: "التفرقة السريرية والعلامات التحذيرية للإسهال."
   },
   content: {
-  "definition": "Diarrhea: A subjective abdominal or digestive manifestation of altered gut motility, mucosal irritation, or secretory dysregulation.",
-  "clinicalMeaning": "Indicates mucosal inflammation, smooth muscle spasm, or hyper-reactivity of the enteric nervous system.",
-  "commonCauses": [
-    "Gastroesophageal reflux disease (GERD)",
-    "Gastritis or peptic ulcer disease",
-    "Irritable Bowel Syndrome (IBS)",
-    "Dietary intolerance or food allergies"
-  ],
-  "differentialDiagnosis": "Exclude gallstones, chronic pancreatitis, celiac disease, and acute surgical abdomen conditions.",
-  "redFlags": [
-    "Unexplained weight loss or persistent vomiting",
-    "Difficulty swallowing (dysphagia) or gastrointestinal bleeding (melena)",
-    "Severe overnight abdominal pain waking the patient"
-  ],
-  "lifestyleAdvice": "Avoid carbonated beverages, caffeine, and highly fatty foods; chew food thoroughly, maintain vertical posture for 2 hours post-meals, and manage stress.",
-  "references": [
-    "CIT-0017",
-    "CIT-0018",
-    "CIT-0022"
-  ],
+    definition: "Diarrhea: An increase in stool frequency (3 or more loose/liquid bowel movements per 24 hours) or stool weight (>200 g/day), categorized into secretory, osmotic, inflammatory (exudative), and hypermotility etiologies.",
+    clinicalMeaning: "Reflects mucosal inflammation, viral/bacterial enterotoxin excretion, malabsorption, or intestinal hypermotility requiring hydration and stool diagnostic testing.",
+    commonCauses: [
+      "Acute Viral Gastroenteritis (Norovirus, Rotavirus)",
+      "Bacterial Enteritis (Campylobacter, Salmonella, Shigella, E. coli)",
+      "Clostridioides difficile Colitis (Post-Antibiotic)",
+      "Inflammatory Bowel Disease (Ulcerative Colitis, Crohn's) or IBS-D"
+    ],
+    differentialDiagnosis: "Differentiate acute self-limited viral diarrhea from invasive bacterial dysentery, C. difficile colitis, malabsorption, and inflammatory bowel disease.",
+    redFlags: [
+      "Grossly bloody stools (dysentery) with high fever and tenesmus",
+      "Signs of severe hypovolemic shock (hypotension, anuria, lethargy)",
+      "Toxic megacolon symptoms (severe abdominal distension, fever, tachycardia in colitis)"
+    ],
+    lifestyleAdvice: "Prioritize oral rehydration salts (ORS), avoid dairy and high-sugar solutions; seek immediate medical evaluation for bloody diarrhea, high fever, or severe dehydration.",
+    references: [
+      "CIT-0065",
+      "CIT-0023"
+    ],
+    claimCitations: [
+      {
+        claimId: "CLM-S0011-001",
+        passage: "Grossly bloody diarrhea accompanied by high fever requires immediate stool culture, PCR panel, and evaluation for invasive bacterial infection or IBD.",
+        citationIds: ["CIT-0065"]
+      },
+      {
+        claimId: "CLM-S0011-002",
+        passage: "Severe dehydration with anuria, sunken eyes, and postural hypotension indicates impending hypovolemic shock demanding emergency IV fluid resuscitation.",
+        citationIds: ["CIT-0065"]
+      },
+      {
+        claimId: "CLM-S0011-003",
+        passage: "Recent antibiotic exposure followed by profuse watery diarrhea requires testing for Clostridioides difficile toxin.",
+        citationIds: ["CIT-0065"]
+      },
+      {
+        claimId: "CLM-S0011-004",
+        passage: "Homeopathic supportive remedies do not replace fluid and electrolyte rehydration or emergency medical care in severe infectious diarrhea.",
+        citationIds: ["CIT-0023"]
+      }
+    ],
   "faqs": [
     {
       "question": "What are the common triggers for digestive flares?",

@@ -6,48 +6,67 @@ export const KFTLabTest: KnowledgeEntity = {
   entityType: "lab-test",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-07-31T19:50:00Z",
+    reviewed: "2026-07-31T19:50:00Z"
   },
   title: {
-    en: "KFT",
-    hi: "KFT",
-    gu: "KFT",
-    mr: "KFT",
-    es: "KFT",
-    ar: "KFT"
+    en: "Kidney Function Test (KFT / RFT)",
+    hi: "गुर्दा कार्य परीक्षण (KFT / RFT)",
+    gu: "કિડની ફંક્શન ટેસ્ટ (KFT / RFT)",
+    mr: "मूत्रपिंड कार्य चाचणी (KFT / RFT)",
+    es: "Prueba de Función Renal (KFT / RFT)",
+    ar: "فحص وظائف الكلى (KFT)"
   },
   summary: {
-    en: "Clinical purpose, normal range, and interpretation of KFT lab results.",
-    hi: "KFT प्रयोगशाला परीक्षण विवरण.",
-    gu: "KFT લેબોરેટરી ટેસ્ટ પરિચય.",
-    mr: "KFT लॅब टेस्ट माहिती.",
-    es: "Propósito e interpretación de la prueba de laboratorio KFT.",
-    ar: "الغرض السريري وتفسير نتائج اختبار KFT."
+    en: "Clinical interpretation, reference ranges, eGFR staging, and renal status evaluation for Kidney Function Test (KFT) under KDIGO 2024 standards.",
+    hi: "KFT गुर्दा परीक्षण की नैदानिक समझ और संदर्भ सीमाएँ.",
+    gu: "KFT કિડની ટેસ્ટની સમજણ અને રેફરન્સ રેન્જ.",
+    mr: "KFT चाचणीची माहिती आणि संदर्भ मर्यादा.",
+    es: "Interpretación clínica y evaluación de función renal según KDIGO 2024.",
+    ar: "التفسير السريري والنطاق المرجعي لفحص وظائف الكلى."
   },
   content: {
-  "overview": "KFT: A general laboratory screening parameter or basic metabolic marker used to assess baseline physiological homeostasis and metabolic efficiency.",
-  "normalRange": "ESR: < 20 mm/hr; Blood Glucose: 70-99 mg/dL; Serum Creatinine: 0.6-1.2 mg/dL.",
-  "highValues": [
-    "Systemic inflammatory baseline (high ESR)",
-    "Metabolic intolerance or early diabetes (high glucose)",
-    "Impaired kidney function (high creatinine)"
-  ],
-  "lowValues": [
-    "Anemia or low muscle mass",
-    "Hypoglycemia",
-    "Nutritional deficiencies"
-  ],
-  "clinicalInterpretation": "KFT evaluation: Elevated inflammatory markers (ESR, CRP) suggest systemic activity needing further investigation. Blood glucose shifts require evaluation of insulin sensitivity and glycemic control.",
-  "references": [
-    "CIT-0004",
-    "CIT-0005",
-    "CIT-0006",
-    "CIT-0007",
-    "CIT-0008"
-  ],
+    overview: "Kidney Function Test (KFT / Renal Function Test): A biochemical blood and urine panel including Serum Creatinine, Blood Urea Nitrogen (BUN), eGFR, Serum Electrolytes, and Uric Acid to assess glomerular filtration, tubular reabsorption, and nitrogenous waste excretion.",
+    normalRange: "Serum Creatinine: 0.6 - 1.2 mg/dL; BUN: 7 - 20 mg/dL; eGFR: >90 mL/min/1.73m2; BUN/Creatinine Ratio: 10:1 to 20:1.",
+    highValues: [
+      "Acute Kidney Injury (AKI) or Chronic Kidney Disease (CKD Stages 1-5)",
+      "Prerenal Azotemia (Dehydration, Severe Heart Failure, Volume Depletion)",
+      "Postrenal Obstruction (Prostatic Hypertrophy, Nephrolithiasis, Tumor)"
+    ],
+    lowValues: [
+      "Low Serum Creatinine: Severe muscle atrophy, malnutrition, or advanced liver disease",
+      "Low BUN: Severe hepatic failure or protein restriction",
+      "Increased eGFR (Glomerular Hyperfiltration in Early Diabetes)"
+    ],
+    clinicalInterpretation: "KFT evaluation requires calculating eGFR using CKD-EPI 2021 equations; acute creatinine elevation (>0.3 mg/dL within 48 hours or >1.5-fold baseline) confirms AKI requiring urgent nephrology triage and etiology identification.",
+    references: [
+      "CIT-0069",
+      "CIT-0023"
+    ],
+    claimCitations: [
+      {
+        claimId: "CLM-L0013-001",
+        passage: "Acute elevation in Serum Creatinine by 0.3 mg/dL or more within 48 hours defines Acute Kidney Injury (AKI) per KDIGO criteria.",
+        citationIds: ["CIT-0069"]
+      },
+      {
+        claimId: "CLM-L0013-002",
+        passage: "Persistent eGFR below 60 mL/min/1.73m2 for more than 3 months establishes Chronic Kidney Disease (CKD).",
+        citationIds: ["CIT-0069"]
+      },
+      {
+        claimId: "CLM-L0013-003",
+        passage: "AKI accompanied by severe hyperkalemia (>6.5 mEq/L) or uremic pericarditis demands emergency hemodialysis consultation.",
+        citationIds: ["CIT-0069"]
+      },
+      {
+        claimId: "CLM-L0013-004",
+        passage: "Homeopathic supportive care does not replace renal replacement therapy (dialysis) or emergency management of acute uremic encephalopathy.",
+        citationIds: ["CIT-0023"]
+      }
+    ],
   "faqs": [
     {
       "question": "What is a constitutional remedy in homeopathy?",

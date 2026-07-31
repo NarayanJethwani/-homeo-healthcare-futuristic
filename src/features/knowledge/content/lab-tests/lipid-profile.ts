@@ -6,48 +6,67 @@ export const LipidProfileLabTest: KnowledgeEntity = {
   entityType: "lab-test",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-07-31T19:50:00Z",
+    reviewed: "2026-07-31T19:50:00Z"
   },
   title: {
-    en: "Lipid Profile",
-    hi: "Lipid Profile",
-    gu: "Lipid Profile",
-    mr: "Lipid Profile",
-    es: "Lipid Profile",
-    ar: "Lipid Profile"
+    en: "Lipid Profile (Lipid Panel)",
+    hi: "लिपिड प्रोफाइल (Lipid Profile)",
+    gu: "લિપિડ પ્રોફાઇલ (Lipid Profile)",
+    mr: "लिपिड प्रोफाईल (Lipid Profile)",
+    es: "Perfil Lipídico / Panel de Lípidos (Lipid Profile)",
+    ar: "فحص الدهون (Lipid Profile)"
   },
   summary: {
-    en: "Clinical purpose, normal range, and interpretation of Lipid Profile lab results.",
-    hi: "Lipid Profile प्रयोगशाला परीक्षण विवरण.",
-    gu: "Lipid Profile લેબોરેટરી ટેસ્ટ પરિચય.",
-    mr: "Lipid Profile लॅब टेस्ट माहिती.",
-    es: "Propósito e interpretación de la prueba de laboratorio Lipid Profile.",
-    ar: "الغرض السريري وتفسير نتائج اختبار Lipid Profile."
+    en: "Clinical interpretation, reference ranges, and atherosclerotic risk stratification for Lipid Profile under NLA 2022 standards.",
+    hi: "लिपिड प्रोफाइल लैब टेस्ट की नैदानिक समझ और संदर्भ सीमाएँ.",
+    gu: "લિપિડ પ્રોફાઇલ ટેસ્ટની સમજણ અને રેફરન્સ રેન્જ.",
+    mr: "लिपिड प्रोफाईल चाचणीची माहिती आणि संदर्भ मर्यादा.",
+    es: "Interpretación clínica y estratificación de riesgo cardiovascular del perfil lipídico.",
+    ar: "التفسير السريري والنطاق المرجعي لفحص الدهون."
   },
   content: {
-  "overview": "LIPID PROFILE: A general laboratory screening parameter or basic metabolic marker used to assess baseline physiological homeostasis and metabolic efficiency.",
-  "normalRange": "ESR: < 20 mm/hr; Blood Glucose: 70-99 mg/dL; Serum Creatinine: 0.6-1.2 mg/dL.",
-  "highValues": [
-    "Systemic inflammatory baseline (high ESR)",
-    "Metabolic intolerance or early diabetes (high glucose)",
-    "Impaired kidney function (high creatinine)"
-  ],
-  "lowValues": [
-    "Anemia or low muscle mass",
-    "Hypoglycemia",
-    "Nutritional deficiencies"
-  ],
-  "clinicalInterpretation": "LIPID PROFILE evaluation: Elevated inflammatory markers (ESR, CRP) suggest systemic activity needing further investigation. Blood glucose shifts require evaluation of insulin sensitivity and glycemic control.",
-  "references": [
-    "CIT-0004",
-    "CIT-0005",
-    "CIT-0006",
-    "CIT-0007",
-    "CIT-0008"
-  ],
+    overview: "Lipid Profile: A comprehensive serum biochemical panel measuring Total Cholesterol, High-Density Lipoprotein Cholesterol (HDL-C), Low-Density Lipoprotein Cholesterol (LDL-C), Very Low-Density Lipoprotein Cholesterol (VLDL-C), and Triglycerides to evaluate atherosclerotic cardiovascular disease (ASCVD) risk.",
+    normalRange: "Total Cholesterol: <200 mg/dL; LDL-C: <100 mg/dL; HDL-C: >40 mg/dL (men), >50 mg/dL (women); Triglycerides: <150 mg/dL.",
+    highValues: [
+      "Elevated Total Cholesterol and LDL-C: Increased atherogenic plaque formation and CAD risk",
+      "Severe Hypertriglyceridemia (>500-1000 mg/dL): High risk for Acute Pancreatitis",
+      "Familial Hypercholesterolemia or Metabolic Syndrome"
+    ],
+    lowValues: [
+      "Low HDL-C (<40 mg/dL): Independent risk factor for coronary artery disease",
+      "Hypobetalipoproteinemia or severe malabsorption",
+      "Hyperthyroidism or chronic hepatic insufficiency"
+    ],
+    clinicalInterpretation: "Lipid Profile interpretation requires integrating LDL-C levels with 10-year ASCVD risk estimators (AHA/ACC risk score); extreme triglyceride elevations (>500 mg/dL) mandate immediate triglyceride-lowering therapy to prevent acute pancreatitis.",
+    references: [
+      "CIT-0067",
+      "CIT-0023"
+    ],
+    claimCitations: [
+      {
+        claimId: "CLM-L0006-001",
+        passage: "Low-Density Lipoprotein Cholesterol (LDL-C) serves as the primary therapeutic target for reducing atherogenic cardiovascular risk.",
+        citationIds: ["CIT-0067"]
+      },
+      {
+        claimId: "CLM-L0006-002",
+        passage: "Severe hypertriglyceridemia exceeding 500 mg/dL requires prompt medical management to prevent acute hypertriglyceridemic pancreatitis.",
+        citationIds: ["CIT-0067"]
+      },
+      {
+        claimId: "CLM-L0006-003",
+        passage: "Fasting lipid panels should be performed after a 9 to 12 hour fast for accurate triglyceride and VLDL-C calculation.",
+        citationIds: ["CIT-0067"]
+      },
+      {
+        claimId: "CLM-L0006-004",
+        passage: "Homeopathic dietary support does not substitute for lipid-lowering medical therapy in familial hypercholesterolemia or high-risk ASCVD.",
+        citationIds: ["CIT-0023"]
+      }
+    ],
   "faqs": [
     {
       "question": "What is a constitutional remedy in homeopathy?",

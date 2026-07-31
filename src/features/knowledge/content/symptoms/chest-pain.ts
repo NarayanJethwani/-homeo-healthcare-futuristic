@@ -6,47 +6,69 @@ export const ChestPainSymptom: KnowledgeEntity = {
   entityType: "symptom",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-07-31T19:50:00Z",
+    reviewed: "2026-07-31T19:50:00Z"
   },
   title: {
     en: "Chest Pain",
-    hi: "Chest Pain",
-    gu: "Chest Pain",
-    mr: "Chest Pain",
-    es: "Chest Pain",
-    ar: "Chest Pain"
+    hi: "छाती में दर्द (Chest Pain)",
+    gu: "છાતીમાં દુખાવો (Chest Pain)",
+    mr: "छातीत दुखणे (Chest Pain)",
+    es: "Dolor Torácico (Chest Pain)",
+    ar: "ألم الصدر (Chest Pain)"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Chest Pain.",
-    hi: "Chest Pain के लक्षण की नैदानिक समझ.",
-    gu: "Chest Pain ના લક્ષણ ની સમજણ.",
-    mr: "Chest Pain चे लक्षण आणि उपचार.",
-    es: "Definición clínica y significado de Chest Pain.",
-    ar: "التعريف السريري والأهمية لـ Chest Pain."
+    en: "Clinical triage, emergency differentiation, and supportive management of Chest Pain under ACC/AHA 2021 standards.",
+    hi: "Chest Pain के लक्षण की नैदानिक समझ और आपातकालीन खतरे के संकेत.",
+    gu: "Chest Pain ના લક્ષણ ની સમજણ અને એટોમિક ઇમરજન્સી ફ્લેગ્સ.",
+    mr: "Chest Pain चे लक्षण आणि तातडीचे रेड फ्लॅग्स.",
+    es: "Triaje clínico y señales de emergencia del dolor torácico.",
+    ar: "التفرقة السريرية والعلامات التحذيرية لألم الصدر."
   },
   content: {
-  "definition": "Chest pain: A localized pain, sensory alteration, or mobility limitation originating from nerves, muscles, joints, or tendons.",
-  "clinicalMeaning": "Replects nociceptive pathway stimulation, localized tissue injury, or nerve root compression resulting in altered sensation.",
-  "commonCauses": [
-    "Mechanical strain or postural imbalance",
-    "Peripheral nerve compression (e.g., sciatica, carpal tunnel)",
-    "Osteoarthritis or joint degeneration",
-    "Neurogenic inflammation"
-  ],
-  "differentialDiagnosis": "Differentiate from systemic autoimmune joint disease, peripheral vascular disease, and referred visceral pain.",
-  "redFlags": [
-    "Loss of bladder or bowel control (Cauda Equina Syndrome)",
-    "Sudden onset of limb weakness or foot drop",
-    "Severe joint swelling with high fever indicating septic arthritis"
-  ],
-  "lifestyleAdvice": "Implement regular stretching, adjust desk ergonomics, engage in low-impact walking, and stay hydrated to maintain joint lubrication.",
-  "references": [
-    "CIT-0011",
-    "CIT-0022"
-  ],
+    definition: "Chest Pain: A sensory symptom originating from visceral (cardiac, esophageal, vascular) or somatic (musculoskeletal, dermatomal) pain pathways, ranging from benign muscle strain to life-threatening acute coronary syndrome.",
+    clinicalMeaning: "Reflects myocardial ischemia, aortic wall shear, pulmonary artery obstruction, intercostal strain, or reflux esophagitis requiring systematic risk stratification.",
+    commonCauses: [
+      "Acute Coronary Syndrome (Unstable Angina, Myocardial Infarction)",
+      "Aortic Dissection or Pulmonary Embolism",
+      "Gastroesophageal Reflux Disease (GERD) or Esophageal Spasm",
+      "Costochondritis, Intercostal Strain, or Anxiety/Panic Episode"
+    ],
+    differentialDiagnosis: "Differentiate acute cardiac ischemia from pulmonary embolism, tension pneumothorax, aortic dissection, GERD, and musculoskeletal chest wall pain.",
+    redFlags: [
+      "Crushing substernal pressure radiating to jaw, neck, or left arm with diaphoresis (ACS)",
+      "Tearing mid-scapular back pain with blood pressure asymmetry (Aortic Dissection)",
+      "Sudden dyspnea, pleuritic chest pain, and hemoptysis (Pulmonary Embolism)"
+    ],
+    lifestyleAdvice: "Immediate 911 / emergency transport for severe or crushing chest pain; avoid physical exertion until cardiac causes are ruled out by ECG and high-sensitivity troponin.",
+    references: [
+      "CIT-0062",
+      "CIT-0023"
+    ],
+    claimCitations: [
+      {
+        claimId: "CLM-S0035-001",
+        passage: "Substernal chest pressure radiating to the jaw, neck, or left arm accompanied by cold sweats requires immediate emergency triage for Acute Coronary Syndrome.",
+        citationIds: ["CIT-0062"]
+      },
+      {
+        claimId: "CLM-S0035-002",
+        passage: "Tearing interscapular back pain with pulse or blood pressure disparity between arms is a classic red flag for Acute Aortic Dissection.",
+        citationIds: ["CIT-0062"]
+      },
+      {
+        claimId: "CLM-S0035-003",
+        passage: "Sudden onset of dyspnea, pleuritic chest pain, and tachycardia requires urgent evaluation for Pulmonary Embolism.",
+        citationIds: ["CIT-0062"]
+      },
+      {
+        claimId: "CLM-S0035-004",
+        passage: "Homeopathic supportive care does not replace emergency cardiac evaluation, 12-lead ECG, or troponin testing in acute chest pain.",
+        citationIds: ["CIT-0023"]
+      }
+    ],
   "faqs": [
     {
       "question": "What causes muscle stiffness in the morning?",
