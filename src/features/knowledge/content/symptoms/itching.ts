@@ -1,53 +1,75 @@
 import { KnowledgeEntity } from "../../types";
 
 export const ItchingSymptom: KnowledgeEntity = {
-  id: "S0017",
+  id: "S0014",
   slug: "itching",
   entityType: "symptom",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-07-31T20:30:00Z",
+    reviewed: "2026-07-31T20:30:00Z"
   },
   title: {
-    en: "Itching",
-    hi: "Itching",
-    gu: "Itching",
-    mr: "Itching",
-    es: "Itching",
-    ar: "Itching"
+    en: "Itching (Pruritus)",
+    hi: "खुजली (Itching / Pruritus)",
+    gu: "ખંજવાળ (Itching / Pruritus)",
+    mr: "खाज / खाज सुटणे (Itching / Pruritus)",
+    es: "Picazón / Prurito (Itching / Pruritus)",
+    ar: "الحكة (Pruritus)"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Itching.",
-    hi: "Itching के लक्षण की नैदानिक समझ.",
-    gu: "Itching ના લક્ષણ ની સમજણ.",
-    mr: "Itching चे लक्षण आणि उपचार.",
-    es: "Definición clínica y significado de Itching.",
-    ar: "التعريف السريري والأهمية لـ Itching."
+    en: "Clinical evaluation, differential diagnosis, systemic etiology screening, and supportive management for Pruritus under AAD 2020 guidelines.",
+    hi: "खुजली के लक्षण की नैदानिक समझ और प्रणालीगत चेतावनी लक्षण.",
+    gu: "ખંજવાળના લક્ષણની તબીબી સમજણ અને ઈમરજન્સી ચેતવણી લક્ષણો.",
+    mr: "खाजेच्या लक्षणांची वैद्यकीय माहिती आणि आपत्कालीन इशारे.",
+    es: "Evaluación clínica, causas sistémicas y señales de alarma del prurito según AAD 2020.",
+    ar: "التقييم السريري وعلامات الخطر للحكة."
   },
   content: {
-  "definition": "Itching: A subjective or visible skin manifestation representing cutaneous inflammation, epidermal barrier damage, or localized histamine release.",
-  "clinicalMeaning": "Reflects localized capillary dilation, dermal infiltration by inflammatory cells, or nerve fiber excitation causing pruritus.",
-  "commonCauses": [
-    "Atopic eczema or contact allergy",
-    "Psoriasis or seborrheic dermatitis",
-    "Urticarial histamine reactions",
-    "Local infections or sweat duct occlusion"
-  ],
-  "differentialDiagnosis": "Differentiate from scabies infestation, drug eruptions, cutaneous lymphoma, and viral exanthems.",
-  "redFlags": [
-    "Rapidly spreading rash with fever or systemic toxicity",
-    "Signs of secondary bacterial infection (pus, warmth, severe pain)",
-    "Erythroderma involving >90% of the body surface area"
-  ],
-  "lifestyleAdvice": "Use gentle soap-free cleansers, keep skin moisturized, avoid hot water, and identify and avoid trigger substances.",
-  "references": [
-    "CIT-0002",
-    "CIT-0019",
-    "CIT-0022"
-  ],
+    definition: "Pruritus (Itching): An unpleasant, localized or generalized cutaneous sensation provoking the desire or reflex to scratch.",
+    clinicalMeaning: "Reflects dermatologic inflammatory disease (pruritoceptive), neuropathic C-fiber stimulation, or neurogenic/systemic accumulation of pruritogens (bile salts, uremic toxins, cytokines).",
+    commonCauses: [
+      "Dermatologic: Atopic Dermatitis, Xerosis, Contact Dermatitis, Urticaria, Psoriasis",
+      "Systemic: Cholestatic Liver Disease, Chronic Kidney Disease (Uremic Pruritus)",
+      "Hematologic: Polycythemia Vera, Hodgkin Lymphoma, Iron Deficiency Anemia",
+      "Endocrine / Infectious: Hyperthyroidism, Diabetes Mellitus, Scabies, Cutaneous Fungal Infection"
+    ],
+    differentialDiagnosis: "Differentiate primary dermatologic rash with pruritus from generalized non-rash systemic pruritus (biliary, renal, hematologic, malignant, or medication-induced).",
+    redFlags: [
+      "Generalized pruritus accompanied by jaundice, dark urine, or pale stools (biliary obstruction)",
+      "Aquagenic pruritus (intense itching after warm water exposure) with plethoric face (Polycythemia Vera)",
+      "Unexplained generalized itching with B-symptoms (fever, night sweats, weight loss, painless lymphadenopathy)",
+      "Generalized erythroderma (>90% body surface area) with skin exfoliation and systemic toxicity"
+    ],
+    lifestyleAdvice: "Apply emollient barrier creams liberally, use lukewarm bath water with soap-free synthetic detergents, keep fingernails trimmed, wear loose cotton clothing, and avoid scratching.",
+    references: [
+      "CIT-0079",
+      "CIT-0023"
+    ],
+    claimCitations: [
+      {
+        claimId: "CLM-S0014-001",
+        passage: "Generalized pruritus in the absence of primary skin lesions requires systematic evaluation for underlying hepatic, renal, hematologic, thyroid, or malignant disease.",
+        citationIds: ["CIT-0079"]
+      },
+      {
+        claimId: "CLM-S0014-002",
+        passage: "Severe generalized itching accompanied by jaundice or elevated serum bile acids indicates cholestatic hepatobiliary obstruction.",
+        citationIds: ["CIT-0079"]
+      },
+      {
+        claimId: "CLM-S0014-003",
+        passage: "Aquagenic pruritus without visible rash is a classical symptom of Polycythemia Vera, requiring complete blood count and JAK2 V617F mutation testing.",
+        citationIds: ["CIT-0079"]
+      },
+      {
+        claimId: "CLM-S0014-004",
+        passage: "Homeopathic topical and internal supportive care (e.g., Sulphur, Graphites, Rhus Tox) does not substitute for hepatobiliary or hematologic evaluation in non-dermatologic systemic pruritus.",
+        citationIds: ["CIT-0023"]
+      }
+    ],
   "faqs": [
     {
       "question": "Why do skin conditions worsen with emotional stress?",

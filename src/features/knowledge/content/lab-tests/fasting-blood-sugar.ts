@@ -6,48 +6,66 @@ export const FastingBloodSugarLabTest: KnowledgeEntity = {
   entityType: "lab-test",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-07-31T20:30:00Z",
+    reviewed: "2026-07-31T20:30:00Z"
   },
   title: {
-    en: "Fasting Blood Sugar",
-    hi: "Fasting Blood Sugar",
-    gu: "Fasting Blood Sugar",
-    mr: "Fasting Blood Sugar",
-    es: "Fasting Blood Sugar",
-    ar: "Fasting Blood Sugar"
+    en: "Fasting Blood Sugar (FBS / FPG)",
+    hi: "फास्टिंग ब्लड शुगर (FBS / FPG)",
+    gu: "ફાસ્ટિંગ બ્લડ સુગર (FBS / FPG)",
+    mr: "फास्टिंग ब्लड शुगर (FBS / FPG)",
+    es: "Glucosa en Ayunas (Glicemia en Ayunas / FBS)",
+    ar: "سكر الدم الصائم (FBS)"
   },
   summary: {
-    en: "Clinical purpose, normal range, and interpretation of Fasting Blood Sugar lab results.",
-    hi: "Fasting Blood Sugar प्रयोगशाला परीक्षण विवरण.",
-    gu: "Fasting Blood Sugar લેબોરેટરી ટેસ્ટ પરિચય.",
-    mr: "Fasting Blood Sugar लॅब टेस्ट माहिती.",
-    es: "Propósito e interpretación de la prueba de laboratorio Fasting Blood Sugar.",
-    ar: "الغرض السريري وتفسير نتائج اختبار Fasting Blood Sugar."
+    en: "Clinical interpretation, ADA diagnostic thresholds, prediabetes identification, and diabetic crisis evaluation for Fasting Plasma Glucose (FPG / FBS).",
+    hi: "फास्टिंग ब्लड शुगर (FBS) परीक्षण की नैदानिक समझ और मधुमेह नैदानिक सीमाएँ.",
+    gu: "ફાસ્ટિંગ બ્લડ સુગર લેબોરેટરી ટેસ્ટની સમજણ અને રેફરન્સ રેન્જ.",
+    mr: "फास्टિંગ ब्लड शुगर लॅब टेस्टची माहिती आणि संदर्भ मर्यादा.",
+    es: "Interpretación clínica y umbrales diagnósticos de la glucosa en ayunas según la ADA.",
+    ar: "التفسير السريري والنطاق المرجعي لسكر الدم الصائم."
   },
   content: {
-  "overview": "FASTING BLOOD SUGAR: A general laboratory screening parameter or basic metabolic marker used to assess baseline physiological homeostasis and metabolic efficiency.",
-  "normalRange": "ESR: < 20 mm/hr; Blood Glucose: 70-99 mg/dL; Serum Creatinine: 0.6-1.2 mg/dL.",
-  "highValues": [
-    "Systemic inflammatory baseline (high ESR)",
-    "Metabolic intolerance or early diabetes (high glucose)",
-    "Impaired kidney function (high creatinine)"
-  ],
-  "lowValues": [
-    "Anemia or low muscle mass",
-    "Hypoglycemia",
-    "Nutritional deficiencies"
-  ],
-  "clinicalInterpretation": "FASTING BLOOD SUGAR evaluation: Elevated inflammatory markers (ESR, CRP) suggest systemic activity needing further investigation. Blood glucose shifts require evaluation of insulin sensitivity and glycemic control.",
-  "references": [
-    "CIT-0004",
-    "CIT-0005",
-    "CIT-0006",
-    "CIT-0007",
-    "CIT-0008"
-  ],
+    overview: "Fasting Blood Sugar (Fasting Plasma Glucose / FPG): Quantitative measurement of blood venous plasma glucose concentration following a minimum 8-hour overnight caloric fast, serving as a primary diagnostic tool for diabetes mellitus and impaired fasting glucose.",
+    normalRange: "Normal: 70–99 mg/dL (3.9–5.5 mmol/L); Impaired Fasting Glucose (Prediabetes): 100–125 mg/dL (5.6–6.9 mmol/L); Diabetes Mellitus Diagnostic Threshold: ≥126 mg/dL (≥7.0 mmol/L) confirmed on repeat testing.",
+    highValues: [
+      "Type 1 and Type 2 Diabetes Mellitus, Gestational Diabetes Mellitus",
+      "Diabetic Ketoacidosis (DKA), Hyperosmolar Hyperglycemic State (HHS - glucose >600 mg/dL)",
+      "Cushing's Syndrome, Acromegaly, Acute Pancreatitis, Stress Hyperglycemia (Sepsis, Trauma, Steroid Therapy)"
+    ],
+    lowValues: [
+      "Level 1 Hypoglycemia (54-70 mg/dL), Level 2 Severe Hypoglycemia (<54 mg/dL)",
+      "Exogenous Insulin or Sulfonylurea Overdose, Insulinoma, Severe Hepatic Failure, Adrenal Insufficiency"
+    ],
+    clinicalInterpretation: "Fasting glucose ≥126 mg/dL on two separate occasions confirms Diabetes Mellitus; extreme hyperglycemia (>300 mg/dL) with Kussmaul breathing or altered mental status demands emergency DKA/HHS management.",
+    references: [
+      "CIT-0070",
+      "CIT-0023"
+    ],
+    claimCitations: [
+      {
+        claimId: "CLM-L0004-001",
+        passage: "ADA guidelines define Fasting Plasma Glucose (FPG) ≥126 mg/dL (7.0 mmol/L) after an 8-hour fast as a diagnostic criterion for Diabetes Mellitus.",
+        citationIds: ["CIT-0070"]
+      },
+      {
+        claimId: "CLM-L0004-002",
+        passage: "Fasting glucose levels between 100 and 125 mg/dL represent Impaired Fasting Glucose (IFG), placing individuals at high risk for future type 2 diabetes development.",
+        citationIds: ["CIT-0070"]
+      },
+      {
+        claimId: "CLM-L0004-003",
+        passage: "Severe hypoglycemia (FBS <54 mg/dL) causes neuroglycopenia, requiring immediate fast-acting oral glucose or parenteral dextrose/glucagon.",
+        citationIds: ["CIT-0070"]
+      },
+      {
+        claimId: "CLM-L0004-004",
+        passage: "Homeopathic dietary and constitutional care (e.g., Syzygium Jambolanum, Gymnema) does not replace emergency insulin therapy in DKA or severe symptomatic hyperglycemia.",
+        citationIds: ["CIT-0023"]
+      }
+    ],
   "faqs": [
     {
       "question": "What is a constitutional remedy in homeopathy?",

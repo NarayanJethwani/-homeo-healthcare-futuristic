@@ -6,48 +6,67 @@ export const FT3LabTest: KnowledgeEntity = {
   entityType: "lab-test",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-07-31T20:30:00Z",
+    reviewed: "2026-07-31T20:30:00Z"
   },
   title: {
-    en: "FT3",
-    hi: "FT3",
-    gu: "FT3",
-    mr: "FT3",
-    es: "FT3",
-    ar: "FT3"
+    en: "Free Triiodothyronine (Free T3 / FT3)",
+    hi: "फ्री ट्राइआयोडोथायरोनिन (Free T3 / FT3)",
+    gu: "ફ્રી ટ્રાયઆયોડોથાયરોનિન (Free T3 / FT3)",
+    mr: "फ्री ट्रायआयोडोथायरॉइन (Free T3 / FT3)",
+    es: "Triyodotironina Libre (T3 Libre / FT3)",
+    ar: "ثلاثي يود الثيرونين الحر (Free T3)"
   },
   summary: {
-    en: "Clinical purpose, normal range, and interpretation of FT3 lab results.",
-    hi: "FT3 प्रयोगशाला परीक्षण विवरण.",
-    gu: "FT3 લેબોરેટરી ટેસ્ટ પરિચય.",
-    mr: "FT3 लॅब टेस्ट माहिती.",
-    es: "Propósito e interpretación de la prueba de laboratorio FT3.",
-    ar: "الغرض السريري وتفسير نتائج اختبار FT3."
+    en: "Clinical interpretation, ATA 2026 guidelines, T3 thyrotoxicosis, euthyroid sick syndrome, and metabolic rate assessment for Free T3 (FT3).",
+    hi: "फ्री T3 (FT3) प्रयोगशाला परीक्षण की नैदानिक समझ और थायराइड कार्य मूल्यांकन.",
+    gu: "ફ્રી T3 લેબોરેટરી ટેસ્ટની સમજણ અને રેફરન્સ રેન્જ.",
+    mr: "Free T3 लॅब टेस्टची माहिती आणि संदर्भ मर्यादा.",
+    es: "Interpretación clínica y evaluación de tirotoxicosis T3 según las guías ATA 2026.",
+    ar: "التفسير السريري والنطاق المرجعي للثلاثي يود الثيرونين الحر."
   },
   content: {
-  "overview": "FT3: A general laboratory screening parameter or basic metabolic marker used to assess baseline physiological homeostasis and metabolic efficiency.",
-  "normalRange": "Varies by laboratory. Typically defined within reference intervals.",
-  "highValues": [
-    "Systemic inflammatory baseline (high ESR)",
-    "Metabolic intolerance or early diabetes (high glucose)",
-    "Impaired kidney function (high creatinine)"
-  ],
-  "lowValues": [
-    "Anemia or low muscle mass",
-    "Hypoglycemia",
-    "Nutritional deficiencies"
-  ],
-  "clinicalInterpretation": "FT3 evaluation: Elevated inflammatory markers (ESR, CRP) suggest systemic activity needing further investigation. Blood glucose shifts require evaluation of insulin sensitivity and glycemic control.",
-  "references": [
-    "CIT-0004",
-    "CIT-0005",
-    "CIT-0006",
-    "CIT-0007",
-    "CIT-0008"
-  ],
+    overview: "Free Triiodothyronine (Free T3 / FT3): Unbound, biologically active fraction of the metabolically potent thyroid hormone T3, representing ~0.3% of total circulating T3 generated primarily by peripheral 5'-deiodination of T4 in liver, kidney, and muscle tissues.",
+    normalRange: "Adult Reference Interval: 2.3–4.2 pg/mL (3.5–6.5 pmol/L).",
+    highValues: [
+      "T3 Thyrotoxicosis (Suppressed TSH with elevated FT3 but normal FT4)",
+      "Graves' Disease, Toxic Multinodular Goiter, Toxic Adenoma",
+      "Exogenous T3 Therapy (Liothyronine), Peripheral Thyroid Hormone Resistance"
+    ],
+    lowValues: [
+      "Euthyroid Sick Syndrome (Non-Thyroidal Illness Syndrome during severe systemic infection, trauma, or starvation)",
+      "Primary or Secondary Hypothyroidism (though FT3 drops later than FT4)",
+      "Severe Malnutrition, Fasting, Glucocorticoid or High-Dose Propranolol Administration"
+    ],
+    clinicalInterpretation: "Elevated FT3 with suppressed TSH (<0.01 mIU/L) confirms active hyperthyroidism/T3 toxicosis; low FT3 in critically ill ICU patients typically reflects non-thyroidal illness syndrome (euthyroid sick syndrome) rather than primary hypothyroidism.",
+    references: [
+      "CIT-0068",
+      "CIT-0023"
+    ],
+    claimCitations: [
+      {
+        claimId: "CLM-L0009-001",
+        passage: "ATA 2026 guidelines recommend FT3 testing specifically when TSH is suppressed but FT4 is normal, to diagnose isolated T3 thyrotoxicosis.",
+        citationIds: ["CIT-0068"]
+      },
+      {
+        claimId: "CLM-L0009-002",
+        passage: "Low FT3 in acute severe systemic illness represents an adaptive downregulation of metabolic rate (Euthyroid Sick Syndrome) and does not require routine levothyroxine or T3 replacement.",
+        citationIds: ["CIT-0068"]
+      },
+      {
+        claimId: "CLM-L0009-003",
+        passage: "Free T3 measurement avoids protein-binding interference caused by thyroid-binding globulin (TBG) variations in pregnancy or estrogen therapy.",
+        citationIds: ["CIT-0068"]
+      },
+      {
+        claimId: "CLM-L0009-004",
+        passage: "Homeopathic supportive remedies (e.g., Iodum, Thyroidinum) do not replace antithyroid medications (Methimazole) in overt T3 thyrotoxicosis with tachyarrhythmias.",
+        citationIds: ["CIT-0023"]
+      }
+    ],
   "faqs": [
     {
       "question": "What is a constitutional remedy in homeopathy?",

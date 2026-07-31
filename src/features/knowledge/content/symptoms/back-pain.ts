@@ -1,52 +1,75 @@
 import { KnowledgeEntity } from "../../types";
 
 export const BackPainSymptom: KnowledgeEntity = {
-  id: "S0013",
+  id: "S0005",
   slug: "back-pain",
   entityType: "symptom",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-07-31T20:30:00Z",
+    reviewed: "2026-07-31T20:30:00Z"
   },
   title: {
-    en: "Back Pain",
-    hi: "Back Pain",
-    gu: "Back Pain",
-    mr: "Back Pain",
-    es: "Back Pain",
-    ar: "Back Pain"
+    en: "Low Back Pain",
+    hi: "पीठ / कमर दर्द (Low Back Pain)",
+    gu: "પીઠનો દુખાવો (Low Back Pain)",
+    mr: "पाठदुखी / कंबरदुखी (Low Back Pain)",
+    es: "Dolor de Espalda (Low Back Pain)",
+    ar: "ألم الظهر (Low Back Pain)"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Back Pain.",
-    hi: "Back Pain के लक्षण की नैदानिक समझ.",
-    gu: "Back Pain ના લક્ષણ ની સમજણ.",
-    mr: "Back Pain चे लक्षण आणि उपचार.",
-    es: "Definición clínica y significado de Back Pain.",
-    ar: "التعريف السريري والأهمية لـ Back Pain."
+    en: "Clinical evaluation, differential diagnosis, cauda equina red flags, and supportive management for Low Back Pain under ACP 2017 guidelines.",
+    hi: "कमर दर्द लक्षण की नैदानिक समझ और आपातकालीन तंत्रिका चेतावनी लक्षण.",
+    gu: "પીઠના દુખાવાની તબીબી સમજણ અને ઈમરજન્સી રેડ ફ્લેગ્સ.",
+    mr: "पाठदुखीच्या लक्षणांची वैद्यकीय माहिती आणि इशारे.",
+    es: "Evaluación clínica, síndrome de cola de caballo y manejo del dolor lumbar según ACP 2017.",
+    ar: "التقييم السريري وعلامات الخطر لألم الظهر."
   },
   content: {
-  "definition": "Back pain: A localized pain, sensory alteration, or mobility limitation originating from nerves, muscles, joints, or tendons.",
-  "clinicalMeaning": "Replects nociceptive pathway stimulation, localized tissue injury, or nerve root compression resulting in altered sensation.",
-  "commonCauses": [
-    "Mechanical strain or postural imbalance",
-    "Peripheral nerve compression (e.g., sciatica, carpal tunnel)",
-    "Osteoarthritis or joint degeneration",
-    "Neurogenic inflammation"
-  ],
-  "differentialDiagnosis": "Differentiate from systemic autoimmune joint disease, peripheral vascular disease, and referred visceral pain.",
-  "redFlags": [
-    "Loss of bladder or bowel control (Cauda Equina Syndrome)",
-    "Sudden onset of limb weakness or foot drop",
-    "Severe joint swelling with high fever indicating septic arthritis"
-  ],
-  "lifestyleAdvice": "Implement regular stretching, adjust desk ergonomics, engage in low-impact walking, and stay hydrated to maintain joint lubrication.",
-  "references": [
-    "CIT-0011",
-    "CIT-0022"
-  ],
+    definition: "Low Back Pain: Musculoskeletal or neurogenic pain localized between the 12th rib margin and inferior gluteal folds, with or without lower extremity radicular sensory or motor radiation.",
+    clinicalMeaning: "Reflects mechanical lumbar strain, intervertebral disc herniation, spinal stenosis, facet arthropathy, or systemic pathology requiring red flag neurological screening.",
+    commonCauses: [
+      "Lumbar Musculoskeletal Strain, Ligamentous Sprain",
+      "Intervertebral Disc Herniation (Sciatica / L4-S1 Radiculopathy)",
+      "Lumbar Spinal Stenosis, Degenerative Spondylolisthesis, Osteoarthritis",
+      "Vertebral Compression Fracture (Osteoporosis / Trauma)"
+    ],
+    differentialDiagnosis: "Differentiate mechanical back pain from Cauda Equina Syndrome, spinal epidural abscess/osteomyelitis, metastatic spinal neoplasms, ankylosing spondylitis, and referred visceral pain (nephrolithiasis, AAA).",
+    redFlags: [
+      "Loss of bowel or bladder control (urinary retention/incontinence) or saddle anesthesia",
+      "Progressive bilateral lower extremity motor weakness or acute foot drop",
+      "Fever, night sweats, or history of IV drug use / immunosuppression (spinal infection)",
+      "Unexplained weight loss or history of cancer (vertebral metastasis)"
+    ],
+    lifestyleAdvice: "Remain active with early low-impact walking, avoid prolonged bed rest, practice proper ergonomic lifting mechanics, and strengthen core trunk musculature.",
+    references: [
+      "CIT-0074",
+      "CIT-0023"
+    ],
+    claimCitations: [
+      {
+        claimId: "CLM-S0005-001",
+        passage: "Acute low back pain with acute urinary retention or saddle anesthesia indicates Cauda Equina Syndrome requiring emergency spinal decompression surgery within 24-48 hours.",
+        citationIds: ["CIT-0074"]
+      },
+      {
+        claimId: "CLM-S0005-002",
+        passage: "ACP 2017 guidelines recommend non-pharmacologic therapies as initial management for acute or subacute non-radicular low back pain.",
+        citationIds: ["CIT-0074"]
+      },
+      {
+        claimId: "CLM-S0005-003",
+        passage: "Routine lumbar spine imaging is not indicated for uncomplicated acute back pain lacking red flag clinical indicators.",
+        citationIds: ["CIT-0074"]
+      },
+      {
+        claimId: "CLM-S0005-004",
+        passage: "Homeopathic supportive remedies (e.g., Rhus Tox, Bryonia) do not substitute for emergency MRI and surgical consultation in progressive neurological deficit.",
+        citationIds: ["CIT-0023"]
+      }
+    ],
   "faqs": [
     {
       "question": "What causes muscle stiffness in the morning?",

@@ -92,7 +92,8 @@ function runSubprocess(id: string, cmd: string, cmdArgs: string[]): Verification
     const subprocessEnv: Record<string, string> = {
       ...process.env,
       NODE_ENV: 'test',
-      NODE_OPTIONS: '--max-old-space-size=5120'
+      NODE_OPTIONS: '--max-old-space-size=5120',
+      TS_NODE_PROJECT: path.resolve(__dirname, "../tests/tsconfig.test.json")
     };
 
     const isUnitTest = cmdArgs.some(arg =>

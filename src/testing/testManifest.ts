@@ -1400,5 +1400,12 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "ownerArea": "knowledge-expansion",
     "testLayer": "governance",
     "reason": "M7 KEP-4 High-Risk Symptoms & Laboratory Tests (10 high-risk symptoms & 8 lab tests) v1.1.0 upgrades, 90 draft graph proposals, 180-case offline evaluation, and human wave promotion authorization boundary"
+  },
+  {
+    "path": "tests/knowledgeKEP4CommonSymptomsLabs.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "governance",
+    "reason": "M8 KEP-4 Common Symptoms & General Laboratory Tests (10 common symptoms & 8 general lab tests) v1.1.0 upgrades, 95 draft graph proposals, 190-case offline evaluation, and human wave promotion authorization boundary"
   }
 ];
