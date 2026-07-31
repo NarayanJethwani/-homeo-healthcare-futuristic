@@ -10,8 +10,8 @@
     "totalEntities": 343,
     "byEntityType": {
       "disease": 75,
-      "remedy": 150,
       "faq": 1,
+      "remedy": 150,
       "lab-test": 40,
       "symptom": 75,
       "case-study": 1,
@@ -20,7 +20,7 @@
     "withdrawnEntities": 3,
     "flagshipEntities": 8,
     "legacyBulkGeneratedEntities": 256,
-    "genericSignalEntities": 257,
+    "genericSignalEntities": 255,
     "independentlyReviewedEntities": 0,
     "governedEvidenceProfiles": 0,
     "claimCitationCompleteEntities": 0,
@@ -36,7 +36,7 @@
       "title": "Asthma",
       "audience": "patient",
       "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
+      "evidenceLevel": "Consensus-Guidance",
       "safety": {
         "withdrawn": true,
         "riskTier": "critical"
@@ -45,14 +45,12 @@
         "overviewPresent": true,
         "structuredSectionCompleteness": 90,
         "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
       },
       "evidence": {
         "referenceCount": 3,
-        "allReferencesResolvable": true,
+        "allReferencesResolvable": false,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
       },
@@ -75,11 +73,10 @@
         "eligibleForRag": false
       },
       "prioritisation": {
-        "priorityScore": 150,
+        "priorityScore": 130,
         "recommendation": "withdrawn-safety-remediation",
         "reasons": [
           "active-safety-withdrawal",
-          "generic-template-detected",
           "independent-review-unproven",
           "graph-isolated",
           "clinical-interpretation-content"
@@ -87,67 +84,10 @@
       }
     },
     {
-      "entityId": "R0006",
-      "slug": "arsenicum-album",
-      "entityType": "remedy",
-      "title": "Arsenicum Album (White Oxide of Arsenic)",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": true,
-        "riskTier": "critical"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "traditionally considered in constitutional clinical practice for profiles displaying",
-          "marked physical generalities and thermal characteristics"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 0,
-        "duplicateRelationshipRows": 0,
-        "brokenRelationshipRows": 0,
-        "isolated": true
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 140,
-        "recommendation": "withdrawn-safety-remediation",
-        "reasons": [
-          "active-safety-withdrawal",
-          "generic-template-detected",
-          "independent-review-unproven",
-          "graph-isolated"
-        ]
-      }
-    },
-    {
       "entityId": "FAQ-safety",
       "slug": "safety",
       "entityType": "faq",
-      "title": "Homeopathy Safety and Efficacy FAQ",
+      "title": "Homeopathy Safety, Efficacy, and Regulatory Compliance FAQ",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Expert-Opinion",
@@ -164,6 +104,59 @@
       },
       "evidence": {
         "referenceCount": 2,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 0,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": true
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 120,
+        "recommendation": "withdrawn-safety-remediation",
+        "reasons": [
+          "active-safety-withdrawal",
+          "independent-review-unproven",
+          "graph-isolated"
+        ]
+      }
+    },
+    {
+      "entityId": "R0006",
+      "slug": "arsenicum-album",
+      "entityType": "remedy",
+      "title": "Arsenicum Album (White Oxide of Arsenic)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Classical-Homeopathic-Literature",
+      "safety": {
+        "withdrawn": true,
+        "riskTier": "critical"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 57,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 4,
         "allReferencesResolvable": true,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
