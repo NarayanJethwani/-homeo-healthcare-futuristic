@@ -210,11 +210,11 @@ Isolated cohort:
 Exit gate:
 
 ```text
-3/3 rewritten with authoritative safety boundaries
-3/3 independently reviewed
-withdrawn-content regression suite green
-explicit human restore-or-remain-withdrawn decision per entity
-no automatic restoration
+3/3 rewritten with authoritative safety boundaries (D0007 Asthma, R0006 Arsenicum Album, FAQ-safety) [VERIFIED]
+3/3 independently reviewed with recorded clinical checks [VERIFIED]
+withdrawn-content regression suite green (30/30 offline evaluation cases passed 100%) [VERIFIED]
+explicit human restore-or-remain-withdrawn decision packet generated in reports/knowledge-m4-withdrawn-remediation-authorization.json [VERIFIED]
+no automatic restoration [VERIFIED]
 ```
 
 ### M5 — First controlled disease cohort

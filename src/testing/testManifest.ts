@@ -1365,5 +1365,12 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "ownerArea": "knowledge-expansion",
     "testLayer": "governance",
     "reason": "M3 Flagship Independent Review, risk-lane verification, aggregated 160-case offline evaluation, canary/rollback exercise, and human Go/No-Go decision boundary"
+  },
+  {
+    "path": "tests/knowledgeKEP2WithdrawnRemediation.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "governance",
+    "reason": "M4 KEP-2 Withdrawn-Entity Remediation (Asthma, Arsenicum Album, Safety FAQ) v1.1.0 rewrites, 30-case offline evaluation, and human restore-or-remain-withdrawn authorization boundary"
   }
 ];

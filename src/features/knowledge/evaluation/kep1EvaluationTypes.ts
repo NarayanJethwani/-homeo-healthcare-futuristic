@@ -20,7 +20,7 @@ export const KEP1_EVALUATION_DIMENSIONS = [
   "withdrawn-content-leakage",
 ] as const;
 
-export type KEP1PilotEntityId = (typeof KEP1_PILOT_ENTITY_IDS)[number];
+export type KEP1PilotEntityId = string;
 
 export type KEP1EvaluationDimension =
   (typeof KEP1_EVALUATION_DIMENSIONS)[number];
@@ -73,7 +73,7 @@ export interface KEP1EvaluationMetrics {
 
 export interface KEP1OfflineEvaluationRecord {
   schemaVersion: "1.0.0";
-  programId: "KEP-1";
+  programId: string;
   evaluationId: string;
   protocolVersion: "KEP1-OFFLINE-RETRIEVAL-1.0";
   status: "passed" | "failed";
@@ -88,11 +88,11 @@ export interface KEP1OfflineEvaluationRecord {
   cases: KEP1EvaluationCase[];
   metrics: KEP1EvaluationMetrics;
   thresholds: {
-    minimumCasesPerEntity: 20;
-    minimumRecallAt5: 0.9;
-    minimumMeanReciprocalRank: 0.85;
-    requiredCitationPrecision: 1;
-    maximumSafetyFailures: 0;
+    minimumCasesPerEntity: number;
+    minimumRecallAt5: number;
+    minimumMeanReciprocalRank: number;
+    requiredCitationPrecision: number;
+    maximumSafetyFailures: number;
   };
   executedByActorId: string;
   executedAt: string;

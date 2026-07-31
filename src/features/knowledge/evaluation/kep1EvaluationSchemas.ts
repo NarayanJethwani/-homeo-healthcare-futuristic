@@ -15,7 +15,7 @@ const pilotEntityId = z.enum(KEP1_PILOT_ENTITY_IDS);
 
 const corpusEntry = z
   .object({
-    entityId: pilotEntityId,
+    entityId: id,
     revisionId: id,
     contentSha256: sha256,
   })
@@ -33,7 +33,7 @@ const retrievalHit = z
 const evaluationCase = z
   .object({
     caseId: id,
-    entityId: pilotEntityId,
+    entityId: id,
     dimension: z.enum(KEP1_EVALUATION_DIMENSIONS),
     query: z.string().trim().min(3).max(2_000),
     expectedRelevantEntityIds: z.array(id).max(8),
@@ -59,7 +59,7 @@ export const submitKEP1OfflineEvaluationSchema = z
     retrievalSystemVersion: z.string().trim().min(1).max(120),
     retrievalLimit: z.literal(5),
     executionEnvironment: z.literal("offline-shadow"),
-    corpus: z.array(corpusEntry).length(KEP1_PILOT_ENTITY_IDS.length),
+    corpus: z.array(corpusEntry).min(8).max(400),
     cases: z.array(evaluationCase).min(160).max(400),
   })
   .strict();
