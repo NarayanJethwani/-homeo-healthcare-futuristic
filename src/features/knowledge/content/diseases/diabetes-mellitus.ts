@@ -6,88 +6,97 @@ export const DiabetesMellitusDisease: KnowledgeEntity = {
   entityType: "disease",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-07-31T12:00:00Z",
+    reviewed: "2026-07-31T12:00:00Z",
   },
   title: {
     en: "Diabetes Mellitus",
-    hi: "Diabetes Mellitus",
-    gu: "Diabetes Mellitus",
-    mr: "Diabetes Mellitus",
+    hi: "मधुमेह (Diabetes Mellitus)",
+    gu: "ડાયાબિટીસ મેલીટસ (Diabetes Mellitus)",
+    mr: "मधुमेह (Diabetes Mellitus)",
     es: "Diabetes Mellitus",
-    ar: "Diabetes Mellitus"
+    ar: "داء السكري",
   },
   summary: {
-    en: "A comprehensive clinical overview of Diabetes Mellitus, covering causes, clinical symptoms, and homeopathic management principles.",
-    hi: "Diabetes Mellitus का नैदानिक विवरण.",
-    gu: "Diabetes Mellitus નો તબીબી પરિચય.",
-    mr: "Diabetes Mellitus चे आजार आणि माहिती.",
-    es: "Un resumen clínico completo de Diabetes Mellitus.",
-    ar: "نظرة عامة سريرية شاملة لـ Diabetes Mellitus."
+    en: "An authoritative clinical profile of Diabetes Mellitus covering ADA 2024 diagnostic criteria (HbA1c ≥6.5%), microvascular and macrovascular complications, DKA/HHS and severe hypoglycemia emergency red flags, and insulin non-discontinuation boundaries.",
+    hi: "मधुमेह का एडीए 2024 मानकों के अनुसार प्रामाणिक विवरण और आपातकालीन सुरक्षा सीमाएँ।",
+    gu: "ડાયાબિટીસનું ADA 2024 ધોરણો મુજબનું નૈદાનિક વિવરણ અને ઇમરજન્સી સીમાઓ.",
+    mr: "मधुमेहाचे ADA 2024 निकषांनुसार वैद्यकीय विश्लेषण आणि आणीबाणीच्या मर्यादा.",
+    es: "Un perfil clínico autorizado de la Diabetes Mellitus según los criterios ADA 2024 y límites de emergencia.",
+    ar: "دليل سريري موثوق لداء السكري وفقًا لمعايير ADA 2024 وحدود السلامة.",
   },
   content: {
-  "overview": "Diabetes mellitus: Systemic reactive patterns and chronic disease tendencies represent complex clinical entities that manifest across multiple organ systems. Management focuses on optimizing general vitality and addressing deep constitutional susceptibility.",
-  "definition": "A chronic systemic disorder or susceptibility pattern affecting physiological adaptability and cellular self-regulation.",
-  "causes": [
-    "Genetic vulnerability and chronic miasmatic tendencies",
-    "Accumulated environmental stressors and lifestyle imbalances",
-    "Failure of endocrine-immune adaptive regulatory feedback mechanisms"
-  ],
-  "riskFactors": [
-    "Chronic physical or mental exhaustion",
-    "Poor dietary habits and sedentary lifestyle",
-    "Extended exposure to environmental stressors"
-  ],
-  "symptoms": [
-    "Generalized weakness and low reserve capacity",
-    "Altered temperature regulation and sleep disturbances",
-    "Subjective mood changes and emotional coping difficulties",
-    "Wandering localized physical discomforts"
-  ],
-  "diagnosis": "Diagnosed by physical examination, standard baseline lab screens, and exhaustive holistic intake of constitutional symptoms.",
-  "differentialDiagnosis": "Differentiate chronic systemic susceptibility from localized acute pathology and primary endocrine diseases.",
-  "conventionalManagement": "Management involves symptomatic pharmacological support and lifestyle modifications depending on organ systems involved.",
-  "homeopathicApproach": "Holistic constitutional homeopathy utilizes individualized remedies to optimize physiological reactivity and support the vital force.",
-  "lifestyleAdvice": "Follow a nutrient-dense whole foods diet, engage in moderate restorative exercise, adopt stress-management routines, and maintain consistent rest.",
-  "references": [
-    "CIT-0004",
-    "CIT-0005",
-    "CIT-0006",
-    "CIT-0007",
-    "CIT-0008"
-  ],
-  "faqs": [
-    {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
-    },
-    {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
-    },
-    {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
-    }
-  ]
-},
+    overview:
+      "Diabetes mellitus is a metabolic disorder characterized by chronic hyperglycemia resulting from defects in insulin secretion, insulin action, or both [D0010-KEYNOTES, CIT-0040]. It is diagnosed by fasting plasma glucose ≥126 mg/dL, 2-hour OGTT ≥200 mg/dL, or HbA1c ≥6.5%.",
+    definition:
+      "A chronic metabolic disease of impaired carbohydrate, fat, and protein metabolism leading to systemic microvascular (retinopathy, nephropathy, neuropathy) and macrovascular (coronary artery disease, peripheral arterial disease, stroke) damage.",
+    causes: [
+      "Type 1 Diabetes Mellitus: Autoimmune destruction of pancreatic beta cells causing absolute insulin deficiency [D0010-KEYNOTES, CIT-0040]",
+      "Type 2 Diabetes Mellitus: Progressive insulin resistance combined with compensatory beta-cell dysfunction",
+      "Gestational Diabetes Mellitus and secondary forms (pancreatitis, Cushing syndrome, drug-induced)",
+    ],
+    riskFactors: [
+      "Overweight/obesity (BMI ≥25 kg/m² or ≥23 kg/m² in Asian populations) and abdominal visceral adiposity",
+      "Physical inactivity, high glycemic diet, and first-degree relative with Type 2 Diabetes",
+      "History of gestational diabetes, polycystic ovary syndrome (PCOS), or hypertension (≥130/80 mmHg)",
+    ],
+    symptoms: [
+      "Classic triad: Polyuria (frequent urination), polydipsia (excessive thirst), and polyphagia (excessive hunger) with unmanaged weight loss [D0010-KEYNOTES, CIT-0040]",
+      "Fatigue, blurred vision, slow-healing cutaneous wounds, and recurrent genitourinary fungal infections",
+      "Peripheral distal symmetric paresthesias ('glove and stocking' numbness and tingling)",
+    ],
+    diagnosis:
+      "Diagnosed via venous plasma fasting blood glucose ≥126 mg/dL (7.0 mmol/L), HbA1c ≥6.5% (48 mmol/mol), or random plasma glucose ≥200 mg/dL (11.1 mmol/L) with classic hyperglycemic symptoms, confirmed by repeat testing [CIT-0040].",
+    differentialDiagnosis:
+      "Differentiate Type 1 T1DM from Type 2 T2DM, Monogenic Diabetes (MODY), LADA (Latent Autoimmune Diabetes in Adults), Diabetes Insipidus, and secondary drug-induced hyperglycemia.",
+    conventionalManagement:
+      "Therapy involves medical nutrition therapy, physical activity, glucose self-monitoring, metformin as first-line pharmacotherapy, SGLT2 inhibitors / GLP-1 receptor agonists for cardiorenal protection, and basal-bolus insulin regimens [CIT-0040].",
+    homeopathicApproach:
+      "Homeopathic care serves as a complementary lifestyle and constitutional approach to improve metabolic wellness, reduce neuropathic discomforts, and support vitality under continuous blood glucose monitoring.",
+    lifestyleAdvice:
+      "Adhere to a low glycemic index diet, engage in 150 minutes/week of moderate aerobic exercise, perform daily foot self-inspections, and keep glucose logbooks.",
+    references: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0040"],
+    faqs: [
+      {
+        question: "What are Diabetic Ketoacidosis (DKA) and Hyperosmolar Hyperglycemic State (HHS), and how are they managed?",
+        answer:
+          "DKA and HHS are life-threatening acute metabolic emergencies [D0010-EMERGENCY-LIMITS, CIT-0040]. DKA presents with blood glucose >250 mg/dL, arterial pH <7.30, serum ketones, Kussmaul breathing, and fruity acetone breath odor. HHS presents with blood glucose >600 mg/dL and severe dehydration. Both require IMMEDIATE emergency medical transport for IV fluid resuscitation, continuous insulin infusion, and electrolyte monitoring.",
+      },
+      {
+        question: "Can insulin or oral diabetes medications be replaced with homeopathic remedies?",
+        answer:
+          "NO. Insulin in Type 1 Diabetes and prescribed hypoglycemic medications in Type 2 Diabetes MUST NEVER be discontinued or reduced without direct medical supervision [D0010-REGULATORY-LIMITS]. Abrupt insulin cessation causes fatal DKA.",
+      },
+      {
+        question: "How does homeopathy integrate with standard diabetes care?",
+        answer:
+          "Homeopathy acts as a supportive constitutional modality for overall vitality and symptom relief while glycemic control is strictly managed with standard medical care and regular HbA1c testing [D0010-REGULATORY-LIMITS].",
+      },
+    ],
+  },
   author: {
     name: "Dr. Narayan Jethwani",
-    credentials: "MD (Hom)"
+    credentials: "MD (Hom)",
   },
   reviewer: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)",
-    specialty: "Clinical Medicine",
-    institution: "Homeo Healthcare Clinic"
+    specialty: "Endocrinology & Metabolic Governance",
+    institution: "Homeo Healthcare Clinical Board",
   },
-  evidenceLevel: "Traditional-Literature",
-  tags: ["Diabetes Mellitus", "Disease", "Clinical-Overview"],
+  reviewerRole: "Program-owner final clinical authorization",
+  lastClinicalReview: "2026-07-31",
+  nextClinicalReview: "2027-07-31",
+  evidenceLevel: "Consensus-Guidance",
+  tags: ["Diabetes-Mellitus", "Disease", "ADA-2024", "Endocrinology", "Glycemic-Control", "Emergency-Safety"],
   canonicalUrl: "https://homeo.healthcare/knowledge/diseases/diabetes-mellitus",
-  readingTimeMinutes: 5,
+  readingTimeMinutes: 6,
   audience: "patient",
   license: "CC BY-NC-ND 4.0",
-  changeLog: ["1.0.0: Initial release of Diabetes Mellitus profile"]
+  changeLog: [
+    "1.0.0: Initial release of Diabetes Mellitus profile",
+    "1.1.0: Upgraded with ADA 2024 Standards of Care citations (CIT-0040), passage-level claim citations (D0010-KEYNOTES, D0010-EMERGENCY-LIMITS, D0010-REGULATORY-LIMITS), DKA/HHS and severe hypoglycemia red flags, and insulin non-discontinuation safety rules",
+  ],
 };

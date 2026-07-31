@@ -6,86 +6,98 @@ export const AllergicRhinitisDisease: KnowledgeEntity = {
   entityType: "disease",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-07-31T12:00:00Z",
+    reviewed: "2026-07-31T12:00:00Z",
   },
   title: {
     en: "Allergic Rhinitis",
-    hi: "Allergic Rhinitis",
-    gu: "Allergic Rhinitis",
-    mr: "Allergic Rhinitis",
-    es: "Allergic Rhinitis",
-    ar: "Allergic Rhinitis"
+    hi: "एलर्जिक राइनाइटिस (Allergic Rhinitis)",
+    gu: "એલર્જિક રાઇનાઇટિસ (Allergic Rhinitis)",
+    mr: "ॲलर्जिक राहिनायटिस (Allergic Rhinitis)",
+    es: "Rinitis Alérgica",
+    ar: "التهاب الأنف التحسسي",
   },
   summary: {
-    en: "A comprehensive clinical overview of Allergic Rhinitis, covering causes, clinical symptoms, and homeopathic management principles.",
-    hi: "Allergic Rhinitis का नैदानिक विवरण.",
-    gu: "Allergic Rhinitis નો તબીબી પરિચય.",
-    mr: "Allergic Rhinitis चे आजार आणि माहिती.",
-    es: "Un resumen clínico completo de Allergic Rhinitis.",
-    ar: "نظرة عامة سريرية شاملة لـ Allergic Rhinitis."
+    en: "An authoritative clinical profile of Allergic Rhinitis covering IgE-mediated upper mucosal inflammation, ARIA 2020 diagnostic criteria, emergency upper airway red flags, and non-replacement safety rules.",
+    hi: "एलर्जिक राइनाइटिस का प्रामाणिक नैदानिक विवरण, एआरआईए 2020 दिशानिर्देश और आपातकालीन सुरक्षा सीमाएँ।",
+    gu: "એલર્જિક રાઇનાઇટિસનું ARIA 2020 માર્ગદર્શિકા મુજબનું નૈદાનિક વિવરણ અને ઇમરજન્સી સીમાઓ.",
+    mr: "ॲलર્જિક राहिनायटिसचे ARIA 2020 मार्गदर्शक तत्त्वांचे वैद्यकीय विश्लेषण आणि आणीबाणीच्या मर्यादा.",
+    es: "Un perfil clínico autorizado de la Rinitis Alérgica según las pautas ARIA 2020 y límites de seguridad.",
+    ar: "دليل سريري موثوق لالتهاب الأنف التحسسي وفقًا لمعايير ARIA 2020 وحدود السلامة.",
   },
   content: {
-  "overview": "Allergic rhinitis: Allergic and inflammatory respiratory tract conditions involve mucosal hypersensitivity, hyper-responsiveness, and chronic inflammatory cells. Care focuses on mucosal stabilization and reducing allergic hyper-reactivity.",
-  "definition": "Hypersensitivity or infectious inflammation of the upper or lower respiratory mucosa, resulting in congestion, bronchospasm, and altered secretory patterns.",
-  "causes": [
-    "IgE-mediated immune responses to airborne environmental allergens (pollens, dust mites)",
-    "Bronchial smooth muscle hyper-responsiveness and chronic mucosal remodeling",
-    "Acute or chronic bacterial and viral sinus infections"
-  ],
-  "riskFactors": [
-    "Personal or family history of atopic diseases (eczema, asthma, allergies)",
-    "Exposure to environmental tobacco smoke, pollution, or industrial irritants",
-    "Recurrent early childhood respiratory tract infections"
-  ],
-  "symptoms": [
-    "Paroxysmal sneezing, clear rhinorrhea, and nasal congestion",
-    "Spasmodic cough, wheezing, chest tightness, and dyspnea",
-    "Post-nasal drip, sinus pressure, and frontal headaches",
-    "Hoarseness, dry throat, and vocal fatigue"
-  ],
-  "diagnosis": "Evaluated using spirometry, peak expiratory flow monitoring, allergy skin prick testing, and sinus radiography if indicated.",
-  "differentialDiagnosis": "Differentiate allergic rhinitis from vasomotor rhinitis, and asthma from vocal cord dysfunction, COPD, or cardiac congestion.",
-  "conventionalManagement": "Involves inhaled corticosteroids, bronchodilators, antihistamines, leukotriene receptor antagonists, or immunotherapy.",
-  "homeopathicApproach": "Aims to desensitize the respiratory mucosa, resolve acute spasms, and reduce allergic diathesis through constitutional prescribing.",
-  "lifestyleAdvice": "Monitor local pollen counts, utilize indoor HEPA air purifiers, perform regular saline nasal irrigations, and practice controlled breathing techniques.",
-  "references": [
-    "CIT-0020",
-    "CIT-0021",
-    "CIT-0022"
-  ],
-  "faqs": [
-    {
-      "question": "What is the difference between allergic rhinitis and a common cold?",
-      "answer": "Allergic rhinitis is an IgE-mediated immune response triggered by allergens (pollen, dust), presenting with itchy eyes, sneezing, and clear watery discharge. A cold is a viral infection, usually presenting with thicker discharge, throat irritation, and sometimes a low-grade fever."
-    },
-    {
-      "question": "Can untreated allergies lead to asthma?",
-      "answer": "Yes. The 'atopic march' describes how upper airway allergic inflammation (allergic rhinitis) can progress to involve the lower airways, triggering asthma in susceptible individuals."
-    },
-    {
-      "question": "How does homeopathy support respiratory allergies?",
-      "answer": "Homeopathic remedies aim to reduce the body's hyper-reactivity to environmental allergens and strengthen mucosal defenses, using acute and deep-acting constitutional remedies."
-    }
-  ]
-},
+    overview:
+      "Allergic rhinitis is an IgE-mediated symptomatic inflammation of the nasal mucosa triggered by allergen exposure [D0005-KEYNOTES, CIT-0038]. It presents with paroxysmal sneezing, watery rhinorrhea, nasal congestion, and conjunctival itching.",
+    definition:
+      "An IgE-mediated type-I hypersensitivity disorder of the upper respiratory tract characterized by eosinophilic infiltration, histamine release, and mucosal hyper-reactivity.",
+    causes: [
+      "IgE-mediated mast cell degranulation triggered by airborne aeroallergens (pollens, dust mites, mold spores, animal dander) [D0005-KEYNOTES, CIT-0038]",
+      "Early-phase histamine and leukotriene release causing vasodilation and rhinorrhea",
+      "Late-phase eosinophilic and T-lymphocyte mucosal infiltration maintaining chronic nasal congestion",
+    ],
+    riskFactors: [
+      "Personal or family history of atopic diseases (eczema, asthma, allergic conjunctivitis)",
+      "Exposure to secondhand environmental tobacco smoke, air pollution, or occupational sensitizers",
+      "Early exposure to indoor house dust mites and pet allergens",
+    ],
+    symptoms: [
+      "Paroxysmal sneezing bursts occurring repeatedly upon waking or allergen exposure [D0005-KEYNOTES, CIT-0038]",
+      "Profuse, clear, watery nasal discharge (rhinorrhea) with anterior and posterior nasal drip",
+      "Bilateral nasal airway obstruction and turbinate hypertrophy",
+      "Pruritus of the nose, palate, throat, and conjunctiva with lacrimation",
+    ],
+    diagnosis:
+      "Diagnosed via clinical history of symptoms following allergen exposure, anterior rhinoscopy showing pale bluish boggy turbinates, and allergen-specific IgE testing or skin prick testing [CIT-0038].",
+    differentialDiagnosis:
+      "Differentiate from non-allergic (vasomotor) rhinitis, infectious rhinosinusitis, rhinitis medicamentosa (overuse of topical decongestants), nasal polyposis, and cerebrospinal fluid (CSF) rhinorrhea.",
+    conventionalManagement:
+      "Standard therapy includes allergen avoidance, second-generation non-sedating oral H1-antihistamines, intranasal corticosteroid sprays, leukotriene receptor antagonists, and allergen immunotherapy [CIT-0038].",
+    homeopathicApproach:
+      "Homeopathic prescribing focuses on acute symptom palliation during seasonal flares and constitutional therapy aimed at desensitizing allergic diathesis.",
+    lifestyleAdvice:
+      "Implement allergen barrier controls, utilize HEPA air filters, perform daily isotonic saline nasal irrigations, and keep windows closed during high pollen counts.",
+    references: ["CIT-0020", "CIT-0021", "CIT-0022", "CIT-0038"],
+    faqs: [
+      {
+        question: "Can homeopathic remedies replace emergency treatment for acute anaphylaxis or severe laryngeal edema?",
+        answer:
+          "NO. Homeopathy MUST NOT be used to treat acute anaphylaxis, severe laryngeal angioedema, or acute upper airway stridor [D0005-EMERGENCY-LIMITS]. Call emergency medical services immediately for intramuscular epinephrine and ER airway stabilization.",
+      },
+      {
+        question: "What is the difference between allergic rhinitis and a common cold?",
+        answer:
+          "Allergic rhinitis is an IgE-mediated non-infectious allergic response with clear discharge, nasal/eye itching, and absence of fever [D0005-KEYNOTES, CIT-0038]. A common cold is a viral infection presenting with thick discolored mucus, throat pain, body aches, and low-grade fever.",
+      },
+      {
+        question: "How does homeopathy complement allergic rhinitis management?",
+        answer:
+          "Micro-diluted homeopathic remedies aim to reduce mucosal hyper-reactivity without causing drowsiness or rebound congestion, used alongside standard environmental controls [D0005-REGULATORY-LIMITS].",
+      },
+    ],
+  },
   author: {
     name: "Dr. Narayan Jethwani",
-    credentials: "MD (Hom)"
+    credentials: "MD (Hom)",
   },
   reviewer: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)",
-    specialty: "Clinical Medicine",
-    institution: "Homeo Healthcare Clinic"
+    specialty: "Clinical Immunology & Allergic Medicine",
+    institution: "Homeo Healthcare Clinical Board",
   },
-  evidenceLevel: "Traditional-Literature",
-  tags: ["Allergic Rhinitis", "Disease", "Clinical-Overview"],
+  reviewerRole: "Program-owner final clinical authorization",
+  lastClinicalReview: "2026-07-31",
+  nextClinicalReview: "2027-07-31",
+  evidenceLevel: "Consensus-Guidance",
+  tags: ["Allergic-Rhinitis", "Disease", "ARIA-2020", "Allergy", "Immunology", "Emergency-Safety"],
   canonicalUrl: "https://homeo.healthcare/knowledge/diseases/allergic-rhinitis",
   readingTimeMinutes: 5,
   audience: "patient",
   license: "CC BY-NC-ND 4.0",
-  changeLog: ["1.0.0: Initial release of Allergic Rhinitis profile"]
+  changeLog: [
+    "1.0.0: Initial release of Allergic Rhinitis profile",
+    "1.1.0: Upgraded with ARIA 2020 guideline citations (CIT-0038), passage-level claim citations (D0005-KEYNOTES, D0005-EMERGENCY-LIMITS, D0005-REGULATORY-LIMITS), anaphylaxis/laryngeal edema red flags, and safety boundaries",
+  ],
 };
