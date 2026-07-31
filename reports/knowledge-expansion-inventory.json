@@ -20,7 +20,7 @@
     "withdrawnEntities": 3,
     "flagshipEntities": 8,
     "legacyBulkGeneratedEntities": 256,
-    "genericSignalEntities": 250,
+    "genericSignalEntities": 240,
     "independentlyReviewedEntities": 0,
     "governedEvidenceProfiles": 0,
     "claimCitationCompleteEntities": 0,
@@ -612,398 +612,6 @@
       }
     },
     {
-      "entityId": "D0006",
-      "slug": "sinusitis",
-      "entityType": "disease",
-      "title": "Sinusitis",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 3,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 0,
-        "duplicateRelationshipRows": 0,
-        "brokenRelationshipRows": 0,
-        "isolated": true
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 50,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "graph-isolated",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "D0008",
-      "slug": "gastritis",
-      "entityType": "disease",
-      "title": "Gastritis",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 3,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 0,
-        "duplicateRelationshipRows": 0,
-        "brokenRelationshipRows": 0,
-        "isolated": true
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 50,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "graph-isolated",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "D0013",
-      "slug": "pcos",
-      "entityType": "disease",
-      "title": "PCOS",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 0,
-        "duplicateRelationshipRows": 0,
-        "brokenRelationshipRows": 0,
-        "isolated": true
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 50,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "graph-isolated",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "D0014",
-      "slug": "acne-vulgaris",
-      "entityType": "disease",
-      "title": "Acne Vulgaris",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 3,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 0,
-        "duplicateRelationshipRows": 0,
-        "brokenRelationshipRows": 0,
-        "isolated": true
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 50,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "graph-isolated",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "D0015",
-      "slug": "psoriasis",
-      "entityType": "disease",
-      "title": "Psoriasis",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 3,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 0,
-        "duplicateRelationshipRows": 0,
-        "brokenRelationshipRows": 0,
-        "isolated": true
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 50,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "graph-isolated",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "D0016",
-      "slug": "urticaria",
-      "entityType": "disease",
-      "title": "Urticaria",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 3,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 0,
-        "duplicateRelationshipRows": 0,
-        "brokenRelationshipRows": 0,
-        "isolated": true
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 50,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "graph-isolated",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "D0017",
-      "slug": "osteoarthritis",
-      "entityType": "disease",
-      "title": "Osteoarthritis",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 0,
-        "duplicateRelationshipRows": 0,
-        "brokenRelationshipRows": 0,
-        "isolated": true
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 50,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "graph-isolated",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
       "entityId": "D0018",
       "slug": "cervical-spondylosis",
       "entityType": "disease",
@@ -1060,178 +668,10 @@
       }
     },
     {
-      "entityId": "D0019",
-      "slug": "anxiety-disorder",
-      "entityType": "disease",
-      "title": "Anxiety Disorder",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 0,
-        "duplicateRelationshipRows": 0,
-        "brokenRelationshipRows": 0,
-        "isolated": true
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 50,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "graph-isolated",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "D0020",
-      "slug": "depression",
-      "entityType": "disease",
-      "title": "Depression",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 0,
-        "duplicateRelationshipRows": 0,
-        "brokenRelationshipRows": 0,
-        "isolated": true
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 50,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "graph-isolated",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
       "entityId": "D0021",
       "slug": "insomnia",
       "entityType": "disease",
       "title": "Insomnia",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 0,
-        "duplicateRelationshipRows": 0,
-        "brokenRelationshipRows": 0,
-        "isolated": true
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 50,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "graph-isolated",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "D0022",
-      "slug": "rheumatoid-arthritis",
-      "entityType": "disease",
-      "title": "Rheumatoid Arthritis",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Traditional-Literature",
@@ -13064,6 +12504,112 @@
       }
     },
     {
+      "entityId": "D0006",
+      "slug": "sinusitis",
+      "entityType": "disease",
+      "title": "Sinusitis (Rhinosinusitis)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Consensus-Guidance",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 90,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 4,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 0,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": true
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 30,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "graph-isolated",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "D0008",
+      "slug": "gastritis",
+      "entityType": "disease",
+      "title": "Gastritis",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Consensus-Guidance",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 90,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 4,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 0,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": true
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 30,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "graph-isolated",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
       "entityId": "D0009",
       "slug": "hypertension",
       "entityType": "disease",
@@ -13121,6 +12667,430 @@
       "slug": "diabetes-mellitus",
       "entityType": "disease",
       "title": "Diabetes Mellitus",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Consensus-Guidance",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 90,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 4,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 0,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": true
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 30,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "graph-isolated",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "D0013",
+      "slug": "pcos",
+      "entityType": "disease",
+      "title": "Polycystic Ovary Syndrome (PCOS)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Consensus-Guidance",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 90,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 4,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 0,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": true
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 30,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "graph-isolated",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "D0014",
+      "slug": "acne-vulgaris",
+      "entityType": "disease",
+      "title": "Acne Vulgaris",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Consensus-Guidance",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 90,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 4,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 0,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": true
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 30,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "graph-isolated",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "D0015",
+      "slug": "psoriasis",
+      "entityType": "disease",
+      "title": "Psoriasis Vulgaris",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Consensus-Guidance",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 90,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 4,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 0,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": true
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 30,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "graph-isolated",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "D0016",
+      "slug": "urticaria",
+      "entityType": "disease",
+      "title": "Urticaria (Hives) & Angioedema",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Consensus-Guidance",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 90,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 4,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 0,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": true
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 30,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "graph-isolated",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "D0017",
+      "slug": "osteoarthritis",
+      "entityType": "disease",
+      "title": "Osteoarthritis (OA)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Consensus-Guidance",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 90,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 4,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 0,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": true
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 30,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "graph-isolated",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "D0019",
+      "slug": "anxiety-disorder",
+      "entityType": "disease",
+      "title": "Generalized Anxiety Disorder (GAD) & Panic Disorder",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Consensus-Guidance",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 90,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 4,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 0,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": true
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 30,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "graph-isolated",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "D0020",
+      "slug": "depression",
+      "entityType": "disease",
+      "title": "Major Depressive Disorder (MDD)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Consensus-Guidance",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 90,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 4,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 0,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": true
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 30,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "graph-isolated",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "D0022",
+      "slug": "rheumatoid-arthritis",
+      "entityType": "disease",
+      "title": "Rheumatoid Arthritis (RA)",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Consensus-Guidance",
