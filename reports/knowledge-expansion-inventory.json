@@ -20,7 +20,7 @@
     "withdrawnEntities": 3,
     "flagshipEntities": 8,
     "legacyBulkGeneratedEntities": 256,
-    "genericSignalEntities": 255,
+    "genericSignalEntities": 250,
     "independentlyReviewedEntities": 0,
     "governedEvidenceProfiles": 0,
     "claimCitationCompleteEntities": 0,
@@ -50,7 +50,7 @@
       },
       "evidence": {
         "referenceCount": 3,
-        "allReferencesResolvable": false,
+        "allReferencesResolvable": true,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
       },
@@ -612,62 +612,6 @@
       }
     },
     {
-      "entityId": "D0005",
-      "slug": "allergic-rhinitis",
-      "entityType": "disease",
-      "title": "Allergic Rhinitis",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 3,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 0,
-        "duplicateRelationshipRows": 0,
-        "brokenRelationshipRows": 0,
-        "isolated": true
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 50,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "graph-isolated",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
       "entityId": "D0006",
       "slug": "sinusitis",
       "entityType": "disease",
@@ -746,118 +690,6 @@
       },
       "evidence": {
         "referenceCount": 3,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 0,
-        "duplicateRelationshipRows": 0,
-        "brokenRelationshipRows": 0,
-        "isolated": true
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 50,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "graph-isolated",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "D0009",
-      "slug": "hypertension",
-      "entityType": "disease",
-      "title": "Hypertension",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 0,
-        "duplicateRelationshipRows": 0,
-        "brokenRelationshipRows": 0,
-        "isolated": true
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 50,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "graph-isolated",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "D0010",
-      "slug": "diabetes-mellitus",
-      "entityType": "disease",
-      "title": "Diabetes Mellitus",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
         "allReferencesResolvable": true,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
@@ -4368,61 +4200,6 @@
       }
     },
     {
-      "entityId": "D0011",
-      "slug": "hypothyroidism",
-      "entityType": "disease",
-      "title": "Hypothyroidism",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 3,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 10,
-        "duplicateRelationshipRows": 0,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 40,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
       "entityId": "D0012",
       "slug": "hyperthyroidism",
       "entityType": "disease",
@@ -4458,61 +4235,6 @@
       "graph": {
         "uniqueConnectionCount": 8,
         "duplicateRelationshipRows": 0,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 40,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "D0051",
-      "slug": "anemia",
-      "entityType": "disease",
-      "title": "Anemia",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 90,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "a comprehensive clinical overview of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 3,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 6,
-        "duplicateRelationshipRows": 6,
         "brokenRelationshipRows": 0,
         "isolated": false
       },
@@ -13289,6 +13011,165 @@
       }
     },
     {
+      "entityId": "D0005",
+      "slug": "allergic-rhinitis",
+      "entityType": "disease",
+      "title": "Allergic Rhinitis",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Consensus-Guidance",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 90,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 4,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 0,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": true
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 30,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "graph-isolated",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "D0009",
+      "slug": "hypertension",
+      "entityType": "disease",
+      "title": "Hypertension (High Blood Pressure)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Consensus-Guidance",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 90,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 4,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 0,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": true
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 30,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "graph-isolated",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "D0010",
+      "slug": "diabetes-mellitus",
+      "entityType": "disease",
+      "title": "Diabetes Mellitus",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Consensus-Guidance",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 90,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 4,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 0,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": true
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 30,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "graph-isolated",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
       "entityId": "R0003",
       "slug": "lycopodium",
       "entityType": "remedy",
@@ -15868,6 +15749,110 @@
       "graph": {
         "uniqueConnectionCount": 3,
         "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "D0011",
+      "slug": "hypothyroidism",
+      "entityType": "disease",
+      "title": "Hypothyroidism",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Consensus-Guidance",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 90,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 4,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 10,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "D0051",
+      "slug": "anemia",
+      "entityType": "disease",
+      "title": "Anemia",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Consensus-Guidance",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 90,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 4,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 6,
+        "duplicateRelationshipRows": 6,
         "brokenRelationshipRows": 0,
         "isolated": false
       },
