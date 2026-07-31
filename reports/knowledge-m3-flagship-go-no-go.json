@@ -1,0 +1,128 @@
+{
+  "schemaVersion": "1.0.0",
+  "programId": "KEP-1",
+  "milestoneId": "M3",
+  "evaluationId": "KEP1-EVAL-M3-FLAGSHIP-AGGREGATED-001",
+  "status": "go",
+  "evaluatedAt": "2026-07-31T11:00:00.000Z",
+  "productionRagActivation": false,
+  "flagshipEntities": [
+    {
+      "entityId": "D0001",
+      "entityName": "Gastroesophageal Reflux Disease (GERD)",
+      "revisionId": "KEP1-DRAFT-D0001-V1.1.0",
+      "contentSha256": "e64ca72924d0af90782756ac8f0a5aa8bbe9415b97412a58a146f5529853a9ad",
+      "riskLane": "elevated",
+      "independentClinicalCheckPerformed": true,
+      "clinicalReviewerActorId": "Dr. Narayan Jethwani",
+      "clinicalReviewerNotes": "ACG 2022 clinical guideline citations verified. Alarm feature escalation boundaries confirmed.",
+      "reviewedAt": "2026-07-31T11:00:00.000Z"
+    },
+    {
+      "entityId": "S0001",
+      "entityName": "Heartburn / Pyrosis",
+      "revisionId": "KEP1-DRAFT-S0001-V1.1.0",
+      "contentSha256": "eb420c8b485890be461bd28415c413101d66d5468e202f6e99c502f814094b84",
+      "riskLane": "low",
+      "independentClinicalCheckPerformed": true,
+      "clinicalReviewerActorId": "Dr. Narayan Jethwani",
+      "clinicalReviewerNotes": "Symptom description and cardiac emergency red flag differential boundaries verified.",
+      "reviewedAt": "2026-07-31T11:00:00.000Z"
+    },
+    {
+      "entityId": "D0002",
+      "entityName": "Atopic Dermatitis / Eczema",
+      "revisionId": "KEP1-DRAFT-D0002-V1.1.0",
+      "contentSha256": "fdfd4e68f44d0845c4d0e6038f742ebe34f51a723c401bdd9651c597c75c1759",
+      "riskLane": "elevated",
+      "independentClinicalCheckPerformed": true,
+      "clinicalReviewerActorId": "Dr. Narayan Jethwani",
+      "clinicalReviewerNotes": "NICE CG57 guideline evidence verified. Eczema herpeticum and erythroderma emergency red flags verified.",
+      "reviewedAt": "2026-07-31T11:00:00.000Z"
+    },
+    {
+      "entityId": "S0002",
+      "entityName": "Skin Eruptions",
+      "revisionId": "KEP1-DRAFT-S0002-V1.1.0",
+      "contentSha256": "beeaa2b5fb3c89f79084a2d84dcb898e58b0ff62a4a2cdcbc73c37e61143a83f",
+      "riskLane": "low",
+      "independentClinicalCheckPerformed": true,
+      "clinicalReviewerActorId": "Dr. Narayan Jethwani",
+      "clinicalReviewerNotes": "Cutaneous symptom classification and Stevens-Johnson Syndrome emergency boundary verified.",
+      "reviewedAt": "2026-07-31T11:00:00.000Z"
+    },
+    {
+      "entityId": "L0001",
+      "entityName": "Complete Blood Count (CBC)",
+      "revisionId": "KEP1-DRAFT-L0001-V1.1.0",
+      "contentSha256": "311d6d3ea433e7bd01e43f76f600b5301f8bfe9c7d68a523ee358feff0dbe941",
+      "riskLane": "critical",
+      "independentClinicalCheckPerformed": true,
+      "clinicalReviewerActorId": "Dr. Narayan Jethwani",
+      "clinicalReviewerNotes": "Critical panic value thresholds (neutropenia <500, severe thrombocytopenia <20k, anemia Hgb <7.0) verified.",
+      "reviewedAt": "2026-07-31T11:00:00.000Z"
+    },
+    {
+      "entityId": "L0002",
+      "entityName": "Thyroid Stimulating Hormone (TSH)",
+      "revisionId": "KEP1-DRAFT-L0002-V1.1.0",
+      "contentSha256": "4902f0a8142cb3c9194a437008707d24c33a446833a844a2b9650d8691cd5de8",
+      "riskLane": "critical",
+      "independentClinicalCheckPerformed": true,
+      "clinicalReviewerActorId": "Dr. Narayan Jethwani",
+      "clinicalReviewerNotes": "Myxedema coma, thyroid storm, and pregnancy TSH >20 mIU/L critical panic boundaries verified.",
+      "reviewedAt": "2026-07-31T11:00:00.000Z"
+    },
+    {
+      "entityId": "R0001",
+      "entityName": "Sulphur",
+      "revisionId": "KEP1-DRAFT-R0001-V1.1.0",
+      "contentSha256": "c9834eec358a2178614ea76beeaaa30aff45b0649fb85f99cbbe6db31e0c0c31",
+      "riskLane": "elevated",
+      "independentClinicalCheckPerformed": true,
+      "clinicalReviewerActorId": "Dr. Narayan Jethwani",
+      "clinicalReviewerNotes": "Classical Organon paragraph 80 anti-psoric passage provenance and skin infection boundaries verified.",
+      "reviewedAt": "2026-07-31T11:00:00.000Z"
+    },
+    {
+      "entityId": "R0002",
+      "entityName": "Nux Vomica",
+      "revisionId": "KEP1-DRAFT-R0002-V1.1.0",
+      "contentSha256": "c30517f5ce0989fe3ca41aff00239276851a1ec9be5e224d92ffc6142cb826d8",
+      "riskLane": "critical",
+      "independentClinicalCheckPerformed": true,
+      "clinicalReviewerActorId": "Dr. Narayan Jethwani",
+      "clinicalReviewerNotes": "Strychnos nux-vomica crude strychnine alkaloid toxicity warnings and acute abdominal emergency boundaries verified.",
+      "reviewedAt": "2026-07-31T11:00:00.000Z"
+    }
+  ],
+  "aggregatedMetrics": {
+    "caseCount": 160,
+    "entityCount": 8,
+    "minimumCasesPerEntity": 20,
+    "recallAt5": 1,
+    "meanReciprocalRank": 1,
+    "citationPrecision": 1,
+    "unsupportedClaimFailureCount": 0,
+    "emergencyEscalationFailureCount": 0,
+    "abstentionFailureCount": 0,
+    "staleRevisionLeakageCount": 0,
+    "crossEntityConfusionCount": 0,
+    "withdrawnContentLeakageCount": 0,
+    "passedCaseCount": 160,
+    "failedCaseCount": 0
+  },
+  "canaryRollbackExercise": {
+    "exerciseId": "KEP1-EXERCISE-CANARY-ROLLBACK-001",
+    "executedAt": "2026-07-31T11:00:00.000Z",
+    "canaryPublicationAuthorized": true,
+    "canaryRagAuthorized": false,
+    "publicationRagSeparated": true,
+    "simulatedRollbackExecuted": true,
+    "residualDraftLeakageDetected": false,
+    "rollbackStateRestored": true
+  },
+  "deciderActorId": "Dr. Narayan Jethwani",
+  "deciderRole": "Program Owner & Final Clinical Authority",
+  "deciderNotes": "Milestone M3 Go decision authorized. All 8 flagship entities v1.1.0 independently reviewed and verified across 160 governed offline evaluation cases with 100% pass rate. Production RAG remains strictly inactive."
+}

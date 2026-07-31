@@ -9,7 +9,7 @@
     {
       "entityId": "D0002",
       "version": "1.1.0",
-      "revisionHash": "cff58d14f63d9d65629778154b17d5073c98bdbef1a93266a74eab24ddb5d139",
+      "revisionHash": "fdfd4e68f44d0845c4d0e6038f742ebe34f51a723c401bdd9651c597c75c1759",
       "materialClaimCount": 8,
       "citationIds": [
         "CIT-0019",
@@ -22,7 +22,7 @@
     {
       "entityId": "S0002",
       "version": "1.1.0",
-      "revisionHash": "06a6ba021ed03fe96668d6c424e8d3809be922523f815d9a8afd7fb6eb9d3831",
+      "revisionHash": "beeaa2b5fb3c89f79084a2d84dcb898e58b0ff62a4a2cdcbc73c37e61143a83f",
       "materialClaimCount": 6,
       "citationIds": [
         "CIT-0019",
@@ -252,5 +252,5 @@
     "approvedAt": "2026-07-30",
     "decisionReference": "PR-m2-eczema-skin-eruptions-authorization"
   },
-  "packageHash": "e6d1161df3a4fa369519154ee5c84fd378d8c14efacd7e303370c2867e0e1707"
+  "packageHash": "a3b81625e14bab77518fe05a51898aa853aefcc7bf6f1c621a56ad5769cb8f18"
 }
