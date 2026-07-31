@@ -6,48 +6,67 @@ export const T4LabTest: KnowledgeEntity = {
   entityType: "lab-test",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-07-31T19:50:00Z",
+    reviewed: "2026-07-31T19:50:00Z"
   },
   title: {
-    en: "T4",
-    hi: "T4",
-    gu: "T4",
-    mr: "T4",
-    es: "T4",
-    ar: "T4"
+    en: "Thyroxine (T4 / FT4)",
+    hi: "थायरोक्सिन (T4 / FT4)",
+    gu: "થાઇરોક્સિન (T4 / FT4)",
+    mr: "थायरोक्सिन (T4 / FT4)",
+    es: "Tiroxina (T4 Libre / Total)",
+    ar: "الثيروكسين (T4)"
   },
   summary: {
-    en: "Clinical purpose, normal range, and interpretation of T4 lab results.",
-    hi: "T4 प्रयोगशाला परीक्षण विवरण.",
-    gu: "T4 લેબોરેટરી ટેસ્ટ પરિચય.",
-    mr: "T4 लॅब टेस्ट माहिती.",
-    es: "Propósito e interpretación de la prueba de laboratorio T4.",
-    ar: "الغرض السريري وتفسير نتائج اختبار T4."
+    en: "Clinical interpretation, reference ranges, and thyroid status evaluation for Thyroxine (T4/FT4) under ATA 2017 standards.",
+    hi: "T4 थायराइड लैब टेस्ट की नैदानिक समझ और संदर्भ सीमाएँ.",
+    gu: "T4 ટેસ્ટની સમજણ અને રેફરન્સ રેન્જ.",
+    mr: "T4 चाचणीची माहिती आणि संदर्भ मर्यादा.",
+    es: "Interpretación clínica y evaluación tiroidea de la tiroxina (T4).",
+    ar: "التفسير السريري والنطاق المرجعي لهرمون T4."
   },
   content: {
-  "overview": "T4: A general laboratory screening parameter or basic metabolic marker used to assess baseline physiological homeostasis and metabolic efficiency.",
-  "normalRange": "ESR: < 20 mm/hr; Blood Glucose: 70-99 mg/dL; Serum Creatinine: 0.6-1.2 mg/dL.",
-  "highValues": [
-    "Systemic inflammatory baseline (high ESR)",
-    "Metabolic intolerance or early diabetes (high glucose)",
-    "Impaired kidney function (high creatinine)"
-  ],
-  "lowValues": [
-    "Anemia or low muscle mass",
-    "Hypoglycemia",
-    "Nutritional deficiencies"
-  ],
-  "clinicalInterpretation": "T4 evaluation: Elevated inflammatory markers (ESR, CRP) suggest systemic activity needing further investigation. Blood glucose shifts require evaluation of insulin sensitivity and glycemic control.",
-  "references": [
-    "CIT-0004",
-    "CIT-0005",
-    "CIT-0006",
-    "CIT-0007",
-    "CIT-0008"
-  ],
+    overview: "Thyroxine (T4): The primary prohormone synthesized and secreted by the thyroid gland follicular cells, circulating mostly bound to thyroxine-binding globulin (TBG). Free T4 (FT4) represents the metabolically active, unbound fraction (0.03%).",
+    normalRange: "Free T4 (FT4): 0.8 - 1.8 ng/dL (10 - 23 pmol/L); Total T4: 4.5 - 11.2 mcg/dL (58 - 144 nmol/L).",
+    highValues: [
+      "Primary Hyperthyroidism (Graves' Disease, Toxic Nodular Goiter)",
+      "Subacute Granulomatous (de Quervain's) Thyroiditis (Release Phase)",
+      "Exogenous Levothyroxine Overdose or Pituitary TSH-Secreting Adenoma"
+    ],
+    lowValues: [
+      "Primary Hypothyroidism (Hashimoto's Thyroiditis, Post-Ablation)",
+      "Secondary / Central Hypothyroidism (Pituitary or Hypothalamic Failure)",
+      "Severe Myxedema Coma (Profound Low FT4 with Hypothermia and Altered Sensorium)"
+    ],
+    clinicalInterpretation: "Free T4 (FT4) combined with TSH is the primary diagnostic pair for thyroid disease; low FT4 with elevated TSH confirms primary hypothyroidism, while low FT4 with low/normal TSH indicates central hypothyroidism requiring pituitary imaging.",
+    references: [
+      "CIT-0068",
+      "CIT-0023"
+    ],
+    claimCitations: [
+      {
+        claimId: "CLM-L0011-001",
+        passage: "Free T4 (FT4) assay is the gold-standard measure for assessing peripheral thyroid hormone availability, avoiding TBG binding artifacts.",
+        citationIds: ["CIT-0068"]
+      },
+      {
+        claimId: "CLM-L0011-002",
+        passage: "Low FT4 combined with elevated serum TSH (>10 mIU/L) establishes primary overt hypothyroidism warranting Levothyroxine replacement.",
+        citationIds: ["CIT-0068"]
+      },
+      {
+        claimId: "CLM-L0011-003",
+        passage: "Profoundly low FT4 accompanied by hypothermia, hyponatremia, and altered mental status represents Myxedema Coma, a medical emergency requiring IV Levothyroxine and hydrocortisone.",
+        citationIds: ["CIT-0068"]
+      },
+      {
+        claimId: "CLM-L0011-004",
+        passage: "Homeopathic supportive care does not substitute for Levothyroxine hormone replacement in severe primary hypothyroidism or Myxedema Coma.",
+        citationIds: ["CIT-0023"]
+      }
+    ],
   "faqs": [
     {
       "question": "What is a constitutional remedy in homeopathy?",

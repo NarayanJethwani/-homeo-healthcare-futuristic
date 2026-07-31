@@ -6,50 +6,69 @@ export const DifficultySwallowingSymptom: KnowledgeEntity = {
   entityType: "symptom",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-07-31T19:50:00Z",
+    reviewed: "2026-07-31T19:50:00Z"
   },
   title: {
-    en: "Difficulty Swallowing",
-    hi: "Difficulty Swallowing",
-    gu: "Difficulty Swallowing",
-    mr: "Difficulty Swallowing",
-    es: "Difficulty Swallowing",
-    ar: "Difficulty Swallowing"
+    en: "Difficulty Swallowing (Dysphagia)",
+    hi: "निगलने में कठिनाई (Dysphagia)",
+    gu: "ગળવામાં તકલીફ (Dysphagia)",
+    mr: "गिळण्यास त्रास (Dysphagia)",
+    es: "Disfagia / Dificultad para Tragar (Dysphagia)",
+    ar: "صعوبة البلع (Dysphagia)"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Difficulty Swallowing.",
-    hi: "Difficulty Swallowing के लक्षण की नैदानिक समझ.",
-    gu: "Difficulty Swallowing ના લક્ષણ ની સમજણ.",
-    mr: "Difficulty Swallowing चे लक्षण आणि उपचार.",
-    es: "Definición clínica y significado de Difficulty Swallowing.",
-    ar: "التعريف السريري والأهمية لـ Difficulty Swallowing."
+    en: "Clinical triage, emergency differentiation, and supportive management of Difficulty Swallowing (Dysphagia) under ACG 2022 standards.",
+    hi: "निगलने में कठिनाई की नैदानिक समझ और आपातकालीन रेड फ्लैग्स.",
+    gu: "ગળવામાં તકલીફના લક્ષણ ની સમજણ અને ઇમરજન્સી ફ્લેગ્સ.",
+    mr: "गिळण्यास त्रासाचे लक्षण आणि तातडीचे रेड फ्लॅग्स.",
+    es: "Triaje clínico y señales de emergencia de la disfagia.",
+    ar: "التفرقة السريرية والعلامات التحذيرية لصعوبة البلع."
   },
   content: {
-  "definition": "Difficulty swallowing: A general physical symptom reflecting altered systemic vitality, sleep disruption, or thermal deregulation.",
-  "clinicalMeaning": "Represents a functional warning sign indicating that systemic auto-regulation is strained or compromised.",
-  "commonCauses": [
-    "Post-viral fatigue states",
-    "Chronic physical or psychological stress",
-    "Sleep deprivation or metabolic imbalances",
-    "Subclinical systemic congestion"
-  ],
-  "differentialDiagnosis": "Must be differentiated from primary thyroid disease, severe anemia, fibromyalgia, and major depressive disorder.",
-  "redFlags": [
-    "Sudden profound unexplained weight loss",
-    "Unremitting high fever unresponsive to standard care",
-    "Sudden localized numbness or severe weakness"
-  ],
-  "lifestyleAdvice": "Prioritize consistent sleep timing, consume a balanced whole-foods diet, practice mild relaxation exercises, and stay hydrated.",
-  "references": [
-    "CIT-0004",
-    "CIT-0005",
-    "CIT-0006",
-    "CIT-0007",
-    "CIT-0008"
-  ],
+    definition: "Difficulty Swallowing (Dysphagia): Impaired transit of liquid or solid boluses from the oral cavity into the stomach, classified into oropharyngeal (neuromuscular/structural) and esophageal (motility/obstructive) origins.",
+    clinicalMeaning: "Reflects esophageal stricture, eosinophilic esophagitis, achalasia, esophageal adenocarcinoma, or cranial nerve neuromuscular palsy requiring urgent endoscopic or barium evaluation.",
+    commonCauses: [
+      "Gastroesophageal Reflux Disease (GERD) Stricture or Eosinophilic Esophagitis",
+      "Esophageal Malignancy or Benign Web/Ring",
+      "Achalasia or Diffuse Esophageal Spasm",
+      "Stroke, Parkinson's, or Myasthenia Gravis (Oropharyngeal Dysphagia)"
+    ],
+    differentialDiagnosis: "Differentiate oropharyngeal transfer dysphagia (aspiration risk) from esophageal transport dysphagia, globus sensation, and odynophagia.",
+    redFlags: [
+      "Complete inability to swallow liquids or saliva with bolus impaction (Esophageal Impaction)",
+      "Progressive solid-to-liquid dysphagia with unintended weight loss (Esophageal Cancer)",
+      "Severe chest/neck pain after vomiting with subcutaneous emphysema (Esophageal Perforation / Boerhaave)"
+    ],
+    lifestyleAdvice: "Eat small, well-chewed food boluses in an upright posture; seek immediate endoscopic evaluation for complete food impaction or progressive dysphagia.",
+    references: [
+      "CIT-0064",
+      "CIT-0023"
+    ],
+    claimCitations: [
+      {
+        claimId: "CLM-S0043-001",
+        passage: "Acute complete inability to swallow liquids or saliva indicates esophageal food impaction requiring emergency endoscopic bolus removal.",
+        citationIds: ["CIT-0064"]
+      },
+      {
+        claimId: "CLM-S0043-002",
+        passage: "Progressive solid food dysphagia advancing to liquid dysphagia associated with weight loss requires urgent upper endoscopy to exclude esophageal adenocarcinoma.",
+        citationIds: ["CIT-0064"]
+      },
+      {
+        claimId: "CLM-S0043-003",
+        passage: "Sudden retrosternal pain and subcutaneous emphysema following emesis indicates transmural esophageal rupture (Boerhaave syndrome) demanding surgical emergency care.",
+        citationIds: ["CIT-0064"]
+      },
+      {
+        claimId: "CLM-S0043-004",
+        passage: "Homeopathic supportive care does not replace diagnostic endoscopy, esophageal manometry, or emergency airway protection in severe dysphagia.",
+        citationIds: ["CIT-0023"]
+      }
+    ],
   "faqs": [
     {
       "question": "What is a constitutional remedy in homeopathy?",

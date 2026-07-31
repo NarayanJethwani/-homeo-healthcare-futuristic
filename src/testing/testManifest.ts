@@ -1393,5 +1393,12 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "ownerArea": "knowledge-expansion",
     "testLayer": "governance",
     "reason": "M6 KEP-4 Disease Coverage Wave 2 (GERD, IBS, Bronchitis, Tonsillitis, Pharyngitis, Dysmenorrhea, Menopause, Alopecia Areata, Vitiligo, Hemorrhoids) v1.1.0 upgrades, 50 draft graph proposals, 100-case offline evaluation, and human wave promotion authorization boundary"
+  },
+  {
+    "path": "tests/knowledgeKEP4SymptomsLabs.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "governance",
+    "reason": "M7 KEP-4 High-Risk Symptoms & Laboratory Tests (10 high-risk symptoms & 8 lab tests) v1.1.0 upgrades, 90 draft graph proposals, 180-case offline evaluation, and human wave promotion authorization boundary"
   }
 ];

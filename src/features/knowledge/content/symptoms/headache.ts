@@ -6,10 +6,10 @@ export const HeadacheSymptom: KnowledgeEntity = {
   entityType: "symptom",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-06-30T12:00:00Z",
-    updated: "2026-06-30T12:00:00Z",
-    reviewed: "2026-06-30T12:00:00Z"
+    updated: "2026-07-31T19:50:00Z",
+    reviewed: "2026-07-31T19:50:00Z"
   },
   title: {
     en: "Headache (Cephalgia)",
@@ -20,33 +20,55 @@ export const HeadacheSymptom: KnowledgeEntity = {
     ar: "الصداع (Headache)"
   },
   summary: {
-    en: "Pain or discomfort in the head, scalp, or neck, originating from tension, vascular irritation, or neurological pathways.",
-    hi: "सिर, खोपड़ी या गर्दन में दर्द या बेचैनी, जो तनाव, संवहनी जलन या न्यूरोलॉजिकल कारणों से उत्पन्न होती है.",
-    gu: "માથામાં કે ગળાના ભાગમાં દુખાવો કે અસ્વસ્થતા, જે તાણ કે ન્યુરોલોજીકલ કારણોસર થાય છે.",
-    mr: "डोके, कवटी किंवा मान या भागातील वेदना, ज्या मानसिक ताण किंवा रक्तवाहिन्यांच्या उत्तेजनामुळे होतात.",
-    es: "Dolor o malestar en la cabeza, el cuero cabelludo o el cuello.",
-    ar: "ألم أو انزعاج في الرأس أو فروة الرأس أو الرقبة."
+    en: "Clinical triage, neuroimaging criteria, and supportive management of Headache under AAN 2021 standards.",
+    hi: "सिरदर्द की नैदानिक समझ और आपातकालीन खतरे के संकेत.",
+    gu: "માથાના દુખાવાની સમજણ અને ઇમરજન્સી ફ્લેગ્સ.",
+    mr: "डोकेदुखीचे लक्षण आणि तातडीचे रेड फ्लॅग्स.",
+    es: "Triaje clínico y neuroimagen en cefaleas según las guías AAN 2021.",
+    ar: "التفرقة السريرية والعلامات التحذيرية للصداع."
   },
   content: {
-  "definition": "Headache: A localized pain, sensory alteration, or mobility limitation originating from nerves, muscles, joints, or tendons.",
-  "clinicalMeaning": "Replects nociceptive pathway stimulation, localized tissue injury, or nerve root compression resulting in altered sensation.",
-  "commonCauses": [
-    "Mechanical strain or postural imbalance",
-    "Peripheral nerve compression (e.g., sciatica, carpal tunnel)",
-    "Osteoarthritis or joint degeneration",
-    "Neurogenic inflammation"
-  ],
-  "differentialDiagnosis": "Differentiate from systemic autoimmune joint disease, peripheral vascular disease, and referred visceral pain.",
-  "redFlags": [
-    "Loss of bladder or bowel control (Cauda Equina Syndrome)",
-    "Sudden onset of limb weakness or foot drop",
-    "Severe joint swelling with high fever indicating septic arthritis"
-  ],
-  "lifestyleAdvice": "Implement regular stretching, adjust desk ergonomics, engage in low-impact walking, and stay hydrated to maintain joint lubrication.",
-  "references": [
-    "CIT-0011",
-    "CIT-0022"
-  ],
+    definition: "Headache (Cephalgia): Pain perceived in the head or upper neck arising from pain-sensitive cranial structures (dura mater, venous sinuses, meningeal arteries, trigeminal and cervical nerve fibers).",
+    clinicalMeaning: "Reflects benign primary headache disorders (migraine, tension-type, cluster) or serious secondary etiologies (subarachnoid hemorrhage, meningitis, intracranial mass, temporal arteritis).",
+    commonCauses: [
+      "Tension-Type Headache or Migraine with/without Aura",
+      "Cluster Headache or Sinus/Cervicogenic Headache",
+      "Subarachnoid Hemorrhage (Thunderclap Headache)",
+      "Bacterial/Viral Meningitis or Giant Cell (Temporal) Arteritis"
+    ],
+    differentialDiagnosis: "Differentiate primary migraine and tension-type headache from secondary life-threatening thunderclap headache, intracranial tumor, and meningitis.",
+    redFlags: [
+      "Sudden explosive 'thunderclap' onset reaching peak intensity within seconds (Subarachnoid Hemorrhage)",
+      "Headache with fever, stiff neck, photophobia, and altered consciousness (Meningitis)",
+      "New onset temporal headache in patients >50 years with jaw claudication or visual loss (Temporal Arteritis)"
+    ],
+    lifestyleAdvice: "Maintain regular sleep hygiene, hydration, and stress reduction; seek immediate emergency CT head / LP for sudden thunderclap headache or fever with neck stiffness.",
+    references: [
+      "CIT-0066",
+      "CIT-0023"
+    ],
+    claimCitations: [
+      {
+        claimId: "CLM-S0003-001",
+        passage: "Sudden explosive headache reaching peak intensity in less than one minute (thunderclap headache) demands immediate non-contrast CT brain scan and lumbar puncture for subarachnoid hemorrhage.",
+        citationIds: ["CIT-0066"]
+      },
+      {
+        claimId: "CLM-S0003-002",
+        passage: "Headache accompanied by fever, nuchal rigidity, and clouding of sensorium requires urgent cerebrospinal fluid analysis for meningitis.",
+        citationIds: ["CIT-0066"]
+      },
+      {
+        claimId: "CLM-S0003-003",
+        passage: "New-onset headache in an individual older than 50 accompanied by scalp tenderness and jaw claudication requires ESR testing and temporal artery biopsy.",
+        citationIds: ["CIT-0066"]
+      },
+      {
+        claimId: "CLM-S0003-004",
+        passage: "Homeopathic supportive care does not replace urgent neuroimaging, lumbar puncture, or emergency vascular evaluation in secondary severe headache.",
+        citationIds: ["CIT-0023"]
+      }
+    ],
   "faqs": [
     {
       "question": "What causes muscle stiffness in the morning?",

@@ -6,48 +6,69 @@ export const ProductiveCoughSymptom: KnowledgeEntity = {
   entityType: "symptom",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-07-31T19:50:00Z",
+    reviewed: "2026-07-31T19:50:00Z"
   },
   title: {
-    en: "Productive Cough",
-    hi: "Productive Cough",
-    gu: "Productive Cough",
-    mr: "Productive Cough",
-    es: "Productive Cough",
-    ar: "Productive Cough"
+    en: "Productive Cough (Wet Cough)",
+    hi: "कफ वाली खांसी (Productive Cough)",
+    gu: "કફવાળી ખાંસી (Productive Cough)",
+    mr: "कफ असणारा खोकला (Productive Cough)",
+    es: "Tos Productiva / Tos con Flemas (Productive Cough)",
+    ar: "السعال المنتجة (Productive Cough)"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Productive Cough.",
-    hi: "Productive Cough के लक्षण की नैदानिक समझ.",
-    gu: "Productive Cough ના લક્ષણ ની સમજણ.",
-    mr: "Productive Cough चे लक्षण आणि उपचार.",
-    es: "Definición clínica y significado de Productive Cough.",
-    ar: "التعريف السريري والأهمية لـ Productive Cough."
+    en: "Clinical triage, sputum evaluation, and respiratory management of Productive Cough under ERS 2020 standards.",
+    hi: "कफ वाली खांसी की नैदानिक समझ और आपातकालीन खतरे के संकेत.",
+    gu: "કફવાળી ખાંસીના લક્ષણ ની સમજણ અને ઇમરજન્સી ફ્લેગ્સ.",
+    mr: "कफ असणाऱ्या खोकल्याचे लक्षण आणि तातडीचे रेड फ्लॅग्स.",
+    es: "Triaje clínico y evaluación del esputo en tos productiva.",
+    ar: "التفرقة السريرية والعلامات التحذيرية للسعال المنتج."
   },
   content: {
-  "definition": "Productive cough: A subjective or objective upper or lower airway manifestation indicating mucosal congestion, irritation, or bronchospasm.",
-  "clinicalMeaning": "Replects airway smooth muscle contraction, goblet cell hypersecretion, or trigeminal nerve irritation in the nasal mucosa.",
-  "commonCauses": [
-    "Allergic rhinitis or seasonal hay fever",
-    "Bronchial asthma or hyper-reactivity",
-    "Sinusitis or post-nasal drip",
-    "Viral respiratory tract infections"
-  ],
-  "differentialDiagnosis": "Exclude foreign body aspiration, vocal cord paralysis, post-viral airway hyper-responsiveness, and cardiac asthma.",
-  "redFlags": [
-    "Severe respiratory distress with accessory muscle use",
-    "Stridor, wheezing that suddenly stops (silent chest), or cyanosis",
-    "High fever with foul-smelling nasal discharge and facial swelling"
-  ],
-  "lifestyleAdvice": "Keep windows closed during high pollen seasons, wash bedding weekly at 60°C, and stay hydrated to thin mucus secretions.",
-  "references": [
-    "CIT-0020",
-    "CIT-0021",
-    "CIT-0022"
-  ],
+    definition: "Productive Cough: A respiratory defense reflex characterized by the expulsion of tracheobronchial mucus or purulent secretions from the lower respiratory tract.",
+    clinicalMeaning: "Reflects bronchial mucosal hypersecretion, bacterial lower respiratory tract infection, bronchiectasis, or chronic bronchitis requiring sputum evaluation and chest imaging.",
+    commonCauses: [
+      "Acute Bacterial Bronchitis or Community-Acquired Pneumonia",
+      "Chronic Obstructive Pulmonary Disease (COPD) Exacerbation",
+      "Bronchiectasis or Pulmonary Tuberculosis",
+      "Congestive Heart Failure (Pink Frothy Sputum / Pulmonary Edema)"
+    ],
+    differentialDiagnosis: "Differentiate acute bronchitis from pneumonia, COPD exacerbation, bronchiectasis, pulmonary tuberculosis, and lung malignancy.",
+    redFlags: [
+      "Hemoptysis (coughing up frank blood or rust-colored sputum)",
+      "High fever with chest pain, tachypnea, and bronchial breath sounds (Pneumonia)",
+      "Night sweats, unremitting weight loss, and chronic productive cough >3 weeks (Tuberculosis)"
+    ],
+    lifestyleAdvice: "Maintain oral hydration to thin secretions, use steam inhalation; seek immediate chest X-ray and medical care for hemoptysis, persistent high fever, or dyspnea.",
+    references: [
+      "CIT-0055",
+      "CIT-0023"
+    ],
+    claimCitations: [
+      {
+        claimId: "CLM-S0009-001",
+        passage: "Hemoptysis or rust-colored sputum demands immediate chest radiography and clinical evaluation for pulmonary infection, infarction, or malignancy.",
+        citationIds: ["CIT-0055"]
+      },
+      {
+        claimId: "CLM-S0009-002",
+        passage: "High fever accompanied by purulent sputum, focal pleuritic pain, and tachypnea indicates community-acquired pneumonia requiring antibiotic stewardship.",
+        citationIds: ["CIT-0055"]
+      },
+      {
+        claimId: "CLM-S0009-003",
+        passage: "Chronic productive cough lasting over 3 weeks accompanied by night sweats requires sputum acid-fast bacilli (AFB) testing for tuberculosis.",
+        citationIds: ["CIT-0055"]
+      },
+      {
+        claimId: "CLM-S0009-004",
+        passage: "Homeopathic supportive remedies do not replace antibiotics for bacterial pneumonia or emergency management of massive hemoptysis.",
+        citationIds: ["CIT-0023"]
+      }
+    ],
   "faqs": [
     {
       "question": "What is the difference between allergic rhinitis and a common cold?",

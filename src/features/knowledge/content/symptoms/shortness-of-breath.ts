@@ -6,48 +6,69 @@ export const ShortnessofBreathSymptom: KnowledgeEntity = {
   entityType: "symptom",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-07-31T19:50:00Z",
+    reviewed: "2026-07-31T19:50:00Z"
   },
   title: {
-    en: "Shortness of Breath",
-    hi: "Shortness of Breath",
-    gu: "Shortness of Breath",
-    mr: "Shortness of Breath",
-    es: "Shortness of Breath",
-    ar: "Shortness of Breath"
+    en: "Shortness of Breath (Dyspnea)",
+    hi: "सांस फूलना (Shortness of Breath)",
+    gu: "શ્વાસ ચડવો (Shortness of Breath)",
+    mr: "श्वास घेण्यास त्रास (Shortness of Breath)",
+    es: "Disnea / Dificultad Respiratoria (Shortness of Breath)",
+    ar: "ضيق التنفس (Shortness of Breath)"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Shortness of Breath.",
-    hi: "Shortness of Breath के लक्षण की नैदानिक समझ.",
-    gu: "Shortness of Breath ના લક્ષણ ની સમજણ.",
-    mr: "Shortness of Breath चे लक्षण आणि उपचार.",
-    es: "Definición clínica y significado de Shortness of Breath.",
-    ar: "التعريف السريري والأهمية لـ Shortness of Breath."
+    en: "Clinical triage, emergency differentiation, and supportive management of Shortness of Breath (Dyspnea) under ATS/ERS 2020 standards.",
+    hi: "सांस फूलने के लक्षण की नैदानिक समझ और आपातकालीन खतरे के संकेत.",
+    gu: "શ્વાસ ચડવાના લક્ષણ ની સમજણ અને ઇમરજન્સી ફ્લેગ્સ.",
+    mr: "श्वास घेण्यास त्रासाचे लक्षण आणि तातडीचे रेड फ्लॅग्स.",
+    es: "Triaje clínico y señales de emergencia de la disnea agudas.",
+    ar: "التفرقة السريرية والعلامات التحذيرية لضيق التنفس."
   },
   content: {
-  "definition": "Shortness of breath: A subjective or objective upper or lower airway manifestation indicating mucosal congestion, irritation, or bronchospasm.",
-  "clinicalMeaning": "Replects airway smooth muscle contraction, goblet cell hypersecretion, or trigeminal nerve irritation in the nasal mucosa.",
-  "commonCauses": [
-    "Allergic rhinitis or seasonal hay fever",
-    "Bronchial asthma or hyper-reactivity",
-    "Sinusitis or post-nasal drip",
-    "Viral respiratory tract infections"
-  ],
-  "differentialDiagnosis": "Exclude foreign body aspiration, vocal cord paralysis, post-viral airway hyper-responsiveness, and cardiac asthma.",
-  "redFlags": [
-    "Severe respiratory distress with accessory muscle use",
-    "Stridor, wheezing that suddenly stops (silent chest), or cyanosis",
-    "High fever with foul-smelling nasal discharge and facial swelling"
-  ],
-  "lifestyleAdvice": "Keep windows closed during high pollen seasons, wash bedding weekly at 60°C, and stay hydrated to thin mucus secretions.",
-  "references": [
-    "CIT-0020",
-    "CIT-0021",
-    "CIT-0022"
-  ],
+    definition: "Shortness of Breath (Dyspnea): A subjective sensation of breathing discomfort that varies in intensity, originating from mechanical, metabolic, or gas exchange disturbances in the cardiopulmonary system.",
+    clinicalMeaning: "Reflects hypoxemia, hypercapnia, bronchospasm, alveolar flooding, or impaired respiratory muscle function requiring urgent pulse oximetry and clinical triage.",
+    commonCauses: [
+      "Bronchial Asthma Acute Exacerbation or COPD",
+      "Acute Pulmonary Embolism or Pneumothorax",
+      "Acute Decompensated Heart Failure or Pulmonary Edema",
+      "Pneumonia, Severe Anemia, or Anaphylaxis"
+    ],
+    differentialDiagnosis: "Differentiate acute upper airway obstruction, bronchial asthma, COPD exacerbation, acute heart failure, pulmonary embolism, and panic disorder.",
+    redFlags: [
+      "Severe resting dyspnea with accessory muscle use, cyanosis, or silent chest (Respiratory Failure)",
+      "Sudden unilateral pleuritic chest pain and hyper-resonance (Tension Pneumothorax)",
+      "SpO2 < 90% on room air, lethargy, or altered mental status"
+    ],
+    lifestyleAdvice: "Immediate emergency medical evaluation and supplemental oxygenation for acute or worsening dyspnea; avoid exertion until cardiopulmonary stability is confirmed.",
+    references: [
+      "CIT-0063",
+      "CIT-0023"
+    ],
+    claimCitations: [
+      {
+        claimId: "CLM-S0034-001",
+        passage: "Acute resting dyspnea with cyanosis, silent chest, or accessory muscle work indicates impending respiratory failure requiring emergency oxygen and mechanical ventilation support.",
+        citationIds: ["CIT-0063"]
+      },
+      {
+        claimId: "CLM-S0034-002",
+        passage: "Sudden onset of dyspnea with unilateral absent breath sounds and pleuritic pain suggests acute tension pneumothorax or massive pulmonary embolism.",
+        citationIds: ["CIT-0063"]
+      },
+      {
+        claimId: "CLM-S0034-003",
+        passage: "Oxygen saturation below 90% on room air accompanied by confusion requires urgent emergency department transport.",
+        citationIds: ["CIT-0063"]
+      },
+      {
+        claimId: "CLM-S0034-004",
+        passage: "Homeopathic supportive care does not replace emergency oxygenation, pulse oximetry, or emergency airway stabilization in acute dyspnea.",
+        citationIds: ["CIT-0023"]
+      }
+    ],
   "faqs": [
     {
       "question": "What is the difference between allergic rhinitis and a common cold?",

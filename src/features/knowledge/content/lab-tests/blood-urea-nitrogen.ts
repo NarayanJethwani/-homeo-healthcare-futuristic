@@ -6,48 +6,67 @@ export const BloodUreaNitrogenLabTest: KnowledgeEntity = {
   entityType: "lab-test",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-07-31T19:50:00Z",
+    reviewed: "2026-07-31T19:50:00Z"
   },
   title: {
-    en: "Blood Urea Nitrogen",
-    hi: "Blood Urea Nitrogen",
-    gu: "Blood Urea Nitrogen",
-    mr: "Blood Urea Nitrogen",
-    es: "Blood Urea Nitrogen",
-    ar: "Blood Urea Nitrogen"
+    en: "Blood Urea Nitrogen (BUN)",
+    hi: "ब्लड यूरिया नाइट्रोजन (BUN)",
+    gu: "બ્લડ યુરિયા નાઇટ્રોજન (BUN)",
+    mr: "ब्लड युरिया नायट्रोजन (BUN)",
+    es: "Nitrógeno Ureico en Sangre (BUN)",
+    ar: "نيتروجين يوريا الدم (BUN)"
   },
   summary: {
-    en: "Clinical purpose, normal range, and interpretation of Blood Urea Nitrogen lab results.",
-    hi: "Blood Urea Nitrogen प्रयोगशाला परीक्षण विवरण.",
-    gu: "Blood Urea Nitrogen લેબોરેટરી ટેસ્ટ પરિચય.",
-    mr: "Blood Urea Nitrogen लॅब टेस्ट माहिती.",
-    es: "Propósito e interpretación de la prueba de laboratorio Blood Urea Nitrogen.",
-    ar: "الغرض السريري وتفسير نتائج اختبار Blood Urea Nitrogen."
+    en: "Clinical interpretation, reference ranges, and BUN/Creatinine ratio evaluation under KDIGO 2024 standards.",
+    hi: "BUN लैब टेस्ट की नैदानिक समझ और संदर्भ सीमाएँ.",
+    gu: "BUN ટેસ્ટની સમજણ અને રેફરન્સ રેન્જ.",
+    mr: "BUN चाचणीची माहिती आणि संदर्भ मर्यादा.",
+    es: "Interpretación clínica y evaluación del nitrógeno ureico sérico según KDIGO 2024.",
+    ar: "التفسير السريري والنطاق المرجعي لليوريا في الدم."
   },
   content: {
-  "overview": "BLOOD UREA NITROGEN: A general laboratory screening parameter or basic metabolic marker used to assess baseline physiological homeostasis and metabolic efficiency.",
-  "normalRange": "ESR: < 20 mm/hr; Blood Glucose: 70-99 mg/dL; Serum Creatinine: 0.6-1.2 mg/dL.",
-  "highValues": [
-    "Systemic inflammatory baseline (high ESR)",
-    "Metabolic intolerance or early diabetes (high glucose)",
-    "Impaired kidney function (high creatinine)"
-  ],
-  "lowValues": [
-    "Anemia or low muscle mass",
-    "Hypoglycemia",
-    "Nutritional deficiencies"
-  ],
-  "clinicalInterpretation": "BLOOD UREA NITROGEN evaluation: Elevated inflammatory markers (ESR, CRP) suggest systemic activity needing further investigation. Blood glucose shifts require evaluation of insulin sensitivity and glycemic control.",
-  "references": [
-    "CIT-0004",
-    "CIT-0005",
-    "CIT-0006",
-    "CIT-0007",
-    "CIT-0008"
-  ],
+    overview: "Blood Urea Nitrogen (BUN): Biochemical measurement of nitrogen in the form of urea, the primary waste product of hepatic protein catabolism, cleared by glomerular filtration and variable passive renal tubular reabsorption dependent on hydration state.",
+    normalRange: "Adults: 7 - 20 mg/dL (2.5 - 7.1 mmol/L); BUN/Creatinine Ratio: 10:1 to 20:1.",
+    highValues: [
+      "Prerenal Azotemia (BUN/Creatinine >20:1): Dehydration, Gastrointestinal Hemorrhage, High Protein Diet",
+      "Intrinsic Renal Failure (BUN/Creatinine 10:1 to 15:1): Glomerulonephritis, Acute Tubular Necrosis",
+      "Postrenal Azotemia (BUN/Creatinine >20:1): Urinary Tract Obstruction"
+    ],
+    lowValues: [
+      "Severe Hepatic Failure (Impaired Urea Synthesis)",
+      "Malnutrition, Protein Starvation, or Syndrome of Inappropriate ADH (SIADH)",
+      "Normal Pregnancy (Plasma Volume Expansion and Increased eGFR)"
+    ],
+    clinicalInterpretation: "Elevated BUN >80-100 mg/dL accompanied by uremic flap (asterixis), pericardial friction rub, or lethargy indicates Uremic Syndrome demanding urgent hemodialysis.",
+    references: [
+      "CIT-0069",
+      "CIT-0023"
+    ],
+    claimCitations: [
+      {
+        claimId: "CLM-L0018-001",
+        passage: "BUN to Serum Creatinine ratio exceeding 20:1 strongly indicates prerenal azotemia due to volume depletion, congestive heart failure, or upper GI bleeding.",
+        citationIds: ["CIT-0069"]
+      },
+      {
+        claimId: "CLM-L0018-002",
+        passage: "Severe upper gastrointestinal bleeding causes disproportionate BUN elevation due to bacterial digestion and absorption of blood proteins.",
+        citationIds: ["CIT-0069"]
+      },
+      {
+        claimId: "CLM-L0018-003",
+        passage: "BUN levels >100 mg/dL accompanied by confusion and pericarditis represent severe uremia requiring emergency dialysis.",
+        citationIds: ["CIT-0069"]
+      },
+      {
+        claimId: "CLM-L0018-004",
+        passage: "Homeopathic supportive care does not replace emergency rehydration, blood transfusion, or renal replacement therapy in acute azotemia.",
+        citationIds: ["CIT-0023"]
+      }
+    ],
   "faqs": [
     {
       "question": "What is a constitutional remedy in homeopathy?",
