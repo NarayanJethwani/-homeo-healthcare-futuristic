@@ -20,7 +20,7 @@
     "withdrawnEntities": 3,
     "flagshipEntities": 8,
     "legacyBulkGeneratedEntities": 256,
-    "genericSignalEntities": 221,
+    "genericSignalEntities": 214,
     "independentlyReviewedEntities": 0,
     "governedEvidenceProfiles": 0,
     "claimCitationCompleteEntities": 0,
@@ -2774,9 +2774,9 @@
         "independentReviewProven": false
       },
       "graph": {
-        "uniqueConnectionCount": 6,
-        "duplicateRelationshipRows": 6,
-        "brokenRelationshipRows": 0,
+        "uniqueConnectionCount": 5,
+        "duplicateRelationshipRows": 5,
+        "brokenRelationshipRows": 2,
         "isolated": false
       },
       "eligibility": {
@@ -2939,9 +2939,9 @@
         "independentReviewProven": false
       },
       "graph": {
-        "uniqueConnectionCount": 5,
-        "duplicateRelationshipRows": 5,
-        "brokenRelationshipRows": 0,
+        "uniqueConnectionCount": 4,
+        "duplicateRelationshipRows": 4,
+        "brokenRelationshipRows": 2,
         "isolated": false
       },
       "eligibility": {
@@ -3159,9 +3159,9 @@
         "independentReviewProven": false
       },
       "graph": {
-        "uniqueConnectionCount": 6,
-        "duplicateRelationshipRows": 6,
-        "brokenRelationshipRows": 0,
+        "uniqueConnectionCount": 5,
+        "duplicateRelationshipRows": 5,
+        "brokenRelationshipRows": 2,
         "isolated": false
       },
       "eligibility": {
@@ -3819,9 +3819,9 @@
         "independentReviewProven": false
       },
       "graph": {
-        "uniqueConnectionCount": 6,
-        "duplicateRelationshipRows": 6,
-        "brokenRelationshipRows": 0,
+        "uniqueConnectionCount": 5,
+        "duplicateRelationshipRows": 5,
+        "brokenRelationshipRows": 2,
         "isolated": false
       },
       "eligibility": {
@@ -3874,9 +3874,9 @@
         "independentReviewProven": false
       },
       "graph": {
-        "uniqueConnectionCount": 5,
-        "duplicateRelationshipRows": 5,
-        "brokenRelationshipRows": 0,
+        "uniqueConnectionCount": 4,
+        "duplicateRelationshipRows": 4,
+        "brokenRelationshipRows": 2,
         "isolated": false
       },
       "eligibility": {
@@ -3931,171 +3931,6 @@
       "graph": {
         "uniqueConnectionCount": 5,
         "duplicateRelationshipRows": 5,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 40,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "L0003",
-      "slug": "esr",
-      "entityType": "lab-test",
-      "title": "ESR",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "clinical purpose, normal range, and interpretation of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 5,
-        "duplicateRelationshipRows": 5,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 40,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "L0004",
-      "slug": "crp",
-      "entityType": "lab-test",
-      "title": "CRP",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "clinical purpose, normal range, and interpretation of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 2,
-        "duplicateRelationshipRows": 2,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 40,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "L0005",
-      "slug": "hba1c",
-      "entityType": "lab-test",
-      "title": "HbA1c",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "clinical purpose, normal range, and interpretation of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 1,
-        "duplicateRelationshipRows": 1,
         "brokenRelationshipRows": 0,
         "isolated": false
       },
@@ -4283,61 +4118,6 @@
       }
     },
     {
-      "entityId": "L0012",
-      "slug": "lft",
-      "entityType": "lab-test",
-      "title": "LFT",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "clinical purpose, normal range, and interpretation of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 1,
-        "duplicateRelationshipRows": 1,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 40,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
       "entityId": "L0014",
       "slug": "urine-routine",
       "entityType": "lab-test",
@@ -4360,61 +4140,6 @@
       },
       "evidence": {
         "referenceCount": 2,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 1,
-        "duplicateRelationshipRows": 1,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 40,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "L0015",
-      "slug": "fasting-blood-sugar",
-      "entityType": "lab-test",
-      "title": "Fasting Blood Sugar",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "clinical purpose, normal range, and interpretation of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
         "allReferencesResolvable": true,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
@@ -4537,116 +4262,6 @@
       },
       "graph": {
         "uniqueConnectionCount": 2,
-        "duplicateRelationshipRows": 0,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 40,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "L0035",
-      "slug": "ft3",
-      "entityType": "lab-test",
-      "title": "FT3",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "clinical purpose, normal range, and interpretation of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 3,
-        "duplicateRelationshipRows": 0,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 40,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "L0036",
-      "slug": "ft4",
-      "entityType": "lab-test",
-      "title": "FT4",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "clinical purpose, normal range, and interpretation of"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 3,
         "duplicateRelationshipRows": 0,
         "brokenRelationshipRows": 0,
         "isolated": false
@@ -15785,6 +15400,370 @@
       }
     },
     {
+      "entityId": "L0003",
+      "slug": "esr",
+      "entityType": "lab-test",
+      "title": "Erythrocyte Sedimentation Rate (ESR)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 2,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 5,
+        "duplicateRelationshipRows": 5,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "L0004",
+      "slug": "crp",
+      "entityType": "lab-test",
+      "title": "C-Reactive Protein (CRP / hs-CRP)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 2,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 2,
+        "duplicateRelationshipRows": 2,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "L0005",
+      "slug": "hba1c",
+      "entityType": "lab-test",
+      "title": "Glycated Hemoglobin (HbA1c / A1C)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 2,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 1,
+        "duplicateRelationshipRows": 1,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "L0012",
+      "slug": "lft",
+      "entityType": "lab-test",
+      "title": "Liver Function Tests (LFT / Liver Panel)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 2,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 1,
+        "duplicateRelationshipRows": 1,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "L0015",
+      "slug": "fasting-blood-sugar",
+      "entityType": "lab-test",
+      "title": "Fasting Blood Sugar (FBS / FPG)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 2,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 1,
+        "duplicateRelationshipRows": 1,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "L0035",
+      "slug": "ft3",
+      "entityType": "lab-test",
+      "title": "Free Triiodothyronine (Free T3 / FT3)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 2,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 3,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "L0036",
+      "slug": "ft4",
+      "entityType": "lab-test",
+      "title": "Free Thyroxine (Free T4 / FT4)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 2,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 3,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
       "entityId": "S0003",
       "slug": "headache",
       "entityType": "symptom",
@@ -15941,10 +15920,10 @@
       }
     },
     {
-      "entityId": "S0006",
-      "slug": "fatigue",
+      "entityId": "S0005",
+      "slug": "back-pain",
       "entityType": "symptom",
-      "title": "Fatigue",
+      "title": "Low Back Pain",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Traditional-Literature",
@@ -15960,7 +15939,59 @@
         "genericTemplateSignals": []
       },
       "evidence": {
-        "referenceCount": 5,
+        "referenceCount": 2,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 1,
+        "duplicateRelationshipRows": 1,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "S0006",
+      "slug": "bloating",
+      "entityType": "symptom",
+      "title": "Abdominal Bloating",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": false,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 2,
         "allReferencesResolvable": true,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
@@ -16045,10 +16076,10 @@
       }
     },
     {
-      "entityId": "S0008",
+      "entityId": "S0007",
       "slug": "dry-cough",
       "entityType": "symptom",
-      "title": "Dry Cough",
+      "title": "Dry Cough (Non-Productive Cough)",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Traditional-Literature",
@@ -16064,7 +16095,59 @@
         "genericTemplateSignals": []
       },
       "evidence": {
-        "referenceCount": 3,
+        "referenceCount": 2,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 1,
+        "duplicateRelationshipRows": 0,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 20,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven",
+          "clinical-interpretation-content"
+        ]
+      }
+    },
+    {
+      "entityId": "S0008",
+      "slug": "sore-throat",
+      "entityType": "symptom",
+      "title": "Sore Throat (Pharyngitis)",
+      "audience": "patient",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "high"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": false,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 2,
         "allReferencesResolvable": true,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
@@ -16150,9 +16233,9 @@
     },
     {
       "entityId": "S0013",
-      "slug": "back-pain",
+      "slug": "fatigue",
       "entityType": "symptom",
-      "title": "Back Pain",
+      "title": "Chronic Fatigue and Weakness",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Traditional-Literature",
@@ -16253,10 +16336,10 @@
       }
     },
     {
-      "entityId": "S0015",
-      "slug": "joint-pain",
+      "entityId": "S0014",
+      "slug": "itching",
       "entityType": "symptom",
-      "title": "Joint Pain",
+      "title": "Itching (Pruritus)",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Traditional-Literature",
@@ -16284,8 +16367,8 @@
         "independentReviewProven": false
       },
       "graph": {
-        "uniqueConnectionCount": 2,
-        "duplicateRelationshipRows": 2,
+        "uniqueConnectionCount": 1,
+        "duplicateRelationshipRows": 1,
         "brokenRelationshipRows": 0,
         "isolated": false
       },
@@ -16305,10 +16388,10 @@
       }
     },
     {
-      "entityId": "S0017",
-      "slug": "itching",
+      "entityId": "S0015",
+      "slug": "joint-pain",
       "entityType": "symptom",
-      "title": "Itching",
+      "title": "Joint Pain (Arthralgia)",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Traditional-Literature",
@@ -16324,7 +16407,7 @@
         "genericTemplateSignals": []
       },
       "evidence": {
-        "referenceCount": 3,
+        "referenceCount": 2,
         "allReferencesResolvable": true,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
@@ -16617,62 +16700,10 @@
       }
     },
     {
-      "entityId": "S0025",
-      "slug": "bloating",
-      "entityType": "symptom",
-      "title": "Bloating",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": false,
-        "genericTemplateDetected": false,
-        "genericTemplateSignals": []
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 1,
-        "duplicateRelationshipRows": 1,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 20,
-        "recommendation": "independent-review-and-enrichment",
-        "reasons": [
-          "independent-review-unproven",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
       "entityId": "S0029",
       "slug": "dizziness",
       "entityType": "symptom",
-      "title": "Dizziness",
+      "title": "Dizziness and Vertigo",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Traditional-Literature",
@@ -16688,7 +16719,7 @@
         "genericTemplateSignals": []
       },
       "evidence": {
-        "referenceCount": 5,
+        "referenceCount": 2,
         "allReferencesResolvable": true,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
@@ -16897,58 +16928,6 @@
       },
       "evidence": {
         "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 2,
-        "duplicateRelationshipRows": 2,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 20,
-        "recommendation": "independent-review-and-enrichment",
-        "reasons": [
-          "independent-review-unproven",
-          "clinical-interpretation-content"
-        ]
-      }
-    },
-    {
-      "entityId": "S0036",
-      "slug": "sore-throat",
-      "entityType": "symptom",
-      "title": "Sore Throat",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "high"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": false,
-        "genericTemplateDetected": false,
-        "genericTemplateSignals": []
-      },
-      "evidence": {
-        "referenceCount": 3,
         "allReferencesResolvable": true,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
@@ -17296,7 +17275,7 @@
       "entityId": "S0045",
       "slug": "acid-reflux",
       "entityType": "symptom",
-      "title": "Acid Reflux",
+      "title": "Acid Reflux (Heartburn)",
       "audience": "patient",
       "editorialStatus": "published",
       "evidenceLevel": "Traditional-Literature",
@@ -17312,7 +17291,7 @@
         "genericTemplateSignals": []
       },
       "evidence": {
-        "referenceCount": 3,
+        "referenceCount": 2,
         "allReferencesResolvable": true,
         "governedEvidenceProfilePresent": false,
         "claimLevelCitationAssessment": "not-modeled"
