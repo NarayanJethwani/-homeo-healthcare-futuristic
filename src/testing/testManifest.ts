@@ -1386,5 +1386,12 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "ownerArea": "knowledge-expansion",
     "testLayer": "governance",
     "reason": "M6 KEP-4 Disease Coverage Wave 1 (Sinusitis, Gastritis, PCOS, Acne Vulgaris, Psoriasis, Urticaria, Osteoarthritis, Anxiety Disorder, Depression, Rheumatoid Arthritis) v1.1.0 upgrades, 50 draft graph proposals, 100-case offline evaluation, and human wave promotion authorization boundary"
+  },
+  {
+    "path": "tests/knowledgeKEP4DiseaseWave2.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "governance",
+    "reason": "M6 KEP-4 Disease Coverage Wave 2 (GERD, IBS, Bronchitis, Tonsillitis, Pharyngitis, Dysmenorrhea, Menopause, Alopecia Areata, Vitiligo, Hemorrhoids) v1.1.0 upgrades, 50 draft graph proposals, 100-case offline evaluation, and human wave promotion authorization boundary"
   }
 ];

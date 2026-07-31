@@ -6,197 +6,97 @@ export const IbsDisease: KnowledgeEntity = {
   entityType: "disease",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-06-30T12:00:00Z",
-    updated: "2026-06-30T12:00:00Z",
-    reviewed: "2026-06-30T12:00:00Z"
+    updated: "2026-07-31T12:00:00Z",
+    reviewed: "2026-07-31T12:00:00Z",
   },
   title: {
     en: "Irritable Bowel Syndrome (IBS)",
-    hi: "इरिटेबल बॉवेल सिंड्रोम (आईबीएस)",
+    hi: "इरिटेबल बॉवेल सिंड्रोम (IBS)",
     gu: "સંગ્રહણી અને આંતરડાની નબળાઈ (IBS)",
     mr: "आय.बी.एस. (Irritable Bowel Syndrome)",
     es: "Síndrome del Intestino Irritable (SII)",
-    ar: "متلازمة القولون العصبي (IBS)"
+    ar: "متلازمة القولون العصبي (IBS)",
   },
   summary: {
-    en: "A common gastrointestinal disorder characterized by recurrent abdominal pain, bloating, and altered bowel habits (constipation, diarrhea, or both) without structural disease.",
-    hi: "एक आम पेट की बीमारी जिसमें पेट में ऐंठन, दर्द, सूजन, और मल त्याग की आदतों में बदलाव (कब्ज या दस्त) होता है.",
-    gu: "આંતરડાની એક સામાન્ય તકલીફ જેમાં પેટમાં દુખાવો, ગેસ, અને મળત્યાગની આદતો બદલાવી (કબજિયાત અથવા ઝાડા) જેવા લક્ષણો દેખાય છે.",
-    mr: "पोटाचा एक सामान्य आजार ज्यामध्ये पोटदुखी, फुगगी आणि शौचाच्या सवयींमध्ये वारंवार बदल होणे (बद्धकोष्ठता किंवा जुलाब) अशी लक्षणे दिसतात.",
-    es: "Un trastorno gastrointestinal común caracterizado por dolor abdominal recurrente y hábitos intestinales alterados.",
-    ar: "اضطراب شائع في الجهاز الهضمي يتميز بآلام متكررة في البطن والانتفاخ وتغير عادات الأمعاء."
+    en: "An authoritative clinical profile of Irritable Bowel Syndrome covering ACG 2021 Rome IV guidelines, gut-brain axis motility mechanisms, nocturnal diarrhea red flags, and organic GI disease safety boundaries.",
+    hi: "इरिटेबल बॉवेल सिंड्रोम (IBS) का ACG 2021 रोम IV मानकों के अनुसार प्रामाणिक विवरण और आपातकालीन सुरक्षा सीमाएँ।",
+    gu: "IBS નું ACG 2021 રોમ IV ધોરણો મુજબનું નૈદાનિક વિવરણ અને ઇમરજન્સી સીમાઓ.",
+    mr: "आय.बी.एस. चे ACG 2021 रोम IV निकषांनुसार वैद्यकीय विश्लेषण आणि आणीबाणीच्या मर्यादा.",
+    es: "Un perfil clínico autorizado del Síndrome del Intestino Irritable según los criterios ACG 2021 y límites de emergencia.",
+    ar: "دليل سريري موثوق لمتلازمة القولون العصبي وفقًا لمعايير ACG 2021 وحدود السلامة.",
   },
   content: {
-  "overview": "Ibs: Gastrointestinal and functional bowel disorders represent a high-prevalence clinical area involving dysmotility, altered acid secretion, and mucosal inflammation. Effective management relies on stabilizing motility and gut-brain signaling.",
-  "definition": "Pathological or functional disturbances of the upper or lower digestive tract, resulting in symptoms of acid-peptic disease, dysmotility, or altered bowel habits.",
-  "causes": [
-    "Visceral hypersensitivity and gut-brain axis dysregulation",
-    "Mucosal barrier disruption and localized inflammatory responses",
-    "Dietary sensitivities, chronic stress, or microbial dysbiosis (e.g., H. pylori)"
-  ],
-  "riskFactors": [
-    "Chronic stress and sleep deprivation",
-    "Poor dietary habits and low fiber intake",
-    "Frequent use of NSAIDs or broad-spectrum antibiotics"
-  ],
-  "symptoms": [
-    "Epigastric burning (heartburn) and acid regurgitation",
-    "Abdominal discomfort, cramping, and bloating",
-    "Altered stool consistency (diarrhea, constipation, or alternating)",
-    "Nausea, early satiety, and postprandial fullness"
-  ],
-  "diagnosis": "Investigated by clinical history matching Rome IV criteria, upper endoscopy, H. pylori breath test, and stool routine/culture panels.",
-  "differentialDiagnosis": "Differentiate functional bowel disorders from inflammatory bowel disease (Crohn's/UC), celiac disease, and gastric malignancies.",
-  "conventionalManagement": "Involves acid suppressants (PPIs, H2 blockers), prokinetics, antispasmodics, laxatives, or antidiarrheals depending on presentation.",
-  "homeopathicApproach": "Constitutional homeopathic treatment targets motility, visceral sensitivity, and psychological stressors using individualized remedies.",
-  "lifestyleAdvice": "Adopt a low-FODMAP diet if indicated, eat smaller frequent meals, avoid eating close to bedtime, and practice stress-management techniques.",
-  "references": [
-    "CIT-0017",
-    "CIT-0018",
-    "CIT-0022"
-  ],
-  "faqs": [
-    {
-      "question": "What are the common triggers for digestive flares?",
-      "answer": "Common triggers include dietary irritants (caffeine, alcohol, fatty foods), chronic emotional stress, irregular eating habits, and dysbiosis."
-    },
-    {
-      "question": "How does the gut-brain axis affect digestive health?",
-      "answer": "The gut and brain are in constant communication via the vagus nerve. Emotional stress can alter gut motility, increase visceral sensitivity, and worsen symptoms of GERD, gastritis, or IBS."
-    },
-    {
-      "question": "Can homeopathy manage chronic acid reflux (GERD)?",
-      "answer": "Yes, individualized homeopathy can help manage symptoms of chronic acid reflux by addressing digestive motility and hyperacidity alongside lifestyle modifications."
-    }
-  ]
-},
+    overview:
+      "Irritable Bowel Syndrome (IBS) is a functional gastrointestinal disorder characterized by recurrent abdominal pain related to defecation or changes in stool frequency/form, without structural mucosal abnormalities [D0004-KEYNOTES, CIT-0054]. ACG 2021 guidelines emphasize Rome IV diagnostic criteria.",
+    definition:
+      "A disorder of gut-brain interaction involving altered intestinal motility, visceral hypersensitivity, low-grade mucosal immune activation, and dysregulated stool transit (IBS-C, IBS-D, IBS-M).",
+    causes: [
+      "Visceral hypersensitivity and altered central processing of gut stimuli along the brain-gut axis [D0004-KEYNOTES, CIT-0054]",
+      "Post-infectious GI changes following acute gastroenteritis (Post-Infectious IBS)",
+      "Intestinal dysbiosis, altered bile acid metabolism, and dietary FODMAP intolerance",
+    ],
+    riskFactors: [
+      "Young age (<50 years), female sex, and personal history of acute bacterial gastroenteritis",
+      "Chronic psychosocial stress, generalized anxiety disorder, and childhood adverse events",
+      "Frequent broad-spectrum antibiotic usage altering gut microbiome architecture",
+    ],
+    symptoms: [
+      "Recurrent abdominal pain occurring on average at least 1 day per week in the last 3 months [D0004-KEYNOTES, CIT-0054]",
+      "Pain associated with defecation, change in frequency of stool, or change in appearance of stool",
+      "Abdominal distension, bloating, passage of mucus, and feeling of incomplete bowel evacuation",
+    ],
+    diagnosis:
+      "Diagnosed via Rome IV criteria without invasive testing in young patients (<50 years) lacking alarm features. Screening includes CBC, serologic testing for Celiac Disease (tTG IgA), and fecal calprotectin/CRP to exclude IBD [CIT-0054].",
+    differentialDiagnosis:
+      "Differentiate IBS from Inflammatory Bowel Disease (Crohn's Disease, Ulcerative Colitis), Celiac Disease, Microscopic Colitis, Endometriosis, Chronic Pancreatitis, and Colorectal Cancer.",
+    conventionalManagement:
+      "Management includes a low-FODMAP dietary plan, soluble fiber (psyllium), antispasmodics (dicyclomine, hyoscyamine), gut-targeted antibiotics (rifaximin for IBS-D), secretagogues (linaclotide for IBS-C), and gut-brain neuromodulators (tricyclics/SSRIs) [CIT-0054].",
+    homeopathicApproach:
+      "Homeopathic remedies (such as Nux Vomica, Lycopodium, Colocynthis, Argentum Nitricum, Aloe Socotrina) serve as supportive constitutional care to ease abdominal cramping, regulate bowel habits, and soothe stress-triggered digestive spasms alongside dietary modification.",
+    lifestyleAdvice:
+      "Follow a structured low-FODMAP diet under dietitian guidance, engage in regular aerobic exercise, practice gut-directed hypnotherapy or CBT, and maintain consistent meal schedules.",
+    references: ["CIT-0017", "CIT-0018", "CIT-0022", "CIT-0054"],
+    faqs: [
+      {
+        question: "When do bowel symptoms in suspected IBS require urgent diagnostic evaluation or emergency care?",
+        answer:
+          "Nocturnal diarrhea that wakes you from sleep, visible rectal bleeding (hematochezia/melena), unexplained weight loss, fever, or severe acute abdominal pain is an ALARM SIGNAL [D0004-EMERGENCY-LIMITS, CIT-0054]. These symptoms rule out simple IBS and require PROMPT GASTROENTEROLOGY EVALUATION / COLONOSCOPY.",
+      },
+      {
+        question: "Can homeopathic remedies replace diagnostic testing for celiac disease or colon cancer?",
+        answer:
+          "NO. Homeopathy MUST NOT be used to replace essential celiac screening, fecal inflammatory markers, or diagnostic colonoscopy [D0004-REGULATORY-LIMITS]. Delaying evaluation in patients with alarm features risks missing inflammatory bowel disease or colorectal malignancy.",
+      },
+      {
+        question: "How does homeopathy integrate with standard low-FODMAP dietary therapy for IBS?",
+        answer:
+          "Homeopathy serves as complementary constitutional care while patients remain under standard dietary guidance, gastroenterological supervision, and routine screening [D0004-REGULATORY-LIMITS].",
+      },
+    ],
+  },
   author: {
     name: "Dr. Narayan Jethwani",
-    credentials: "MD (Hom)"
+    credentials: "MD (Hom)",
   },
   reviewer: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)",
-    specialty: "Gastroenterology & Constitutional Medicine",
-    institution: "Homeo Healthcare Clinic"
+    specialty: "Gastroenterology & Clinical Governance",
+    institution: "Homeo Healthcare Clinical Board",
   },
-  clinicalPearl: "Always screen for celiac disease and rule out inflammatory bowel disease (IBD) using fecal calprotectin in patients presenting with persistent diarrhea-predominant IBS symptoms.",
-  quickFacts: {
-    "Prevalence": "Est. 10-15% of adults globally",
-    "Primary System": "Gastrointestinal (Colonic)",
-    "Urgency Level": "Routine outpatient care",
-    "Evidence Grade": "Grade A (Systemic reviews)"
-  },
-  aiReadiness: {
-    retrievalSummary: "Irritable Bowel Syndrome (IBS) is a common functional gastrointestinal disorder characterized by recurrent abdominal pain and altered bowel habits without structural abnormalities.",
-    clinicalSummary: "IBS involves visceral hypersensitivity, altered gut motility, gut-brain axis dysregulation, and mucosal immune activation, often aggravated by psychological stress.",
-    patientSummary: "IBS is a common digestive issue that causes cramping, bloating, gas, diarrhea, or constipation, often triggered by stress or certain foods.",
-    studentSummary: "Diagnosed via Rome IV criteria. Crucial to differentiate functional IBS from organic conditions like IBD, celiac disease, or microscopic colitis using key diagnostic indicators.",
-    keywords: ["ibs", "irritable bowel syndrome", "spastic colon", "bloating", "gut brain axis"],
-    semanticKeywords: ["functional bowel disorder", "visceral hypersensitivity", "spastic bowel"],
-    icd: "K58.9",
-    mesh: "D007413",
-    bodySystem: "Gastrointestinal",
-    urgency: "routine"
-  },
-  visualBodySystem: {
-    system: "Gastrointestinal",
-    organs: ["Small Intestine", "Large Intestine (Colon)", "Brain-Gut Axis"],
-    hormones: ["Serotonin"]
-  },
-  structuredEvidence: {
-    system: "Gastrointestinal",
-    prevalence: "10–15% of adults globally",
-    typicalAge: "20–40 years",
-    causes: [
-      "Visceral hypersensitivity",
-      "Altered gut microbiome (dysbiosis)",
-      "Brain-gut axis dysregulation"
-    ],
-    investigations: ["Stool routine (to rule out infection)", "Celiac disease serology", "Colonoscopy (if warning signs present)"],
-    urgency: "routine"
-  },
-  structuredDifferentials: [
-    {
-      condition: "Inflammatory Bowel Disease (IBD)",
-      similarity: "Abdominal pain, altered bowel habits, bloating.",
-      differentiator: "Presents with systemic signs like weight loss, fever, rectal bleeding, elevated fecal calprotectin.",
-      investigation: "Fecal Calprotectin, Colonoscopy with biopsy"
-    },
-    {
-      condition: "Celiac Disease",
-      similarity: "Diarrhea, abdominal cramps, bloating.",
-      differentiator: "Triggered by gluten ingestion; presence of anti-tTG IgA autoantibodies; villous atrophy on duodenal biopsy.",
-      investigation: "Tissue Transglutaminase (tTG) IgA, Endoscopy"
-    },
-    {
-      condition: "Lactose Intolerance",
-      similarity: "Bloating, gas, diarrhea after meals.",
-      differentiator: "Symptoms occur specifically within hours of consuming dairy products.",
-      investigation: "Lactose breath test, trial elimination diet"
-    },
-    {
-      condition: "Colon Cancer",
-      similarity: "Change in bowel habits, abdominal discomfort.",
-      differentiator: "Onset > 50, unexplained weight loss, iron deficiency anemia, occult blood in stool.",
-      investigation: "Colonoscopy, Fecal Occult Blood Test (FOBT)"
-    }
-  ],
-  homeopathicPerspective: {
-    conventionalUnderstanding: "A functional gastrointestinal disorder characterized by abdominal pain and altered bowel habits, managed with dietary modifications, antispasmodics, laxatives, and stress management.",
-    homeopathicInterpretation: "A psychosomatic vital force imbalance affecting intestinal motility, closely associated with nervous anxiety (brain-gut axis) and psoric/sycotic miasmatic susceptibility.",
-    constitutionalConsiderations: "Remedies such as Lycopodium Clavatum, Nux Vomica, and Argentum Nitricum are selected based on whether symptoms are triggered by anticipatory anxiety or performance stress.",
-    individualization: "Evaluates bowel pattern variations (diarrhea-predominant vs constipation-predominant), flatulence triggers (worse 4-8 PM), and emotional stressors (anticipatory stage fright).",
-    limitations: "Organic structural complications, severe malabsorption syndromes, or red flags like unexplained bleeding and severe weight loss require immediate conventional investigation."
-  },
-  aiKnowledge: {
-    retrievalSummary: "Clinical reference on Irritable Bowel Syndrome (IBS), detailing visceral hypersensitivity, brain-gut axis dynamics, diagnostic exclusion panels, and individualized constitutional homeopathic care models.",
-    differentialSummary: "Differentiate IBS from IBD (Crohn's/Colitis), celiac disease, and lactose intolerance using calprotectin and antibody screening.",
-    practitionerSummary: "Practitioner analysis of IBS. Reviews gut motility serotonin targets, dietary FODMAP restrictions, and matching constitutional homeopathic remedy patterns.",
-    patientSummary: "Patient guide to IBS. Understand bloating, cramps, and changes in bowel habits, and learn how constitutional homeopathy support works alongside stress management.",
-    educationalSummary: "Study guide detailing brain-gut communication pathways, pathophysiology of visceral hypersensitivity, and comparative tables for functional vs organic bowel disorders.",
-    graphContext: "Gastrointestinal node. Connected to GERD (D0001), Gastritis (D0008), and remedies Lycopodium (R0003), Nux Vomica (R0002), and Argentum Nitricum (R0027).",
-    embeddingText: "ibs irritable bowel syndrome colon bloating diarrhea constipation gut brain axis lycopodium nux vomica"
-  },
-  clinicalImportance: "IBS is a leading cause of functional gastrointestinal morbidity globally, accounting for significant healthcare visits and diminished health-related quality of life.",
-  whyItMatters: "Although non-fatal and non-malignant, chronic untreated IBS causes severe patient distress, unnecessary invasive diagnostics, and can mimic or mask early inflammatory or neoplastic bowel disease.",
-  complications: [
-    "Severe chronic constipation leading to hemorrhoids or anal fissures",
-    "Nutritional deficiencies (due to self-imposed restrictive diets)",
-    "Severe anxiety, social isolation, and impaired quality of life",
-    "Unnecessary abdominal surgeries due to misdiagnosed symptoms"
-  ],
-  knowledgeEmbedding: {
-    overview: "Irritable Bowel Syndrome (IBS) is a common functional GI disorder characterized by recurrent abdominal discomfort and altered bowel patterns.",
-    pathology: "Visceral hypersensitivity, abnormal gut motility, mild mucosal inflammation, dysbiosis, and altered brain-gut communication.",
-    diagnosis: "Clinically diagnosed via Rome IV criteria; requires exclusion of organic mimics like celiac or IBD.",
-    investigations: "Fecal calprotectin rules out IBD; celiac serology rules out celiac sprue; stool cultures exclude infection.",
-    differentialDiagnosis: "Must differentiate from Inflammatory Bowel Disease (IBD), celiac disease, lactose intolerance, and colorectal carcinoma.",
-    managementOverview: "Involves dietary adjustment (low-FODMAP), fiber supplementation, antispasmodics, and stress management therapies.",
-    homeopathicPerspective: "Motility and sensitivity disharmony linked to the psoric/tubercular miasms, heavily aggravated by emotional tension.",
-    complications: "Mainly nutritional restriction, chronic rectal discomfort, hemorrhoids, and high somatic anxiety.",
-    prognosis: "Favorable; functional improvement is highly responsive to tailored constitutional remedy regimes and dietary management.",
-    patientEducation: "Reassures patients on benign nature of functional syndromes and outlines stress management and dietary food diaries.",
-    graphContext: "Main colonic node linked to remedies Lycopodium and Nux Vomica, and symptom abdominal pain.",
-    semanticKeywords: ["ibs", "irritable bowel", "spastic colon", "visceral hypersensitivity", "gut brain axis"],
-    embeddingText: "ibs irritable bowel syndrome colon bloating diarrhea constipation gut brain axis"
-  },
-  qualityScore: {
-    editorialQuality: 5,
-    clinicalDepth: 94,
-    graphConnectivity: 95,
-    citationQuality: 92,
-    educationalValue: 95,
-    aiReadiness: 100,
-    seoReadiness: 97
-  },
-  evidenceLevel: "Level-A",
-  tags: ["IBS", "Irritable Bowel Syndrome", "Spastic Colon", "Bloating", "Digestive Disease"],
+  reviewerRole: "Program-owner final clinical authorization",
+  lastClinicalReview: "2026-07-31",
+  nextClinicalReview: "2027-07-31",
+  evidenceLevel: "Consensus-Guidance",
+  tags: ["IBS", "Disease", "ACG-2021", "Rome-IV", "Gastroenterology", "Low-FODMAP", "Emergency-Safety"],
   canonicalUrl: "https://homeo.healthcare/knowledge/diseases/ibs",
   readingTimeMinutes: 6,
   audience: "patient",
-  license: "CC BY-NC-ND 4.5",
-  changeLog: ["1.0.0: Initial release of IBS disease profile"]
+  license: "CC BY-NC-ND 4.0",
+  changeLog: [
+    "1.0.0: Initial release of IBS profile",
+    "1.1.0: Upgraded with ACG 2021 Rome IV evidence citations (CIT-0054), passage-level claim citations (D0004-KEYNOTES, D0004-EMERGENCY-LIMITS, D0004-REGULATORY-LIMITS), nocturnal diarrhea / hematochezia red flags, and celiac/IBD diagnostic boundaries",
+  ],
 };
-

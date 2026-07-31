@@ -9,7 +9,7 @@
     {
       "entityId": "D0001",
       "version": "1.1.0",
-      "revisionHash": "e14e9c3e37008afb742b2e5f56cda21a32f2f29db6c388ccd7a5419934a2ed51",
+      "revisionHash": "e35c5d9de4ee928409232818c7f7d8a9aa221a954aac3bb216df7fc3effb0b09",
       "materialClaimCount": 8,
       "citationIds": [
         "CIT-0017",
@@ -254,5 +254,5 @@
     "approvedAt": "2026-07-30",
     "decisionReference": "PR-74-owner-authorization"
   },
-  "packageHash": "136dff3415fc5b5e9cb55948e18d6e211017f7fa550ccf0c21bca5936d5ecdcd"
+  "packageHash": "4873783cf338637c91557122ad9a19149d18b0df9096248f977c85051e484a0a"
 }
