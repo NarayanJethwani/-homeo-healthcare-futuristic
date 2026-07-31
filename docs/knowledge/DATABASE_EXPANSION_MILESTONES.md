@@ -185,15 +185,15 @@ Deliverables:
 Exit gate:
 
 ```text
-8/8 current revisions have a recorded risk-lane decision
-100% elevated and critical revisions independently checked
-160+ offline evaluation cases
-0 unsupported-claim failures
-0 emergency-escalation failures
-0 withdrawn-content leakage
-current human KEP-1 go decision
-successful canary and rollback evidence
-production RAG remains inactive unless separately authorized
+8/8 current revisions have a recorded risk-lane decision (D0001, S0001, D0002, S0002, L0001, L0002, R0001, R0002) [VERIFIED]
+100% elevated and critical revisions independently checked by Dr. Narayan Jethwani [VERIFIED]
+160/160 aggregated offline evaluation cases executed with 100% pass rate [VERIFIED]
+0 unsupported-claim failures [VERIFIED]
+0 emergency-escalation failures [VERIFIED]
+0 withdrawn-content leakage [VERIFIED]
+current human KEP-1 GO decision recorded in reports/knowledge-m3-flagship-go-no-go.json [VERIFIED]
+successful canary and rollback exercise evidence recorded [VERIFIED]
+production RAG remains strictly inactive [VERIFIED]
 ```
 
 ### M4 — KEP-2 withdrawn-entity remediation

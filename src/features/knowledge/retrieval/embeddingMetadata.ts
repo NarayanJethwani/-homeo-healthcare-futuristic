@@ -11,16 +11,19 @@ export interface RAGMetadata {
   audience: string;
 }
 
-/**
- * Returns structured metadata tags optimized for LLM context retrieval filters.
- */
-export function compileRAGMetadata(entity: KnowledgeEntity): RAGMetadata {
+export function getRAGMetadata(entity: KnowledgeEntity): RAGMetadata {
+  const reviewerStr = typeof entity.reviewer === "string"
+    ? entity.reviewer
+    : entity.reviewer?.name
+      ? `${entity.reviewer.name}${entity.reviewer.credentials ? `, ${entity.reviewer.credentials}` : ""}`
+      : "Dr. Narayan Jethwani, MD (Hom)";
+
   return {
     entityId: entity.id,
     slug: entity.slug,
     type: entity.entityType,
     evidenceLevel: entity.evidenceLevel,
-    reviewer: `${entity.reviewer.name}, ${entity.reviewer.credentials}`,
+    reviewer: reviewerStr,
     lastUpdated: entity.versionInfo.updated,
     topics: entity.tags,
     audience: entity.audience,

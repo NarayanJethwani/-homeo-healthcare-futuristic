@@ -13,19 +13,25 @@ interface TimelineHistoryProps {
     deprecated?: boolean;
     replacementEntityId?: string;
   };
-  reviewer: {
-    name: string;
+  reviewer?: {
+    name?: string;
     credentials?: string;
     specialty?: string;
-  };
+  } | string;
 }
 
 export default function TimelineHistory({ versionInfo, reviewer }: TimelineHistoryProps) {
   const [expanded, setExpanded] = useState(false);
 
   const createdDate = formatMedicalDateLong(versionInfo.created);
-
   const updatedDate = formatMedicalDateLong(versionInfo.updated);
+
+  const reviewerName = typeof reviewer === "string"
+    ? reviewer
+    : reviewer?.name || "Dr. Narayan Jethwani";
+  const reviewerCreds = typeof reviewer === "object" && reviewer?.credentials
+    ? `, ${reviewer.credentials}`
+    : "";
 
   return (
     <div className="p-5 border border-neutral-200 dark:border-neutral-850 rounded-2xl bg-white/5 backdrop-blur-md space-y-4 print-hide">
@@ -67,7 +73,7 @@ export default function TimelineHistory({ versionInfo, reviewer }: TimelineHisto
           <div>
             <span className="text-[10px] text-neutral-500 block uppercase">Reviewer Validation</span>
             <span className="font-semibold text-neutral-850 dark:text-neutral-200 truncate max-w-[150px] block">
-              {reviewer.name} {reviewer.credentials && `, ${reviewer.credentials}`}
+              {reviewerName}{reviewerCreds}
             </span>
           </div>
         </div>

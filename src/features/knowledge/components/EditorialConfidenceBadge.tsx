@@ -31,15 +31,23 @@ export default function EditorialConfidenceBadge({ entity, reviewedDate }: Edito
   const refsCount = Array.isArray(entity.content?.references)
     ? entity.content.references.length
     : 0;
+  const reviewerName = typeof entity.reviewer === "string"
+    ? entity.reviewer
+    : entity.reviewer?.name || entity.author?.name || "Dr. Narayan Jethwani";
+  const reviewerCredentials = (typeof entity.reviewer === "object" && entity.reviewer?.credentials)
+    ? `, ${entity.reviewer.credentials}`
+    : "";
+
   const statusHeading = isWithdrawn
     ? "Clinical safety review in progress"
     : isFullyReviewed
       ? "Independent clinical review complete"
       : "Editorial review complete";
+
   const statusDetail = isWithdrawn
     ? "This entry is being reassessed for clinical safety and accuracy."
     : isFullyReviewed
-      ? `Clinically reviewed by ${entity.reviewer.name}, ${entity.reviewer.credentials}`
+      ? `Clinically reviewed by ${reviewerName}${reviewerCredentials}`
       : "Independent clinical validation is pending.";
   const statusPill = isWithdrawn
     ? "Under review"
