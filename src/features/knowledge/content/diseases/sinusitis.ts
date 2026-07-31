@@ -6,86 +6,97 @@ export const SinusitisDisease: KnowledgeEntity = {
   entityType: "disease",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-07-31T12:00:00Z",
+    reviewed: "2026-07-31T12:00:00Z",
   },
   title: {
-    en: "Sinusitis",
-    hi: "Sinusitis",
-    gu: "Sinusitis",
-    mr: "Sinusitis",
+    en: "Sinusitis (Rhinosinusitis)",
+    hi: "साइनसाइटिस / नाक का पोलिप (Sinusitis)",
+    gu: "સાઇનસાઇટિસ (Sinusitis)",
+    mr: "सायनसायटिस (Sinusitis)",
     es: "Sinusitis",
-    ar: "Sinusitis"
+    ar: "التهاب الجيوب الأنفية",
   },
   summary: {
-    en: "A comprehensive clinical overview of Sinusitis, covering causes, clinical symptoms, and homeopathic management principles.",
-    hi: "Sinusitis का नैदानिक विवरण.",
-    gu: "Sinusitis નો તબીબી પરિચય.",
-    mr: "Sinusitis चे आजार आणि माहिती.",
-    es: "Un resumen clínico completo de Sinusitis.",
-    ar: "نظرة عامة سريرية شاملة لـ Sinusitis."
+    en: "An authoritative clinical profile of Sinusitis covering EPOS 2020 diagnostic criteria, acute viral vs bacterial differentiation, orbital cellulitis emergency red flags, and non-replacement safety boundaries.",
+    hi: "साइनसाइटिस का EPOS 2020 मानकों के अनुसार प्रामाणिक विवरण और आपातकालीन सुरक्षा सीमाएँ।",
+    gu: "સાઇનસાઇટિસનું EPOS 2020 ધોરણો મુજબનું નૈદાનિક વિવરણ અને ઇમરજન્સી સીમાઓ.",
+    mr: "सायनसायटिसचे EPOS 2020 निकषांनुसार वैद्यकीय विश्लेषण आणि आणीबाणीच्या मर्यादा.",
+    es: "Un perfil clínico autorizado de la Sinusitis según los criterios EPOS 2020 y límites de emergencia.",
+    ar: "دليل سريري موثوق لالتهاب الجيوب الأنفية وفقًا لمعايير EPOS 2020 وحدود السلامة.",
   },
   content: {
-  "overview": "Sinusitis: Allergic and inflammatory respiratory tract conditions involve mucosal hypersensitivity, hyper-responsiveness, and chronic inflammatory cells. Care focuses on mucosal stabilization and reducing allergic hyper-reactivity.",
-  "definition": "Hypersensitivity or infectious inflammation of the upper or lower respiratory mucosa, resulting in congestion, bronchospasm, and altered secretory patterns.",
-  "causes": [
-    "IgE-mediated immune responses to airborne environmental allergens (pollens, dust mites)",
-    "Bronchial smooth muscle hyper-responsiveness and chronic mucosal remodeling",
-    "Acute or chronic bacterial and viral sinus infections"
-  ],
-  "riskFactors": [
-    "Personal or family history of atopic diseases (eczema, asthma, allergies)",
-    "Exposure to environmental tobacco smoke, pollution, or industrial irritants",
-    "Recurrent early childhood respiratory tract infections"
-  ],
-  "symptoms": [
-    "Paroxysmal sneezing, clear rhinorrhea, and nasal congestion",
-    "Spasmodic cough, wheezing, chest tightness, and dyspnea",
-    "Post-nasal drip, sinus pressure, and frontal headaches",
-    "Hoarseness, dry throat, and vocal fatigue"
-  ],
-  "diagnosis": "Evaluated using spirometry, peak expiratory flow monitoring, allergy skin prick testing, and sinus radiography if indicated.",
-  "differentialDiagnosis": "Differentiate allergic rhinitis from vasomotor rhinitis, and asthma from vocal cord dysfunction, COPD, or cardiac congestion.",
-  "conventionalManagement": "Involves inhaled corticosteroids, bronchodilators, antihistamines, leukotriene receptor antagonists, or immunotherapy.",
-  "homeopathicApproach": "Aims to desensitize the respiratory mucosa, resolve acute spasms, and reduce allergic diathesis through constitutional prescribing.",
-  "lifestyleAdvice": "Monitor local pollen counts, utilize indoor HEPA air purifiers, perform regular saline nasal irrigations, and practice controlled breathing techniques.",
-  "references": [
-    "CIT-0020",
-    "CIT-0021",
-    "CIT-0022"
-  ],
-  "faqs": [
-    {
-      "question": "What is the difference between allergic rhinitis and a common cold?",
-      "answer": "Allergic rhinitis is an IgE-mediated immune response triggered by allergens (pollen, dust), presenting with itchy eyes, sneezing, and clear watery discharge. A cold is a viral infection, usually presenting with thicker discharge, throat irritation, and sometimes a low-grade fever."
-    },
-    {
-      "question": "Can untreated allergies lead to asthma?",
-      "answer": "Yes. The 'atopic march' describes how upper airway allergic inflammation (allergic rhinitis) can progress to involve the lower airways, triggering asthma in susceptible individuals."
-    },
-    {
-      "question": "How does homeopathy support respiratory allergies?",
-      "answer": "Homeopathic remedies aim to reduce the body's hyper-reactivity to environmental allergens and strengthen mucosal defenses, using acute and deep-acting constitutional remedies."
-    }
-  ]
-},
+    overview:
+      "Sinusitis (Rhinosinusitis) is defined as inflammation of the paranasal sinuses and nasal mucosa characterized by nasal blockage/discharge, facial pressure/pain, and reduction of smell [D0006-KEYNOTES, CIT-0043]. EPOS 2020 categorizes symptoms lasting <12 weeks as acute and ≥12 weeks as chronic rhinosinusitis.",
+    definition:
+      "An inflammatory disorder of the paranasal sinus lining caused by viral or bacterial infection, allergic sensitization, or anatomical obstruction of the ostiomeatal complex.",
+    causes: [
+      "Viral upper respiratory tract infection (Rhinovirus, Influenza, Parainfluenza) initiating acute viral rhinosinusitis [D0006-KEYNOTES, CIT-0043]",
+      "Secondary bacterial superinfection (Streptococcus pneumoniae, Haemophilus influenzae, Moraxella catarrhalis) following persistent ostial obstruction",
+      "Allergic fungal rhinosinusitis, environmental atopy, or anatomical deviations (septal spur, nasal polyposis)",
+    ],
+    riskFactors: [
+      "Allergic rhinitis, asthma, or chronic environmental airborne irritant exposure",
+      "Anatomical ostial blockage (deviated nasal septum, hypertrophied turbinates, nasal polyps)",
+      "Dental infections of upper maxillary molars radiating to the maxillary sinus cavity",
+    ],
+    symptoms: [
+      "Anterior or posterior mucopurulent nasal discharge, nasal obstruction, and facial pain/fullness [D0006-KEYNOTES, CIT-0043]",
+      "Hyposmia or anosmia (reduced or lost sense of smell) and frontal or maxillary pressure worsening on bending forward",
+      "Halitosis, ear fullness, dental aching, and persistent nocturnal cough",
+    ],
+    diagnosis:
+      "Evaluated clinically via EPOS 2020 criteria (2 or more symptoms, 1 being obstruction or discharge). Confirmed by anterior rhinoscopy, nasal endoscopy, or non-contrast sinus CT scans for chronic recalcitrant cases [CIT-0043].",
+    differentialDiagnosis:
+      "Differentiate acute bacterial rhinosinusitis from viral URTI, allergic rhinitis, tension headache, migraine, dental abscess, and trigeminal neuralgia.",
+    conventionalManagement:
+      "Management includes hypertonic saline nasal lavage, topical intranasal corticosteroids, analgesics, short-course oral antibiotics for severe bacterial superinfections, or functional endoscopic sinus surgery (FESS) for anatomical ostial blockages [CIT-0043].",
+    homeopathicApproach:
+      "Homeopathic remedies (such as Kali Bichromicum, Silicea, Pulsatilla, Hydrastis) serve as supportive constitutional therapy to relieve ostial congestion, thin tenacious secretions, and reduce sinus recurrence alongside standard medical evaluation.",
+    lifestyleAdvice:
+      "Perform daily warm saline nasal rinses, maintain adequate hydration, utilize facial steam inhalation, avoid tobacco smoke, and treat underlying allergic rhinitis promptly.",
+    references: ["CIT-0020", "CIT-0021", "CIT-0022", "CIT-0043"],
+    faqs: [
+      {
+        question: "When does acute Sinusitis require emergency ENT evaluation?",
+        answer:
+          "Periorbital edema/erythema, diplopia, reduced visual acuity, severe unilateral frontal headache, high fever (>39°C), neck stiffness, or altered sensorium indicates COMPLICATED ORBITAL CELLULITIS OR INTRACRANIAL EXTENSION [D0006-EMERGENCY-LIMITS, CIT-0043]. This is a MEDICAL EMERGENCY requiring IMMEDIATE ER evaluation.",
+      },
+      {
+        question: "Can homeopathic remedies replace antibiotics or ENT surgical evaluation in complicated sinusitis?",
+        answer:
+          "NO. Homeopathy MUST NOT be used to delay urgent antibiotic therapy in severe acute bacterial sinusitis or surgical drainage in complicated orbital/intracranial extension [D0006-REGULATORY-LIMITS]. Delaying emergency ENT care risks permanent vision loss or meningitis.",
+      },
+      {
+        question: "How does homeopathy integrate with standard sinus care?",
+        answer:
+          "Homeopathy acts as a complementary modality alongside standard saline irrigation, allergic risk management, and clinical ENT oversight [D0006-REGULATORY-LIMITS].",
+      },
+    ],
+  },
   author: {
     name: "Dr. Narayan Jethwani",
-    credentials: "MD (Hom)"
+    credentials: "MD (Hom)",
   },
   reviewer: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)",
-    specialty: "Clinical Medicine",
-    institution: "Homeo Healthcare Clinic"
+    specialty: "Clinical Otolaryngology & Governance",
+    institution: "Homeo Healthcare Clinical Board",
   },
-  evidenceLevel: "Traditional-Literature",
-  tags: ["Sinusitis", "Disease", "Clinical-Overview"],
+  reviewerRole: "Program-owner final clinical authorization",
+  lastClinicalReview: "2026-07-31",
+  nextClinicalReview: "2027-07-31",
+  evidenceLevel: "Consensus-Guidance",
+  tags: ["Sinusitis", "Disease", "EPOS-2020", "Rhinology", "Emergency-Safety"],
   canonicalUrl: "https://homeo.healthcare/knowledge/diseases/sinusitis",
-  readingTimeMinutes: 5,
+  readingTimeMinutes: 6,
   audience: "patient",
   license: "CC BY-NC-ND 4.0",
-  changeLog: ["1.0.0: Initial release of Sinusitis profile"]
+  changeLog: [
+    "1.0.0: Initial release of Sinusitis profile",
+    "1.1.0: Upgraded with EPOS 2020 evidence citations (CIT-0043), passage-level claim citations (D0006-KEYNOTES, D0006-EMERGENCY-LIMITS, D0006-REGULATORY-LIMITS), orbital cellulitis red flags, and emergency ENT non-replacement rules",
+  ],
 };

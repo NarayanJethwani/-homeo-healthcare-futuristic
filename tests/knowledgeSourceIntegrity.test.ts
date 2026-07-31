@@ -17,7 +17,7 @@ export function runKnowledgeSourceIntegrityTests(): void {
   assert.strictEqual(report.status, "staging-only");
   assert.strictEqual(report.invariants.publicationState, "unchanged");
   assert.strictEqual(report.invariants.ragState, "inactive");
-  assert.strictEqual(report.summary.eligibleCitationRecords, 38);
+  assert.strictEqual(report.summary.eligibleCitationRecords, 48);
   assert.strictEqual(report.summary.blockerCount, 3);
   assert.strictEqual(report.summary.reviewCount, 1);
   for (const citationId of [
