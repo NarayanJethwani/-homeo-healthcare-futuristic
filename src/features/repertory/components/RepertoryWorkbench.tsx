@@ -53,7 +53,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
   const [newCasePhone, setNewCasePhone] = useState('');
   const [newCaseEmail, setNewCaseEmail] = useState('');
   const [newCaseComplaint, setNewCaseComplaint] = useState('');
-  const [newCaseCareLevel, setNewCaseCareLevel] = useState('🌱 Essential Acute & Wellness Care');
+  const [newCaseCareLevel, setNewCaseCareLevel] = useState('🌱 Acute & Wellness Care');
   const [newCaseBillingCycle, setNewCaseBillingCycle] = useState('Weekly');
   const [newCasePrice, setNewCasePrice] = useState('');
   const [newCaseDuration, setNewCaseDuration] = useState('2');
@@ -609,8 +609,8 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
           careLevel: newCaseCareLevel,
           conditionsCount: Number(newCaseConditions) || 1,
           durationText: `${newCaseDuration} Weeks`,
-          finalPrice: newCasePrice ? Number(newCasePrice) : (newCaseCareLevel.includes("🌱 Essential Acute & Wellness Care") ? 2850 : (newCaseCareLevel.includes("🚨 Intensive Acute Priority Care") ? 25000 : 12000)),
-          receivedAmount: newCasePrice ? Number(newCasePrice) : (newCaseCareLevel.includes("🌱 Essential Acute & Wellness Care") ? 2850 : (newCaseCareLevel.includes("🚨 Intensive Acute Priority Care") ? 25000 : 12000)),
+          finalPrice: newCasePrice ? Number(newCasePrice) : (newCaseCareLevel.includes("Acute & Wellness") ? 2000 : (newCaseCareLevel.includes("Advanced Constitutional") ? 20000 : (newCaseCareLevel.includes("Complete Health") ? 40000 : 12000))),
+          receivedAmount: newCasePrice ? Number(newCasePrice) : (newCaseCareLevel.includes("Acute & Wellness") ? 2000 : (newCaseCareLevel.includes("Advanced Constitutional") ? 20000 : (newCaseCareLevel.includes("Complete Health") ? 40000 : 12000))),
           remainingBalance: 0,
           billingCycle: newCaseBillingCycle,
           durationValue: Number(newCaseDuration) || 2,
@@ -1173,13 +1173,12 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
                 }}
                 className="w-full bg-slate-50/50 hover:bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white transition-all font-semibold cursor-pointer"
               >
-                {/* 2-week registration package: ₹1,500/week × 2 weeks = ₹3,000, less 5% = ₹2,850 */}
-                <option value="🌱 Essential Acute & Wellness Care">🌱 Essential Acute & Wellness Care (₹2,850)</option>
-                <option value="⚡ Core Chronic Care">⚡ Core Chronic Care (₹12,000)</option>
-                <option value="🚨 Intensive Acute Priority Care">🚨 Intensive Acute Priority Care (₹25,000)</option>
-                <option value="🎯 Deep Constitutional Care">🎯 Deep Constitutional Care (₹21,000)</option>
-                <option value="🫁 Advanced Pathology Support">🫁 Advanced Pathology Support (₹30,000)</option>
-                <option value="🔮 Multisystem Integrative Care">🔮 Multisystem Integrative Care (₹42,000)</option>
+                <option value="🌱 Acute & Wellness Care">🌱 Acute & Wellness Care — 1 week (₹2,000)</option>
+                <option value="⚡ Constitutional Care">⚡ Constitutional Care — 4 weeks (₹12,000)</option>
+                <option value="🎯 Advanced Constitutional Care">🎯 Advanced Constitutional Care — 4 weeks (from ₹20,000)</option>
+                <option value="🔮 Complete Health Transformation Program">🔮 Complete Health Transformation Program — clinician-assigned (₹10,000/week)</option>
+                <option value="🚨 Priority Acute Support">🚨 Priority Acute Support add-on (+₹2,000/week)</option>
+                <option value="🫁 Advanced Records & Pathology Review">🫁 Advanced Records & Pathology Review (from ₹3,000)</option>
               </select>
             </div>
 

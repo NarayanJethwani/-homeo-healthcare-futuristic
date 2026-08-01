@@ -337,6 +337,112 @@ body {
   border-color: rgba(255, 255, 255, 0.05);
 }
 
+/* Patient pricing planner: scoped, high-contrast dark surfaces. */
+.dark .patient-pricing-planner .pricing-panel,
+.dark .patient-pricing-planner .pricing-pathway-card,
+.dark .patient-pricing-planner .pricing-option,
+.dark .patient-pricing-planner .pricing-table {
+  background: rgba(17, 24, 39, 0.94) !important;
+  border-color: rgba(148, 163, 184, 0.34) !important;
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.24);
+}
+
+.dark .patient-pricing-planner .pricing-pathway-card:hover,
+.dark .patient-pricing-planner .pricing-option:hover {
+  background: rgba(26, 38, 55, 0.98) !important;
+  border-color: rgba(45, 212, 191, 0.58) !important;
+}
+
+.dark .patient-pricing-planner .pricing-pathway-card[aria-pressed="true"],
+.dark .patient-pricing-planner .pricing-option[aria-pressed="true"] {
+  background: rgba(15, 58, 55, 0.92) !important;
+  border-color: #2dd4bf !important;
+  box-shadow: 0 16px 46px rgba(20, 184, 166, 0.15);
+}
+
+.dark .patient-pricing-planner .pricing-subtle-panel,
+.dark .patient-pricing-planner .pricing-info-panel {
+  background: rgba(20, 33, 48, 0.92) !important;
+  border-color: rgba(94, 234, 212, 0.25) !important;
+}
+
+.dark .patient-pricing-planner .text-\[\#1A2421\],
+.dark .patient-pricing-planner h2,
+.dark .patient-pricing-planner h3,
+.dark .patient-pricing-planner summary,
+.dark .patient-pricing-planner dt,
+.dark .patient-pricing-planner dd {
+  color: #f8fafc !important;
+}
+
+.dark .patient-pricing-planner .text-slate-600,
+.dark .patient-pricing-planner .text-slate-650,
+.dark .patient-pricing-planner .text-slate-700 {
+  color: #cbd5e1 !important;
+}
+
+.dark .patient-pricing-planner .text-slate-200 {
+  color: #e2e8f0 !important;
+}
+
+.dark .patient-pricing-planner .text-slate-300 {
+  color: #cbd5e1 !important;
+}
+
+.dark .patient-pricing-planner .text-slate-500 {
+  color: #aebdce !important;
+}
+
+.dark .patient-pricing-planner .text-mint-dark {
+  color: #5eead4 !important;
+}
+
+.dark .patient-pricing-planner .border-slate-200,
+.dark .patient-pricing-planner .divide-slate-200 > :not(:last-child) {
+  border-color: rgba(148, 163, 184, 0.28) !important;
+}
+
+.dark .patient-pricing-planner .pricing-dark-surface {
+  background: #0f2f2a !important;
+  color: #f8fafc !important;
+  border-color: rgba(94, 234, 212, 0.28) !important;
+}
+
+.dark .patient-pricing-planner .pricing-dark-surface * {
+  color: inherit;
+}
+
+.dark .patient-pricing-planner .pricing-recommended-badge {
+  background: #2dd4bf !important;
+  color: #062e2a !important;
+}
+
+.dark .patient-pricing-planner .pricing-primary-action {
+  background: #2dd4bf !important;
+  color: #062e2a !important;
+  box-shadow: 0 8px 24px rgba(20, 184, 166, 0.2);
+}
+
+.dark .patient-pricing-planner .pricing-primary-action:hover {
+  background: #5eead4 !important;
+}
+
+.dark .patient-pricing-planner .pricing-complete {
+  background: linear-gradient(145deg, #102a27 0%, #101827 100%) !important;
+  border-color: rgba(45, 212, 191, 0.46) !important;
+  box-shadow: 0 24px 72px rgba(0, 0, 0, 0.34);
+}
+
+.dark .patient-pricing-planner .pricing-complete h2,
+.dark .patient-pricing-planner .pricing-complete h3 {
+  color: #f8fafc !important;
+}
+
+.dark .patient-pricing-planner input[type="checkbox"] {
+  outline: 1px solid rgba(203, 213, 225, 0.55);
+  outline-offset: 1px;
+}
+
 /* Glow effects & Dynamic ambient lighting */
 .glow-mint {
   box-shadow: 0 0 40px -5px rgba(20, 184, 166, 0.15);

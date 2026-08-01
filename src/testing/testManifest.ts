@@ -24,6 +24,20 @@ export interface TestSuiteManifestEntry {
 
 export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
   {
+    "path": "tests/pricingPathways.test.ts",
+    "status": "active",
+    "ownerArea": "commerce-pricing",
+    "testLayer": "unit",
+    "reason": "Validates care pathway prices, durations, add-ons, and legacy mapping"
+  },
+  {
+    "path": "tests/specialtyAssessmentPricing.test.ts",
+    "status": "active",
+    "ownerArea": "commerce-pricing",
+    "testLayer": "unit",
+    "reason": "Validates structured specialty price ranges and prevents payment before physician confirmation"
+  },
+  {
     "path": "src/features/dashboard/__tests__/alerts.test.tsx",
     "status": "quarantined",
     "ownerArea": "ui-components",

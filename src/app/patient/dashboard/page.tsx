@@ -95,7 +95,7 @@ export default function PatientDashboard() {
             email: "aarav.sharma@gmail.com",
             location: "Baner, Pune",
             complaint: "Chronic asthma with dry skin flare-ups in cold weather.",
-            careLevel: "🌱 Essential Acute & Wellness Care",
+            careLevel: "🌱 Acute & Wellness Care",
             durationText: "3-Month Consultation",
             status: "active",
             createdAt: new Date().toISOString(),

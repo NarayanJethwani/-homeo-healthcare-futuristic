@@ -1,190 +1,287 @@
+export type CareLevelKey =
+  | "mild"
+  | "moderate"
+  | "focused"
+  | "organ"
+  | "comprehensive"
+  | "acute_critical";
+
+export type PublicCarePathwayKey = "mild" | "moderate" | "focused";
+
 export interface CareLevelDetail {
   title: string;
+  subtitle?: string;
   weeklyPrice: number;
   monthlyPrice: number;
   badge: string;
   icon: string;
   complexityLabel: string;
   description: string;
+  scopeMessage: string;
+  bestFor: string[];
   features: string[];
+  durations: readonly number[];
+  defaultDurationWeeks: number;
   glowColor: string;
   surchargeWeekly: number;
   surchargeMonthly: number;
   colorClass?: string;
   legacyNames: string[];
+  pricePrefix?: "From";
+  clinicianConfirmationRequired?: boolean;
 }
 
-export const CARE_LEVELS_DETAILS: Record<"mild" | "moderate" | "focused" | "organ" | "comprehensive" | "acute_critical", CareLevelDetail> = {
+const ACUTE_WEEKLY_PRICE = 2_000;
+const CONSTITUTIONAL_WEEKLY_PRICE = 3_000;
+const ADVANCED_WEEKLY_PRICE = 5_000;
+
+export const ADDITIONAL_ACUTE_EPISODE_PRICE = 1_000;
+export const PRIORITY_ACUTE_SUPPORT_WEEKLY_PRICE = 2_000;
+export const RECORDS_PATHOLOGY_REVIEW_PRICE = 3_000;
+export const COMPLETE_HEALTH_TRANSFORMATION_WEEKLY_PRICE = 10_000;
+export const COMPLETE_HEALTH_TRANSFORMATION_DURATIONS = [4, 8, 12] as const;
+
+export const PUBLIC_CARE_LEVEL_KEYS: readonly PublicCarePathwayKey[] = [
+  "mild",
+  "moderate",
+  "focused",
+] as const;
+
+export const CARE_LEVELS_DETAILS: Record<CareLevelKey, CareLevelDetail> = {
   mild: {
-    title: "Essential Acute & Wellness Care",
-    weeklyPrice: 1500,
-    monthlyPrice: 6000,
-    badge: "Short-Term Support",
+    title: "Acute & Wellness Care",
+    weeklyPrice: ACUTE_WEEKLY_PRICE,
+    monthlyPrice: ACUTE_WEEKLY_PRICE * 4,
+    badge: "Short-term care",
     icon: "🌱",
-    colorClass: "text-teal-650 border-teal-200/50 bg-teal-50/50 dark:bg-teal-950/20 dark:text-teal-400",
+    colorClass: "text-teal-700 border-teal-200/60 bg-teal-50/70",
     glowColor: "rgba(20,184,166,0.15)",
-    surchargeWeekly: 375,
-    surchargeMonthly: 1500,
-    complexityLabel: "Low",
-    description: "For short-term symptoms, seasonal complaints, immunity, hair fall, and low-complexity wellness support.",
+    surchargeWeekly: 0,
+    surchargeMonthly: 0,
+    complexityLabel: "Focused",
+    description: "For a new, short-term illness or one acute episode needing timely physician guidance.",
+    scopeMessage: "One acute episode is included. A separate, unrelated acute episode during the same care period can be assessed for ₹1,000.",
+    bestFor: ["New or short-term symptoms", "Seasonal illness", "One acute episode"],
     features: [
-      "General constitutional wellness analysis",
-      "Corrective micro-dosing remedy supply",
-      "Standard wellness dietary guide sheet",
-      "WhatsApp clinical team updates (bi-weekly)"
+      "Physician consultation and clinical assessment",
+      "Individualized treatment plan",
+      "One acute episode within the selected period",
+      "Standard follow-up during the care period",
     ],
-    legacyNames: ["Acute & Wellness Care"]
+    durations: [1, 2, 4],
+    defaultDurationWeeks: 1,
+    legacyNames: ["Essential Acute & Wellness Care", "Acute & Wellness Care"],
   },
   moderate: {
-    title: "Core Chronic Care",
-    weeklyPrice: 3000,
-    monthlyPrice: 12000,
-    badge: "Most Patients Start Here",
+    title: "Constitutional Care",
+    subtitle: "Personalized care for chronic and recurring health conditions",
+    weeklyPrice: CONSTITUTIONAL_WEEKLY_PRICE,
+    monthlyPrice: CONSTITUTIONAL_WEEKLY_PRICE * 4,
+    badge: "Recommended",
     icon: "⚡",
-    colorClass: "text-purple-600 border-purple-200/50 bg-purple-50/50 dark:bg-purple-950/20 dark:text-purple-400",
+    colorClass: "text-purple-700 border-purple-200/60 bg-purple-50/70",
     glowColor: "rgba(168,85,247,0.15)",
-    surchargeWeekly: 563,
-    surchargeMonthly: 2250,
-    complexityLabel: "Moderate",
-    description: "For single-system chronic complaints requiring structured follow-up and remedy adjustment.",
+    surchargeWeekly: 0,
+    surchargeMonthly: 0,
+    complexityLabel: "Ongoing",
+    description: "For chronic or recurring symptoms that benefit from a whole-person constitutional case assessment.",
+    scopeMessage: "Clinically related symptoms are considered together within the constitutional case. There is no automatic per-symptom charge.",
+    bestFor: ["Recurring symptoms", "Established chronic conditions", "Related constitutional symptoms"],
     features: [
-      "Single chronic condition profile mapping",
-      "Targeted constitutional remedy preparation",
-      "Anti-inflammatory diet & lifestyle sheets",
-      "Standard clinical response monitoring checkups"
+      "Comprehensive constitutional case-taking",
+      "Clinically related symptoms included",
+      "Personalized treatment planning",
+      "Regular progress review",
     ],
-    legacyNames: ["Standard Chronic Care"]
+    durations: [2, 4, 8, 12],
+    defaultDurationWeeks: 4,
+    legacyNames: ["Core Chronic Care", "Standard Chronic Care"],
   },
   focused: {
-    title: "Deep Constitutional Care",
-    weeklyPrice: 5250,
-    monthlyPrice: 21000,
-    badge: "Deeper Case Analysis",
+    title: "Advanced Constitutional Care",
+    weeklyPrice: ADVANCED_WEEKLY_PRICE,
+    monthlyPrice: ADVANCED_WEEKLY_PRICE * 4,
+    badge: "Physician-guided scope",
     icon: "🎯",
-    colorClass: "text-sky-600 border-sky-200/50 bg-sky-50/50 dark:bg-sky-950/20 dark:text-sky-400",
+    colorClass: "text-sky-700 border-sky-200/60 bg-sky-50/70",
     glowColor: "rgba(14,165,233,0.15)",
-    surchargeWeekly: 938,
-    surchargeMonthly: 3750,
-    complexityLabel: "Moderate–High",
-    description: "For long-standing, recurring, or layered chronic patterns requiring deeper constitutional analysis.",
+    surchargeWeekly: 0,
+    surchargeMonthly: 0,
+    complexityLabel: "Advanced",
+    description: "For stable, long-standing, or layered cases requiring deeper review and closer planned follow-up.",
+    scopeMessage: "₹5,000/week is the starting care fee. Clinically relevant conditions are included within the agreed scope, with no automatic symptom or organ-system charge. Any advanced records review is shown separately before treatment.",
+    bestFor: ["Stable complex conditions", "Long-standing patterns", "Closer planned follow-up"],
     features: [
-      "Deep-seated target system pathology analysis",
-      "High-potency customized constitutional dilutions",
-      "Custom anti-inflammatory & allergen guides",
-      "Priority clinical checkins over WhatsApp"
+      "Advanced constitutional assessment",
+      "Clinically relevant conditions within agreed scope",
+      "Coordinated treatment planning",
+      "Enhanced physician follow-up",
     ],
-    legacyNames: ["Deep Systemic Care"]
+    durations: [2, 4, 8, 12],
+    defaultDurationWeeks: 4,
+    pricePrefix: "From",
+    clinicianConfirmationRequired: true,
+    legacyNames: ["Deep Constitutional Care", "Deep Systemic Care", "Advanced Recovery"],
   },
   organ: {
-    title: "Advanced Pathology Support",
-    weeklyPrice: 7500,
-    monthlyPrice: 30000,
-    badge: "Report-Based Monitoring",
+    title: "Advanced Records & Pathology Review",
+    weeklyPrice: RECORDS_PATHOLOGY_REVIEW_PRICE,
+    monthlyPrice: RECORDS_PATHOLOGY_REVIEW_PRICE,
+    badge: "Assessment add-on",
     icon: "🫁",
-    colorClass: "text-emerald-600 border-emerald-200/50 bg-emerald-50/50 dark:bg-emerald-950/20 dark:text-emerald-400",
+    complexityLabel: "Assessment",
+    description: "A focused review of substantial medical records, reports, and prior treatment history.",
+    scopeMessage: "Available from ₹3,000 when a physician recommends additional records or pathology review.",
+    bestFor: ["Substantial medical records", "Pathology reports", "Prior treatment review"],
+    features: ["Records organization", "Report review", "Clinical synthesis", "Assessment summary"],
+    durations: [1],
+    defaultDurationWeeks: 1,
     glowColor: "rgba(16,185,129,0.15)",
-    surchargeWeekly: 1313,
-    surchargeMonthly: 5250,
-    complexityLabel: "High",
-    description: "For medically diagnosed conditions requiring careful monitoring, report review, and structured clinical follow-up.",
-    features: [
-      "Multi-remedy support for organ pathology",
-      "Advanced systemic rebalancing protocols",
-      "Biomarker timeline mapping & reviews",
-      "Personalized organ-support lifestyle sheets"
-    ],
-    legacyNames: ["Advanced Pathological Care"]
+    surchargeWeekly: 0,
+    surchargeMonthly: 0,
+    legacyNames: ["Advanced Pathology Support", "Advanced Pathological Care"],
+    pricePrefix: "From",
+    clinicianConfirmationRequired: true,
   },
   comprehensive: {
-    title: "Multisystem Integrative Care",
-    weeklyPrice: 10500,
-    monthlyPrice: 42000,
-    badge: "Best for Complex Cases",
+    title: "Complete Health Transformation Program",
+    weeklyPrice: COMPLETE_HEALTH_TRANSFORMATION_WEEKLY_PRICE,
+    monthlyPrice: COMPLETE_HEALTH_TRANSFORMATION_WEEKLY_PRICE * 4,
+    badge: "Clinician-assigned",
     icon: "🔮",
-    colorClass: "text-indigo-600 border-indigo-200/50 bg-indigo-50/50 dark:bg-indigo-950/20 dark:text-indigo-400",
-    glowColor: "rgba(99,102,241,0.15)",
-    surchargeWeekly: 1688,
-    surchargeMonthly: 6750,
     complexityLabel: "Comprehensive",
-    description: "For complex cases involving multiple body systems, multiple active concerns, and higher clinical coordination.",
-    features: [
-      "Multi-organ pathogenetic profile mapping",
-      "Direct clinical supervision by Dr. Jethwani",
-      "High-frequency dosage titrations & reviews",
-      "Direct priority clinical assistance channel"
-    ],
-    legacyNames: ["Multisystem Integrative Care"]
+    description: "Our most comprehensive individual program for exceptionally intensive cases requiring frequent review, coordinated adjustments, and direct physician supervision.",
+    scopeMessage: "All clinically relevant conditions within the agreed individual scope are included. Duration is assigned only after physician assessment; outcomes depend on individual clinical response.",
+    bestFor: ["Exceptionally intensive cases", "Frequent clinical adjustments", "Direct physician supervision"],
+    features: ["Comprehensive constitutional assessment", "Individualized care scope", "High-frequency monitoring", "Direct physician guidance"],
+    durations: [4, 8, 12],
+    defaultDurationWeeks: 4,
+    glowColor: "rgba(99,102,241,0.15)",
+    surchargeWeekly: 0,
+    surchargeMonthly: 0,
+    legacyNames: ["Complete Health Transformation", "Multisystem Integrative Care"],
+    clinicianConfirmationRequired: true,
   },
   acute_critical: {
-    title: "Intensive Acute Priority Care",
-    weeklyPrice: 6250,
-    monthlyPrice: 25000,
-    badge: "Priority Acute Support",
+    title: "Priority Acute Support",
+    weeklyPrice: PRIORITY_ACUTE_SUPPORT_WEEKLY_PRICE,
+    monthlyPrice: PRIORITY_ACUTE_SUPPORT_WEEKLY_PRICE * 4,
+    badge: "Care add-on",
     icon: "🚨",
-    colorClass: "text-rose-600 border-rose-200/50 bg-rose-50/50 dark:bg-rose-950/20 dark:text-rose-400",
+    complexityLabel: "Priority",
+    description: "Faster access and closer short-term monitoring for suitable acute cases.",
+    scopeMessage: "Add to Acute & Wellness Care for ₹2,000 per week. This is not emergency medical care.",
+    bestFor: ["Priority appointment access", "Closer short-term monitoring", "Suitable acute cases"],
+    features: ["Priority access", "Defined response window", "Closer monitoring", "Physician-directed use"],
+    durations: [1, 2, 4],
+    defaultDurationWeeks: 1,
     glowColor: "rgba(239,68,68,0.15)",
-    surchargeWeekly: 1250,
-    surchargeMonthly: 5000,
-    complexityLabel: "Intensive",
-    description: "For suitable acute cases requiring priority homeopathic support and closer short-term follow-up. Not a replacement for emergency medical care, hospitalization, or life-saving treatment. In emergencies, seek immediate medical attention.",
-    features: [
-      "Daily doctor clinical review and check-ins",
-      "Intensive daily remedy titration and support",
-      "Emergency/priority WhatsApp communication channel",
-      "Detailed case study and Organon-guided repertorization"
-    ],
-    legacyNames: ["Acute Critical Care"]
+    surchargeWeekly: 0,
+    surchargeMonthly: 0,
+    legacyNames: ["Intensive Acute Priority Care", "Acute Critical Care"],
+    clinicianConfirmationRequired: true,
+  },
+};
+
+export const surchargesLookup: Record<CareLevelKey, { unitWeekly: number; unitMonthly: number }> = {
+  mild: { unitWeekly: 0, unitMonthly: 0 },
+  moderate: { unitWeekly: 0, unitMonthly: 0 },
+  focused: { unitWeekly: 0, unitMonthly: 0 },
+  organ: { unitWeekly: 0, unitMonthly: 0 },
+  comprehensive: { unitWeekly: 0, unitMonthly: 0 },
+  acute_critical: { unitWeekly: 0, unitMonthly: 0 },
+};
+
+export interface CarePriceSelection {
+  pathway: PublicCarePathwayKey;
+  durationWeeks: number;
+  additionalAcuteEpisode?: boolean;
+  priorityAcuteSupport?: boolean;
+  recordsPathologyReview?: boolean;
+}
+
+export interface CarePriceSummary {
+  baseCareTotal: number;
+  additionalAcuteEpisodeTotal: number;
+  priorityAcuteSupportTotal: number;
+  recordsPathologyReviewTotal: number;
+  total: number;
+}
+
+export function calculateCarePrice(selection: CarePriceSelection): CarePriceSummary {
+  const detail = CARE_LEVELS_DETAILS[selection.pathway];
+  if (!detail.durations.includes(selection.durationWeeks)) {
+    throw new Error(`Unsupported duration for ${detail.title}: ${selection.durationWeeks} weeks`);
   }
-};
 
-export const surchargesLookup = {
-  mild: { unitWeekly: 375, unitMonthly: 1500 },
-  moderate: { unitWeekly: 563, unitMonthly: 2250 },
-  focused: { unitWeekly: 938, unitMonthly: 3750 },
-  acute_critical: { unitWeekly: 1250, unitMonthly: 5000 },
-  organ: { unitWeekly: 1313, unitMonthly: 5250 },
-  comprehensive: { unitWeekly: 1688, unitMonthly: 6750 }
-};
+  const isAcute = selection.pathway === "mild";
+  const baseCareTotal = detail.weeklyPrice * selection.durationWeeks;
+  const additionalAcuteEpisodeTotal = isAcute && selection.additionalAcuteEpisode
+    ? ADDITIONAL_ACUTE_EPISODE_PRICE
+    : 0;
+  const priorityAcuteSupportTotal = isAcute && selection.priorityAcuteSupport
+    ? PRIORITY_ACUTE_SUPPORT_WEEKLY_PRICE * selection.durationWeeks
+    : 0;
+  const recordsPathologyReviewTotal = selection.recordsPathologyReview
+    ? RECORDS_PATHOLOGY_REVIEW_PRICE
+    : 0;
 
-export type CareLevelKey = "mild" | "moderate" | "focused" | "organ" | "comprehensive" | "acute_critical";
+  return {
+    baseCareTotal,
+    additionalAcuteEpisodeTotal,
+    priorityAcuteSupportTotal,
+    recordsPathologyReviewTotal,
+    total:
+      baseCareTotal +
+      additionalAcuteEpisodeTotal +
+      priorityAcuteSupportTotal +
+      recordsPathologyReviewTotal,
+  };
+}
+
+export function calculateCompleteHealthTransformationPrice(durationWeeks: number): CarePriceSummary {
+  if (!COMPLETE_HEALTH_TRANSFORMATION_DURATIONS.includes(durationWeeks as 4 | 8 | 12)) {
+    throw new Error(`Unsupported duration for Complete Health Transformation Program: ${durationWeeks} weeks`);
+  }
+
+  const baseCareTotal = COMPLETE_HEALTH_TRANSFORMATION_WEEKLY_PRICE * durationWeeks;
+  return {
+    baseCareTotal,
+    additionalAcuteEpisodeTotal: 0,
+    priorityAcuteSupportTotal: 0,
+    recordsPathologyReviewTotal: 0,
+    total: baseCareTotal,
+  };
+}
 
 export function normalizeCareLevelName(input: string): CareLevelKey {
   if (!input) return "moderate";
   const clean = input.toLowerCase().trim();
-  
-  if (clean === "mild" || clean === "moderate" || clean === "focused" || clean === "organ" || clean === "comprehensive" || clean === "acute_critical") {
+
+  if (["mild", "moderate", "focused", "organ", "comprehensive", "acute_critical"].includes(clean)) {
     return clean as CareLevelKey;
   }
-  
-  if (clean.includes("critical") || clean.includes("emergency") || clean.includes("intensive") || clean.includes("priority")) {
-    return "acute_critical";
-  }
-  if (clean.includes("wellness") || clean.includes("essential") || clean.includes("mild") || clean.includes("acute")) {
-    return "mild";
-  }
-  if (clean.includes("standard") || clean.includes("chronic") || clean.includes("core")) {
-    return "moderate";
-  }
-  if (clean.includes("deep") || clean.includes("systemic") || clean.includes("constitutional") || clean.includes("focused")) {
-    return "focused";
-  }
-  if (clean.includes("organ") || clean.includes("advanced") || clean.includes("pathology") || clean.includes("pathological")) {
-    return "organ";
-  }
-  if (clean.includes("comprehensive") || clean.includes("multisystem") || clean.includes("integrative")) {
-    return "comprehensive";
-  }
-  
+  if (clean.includes("complete") || clean.includes("multisystem") || clean.includes("integrative")) return "comprehensive";
+  if (clean.includes("pathology") || clean.includes("records")) return "organ";
+  if (clean.includes("priority") || clean.includes("critical") || clean.includes("intensive acute")) return "acute_critical";
+  if (clean.includes("advanced") || clean.includes("deep") || clean.includes("systemic")) return "focused";
+  if (clean.includes("constitutional") || clean.includes("chronic") || clean.includes("core") || clean.includes("standard")) return "moderate";
+  if (clean.includes("wellness") || clean.includes("essential") || clean.includes("acute")) return "mild";
   return "moderate";
 }
 
+export function toPublicCarePathway(input: string): PublicCarePathwayKey {
+  const normalized = normalizeCareLevelName(input);
+  if (normalized === "mild") return "mild";
+  if (normalized === "moderate") return "moderate";
+  return "focused";
+}
+
 export function getCareLevelDisplayName(keyOrName: string): string {
-  const key = normalizeCareLevelName(keyOrName);
-  return CARE_LEVELS_DETAILS[key].title;
+  return CARE_LEVELS_DETAILS[normalizeCareLevelName(keyOrName)].title;
 }
 
 export function getCareLevelDisplayNameWithIcon(keyOrName: string): string {
-  const key = normalizeCareLevelName(keyOrName);
-  const detail = CARE_LEVELS_DETAILS[key];
+  const detail = CARE_LEVELS_DETAILS[normalizeCareLevelName(keyOrName)];
   return `${detail.icon} ${detail.title}`;
 }
