@@ -5,7 +5,7 @@ export const LedumPalustreRemedy: KnowledgeEntity = {
   slug: "ledum-palustre",
   entityType: "remedy",
   editorialStatus: "published",
-  reviewStatus: "owner-authorized-source-bound",
+  reviewStatus: "owner-authorization-required",
   versionInfo: {
     version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
@@ -88,7 +88,7 @@ export const LedumPalustreRemedy: KnowledgeEntity = {
       "1M"
     ],
     safetyNotes:
-      "Botanical source (*Ledum palustre* / Wild Rosemary). Highly potentized homeopathic preparations (6C, 30C, 200C) contain minimal chemical solute. Emergency Referral: Soil-contaminated deep puncture wounds, rusty nail injuries, animal/human bites, or suspected rabies/tetanus exposure mandate immediate emergency surgical debridement, antibiotic prophylaxis, and tetanus toxoid/immunoglobulin immunization.",
+      "A homeopathic dilution label does not by itself guarantee composition, quality, safety, or effectiveness. Deep or contaminated punctures, retained foreign bodies, animal or human bites, spreading infection, and possible tetanus or rabies exposure require immediate conventional wound assessment; prophylaxis and treatment must be determined by qualified clinicians.",
     references: [
       "CIT-0004",
       "CIT-0005",
@@ -108,6 +108,13 @@ export const LedumPalustreRemedy: KnowledgeEntity = {
       }
     ]
   },
+  claimCitations: [
+    { claimId: "R0054-TRADITIONAL-PROFILE", statement: "The puncture, bite, and joint keynote profile is a historical description from classical homeopathic literature.", citationIds: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0007"], passageId: "CIT-0004-R0054-TRADITIONAL-PROFILE" },
+    { claimId: "R0054-EVIDENCE-LIMITS", statement: "Traditional literature does not establish modern clinical efficacy for wounds, bites, tetanus, rabies, infection, or joint disease.", citationIds: ["CIT-0023", "CIT-0024"], passageId: "CIT-0023-HOMEOPATHY-EVIDENCE-LIMITS" },
+    { claimId: "R0054-PRODUCT-SAFETY", statement: "A homeopathic dilution label does not guarantee product composition, quality, safety, or effectiveness.", citationIds: ["CIT-0023", "CIT-0024"], passageId: "CIT-0024-HOMEOPATHIC-PRODUCT-SAFETY" },
+    { claimId: "R0054-CARE-BOUNDARY", statement: "This profile must not delay wound cleaning, infection treatment, vaccination assessment, or rabies and tetanus prophylaxis decisions.", citationIds: ["CIT-0023", "CIT-0024"], passageId: "CIT-0024-SERIOUS-CONDITION-BOUNDARY" },
+  ],
+  redFlags: ["Deep or contaminated punctures, retained foreign bodies, spreading infection, or unknown tetanus status requires urgent care.", "Animal or human bites and possible rabies exposure require immediate conventional assessment."],
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"
@@ -134,7 +141,7 @@ export const LedumPalustreRemedy: KnowledgeEntity = {
   },
   aiReadiness: {
     retrievalSummary: "Ledum Palustre (Wild Rosemary) is a major botanical homeopathic remedy described historically for puncture wounds, animal/insect bites, coldness of affected parts relieved by cold ice applications, and ascending joint complaints.",
-    clinicalSummary: "Source is wild rosemary. Potentized homeopathic dilutions contain minimal chemical solute. Primary historical affinities include peripheral capillaries, skin, joint capsules, and small joints.",
+    clinicalSummary: "Classical texts describe a wild-rosemary puncture, bite, and joint symptom profile. This historical description does not establish clinical efficacy or product safety and must not delay wound care, vaccination assessment, or infection management.",
     patientSummary: "Ledum is a traditional homeopathic remedy described in literature for puncture wounds from nails or pins, bug bites, and joint pains that feel cold but feel better with ice packs.",
     studentSummary: "Guiding traditional keynotes include puncture wounds from sharp objects, insect/animal bites, paradoxical cold affected part relieved by ice water, ascending gout/rheumatism, and long-lasting ecchymosis.",
     keywords: ["ledum", "wild rosemary", "puncture wound remedy", "insect bite remedy", "ice better joint pain"],

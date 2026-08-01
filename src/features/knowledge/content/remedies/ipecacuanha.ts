@@ -5,7 +5,7 @@ export const IpecacuanhaRemedy: KnowledgeEntity = {
   slug: "ipecacuanha",
   entityType: "remedy",
   editorialStatus: "published",
-  reviewStatus: "owner-authorized-source-bound",
+  reviewStatus: "owner-authorization-required",
   versionInfo: {
     version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
@@ -88,7 +88,7 @@ export const IpecacuanhaRemedy: KnowledgeEntity = {
       "1M"
     ],
     safetyNotes:
-      "Botanical source (*Cephaelis ipecacuanha* / Ipecac root containing emetine and cephaeline alkaloids). Raw emetine is a potent emetic, gastrointestinal irritant, and myocardial toxin. Highly potentized homeopathic preparations (6C, 30C, 200C) contain minimal chemical solute. Emergency Referral: Intractable vomiting leading to severe dehydration, acute massive gastrointestinal bleeding, acute severe hemoptysis, or poisoning mandates immediate emergency medical resuscitation.",
+      "Crude ipecac and emetine-containing products may cause serious toxicity and require immediate poison-service guidance after exposure. A homeopathic dilution label does not by itself guarantee composition, quality, safety, or effectiveness. Persistent vomiting with dehydration, vomiting or coughing blood, breathing difficulty, fainting, or suspected poisoning requires emergency assessment.",
     references: [
       "CIT-0004",
       "CIT-0005",
@@ -108,6 +108,13 @@ export const IpecacuanhaRemedy: KnowledgeEntity = {
       }
     ]
   },
+  claimCitations: [
+    { claimId: "R0049-TRADITIONAL-PROFILE", statement: "The nausea, bleeding, and respiratory keynote profile is a historical description from classical homeopathic literature.", citationIds: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0007"], passageId: "CIT-0004-R0049-TRADITIONAL-PROFILE" },
+    { claimId: "R0049-EVIDENCE-LIMITS", statement: "Traditional literature does not establish modern clinical efficacy for vomiting, hemorrhage, asthma, or respiratory disease.", citationIds: ["CIT-0023", "CIT-0024"], passageId: "CIT-0023-HOMEOPATHY-EVIDENCE-LIMITS" },
+    { claimId: "R0049-PRODUCT-SAFETY", statement: "A homeopathic dilution label does not guarantee product composition, quality, safety, or effectiveness.", citationIds: ["CIT-0023", "CIT-0024"], passageId: "CIT-0024-HOMEOPATHIC-PRODUCT-SAFETY" },
+    { claimId: "R0049-CARE-BOUNDARY", statement: "This profile must not delay emergency gastrointestinal, bleeding, respiratory, or poison care.", citationIds: ["CIT-0023", "CIT-0024"], passageId: "CIT-0024-SERIOUS-CONDITION-BOUNDARY" },
+  ],
+  redFlags: ["Vomiting or coughing blood, fainting, breathing difficulty, or severe dehydration requires emergency care.", "Suspected crude ipecac or emetine exposure with persistent vomiting, chest symptoms, or collapse requires poison guidance."],
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"
@@ -134,7 +141,7 @@ export const IpecacuanhaRemedy: KnowledgeEntity = {
   },
   aiReadiness: {
     retrievalSummary: "Ipecacuanha (Ipecac) is a major botanical homeopathic remedy described historically for persistent unrelieving nausea with a clean tongue, bright red mucosal hemorrhages, and spasmodic respiratory asthma.",
-    clinicalSummary: "Source is ipecac root containing emetine. Potentized homeopathic dilutions contain minimal chemical solute. Primary historical affinities include vagus nerve, gastric mucosa, bronchial tree, and uterine vessels.",
+    clinicalSummary: "Classical texts describe an ipecac-root nausea, bleeding, and respiratory symptom profile. This historical description does not establish clinical efficacy or product safety and must not delay emergency gastrointestinal, respiratory, or poison care.",
     patientSummary: "Ipecacuanha is a traditional homeopathic remedy described in literature for constant, severe nausea that doesn't get better even after throwing up, with a pink clean tongue.",
     studentSummary: "Guiding traditional keynotes include persistent unrelieving nausea, clean tongue, bright red liquid hemorrhage, spasmodic asthma with chest constriction, and grass-green stool.",
     keywords: ["ipecacuanha", "ipecac", "persistent nausea remedy", "clean tongue nausea", "bright red hemorrhage"],

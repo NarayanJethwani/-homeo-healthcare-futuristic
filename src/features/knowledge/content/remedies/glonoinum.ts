@@ -2,10 +2,10 @@ import { KnowledgeEntity } from "../../types";
 
 export const GlonoinumRemedy: KnowledgeEntity = {
   id: "R0044",
-  slug: "glonoinum",
+  slug: "glonoine",
   entityType: "remedy",
   editorialStatus: "published",
-  reviewStatus: "owner-authorized-source-bound",
+  reviewStatus: "owner-authorization-required",
   versionInfo: {
     version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
@@ -89,7 +89,7 @@ export const GlonoinumRemedy: KnowledgeEntity = {
       "1M"
     ],
     safetyNotes:
-      "Chemical source Nitroglycerin (Glyceryl Trinitrate) is a potent vasodilator capable of inducing severe hypotension, syncope, and reflex tachycardia in crude doses. Highly potentized homeopathic preparations (6C, 30C, 200C) contain minimal chemical solute. Emergency Referral: Acute chest pain, suspected myocardial infarction, hypertensive crisis, acute cerebrovascular accident (stroke), or severe heatstroke with hyperpyrexia/altered mental status requires immediate emergency department transfer (EMS 911).",
+      "Nitroglycerin is an active prescription medicine and hazardous exposure requires immediate professional guidance. A homeopathic dilution label does not by itself guarantee composition, quality, safety, or effectiveness. Chest pain, new neurological deficit, collapse, or heat illness with altered mental status requires immediate emergency services; this traditional profile must not delay proven care.",
     references: [
       "CIT-0004",
       "CIT-0005",
@@ -109,6 +109,13 @@ export const GlonoinumRemedy: KnowledgeEntity = {
       }
     ]
   },
+  claimCitations: [
+    { claimId: "R0044-TRADITIONAL-PROFILE", statement: "The pulsatile and heat-associated keynote profile is a historical description from classical homeopathic literature.", citationIds: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0007"], passageId: "CIT-0004-R0044-TRADITIONAL-PROFILE" },
+    { claimId: "R0044-EVIDENCE-LIMITS", statement: "Traditional literature does not establish modern clinical efficacy for cardiac, neurological, hypertensive, or heat illness.", citationIds: ["CIT-0023", "CIT-0024"], passageId: "CIT-0023-HOMEOPATHY-EVIDENCE-LIMITS" },
+    { claimId: "R0044-PRODUCT-SAFETY", statement: "A homeopathic dilution label does not guarantee product composition, quality, safety, or effectiveness.", citationIds: ["CIT-0023", "CIT-0024"], passageId: "CIT-0024-HOMEOPATHIC-PRODUCT-SAFETY" },
+    { claimId: "R0044-CARE-BOUNDARY", statement: "This profile must not delay emergency assessment of chest pain, stroke signs, collapse, or heatstroke.", citationIds: ["CIT-0023", "CIT-0024"], passageId: "CIT-0024-SERIOUS-CONDITION-BOUNDARY" },
+  ],
+  redFlags: ["Chest pressure, sweating, breathlessness, fainting, or pain radiating to the jaw or arm requires emergency services.", "New neurological deficit, confusion, collapse, or severe heat illness requires emergency care."],
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"
@@ -121,7 +128,7 @@ export const GlonoinumRemedy: KnowledgeEntity = {
   },
   evidenceLevel: "Traditional-Literature",
   tags: ["Glonoinum", "Nitroglycerin", "Remedy", "Throbbing Headache", "Sunstroke", "Vascular Congestion"],
-  canonicalUrl: "https://homeo.healthcare/knowledge/remedies/glonoinum",
+  canonicalUrl: "https://homeo.healthcare/knowledge/remedies/glonoine",
   readingTimeMinutes: 5,
   audience: "student",
   license: "CC BY-NC-ND 4.0",
@@ -135,7 +142,7 @@ export const GlonoinumRemedy: KnowledgeEntity = {
   },
   aiReadiness: {
     retrievalSummary: "Glonoinum (Nitroglycerin) is a major chemical homeopathic remedy described historically for violent throbbing arterial headaches synchronous with heart pulse, sunstroke, heat exhaustion, and spatial disorientation.",
-    clinicalSummary: "Source is nitroglycerin. Potentized homeopathic dilutions contain minimal chemical solute. Primary historical affinities include cerebral vessels, carotid arteries, heart, and vasomotor center.",
+    clinicalSummary: "Classical texts describe a nitroglycerin-derived pulsatile and heat-associated symptom profile. This historical description does not establish clinical efficacy or product safety and must not delay cardiac, neurological, or heat-emergency care.",
     patientSummary: "Glonoinum is a traditional homeopathic remedy described in literature for severe pounding headaches that pulse with the heart, especially after being out in hot sun.",
     studentSummary: "Guiding traditional keynotes include throbbing headache synchronous with pulse, sunstroke/heat etiology, spatial disorientation in familiar places, and aggravation from sun heat and jar.",
     keywords: ["glonoinum", "nitroglycerin", "throbbing headache remedy", "sunstroke remedy", "vascular congestion"],

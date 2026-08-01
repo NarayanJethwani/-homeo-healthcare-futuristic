@@ -2,10 +2,10 @@ import { KnowledgeEntity } from "../../types";
 
 export const EuphrasiaOfficinalisRemedy: KnowledgeEntity = {
   id: "R0042",
-  slug: "euphrasia-officinalis",
+  slug: "euphrasia",
   entityType: "remedy",
   editorialStatus: "published",
-  reviewStatus: "owner-authorized-source-bound",
+  reviewStatus: "owner-authorization-required",
   versionInfo: {
     version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
@@ -88,7 +88,7 @@ export const EuphrasiaOfficinalisRemedy: KnowledgeEntity = {
       "1M"
     ],
     safetyNotes:
-      "Botanical source (*Euphrasia officinalis* / Eyebright). Highly potentized homeopathic preparations (6C, 30C, 200C) contain minimal chemical solute. Emergency Referral: Sudden loss of vision, deep severe ocular pain, corneal ulceration, chemical eye exposure, or acute purulent conjunctivitis mandates immediate professional ophthalmological examination.",
+      "A homeopathic dilution label does not by itself guarantee composition, quality, safety, or effectiveness. Sudden vision change, severe eye pain, trauma, chemical exposure, corneal clouding, or marked purulent discharge requires immediate conventional eye assessment; this traditional profile must not delay urgent ophthalmic care.",
     references: [
       "CIT-0004",
       "CIT-0005",
@@ -108,6 +108,13 @@ export const EuphrasiaOfficinalisRemedy: KnowledgeEntity = {
       }
     ]
   },
+  claimCitations: [
+    { claimId: "R0042-TRADITIONAL-PROFILE", statement: "The ocular and nasal keynote profile is a historical description from classical homeopathic literature.", citationIds: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0007"], passageId: "CIT-0004-R0042-TRADITIONAL-PROFILE" },
+    { claimId: "R0042-EVIDENCE-LIMITS", statement: "Traditional literature does not establish modern clinical efficacy for conjunctivitis, allergy, infection, or eye injury.", citationIds: ["CIT-0023", "CIT-0024"], passageId: "CIT-0023-HOMEOPATHY-EVIDENCE-LIMITS" },
+    { claimId: "R0042-PRODUCT-SAFETY", statement: "A homeopathic dilution label does not guarantee product composition, quality, safety, or effectiveness.", citationIds: ["CIT-0023", "CIT-0024"], passageId: "CIT-0024-HOMEOPATHIC-PRODUCT-SAFETY" },
+    { claimId: "R0042-CARE-BOUNDARY", statement: "This profile must not delay urgent conventional eye assessment or proven treatment.", citationIds: ["CIT-0023", "CIT-0024"], passageId: "CIT-0024-SERIOUS-CONDITION-BOUNDARY" },
+  ],
+  redFlags: ["Sudden vision change, severe eye pain, trauma, or chemical exposure requires immediate eye care.", "Corneal clouding, marked light sensitivity, or purulent discharge requires urgent assessment."],
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"
@@ -120,7 +127,7 @@ export const EuphrasiaOfficinalisRemedy: KnowledgeEntity = {
   },
   evidenceLevel: "Traditional-Literature",
   tags: ["Euphrasia", "Remedy", "Acrid Lachrymation", "Bland Coryza", "Allergic Conjunctivitis"],
-  canonicalUrl: "https://homeo.healthcare/knowledge/remedies/euphrasia-officinalis",
+  canonicalUrl: "https://homeo.healthcare/knowledge/remedies/euphrasia",
   readingTimeMinutes: 5,
   audience: "student",
   license: "CC BY-NC-ND 4.0",
@@ -134,7 +141,7 @@ export const EuphrasiaOfficinalisRemedy: KnowledgeEntity = {
   },
   aiReadiness: {
     retrievalSummary: "Euphrasia Officinalis is a major botanical homeopathic remedy described historically for acrid burning eye lachrymation with swollen lids, bland nasal coryza, photophobia, and allergic conjunctivitis.",
-    clinicalSummary: "Source is eyebright. Potentized homeopathic dilutions contain minimal chemical solute. Primary historical affinities include conjunctiva, lacrimal glands, eyelids, and nasal mucosa.",
+    clinicalSummary: "Classical texts describe an eyebright ocular and nasal symptom profile. This historical description does not establish clinical efficacy or product safety and must not delay urgent eye care.",
     patientSummary: "Euphrasia is a traditional homeopathic remedy described in literature for red, burning, watery eyes with swollen lids where tears sting the cheeks.",
     studentSummary: "Guiding traditional keynotes include acrid eye lachrymation + bland nasal coryza (opposite Allium Cepa), photophobia, frequent winking, and cough relieved lying down.",
     keywords: ["euphrasia", "eyebright", "acrid lachrymation", "allergic conjunctivitis remedy", "bland coryza"],

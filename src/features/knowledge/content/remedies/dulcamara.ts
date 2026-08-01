@@ -5,7 +5,7 @@ export const DulcamaraRemedy: KnowledgeEntity = {
   slug: "dulcamara",
   entityType: "remedy",
   editorialStatus: "published",
-  reviewStatus: "owner-authorized-source-bound",
+  reviewStatus: "owner-authorization-required",
   versionInfo: {
     version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
@@ -87,7 +87,7 @@ export const DulcamaraRemedy: KnowledgeEntity = {
       "1M"
     ],
     safetyNotes:
-      "Botanical source (*Solanum dulcamara* / Bittersweet nightshade containing toxic glycoalkaloids solanine and dulcamarine). Accidental ingestion of raw nightshade plant berries or leaves requires poison control consultation. Highly potentized homeopathic preparations (6C, 30C, 200C) contain minimal chemical solute. Emergency Referral: Spreading bacterial skin infections (cellulitis, erysipelas), acute asthma paroxysms with severe hypoxemia, or severe acute pyelonephritis mandate prompt conventional medical evaluation.",
+      "Raw bittersweet-nightshade material may be poisonous; suspected ingestion requires immediate poison-service or emergency guidance. A homeopathic dilution label does not by itself guarantee composition, quality, safety, or effectiveness. Breathing difficulty, rapidly spreading painful skin inflammation with fever, or severe urinary symptoms requires urgent conventional assessment.",
     references: [
       "CIT-0004",
       "CIT-0005",
@@ -107,6 +107,13 @@ export const DulcamaraRemedy: KnowledgeEntity = {
       }
     ]
   },
+  claimCitations: [
+    { claimId: "R0040-TRADITIONAL-PROFILE", statement: "The cold-damp keynote profile is a historical description from classical homeopathic literature.", citationIds: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0007"], passageId: "CIT-0004-R0040-TRADITIONAL-PROFILE" },
+    { claimId: "R0040-EVIDENCE-LIMITS", statement: "Traditional literature does not establish modern clinical efficacy for infection, asthma, urinary disease, or dermatological disease.", citationIds: ["CIT-0023", "CIT-0024"], passageId: "CIT-0023-HOMEOPATHY-EVIDENCE-LIMITS" },
+    { claimId: "R0040-PRODUCT-SAFETY", statement: "A homeopathic dilution label does not guarantee product composition, quality, safety, or effectiveness.", citationIds: ["CIT-0023", "CIT-0024"], passageId: "CIT-0024-HOMEOPATHIC-PRODUCT-SAFETY" },
+    { claimId: "R0040-CARE-BOUNDARY", statement: "This profile must not delay poison guidance or urgent conventional assessment of respiratory, infectious, or urinary emergencies.", citationIds: ["CIT-0023", "CIT-0024"], passageId: "CIT-0024-SERIOUS-CONDITION-BOUNDARY" },
+  ],
+  redFlags: ["Suspected ingestion of raw bittersweet nightshade requires immediate poison-service guidance.", "Breathing difficulty, spreading painful skin redness with fever, or severe urinary symptoms requires urgent care."],
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"
@@ -133,7 +140,7 @@ export const DulcamaraRemedy: KnowledgeEntity = {
   },
   aiReadiness: {
     retrievalSummary: "Dulcamara is a major botanical homeopathic remedy described historically for catarrhal, rheumatic, and dermatological ailments triggered by exposure to cold damp weather or rapid weather transitions from warm to cold.",
-    clinicalSummary: "Source is bittersweet nightshade containing solanine. Potentized homeopathic dilutions contain minimal chemical solute. Primary historical affinities include mucous membranes, skin, and fibrous joints.",
+    clinicalSummary: "Classical texts describe a bittersweet-nightshade symptom profile. This historical description does not establish clinical efficacy or product safety and must not delay poison, respiratory, infectious, or urinary care.",
     patientSummary: "Dulcamara is a traditional homeopathic remedy described in literature for colds, joint stiffness, or skin rashes that start after getting wet or being out in damp cold weather.",
     studentSummary: "Guiding traditional keynotes include cold damp weather etiology, thick yellow crusty skin eruptions, damp-weather diarrhea, and rheumatic stiffness relieved by motion.",
     keywords: ["dulcamara", "bittersweet", "damp cold worse", "weather change remedy", "crusty eczema"],

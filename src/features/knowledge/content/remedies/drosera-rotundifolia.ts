@@ -2,10 +2,10 @@ import { KnowledgeEntity } from "../../types";
 
 export const DroseraRotundifoliaRemedy: KnowledgeEntity = {
   id: "R0039",
-  slug: "drosera-rotundifolia",
+  slug: "drosera",
   entityType: "remedy",
   editorialStatus: "published",
-  reviewStatus: "owner-authorized-source-bound",
+  reviewStatus: "owner-authorization-required",
   versionInfo: {
     version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
@@ -87,7 +87,7 @@ export const DroseraRotundifoliaRemedy: KnowledgeEntity = {
       "1M"
     ],
     safetyNotes:
-      "Botanical source (*Drosera rotundifolia* / Sundew). Highly potentized homeopathic preparations (6C, 30C, 200C) contain minimal chemical solute. Emergency Referral: Acute respiratory distress, stridor, pediatric croup with cyanosis, suspected pertussis with hypoxemia, or respiratory exhaustion mandates immediate emergency pediatric/pulmonary evaluation and oxygenation.",
+      "A homeopathic dilution label does not by itself guarantee composition, quality, safety, or effectiveness. Acute breathing difficulty, stridor, cyanosis, apnea, suspected pertussis with hypoxemia, or respiratory exhaustion requires immediate emergency assessment; this traditional profile must not delay proven airway and respiratory care.",
     references: [
       "CIT-0004",
       "CIT-0005",
@@ -107,6 +107,13 @@ export const DroseraRotundifoliaRemedy: KnowledgeEntity = {
       }
     ]
   },
+  claimCitations: [
+    { claimId: "R0039-TRADITIONAL-PROFILE", statement: "The cough keynote profile is a historical description from classical homeopathic literature.", citationIds: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0007"], passageId: "CIT-0004-R0039-TRADITIONAL-PROFILE" },
+    { claimId: "R0039-EVIDENCE-LIMITS", statement: "Traditional literature does not establish modern clinical efficacy for croup, pertussis, or respiratory disease.", citationIds: ["CIT-0023", "CIT-0024"], passageId: "CIT-0023-HOMEOPATHY-EVIDENCE-LIMITS" },
+    { claimId: "R0039-PRODUCT-SAFETY", statement: "A homeopathic dilution label does not guarantee product composition, quality, safety, or effectiveness.", citationIds: ["CIT-0023", "CIT-0024"], passageId: "CIT-0024-HOMEOPATHIC-PRODUCT-SAFETY" },
+    { claimId: "R0039-CARE-BOUNDARY", statement: "This profile must not delay emergency airway assessment or proven respiratory treatment.", citationIds: ["CIT-0023", "CIT-0024"], passageId: "CIT-0024-SERIOUS-CONDITION-BOUNDARY" },
+  ],
+  redFlags: ["Stridor, cyanosis, apnea, severe retractions, or respiratory exhaustion requires emergency care.", "A young infant, suspected pertussis, dehydration, or altered responsiveness requires urgent assessment."],
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"
@@ -119,7 +126,7 @@ export const DroseraRotundifoliaRemedy: KnowledgeEntity = {
   },
   evidenceLevel: "Traditional-Literature",
   tags: ["Drosera", "Remedy", "Paroxysmal Cough", "Lying Down Worse", "Whooping Cough Profile"],
-  canonicalUrl: "https://homeo.healthcare/knowledge/remedies/drosera-rotundifolia",
+  canonicalUrl: "https://homeo.healthcare/knowledge/remedies/drosera",
   readingTimeMinutes: 5,
   audience: "student",
   license: "CC BY-NC-ND 4.0",
@@ -133,7 +140,7 @@ export const DroseraRotundifoliaRemedy: KnowledgeEntity = {
   },
   aiReadiness: {
     retrievalSummary: "Drosera Rotundifolia is a major botanical homeopathic remedy described historically for violent paroxysmal spasmodic coughing fits in rapid succession, cough aggravated upon lying down and warmth of bed, retching/vomiting of mucus, and deep hoarse voice.",
-    clinicalSummary: "Source is round-leaved sundew. Potentized homeopathic dilutions contain minimal chemical solute. Primary historical affinities include larynx, trachea, bronchial mucosa, and vagus nerve.",
+    clinicalSummary: "Classical texts describe a round-leaved-sundew cough profile. This historical description does not establish clinical efficacy or product safety and must not delay emergency respiratory care.",
     patientSummary: "Drosera is a traditional homeopathic remedy described in literature for severe coughing fits that come one right after another, especially worse when lying down at night.",
     studentSummary: "Guiding traditional keynotes include paroxysmal spasmodic cough in rapid succession, worse lying down / head on pillow, retching/vomiting after cough, and deep hoarse voice.",
     keywords: ["drosera", "sundew", "paroxysmal cough remedy", "lying down worse cough", "spasmodic cough"],

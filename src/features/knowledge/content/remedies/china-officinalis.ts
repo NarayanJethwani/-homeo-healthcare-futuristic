@@ -2,10 +2,10 @@ import { KnowledgeEntity } from "../../types";
 
 export const ChinaOfficinalisRemedy: KnowledgeEntity = {
   id: "R0035",
-  slug: "china-officinalis",
+  slug: "cinchona-officinalis",
   entityType: "remedy",
   editorialStatus: "published",
-  reviewStatus: "owner-authorized-source-bound",
+  reviewStatus: "owner-authorization-required",
   versionInfo: {
     version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
@@ -90,7 +90,7 @@ export const ChinaOfficinalisRemedy: KnowledgeEntity = {
       "1M"
     ],
     safetyNotes:
-      "Cinchona bark contains quinine alkaloids (risk of cinchonism, tinnitus, hearing loss, and cardiac dysrhythmias in crude doses). Highly potentized homeopathic preparations (6C, 30C, 200C) contain minimal chemical solute. Emergency Referral: Acute heavy hemorrhage, hypovolemic shock, or severe uncompensated anemia requires immediate emergency hospital care, blood transfusion, and hemodynamic stabilization.",
+      "Crude Cinchona and quinine-containing products can cause serious adverse effects and require source-specific toxicology guidance. A homeopathic dilution label does not by itself guarantee composition, quality, safety, or effectiveness. Acute heavy bleeding, fainting, shock, or suspected severe anemia requires immediate emergency assessment; this traditional profile must not delay proven care.",
     references: [
       "CIT-0004",
       "CIT-0005",
@@ -110,6 +110,13 @@ export const ChinaOfficinalisRemedy: KnowledgeEntity = {
       }
     ]
   },
+  claimCitations: [
+    { claimId: "R0035-TRADITIONAL-PROFILE", statement: "The keynote profile is a historical description from classical homeopathic literature.", citationIds: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0007"], passageId: "CIT-0004-R0035-TRADITIONAL-PROFILE" },
+    { claimId: "R0035-EVIDENCE-LIMITS", statement: "Traditional literature does not establish modern clinical efficacy for bleeding, anemia, fever, or gastrointestinal disease.", citationIds: ["CIT-0023", "CIT-0024"], passageId: "CIT-0023-HOMEOPATHY-EVIDENCE-LIMITS" },
+    { claimId: "R0035-PRODUCT-SAFETY", statement: "A homeopathic dilution label does not guarantee product composition, quality, safety, or effectiveness.", citationIds: ["CIT-0023", "CIT-0024"], passageId: "CIT-0024-HOMEOPATHIC-PRODUCT-SAFETY" },
+    { claimId: "R0035-CARE-BOUNDARY", statement: "This profile must not delay emergency assessment or replace proven treatment for hemorrhage, shock, or poisoning.", citationIds: ["CIT-0023", "CIT-0024"], passageId: "CIT-0024-SERIOUS-CONDITION-BOUNDARY" },
+  ],
+  redFlags: ["Uncontrolled bleeding, fainting, confusion, or shock requires emergency care.", "Suspected crude-source toxicity, severe weakness, chest symptoms, or abnormal heartbeat requires urgent assessment."],
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"
@@ -122,7 +129,7 @@ export const ChinaOfficinalisRemedy: KnowledgeEntity = {
   },
   evidenceLevel: "Traditional-Literature",
   tags: ["China Off", "Cinchona", "Remedy", "Fluid Loss Debility", "Flatulence", "Periodicity"],
-  canonicalUrl: "https://homeo.healthcare/knowledge/remedies/china-officinalis",
+  canonicalUrl: "https://homeo.healthcare/knowledge/remedies/cinchona-officinalis",
   readingTimeMinutes: 5,
   audience: "student",
   license: "CC BY-NC-ND 4.0",
@@ -136,7 +143,7 @@ export const ChinaOfficinalisRemedy: KnowledgeEntity = {
   },
   aiReadiness: {
     retrievalSummary: "China Officinalis (Cinchona) is a major botanical homeopathic remedy described historically for fluid-loss debility, tympanitic abdominal distension without relief from eructation, light-touch hyperesthesia, and periodic fever.",
-    clinicalSummary: "Source is Cinchona bark containing quinine alkaloids. Potentized homeopathic dilutions contain minimal chemical solute. Primary historical affinities include blood, spleen, liver, GI tract, and nervous system.",
+    clinicalSummary: "Classical texts describe a Cinchona-bark symptom profile. This historical description does not establish clinical efficacy or product safety, and it must not delay emergency care for bleeding, shock, or serious adverse effects.",
     patientSummary: "China Officinalis is a traditional homeopathic remedy described in literature for weakness after loss of fluids (like sweating, diarrhea, or bleeding) and uncomfortable abdominal gas.",
     studentSummary: "Guiding traditional keynotes include fluid-loss debility, flatulent abdominal distension, light touch worse / hard pressure better, 1790 Hahnemann discovery role, and periodic paroxysms.",
     keywords: ["china off", "cinchona", "fluid loss debility", "flatulence remedy", "periodicity remedy"],

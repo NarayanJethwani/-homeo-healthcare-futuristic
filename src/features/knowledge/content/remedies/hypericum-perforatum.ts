@@ -2,10 +2,10 @@ import { KnowledgeEntity } from "../../types";
 
 export const HypericumPerforatumRemedy: KnowledgeEntity = {
   id: "R0048",
-  slug: "hypericum-perforatum",
+  slug: "hypericum",
   entityType: "remedy",
   editorialStatus: "published",
-  reviewStatus: "owner-authorized-source-bound",
+  reviewStatus: "owner-authorization-required",
   versionInfo: {
     version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
@@ -87,7 +87,7 @@ export const HypericumPerforatumRemedy: KnowledgeEntity = {
       "1M"
     ],
     safetyNotes:
-      "Botanical source (*Hypericum perforatum* / St. John's Wort). Raw botanical extracts contain hypericin and induce hepatic CYP3A4 enzymes (leading to pharmaceutical drug interactions). Potentized homeopathic preparations (6C, 30C, 200C) contain minimal chemical solute. Emergency Referral: Open nerve laceration, compound fracture, spinal cord injury with paralysis/sensory loss, severe traumatic brain injury, or deep soil-contaminated puncture wound with tetanus risk mandates immediate emergency trauma/surgical evaluation and tetanus immunization.",
+      "St. John's wort products can interact with medicines; product-specific professional guidance is required. A homeopathic dilution label does not by itself guarantee composition, quality, safety, or effectiveness. Open wounds, fractures, head or spinal trauma, new weakness or sensory loss, and deep contaminated puncture injuries require urgent conventional assessment.",
     references: [
       "CIT-0004",
       "CIT-0005",
@@ -107,6 +107,13 @@ export const HypericumPerforatumRemedy: KnowledgeEntity = {
       }
     ]
   },
+  claimCitations: [
+    { claimId: "R0048-TRADITIONAL-PROFILE", statement: "The trauma and nerve-pain keynote profile is a historical description from classical homeopathic literature.", citationIds: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0007"], passageId: "CIT-0004-R0048-TRADITIONAL-PROFILE" },
+    { claimId: "R0048-EVIDENCE-LIMITS", statement: "Traditional literature does not establish modern clinical efficacy for nerve injury, fracture, spinal trauma, or puncture wounds.", citationIds: ["CIT-0023", "CIT-0024"], passageId: "CIT-0023-HOMEOPATHY-EVIDENCE-LIMITS" },
+    { claimId: "R0048-PRODUCT-SAFETY", statement: "A homeopathic dilution label does not guarantee product composition, interaction risk, quality, safety, or effectiveness.", citationIds: ["CIT-0023", "CIT-0024"], passageId: "CIT-0024-HOMEOPATHIC-PRODUCT-SAFETY" },
+    { claimId: "R0048-CARE-BOUNDARY", statement: "This profile must not delay trauma, neurological, fracture, or contaminated-wound care.", citationIds: ["CIT-0023", "CIT-0024"], passageId: "CIT-0024-SERIOUS-CONDITION-BOUNDARY" },
+  ],
+  redFlags: ["Head or spinal trauma, new weakness, sensory loss, loss of bladder control, or severe pain requires emergency care.", "Open wounds, fractures, crushed tissue, or deep contaminated punctures require urgent conventional assessment."],
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"
@@ -119,7 +126,7 @@ export const HypericumPerforatumRemedy: KnowledgeEntity = {
   },
   evidenceLevel: "Traditional-Literature",
   tags: ["Hypericum", "Remedy", "Nerve Trauma", "Crushed Fingertips", "Coccyx Injury", "Shooting Nerve Pain"],
-  canonicalUrl: "https://homeo.healthcare/knowledge/remedies/hypericum-perforatum",
+  canonicalUrl: "https://homeo.healthcare/knowledge/remedies/hypericum",
   readingTimeMinutes: 5,
   audience: "student",
   license: "CC BY-NC-ND 4.0",
@@ -133,7 +140,7 @@ export const HypericumPerforatumRemedy: KnowledgeEntity = {
   },
   aiReadiness: {
     retrievalSummary: "Hypericum Perforatum (St. John's Wort) is a major botanical homeopathic remedy described historically for nerve-rich injury profiles (crushed fingers, toes, tailbone trauma), sharp shooting nerve pains, and puncture wounds.",
-    clinicalSummary: "Source is St. John's Wort. Potentized homeopathic dilutions contain minimal chemical solute. Primary historical affinities include peripheral nerves, spinal cord, coccyx, and nail beds.",
+    clinicalSummary: "Classical texts describe a St. John's-wort trauma and nerve-pain profile. This historical description does not establish clinical efficacy, absence of interactions, or product safety and must not delay trauma and wound care.",
     patientSummary: "Hypericum is a traditional homeopathic remedy described in literature for injuries to nerve-sensitive places like crushed fingers, toes, or a hurt tailbone with sharp shooting pain.",
     studentSummary: "Guiding traditional keynotes include nerve-rich crushing trauma (fingertips, coccyx), sharp shooting pains proximally along nerves, puncture wounds, and nerve injury after surgery.",
     keywords: ["hypericum", "st johns wort", "nerve injury remedy", "crushed finger remedy", "coccyx trauma"],

@@ -5,7 +5,7 @@ export const GraphitesRemedy: KnowledgeEntity = {
   slug: "graphites",
   entityType: "remedy",
   editorialStatus: "published",
-  reviewStatus: "owner-authorized-source-bound",
+  reviewStatus: "owner-authorization-required",
   versionInfo: {
     version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
@@ -89,7 +89,7 @@ export const GraphitesRemedy: KnowledgeEntity = {
       "1M"
     ],
     safetyNotes:
-      "Mineral source Black Lead (Graphite/Carbon). Highly potentized homeopathic preparations (6C, 30C, 200C) contain minimal chemical solute and are free of elemental toxicity. Emergency Referral: Secondary bacterial infection of skin lesions (spreading cellulitis, deep abscesses), intestinal obstruction, or acute surgical abdomen mandates prompt medical evaluation.",
+      "A homeopathic dilution label does not by itself guarantee composition, quality, safety, or effectiveness. Rapidly spreading painful skin inflammation, fever, deep swelling, persistent vomiting, abdominal distension, or inability to pass stool or gas requires urgent conventional assessment; this traditional profile must not delay infectious or surgical care.",
     references: [
       "CIT-0004",
       "CIT-0005",
@@ -109,6 +109,13 @@ export const GraphitesRemedy: KnowledgeEntity = {
       }
     ]
   },
+  claimCitations: [
+    { claimId: "R0045-TRADITIONAL-PROFILE", statement: "The skin and bowel keynote profile is a historical description from classical homeopathic literature.", citationIds: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0007"], passageId: "CIT-0004-R0045-TRADITIONAL-PROFILE" },
+    { claimId: "R0045-EVIDENCE-LIMITS", statement: "Traditional literature does not establish modern clinical efficacy for eczema, infection, constipation, or obstruction.", citationIds: ["CIT-0023", "CIT-0024"], passageId: "CIT-0023-HOMEOPATHY-EVIDENCE-LIMITS" },
+    { claimId: "R0045-PRODUCT-SAFETY", statement: "A homeopathic dilution label does not guarantee product composition, quality, safety, or effectiveness.", citationIds: ["CIT-0023", "CIT-0024"], passageId: "CIT-0024-HOMEOPATHIC-PRODUCT-SAFETY" },
+    { claimId: "R0045-CARE-BOUNDARY", statement: "This profile must not delay infectious, dermatological, gastrointestinal, or surgical assessment.", citationIds: ["CIT-0023", "CIT-0024"], passageId: "CIT-0024-SERIOUS-CONDITION-BOUNDARY" },
+  ],
+  redFlags: ["Rapidly spreading painful skin inflammation, fever, deep swelling, or confusion requires urgent care.", "Persistent vomiting, abdominal swelling, severe pain, or inability to pass stool or gas requires emergency assessment."],
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"
@@ -135,7 +142,7 @@ export const GraphitesRemedy: KnowledgeEntity = {
   },
   aiReadiness: {
     retrievalSummary: "Graphites (Black Lead) is a major mineral homeopathic remedy described historically for rough dry skin with sticky honey-like yellow fluid exudation, flexural eczema behind ears, chronic constipation with mucous-threaded knotty stool, and chilly obesity.",
-    clinicalSummary: "Source is native graphite. Potentized homeopathic dilutions contain minimal chemical solute. Primary historical affinities include skin, epidermis, GI tract, lymphatic glands, and nails.",
+    clinicalSummary: "Classical texts describe a graphite-derived skin and bowel symptom profile. This historical description does not establish clinical efficacy or product safety and must not delay infectious, dermatological, or surgical care.",
     patientSummary: "Graphites is a traditional homeopathic remedy described in literature for dry, cracked skin that leaks a sticky, honey-colored fluid, especially behind ears or in skin creases.",
     studentSummary: "Guiding traditional keynotes include honey-like sticky yellow skin exudation, eczema behind ears & flexures, knotty constipation with mucous threads, thick brittle nails, and chilly obesity.",
     keywords: ["graphites", "black lead", "sticky eczema remedy", "honey fluid skin", "constipation remedy"],

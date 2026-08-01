@@ -5,7 +5,7 @@ export const ColocynthisRemedy: KnowledgeEntity = {
   slug: "colocynthis",
   entityType: "remedy",
   editorialStatus: "published",
-  reviewStatus: "owner-authorized-source-bound",
+  reviewStatus: "owner-authorization-required",
   versionInfo: {
     version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
@@ -88,7 +88,7 @@ export const ColocynthisRemedy: KnowledgeEntity = {
       "1M"
     ],
     safetyNotes:
-      "Source *Citrullus colocynthis* (Bitter Apple) fruit pulp contains toxic cucurbitacin glycosides capable of causing severe gastrointestinal catharsis, bloody diarrhea, and renal irritation in crude form. Highly potentized homeopathic preparations (6C, 30C, 200C) contain minimal chemical solute. Emergency Referral: Agonizing abdominal pain from suspected acute appendicitis, bowel obstruction, peritonitis, ectopic pregnancy, or acute surgical abdomen mandates immediate emergency evaluation.",
+      "Crude bitter-apple preparations may be hazardous and require source-specific toxicology guidance. A homeopathic dilution label does not by itself guarantee composition, quality, safety, or effectiveness. Severe abdominal pain with guarding, fever, fainting, pregnancy, persistent vomiting, or obstruction signs requires urgent conventional assessment; this traditional profile must not delay surgical or emergency care.",
     references: [
       "CIT-0004",
       "CIT-0005",
@@ -108,6 +108,13 @@ export const ColocynthisRemedy: KnowledgeEntity = {
       }
     ]
   },
+  claimCitations: [
+    { claimId: "R0036-TRADITIONAL-PROFILE", statement: "The keynote profile is a historical description from classical homeopathic literature.", citationIds: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0007"], passageId: "CIT-0004-R0036-TRADITIONAL-PROFILE" },
+    { claimId: "R0036-EVIDENCE-LIMITS", statement: "Traditional literature does not establish modern clinical efficacy for abdominal, pelvic, or sciatic disorders.", citationIds: ["CIT-0023", "CIT-0024"], passageId: "CIT-0023-HOMEOPATHY-EVIDENCE-LIMITS" },
+    { claimId: "R0036-PRODUCT-SAFETY", statement: "A homeopathic dilution label does not guarantee product composition, quality, safety, or effectiveness.", citationIds: ["CIT-0023", "CIT-0024"], passageId: "CIT-0024-HOMEOPATHIC-PRODUCT-SAFETY" },
+    { claimId: "R0036-CARE-BOUNDARY", statement: "This profile must not delay urgent evaluation of a surgical abdomen, pregnancy complication, obstruction, or poisoning.", citationIds: ["CIT-0023", "CIT-0024"], passageId: "CIT-0024-SERIOUS-CONDITION-BOUNDARY" },
+  ],
+  redFlags: ["Severe abdominal pain with guarding, fever, fainting, pregnancy, or persistent vomiting requires urgent care.", "Suspected crude bitter-apple ingestion, bloody diarrhea, or severe dehydration requires poison or emergency guidance."],
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"
@@ -134,7 +141,7 @@ export const ColocynthisRemedy: KnowledgeEntity = {
   },
   aiReadiness: {
     retrievalSummary: "Colocynthis is a major botanical homeopathic remedy described historically for agonizing abdominal colic causing doubling up and seeking hard pressure, sciatic neuralgia, and ailments from suppressed anger.",
-    clinicalSummary: "Source is bitter apple containing cucurbitacin glycosides. Potentized homeopathic dilutions contain minimal chemical solute. Primary historical affinities include splanchnic nerves, sciatic nerve, GI mucosa, and ovaries.",
+    clinicalSummary: "Classical texts describe a bitter-apple symptom profile. This historical description does not establish clinical efficacy or product safety, and it must not delay urgent evaluation of severe abdominal or pelvic symptoms.",
     patientSummary: "Colocynthis is a traditional homeopathic remedy described in literature for severe cramping belly pain where pressing hard or doubling over brings comfort, and for pain following anger.",
     studentSummary: "Guiding traditional keynotes include doubling up colic with hard pressure relief, suppressed anger etiology, right-sided sciatica, and relief from warmth.",
     keywords: ["colocynthis", "bitter apple", "abdominal colic remedy", "bending double", "sciatica remedy"],
