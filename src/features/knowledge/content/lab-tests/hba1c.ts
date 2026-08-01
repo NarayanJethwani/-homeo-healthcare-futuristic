@@ -6,48 +6,66 @@ export const HbA1cLabTest: KnowledgeEntity = {
   entityType: "lab-test",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-07-31T20:30:00Z",
+    reviewed: "2026-07-31T20:30:00Z"
   },
   title: {
-    en: "HbA1c",
-    hi: "HbA1c",
-    gu: "HbA1c",
-    mr: "HbA1c",
-    es: "HbA1c",
-    ar: "HbA1c"
+    en: "Glycated Hemoglobin (HbA1c / A1C)",
+    hi: "ग्लाइकेटेड हीमोग्लोबिन (HbA1c / A1C)",
+    gu: "ગ્લાયકેટેડ હિમોગ્લોબિન (HbA1c / A1C)",
+    mr: "ग्लाइकेटेड हिमोग्लोबिन (HbA1c / A1C)",
+    es: "Hemoglobina Glicada (HbA1c / A1C)",
+    ar: "الهيموجلوبين السكري (HbA1c)"
   },
   summary: {
-    en: "Clinical purpose, normal range, and interpretation of HbA1c lab results.",
-    hi: "HbA1c प्रयोगशाला परीक्षण विवरण.",
-    gu: "HbA1c લેબોરેટરી ટેસ્ટ પરિચય.",
-    mr: "HbA1c लॅब टेस्ट माहिती.",
-    es: "Propósito e interpretación de la prueba de laboratorio HbA1c.",
-    ar: "الغرض السريري وتفسير نتائج اختبار HbA1c."
+    en: "Clinical interpretation, ADA diagnostic criteria, 3-month average glycemic index, and prediabetes thresholds for Glycated Hemoglobin (HbA1c).",
+    hi: "HbA1c परीक्षण की नैदानिक समझ, 3 महीने का औसत रक्त शर्करा स्तर और नैदानिक सीमाएँ.",
+    gu: "HbA1c લેબોરેટરી ટેસ્ટની સમજણ અને રેફરન્સ રેન્જ.",
+    mr: "HbA1c लॅब टेस्टची माहिती आणि संदर्भ मर्यादा.",
+    es: "Interpretación clínica y criterios diagnósticos de la hemoglobina glicada según la ADA.",
+    ar: "التفسير السريري والنطاق المرجعي للهيموجلوبين السكري."
   },
   content: {
-  "overview": "HBA1C: A general laboratory screening parameter or basic metabolic marker used to assess baseline physiological homeostasis and metabolic efficiency.",
-  "normalRange": "ESR: < 20 mm/hr; Blood Glucose: 70-99 mg/dL; Serum Creatinine: 0.6-1.2 mg/dL.",
-  "highValues": [
-    "Systemic inflammatory baseline (high ESR)",
-    "Metabolic intolerance or early diabetes (high glucose)",
-    "Impaired kidney function (high creatinine)"
-  ],
-  "lowValues": [
-    "Anemia or low muscle mass",
-    "Hypoglycemia",
-    "Nutritional deficiencies"
-  ],
-  "clinicalInterpretation": "HBA1C evaluation: Elevated inflammatory markers (ESR, CRP) suggest systemic activity needing further investigation. Blood glucose shifts require evaluation of insulin sensitivity and glycemic control.",
-  "references": [
-    "CIT-0004",
-    "CIT-0005",
-    "CIT-0006",
-    "CIT-0007",
-    "CIT-0008"
-  ],
+    overview: "Glycated Hemoglobin (HbA1c / A1C): Quantitative measure of non-enzymatic glycation of the N-terminal valine residue of the hemoglobin beta chain, reflecting mean circulating blood glucose over the preceding 2 to 3 months (erythrocyte lifespan).",
+    normalRange: "Normal Non-Diabetic: <5.7% (<39 mmol/mol); Prediabetes Threshold: 5.7%–6.4% (39–47 mmol/mol); Diabetes Mellitus Diagnostic Threshold: ≥6.5% (≥48 mmol/mol) confirmed on repeat testing; Target Glycemic Control in Diabetes: <7.0% (<53 mmol/mol).",
+    highValues: [
+      "Uncontrolled Type 1 or Type 2 Diabetes Mellitus (HbA1c >9.0% indicates severe chronic hyperglycemia)",
+      "Prediabetes / Impaired Glucose Tolerance",
+      "False Elevations: Iron Deficiency Anemia, Asplenia, Alcoholism, Hemoglobinopathies (HbS, HbC in certain assays)"
+    ],
+    lowValues: [
+      "False Lows / Underestimation: Hemolytic Anemia, Acute Hemorrhage, Recent Blood Transfusion, Pregnancy (high RBC turnover)",
+      "Recurrent Severe Hypoglycemia in treated diabetes"
+    ],
+    clinicalInterpretation: "HbA1c ≥6.5% confirms Diabetes Mellitus; HbA1c >9.0% warrants intensification of antihyperglycemic pharmacotherapy to prevent microvascular (retinopathy, nephropathy, neuropathy) and macrovascular complications.",
+    references: [
+      "CIT-0070",
+      "CIT-0023"
+    ],
+    claimCitations: [
+      {
+        claimId: "CLM-L0005-001",
+        passage: "ADA 2026 guidelines specify an HbA1c threshold of ≥6.5% (48 mmol/mol) as a diagnostic criterion for Diabetes Mellitus.",
+        citationIds: ["CIT-0070"]
+      },
+      {
+        claimId: "CLM-L0005-002",
+        passage: "HbA1c levels between 5.7% and 6.4% identify prediabetes, signaling high risk for future vascular disease and progression to clinical diabetes.",
+        citationIds: ["CIT-0070"]
+      },
+      {
+        claimId: "CLM-L0005-003",
+        passage: "Conditions that alter red blood cell turnover (e.g., hemolytic anemia, pregnancy, recent transfusion) cause invalid HbA1c readings, requiring fructosamine or continuous glucose monitoring (CGM).",
+        citationIds: ["CIT-0070"]
+      },
+      {
+        claimId: "CLM-L0005-004",
+        passage: "Homeopathic supportive management does not eliminate the necessity for routine HbA1c monitoring every 3 to 6 months in diagnosed diabetic patients.",
+        citationIds: ["CIT-0023"]
+      }
+    ],
   "faqs": [
     {
       "question": "What is a constitutional remedy in homeopathy?",

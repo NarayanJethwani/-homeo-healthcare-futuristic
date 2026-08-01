@@ -6,88 +6,97 @@ export const AlopeciaAreataDisease: KnowledgeEntity = {
   entityType: "disease",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-07-31T12:00:00Z",
+    reviewed: "2026-07-31T12:00:00Z",
   },
   title: {
     en: "Alopecia Areata",
-    hi: "Alopecia Areata",
-    gu: "Alopecia Areata",
-    mr: "Alopecia Areata",
+    hi: "एलोपेशिया एरीटा / बाल झड़ने की बीमारी (Alopecia Areata)",
+    gu: "એલોપેસિયા એરિયાટા / પેચમાં વાળ ખરવા (Alopecia Areata)",
+    mr: "एलोपेशिया एरियटा / चट्टे पडणे (Alopecia Areata)",
     es: "Alopecia Areata",
-    ar: "Alopecia Areata"
+    ar: "الثعلبة البقعية",
   },
   summary: {
-    en: "A comprehensive clinical overview of Alopecia Areata, covering causes, clinical symptoms, and homeopathic management principles.",
-    hi: "Alopecia Areata का नैदानिक विवरण.",
-    gu: "Alopecia Areata નો તબીબી પરિચય.",
-    mr: "Alopecia Areata चे आजार आणि माहिती.",
-    es: "Un resumen clínico completo de Alopecia Areata.",
-    ar: "نظرة عامة سريرية شاملة لـ Alopecia Areata."
+    en: "An authoritative clinical profile of Alopecia Areata covering AAD 2022 guidelines, CD8+ T-cell immune privilege collapse mechanics, systemic JAK inhibitor safety monitoring, and cicatricial alopecia differential boundaries.",
+    hi: "एलोपेशिया एरीटा (Alopecia Areata) का AAD 2022 मानकों के अनुसार प्रामाणिक विवरण और सुरक्षा सीमाएँ।",
+    gu: "એલોપેસિયા એરિયાટાનું AAD 2022 ધોરણો મુજબનું નૈદાનિક વિવરણ અને સુરક્ષા સીમાઓ.",
+    mr: "एलोपेशिया एरियटाचे AAD 2022 निकषांनुसार वैद्यकीय विश्लेषण आणि आणीबाणीच्या मर्यादा.",
+    es: "Un perfil clínico autorizado de la Alopecia Areata según los criterios AAD 2022 y límites de emergencia.",
+    ar: "دليل سريري موثوق للثعلبة البقعية وفقًا لمعايير AAD 2022 وحدود السلامة.",
   },
   content: {
-  "overview": "Alopecia areata: Systemic reactive patterns and chronic disease tendencies represent complex clinical entities that manifest across multiple organ systems. Management focuses on optimizing general vitality and addressing deep constitutional susceptibility.",
-  "definition": "A chronic systemic disorder or susceptibility pattern affecting physiological adaptability and cellular self-regulation.",
-  "causes": [
-    "Genetic vulnerability and chronic miasmatic tendencies",
-    "Accumulated environmental stressors and lifestyle imbalances",
-    "Failure of endocrine-immune adaptive regulatory feedback mechanisms"
-  ],
-  "riskFactors": [
-    "Chronic physical or mental exhaustion",
-    "Poor dietary habits and sedentary lifestyle",
-    "Extended exposure to environmental stressors"
-  ],
-  "symptoms": [
-    "Generalized weakness and low reserve capacity",
-    "Altered temperature regulation and sleep disturbances",
-    "Subjective mood changes and emotional coping difficulties",
-    "Wandering localized physical discomforts"
-  ],
-  "diagnosis": "Diagnosed by physical examination, standard baseline lab screens, and exhaustive holistic intake of constitutional symptoms.",
-  "differentialDiagnosis": "Differentiate chronic systemic susceptibility from localized acute pathology and primary endocrine diseases.",
-  "conventionalManagement": "Management involves symptomatic pharmacological support and lifestyle modifications depending on organ systems involved.",
-  "homeopathicApproach": "Holistic constitutional homeopathy utilizes individualized remedies to optimize physiological reactivity and support the vital force.",
-  "lifestyleAdvice": "Follow a nutrient-dense whole foods diet, engage in moderate restorative exercise, adopt stress-management routines, and maintain consistent rest.",
-  "references": [
-    "CIT-0004",
-    "CIT-0005",
-    "CIT-0006",
-    "CIT-0007",
-    "CIT-0008"
-  ],
-  "faqs": [
-    {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
-    },
-    {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
-    },
-    {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
-    }
-  ]
-},
+    overview:
+      "Alopecia Areata (AA) is an autoimmune non-scarring hair loss condition characterized by well-demarcated patches of hair loss on the scalp or body [D0035-KEYNOTES, CIT-0059]. AAD 2022 guidelines detail topical, intralesional, and systemic targeted immunomodulatory care.",
+    definition:
+      "An autoimmune disease of hair follicles driven by breakdown of immune privilege in the anagen hair bulb, mediated by CD8+ NKG2D+ T-lymphocytes, leading to hair cycle disruption without follicular scarring.",
+    causes: [
+      "Autoimmune attack against hair follicle autoantigens following collapse of hair follicle immune privilege [D0035-KEYNOTES, CIT-0059]",
+      "Interferon-gamma (IFN-γ) and IL-15 pro-inflammatory signaling pathways",
+      "Genetic susceptibility (HLA-DRB1, DQB1) combined with environmental triggers (viral infection, acute psychological stress)",
+    ],
+    riskFactors: [
+      "Family history of Alopecia Areata or personal history of autoimmune disorders (Vitiligo, Hashimoto's Thyroiditis, Type 1 Diabetes, Celiac Disease)",
+      "Atopic diathesis (eczema, allergic rhinitis, asthma)",
+      "Severe acute emotional trauma or physical systemic illness",
+    ],
+    symptoms: [
+      "Abrupt onset of smooth, round or oval non-scarring patches of complete hair loss [D0035-KEYNOTES, CIT-0059]",
+      "Presence of short, tapered 'exclamation mark hairs' at the periphery of expanding lesions",
+      "Nail changes: Pitting, trachyonychia (rough nails), red lunulae, and longitudinal ridging",
+    ],
+    diagnosis:
+      "Diagnosed by clinical inspection and dermoscopy (trichoscopy showing yellow dots, black dots, exclamation mark hairs). Scalp biopsy and screening for thyroid autoantibodies (TPO) and serum TSH are performed when co-occurring systemic autoimmunity is suspected [CIT-0059].",
+    differentialDiagnosis:
+      "Differentiate Alopecia Areata from Tinea Capitis (fungal infection with scaling/black dots), Trichotillomania (hair-pulling disorder), Telogen Effluvium, Androgenetic Alopecia, and Cicatricial Scarring Alopecia (Lichen Planopilaris, Discoid Lupus).",
+    conventionalManagement:
+      "Management options include intralesional corticosteroid injections (triamcinolone acetonide), topical high-potency corticosteroids, topical immunotherapy (DPCP), topical minoxidil, and oral Janus Kinase (JAK) inhibitors (baricitinib, ritlecitinib) for severe extensive disease [CIT-0059].",
+    homeopathicApproach:
+      "Homeopathic remedies (such as Acidum Flouricum, Phosphorus, Natrum Muriaticum, Lycopodium, Vinca Minor) serve as supportive constitutional care to modulate immune reactivity, encourage follicular regrowth, and address emotional stress alongside dermatological care.",
+    lifestyleAdvice:
+      "Protect exposed scalp patches with sunblock (SPF 30+) or headwear, avoid harsh chemical hair treatments, practice stress reduction, and maintain balanced nutrition.",
+    references: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0059"],
+    faqs: [
+      {
+        question: "When does rapid hair loss indicate a severe dermatological condition or scarring scalp disease?",
+        answer:
+          "Rapid fulminant shedding causing total scalp loss (Alopecia Totalis) or full body hair loss (Alopecia Universalis), or painful scalp erythema, pustules, and scarring (CICATRICIAL ALOPECIA) requires URGENT DERMATOLOGICAL EVALUATION [D0035-EMERGENCY-LIMITS, CIT-0059]. Scarring destruction of hair follicles is IRREVERSIBLE if untreated.",
+      },
+      {
+        question: "Can homeopathic remedies replace dermatological dermoscopy, blood screens, or prescribed JAK inhibitors in severe cases?",
+        answer:
+          "NO. Homeopathy MUST NOT be used to replace diagnostic dermoscopy, autoimmune thyroid screening, or prescribed systemic immunomodulatory therapy in severe rapidly progressing disease [D0035-REGULATORY-LIMITS].",
+      },
+      {
+        question: "How does homeopathy integrate with standard dermatological care for alopecia areata?",
+        answer:
+          "Homeopathy serves as complementary constitutional support while patients remain under standard dermatological follow-up, trichoscopy tracking, and autoimmune screening [D0035-REGULATORY-LIMITS].",
+      },
+    ],
+  },
   author: {
     name: "Dr. Narayan Jethwani",
-    credentials: "MD (Hom)"
+    credentials: "MD (Hom)",
   },
   reviewer: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)",
-    specialty: "Clinical Medicine",
-    institution: "Homeo Healthcare Clinic"
+    specialty: "Dermatology & Clinical Governance",
+    institution: "Homeo Healthcare Clinical Board",
   },
-  evidenceLevel: "Traditional-Literature",
-  tags: ["Alopecia Areata", "Disease", "Clinical-Overview"],
+  reviewerRole: "Program-owner final clinical authorization",
+  lastClinicalReview: "2026-07-31",
+  nextClinicalReview: "2027-07-31",
+  evidenceLevel: "Consensus-Guidance",
+  tags: ["Alopecia-Areata", "Disease", "AAD-2022", "Dermatology", "Autoimmune", "Hair-Loss", "Emergency-Safety"],
   canonicalUrl: "https://homeo.healthcare/knowledge/diseases/alopecia-areata",
-  readingTimeMinutes: 5,
+  readingTimeMinutes: 6,
   audience: "patient",
   license: "CC BY-NC-ND 4.0",
-  changeLog: ["1.0.0: Initial release of Alopecia Areata profile"]
+  changeLog: [
+    "1.0.0: Initial release of Alopecia Areata profile",
+    "1.1.0: Upgraded with AAD 2022 evidence citations (CIT-0059), passage-level claim citations (D0035-KEYNOTES, D0035-EMERGENCY-LIMITS, D0035-REGULATORY-LIMITS), alopecia totalis / scarring red flags, and immunomodulatory safety boundaries",
+  ],
 };

@@ -6,48 +6,67 @@ export const FT4LabTest: KnowledgeEntity = {
   entityType: "lab-test",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-07-31T20:30:00Z",
+    reviewed: "2026-07-31T20:30:00Z"
   },
   title: {
-    en: "FT4",
-    hi: "FT4",
-    gu: "FT4",
-    mr: "FT4",
-    es: "FT4",
-    ar: "FT4"
+    en: "Free Thyroxine (Free T4 / FT4)",
+    hi: "फ्री थायरोक्सिन (Free T4 / FT4)",
+    gu: "ફ્રી થાઇરોક્સિન (Free T4 / FT4)",
+    mr: "फ्री थायरॉक्सिन (Free T4 / FT4)",
+    es: "Tiroxina Libre (T4 Libre / FT4)",
+    ar: "الثيروكسين الحر (Free T4)"
   },
   summary: {
-    en: "Clinical purpose, normal range, and interpretation of FT4 lab results.",
-    hi: "FT4 प्रयोगशाला परीक्षण विवरण.",
-    gu: "FT4 લેબોરેટરી ટેસ્ટ પરિચય.",
-    mr: "FT4 लॅब टेस्ट माहिती.",
-    es: "Propósito e interpretación de la prueba de laboratorio FT4.",
-    ar: "الغرض السريري وتفسير نتائج اختبار FT4."
+    en: "Clinical interpretation, ATA 2026 guidelines, thyroid axis function, primary hypothyroidism/hyperthyroidism, and levothyroxine monitoring for Free T4 (FT4).",
+    hi: "फ्री T4 (FT4) प्रयोगशाला परीक्षण की नैदानिक समझ और थायराइड कार्य मूल्यांकन.",
+    gu: "ફ્રી T4 લેબોરેટરી ટેસ્ટની સમજણ અને રેફરન્સ રેન્જ.",
+    mr: "Free T4 लॅબ टेस्टची माहिती आणि संदर्भ मर्यादा.",
+    es: "Interpretación clínica y evaluación del eje tiroideo según las guías ATA 2026.",
+    ar: "التفسير السريري والنطاق المرجعي للثيروكسين الحر."
   },
   content: {
-  "overview": "FT4: A general laboratory screening parameter or basic metabolic marker used to assess baseline physiological homeostasis and metabolic efficiency.",
-  "normalRange": "Varies by laboratory. Typically defined within reference intervals.",
-  "highValues": [
-    "Systemic inflammatory baseline (high ESR)",
-    "Metabolic intolerance or early diabetes (high glucose)",
-    "Impaired kidney function (high creatinine)"
-  ],
-  "lowValues": [
-    "Anemia or low muscle mass",
-    "Hypoglycemia",
-    "Nutritional deficiencies"
-  ],
-  "clinicalInterpretation": "FT4 evaluation: Elevated inflammatory markers (ESR, CRP) suggest systemic activity needing further investigation. Blood glucose shifts require evaluation of insulin sensitivity and glycemic control.",
-  "references": [
-    "CIT-0004",
-    "CIT-0005",
-    "CIT-0006",
-    "CIT-0007",
-    "CIT-0008"
-  ],
+    overview: "Free Thyroxine (Free T4 / FT4): Unbound, non-protein-attached fraction of thyroxine circulating in blood (~0.03% of total T4), representing the primary secretory product of the thyroid gland available for cellular uptake and conversion to active T3.",
+    normalRange: "Adult Reference Interval: 0.8–1.8 ng/dL (10.3–23.2 pmol/L); First Trimester Pregnancy: 0.9–1.5 ng/dL.",
+    highValues: [
+      "Overt Primary Hyperthyroidism (Graves' Disease, Toxic Nodular Goiter, Subacute Thyroiditis)",
+      "Exogenous Levothyroxine Overreplacement (Thyrotoxicosis Factitia)",
+      "Central Hyperthyroidism (TSH-secreting pituitary adenoma), Resistance to Thyroid Hormone (RTH)"
+    ],
+    lowValues: [
+      "Overt Primary Hypothyroidism (Hashimoto's Thyroiditis, Post-Surgical / Post-Iodine-131 Ablation)",
+      "Secondary / Central Hypothyroidism (Pituitary or Hypothalamic Failure with low or inappropriately normal TSH)",
+      "Inadequate Levothyroxine Replacement Therapy"
+    ],
+    clinicalInterpretation: "Elevated FT4 with suppressed TSH (<0.1 mIU/L) confirms overt hyperthyroidism; low FT4 with elevated TSH (>10 mIU/L) confirms overt primary hypothyroidism requiring levothyroxine replacement.",
+    references: [
+      "CIT-0068",
+      "CIT-0023"
+    ],
+    claimCitations: [
+      {
+        claimId: "CLM-L0009-005",
+        passage: "ATA 2026 guidelines recommend reflex FT4 measurement following an abnormal serum TSH screen to distinguish overt from subclinical thyroid disease.",
+        citationIds: ["CIT-0068"]
+      },
+      {
+        claimId: "CLM-L0009-006",
+        passage: "Low FT4 combined with low or inappropriately normal TSH indicates central (secondary/tertiary) hypothyroidism due to pituitary or hypothalamic disease.",
+        citationIds: ["CIT-0068"]
+      },
+      {
+        claimId: "CLM-L0009-007",
+        passage: "Free T4 measurements provide accurate thyroid hormone status independent of altered thyroxine-binding globulin (TBG) concentrations in pregnancy, estrogen therapy, or hepatic disease.",
+        citationIds: ["CIT-0068"]
+      },
+      {
+        claimId: "CLM-L0009-008",
+        passage: "Homeopathic supportive care (e.g., Calcarea Carb, Thyroidinum) does not replace levothyroxine replacement in overt primary hypothyroidism with subnormal FT4.",
+        citationIds: ["CIT-0023"]
+      }
+    ],
   "faqs": [
     {
       "question": "What is a constitutional remedy in homeopathy?",

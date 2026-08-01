@@ -6,47 +6,69 @@ export const MuscleWeaknessSymptom: KnowledgeEntity = {
   entityType: "symptom",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-07-31T19:50:00Z",
+    reviewed: "2026-07-31T19:50:00Z"
   },
   title: {
-    en: "Muscle Weakness",
-    hi: "Muscle Weakness",
-    gu: "Muscle Weakness",
-    mr: "Muscle Weakness",
-    es: "Muscle Weakness",
-    ar: "Muscle Weakness"
+    en: "Muscle Weakness (Paresis)",
+    hi: "मांसपेशियों की कमजोरी (Muscle Weakness)",
+    gu: "સ્નાયુઓની નબળાઈ (Muscle Weakness)",
+    mr: "स्नायूंची दुर्बलता (Muscle Weakness)",
+    es: "Debilidad Muscular (Paresia)",
+    ar: "ضعف العضلات (Muscle Weakness)"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Muscle Weakness.",
-    hi: "Muscle Weakness के लक्षण की नैदानिक समझ.",
-    gu: "Muscle Weakness ના લક્ષણ ની સમજણ.",
-    mr: "Muscle Weakness चे लक्षण आणि उपचार.",
-    es: "Definición clínica y significado de Muscle Weakness.",
-    ar: "التعريف السريري والأهمية لـ Muscle Weakness."
+    en: "Clinical triage, neurological localization, and emergency management of Muscle Weakness under AAN 2021 standards.",
+    hi: "मांसपेशियों की कमजोरी की नैदानिक समझ और आपातकालीन रेड फ्लैग्स.",
+    gu: "સ્નાયુઓની નબળાઈના લક્ષણ ની સમજણ અને ઇમરજન્સી ફ્લેગ્સ.",
+    mr: "स्नायूंच्या दुर्बलतेचे लक्षण आणि तातडीचे रेड फ्लॅग्स.",
+    es: "Triaje clínico y evaluación neurológica de la debilidad muscular.",
+    ar: "التفرقة السريرية والعلامات التحذيرية لضعف العضلات."
   },
   content: {
-  "definition": "Muscle weakness: A localized pain, sensory alteration, or mobility limitation originating from nerves, muscles, joints, or tendons.",
-  "clinicalMeaning": "Replects nociceptive pathway stimulation, localized tissue injury, or nerve root compression resulting in altered sensation.",
-  "commonCauses": [
-    "Mechanical strain or postural imbalance",
-    "Peripheral nerve compression (e.g., sciatica, carpal tunnel)",
-    "Osteoarthritis or joint degeneration",
-    "Neurogenic inflammation"
-  ],
-  "differentialDiagnosis": "Differentiate from systemic autoimmune joint disease, peripheral vascular disease, and referred visceral pain.",
-  "redFlags": [
-    "Loss of bladder or bowel control (Cauda Equina Syndrome)",
-    "Sudden onset of limb weakness or foot drop",
-    "Severe joint swelling with high fever indicating septic arthritis"
-  ],
-  "lifestyleAdvice": "Implement regular stretching, adjust desk ergonomics, engage in low-impact walking, and stay hydrated to maintain joint lubrication.",
-  "references": [
-    "CIT-0011",
-    "CIT-0022"
-  ],
+    definition: "Muscle Weakness (Paresis): Reduction in maximum voluntary motor force exerted by one or more skeletal muscle groups, localizing to upper motor neuron (brain/spinal cord), lower motor neuron (anterior horn cell/root/nerve), neuromuscular junction, or primary muscle tissue.",
+    clinicalMeaning: "Reflects acute ischemic stroke, spinal cord compression, Guillain-Barré syndrome, myasthenia gravis crisis, or severe electrolyte imbalance (hypokalemia) requiring immediate neurological localization.",
+    commonCauses: [
+      "Stroke or Transient Ischemic Attack (TIA)",
+      "Spinal Cord Compression or Acute Radiculopathy",
+      "Guillain-Barré Syndrome or Myasthenia Gravis",
+      "Severe Hypokalemia, Hypomagnesemia, or Polymyositis"
+    ],
+    differentialDiagnosis: "Differentiate upper motor neuron weakness (hyperreflexia, spasticity) from lower motor neuron weakness (flaccidity, atrophy), myasthenia (fatigability), and myopathy.",
+    redFlags: [
+      "Sudden focal weakness of face, arm, or leg (Stroke / TIA - FAST alert)",
+      "Rapidly ascending paraparesis or quadriparesis with loss of deep tendon reflexes (Guillain-Barré Syndrome)",
+      "Weakness accompanied by dyspnea or dysphagia (Impending Neuromuscular Respiratory Crisis)"
+    ],
+    lifestyleAdvice: "Immediate 911 emergency activation for acute unilateral motor weakness or dyspnea; prioritize urgent neurological imaging and electromyography.",
+    references: [
+      "CIT-0066",
+      "CIT-0023"
+    ],
+    claimCitations: [
+      {
+        claimId: "CLM-S0044-001",
+        passage: "Sudden onset of hemiparesis or facial droop demands hyperacute stroke protocol activation for thrombolysis or mechanical thrombectomy.",
+        citationIds: ["CIT-0066"]
+      },
+      {
+        claimId: "CLM-S0044-002",
+        passage: "Rapidly progressive ascending flaccid weakness following viral infection suggests Guillain-Barré syndrome requiring urgent IVIG or plasma exchange.",
+        citationIds: ["CIT-0066"]
+      },
+      {
+        claimId: "CLM-S0044-003",
+        passage: "Fluctuating muscle weakness involving ocular and bulbar muscles that worsens with exertion suggests myasthenia gravis.",
+        citationIds: ["CIT-0066"]
+      },
+      {
+        claimId: "CLM-S0044-004",
+        passage: "Homeopathic supportive care does not replace urgent neuroimaging, nerve conduction studies, or emergency airway stabilization in acute paralysis.",
+        citationIds: ["CIT-0023"]
+      }
+    ],
   "faqs": [
     {
       "question": "What causes muscle stiffness in the morning?",

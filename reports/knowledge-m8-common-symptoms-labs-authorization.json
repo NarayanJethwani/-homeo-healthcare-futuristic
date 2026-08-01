@@ -1,0 +1,172 @@
+{
+  "milestoneId": "M8",
+  "packageId": "KEP4-PACKAGE-M8-COMMON-SYMPTOMS-LABS-001",
+  "generatedAt": "2026-08-01T07:32:48.440Z",
+  "status": "pending_authorization",
+  "governance": {
+    "program": "KEP-4",
+    "productionRagActivation": false,
+    "governedProposalsCount": 95,
+    "allProposalsDraftOnly": true,
+    "ragIneligible": true
+  },
+  "summary": {
+    "totalEntitiesUpgraded": 19,
+    "symptomEntitiesCount": 10,
+    "labTestEntitiesCount": 9,
+    "evaluationCasesCount": 190,
+    "evaluationPassRate": 1
+  },
+  "entities": [
+    {
+      "entityId": "S0012",
+      "slug": "abdominal-pain",
+      "entityType": "symptom",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0072"
+    },
+    {
+      "entityId": "S0045",
+      "slug": "acid-reflux",
+      "entityType": "symptom",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0073"
+    },
+    {
+      "entityId": "S0005",
+      "slug": "back-pain",
+      "entityType": "symptom",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0074"
+    },
+    {
+      "entityId": "S0006",
+      "slug": "bloating",
+      "entityType": "symptom",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0073"
+    },
+    {
+      "entityId": "S0007",
+      "slug": "dry-cough",
+      "entityType": "symptom",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0075"
+    },
+    {
+      "entityId": "S0008",
+      "slug": "sore-throat",
+      "entityType": "symptom",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0076"
+    },
+    {
+      "entityId": "S0029",
+      "slug": "dizziness",
+      "entityType": "symptom",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0077"
+    },
+    {
+      "entityId": "S0013",
+      "slug": "fatigue",
+      "entityType": "symptom",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0078"
+    },
+    {
+      "entityId": "S0014",
+      "slug": "itching",
+      "entityType": "symptom",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0079"
+    },
+    {
+      "entityId": "S0015",
+      "slug": "joint-pain",
+      "entityType": "symptom",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0080"
+    },
+    {
+      "entityId": "L0001",
+      "slug": "cbc",
+      "entityType": "lab-test",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "L0003",
+      "slug": "esr",
+      "entityType": "lab-test",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "L0004",
+      "slug": "crp",
+      "entityType": "lab-test",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "L0015",
+      "slug": "fasting-blood-sugar",
+      "entityType": "lab-test",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0070"
+    },
+    {
+      "entityId": "L0005",
+      "slug": "hba1c",
+      "entityType": "lab-test",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0070"
+    },
+    {
+      "entityId": "L0012",
+      "slug": "lft",
+      "entityType": "lab-test",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "L0002",
+      "slug": "tsh",
+      "entityType": "lab-test",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0068"
+    },
+    {
+      "entityId": "L0035",
+      "slug": "ft3",
+      "entityType": "lab-test",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0068"
+    },
+    {
+      "entityId": "L0036",
+      "slug": "ft4",
+      "entityType": "lab-test",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0068"
+    }
+  ],
+  "evaluation": {
+    "caseCount": 190,
+    "entityCount": 18,
+    "minimumCasesPerEntity": 10,
+    "recallAt5": 1,
+    "meanReciprocalRank": 1,
+    "citationPrecision": 1,
+    "unsupportedClaimFailureCount": 0,
+    "emergencyEscalationFailureCount": 0,
+    "abstentionFailureCount": 0,
+    "staleRevisionLeakageCount": 0,
+    "crossEntityConfusionCount": 0,
+    "withdrawnContentLeakageCount": 0,
+    "passedCaseCount": 190,
+    "failedCaseCount": 0
+  },
+  "packageSha256": "2a8036c756f5779513594f6117fa34642284a6c3e99aba933a58635c7c7b9e81"
+}

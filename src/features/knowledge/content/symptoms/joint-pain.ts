@@ -6,47 +6,70 @@ export const JointPainSymptom: KnowledgeEntity = {
   entityType: "symptom",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-07-31T20:30:00Z",
+    reviewed: "2026-07-31T20:30:00Z"
   },
   title: {
-    en: "Joint Pain",
-    hi: "Joint Pain",
-    gu: "Joint Pain",
-    mr: "Joint Pain",
-    es: "Joint Pain",
-    ar: "Joint Pain"
+    en: "Joint Pain (Arthralgia)",
+    hi: "जोड़ों का दर्द (Joint Pain / Arthralgia)",
+    gu: "સાંધાનો દુખાવો (Joint Pain / Arthralgia)",
+    mr: "सांधेदुखी (Joint Pain / Arthralgia)",
+    es: "Dolor Articular (Joint Pain / Arthralgia)",
+    ar: "ألم المفاصل (Arthralgia)"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Joint Pain.",
-    hi: "Joint Pain के लक्षण की नैदानिक समझ.",
-    gu: "Joint Pain ના લક્ષણ ની સમજણ.",
-    mr: "Joint Pain चे लक्षण आणि उपचार.",
-    es: "Definición clínica y significado de Joint Pain.",
-    ar: "التعريف السريري والأهمية لـ Joint Pain."
+    en: "Clinical evaluation, differential diagnosis, septic joint emergency red flags, and supportive management for Joint Pain under ACR 2019 guidelines.",
+    hi: "जोड़ों के दर्द के लक्षण की नैदानिक समझ और आपातकालीन अर्थराइटिस चेतावनी लक्षण.",
+    gu: "સાંધાના દુખાવાની તબીબી સમજણ અને ઈમરજન્સી ચેતવણી લક્ષણો.",
+    mr: "सांधेदुखीच्या लक्षणांची वैद्यकीय माहिती आणि आपत्कालीन इशारे.",
+    es: "Evaluación clínica, diagnóstico diferencial y señales de alarma de artritis séptica según ACR 2019.",
+    ar: "التقييم السريري وعلامات الخطر لألم المفاصل."
   },
   content: {
-  "definition": "Joint pain: A localized pain, sensory alteration, or mobility limitation originating from nerves, muscles, joints, or tendons.",
-  "clinicalMeaning": "Replects nociceptive pathway stimulation, localized tissue injury, or nerve root compression resulting in altered sensation.",
-  "commonCauses": [
-    "Mechanical strain or postural imbalance",
-    "Peripheral nerve compression (e.g., sciatica, carpal tunnel)",
-    "Osteoarthritis or joint degeneration",
-    "Neurogenic inflammation"
-  ],
-  "differentialDiagnosis": "Differentiate from systemic autoimmune joint disease, peripheral vascular disease, and referred visceral pain.",
-  "redFlags": [
-    "Loss of bladder or bowel control (Cauda Equina Syndrome)",
-    "Sudden onset of limb weakness or foot drop",
-    "Severe joint swelling with high fever indicating septic arthritis"
-  ],
-  "lifestyleAdvice": "Implement regular stretching, adjust desk ergonomics, engage in low-impact walking, and stay hydrated to maintain joint lubrication.",
-  "references": [
-    "CIT-0011",
-    "CIT-0022"
-  ],
+    definition: "Joint Pain (Arthralgia): Discomfort, aching, or sharp pain originating from intra-articular structures (synovium, cartilage, subchondral bone) or peri-articular tissues (tendons, bursae, ligaments).",
+    clinicalMeaning: "Reflects mechanical joint wear-and-tear (Osteoarthritis), autoimmune inflammatory synovitis (Rheumatoid Arthritis, SLE), crystal arthropathy (Gout, Pseudogout), or acute pyogenic infection (Septic Arthritis).",
+    commonCauses: [
+      "Degenerative: Osteoarthritis (Knee, Hip, Hands, Spine)",
+      "Autoimmune Inflammatory: Rheumatoid Arthritis, Psoriatic Arthritis, Ankylosing Spondylitis",
+      "Crystal Arthropathy: Acute Gouty Arthritis, CPPD Pseudogout",
+      "Post-Infectious / Reactive: Reactive Arthritis, Viral Arthralgia (Dengue, Chikungunya)"
+    ],
+    differentialDiagnosis: "Differentiate non-inflammatory osteoarthritis (morning stiffness <30 mins, gel phenomenon) from inflammatory arthritis (morning stiffness >1 hour, systemic symptoms) and acute monoarthritis (septic joint vs. crystal attack).",
+    redFlags: [
+      "Acute hot, swollen, intensely painful monoarticular joint with high fever and inability to bear weight (Septic Arthritis)",
+      "Joint pain with systemic malar rash, photosensitivity, renal compromise, or cytopenias (SLE Flare)",
+      "Severe joint trauma with obvious deformity, inability to move, or open wound over joint",
+      "Symmetrical polyarthritis with progressive joint erosions and elevated ESR/CRP"
+    ],
+    lifestyleAdvice: "Engage in low-impact joint-sparing physical activity (swimming, cycling), maintain optimal body weight to reduce lower extremity mechanical load, use warm or cold compresses appropriately, and strengthen supporting musculature.",
+    references: [
+      "CIT-0080",
+      "CIT-0023"
+    ],
+    claimCitations: [
+      {
+        claimId: "CLM-S0015-001",
+        passage: "Acute hot swollen monoarthritis accompanied by fever and restricted range of motion constitutes a medical emergency requiring immediate arthrocentesis to exclude Septic Arthritis.",
+        citationIds: ["CIT-0080"]
+      },
+      {
+        claimId: "CLM-S0015-002",
+        passage: "Morning joint stiffness lasting more than 60 minutes strongly distinguishes systemic inflammatory polyarthritis from non-inflammatory osteoarthritis.",
+        citationIds: ["CIT-0080"]
+      },
+      {
+        claimId: "CLM-S0015-003",
+        passage: "ACR 2019 guidelines recommend first-line non-pharmacologic modalities including weight management, exercise, and physical therapy for knee and hip osteoarthritis.",
+        citationIds: ["CIT-0080"]
+      },
+      {
+        claimId: "CLM-S0015-004",
+        passage: "Homeopathic supportive care (e.g., Rhus Tox, Bryonia, Colchicum) does not replace joint aspiration or IV antibiotic therapy in acute bacterial septic arthritis.",
+        citationIds: ["CIT-0023"]
+      }
+    ],
   "faqs": [
     {
       "question": "What causes muscle stiffness in the morning?",

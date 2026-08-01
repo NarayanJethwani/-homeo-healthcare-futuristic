@@ -1,0 +1,108 @@
+{
+  "milestoneId": "M9",
+  "packageId": "KEP5-PACKAGE-M9-POLYCREST-REMEDIES-001",
+  "generatedAt": "2026-08-01T07:32:49.512Z",
+  "status": "pending_authorization",
+  "governance": {
+    "program": "KEP-5",
+    "productionRagActivation": false,
+    "governedProposalsCount": 50,
+    "allProposalsDraftOnly": true,
+    "ragIneligible": true
+  },
+  "summary": {
+    "totalEntitiesUpgraded": 10,
+    "polycrestRemedyEntitiesCount": 10,
+    "evaluationCasesCount": 100,
+    "evaluationPassRate": 1
+  },
+  "entities": [
+    {
+      "entityId": "R0003",
+      "slug": "lycopodium",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "R0004",
+      "slug": "aconitum-napellus",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "R0005",
+      "slug": "arnica-montana",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "R0007",
+      "slug": "belladonna",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "R0008",
+      "slug": "bryonia-alba",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "R0009",
+      "slug": "calcarea-carbonica",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "R0012",
+      "slug": "gelsemium-sempervirens",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "R0019",
+      "slug": "pulsatilla-pratensis",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "R0020",
+      "slug": "rhus-toxicodendron",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "R0021",
+      "slug": "sepia-officinalis",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    }
+  ],
+  "evaluation": {
+    "caseCount": 100,
+    "entityCount": 10,
+    "minimumCasesPerEntity": 10,
+    "recallAt5": 1,
+    "meanReciprocalRank": 1,
+    "citationPrecision": 1,
+    "unsupportedClaimFailureCount": 0,
+    "emergencyEscalationFailureCount": 0,
+    "abstentionFailureCount": 0,
+    "staleRevisionLeakageCount": 0,
+    "crossEntityConfusionCount": 0,
+    "withdrawnContentLeakageCount": 0,
+    "passedCaseCount": 100,
+    "failedCaseCount": 0
+  },
+  "packageSha256": "0f853d4b098bf6d125454bc555be281526e4f03ce32426c93ddad73625d1ad1e"
+}

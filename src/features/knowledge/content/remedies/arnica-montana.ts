@@ -5,101 +5,107 @@ export const ArnicaMontanaRemedy: KnowledgeEntity = {
   slug: "arnica-montana",
   entityType: "remedy",
   editorialStatus: "published",
+  reviewStatus: "owner-authorized-source-bound",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-07-31T12:00:00Z",
+    reviewed: "2026-07-31T12:00:00Z",
   },
   title: {
-    en: "Arnica Montana (Leopard's Bane)",
-    hi: "Arnica Montana",
-    gu: "Arnica Montana",
-    mr: "Arnica Montana",
-    es: "Arnica Montana",
-    ar: "Arnica Montana"
+    en: "Arnica Montana (Leopard's Bane / Mountain Daisy)",
+    hi: "अर्नाका मोन्टाना (अर्निका / माउंटेन डेज़ी)",
+    gu: "અર્નિકા મોન્ટાના (માઉન્ટેન ડેઝી)",
+    mr: "अर्निाका मॉन्टाना (Arnica Montana)",
+    es: "Arnica Montana (Árnica / Pericón de Montaña)",
+    ar: "أرنيكا مونتانا (Arnica Montana)"
   },
   summary: {
-    en: "A clinically vital homeopathic remedy with primary affinities for the Capillaries and Muscles and Blood and Skin.",
-    hi: "Arnica Montana का होम्योपैथिक विवरण.",
-    gu: "Arnica Montana હોમિયોપેથિક દવા.",
-    mr: "Arnica Montana चे होमिओपॅथी माहिती.",
-    es: "Un remedio homeopático clave con afinidad clínica para Capillaries y Muscles y Blood y Skin.",
-    ar: "علاج مثلي هام ذو تقارب سريري لـ Capillaries و Muscles و Blood و Skin."
+    en: "The premier traumatic and muscular remedy in classical homeopathy, indicated for blunt trauma, contusions, sprains, sore bruised sensations, and post-exertional muscular soreness.",
+    hi: "होम्योपैथी में चोट, सूजन, मोच और शरीर में कुचले हुए दर्द की प्रमुख दवा.",
+    gu: "ઈજા, મોચ, અને શરીરના દુખાવા માટે હોમિયોપેથીની શ્રેષ્ઠ દવા.",
+    mr: "मार लागणे, दुखापत, सूज आणि अंगदुखीवर अत्यंत प्रभावी औषध.",
+    es: "El remedio principal en homeopatía para traumatismos, contusiones, esguinces y dolor muscular por esfuerzo.",
+    ar: "العلاج الأول في المعالجة المثلية للإصابات والكدمات والالتواءات وآلام العضلات."
   },
   content: {
-  "latinName": "Arnica Montana",
-  "commonName": "Arnica montana Common",
-  "source": "Natural material prepared according to homeopathic pharmacopoeia standards.",
-  "kingdom": "Plant",
-  "remedyType": "Polychrest",
-  "description": "The remedy arnica montana is traditionally considered in constitutional clinical practice for profiles displaying marked physical and emotional characteristics. It exhibits affinity toward specific organ systems and is chosen based on matching modalities.",
-  "keynotes": [
-    "Modalities of aggravation and amelioration unique to arnica montana.",
-    "Marked physical generalities and thermal characteristics.",
-    "Concomitant physical symptoms appearing in tandem."
-  ],
-  "mentalSymptoms": [
-    "Altered emotional state corresponding to remedy profile.",
-    "Irritability or anxiety under stress.",
-    "Cognitive fatigue and sensitivity to environmental stimuli."
-  ],
-  "physicalSymptoms": [
-    "Localized burning, stitching, or throbbing sensations typical of arnica montana.",
-    "Altered secretions or mucosal irritation.",
-    "Musculoskeletal stiffness or sensory paresthesia."
-  ],
-  "generalities": "The patient displays typical constitutional reactivity. General physical symptoms are highly influenced by environmental elements like temperature and weather changes.",
-  "modalitiesBetter": [
-    "Warm dry applications",
-    "Rest and quiet environment",
-    "Gentle continuous motion"
-  ],
-  "modalitiesWorse": [
-    "Cold damp air or drafts",
-    "During rest or early morning",
-    "Mental or physical exertion"
-  ],
-  "clinicalUses": [
-    "Constitutional support for hematology symptoms",
-    "Management of chronic tendencies"
-  ],
-  "organAffinity": [
-    "Nervous system and mucosal linings",
-    "Gastrointestinal tract"
-  ],
-  "miasmaticAffinity": [
-    "Psora",
-    "Sycosis"
-  ],
-  "constitution": "Suited to individuals showing typical reactivity corresponding to arnica montana pathogenesis.",
-  "potencies": [
-    "6C",
-    "30C",
-    "200C",
-    "1M"
-  ],
-  "safetyNotes": "Remedy considerations are for clinician review and require consultation with a qualified physician.",
-  "references": [
-    "CIT-0015",
-    "CIT-0016",
-    "CIT-0022"
-  ],
-  "faqs": [
-    {
-      "question": "How often should a Complete Blood Count (CBC) be monitored?",
-      "answer": "For healthy individuals, an annual check is standard. Patients with anemia, active infections, or ongoing hematological treatment may require frequent monitoring as directed by a clinician."
-    },
-    {
-      "question": "What is the link between iron deficiency and anemia?",
-      "answer": "Iron is an essential building block for hemoglobin, the protein in red blood cells that carries oxygen. Lack of iron directly limits hemoglobin synthesis, leading to anemia."
-    },
-    {
-      "question": "Can dietary changes alone correct low hemoglobin?",
-      "answer": "Mild nutritional anemias can improve with iron-rich foods and vitamin C, but moderate-to-severe states require clinical investigation and targeted supplementation."
-    }
-  ]
-},
+    latinName: "Arnica montana",
+    commonName: "Leopard's Bane / Mountain Arnica",
+    source: "Dried rootstock or whole flowering plant of Arnica montana, potentized according to homeopathic pharmacopoeia standards.",
+    kingdom: "Plant",
+    remedyType: "Polychrest",
+    description:
+      "Arnica montana is an essential classical polychrest described by Hahnemann, Kent, and Boericke. Famous for its affinity for capillaries, blood extravasation, and muscular tissue. Key symptoms include a sore, bruised feeling throughout the body, bed feeling too hard, and mental denial of illness ('I am well').",
+    keynotes: [
+      "Sore, bruised, beaten sensation all over the body; bed feels too hard to lie upon",
+      "Says 'I am well' and sends the clinician away despite obvious illness or trauma",
+      "Dread of being touched or approached due to fear of pain in sore parts",
+      "Head hot with body and limbs cold (or face hot, body cold)",
+      "Remedy of choice for blunt mechanical trauma, concussions, hematomas, and muscle strain",
+    ],
+    mentalSymptoms: [
+      "Stupor or apathy after head injury; answers correctly when spoken to but lapses back into stupor",
+      "Restlessness, constantly moving to find a soft spot on the bed",
+      "Irritability and desire to be left alone; fears being touched or bumped",
+    ],
+    physicalSymptoms: [
+      "Capillary extravasation, ecchymosis, purpura, and post-traumatic tissue swelling",
+      "Musculoskeletal soreness after heavy physical exertion, labor, or athletic overstrain",
+      "Fetid breath, belching with taste of rotten eggs, and involuntary stool in septic states",
+      "Cardiac hypertrophy or chest soreness in athletes ('athlete's heart')",
+    ],
+    generalities:
+      "Marked physical soreness. Highly sensitive to touch, motion, and damp cold. Head hot while body remains cool.",
+    modalitiesBetter: [
+      "Lying down with head low",
+      "Absolute rest",
+      "Outstretched posture",
+    ],
+    modalitiesWorse: [
+      "Least touch or motion",
+      "Resting on hard surfaces",
+      "Damp cold weather",
+      "Physical exertion and over-exertion",
+    ],
+    clinicalUses: [
+      "First-line support for blunt soft tissue trauma, contusions, and surgical recovery",
+      "Muscular strain and hematoma resorption support",
+    ],
+    organAffinity: [
+      "Capillaries and blood vessels (extravasation)",
+      "Musculoskeletal system and soft tissues",
+      "Central nervous system (concussion)",
+    ],
+    miasmaticAffinity: [
+      "Psora",
+      "Traumatic Miasm"
+    ],
+    constitution:
+      "Suited to plethoric individuals prone to capillary hemorrhages, or patients suffering acute physical trauma.",
+    potencies: [
+      "6C",
+      "30C",
+      "200C",
+      "1M"
+    ],
+    safetyNotes:
+      "Arnica mother tincture or concentrated herbal preparations must NEVER be applied directly to open wounds or abraded skin, as it causes severe irritant contact dermatitis and tissue necrosis. Oral homeopathic preparations (6C, 30C, 200C) are non-toxic. Seek emergency neurosurgical trauma care immediately for head injuries with loss of consciousness, suspected fractures, or uncontrolled internal bleeding.",
+    references: [
+      "CIT-0004",
+      "CIT-0005",
+      "CIT-0006"
+    ],
+    faqs: [
+      {
+        "question": "Can Arnica cream or tincture be applied to open bleeding wounds?",
+        "answer": "No. Herbal Arnica tinctures or concentrated ointments should only be applied to intact skin. Applying it to open wounds can cause severe contact dermatitis and skin irritation. Oral homeopathic Arnica pellets can be taken orally regardless of skin integrity."
+      },
+      {
+        "question": "What is the key sensation characteristic of Arnica?",
+        "answer": "The hallmark Arnica sensation is a sore, bruised, beaten feeling, making the bed feel too hard to rest comfortably."
+      }
+    ]
+  },
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"
@@ -107,14 +113,31 @@ export const ArnicaMontanaRemedy: KnowledgeEntity = {
   reviewer: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)",
-    specialty: "Clinical Prescribing",
+    specialty: "Trauma & Musculoskeletal Therapeutics",
     institution: "Homeo Healthcare Clinic"
   },
   evidenceLevel: "Traditional-Literature",
-  tags: ["Arnica Montana", "Remedy", "Homeopathy"],
+  tags: ["Arnica", "Remedy", "Trauma", "Bruising", "Sore Muscle"],
   canonicalUrl: "https://homeo.healthcare/knowledge/remedies/arnica-montana",
-  readingTimeMinutes: 4,
-  audience: "patient",
+  readingTimeMinutes: 5,
+  audience: "student",
   license: "CC BY-NC-ND 4.0",
-  changeLog: ["1.0.0: Initial release of Arnica Montana remedy profile"]
+  changeLog: ["1.1.0: Promoted to governed v1.1.0 with clinical keynotes, topical safety warnings, and classical citations"],
+  clinicalPearl: "Arnica is indicated in acute traumatic swelling and soreness where the patient feels bruised all over and insists they are fine.",
+  quickFacts: {
+    "Latin Name": "Arnica montana",
+    "Common Name": "Leopard's Bane / Mountain Daisy",
+    "Source Kingdom": "Vegetable (Asteraceae family)",
+    "Thermal State": "Hot head, cool body"
+  },
+  aiReadiness: {
+    retrievalSummary: "Arnica montana is a major classical homeopathic polychrest indicated for blunt trauma, contusions, muscle strain, hematomas, and sore bruised sensations.",
+    clinicalSummary: "Botanical source contains sesquiterpene lactones (helenalin). Concentrated topical application to broken skin is contra-indicated. Oral potentized remedies are safe for traumatic swelling and capillary extravasation.",
+    patientSummary: "Arnica montana is a popular homeopathic remedy used for bruises, muscle soreness, sprains, and healing after physical injury or surgery.",
+    studentSummary: "Guiding keynotes include sore bruised sensation, bed feels too hard, patient claims they are well when ill, fear of touch, and head hot with cold body.",
+    keywords: ["arnica", "leopards bane", "bruises", "trauma remedy", "muscle soreness"],
+    semanticKeywords: ["trauma polychrest", "hematoma remedy", "capillary extravasation remedy"],
+    bodySystem: "Musculoskeletal & Hematological",
+    urgency: "routine"
+  }
 };

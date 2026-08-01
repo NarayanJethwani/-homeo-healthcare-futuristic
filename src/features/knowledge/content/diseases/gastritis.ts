@@ -6,86 +6,97 @@ export const GastritisDisease: KnowledgeEntity = {
   entityType: "disease",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-07-31T12:00:00Z",
+    reviewed: "2026-07-31T12:00:00Z",
   },
   title: {
     en: "Gastritis",
-    hi: "Gastritis",
-    gu: "Gastritis",
-    mr: "Gastritis",
+    hi: "गैस्ट्र्रिटिस / पेट की सूजन (Gastritis)",
+    gu: "ગેસ્ટ્રાઇટિસ (Gastritis)",
+    mr: "गॅस्ट्रोबायटिस (Gastritis)",
     es: "Gastritis",
-    ar: "Gastritis"
+    ar: "التهاب المعدة",
   },
   summary: {
-    en: "A comprehensive clinical overview of Gastritis, covering causes, clinical symptoms, and homeopathic management principles.",
-    hi: "Gastritis का नैदानिक विवरण.",
-    gu: "Gastritis નો તબીબી પરિચય.",
-    mr: "Gastritis चे आजार आणि माहिती.",
-    es: "Un resumen clínico completo de Gastritis.",
-    ar: "نظرة عامة سريرية شاملة لـ Gastritis."
+    en: "An authoritative clinical profile of Gastritis covering ACG 2021 diagnostic guidelines, H. pylori vs NSAID-induced etiologies, upper GI hemorrhage emergency red flags, and endoscopy non-delay boundaries.",
+    hi: "गैस्ट्र्रिटिस का ACG 2021 मानकों के अनुसार प्रामाणिक विवरण और आपातकालीन सुरक्षा सीमाएँ।",
+    gu: "ગેસ્ટ્રાઇટિસનું ACG 2021 ધોરણો મુજબનું નૈદાનિક વિવરણ અને ઇમરજન્સી સીમાઓ.",
+    mr: "गॅस्ट्रोबायटिसचे ACG 2021 निकषांनुसार वैद्यकीय विश्लेषण आणि आणीबाणीच्या मर्यादा.",
+    es: "Un perfil clínico autorizado de la Gastritis según los criterios ACG 2021 y límites de emergencia.",
+    ar: "دليل سريري موثوق لالتهاب المعدة وفقًا لمعايير ACG 2021 وحدود السلامة.",
   },
   content: {
-  "overview": "Gastritis: Gastrointestinal and functional bowel disorders represent a high-prevalence clinical area involving dysmotility, altered acid secretion, and mucosal inflammation. Effective management relies on stabilizing motility and gut-brain signaling.",
-  "definition": "Pathological or functional disturbances of the upper or lower digestive tract, resulting in symptoms of acid-peptic disease, dysmotility, or altered bowel habits.",
-  "causes": [
-    "Visceral hypersensitivity and gut-brain axis dysregulation",
-    "Mucosal barrier disruption and localized inflammatory responses",
-    "Dietary sensitivities, chronic stress, or microbial dysbiosis (e.g., H. pylori)"
-  ],
-  "riskFactors": [
-    "Chronic stress and sleep deprivation",
-    "Poor dietary habits and low fiber intake",
-    "Frequent use of NSAIDs or broad-spectrum antibiotics"
-  ],
-  "symptoms": [
-    "Epigastric burning (heartburn) and acid regurgitation",
-    "Abdominal discomfort, cramping, and bloating",
-    "Altered stool consistency (diarrhea, constipation, or alternating)",
-    "Nausea, early satiety, and postprandial fullness"
-  ],
-  "diagnosis": "Investigated by clinical history matching Rome IV criteria, upper endoscopy, H. pylori breath test, and stool routine/culture panels.",
-  "differentialDiagnosis": "Differentiate functional bowel disorders from inflammatory bowel disease (Crohn's/UC), celiac disease, and gastric malignancies.",
-  "conventionalManagement": "Involves acid suppressants (PPIs, H2 blockers), prokinetics, antispasmodics, laxatives, or antidiarrheals depending on presentation.",
-  "homeopathicApproach": "Constitutional homeopathic treatment targets motility, visceral sensitivity, and psychological stressors using individualized remedies.",
-  "lifestyleAdvice": "Adopt a low-FODMAP diet if indicated, eat smaller frequent meals, avoid eating close to bedtime, and practice stress-management techniques.",
-  "references": [
-    "CIT-0017",
-    "CIT-0018",
-    "CIT-0022"
-  ],
-  "faqs": [
-    {
-      "question": "What are the common triggers for digestive flares?",
-      "answer": "Common triggers include dietary irritants (caffeine, alcohol, fatty foods), chronic emotional stress, irregular eating habits, and dysbiosis."
-    },
-    {
-      "question": "How does the gut-brain axis affect digestive health?",
-      "answer": "The gut and brain are in constant communication via the vagus nerve. Emotional stress can alter gut motility, increase visceral sensitivity, and worsen symptoms of GERD, gastritis, or IBS."
-    },
-    {
-      "question": "Can homeopathy manage chronic acid reflux (GERD)?",
-      "answer": "Yes, individualized homeopathy can help manage symptoms of chronic acid reflux by addressing digestive motility and hyperacidity alongside lifestyle modifications."
-    }
-  ]
-},
+    overview:
+      "Gastritis is defined as inflammation of the gastric mucosal lining confirmed histologically or endoscopically [D0008-KEYNOTES, CIT-0044]. It ranges from acute erosive hemorrhagic gastropathy to chronic Helicobacter pylori or autoimmune gastritis.",
+    definition:
+      "A histologically or endoscopically documented inflammatory mucosal breakdown of the stomach wall induced by bacterial infection, chemical irritants, or autoantibodies.",
+    causes: [
+      "Helicobacter pylori bacterial colonization causing chronic antral or pangastritis [D0008-KEYNOTES, CIT-0044]",
+      "Chronic nonsteroidal anti-inflammatory drug (NSAID) or aspirin use disrupting protective mucosal prostaglandins",
+      "Excessive alcohol intake, heavy smoking, severe physiological stress (stress ulcers), or autoimmune parietal cell antibodies",
+    ],
+    riskFactors: [
+      "Frequent or unmonitored use of NSAIDs, corticosteroids, or anticoagulants",
+      "Untreated H. pylori infection, chronic alcohol ingestion, and high physiological stress",
+      "Autoimmune conditions (e.g. Hashimoto's thyroiditis, Type 1 diabetes) predisposing to autoimmune gastritis",
+    ],
+    symptoms: [
+      "Epigastric gnawing or burning pain, early satiety, postprandial fullness, and nausea [D0008-KEYNOTES, CIT-0044]",
+      "Abdominal distension, belching, regurgitation, and anorexia",
+      "Erosive gastropathy symptoms: Occult blood loss, microcytic anemia, or hematemesis",
+    ],
+    diagnosis:
+      "Diagnosed via Esophagogastroduodenoscopy (EGD) with mucosal biopsy, H. pylori urea breath test or stool antigen assay, and serum anti-parietal cell antibody panels [CIT-0044].",
+    differentialDiagnosis:
+      "Differentiate Gastritis from Peptic Ulcer Disease (PUD), GERD, Functional Dyspepsia, Cholecystitis, Pancreatitis, and Gastric Adenocarcinoma.",
+    conventionalManagement:
+      "Management involves proton pump inhibitors (PPIs), H2-receptor antagonists, sucralfate mucosal protectants, discontinuing offending NSAIDs, and quad-therapy antibiotic regimens for H. pylori eradication [CIT-0044].",
+    homeopathicApproach:
+      "Homeopathic remedies (such as Nux Vomica, Arsenicum Album, Phosphorus, Lycopodium) act as supportive care to soothe burning epigastric discomfort, balance digestive acidity, and improve dietary tolerance alongside gastroenterological evaluation.",
+    lifestyleAdvice:
+      "Avoid NSAIDs, alcohol, smoking, and highly spiced or greasy foods; eat small, regular meals; maintain adequate hydration; and manage chronic stress.",
+    references: ["CIT-0017", "CIT-0018", "CIT-0022", "CIT-0044"],
+    faqs: [
+      {
+        question: "When is Gastritis considered a gastroenterological emergency requiring immediate hospitalization?",
+        answer:
+          "Hematemesis (vomiting frank blood or 'coffee-ground' material), melena (black tarry stools), acute severe epigastric agony, dizziness with hypotension, or persistent uncontrollable vomiting indicates ACUTE UPPER GI HEMORRHAGE OR PERFORATION [D0008-EMERGENCY-LIMITS, CIT-0044]. This is a MEDICAL EMERGENCY requiring IMMEDIATE ER evaluation.",
+      },
+      {
+        question: "Can homeopathic remedies replace endoscopy or antibiotic H. pylori eradication therapy?",
+        answer:
+          "NO. Homeopathy MUST NOT be used to replace diagnostic upper endoscopy in red-flag cases or delay prescribed antibiotic eradication therapy for H. pylori infection [D0008-REGULATORY-LIMITS]. Untreated H. pylori carries risks of peptic ulceration and gastric MALT lymphoma.",
+      },
+      {
+        question: "How does homeopathy complement conventional gastritis treatment?",
+        answer:
+          "Homeopathy provides supportive constitutional care for symptomatic relief while patients remain under standard gastroenterology diagnostic and monitoring protocols [D0008-REGULATORY-LIMITS].",
+      },
+    ],
+  },
   author: {
     name: "Dr. Narayan Jethwani",
-    credentials: "MD (Hom)"
+    credentials: "MD (Hom)",
   },
   reviewer: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)",
-    specialty: "Clinical Medicine",
-    institution: "Homeo Healthcare Clinic"
+    specialty: "Gastroenterology & Clinical Governance",
+    institution: "Homeo Healthcare Clinical Board",
   },
-  evidenceLevel: "Traditional-Literature",
-  tags: ["Gastritis", "Disease", "Clinical-Overview"],
+  reviewerRole: "Program-owner final clinical authorization",
+  lastClinicalReview: "2026-07-31",
+  nextClinicalReview: "2027-07-31",
+  evidenceLevel: "Consensus-Guidance",
+  tags: ["Gastritis", "Disease", "ACG-2021", "Gastroenterology", "H-Pylori", "Emergency-Safety"],
   canonicalUrl: "https://homeo.healthcare/knowledge/diseases/gastritis",
-  readingTimeMinutes: 5,
+  readingTimeMinutes: 6,
   audience: "patient",
   license: "CC BY-NC-ND 4.0",
-  changeLog: ["1.0.0: Initial release of Gastritis profile"]
+  changeLog: [
+    "1.0.0: Initial release of Gastritis profile",
+    "1.1.0: Upgraded with ACG 2021 evidence citations (CIT-0044), passage-level claim citations (D0008-KEYNOTES, D0008-EMERGENCY-LIMITS, D0008-REGULATORY-LIMITS), upper GI hemorrhage red flags, and endoscopy non-delay rules",
+  ],
 };

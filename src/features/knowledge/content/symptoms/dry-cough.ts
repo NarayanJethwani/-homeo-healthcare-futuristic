@@ -1,53 +1,75 @@
 import { KnowledgeEntity } from "../../types";
 
 export const DryCoughSymptom: KnowledgeEntity = {
-  id: "S0008",
+  id: "S0007",
   slug: "dry-cough",
   entityType: "symptom",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-07-31T20:30:00Z",
+    reviewed: "2026-07-31T20:30:00Z"
   },
   title: {
-    en: "Dry Cough",
-    hi: "Dry Cough",
-    gu: "Dry Cough",
-    mr: "Dry Cough",
-    es: "Dry Cough",
-    ar: "Dry Cough"
+    en: "Dry Cough (Non-Productive Cough)",
+    hi: "सूखी खांसी (Dry Cough)",
+    gu: "સૂકી ઉધરસ (Dry Cough)",
+    mr: "कोरडा खोकला (Dry Cough)",
+    es: "Tos Seca (Dry Cough)",
+    ar: "السعال الجاف (Dry Cough)"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Dry Cough.",
-    hi: "Dry Cough के लक्षण की नैदानिक समझ.",
-    gu: "Dry Cough ના લક્ષણ ની સમજણ.",
-    mr: "Dry Cough चे लक्षण आणि उपचार.",
-    es: "Definición clínica y significado de Dry Cough.",
-    ar: "التعريف السريري والأهمية لـ Dry Cough."
+    en: "Clinical evaluation, differential diagnosis, red flag alarm features, and supportive management for Dry Cough under CHEST 2021 guidelines.",
+    hi: "सूखी खांसी के लक्षण की नैदानिक समझ और चेतावनी लक्षण.",
+    gu: "સૂકી ઉધરસના લક્ષણની તબીબી સમજણ અને ઈમરજન્સી ચેતવણી લક્ષણો.",
+    mr: "कोरड्या खोकल्याच्या लक्षणांची वैद्यकीय माहिती आणि इशारे.",
+    es: "Evaluación clínica, diagnóstico diferencial y señales de alarma para la tos seca según CHEST 2021.",
+    ar: "التقييم السريري وعلامات الخطر للسعال الجاف."
   },
   content: {
-  "definition": "Dry cough: A subjective or objective upper or lower airway manifestation indicating mucosal congestion, irritation, or bronchospasm.",
-  "clinicalMeaning": "Replects airway smooth muscle contraction, goblet cell hypersecretion, or trigeminal nerve irritation in the nasal mucosa.",
-  "commonCauses": [
-    "Allergic rhinitis or seasonal hay fever",
-    "Bronchial asthma or hyper-reactivity",
-    "Sinusitis or post-nasal drip",
-    "Viral respiratory tract infections"
-  ],
-  "differentialDiagnosis": "Exclude foreign body aspiration, vocal cord paralysis, post-viral airway hyper-responsiveness, and cardiac asthma.",
-  "redFlags": [
-    "Severe respiratory distress with accessory muscle use",
-    "Stridor, wheezing that suddenly stops (silent chest), or cyanosis",
-    "High fever with foul-smelling nasal discharge and facial swelling"
-  ],
-  "lifestyleAdvice": "Keep windows closed during high pollen seasons, wash bedding weekly at 60°C, and stay hydrated to thin mucus secretions.",
-  "references": [
-    "CIT-0020",
-    "CIT-0021",
-    "CIT-0022"
-  ],
+    definition: "Dry Cough: A non-productive cough lacking sputum production, resulting from mechanical, chemical, or inflammatory irritation of vagal afferent cough receptors in the upper or lower respiratory tract.",
+    clinicalMeaning: "Reflects upper airway cough syndrome (UACS/post-nasal drip), cough-variant asthma, GERD micro-aspiration, drug-induced bronchospasm, or early interstitial lung disease.",
+    commonCauses: [
+      "Upper Airway Cough Syndrome (UACS), Post-Viral Airway Hyper-responsiveness",
+      "Cough-Variant Asthma (CVA), Gastroesophageal Reflux Disease (GERD)",
+      "ACE-Inhibitor Induced Cough (Bradykinin/Substance P Accumulation)",
+      "Environmental Irritants (Tobacco smoke, pollution, occupational dusts)"
+    ],
+    differentialDiagnosis: "Differentiate uncomplicated dry cough from acute pulmonary embolism, pertussis, interstitial lung disease (ILD/pulmonary fibrosis), bronchogenic carcinoma, and left-sided heart failure (cardiac asthma).",
+    redFlags: [
+      "Hemoptysis (blood-streaked or frank bloody sputum)",
+      "Unexplained dyspnea, hypoxia (SpO2 <90%), or stridor",
+      "Unintentional weight loss, drenching night sweats, or hoarseness >3 weeks",
+      "High fever with pleuritic chest pain or crackles on auscultation"
+    ],
+    lifestyleAdvice: "Maintain indoor humidity, eliminate tobacco smoke and airborne irritants, try warm honey or saline gargles, review medications with prescribing physician, and stay well hydrated.",
+    references: [
+      "CIT-0075",
+      "CIT-0023"
+    ],
+    claimCitations: [
+      {
+        claimId: "CLM-S0007-001",
+        passage: "Chronic dry cough (>8 weeks duration) lacking red flags is most commonly caused by UACS, Asthma, or GERD ('the pathogenic triad').",
+        citationIds: ["CIT-0075"]
+      },
+      {
+        claimId: "CLM-S0007-002",
+        passage: "ACE-inhibitor cough occurs in up to 15% of treated patients and typically resolves within 1 to 4 weeks after drug discontinuation.",
+        citationIds: ["CIT-0075"]
+      },
+      {
+        claimId: "CLM-S0007-003",
+        passage: "Dry cough accompanied by hemoptysis, systemic constitutional symptoms, or smoking history warrants urgent chest radiography or CT.",
+        citationIds: ["CIT-0075"]
+      },
+      {
+        claimId: "CLM-S0007-004",
+        passage: "Homeopathic supportive remedies (e.g., Drosera, Rumex, Spongia) do not replace chest imaging or pulmonology evaluation in chronic persistent cough.",
+        citationIds: ["CIT-0023"]
+      }
+    ],
   "faqs": [
     {
       "question": "What is the difference between allergic rhinitis and a common cold?",

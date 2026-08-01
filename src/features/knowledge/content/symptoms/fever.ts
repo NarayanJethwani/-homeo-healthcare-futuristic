@@ -6,50 +6,69 @@ export const FeverSymptom: KnowledgeEntity = {
   entityType: "symptom",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-07-31T19:50:00Z",
+    reviewed: "2026-07-31T19:50:00Z"
   },
   title: {
-    en: "Fever",
-    hi: "Fever",
-    gu: "Fever",
-    mr: "Fever",
-    es: "Fever",
-    ar: "Fever"
+    en: "Fever (Pyrexia)",
+    hi: "बुखार (Fever)",
+    gu: "તાાવ (Fever)",
+    mr: "ताप (Fever)",
+    es: "Fiebre (Pirexia)",
+    ar: "الحمى (Fever)"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Fever.",
-    hi: "Fever के लक्षण की नैदानिक समझ.",
-    gu: "Fever ના લક્ષણ ની સમજણ.",
-    mr: "Fever चे लक्षण आणि उपचार.",
-    es: "Definición clínica y significado de Fever.",
-    ar: "التعريف السريري والأهمية لـ Fever."
+    en: "Clinical triage, systemic infection differentiation, and emergency escalation for Fever under IDSA guidelines.",
+    hi: "बुखार के लक्षण की नैदानिक समझ और आपातकालीन खतरे के संकेत.",
+    gu: "તાાવના લક્ષણ ની સમજણ અને ઇમરજન્સી ફ્લેગ્સ.",
+    mr: "तापाचे लक्षण आणि तातडीचे रेड फ्लॅग्स.",
+    es: "Triaje clínico y manejo de la fiebre según las guías IDSA.",
+    ar: "التفرقة Сريرية والعلامات التحذيرية للحمى."
   },
   content: {
-  "definition": "Fever: A general physical symptom reflecting altered systemic vitality, sleep disruption, or thermal deregulation.",
-  "clinicalMeaning": "Represents a functional warning sign indicating that systemic auto-regulation is strained or compromised.",
-  "commonCauses": [
-    "Post-viral fatigue states",
-    "Chronic physical or psychological stress",
-    "Sleep deprivation or metabolic imbalances",
-    "Subclinical systemic congestion"
-  ],
-  "differentialDiagnosis": "Must be differentiated from primary thyroid disease, severe anemia, fibromyalgia, and major depressive disorder.",
-  "redFlags": [
-    "Sudden profound unexplained weight loss",
-    "Unremitting high fever unresponsive to standard care",
-    "Sudden localized numbness or severe weakness"
-  ],
-  "lifestyleAdvice": "Prioritize consistent sleep timing, consume a balanced whole-foods diet, practice mild relaxation exercises, and stay hydrated.",
-  "references": [
-    "CIT-0004",
-    "CIT-0005",
-    "CIT-0006",
-    "CIT-0007",
-    "CIT-0008"
-  ],
+    definition: "Fever (Pyrexia): An elevation of body temperature above the normal circadian range (>38.0°C / 100.4°F) driven by hypothalamic thermoregulatory set-point elevation in response to endogenous pyrogens (IL-1, IL-6, TNF-alpha).",
+    clinicalMeaning: "Reflects acute systemic or focal infection, autoimmune hyper-inflammation, drug hypersensitivity, or occult malignancy demanding systematic source evaluation.",
+    commonCauses: [
+      "Acute Viral or Bacterial Respiratory, Urinary, or GI Infection",
+      "Sepsis or Bacteremia",
+      "Neutropenic Fever or Central Nervous System Infection (Meningitis)",
+      "Autoimmune Connective Tissue Disease or Fever of Unknown Origin (FUO)"
+    ],
+    differentialDiagnosis: "Differentiate acute self-limited viral pyrexia from severe sepsis, bacterial meningitis, malaria, enteric fever, and drug fever.",
+    redFlags: [
+      "Fever with nuchal rigidity, confusion, and petechial rash (Meningococcemia / Bacterial Meningitis)",
+      "High fever with hypotension, tachycardia, tachypnea, and altered sensorium (Severe Sepsis)",
+      "Neutropenic fever (absolute neutrophil count <500/mcL) in chemotherapy patients"
+    ],
+    lifestyleAdvice: "Ensure adequate oral fluid intake; seek immediate emergency care for high fever with stiff neck, hypotension, confusion, or recent chemotherapy.",
+    references: [
+      "CIT-0065",
+      "CIT-0023"
+    ],
+    claimCitations: [
+      {
+        claimId: "CLM-S0004-001",
+        passage: "Fever accompanied by nuchal rigidity, photophobia, and altered mental status requires immediate lumbar puncture and empirical parenteral antibiotics for bacterial meningitis.",
+        citationIds: ["CIT-0065"]
+      },
+      {
+        claimId: "CLM-S0004-002",
+        passage: "High fever associated with hypotension and organ dysfunction indicates sepsis requiring emergency blood cultures and IV fluid resuscitation.",
+        citationIds: ["CIT-0065"]
+      },
+      {
+        claimId: "CLM-S0004-003",
+        passage: "Fever in an immunocompromised patient demands immediate blood cultures and empirical broad-spectrum antibiotic coverage.",
+        citationIds: ["CIT-0065"]
+      },
+      {
+        claimId: "CLM-S0004-004",
+        passage: "Homeopathic antipyretic support does not replace blood cultures, parenteral antibiotics, or emergency resuscitation in severe sepsis.",
+        citationIds: ["CIT-0023"]
+      }
+    ],
   "faqs": [
     {
       "question": "What is a constitutional remedy in homeopathy?",

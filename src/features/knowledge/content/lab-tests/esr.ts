@@ -6,48 +6,66 @@ export const ESRLabTest: KnowledgeEntity = {
   entityType: "lab-test",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-07-31T20:30:00Z",
+    reviewed: "2026-07-31T20:30:00Z"
   },
   title: {
-    en: "ESR",
-    hi: "ESR",
-    gu: "ESR",
-    mr: "ESR",
-    es: "ESR",
-    ar: "ESR"
+    en: "Erythrocyte Sedimentation Rate (ESR)",
+    hi: "एरिथ्रोसाइट सेडिमेंटेशन रेट (ESR)",
+    gu: "એરિથ્રોસાઇટ સેડિમેન્ટેશન રેટ (ESR)",
+    mr: "एरिथ्रोसाइट सेडिमेंटेशन रेट (ESR)",
+    es: "Velocidad de Sedimentación Globular (VSG / ESR)",
+    ar: "سرعة ترسب الدم (ESR)"
   },
   summary: {
-    en: "Clinical purpose, normal range, and interpretation of ESR lab results.",
-    hi: "ESR प्रयोगशाला परीक्षण विवरण.",
-    gu: "ESR લેબોરેટરી ટેસ્ટ પરિચય.",
-    mr: "ESR लॅब टेस्ट माहिती.",
-    es: "Propósito e interpretación de la prueba de laboratorio ESR.",
-    ar: "الغرض السريري وتفسير نتائج اختبار ESR."
+    en: "Clinical interpretation, age-adjusted reference ranges, and inflammatory disease monitoring for Erythrocyte Sedimentation Rate (ESR).",
+    hi: "ईएसआर (ESR) सूजन संबंधी लैब टेस्ट की नैदानिक समझ और संदर्भ सीमाएँ.",
+    gu: "ESR લેબોરેટરી ટેસ્ટની સમજણ અને રેફરન્સ રેન્જ.",
+    mr: "ESR लॅब टेस्टची माहिती आणि संदर्भ मर्यादा.",
+    es: "Interpretación clínica y rangos de referencia para la velocidad de sedimentación globular.",
+    ar: "التفسير السريري والنطاق المرجعي لسرعة ترسب الدم."
   },
   content: {
-  "overview": "ESR: A general laboratory screening parameter or basic metabolic marker used to assess baseline physiological homeostasis and metabolic efficiency.",
-  "normalRange": "ESR: < 20 mm/hr; Blood Glucose: 70-99 mg/dL; Serum Creatinine: 0.6-1.2 mg/dL.",
-  "highValues": [
-    "Systemic inflammatory baseline (high ESR)",
-    "Metabolic intolerance or early diabetes (high glucose)",
-    "Impaired kidney function (high creatinine)"
-  ],
-  "lowValues": [
-    "Anemia or low muscle mass",
-    "Hypoglycemia",
-    "Nutritional deficiencies"
-  ],
-  "clinicalInterpretation": "ESR evaluation: Elevated inflammatory markers (ESR, CRP) suggest systemic activity needing further investigation. Blood glucose shifts require evaluation of insulin sensitivity and glycemic control.",
-  "references": [
-    "CIT-0004",
-    "CIT-0005",
-    "CIT-0006",
-    "CIT-0007",
-    "CIT-0008"
-  ],
+    overview: "Erythrocyte Sedimentation Rate (ESR): An indirect quantitative laboratory measurement of systemic acute-phase inflammation, determining the distance in millimeters that red blood cells settle in uncoagulated anticoagulated blood in one hour.",
+    normalRange: "Men <50 yrs: <15 mm/hr; Men >50 yrs: <20 mm/hr; Women <50 yrs: <20 mm/hr; Women >50 yrs: <30 mm/hr.",
+    highValues: [
+      "Marked Elevation (>100 mm/mm): Temporal Arteritis (Giant Cell Arteritis), Polymyalgia Rheumatica",
+      "Multiple Myeloma, Systemic Necrotizing Vasculitis, Metastatic Malignancy",
+      "Acute Bacterial Infections (Osteomyelitis, Endocarditis), Rheumatoid Arthritis, SLE"
+    ],
+    lowValues: [
+      "Polycythemia Vera, Sickle Cell Anemia (Altered Red Cell Morphology)",
+      "Extreme Leukocytosis, Congestive Heart Failure, Hypofibrinogenemia"
+    ],
+    clinicalInterpretation: "Extreme ESR elevation (>100 mm/hr) in an elderly patient with new headache or jaw claudication strongly indicates Temporal Arteritis, demanding immediate high-dose glucocorticoid therapy to prevent permanent blindness.",
+    references: [
+      "CIT-0004",
+      "CIT-0023"
+    ],
+    claimCitations: [
+      {
+        claimId: "CLM-L0002-001",
+        passage: "ESR elevation >100 mm/hr accompanied by temporal headache or visual disturbances indicates Temporal Arteritis, requiring urgent ophthalmology and rheumatology evaluation.",
+        citationIds: ["CIT-0004"]
+      },
+      {
+        claimId: "CLM-L0002-002",
+        passage: "ESR is a non-specific inflammatory marker affected by fibrinogen, immunoglobulins, anemia, age, and sex, requiring clinical correlation.",
+        citationIds: ["CIT-0004"]
+      },
+      {
+        claimId: "CLM-L0002-003",
+        passage: "Polymyalgia Rheumatica presents with severe proximal shoulder and hip girdle stiffness and markedly elevated ESR >50 mm/hr.",
+        citationIds: ["CIT-0004"]
+      },
+      {
+        claimId: "CLM-L0002-004",
+        passage: "Homeopathic supportive remedies do not replace emergency steroid therapy in biopsy-proven Giant Cell Arteritis to prevent irreversible optic nerve ischemia.",
+        citationIds: ["CIT-0023"]
+      }
+    ],
   "faqs": [
     {
       "question": "What is a constitutional remedy in homeopathy?",

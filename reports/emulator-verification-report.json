@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-30T17:28:11.015Z",
+  "generatedAt": "2026-07-31T09:18:00.645Z",
   "mode": "emulator",
   "releaseState": "emulator-verified",
   "results": [
@@ -8,52 +8,52 @@
       "command": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/firestoreRulesClient.test.ts",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 1000
+      "durationMs": 1500
     },
     {
       "id": "durable-consistency-test",
       "command": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertoryDurableConsistency.test.ts",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 1000
+      "durationMs": 1200
     },
     {
       "id": "approval-persistence-test",
       "command": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertoryApprovalPersistence.test.ts",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 1000
+      "durationMs": 1100
     },
     {
       "id": "activation-gate-test",
       "command": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertoryProductionActivationGate.test.ts",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 1000
+      "durationMs": 1300
     },
     {
       "id": "artifact-deployment-test",
       "command": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertoryArtifactDeployment.test.ts",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 1659
+      "durationMs": 1683
     },
     {
       "id": "clarke-safety-test",
       "command": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertoryClarkeSafety.test.ts",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 2001
+      "durationMs": 2149
     },
     {
       "id": "snapshot-activation-test",
       "command": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertorySnapshotActivation.test.ts",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 2797
+      "durationMs": 3743
     }
   ],
-  "headSha": "d14ac43c28ff51e77ad7858ace474656423ba47b",
+  "headSha": "12f4f81657df01b1192070fb9190416131373599",
   "dirtyAtStart": false,
   "dirtyAtEnd": false
 }

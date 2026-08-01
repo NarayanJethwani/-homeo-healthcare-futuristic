@@ -1,0 +1,109 @@
+{
+  "milestoneId": "M11",
+  "packageId": "KEP5-PACKAGE-M11-KEY-REMEDIES-WAVE3-001",
+  "generatedAt": "2026-08-01T06:30:32.795Z",
+  "status": "pending_authorization",
+  "governance": {
+    "program": "KEP-5",
+    "productionRagActivation": false,
+    "transitionalPublicationFreeze": true,
+    "governedProposalsCount": 50,
+    "allProposalsDraftOnly": true,
+    "ragIneligible": true
+  },
+  "summary": {
+    "totalEntitiesUpgraded": 10,
+    "keyRemedyEntitiesCount": 10,
+    "evaluationCasesCount": 100,
+    "evaluationPassRate": 1
+  },
+  "entities": [
+    {
+      "entityId": "R0024",
+      "slug": "allium-cepa",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0006"
+    },
+    {
+      "entityId": "R0025",
+      "slug": "antimonium-tartaricum",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0006"
+    },
+    {
+      "entityId": "R0026",
+      "slug": "apis-mellifica",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0006"
+    },
+    {
+      "entityId": "R0027",
+      "slug": "argentum-nitricum",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0006"
+    },
+    {
+      "entityId": "R0028",
+      "slug": "baptisia-tinctoria",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0006"
+    },
+    {
+      "entityId": "R0029",
+      "slug": "baryta-carbonica",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0006"
+    },
+    {
+      "entityId": "R0030",
+      "slug": "borax",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0006"
+    },
+    {
+      "entityId": "R0031",
+      "slug": "cactus-grandiflorus",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0006"
+    },
+    {
+      "entityId": "R0032",
+      "slug": "cantharis",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0006"
+    },
+    {
+      "entityId": "R0033",
+      "slug": "causticum",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0006"
+    }
+  ],
+  "evaluation": {
+    "caseCount": 100,
+    "entityCount": 10,
+    "minimumCasesPerEntity": 10,
+    "recallAt5": 1,
+    "meanReciprocalRank": 1,
+    "citationPrecision": 1,
+    "unsupportedClaimFailureCount": 0,
+    "emergencyEscalationFailureCount": 0,
+    "abstentionFailureCount": 0,
+    "staleRevisionLeakageCount": 0,
+    "crossEntityConfusionCount": 0,
+    "withdrawnContentLeakageCount": 0,
+    "passedCaseCount": 100,
+    "failedCaseCount": 0
+  },
+  "packageSha256": "fa9613949fe1427a6e79bd59eb2fcd179a762786e81d6acc5e0b890488bfbf88"
+}

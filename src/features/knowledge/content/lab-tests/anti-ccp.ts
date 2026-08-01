@@ -6,48 +6,65 @@ export const AntiCCPLabTest: KnowledgeEntity = {
   entityType: "lab-test",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-07-31T19:50:00Z",
+    reviewed: "2026-07-31T19:50:00Z"
   },
   title: {
-    en: "Anti-CCP",
-    hi: "Anti-CCP",
-    gu: "Anti-CCP",
-    mr: "Anti-CCP",
-    es: "Anti-CCP",
-    ar: "Anti-CCP"
+    en: "Anti-CCP Antibodies (ACPA)",
+    hi: "एंटी-सीसीपी एंटीबॉडी (Anti-CCP)",
+    gu: "એન્ટિ-સીસીપી એન્ટિબોડીઝ (Anti-CCP)",
+    mr: "एंटी-सीसीपी अँटीबॉडीज (Anti-CCP)",
+    es: "Anticuerpos Anti-CCP (ACPA)",
+    ar: "أجسام مضادة لـ Anti-CCP"
   },
   summary: {
-    en: "Clinical purpose, normal range, and interpretation of Anti-CCP lab results.",
-    hi: "Anti-CCP प्रयोगशाला परीक्षण विवरण.",
-    gu: "Anti-CCP લેબોરેટરી ટેસ્ટ પરિચય.",
-    mr: "Anti-CCP लॅब टेस्ट माहिती.",
-    es: "Propósito e interpretación de la prueba de laboratorio Anti-CCP.",
-    ar: "الغرض السريري وتفسير نتائج اختبار Anti-CCP."
+    en: "Clinical interpretation, reference ranges, and highly specific Rheumatoid Arthritis diagnosis for Anti-CCP (ACPA) under ACR standards.",
+    hi: "एंटी-सीसीपी एंटीबॉडी लैब टेस्ट की नैदानिक समझ और संदर्भ सीमाएँ.",
+    gu: "એન્ટિ-સીસીપી ટેસ્ટની સમજણ અને રેફરન્સ રેન્જ.",
+    mr: "एंटी-सीसीपी चाचणीची माहिती आणि संदर्भ मर्यादा.",
+    es: "Interpretación clínica y alta especificidad para Artritis Reumatoide de los anticuerpos Anti-CCP.",
+    ar: "التفسير السريري والنطاق المرجعي للأجسام المضادة لـ Anti-CCP."
   },
   content: {
-  "overview": "ANTI CCP: A general laboratory screening parameter or basic metabolic marker used to assess baseline physiological homeostasis and metabolic efficiency.",
-  "normalRange": "ESR: < 20 mm/hr; Blood Glucose: 70-99 mg/dL; Serum Creatinine: 0.6-1.2 mg/dL.",
-  "highValues": [
-    "Systemic inflammatory baseline (high ESR)",
-    "Metabolic intolerance or early diabetes (high glucose)",
-    "Impaired kidney function (high creatinine)"
-  ],
-  "lowValues": [
-    "Anemia or low muscle mass",
-    "Hypoglycemia",
-    "Nutritional deficiencies"
-  ],
-  "clinicalInterpretation": "ANTI CCP evaluation: Elevated inflammatory markers (ESR, CRP) suggest systemic activity needing further investigation. Blood glucose shifts require evaluation of insulin sensitivity and glycemic control.",
-  "references": [
-    "CIT-0004",
-    "CIT-0005",
-    "CIT-0006",
-    "CIT-0007",
-    "CIT-0008"
-  ],
+    overview: "Anti-Cyclic Citrullinated Peptide (Anti-CCP) Antibodies / Anti-Citrullinated Protein Antibodies (ACPA): Highly specific autoantibodies targeting citrullinated protein epitopes generated via peptidylarginine deiminase (PAD) enzyme post-translational modification during synovial inflammation.",
+    normalRange: "Negative: <20 U/mL; Weakly Positive: 20 - 39 U/mL; Moderately Positive: 40 - 59 U/mL; Strongly Positive: >=60 U/mL.",
+    highValues: [
+      "Rheumatoid Arthritis (High specificity 95-98% for early and established RA)",
+      "High Risk for Progressive Erosive Joint Damage and Extra-Articular Manifestations",
+      "Psoriatic Arthritis or Palindromic Rheumatism (Subgroup)"
+    ],
+    lowValues: [
+      "Normal / Unremarkable Serology (Does not rule out Seronegative RA)"
+    ],
+    clinicalInterpretation: "Anti-CCP positivity has high diagnostic specificity (95-98%) for Rheumatoid Arthritis and can precede clinical joint inflammation by years; high-titer Anti-CCP strongly predicts aggressive erosive joint destruction warranting early DMARD therapy.",
+    references: [
+      "CIT-0071",
+      "CIT-0023"
+    ],
+    claimCitations: [
+      {
+        claimId: "CLM-L0024-001",
+        passage: "Anti-CCP antibodies demonstrate 95-98% specificity for Rheumatoid Arthritis, superior to Rheumatoid Factor in distinguishing RA from other arthritides.",
+        citationIds: ["CIT-0071"]
+      },
+      {
+        claimId: "CLM-L0024-002",
+        passage: "High Anti-CCP antibody titers serve as an independent prognostic marker for rapid radiographical joint erosion and aggressive disease course.",
+        citationIds: ["CIT-0071"]
+      },
+      {
+        claimId: "CLM-L0024-003",
+        passage: "Anti-CCP positivity confers 3 points toward the 2010 ACR/EULAR Rheumatoid Arthritis classification criteria.",
+        citationIds: ["CIT-0071"]
+      },
+      {
+        claimId: "CLM-L0024-004",
+        passage: "Homeopathic supportive management does not replace early DMARD initiation in Anti-CCP positive erosive joint disease.",
+        citationIds: ["CIT-0023"]
+      }
+    ],
   "faqs": [
     {
       "question": "What is a constitutional remedy in homeopathy?",

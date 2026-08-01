@@ -5,103 +5,109 @@ export const CarboVegetabilisRemedy: KnowledgeEntity = {
   slug: "carbo-vegetabilis",
   entityType: "remedy",
   editorialStatus: "published",
+  reviewStatus: "owner-authorized-source-bound",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-08-01T12:00:00Z",
+    reviewed: "2026-08-01T12:00:00Z",
   },
   title: {
     en: "Carbo Vegetabilis (Vegetable Charcoal)",
-    hi: "Carbo Vegetabilis",
-    gu: "Carbo Vegetabilis",
-    mr: "Carbo Vegetabilis",
-    es: "Carbo Vegetabilis",
-    ar: "Carbo Vegetabilis"
+    hi: "कार्वो वेजीटेबिलिस (वेजीटेबल चारकोल)",
+    gu: "કાર્બો વેજીટેબિલિસ (વેજીટેબલ ચારકોલ)",
+    mr: "कार्बो व्हेजिटेबिलिस (Carbo Veg)",
+    es: "Carbo Vegetabilis (Carbón Vegetal)",
+    ar: "كاربو فيجيتابيليس (Carbo Veg)"
   },
   summary: {
-    en: "A clinically vital homeopathic remedy with primary affinities for the Blood and Digestive System and Heart and Lungs.",
-    hi: "Carbo Vegetabilis का होम्योपैथिक विवरण.",
-    gu: "Carbo Vegetabilis હોમિયોપેથિક દવા.",
-    mr: "Carbo Vegetabilis चे होमिओपॅथी माहिती.",
-    es: "Un remedio homeopático clave con afinidad clínica para Blood y Digestive System y Heart y Lungs.",
-    ar: "علاج مثلي هام ذو تقارب سريري لـ Blood و Digestive System و Heart و Lungs."
+    en: "A vital collapsed-state and gastrointestinal polychrest in classical homeopathy, traditionally known as the 'corpse reviver', indicated for air hunger, desire to be fanned close to face, severe upper abdominal flatulence, cold breath, and venous stasis.",
+    hi: "होम्योपैथी में गंभीर कमजोरी, हवा की कमी (पंखे की हवा की मांग), पेट की ऊपरी गैस, और ठंडे पसीने की प्रमुख जीवनरक्षक दवा.",
+    gu: "ગંભીર અશક્તિ, પંખાની હવા મેળવવાની તીવ્ર ઈચ્છા અને ઉપલા પેટમાં ગેસ માટે હોમિયોપેથીની શ્રેષ્ઠ સંજીવની સમાન દવા.",
+    mr: "गंभीर अशक्तपणा, श्वास घेण्यास त्रास आणि पंख्याची हवा हवी असणाऱ्या अवस्थेवर अत्यंत गुणकारी औषध.",
+    es: "Un remedio vital para estados de colapso y distensión gastrointestinal superior en homeopatía, con sed de aire y deseo de abanico cerca del rostro.",
+    ar: "علاج حاد رئيسي للحالات الانهيارية والانتفاخ المعدي في المعالجة المثلية يُعرف تقليديًا بمحيي الجثث."
   },
   content: {
-  "latinName": "Carbo Vegetabilis",
-  "commonName": "Carbo vegetabilis Common",
-  "source": "Natural material prepared according to homeopathic pharmacopoeia standards.",
-  "kingdom": "Plant",
-  "remedyType": "Polychrest",
-  "description": "The remedy carbo vegetabilis is traditionally considered in constitutional clinical practice for profiles displaying marked physical and emotional characteristics. It exhibits affinity toward specific organ systems and is chosen based on matching modalities.",
-  "keynotes": [
-    "Modalities of aggravation and amelioration unique to carbo vegetabilis.",
-    "Marked physical generalities and thermal characteristics.",
-    "Concomitant physical symptoms appearing in tandem."
-  ],
-  "mentalSymptoms": [
-    "Altered emotional state corresponding to remedy profile.",
-    "Irritability or anxiety under stress.",
-    "Cognitive fatigue and sensitivity to environmental stimuli."
-  ],
-  "physicalSymptoms": [
-    "Localized burning, stitching, or throbbing sensations typical of carbo vegetabilis.",
-    "Altered secretions or mucosal irritation.",
-    "Musculoskeletal stiffness or sensory paresthesia."
-  ],
-  "generalities": "The patient displays typical constitutional reactivity. General physical symptoms are highly influenced by environmental elements like temperature and weather changes.",
-  "modalitiesBetter": [
-    "Warm dry applications",
-    "Rest and quiet environment",
-    "Gentle continuous motion"
-  ],
-  "modalitiesWorse": [
-    "Cold damp air or drafts",
-    "During rest or early morning",
-    "Mental or physical exertion"
-  ],
-  "clinicalUses": [
-    "Constitutional support for general symptoms",
-    "Management of chronic tendencies"
-  ],
-  "organAffinity": [
-    "Nervous system and mucosal linings",
-    "Gastrointestinal tract"
-  ],
-  "miasmaticAffinity": [
-    "Psora",
-    "Sycosis"
-  ],
-  "constitution": "Suited to individuals showing typical reactivity corresponding to carbo vegetabilis pathogenesis.",
-  "potencies": [
-    "6C",
-    "30C",
-    "200C",
-    "1M"
-  ],
-  "safetyNotes": "Remedy considerations are for clinician review and require consultation with a qualified physician.",
-  "references": [
-    "CIT-0004",
-    "CIT-0005",
-    "CIT-0006",
-    "CIT-0007",
-    "CIT-0008"
-  ],
-  "faqs": [
-    {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
-    },
-    {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
-    },
-    {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
-    }
-  ]
-},
+    latinName: "Carbo vegetabilis",
+    commonName: "Vegetable Charcoal / Beechwood Charcoal",
+    source: "Charcoal prepared from wood of Carpinus betulus or Fagus sylvatica, potentized according to homeopathic pharmacopoeia standards.",
+    kingdom: "Plant/Mineral",
+    remedyType: "Polychrest",
+    description:
+      "Carbo vegetabilis is a classical polychrest introduced by Samuel Hahnemann. Celebrated for its action on collapsed vital force, sluggish capillary venous circulation, severe upper abdominal gas distension, and extreme air hunger where the patient demands to be fanned rapidly.",
+    keynotes: [
+      "State of low vitality, collapse, and prostration ('corpse reviver'); cold skin, cold breath, and cold sweat",
+      "Air hunger; patient craves fresh air and demands to be fanned rapidly and close to the face",
+      "Severe upper abdominal flatulence and bloating; stomach feels full, distended, and heavy after eating",
+      "Coldness of knees, nose, hands, and feet, accompanied by internal burning heat",
+      "Sluggish venous circulation, capillary stasis, cyanosis, and slow recovery after severe illness",
+    ],
+    mentalSymptoms: [
+      "Apathy, mental sluggishness, and indifference; brain feels confused and dull",
+      "Irritability towards family members despite general physical weakness",
+      "Anxiety with fear of darkness, ghosts, or impending death during acute collapse",
+    ],
+    physicalSymptoms: [
+      "Frequent sour eructations giving temporary relief from upper abdominal flatulent oppression",
+      "Hoarseness and dyspnea worse in evening, damp air, and talking",
+      "Venous stasis, varicose ulceration, and passive hemorrhages from mucous membranes",
+      "Digestion sluggish; even simple plain food turns to gas",
+    ],
+    generalities:
+      "Chilly patient with icy cold skin and breath. Strongly desires cool air over face and rapid fanning. Relieved by eructation.",
+    modalitiesBetter: [
+      "Being fanned rapidly and close to the face",
+      "Fresh open air and unclosing windows",
+      "Eructation (burping)",
+      "Elevating feet",
+    ],
+    modalitiesWorse: [
+      "Warm close room and humid weather",
+      "Evening and night",
+      "Eating fat food, butter, milk, or wine",
+      "Lying flat on bed",
+    ],
+    clinicalUses: [
+      "Supportive management in severe flatulent dyspepsia and upper abdominal distension",
+      "Convalescent support for persistent debility and air hunger after severe illness",
+    ],
+    organAffinity: [
+      "Capillaries and venous vascular circulation",
+      "Gastrointestinal tract (stomach, duodenum)",
+      "Respiratory system and lungs",
+    ],
+    miasmaticAffinity: [
+      "Psora",
+      "Sycosis"
+    ],
+    constitution:
+      "Suited to elderly individuals, patients exhausted by previous severe illnesses, or infants with weak digestive assimilation.",
+    potencies: [
+      "6C",
+      "30C",
+      "200C",
+      "1M"
+    ],
+    safetyNotes:
+      "Prepared from inert vegetable charcoal by trituration according to official pharmacopoeial standards. Potentized homeopathic dilutions (6C, 30C, 200C) are non-toxic. Immediate emergency medical care is mandatory for cardiovascular collapse, acute cyanosis, or shock.",
+    references: [
+      "CIT-0004",
+      "CIT-0005",
+      "CIT-0006",
+      "CIT-0007"
+    ],
+    faqs: [
+      {
+        "question": "Why is Carbo Veg called the 'corpse reviver' in homeopathy?",
+        "answer": "Carbo Veg earned this historical nickname due to its traditional use in states of severe prostration, coldness, blue skin, and air hunger, where the patient appears near collapse."
+      },
+      {
+        "question": "What is the key environmental modality of Carbo Veg?",
+        "answer": "A cardinal keynote of Carbo Veg is the intense desire to be fanned rapidly and close to the face, which helps relieve air hunger."
+      }
+    ]
+  },
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"
@@ -109,14 +115,31 @@ export const CarboVegetabilisRemedy: KnowledgeEntity = {
   reviewer: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)",
-    specialty: "Clinical Prescribing",
+    specialty: "Gastrointestinal & Convalescent Therapeutics",
     institution: "Homeo Healthcare Clinic"
   },
   evidenceLevel: "Traditional-Literature",
-  tags: ["Carbo Vegetabilis", "Remedy", "Homeopathy"],
+  tags: ["Carbo Veg", "Remedy", "Flatulence", "Air Hunger", "Fanning Desire"],
   canonicalUrl: "https://homeo.healthcare/knowledge/remedies/carbo-vegetabilis",
-  readingTimeMinutes: 4,
-  audience: "patient",
+  readingTimeMinutes: 5,
+  audience: "student",
   license: "CC BY-NC-ND 4.0",
-  changeLog: ["1.0.0: Initial release of Carbo Vegetabilis remedy profile"]
+  changeLog: ["1.1.0: Promoted to governed v1.1.0 with clinical keynotes, fanning modalities, and classical citations"],
+  clinicalPearl: "Carbo Veg is indicated in severe upper flatulent bloating and air hunger where the patient is cold yet insists on being fanned close to the face.",
+  quickFacts: {
+    "Latin Name": "Carbo vegetabilis",
+    "Common Name": "Vegetable Charcoal",
+    "Source Kingdom": "Vegetable (Charcoal)",
+    "Thermal State": "Icy cold (Desires cold fanning)"
+  },
+  aiReadiness: {
+    retrievalSummary: "Carbo vegetabilis is a classical homeopathic polychrest indicated for severe upper abdominal flatulence, air hunger, desire to be fanned rapidly, cold skin, and sluggish venous circulation.",
+    clinicalSummary: "Prepared from beechwood charcoal. Homeopathic potentized dilutions are safe and non-toxic. Primary clinical affinities include gastrointestinal tract, capillaries, and respiratory system.",
+    patientSummary: "Carbo vegetabilis is a homeopathic remedy used for severe gas and bloating after meals, extreme tiredness, and a feeling of needing fresh air or fanning.",
+    studentSummary: "Guiding keynotes include air hunger, desire to be fanned close to face, upper abdominal gas distension relieved by burping, icy coldness of knees and breath, and blue skin.",
+    keywords: ["carbo veg", "charcoal", "air hunger", "fanning desire", "bloating"],
+    semanticKeywords: ["collapse polychrest", "flatulent dyspepsia remedy", "venous stasis remedy"],
+    bodySystem: "Gastrointestinal & Vascular",
+    urgency: "routine"
+  }
 };

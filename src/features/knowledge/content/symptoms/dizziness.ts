@@ -6,50 +6,70 @@ export const DizzinessSymptom: KnowledgeEntity = {
   entityType: "symptom",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-07-31T20:30:00Z",
+    reviewed: "2026-07-31T20:30:00Z"
   },
   title: {
-    en: "Dizziness",
-    hi: "Dizziness",
-    gu: "Dizziness",
-    mr: "Dizziness",
-    es: "Dizziness",
-    ar: "Dizziness"
+    en: "Dizziness and Vertigo",
+    hi: "चक्कर आना (Dizziness and Vertigo)",
+    gu: "ચક્કર આવવા (Dizziness and Vertigo)",
+    mr: "चक्कर येणे (Dizziness and Vertigo)",
+    es: "Mareo y Vértigo (Dizziness and Vertigo)",
+    ar: "الدوخة والدوار (Dizziness and Vertigo)"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Dizziness.",
-    hi: "Dizziness के लक्षण की नैदानिक समझ.",
-    gu: "Dizziness ના લક્ષણ ની સમજણ.",
-    mr: "Dizziness चे लक्षण आणि उपचार.",
-    es: "Definición clínica y significado de Dizziness.",
-    ar: "التعريف السريري والأهمية لـ Dizziness."
+    en: "Clinical evaluation, differential diagnosis, central stroke red flags (HINTS examination), and supportive management for Dizziness under AAN 2020 guidelines.",
+    hi: "चक्कर आने के लक्षण की नैदानिक समझ और स्ट्रोक चेतावनी लक्षण.",
+    gu: "ચક્કર આવવાના લક્ષણની તબીબી સમજણ અને ઈમરજન્સી ચેતવણી લક્ષણો.",
+    mr: "चक्कर येण्याच्या लक्षणांची वैद्यकीय माहिती आणि आपत्कालीन इशारे.",
+    es: "Evaluación clínica, examen HINTS y señales de alarma de ictus según AAN 2020.",
+    ar: "التقييم السريري وعلامات الخطر للدوخة."
   },
   content: {
-  "definition": "Dizziness: A general physical symptom reflecting altered systemic vitality, sleep disruption, or thermal deregulation.",
-  "clinicalMeaning": "Represents a functional warning sign indicating that systemic auto-regulation is strained or compromised.",
-  "commonCauses": [
-    "Post-viral fatigue states",
-    "Chronic physical or psychological stress",
-    "Sleep deprivation or metabolic imbalances",
-    "Subclinical systemic congestion"
-  ],
-  "differentialDiagnosis": "Must be differentiated from primary thyroid disease, severe anemia, fibromyalgia, and major depressive disorder.",
-  "redFlags": [
-    "Sudden profound unexplained weight loss",
-    "Unremitting high fever unresponsive to standard care",
-    "Sudden localized numbness or severe weakness"
-  ],
-  "lifestyleAdvice": "Prioritize consistent sleep timing, consume a balanced whole-foods diet, practice mild relaxation exercises, and stay hydrated.",
-  "references": [
-    "CIT-0004",
-    "CIT-0005",
-    "CIT-0006",
-    "CIT-0007",
-    "CIT-0008"
-  ],
+    definition: "Dizziness: A broad clinical term encompassing rotational spinning sensation (Vertigo), lightheadedness/presyncope, disequilibrium, or non-specific spatial disorientation.",
+    clinicalMeaning: "Reflects vestibular nerve or inner ear pathology (BPPV, vestibular neuritis), central brainstem/cerebellar stroke, cardiac dysrhythmia, or orthostatic hypotension.",
+    commonCauses: [
+      "Benign Paroxysmal Positional Vertigo (BPPV), Vestibular Neuritis / Labyrinthitis",
+      "Meniere's Disease, Vestibular Migraine",
+      "Orthostatic Hypotension, Medication Side Effects (Antihypertensives, Sedatives)",
+      "Anemia, Hypoglycemia, Dehydration, Anxiety / Hyperventilation"
+    ],
+    differentialDiagnosis: "Differentiate peripheral vestibular dizziness (BPPV, neuritis) from central neurological stroke (posterior circulation / cerebellar ischemia), cardiac arrhythmias (AV block, VT), and presyncope.",
+    redFlags: [
+      "Sudden onset continuous vertigo with focal neurological deficits (dysarthria, diplopia, ataxia, facial weakness)",
+      "Abnormal HINTS exam (normal head impulse, direction-changing nystagmus, vertical skew deviation - suggestive of central stroke)",
+      "Dizziness accompanied by chest pain, palpitations, presyncope, or loss of consciousness",
+      "Sudden severe unilateral hearing loss or inability to stand/walk unassisted"
+    ],
+    lifestyleAdvice: "Perform Epley maneuver for positional vertigo under guidance, change positions slowly, maintain adequate hydration, avoid sudden neck movements, and reduce salt intake if Meniere's disease is suspected.",
+    references: [
+      "CIT-0077",
+      "CIT-0023"
+    ],
+    claimCitations: [
+      {
+        claimId: "CLM-S0012-001",
+        passage: "Acute continuous vertigo with ataxia, dysarthria, or abnormal HINTS examination requires immediate brain MRI to rule out posterior circulation cerebellar stroke.",
+        citationIds: ["CIT-0077"]
+      },
+      {
+        claimId: "CLM-S0012-002",
+        passage: "Benign Paroxysmal Positional Vertigo (BPPV) is characterized by brief (<1 minute) episodes of spinning vertigo triggered by head position changes, effectively treated with canalith repositioning procedures.",
+        citationIds: ["CIT-0077"]
+      },
+      {
+        claimId: "CLM-S0012-003",
+        passage: "Lightheadedness accompanied by palpitations or syncope mandates ECG and Holter monitoring for cardiac dysrhythmias.",
+        citationIds: ["CIT-0077"]
+      },
+      {
+        claimId: "CLM-S0012-004",
+        passage: "Homeopathic supportive remedies (e.g., Conium, Bryonia, Cocculus) do not substitute for emergency stroke neuroimaging or cardiac telemetry in acute central vertigo.",
+        citationIds: ["CIT-0023"]
+      }
+    ],
   "faqs": [
     {
       "question": "What is a constitutional remedy in homeopathy?",

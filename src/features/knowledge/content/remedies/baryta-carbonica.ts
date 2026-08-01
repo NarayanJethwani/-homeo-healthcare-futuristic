@@ -5,103 +5,141 @@ export const BarytaCarbonicaRemedy: KnowledgeEntity = {
   slug: "baryta-carbonica",
   entityType: "remedy",
   editorialStatus: "published",
+  reviewStatus: "owner-authorization-required",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-08-01T12:00:00Z",
+    reviewed: "2026-08-01T12:00:00Z",
   },
   title: {
-    en: "Baryta Carbonica (Baryta Carbonica Common)",
-    hi: "Baryta Carbonica",
-    gu: "Baryta Carbonica",
-    mr: "Baryta Carbonica",
-    es: "Baryta Carbonica",
-    ar: "Baryta Carbonica"
+    en: "Baryta Carbonica (Barium Carbonate)",
+    hi: "बेराइटा कार्बोनिका (बेरियम कार्बोनेट)",
+    gu: "બેરાઈટા કાર્બોનિકા (બેરિયમ કાર્બોનેટ)",
+    mr: "बेराइटा कार्ब (Baryta Carb)",
+    es: "Baryta Carbonica (Carbonato de Bario)",
+    ar: "باريتا كاربونيكا (Baryta Carb)"
   },
   summary: {
-    en: "A clinically vital homeopathic remedy with primary affinities for the Skin and Mucous Membranes and Nerves.",
-    hi: "Baryta Carbonica का होम्योपैथिक विवरण.",
-    gu: "Baryta Carbonica હોમિયોપેથિક દવા.",
-    mr: "Baryta Carbonica चे होमिओपॅथी माहिती.",
-    es: "Un remedio homeopático clave con afinidad clínica para Skin y Mucous Membranes y Nerves.",
-    ar: "علاج مثلي هام ذو تقارب سريري لـ Skin و Mucous Membranes و Nerves."
+    en: "A cardinal developmental, glandular, pediatric, and geriatric mineral polychrest in classical homeopathy, indicated for physical/mental developmental delay, chronic tonsillar hypertrophy, extreme bashfulness, and senile cognitive decline.",
+    hi: "होम्योपैथी में बच्चों का शारीरिक व मानसिक विकास रुकना, बार-बार टॉन्सिल सूजना, अत्यधिक शर्मिलापन, और बुजुर्गों की भूलने की बीमारी की प्रमुख दवा.",
+    gu: "બાળકોનો શારીરિક-માનસિક વિકાસ અટકવો, વારંવાર ટાન્સિલ વધવા, અતિશય શરમાળપણું અને વૃદ્ધોની સ્મૃતિભ્રંશ માટે હોમિયોપેથીની ઉત્તમ દવા.",
+    mr: "मुलांचा शारीरिक व मानसिक विकास मंदावणे, टॉन्सिल्स वाढणे आणि वृद्धांमधील स्मृतीभ्रंशावर अत्यंत गुणकारी औषध.",
+    es: "Un remedio mineral fundamental en homeopatía para retraso del desarrollo físico/mental, hipertrofia amigdalina crónica, timidez extrema y deterioro cognitivo senil.",
+    ar: "علاج معدني رئيسي للنمو والغدد في المعالجة المثلية يُشار إليه لتأخر النمو البدني والعقلي وضخامة اللوزتين."
   },
   content: {
-  "latinName": "Baryta Carbonica",
-  "commonName": "Baryta carbonica Common",
-  "source": "Natural material prepared according to homeopathic pharmacopoeia standards.",
-  "kingdom": "Plant",
-  "remedyType": "Polychrest",
-  "description": "The remedy baryta carbonica is traditionally considered in constitutional clinical practice for profiles displaying marked physical and emotional characteristics. It exhibits affinity toward specific organ systems and is chosen based on matching modalities.",
-  "keynotes": [
-    "Modalities of aggravation and amelioration unique to baryta carbonica.",
-    "Marked physical generalities and thermal characteristics.",
-    "Concomitant physical symptoms appearing in tandem."
-  ],
-  "mentalSymptoms": [
-    "Altered emotional state corresponding to remedy profile.",
-    "Irritability or anxiety under stress.",
-    "Cognitive fatigue and sensitivity to environmental stimuli."
-  ],
-  "physicalSymptoms": [
-    "Localized burning, stitching, or throbbing sensations typical of baryta carbonica.",
-    "Altered secretions or mucosal irritation.",
-    "Musculoskeletal stiffness or sensory paresthesia."
-  ],
-  "generalities": "The patient displays typical constitutional reactivity. General physical symptoms are highly influenced by environmental elements like temperature and weather changes.",
-  "modalitiesBetter": [
-    "Warm dry applications",
-    "Rest and quiet environment",
-    "Gentle continuous motion"
-  ],
-  "modalitiesWorse": [
-    "Cold damp air or drafts",
-    "During rest or early morning",
-    "Mental or physical exertion"
-  ],
-  "clinicalUses": [
-    "Constitutional support for general symptoms",
-    "Management of chronic tendencies"
-  ],
-  "organAffinity": [
-    "Nervous system and mucosal linings",
-    "Gastrointestinal tract"
-  ],
-  "miasmaticAffinity": [
-    "Psora",
-    "Sycosis"
-  ],
-  "constitution": "Suited to individuals showing typical reactivity corresponding to baryta carbonica pathogenesis.",
-  "potencies": [
-    "6C",
-    "30C",
-    "200C",
-    "1M"
-  ],
-  "safetyNotes": "Remedy considerations are for clinician review and require consultation with a qualified physician.",
-  "references": [
-    "CIT-0004",
-    "CIT-0005",
-    "CIT-0006",
-    "CIT-0007",
-    "CIT-0008"
-  ],
-  "faqs": [
+    latinName: "Barium carbonate",
+    commonName: "Barium Carbonate / Witherite",
+    source: "Precipitated barium carbonate BaCO3 potentized according to homeopathic pharmacopoeia standards.",
+    kingdom: "Mineral",
+    remedyType: "Polychrest",
+    description:
+      "Baryta Carbonica is a major antipsoric and scrofulous mineral polychrest proved by Samuel Hahnemann. Celebrated for its unique action on lymphatic glands, brain development, vascular elasticity, and aging tissues. Key features include dwarfish physical/mental habitus in children, chronic tonsillar enlargement with suppurative quinsy, extreme shyness before strangers, and senile dementia in the elderly.",
+    keynotes: [
+      "Delayed physical, mental, or intellectual development in children ('dwarfishness of mind and body')",
+      "Chronic hypertrophy and hardening of tonsils; tendency to recurrent quinsy from slightest cold exposure",
+      "Extreme bashfulness, shyness, and fear of strangers; child hides behind furniture or mother's apron",
+      "Senile cognitive decline in the elderly: loss of memory, childish behavior, confusion, and cerebral arteriosclerosis",
+      "Suppuration and swelling of cervical, parotid, and submaxillary lymphatic glands",
+      "Offensive foot perspiration; toes cold, clammy, and excoriated",
+    ],
+    mentalSymptoms: [
+      "Lack of self-confidence; feels incapable, foolish, and easily intimidated",
+      "Loss of memory for names, words, and recent events; indecisive",
+      "Childish grief over small matters; easily frightened",
+    ],
+    physicalSymptoms: [
+      "Chronic tonsillitis with throat constriction; can swallow liquids only, solids cause choking pain",
+      "Apoplexy in elderly with hypertension and vascular fragility",
+      "Fatty tumors (lipomas), encysted tumors, and glandular indurations",
+      "Chronic catarrhal bronchitis in elderly with profuse expectoration",
+    ],
+    generalities:
+      "Chilly patient, extremely sensitive to cold dry air and washing head. Strongly aggravated by cold air, damp weather, and swallowing. Ameliorated by warmth.",
+    modalitiesBetter: [
+      "Warmth and warm clothing",
+      "Resting in warm room",
+    ],
+    modalitiesWorse: [
+      "Cold dry air, cold wind, and washing head",
+      "Thinking of symptoms",
+      "Lying on painful side",
+      "After eating",
+    ],
+    clinicalUses: [
+      "Traditional materia-medica profile associated with developmental and tonsillar symptom patterns",
+      "Historical homeopathic literature association with bashfulness and age-related cognitive symptoms",
+    ],
+    organAffinity: [
+      "Lymphatic glandular system (tonsils, parotids, cervical nodes)",
+      "Brain, central nervous system, and mind",
+      "Vascular system, arteries, and skin",
+    ],
+    miasmaticAffinity: [
+      "Psora",
+      "Sycosis",
+      "Syphilis"
+    ],
+    constitution:
+      "Suited to children with large abdomen, thin limbs, delayed growth, or elderly individuals undergoing premature senile decay.",
+    potencies: [
+      "6C",
+      "30C",
+      "200C",
+      "1M"
+    ],
+    safetyNotes:
+      "Raw barium carbonate is toxic and can cause severe hypokalemia, weakness, paralysis, and cardiac rhythm disturbance. A dilution label alone does not prove the absence of barium or guarantee product quality. Developmental delay, persistent tonsillar obstruction, cognitive decline, or stroke symptoms require conventional medical assessment; suspected barium exposure requires urgent poison-control care.",
+    references: [
+      "CIT-0004",
+      "CIT-0005",
+      "CIT-0006",
+      "CIT-0007",
+      "CIT-0023",
+      "CIT-0024"
+    ],
+    faqs: [
+      {
+        "question": "What is the classic mental behavior of a Baryta Carb child?",
+        "answer": "A Baryta Carb child is excessively bashful, shy, and fearful of strangers, often hiding behind furniture, doors, or their mother when visitors arrive."
+      },
+      {
+        "question": "What glandular organ is most strongly targeted by Baryta Carb?",
+        "answer": "Baryta Carb has a celebrated affinity for the tonsils, indicated in chronic enlargement, induration, and recurrent suppurative quinsy."
+      }
+    ]
+  },
+  claimCitations: [
     {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
+      claimId: "R0029-TRADITIONAL-PROFILE",
+      statement: "Verified classical materia-medica sources describe Baryta Carbonica using developmental delay, tonsillar enlargement, bashfulness, cold sensitivity, and age-related cognitive symptoms.",
+      citationIds: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0007"],
+      passageId: "CIT-0006-R0029-TRADITIONAL-PROFILE",
     },
     {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
+      claimId: "R0029-EVIDENCE-LIMITS",
+      statement: "The historical profile is traditional literature evidence and does not establish modern clinical efficacy for any disease.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0023-HOMEOPATHY-EVIDENCE-LIMITS",
     },
     {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
-    }
-  ]
-},
+      claimId: "R0029-PRODUCT-SAFETY",
+      statement: "A homeopathic dilution label does not by itself guarantee product composition, quality, safety, or effectiveness.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0024-HOMEOPATHIC-PRODUCT-SAFETY",
+    },
+    {
+      claimId: "R0029-CONVENTIONAL-CARE-BOUNDARY",
+      statement: "Homeopathic products must not delay emergency assessment or replace proven conventional treatment for serious or life-threatening symptoms.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0024-SERIOUS-CONDITION-BOUNDARY",
+    },
+  ],
+  redFlags: [
+    "Sudden weakness, speech difficulty, or facial droop requires emergency stroke evaluation.",
+    "Suspected barium exposure, muscle paralysis, or arrhythmia requires urgent poison-control and hospital care.",
+  ],
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"
@@ -109,14 +147,31 @@ export const BarytaCarbonicaRemedy: KnowledgeEntity = {
   reviewer: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)",
-    specialty: "Clinical Prescribing",
+    specialty: "Pediatric & Geriatric Therapeutics",
     institution: "Homeo Healthcare Clinic"
   },
   evidenceLevel: "Traditional-Literature",
-  tags: ["Baryta Carbonica", "Remedy", "Homeopathy"],
+  tags: ["Baryta Carb", "Remedy", "Tonsillar Hypertrophy", "Developmental Delay", "Senile Decline"],
   canonicalUrl: "https://homeo.healthcare/knowledge/remedies/baryta-carbonica",
-  readingTimeMinutes: 4,
-  audience: "patient",
+  readingTimeMinutes: 5,
+  audience: "student",
   license: "CC BY-NC-ND 4.0",
-  changeLog: ["1.0.0: Initial release of Baryta Carbonica remedy profile"]
+  changeLog: ["1.1.0: Promoted to governed v1.1.0 with developmental keynotes, tonsillar enlargement, and classical citations"],
+  clinicalPearl: "Baryta Carb is indicated in physical/mental developmental delay, chronic tonsillar hypertrophy, extreme bashfulness, and senile memory loss.",
+  quickFacts: {
+    "Latin Name": "Barium carbonate",
+    "Common Name": "Barium Carbonate / Witherite",
+    "Source Kingdom": "Mineral",
+    "Thermal State": "Chilly (Sensitive to cold air & washing head)"
+  },
+  aiReadiness: {
+    retrievalSummary: "Baryta Carbonica is a major mineral homeopathic polychrest for physical and mental developmental delay, chronic tonsillar hypertrophy, extreme shyness, and senile cognitive decline.",
+    clinicalSummary: "Classical literature derives this profile from barium carbonate and describes developmental and tonsillar patterns; it does not establish efficacy or guarantee product safety.",
+    patientSummary: "Classical texts associate Baryta Carbonica with developmental and tonsillar patterns. Children with delayed development or breathing/swallowing obstruction need standard medical assessment.",
+    studentSummary: "Guiding keynotes include physical/mental dwarfishness, chronic enlarged tonsils, fear of strangers, senile dementia, cold feet, and aggravation from cold dry air.",
+    keywords: ["baryta carb", "barium carbonate", "tonsillar hypertrophy", "developmental delay", "senile decline"],
+    semanticKeywords: ["pediatric developmental polychrest", "tonsillitis remedy", "senile dementia remedy"],
+    bodySystem: "Endocrine & Lymphatic",
+    urgency: "routine"
+  }
 };

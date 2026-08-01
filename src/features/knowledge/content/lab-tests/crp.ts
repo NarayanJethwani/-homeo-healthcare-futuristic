@@ -6,48 +6,66 @@ export const CRPLabTest: KnowledgeEntity = {
   entityType: "lab-test",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-07-31T20:30:00Z",
+    reviewed: "2026-07-31T20:30:00Z"
   },
   title: {
-    en: "CRP",
-    hi: "CRP",
-    gu: "CRP",
-    mr: "CRP",
-    es: "CRP",
-    ar: "CRP"
+    en: "C-Reactive Protein (CRP / hs-CRP)",
+    hi: "सी-रिएक्टिव प्रोटीन (CRP)",
+    gu: "સી-રિએક્ટિવ પ્રોટીન (CRP)",
+    mr: "सी-रिएक्टिव्ह प्रोटीन (CRP)",
+    es: "Proteína C Reactiva (PCR / hs-CRP)",
+    ar: "البروتين المتفاعل سي (CRP)"
   },
   summary: {
-    en: "Clinical purpose, normal range, and interpretation of CRP lab results.",
-    hi: "CRP प्रयोगशाला परीक्षण विवरण.",
-    gu: "CRP લેબોરેટરી ટેસ્ટ પરિચય.",
-    mr: "CRP लॅब टेस्ट माहिती.",
-    es: "Propósito e interpretación de la prueba de laboratorio CRP.",
-    ar: "الغرض السريري وتفسير نتائج اختبار CRP."
+    en: "Clinical interpretation, reference ranges, hs-CRP cardiovascular risk stratification, and bacterial sepsis evaluation for C-Reactive Protein (CRP).",
+    hi: "सीआरपी (CRP) सूजन और संक्रमण संबंधी लैब टेस्ट की नैदानिक समझ और संदर्भ सीमाएँ.",
+    gu: "CRP લેબોરેટરી ટેસ્ટની સમજણ અને રેફરન્સ રેન્જ.",
+    mr: "CRP लॅब टेस्टची माहिती आणि संदर्भ मर्यादा.",
+    es: "Interpretación clínica y estratificación de riesgo cardiovascular de la proteína C reactiva.",
+    ar: "التفسير السريري والنطاق المرجعي للبروتين المتفاعل سي."
   },
   content: {
-  "overview": "CRP: A general laboratory screening parameter or basic metabolic marker used to assess baseline physiological homeostasis and metabolic efficiency.",
-  "normalRange": "ESR: < 20 mm/hr; Blood Glucose: 70-99 mg/dL; Serum Creatinine: 0.6-1.2 mg/dL.",
-  "highValues": [
-    "Systemic inflammatory baseline (high ESR)",
-    "Metabolic intolerance or early diabetes (high glucose)",
-    "Impaired kidney function (high creatinine)"
-  ],
-  "lowValues": [
-    "Anemia or low muscle mass",
-    "Hypoglycemia",
-    "Nutritional deficiencies"
-  ],
-  "clinicalInterpretation": "CRP evaluation: Elevated inflammatory markers (ESR, CRP) suggest systemic activity needing further investigation. Blood glucose shifts require evaluation of insulin sensitivity and glycemic control.",
-  "references": [
-    "CIT-0004",
-    "CIT-0005",
-    "CIT-0006",
-    "CIT-0007",
-    "CIT-0008"
-  ],
+    overview: "C-Reactive Protein (CRP): An acute-phase pentraxin reactant protein synthesized rapidly by hepatocytes in response to interleukin-6 (IL-6) stimulation during acute inflammation, bacterial infection, or tissue necrosis.",
+    normalRange: "Standard CRP: <3.0 mg/L (<0.3 mg/dL); High-Sensitivity hs-CRP (Cardiovascular Risk): Low Risk <1.0 mg/L, Average Risk 1.0 - 3.0 mg/L, High Risk >3.0 mg/L.",
+    highValues: [
+      "Severe Bacterial Sepsis / Bacteremia (>100 mg/L)",
+      "Acute Pyogenic Infections (Pneumonia, Osteomyelitis, Appendicitis, Abscess)",
+      "Active Autoimmune Flares (Rheumatoid Arthritis, IBD, Vasculitis), Acute Myocardial Infarction"
+    ],
+    lowValues: [
+      "Normal Physiological State (Absence of acute systemic inflammation)",
+      "Severe Hepatic Failure (Impaired Hepatic Protein Synthesis Capacity)"
+    ],
+    clinicalInterpretation: "Marked CRP elevation (>100 mg/L) strongly points to acute invasive bacterial infection or severe tissue trauma; rapid CRP drops correlate with clinical response to effective therapy.",
+    references: [
+      "CIT-0004",
+      "CIT-0023"
+    ],
+    claimCitations: [
+      {
+        claimId: "CLM-L0003-001",
+        passage: "Standard CRP levels >100 mg/L are highly specific for severe bacterial infection, sepsis, or major systemic tissue injury.",
+        citationIds: ["CIT-0004"]
+      },
+      {
+        claimId: "CLM-L0003-002",
+        passage: "High-sensitivity CRP (hs-CRP) levels >3.0 mg/L in asymptomatic individuals serve as an independent biomarker for elevated atherogenic cardiovascular event risk.",
+        citationIds: ["CIT-0004"]
+      },
+      {
+        claimId: "CLM-L0003-003",
+        passage: "CRP rises rapidly within 6-12 hours of inflammatory onset and has a short half-life (~19 hours), making it superior to ESR for serial monitoring of treatment response.",
+        citationIds: ["CIT-0004"]
+      },
+      {
+        claimId: "CLM-L0003-004",
+        passage: "Homeopathic supportive remedies do not substitute for emergency IV antibiotic therapy or surgical source control in acute septic CRP elevations.",
+        citationIds: ["CIT-0023"]
+      }
+    ],
   "faqs": [
     {
       "question": "What is a constitutional remedy in homeopathy?",

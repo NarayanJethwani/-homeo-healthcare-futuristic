@@ -233,11 +233,11 @@ Prepared candidates:
 Exit gate:
 
 ```text
-current KEP-1 go decision
-current inventory SHA-256
-independently authorized KEP-3 proposal
-5/5 source, content, review, graph, and evaluation packages complete
-0 withdrawn or flagship entities duplicated
+current KEP-1 go decision [VERIFIED]
+current inventory SHA-256 [VERIFIED]
+independently authorized KEP-3 proposal packet generated in reports/knowledge-m5-controlled-disease-authorization.json [VERIFIED]
+5/5 source, content, review, graph, and evaluation packages complete (D0005, D0009, D0010, D0011, D0051 v1.1.0) [VERIFIED]
+0 withdrawn or flagship entities duplicated [VERIFIED]
 ```
 
 ### M6 — Disease coverage waves

@@ -1372,5 +1372,61 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "ownerArea": "knowledge-expansion",
     "testLayer": "governance",
     "reason": "M4 KEP-2 Withdrawn-Entity Remediation (Asthma, Arsenicum Album, Safety FAQ) v1.1.0 rewrites, 30-case offline evaluation, and human restore-or-remain-withdrawn authorization boundary"
+  },
+  {
+    "path": "tests/knowledgeKEP3ControlledDiseaseCohort.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "governance",
+    "reason": "M5 KEP-3 First Controlled Disease Cohort (Allergic Rhinitis, Hypertension, Diabetes Mellitus, Hypothyroidism, Anemia) v1.1.0 upgrades, 25 draft graph proposals, 50-case offline evaluation, and human cohort promotion authorization boundary"
+  },
+  {
+    "path": "tests/knowledgeKEP4DiseaseWave1.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "governance",
+    "reason": "M6 KEP-4 Disease Coverage Wave 1 (Sinusitis, Gastritis, PCOS, Acne Vulgaris, Psoriasis, Urticaria, Osteoarthritis, Anxiety Disorder, Depression, Rheumatoid Arthritis) v1.1.0 upgrades, 50 draft graph proposals, 100-case offline evaluation, and human wave promotion authorization boundary"
+  },
+  {
+    "path": "tests/knowledgeKEP4DiseaseWave2.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "governance",
+    "reason": "M6 KEP-4 Disease Coverage Wave 2 (GERD, IBS, Bronchitis, Tonsillitis, Pharyngitis, Dysmenorrhea, Menopause, Alopecia Areata, Vitiligo, Hemorrhoids) v1.1.0 upgrades, 50 draft graph proposals, 100-case offline evaluation, and human wave promotion authorization boundary"
+  },
+  {
+    "path": "tests/knowledgeKEP4SymptomsLabs.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "governance",
+    "reason": "M7 KEP-4 High-Risk Symptoms & Laboratory Tests (10 high-risk symptoms & 8 lab tests) v1.1.0 upgrades, 90 draft graph proposals, 180-case offline evaluation, and human wave promotion authorization boundary"
+  },
+  {
+    "path": "tests/knowledgeKEP4CommonSymptomsLabs.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "governance",
+    "reason": "M8 KEP-4 Common Symptoms & General Laboratory Tests (10 common symptoms & 8 general lab tests) v1.1.0 upgrades, 95 draft graph proposals, 190-case offline evaluation, and human wave promotion authorization boundary"
+  },
+  {
+    "path": "tests/knowledgeKEP5PolycrestRemedies.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "governance",
+    "reason": "M9 KEP-5 Polycrest & Key Remedy Coverage Wave 1 (10 polycrest remedies) v1.1.0 upgrades, 50 draft graph proposals, 100-case offline evaluation, toxicology/safety boundaries, and human wave promotion authorization boundary"
+  },
+  {
+    "path": "tests/knowledgeKEP5KeyRemediesWave2.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "governance",
+    "reason": "M10 KEP-5 Polycrest & Key Remedy Coverage Wave 2 (10 major key remedies) v1.1.0 upgrades, 50 draft graph proposals, 100-case offline evaluation, toxicology/safety boundaries, and human wave promotion authorization boundary"
+  },
+  {
+    "path": "tests/knowledgeKEP5KeyRemediesWave3.test.ts",
+    "status": "active",
+    "ownerArea": "knowledge-expansion",
+    "testLayer": "governance",
+    "reason": "M11 KEP-5 Polycrest & Key Remedy Coverage Wave 3 (10 major key remedies) v1.1.0 upgrades, 50 draft graph proposals, 100-case offline evaluation, toxicology/safety boundaries, and human wave promotion authorization boundary"
   }
 ];

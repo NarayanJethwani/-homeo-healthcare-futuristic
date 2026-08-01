@@ -1,0 +1,108 @@
+{
+  "milestoneId": "M10",
+  "packageId": "KEP5-PACKAGE-M10-KEY-REMEDIES-WAVE2-001",
+  "generatedAt": "2026-08-01T07:32:50.631Z",
+  "status": "pending_authorization",
+  "governance": {
+    "program": "KEP-5",
+    "productionRagActivation": false,
+    "governedProposalsCount": 50,
+    "allProposalsDraftOnly": true,
+    "ragIneligible": true
+  },
+  "summary": {
+    "totalEntitiesUpgraded": 10,
+    "keyRemedyEntitiesCount": 10,
+    "evaluationCasesCount": 100,
+    "evaluationPassRate": 1
+  },
+  "entities": [
+    {
+      "entityId": "R0010",
+      "slug": "carbo-vegetabilis",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "R0011",
+      "slug": "chamomilla",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "R0013",
+      "slug": "hepar-sulphuris-calcareum",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "R0014",
+      "slug": "ignatia-amara",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "R0015",
+      "slug": "kali-bichromicum",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "R0016",
+      "slug": "mercurius-solubilis",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "R0017",
+      "slug": "natrum-muriaticum",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "R0018",
+      "slug": "phosphorus",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "R0022",
+      "slug": "silicea-terra",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    },
+    {
+      "entityId": "R0023",
+      "slug": "thuja-occidentalis",
+      "entityType": "remedy",
+      "version": "1.1.0",
+      "primaryCitationId": "CIT-0004"
+    }
+  ],
+  "evaluation": {
+    "caseCount": 100,
+    "entityCount": 10,
+    "minimumCasesPerEntity": 10,
+    "recallAt5": 1,
+    "meanReciprocalRank": 1,
+    "citationPrecision": 1,
+    "unsupportedClaimFailureCount": 0,
+    "emergencyEscalationFailureCount": 0,
+    "abstentionFailureCount": 0,
+    "staleRevisionLeakageCount": 0,
+    "crossEntityConfusionCount": 0,
+    "withdrawnContentLeakageCount": 0,
+    "passedCaseCount": 100,
+    "failedCaseCount": 0
+  },
+  "packageSha256": "31eeaac88ac5b1af5ae67d07929284390654aea8c2e7db23a6ec143839134bcc"
+}

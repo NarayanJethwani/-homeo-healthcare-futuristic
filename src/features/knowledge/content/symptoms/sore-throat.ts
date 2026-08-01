@@ -1,53 +1,75 @@
 import { KnowledgeEntity } from "../../types";
 
 export const SoreThroatSymptom: KnowledgeEntity = {
-  id: "S0036",
+  id: "S0008",
   slug: "sore-throat",
   entityType: "symptom",
   editorialStatus: "published",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-07-31T20:30:00Z",
+    reviewed: "2026-07-31T20:30:00Z"
   },
   title: {
-    en: "Sore Throat",
-    hi: "Sore Throat",
-    gu: "Sore Throat",
-    mr: "Sore Throat",
-    es: "Sore Throat",
-    ar: "Sore Throat"
+    en: "Sore Throat (Pharyngitis)",
+    hi: "गले में खराश / दर्द (Sore Throat)",
+    gu: "ગળામાં દુખાવો / ખરાશ (Sore Throat)",
+    mr: "घसा दुखी / खवखव (Sore Throat)",
+    es: "Dolor de Garganta (Sore Throat)",
+    ar: "ألم الحلق (Sore Throat)"
   },
   summary: {
-    en: "Clinical definition, significance, causes, and supportive management of Sore Throat.",
-    hi: "Sore Throat के लक्षण की नैदानिक समझ.",
-    gu: "Sore Throat ના લક્ષણ ની સમજણ.",
-    mr: "Sore Throat चे लक्षण आणि उपचार.",
-    es: "Definición clínica y significado de Sore Throat.",
-    ar: "التعريف السريري والأهمية لـ Sore Throat."
+    en: "Clinical evaluation, Centor scoring, airway emergency red flags, and supportive management for Sore Throat under AAO-HNS 2020 guidelines.",
+    hi: "गले की खराश के लक्षण की नैदानिक समझ और आपातकालीन एयरवे चेतावनी लक्षण.",
+    gu: "ગળામાં દુખાવાની તબીબી સમજણ અને ઈમરજન્સી એરવે રેડ ફ્લેગ્સ.",
+    mr: "घसा दुखीच्या लक्षणांची वैद्यकीय माहिती आणि आपत्कालीन इशारे.",
+    es: "Evaluación clínica, puntuación de Centor y señales de alarma de la vía aérea según AAO-HNS 2020.",
+    ar: "التقييم السريري وعلامات الخطر لألم الحلق."
   },
   content: {
-  "definition": "Sore throat: A subjective or objective upper or lower airway manifestation indicating mucosal congestion, irritation, or bronchospasm.",
-  "clinicalMeaning": "Replects airway smooth muscle contraction, goblet cell hypersecretion, or trigeminal nerve irritation in the nasal mucosa.",
-  "commonCauses": [
-    "Allergic rhinitis or seasonal hay fever",
-    "Bronchial asthma or hyper-reactivity",
-    "Sinusitis or post-nasal drip",
-    "Viral respiratory tract infections"
-  ],
-  "differentialDiagnosis": "Exclude foreign body aspiration, vocal cord paralysis, post-viral airway hyper-responsiveness, and cardiac asthma.",
-  "redFlags": [
-    "Severe respiratory distress with accessory muscle use",
-    "Stridor, wheezing that suddenly stops (silent chest), or cyanosis",
-    "High fever with foul-smelling nasal discharge and facial swelling"
-  ],
-  "lifestyleAdvice": "Keep windows closed during high pollen seasons, wash bedding weekly at 60°C, and stay hydrated to thin mucus secretions.",
-  "references": [
-    "CIT-0020",
-    "CIT-0021",
-    "CIT-0022"
-  ],
+    definition: "Sore Throat: Pain, scratchiness, or irritation of the pharynx, palatine tonsils, or supraglottic laryngeal structures, aggravated by deglutition.",
+    clinicalMeaning: "Reflects acute viral or bacterial pharyngitis, tonsillitis, deep neck space infection, or environmental mucosal drying.",
+    commonCauses: [
+      "Viral Pharyngitis (Rhinovirus, Adenovirus, Influenza, EBV infectious mononucleosis)",
+      "Group A Beta-Hemolytic Streptococcus (GABHS / Strep Throat)",
+      "Acute Tonsillitis, Post-Nasal Drip, GERD Laryngopharyngeal Reflux",
+      "Environmental Irritants, Dry Air, Tobacco Smoke Exposure"
+    ],
+    differentialDiagnosis: "Differentiate benign viral/streptococcal pharyngitis from Acute Epiglottitis, Peritonsillar Abscess (Quinsy), Retropharyngeal Abscess, Lemierre Syndrome, and Acute HIV Seroconversion.",
+    redFlags: [
+      "Inability to swallow saliva, drooling, or severe odynophagia",
+      "Inspiratory stridor, tripod position, or acute respiratory distress (Acute Epiglottitis)",
+      "Muffled 'hot potato' voice, trismus, or unilateral soft palate bulge (Peritonsillar Abscess)",
+      "Neck swelling, severe systemic toxicity, or high fever with rigors"
+    ],
+    lifestyleAdvice: "Gargle with warm salt water, maintain high fluid intake, use throat lozenges, avoid vocal strain and tobacco smoke, and rest adequately.",
+    references: [
+      "CIT-0076",
+      "CIT-0023"
+    ],
+    claimCitations: [
+      {
+        claimId: "CLM-S0008-001",
+        passage: "Drooling, stridor, or inability to swallow saliva in a patient with sore throat indicates acute supraglottic swelling (Epiglottitis) requiring immediate emergency airway management.",
+        citationIds: ["CIT-0076"]
+      },
+      {
+        claimId: "CLM-S0008-002",
+        passage: "Unilateral tonsillar swelling with trismus and a muffled voice points to Peritonsillar Abscess requiring urgent needle aspiration or drainage.",
+        citationIds: ["CIT-0076"]
+      },
+      {
+        claimId: "CLM-S0008-003",
+        passage: "Modified Centor Criteria (fever, tonsillar exudate, tender anterior cervical lymphadenopathy, absence of cough) guide GABHS rapid antigen testing and antibiotic decision making.",
+        citationIds: ["CIT-0076"]
+      },
+      {
+        claimId: "CLM-S0008-004",
+        passage: "Homeopathic supportive remedies (e.g., Belladonna, Hepar Sulf, Merc Sol) do not replace emergency intubation or surgical drainage in deep neck space abscesses.",
+        citationIds: ["CIT-0023"]
+      }
+    ],
   "faqs": [
     {
       "question": "What is the difference between allergic rhinitis and a common cold?",

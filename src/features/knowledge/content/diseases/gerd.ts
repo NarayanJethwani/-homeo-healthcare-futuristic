@@ -1,6 +1,6 @@
 import { KnowledgeEntity } from "../../types";
 
-const GERD_CITATIONS = ["CIT-0017", "CIT-0023", "CIT-0025", "CIT-0036"];
+const GERD_CITATIONS = ["CIT-0017", "CIT-0023", "CIT-0025", "CIT-0036", "CIT-0053"];
 
 export const GerdDisease: KnowledgeEntity = {
   id: "D0001",
