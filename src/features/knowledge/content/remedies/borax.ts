@@ -5,7 +5,7 @@ export const BoraxRemedy: KnowledgeEntity = {
   slug: "borax",
   entityType: "remedy",
   editorialStatus: "published",
-  reviewStatus: "owner-authorized-source-bound",
+  reviewStatus: "owner-authorization-required",
   versionInfo: {
     version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
@@ -69,8 +69,8 @@ export const BoraxRemedy: KnowledgeEntity = {
       "Lying on painful side",
     ],
     clinicalUses: [
-      "Management of pediatric oral thrush (candidiasis), aphthous stomatitis, and painful mouth ulcers",
-      "Supportive care in motion sickness (downward motion anxiety), membranous dysmenorrhea, and trichiasis",
+      "Traditional materia-medica profile associated with aphthous mouth and downward-motion sensitivity",
+      "Historical homeopathic literature association with startle responses and selected mucosal symptoms",
     ],
     organAffinity: [
       "Oral mucous membranes and digestive tract",
@@ -90,12 +90,14 @@ export const BoraxRemedy: KnowledgeEntity = {
       "1M"
     ],
     safetyNotes:
-      "Prepared from sodium tetraborate by trituration according to official pharmacopoeial standards. Potentized homeopathic preparations (6C, 30C, 200C) contain no raw borate toxicity and are non-toxic. Clinical evaluation is recommended for severe pediatric oral thrush with dehydration.",
+      "Raw borax (sodium borate) is not safe to ingest and can be toxic. A dilution label alone does not establish composition, safety, or efficacy. Infants with poor feeding, suspected thrush, fever, lethargy, reduced urine, or dehydration require prompt pediatric assessment; suspected borax ingestion requires poison-control advice.",
     references: [
       "CIT-0004",
       "CIT-0005",
       "CIT-0006",
-      "CIT-0007"
+      "CIT-0007",
+      "CIT-0023",
+      "CIT-0024"
     ],
     faqs: [
       {
@@ -108,6 +110,36 @@ export const BoraxRemedy: KnowledgeEntity = {
       }
     ]
   },
+  claimCitations: [
+    {
+      claimId: "R0030-TRADITIONAL-PROFILE",
+      statement: "Verified classical materia-medica sources describe Borax using downward-motion fear, aphthous mouth pain, and marked sensitivity to sudden noise.",
+      citationIds: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0007"],
+      passageId: "CIT-0006-R0030-TRADITIONAL-PROFILE",
+    },
+    {
+      claimId: "R0030-EVIDENCE-LIMITS",
+      statement: "The historical profile is traditional literature evidence and does not establish modern clinical efficacy for any disease.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0023-HOMEOPATHY-EVIDENCE-LIMITS",
+    },
+    {
+      claimId: "R0030-PRODUCT-SAFETY",
+      statement: "A homeopathic dilution label does not by itself guarantee product composition, quality, safety, or effectiveness.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0024-HOMEOPATHIC-PRODUCT-SAFETY",
+    },
+    {
+      claimId: "R0030-CONVENTIONAL-CARE-BOUNDARY",
+      statement: "Homeopathic products must not delay emergency assessment or replace proven conventional treatment for serious or life-threatening symptoms.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0024-SERIOUS-CONDITION-BOUNDARY",
+    },
+  ],
+  redFlags: [
+    "An infant with poor feeding, lethargy, reduced urine, or dehydration requires prompt pediatric assessment.",
+    "Raw borax ingestion can be toxic and requires poison-control advice; it is not a home remedy.",
+  ],
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"
@@ -134,8 +166,8 @@ export const BoraxRemedy: KnowledgeEntity = {
   },
   aiReadiness: {
     retrievalSummary: "Borax is a major mineral homeopathic polychrest for dread of downward motion, aphthous stomatitis, hypersensitivity to sudden noise, egg-white leucorrhea, and inward-turning eyelashes.",
-    clinicalSummary: "Source is sodium tetraborate. Potentized homeopathic dilutions are safe and non-toxic. Primary clinical affinities include oral mucous membranes, vestibular system, uterus, and eyes.",
-    patientSummary: "Borax is a homeopathic remedy used for mouth ulcers/thrush in babies, fear of downward movement (like elevators or stairs), and extreme jumpiness at noise.",
+    clinicalSummary: "Classical literature derives this profile from sodium tetraborate and describes oral and motion-sensitivity patterns; it does not establish efficacy or guarantee product safety.",
+    patientSummary: "Classical texts associate Borax with mouth soreness and downward-motion sensitivity. Infant feeding problems or dehydration require prompt pediatric care.",
     studentSummary: "Guiding keynotes include dread of downward motion, hot painful aphthous mouth, startle response to sudden noise, egg-white leucorrhea, and inward eyelashes.",
     keywords: ["borax", "sodium tetraborate", "downward motion fear", "aphthae", "thrush remedy"],
     semanticKeywords: ["pediatric oral polychrest", "stomatitis remedy", "vestibular motion remedy"],

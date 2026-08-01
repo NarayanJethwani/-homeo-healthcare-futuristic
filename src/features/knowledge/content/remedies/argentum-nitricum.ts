@@ -5,7 +5,7 @@ export const ArgentumNitricumRemedy: KnowledgeEntity = {
   slug: "argentum-nitricum",
   entityType: "remedy",
   editorialStatus: "published",
-  reviewStatus: "owner-authorized-source-bound",
+  reviewStatus: "owner-authorization-required",
   versionInfo: {
     version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
@@ -69,8 +69,8 @@ export const ArgentumNitricumRemedy: KnowledgeEntity = {
       "Lying on right side",
     ],
     clinicalUses: [
-      "Management of anticipatory anxiety disorders, panic attacks, phobias, and stage fright",
-      "Supportive care in irritable bowel syndrome (IBS with anticipatory diarrhea), flatulent dyspepsia, and purulent conjunctivitis",
+      "Traditional materia-medica profile associated with anticipatory anxiety and gastrointestinal symptom patterns",
+      "Historical homeopathic literature association with stage fright, vertigo, and sugar aggravation",
     ],
     organAffinity: [
       "Brain, spinal cord, and peripheral nerves",
@@ -91,12 +91,14 @@ export const ArgentumNitricumRemedy: KnowledgeEntity = {
       "1M"
     ],
     safetyNotes:
-      "Raw silver nitrate is a corrosive caustic chemical hazard (causes argyria skin staining and tissue necrosis). Potentized homeopathic preparations (6C, 30C, 200C) contain no caustic ions and are non-toxic. Clinical psychiatric or gastroenterological evaluation is recommended for severe phobic panic disorders or chronic gastrointestinal ulceration.",
+      "Raw silver nitrate is corrosive and can cause burns, methemoglobinemia, and permanent argyria after substantial exposure. A dilution label alone does not prove product composition or safety. Severe anxiety, self-harm risk, persistent diarrhea, dehydration, eye exposure, or suspected ingestion requires appropriate medical or poison-control assessment.",
     references: [
       "CIT-0004",
       "CIT-0005",
       "CIT-0006",
-      "CIT-0007"
+      "CIT-0007",
+      "CIT-0023",
+      "CIT-0024"
     ],
     faqs: [
       {
@@ -109,6 +111,36 @@ export const ArgentumNitricumRemedy: KnowledgeEntity = {
       }
     ]
   },
+  claimCitations: [
+    {
+      claimId: "R0027-TRADITIONAL-PROFILE",
+      statement: "Verified classical materia-medica sources describe Argentum Nitricum using anticipatory anxiety, event-related diarrhea, sweet aggravation, and splinter-like throat sensation.",
+      citationIds: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0007"],
+      passageId: "CIT-0006-R0027-TRADITIONAL-PROFILE",
+    },
+    {
+      claimId: "R0027-EVIDENCE-LIMITS",
+      statement: "The historical profile is traditional literature evidence and does not establish modern clinical efficacy for any disease.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0023-HOMEOPATHY-EVIDENCE-LIMITS",
+    },
+    {
+      claimId: "R0027-PRODUCT-SAFETY",
+      statement: "A homeopathic dilution label does not by itself guarantee product composition, quality, safety, or effectiveness.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0024-HOMEOPATHIC-PRODUCT-SAFETY",
+    },
+    {
+      claimId: "R0027-CONVENTIONAL-CARE-BOUNDARY",
+      statement: "Homeopathic products must not delay emergency assessment or replace proven conventional treatment for serious or life-threatening symptoms.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0024-SERIOUS-CONDITION-BOUNDARY",
+    },
+  ],
+  redFlags: [
+    "Self-harm risk, severe panic with medical instability, persistent diarrhea, or dehydration requires urgent assessment.",
+    "Raw silver nitrate exposure is corrosive; suspected ingestion or eye exposure requires urgent poison-control care.",
+  ],
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"
@@ -135,8 +167,8 @@ export const ArgentumNitricumRemedy: KnowledgeEntity = {
   },
   aiReadiness: {
     retrievalSummary: "Argentum Nitricum is a major mineral homeopathic polychrest for anticipatory anxiety, stage fright, apprehension diarrhea, sugar cravings that worsen gas, throat splinter pain, and vertigo.",
-    clinicalSummary: "Source is silver nitrate. Potentized homeopathic dilutions are safe and non-toxic. Primary clinical affinities include central nervous system, brain centers, stomach, colon, and eyes.",
-    patientSummary: "Argentum Nitricum is a homeopathic remedy used for performance anxiety before exams or public speaking, nervous stomach with diarrhea, sugar cravings, and fear of heights.",
+    clinicalSummary: "Classical literature derives this profile from silver nitrate and describes anticipatory anxiety and gastrointestinal patterns; it does not establish efficacy or guarantee product safety.",
+    patientSummary: "Classical texts associate Argentum Nitricum with anticipatory anxiety and diarrhea. Persistent or severe symptoms need standard clinical assessment.",
     studentSummary: "Guiding keynotes include anticipatory anxiety, apprehension diarrhea, sugar craving aggravating gas, throat splinter sensation, vertigo near tall buildings, time distortion, and loud belching.",
     keywords: ["argentum nit", "silver nitrate", "anticipatory anxiety", "stage fright", "sugar craving"],
     semanticKeywords: ["psychiatric polychrest", "panic disorder remedy", "IBS anticipatory diarrhea remedy"],

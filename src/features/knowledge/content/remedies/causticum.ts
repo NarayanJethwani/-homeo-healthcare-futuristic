@@ -5,7 +5,7 @@ export const CausticumRemedy: KnowledgeEntity = {
   slug: "causticum",
   entityType: "remedy",
   editorialStatus: "published",
-  reviewStatus: "owner-authorized-source-bound",
+  reviewStatus: "owner-authorization-required",
   versionInfo: {
     version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
@@ -69,8 +69,8 @@ export const CausticumRemedy: KnowledgeEntity = {
       "Sweet foods",
     ],
     clinicalUses: [
-      "Management of urinary stress incontinence, nocturnal enuresis, and bladder sphincter weakness",
-      "Supportive care in facial nerve paralysis (Bell's palsy), vocal cord paresis/hoarseness, tendon contractures, and warts",
+      "Traditional materia-medica profile associated with stress-incontinence and laryngeal symptom patterns",
+      "Historical homeopathic literature association with weakness, contracture, and selected skin symptoms",
     ],
     organAffinity: [
       "Motor and sensory nervous system (cranial nerves, vocal cords)",
@@ -91,12 +91,14 @@ export const CausticumRemedy: KnowledgeEntity = {
       "1M"
     ],
     safetyNotes:
-      "Prepared according to Hahnemann's chemical distillation formula. Potentized homeopathic preparations (6C, 30C, 200C) are safe and non-toxic. Clinical neurological evaluation is recommended for acute stroke, acute cranial nerve paralysis, or progressive motor neuron disease.",
+      "This is a traditional materia-medica profile, not evidence that Causticum treats paralysis, stroke, incontinence, or progressive neurologic disease. Product composition and quality can vary. Sudden facial or limb weakness, speech difficulty, new urinary retention, saddle numbness, or rapidly progressive weakness requires emergency medical assessment.",
     references: [
       "CIT-0004",
       "CIT-0005",
       "CIT-0006",
-      "CIT-0007"
+      "CIT-0007",
+      "CIT-0023",
+      "CIT-0024"
     ],
     faqs: [
       {
@@ -109,6 +111,36 @@ export const CausticumRemedy: KnowledgeEntity = {
       }
     ]
   },
+  claimCitations: [
+    {
+      claimId: "R0033-TRADITIONAL-PROFILE",
+      statement: "Verified classical materia-medica sources describe Causticum using stress incontinence, raw laryngeal symptoms, focal weakness, contractures, and damp-weather amelioration.",
+      citationIds: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0007"],
+      passageId: "CIT-0006-R0033-TRADITIONAL-PROFILE",
+    },
+    {
+      claimId: "R0033-EVIDENCE-LIMITS",
+      statement: "The historical profile is traditional literature evidence and does not establish modern clinical efficacy for any disease.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0023-HOMEOPATHY-EVIDENCE-LIMITS",
+    },
+    {
+      claimId: "R0033-PRODUCT-SAFETY",
+      statement: "A homeopathic dilution label does not by itself guarantee product composition, quality, safety, or effectiveness.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0024-HOMEOPATHIC-PRODUCT-SAFETY",
+    },
+    {
+      claimId: "R0033-CONVENTIONAL-CARE-BOUNDARY",
+      statement: "Homeopathic products must not delay emergency assessment or replace proven conventional treatment for serious or life-threatening symptoms.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0024-SERIOUS-CONDITION-BOUNDARY",
+    },
+  ],
+  redFlags: [
+    "Sudden facial or limb weakness, speech difficulty, or loss of coordination requires emergency stroke evaluation.",
+    "New urinary retention, saddle numbness, or rapidly progressive weakness requires emergency neurologic assessment.",
+  ],
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"
@@ -135,8 +167,8 @@ export const CausticumRemedy: KnowledgeEntity = {
   },
   aiReadiness: {
     retrievalSummary: "Causticum is a major mineral homeopathic polychrest for stress incontinence on coughing, rawness and burning in larynx, single-muscle paralysis, tendon contractures, and relief in damp weather.",
-    clinicalSummary: "Source is Hahnemann's chemical distillate. Potentized homeopathic dilutions are safe and non-toxic. Primary clinical affinities include motor nerves, bladder sphincter, larynx, tendons, and skin.",
-    patientSummary: "Causticum is a homeopathic remedy used for leaking urine when coughing or sneezing, hoarseness with raw throat pain, facial nerve weakness, and stiffness relieved by rainy weather.",
+    clinicalSummary: "Classical literature describes a Causticum profile involving laryngeal, urinary, and motor symptoms; it does not establish efficacy or guarantee product safety.",
+    patientSummary: "Classical texts associate Causticum with urinary leakage and hoarseness. Sudden weakness, speech difficulty, or urinary retention requires urgent conventional assessment.",
     studentSummary: "Guiding keynotes include stress incontinence on coughing, raw larynx burning, single-muscle paralysis, tendon contractures, intense social sympathy, and relief in damp wet weather.",
     keywords: ["causticum", "stress incontinence", "paralysis remedy", "raw throat", "damp weather better"],
     semanticKeywords: ["neurological polychrest", "urinary incontinence remedy", "facial paralysis remedy"],

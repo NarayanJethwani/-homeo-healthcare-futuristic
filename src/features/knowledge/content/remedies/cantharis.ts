@@ -5,7 +5,7 @@ export const CantharisRemedy: KnowledgeEntity = {
   slug: "cantharis",
   entityType: "remedy",
   editorialStatus: "published",
-  reviewStatus: "owner-authorized-source-bound",
+  reviewStatus: "owner-authorization-required",
   versionInfo: {
     version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
@@ -67,8 +67,8 @@ export const CantharisRemedy: KnowledgeEntity = {
       "Touch and pressure on bladder",
     ],
     clinicalUses: [
-      "Emergency management of acute urinary tract infections (UTI), cystitis, dysuria, and hematuria",
-      "Management of acute second-degree burns, scalds, sunburn blisters, and blistering erysipelas",
+      "Traditional materia-medica profile associated with burning urinary symptoms and tenesmus",
+      "Historical homeopathic literature association with blistering and burning skin sensations",
     ],
     organAffinity: [
       "Urinary system (bladder, urethra, kidneys)",
@@ -88,12 +88,14 @@ export const CantharisRemedy: KnowledgeEntity = {
       "1M"
     ],
     safetyNotes:
-      "Source beetle contains cantharidin, a potent vesicant and nephrotoxin. Potentized homeopathic preparations (6C, 30C, 200C) are non-toxic and free of active cantharidin nephrotoxicity. Immediate emergency medical care is required for acute pyelonephritis, gross hematuria, acute renal failure, or extensive third-degree burns.",
+      "The source beetle contains cantharidin, a potent blistering agent that can cause gastrointestinal and urinary-tract injury and kidney toxicity. A dilution label alone does not prove absence of active ingredient or guarantee quality. Fever with flank pain, inability to urinate, visible blood, suspected ingestion, or significant burns requires urgent or emergency medical care.",
     references: [
       "CIT-0004",
       "CIT-0005",
       "CIT-0006",
-      "CIT-0007"
+      "CIT-0007",
+      "CIT-0023",
+      "CIT-0024"
     ],
     faqs: [
       {
@@ -102,10 +104,40 @@ export const CantharisRemedy: KnowledgeEntity = {
       },
       {
         "question": "How is Cantharis applied in burn emergencies?",
-        "answer": "Cantharis is the premier homeopathic remedy for first- and second-degree thermal scalds and burns to prevent blistering and relieve burning pain."
+        "answer": "Classical materia medica associates Cantharis with blistering and burning sensations, but it is not proven to prevent burn blistering. Cool running water and prompt evidence-based burn assessment should not be delayed."
       }
     ]
   },
+  claimCitations: [
+    {
+      claimId: "R0032-TRADITIONAL-PROFILE",
+      statement: "Verified classical materia-medica sources describe Cantharis using burning urinary pain, tenesmus, drop-by-drop urination, and blistering sensations.",
+      citationIds: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0007"],
+      passageId: "CIT-0006-R0032-TRADITIONAL-PROFILE",
+    },
+    {
+      claimId: "R0032-EVIDENCE-LIMITS",
+      statement: "The historical profile is traditional literature evidence and does not establish modern clinical efficacy for any disease.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0023-HOMEOPATHY-EVIDENCE-LIMITS",
+    },
+    {
+      claimId: "R0032-PRODUCT-SAFETY",
+      statement: "A homeopathic dilution label does not by itself guarantee product composition, quality, safety, or effectiveness.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0024-HOMEOPATHIC-PRODUCT-SAFETY",
+    },
+    {
+      claimId: "R0032-CONVENTIONAL-CARE-BOUNDARY",
+      statement: "Homeopathic products must not delay emergency assessment or replace proven conventional treatment for serious or life-threatening symptoms.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0024-SERIOUS-CONDITION-BOUNDARY",
+    },
+  ],
+  redFlags: [
+    "Fever with flank pain, visible blood in urine, inability to urinate, or suspected kidney injury requires urgent care.",
+    "Significant burns or cantharidin exposure require evidence-based first aid, poison-control advice, and medical assessment.",
+  ],
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"
@@ -132,12 +164,12 @@ export const CantharisRemedy: KnowledgeEntity = {
   },
   aiReadiness: {
     retrievalSummary: "Cantharis is a major animal homeopathic polychrest for acute cystitis, scalding dysuria passing urine drop by drop, raw burning pain, second-degree burn blisters, and urinary tenesmus.",
-    clinicalSummary: "Source is Spanish fly beetle containing cantharidin. Potentized homeopathic dilutions are safe and non-toxic. Primary clinical affinities include bladder, urethra, kidneys, skin, and mucosa.",
-    patientSummary: "Cantharis is a homeopathic remedy used for severe urinary tract infection with intense burning pain while urinating, and for skin burns or scalds with painful blisters.",
+    clinicalSummary: "Classical literature derives this profile from Spanish fly, whose cantharidin is toxic; the profile does not establish efficacy or guarantee that a marketed product lacks active cantharidin.",
+    patientSummary: "Classical texts associate Cantharis with burning urination and blisters. Blood in urine, fever with flank pain, inability to urinate, or significant burns require prompt conventional care.",
     studentSummary: "Guiding keynotes include raw scalding dysuria drop by drop, constant tenesmus, vesicular burn blisters, burning thirst with liquid aversion, and violent frenzy.",
     keywords: ["cantharis", "spanish fly", "cystitis remedy", "scalding dysuria", "burn blisters"],
     semanticKeywords: ["urological polychrest", "UTI cystitis remedy", "thermal burn remedy"],
     bodySystem: "Urological & Dermatologic",
-    urgency: "routine"
+    urgency: "urgent"
   }
 };

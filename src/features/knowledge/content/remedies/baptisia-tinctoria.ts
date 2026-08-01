@@ -5,7 +5,7 @@ export const BaptisiaTinctoriaRemedy: KnowledgeEntity = {
   slug: "baptisia-tinctoria",
   entityType: "remedy",
   editorialStatus: "published",
-  reviewStatus: "owner-authorized-source-bound",
+  reviewStatus: "owner-authorization-required",
   versionInfo: {
     version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
@@ -67,8 +67,8 @@ export const BaptisiaTinctoriaRemedy: KnowledgeEntity = {
       "Pressure on sore parts",
     ],
     clinicalUses: [
-      "Management of acute septic fevers, typhoid fever, severe influenza, and septicemia",
-      "Supportive care in ulcerative stomatitis, gangrenous tonsillitis, and septic gastroenteritis",
+      "Traditional materia-medica profile associated with febrile prostration and offensive-discharge patterns",
+      "Historical homeopathic literature association with delirium and the sensation that the body is scattered",
     ],
     organAffinity: [
       "Blood and vascular system",
@@ -88,12 +88,14 @@ export const BaptisiaTinctoriaRemedy: KnowledgeEntity = {
       "1M"
     ],
     safetyNotes:
-      "Tincture prepared from root bark of Baptisia tinctoria containing baptisin glucoside. Potentized homeopathic preparations (6C, 30C, 200C) contain no raw alkaloid toxicity. Emergency hospital care is mandatory for acute septic shock, severe typhoid fever, or bowel perforation.",
+      "This is a historical materia-medica profile, not evidence that Baptisia treats sepsis, typhoid, influenza, or another infection. A dilution label does not guarantee composition or safety. Fever with confusion, hypotension, breathing difficulty, neck stiffness, severe dehydration, or suspected sepsis requires emergency medical care and proven antimicrobial or supportive treatment as indicated.",
     references: [
       "CIT-0004",
       "CIT-0005",
       "CIT-0006",
-      "CIT-0007"
+      "CIT-0007",
+      "CIT-0023",
+      "CIT-0024"
     ],
     faqs: [
       {
@@ -106,6 +108,36 @@ export const BaptisiaTinctoriaRemedy: KnowledgeEntity = {
       }
     ]
   },
+  claimCitations: [
+    {
+      claimId: "R0028-TRADITIONAL-PROFILE",
+      statement: "Verified classical materia-medica sources describe Baptisia Tinctoria using febrile prostration, offensive discharges, a dark besotted appearance, and a scattered-body delusion.",
+      citationIds: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0007"],
+      passageId: "CIT-0006-R0028-TRADITIONAL-PROFILE",
+    },
+    {
+      claimId: "R0028-EVIDENCE-LIMITS",
+      statement: "The historical profile is traditional literature evidence and does not establish modern clinical efficacy for any disease.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0023-HOMEOPATHY-EVIDENCE-LIMITS",
+    },
+    {
+      claimId: "R0028-PRODUCT-SAFETY",
+      statement: "A homeopathic dilution label does not by itself guarantee product composition, quality, safety, or effectiveness.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0024-HOMEOPATHIC-PRODUCT-SAFETY",
+    },
+    {
+      claimId: "R0028-CONVENTIONAL-CARE-BOUNDARY",
+      statement: "Homeopathic products must not delay emergency assessment or replace proven conventional treatment for serious or life-threatening symptoms.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0024-SERIOUS-CONDITION-BOUNDARY",
+    },
+  ],
+  redFlags: [
+    "Fever with confusion, hypotension, neck stiffness, or breathing difficulty may indicate sepsis and requires emergency care.",
+    "Homeopathy must not replace antimicrobial treatment or hospital supportive care for serious infection.",
+  ],
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"
@@ -132,12 +164,12 @@ export const BaptisiaTinctoriaRemedy: KnowledgeEntity = {
   },
   aiReadiness: {
     retrievalSummary: "Baptisia Tinctoria is a major botanical homeopathic polychrest for acute septic prostration, typhoid fevers, dark besotted facial look, foul offensive body discharges, and body-scattered delusion.",
-    clinicalSummary: "Source is wild indigo root bark. Potentized homeopathic dilutions are safe and non-toxic. Primary clinical affinities include blood, vascular walls, digestive tract, Peyer's patches, and throat.",
-    patientSummary: "Baptisia Tinctoria is a homeopathic remedy used for severe high fever, typhoid-like illness with extreme muscle soreness, bad breath, and confusion.",
+    clinicalSummary: "Classical literature derives this profile from wild indigo and describes febrile prostration patterns; it does not establish efficacy for infection or product safety.",
+    patientSummary: "Classical texts associate Baptisia with feverish prostration and confusion. High fever or confusion can be an emergency and requires immediate medical assessment.",
     studentSummary: "Guiding keynotes include rapid septic prostration, besotted face, offensive discharges, body scattered in pieces, liquid-only swallowing, and falls asleep mid-sentence.",
     keywords: ["baptisia", "wild indigo", "typhoid fever", "septic prostration", "offensive discharges"],
     semanticKeywords: ["septic polychrest", "typhoid remedy", "infectious fever remedy"],
     bodySystem: "Hematologic & Gastrointestinal",
-    urgency: "routine"
+    urgency: "emergency"
   }
 };

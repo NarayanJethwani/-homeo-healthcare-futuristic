@@ -5,7 +5,7 @@ export const CactusGrandiflorusRemedy: KnowledgeEntity = {
   slug: "cactus-grandiflorus",
   entityType: "remedy",
   editorialStatus: "published",
-  reviewStatus: "owner-authorized-source-bound",
+  reviewStatus: "owner-authorization-required",
   versionInfo: {
     version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
@@ -67,8 +67,8 @@ export const CactusGrandiflorusRemedy: KnowledgeEntity = {
       "Sun heat",
     ],
     clinicalUses: [
-      "Supportive management in angina pectoris, coronary insufficiency, cardiac hypertrophy, and functional palpitations",
-      "Management of congestive tension headache, dysmenorrhea, and periodic neuralgias",
+      "Traditional materia-medica profile associated with constrictive chest sensations and palpitations",
+      "Historical homeopathic literature association with periodic headache and pelvic symptom patterns",
     ],
     organAffinity: [
       "Heart, coronary arteries, and vascular tree",
@@ -88,12 +88,14 @@ export const CactusGrandiflorusRemedy: KnowledgeEntity = {
       "1M"
     ],
     safetyNotes:
-      "Tincture prepared from fresh stems of Cactus grandiflorus. Potentized homeopathic preparations (6C, 30C, 200C) are non-toxic. Immediate emergency hospital evaluation and ECG are mandatory for acute chest pain, suspected acute coronary syndrome, or severe cardiac dysrhythmia.",
+      "This is a traditional materia-medica profile, not evidence that Cactus treats angina, coronary disease, or arrhythmia. A dilution label alone does not guarantee product safety or quality. New or severe chest pressure, breathlessness, fainting, sweating, or pain radiating to the arm, jaw, or back requires immediate emergency evaluation; do not delay ECG-based care.",
     references: [
       "CIT-0004",
       "CIT-0005",
       "CIT-0006",
-      "CIT-0007"
+      "CIT-0007",
+      "CIT-0023",
+      "CIT-0024"
     ],
     faqs: [
       {
@@ -106,6 +108,36 @@ export const CactusGrandiflorusRemedy: KnowledgeEntity = {
       }
     ]
   },
+  claimCitations: [
+    {
+      claimId: "R0031-TRADITIONAL-PROFILE",
+      statement: "Verified classical materia-medica sources describe Cactus Grandiflorus using iron-band chest constriction, palpitations, left-side aggravation, and periodic symptoms.",
+      citationIds: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0007"],
+      passageId: "CIT-0006-R0031-TRADITIONAL-PROFILE",
+    },
+    {
+      claimId: "R0031-EVIDENCE-LIMITS",
+      statement: "The historical profile is traditional literature evidence and does not establish modern clinical efficacy for any disease.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0023-HOMEOPATHY-EVIDENCE-LIMITS",
+    },
+    {
+      claimId: "R0031-PRODUCT-SAFETY",
+      statement: "A homeopathic dilution label does not by itself guarantee product composition, quality, safety, or effectiveness.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0024-HOMEOPATHIC-PRODUCT-SAFETY",
+    },
+    {
+      claimId: "R0031-CONVENTIONAL-CARE-BOUNDARY",
+      statement: "Homeopathic products must not delay emergency assessment or replace proven conventional treatment for serious or life-threatening symptoms.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0024-SERIOUS-CONDITION-BOUNDARY",
+    },
+  ],
+  redFlags: [
+    "New chest pressure, fainting, sweating, breathlessness, or radiating pain requires emergency cardiac evaluation.",
+    "Do not delay ECG, troponin testing, or evidence-based acute coronary syndrome treatment.",
+  ],
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"
@@ -132,12 +164,12 @@ export const CactusGrandiflorusRemedy: KnowledgeEntity = {
   },
   aiReadiness: {
     retrievalSummary: "Cactus Grandiflorus is a major botanical homeopathic polychrest for iron-band constrictive chest pain, angina pectoris, dyspnea worse lying on left side, periodic fever, and vice-like headache.",
-    clinicalSummary: "Source is night-blooming cereus. Potentized homeopathic dilutions are safe and non-toxic. Primary clinical affinities include heart, coronary arteries, vascular tree, chest, and uterus.",
-    patientSummary: "Cactus Grandiflorus is a homeopathic remedy used for tightness in the chest feeling like an iron band squeezing the heart, heart palpitations, and chest discomfort worse lying on the left side.",
+    clinicalSummary: "Classical literature derives this profile from night-blooming cereus and describes constrictive chest patterns; it does not establish cardiovascular efficacy or product safety.",
+    patientSummary: "Classical texts associate Cactus with an iron-band chest sensation. Any new chest pressure or breathing difficulty requires emergency assessment, not self-treatment.",
     studentSummary: "Guiding keynotes include iron band squeezing heart, angina radiating to left arm, dyspnea worse lying on left side, 11 AM/PM periodicity, and vice-like headache.",
     keywords: ["cactus grand", "night blooming cereus", "iron band constriction", "angina remedy", "left side worse"],
     semanticKeywords: ["cardiovascular polychrest", "angina pectoris remedy", "cardiac constriction remedy"],
     bodySystem: "Cardiovascular & Respiratory",
-    urgency: "routine"
+    urgency: "emergency"
   }
 };

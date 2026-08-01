@@ -5,7 +5,7 @@ export const AlliumCepaRemedy: KnowledgeEntity = {
   slug: "allium-cepa",
   entityType: "remedy",
   editorialStatus: "published",
-  reviewStatus: "owner-authorized-source-bound",
+  reviewStatus: "owner-authorization-required",
   versionInfo: {
     version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
@@ -66,8 +66,8 @@ export const AlliumCepaRemedy: KnowledgeEntity = {
       "Handling peaches or smelling flowers",
     ],
     clinicalUses: [
-      "Management of acute coryza, allergic rhinitis, hay fever, and acute catarrhal laryngitis",
-      "Supportive care in stump neuralgia and post-traumatic nerve pain",
+      "Traditional materia-medica profile associated with coryza, rhinitis-like symptoms, and catarrhal laryngeal symptoms",
+      "Historical homeopathic literature association with neuralgic symptom patterns",
     ],
     organAffinity: [
       "Nasal mucous membranes and sinuses",
@@ -86,12 +86,14 @@ export const AlliumCepaRemedy: KnowledgeEntity = {
       "1M"
     ],
     safetyNotes:
-      "Botanical source tincture prepared from fresh red onion. Homeopathic potentized preparations (6C, 30C, 200C) are non-toxic. Clinical evaluation is recommended for severe laryngeal dyspnea or bacterial sinusitis.",
+      "This is a traditional materia-medica description, not evidence that a homeopathic product is safe or effective for a disease. Product composition and quality can vary; FDA has approved no product labeled homeopathic. Breathing difficulty, facial swelling, severe infection, or persistent symptoms require prompt conventional medical assessment.",
     references: [
       "CIT-0004",
       "CIT-0005",
       "CIT-0006",
-      "CIT-0007"
+      "CIT-0007",
+      "CIT-0023",
+      "CIT-0024"
     ],
     faqs: [
       {
@@ -104,6 +106,36 @@ export const AlliumCepaRemedy: KnowledgeEntity = {
       }
     ]
   },
+  claimCitations: [
+    {
+      claimId: "R0024-TRADITIONAL-PROFILE",
+      statement: "Verified classical materia-medica sources describe Allium Cepa using acrid nasal discharge, bland tearing, warm-room aggravation, and cool-air amelioration.",
+      citationIds: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0007"],
+      passageId: "CIT-0006-R0024-TRADITIONAL-PROFILE",
+    },
+    {
+      claimId: "R0024-EVIDENCE-LIMITS",
+      statement: "The historical profile is traditional literature evidence and does not establish modern clinical efficacy for any disease.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0023-HOMEOPATHY-EVIDENCE-LIMITS",
+    },
+    {
+      claimId: "R0024-PRODUCT-SAFETY",
+      statement: "A homeopathic dilution label does not by itself guarantee product composition, quality, safety, or effectiveness.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0024-HOMEOPATHIC-PRODUCT-SAFETY",
+    },
+    {
+      claimId: "R0024-CONVENTIONAL-CARE-BOUNDARY",
+      statement: "Homeopathic products must not delay emergency assessment or replace proven conventional treatment for serious or life-threatening symptoms.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0024-SERIOUS-CONDITION-BOUNDARY",
+    },
+  ],
+  redFlags: [
+    "Breathing difficulty, throat swelling, facial swelling, or cyanosis requires emergency care.",
+    "Persistent fever, severe facial pain, or suspected bacterial sinusitis requires conventional assessment.",
+  ],
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"
@@ -130,8 +162,8 @@ export const AlliumCepaRemedy: KnowledgeEntity = {
   },
   aiReadiness: {
     retrievalSummary: "Allium Cepa is a major botanical homeopathic polychrest for acute allergic rhinitis, acrid burning nasal discharge excoriating the lip, bland lachrymation, laryngeal cough, and relief in cool air.",
-    clinicalSummary: "Source is red onion. Potentized homeopathic dilutions are safe and non-toxic. Primary clinical affinities include nasal mucous membranes, eyes, larynx, and peripheral nerves.",
-    patientSummary: "Allium Cepa is a homeopathic remedy used for watery runny nose with burning lip soreness, sneezing, and watery eyes that feel better in fresh cool air.",
+    clinicalSummary: "Classical literature derives this profile from red onion and describes nasal, ocular, and laryngeal symptom patterns; it does not establish modern clinical efficacy or product safety.",
+    patientSummary: "Classical homeopathic texts associate Allium Cepa with watery nasal discharge and tearing. It should not replace evaluation or proven treatment for allergy, infection, or breathing difficulty.",
     studentSummary: "Guiding keynotes include acrid nasal discharge excoriating lip, bland lachrymation, laryngeal tearing cough, aggravation in warm rooms, and relief in cool open air.",
     keywords: ["allium cepa", "red onion", "coryza", "acrid nose bland tears", "cool air better"],
     semanticKeywords: ["rhinitis polychrest", "hay fever remedy", "laryngeal cough remedy"],

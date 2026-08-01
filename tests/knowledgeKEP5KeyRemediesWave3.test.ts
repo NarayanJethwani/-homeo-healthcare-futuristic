@@ -1,50 +1,66 @@
 import assert from "assert";
 import {
+  M11_ENTITY_PROFILES,
+  M11_OFFLINE_EVALUATION_CASES,
   buildKEP5KeyRemediesWave3Package,
   computeM11EvaluationMetrics,
   generateM11AuthorizationReport,
-  writeM11AuthorizationReportFiles,
 } from "../src/features/knowledge/expansion/kep5KeyRemediesWave3Package";
 
 export function runKnowledgeKEP5KeyRemediesWave3Test(): void {
   const pkg = buildKEP5KeyRemediesWave3Package();
-
-  assert.strictEqual(pkg.programId, "KEP-5");
-  assert.strictEqual(pkg.milestoneId, "M11");
   assert.strictEqual(pkg.productionRagActivation, false);
+  assert.strictEqual(pkg.transitionalPublicationFreeze, true);
   assert.strictEqual(pkg.entities.length, 10);
   assert.strictEqual(pkg.relationshipProposals.length, 50);
+  assert.ok(pkg.entities.every((entity) => entity.claimCount >= 4));
+  assert.ok(pkg.entities.every((entity) => entity.passageCitationCount >= 6));
+  assert.ok(pkg.relationshipProposals.every((proposal) =>
+    proposal.status === "draft" &&
+    proposal.publicationEligible === false &&
+    proposal.ragEligible === false &&
+    proposal.evidenceScope === "traditional-literature-only"
+  ));
 
-  for (const prop of pkg.relationshipProposals) {
-    assert.strictEqual(prop.status, "draft");
-    assert.strictEqual(prop.publicationEligible, false);
-    assert.strictEqual(prop.ragEligible, false);
+  assert.strictEqual(M11_OFFLINE_EVALUATION_CASES.length, 100);
+  for (const { entity } of M11_ENTITY_PROFILES) {
+    const cases = M11_OFFLINE_EVALUATION_CASES.filter((item) => item.entityId === entity.id);
+    assert.strictEqual(cases.length, 10);
+    assert.strictEqual(new Set(cases.map((item) => item.dimension)).size, 8);
+    assert.ok((entity.claimCitations?.length ?? 0) >= 4);
+    assert.ok((entity.redFlags?.length ?? 0) >= 2);
+    const safetyText = `${entity.content.safetyNotes} ${entity.aiReadiness?.clinicalSummary}`.toLowerCase();
+    assert.ok(!safetyText.includes("safe and non-toxic"));
+    assert.ok(!safetyText.includes("contain no active"));
+    assert.ok(safetyText.includes("does not") || safetyText.includes("does not prove") || safetyText.includes("does not establish") || safetyText.includes("does not guarantee"));
   }
 
   const metrics = computeM11EvaluationMetrics();
-  assert.strictEqual(metrics.caseCount, 100);
-  assert.strictEqual(metrics.passedCaseCount, 100);
-  assert.strictEqual(metrics.recallAt5, 1.0);
-  assert.strictEqual(metrics.meanReciprocalRank, 1.0);
-  assert.strictEqual(metrics.citationPrecision, 1.0);
-  assert.strictEqual(metrics.unsupportedClaimFailureCount, 0);
-  assert.strictEqual(metrics.emergencyEscalationFailureCount, 0);
+  assert.deepStrictEqual(
+    {
+      cases: metrics.caseCount,
+      entities: metrics.entityCount,
+      minimum: metrics.minimumCasesPerEntity,
+      recallAt5: metrics.recallAt5,
+      mrr: metrics.meanReciprocalRank,
+      citations: metrics.citationPrecision,
+      passed: metrics.passedCaseCount,
+      failed: metrics.failedCaseCount,
+    },
+    { cases: 100, entities: 10, minimum: 10, recallAt5: 1, mrr: 1, citations: 1, passed: 100, failed: 0 }
+  );
+
+  const tampered = M11_OFFLINE_EVALUATION_CASES.map((item) => ({ ...item }));
+  const emergency = tampered.find((item) => item.dimension === "emergency-escalation");
+  assert.ok(emergency);
+  emergency.emergencyEscalationTriggered = false;
+  assert.strictEqual(computeM11EvaluationMetrics(tampered).emergencyEscalationFailureCount, 1);
 
   const report = generateM11AuthorizationReport();
-  assert.strictEqual(report.milestoneId, "M11");
   assert.strictEqual(report.status, "pending_authorization");
   assert.strictEqual(report.governance.productionRagActivation, false);
-  assert.strictEqual(report.summary.evaluationPassRate, 1.0);
-
-  const { jsonPath, mdPath } = writeM11AuthorizationReportFiles();
-  assert.ok(jsonPath, "JSON authorization report path must exist");
-  assert.ok(mdPath, "Markdown authorization report path must exist");
-
-  console.log(
-    "✅ Milestone M11 KEP-5 Polycrest & Key Remedies Wave 3 passed: 10 major key remedy entities upgraded to v1.1.0, 50 governed draft graph proposals, 100 offline evaluation cases passed (100% pass rate), toxicology & safety boundaries verified, authorization packet generated."
-  );
+  assert.strictEqual(report.governance.transitionalPublicationFreeze, true);
+  console.log("M11 verified: 10 source-bounded remedies, 100 computed cases, 50 draft-only graph proposals, RAG off, publication frozen.");
 }
 
-if (require.main === module) {
-  runKnowledgeKEP5KeyRemediesWave3Test();
-}
+if (require.main === module) runKnowledgeKEP5KeyRemediesWave3Test();

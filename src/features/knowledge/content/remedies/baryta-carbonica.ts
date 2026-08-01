@@ -5,7 +5,7 @@ export const BarytaCarbonicaRemedy: KnowledgeEntity = {
   slug: "baryta-carbonica",
   entityType: "remedy",
   editorialStatus: "published",
-  reviewStatus: "owner-authorized-source-bound",
+  reviewStatus: "owner-authorization-required",
   versionInfo: {
     version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
@@ -68,8 +68,8 @@ export const BarytaCarbonicaRemedy: KnowledgeEntity = {
       "After eating",
     ],
     clinicalUses: [
-      "Management of pediatric developmental delay, adenotonsillar hypertrophy, and chronic quinsy",
-      "Supportive care in senile dementia, cerebral arteriosclerosis, lipomas, and glandular induration",
+      "Traditional materia-medica profile associated with developmental and tonsillar symptom patterns",
+      "Historical homeopathic literature association with bashfulness and age-related cognitive symptoms",
     ],
     organAffinity: [
       "Lymphatic glandular system (tonsils, parotids, cervical nodes)",
@@ -90,12 +90,14 @@ export const BarytaCarbonicaRemedy: KnowledgeEntity = {
       "1M"
     ],
     safetyNotes:
-      "Raw barium carbonate is a hazardous barium salt (causes acute muscle paralysis and hypokalemia). Potentized homeopathic preparations (6C, 30C, 200C) contain no free toxic barium ions and are non-toxic. Medical evaluation is essential for severe pediatric developmental disorders or acute stroke/apoplexy.",
+      "Raw barium carbonate is toxic and can cause severe hypokalemia, weakness, paralysis, and cardiac rhythm disturbance. A dilution label alone does not prove the absence of barium or guarantee product quality. Developmental delay, persistent tonsillar obstruction, cognitive decline, or stroke symptoms require conventional medical assessment; suspected barium exposure requires urgent poison-control care.",
     references: [
       "CIT-0004",
       "CIT-0005",
       "CIT-0006",
-      "CIT-0007"
+      "CIT-0007",
+      "CIT-0023",
+      "CIT-0024"
     ],
     faqs: [
       {
@@ -108,6 +110,36 @@ export const BarytaCarbonicaRemedy: KnowledgeEntity = {
       }
     ]
   },
+  claimCitations: [
+    {
+      claimId: "R0029-TRADITIONAL-PROFILE",
+      statement: "Verified classical materia-medica sources describe Baryta Carbonica using developmental delay, tonsillar enlargement, bashfulness, cold sensitivity, and age-related cognitive symptoms.",
+      citationIds: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0007"],
+      passageId: "CIT-0006-R0029-TRADITIONAL-PROFILE",
+    },
+    {
+      claimId: "R0029-EVIDENCE-LIMITS",
+      statement: "The historical profile is traditional literature evidence and does not establish modern clinical efficacy for any disease.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0023-HOMEOPATHY-EVIDENCE-LIMITS",
+    },
+    {
+      claimId: "R0029-PRODUCT-SAFETY",
+      statement: "A homeopathic dilution label does not by itself guarantee product composition, quality, safety, or effectiveness.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0024-HOMEOPATHIC-PRODUCT-SAFETY",
+    },
+    {
+      claimId: "R0029-CONVENTIONAL-CARE-BOUNDARY",
+      statement: "Homeopathic products must not delay emergency assessment or replace proven conventional treatment for serious or life-threatening symptoms.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0024-SERIOUS-CONDITION-BOUNDARY",
+    },
+  ],
+  redFlags: [
+    "Sudden weakness, speech difficulty, or facial droop requires emergency stroke evaluation.",
+    "Suspected barium exposure, muscle paralysis, or arrhythmia requires urgent poison-control and hospital care.",
+  ],
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"
@@ -134,8 +166,8 @@ export const BarytaCarbonicaRemedy: KnowledgeEntity = {
   },
   aiReadiness: {
     retrievalSummary: "Baryta Carbonica is a major mineral homeopathic polychrest for physical and mental developmental delay, chronic tonsillar hypertrophy, extreme shyness, and senile cognitive decline.",
-    clinicalSummary: "Source is barium carbonate. Potentized homeopathic dilutions are safe and non-toxic. Primary clinical affinities include lymphatic glands, tonsils, brain, arteries, and skin.",
-    patientSummary: "Baryta Carbonica is a homeopathic remedy used for children with slow growth or enlarged tonsils, extreme shyness with strangers, and memory weakness in elderly individuals.",
+    clinicalSummary: "Classical literature derives this profile from barium carbonate and describes developmental and tonsillar patterns; it does not establish efficacy or guarantee product safety.",
+    patientSummary: "Classical texts associate Baryta Carbonica with developmental and tonsillar patterns. Children with delayed development or breathing/swallowing obstruction need standard medical assessment.",
     studentSummary: "Guiding keynotes include physical/mental dwarfishness, chronic enlarged tonsils, fear of strangers, senile dementia, cold feet, and aggravation from cold dry air.",
     keywords: ["baryta carb", "barium carbonate", "tonsillar hypertrophy", "developmental delay", "senile decline"],
     semanticKeywords: ["pediatric developmental polychrest", "tonsillitis remedy", "senile dementia remedy"],

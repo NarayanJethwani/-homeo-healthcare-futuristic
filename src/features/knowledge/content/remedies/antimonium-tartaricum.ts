@@ -5,7 +5,7 @@ export const AntimoniumTartaricumRemedy: KnowledgeEntity = {
   slug: "antimonium-tartaricum",
   entityType: "remedy",
   editorialStatus: "published",
-  reviewStatus: "owner-authorized-source-bound",
+  reviewStatus: "owner-authorization-required",
   versionInfo: {
     version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
@@ -69,8 +69,8 @@ export const AntimoniumTartaricumRemedy: KnowledgeEntity = {
       "Milk and sweet foods",
     ],
     clinicalUses: [
-      "Management of acute bronchiolitis, broncho-pneumonia, emphysema, and bronchial asthma",
-      "Supportive care in asphyxia neonatorum, croup, and post-viral pulmonary congestion",
+      "Traditional materia-medica profile associated with rattling respiratory symptom patterns",
+      "Historical homeopathic literature association with weak expectoration and prostration",
     ],
     organAffinity: [
       "Bronchial mucous membranes and pulmonary alveoli",
@@ -90,12 +90,14 @@ export const AntimoniumTartaricumRemedy: KnowledgeEntity = {
       "1M"
     ],
     safetyNotes:
-      "Raw tartar emetic is a toxic antimony compound (causes severe emesis and cardiac depression). Potentized homeopathic preparations (6C, 30C, 200C) are non-toxic. Immediate emergency medical intervention is mandatory for severe hypoxemia, acute respiratory failure, or pediatric cyanosis.",
+      "Raw tartar emetic is a toxic antimony compound. A dilution label alone does not prove product safety, composition, or quality; FDA has approved no product labeled homeopathic. Cyanosis, severe breathlessness, drowsiness, weak expectoration, or suspected respiratory failure requires emergency medical care and must never be managed with homeopathy alone.",
     references: [
       "CIT-0004",
       "CIT-0005",
       "CIT-0006",
-      "CIT-0007"
+      "CIT-0007",
+      "CIT-0023",
+      "CIT-0024"
     ],
     faqs: [
       {
@@ -108,6 +110,36 @@ export const AntimoniumTartaricumRemedy: KnowledgeEntity = {
       }
     ]
   },
+  claimCitations: [
+    {
+      claimId: "R0025-TRADITIONAL-PROFILE",
+      statement: "Verified classical materia-medica sources describe Antimonium Tartaricum using coarse rattling mucus, weak expectoration, drowsiness, cyanosis, and cold sweat.",
+      citationIds: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0007"],
+      passageId: "CIT-0006-R0025-TRADITIONAL-PROFILE",
+    },
+    {
+      claimId: "R0025-EVIDENCE-LIMITS",
+      statement: "The historical profile is traditional literature evidence and does not establish modern clinical efficacy for any disease.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0023-HOMEOPATHY-EVIDENCE-LIMITS",
+    },
+    {
+      claimId: "R0025-PRODUCT-SAFETY",
+      statement: "A homeopathic dilution label does not by itself guarantee product composition, quality, safety, or effectiveness.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0024-HOMEOPATHIC-PRODUCT-SAFETY",
+    },
+    {
+      claimId: "R0025-CONVENTIONAL-CARE-BOUNDARY",
+      statement: "Homeopathic products must not delay emergency assessment or replace proven conventional treatment for serious or life-threatening symptoms.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0024-SERIOUS-CONDITION-BOUNDARY",
+    },
+  ],
+  redFlags: [
+    "Cyanosis, severe breathlessness, confusion, or inability to clear secretions requires emergency care.",
+    "Do not delay oxygenation, airway support, antibiotics, bronchodilators, or other evidence-based respiratory treatment.",
+  ],
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"
@@ -134,12 +166,12 @@ export const AntimoniumTartaricumRemedy: KnowledgeEntity = {
   },
   aiReadiness: {
     retrievalSummary: "Antimonium Tartaricum is a major mineral homeopathic polychrest for loud rattling bronchial mucus with inability to expectorate, cyanotic prostration, cold sweat, and pale face.",
-    clinicalSummary: "Source is tartar emetic. Potentized homeopathic dilutions are safe and non-toxic. Primary clinical affinities include bronchial mucous membranes, lungs, vagus nerve, and stomach.",
-    patientSummary: "Antimonium Tartaricum is a homeopathic remedy used for heavy chest colds with rattling mucus that cannot be coughed out, shortness of breath, and tiredness.",
+    clinicalSummary: "Classical literature derives this profile from tartar emetic and describes respiratory and gastrointestinal symptom patterns; it does not establish clinical efficacy or guarantee product safety.",
+    patientSummary: "Classical texts associate Antimonium Tartaricum with rattling mucus and weak expectoration. These can signal a medical emergency and require prompt conventional assessment.",
     studentSummary: "Guiding keynotes include loud coarse rattling phlegm, inability to expectorate, pale cyanotic face with cold sweat, white pasty tongue, and relief sitting upright.",
     keywords: ["antimonium tart", "tartar emetic", "rattling chest", "bronchitis remedy", "cyanosis"],
     semanticKeywords: ["respiratory polychrest", "broncho-pneumonia remedy", "pulmonary congestion remedy"],
     bodySystem: "Respiratory & Cardiovascular",
-    urgency: "routine"
+    urgency: "emergency"
   }
 };

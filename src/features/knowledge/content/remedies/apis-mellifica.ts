@@ -5,7 +5,7 @@ export const ApisMellificaRemedy: KnowledgeEntity = {
   slug: "apis-mellifica",
   entityType: "remedy",
   editorialStatus: "published",
-  reviewStatus: "owner-authorized-source-bound",
+  reviewStatus: "owner-authorization-required",
   versionInfo: {
     version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
@@ -69,8 +69,8 @@ export const ApisMellificaRemedy: KnowledgeEntity = {
       "Closed warm places",
     ],
     clinicalUses: [
-      "Management of acute urticaria, angioedema, insect stings, erysipelas, and uvular edema",
-      "Supportive care in acute nephritis, ovarian cysts, joint effusion, and pleurisy",
+      "Traditional materia-medica profile associated with stinging pain and edematous symptom patterns",
+      "Historical homeopathic literature association with heat aggravation and cold amelioration",
     ],
     organAffinity: [
       "Cellular subcutaneous tissue and skin",
@@ -90,12 +90,14 @@ export const ApisMellificaRemedy: KnowledgeEntity = {
       "1M"
     ],
     safetyNotes:
-      "Prepared from whole honeybee including apitoxin. Potentized homeopathic preparations (6C, 30C, 200C) contain no active venom toxicity and are safe. Emergency medical intervention is mandatory for severe anaphylaxis, acute glottic edema, or respiratory compromise.",
+      "The source material includes honeybee components and venom. A dilution label alone does not prove absence of allergens or guarantee product quality; FDA has approved no product labeled homeopathic. Suspected anaphylaxis, tongue or throat swelling, wheeze, faintness, or breathing difficulty requires immediate emergency treatment; do not delay epinephrine or emergency care.",
     references: [
       "CIT-0004",
       "CIT-0005",
       "CIT-0006",
-      "CIT-0007"
+      "CIT-0007",
+      "CIT-0023",
+      "CIT-0024"
     ],
     faqs: [
       {
@@ -108,6 +110,36 @@ export const ApisMellificaRemedy: KnowledgeEntity = {
       }
     ]
   },
+  claimCitations: [
+    {
+      claimId: "R0026-TRADITIONAL-PROFILE",
+      statement: "Verified classical materia-medica sources describe Apis Mellifica using puffy edema, stinging-burning pain, thirstlessness, heat aggravation, and cold amelioration.",
+      citationIds: ["CIT-0004", "CIT-0005", "CIT-0006", "CIT-0007"],
+      passageId: "CIT-0006-R0026-TRADITIONAL-PROFILE",
+    },
+    {
+      claimId: "R0026-EVIDENCE-LIMITS",
+      statement: "The historical profile is traditional literature evidence and does not establish modern clinical efficacy for any disease.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0023-HOMEOPATHY-EVIDENCE-LIMITS",
+    },
+    {
+      claimId: "R0026-PRODUCT-SAFETY",
+      statement: "A homeopathic dilution label does not by itself guarantee product composition, quality, safety, or effectiveness.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0024-HOMEOPATHIC-PRODUCT-SAFETY",
+    },
+    {
+      claimId: "R0026-CONVENTIONAL-CARE-BOUNDARY",
+      statement: "Homeopathic products must not delay emergency assessment or replace proven conventional treatment for serious or life-threatening symptoms.",
+      citationIds: ["CIT-0023", "CIT-0024"],
+      passageId: "CIT-0024-SERIOUS-CONDITION-BOUNDARY",
+    },
+  ],
+  redFlags: [
+    "Suspected anaphylaxis or tongue, throat, or facial swelling requires immediate epinephrine and emergency care.",
+    "Homeopathic products must never delay proven treatment for allergic or respiratory emergencies.",
+  ],
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"
@@ -134,12 +166,12 @@ export const ApisMellificaRemedy: KnowledgeEntity = {
   },
   aiReadiness: {
     retrievalSummary: "Apis Mellifica is a major animal homeopathic polychrest for rapid puffy edema, lower eyelid bag-like swelling, stinging-burning pains, complete thirstlessness, and relief from cold applications.",
-    clinicalSummary: "Source is honeybee venom. Potentized homeopathic dilutions are safe and non-toxic. Primary clinical affinities include subcutaneous cellular tissue, skin, kidneys, serous membranes, and ovaries.",
-    patientSummary: "Apis Mellifica is a homeopathic remedy used for hives, puffy eye swelling, bee stings, skin swelling with burning stinging pain, and relief from ice packs.",
+    clinicalSummary: "Classical literature derives this profile from honeybee material and describes stinging and edematous patterns; it does not establish efficacy or guarantee freedom from allergens.",
+    patientSummary: "Classical texts associate Apis Mellifica with stinging and swelling. Any rapid swelling or breathing difficulty is an emergency and requires proven treatment without delay.",
     studentSummary: "Guiding keynotes include puffy edema, lower eyelid bags, stinging burning pains, complete thirstlessness, extreme heat intolerance, cold better, and awkwardness.",
     keywords: ["apis", "honeybee", "edema remedy", "stinging pain", "thirstless remedy"],
     semanticKeywords: ["allergic edematous polychrest", "angioedema remedy", "nephritis remedy"],
     bodySystem: "Immune & Nephrological",
-    urgency: "routine"
+    urgency: "emergency"
   }
 };
