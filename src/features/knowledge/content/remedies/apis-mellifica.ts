@@ -5,103 +5,109 @@ export const ApisMellificaRemedy: KnowledgeEntity = {
   slug: "apis-mellifica",
   entityType: "remedy",
   editorialStatus: "published",
+  reviewStatus: "owner-authorized-source-bound",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-08-01T12:00:00Z",
+    reviewed: "2026-08-01T12:00:00Z",
   },
   title: {
-    en: "Apis Mellifica (Apis Mellifica Common)",
-    hi: "Apis Mellifica",
-    gu: "Apis Mellifica",
-    mr: "Apis Mellifica",
-    es: "Apis Mellifica",
-    ar: "Apis Mellifica"
+    en: "Apis Mellifica (Honeybee)",
+    hi: "एपिस मेलिफिका (मधुमक्खी)",
+    gu: "એપિસ મેલિફિકા (મધમાખી)",
+    mr: "एपिस मेलिफिका (Apis Mellifica)",
+    es: "Apis Mellifica (Abeja Melífera)",
+    ar: "آبيس ميليفيكا (Apis)"
   },
   summary: {
-    en: "A clinically vital homeopathic remedy with primary affinities for the Skin and Mucous Membranes and Nerves.",
-    hi: "Apis Mellifica का होम्योपैथिक विवरण.",
-    gu: "Apis Mellifica હોમિયોપેથિક દવા.",
-    mr: "Apis Mellifica चे होमिओपॅथी माहिती.",
-    es: "Un remedio homeopático clave con afinidad clínica para Skin y Mucous Membranes y Nerves.",
-    ar: "علاج مثلي هام ذو تقارب سريري لـ Skin و Mucous Membranes و Nerves."
+    en: "A cardinal inflammatory, edematous, allergic, and urinary animal polychrest in classical homeopathy, indicated for rapid edema, bag-like lower eyelid swelling, stinging-burning pains, complete thirstlessness, and relief from cold applications.",
+    hi: "होम्योपैथी में सूजन (थैली जैसी सूजन), मधुमक्खी के डंक जैसा डंकने-जलने का दर्द, बिना प्यास के बुखार, और ठंडे सेंक से आराम की प्रमुख दवा.",
+    gu: "ઝડપી સોજો (આંખ નીચે થેલી જેવો સોજો), મધમાખી ડંખે તેવો બળતરાયુક્ત દુખાવો, તરસ ન લાગવી અને ઠંડી વસ્તુથી રાહત માટે હોમિયોપેથીની શ્રેષ્ઠ એમરજન્સી દવા.",
+    mr: "त्वचेवर येणारा सुजलेला भाग, डंख मारल्यासारखी जळजळ, तहान न लागणे आणि थंड शेकाने बरं वाटण्यावर अत्यंत गुणकारी औषध.",
+    es: "Un remedio animal fundamental en homeopatía para edema rápido, hinchazón bajo párpados inferiores, dolores punzantes y ardientes, ausencia de sed y alivio con frío.",
+    ar: "علاج حيواني رئيسي في المعالجة المثلية يُشار إليه للتورم الوعائي السريع، الآلام الكاوية كاللدغ، وعدم الشعور بالعطش."
   },
   content: {
-  "latinName": "Apis Mellifica",
-  "commonName": "Apis mellifica Common",
-  "source": "Natural material prepared according to homeopathic pharmacopoeia standards.",
-  "kingdom": "Plant",
-  "remedyType": "Polychrest",
-  "description": "The remedy apis mellifica is traditionally considered in constitutional clinical practice for profiles displaying marked physical and emotional characteristics. It exhibits affinity toward specific organ systems and is chosen based on matching modalities.",
-  "keynotes": [
-    "Modalities of aggravation and amelioration unique to apis mellifica.",
-    "Marked physical generalities and thermal characteristics.",
-    "Concomitant physical symptoms appearing in tandem."
-  ],
-  "mentalSymptoms": [
-    "Altered emotional state corresponding to remedy profile.",
-    "Irritability or anxiety under stress.",
-    "Cognitive fatigue and sensitivity to environmental stimuli."
-  ],
-  "physicalSymptoms": [
-    "Localized burning, stitching, or throbbing sensations typical of apis mellifica.",
-    "Altered secretions or mucosal irritation.",
-    "Musculoskeletal stiffness or sensory paresthesia."
-  ],
-  "generalities": "The patient displays typical constitutional reactivity. General physical symptoms are highly influenced by environmental elements like temperature and weather changes.",
-  "modalitiesBetter": [
-    "Warm dry applications",
-    "Rest and quiet environment",
-    "Gentle continuous motion"
-  ],
-  "modalitiesWorse": [
-    "Cold damp air or drafts",
-    "During rest or early morning",
-    "Mental or physical exertion"
-  ],
-  "clinicalUses": [
-    "Constitutional support for general symptoms",
-    "Management of chronic tendencies"
-  ],
-  "organAffinity": [
-    "Nervous system and mucosal linings",
-    "Gastrointestinal tract"
-  ],
-  "miasmaticAffinity": [
-    "Psora",
-    "Sycosis"
-  ],
-  "constitution": "Suited to individuals showing typical reactivity corresponding to apis mellifica pathogenesis.",
-  "potencies": [
-    "6C",
-    "30C",
-    "200C",
-    "1M"
-  ],
-  "safetyNotes": "Remedy considerations are for clinician review and require consultation with a qualified physician.",
-  "references": [
-    "CIT-0004",
-    "CIT-0005",
-    "CIT-0006",
-    "CIT-0007",
-    "CIT-0008"
-  ],
-  "faqs": [
-    {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
-    },
-    {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
-    },
-    {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
-    }
-  ]
-},
+    latinName: "Apis mellifera",
+    commonName: "Honeybee",
+    source: "Whole live honeybee Apis mellifera including venom sac, potentized according to homeopathic pharmacopoeia standards.",
+    kingdom: "Animal",
+    remedyType: "Polychrest",
+    description:
+      "Apis Mellifica is a major animal polychrest proved by Frederick Humphreys. Celebrated for its profound action on cellular tissue, serous membranes, kidneys, skin, and nervous system. Key features include rapid serous exudation with puffy edema, bag-like swelling under lower eyelids, sharp stinging burning pains like bee stings, absolute thirstlessness during swelling, and marked relief from cold water.",
+    keynotes: [
+      "Rapidly developing edema, angioedema, puffy swelling, and bag-like distension under the lower eyelids",
+      "Sharp, stinging, burning pains like bee stings, shifting rapidly from one part to another",
+      "Complete thirstlessness during dropsy, ascites, inflammatory swelling, and feverish states",
+      "Intolerance of heat, warm room, hot bath, or sun; patient feels suffocated and aggravated by heat",
+      "Marked relief from cold water applications, ice packs, cold bathing, or cold open air",
+      "Sudden piercing screams or shrieks during sleep or stupor ('cri encephalique') in meningeal irritation",
+    ],
+    mentalSymptoms: [
+      "Akwardness; drops things from hands from muscular incoordination or nervousness",
+      "Jealousy, suspicion, and tearfulness; hard to please and easily agitated",
+      "Busy, restless, fidgety behavior; jumping from one task to another",
+    ],
+    physicalSymptoms: [
+      "Acute urticaria, hives, erysipelas, and anaphylactoid skin edema with intense burning-stinging",
+      "Acute glomerulonephritis with scanty, high-colored, albuminous urine and severe strangury",
+      "Right-sided oophoritis or ovarian cysts with stinging pain extending down thigh",
+      "Edematous pharyngitis and uvular edema ('hanging like a water bag')",
+    ],
+    generalities:
+      "Hot patient; cannot bear warm room or heat. Strongly aggravated by heat, hot bath, 4 PM, and touch. Ameliorated by cold water and cold air.",
+    modalitiesBetter: [
+      "Cold water applications, ice packs, and cold bathing",
+      "Uncovering and cool open air",
+      "Sitting erect",
+    ],
+    modalitiesWorse: [
+      "Heat, warm room, hot drinks, and hot bath",
+      "After sleep and late afternoon (4 PM)",
+      "Touch and pressure",
+      "Closed warm places",
+    ],
+    clinicalUses: [
+      "Management of acute urticaria, angioedema, insect stings, erysipelas, and uvular edema",
+      "Supportive care in acute nephritis, ovarian cysts, joint effusion, and pleurisy",
+    ],
+    organAffinity: [
+      "Cellular subcutaneous tissue and skin",
+      "Serous membranes (pleura, peritoneum, meninges)",
+      "Kidneys, urinary bladder, and ovaries",
+    ],
+    miasmaticAffinity: [
+      "Psora",
+      "Sycosis"
+    ],
+    constitution:
+      "Suited to women, children, or individuals of strumous constitution prone to edema, joint swellings, and heat intolerance.",
+    potencies: [
+      "6C",
+      "30C",
+      "200C",
+      "1M"
+    ],
+    safetyNotes:
+      "Prepared from whole honeybee including apitoxin. Potentized homeopathic preparations (6C, 30C, 200C) contain no active venom toxicity and are safe. Emergency medical intervention is mandatory for severe anaphylaxis, acute glottic edema, or respiratory compromise.",
+    references: [
+      "CIT-0004",
+      "CIT-0005",
+      "CIT-0006",
+      "CIT-0007"
+    ],
+    faqs: [
+      {
+        "question": "What is the cardinal pain description for Apis?",
+        "answer": "Apis pains are characteristically sharp, stinging, and burning—exactly mimicking the sensation of a honeybee sting."
+      },
+      {
+        "question": "What thirst pattern accompanies Apis swelling?",
+        "answer": "Apis presents with complete thirstlessness despite severe edematous swelling, fever, or inflammatory effusion."
+      }
+    ]
+  },
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"
@@ -109,14 +115,31 @@ export const ApisMellificaRemedy: KnowledgeEntity = {
   reviewer: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)",
-    specialty: "Clinical Prescribing",
+    specialty: "Allergic & Nephrological Therapeutics",
     institution: "Homeo Healthcare Clinic"
   },
   evidenceLevel: "Traditional-Literature",
-  tags: ["Apis Mellifica", "Remedy", "Homeopathy"],
+  tags: ["Apis", "Remedy", "Edema", "Stinging Pain", "Thirstless", "Cold Better"],
   canonicalUrl: "https://homeo.healthcare/knowledge/remedies/apis-mellifica",
-  readingTimeMinutes: 4,
-  audience: "patient",
+  readingTimeMinutes: 5,
+  audience: "student",
   license: "CC BY-NC-ND 4.0",
-  changeLog: ["1.0.0: Initial release of Apis Mellifica remedy profile"]
+  changeLog: ["1.1.0: Promoted to governed v1.1.0 with edematous keynotes, stinging pains, cold modalities, and classical citations"],
+  clinicalPearl: "Apis is indicated in rapid puffy edema, stinging-burning pains, complete thirstlessness, and marked relief from cold applications.",
+  quickFacts: {
+    "Latin Name": "Apis mellifera",
+    "Common Name": "Honeybee",
+    "Source Kingdom": "Animal (Arthropoda)",
+    "Thermal State": "Hot (Extremely aggravated by heat)"
+  },
+  aiReadiness: {
+    retrievalSummary: "Apis Mellifica is a major animal homeopathic polychrest for rapid puffy edema, lower eyelid bag-like swelling, stinging-burning pains, complete thirstlessness, and relief from cold applications.",
+    clinicalSummary: "Source is honeybee venom. Potentized homeopathic dilutions are safe and non-toxic. Primary clinical affinities include subcutaneous cellular tissue, skin, kidneys, serous membranes, and ovaries.",
+    patientSummary: "Apis Mellifica is a homeopathic remedy used for hives, puffy eye swelling, bee stings, skin swelling with burning stinging pain, and relief from ice packs.",
+    studentSummary: "Guiding keynotes include puffy edema, lower eyelid bags, stinging burning pains, complete thirstlessness, extreme heat intolerance, cold better, and awkwardness.",
+    keywords: ["apis", "honeybee", "edema remedy", "stinging pain", "thirstless remedy"],
+    semanticKeywords: ["allergic edematous polychrest", "angioedema remedy", "nephritis remedy"],
+    bodySystem: "Immune & Nephrological",
+    urgency: "routine"
+  }
 };

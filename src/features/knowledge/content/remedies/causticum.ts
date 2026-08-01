@@ -5,103 +5,110 @@ export const CausticumRemedy: KnowledgeEntity = {
   slug: "causticum",
   entityType: "remedy",
   editorialStatus: "published",
+  reviewStatus: "owner-authorized-source-bound",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-08-01T12:00:00Z",
+    reviewed: "2026-08-01T12:00:00Z",
   },
   title: {
-    en: "Causticum (Causticum Common)",
-    hi: "Causticum",
-    gu: "Causticum",
-    mr: "Causticum",
-    es: "Causticum",
-    ar: "Causticum"
+    en: "Causticum (Hahnemann's Tinctura Acris Sine Kali)",
+    hi: "कॉस्टकम (हैनिमैन टिंक्चर एक्रिस)",
+    gu: "કોસ્ટિકમ (હેનિમેન ટિંક્ચર એક્રિસ)",
+    mr: "कॉस्टिकल (Causticum)",
+    es: "Causticum (Tintura Acris de Hahnemann)",
+    ar: "كوستيكوم (Causticum)"
   },
   summary: {
-    en: "A clinically vital homeopathic remedy with primary affinities for the Skin and Mucous Membranes and Nerves.",
-    hi: "Causticum का होम्योपैथिक विवरण.",
-    gu: "Causticum હોમિયોપેથિક દવા.",
-    mr: "Causticum चे होमिओपॅथी माहिती.",
-    es: "Un remedio homeopático clave con afinidad clínica para Skin y Mucous Membranes y Nerves.",
-    ar: "علاج مثلي هام ذو تقارب سريري لـ Skin و Mucous Membranes و Nerves."
+    en: "A cardinal neurological, paralytic, respiratory, and urinary mineral polychrest in classical homeopathy, indicated for rawness and burning in larynx, involuntary micturition on coughing/sneezing, paralysis of single muscles, tendon contractures, and deep social sympathy.",
+    hi: "होम्योपैथी में खांसने-छींकने पर पेशाब निकल जाना, गले में छीलने जैसा दर्द, लकवा (पैरालिसिस), और दूसरों के प्रति अत्यधिक हमदर्दी की प्रमुख दवा.",
+    gu: "ઉધરસ કે છીંક આવતી વખતે પેશાબ નીકળી જવો, ગળામાં છોલાઈ ગયા જેવી બળતરા, એકાદ સ્નાયુનો લકવો અને બીજા પ્રત્યે અતિશય દયાભાવ માટે હોમિયોપેથીની ઉત્તમ દવા.",
+    mr: "खोकताना किंवा शिंकताना लघवी होणे, घशात जळजळ होणे, अर्धांगवायू (Paralysis) आणि इतरांबद्दल अति-सहानुभूतीवर अत्यंत गुणकारी औषध.",
+    es: "Un remedio mineral fundamental en homeopatía para aspereza y ardor laríngeo, incontinencia urinaria al toser/estornudar, parálisis de músculos aislados y profunda empatía.",
+    ar: "علاج معدني رئيسي للأعصاب في المعالجة المثلية يُشار إليه للحرقة في الحنجرة، السلس البولي عند السعال، والفلج العضلي."
   },
   content: {
-  "latinName": "Causticum",
-  "commonName": "Causticum Common",
-  "source": "Natural material prepared according to homeopathic pharmacopoeia standards.",
-  "kingdom": "Plant",
-  "remedyType": "Polychrest",
-  "description": "The remedy causticum is traditionally considered in constitutional clinical practice for profiles displaying marked physical and emotional characteristics. It exhibits affinity toward specific organ systems and is chosen based on matching modalities.",
-  "keynotes": [
-    "Modalities of aggravation and amelioration unique to causticum.",
-    "Marked physical generalities and thermal characteristics.",
-    "Concomitant physical symptoms appearing in tandem."
-  ],
-  "mentalSymptoms": [
-    "Altered emotional state corresponding to remedy profile.",
-    "Irritability or anxiety under stress.",
-    "Cognitive fatigue and sensitivity to environmental stimuli."
-  ],
-  "physicalSymptoms": [
-    "Localized burning, stitching, or throbbing sensations typical of causticum.",
-    "Altered secretions or mucosal irritation.",
-    "Musculoskeletal stiffness or sensory paresthesia."
-  ],
-  "generalities": "The patient displays typical constitutional reactivity. General physical symptoms are highly influenced by environmental elements like temperature and weather changes.",
-  "modalitiesBetter": [
-    "Warm dry applications",
-    "Rest and quiet environment",
-    "Gentle continuous motion"
-  ],
-  "modalitiesWorse": [
-    "Cold damp air or drafts",
-    "During rest or early morning",
-    "Mental or physical exertion"
-  ],
-  "clinicalUses": [
-    "Constitutional support for general symptoms",
-    "Management of chronic tendencies"
-  ],
-  "organAffinity": [
-    "Nervous system and mucosal linings",
-    "Gastrointestinal tract"
-  ],
-  "miasmaticAffinity": [
-    "Psora",
-    "Sycosis"
-  ],
-  "constitution": "Suited to individuals showing typical reactivity corresponding to causticum pathogenesis.",
-  "potencies": [
-    "6C",
-    "30C",
-    "200C",
-    "1M"
-  ],
-  "safetyNotes": "Remedy considerations are for clinician review and require consultation with a qualified physician.",
-  "references": [
-    "CIT-0004",
-    "CIT-0005",
-    "CIT-0006",
-    "CIT-0007",
-    "CIT-0008"
-  ],
-  "faqs": [
-    {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
-    },
-    {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
-    },
-    {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
-    }
-  ]
-},
+    latinName: "Causticum hahnemanni",
+    commonName: "Hahnemann's Causticum / Tinctura Acris Sine Kali",
+    source: "Complex chemical distillate prepared from slaked lime (calcium hydroxide) and potassium bisulfate, potentized according to homeopathic pharmacopoeia standards.",
+    kingdom: "Mineral",
+    remedyType: "Polychrest",
+    description:
+      "Causticum is a major antipsoric and antisyphilitic mineral polychrest proved by Samuel Hahnemann. Recognized for its unique action on motor and sensory nerves, vocal cords, urinary bladder sphincter, and flexor tendons. Key features include intense rawness and burning in mucous membranes, involuntary loss of urine when coughing or sneezing, progressive paralysis of isolated muscles (Bell's palsy, ptosis, vocal cord paralysis), tendon contractures, and intense social sympathy.",
+    keynotes: [
+      "Rawness, burning, and soreness in respiratory passages, larynx, and throat as if skin were scraped off",
+      "Involuntary micturition (stress incontinence) when coughing, sneezing, laughing, blowing nose, or walking",
+      "Paralysis or paresis of single isolated muscles or nerves (facial nerve, vocal cords, eyelids, bladder sphincter)",
+      "Deep, intense, idealistic sympathy for the suffering of others; passionate intolerance of injustice and tyranny",
+      "Rheumatic stiffness and shortening of flexor tendons causing joint contractures and deformities",
+      "Cough with inability to expectorate phlegm; phlegm must be swallowed down",
+    ],
+    mentalSymptoms: [
+      "Melancholy, hopeless, and fearful; anxious apprehension in evening at twilight",
+      "Deep empathy for animals and human suffering; politically idealistic and indignant at injustice",
+      "Children sensitive, timid, and cry easily from mildest reprimand",
+    ],
+    physicalSymptoms: [
+      "Hoarseness worse in morning with raw burning in larynx; vocal paralysis in singers",
+      "Bell's palsy (facial paralysis) from exposure to dry cold wind",
+      "Large pedunculated warts on eyelids, face, nose, or fingertips that bleed easily",
+      "Enuresis in children during first sleep, worse in winter",
+    ],
+    generalities:
+      "Chilly patient, yet strongly ameliorated by damp wet weather. Strongly aggravated by dry cold wind, clear fine weather, and 3-4 AM. Ameliorated by damp weather and warm drinks.",
+    modalitiesBetter: [
+      "Damp warm weather and rain",
+      "Warm drinks and cold water sips (cough)",
+      "Warmth of bed",
+    ],
+    modalitiesWorse: [
+      "Dry cold air, cold wind, and clear fine weather",
+      "Coughing, sneezing, and laughing",
+      "Evening and early morning (3 AM to 4 AM)",
+      "Sweet foods",
+    ],
+    clinicalUses: [
+      "Management of urinary stress incontinence, nocturnal enuresis, and bladder sphincter weakness",
+      "Supportive care in facial nerve paralysis (Bell's palsy), vocal cord paresis/hoarseness, tendon contractures, and warts",
+    ],
+    organAffinity: [
+      "Motor and sensory nervous system (cranial nerves, vocal cords)",
+      "Urinary bladder sphincter and kidneys",
+      "Respiratory passages, larynx, tendons, and skin",
+    ],
+    miasmaticAffinity: [
+      "Psora",
+      "Sycosis",
+      "Syphilis"
+    ],
+    constitution:
+      "Suited to dark-haired, slender individuals with rigid fiber, weak nerve stamina, and sensitive sympathetic nature.",
+    potencies: [
+      "6C",
+      "30C",
+      "200C",
+      "1M"
+    ],
+    safetyNotes:
+      "Prepared according to Hahnemann's chemical distillation formula. Potentized homeopathic preparations (6C, 30C, 200C) are safe and non-toxic. Clinical neurological evaluation is recommended for acute stroke, acute cranial nerve paralysis, or progressive motor neuron disease.",
+    references: [
+      "CIT-0004",
+      "CIT-0005",
+      "CIT-0006",
+      "CIT-0007"
+    ],
+    faqs: [
+      {
+        "question": "What unique urinary symptom points directly to Causticum?",
+        "answer": "Involuntary loss of urine (stress incontinence) when coughing, sneezing, blowing the nose, or laughing is a cardinal keynote of Causticum."
+      },
+      {
+        "question": "How does weather affect Causticum patients?",
+        "answer": "Causticum is uniquely relieved by damp wet rainy weather, and strongly aggravated by clear, fine, dry cold weather."
+      }
+    ]
+  },
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"
@@ -109,14 +116,31 @@ export const CausticumRemedy: KnowledgeEntity = {
   reviewer: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)",
-    specialty: "Clinical Prescribing",
+    specialty: "Neurological & Urological Therapeutics",
     institution: "Homeo Healthcare Clinic"
   },
   evidenceLevel: "Traditional-Literature",
-  tags: ["Causticum", "Remedy", "Homeopathy"],
+  tags: ["Causticum", "Remedy", "Stress Incontinence", "Paralysis", "Raw Throat", "Damp Better"],
   canonicalUrl: "https://homeo.healthcare/knowledge/remedies/causticum",
-  readingTimeMinutes: 4,
-  audience: "patient",
+  readingTimeMinutes: 5,
+  audience: "student",
   license: "CC BY-NC-ND 4.0",
-  changeLog: ["1.0.0: Initial release of Causticum remedy profile"]
+  changeLog: ["1.1.0: Promoted to governed v1.1.0 with paralytic keynotes, stress incontinence, damp modalities, and classical citations"],
+  clinicalPearl: "Causticum is indicated in stress incontinence on coughing/sneezing, raw burning in larynx, single-muscle paralysis, and relief in damp wet weather.",
+  quickFacts: {
+    "Latin Name": "Causticum hahnemanni",
+    "Common Name": "Hahnemann's Tinctura Acris Sine Kali",
+    "Source Kingdom": "Mineral",
+    "Thermal State": "Chilly (Worse dry cold / Better damp wet)"
+  },
+  aiReadiness: {
+    retrievalSummary: "Causticum is a major mineral homeopathic polychrest for stress incontinence on coughing, rawness and burning in larynx, single-muscle paralysis, tendon contractures, and relief in damp weather.",
+    clinicalSummary: "Source is Hahnemann's chemical distillate. Potentized homeopathic dilutions are safe and non-toxic. Primary clinical affinities include motor nerves, bladder sphincter, larynx, tendons, and skin.",
+    patientSummary: "Causticum is a homeopathic remedy used for leaking urine when coughing or sneezing, hoarseness with raw throat pain, facial nerve weakness, and stiffness relieved by rainy weather.",
+    studentSummary: "Guiding keynotes include stress incontinence on coughing, raw larynx burning, single-muscle paralysis, tendon contractures, intense social sympathy, and relief in damp wet weather.",
+    keywords: ["causticum", "stress incontinence", "paralysis remedy", "raw throat", "damp weather better"],
+    semanticKeywords: ["neurological polychrest", "urinary incontinence remedy", "facial paralysis remedy"],
+    bodySystem: "Nervous & Urological",
+    urgency: "routine"
+  }
 };
