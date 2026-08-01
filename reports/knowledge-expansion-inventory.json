@@ -20,7 +20,7 @@
     "withdrawnEntities": 3,
     "flagshipEntities": 8,
     "legacyBulkGeneratedEntities": 256,
-    "genericSignalEntities": 204,
+    "genericSignalEntities": 194,
     "independentlyReviewedEntities": 0,
     "governedEvidenceProfiles": 0,
     "claimCitationCompleteEntities": 0,
@@ -12698,556 +12698,6 @@
       }
     },
     {
-      "entityId": "R0010",
-      "slug": "carbo-vegetabilis",
-      "entityType": "remedy",
-      "title": "Carbo Vegetabilis (Vegetable Charcoal)",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "medium"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "traditionally considered in constitutional clinical practice for profiles displaying",
-          "marked physical generalities and thermal characteristics"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 2,
-        "duplicateRelationshipRows": 2,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 30,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven"
-        ]
-      }
-    },
-    {
-      "entityId": "R0011",
-      "slug": "chamomilla",
-      "entityType": "remedy",
-      "title": "Chamomilla (German Chamomile)",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "medium"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "traditionally considered in constitutional clinical practice for profiles displaying",
-          "marked physical generalities and thermal characteristics"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 1,
-        "duplicateRelationshipRows": 1,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 30,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven"
-        ]
-      }
-    },
-    {
-      "entityId": "R0013",
-      "slug": "hepar-sulphuris-calcareum",
-      "entityType": "remedy",
-      "title": "Hepar Sulphuris Calcareum (Calcium Sulfide)",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "medium"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "traditionally considered in constitutional clinical practice for profiles displaying",
-          "marked physical generalities and thermal characteristics"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 3,
-        "duplicateRelationshipRows": 3,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 30,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven"
-        ]
-      }
-    },
-    {
-      "entityId": "R0014",
-      "slug": "ignatia-amara",
-      "entityType": "remedy",
-      "title": "Ignatia Amara (St. Ignatius Bean)",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "medium"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "traditionally considered in constitutional clinical practice for profiles displaying",
-          "marked physical generalities and thermal characteristics"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 6,
-        "duplicateRelationshipRows": 6,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 30,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven"
-        ]
-      }
-    },
-    {
-      "entityId": "R0015",
-      "slug": "kali-bichromicum",
-      "entityType": "remedy",
-      "title": "Kali Bichromicum (Potassium Bichromate)",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "medium"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "traditionally considered in constitutional clinical practice for profiles displaying",
-          "marked physical generalities and thermal characteristics"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 4,
-        "duplicateRelationshipRows": 4,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 30,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven"
-        ]
-      }
-    },
-    {
-      "entityId": "R0016",
-      "slug": "mercurius-solubilis",
-      "entityType": "remedy",
-      "title": "Mercurius Solubilis (Hahnemann's Soluble Mercury)",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "medium"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "traditionally considered in constitutional clinical practice for profiles displaying",
-          "marked physical generalities and thermal characteristics"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 1,
-        "duplicateRelationshipRows": 1,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 30,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven"
-        ]
-      }
-    },
-    {
-      "entityId": "R0017",
-      "slug": "natrum-muriaticum",
-      "entityType": "remedy",
-      "title": "Natrum Muriaticum (Common Salt)",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "medium"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "traditionally considered in constitutional clinical practice for profiles displaying",
-          "marked physical generalities and thermal characteristics"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 7,
-        "duplicateRelationshipRows": 5,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 30,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven"
-        ]
-      }
-    },
-    {
-      "entityId": "R0018",
-      "slug": "phosphorus",
-      "entityType": "remedy",
-      "title": "Phosphorus (Elemental Phosphorus)",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "medium"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "traditionally considered in constitutional clinical practice for profiles displaying",
-          "marked physical generalities and thermal characteristics"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 5,
-        "duplicateRelationshipRows": 5,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 30,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven"
-        ]
-      }
-    },
-    {
-      "entityId": "R0022",
-      "slug": "silicea-terra",
-      "entityType": "remedy",
-      "title": "Silicea Terra (Pure Silica)",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "medium"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "traditionally considered in constitutional clinical practice for profiles displaying",
-          "marked physical generalities and thermal characteristics"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 4,
-        "duplicateRelationshipRows": 4,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 30,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven"
-        ]
-      }
-    },
-    {
-      "entityId": "R0023",
-      "slug": "thuja-occidentalis",
-      "entityType": "remedy",
-      "title": "Thuja Occidentalis (Arbor Vitae)",
-      "audience": "patient",
-      "editorialStatus": "published",
-      "evidenceLevel": "Traditional-Literature",
-      "safety": {
-        "withdrawn": false,
-        "riskTier": "medium"
-      },
-      "content": {
-        "overviewPresent": true,
-        "structuredSectionCompleteness": 100,
-        "legacyBulkGenerationCohort": true,
-        "genericTemplateDetected": true,
-        "genericTemplateSignals": [
-          "traditionally considered in constitutional clinical practice for profiles displaying",
-          "marked physical generalities and thermal characteristics"
-        ]
-      },
-      "evidence": {
-        "referenceCount": 5,
-        "allReferencesResolvable": true,
-        "governedEvidenceProfilePresent": false,
-        "claimLevelCitationAssessment": "not-modeled"
-      },
-      "review": {
-        "reviewerRecorded": true,
-        "immutableReviewerIdPresent": false,
-        "authorReviewerNameConflict": true,
-        "independentReviewProven": false
-      },
-      "graph": {
-        "uniqueConnectionCount": 3,
-        "duplicateRelationshipRows": 3,
-        "brokenRelationshipRows": 0,
-        "isolated": false
-      },
-      "eligibility": {
-        "publicIndexAllowlisted": false,
-        "eligibleForIndexing": false,
-        "ragAllowlisted": false,
-        "eligibleForRag": false
-      },
-      "prioritisation": {
-        "priorityScore": 30,
-        "recommendation": "topic-specific-rewrite",
-        "reasons": [
-          "generic-template-detected",
-          "independent-review-unproven"
-        ]
-      }
-    },
-    {
       "entityId": "R0024",
       "slug": "allium-cepa",
       "entityType": "remedy",
@@ -18431,6 +17881,108 @@
       }
     },
     {
+      "entityId": "R0010",
+      "slug": "carbo-vegetabilis",
+      "entityType": "remedy",
+      "title": "Carbo Vegetabilis (Vegetable Charcoal)",
+      "audience": "student",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "medium"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 4,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 2,
+        "duplicateRelationshipRows": 2,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 10,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven"
+        ]
+      }
+    },
+    {
+      "entityId": "R0011",
+      "slug": "chamomilla",
+      "entityType": "remedy",
+      "title": "Chamomilla (German Chamomile)",
+      "audience": "student",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "medium"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 4,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 1,
+        "duplicateRelationshipRows": 1,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 10,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven"
+        ]
+      }
+    },
+    {
       "entityId": "R0012",
       "slug": "gelsemium-sempervirens",
       "entityType": "remedy",
@@ -18464,6 +18016,312 @@
       "graph": {
         "uniqueConnectionCount": 4,
         "duplicateRelationshipRows": 4,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 10,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven"
+        ]
+      }
+    },
+    {
+      "entityId": "R0013",
+      "slug": "hepar-sulphuris-calcareum",
+      "entityType": "remedy",
+      "title": "Hepar Sulphuris Calcareum (Hahnemann's Calcium Sulfide)",
+      "audience": "student",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "medium"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 4,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 3,
+        "duplicateRelationshipRows": 3,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 10,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven"
+        ]
+      }
+    },
+    {
+      "entityId": "R0014",
+      "slug": "ignatia-amara",
+      "entityType": "remedy",
+      "title": "Ignatia Amara (St. Ignatius Bean)",
+      "audience": "student",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "medium"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 4,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 6,
+        "duplicateRelationshipRows": 6,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 10,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven"
+        ]
+      }
+    },
+    {
+      "entityId": "R0015",
+      "slug": "kali-bichromicum",
+      "entityType": "remedy",
+      "title": "Kali Bichromicum (Potassium Bichromate)",
+      "audience": "student",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "medium"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 4,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 4,
+        "duplicateRelationshipRows": 4,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 10,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven"
+        ]
+      }
+    },
+    {
+      "entityId": "R0016",
+      "slug": "mercurius-solubilis",
+      "entityType": "remedy",
+      "title": "Mercurius Solubilis (Hahnemann's Soluble Mercury)",
+      "audience": "student",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "medium"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 4,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 1,
+        "duplicateRelationshipRows": 1,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 10,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven"
+        ]
+      }
+    },
+    {
+      "entityId": "R0017",
+      "slug": "natrum-muriaticum",
+      "entityType": "remedy",
+      "title": "Natrum Muriaticum (Common Salt)",
+      "audience": "student",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "medium"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 4,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 7,
+        "duplicateRelationshipRows": 5,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 10,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven"
+        ]
+      }
+    },
+    {
+      "entityId": "R0018",
+      "slug": "phosphorus",
+      "entityType": "remedy",
+      "title": "Phosphorus (Elemental Phosphorus)",
+      "audience": "student",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "medium"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 4,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 5,
+        "duplicateRelationshipRows": 5,
         "brokenRelationshipRows": 0,
         "isolated": false
       },
@@ -18616,6 +18474,108 @@
       },
       "graph": {
         "uniqueConnectionCount": 4,
+        "duplicateRelationshipRows": 3,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 10,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven"
+        ]
+      }
+    },
+    {
+      "entityId": "R0022",
+      "slug": "silicea-terra",
+      "entityType": "remedy",
+      "title": "Silicea Terra (Pure Silica)",
+      "audience": "student",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "medium"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 4,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 4,
+        "duplicateRelationshipRows": 4,
+        "brokenRelationshipRows": 0,
+        "isolated": false
+      },
+      "eligibility": {
+        "publicIndexAllowlisted": false,
+        "eligibleForIndexing": false,
+        "ragAllowlisted": false,
+        "eligibleForRag": false
+      },
+      "prioritisation": {
+        "priorityScore": 10,
+        "recommendation": "independent-review-and-enrichment",
+        "reasons": [
+          "independent-review-unproven"
+        ]
+      }
+    },
+    {
+      "entityId": "R0023",
+      "slug": "thuja-occidentalis",
+      "entityType": "remedy",
+      "title": "Thuja Occidentalis (Arbor Vitae / Tree of Life)",
+      "audience": "student",
+      "editorialStatus": "published",
+      "evidenceLevel": "Traditional-Literature",
+      "safety": {
+        "withdrawn": false,
+        "riskTier": "medium"
+      },
+      "content": {
+        "overviewPresent": true,
+        "structuredSectionCompleteness": 100,
+        "legacyBulkGenerationCohort": true,
+        "genericTemplateDetected": false,
+        "genericTemplateSignals": []
+      },
+      "evidence": {
+        "referenceCount": 4,
+        "allReferencesResolvable": true,
+        "governedEvidenceProfilePresent": false,
+        "claimLevelCitationAssessment": "not-modeled"
+      },
+      "review": {
+        "reviewerRecorded": true,
+        "immutableReviewerIdPresent": false,
+        "authorReviewerNameConflict": true,
+        "independentReviewProven": false
+      },
+      "graph": {
+        "uniqueConnectionCount": 3,
         "duplicateRelationshipRows": 3,
         "brokenRelationshipRows": 0,
         "isolated": false
