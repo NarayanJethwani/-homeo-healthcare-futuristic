@@ -5,103 +5,110 @@ export const GraphitesRemedy: KnowledgeEntity = {
   slug: "graphites",
   entityType: "remedy",
   editorialStatus: "published",
+  reviewStatus: "owner-authorized-source-bound",
   versionInfo: {
-    version: "1.0.0",
+    version: "1.1.0",
     created: "2026-07-08T12:00:00Z",
-    updated: "2026-07-08T12:00:00Z",
-    reviewed: "2026-07-08T12:00:00Z"
+    updated: "2026-08-01T12:00:00Z",
+    reviewed: "2026-08-01T12:00:00Z",
   },
   title: {
-    en: "Graphites (Graphites Common)",
-    hi: "Graphites",
-    gu: "Graphites",
-    mr: "Graphites",
-    es: "Graphites",
-    ar: "Graphites"
+    en: "Graphites (Black Lead / Plumbago)",
+    hi: "ग्राफाइट्स (ब्लैक लीड)",
+    gu: "ગ્રાફાઇટ્સ (બ્લેક લીડ)",
+    mr: "ग्राफाइट्स (Graphites)",
+    es: "Graphites (Lápiz Negro / Plumbagina)",
+    ar: "جرافيتس (Graphites)"
   },
   summary: {
-    en: "A clinically vital homeopathic remedy with primary affinities for the Skin and Mucous Membranes and Nerves.",
-    hi: "Graphites का होम्योपैथिक विवरण.",
-    gu: "Graphites હોમિયોપેથિક દવા.",
-    mr: "Graphites चे होमिओपॅथी माहिती.",
-    es: "Un remedio homeopático clave con afinidad clínica para Skin y Mucous Membranes y Nerves.",
-    ar: "علاج مثلي هام ذو تقارب سريري لـ Skin و Mucous Membranes و Nerves."
+    en: "A cardinal dermatological and metabolic mineral polychrest in classical homeopathic materia medica, historically described for rough unhealthy skin with sticky honey-like yellow fluid exudation, flexural eczema, and chronic constipation with mucous-threaded knotty stool.",
+    hi: "होम्योपैथिक साहित्य में चमड़ी के घावों से निकलने वाले शहद जैसे चिपचिपे पीले डिस्चार्ज, कान के पीछे या मोड़ों के दाद-खाज, और कब्जियत की प्रमुख वर्णित औषधि.",
+    gu: "ચામડીમાંથી નીકળતા મધ જેવા ચીકણા પીળા પાણી, કાનની પાછળ કે સાંધાના ભાગે થતા દાદર અને મ્યુકસવાળા મળ સાથેની કબજિયાત માટે હોમિયોપેથીની ઉત્તમ દવા.",
+    mr: "त्वचेतून येणारा मधासारखा चिकट पिवळा स्राव, कानाच्या मागे होणारे खरूज आणि बद्धकोष्ठतेवर अत्यंत गुणकारी पारंपरिक औषध.",
+    es: "Un remedio mineral dermatológico y metabólico fundamental en materia médica homeopática, descrito históricamente para piel áspera con exudado amarillo pegajoso similar a la miel, eccema en pliegues y estreñimiento crónico.",
+    ar: "علاج معدني جلدي رئيسي في المعالجة المثلية يُوصف تاريخياً للجلد الخشن المزمن مع إفرازات صفراء لزجة يشبه العسل."
   },
   content: {
-  "latinName": "Graphites",
-  "commonName": "Graphites Common",
-  "source": "Natural material prepared according to homeopathic pharmacopoeia standards.",
-  "kingdom": "Plant",
-  "remedyType": "Polychrest",
-  "description": "The remedy graphites is traditionally considered in constitutional clinical practice for profiles displaying marked physical and emotional characteristics. It exhibits affinity toward specific organ systems and is chosen based on matching modalities.",
-  "keynotes": [
-    "Modalities of aggravation and amelioration unique to graphites.",
-    "Marked physical generalities and thermal characteristics.",
-    "Concomitant physical symptoms appearing in tandem."
-  ],
-  "mentalSymptoms": [
-    "Altered emotional state corresponding to remedy profile.",
-    "Irritability or anxiety under stress.",
-    "Cognitive fatigue and sensitivity to environmental stimuli."
-  ],
-  "physicalSymptoms": [
-    "Localized burning, stitching, or throbbing sensations typical of graphites.",
-    "Altered secretions or mucosal irritation.",
-    "Musculoskeletal stiffness or sensory paresthesia."
-  ],
-  "generalities": "The patient displays typical constitutional reactivity. General physical symptoms are highly influenced by environmental elements like temperature and weather changes.",
-  "modalitiesBetter": [
-    "Warm dry applications",
-    "Rest and quiet environment",
-    "Gentle continuous motion"
-  ],
-  "modalitiesWorse": [
-    "Cold damp air or drafts",
-    "During rest or early morning",
-    "Mental or physical exertion"
-  ],
-  "clinicalUses": [
-    "Constitutional support for general symptoms",
-    "Management of chronic tendencies"
-  ],
-  "organAffinity": [
-    "Nervous system and mucosal linings",
-    "Gastrointestinal tract"
-  ],
-  "miasmaticAffinity": [
-    "Psora",
-    "Sycosis"
-  ],
-  "constitution": "Suited to individuals showing typical reactivity corresponding to graphites pathogenesis.",
-  "potencies": [
-    "6C",
-    "30C",
-    "200C",
-    "1M"
-  ],
-  "safetyNotes": "Remedy considerations are for clinician review and require consultation with a qualified physician.",
-  "references": [
-    "CIT-0004",
-    "CIT-0005",
-    "CIT-0006",
-    "CIT-0007",
-    "CIT-0008"
-  ],
-  "faqs": [
-    {
-      "question": "What is a constitutional remedy in homeopathy?",
-      "answer": "A constitutional remedy is a deep-acting medicine selected to match a patient's overall physical, mental, and emotional makeup, rather than just treating a single local symptom."
-    },
-    {
-      "question": "Why does the homeopath ask so many detailed questions?",
-      "answer": "To find the individualized remedy, the homeopath must understand all unique characteristics—such as sleep patterns, thermal sensitivities, food cravings, and emotional triggers."
-    },
-    {
-      "question": "How should homeopathic remedies be stored?",
-      "answer": "Remedies should be stored in a cool, dry place, away from direct sunlight, strong odors (like camphor, perfumes), and electronic devices to maintain their potency."
-    }
-  ]
-},
+    latinName: "Graphites",
+    commonName: "Black Lead / Plumbago",
+    source: "Pure native graphite powder prepared by trituration according to homeopathic pharmacopoeia standards.",
+    kingdom: "Mineral",
+    remedyType: "Polychrest",
+    description:
+      "Graphites (Black Lead) is a major antipsoric mineral polychrest proved by Samuel Hahnemann. In classical homeopathic texts, it is celebrated for its specific affinity for the skin, nutrition, lymphatic glands, and gastrointestinal mucosa. Key features recorded in materia medica include rough, dry, unhealthy skin prone to cracking and oozing a thick, sticky, glutinous, honey-like yellow fluid, eczema localized to skin folds (behind ears, eyelids, nostrils, elbows, groin), and stubborn constipation with large, hard, knotty stool united by mucous threads.",
+    keynotes: [
+      "Historically described for unhealthy skin with cracks, fissures, and exudation of thick, sticky, honey-like yellow fluid",
+      "Eczema and eruptions localized behind ears, on eyelids, bends of joints, nipples, and skin flexures",
+      "Obstinate constipation with large, hard, knotty stool held together by mucous threads; anal fissures with burning pain",
+      "Chilly, sluggish, timid constitution with tendency to obesity, delayed menses, and cold feet",
+      "Thickened, deformed, brittle, or cracked nails that crumble easily",
+      "Keloids, rigid cicatrices, and hard indurated lymphatic glandular swellings",
+    ],
+    mentalSymptoms: [
+      "Timid, hesitant, indecisive, and easily despondent; cries from hearing music",
+      "Anxious apprehension and foreboding of impending misfortune in morning",
+      "Mental sluggishness, apathy, and difficulty concentrating",
+    ],
+    physicalSymptoms: [
+      "Chronic eczema, psoriasis, herpes zoster, and intertrigo with honey-like sticky discharge",
+      "Delayed, scanty, pale menses in chilly women with constipation",
+      "Gastric ulceration or gastralgia relieved by warm drinks or eating",
+    ],
+    generalities:
+      "Chilly patient, sensitive to draft and cold air. Strongly aggravated by cold, menses, warmth of bed (itching), and suppression of skin eruptions. Ameliorated by warm drinks, walking in open air, and eating.",
+    modalitiesBetter: [
+      "Warm drinks and eating",
+      "Walking in open air",
+      "Dark room",
+    ],
+    modalitiesWorse: [
+      "Cold air, cold drafts, and dampness",
+      "During and before menses",
+      "Warmth of bed (itching)",
+      "Suppression of skin eruptions",
+    ],
+    clinicalUses: [
+      "Educational description of classical homeopathic symptom patterns in flexural eczema, sticky skin exudations, and mucous constipation",
+      "Historical materia medica reference for sluggish metabolic and dermatological profiles",
+    ],
+    organAffinity: [
+      "Skin, epidermis, and sebaceous/sweat glands",
+      "Gastrointestinal tract and rectal mucosa",
+      "Metabolic system, lymphatic glands, and nails",
+    ],
+    miasmaticAffinity: [
+      "Psora",
+      "Sycosis"
+    ],
+    constitution:
+      "Suited to fair, chilly, obese individuals with pale skin, slow metabolism, lax fiber, and history of delayed menses.",
+    potencies: [
+      "6C",
+      "30C",
+      "200C",
+      "1M"
+    ],
+    safetyNotes:
+      "Mineral source Black Lead (Graphite/Carbon). Highly potentized homeopathic preparations (6C, 30C, 200C) contain minimal chemical solute and are free of elemental toxicity. Emergency Referral: Secondary bacterial infection of skin lesions (spreading cellulitis, deep abscesses), intestinal obstruction, or acute surgical abdomen mandates prompt medical evaluation.",
+    references: [
+      "CIT-0004",
+      "CIT-0005",
+      "CIT-0006",
+      "CIT-0007",
+      "CIT-0023",
+      "CIT-0024"
+    ],
+    faqs: [
+      {
+        "question": "What is the hallmark character of Graphites skin discharge in classical texts?",
+        "answer": "In traditional homeopathic materia medica, Graphites skin discharge is characteristically thick, sticky, glutinous, and honey-like yellow, oozing from skin cracks and eruptions."
+      },
+      {
+        "question": "Which anatomical locations are classic for Graphites eczema?",
+        "answer": "In classical descriptions, Graphites eczema typically affects skin flexures, behind ears, eyelids, nostrils, bends of joints, and skin folds."
+      }
+    ]
+  },
   author: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)"
@@ -109,14 +116,31 @@ export const GraphitesRemedy: KnowledgeEntity = {
   reviewer: {
     name: "Dr. Narayan Jethwani",
     credentials: "MD (Hom)",
-    specialty: "Clinical Prescribing",
+    specialty: "Clinical Governance & Materia Medica",
     institution: "Homeo Healthcare Clinic"
   },
   evidenceLevel: "Traditional-Literature",
-  tags: ["Graphites", "Remedy", "Homeopathy"],
+  tags: ["Graphites", "Remedy", "Sticky Eczema", "Honey Fluid", "Flexural Eruptions", "Constipation"],
   canonicalUrl: "https://homeo.healthcare/knowledge/remedies/graphites",
-  readingTimeMinutes: 4,
-  audience: "patient",
+  readingTimeMinutes: 5,
+  audience: "student",
   license: "CC BY-NC-ND 4.0",
-  changeLog: ["1.0.0: Initial release of Graphites remedy profile"]
+  changeLog: ["1.1.0: Promoted to governed v1.1.0 with traditional sticky-eczema keynotes, dermatological safety notes, and verified citations"],
+  clinicalPearl: "Graphites is described in traditional materia medica for rough unhealthy skin with honey-like sticky yellow fluid oozing behind ears and flexures, and constipation with mucous-threaded stool.",
+  quickFacts: {
+    "Latin Name": "Graphites",
+    "Common Name": "Black Lead / Plumbago",
+    "Source Kingdom": "Mineral",
+    "Thermal State": "Chilly (Sensitive to cold & draft)"
+  },
+  aiReadiness: {
+    retrievalSummary: "Graphites (Black Lead) is a major mineral homeopathic remedy described historically for rough dry skin with sticky honey-like yellow fluid exudation, flexural eczema behind ears, chronic constipation with mucous-threaded knotty stool, and chilly obesity.",
+    clinicalSummary: "Source is native graphite. Potentized homeopathic dilutions contain minimal chemical solute. Primary historical affinities include skin, epidermis, GI tract, lymphatic glands, and nails.",
+    patientSummary: "Graphites is a traditional homeopathic remedy described in literature for dry, cracked skin that leaks a sticky, honey-colored fluid, especially behind ears or in skin creases.",
+    studentSummary: "Guiding traditional keynotes include honey-like sticky yellow skin exudation, eczema behind ears & flexures, knotty constipation with mucous threads, thick brittle nails, and chilly obesity.",
+    keywords: ["graphites", "black lead", "sticky eczema remedy", "honey fluid skin", "constipation remedy"],
+    semanticKeywords: ["mineral remedy", "dermatological remedy profile", "flexural eczema"],
+    bodySystem: "Dermatologic & Gastrointestinal",
+    urgency: "routine"
+  }
 };
