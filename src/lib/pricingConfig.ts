@@ -39,7 +39,7 @@ export const ADDITIONAL_ACUTE_EPISODE_PRICE = 1_000;
 export const PRIORITY_ACUTE_SUPPORT_WEEKLY_PRICE = 2_000;
 export const RECORDS_PATHOLOGY_REVIEW_PRICE = 3_000;
 export const COMPLETE_HEALTH_TRANSFORMATION_WEEKLY_PRICE = 10_000;
-export const COMPLETE_HEALTH_TRANSFORMATION_DURATIONS = [4, 8, 12] as const;
+export const COMPLETE_HEALTH_TRANSFORMATION_DURATIONS = [2, 4, 8, 12] as const;
 
 export const PUBLIC_CARE_LEVEL_KEYS: readonly PublicCarePathwayKey[] = [
   "mild",
@@ -154,8 +154,8 @@ export const CARE_LEVELS_DETAILS: Record<CareLevelKey, CareLevelDetail> = {
     scopeMessage: "All clinically relevant conditions within the agreed individual scope are included. Duration is assigned only after physician assessment; outcomes depend on individual clinical response.",
     bestFor: ["Exceptionally intensive cases", "Frequent clinical adjustments", "Direct physician supervision"],
     features: ["Comprehensive constitutional assessment", "Individualized care scope", "High-frequency monitoring", "Direct physician guidance"],
-    durations: [4, 8, 12],
-    defaultDurationWeeks: 4,
+    durations: [2, 4, 8, 12],
+    defaultDurationWeeks: 2,
     glowColor: "rgba(99,102,241,0.15)",
     surchargeWeekly: 0,
     surchargeMonthly: 0,
@@ -240,7 +240,7 @@ export function calculateCarePrice(selection: CarePriceSelection): CarePriceSumm
 }
 
 export function calculateCompleteHealthTransformationPrice(durationWeeks: number): CarePriceSummary {
-  if (!COMPLETE_HEALTH_TRANSFORMATION_DURATIONS.includes(durationWeeks as 4 | 8 | 12)) {
+  if (!COMPLETE_HEALTH_TRANSFORMATION_DURATIONS.includes(durationWeeks as 2 | 4 | 8 | 12)) {
     throw new Error(`Unsupported duration for Complete Health Transformation Program: ${durationWeeks} weeks`);
   }
 

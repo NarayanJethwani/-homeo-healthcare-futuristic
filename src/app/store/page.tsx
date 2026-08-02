@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -9,7 +9,6 @@ import {
   CheckCircle2,
   ClipboardList,
   LayoutGrid,
-  Search,
   ShieldCheck,
   Stethoscope,
   X,
@@ -19,13 +18,15 @@ import PatientPricingPlanner, {
   getOrganSystemBreadthLabel,
   type PatientPricingSelection,
 } from "@/components/PatientPricingPlanner";
+import SpecialtySupportDirectory from "@/components/SpecialtySupportDirectory";
 import Portal from "@/components/Portal";
 import { CARE_LEVELS_DETAILS } from "@/lib/pricingConfig";
 import {
-  SPECIALTY_PROGRAMS,
+  SPECIALTY_SUPPORT_TIERS,
+  calculateSpecialtyTierTotal,
   createSpecialtyAssessmentRequest,
-  formatSpecialtyPriceRange,
-  type SpecialtyProgram,
+  findSpecialtyArea,
+  type SpecialtySelection,
 } from "@/lib/specialtyPrograms";
 
 type StoreView = "pathways" | "specialty";
@@ -39,7 +40,9 @@ interface AssessmentPlan {
   feeLabel: string;
   feeDisplay: string;
   organSystemBreadthLabel?: string;
-  specialtyProgramId?: string;
+  specialtyAreaId?: string;
+  selectedCondition?: string;
+  urgentBoundary?: string;
 }
 
 interface AssessmentForm {
@@ -49,6 +52,10 @@ interface AssessmentForm {
   age: string;
   gender: string;
   city: string;
+  diagnosisStatus: string;
+  currentMedicines: string;
+  treatingClinicians: string;
+  reportsSummary: string;
   complaint: string;
 }
 
@@ -59,45 +66,27 @@ const EMPTY_FORM: AssessmentForm = {
   age: "",
   gender: "Male",
   city: "",
+  diagnosisStatus: "Under evaluation",
+  currentMedicines: "",
+  treatingClinicians: "",
+  reportsSummary: "",
   complaint: "",
-};
-
-const accentClasses: Record<SpecialtyProgram["accent"], string> = {
-  rose: "border-rose-200/70 bg-rose-50/40 dark:border-rose-400/25 dark:bg-rose-400/[0.06]",
-  emerald: "border-emerald-200/70 bg-emerald-50/40 dark:border-emerald-400/25 dark:bg-emerald-400/[0.06]",
-  teal: "border-teal-200/70 bg-teal-50/40 dark:border-teal-400/25 dark:bg-teal-400/[0.06]",
-  lime: "border-lime-200/70 bg-lime-50/40 dark:border-lime-400/25 dark:bg-lime-400/[0.06]",
-  amber: "border-amber-200/70 bg-amber-50/40 dark:border-amber-400/25 dark:bg-amber-400/[0.06]",
-  indigo: "border-indigo-200/70 bg-indigo-50/40 dark:border-indigo-400/25 dark:bg-indigo-400/[0.06]",
-  orange: "border-orange-200/70 bg-orange-50/40 dark:border-orange-400/25 dark:bg-orange-400/[0.06]",
-  cyan: "border-cyan-200/70 bg-cyan-50/40 dark:border-cyan-400/25 dark:bg-cyan-400/[0.06]",
-  purple: "border-purple-200/70 bg-purple-50/40 dark:border-purple-400/25 dark:bg-purple-400/[0.06]",
 };
 
 const formatPrice = (value: number) => `₹${value.toLocaleString("en-IN")}`;
 
 export default function StorePage() {
   const [view, setView] = useState<StoreView>("pathways");
-  const [searchQuery, setSearchQuery] = useState("");
   const [assessmentPlan, setAssessmentPlan] = useState<AssessmentPlan | null>(null);
   const [assessmentStep, setAssessmentStep] = useState<AssessmentStep>("intake");
   const [form, setForm] = useState<AssessmentForm>(EMPTY_FORM);
   const [formErrors, setFormErrors] = useState<Partial<Record<keyof AssessmentForm, boolean>>>({});
+  const [emergencyAcknowledged, setEmergencyAcknowledged] = useState(false);
 
   useEffect(() => {
     const mode = new URLSearchParams(window.location.search).get("mode");
     if (mode === "catalog" || mode === "specialty") setView("specialty");
   }, []);
-
-  const filteredSpecialtyPrograms = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
-    if (!query) return SPECIALTY_PROGRAMS;
-    return SPECIALTY_PROGRAMS.filter((program) =>
-      program.title.toLowerCase().includes(query) ||
-      program.description.toLowerCase().includes(query) ||
-      program.features.some((feature) => feature.toLowerCase().includes(query)),
-    );
-  }, [searchQuery]);
 
   const openPathwayAssessment = (selection: PatientPricingSelection) => {
     const detail = CARE_LEVELS_DETAILS[selection.pathway];
@@ -121,28 +110,38 @@ export default function StorePage() {
     });
     setAssessmentStep("intake");
     setFormErrors({});
+    setEmergencyAcknowledged(false);
     setForm((current) => ({
       ...current,
       complaint: current.complaint || `Clinical assessment request for ${detail.title}. Please describe the main symptoms, their duration, current medicines, and relevant medical history: `,
     }));
   };
 
-  const openSpecialtyAssessment = (program: SpecialtyProgram) => {
-    const request = createSpecialtyAssessmentRequest(program);
+  const openSpecialtyAssessment = (selection: SpecialtySelection) => {
+    const request = createSpecialtyAssessmentRequest(selection);
+    const area = findSpecialtyArea(request.areaId);
+    if (!area) return;
+    const startingTier = SPECIALTY_SUPPORT_TIERS[request.allowedTierKeys[0]];
+    const startingDuration = startingTier.durations[0];
+    const organSystemBreadthLabel = getOrganSystemBreadthLabel(request.organSystemBreadth);
     setAssessmentPlan({
       title: request.title,
-      description: program.description,
+      description: area.description,
       durationText: request.durationText,
-      scopeText: "The physician reviews clinical suitability, care scope, duration, and the final fee before treatment begins.",
-      feeLabel: "Indicative fee range",
-      feeDisplay: formatSpecialtyPriceRange(request.priceRange),
-      specialtyProgramId: request.programId,
+      scopeText: `${request.condition}. Patient-reported case breadth: ${organSystemBreadthLabel}. This guides clinical assessment only and never creates an automatic organ-system charge.`,
+      feeLabel: "Starting care-period total",
+      feeDisplay: `${formatPrice(calculateSpecialtyTierTotal(startingTier.key, startingDuration))} / ${startingDuration} weeks`,
+      specialtyAreaId: request.areaId,
+      selectedCondition: request.condition,
+      organSystemBreadthLabel,
+      urgentBoundary: area.urgentBoundary,
     });
     setAssessmentStep("intake");
     setFormErrors({});
+    setEmergencyAcknowledged(false);
     setForm((current) => ({
       ...current,
-      complaint: current.complaint || `Clinical assessment request for ${program.title}. Please describe the main symptoms, their duration, current medicines, and relevant medical history: `,
+      complaint: current.complaint || `Clinical assessment request for ${area.title} — ${request.condition}. Please describe the main symptoms, their duration, and relevant history: `,
     }));
   };
 
@@ -150,6 +149,7 @@ export default function StorePage() {
     setAssessmentPlan(null);
     setAssessmentStep("intake");
     setFormErrors({});
+    setEmergencyAcknowledged(false);
   };
 
   const updateForm = (field: keyof AssessmentForm, value: string) => {
@@ -165,12 +165,16 @@ export default function StorePage() {
     if (!form.age.trim()) errors.age = true;
     if (form.email && !form.email.includes("@")) errors.email = true;
     if (form.complaint.trim().length < 5) errors.complaint = true;
+    if (assessmentPlan.specialtyAreaId && !emergencyAcknowledged) return;
     if (Object.keys(errors).length) {
       setFormErrors(errors);
       return;
     }
 
-    const message = `Hello Dr. Jethwani, I would like a clinical assessment.\n\n*PATIENT DETAILS*\n- Name: ${form.name.trim()} (${form.age.trim()} years, ${form.gender})\n- Contact: ${form.phone.trim()}\n- Email: ${form.email.trim() || "Not provided"}\n- City: ${form.city.trim() || "Not provided"}\n\n*SELECTED CARE*\n- Program: ${assessmentPlan.title}\n- Duration: ${assessmentPlan.durationText}\n- Scope: ${assessmentPlan.scopeText}\n- ${assessmentPlan.feeLabel}: ${assessmentPlan.feeDisplay}\n\n*CLINICAL HISTORY*\n${form.complaint.trim()}\n\nI understand that this is an assessment request, not a purchase. A physician will confirm suitability, care scope, duration, and the final fee before treatment begins.`;
+    const specialtyContext = assessmentPlan.specialtyAreaId
+      ? `\n\n*SPECIALTY CONTEXT*\n- Main concern: ${assessmentPlan.selectedCondition}\n- Diagnosis status: ${form.diagnosisStatus}\n- Current medicines: ${form.currentMedicines.trim() || "Not provided"}\n- Treating clinicians: ${form.treatingClinicians.trim() || "Not provided"}\n- Reports available: ${form.reportsSummary.trim() || "Not provided"}\n- Emergency-service limitation acknowledged: Yes`
+      : "";
+    const message = `Hello Dr. Jethwani, I would like a clinical assessment.\n\n*PATIENT DETAILS*\n- Name: ${form.name.trim()} (${form.age.trim()} years, ${form.gender})\n- Contact: ${form.phone.trim()}\n- Email: ${form.email.trim() || "Not provided"}\n- City: ${form.city.trim() || "Not provided"}\n\n*SELECTED CARE*\n- Program: ${assessmentPlan.title}\n- Duration: ${assessmentPlan.durationText}\n- Scope: ${assessmentPlan.scopeText}\n- ${assessmentPlan.feeLabel}: ${assessmentPlan.feeDisplay}${specialtyContext}\n\n*CLINICAL HISTORY*\n${form.complaint.trim()}\n\nI understand that this is an assessment request, not a purchase. A physician will confirm suitability, care scope, duration, and the final fee before treatment begins.`;
     window.open(
       `https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918446056789"}?text=${encodeURIComponent(message)}`,
       "_blank",
@@ -220,44 +224,12 @@ export default function StorePage() {
             </motion.section>
           ) : (
             <motion.section key="specialty" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} aria-labelledby="specialty-heading">
-              <div className="flex flex-col md:flex-row md:items-end justify-between gap-5 mb-8">
-                <div className="max-w-3xl">
-                  <span className="text-[10px] font-bold text-mint uppercase tracking-widest">Assessment-led specialty care</span>
-                  <h2 id="specialty-heading" className="font-serif text-3xl md:text-4xl font-semibold text-[#1A2421] dark:text-[#F8FAFC] mt-2">Specialty support programs</h2>
-                  <p className="text-sm font-semibold text-slate-600 dark:text-[#CBD5E1] leading-relaxed mt-3">Displayed ranges are indicative. No payment is requested until a physician confirms clinical suitability, scope, duration, and the final fee.</p>
-                </div>
-                <label className="relative w-full md:max-w-sm">
-                  <span className="sr-only">Search specialty programs</span>
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" aria-hidden="true" />
-                  <input value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="Search specialty programs..." className="w-full pl-11 pr-5 py-3 rounded-full border border-slate-200 dark:border-white/15 bg-white/70 dark:bg-[#111827] text-sm text-[#1A2421] dark:text-white outline-none focus:border-mint" />
-                </label>
+              <div className="max-w-4xl mb-8">
+                <span className="text-[10px] font-bold text-mint uppercase tracking-widest">Assessment-led specialty support</span>
+                <h2 id="specialty-heading" className="font-serif text-3xl md:text-4xl font-semibold text-[#1A2421] dark:text-[#F8FAFC] mt-2">Choose a health area—not a disease-priced package</h2>
+                <p className="text-sm font-semibold text-slate-600 dark:text-[#CBD5E1] leading-relaxed mt-3">Search the condition or organ system you recognize. Your selection guides clinical routing; a physician determines care intensity, duration, scope, and the fixed care-period total.</p>
               </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {filteredSpecialtyPrograms.map((program) => (
-                  <article key={program.id} className={`rounded-3xl border p-6 md:p-7 flex flex-col ${accentClasses[program.accent]}`}>
-                    <div className="flex-1">
-                      {program.badge && <span className="inline-flex rounded-full bg-[#1A2421] px-3 py-1 text-[9px] font-black uppercase tracking-wider text-white mb-3">{program.badge}</span>}
-                      <h3 className="text-xl font-bold text-[#1A2421] dark:text-[#F8FAFC]">{program.title}</h3>
-                      <p className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-[#94A3B8] mt-1">{program.durationLabel}</p>
-                      <div className="text-2xl font-black text-[#1A2421] dark:text-white mt-5">{formatSpecialtyPriceRange(program.priceRange)}</div>
-                      <p className="text-[11px] font-bold text-mint-dark dark:text-[#5EEAD4] mt-1">Indicative range · confirmed after assessment</p>
-                      <p className="text-sm font-semibold text-slate-650 dark:text-[#CBD5E1] leading-relaxed mt-5">{program.description}</p>
-                      <ul className="space-y-2.5 mt-5">
-                        {program.features.map((feature) => (
-                          <li key={feature} className="flex items-start gap-2.5 text-xs font-semibold text-slate-650 dark:text-[#CBD5E1]">
-                            <CheckCircle2 className="w-4 h-4 text-mint shrink-0 mt-0.5" aria-hidden="true" /> {feature}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <button type="button" onClick={() => openSpecialtyAssessment(program)} className="w-full mt-7 py-3.5 rounded-full bg-[#1A2421] hover:bg-[#2b3a36] text-white text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-colors">
-                      Continue to Clinical Assessment <ArrowRight className="w-4 h-4" aria-hidden="true" />
-                    </button>
-                  </article>
-                ))}
-              </div>
-              {!filteredSpecialtyPrograms.length && <p className="rounded-3xl border border-slate-200 p-8 text-center text-sm font-semibold text-slate-600 dark:text-[#CBD5E1]">No specialty programs match that search.</p>}
+              <SpecialtySupportDirectory onContinue={openSpecialtyAssessment} />
             </motion.section>
           )}
         </AnimatePresence>
@@ -303,6 +275,11 @@ export default function StorePage() {
                       <div><span className="block font-bold text-slate-500 dark:text-[#94A3B8]">{assessmentPlan.feeLabel}</span><strong className="text-[#1A2421] dark:text-white">{assessmentPlan.feeDisplay}</strong></div>
                     </div>
                     <p className="rounded-2xl bg-[#1A2421] p-4 text-xs font-semibold text-white leading-relaxed"><strong className="text-mint">No payment at this step.</strong> This request goes to the physician for clinical confirmation first.</p>
+                    {assessmentPlan.urgentBoundary && (
+                      <p className="rounded-2xl border border-amber-300/70 bg-amber-50 p-4 text-xs font-semibold leading-relaxed text-amber-950 dark:border-amber-400/30 dark:bg-amber-400/[0.08] dark:text-amber-100">
+                        <strong>Urgent-care boundary:</strong> {assessmentPlan.urgentBoundary}
+                      </p>
+                    )}
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {([
@@ -323,15 +300,46 @@ export default function StorePage() {
                           <option>Male</option><option>Female</option><option>Other</option><option>Prefer not to say</option>
                         </select>
                       </label>
+                      {assessmentPlan.specialtyAreaId && (
+                        <>
+                          <label className="space-y-1">
+                            <span className="text-[10px] font-black text-slate-700 dark:text-[#CBD5E1] uppercase tracking-wider">Diagnosis status</span>
+                            <select value={form.diagnosisStatus} onChange={(event) => updateForm("diagnosisStatus", event.target.value)} className="w-full p-3 rounded-xl border border-slate-200 dark:border-white/15 bg-white dark:bg-[#0F172A] text-sm text-[#1A2421] dark:text-white outline-none focus:border-mint">
+                              <option>Confirmed diagnosis</option>
+                              <option>Under evaluation</option>
+                              <option>Symptoms only / not diagnosed</option>
+                            </select>
+                          </label>
+                          <label className="space-y-1">
+                            <span className="text-[10px] font-black text-slate-700 dark:text-[#CBD5E1] uppercase tracking-wider">Current doctors or specialists</span>
+                            <input value={form.treatingClinicians} onChange={(event) => updateForm("treatingClinicians", event.target.value)} placeholder="Example: cardiologist, pediatrician, none" className="w-full p-3 rounded-xl border border-slate-200 dark:border-white/15 bg-white dark:bg-[#0F172A] text-sm text-[#1A2421] dark:text-white outline-none focus:border-mint" />
+                          </label>
+                          <label className="md:col-span-2 space-y-1">
+                            <span className="text-[10px] font-black text-slate-700 dark:text-[#CBD5E1] uppercase tracking-wider">Current medicines and treatments</span>
+                            <textarea rows={3} value={form.currentMedicines} onChange={(event) => updateForm("currentMedicines", event.target.value)} placeholder="List prescribed medicines, inhalers, insulin, therapy, supplements, or write none" className="w-full p-3 rounded-xl border border-slate-200 dark:border-white/15 bg-white dark:bg-[#0F172A] text-sm text-[#1A2421] dark:text-white outline-none resize-y focus:border-mint" />
+                          </label>
+                          <label className="md:col-span-2 space-y-1">
+                            <span className="text-[10px] font-black text-slate-700 dark:text-[#CBD5E1] uppercase tracking-wider">Reports available</span>
+                            <textarea rows={2} value={form.reportsSummary} onChange={(event) => updateForm("reportsSummary", event.target.value)} placeholder="Example: blood tests, scan, discharge summary, pathology report, none" className="w-full p-3 rounded-xl border border-slate-200 dark:border-white/15 bg-white dark:bg-[#0F172A] text-sm text-[#1A2421] dark:text-white outline-none resize-y focus:border-mint" />
+                          </label>
+                        </>
+                      )}
                       <label className="md:col-span-2 space-y-1">
                         <span className="text-[10px] font-black text-slate-700 dark:text-[#CBD5E1] uppercase tracking-wider">Symptoms and clinical history *</span>
                         <textarea rows={5} value={form.complaint} onChange={(event) => updateForm("complaint", event.target.value)} className={`w-full p-3 rounded-xl border bg-white dark:bg-[#0F172A] text-sm text-[#1A2421] dark:text-white outline-none resize-y ${formErrors.complaint ? "border-red-500 ring-2 ring-red-100" : "border-slate-200 dark:border-white/15 focus:border-mint"}`} />
                       </label>
                     </div>
 
+                    {assessmentPlan.specialtyAreaId && (
+                      <label className="flex items-start gap-3 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] p-4 cursor-pointer">
+                        <input type="checkbox" checked={emergencyAcknowledged} onChange={(event) => setEmergencyAcknowledged(event.target.checked)} className="mt-0.5 h-4 w-4 accent-emerald-600" />
+                        <span className="text-xs font-semibold leading-relaxed text-slate-700 dark:text-[#CBD5E1]">I understand that this assessment request is not an emergency service and that prescribed medicines should not be stopped without the treating physician.</span>
+                      </label>
+                    )}
+
                     <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4 border-t border-slate-200 dark:border-white/10">
                       <button type="button" onClick={closeAssessment} className="px-6 py-3 rounded-full border border-slate-200 dark:border-white/15 text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-white">Cancel</button>
-                      <button type="button" onClick={submitAssessment} className="px-7 py-3 rounded-full bg-mint hover:bg-mint-dark text-white text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2">Submit for Physician Review <ArrowRight className="w-4 h-4" aria-hidden="true" /></button>
+                      <button type="button" disabled={Boolean(assessmentPlan.specialtyAreaId && !emergencyAcknowledged)} onClick={submitAssessment} className="px-7 py-3 rounded-full bg-mint hover:bg-mint-dark text-white text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 disabled:cursor-not-allowed disabled:opacity-40">Submit for Physician Review <ArrowRight className="w-4 h-4" aria-hidden="true" /></button>
                     </div>
                   </div>
                 ) : (
@@ -339,7 +347,7 @@ export default function StorePage() {
                     <CheckCircle2 className="w-14 h-14 text-mint mx-auto" aria-hidden="true" />
                     <span className="block text-[10px] font-bold text-mint uppercase tracking-widest mt-5">Assessment request prepared</span>
                     <h2 id="assessment-title" className="font-serif text-3xl font-semibold text-[#1A2421] dark:text-white mt-2">Complete the request in WhatsApp</h2>
-                    <p className="text-sm font-semibold text-slate-600 dark:text-[#CBD5E1] leading-relaxed mt-3">A pre-filled WhatsApp message has opened. Send it to the clinic for physician review. No payment has been requested or authorized.</p>
+                    <p className="text-sm font-semibold text-slate-600 dark:text-[#CBD5E1] leading-relaxed mt-3">A pre-filled WhatsApp message has opened. Send it to the clinic and attach any relevant reports there for physician review. No payment has been requested or authorized.</p>
                     <button type="button" onClick={() => { closeAssessment(); setForm(EMPTY_FORM); }} className="w-full mt-7 px-7 py-3 rounded-full bg-[#1A2421] text-white text-xs font-black uppercase tracking-wider">Close</button>
                   </div>
                 )}

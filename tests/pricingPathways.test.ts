@@ -17,7 +17,9 @@ function runPricingPathwayTests() {
   assert.strictEqual(CARE_LEVELS_DETAILS.comprehensive.title, "Complete Health Transformation Program");
   assert.match(CARE_LEVELS_DETAILS.focused.scopeMessage, /no automatic symptom or organ-system charge/i);
   assert.match(CARE_LEVELS_DETAILS.comprehensive.scopeMessage, /duration is assigned only after physician assessment/i);
-  assert.deepStrictEqual(COMPLETE_HEALTH_TRANSFORMATION_DURATIONS, [4, 8, 12]);
+  assert.deepStrictEqual(COMPLETE_HEALTH_TRANSFORMATION_DURATIONS, [2, 4, 8, 12]);
+  assert.strictEqual(CARE_LEVELS_DETAILS.comprehensive.defaultDurationWeeks, 2);
+  assert.strictEqual(calculateCompleteHealthTransformationPrice(2).total, 20_000);
   assert.strictEqual(calculateCompleteHealthTransformationPrice(4).total, 40_000);
   assert.strictEqual(calculateCompleteHealthTransformationPrice(8).total, 80_000);
   assert.strictEqual(calculateCompleteHealthTransformationPrice(12).total, 120_000);
