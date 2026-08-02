@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import childProcess from "child_process";
 import { createHash } from "crypto";
 
 import { ChinaOfficinalisRemedy } from "../content/remedies/china-officinalis";
@@ -357,9 +358,16 @@ export function buildKEP5KeyRemediesWave4Package(): KEP5KeyRemediesWave4Package 
 export function generateM12AuthorizationReport() {
   const pkg = buildKEP5KeyRemediesWave4Package();
   const metrics = computeM12EvaluationMetrics();
+  const sourceCommit = childProcess
+    .spawnSync("git", ["rev-parse", "HEAD"], { cwd: process.cwd(), encoding: "utf8" })
+    .stdout.trim();
+  if (!/^[a-f0-9]{40}$/.test(sourceCommit)) {
+    throw new Error("Unable to bind the M12 authorization report to the current source commit.");
+  }
   return {
     milestoneId: "M12",
     packageId: pkg.packageId,
+    sourceCommit,
     generatedAt: new Date().toISOString(),
     status: "pending_authorization" as const,
     governance: {

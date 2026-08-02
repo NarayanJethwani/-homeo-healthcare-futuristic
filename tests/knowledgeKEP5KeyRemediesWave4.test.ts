@@ -77,6 +77,7 @@ export function runKnowledgeKEP5KeyRemediesWave4Test(): void {
 
   const report = generateM12AuthorizationReport();
   assert.strictEqual(report.status, "pending_authorization");
+  assert.match(report.sourceCommit, /^[a-f0-9]{40}$/);
   assert.strictEqual(report.summary.programCompletionCandidate, true);
   assert.strictEqual(report.summary.programCompletionAchieved, false);
   console.log("M12 verified: 10 source-bound remedies, 100 computed cases with 20 emergency controls, 50 draft-only proposals, RAG off, publication frozen.");
