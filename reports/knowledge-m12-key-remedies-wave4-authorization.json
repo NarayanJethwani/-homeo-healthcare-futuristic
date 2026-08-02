@@ -1,11 +1,13 @@
 {
   "milestoneId": "M12",
   "packageId": "KEP5-PACKAGE-M12-KEY-REMEDIES-WAVE4-001",
-  "generatedAt": "2026-08-01T09:10:31.387Z",
+  "sourceCommit": "15521518104c270698ebdfd8a603d4651be4ac0d",
+  "generatedAt": "2026-08-02T08:48:03.722Z",
   "status": "pending_authorization",
   "governance": {
     "program": "KEP-5",
     "productionRagActivation": false,
+    "transitionalPublicationFreeze": true,
     "governedProposalsCount": 50,
     "allProposalsDraftOnly": true,
     "ragIneligible": true
@@ -15,12 +17,13 @@
     "keyRemedyEntitiesCount": 10,
     "evaluationCasesCount": 100,
     "evaluationPassRate": 1,
-    "programCompletionAchieved": true
+    "programCompletionCandidate": true,
+    "programCompletionAchieved": false
   },
   "entities": [
     {
       "entityId": "R0035",
-      "slug": "china-officinalis",
+      "slug": "cinchona-officinalis",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
@@ -34,7 +37,7 @@
     },
     {
       "entityId": "R0039",
-      "slug": "drosera-rotundifolia",
+      "slug": "drosera",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
@@ -48,14 +51,14 @@
     },
     {
       "entityId": "R0042",
-      "slug": "euphrasia-officinalis",
+      "slug": "euphrasia",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
     },
     {
       "entityId": "R0044",
-      "slug": "glonoinum",
+      "slug": "glonoine",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
@@ -69,7 +72,7 @@
     },
     {
       "entityId": "R0048",
-      "slug": "hypericum-perforatum",
+      "slug": "hypericum",
       "entityType": "remedy",
       "version": "1.1.0",
       "primaryCitationId": "CIT-0004"
@@ -105,5 +108,5 @@
     "passedCaseCount": 100,
     "failedCaseCount": 0
   },
-  "packageSha256": "eeb0fd04f35cd8d128d46e00eddb8bd07b3127766f52bd2d9c1d0229bb633f28"
+  "packageSha256": "de61c6a12eb9551742f120f335a3b69d944d385d8e3d72c6bacf22086b282343"
 }
