@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 
 export default function WhatsAppButton() {
   const pathname = usePathname();
+  const isPricingRoute = pathname?.startsWith("/store");
   const [isHovered, setIsHovered] = useState(false);
   const [isPortalHost, setIsPortalHost] = useState(false);
 
@@ -24,7 +25,7 @@ export default function WhatsAppButton() {
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${defaultMessage}`;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3">
+    <div className={`fixed z-50 flex items-center gap-3 ${isPricingRoute ? "bottom-4 right-4 md:bottom-6 md:right-6" : "bottom-6 right-6"}`}>
       {/* Tooltip Label */}
       <AnimatePresence>
         {isHovered && (
@@ -46,11 +47,12 @@ export default function WhatsAppButton() {
         href={whatsappUrl}
         target="_blank"
         rel="noopener noreferrer"
+        aria-label="Chat with Dr. Narayan on WhatsApp"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.95 }}
-        className="relative flex items-center justify-center w-14 h-14 rounded-full glass-panel shadow-[0_8px_32px_rgba(20,184,166,0.15)] hover:shadow-[0_12px_40px_rgba(20,184,166,0.25)] border-white/50 group transition-all duration-300 cursor-pointer"
+        className={`relative flex items-center justify-center rounded-full glass-panel shadow-[0_8px_32px_rgba(20,184,166,0.15)] hover:shadow-[0_12px_40px_rgba(20,184,166,0.25)] border-white/50 group transition-all duration-300 cursor-pointer ${isPricingRoute ? "w-12 h-12 md:w-14 md:h-14" : "w-14 h-14"}`}
       >
         {/* Pulsing Outer Ring (Green/Mint) */}
         <span className="absolute inset-0 rounded-full bg-mint/10 animate-ping opacity-75" />

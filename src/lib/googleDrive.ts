@@ -560,14 +560,14 @@ export async function createPatientClinicalSheet(
                 {
                   range: "'Treatment Planner'!A8:C15",
                   values: [
-                    ["Base Rate", `=IF(OR(ISNUMBER(SEARCH("Critical", A4)), ISNUMBER(SEARCH("Intensive", A4))), IF(B4="Weekly", 6250, 25000), IF(OR(ISNUMBER(SEARCH("Wellness", A4)), ISNUMBER(SEARCH("Essential", A4))), IF(B4="Weekly", 1500, 6000), IF(OR(ISNUMBER(SEARCH("Standard", A4)), ISNUMBER(SEARCH("Core", A4))), IF(B4="Weekly", 3000, 12000), IF(OR(ISNUMBER(SEARCH("Deep", A4)), ISNUMBER(SEARCH("Constitutional", A4))), IF(B4="Weekly", 5250, 21000), IF(OR(ISNUMBER(SEARCH("Advanced", A4)), ISNUMBER(SEARCH("Pathology", A4))), IF(B4="Weekly", 7500, 30000), IF(OR(ISNUMBER(SEARCH("Multisystem", A4)), ISNUMBER(SEARCH("Integrative", A4))), IF(B4="Weekly", 10500, 42000), 6000))))))`, "Base rate based on Care Level and Billing Cycle"],
-                    ["Conditions Surcharge", `=IF(D4<=1, 0, (D4-1)*IF(OR(ISNUMBER(SEARCH("Critical", A4)), ISNUMBER(SEARCH("Intensive", A4))), IF(B4="Weekly", 1250, 5000), IF(OR(ISNUMBER(SEARCH("Wellness", A4)), ISNUMBER(SEARCH("Essential", A4))), IF(B4="Weekly", 375, 1500), IF(OR(ISNUMBER(SEARCH("Standard", A4)), ISNUMBER(SEARCH("Core", A4))), IF(B4="Weekly", 563, 2250), IF(OR(ISNUMBER(SEARCH("Deep", A4)), ISNUMBER(SEARCH("Constitutional", A4))), IF(B4="Weekly", 938, 3750), IF(OR(ISNUMBER(SEARCH("Advanced", A4)), ISNUMBER(SEARCH("Pathology", A4))), IF(B4="Weekly", 1313, 5250), IF(OR(ISNUMBER(SEARCH("Multisystem", A4)), ISNUMBER(SEARCH("Integrative", A4))), IF(B4="Weekly", 1688, 6750), 0)))))))`, "Surcharge for co-existing chronic conditions"],
-                    ["Gross Subtotal", "=(B8+B9)*C4", "Adjusted base rate multiplied by duration"],
-                    ["Duration Discount %", `=IF(IF(B4="Weekly", C4, C4*4)>=48, 0.30, IF(IF(B4="Weekly", C4, C4*4)>=24, 0.25, IF(IF(B4="Weekly", C4, C4*4)>=12, 0.20, IF(IF(B4="Weekly", C4, C4*4)>=8, 0.15, IF(IF(B4="Weekly", C4, C4*4)>=4, 0.10, IF(IF(B4="Weekly", C4, C4*4)>=2, 0.05, 0))))))`, "Duration loyalty discount percentage"],
-                    ["Duration Discount Amount", "=B10*B11", "Total savings from duration discount"],
-                    ["Concession Discount Amount", `=IF(ISNUMBER(SEARCH("Senior", E4)), (B10-B12)*0.15, IF(ISNUMBER(SEARCH("Socio", E4)), (B10-B12)*0.30, IF(OR(ISNUMBER(SEARCH("Override", E4)), ISNUMBER(SEARCH("Special", E4))), MAX(0, (B10-B12) - F4), 0)))`, "Compassionate, Senior, or Override concession"],
+                    ["Care Rate", `=IF(ISNUMBER(SEARCH("Complete", A4)), IF(B4="Weekly", 10000, 40000), IF(ISNUMBER(SEARCH("Records", A4)), 3000, IF(ISNUMBER(SEARCH("Priority", A4)), IF(B4="Weekly", 2000, 8000), IF(ISNUMBER(SEARCH("Advanced Constitutional", A4)), IF(B4="Weekly", 5000, 20000), IF(ISNUMBER(SEARCH("Constitutional", A4)), IF(B4="Weekly", 3000, 12000), IF(OR(ISNUMBER(SEARCH("Wellness", A4)), ISNUMBER(SEARCH("Acute", A4))), IF(B4="Weekly", 2000, 8000), 0))))))`, "Rate from the synchronized care pathway"],
+                    ["Scope Adjustment", 0, "No automatic per-symptom or per-condition charge"],
+                    ["Care Period Total", "=B8*C4", "Care rate multiplied by selected duration"],
+                    ["Physician Scope Review", 0, "Any physician-recommended scope change requires patient approval"],
+                    ["Assessment Add-ons", 0, "Records review or acute support is added only when selected"],
+                    ["Clinical Concession Amount", `=IF(ISNUMBER(SEARCH("Senior", E4)), B10*0.15, IF(ISNUMBER(SEARCH("Socio", E4)), B10*0.30, IF(OR(ISNUMBER(SEARCH("Override", E4)), ISNUMBER(SEARCH("Special", E4))), MAX(0, B10-F4), 0)))`, "Internal compassionate, senior, or approved override concession"],
                     ["Medicine Add-ons", "=G4", "Medicine charges and dynamic add-on scripts"],
-                    ["Total Program Cost", "=B10-B12-B13+B14", "Final package cost taking all factors into consideration"]
+                    ["Total Program Cost", "=B10+B12-B13+B14", "Fixed care-period total plus selected add-ons"]
                   ]
                 },
                 {
@@ -585,7 +585,7 @@ export async function createPatientClinicalSheet(
                 {
                   range: "'Treatment Planner'!A19:B19",
                   values: [
-                    ["WhatsApp Invoice Message", `="Dear " & 'Case Taking'!B4 & ", thank you for consulting Homeo Healthcare. Your treatment package is: " & A4 & " (" & IF(D4=1, "1 condition", D4 & " conditions") & ", " & C4 & " " & IF(B4="Weekly", IF(C4=1, "week", "weeks"), IF(C4=1, "month", "months")) & IF(E4="None", "", " [" & E4 & "]") & "). Total Cost: ₹" & TEXT(B15, "#,##0") & ". Balance Due: ₹" & TEXT(B17, "#,##0") & ". Please pay using Gpay: ${paymentPhone}. Clinic Branch: Homeo Healthcare."`]
+                    ["WhatsApp Care Summary", `="Dear " & 'Case Taking'!B4 & ", thank you for consulting Homeo Healthcare. Your physician-confirmed care pathway is: " & A4 & " for " & C4 & " " & IF(B4="Weekly", IF(C4=1, "week", "weeks"), IF(C4=1, "month", "months")) & IF(E4="None", "", " [" & E4 & "]") & ". Agreed Total: ₹" & TEXT(B15, "#,##0") & ". Balance Due: ₹" & TEXT(B17, "#,##0") & ". Clinic Branch: Homeo Healthcare."`]
                   ]
                 },
                 {
@@ -974,18 +974,18 @@ export async function createPatientClinicalSheet(
           ["", "", "", "", "", "", ""],
           ["PRICING BREAKDOWN", "", "", "", "", "", ""],
           ["Component", "Rate / Amount (₹)", "Calculation Description", "", "", "", ""],
-          ["Base Rate", `=IF(OR(ISNUMBER(SEARCH("Critical", A4)), ISNUMBER(SEARCH("Intensive", A4))), IF(B4="Weekly", 6250, 25000), IF(OR(ISNUMBER(SEARCH("Wellness", A4)), ISNUMBER(SEARCH("Essential", A4))), IF(B4="Weekly", 1500, 6000), IF(OR(ISNUMBER(SEARCH("Standard", A4)), ISNUMBER(SEARCH("Core", A4))), IF(B4="Weekly", 3000, 12000), IF(OR(ISNUMBER(SEARCH("Deep", A4)), ISNUMBER(SEARCH("Constitutional", A4))), IF(B4="Weekly", 5250, 21000), IF(OR(ISNUMBER(SEARCH("Advanced", A4)), ISNUMBER(SEARCH("Pathology", A4))), IF(B4="Weekly", 7500, 30000), IF(OR(ISNUMBER(SEARCH("Multisystem", A4)), ISNUMBER(SEARCH("Integrative", A4))), IF(B4="Weekly", 10500, 42000), 6000))))))`, "Base rate based on Care Level and Billing Cycle", "", "", "", ""],
-          ["Conditions Surcharge", `=IF(D4<=1, 0, (D4-1)*IF(OR(ISNUMBER(SEARCH("Critical", A4)), ISNUMBER(SEARCH("Intensive", A4))), IF(B4="Weekly", 1250, 5000), IF(OR(ISNUMBER(SEARCH("Wellness", A4)), ISNUMBER(SEARCH("Essential", A4))), IF(B4="Weekly", 375, 1500), IF(OR(ISNUMBER(SEARCH("Standard", A4)), ISNUMBER(SEARCH("Core", A4))), IF(B4="Weekly", 563, 2250), IF(OR(ISNUMBER(SEARCH("Deep", A4)), ISNUMBER(SEARCH("Constitutional", A4))), IF(B4="Weekly", 938, 3750), IF(OR(ISNUMBER(SEARCH("Advanced", A4)), ISNUMBER(SEARCH("Pathology", A4))), IF(B4="Weekly", 1313, 5250), IF(OR(ISNUMBER(SEARCH("Multisystem", A4)), ISNUMBER(SEARCH("Integrative", A4))), IF(B4="Weekly", 1688, 6750), 0)))))))`, "Surcharge for co-existing chronic conditions", "", "", "", ""],
-          ["Gross Subtotal", "=(B8+B9)*C4", "Adjusted base rate multiplied by duration", "", "", "", ""],
-          ["Duration Discount %", `=IF(IF(B4="Weekly", C4, C4*4)>=48, 0.30, IF(IF(B4="Weekly", C4, C4*4)>=24, 0.25, IF(IF(B4="Weekly", C4, C4*4)>=12, 0.20, IF(IF(B4="Weekly", C4, C4*4)>=8, 0.15, IF(IF(B4="Weekly", C4, C4*4)>=4, 0.10, IF(IF(B4="Weekly", C4, C4*4)>=2, 0.05, 0))))))`, "Duration loyalty discount percentage", "", "", "", ""],
-          ["Duration Discount Amount", "=B10*B11", "Total savings from duration discount", "", "", "", ""],
-          ["Concession Discount Amount", `=IF(ISNUMBER(SEARCH("Senior", E4)), (B10-B12)*0.15, IF(ISNUMBER(SEARCH("Socio", E4)), (B10-B12)*0.30, IF(OR(ISNUMBER(SEARCH("Override", E4)), ISNUMBER(SEARCH("Special", E4))), MAX(0, (B10-B12) - F4), 0)))`, "Compassionate, Senior, or Override concession", "", "", "", ""],
+          ["Care Rate", `=IF(ISNUMBER(SEARCH("Complete", A4)), IF(B4="Weekly", 10000, 40000), IF(ISNUMBER(SEARCH("Records", A4)), 3000, IF(ISNUMBER(SEARCH("Priority", A4)), IF(B4="Weekly", 2000, 8000), IF(ISNUMBER(SEARCH("Advanced Constitutional", A4)), IF(B4="Weekly", 5000, 20000), IF(ISNUMBER(SEARCH("Constitutional", A4)), IF(B4="Weekly", 3000, 12000), IF(OR(ISNUMBER(SEARCH("Wellness", A4)), ISNUMBER(SEARCH("Acute", A4))), IF(B4="Weekly", 2000, 8000), 0))))))`, "Rate from the synchronized care pathway", "", "", "", ""],
+          ["Scope Adjustment", 0, "No automatic per-symptom or per-condition charge", "", "", "", ""],
+          ["Care Period Total", "=B8*C4", "Care rate multiplied by selected duration", "", "", "", ""],
+          ["Physician Scope Review", 0, "Any physician-recommended scope change requires patient approval", "", "", "", ""],
+          ["Assessment Add-ons", 0, "Records review or acute support is added only when selected", "", "", "", ""],
+          ["Clinical Concession Amount", `=IF(ISNUMBER(SEARCH("Senior", E4)), B10*0.15, IF(ISNUMBER(SEARCH("Socio", E4)), B10*0.30, IF(OR(ISNUMBER(SEARCH("Override", E4)), ISNUMBER(SEARCH("Special", E4))), MAX(0, B10-F4), 0)))`, "Internal compassionate, senior, or approved override concession", "", "", "", ""],
           ["Medicine Add-ons", "=G4", "Medicine charges and dynamic add-on scripts", "", "", "", ""],
-          ["Total Program Cost", "=B10-B12-B13+B14", "Final package cost taking all factors into consideration", "", "", "", ""],
+          ["Total Program Cost", "=B10+B12-B13+B14", "Fixed care-period total plus selected add-ons", "", "", "", ""],
           ["Amount Received", data.receivedAmount !== undefined ? data.receivedAmount : data.finalPrice, "Amount collected from patient for this plan", "", "", "", ""],
           ["Balance Due", "=B15-B16", "Outstanding dues for this treatment plan", "", "", "", ""],
           ["", "", "", "", "", "", ""],
-          ["WhatsApp Invoice Message", `="Dear " & 'Case Taking'!B4 & ", thank you for consulting Homeo Healthcare. Your treatment package is: " & A4 & " (" & IF(D4=1, "1 condition", D4 & " conditions") & ", " & C4 & " " & IF(B4="Weekly", IF(C4=1, "week", "weeks"), IF(C4=1, "month", "months")) & IF(E4="None", "", " [" & E4 & "]") & "). Total Cost: ₹" & TEXT(B15, "#,##0") & ". Balance Due: ₹" & TEXT(B17, "#,##0") & ". Please pay using Gpay: ${paymentPhone}. Clinic Branch: Homeo Healthcare."`, "", "", "", "", ""]
+          ["WhatsApp Care Summary", `="Dear " & 'Case Taking'!B4 & ", thank you for consulting Homeo Healthcare. Your physician-confirmed care pathway is: " & A4 & " for " & C4 & " " & IF(B4="Weekly", IF(C4=1, "week", "weeks"), IF(C4=1, "month", "months")) & IF(E4="None", "", " [" & E4 & "]") & ". Agreed Total: ₹" & TEXT(B15, "#,##0") & ". Balance Due: ₹" & TEXT(B17, "#,##0") & ". Clinic Branch: Homeo Healthcare."`, "", "", "", "", ""]
         ];
 
         // values for Finance

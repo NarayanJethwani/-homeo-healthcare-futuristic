@@ -6,6 +6,7 @@ import { X, Minus, Maximize2, Minimize2, RotateCcw } from "lucide-react";
 
 export default function LucyButton() {
   const pathname = usePathname();
+  const isPricingRoute = pathname?.startsWith("/store");
   const [isOpen, setIsOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [iframeSrc, setIframeSrc] = useState("");
@@ -18,6 +19,13 @@ export default function LucyButton() {
       setIsPortalHost(window.location.hostname.includes("portal.homeo.healthcare"));
     }
   }, []);
+
+  useEffect(() => {
+    if (isPricingRoute) {
+      setIsOpen(false);
+      setIsFullscreen(false);
+    }
+  }, [isPricingRoute]);
 
   // Listen to postMessage event for toggling fullscreen or closing
   useEffect(() => {
@@ -173,7 +181,7 @@ export default function LucyButton() {
 
       {/* Floating launcher bubble */}
       <div 
-        className="fixed z-50 flex items-center gap-3"
+        className={`fixed z-50 items-center gap-3 ${isPricingRoute ? "hidden md:flex" : "flex"}`}
         style={{ bottom: "96px", right: "24px" }}
       >
         {/* Tooltip label */}

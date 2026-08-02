@@ -5166,7 +5166,7 @@ export default function AdminDashboard() {
     state: "",
     country: "India",
     complaint: "",
-    careLevel: "🌱 Essential Acute & Wellness Care",
+    careLevel: "🌱 Acute & Wellness Care",
     billingCycle: "Monthly",
     concessionType: "None",
     durationText: "1-Month Consultation",
@@ -6179,7 +6179,7 @@ Homeo Healthcare`;
           state: "",
           country: "India",
           complaint: "",
-          careLevel: "🌱 Essential Acute & Wellness Care",
+          careLevel: "🌱 Acute & Wellness Care",
           billingCycle: "Monthly",
           concessionType: "None",
           durationText: "1-Month Consultation",
@@ -6292,7 +6292,7 @@ Homeo Healthcare`;
     const ageVal = patient.age || "30";
     const ageNum = parseInt(ageVal) || 0;
     const concession = ageNum >= 60 ? "Senior" : "None";
-    const careLevel = "🌱 Essential Acute & Wellness Care";
+    const careLevel = "🌱 Acute & Wellness Care";
     const duration = "1-Month Consultation";
     const cycle = "Monthly";
     const pricing = calculateCaseFormPricing(careLevel, duration, ageVal, 0, cycle, concession, 1);
@@ -6392,7 +6392,7 @@ Homeo Healthcare`;
         const ageVal = age || "30";
         const ageNum = parseInt(ageVal) || 0;
         const concession = ageNum >= 60 ? "Senior" : "None";
-        const careLevel = "⚡ Core Chronic Care";
+        const careLevel = "⚡ Constitutional Care";
         const duration = "1-Month Consultation";
         const cycle = "Monthly";
         const pricing = calculateCaseFormPricing(careLevel, duration, ageVal, 0, cycle, concession, 1);
@@ -6793,7 +6793,7 @@ Homeo Healthcare`;
     const ageVal = patient.age || "30";
     const ageNum = parseInt(ageVal) || 0;
     const concession = ageNum >= 60 ? "Senior" : "None";
-    const careLevel = "⚡ Core Chronic Care";
+    const careLevel = "⚡ Constitutional Care";
     const duration = "1-Month Consultation";
     const cycle = "Monthly";
     const pricing = calculateCaseFormPricing(careLevel, duration, ageVal, 0, cycle, concession, 1);
@@ -12372,7 +12372,7 @@ ${err.message || err}`);
                                 state: "",
                                 country: "India",
                                 complaint: "",
-                                careLevel: "🌱 Essential Acute & Wellness Care",
+                                careLevel: "🌱 Acute & Wellness Care",
                                 billingCycle: "Monthly",
                                 concessionType: "None",
                                 durationText: "1-Month Consultation",
@@ -14130,7 +14130,7 @@ ${err.message || err}`);
                         state: "",
                         country: "India",
                         complaint: "",
-                        careLevel: "🌱 Essential Acute & Wellness Care",
+                        careLevel: "🌱 Acute & Wellness Care",
                         billingCycle: "Monthly",
                         concessionType: "None",
                         durationText: "1-Month Consultation",
@@ -27930,12 +27930,12 @@ Exported on: ${new Date().toLocaleDateString()}
                           onChange={(e) => handleCareLevelChange(e.target.value)}
                           className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-semibold text-[#1A2421]"
                         >
-                          <option value="🌱 Essential Acute & Wellness Care">{getOptionLabel("🌱 Routine (Essential Acute & Wellness Care)", 6000)}</option>
-                          <option value="⚡ Core Chronic Care">{getOptionLabel("⚡ Standard (Core Chronic Care)", 12000)}</option>
-                          <option value="🎯 Deep Constitutional Care">{getOptionLabel("🎯 Enhanced (Deep Constitutional Care)", 21000)}</option>
-                          <option value="🚨 Intensive Acute Priority Care">{getOptionLabel("🚨 Advanced (Intensive Acute Priority Care)", 25000)}</option>
-                          <option value="🫁 Advanced Pathology Support">{getOptionLabel("🫁 Comprehensive (Advanced Pathology Support)", 30000)}</option>
-                          <option value="🔮 Multisystem Integrative Care">{getOptionLabel("🔮 Intensive (Multisystem Integrative Care)", 42000)}</option>
+                          <option value="🌱 Acute & Wellness Care">{getOptionLabel("🌱 Acute & Wellness Care — 4 weeks", 8000)}</option>
+                          <option value="⚡ Constitutional Care">{getOptionLabel("⚡ Constitutional Care — 4 weeks", 12000)}</option>
+                          <option value="🎯 Advanced Constitutional Care">{getOptionLabel("🎯 Advanced Constitutional Care — 4 weeks", 20000)}</option>
+                          <option value="🔮 Complete Health Transformation Program">{getOptionLabel("🔮 Complete Health Transformation Program — clinician-assigned, indicative weekly fee", 10000)}</option>
+                          <option value="🚨 Priority Acute Support">{getOptionLabel("🚨 Priority Acute Support add-on — 1 week", 2000)}</option>
+                          <option value="🫁 Advanced Records & Pathology Review">{getOptionLabel("🫁 Advanced Records & Pathology Review", 3000)}</option>
                         </select>
                       </div>
 
