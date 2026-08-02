@@ -35,7 +35,7 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "status": "active",
     "ownerArea": "commerce-pricing",
     "testLayer": "unit",
-    "reason": "Validates structured specialty price ranges and prevents payment before physician confirmation"
+    "reason": "Validates specialty clinical-area coverage, fixed care-period totals, urgent-care boundaries, and prevention of payment before physician confirmation"
   },
   {
     "path": "src/features/dashboard/__tests__/alerts.test.tsx",

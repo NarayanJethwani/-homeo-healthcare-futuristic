@@ -149,18 +149,18 @@ export default function PatientPricingPlanner({
   const completeSelection = useMemo<PatientPricingSelection>(
     () => ({
       pathway: "comprehensive",
-      durationWeeks: 0,
+      durationWeeks: 2,
       organSystemBreadth,
       additionalAcuteEpisode: false,
       priorityAcuteSupport: false,
       recordsPathologyReview: false,
-      durationPendingConfirmation: true,
+      durationPendingConfirmation: false,
       summary: {
-        baseCareTotal: COMPLETE_HEALTH_TRANSFORMATION_WEEKLY_PRICE,
+        baseCareTotal: COMPLETE_HEALTH_TRANSFORMATION_WEEKLY_PRICE * 2,
         additionalAcuteEpisodeTotal: 0,
         priorityAcuteSupportTotal: 0,
         recordsPathologyReviewTotal: 0,
-        total: COMPLETE_HEALTH_TRANSFORMATION_WEEKLY_PRICE,
+        total: COMPLETE_HEALTH_TRANSFORMATION_WEEKLY_PRICE * 2,
       },
     }),
     [organSystemBreadth],
@@ -483,7 +483,7 @@ export default function PatientPricingPlanner({
 
           <div className="lg:col-span-5 rounded-3xl border border-white/10 bg-white/[0.06] p-5 md:p-6 backdrop-blur-sm">
             <h3 className="text-xs font-black uppercase tracking-wider text-mint">Indicative care-period totals</h3>
-            <div className="mt-4 grid grid-cols-3 gap-2">
+            <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2">
               {COMPLETE_HEALTH_TRANSFORMATION_DURATIONS.map((weeks) => (
                 <div key={weeks} className="rounded-2xl border border-white/15 bg-white/[0.03] p-3">
                   <span className="block text-xs font-black">{weeks} weeks</span>
@@ -495,7 +495,7 @@ export default function PatientPricingPlanner({
               These totals are references, not selectable packages. Your physician recommends the appropriate duration and confirms scope and final fee after assessment. This is individual—not family—care, and outcomes vary by individual clinical response.
             </p>
             <div className="rounded-2xl border border-mint/20 bg-mint/10 p-4 mt-4 text-xs font-semibold text-slate-200 leading-relaxed">
-              <strong className="text-mint">Transparent intensive-care example:</strong> Program ₹10,000/week + physician-assigned Priority Acute Support ₹2,000/week = ₹12,000 for that week.
+              <strong className="text-mint">Transparent intensive-care example:</strong> Two-week program ₹20,000 + physician-assigned Priority Acute Support ₹4,000 for the same period = ₹24,000 for 2 weeks.
             </div>
             {onContinue ? (
               <button type="button" onClick={() => onContinue(completeSelection)} className="pricing-primary-action w-full mt-5 py-4 rounded-full bg-mint hover:bg-mint-dark text-white text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mint focus-visible:ring-offset-2 focus-visible:ring-offset-[#1A2421]">
