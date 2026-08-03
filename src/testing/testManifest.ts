@@ -24,6 +24,27 @@ export interface TestSuiteManifestEntry {
 
 export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
   {
+    "path": "tests/clinicalCareSimulator.test.ts",
+    "status": "active",
+    "ownerArea": "commerce-pricing",
+    "testLayer": "unit",
+    "reason": "Validates physician care recommendations, safety gates, pathway overrides, and itemized quotation calculations"
+  },
+  {
+    "path": "tests/clinicalQuotationPdf.test.ts",
+    "status": "active",
+    "ownerArea": "commerce-pricing",
+    "testLayer": "unit",
+    "reason": "Validates branded patient quotation PDF generation and required quotation identity"
+  },
+  {
+    "path": "tests/invoiceWorkflow.test.ts",
+    "status": "active",
+    "ownerArea": "commerce-pricing",
+    "testLayer": "unit",
+    "reason": "Validates approval and physician-confirmation gates for plan-derived invoices and documented manual invoicing"
+  },
+  {
     "path": "tests/pricingPathways.test.ts",
     "status": "active",
     "ownerArea": "commerce-pricing",
