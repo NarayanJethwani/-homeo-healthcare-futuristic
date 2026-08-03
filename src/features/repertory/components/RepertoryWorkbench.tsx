@@ -1178,7 +1178,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
                 <option value="🎯 Advanced Constitutional Care">🎯 Advanced Constitutional Care — 4 weeks (from ₹20,000)</option>
                 <option value="🔮 Complete Health Transformation Program">🔮 Complete Health Transformation Program — clinician-assigned (₹10,000/week)</option>
                 <option value="🚨 Priority Acute Support">🚨 Priority Acute Support add-on (+₹2,000/week)</option>
-                <option value="🫁 Advanced Records & Pathology Review">🫁 Advanced Records & Pathology Review (from ₹3,000)</option>
+                <option value="🫁 Case-Specific Clinical Support">🫁 Case-Specific Clinical Support (fee confirmed after assessment)</option>
               </select>
             </div>
 

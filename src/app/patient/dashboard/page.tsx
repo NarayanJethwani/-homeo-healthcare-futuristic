@@ -130,10 +130,10 @@ export default function PatientDashboard() {
               id: "INV-2026-001",
               date: "20-06-2026",
               dueDate: "30-06-2026",
-              grandTotal: 4320,
+              grandTotal: 6000,
               status: "Paid",
               previewUrl: `/admin/invoice-preview?invoiceNo=INV-2026-001`,
-              items: [{ description: "General Constitutional Consultation & Case-Taking", qty: 1, amount: 3500 }]
+              items: [{ description: "Constitutional Care — 2-week confirmed care period", qty: 2, amount: 6000 }]
             }
           ]);
         }
@@ -144,10 +144,10 @@ export default function PatientDashboard() {
             id: "INV-2026-001",
             date: "20-06-2026",
             dueDate: "30-06-2026",
-            grandTotal: 4320,
+            grandTotal: 6000,
             status: "Paid",
             previewUrl: `/admin/invoice-preview?invoiceNo=INV-2026-001`,
-            items: [{ description: "General Constitutional Consultation & Case-Taking", qty: 1, amount: 3500 }]
+            items: [{ description: "Constitutional Care — 2-week confirmed care period", qty: 2, amount: 6000 }]
           }
         ]);
       }

@@ -17,7 +17,7 @@ export default function PlansComparisonPage() {
         <header className="max-w-4xl mt-10 mb-12">
           <span className="text-xs font-bold text-mint uppercase tracking-widest">Clear, physician-led pricing</span>
           <h1 className="font-serif text-4xl md:text-6xl font-semibold tracking-tight text-[#1A2421] mt-4">
-            Choose a care pathway, not a medical billing formula.
+            Choose a care pathway
           </h1>
           <p className="text-base text-slate-700 font-semibold leading-relaxed mt-6">
             Three pathways cover short-term, constitutional, and advanced care. Select the description closest to your needs and review fixed care-duration totals; a physician confirms suitability before treatment.

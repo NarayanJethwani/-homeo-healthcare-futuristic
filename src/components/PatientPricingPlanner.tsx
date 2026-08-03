@@ -8,7 +8,6 @@ import {
   COMPLETE_HEALTH_TRANSFORMATION_DURATIONS,
   COMPLETE_HEALTH_TRANSFORMATION_WEEKLY_PRICE,
   PUBLIC_CARE_LEVEL_KEYS,
-  RECORDS_PATHOLOGY_REVIEW_PRICE,
   calculateCarePrice,
   toPublicCarePathway,
   type CarePriceSummary,
@@ -21,7 +20,6 @@ export interface PatientPricingSelection {
   organSystemBreadth?: OrganSystemBreadth;
   additionalAcuteEpisode: boolean;
   priorityAcuteSupport: boolean;
-  recordsPathologyReview: boolean;
   durationPendingConfirmation?: boolean;
   summary: CarePriceSummary;
 }
@@ -67,7 +65,6 @@ export default function PatientPricingPlanner({
   const [durationWeeks, setDurationWeeks] = useState(4);
   const [additionalAcuteEpisode, setAdditionalAcuteEpisode] = useState(false);
   const [priorityAcuteSupport, setPriorityAcuteSupport] = useState(false);
-  const [recordsPathologyReview, setRecordsPathologyReview] = useState(false);
   const [organSystemBreadth, setOrganSystemBreadth] = useState<OrganSystemBreadth | undefined>();
 
   useEffect(() => {
@@ -114,7 +111,6 @@ export default function PatientPricingPlanner({
       setDurationWeeks(nextDuration);
       setAdditionalAcuteEpisode(nextPathway === "mild" && (params.get("extraAcute") === "1" || Boolean(stored?.additionalAcuteEpisode)));
       setPriorityAcuteSupport(nextPathway === "mild" && (params.get("priority") === "1" || Boolean(stored?.priorityAcuteSupport)));
-      setRecordsPathologyReview(params.get("recordsReview") === "1" || Boolean(stored?.recordsPathologyReview));
       setOrganSystemBreadth(nextOrganSystemBreadth);
     } catch {
       // Invalid or legacy browser data falls back to the recommended pathway.
@@ -128,9 +124,8 @@ export default function PatientPricingPlanner({
         durationWeeks,
         additionalAcuteEpisode,
         priorityAcuteSupport,
-        recordsPathologyReview,
       }),
-    [additionalAcuteEpisode, durationWeeks, pathway, priorityAcuteSupport, recordsPathologyReview],
+    [additionalAcuteEpisode, durationWeeks, pathway, priorityAcuteSupport],
   );
 
   const selection = useMemo<PatientPricingSelection>(
@@ -139,11 +134,10 @@ export default function PatientPricingPlanner({
       durationWeeks,
       additionalAcuteEpisode,
       priorityAcuteSupport,
-      recordsPathologyReview,
       organSystemBreadth,
       summary,
     }),
-    [additionalAcuteEpisode, durationWeeks, organSystemBreadth, pathway, priorityAcuteSupport, recordsPathologyReview, summary],
+    [additionalAcuteEpisode, durationWeeks, organSystemBreadth, pathway, priorityAcuteSupport, summary],
   );
 
   const completeSelection = useMemo<PatientPricingSelection>(
@@ -153,13 +147,11 @@ export default function PatientPricingPlanner({
       organSystemBreadth,
       additionalAcuteEpisode: false,
       priorityAcuteSupport: false,
-      recordsPathologyReview: false,
       durationPendingConfirmation: false,
       summary: {
         baseCareTotal: COMPLETE_HEALTH_TRANSFORMATION_WEEKLY_PRICE * 2,
         additionalAcuteEpisodeTotal: 0,
         priorityAcuteSupportTotal: 0,
-        recordsPathologyReviewTotal: 0,
         total: COMPLETE_HEALTH_TRANSFORMATION_WEEKLY_PRICE * 2,
       },
     }),
@@ -189,7 +181,6 @@ export default function PatientPricingPlanner({
     weeks: String(durationWeeks),
     extraAcute: additionalAcuteEpisode ? "1" : "0",
     priority: priorityAcuteSupport ? "1" : "0",
-    recordsReview: recordsPathologyReview ? "1" : "0",
   });
   if (organSystemBreadth) queryParams.set("systems", organSystemBreadth);
   const query = queryParams.toString();
@@ -351,14 +342,15 @@ export default function PatientPricingPlanner({
                 </label>
               </>
             )}
-            <label className="pricing-option flex items-start gap-3 rounded-2xl border border-slate-200 bg-white/65 p-4 cursor-pointer">
-              <input type="checkbox" checked={recordsPathologyReview} onChange={(event) => setRecordsPathologyReview(event.target.checked)} className="mt-1 accent-teal-600" />
+            <div className="pricing-option flex items-start gap-3 rounded-2xl border border-slate-200 bg-white/65 p-4">
+              <ClipboardList className="mt-0.5 h-4 w-4 shrink-0 text-mint-dark" aria-hidden="true" />
               <span className="flex-1">
-                <span className="block text-sm font-bold text-[#1A2421]">Advanced Records & Pathology Review</span>
-                <span className="block text-xs font-semibold text-slate-500 mt-1">For substantial reports, prior prescriptions, or multi-system investigations.</span>
+                <span className="block text-sm font-bold text-[#1A2421]">Case-Specific Clinical Support</span>
+                <span className="block text-xs font-semibold text-slate-500 mt-1">For additional physician time, extended records review, closer monitoring, care coordination, or specially prescribed medicines when clinically indicated.</span>
+                <span className="block text-[11px] font-bold text-mint-dark mt-2">Nothing is added automatically; any itemized fee requires your approval.</span>
               </span>
-              <span className="text-sm font-black text-[#1A2421]">from {formatPrice(RECORDS_PATHOLOGY_REVIEW_PRICE)}</span>
-            </label>
+              <span className="text-xs font-black text-[#1A2421] text-right">Fee confirmed<br />after assessment</span>
+            </div>
           </div>
         </div>
 
@@ -373,7 +365,6 @@ export default function PatientPricingPlanner({
             <div className="flex justify-between gap-4"><dt className="font-semibold text-slate-500">Care fee</dt><dd className="font-bold text-[#1A2421]">{formatPrice(summary.baseCareTotal)}</dd></div>
             {summary.additionalAcuteEpisodeTotal > 0 && <div className="flex justify-between gap-4"><dt className="font-semibold text-slate-500">Additional acute assessment</dt><dd className="font-bold text-[#1A2421]">+{formatPrice(summary.additionalAcuteEpisodeTotal)}</dd></div>}
             {summary.priorityAcuteSupportTotal > 0 && <div className="flex justify-between gap-4"><dt className="font-semibold text-slate-500">Priority support</dt><dd className="font-bold text-[#1A2421]">+{formatPrice(summary.priorityAcuteSupportTotal)}</dd></div>}
-            {summary.recordsPathologyReviewTotal > 0 && <div className="flex justify-between gap-4"><dt className="font-semibold text-slate-500">Records review</dt><dd className="font-bold text-[#1A2421]">+{formatPrice(summary.recordsPathologyReviewTotal)}</dd></div>}
           </dl>
 
           <div className="border-t border-slate-200 mt-5 pt-5">
@@ -448,7 +439,7 @@ export default function PatientPricingPlanner({
         <div className="pricing-panel rounded-3xl border border-slate-200 bg-white/60 p-6 md:p-7">
           <h2 className="font-serif text-2xl font-semibold text-[#1A2421]">Possible additional fees</h2>
           <dl className="mt-5 space-y-3 text-sm">
-            <div className="flex justify-between gap-5"><dt className="font-semibold text-slate-600">Advanced Records & Pathology Review</dt><dd className="font-black text-[#1A2421] whitespace-nowrap">from ₹3,000</dd></div>
+            <div className="flex justify-between gap-5"><dt className="font-semibold text-slate-600">Case-Specific Clinical Support</dt><dd className="font-black text-[#1A2421] text-right">quoted after assessment</dd></div>
             <div className="flex justify-between gap-5"><dt className="font-semibold text-slate-600">Priority Acute Support, when assigned</dt><dd className="font-black text-[#1A2421] whitespace-nowrap">+₹2,000/week</dd></div>
             <div className="flex justify-between gap-5"><dt className="font-semibold text-slate-600">Domestic courier</dt><dd className="font-black text-[#1A2421] whitespace-nowrap">₹300</dd></div>
             <div className="flex justify-between gap-5"><dt className="font-semibold text-slate-600">International delivery</dt><dd className="font-black text-[#1A2421] whitespace-nowrap">at dispatch</dd></div>
@@ -517,7 +508,7 @@ export default function PatientPricingPlanner({
           {[
             ["Can the physician recommend a different pathway?", "Yes. The assessment request is not a purchase. Your physician may recommend a simpler or more intensive pathway before any payment."],
             ["Are remedies and delivery included?", "Prescribed standard homeopathic remedies for the agreed care period are included. Domestic courier is ₹300; international delivery is calculated at dispatch."],
-            ["Why might Advanced Care cost more than ₹5,000/week?", "The care fee starts at ₹5,000/week. Substantial records or pathology review is shown separately from ₹3,000. There is no automatic charge per symptom or organ system."],
+            ["Can additional clinical support change my final fee?", "Only when the physician identifies work beyond the confirmed pathway scope. The service and fee are itemized after assessment, and nothing is added without your approval. There is no automatic charge per symptom or organ system."],
             ["What if I need urgent or emergency treatment?", "Priority Acute Support is not emergency care. For severe, rapidly worsening, or life-threatening symptoms, seek appropriate emergency medical services immediately."],
             ["What are the cancellation and refund terms?", "No payment is taken with the assessment request. Any cancellation or refund terms for the confirmed individualized plan are provided in writing before payment."],
           ].map(([question, answer]) => (
