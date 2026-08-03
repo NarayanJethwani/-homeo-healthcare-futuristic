@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ADMIN_SESSION_COOKIE, verifyAdminSessionCookie } from "@/lib/adminSession";
 import type { InvoiceData } from "@/lib/googleDrive";
+import { validateInvoiceWorkflow } from "@/lib/invoiceWorkflow";
 
 function jsonResponse(body: Record<string, unknown>, status = 200) {
   const response = NextResponse.json(body, { status });
@@ -50,21 +51,56 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    
+    const invoiceNo = typeof body.invoiceNo === "string" ? body.invoiceNo.trim() : "";
+    const patientId = typeof body.patientId === "string" ? body.patientId.trim() : "";
+    const patientName = typeof body.patientName === "string" ? body.patientName.trim() : "";
+    const rawItems = Array.isArray(body.items) ? body.items : [];
+
+    if (!invoiceNo || !/^[A-Za-z0-9._-]+$/.test(invoiceNo)) {
+      return jsonResponse({ success: false, message: "Enter a valid invoice number." }, 400);
+    }
+    if (!patientId || !patientName) {
+      return jsonResponse({ success: false, message: "Select an existing patient before generating the invoice." }, 400);
+    }
+    const invoiceSource = body.invoiceSource === "confirmed-quotation" ? "confirmed-quotation" : "manual-administrative";
+    const manualOverrideReason = typeof body.manualOverrideReason === "string" ? body.manualOverrideReason.trim() : "";
+    const concessionReason = typeof body.concessionReason === "string" ? body.concessionReason.trim() : "";
+    const workflowError = validateInvoiceWorkflow({ ...body, invoiceSource, manualOverrideReason, concessionReason });
+    if (workflowError) return jsonResponse({ success: false, message: workflowError }, 400);
+
+    const items: Array<{ description: string; qty: number; unitPrice: number; amount: number }> = rawItems.map((item: any) => {
+      const description = typeof item?.description === "string" ? item.description.trim() : "";
+      const qty = Number(item?.qty);
+      const unitPrice = Number(item?.unitPrice);
+      return { description, qty, unitPrice, amount: qty * unitPrice };
+    });
+    const invalidItem = items.some((item) =>
+      !item.description ||
+      !Number.isFinite(item.qty) || item.qty <= 0 ||
+      !Number.isFinite(item.unitPrice) || item.unitPrice < 0
+    );
+    if (items.length === 0 || invalidItem) {
+      return jsonResponse({ success: false, message: "Add at least one valid invoice item." }, 400);
+    }
+
+    const subtotal = items.reduce((sum, item) => sum + item.amount, 0);
+    const requestedDiscount = Number(body.discount || 0);
+    const discount = Number.isFinite(requestedDiscount) ? Math.min(Math.max(0, requestedDiscount), subtotal) : 0;
+
     // Structure invoice data
     const invoiceData: InvoiceData = {
-      invoiceNo: body.invoiceNo,
+      invoiceNo,
       date: body.date,
       dueDate: body.dueDate,
-      patientId: body.patientId,
-      patientName: body.patientName,
+      patientId,
+      patientName,
       patientPhone: body.patientPhone || "",
       patientEmail: body.patientEmail || "",
       patientAddress: body.patientAddress || "",
-      items: body.items || [],
-      subtotal: Number(body.subtotal || 0),
-      discount: Number(body.discount || 0),
-      grandTotal: Number(body.grandTotal || 0),
+      items,
+      subtotal,
+      discount,
+      grandTotal: subtotal - discount,
       paymentMode: body.paymentMode || "UPI",
       status: body.status || "Pending"
     };
@@ -119,6 +155,14 @@ export async function POST(request: NextRequest) {
       grandTotal: invoiceData.grandTotal,
       paymentMode: invoiceData.paymentMode,
       status: invoiceData.status,
+      invoiceSource,
+      manualOverrideReason,
+      concessionReason,
+      quotationId: body.quotationId || "",
+      approvalStatus: body.approvalStatus || "",
+      physicianConfirmed: body.physicianConfirmed === true,
+      confirmedAt: body.confirmedAt || "",
+      pricingRuleVersion: body.pricingRuleVersion || "",
       sheetId: invoiceSheetId,
       sheetUrl: invoiceSheetUrl,
       previewUrl: getInvoicePreviewUrl(invoiceData.invoiceNo),

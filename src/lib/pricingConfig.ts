@@ -38,7 +38,8 @@ const ADVANCED_WEEKLY_PRICE = 5_000;
 export const ADDITIONAL_ACUTE_EPISODE_PRICE = 1_000;
 export const PRIORITY_ACUTE_SUPPORT_WEEKLY_PRICE = 2_000;
 export const COMPLETE_HEALTH_TRANSFORMATION_WEEKLY_PRICE = 10_000;
-export const COMPLETE_HEALTH_TRANSFORMATION_DURATIONS = [2, 4, 8, 12] as const;
+export const STANDARD_CARE_PERIOD_DURATIONS = [1, 2, 4, 8, 12] as const;
+export const COMPLETE_HEALTH_TRANSFORMATION_DURATIONS = STANDARD_CARE_PERIOD_DURATIONS;
 
 export const PUBLIC_CARE_LEVEL_KEYS: readonly PublicCarePathwayKey[] = [
   "mild",
@@ -67,7 +68,7 @@ export const CARE_LEVELS_DETAILS: Record<CareLevelKey, CareLevelDetail> = {
       "One acute episode within the selected period",
       "Standard follow-up during the care period",
     ],
-    durations: [1, 2, 4],
+    durations: STANDARD_CARE_PERIOD_DURATIONS,
     defaultDurationWeeks: 1,
     legacyNames: ["Essential Acute & Wellness Care", "Acute & Wellness Care"],
   },
@@ -92,7 +93,7 @@ export const CARE_LEVELS_DETAILS: Record<CareLevelKey, CareLevelDetail> = {
       "Personalized treatment planning",
       "Regular progress review",
     ],
-    durations: [2, 4, 8, 12],
+    durations: STANDARD_CARE_PERIOD_DURATIONS,
     defaultDurationWeeks: 4,
     legacyNames: ["Core Chronic Care", "Standard Chronic Care"],
   },
@@ -116,7 +117,7 @@ export const CARE_LEVELS_DETAILS: Record<CareLevelKey, CareLevelDetail> = {
       "Coordinated treatment planning",
       "Enhanced physician follow-up",
     ],
-    durations: [2, 4, 8, 12],
+    durations: STANDARD_CARE_PERIOD_DURATIONS,
     defaultDurationWeeks: 4,
     pricePrefix: "From",
     clinicianConfirmationRequired: true,
@@ -152,7 +153,7 @@ export const CARE_LEVELS_DETAILS: Record<CareLevelKey, CareLevelDetail> = {
     scopeMessage: "All clinically relevant conditions within the agreed individual scope are included. Duration is assigned only after physician assessment; outcomes depend on individual clinical response.",
     bestFor: ["Exceptionally intensive cases", "Frequent clinical adjustments", "Direct physician supervision"],
     features: ["Comprehensive constitutional assessment", "Individualized care scope", "High-frequency monitoring", "Direct physician guidance"],
-    durations: [2, 4, 8, 12],
+    durations: STANDARD_CARE_PERIOD_DURATIONS,
     defaultDurationWeeks: 2,
     glowColor: "rgba(99,102,241,0.15)",
     surchargeWeekly: 0,
@@ -230,7 +231,7 @@ export function calculateCarePrice(selection: CarePriceSelection): CarePriceSumm
 }
 
 export function calculateCompleteHealthTransformationPrice(durationWeeks: number): CarePriceSummary {
-  if (!COMPLETE_HEALTH_TRANSFORMATION_DURATIONS.includes(durationWeeks as 2 | 4 | 8 | 12)) {
+  if (!COMPLETE_HEALTH_TRANSFORMATION_DURATIONS.includes(durationWeeks as 1 | 2 | 4 | 8 | 12)) {
     throw new Error(`Unsupported duration for Complete Health Transformation Program: ${durationWeeks} weeks`);
   }
 

@@ -48,7 +48,7 @@ const ORGAN_SYSTEM_OPTIONS: ReadonlyArray<{
 ];
 
 const TIER_ORDER: readonly SpecialtyTierKey[] = ["constitutional", "advanced", "complete"];
-const DISPLAY_DURATIONS = [2, 4, 8, 12] as const;
+const DISPLAY_DURATIONS = [1, 2, 4, 8, 12] as const;
 
 export default function SpecialtySupportDirectory({ onContinue }: SpecialtySupportDirectoryProps) {
   const [searchQuery, setSearchQuery] = useState("");

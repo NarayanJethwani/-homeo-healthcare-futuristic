@@ -20,17 +20,18 @@ function runPricingPathwayTests() {
   assert.strictEqual(CARE_LEVELS_DETAILS.comprehensive.title, "Complete Health Transformation Program");
   assert.match(CARE_LEVELS_DETAILS.focused.scopeMessage, /no automatic symptom or organ-system charge/i);
   assert.match(CARE_LEVELS_DETAILS.comprehensive.scopeMessage, /duration is assigned only after physician assessment/i);
-  assert.deepStrictEqual(COMPLETE_HEALTH_TRANSFORMATION_DURATIONS, [2, 4, 8, 12]);
+  assert.deepStrictEqual(COMPLETE_HEALTH_TRANSFORMATION_DURATIONS, [1, 2, 4, 8, 12]);
   assert.strictEqual(CARE_LEVELS_DETAILS.comprehensive.defaultDurationWeeks, 2);
+  assert.strictEqual(calculateCompleteHealthTransformationPrice(1).total, 10_000);
   assert.strictEqual(calculateCompleteHealthTransformationPrice(2).total, 20_000);
   assert.strictEqual(calculateCompleteHealthTransformationPrice(4).total, 40_000);
   assert.strictEqual(calculateCompleteHealthTransformationPrice(8).total, 80_000);
   assert.strictEqual(calculateCompleteHealthTransformationPrice(12).total, 120_000);
-  assert.throws(() => calculateCompleteHealthTransformationPrice(1), /Unsupported duration/);
+  assert.throws(() => calculateCompleteHealthTransformationPrice(3), /Unsupported duration/);
 
-  assert.deepStrictEqual(CARE_LEVELS_DETAILS.mild.durations, [1, 2, 4]);
-  assert.deepStrictEqual(CARE_LEVELS_DETAILS.moderate.durations, [2, 4, 8, 12]);
-  assert.deepStrictEqual(CARE_LEVELS_DETAILS.focused.durations, [2, 4, 8, 12]);
+  assert.deepStrictEqual(CARE_LEVELS_DETAILS.mild.durations, [1, 2, 4, 8, 12]);
+  assert.deepStrictEqual(CARE_LEVELS_DETAILS.moderate.durations, [1, 2, 4, 8, 12]);
+  assert.deepStrictEqual(CARE_LEVELS_DETAILS.focused.durations, [1, 2, 4, 8, 12]);
   assert.strictEqual(CARE_LEVELS_DETAILS.moderate.defaultDurationWeeks, 4);
   assert.strictEqual(CARE_LEVELS_DETAILS.focused.defaultDurationWeeks, 4);
   assert.strictEqual(calculateCarePrice({ pathway: "moderate", durationWeeks: 2 }).total, 6_000);
@@ -62,9 +63,9 @@ function runPricingPathwayTests() {
     "Acute episode pricing must never leak into constitutional pathways",
   );
 
-  assert.throws(
-    () => calculateCarePrice({ pathway: "moderate", durationWeeks: 1 }),
-    /Unsupported duration/,
+  assert.strictEqual(
+    calculateCarePrice({ pathway: "moderate", durationWeeks: 1 }).total,
+    3_000,
   );
 
   assert.strictEqual(toPublicCarePathway("Core Chronic Care"), "moderate");

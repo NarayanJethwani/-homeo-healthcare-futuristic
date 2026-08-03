@@ -1,6 +1,6 @@
 "use client";
 
-import { CARE_LEVELS_DETAILS, surchargesLookup, normalizeCareLevelName, getCareLevelDisplayName } from "@/lib/pricingConfig";
+import { CARE_LEVELS_DETAILS, normalizeCareLevelName, getCareLevelDisplayName } from "@/lib/pricingConfig";
 
 import { useState, useEffect, useRef, useMemo, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
 import { useRouter } from "next/navigation";
@@ -95,6 +95,10 @@ import {
   featureFlags,
 } from "../../../features/dashboard";
 import KeyboardShortcutsModal from "../../../features/dashboard/components/KeyboardShortcutsModal";
+import {
+  ClinicalCareFeeSimulator,
+  type ClinicalCareSimulatorDecision,
+} from "@/components/doctor/ClinicalCareFeeSimulator";
 
 
 const ManageDoctorsPanel = dynamic(() => import("@/components/ManageDoctorsPanel"), {
@@ -226,42 +230,161 @@ interface Patient {
 
 const INVOICE_TEMPLATES = [
   {
+    group: "Acute & Wellness Care",
     label: "Acute & Wellness Care · 1 week",
     description: "Acute & Wellness Care — 1-week confirmed care period",
     qty: 1,
     unitPrice: 2000,
   },
   {
+    group: "Acute & Wellness Care",
+    label: "Acute & Wellness Care · 2 weeks",
+    description: "Acute & Wellness Care — 2-week confirmed care period",
+    qty: 2,
+    unitPrice: 2000,
+  },
+  {
+    group: "Acute & Wellness Care",
+    label: "Acute & Wellness Care · 4 weeks",
+    description: "Acute & Wellness Care — 4-week confirmed care period",
+    qty: 4,
+    unitPrice: 2000,
+  },
+  {
+    group: "Acute & Wellness Care",
+    label: "Acute & Wellness Care · 8 weeks",
+    description: "Acute & Wellness Care — 8-week confirmed care period",
+    qty: 8,
+    unitPrice: 2000,
+  },
+  {
+    group: "Acute & Wellness Care",
+    label: "Acute & Wellness Care · 12 weeks",
+    description: "Acute & Wellness Care — 12-week confirmed care period",
+    qty: 12,
+    unitPrice: 2000,
+  },
+  {
+    group: "Constitutional Care",
+    label: "Constitutional Care · 1 week",
+    description: "Constitutional Care — 1-week confirmed care period",
+    qty: 1,
+    unitPrice: 3000,
+  },
+  {
+    group: "Constitutional Care",
     label: "Constitutional Care · 2 weeks",
     description: "Constitutional Care — 2-week confirmed care period",
     qty: 2,
     unitPrice: 3000,
   },
   {
+    group: "Constitutional Care",
+    label: "Constitutional Care · 4 weeks",
+    description: "Constitutional Care — 4-week confirmed care period",
+    qty: 4,
+    unitPrice: 3000,
+  },
+  {
+    group: "Constitutional Care",
+    label: "Constitutional Care · 8 weeks",
+    description: "Constitutional Care — 8-week confirmed care period",
+    qty: 8,
+    unitPrice: 3000,
+  },
+  {
+    group: "Constitutional Care",
+    label: "Constitutional Care · 12 weeks",
+    description: "Constitutional Care — 12-week confirmed care period",
+    qty: 12,
+    unitPrice: 3000,
+  },
+  {
+    group: "Advanced Constitutional Care",
+    label: "Advanced Constitutional Care · 1 week",
+    description: "Advanced Constitutional Care — 1-week physician-confirmed care period",
+    qty: 1,
+    unitPrice: 5000,
+  },
+  {
+    group: "Advanced Constitutional Care",
     label: "Advanced Constitutional Care · 2 weeks",
     description: "Advanced Constitutional Care — 2-week confirmed care period",
     qty: 2,
     unitPrice: 5000,
   },
   {
+    group: "Advanced Constitutional Care",
+    label: "Advanced Constitutional Care · 4 weeks",
+    description: "Advanced Constitutional Care — 4-week physician-confirmed care period",
+    qty: 4,
+    unitPrice: 5000,
+  },
+  {
+    group: "Advanced Constitutional Care",
+    label: "Advanced Constitutional Care · 8 weeks",
+    description: "Advanced Constitutional Care — 8-week physician-confirmed care period",
+    qty: 8,
+    unitPrice: 5000,
+  },
+  {
+    group: "Advanced Constitutional Care",
+    label: "Advanced Constitutional Care · 12 weeks",
+    description: "Advanced Constitutional Care — 12-week physician-confirmed care period",
+    qty: 12,
+    unitPrice: 5000,
+  },
+  {
+    group: "Complete Health Transformation",
+    label: "Complete Health Transformation · 1 week",
+    description: "Complete Health Transformation Program — 1-week clinician-assigned care period",
+    qty: 1,
+    unitPrice: 10000,
+  },
+  {
+    group: "Complete Health Transformation",
     label: "Complete Health Transformation · 2 weeks",
     description: "Complete Health Transformation Program — 2-week clinician-assigned care period",
     qty: 2,
     unitPrice: 10000,
   },
   {
+    group: "Complete Health Transformation",
+    label: "Complete Health Transformation · 4 weeks",
+    description: "Complete Health Transformation Program — 4-week clinician-assigned care period",
+    qty: 4,
+    unitPrice: 10000,
+  },
+  {
+    group: "Complete Health Transformation",
+    label: "Complete Health Transformation · 8 weeks",
+    description: "Complete Health Transformation Program — 8-week clinician-assigned care period",
+    qty: 8,
+    unitPrice: 10000,
+  },
+  {
+    group: "Complete Health Transformation",
+    label: "Complete Health Transformation · 12 weeks",
+    description: "Complete Health Transformation Program — 12-week clinician-assigned care period",
+    qty: 12,
+    unitPrice: 10000,
+  },
+  {
+    group: "Clinical support and delivery",
     label: "Priority Acute Support · 1 week",
     description: "Priority Acute Support — 1-week physician-assigned add-on",
     qty: 1,
     unitPrice: 2000,
   },
   {
+    group: "Clinical support and delivery",
     label: "Domestic medicine preparation & delivery",
     description: "Prescribed medicine preparation and secure domestic delivery",
     qty: 1,
     unitPrice: 1000,
   },
   {
+    group: "Clinical support and delivery",
     label: "International medicine preparation & delivery",
     description: "Prescribed medicine preparation and secure international delivery",
     qty: 1,
@@ -781,14 +904,8 @@ const getCareLevelRate = (level: string, cycle: string, conditions: number = 1) 
   const key = getCareLevelKey(level);
   const isWeekly = cycle === "Weekly";
   const basePrice = isWeekly ? CARE_LEVELS_DETAILS[key].weeklyPrice : CARE_LEVELS_DETAILS[key].monthlyPrice;
-  
-  let surcharge = 0;
-  if (conditions > 1) {
-    const tierSurcharges = surchargesLookup[key];
-    const unit = isWeekly ? tierSurcharges.unitWeekly : tierSurcharges.unitMonthly;
-    surcharge = (conditions - 1) * unit;
-  }
-  return basePrice + surcharge;
+  void conditions;
+  return basePrice;
 };
 
 const calculatePlannerPricing = (
@@ -799,30 +916,12 @@ const calculatePlannerPricing = (
 ) => {
   const details = CARE_LEVELS_DETAILS[level as keyof typeof CARE_LEVELS_DETAILS] || CARE_LEVELS_DETAILS.focused;
   const basePrice = cycle === "weekly" ? details.weeklyPrice : details.monthlyPrice;
-  
-  let surcharge = 0;
-  if (conditions > 1) {
-    const tierSurcharges = surchargesLookup[level as keyof typeof surchargesLookup] || surchargesLookup.focused;
-    const unit = cycle === "weekly" ? tierSurcharges.unitWeekly : tierSurcharges.unitMonthly;
-    surcharge = (conditions - 1) * unit;
-  }
-
-  const adjustedBasePrice = basePrice + surcharge;
+  const surcharge = 0;
+  const adjustedBasePrice = basePrice;
   const rawTotal = adjustedBasePrice * duration;
-  
-  // Equivalent weeks
-  const equivalentWeeks = cycle === "weekly" ? duration : duration * 4;
-  
-  let discountPercent = 0;
-  if (equivalentWeeks >= 48) discountPercent = 30;
-  else if (equivalentWeeks >= 24) discountPercent = 25;
-  else if (equivalentWeeks >= 12) discountPercent = 20;
-  else if (equivalentWeeks >= 8) discountPercent = 15;
-  else if (equivalentWeeks >= 4) discountPercent = 10;
-  else if (equivalentWeeks >= 2) discountPercent = 5;
-  
-  const discountAmount = Math.round((rawTotal * discountPercent) / 100);
-  const finalPriceBeforeConcession = rawTotal - discountAmount;
+  const discountPercent = 0;
+  const discountAmount = 0;
+  const finalPriceBeforeConcession = rawTotal;
   
   return {
     basePrice,
@@ -954,8 +1053,8 @@ export default function AdminDashboard() {
         break;
       case "generate-invoice":
         if (patients.length > 0) {
-          setSelectedInvoicePatient(patients[0]);
-          setIsInvoiceModalOpen(true);
+          const invoicePatient = patients.find((patient) => patient.id === selectedPatientId) || patients[0];
+          openInvoiceModal(invoicePatient);
         } else {
           alert("Please register a patient first before generating an invoice.");
         }
@@ -3460,8 +3559,8 @@ export default function AdminDashboard() {
   // TREATMENT PLANNER STATES & LOGIC
   // ------------------------------------------------------------
   const [plannerCareLevel, setPlannerCareLevel] = useState<string>("focused");
-  const [plannerBillingCycle, setPlannerBillingCycle] = useState<"monthly" | "weekly">("monthly");
-  const [plannerDurationValue, setPlannerDurationValue] = useState<number>(3);
+  const [plannerBillingCycle, setPlannerBillingCycle] = useState<"monthly" | "weekly">("weekly");
+  const [plannerDurationValue, setPlannerDurationValue] = useState<number>(4);
   const [plannerConditionsCount, setPlannerConditionsCount] = useState<number>(1);
   const [plannerConcessionType, setPlannerConcessionType] = useState<string>("None");
   const [plannerOverridePrice, setPlannerOverridePrice] = useState<number>(21000);
@@ -3470,9 +3569,27 @@ export default function AdminDashboard() {
   const [addonType, setAddonType] = useState<string>("Dilution");
   const [addonDetails, setAddonDetails] = useState<string>("");
   const [addonAmount, setAddonAmount] = useState<number>(150);
+  const [plannerSimulatorDecision, setPlannerSimulatorDecision] = useState<ClinicalCareSimulatorDecision | null>(null);
 
   // Dynamic Pricing Calculation for Treatment Planner (using useMemo to prevent compiler inlining issue/TDZ on Vercel)
   const calculatedPrices = useMemo(() => {
+    if (plannerSimulatorDecision) {
+      const { quote } = plannerSimulatorDecision;
+      return {
+        basePrice: quote.weeklyCareFee,
+        surcharge: 0,
+        adjustedBasePrice: quote.weeklyCareFee,
+        rawTotal: quote.baseCareTotal,
+        discountPercent: 0,
+        discountAmount: 0,
+        finalPriceBeforeConcession: quote.subtotal,
+        caseSpecificSupportTotal: quote.caseSpecificSupportTotal,
+        concessionAmount: quote.concessionTotal,
+        addonsSum: quote.pharmacyTotal,
+        finalPrice: quote.finalTotal,
+        balanceDue: quote.finalTotal - plannerReceived,
+      };
+    }
     const basePricing = calculatePlannerPricing(
       plannerCareLevel,
       plannerBillingCycle,
@@ -3481,11 +3598,7 @@ export default function AdminDashboard() {
     );
     
     let concessionAmount = 0;
-    if (plannerConcessionType === "Senior") {
-      concessionAmount = Math.round(basePricing.finalPriceBeforeConcession * 0.15);
-    } else if (plannerConcessionType === "Socio") {
-      concessionAmount = Math.round(basePricing.finalPriceBeforeConcession * 0.30);
-    } else if (plannerConcessionType === "Override") {
+    if (plannerConcessionType === "Override") {
       concessionAmount = Math.max(0, basePricing.finalPriceBeforeConcession - plannerOverridePrice);
     }
     
@@ -3497,6 +3610,7 @@ export default function AdminDashboard() {
     return {
       ...basePricing,
       concessionAmount,
+      caseSpecificSupportTotal: 0,
       addonsSum,
       finalPrice,
       balanceDue: computedBalanceDue
@@ -3510,6 +3624,7 @@ export default function AdminDashboard() {
     plannerOverridePrice,
     plannerReceived,
     plannerMedicineAddons
+    ,plannerSimulatorDecision
   ]);
 
   // Synchronize Treatment Planner state with selected patient
@@ -3518,6 +3633,7 @@ export default function AdminDashboard() {
     if (selectedPatientId && selectedPatientId !== lastLoadedPatientId.current) {
       const activePatient = patients.find(p => p.id === selectedPatientId);
       if (activePatient) {
+        setPlannerSimulatorDecision(null);
         lastLoadedPatientId.current = selectedPatientId;
         // If patient already has a plan saved, use those values
         if (activePatient.careLevel) {
@@ -3562,6 +3678,10 @@ export default function AdminDashboard() {
       alert("Please select a patient first.");
       return;
     }
+    if (!plannerSimulatorDecision?.physicianConfirmed) {
+      alert("Complete the Clinical Care & Fee Simulator and apply the physician-confirmed decision first.");
+      return;
+    }
     const isMockProject = !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID === "mock-project-id";
     
     const targetPatient = patients.find(p => p.id === selectedPatientId);
@@ -3570,49 +3690,72 @@ export default function AdminDashboard() {
       return;
     }
 
-    let durationText = `${plannerDurationValue}-Month Treatment Plan`;
-    if (plannerBillingCycle === "weekly") {
-      durationText = `${plannerDurationValue}-Week Treatment Plan`;
-    }
+    const durationText = `${plannerSimulatorDecision.durationWeeks}-Week Care Plan`;
     
     // Get dynamic recommendation details
-    const recommendation = getTreatmentRecommendation(
-      plannerCareLevel,
-      plannerConditionsCount,
-      plannerDurationValue,
-      plannerBillingCycle
-    );
+    const recommendation = plannerSimulatorDecision.recommendation;
 
     const newPlan = {
       id: Math.random().toString(36).substring(2, 9),
       createdAt: new Date().toISOString(),
-      careLevel: CARE_LEVELS_DETAILS[plannerCareLevel as keyof typeof CARE_LEVELS_DETAILS].title,
+      careLevel: recommendation.title,
       conditionsCount: plannerConditionsCount,
-      careIntensity: recommendation.complexity,
-      durationValue: plannerDurationValue,
+      careIntensity: recommendation.followUpLabel,
+      durationValue: plannerSimulatorDecision.durationWeeks,
       durationText: durationText,
-      followUpFrequency: recommendation.followUpFrequency,
+      followUpFrequency: recommendation.followUpLabel,
       finalPrice: calculatedPrices.finalPrice,
-      billingCycle: plannerBillingCycle,
-      concessionApplied: plannerConcessionType,
-      status: "Draft",
+      billingCycle: "weekly",
+      concessionApplied: plannerSimulatorDecision.concessionAmount > 0 ? "Documented manual concession" : "None",
+      status: "Pending quotation",
       notes: "",
-      explanation: recommendation.patientExplanation
+      explanation: recommendation.reasons.join("; "),
+      simulatorAssessment: plannerSimulatorDecision.assessment,
+      quote: plannerSimulatorDecision.quote,
+      caseSpecificSupport: {
+        amount: plannerSimulatorDecision.caseSpecificSupportAmount,
+        reason: plannerSimulatorDecision.caseSpecificSupportReason,
+      },
+      concessionReason: plannerSimulatorDecision.concessionReason,
+      pharmacyItems: plannerSimulatorDecision.pharmacyItems,
+      physicianConfirmed: true,
+      confirmedAt: plannerSimulatorDecision.confirmedAt,
+      quotationId: plannerSimulatorDecision.quotationId,
+      validUntil: plannerSimulatorDecision.validUntil,
+      approvalStatus: plannerSimulatorDecision.approvalStatus,
+      recommendedPathway: plannerSimulatorDecision.recommendedPathway,
+      selectedPathway: plannerSimulatorDecision.selectedPathway,
+      selectionMode: plannerSimulatorDecision.selectionMode,
+      manualSelectionReason: plannerSimulatorDecision.manualSelectionReason,
+      pricingRuleVersion: plannerSimulatorDecision.pricingRuleVersion,
+      changeHistory: [
+        ...(((targetPatient as any).treatmentPlans?.at(-1)?.changeHistory) || []),
+        {
+          event: "quotation-confirmed",
+          changedAt: plannerSimulatorDecision.confirmedAt,
+          quotationId: plannerSimulatorDecision.quotationId,
+          recommendedPathway: plannerSimulatorDecision.recommendedPathway,
+          selectedPathway: plannerSimulatorDecision.selectedPathway,
+          selectionMode: plannerSimulatorDecision.selectionMode,
+          reason: plannerSimulatorDecision.manualSelectionReason || "Simulator recommendation accepted",
+          actor: "physician",
+        },
+      ],
     };
 
     const currentPlans = (targetPatient as any).treatmentPlans || [];
     const updatedPlans = [...currentPlans, newPlan];
 
     const updatedFields = {
-      careLevel: CARE_LEVELS_DETAILS[plannerCareLevel as keyof typeof CARE_LEVELS_DETAILS].title,
+      careLevel: recommendation.title,
       durationText: durationText,
       finalPrice: calculatedPrices.finalPrice,
       receivedAmount: plannerReceived,
       remainingBalance: calculatedPrices.balanceDue,
-      billingCycle: plannerBillingCycle,
-      concessionApplied: plannerConcessionType,
+      billingCycle: "weekly" as const,
+      concessionApplied: plannerSimulatorDecision.concessionAmount > 0 ? "Documented manual concession" : "None",
       conditionsCount: plannerConditionsCount,
-      durationValue: plannerDurationValue,
+      durationValue: plannerSimulatorDecision.durationWeeks,
       medicineAddons: plannerMedicineAddons,
       treatmentPlans: updatedPlans
     };
@@ -5251,6 +5394,8 @@ export default function AdminDashboard() {
   const [caseSpecificSupportWeeks, setCaseSpecificSupportWeeks] = useState(1);
   const [caseSpecificSupportScope, setCaseSpecificSupportScope] = useState("");
   const [caseSpecificSupportIncludesMedicines, setCaseSpecificSupportIncludesMedicines] = useState(false);
+  const [invoiceManualReason, setInvoiceManualReason] = useState("");
+  const [invoiceConcessionReason, setInvoiceConcessionReason] = useState("");
 
   const invoiceSubtotal = invoiceItems.reduce((sum, item) => sum + item.amount, 0);
   const invoiceGrandTotal = Math.max(0, invoiceSubtotal - invoiceDiscount);
@@ -5329,7 +5474,7 @@ export default function AdminDashboard() {
     ]);
     setInvoiceDiscount(0);
     setInvoicePaymentMode("UPI");
-    setInvoiceStatus("Paid");
+    setInvoiceStatus("Pending");
     setGeneratedInvoiceUrl("");
     setManualWhatsAppPhone("");
     setCaseSpecificSupportAmount("");
@@ -5337,7 +5482,16 @@ export default function AdminDashboard() {
     setCaseSpecificSupportWeeks(1);
     setCaseSpecificSupportScope("");
     setCaseSpecificSupportIncludesMedicines(false);
+    setInvoiceManualReason("");
+    setInvoiceConcessionReason("");
     setIsInvoiceModalOpen(true);
+  };
+
+  const handleInvoicePatientChange = (patientId: string) => {
+    const patient = patients.find((entry) => entry.id === patientId);
+    if (patient) {
+      openInvoiceModal(patient);
+    }
   };
 
   const addInvoiceItem = (description = "", qty = 1, unitPrice = 0) => {
@@ -5419,11 +5573,27 @@ export default function AdminDashboard() {
 
   const handleGenerateInvoice = async () => {
     if (!selectedInvoicePatient) return;
-    
-    if (invoiceItems.length === 0 || invoiceItems.some(it => !it.description.trim())) {
-      alert("Please add at least one item with a description.");
+
+    const invalidItem = invoiceItems.some((item) =>
+      !item.description.trim() ||
+      !Number.isFinite(item.qty) || item.qty <= 0 ||
+      !Number.isFinite(item.unitPrice) || item.unitPrice < 0
+    );
+    if (invoiceItems.length === 0 || invalidItem) {
+      alert("Please add at least one valid item with a description, quantity, and fee.");
       return;
     }
+    if (invoiceManualReason.trim().length < 8) {
+      alert("Document why this administrative invoice is being created.");
+      return;
+    }
+    if (invoiceDiscount > 0 && invoiceConcessionReason.trim().length < 5) {
+      alert("Document the reason for the invoice concession.");
+      return;
+    }
+
+    const effectiveInvoiceNo = invoiceNo.trim() || generateInvoiceNo();
+    setInvoiceNo(effectiveInvoiceNo);
 
     setIsGeneratingInvoice(true);
     try {
@@ -5431,7 +5601,7 @@ export default function AdminDashboard() {
       const grandTotal = Math.max(0, subtotal - invoiceDiscount);
       
       const payload = {
-        invoiceNo,
+        invoiceNo: effectiveInvoiceNo,
         date: new Date().toLocaleDateString("en-IN"),
         dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString("en-IN"),
         patientId: selectedInvoicePatient.id,
@@ -5445,6 +5615,9 @@ export default function AdminDashboard() {
         grandTotal,
         paymentMode: invoicePaymentMode,
         status: invoiceStatus,
+        invoiceSource: "manual-administrative",
+        manualOverrideReason: invoiceManualReason.trim(),
+        concessionReason: invoiceConcessionReason.trim(),
         folderId: selectedInvoicePatient.folderUrl ? extractIdFromDriveUrl(selectedInvoicePatient.folderUrl) : "mock-folder-id",
         caseSheetId: selectedInvoicePatient.sheetUrl ? extractIdFromDriveUrl(selectedInvoicePatient.sheetUrl) : "mock-sheet-id"
       };
@@ -5455,15 +5628,15 @@ export default function AdminDashboard() {
         body: JSON.stringify(payload)
       });
 
-      const data = await response.json();
-      if (data.success) {
-        setGeneratedInvoiceUrl(data.previewUrl || `/admin/invoice-preview?invoiceNo=${encodeURIComponent(invoiceNo)}`);
+      const data = await response.json().catch(() => null);
+      if (response.ok && data?.success) {
+        setGeneratedInvoiceUrl(data.previewUrl || `/admin/invoice-preview?invoiceNo=${encodeURIComponent(effectiveInvoiceNo)}`);
         
         // Save to mock storage locally if in mock mode
         const isMockProject = !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID === "mock-project-id";
         if (isMockProject || data.isMock) {
           const newInvoiceDoc = {
-            id: invoiceNo,
+            id: effectiveInvoiceNo,
             patientId: selectedInvoicePatient.id,
             patientName: selectedInvoicePatient.name,
             patientPhone: selectedInvoicePatient.phone,
@@ -5478,7 +5651,7 @@ export default function AdminDashboard() {
             status: invoiceStatus,
             sheetId: "mock-invoice-id",
             sheetUrl: data.sheetUrl,
-            previewUrl: data.previewUrl || `/admin/invoice-preview?invoiceNo=${encodeURIComponent(invoiceNo)}`,
+            previewUrl: data.previewUrl || `/admin/invoice-preview?invoiceNo=${encodeURIComponent(effectiveInvoiceNo)}`,
             createdAt: new Date().toISOString()
           };
           const key = `mock_invoices_${selectedInvoicePatient.id}`;
@@ -5490,7 +5663,7 @@ export default function AdminDashboard() {
 
         alert("Invoice generated and synced successfully!");
       } else {
-        throw new Error(data.message || "Failed to generate invoice");
+        throw new Error(data?.message || `Failed to generate invoice (${response.status})`);
       }
     } catch (err: any) {
       console.error(err);
@@ -5924,31 +6097,11 @@ Homeo Healthcare`;
     const val = getDurationValue(durationText);
     const base = rate * val;
     
-    // Duration discount
-    let discountPercent = 0;
-    const equivalentWeeks = billingCycle === "Weekly" ? val : val * 4;
-    if (equivalentWeeks >= 48) discountPercent = 30;
-    else if (equivalentWeeks >= 24) discountPercent = 25;
-    else if (equivalentWeeks >= 12) discountPercent = 20;
-    else if (equivalentWeeks >= 8) discountPercent = 15;
-    else if (equivalentWeeks >= 4) discountPercent = 10;
-    else if (equivalentWeeks >= 2) discountPercent = 5;
-    
-    const durationDiscountAmount = Math.round((base * discountPercent) / 100);
-    const afterDurationDiscount = base - durationDiscountAmount;
-    
-    // Concession discount calculation
-    let concessionPercent = 0;
-    if (concessionType === "Senior" || (concessionType === "None" && (parseInt(age) || 0) >= 60)) {
-      concessionPercent = 15;
-    } else if (concessionType === "Socio") {
-      concessionPercent = 30;
-    }
-
-    const concessionDiscountAmount = Math.round((afterDurationDiscount * concessionPercent) / 100);
-    
-    // Final price calculation
-    let calculatedFinal = Math.max(0, afterDurationDiscount - concessionDiscountAmount);
+    const discountPercent = 0;
+    const durationDiscountAmount = 0;
+    const concessionDiscountAmount = 0;
+    const afterDurationDiscount = base;
+    let calculatedFinal = base;
     
     if (concessionType === "Override") {
       calculatedFinal = Math.max(0, afterDurationDiscount - discountOverride);
@@ -5960,8 +6113,8 @@ Homeo Healthcare`;
       basePrice: base,
       discountPercent,
       durationDiscountAmount,
-      seniorDiscountAmount: (concessionType === "Senior" || (concessionType === "None" && (parseInt(age) || 0) >= 60)) ? concessionDiscountAmount : 0,
-      socioDiscountAmount: concessionType === "Socio" ? concessionDiscountAmount : 0,
+      seniorDiscountAmount: 0,
+      socioDiscountAmount: 0,
       calculatedFinal,
       finalPrice
     };
@@ -12380,49 +12533,78 @@ ${err.message || err}`);
 
             // Format dynamic WhatsApp message text
             const careText = CARE_LEVELS_DETAILS[plannerCareLevel as keyof typeof CARE_LEVELS_DETAILS]?.title || "Doctor-Led Custom Care";
-            const condText = plannerConditionsCount === 1 ? "1 Active Concern" : `${plannerConditionsCount} Active Concerns`;
-            const durText = plannerBillingCycle === "weekly"
-              ? `${plannerDurationValue} ${plannerDurationValue === 1 ? "Week" : "Weeks"}`
-              : `${plannerDurationValue} ${plannerDurationValue === 1 ? "Month" : "Months"}`;
-            const concessionText = plannerConcessionType !== "None" 
-              ? `, Concession: ${
-                  plannerConcessionType === "Override" 
-                    ? "Special Clinical Concession" 
-                    : plannerConcessionType === "Senior" 
-                      ? "Senior 15%" 
-                      : plannerConcessionType === "Socio" 
-                        ? "Socio-Economic 30%" 
-                        : plannerConcessionType
-                }` 
-              : "";
+            const breadthText = plannerSimulatorDecision
+              ? `Organ-system breadth recorded: ${plannerSimulatorDecision.assessment.breadth.replaceAll("-", "–")}`
+              : "Clinical breadth pending assessment";
+            const durText = `${plannerDurationValue} ${plannerDurationValue === 1 ? "Week" : "Weeks"}`;
+            const concessionText = calculatedPrices.concessionAmount > 0 ? ", Documented concession applied" : "";
             
-            const whatsappInvoiceText = `Dear ${activePatient?.name || "Valued Patient"},\n\nThank you for consulting Homeo Healthcare.\n\nYour treatment package is successfully configured:\n*Care Program:* ${careText}\n*Active Health Concerns:* ${condText}\n*Recommended Treatment Duration:* ${durText}${concessionText}\n\n*Pricing Breakdown Summary:*\n- Clinical Care Fee: ₹${calculatedPrices.basePrice.toLocaleString("en-IN")}\n` +
-              (calculatedPrices.surcharge > 0 ? `- Clinical Care Intensity Adjustment: +₹${calculatedPrices.surcharge.toLocaleString("en-IN")}\n` : "") +
-              (calculatedPrices.discountAmount > 0 ? `- Continuity of Care Benefit: -₹${calculatedPrices.discountAmount.toLocaleString("en-IN")}\n` : "") +
+            const whatsappInvoiceText = `Dear ${activePatient?.name || "Valued Patient"},\n\nThank you for consulting Homeo Healthcare.\n\nYour physician-reviewed care plan is ready as a pending quotation:\n*Quotation:* ${plannerSimulatorDecision?.quotationId || "Pending confirmation"}\n*Valid until:* ${plannerSimulatorDecision ? new Date(plannerSimulatorDecision.validUntil).toLocaleDateString("en-IN") : "—"}\n*Approval status:* ${(plannerSimulatorDecision?.approvalStatus || "pending-patient-approval").replaceAll("-", " ")}\n*Care Pathway:* ${careText}\n*Clinical Scope:* ${breadthText}\n*Care Period:* ${durText}${concessionText}\n${plannerDurationValue === 1 && plannerSimulatorDecision?.recommendation.pathway !== "mild" ? "*Reassessment:* Physician reassessment is required before continuation.\n" : ""}\n*Itemized Quotation:*\n- Care-period total: ₹${calculatedPrices.rawTotal.toLocaleString("en-IN")}\n` +
+              (calculatedPrices.caseSpecificSupportTotal > 0 ? `- Case-Specific Clinical Support: +₹${calculatedPrices.caseSpecificSupportTotal.toLocaleString("en-IN")}\n` : "") +
               (calculatedPrices.concessionAmount > 0 ? `- Concession Applied: -₹${calculatedPrices.concessionAmount.toLocaleString("en-IN")}\n` : "") +
-              (calculatedPrices.addonsSum > 0 ? `- Medicine Add-ons: +₹${calculatedPrices.addonsSum.toLocaleString("en-IN")}\n` : "") +
+              (calculatedPrices.addonsSum > 0 ? `- Itemized pharmacy medicines: +₹${calculatedPrices.addonsSum.toLocaleString("en-IN")}\n` : "") +
               `----------------------------------------\n` +
-              `*Your Treatment Investment: ₹${calculatedPrices.finalPrice.toLocaleString("en-IN")}*\n` +
-              `*Amount Received Today: ₹${plannerReceived.toLocaleString("en-IN")}*\n` +
-              `*Outstanding Balance Due: ₹${calculatedPrices.balanceDue.toLocaleString("en-IN")}*\n\n` +
-              `Please transfer using GPay: *${process.env.NEXT_PUBLIC_PAYMENT_PHONE || "8446056789"}* (or UPI: *${process.env.NEXT_PUBLIC_PAYMENT_UPI || "8446056789@hdfc"}*).\n` +
-              `Kindly share the transaction screenshot once completed.`;
+              `*Pending Quotation Total: ₹${calculatedPrices.finalPrice.toLocaleString("en-IN")}*\n` +
+              `Please reply *APPROVE* if you agree with this scope and quotation, or ask for a revision. No payment is requested until approval and the final invoice.`;
 
             return (
               <div className={`space-y-6 transition-all duration-300 ${fullscreenTab === "treatment-planner" ? "fixed inset-0 z-[50] overflow-y-auto bg-pearl dark:bg-slate-950 p-8" : "relative"}`}>
                 <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
                   <div>
-                    <h2 className="text-xl font-serif font-bold text-slate-850 dark:text-slate-100">Multi-Clinic Treatment Planner & Fee Structure</h2>
-                    <p className="text-xs text-slate-400 font-sans mt-0.5">Calculate systemic care pricing, concessions, add-ons, outstanding balances, and generate invoice messages.</p>
+                    <h2
+                      className="text-xl font-serif font-bold"
+                      style={{ color: theme === "light" ? "#0f172a" : "#f8fafc" }}
+                    >
+                      Clinical Care Planner & Transparent Quotation
+                    </h2>
+                    <p
+                      className="text-xs font-sans mt-0.5"
+                      style={{ color: theme === "light" ? "#475569" : "#dbe4ef" }}
+                    >
+                      Assess clinical workload, document physician judgment, and build an itemized pending quotation.
+                    </p>
                   </div>
                   <button
                     onClick={() => setFullscreenTab(fullscreenTab === "treatment-planner" ? null : "treatment-planner")}
-                    className="px-3 py-1.5 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 transition-all flex items-center gap-1.5 cursor-pointer bg-white dark:bg-slate-955"
+                    className="px-3 py-1.5 border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl text-xs font-bold text-slate-700 dark:!text-slate-100 transition-all flex items-center gap-1.5 cursor-pointer bg-white dark:!bg-slate-800"
+                    style={{
+                      color: theme === "light" ? "#334155" : "#f8fafc",
+                      backgroundColor: theme === "light" ? "#ffffff" : "#1e293b",
+                      borderColor: theme === "light" ? "#cbd5e1" : "#64748b",
+                    }}
                   >
                     {fullscreenTab === "treatment-planner" ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
                     <span>{fullscreenTab === "treatment-planner" ? "Minimize" : "Full Screen"}</span>
                   </button>
                 </div>
+
+                <ClinicalCareFeeSimulator
+                  patientId={activePatient?.id}
+                  patientName={activePatient?.name}
+                  patientAge={Number(activePatient?.age) || undefined}
+                  onApply={(decision) => {
+                    const breadthCount: Record<string, number> = {
+                      one: 1,
+                      "two-three": 3,
+                      "four-five": 5,
+                      "six-plus": 6,
+                      unsure: 1,
+                    };
+                    setPlannerSimulatorDecision(decision);
+                    setPlannerCareLevel(decision.recommendation.pathway);
+                    setPlannerBillingCycle("weekly");
+                    setPlannerDurationValue(decision.durationWeeks);
+                    setPlannerConditionsCount(breadthCount[decision.assessment.breadth] || 1);
+                    setPlannerConcessionType(decision.concessionAmount > 0 ? "Manual" : "None");
+                    setPlannerMedicineAddons(decision.pharmacyItems.map(item => ({
+                      id: item.id,
+                      type: item.type,
+                      details: `${item.details} · ${item.quantity} × ₹${item.unitPrice.toLocaleString("en-IN")}`,
+                      amount: item.amount,
+                    })));
+                    setPlannerReceived(0);
+                  }}
+                />
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                   {/* Left Column: Configuration & Case Entry (lg:col-span-5) */}
@@ -12431,7 +12613,7 @@ ${err.message || err}`);
                     <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800/85 shadow-sm space-y-4">
                     <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 border-b border-slate-100 dark:border-slate-800 pb-2 flex items-center gap-2">
                       <Sliders className="w-4 h-4 text-emerald-600" />
-                      Plan Configuration
+                      Applied Plan & Patient Record
                     </h3>
 
                     <div className="space-y-4 text-xs font-semibold">
@@ -12512,8 +12694,21 @@ ${err.message || err}`);
                         </>
                       )}
 
+                      <div className="rounded-2xl border border-teal-200 bg-teal-50/70 p-4 text-xs dark:border-teal-800 dark:bg-teal-950/25">
+                        {plannerSimulatorDecision ? (
+                          <div className="space-y-1.5">
+                            <div className="flex items-center gap-2 font-black text-teal-800 dark:text-teal-200"><CheckCircle className="h-4 w-4" /> Physician-confirmed pending plan</div>
+                            <div className="font-bold text-slate-850 dark:text-white">{plannerSimulatorDecision.recommendation.title}</div>
+                            <div className="text-slate-600 dark:text-slate-300">{plannerSimulatorDecision.durationWeeks} weeks · ₹{plannerSimulatorDecision.quote.finalTotal.toLocaleString("en-IN")} pending quotation</div>
+                            <div className="text-[10px] leading-relaxed text-slate-500 dark:text-slate-400">Organ breadth is recorded as a complexity indicator; it did not automatically calculate the fee.</div>
+                          </div>
+                        ) : (
+                          <div className="flex items-start gap-2 text-slate-600 dark:text-slate-300"><Info className="mt-0.5 h-4 w-4 shrink-0 text-teal-600" /><span>Complete the simulator above, confirm the clinical decision, then apply it here before saving.</span></div>
+                        )}
+                      </div>
+
                       {/* Care Level */}
-                      <div className="flex flex-col gap-1">
+                      <div className="hidden flex-col gap-1" aria-hidden="true">
                         <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-450 dark:text-slate-400">Care Level</label>
                         <select
                           className="w-full p-3 border border-slate-250 dark:border-slate-800 bg-white dark:bg-slate-955 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 text-xs font-semibold text-slate-800 dark:text-slate-100 cursor-pointer"
@@ -12529,7 +12724,7 @@ ${err.message || err}`);
                       </div>
 
                       {/* Billing Cycle */}
-                      <div className="flex flex-col gap-1">
+                      <div className="hidden flex-col gap-1" aria-hidden="true">
                         <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-450 dark:text-slate-400">Care Billing Option</label>
                         <div className="flex gap-2">
                           <button
@@ -12562,7 +12757,7 @@ ${err.message || err}`);
                       </div>
 
                       {/* Duration Value */}
-                      <div className="flex flex-col gap-1">
+                      <div className="hidden flex-col gap-1" aria-hidden="true">
                         <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-450 dark:text-slate-400">
                           Recommended Treatment Duration ({plannerBillingCycle === "weekly" ? "Weeks" : "Months"})
                         </label>
@@ -12594,7 +12789,7 @@ ${err.message || err}`);
                       </div>
 
                       {/* Conditions Count */}
-                      <div className="flex flex-col gap-1">
+                      <div className="hidden flex-col gap-1" aria-hidden="true">
                         <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-450 dark:text-slate-400">Active Health Concerns</label>
                         <select
                           className="w-full p-3 border border-slate-255 dark:border-slate-800 bg-white dark:bg-slate-955 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 text-xs font-semibold text-slate-808 dark:text-slate-100 cursor-pointer"
@@ -12610,7 +12805,7 @@ ${err.message || err}`);
                       </div>
 
                       {/* Concession type */}
-                      <div className="flex flex-col gap-1">
+                      <div className="hidden flex-col gap-1" aria-hidden="true">
                         <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-450 dark:text-slate-450">Concession Applied</label>
                         <select
                           className="w-full p-3 border border-slate-250 dark:border-slate-800 bg-white dark:bg-slate-955 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 text-xs font-semibold text-slate-805 dark:text-slate-100 cursor-pointer"
@@ -12625,7 +12820,7 @@ ${err.message || err}`);
                       </div>
 
                       {/* Custom Override Price */}
-                      {plannerConcessionType === "Override" && (
+                      {false && plannerConcessionType === "Override" && (
                         <div className="flex flex-col gap-1 bg-amber-500/5 border border-amber-200 dark:border-amber-900/60 p-3.5 rounded-xl animate-fade-in">
                           <label className="text-[10px] font-bold text-amber-800 dark:text-amber-400 uppercase tracking-wider">Custom Override Price (₹)</label>
                           <input
@@ -12638,7 +12833,7 @@ ${err.message || err}`);
                       )}
 
                       {/* Clinical Decision Support Card */}
-                      <div className="bg-indigo-500/[0.03] dark:bg-indigo-950/10 border border-indigo-150 dark:border-indigo-900/60 p-4 rounded-2xl space-y-2 mt-2">
+                      <div className="hidden bg-indigo-500/[0.03] dark:bg-indigo-950/10 border border-indigo-150 dark:border-indigo-900/60 p-4 rounded-2xl space-y-2 mt-2" aria-hidden="true">
                         <div className="flex items-center gap-1.5 text-indigo-750 dark:text-indigo-400 font-extrabold text-[10px] uppercase tracking-wider">
                           <Brain className="w-3.5 h-3.5" />
                           <span>Clinical Recommendation Info</span>
@@ -12659,7 +12854,7 @@ ${err.message || err}`);
                       </div>
 
                       {/* Medicine Add-ons Section */}
-                      <div className="border-t border-slate-100 dark:border-slate-800 pt-3 space-y-2">
+                      <div className="hidden border-t border-slate-100 dark:border-slate-800 pt-3 space-y-2" aria-hidden="true">
                         <div className="flex justify-between items-center">
                           <span className="text-[10px] uppercase tracking-wider font-extrabold text-slate-450 dark:text-slate-450">Medicine Add-ons</span>
                           <span className="text-[9px] text-slate-400 dark:text-slate-500 font-bold font-mono">₹{calculatedPrices.addonsSum.toLocaleString("en-IN")} Total</span>
@@ -12943,17 +13138,32 @@ ${err.message || err}`);
 
                   {/* Right Column: Breakdown & Invoice (lg:col-span-7) */}
                   <div className="lg:col-span-7 space-y-6">
+                    {!plannerSimulatorDecision ? (
+                      <div className="rounded-3xl border border-dashed border-teal-300 bg-teal-50/60 p-8 text-center dark:border-teal-800 dark:bg-teal-950/20">
+                        <ShieldAlert className="mx-auto h-8 w-8 text-teal-600 dark:text-teal-300" />
+                        <h3 className="mt-3 text-sm font-black text-slate-850 dark:text-white">No physician-confirmed quotation yet</h3>
+                        <p className="mx-auto mt-2 max-w-md text-xs leading-relaxed text-slate-600 dark:text-slate-300">Complete the simulator and select “Apply to pending plan.” Fee and patient-message details will appear only after confirmation.</p>
+                      </div>
+                    ) : (<>
                     {/* Live Pricing Breakdown */}
                     <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 space-y-4 shadow-sm">
                       <h3 className="text-sm font-bold text-slate-850 dark:text-slate-200 border-b border-slate-100 dark:border-slate-800 pb-2 flex items-center gap-2">
                         <IndianRupee className="w-4 h-4 text-emerald-600" />
-                        Live Pricing Breakdown
+                        Pending Quotation Breakdown
                       </h3>
 
                       <div className="space-y-2 text-xs font-semibold text-slate-650 dark:text-slate-400">
+                        <div className="rounded-xl border border-teal-200 bg-teal-50 p-3 dark:border-teal-800 dark:bg-teal-950/30">
+                          <div className="flex justify-between gap-3"><span>Quotation</span><strong>{plannerSimulatorDecision.quotationId}</strong></div>
+                          <div className="mt-1 flex justify-between gap-3"><span>Valid until</span><strong>{new Date(plannerSimulatorDecision.validUntil).toLocaleDateString("en-IN")}</strong></div>
+                          <div className="mt-1 flex justify-between gap-3"><span>Recommended</span><strong>{CARE_LEVELS_DETAILS[plannerSimulatorDecision.recommendedPathway].title}</strong></div>
+                          <div className="mt-1 flex justify-between gap-3"><span>Physician selected</span><strong>{plannerSimulatorDecision.recommendation.title}</strong></div>
+                          {plannerSimulatorDecision.manualSelectionReason && <p className="mt-2 border-t border-teal-200 pt-2 text-[11px] dark:border-teal-800"><strong>Clinical reason:</strong> {plannerSimulatorDecision.manualSelectionReason}</p>}
+                        </div>
+                        <label className="block"><span className="mb-1 block text-[10px] font-black uppercase tracking-wider">Patient approval status</span><select className="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs font-bold text-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-white" value={plannerSimulatorDecision.approvalStatus} onChange={e => setPlannerSimulatorDecision(current => current ? { ...current, approvalStatus: e.target.value as ClinicalCareSimulatorDecision["approvalStatus"] } : current)}><option value="pending-patient-approval">Pending patient approval</option><option value="approved">Approved</option><option value="revision-requested">Revision requested</option><option value="declined">Declined</option></select></label>
                         <div className="flex justify-between items-center">
-                          <span>Clinical Care Fee:</span>
-                          <span className="font-bold text-slate-800 dark:text-slate-200 font-mono">₹{calculatedPrices.basePrice.toLocaleString("en-IN")} / {plannerBillingCycle === "weekly" ? "week" : "month"}</span>
+                          <span>Confirmed weekly care fee:</span>
+                          <span className="font-bold text-slate-800 dark:text-slate-200 font-mono">₹{calculatedPrices.basePrice.toLocaleString("en-IN")} / week</span>
                         </div>
                         {calculatedPrices.surcharge > 0 && (
                           <div className="flex justify-between items-center text-amber-705 dark:text-amber-400 bg-amber-500/5 px-2.5 py-1.5 rounded-xl border border-amber-200 dark:border-amber-900/40">
@@ -12962,17 +13172,23 @@ ${err.message || err}`);
                           </div>
                         )}
                         <div className="flex justify-between items-center border-t border-slate-100 dark:border-slate-800 pt-1.5">
-                          <span>Personalized Care Investment:</span>
-                          <span className="font-bold text-slate-800 dark:text-slate-200 font-mono">₹{calculatedPrices.adjustedBasePrice.toLocaleString("en-IN")}</span>
+                          <span>Care-period total:</span>
+                          <span className="font-bold text-slate-800 dark:text-slate-200 font-mono">₹{calculatedPrices.rawTotal.toLocaleString("en-IN")}</span>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span>Recommended Treatment Duration:</span>
-                          <span className="font-bold text-slate-850 dark:text-slate-350">{plannerDurationValue} {plannerBillingCycle === "weekly" ? (plannerDurationValue === 1 ? "week" : "weeks") : (plannerDurationValue === 1 ? "month" : "months")}</span>
+                          <span>Confirmed care period:</span>
+                          <span className="font-bold text-slate-850 dark:text-slate-350">{plannerDurationValue} {plannerDurationValue === 1 ? "week" : "weeks"}</span>
                         </div>
                         <div className="flex justify-between items-center font-bold text-slate-800 dark:text-slate-200 bg-slate-50 dark:bg-slate-950 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
-                          <span>Gross Subtotal:</span>
+                          <span>Clinical care subtotal:</span>
                           <span className="font-mono">₹{calculatedPrices.rawTotal.toLocaleString("en-IN")}</span>
                         </div>
+                        {calculatedPrices.caseSpecificSupportTotal > 0 && (
+                          <div className="flex justify-between items-center text-teal-700 dark:text-teal-300 bg-teal-500/5 px-2 py-1 rounded-lg">
+                            <span>Case-Specific Clinical Support:</span>
+                            <span className="font-mono">+₹{calculatedPrices.caseSpecificSupportTotal.toLocaleString("en-IN")}</span>
+                          </div>
+                        )}
                         {calculatedPrices.discountPercent > 0 && (
                           <div className="flex justify-between items-center text-emerald-700 dark:text-emerald-400 bg-emerald-500/5 px-2 py-1 rounded-lg">
                             <span>Continuity of Care Benefit ({calculatedPrices.discountPercent}%):</span>
@@ -12987,13 +13203,13 @@ ${err.message || err}`);
                         )}
                         {calculatedPrices.addonsSum > 0 && (
                           <div className="flex justify-between items-center text-slate-700 dark:text-slate-300">
-                            <span>Medicine Add-ons Sum:</span>
+                            <span>Itemized pharmacy medicines:</span>
                             <span className="font-bold font-mono">+₹{calculatedPrices.addonsSum.toLocaleString("en-IN")}</span>
                           </div>
                         )}
                         
                         <div className="flex justify-between items-center border-t border-slate-200 dark:border-slate-800 pt-2 text-xs font-black text-slate-850 dark:text-slate-100">
-                          <span className="text-sm">Your Treatment Investment:</span>
+                          <span className="text-sm">Pending Quotation Total:</span>
                           <span className="text-emerald-600 text-base font-black font-mono">₹{calculatedPrices.finalPrice.toLocaleString("en-IN")}</span>
                         </div>
 
@@ -13032,7 +13248,7 @@ ${err.message || err}`);
                     <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 space-y-4 shadow-sm">
                       <h3 className="text-sm font-bold text-slate-850 dark:text-slate-200 border-b border-slate-100 dark:border-slate-800 pb-2 flex items-center gap-2">
                         <Copy className="w-4 h-4 text-slate-400 dark:text-slate-500" />
-                        WhatsApp Invoice Message
+                        Patient Quotation — WhatsApp & PDF
                       </h3>
 
                       <pre className="text-[10px] text-slate-650 dark:text-slate-350 font-semibold leading-relaxed bg-slate-50 dark:bg-slate-950/60 border border-slate-250 dark:border-slate-800 rounded-2xl p-4 select-all min-h-[120px] max-h-[250px] overflow-y-auto whitespace-pre-wrap font-mono font-bold">
@@ -13063,7 +13279,31 @@ ${err.message || err}`);
                           <span>Send via WhatsApp</span>
                         </button>
                       </div>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          if (!plannerSimulatorDecision) return;
+                          const decision = plannerSimulatorDecision;
+                          const items = [
+                            { label: `${decision.durationWeeks}-week care period`, amount: decision.quote.baseCareTotal },
+                            ...(decision.quote.caseSpecificSupportTotal > 0 ? [{ label: "Case-Specific Clinical Support", amount: decision.quote.caseSpecificSupportTotal }] : []),
+                            ...decision.pharmacyItems.map(item => ({ label: `${item.type}: ${item.details}`, amount: item.amount })),
+                          ];
+                          const response = await fetch("/api/clinical-quotation/pdf", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ quotationId: decision.quotationId, patientName: activePatient?.name || "Patient", issuedAt: decision.confirmedAt, validUntil: decision.validUntil, approvalStatus: decision.approvalStatus, recommendedPathway: CARE_LEVELS_DETAILS[decision.recommendedPathway].title, selectedPathway: decision.recommendation.title, selectionMode: decision.selectionMode, manualSelectionReason: decision.manualSelectionReason, carePeriodWeeks: decision.durationWeeks, weeklyFee: decision.quote.weeklyCareFee, rationale: decision.recommendation.reasons, items, concessionAmount: decision.quote.concessionTotal, finalTotal: decision.quote.finalTotal, pricingRuleVersion: decision.pricingRuleVersion }) });
+                          if (!response.ok) { alert("Unable to generate the PDF quotation."); return; }
+                          const blob = await response.blob();
+                          const url = URL.createObjectURL(blob);
+                          const anchor = document.createElement("a");
+                          anchor.href = url;
+                          anchor.download = `${decision.quotationId}.pdf`;
+                          anchor.click();
+                          URL.revokeObjectURL(url);
+                        }}
+                        className="flex w-full items-center justify-center gap-2 rounded-full border border-teal-500 bg-white py-3 text-xs font-bold uppercase tracking-wider text-teal-800 hover:bg-teal-50 dark:bg-slate-950 dark:text-teal-200 dark:hover:bg-slate-900"
+                      ><Download className="h-4 w-4" /><span>Download branded PDF quotation</span></button>
                     </div>
+
+                    </>)}
 
                   </div>
                 </div>
@@ -30072,9 +30312,22 @@ Exported on: ${new Date().toLocaleDateString()}
                     <Receipt className="w-5 h-5 text-[#0f766e] dark:text-mint" />
                     <div>
                       <h3 className="text-lg font-bold text-[#1A2421] dark:text-slate-100">Patient Billing & Invoicing</h3>
-                      <span className="text-[9px] text-slate-500 dark:text-slate-300 font-semibold uppercase tracking-wider">
-                        Patient: {selectedInvoicePatient.name} ({selectedInvoicePatient.id})
-                      </span>
+                      <label htmlFor="invoice-patient-select" className="mt-1 flex flex-wrap items-center gap-2 text-[9px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-300">
+                        <span>Existing patient</span>
+                        <select
+                          id="invoice-patient-select"
+                          value={selectedInvoicePatient.id}
+                          onChange={(event) => handleInvoicePatientChange(event.target.value)}
+                          disabled={isGeneratingInvoice}
+                          className="max-w-[280px] rounded-lg border border-slate-200 bg-white px-2 py-1 text-[10px] font-bold normal-case tracking-normal text-slate-800 outline-none focus:border-[#0f766e] disabled:opacity-60 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
+                        >
+                          {patients.map((patient) => (
+                            <option key={patient.id} value={patient.id}>
+                              {patient.name} ({patient.id})
+                            </option>
+                          ))}
+                        </select>
+                      </label>
                     </div>
                   </div>
                   <button
@@ -30117,10 +30370,16 @@ Exported on: ${new Date().toLocaleDateString()}
                           className="w-full p-2.5 border border-slate-200 focus:border-[#0f766e] outline-none rounded-xl bg-white text-xs font-semibold text-slate-800 dark:!border-slate-400 dark:!bg-[#0A0F18] dark:!text-white"
                         >
                           <option value="" disabled>Choose a confirmed care item...</option>
-                          {INVOICE_TEMPLATES.map((t, idx) => (
-                            <option key={idx} value={idx}>
-                              {t.label} — ₹{(t.qty * t.unitPrice).toLocaleString("en-IN")}
-                            </option>
+                          {Array.from(new Set(INVOICE_TEMPLATES.map((template) => template.group))).map((group) => (
+                            <optgroup key={group} label={group}>
+                              {INVOICE_TEMPLATES.map((template, index) => ({ template, index }))
+                                .filter(({ template }) => template.group === group)
+                                .map(({ template, index }) => (
+                                  <option key={template.label} value={index}>
+                                    {template.label} — ₹{(template.qty * template.unitPrice).toLocaleString("en-IN")}
+                                  </option>
+                                ))}
+                            </optgroup>
                           ))}
                         </select>
                       </div>
@@ -30328,6 +30587,11 @@ Exported on: ${new Date().toLocaleDateString()}
                           className="w-full p-2.5 border border-slate-200 focus:border-[#0f766e] outline-none rounded-xl bg-white text-xs font-bold text-right"
                         />
                       </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                      <label><span className="mb-1.5 block text-[9px] font-bold uppercase tracking-wider text-slate-700">Administrative invoice reason</span><input value={invoiceManualReason} onChange={e => setInvoiceManualReason(e.target.value)} placeholder="Required audit note" className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs font-semibold text-slate-800" /></label>
+                      {invoiceDiscount > 0 && <label><span className="mb-1.5 block text-[9px] font-bold uppercase tracking-wider text-slate-700">Concession reason</span><input value={invoiceConcessionReason} onChange={e => setInvoiceConcessionReason(e.target.value)} placeholder="Required when concession applies" className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs font-semibold text-slate-800" /></label>}
                     </div>
 
                     {/* Price Summary */}

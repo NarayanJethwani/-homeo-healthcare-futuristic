@@ -14,6 +14,9 @@ function runSpecialtyAssessmentPricingTests() {
   assert.strictEqual(SPECIALTY_SUPPORT_TIERS.constitutional.weeklyPrice, 3_000);
   assert.strictEqual(SPECIALTY_SUPPORT_TIERS.advanced.weeklyPrice, 5_000);
   assert.strictEqual(SPECIALTY_SUPPORT_TIERS.complete.weeklyPrice, 10_000);
+  assert.deepStrictEqual(SPECIALTY_SUPPORT_TIERS.constitutional.durations, [1, 2, 4, 8, 12]);
+  assert.deepStrictEqual(SPECIALTY_SUPPORT_TIERS.advanced.durations, [1, 2, 4, 8, 12]);
+  assert.deepStrictEqual(SPECIALTY_SUPPORT_TIERS.complete.durations, [1, 2, 4, 8, 12]);
 
   assert.strictEqual(calculateSpecialtyTierTotal("constitutional", 2), 6_000);
   assert.strictEqual(calculateSpecialtyTierTotal("constitutional", 12), 36_000);
@@ -23,6 +26,7 @@ function runSpecialtyAssessmentPricingTests() {
   assert.strictEqual(calculateSpecialtyTierTotal("complete", 4), 40_000);
   assert.strictEqual(calculateSpecialtyTierTotal("complete", 12), 120_000);
   assert.strictEqual(formatSpecialtyTierTotal("complete", 12), "₹1,20,000");
+  assert.strictEqual(formatSpecialtyTierTotal("complete", 1), "₹10,000");
   assert.strictEqual(formatSpecialtyTierTotal("complete", 2), "₹20,000");
 
   const expectedOrganSystems = [
@@ -88,6 +92,7 @@ function runSpecialtyAssessmentPricingTests() {
   const plannerSource = fs.readFileSync(path.resolve(process.cwd(), "src/components/PatientPricingPlanner.tsx"), "utf8");
   const adminDashboardSource = fs.readFileSync(path.resolve(process.cwd(), "src/app/admin/dashboard/page.tsx"), "utf8");
   const invoicePreviewSource = fs.readFileSync(path.resolve(process.cwd(), "src/app/admin/invoice-preview/page.tsx"), "utf8");
+  const invoiceRouteSource = fs.readFileSync(path.resolve(process.cwd(), "src/app/api/invoice/route.ts"), "utf8");
   const googleDriveSource = fs.readFileSync(path.resolve(process.cwd(), "src/lib/googleDrive.ts"), "utf8");
   const clinicBrandingSource = fs.readFileSync(path.resolve(process.cwd(), "src/lib/clinicBranding.ts"), "utf8");
   assert.match(storeSource, /No payment at this step/);
@@ -106,11 +111,40 @@ function runSpecialtyAssessmentPricingTests() {
   assert.match(adminDashboardSource, /Acute & Wellness Care · 1 week/);
   assert.match(adminDashboardSource, /Complete Health Transformation · 2 weeks/);
   assert.match(adminDashboardSource, /Choose a confirmed care item/);
+  assert.match(adminDashboardSource, /id="invoice-patient-select"/);
+  assert.match(adminDashboardSource, /openInvoiceModal\(invoicePatient\)/);
+  assert.match(adminDashboardSource, /const effectiveInvoiceNo = invoiceNo\.trim\(\) \|\| generateInvoiceNo\(\)/);
   assert.doesNotMatch(adminDashboardSource, /General Constitutional Consultation & Case-Taking/);
   const invoiceTemplateBlock = adminDashboardSource.match(/const INVOICE_TEMPLATES = \[([\s\S]*?)\n\];/)?.[1] ?? "";
   const invoiceTemplatePrices = [...invoiceTemplateBlock.matchAll(/unitPrice:\s*(\d+)/g)].map((match) => Number(match[1]));
-  assert.ok(invoiceTemplatePrices.length >= 7, "Expected the complete set of invoice quick-add templates");
+  assert.ok(invoiceTemplatePrices.length >= 23, "Expected every care duration and support template");
   assert.ok(invoiceTemplatePrices.every((price) => price % 1000 === 0), "Every invoice template price must use ₹1,000 increments");
+  [
+    "Acute & Wellness Care · 1 week",
+    "Acute & Wellness Care · 2 weeks",
+    "Acute & Wellness Care · 4 weeks",
+    "Acute & Wellness Care · 8 weeks",
+    "Acute & Wellness Care · 12 weeks",
+    "Constitutional Care · 1 week",
+    "Constitutional Care · 2 weeks",
+    "Constitutional Care · 4 weeks",
+    "Constitutional Care · 8 weeks",
+    "Constitutional Care · 12 weeks",
+    "Advanced Constitutional Care · 1 week",
+    "Advanced Constitutional Care · 2 weeks",
+    "Advanced Constitutional Care · 4 weeks",
+    "Advanced Constitutional Care · 8 weeks",
+    "Advanced Constitutional Care · 12 weeks",
+    "Complete Health Transformation · 1 week",
+    "Complete Health Transformation · 2 weeks",
+    "Complete Health Transformation · 4 weeks",
+    "Complete Health Transformation · 8 weeks",
+    "Complete Health Transformation · 12 weeks",
+  ].forEach((label) => assert.ok(invoiceTemplateBlock.includes(label), `Missing invoice template: ${label}`));
+  assert.match(invoiceRouteSource, /Enter a valid invoice number/);
+  assert.match(invoiceRouteSource, /Select an existing patient before generating the invoice/);
+  assert.match(invoiceRouteSource, /const subtotal = items\.reduce/);
+  assert.match(invoiceRouteSource, /grandTotal: subtotal - discount/);
   assert.match(clinicBrandingSource, /CLINIC_BRAND_NAME = "Homeo Healthcare"/);
   assert.match(clinicBrandingSource, /CLINIC_LOGO_PATH = "\/images\/logo\.png"/);
   assert.ok(fs.existsSync(path.resolve(process.cwd(), "public/images/logo.png")), "The official clinic logo asset must exist");
