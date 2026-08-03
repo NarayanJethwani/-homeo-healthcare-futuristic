@@ -13,6 +13,9 @@ function runPricingPathwayTests() {
   assert.strictEqual(CARE_LEVELS_DETAILS.mild.weeklyPrice, 2_000);
   assert.strictEqual(CARE_LEVELS_DETAILS.moderate.weeklyPrice, 3_000);
   assert.strictEqual(CARE_LEVELS_DETAILS.focused.weeklyPrice, 5_000);
+  assert.strictEqual(CARE_LEVELS_DETAILS.organ.weeklyPrice, 0);
+  assert.strictEqual(CARE_LEVELS_DETAILS.organ.title, "Case-Specific Clinical Support");
+  assert.match(CARE_LEVELS_DETAILS.organ.scopeMessage, /nothing is added automatically/i);
   assert.strictEqual(CARE_LEVELS_DETAILS.comprehensive.weeklyPrice, 10_000);
   assert.strictEqual(CARE_LEVELS_DETAILS.comprehensive.title, "Complete Health Transformation Program");
   assert.match(CARE_LEVELS_DETAILS.focused.scopeMessage, /no automatic symptom or organ-system charge/i);
@@ -39,7 +42,6 @@ function runPricingPathwayTests() {
       baseCareTotal: 24_000,
       additionalAcuteEpisodeTotal: 0,
       priorityAcuteSupportTotal: 0,
-      recordsPathologyReviewTotal: 0,
       total: 24_000,
     },
   );
@@ -50,9 +52,8 @@ function runPricingPathwayTests() {
       durationWeeks: 2,
       additionalAcuteEpisode: true,
       priorityAcuteSupport: true,
-      recordsPathologyReview: true,
     }).total,
-    12_000,
+    9_000,
   );
 
   assert.strictEqual(

@@ -1,5 +1,6 @@
 import { google } from "googleapis";
 import { getCareLevelDisplayNameWithIcon } from "./pricingConfig";
+import { CLINIC_BRAND_NAME, CLINIC_LOGO_PUBLIC_URL } from "./clinicBranding";
 
 
 function getDoctorEmails(): string[] {
@@ -4222,8 +4223,8 @@ export async function createInvoiceSheet(
     }
 
     const values = [
-      ["HOMEO HEALTHCARE - INVOICE", "", "", "", ""],
-      ["", "", "", "", ""],
+      ["", CLINIC_BRAND_NAME, "", "", ""],
+      ["", "INVOICE", "", "", ""],
       ["INVOICE DETAILS", "", "", "PATIENT DETAILS", ""],
       ["Invoice Number", data.invoiceNo, "", "Patient ID", data.patientId],
       ["Invoice Date", data.date, "", "Patient Name", data.patientName],
@@ -4246,7 +4247,7 @@ export async function createInvoiceSheet(
       ["IFSC Code", "HDFC0004793", "", "", ""],
       ["Branch Name", "PAN Card Club Road Baner, Pune", "", "", ""],
       ["", "", "", "", ""],
-      ["Thank you for choosing Homeo Healthcare for your healing journey.", "", "", "", ""]
+      [`Thank you for choosing ${CLINIC_BRAND_NAME} for your healing journey.`, "", "", "", ""]
     ];
 
     await sheets.spreadsheets.values.update({
@@ -4256,13 +4257,31 @@ export async function createInvoiceSheet(
       requestBody: { values }
     });
 
+    // The logo formula is a trusted clinic-controlled value. Keep patient and
+    // invoice content RAW above so user-entered descriptions cannot become formulas.
+    await sheets.spreadsheets.values.update({
+      spreadsheetId: sheetId,
+      range: "Sheet1!A1",
+      valueInputOption: "USER_ENTERED",
+      requestBody: {
+        values: [[`=IMAGE("${CLINIC_LOGO_PUBLIC_URL}",4,60,60)`]],
+      },
+    });
+
     // 3. Style the Invoice Spreadsheet beautifully
     const stylingRequests: any[] = [
-      // Column Widths (A: 60px, B: 240px, C: 40px, D: 100px, E: 160px)
+      // Column Widths (A: 76px logo, B: 240px, C: 40px, D: 100px, E: 160px)
       {
         updateDimensionProperties: {
           range: { sheetId: 0, dimension: "COLUMNS", startIndex: 0, endIndex: 1 },
-          properties: { pixelSize: 60 },
+          properties: { pixelSize: 76 },
+          fields: "pixelSize"
+        }
+      },
+      {
+        updateDimensionProperties: {
+          range: { sheetId: 0, dimension: "ROWS", startIndex: 0, endIndex: 2 },
+          properties: { pixelSize: 38 },
           fields: "pixelSize"
         }
       },
@@ -4297,7 +4316,19 @@ export async function createInvoiceSheet(
       // Merges
       {
         mergeCells: {
-          range: { sheetId: 0, startRowIndex: 0, endRowIndex: 2, startColumnIndex: 0, endColumnIndex: 5 },
+          range: { sheetId: 0, startRowIndex: 0, endRowIndex: 2, startColumnIndex: 0, endColumnIndex: 1 },
+          mergeType: "MERGE_ALL"
+        }
+      },
+      {
+        mergeCells: {
+          range: { sheetId: 0, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 1, endColumnIndex: 5 },
+          mergeType: "MERGE_ALL"
+        }
+      },
+      {
+        mergeCells: {
+          range: { sheetId: 0, startRowIndex: 1, endRowIndex: 2, startColumnIndex: 1, endColumnIndex: 5 },
           mergeType: "MERGE_ALL"
         }
       },
@@ -4364,6 +4395,34 @@ export async function createInvoiceSheet(
             }
           },
           fields: "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)"
+        }
+      },
+      // Brand name beside the logo
+      {
+        repeatCell: {
+          range: { sheetId: 0, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 1, endColumnIndex: 5 },
+          cell: {
+            userEnteredFormat: {
+              textFormat: { fontFamily: "Inter", foregroundColor: { red: 1, green: 1, blue: 1 }, fontSize: 16, bold: true },
+              horizontalAlignment: "LEFT",
+              verticalAlignment: "BOTTOM"
+            }
+          },
+          fields: "userEnteredFormat(textFormat,horizontalAlignment,verticalAlignment)"
+        }
+      },
+      // Invoice document label below the clinic name
+      {
+        repeatCell: {
+          range: { sheetId: 0, startRowIndex: 1, endRowIndex: 2, startColumnIndex: 1, endColumnIndex: 5 },
+          cell: {
+            userEnteredFormat: {
+              textFormat: { fontFamily: "Inter", foregroundColor: { red: 204/255, green: 251/255, blue: 241/255 }, fontSize: 10, bold: true },
+              horizontalAlignment: "LEFT",
+              verticalAlignment: "TOP"
+            }
+          },
+          fields: "userEnteredFormat(textFormat,horizontalAlignment,verticalAlignment)"
         }
       },
       // Headers styling (row 3, indexes 2-3)

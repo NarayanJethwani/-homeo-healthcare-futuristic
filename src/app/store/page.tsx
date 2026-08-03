@@ -94,7 +94,6 @@ export default function StorePage() {
     const selectedSupport = [
       selection.additionalAcuteEpisode ? "Additional unrelated acute episode assessment" : null,
       selection.priorityAcuteSupport ? "Priority Acute Support" : null,
-      selection.recordsPathologyReview ? "Advanced Records & Pathology Review" : null,
     ].filter(Boolean);
 
     setAssessmentPlan({

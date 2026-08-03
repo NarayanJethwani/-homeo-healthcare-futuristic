@@ -225,13 +225,48 @@ interface Patient {
 }
 
 const INVOICE_TEMPLATES = [
-  { description: "General Constitutional Consultation & Case-Taking", qty: 1, unitPrice: 3500 },
-  { description: "Follow-up Consultation Fee", qty: 1, unitPrice: 1500 },
-  { description: "Homeopathic Remedy Supply & Compounding (1 Month)", qty: 1, unitPrice: 1500 },
-  { description: "Homeopathic Remedy Supply & Compounding (2 Months)", qty: 1, unitPrice: 3000 },
-  { description: "Homeopathic Remedy Supply & Compounding (3 Months)", qty: 1, unitPrice: 4375 },
-  { description: "Courier & Secure Medicine Shipping (India)", qty: 1, unitPrice: 300 },
-  { description: "International Medicine Shipping & Customs Handling", qty: 1, unitPrice: 2500 }
+  {
+    label: "Acute & Wellness Care · 1 week",
+    description: "Acute & Wellness Care — 1-week confirmed care period",
+    qty: 1,
+    unitPrice: 2000,
+  },
+  {
+    label: "Constitutional Care · 2 weeks",
+    description: "Constitutional Care — 2-week confirmed care period",
+    qty: 2,
+    unitPrice: 3000,
+  },
+  {
+    label: "Advanced Constitutional Care · 2 weeks",
+    description: "Advanced Constitutional Care — 2-week confirmed care period",
+    qty: 2,
+    unitPrice: 5000,
+  },
+  {
+    label: "Complete Health Transformation · 2 weeks",
+    description: "Complete Health Transformation Program — 2-week clinician-assigned care period",
+    qty: 2,
+    unitPrice: 10000,
+  },
+  {
+    label: "Priority Acute Support · 1 week",
+    description: "Priority Acute Support — 1-week physician-assigned add-on",
+    qty: 1,
+    unitPrice: 2000,
+  },
+  {
+    label: "Domestic medicine preparation & delivery",
+    description: "Prescribed medicine preparation and secure domestic delivery",
+    qty: 1,
+    unitPrice: 1000,
+  },
+  {
+    label: "International medicine preparation & delivery",
+    description: "Prescribed medicine preparation and secure international delivery",
+    qty: 1,
+    unitPrice: 3000,
+  },
 ];
 
 const COMMON_REMEDIES_KEYNOTES: Record<string, {
@@ -5211,6 +5246,11 @@ export default function AdminDashboard() {
   const [invoiceStatus, setInvoiceStatus] = useState("Paid");
   const [generatedInvoiceUrl, setGeneratedInvoiceUrl] = useState("");
   const [manualWhatsAppPhone, setManualWhatsAppPhone] = useState("");
+  const [caseSpecificSupportAmount, setCaseSpecificSupportAmount] = useState("");
+  const [caseSpecificSupportBasis, setCaseSpecificSupportBasis] = useState<"one-time" | "per-week">("one-time");
+  const [caseSpecificSupportWeeks, setCaseSpecificSupportWeeks] = useState(1);
+  const [caseSpecificSupportScope, setCaseSpecificSupportScope] = useState("");
+  const [caseSpecificSupportIncludesMedicines, setCaseSpecificSupportIncludesMedicines] = useState(false);
 
   const invoiceSubtotal = invoiceItems.reduce((sum, item) => sum + item.amount, 0);
   const invoiceGrandTotal = Math.max(0, invoiceSubtotal - invoiceDiscount);
@@ -5292,6 +5332,11 @@ export default function AdminDashboard() {
     setInvoiceStatus("Paid");
     setGeneratedInvoiceUrl("");
     setManualWhatsAppPhone("");
+    setCaseSpecificSupportAmount("");
+    setCaseSpecificSupportBasis("one-time");
+    setCaseSpecificSupportWeeks(1);
+    setCaseSpecificSupportScope("");
+    setCaseSpecificSupportIncludesMedicines(false);
     setIsInvoiceModalOpen(true);
   };
 
@@ -5327,6 +5372,41 @@ export default function AdminDashboard() {
       addInvoiceItem(template.description, template.qty, template.unitPrice);
     }
     e.target.value = ""; // Reset dropdown
+  };
+
+  const addCaseSpecificSupportToInvoice = () => {
+    const unitPrice = Number(caseSpecificSupportAmount);
+    const scope = caseSpecificSupportScope.trim();
+    const weeks = caseSpecificSupportBasis === "per-week"
+      ? Math.max(1, Math.floor(caseSpecificSupportWeeks))
+      : 1;
+
+    if (!Number.isFinite(unitPrice) || unitPrice <= 0) {
+      alert("Enter the physician-confirmed support fee.");
+      return;
+    }
+    if (!scope) {
+      alert("Describe the additional clinical scope before adding the fee.");
+      return;
+    }
+
+    const basisLabel = caseSpecificSupportBasis === "per-week"
+      ? `${weeks} ${weeks === 1 ? "week" : "weeks"} at ₹${unitPrice.toLocaleString("en-IN")}/week`
+      : "one-time";
+    const medicinesLabel = caseSpecificSupportIncludesMedicines
+      ? " Includes specially prescribed medicines when clinically indicated."
+      : "";
+
+    addInvoiceItem(
+      `Case-Specific Clinical Support (${basisLabel}) — ${scope}.${medicinesLabel}`,
+      weeks,
+      unitPrice,
+    );
+    setInvoiceStatus("Pending");
+    setCaseSpecificSupportAmount("");
+    setCaseSpecificSupportScope("");
+    setCaseSpecificSupportWeeks(1);
+    setCaseSpecificSupportIncludesMedicines(false);
   };
 
   const buildMockSheetUrl = (patient: Pick<Patient, "id" | "sheetUrl">) => {
@@ -27935,7 +28015,6 @@ Exported on: ${new Date().toLocaleDateString()}
                           <option value="🎯 Advanced Constitutional Care">{getOptionLabel("🎯 Advanced Constitutional Care — 4 weeks", 20000)}</option>
                           <option value="🔮 Complete Health Transformation Program">{getOptionLabel("🔮 Complete Health Transformation Program — clinician-assigned, indicative weekly fee", 10000)}</option>
                           <option value="🚨 Priority Acute Support">{getOptionLabel("🚨 Priority Acute Support add-on — 1 week", 2000)}</option>
-                          <option value="🫁 Advanced Records & Pathology Review">{getOptionLabel("🫁 Advanced Records & Pathology Review", 3000)}</option>
                         </select>
                       </div>
 
@@ -29985,7 +30064,7 @@ Exported on: ${new Date().toLocaleDateString()}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
                 transition={{ type: "spring", damping: 25, stiffness: 220 }}
                 data-lenis-prevent
-                className="fixed inset-0 m-auto max-w-4xl w-full p-6 md:p-8 bg-[#FAF9F6]/95 dark:bg-slate-900/95 border border-white/60 dark:border-slate-850 z-[51] shadow-2xl rounded-[36px] flex flex-col pointer-events-auto max-h-[90vh] overflow-y-auto"
+                className="admin-invoice-modal fixed inset-0 m-auto max-w-4xl w-full p-6 md:p-8 bg-[#FAF9F6]/95 dark:bg-slate-900/95 border border-white/60 dark:border-slate-850 z-[51] shadow-2xl rounded-[36px] flex flex-col pointer-events-auto max-h-[90vh] overflow-y-auto"
               >
                 {/* Modal Header */}
                 <div className="flex items-center justify-between border-b border-slate-900/5 dark:border-slate-800/40 pb-4 mb-6">
@@ -29993,7 +30072,7 @@ Exported on: ${new Date().toLocaleDateString()}
                     <Receipt className="w-5 h-5 text-[#0f766e] dark:text-mint" />
                     <div>
                       <h3 className="text-lg font-bold text-[#1A2421] dark:text-slate-100">Patient Billing & Invoicing</h3>
-                      <span className="text-[9px] text-slate-400 dark:text-slate-500 font-semibold uppercase tracking-wider">
+                      <span className="text-[9px] text-slate-500 dark:text-slate-300 font-semibold uppercase tracking-wider">
                         Patient: {selectedInvoicePatient.name} ({selectedInvoicePatient.id})
                       </span>
                     </div>
@@ -30029,23 +30108,118 @@ Exported on: ${new Date().toLocaleDateString()}
                         />
                       </div>
                       <div>
-                        <label className="block text-[9px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        <label className="block text-[9px] font-bold text-slate-700 dark:!text-slate-200 uppercase tracking-wider mb-1.5">
                           Quick Add Template
                         </label>
                         <select
                           onChange={handleTemplateSelect}
                           defaultValue=""
-                          className="w-full p-2.5 border border-slate-200 focus:border-[#0f766e] outline-none rounded-xl bg-white text-xs font-semibold text-slate-800"
+                          className="w-full p-2.5 border border-slate-200 focus:border-[#0f766e] outline-none rounded-xl bg-white text-xs font-semibold text-slate-800 dark:!border-slate-400 dark:!bg-[#0A0F18] dark:!text-white"
                         >
-                          <option value="" disabled>Select template item...</option>
+                          <option value="" disabled>Choose a confirmed care item...</option>
                           {INVOICE_TEMPLATES.map((t, idx) => (
                             <option key={idx} value={idx}>
-                              {t.description.substring(0, 30)}... (₹{t.unitPrice})
+                              {t.label} — ₹{(t.qty * t.unitPrice).toLocaleString("en-IN")}
                             </option>
                           ))}
                         </select>
                       </div>
                     </div>
+
+                    <section aria-labelledby="case-specific-support-heading" className="rounded-2xl border border-teal-200 bg-teal-50/70 p-4 dark:border-teal-900/60 dark:bg-teal-950/20">
+                      <div className="flex items-start justify-between gap-4">
+                        <div>
+                          <h5 id="case-specific-support-heading" className="text-xs font-extrabold text-[#0f766e] dark:text-mint uppercase tracking-wider">
+                            Case-Specific Clinical Support
+                          </h5>
+                          <p className="mt-1 text-[11px] font-semibold leading-relaxed text-slate-600 dark:text-slate-300">
+                            Doctor-only entry. Add an itemized fee only after assessment; the amount is never calculated from disease or organ-system count.
+                          </p>
+                        </div>
+                        <span className="shrink-0 rounded-full border border-teal-200 bg-white px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-[#0f766e] dark:border-teal-800 dark:bg-slate-900 dark:text-mint">
+                          Manual quote
+                        </span>
+                      </div>
+
+                      <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                        <div>
+                          <label htmlFor="case-support-amount" className="block text-[9px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                            Support fee (₹)
+                          </label>
+                          <input
+                            id="case-support-amount"
+                            type="number"
+                            min="1"
+                            step="1"
+                            value={caseSpecificSupportAmount}
+                            onChange={(event) => setCaseSpecificSupportAmount(event.target.value)}
+                            placeholder="Enter confirmed amount"
+                            className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs font-bold text-slate-800 outline-none focus:border-[#0f766e] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor="case-support-basis" className="block text-[9px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                            Fee basis
+                          </label>
+                          <select
+                            id="case-support-basis"
+                            value={caseSpecificSupportBasis}
+                            onChange={(event) => setCaseSpecificSupportBasis(event.target.value as "one-time" | "per-week")}
+                            className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs font-semibold text-slate-800 outline-none focus:border-[#0f766e] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                          >
+                            <option value="one-time">One-time</option>
+                            <option value="per-week">Per week</option>
+                          </select>
+                        </div>
+                        {caseSpecificSupportBasis === "per-week" && (
+                          <div>
+                            <label htmlFor="case-support-weeks" className="block text-[9px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                              Number of weeks
+                            </label>
+                            <input
+                              id="case-support-weeks"
+                              type="number"
+                              min="1"
+                              step="1"
+                              value={caseSpecificSupportWeeks}
+                              onChange={(event) => setCaseSpecificSupportWeeks(Number(event.target.value))}
+                              className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs font-bold text-slate-800 outline-none focus:border-[#0f766e] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                            />
+                          </div>
+                        )}
+                        <div className={caseSpecificSupportBasis === "per-week" ? "" : "sm:col-span-2"}>
+                          <label htmlFor="case-support-scope" className="block text-[9px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                            Additional clinical scope or reason
+                          </label>
+                          <input
+                            id="case-support-scope"
+                            type="text"
+                            value={caseSpecificSupportScope}
+                            onChange={(event) => setCaseSpecificSupportScope(event.target.value)}
+                            placeholder="e.g. extended records review and closer monitoring"
+                            className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs font-medium text-slate-800 outline-none focus:border-[#0f766e] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                          />
+                        </div>
+                      </div>
+
+                      <label className="mt-3 flex items-start gap-2 text-[11px] font-semibold text-slate-600 dark:text-slate-300">
+                        <input
+                          type="checkbox"
+                          checked={caseSpecificSupportIncludesMedicines}
+                          onChange={(event) => setCaseSpecificSupportIncludesMedicines(event.target.checked)}
+                          className="mt-0.5 accent-teal-600"
+                        />
+                        Include specially prescribed medicines when clinically indicated
+                      </label>
+
+                      <button
+                        type="button"
+                        onClick={addCaseSpecificSupportToInvoice}
+                        className="mt-4 inline-flex items-center justify-center rounded-full bg-[#0f766e] px-4 py-2.5 text-[10px] font-black uppercase tracking-wider text-white transition-colors hover:bg-[#0d645d]"
+                      >
+                        Add itemized fee to pending quotation
+                      </button>
+                    </section>
 
                     {/* Items Table */}
                     <div className="space-y-3">

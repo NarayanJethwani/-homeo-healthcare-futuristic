@@ -37,7 +37,6 @@ const ADVANCED_WEEKLY_PRICE = 5_000;
 
 export const ADDITIONAL_ACUTE_EPISODE_PRICE = 1_000;
 export const PRIORITY_ACUTE_SUPPORT_WEEKLY_PRICE = 2_000;
-export const RECORDS_PATHOLOGY_REVIEW_PRICE = 3_000;
 export const COMPLETE_HEALTH_TRANSFORMATION_WEEKLY_PRICE = 10_000;
 export const COMPLETE_HEALTH_TRANSFORMATION_DURATIONS = [2, 4, 8, 12] as const;
 
@@ -124,23 +123,22 @@ export const CARE_LEVELS_DETAILS: Record<CareLevelKey, CareLevelDetail> = {
     legacyNames: ["Deep Constitutional Care", "Deep Systemic Care", "Advanced Recovery"],
   },
   organ: {
-    title: "Advanced Records & Pathology Review",
-    weeklyPrice: RECORDS_PATHOLOGY_REVIEW_PRICE,
-    monthlyPrice: RECORDS_PATHOLOGY_REVIEW_PRICE,
-    badge: "Assessment add-on",
+    title: "Case-Specific Clinical Support",
+    weeklyPrice: 0,
+    monthlyPrice: 0,
+    badge: "Physician-assigned",
     icon: "🫁",
     complexityLabel: "Assessment",
-    description: "A focused review of substantial medical records, reports, and prior treatment history.",
-    scopeMessage: "Available from ₹3,000 when a physician recommends additional records or pathology review.",
-    bestFor: ["Substantial medical records", "Pathology reports", "Prior treatment review"],
-    features: ["Records organization", "Report review", "Clinical synthesis", "Assessment summary"],
+    description: "Additional physician work assigned only when a case needs support beyond the confirmed pathway scope.",
+    scopeMessage: "The physician may quote additional support for extended records review, closer monitoring, care coordination, or specially prescribed medicines. Nothing is added automatically.",
+    bestFor: ["Extended records review", "Closer monitoring", "Care coordination"],
+    features: ["Itemized clinical scope", "Doctor-entered fee", "Patient approval before billing", "No automatic surcharge"],
     durations: [1],
     defaultDurationWeeks: 1,
     glowColor: "rgba(16,185,129,0.15)",
     surchargeWeekly: 0,
     surchargeMonthly: 0,
-    legacyNames: ["Advanced Pathology Support", "Advanced Pathological Care"],
-    pricePrefix: "From",
+    legacyNames: ["Advanced Pathology Support", "Advanced Pathological Care", "Advanced Records & Pathology Review"],
     clinicianConfirmationRequired: true,
   },
   comprehensive: {
@@ -197,14 +195,12 @@ export interface CarePriceSelection {
   durationWeeks: number;
   additionalAcuteEpisode?: boolean;
   priorityAcuteSupport?: boolean;
-  recordsPathologyReview?: boolean;
 }
 
 export interface CarePriceSummary {
   baseCareTotal: number;
   additionalAcuteEpisodeTotal: number;
   priorityAcuteSupportTotal: number;
-  recordsPathologyReviewTotal: number;
   total: number;
 }
 
@@ -222,20 +218,14 @@ export function calculateCarePrice(selection: CarePriceSelection): CarePriceSumm
   const priorityAcuteSupportTotal = isAcute && selection.priorityAcuteSupport
     ? PRIORITY_ACUTE_SUPPORT_WEEKLY_PRICE * selection.durationWeeks
     : 0;
-  const recordsPathologyReviewTotal = selection.recordsPathologyReview
-    ? RECORDS_PATHOLOGY_REVIEW_PRICE
-    : 0;
-
   return {
     baseCareTotal,
     additionalAcuteEpisodeTotal,
     priorityAcuteSupportTotal,
-    recordsPathologyReviewTotal,
     total:
       baseCareTotal +
       additionalAcuteEpisodeTotal +
-      priorityAcuteSupportTotal +
-      recordsPathologyReviewTotal,
+      priorityAcuteSupportTotal,
   };
 }
 
@@ -249,7 +239,6 @@ export function calculateCompleteHealthTransformationPrice(durationWeeks: number
     baseCareTotal,
     additionalAcuteEpisodeTotal: 0,
     priorityAcuteSupportTotal: 0,
-    recordsPathologyReviewTotal: 0,
     total: baseCareTotal,
   };
 }

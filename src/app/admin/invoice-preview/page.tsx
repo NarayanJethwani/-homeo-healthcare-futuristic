@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Printer, ArrowLeft, Check, Copy, Download, Send, Link } from "lucide-react";
+import { CLINIC_BRAND_NAME, CLINIC_LOGO_PATH } from "@/lib/clinicBranding";
 
 interface InvoiceItem {
   description: string;
@@ -33,7 +34,7 @@ function InvoiceContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [copied, setCopied] = useState<string | null>(null);
-  const [logoUrl, setLogoUrl] = useState("/images/logo.png");
+  const [logoUrl, setLogoUrl] = useState(CLINIC_LOGO_PATH);
   const [qrCodeUrl, setQrCodeUrl] = useState("/images/payment-qr.jpg");
   const [invoice, setInvoice] = useState<InvoicePreviewData | null>(null);
   const [isLoadingInvoice, setIsLoadingInvoice] = useState(true);
@@ -41,7 +42,7 @@ function InvoiceContent() {
   const invoiceNoParam = searchParams.get("invoiceNo") || "";
 
   useEffect(() => {
-    setLogoUrl(window.location.origin + "/images/logo.png");
+    setLogoUrl(window.location.origin + CLINIC_LOGO_PATH);
     setQrCodeUrl(window.location.origin + "/images/payment-qr.jpg");
   }, []);
 
@@ -274,7 +275,7 @@ Homeo Healthcare`;
                 />
               </div>
               <h1 className="text-xl font-black text-slate-900 dark:text-slate-100 print:text-slate-900 tracking-tight">
-                Homeo Healthcare
+                {CLINIC_BRAND_NAME}
               </h1>
             </div>
             <p className="text-xs text-[#0f766e] font-bold mt-1.5 uppercase tracking-wide">

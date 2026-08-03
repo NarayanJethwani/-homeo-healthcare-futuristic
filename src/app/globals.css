@@ -178,6 +178,61 @@
   color: #94a3b8 !important;
 }
 
+/* Invoice modal is rendered through a portal outside .admin-dashboard-shell,
+   so it needs the same explicit dark-surface contrast mapping. */
+.dark .admin-invoice-modal {
+  background-color: rgba(15, 23, 42, 0.98) !important;
+  border-color: rgba(148, 163, 184, 0.28) !important;
+  color: #f8fafc;
+  color-scheme: dark;
+}
+
+.dark .admin-invoice-modal input,
+.dark .admin-invoice-modal select,
+.dark .admin-invoice-modal textarea {
+  background-color: rgba(10, 15, 24, 0.82) !important;
+  border-color: rgba(148, 163, 184, 0.62) !important;
+  color: #f8fafc !important;
+}
+
+.dark .admin-invoice-modal input:focus,
+.dark .admin-invoice-modal select:focus,
+.dark .admin-invoice-modal textarea:focus {
+  border-color: #2dd4bf !important;
+  box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.16) !important;
+}
+
+.dark .admin-invoice-modal input::placeholder,
+.dark .admin-invoice-modal textarea::placeholder {
+  color: #cbd5e1;
+  opacity: 1;
+}
+
+.dark .admin-invoice-modal option {
+  background-color: #0f172a;
+  color: #f8fafc;
+}
+
+.dark .admin-invoice-modal .text-slate-100,
+.dark .admin-invoice-modal .text-slate-200,
+.dark .admin-invoice-modal .text-slate-300,
+.dark .admin-invoice-modal .text-slate-800,
+.dark .admin-invoice-modal .text-slate-900 {
+  color: #f8fafc !important;
+}
+
+.dark .admin-invoice-modal .text-slate-400,
+.dark .admin-invoice-modal .text-slate-500,
+.dark .admin-invoice-modal .text-slate-600,
+.dark .admin-invoice-modal .text-slate-700 {
+  color: #cbd5e1 !important;
+}
+
+.admin-invoice-modal .text-\[9px\] {
+  font-size: 0.6875rem;
+  line-height: 1rem;
+}
+
 /* Accent Color System consistency mappings */
 .dark .admin-dashboard-shell .text-mint, .dark .admin-dashboard-shell .text-teal-650 { color: #14B8A6 !important; }
 .dark .admin-dashboard-shell .text-rose-600, .dark .admin-dashboard-shell .text-rose-650 { color: #EF4444 !important; }
