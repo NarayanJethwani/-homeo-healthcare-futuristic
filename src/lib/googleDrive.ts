@@ -431,6 +431,8 @@ export async function createPatientClinicalSheet(
     let newSheetId = "";
     let newSheetUrl = "";
 
+    let isTemplateCopied = false;
+
     if (TEMPLATE_SHEET_ID) {
       // 1. Copy the template clinical sheet
       try {
@@ -445,6 +447,9 @@ export async function createPatientClinicalSheet(
         });
         newSheetId = response.data.id || "";
         newSheetUrl = response.data.webViewLink || (newSheetId ? `https://docs.google.com/spreadsheets/d/${newSheetId}/edit` : "");
+        if (newSheetId) {
+          isTemplateCopied = true;
+        }
       } catch (templateCopyError) {
         console.warn("Template sheet copy failed or unshared, falling back to fresh sheet creation:", templateCopyError);
         const response = await drive.files.create({
@@ -508,7 +513,7 @@ export async function createPatientClinicalSheet(
               : "Self-Arranged Pickup (Baner Clinic, Pune)")
         : `${data.city}, ${data.state}, ${data.country}`;
 
-      if (TEMPLATE_SHEET_ID) {
+      if (isTemplateCopied) {
         // If template sheet exists, write to standard template tabs
         try {
           const today = new Date().toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" });
