@@ -289,7 +289,7 @@ function runSecurityVerification(): VerificationCheckResult[] {
 function runBuildVerification(): VerificationCheckResult[] {
   console.log("\n--- Running Build verification ---");
   const localResults: VerificationCheckResult[] = [];
-  const buildRes = runSubprocess("next-build", "npx", ["next", "build", "--webpack"]);
+  const buildRes = runSubprocess("next-build", "npm", ["run", "build"]);
   localResults.push(buildRes);
   return localResults;
 }
