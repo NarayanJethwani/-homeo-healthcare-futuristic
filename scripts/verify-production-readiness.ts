@@ -247,6 +247,7 @@ function runSecurityVerification(): VerificationCheckResult[] {
 
     // Run security-specific test scripts
     const securityTests = [
+      "adminProxySecurity.test",
       "rbacSecurity.test",
       "repertoryEntitlementExport.test",
       "repertoryExportRoute.test",
