@@ -433,17 +433,32 @@ export async function createPatientClinicalSheet(
 
     if (TEMPLATE_SHEET_ID) {
       // 1. Copy the template clinical sheet
-      const response = await drive.files.copy({
-        fileId: TEMPLATE_SHEET_ID,
-        requestBody: {
-          name: `${data.name} - Clinical Record`,
-          parents: [folderId]
-        },
-        fields: "id,webViewLink",
-        supportsAllDrives: true
-      });
-      newSheetId = response.data.id || "";
-      newSheetUrl = response.data.webViewLink || (newSheetId ? `https://docs.google.com/spreadsheets/d/${newSheetId}/edit` : "");
+      try {
+        const response = await drive.files.copy({
+          fileId: TEMPLATE_SHEET_ID,
+          requestBody: {
+            name: `${data.name} - Clinical Record`,
+            parents: [folderId]
+          },
+          fields: "id,webViewLink",
+          supportsAllDrives: true
+        });
+        newSheetId = response.data.id || "";
+        newSheetUrl = response.data.webViewLink || (newSheetId ? `https://docs.google.com/spreadsheets/d/${newSheetId}/edit` : "");
+      } catch (templateCopyError) {
+        console.warn("Template sheet copy failed or unshared, falling back to fresh sheet creation:", templateCopyError);
+        const response = await drive.files.create({
+          requestBody: {
+            name: `${data.name} - Clinical Record`,
+            mimeType: "application/vnd.google-apps.spreadsheet",
+            parents: [folderId]
+          },
+          fields: "id,webViewLink",
+          supportsAllDrives: true
+        });
+        newSheetId = response.data.id || "";
+        newSheetUrl = response.data.webViewLink || (newSheetId ? `https://docs.google.com/spreadsheets/d/${newSheetId}/edit` : "");
+      }
     } else {
       // Create a brand new empty Google Sheet inside the folder
       const response = await drive.files.create({
