@@ -12,7 +12,9 @@ import {
 import {
   SPECIALTY_CLINICAL_AREAS,
   SPECIALTY_SUPPORT_TIERS,
+  EXPERT_REVIEW_OPTIONS,
   formatSpecialtyTierTotal,
+  getClinicalAreaLeadership,
   type SpecialtyAccent,
   type SpecialtySelection,
   type SpecialtyTierKey,
@@ -56,6 +58,7 @@ export default function SpecialtySupportDirectory({ onContinue }: SpecialtySuppo
   const [selectedCondition, setSelectedCondition] = useState("");
   const [otherConcern, setOtherConcern] = useState("");
   const [organSystemBreadth, setOrganSystemBreadth] = useState<OrganSystemBreadth>();
+  const [requestedExpertReview, setRequestedExpertReview] = useState<SpecialtySelection["requestedExpertReview"]>("none");
 
   const filteredAreas = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
@@ -81,6 +84,7 @@ export default function SpecialtySupportDirectory({ onContinue }: SpecialtySuppo
     ? otherConcern.trim() || selectedCondition
     : selectedCondition;
   const canContinue = Boolean(selectedArea && resolvedCondition && organSystemBreadth);
+  const leadership = selectedArea ? getClinicalAreaLeadership(selectedArea) : null;
 
   return (
     <div className="space-y-10">
@@ -224,6 +228,26 @@ export default function SpecialtySupportDirectory({ onContinue }: SpecialtySuppo
                   ))}
                 </div>
               </div>
+
+              <div className="mt-8">
+                <span className="text-[10px] font-black uppercase tracking-[0.18em] text-mint">Step 4</span>
+                <h4 className="text-lg font-extrabold text-[#1A2421] dark:text-white mt-2">Would you like to request additional review or coordination?</h4>
+                <p className="text-xs font-semibold text-slate-600 dark:text-[#CBD5E1] mt-1">This is a request for discussion—not a booking or an automatic fee. The physician confirms whether it is appropriate.</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-4">
+                  {EXPERT_REVIEW_OPTIONS.map((option) => (
+                    <button
+                      key={option.key}
+                      type="button"
+                      aria-pressed={requestedExpertReview === option.key}
+                      onClick={() => setRequestedExpertReview(option.key)}
+                      className={`rounded-2xl border p-3 text-left transition-colors ${requestedExpertReview === option.key ? "border-mint bg-mint/10 text-[#1A2421] dark:text-white" : "border-slate-200 dark:border-white/15 bg-white/65 dark:bg-white/[0.05] text-slate-600 dark:text-[#CBD5E1]"}`}
+                    >
+                      <span className="block text-xs font-extrabold">{option.title}</span>
+                      <span className="block text-[10px] font-semibold leading-relaxed opacity-85 mt-1">{option.description}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
 
             <aside className="lg:w-[22rem] space-y-4">
@@ -251,6 +275,14 @@ export default function SpecialtySupportDirectory({ onContinue }: SpecialtySuppo
                   ))}
                 </ul>
               </div>
+              {leadership && (
+                <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white/75 dark:bg-[#111827] p-4">
+                  <Stethoscope className="h-5 w-5 text-mint" aria-hidden="true" />
+                  <h4 className="text-xs font-extrabold text-[#1A2421] dark:text-white mt-3">Who leads your care</h4>
+                  <p className="text-[11px] font-semibold leading-relaxed text-slate-650 dark:text-[#CBD5E1] mt-1.5">{leadership.careLead}</p>
+                  <p className="text-[11px] font-semibold leading-relaxed text-slate-650 dark:text-[#CBD5E1] mt-2">{leadership.referralGuidance}</p>
+                </div>
+              )}
             </aside>
           </div>
 
@@ -261,7 +293,7 @@ export default function SpecialtySupportDirectory({ onContinue }: SpecialtySuppo
               disabled={!canContinue}
               onClick={() => {
                 if (!selectedArea || !organSystemBreadth || !resolvedCondition) return;
-                onContinue({ areaId: selectedArea.id, condition: resolvedCondition, organSystemBreadth });
+                onContinue({ areaId: selectedArea.id, condition: resolvedCondition, organSystemBreadth, requestedExpertReview });
               }}
               className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-[#1A2421] px-6 py-3 text-xs font-black uppercase tracking-wider text-white transition-colors hover:bg-[#2b3a36] disabled:cursor-not-allowed disabled:opacity-40"
             >
