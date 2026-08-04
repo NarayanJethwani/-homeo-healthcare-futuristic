@@ -17,6 +17,20 @@ export type SpecialtyAccent =
 
 export type SpecialtyTierKey = "constitutional" | "advanced" | "complete";
 
+export type ExpertReviewKey =
+  | "none"
+  | "senior-physician-review"
+  | "independent-specialist-opinion"
+  | "multidisciplinary-case-conference"
+  | "care-navigation";
+
+export interface ExpertReviewOption {
+  key: ExpertReviewKey;
+  title: string;
+  description: string;
+  boundary: string;
+}
+
 export interface SpecialtySupportTier {
   key: SpecialtyTierKey;
   title: string;
@@ -42,6 +56,7 @@ export interface SpecialtySelection {
   areaId: string;
   condition: string;
   organSystemBreadth: OrganSystemBreadth;
+  requestedExpertReview: ExpertReviewKey;
 }
 
 export interface SpecialtyAssessmentRequest {
@@ -51,8 +66,58 @@ export interface SpecialtyAssessmentRequest {
   title: string;
   condition: string;
   organSystemBreadth: OrganSystemBreadth;
+  requestedExpertReview: ExpertReviewKey;
   allowedTierKeys: readonly SpecialtyTierKey[];
   durationText: "Physician-recommended after assessment";
+}
+
+export const EXPERT_REVIEW_OPTIONS: readonly ExpertReviewOption[] = [
+  {
+    key: "none",
+    title: "Standard physician assessment",
+    description: "Begin with the clinic physician; further review is recommended only if clinically appropriate.",
+    boundary: "No additional review is added automatically.",
+  },
+  {
+    key: "senior-physician-review",
+    title: "Senior physician case review",
+    description: "A deeper review of a complex history, prior care, or diagnostic uncertainty.",
+    boundary: "Any additional work and fee are discussed and approved before it is arranged.",
+  },
+  {
+    key: "independent-specialist-opinion",
+    title: "Independent specialist opinion",
+    description: "A referral or opinion from an appropriately qualified external clinician when needed.",
+    boundary: "External consultation fees and any clinic coordination are clearly itemized and patient-approved.",
+  },
+  {
+    key: "multidisciplinary-case-conference",
+    title: "Multidisciplinary case conference",
+    description: "A documented discussion involving the relevant clinicians for a genuinely complex case.",
+    boundary: "Available only when the participating clinicians and clinical purpose are confirmed.",
+  },
+  {
+    key: "care-navigation",
+    title: "Care navigation & records coordination",
+    description: "Help organizing records, referrals, and communication across the treating team.",
+    boundary: "Navigation supports care coordination; it does not replace clinical diagnosis or emergency care.",
+  },
+] as const;
+
+export function getExpertReviewOption(key: ExpertReviewKey): ExpertReviewOption {
+  return EXPERT_REVIEW_OPTIONS.find((option) => option.key === key) || EXPERT_REVIEW_OPTIONS[0];
+}
+
+export function getClinicalAreaLeadership(area: SpecialtyClinicalArea) {
+  const highComplexityArea = area.allowedTierKeys.length === 2;
+  return {
+    careLead: highComplexityArea
+      ? "Shared care: the treating specialist leads condition-specific treatment; Homeo Healthcare coordinates agreed supportive care."
+      : "Homeo Healthcare leads the initial assessment and coordinates with your treating clinician when needed.",
+    referralGuidance: highComplexityArea
+      ? "Specialist review is central to this area. We will not change prescribed treatment or delay indicated referral."
+      : "A physician may recommend specialist assessment, tests, or referral when symptoms, records, or examination findings require it.",
+  };
 }
 
 export const SPECIALTY_SUPPORT_TIERS: Record<SpecialtyTierKey, SpecialtySupportTier> = {
@@ -309,6 +374,7 @@ export function createSpecialtyAssessmentRequest(selection: SpecialtySelection):
     title: area.title,
     condition,
     organSystemBreadth: selection.organSystemBreadth,
+    requestedExpertReview: selection.requestedExpertReview,
     allowedTierKeys: area.allowedTierKeys,
     durationText: "Physician-recommended after assessment",
   };

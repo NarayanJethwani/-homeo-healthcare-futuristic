@@ -26,6 +26,8 @@ import {
   calculateSpecialtyTierTotal,
   createSpecialtyAssessmentRequest,
   findSpecialtyArea,
+  getClinicalAreaLeadership,
+  getExpertReviewOption,
   type SpecialtySelection,
 } from "@/lib/specialtyPrograms";
 
@@ -42,6 +44,9 @@ interface AssessmentPlan {
   organSystemBreadthLabel?: string;
   specialtyAreaId?: string;
   selectedCondition?: string;
+  requestedExpertReview?: string;
+  careLead?: string;
+  referralGuidance?: string;
   urgentBoundary?: string;
 }
 
@@ -120,6 +125,8 @@ export default function StorePage() {
     const request = createSpecialtyAssessmentRequest(selection);
     const area = findSpecialtyArea(request.areaId);
     if (!area) return;
+    const leadership = getClinicalAreaLeadership(area);
+    const expertReview = getExpertReviewOption(request.requestedExpertReview);
     const startingTier = SPECIALTY_SUPPORT_TIERS[request.allowedTierKeys[0]];
     const startingDuration = startingTier.durations[0];
     const organSystemBreadthLabel = getOrganSystemBreadthLabel(request.organSystemBreadth);
@@ -132,6 +139,9 @@ export default function StorePage() {
       feeDisplay: `${formatPrice(calculateSpecialtyTierTotal(startingTier.key, startingDuration))} / ${startingDuration} weeks`,
       specialtyAreaId: request.areaId,
       selectedCondition: request.condition,
+      requestedExpertReview: expertReview.title,
+      careLead: leadership.careLead,
+      referralGuidance: leadership.referralGuidance,
       organSystemBreadthLabel,
       urgentBoundary: area.urgentBoundary,
     });
@@ -171,7 +181,7 @@ export default function StorePage() {
     }
 
     const specialtyContext = assessmentPlan.specialtyAreaId
-      ? `\n\n*SPECIALTY CONTEXT*\n- Main concern: ${assessmentPlan.selectedCondition}\n- Diagnosis status: ${form.diagnosisStatus}\n- Current medicines: ${form.currentMedicines.trim() || "Not provided"}\n- Treating clinicians: ${form.treatingClinicians.trim() || "Not provided"}\n- Reports available: ${form.reportsSummary.trim() || "Not provided"}\n- Emergency-service limitation acknowledged: Yes`
+      ? `\n\n*SPECIALTY CONTEXT*\n- Main concern: ${assessmentPlan.selectedCondition}\n- Requested review or coordination: ${assessmentPlan.requestedExpertReview || "Standard physician assessment"}\n- Diagnosis status: ${form.diagnosisStatus}\n- Current medicines: ${form.currentMedicines.trim() || "Not provided"}\n- Treating clinicians: ${form.treatingClinicians.trim() || "Not provided"}\n- Reports available: ${form.reportsSummary.trim() || "Not provided"}\n- Emergency-service limitation acknowledged: Yes`
       : "";
     const message = `Hello Dr. Jethwani, I would like a clinical assessment.\n\n*PATIENT DETAILS*\n- Name: ${form.name.trim()} (${form.age.trim()} years, ${form.gender})\n- Contact: ${form.phone.trim()}\n- Email: ${form.email.trim() || "Not provided"}\n- City: ${form.city.trim() || "Not provided"}\n\n*SELECTED CARE*\n- Program: ${assessmentPlan.title}\n- Duration: ${assessmentPlan.durationText}\n- Scope: ${assessmentPlan.scopeText}\n- ${assessmentPlan.feeLabel}: ${assessmentPlan.feeDisplay}${specialtyContext}\n\n*CLINICAL HISTORY*\n${form.complaint.trim()}\n\nI understand that this is an assessment request, not a purchase. A physician will confirm suitability, care scope, duration, and the final fee before treatment begins.`;
     window.open(
@@ -208,7 +218,7 @@ export default function StorePage() {
               <Stethoscope className="w-3.5 h-3.5" aria-hidden="true" /> Care Pathways
             </button>
             <button type="button" onClick={() => setView("specialty")} className={`relative px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-2 ${view === "specialty" ? "bg-[#1A2421] text-white" : "text-slate-600 dark:text-[#CBD5E1]"}`}>
-              <LayoutGrid className="w-3.5 h-3.5" aria-hidden="true" /> Specialty Programs
+              <LayoutGrid className="w-3.5 h-3.5" aria-hidden="true" /> Clinical Areas
             </button>
           </div>
           <Link href="/store/plans" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-mint/20 hover:border-mint/60 bg-mint/5 hover:bg-mint/10 text-mint-dark dark:text-[#5EEAD4] text-xs font-extrabold uppercase tracking-wider transition-colors">
@@ -224,9 +234,9 @@ export default function StorePage() {
           ) : (
             <motion.section key="specialty" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} aria-labelledby="specialty-heading">
               <div className="max-w-4xl mb-8">
-                <span className="text-[10px] font-bold text-mint uppercase tracking-widest">Assessment-led specialty support</span>
-                <h2 id="specialty-heading" className="font-serif text-3xl md:text-4xl font-semibold text-[#1A2421] dark:text-[#F8FAFC] mt-2">Choose a health area—not a disease-priced package</h2>
-                <p className="text-sm font-semibold text-slate-600 dark:text-[#CBD5E1] leading-relaxed mt-3">Search the condition or organ system you recognize. Your selection guides clinical routing; a physician determines care intensity, duration, scope, and the fixed care-period total.</p>
+                <span className="text-[10px] font-bold text-mint uppercase tracking-widest">Integrated clinical-area care</span>
+                <h2 id="specialty-heading" className="font-serif text-3xl md:text-4xl font-semibold text-[#1A2421] dark:text-[#F8FAFC] mt-2">Find the right care team—not a disease-priced package</h2>
+                <p className="text-sm font-semibold text-slate-600 dark:text-[#CBD5E1] leading-relaxed mt-3">Choose the health area closest to your concern. We assess the right level of care, coordinate with your treating team when needed, and arrange appropriate referral or expert review.</p>
               </div>
               <SpecialtySupportDirectory onContinue={openSpecialtyAssessment} />
             </motion.section>
@@ -278,6 +288,12 @@ export default function StorePage() {
                       <p className="rounded-2xl border border-amber-300/70 bg-amber-50 p-4 text-xs font-semibold leading-relaxed text-amber-950 dark:border-amber-400/30 dark:bg-amber-400/[0.08] dark:text-amber-100">
                         <strong>Urgent-care boundary:</strong> {assessmentPlan.urgentBoundary}
                       </p>
+                    )}
+                    {assessmentPlan.careLead && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] p-4 text-xs font-semibold leading-relaxed text-slate-700 dark:text-[#CBD5E1]">
+                        <p><strong className="block text-[#1A2421] dark:text-white mb-1">Who leads care</strong>{assessmentPlan.careLead}</p>
+                        <p><strong className="block text-[#1A2421] dark:text-white mb-1">Referral & expert review</strong>{assessmentPlan.referralGuidance} Requested: {assessmentPlan.requestedExpertReview}.</p>
+                      </div>
                     )}
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

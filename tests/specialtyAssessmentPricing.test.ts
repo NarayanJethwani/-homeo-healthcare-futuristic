@@ -5,6 +5,8 @@ import {
   SPECIALTY_CLINICAL_AREAS,
   SPECIALTY_ORGAN_SYSTEMS,
   SPECIALTY_SUPPORT_TIERS,
+  EXPERT_REVIEW_OPTIONS,
+  getClinicalAreaLeadership,
   calculateSpecialtyTierTotal,
   createSpecialtyAssessmentRequest,
   formatSpecialtyTierTotal,
@@ -67,18 +69,20 @@ function runSpecialtyAssessmentPricingTests() {
     areaId: "heart-circulation",
     condition: "Hypertension",
     organSystemBreadth: "4-5",
+    requestedExpertReview: "independent-specialist-opinion",
   });
   assert.strictEqual(request.kind, "clinical-assessment");
   assert.strictEqual(request.paymentAllowed, false);
   assert.strictEqual(request.condition, "Hypertension");
   assert.strictEqual(request.organSystemBreadth, "4-5");
+  assert.strictEqual(request.requestedExpertReview, "independent-specialist-opinion");
   assert.strictEqual("finalPrice" in request, false, "A specialty assessment must not contain a payable total");
   assert.throws(
-    () => createSpecialtyAssessmentRequest({ areaId: "unknown", condition: "Concern", organSystemBreadth: "1" }),
+    () => createSpecialtyAssessmentRequest({ areaId: "unknown", condition: "Concern", organSystemBreadth: "1", requestedExpertReview: "none" }),
     /Unknown specialty clinical area/,
   );
   assert.throws(
-    () => createSpecialtyAssessmentRequest({ areaId: "heart-circulation", condition: " ", organSystemBreadth: "1" }),
+    () => createSpecialtyAssessmentRequest({ areaId: "heart-circulation", condition: " ", organSystemBreadth: "1", requestedExpertReview: "none" }),
     /condition or concern is required/i,
   );
 
@@ -86,6 +90,10 @@ function runSpecialtyAssessmentPricingTests() {
   assert.ok(cancer);
   assert.deepStrictEqual(cancer.allowedTierKeys, ["advanced", "complete"]);
   assert.match(cancer.description, /never a replacement/i);
+  assert.match(cancer.supportBoundary, /Oncology treatment/i);
+  assert.ok(EXPERT_REVIEW_OPTIONS.some((option) => option.key === "independent-specialist-opinion"));
+  assert.ok(EXPERT_REVIEW_OPTIONS.some((option) => option.key === "multidisciplinary-case-conference"));
+  assert.match(getClinicalAreaLeadership(cancer).careLead, /treating specialist leads/i);
 
   const storeSource = fs.readFileSync(path.resolve(process.cwd(), "src/app/store/page.tsx"), "utf8");
   const directorySource = fs.readFileSync(path.resolve(process.cwd(), "src/components/SpecialtySupportDirectory.tsx"), "utf8");
@@ -98,6 +106,8 @@ function runSpecialtyAssessmentPricingTests() {
   assert.match(storeSource, /No payment at this step/);
   assert.match(storeSource, /not an emergency service/);
   assert.match(directorySource, /Continue to Clinical Assessment/);
+  assert.match(directorySource, /EXPERT_REVIEW_OPTIONS/);
+  assert.match(directorySource, /Who leads your care/);
   assert.match(directorySource, /never creates an automatic surcharge/);
   assert.match(plannerSource, /Case-Specific Clinical Support/);
   assert.match(plannerSource, /Nothing is added automatically/);

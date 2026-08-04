@@ -25,6 +25,7 @@ export interface ClinicalCareSimulatorDecision {
   recommendation: ClinicalCareRecommendation;
   durationWeeks: number;
   caseSpecificSupportAmount: number;
+  caseSpecificSupportCategory: string;
   caseSpecificSupportReason: string;
   pharmacyItems: PharmacyQuoteItem[];
   concessionAmount: number;
@@ -63,6 +64,14 @@ const pharmacyTypes = [
   "Delivery",
 ];
 
+const clinicalSupportCategories = [
+  "Case-specific clinical support",
+  "Senior physician case review",
+  "External specialist coordination",
+  "Multidisciplinary case conference",
+  "Care navigation & records coordination",
+];
+
 const breadthLabels: Record<OrganBreadth, string> = {
   one: "1 organ system",
   "two-three": "2–3 organ systems",
@@ -92,6 +101,7 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
   );
   const [durationWeeks, setDurationWeeks] = useState(recommendation.suggestedDurationWeeks);
   const [supportAmount, setSupportAmount] = useState(0);
+  const [supportCategory, setSupportCategory] = useState(clinicalSupportCategories[0]);
   const [supportReason, setSupportReason] = useState("");
   const [concessionAmount, setConcessionAmount] = useState(0);
   const [concessionReason, setConcessionReason] = useState("");
@@ -125,6 +135,7 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
         setManualSelectionReason(draft.manualSelectionReason || "");
         setDurationWeeks(Number(draft.durationWeeks) || 1);
         setSupportAmount(Number(draft.supportAmount) || 0);
+        setSupportCategory(draft.supportCategory || clinicalSupportCategories[0]);
         setSupportReason(draft.supportReason || "");
         setConcessionAmount(Number(draft.concessionAmount) || 0);
         setConcessionReason(draft.concessionReason || "");
@@ -135,6 +146,7 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
         setSelectedPathway("recommended");
         setManualSelectionReason("");
         setSupportAmount(0);
+        setSupportCategory(clinicalSupportCategories[0]);
         setSupportReason("");
         setConcessionAmount(0);
         setConcessionReason("");
@@ -152,11 +164,11 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
     if (!draftHydrated) return;
     const updatedAt = new Date().toISOString();
     localStorage.setItem(`homeo.clinical-care-draft.${patientId || "standalone"}`, JSON.stringify({
-      assessment, selectedPathway, manualSelectionReason, durationWeeks, supportAmount,
+      assessment, selectedPathway, manualSelectionReason, durationWeeks, supportAmount, supportCategory,
       supportReason, concessionAmount, concessionReason, pharmacyItems, updatedAt,
     }));
     setDraftSavedAt(updatedAt);
-  }, [assessment, concessionAmount, concessionReason, draftHydrated, durationWeeks, manualSelectionReason, patientId, pharmacyItems, selectedPathway, supportAmount, supportReason]);
+  }, [assessment, concessionAmount, concessionReason, draftHydrated, durationWeeks, manualSelectionReason, patientId, pharmacyItems, selectedPathway, supportAmount, supportCategory, supportReason]);
 
   useEffect(() => {
     setDurationWeeks(current => recommendation.allowedDurationsWeeks.includes(current)
@@ -262,7 +274,13 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
                 <h4 id="clinical-support-heading" className={`${styles.subTitle} text-sm font-black`}>Case-Specific Clinical Support</h4>
                 <p className={`${styles.helperText} mt-1 text-[11px] leading-relaxed`}>Optional doctor-entered fee for documented additional review, monitoring, or coordination. It is never calculated automatically.</p>
               </div>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-5">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-7">
+                <label className="sm:col-span-2">
+                  <span className={`${labelClass} !text-[11px]`}>Support type</span>
+                  <select className={inputClass} value={supportCategory} onChange={e => { setSupportCategory(e.target.value); setConfirmed(false); }}>
+                    {clinicalSupportCategories.map(category => <option key={category}>{category}</option>)}
+                  </select>
+                </label>
                 <label className="sm:col-span-2">
                   <span className={`${labelClass} !text-[11px]`}>Support fee (₹)</span>
                   <input className={inputClass} type="number" min="0" step="1000" value={supportAmount || ""} placeholder="Enter amount" onChange={e => { setSupportAmount(Math.max(0, Number(e.target.value))); setConfirmed(false); }} />
@@ -376,7 +394,7 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
                 const now = new Date();
                 const validUntil = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
                 const quotationId = `QTN-${now.toISOString().slice(0, 10).replaceAll("-", "")}-${Math.floor(1000 + Math.random() * 9000)}`;
-                onApply({ assessment, recommendation, durationWeeks, caseSpecificSupportAmount: supportAmount, caseSpecificSupportReason: supportReason.trim(), pharmacyItems, concessionAmount: quote.concessionTotal, concessionReason: concessionReason.trim(), quote, physicianConfirmed: true, confirmedAt: now.toISOString(), quotationId, validUntil: validUntil.toISOString(), approvalStatus: "pending-patient-approval", selectionMode: selectedPathway === "recommended" ? "recommended" : "physician-override", recommendedPathway: automaticRecommendation.pathway, selectedPathway: recommendation.pathway, manualSelectionReason: manualSelectionReason.trim(), pricingRuleVersion: recommendation.version });
+                onApply({ assessment, recommendation, durationWeeks, caseSpecificSupportAmount: supportAmount, caseSpecificSupportCategory: supportCategory, caseSpecificSupportReason: supportReason.trim(), pharmacyItems, concessionAmount: quote.concessionTotal, concessionReason: concessionReason.trim(), quote, physicianConfirmed: true, confirmedAt: now.toISOString(), quotationId, validUntil: validUntil.toISOString(), approvalStatus: "pending-patient-approval", selectionMode: selectedPathway === "recommended" ? "recommended" : "physician-override", recommendedPathway: automaticRecommendation.pathway, selectedPathway: recommendation.pathway, manualSelectionReason: manualSelectionReason.trim(), pricingRuleVersion: recommendation.version });
               }} className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-teal-400 px-4 py-3 text-xs font-black uppercase tracking-wider text-slate-950 hover:bg-teal-300 disabled:cursor-not-allowed disabled:opacity-40"><ShieldCheck className="h-4 w-4" /> Apply to pending plan</button>
             </>
           )}

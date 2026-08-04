@@ -3714,6 +3714,7 @@ export default function AdminDashboard() {
       quote: plannerSimulatorDecision.quote,
       caseSpecificSupport: {
         amount: plannerSimulatorDecision.caseSpecificSupportAmount,
+        category: plannerSimulatorDecision.caseSpecificSupportCategory,
         reason: plannerSimulatorDecision.caseSpecificSupportReason,
       },
       concessionReason: plannerSimulatorDecision.concessionReason,
