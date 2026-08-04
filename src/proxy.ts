@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ADMIN_SESSION_COOKIE, verifyAdminSessionCookie } from "@/lib/adminSession";
+import { ADMIN_SESSION_COOKIE, verifyAdminSessionCookie } from "./lib/adminSession";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (pathname === "/admin" || pathname === "/admin/") {
@@ -12,17 +12,15 @@ export async function middleware(request: NextRequest) {
   if (
     pathname === "/admin/login" ||
     pathname === "/admin/login/" ||
-    pathname.startsWith("/api/admin/session") ||
-    pathname.startsWith("/api/admin/invitations/accept")
+    pathname === "/api/admin/session" ||
+    pathname === "/api/admin/invitations/accept"
   ) {
     return NextResponse.next();
   }
 
   const cookieVal = request.cookies.get(ADMIN_SESSION_COOKIE)?.value;
-  console.log(`[Middleware] pathname: ${pathname}, key: ${ADMIN_SESSION_COOKIE}, found: ${!!cookieVal}`);
 
   const session = await verifyAdminSessionCookie(cookieVal);
-  console.log(`[Middleware] session result: ${!!session}`);
 
   if (!session) {
     if (pathname.startsWith("/api/")) {
