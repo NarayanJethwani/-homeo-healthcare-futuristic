@@ -24,6 +24,13 @@ export interface TestSuiteManifestEntry {
 
 export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
   {
+    "path": "tests/adminProxySecurity.test.ts",
+    "status": "active",
+    "ownerArea": "admin-security",
+    "testLayer": "security",
+    "reason": "Validates Next.js 16 admin proxy request gate, session verification, exact route matching, 401 API responses, and fail-closed secret requirements"
+  },
+  {
     "path": "tests/clinicalCareSimulator.test.ts",
     "status": "active",
     "ownerArea": "commerce-pricing",

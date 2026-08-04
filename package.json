@@ -41,7 +41,7 @@
      "test": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register scripts/run-unit-tests.ts",
      "test:unit": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register scripts/run-unit-tests.ts",
      "test:manifest-audit": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register scripts/audit-test-manifest.ts",
-     "test:security": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/aiSecurityBoundary.test.ts tests/repertoryRouteSecurity.test.ts tests/onboardDoctorSafety.test.ts tests/evidenceFirestoreRules.test.ts",
+     "test:security": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/adminProxySecurity.test.ts && npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/aiSecurityBoundary.test.ts && npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertoryRouteSecurity.test.ts && npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/onboardDoctorSafety.test.ts && npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/evidenceFirestoreRules.test.ts",
      "test:integration": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/clinicalOsIntegration.test.ts tests/editorialWorkflow.test.ts",
      "test:emulator": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register scripts/run-emulator-tests.ts",
      "test:performance": "npx ts-node -P tests/tsconfig.test.json -r tsconfig-paths/register tests/repertoryPerformanceSafety.test.ts",
