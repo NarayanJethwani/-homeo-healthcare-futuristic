@@ -41,6 +41,13 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "plannedResolution": "Execute via npm run test:ui (Vitest/jsdom)"
   },
   {
+    "path": "tests/telemedicineSession.test.ts",
+    "status": "active",
+    "ownerArea": "clinical-ehr",
+    "testLayer": "unit",
+    "reason": "Validates Phase 3 Telemedicine media error normalization, safe device enumeration, and elapsed time formatting"
+  },
+  {
     "path": "tests/clinicalCareSimulator.test.ts",
     "status": "active",
     "ownerArea": "commerce-pricing",
