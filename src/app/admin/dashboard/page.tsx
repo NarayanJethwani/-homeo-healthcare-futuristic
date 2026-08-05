@@ -4,6 +4,7 @@ import { CARE_LEVELS_DETAILS, normalizeCareLevelName, getCareLevelDisplayName } 
 
 import { useState, useEffect, useRef, useMemo, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import dynamic from "next/dynamic";
 import { 
@@ -14621,6 +14622,15 @@ ${err.message || err}`);
 
                       {/* Google Drive Services Actions */}
                       <div className="flex items-center gap-3 w-full lg:w-auto flex-wrap">
+                        {/* Native EHR Consultation Workspace Link */}
+                        <Link
+                          href={`/admin/clinical/consultation?patientId=${patient.id}`}
+                          className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4.5 py-3 rounded-full bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white text-xs font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer"
+                        >
+                          <Stethoscope className="w-4 h-4 text-emerald-200" />
+                          <span>Start Consultation</span>
+                        </Link>
+
                         {/* Repertory Quick Action */}
                         <button
                           onClick={() => {
