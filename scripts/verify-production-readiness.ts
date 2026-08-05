@@ -174,7 +174,8 @@ function runStaticVerification(): VerificationCheckResult[] {
     "tests/hydrationAndTiming.test.tsx",
     "tests/graphPerformance.test.tsx",
     "tests/miasmaticFiltering.test.tsx",
-    "tests/providerTelemetryDashboard.test.tsx"
+    "tests/providerTelemetryDashboard.test.tsx",
+    "tests/consultationWorkspace.test.tsx"
   ]);
   localResults.push(uiTestRes);
 
