@@ -14,6 +14,7 @@ import {
 } from "../domain/consultation.types";
 import { ClinicalNotesPanel } from "./ClinicalNotesPanel";
 import { TelemedicinePanel } from "./TelemedicinePanel";
+import { RepertoryIntelligencePanel } from "./RepertoryIntelligencePanel";
 import { StructuredClinicalNotes, DEFAULT_CLINICAL_NOTES } from "../types/clinical-notes.types";
 
 interface ConsultationWorkspaceShellProps {
@@ -33,6 +34,7 @@ export function ConsultationWorkspaceShell({
     initialIntake?.outcome || ""
   );
   const [notes, setNotes] = useState<StructuredClinicalNotes>(DEFAULT_CLINICAL_NOTES);
+  const [prescriptionRemedy, setPrescriptionRemedy] = useState<string>("");
 
   // Concurrency & Revision State
   const [recordVersion, setRecordVersion] = useState<number>(
@@ -240,28 +242,17 @@ export function ConsultationWorkspaceShell({
         </div>
 
         {/* Panel 3: AI Repertory Workbench & Remedy Analysis */}
-        <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 flex flex-col min-h-0 overflow-hidden">
-          <div className="flex items-center justify-between mb-3 border-b border-slate-800 pb-2">
-            <div className="flex items-center space-x-2 text-purple-400">
-              <Brain className="w-4 h-4" />
-              <h2 className="font-semibold text-sm text-slate-100">AI Repertory & Totality</h2>
-            </div>
-            <span className="text-[10px] px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20 font-mono">
-              7,000+ Rubrics
-            </span>
-          </div>
-
-          <div className="flex-1 overflow-y-auto space-y-3 pr-1 text-xs">
-            <input
-              type="text"
-              placeholder="Search rubrics (e.g. stomach acidity, fear height)..."
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-purple-500 text-xs"
-            />
-            <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center space-y-1">
-              <div className="text-slate-400 font-medium">Remedy Totality Ranker</div>
-              <div className="text-[11px] text-slate-500">Deterministic scoring & Materia Medica keynotes comparator ready</div>
-            </div>
-          </div>
+        <div className="flex flex-col min-h-0 overflow-hidden">
+          <RepertoryIntelligencePanel
+            patientId={patientId}
+            consultationId={initialIntake?.id || "consultation_draft"}
+            chiefComplaints={notes.chiefComplaints.map((c) => c.complaint)}
+            patientThermal={notes.thermalState === "hot" ? "warm" : notes.thermalState === "chilly" ? "chilly" : "ambithermal"}
+            patientMiasm={notes.miasmaticExpression}
+            onSelectRemedyForPrescription={(remedyId, remedyName) => {
+              setPrescriptionRemedy(remedyName);
+            }}
+          />
         </div>
 
         {/* Panel 4: Digital Prescription & Dispatch Builder */}
@@ -279,7 +270,9 @@ export function ConsultationWorkspaceShell({
               <label className="block text-slate-400 mb-1 font-medium">Selected Remedy</label>
               <input
                 type="text"
-                placeholder="e.g. Nux Vomica 200C"
+                value={prescriptionRemedy}
+                onChange={(e) => setPrescriptionRemedy(e.target.value)}
+                placeholder="Select from Panel 3 or enter remedy e.g. Nux Vomica 200C..."
                 className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-emerald-500 text-xs"
               />
             </div>

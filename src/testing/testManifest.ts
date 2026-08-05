@@ -48,6 +48,20 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "reason": "Validates Phase 3 Telemedicine media error normalization, safe device enumeration, and elapsed time formatting"
   },
   {
+    "path": "tests/consultation/remedyScoring.test.ts",
+    "status": "active",
+    "ownerArea": "clinical-ehr",
+    "testLayer": "unit",
+    "reason": "Validates Phase 4 deterministic remedy totality scoring, snapshot hashing, characteristic multipliers, and tie-breaking"
+  },
+  {
+    "path": "tests/consultation/clinicalSafety.test.ts",
+    "status": "active",
+    "ownerArea": "clinical-ehr",
+    "testLayer": "unit",
+    "reason": "Validates Phase 4 governed emergency red-flag safety triage and clinician disposition workflows"
+  },
+  {
     "path": "tests/clinicalCareSimulator.test.ts",
     "status": "active",
     "ownerArea": "commerce-pricing",
