@@ -12,6 +12,8 @@ import {
   ConsultationOutcome,
   isValidLifecycleTransition
 } from "../domain/consultation.types";
+import { ClinicalNotesPanel } from "./ClinicalNotesPanel";
+import { StructuredClinicalNotes, DEFAULT_CLINICAL_NOTES } from "../types/clinical-notes.types";
 
 interface ConsultationWorkspaceShellProps {
   patientId: string;
@@ -29,6 +31,7 @@ export function ConsultationWorkspaceShell({
   const [outcome, setOutcome] = useState<ConsultationOutcome | "">(
     initialIntake?.outcome || ""
   );
+  const [notes, setNotes] = useState<StructuredClinicalNotes>(DEFAULT_CLINICAL_NOTES);
 
   // Concurrency & Revision State
   const [recordVersion, setRecordVersion] = useState<number>(
@@ -245,31 +248,13 @@ export function ConsultationWorkspaceShell({
         </div>
 
         {/* Panel 2: Structured Clinical Documentation */}
-        <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 flex flex-col min-h-0 overflow-hidden">
-          <div className="flex items-center justify-between mb-3 border-b border-slate-800 pb-2">
-            <div className="flex items-center space-x-2 text-teal-400">
-              <FileText className="w-4 h-4" />
-              <h2 className="font-semibold text-sm text-slate-100">Clinical Intake Notes</h2>
-            </div>
-            <span className="text-[10px] text-slate-500 font-mono">Structured</span>
-          </div>
-
-          <div className="flex-1 overflow-y-auto space-y-3 pr-1 text-xs">
-            <div>
-              <label className="block text-slate-400 mb-1 font-medium">Chief Complaints & Timeline</label>
-              <textarea
-                placeholder="Enter patient chief complaints, onset, duration..."
-                className="w-full h-24 bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:outline-none focus:border-teal-500 resize-none text-xs"
-              />
-            </div>
-            <div>
-              <label className="block text-slate-400 mb-1 font-medium">Physical & Mental Generals</label>
-              <textarea
-                placeholder="Appetite, thirst, thermal state, fears, modalities..."
-                className="w-full h-24 bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:outline-none focus:border-teal-500 resize-none text-xs"
-              />
-            </div>
-          </div>
+        <div className="flex flex-col min-h-0 overflow-hidden">
+          <ClinicalNotesPanel
+            notes={notes}
+            onChange={setNotes}
+            outcome={outcome || undefined}
+            readOnly={status === "completed"}
+          />
         </div>
 
         {/* Panel 3: AI Repertory Workbench & Remedy Analysis */}
