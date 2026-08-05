@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { randomUUID } from "crypto";
 import { requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiAuth";
 import { StructuredClinicalNotes } from "@/features/consultation/types/clinical-notes.types";
 import { ConsultationLifecycleStatus } from "@/features/consultation/domain/consultation.types";
@@ -72,13 +73,16 @@ export async function POST(req: NextRequest) {
       updatedAt: timestamp,
     };
 
-    // Audit event matching canonical ConsultationAuditEvent schema
+    if (!session.uid || !session.role) {
+      return unauthorizedApiResponse();
+    }
+
     const auditEvent = {
-      id: `audit_evt_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+      id: `audit_evt_${randomUUID()}`,
       consultationId: body.consultationId,
       patientId: body.patientId,
-      actorId: session.uid || "admin_user",
-      actorRole: session.role || "physician",
+      actorId: session.uid,
+      actorRole: session.role,
       eventType: "transcript_excerpt_accepted" as const,
       occurredAt: timestamp,
       metadata: {
