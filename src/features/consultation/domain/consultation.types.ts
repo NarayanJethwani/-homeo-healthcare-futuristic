@@ -101,6 +101,82 @@ export interface FollowUpClinicalIntake {
   updatedPlanNotes?: string;
 }
 
+export type ConsultationLifecycleStatus =
+  | "scheduled"
+  | "waiting"
+  | "active"
+  | "paused"
+  | "completed"
+  | "cancelled"
+  | "archived";
+
+export const ALLOWED_CONSULTATION_TRANSITIONS: Record<ConsultationLifecycleStatus, readonly ConsultationLifecycleStatus[]> = {
+  scheduled: ["waiting", "cancelled"],
+  waiting: ["active", "cancelled"],
+  active: ["paused", "completed", "cancelled"],
+  paused: ["active", "completed", "cancelled"],
+  completed: ["archived"],
+  cancelled: ["archived"],
+  archived: [],
+} as const;
+
+export type ConsultationOutcome =
+  | "prescription_issued"
+  | "no_prescription"
+  | "follow_up_required"
+  | "referred";
+
+export interface ConsultationAssignment {
+  assignedClinicianId: string;
+  claimedAt?: string;
+  lastActivityAt?: string;
+  claimExpiresAt?: string;
+}
+
+export interface ConsultationRevision {
+  version: number;
+  updatedAt: string;
+  updatedBy: string;
+}
+
+export interface ConsultationAuditEvent {
+  id: string;
+  consultationId: string;
+  patientId: string;
+  actorId: string;
+  actorRole: string;
+  eventType:
+    | "consultation_created"
+    | "consultation_started"
+    | "consultation_resumed"
+    | "consultation_paused"
+    | "consultation_cancelled"
+    | "consultation_completed"
+    | "draft_saved"
+    | "draft_conflict_detected"
+    | "rubric_added"
+    | "rubric_removed"
+    | "remedy_selected"
+    | "transcript_excerpt_accepted"
+    | "prescription_finalized"
+    | "prescription_document_generated"
+    | "prescription_dispatch_requested"
+    | "prescription_dispatch_succeeded"
+    | "prescription_dispatch_failed";
+  occurredAt: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface CompletionReadiness {
+  ready: boolean;
+  outcomeSelected: boolean;
+  clinicalValidationErrors: string[];
+  prescriptionValidationErrors: string[];
+  staleRevision: boolean;
+  saveInProgress: boolean;
+  completionInProgress: boolean;
+}
+
 export interface ClinicalIntake {
   id: ConsultationId;
   encounterId: EncounterId;
@@ -108,6 +184,15 @@ export interface ClinicalIntake {
   organizationId: OrganizationId;
   clinicId?: ClinicId;
   treatmentEpisodeId?: EpisodeId;
+
+  lifecycleStatus?: ConsultationLifecycleStatus;
+  outcome?: ConsultationOutcome;
+  assignment?: ConsultationAssignment;
+  startedAt?: string;
+  pausedAt?: string;
+  completedAt?: string;
+  accumulatedActiveSeconds?: number;
+  revision?: ConsultationRevision;
 
   chiefComplaints: SymptomRecord[];
   historyPresentIllness?: string;
@@ -129,6 +214,14 @@ export interface ClinicalIntake {
   schemaVersion: number;
   recordVersion: number;
   provenance: Provenance;
+}
+
+export function isValidLifecycleTransition(
+  current: ConsultationLifecycleStatus,
+  next: ConsultationLifecycleStatus
+): boolean {
+  const allowed = ALLOWED_CONSULTATION_TRANSITIONS[current] || [];
+  return allowed.includes(next);
 }
 
 export function hasMeaningfulMentalGenerals(input: MentalGenerals): boolean {
@@ -154,3 +247,4 @@ export function hasMeaningfulPhysicalGenerals(input: PhysicalGenerals): boolean 
   
   return textFields.some(field => input[field] && input[field]!.trim().length > 0);
 }
+

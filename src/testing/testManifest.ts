@@ -31,6 +31,16 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "reason": "Validates Next.js 16 admin proxy request gate, session verification, exact route matching, 401 API responses, and fail-closed secret requirements"
   },
   {
+    "path": "tests/consultationWorkspace.test.tsx",
+    "status": "quarantined",
+    "ownerArea": "clinical-ehr",
+    "testLayer": "unit",
+    "reason": "UI component rendering test requiring Vitest jsdom React Testing Library runner",
+    "risk": "low",
+    "trackingIssue": "QUARANTINE-TESTS-CONSULTATIONWORKSPACE-TEST-TSX",
+    "plannedResolution": "Execute via npm run test:ui (Vitest/jsdom)"
+  },
+  {
     "path": "tests/clinicalCareSimulator.test.ts",
     "status": "active",
     "ownerArea": "commerce-pricing",
