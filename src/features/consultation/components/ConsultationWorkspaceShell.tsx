@@ -13,6 +13,7 @@ import {
   isValidLifecycleTransition
 } from "../domain/consultation.types";
 import { ClinicalNotesPanel } from "./ClinicalNotesPanel";
+import { TelemedicinePanel } from "./TelemedicinePanel";
 import { StructuredClinicalNotes, DEFAULT_CLINICAL_NOTES } from "../types/clinical-notes.types";
 
 interface ConsultationWorkspaceShellProps {
@@ -214,37 +215,18 @@ export function ConsultationWorkspaceShell({
       <main className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-4 p-4 min-h-0 overflow-hidden bg-slate-950">
         
         {/* Panel 1: Patient Context & Telemedicine Console */}
-        <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 flex flex-col min-h-0 overflow-hidden">
-          <div className="flex items-center justify-between mb-3 border-b border-slate-800 pb-2">
-            <div className="flex items-center space-x-2 text-teal-400">
-              <User className="w-4 h-4" />
-              <h2 className="font-semibold text-sm text-slate-100">Patient & Telemed</h2>
-            </div>
-            <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">
-              Ready
-            </span>
-          </div>
-
-          <div className="flex-1 overflow-y-auto space-y-4 pr-1 text-xs">
-            {/* Patient Context Summary */}
-            <div className="bg-slate-950 p-3 rounded-xl border border-slate-800/80 space-y-2">
-              <div className="text-slate-300 font-medium">Patient Details</div>
-              <div className="text-slate-400">ID: <span className="text-slate-200 font-mono">{patientId}</span></div>
-              <div className="text-slate-400">Allergies: <span className="text-emerald-400 font-medium">No Known Allergies</span></div>
-              <div className="text-slate-400">Diagnoses: <span className="text-amber-400 font-medium">Chronic Dyspepsia</span></div>
-            </div>
-
-            {/* Telemedicine Video Container Placeholder */}
-            <div className="bg-slate-950 rounded-xl border border-slate-800 p-3 flex flex-col items-center justify-center space-y-2 min-h-[160px] text-center">
-              <Video className="w-8 h-8 text-slate-600" />
-              <div className="text-slate-400 font-medium text-xs">WebRTC Telemed Container</div>
-              <div className="text-[11px] text-slate-500">Camera & Microphone Adapter Ready</div>
-              <div className="flex space-x-2 mt-2">
-                <button className="p-2 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700"><Mic className="w-3.5 h-3.5" /></button>
-                <button className="p-2 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700"><Video className="w-3.5 h-3.5" /></button>
-              </div>
-            </div>
-          </div>
+        <div className="flex flex-col min-h-0 overflow-hidden">
+          <TelemedicinePanel
+            patientId={patientId}
+            consultationId={initialIntake?.id || "consultation_draft"}
+            startedAt={initialIntake?.startedAt}
+            pausedAt={initialIntake?.pausedAt}
+            isPaused={status === "paused"}
+            isCompleted={status === "completed"}
+            consent={{ status: "granted", recordedAt: new Date().toISOString(), recordedBy: "patient_portal" }}
+            currentNotes={notes}
+            onNotesUpdated={setNotes}
+          />
         </div>
 
         {/* Panel 2: Structured Clinical Documentation */}
