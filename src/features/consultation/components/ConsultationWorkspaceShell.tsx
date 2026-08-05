@@ -15,6 +15,7 @@ import {
 import { ClinicalNotesPanel } from "./ClinicalNotesPanel";
 import { TelemedicinePanel } from "./TelemedicinePanel";
 import { RepertoryIntelligencePanel } from "./RepertoryIntelligencePanel";
+import { PrescriptionPanel } from "./PrescriptionPanel";
 import { StructuredClinicalNotes, DEFAULT_CLINICAL_NOTES } from "../types/clinical-notes.types";
 
 interface ConsultationWorkspaceShellProps {
@@ -256,34 +257,19 @@ export function ConsultationWorkspaceShell({
         </div>
 
         {/* Panel 4: Digital Prescription & Dispatch Builder */}
-        <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 flex flex-col min-h-0 overflow-hidden">
-          <div className="flex items-center justify-between mb-3 border-b border-slate-800 pb-2">
-            <div className="flex items-center space-x-2 text-emerald-400">
-              <Pill className="w-4 h-4" />
-              <h2 className="font-semibold text-sm text-slate-100">Prescription Builder</h2>
-            </div>
-            <span className="text-[10px] text-slate-500 font-mono">PDF Ready</span>
-          </div>
-
-          <div className="flex-1 overflow-y-auto space-y-3 pr-1 text-xs">
-            <div>
-              <label className="block text-slate-400 mb-1 font-medium">Selected Remedy</label>
-              <input
-                type="text"
-                value={prescriptionRemedy}
-                onChange={(e) => setPrescriptionRemedy(e.target.value)}
-                placeholder="Select from Panel 3 or enter remedy e.g. Nux Vomica 200C..."
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-emerald-500 text-xs"
-              />
-            </div>
-            <div>
-              <label className="block text-slate-400 mb-1 font-medium">Dosage & Instructions</label>
-              <textarea
-                placeholder="4 pills twice daily after meals for 2 weeks..."
-                className="w-full h-24 bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:outline-none focus:border-emerald-500 resize-none text-xs"
-              />
-            </div>
-          </div>
+        <div className="flex flex-col min-h-0 overflow-hidden">
+          <PrescriptionPanel
+            patientId={patientId}
+            consultationId={initialIntake?.id || "consultation_draft"}
+            recordVersion={recordVersion}
+            notes={notes}
+            selectedRemedyName={prescriptionRemedy}
+            onConsultationCompleted={(newOutcome, newRecordVersion) => {
+              setStatus("completed");
+              setOutcome(newOutcome);
+              setRecordVersion(newRecordVersion);
+            }}
+          />
         </div>
 
       </main>

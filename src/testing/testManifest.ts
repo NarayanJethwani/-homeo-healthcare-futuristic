@@ -62,6 +62,27 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "reason": "Validates Phase 4 governed emergency red-flag safety triage and clinician disposition workflows"
   },
   {
+    "path": "tests/consultation/prescriptionValidation.test.ts",
+    "status": "active",
+    "ownerArea": "clinical-ehr",
+    "testLayer": "unit",
+    "reason": "Validates Phase 5 pure digital prescription validation, outcome-dependent validation, and guarded completion readiness"
+  },
+  {
+    "path": "tests/consultation/guardedCompletion.test.ts",
+    "status": "active",
+    "ownerArea": "clinical-ehr",
+    "testLayer": "unit",
+    "reason": "Validates Phase 5 idempotent consultation completion, version increment, and audit logging"
+  },
+  {
+    "path": "tests/consultation/prescriptionImmutability.test.ts",
+    "status": "active",
+    "ownerArea": "clinical-ehr",
+    "testLayer": "unit",
+    "reason": "Validates Phase 5 prescription revision immutability, amendment linkage, and decoupled pharmacy dispatch status"
+  },
+  {
     "path": "tests/clinicalCareSimulator.test.ts",
     "status": "active",
     "ownerArea": "commerce-pricing",
