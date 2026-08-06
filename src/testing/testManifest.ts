@@ -1564,5 +1564,19 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "ownerArea": "knowledge-expansion",
     "testLayer": "governance",
     "reason": "M12 KEP-5 Polycrest & Key Remedy Coverage Wave 4 (10 major key remedies - R0035, R0036, R0039, R0040, R0042, R0044, R0045, R0048, R0049, R0054) v1.1.0 upgrades, 50 draft graph proposals, 100-case offline evaluation with 20 negative controls, toxicology/safety boundaries, and program completion authorization boundary"
+  },
+  {
+    "path": "tests/softLaunchManualPayment.test.ts",
+    "status": "active",
+    "ownerArea": "commerce-pricing",
+    "testLayer": "unit",
+    "reason": "Validates v1.0 simplified soft launch without payment gateway: PAYMENT_GATEWAY_ENABLED=false, manual payment workflow, integer paise verification, duplicate reference detection, immutable reversal events, patient status write prohibition, and governed care activation rules"
+  },
+  {
+    "path": "tests/storeClinicalCare.test.ts",
+    "status": "active",
+    "ownerArea": "commerce-pricing",
+    "testLayer": "unit",
+    "reason": "Validates isolated /store Clinical Care Page Upgrade: STORE_CLINICAL_CARE_V1_ENABLED=true, patient-facing care names (Focused, Integrated, Complex, Advanced), integer paise totals across 1/2/4/8/12 week durations, 8-step patient intake journey, DTO sanitization, included homeopathic medicines, emergency notice, and zero payment triggers"
   }
 ];
