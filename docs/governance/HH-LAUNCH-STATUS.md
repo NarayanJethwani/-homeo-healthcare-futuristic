@@ -5,12 +5,12 @@
 - **Document ID**: `HH-LAUNCH-STATUS`
 - **Platform Release Target**: `v1.0.0`
 - **Current Operational Release Posture**: **`LIVE — Production Release v1.0`**
-- **Release Scope Statement**: Manual payment coordination is the production payment workflow for v1.0. Online payment gateway (Razorpay) integration is deferred to v1.1. Platform is LIVE in production following successful deployment and end-to-end smoke test completion.
-- **Deployed Commit SHA**: `94b643687b6103ed9b1295713dddc641ae77da66` (`94b6436`)
-- **Deployment ID**: `DEPLOY-20260806-PROD-V100`
-- **Deployment Timestamp**: `2026-08-06 18:45:00 UTC`
+- **Release Scope Statement**: Manual payment coordination is the production payment workflow for v1.0. Online payment gateway (Razorpay) integration is deferred to v1.1. Platform is LIVE in production following successful deployment and public URL live verification.
+- **Deployed Commit SHA**: `94b643687b6103ed9b1295713dddc641ae77da66` (`94b6436`), Merged SHA: `c5d3fe8`
+- **Vercel Deployment ID**: `homeo-healthcare-futuristic-qw9cw7jc7`
+- **Deployment Timestamp**: `2026-08-06 19:20:41 UTC`
 - **Lead Tester & Approver**: Platform Steering Committee & DevOps Lead
-- **Last Updated**: `2026-08-06 18:45:00 UTC`
+- **Last Updated**: `2026-08-06 19:20:41 UTC`
 - **Dashboard Owner**: Platform Steering Committee & DevOps Lead
 
 ---
