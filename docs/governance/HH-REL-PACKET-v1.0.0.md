@@ -240,12 +240,12 @@ Production Verification Evidence Bound:        reports/production-readiness-repo
 
 ## 14. Formal Release Recommendation & Status
 
-> **Canonical Release Status Statement**: **LIVE — Production Release v1.0**  
+> **Canonical Release Statement**: **LIVE — Production Release v1.0**  
 > Manual payment coordination is the production payment workflow. Razorpay remains deferred to v1.1.
 
-- **Deployment ID**: `DEPLOY-20260806-PROD-V100`
-- **Deployed Commit SHA**: `94b643687b6103ed9b1295713dddc641ae77da66` (`94b6436`)
-- **Build & Verification Timestamp**: `2026-08-06 18:45:00 UTC`
+- **Vercel Deployment ID**: `homeo-healthcare-futuristic-qw9cw7jc7`
+- **Deployed Commit SHA**: `94b643687b6103ed9b1295713dddc641ae77da66` (`94b6436`), Merged SHA: `c5d3fe8`
+- **Build & Verification Timestamp**: `2026-08-06 19:20:41 UTC`
 - **Lead Tester & Approver**: Platform Steering Committee & DevOps Lead
 - **ESLint Audit Notice**: 0 build errors. 936 static analysis warnings retained in release audit log as non-release-blocking notices.
 
