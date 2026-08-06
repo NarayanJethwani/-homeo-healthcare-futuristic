@@ -4,6 +4,7 @@ import { requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiA
 import { ConsultationOutcome, PrescriptionDraft } from "@/features/consultation/types/prescription.types";
 import { StructuredClinicalNotes } from "@/features/consultation/types/clinical-notes.types";
 import { validatePrescriptionDraft } from "@/features/consultation/utils/prescription-validation";
+import { idempotencyRepository, auditRepository } from "@/features/consultation/repositories/consultationRepositories";
 
 export async function POST(req: NextRequest) {
   const session = await requireAdminApiSession(req);
@@ -29,7 +30,26 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Outcome-dependent validation
+    // 1. Compound Idempotency Reservation
+    const idempKey = body.idempotencyKey || `idemp_cmp_${randomUUID()}`;
+    const idempResult = await idempotencyRepository.reserveIdempotencyKey({
+      actorId: session.uid,
+      operation: "complete_consultation",
+      consultationId: body.consultationId,
+      idempotencyKey: idempKey,
+      requestPayload: { consultationId: body.consultationId, outcome: body.outcome, version: body.recordVersion },
+    });
+
+    if (idempResult.isDuplicate && idempResult.existingRecord?.status === "completed") {
+      return NextResponse.json({
+        success: true,
+        lifecycleStatus: "completed",
+        outcome: body.outcome,
+        idempotencyStatus: "replay",
+      });
+    }
+
+    // 2. Outcome-dependent Prescription Validation
     if (body.outcome === "prescription_issued") {
       if (!body.prescriptionDraft) {
         return NextResponse.json(
@@ -50,7 +70,11 @@ export async function POST(req: NextRequest) {
     const timestamp = new Date().toISOString();
     const updatedRecordVersion = body.recordVersion + 1;
 
-    const auditEvent = {
+    // 3. Complete Idempotency & Log Server Audit Event
+    const compoundKey = idempotencyRepository.createCompoundKey(session.uid, "complete_consultation", body.consultationId, idempKey);
+    await idempotencyRepository.completeIdempotency(compoundKey, body.consultationId);
+
+    await auditRepository.logAuditEvent({
       id: `audit_evt_${randomUUID()}`,
       consultationId: body.consultationId,
       patientId: body.patientId,
@@ -60,12 +84,10 @@ export async function POST(req: NextRequest) {
       occurredAt: timestamp,
       metadata: {
         outcome: body.outcome,
-        idempotencyKey: body.idempotencyKey || `idemp_${randomUUID()}`,
+        idempotencyKey: idempKey,
         recordVersion: updatedRecordVersion,
       },
-    };
-
-    console.log(`[Audit] consultation_completed logged for consultation=${body.consultationId}, outcome=${body.outcome}`);
+    });
 
     return NextResponse.json({
       success: true,
@@ -73,7 +95,6 @@ export async function POST(req: NextRequest) {
       outcome: body.outcome,
       recordVersion: updatedRecordVersion,
       completedAt: timestamp,
-      auditEvent,
     });
   } catch (err) {
     return NextResponse.json(

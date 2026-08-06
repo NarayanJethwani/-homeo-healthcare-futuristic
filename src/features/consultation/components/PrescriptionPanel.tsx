@@ -64,6 +64,7 @@ export function PrescriptionPanel({
   const [isCompleting, setIsCompleting] = useState<boolean>(false);
   const [isDispatching, setIsDispatching] = useState<boolean>(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [finalizedDocumentId, setFinalizedDocumentId] = useState<string | null>(null);
 
   // Draft Preview Drawer State
   const [isPreviewOpen, setIsPreviewOpen] = useState<boolean>(false);
@@ -130,6 +131,35 @@ export function PrescriptionPanel({
       }),
     [notes, outcome, currentDraft, isAnalysisStale, isSavingDraft, isCompleting]
   );
+
+  // Finalize Prescription & Generate Canonical PDF
+  const handleFinalizePrescription = async () => {
+    setIsSavingDraft(true);
+    setStatusMessage(null);
+    try {
+      const res = await fetch("/api/admin/clinical/consultation/finalize-prescription", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          patientId,
+          consultationId,
+          prescriptionDraft: currentDraft,
+          isAnalysisStale,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setFinalizedDocumentId(data.documentRecord.id);
+        setStatusMessage(`✅ Prescription Finalized! Canonical Document ID: ${data.documentRecord.id}`);
+      } else {
+        setStatusMessage(`❌ Finalization failed: ${data.error || "Server error"}`);
+      }
+    } catch {
+      setStatusMessage("❌ Network error during prescription finalization.");
+    } finally {
+      setIsSavingDraft(false);
+    }
+  };
 
   // Finalize Prescription & Complete Consultation Handler
   const handleCompleteConsultation = async () => {
@@ -364,7 +394,7 @@ export function PrescriptionPanel({
         </div>
       </div>
 
-      {/* Footer Controls: Draft Preview, Pharmacy Dispatch, & Guarded End Consultation */}
+      {/* Footer Controls: Draft Preview, Download Canonical PDF, Pharmacy Dispatch, & Guarded End Consultation */}
       <div className="p-3 bg-slate-950 border-t border-slate-800 flex items-center justify-between space-x-2">
         <div className="flex items-center space-x-2">
           <button
@@ -374,6 +404,28 @@ export function PrescriptionPanel({
             <FileText className="w-3.5 h-3.5 text-emerald-400" />
             <span>Draft Preview</span>
           </button>
+
+          {finalizedDocumentId ? (
+            <a
+              href={`/api/admin/clinical/consultation/prescription-pdf?documentId=${finalizedDocumentId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center space-x-1.5 px-3 py-2 bg-emerald-950/80 text-emerald-300 border border-emerald-800/80 hover:bg-emerald-900 rounded-lg font-medium transition-colors"
+            >
+              <Printer className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Download Canonical PDF</span>
+            </a>
+          ) : (
+            <button
+              disabled={isSavingDraft || outcome !== "prescription_issued"}
+              onClick={handleFinalizePrescription}
+              className="flex items-center space-x-1.5 px-3 py-2 bg-slate-900 text-slate-300 border border-slate-800 hover:bg-slate-800 rounded-lg font-medium transition-colors disabled:opacity-40"
+              title="Finalize prescription and generate canonical document"
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
+              <span>{isSavingDraft ? "Finalizing..." : "Finalize Rx"}</span>
+            </button>
+          )}
 
           <button
             disabled={isDispatching}

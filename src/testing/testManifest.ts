@@ -83,6 +83,41 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "reason": "Validates Phase 5 prescription revision immutability, amendment linkage, and decoupled pharmacy dispatch status"
   },
   {
+    "path": "tests/consultation/prescription-pdf.test.ts",
+    "status": "active",
+    "ownerArea": "clinical-ehr",
+    "testLayer": "unit",
+    "reason": "Validates Phase 6 server-only PDF rendering, byte stream format, and SHA-256 checksum generation"
+  },
+  {
+    "path": "tests/consultation/clinical-document-checksum.test.ts",
+    "status": "active",
+    "ownerArea": "clinical-ehr",
+    "testLayer": "unit",
+    "reason": "Validates Phase 6 document record integrity, SHA-256 byte verification on retrieval, and quarantine on checksum mismatch"
+  },
+  {
+    "path": "tests/consultation/deep-authorization.test.ts",
+    "status": "active",
+    "ownerArea": "clinical-ehr",
+    "testLayer": "unit",
+    "reason": "Validates Phase 6 multi-role deep authorization matrix and non-enumerating 404 response on unauthorized document retrieval"
+  },
+  {
+    "path": "tests/consultation/durable-idempotency.test.ts",
+    "status": "active",
+    "ownerArea": "clinical-ehr",
+    "testLayer": "unit",
+    "reason": "Validates Phase 6 compound idempotency keys (actor:op:consultation:key), request hash normalization, and payload mismatch rejection"
+  },
+  {
+    "path": "tests/consultation/clinical-uat-scenarios.test.ts",
+    "status": "active",
+    "ownerArea": "clinical-ehr",
+    "testLayer": "unit",
+    "reason": "Validates Phase 6 automated clinical UAT workflow scenarios covering all 10 standard clinical outcomes and failure paths"
+  },
+  {
     "path": "tests/clinicalCareSimulator.test.ts",
     "status": "active",
     "ownerArea": "commerce-pricing",
