@@ -1,12 +1,13 @@
-"use client";
-
-import React, { useState } from "react";
-import { EmergencyGuidanceBanner } from "./EmergencyGuidanceBanner";
+import React, { useState, useRef } from "react";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { ClinicalCareHeader } from "./ClinicalCareHeader";
 import { CareLevelCard } from "./CareLevelCard";
 import { IncludedServicesList } from "./IncludedServicesList";
 import { PatientJourneyForm } from "./PatientJourneyForm";
 import { SubmissionSuccessView } from "./SubmissionSuccessView";
+import { EmergencyGuidanceBanner } from "./EmergencyGuidanceBanner";
+import { processCareAssessmentSubmission } from "../services/careAssessmentService";
 import type {
   ClinicalCareDurationWeeks,
   PatientIntakeData,
@@ -17,48 +18,52 @@ export const StoreClinicalCareView: React.FC = () => {
   const [selectedTierId, setSelectedTierId] = useState<string>("integrated");
   const [selectedDurationWeeks, setSelectedDurationWeeks] = useState<ClinicalCareDurationWeeks>(4);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [submittedDTO, setSubmittedDTO] = useState<SanitizedAssessmentResponseDTO | null>(null);
+  const [submissionResponse, setSubmissionResponse] = useState<SanitizedAssessmentResponseDTO | null>(null);
+  const assessmentFormRef = useRef<HTMLDivElement>(null);
+
+  const handleProceedToAssessment = () => {
+    const el = document.getElementById("clinical-assessment-form");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   const handleSubmitAssessment = async (intakeData: PatientIntakeData) => {
     setIsSubmitting(true);
     try {
-      const res = await fetch("/api/store/clinical-assessment", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...intakeData,
-          selectedTierId,
-          preferredDurationWeeks: selectedDurationWeeks,
-        }),
-      });
-
-      const json = await res.json();
-      if (json.success && json.data) {
-        setSubmittedDTO(json.data);
-      } else {
-        alert(json.error || "Failed to submit assessment. Please check fields and try again.");
+      const result = processCareAssessmentSubmission(intakeData);
+      if (result.success) {
+        setSubmissionResponse(result.data);
       }
-    } catch (err: any) {
-      alert(`Submission Error: ${err.message}`);
+    } catch (err) {
+      console.error("Failed to submit clinical care assessment:", err);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleReset = () => {
-    setSubmittedDTO(null);
+    setSubmissionResponse(null);
+    setSelectedTierId("integrated");
+    setSelectedDurationWeeks(4);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50 text-slate-900 py-10 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-6xl mx-auto">
+    <main className="bg-gradient-mesh min-h-screen pt-32 pb-24 px-4 md:px-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Navigation Link */}
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-widest hover:text-mint transition-colors mb-8"
+        >
+          <ArrowLeft className="w-4 h-4" /> Return to Main Platform
+        </Link>
+
         <EmergencyGuidanceBanner />
         <ClinicalCareHeader />
 
-        {submittedDTO ? (
-          <SubmissionSuccessView response={submittedDTO} onReset={handleReset} />
+        {submissionResponse ? (
+          <SubmissionSuccessView response={submissionResponse} onReset={handleReset} />
         ) : (
           <>
             <CareLevelCard
@@ -66,19 +71,22 @@ export const StoreClinicalCareView: React.FC = () => {
               selectedDurationWeeks={selectedDurationWeeks}
               onSelectTier={setSelectedTierId}
               onSelectDuration={setSelectedDurationWeeks}
+              onProceedToAssessment={handleProceedToAssessment}
             />
 
-            <IncludedServicesList showAdditionalProductsNotice={true} />
+            <IncludedServicesList />
 
-            <PatientJourneyForm
-              initialTierId={selectedTierId}
-              initialDurationWeeks={selectedDurationWeeks}
-              onSubmitAssessment={handleSubmitAssessment}
-              isSubmitting={isSubmitting}
-            />
+            <div ref={assessmentFormRef}>
+              <PatientJourneyForm
+                initialTierId={selectedTierId}
+                initialDurationWeeks={selectedDurationWeeks}
+                onSubmitAssessment={handleSubmitAssessment}
+                isSubmitting={isSubmitting}
+              />
+            </div>
           </>
         )}
       </div>
-    </div>
+    </main>
   );
 };

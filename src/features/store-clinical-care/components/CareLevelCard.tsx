@@ -1,5 +1,5 @@
 import React from "react";
-import { Check, Clock } from "lucide-react";
+import { CheckCircle2, Clock, ArrowRight } from "lucide-react";
 import {
   CLINICAL_CARE_TIER_OPTIONS,
   ALLOWED_CARE_DURATIONS,
@@ -14,6 +14,7 @@ interface CareLevelCardProps {
   selectedDurationWeeks: ClinicalCareDurationWeeks;
   onSelectTier: (tierId: string) => void;
   onSelectDuration: (weeks: ClinicalCareDurationWeeks) => void;
+  onProceedToAssessment?: () => void;
 }
 
 export const CareLevelCard: React.FC<CareLevelCardProps> = ({
@@ -21,43 +22,21 @@ export const CareLevelCard: React.FC<CareLevelCardProps> = ({
   selectedDurationWeeks,
   onSelectTier,
   onSelectDuration,
+  onProceedToAssessment,
 }) => {
   const tiers = Object.values(CLINICAL_CARE_TIER_OPTIONS);
 
   return (
-    <section className="mb-12">
-      <div className="text-center mb-8">
-        <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-widest bg-emerald-50 border border-emerald-200/80 px-3 py-1 rounded-full inline-block mb-3">
-          Physician-Led Care Pathways
-        </span>
-        <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-2">
-          Clinical Care Tiers & Planned Care Periods
+    <section className="space-y-10 mb-12">
+      {/* Step 1: Pathway Selection Header */}
+      <div className="max-w-3xl">
+        <span className="text-[10px] font-bold text-mint uppercase tracking-widest">Step 1</span>
+        <h2 className="font-serif text-3xl md:text-4xl font-semibold text-[#1A2421] mt-2">
+          Which best describes the care you need?
         </h2>
-        <p className="text-slate-600 text-xs sm:text-sm max-w-2xl mx-auto leading-relaxed">
-          Select a planned care period below. Complete care-period totals are calculated transparently. No payment is requested during initial information submission.
+        <p className="text-sm text-slate-600 font-semibold leading-relaxed mt-3">
+          Choose the closest pathway. A physician reviews your clinical assessment and confirms suitability before treatment begins.
         </p>
-
-        {/* Duration Selector Bar */}
-        <div className="mt-6 inline-flex flex-wrap items-center justify-center gap-2 p-1.5 rounded-2xl bg-slate-100/90 border border-slate-200/80 shadow-inner">
-          <span className="text-xs font-bold text-slate-600 px-3 flex items-center gap-1.5">
-            <Clock className="w-3.5 h-3.5 text-emerald-700" aria-hidden="true" />
-            Planned Duration:
-          </span>
-          {ALLOWED_CARE_DURATIONS.map((weeks) => (
-            <button
-              key={weeks}
-              type="button"
-              onClick={() => onSelectDuration(weeks)}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 ${
-                selectedDurationWeeks === weeks
-                  ? "bg-emerald-800 text-white shadow-md shadow-emerald-800/20 scale-105"
-                  : "bg-white text-slate-700 hover:bg-slate-200/70 border border-slate-200/60"
-              }`}
-            >
-              {weeks} {weeks === 1 ? "Week" : "Weeks"}
-            </button>
-          ))}
-        </div>
       </div>
 
       {/* Tier Cards Grid */}
@@ -70,69 +49,149 @@ export const CareLevelCard: React.FC<CareLevelCardProps> = ({
           const weeklyFormatted = formatINRFromPaise(tier.weeklyRatePaise);
 
           return (
-            <div
+            <button
               key={tier.id}
+              type="button"
+              aria-pressed={isSelected}
               onClick={() => onSelectTier(tier.id)}
-              className={`relative rounded-2xl p-5.5 transition-all duration-300 cursor-pointer border flex flex-col justify-between ${
+              className={`relative rounded-3xl border p-6 text-left transition-all flex flex-col justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mint focus-visible:ring-offset-2 ${
                 isSelected
-                  ? "border-emerald-600 bg-gradient-to-b from-emerald-50/70 via-white to-emerald-50/30 ring-2 ring-emerald-600/40 shadow-xl shadow-emerald-900/10 scale-[1.02]"
-                  : "border-slate-200/90 bg-white hover:border-emerald-500/40 hover:shadow-lg hover:-translate-y-0.5"
+                  ? "border-mint bg-mint/[0.055] shadow-[0_16px_50px_rgba(20,184,166,0.12)] ring-1 ring-mint/20"
+                  : "border-slate-200/80 bg-white/55 hover:border-mint/40 hover:bg-white/80"
               }`}
             >
-              {isRecommended && !isSelected && (
-                <div className="absolute -top-3 right-4 bg-slate-900 text-white px-2.5 py-0.5 rounded-full text-[9px] font-black tracking-wider uppercase shadow-sm">
-                  ★ Recommended
-                </div>
-              )}
-
-              {isSelected && (
-                <div className="absolute -top-3 right-4 bg-emerald-700 text-white px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase flex items-center gap-1 shadow-md">
-                  <Check className="w-3 h-3" /> Selected
-                </div>
+              {isRecommended && (
+                <span className="absolute right-5 top-5 rounded-full bg-[#1A2421] px-3 py-1 text-[9px] font-black uppercase tracking-wider text-white">
+                  Recommended
+                </span>
               )}
 
               <div>
-                <div className="flex items-baseline justify-between mb-1.5">
-                  <h3 className="text-lg font-bold text-slate-900 pr-2">{tier.name}</h3>
-                </div>
-                <p className="text-xs text-slate-600 leading-relaxed mb-4">{tier.description}</p>
+                <h3 className="font-serif text-xl font-bold text-[#1A2421] pr-20">{tier.name}</h3>
+                <p className="text-sm font-semibold text-slate-600 leading-relaxed mt-3">{tier.description}</p>
 
-                {/* Prominent Complete Care-Period Total Display */}
-                <div className="my-4 p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 shadow-sm">
-                  <div className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                    {totalFormatted}
-                  </div>
-                  <div className="text-xs font-semibold text-slate-500 mt-0.5">
-                    Complete Total for {selectedDurationWeeks} {selectedDurationWeeks === 1 ? "Week" : "Weeks"} Care Period
-                  </div>
-                  <div className="text-[11px] font-bold text-emerald-800 mt-1.5 pt-1.5 border-t border-slate-200/70 flex items-center justify-between">
-                    <span>Equivalent to</span>
-                    <span className="text-xs font-extrabold text-emerald-900">{weeklyFormatted} / week</span>
-                  </div>
+                {/* Price Display */}
+                <div className="mt-5 flex items-baseline gap-1.5">
+                  <span className="text-3xl font-black text-[#1A2421]">{weeklyFormatted}</span>
+                  <span className="text-xs font-bold text-slate-500">/week</span>
                 </div>
 
-                <div className="text-xs text-slate-500 font-medium leading-normal mb-4">
-                  <span className="font-semibold text-slate-700">Suitable for:</span> {tier.recommendedFor}
+                <div className="mt-4 p-3 rounded-2xl border border-mint/15 bg-white/80">
+                  <span className="block text-xs font-bold text-slate-500">Care-period total</span>
+                  <span className="block text-lg font-black text-[#1A2421] mt-0.5">{totalFormatted}</span>
+                  <span className="block text-[10px] font-semibold text-mint-dark mt-0.5">
+                    For {selectedDurationWeeks} {selectedDurationWeeks === 1 ? "week" : "weeks"}
+                  </span>
+                </div>
+
+                <div className="mt-4 text-xs font-semibold text-slate-600 flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-mint shrink-0 mt-0.5" aria-hidden="true" />
+                  <span>{tier.recommendedFor}</span>
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onSelectTier(tier.id);
-                }}
-                className={`w-full py-3 px-4 rounded-xl text-xs font-extrabold tracking-wide uppercase transition-all duration-200 flex items-center justify-center gap-2 ${
-                  isSelected
-                    ? "bg-gradient-to-r from-emerald-700 to-teal-800 text-white shadow-md shadow-emerald-900/20 hover:from-emerald-800 hover:to-teal-900"
-                    : "bg-slate-100 text-slate-800 hover:bg-slate-900 hover:text-white"
-                }`}
-              >
-                {isSelected ? "Selected Program" : "Select Program"}
-              </button>
-            </div>
+              <div className="mt-6 w-full py-3.5 rounded-full text-xs font-black uppercase tracking-wider text-center transition-all ${
+                isSelected
+                  ? 'bg-mint text-white shadow-sm'
+                  : 'bg-[#1A2421]/10 text-[#1A2421] hover:bg-mint hover:text-white'
+              }">
+                {isSelected ? "Selected Pathway" : "Select Pathway"}
+              </div>
+            </button>
           );
         })}
+      </div>
+
+      {/* Step 2: Care Duration Selection Panel & Selected Care Sidebar */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <div className="lg:col-span-7 glass-panel border-white/60 bg-white/45 rounded-3xl p-6 md:p-8 space-y-7 border">
+          <div>
+            <span className="text-[10px] font-bold text-mint uppercase tracking-widest">Step 2</span>
+            <h2 className="text-xl font-bold text-[#1A2421] mt-1">Select a care duration</h2>
+            <p className="text-xs text-slate-500 font-semibold mt-1">Each option shows the complete care fee for that period.</p>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+            {ALLOWED_CARE_DURATIONS.map((weeks) => {
+              const activeTier = CLINICAL_CARE_TIER_OPTIONS[selectedTierId] || CLINICAL_CARE_TIER_OPTIONS.integrated;
+              const periodTotal = calculateCarePeriodTotalPaise(activeTier.weeklyRatePaise, weeks);
+              const formattedPeriod = formatINRFromPaise(periodTotal);
+              const isDurationSelected = selectedDurationWeeks === weeks;
+
+              return (
+                <button
+                  key={weeks}
+                  type="button"
+                  aria-pressed={isDurationSelected}
+                  onClick={() => onSelectDuration(weeks)}
+                  className={`rounded-2xl border p-3.5 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mint ${
+                    isDurationSelected
+                      ? "border-mint bg-mint/[0.08] ring-1 ring-mint/20"
+                      : "border-slate-200 bg-white/70 hover:border-slate-400"
+                  }`}
+                >
+                  <span className="block text-xs font-black text-[#1A2421]">{weeks} {weeks === 1 ? "week" : "weeks"}</span>
+                  <span className="block text-sm font-black text-mint-dark mt-1">{formattedPeriod}</span>
+                  {weeks === 4 && (
+                    <span className="inline-flex rounded-full bg-[#1A2421] px-2 py-0.5 text-[8px] font-black uppercase tracking-wider text-white mt-1.5">
+                      Recommended
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="rounded-2xl border border-sky-200/70 bg-sky-50/50 p-4 text-xs font-semibold text-slate-700 leading-relaxed">
+            <strong className="text-sky-800">Why 4 weeks is recommended:</strong> It provides a clear initial review period for constitutional response. A physician confirms or adjusts the care duration following clinical assessment review.
+          </div>
+        </div>
+
+        {/* Selected Care Sidebar */}
+        <aside className="lg:col-span-5 glass-panel border-mint/20 bg-white/60 rounded-3xl p-6 md:p-8 border lg:sticky lg:top-28">
+          <span className="text-[10px] font-bold text-mint uppercase tracking-widest">Selected Care</span>
+          <h3 className="font-serif text-2xl font-bold text-[#1A2421] mt-2">
+            {(CLINICAL_CARE_TIER_OPTIONS[selectedTierId] || CLINICAL_CARE_TIER_OPTIONS.integrated).name}
+          </h3>
+
+          <dl className="mt-6 space-y-3 text-sm">
+            <div className="flex justify-between gap-4">
+              <dt className="font-semibold text-slate-500">Planned Duration</dt>
+              <dd className="font-bold text-[#1A2421]">{selectedDurationWeeks} {selectedDurationWeeks === 1 ? "week" : "weeks"}</dd>
+            </div>
+            <div className="flex justify-between gap-4">
+              <dt className="font-semibold text-slate-500">Weekly Equivalent</dt>
+              <dd className="font-bold text-[#1A2421]">
+                {formatINRFromPaise((CLINICAL_CARE_TIER_OPTIONS[selectedTierId] || CLINICAL_CARE_TIER_OPTIONS.integrated).weeklyRatePaise)}/week
+              </dd>
+            </div>
+          </dl>
+
+          <div className="border-t border-slate-200 mt-5 pt-5">
+            <span className="text-xs font-bold text-slate-500">Care-period total</span>
+            <div className="text-4xl font-black text-[#1A2421] mt-1">
+              {formatINRFromPaise(calculateCarePeriodTotalPaise((CLINICAL_CARE_TIER_OPTIONS[selectedTierId] || CLINICAL_CARE_TIER_OPTIONS.integrated).weeklyRatePaise, selectedDurationWeeks))}
+            </div>
+          </div>
+
+          <div className="rounded-2xl bg-[#1A2421] text-white p-4 mt-6 flex gap-3">
+            <Clock className="w-5 h-5 text-mint shrink-0" aria-hidden="true" />
+            <p className="text-xs font-semibold leading-relaxed">
+              A physician confirms pathway suitability, care scope, and final fee before treatment begins.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={onProceedToAssessment}
+            className="w-full mt-5 py-4 rounded-full bg-mint hover:bg-mint-dark text-white text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mint"
+          >
+            Continue to Clinical Assessment <ArrowRight className="w-4 h-4" aria-hidden="true" />
+          </button>
+          <p className="text-center text-[11px] font-semibold text-slate-500 leading-relaxed mt-3">
+            No payment at this step. Submit details → physician review → recommendation prepared.
+          </p>
+        </aside>
       </div>
     </section>
   );
