@@ -24,13 +24,13 @@ function runClinicalCareSimulatorTests() {
     chronicity: "recent",
   });
   assert.strictEqual(acute.pathway, "mild");
-  assert.strictEqual(acute.weeklyFee, 2_000);
+  assert.strictEqual(acute.weeklyFee, 3_000);
   assert.strictEqual(acute.suggestedDurationWeeks, 1);
   assert.deepStrictEqual(acute.allowedDurationsWeeks, [1, 2, 4, 8, 12]);
 
   const constitutional = recommendClinicalCare(standardChronic);
   assert.strictEqual(constitutional.pathway, "moderate");
-  assert.strictEqual(constitutional.weeklyFee, 3_000);
+  assert.strictEqual(constitutional.weeklyFee, 6_000);
   assert.deepStrictEqual(constitutional.allowedDurationsWeeks, [1, 2, 4, 8, 12]);
 
   const organCountAlone = recommendClinicalCare({ ...standardChronic, breadth: "six-plus" });
@@ -44,12 +44,12 @@ function runClinicalCareSimulatorTests() {
     chronicity: "one-five-years",
   });
   assert.strictEqual(advanced.pathway, "focused");
-  assert.strictEqual(advanced.weeklyFee, 5_000);
+  assert.strictEqual(advanced.weeklyFee, 9_000);
   assert.strictEqual(advanced.suggestedDurationWeeks, 8);
 
   const manualComplete = applyPhysicianPathwayOverride(advanced, "comprehensive");
   assert.strictEqual(manualComplete.pathway, "comprehensive");
-  assert.strictEqual(manualComplete.weeklyFee, 10_000);
+  assert.strictEqual(manualComplete.weeklyFee, 12_000);
   assert.match(manualComplete.reasons[0], /physician manually selected/i);
 
   const complete = recommendClinicalCare({
@@ -60,7 +60,7 @@ function runClinicalCareSimulatorTests() {
     coordination: "extensive",
   });
   assert.strictEqual(complete.pathway, "comprehensive");
-  assert.strictEqual(complete.weeklyFee, 10_000);
+  assert.strictEqual(complete.weeklyFee, 12_000);
 
   const redFlag = recommendClinicalCare({ ...standardChronic, stability: "red-flag" });
   assert.strictEqual(redFlag.blockedBySafetyGate, true);
@@ -77,14 +77,14 @@ function runClinicalCareSimulatorTests() {
     concessionAmount: 2_000,
   });
   assert.deepStrictEqual(quote, {
-    weeklyCareFee: 5_000,
+    weeklyCareFee: 9_000,
     durationWeeks: 4,
-    baseCareTotal: 20_000,
+    baseCareTotal: 36_000,
     caseSpecificSupportTotal: 3_000,
     pharmacyTotal: 1_000,
-    subtotal: 24_000,
+    subtotal: 40_000,
     concessionTotal: 2_000,
-    finalTotal: 22_000,
+    finalTotal: 38_000,
   });
 
   console.log("✅ Clinical care simulator tests passed");
