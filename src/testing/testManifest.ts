@@ -1573,7 +1573,7 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "reason": "Validates v1.0 simplified soft launch without payment gateway: PAYMENT_GATEWAY_ENABLED=false, manual payment workflow, integer paise verification, duplicate reference detection, immutable reversal events, patient status write prohibition, and governed care activation rules"
   },
   {
-    "path": "tests/storeClinicalCare.test.ts",
+    "path": "tests/storeClinicalCare.test.tsx",
     "status": "active",
     "ownerArea": "commerce-pricing",
     "testLayer": "unit",
