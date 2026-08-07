@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { ClinicalCareHeader } from "./ClinicalCareHeader";
+import { OrganSystemsDirectory } from "./OrganSystemsDirectory";
 import { CareLevelCard } from "./CareLevelCard";
 import { IncludedServicesList } from "./IncludedServicesList";
 import { PatientJourneyForm } from "./PatientJourneyForm";
@@ -17,9 +18,18 @@ import type {
 export const StoreClinicalCareView: React.FC = () => {
   const [selectedTierId, setSelectedTierId] = useState<string>("integrated");
   const [selectedDurationWeeks, setSelectedDurationWeeks] = useState<ClinicalCareDurationWeeks>(4);
+  const [selectedAreaTitle, setSelectedAreaTitle] = useState<string>("");
+  const [selectedConditionName, setSelectedConditionName] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [submissionResponse, setSubmissionResponse] = useState<SanitizedAssessmentResponseDTO | null>(null);
   const assessmentFormRef = useRef<HTMLDivElement>(null);
+
+  const handleProceedToTiers = () => {
+    const el = document.getElementById("clinical-care-tiers");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   const handleProceedToAssessment = () => {
     const el = document.getElementById("clinical-assessment-form");
@@ -28,10 +38,24 @@ export const StoreClinicalCareView: React.FC = () => {
     }
   };
 
+  const handleSelectAreaAndCondition = (areaTitle: string, conditionName: string) => {
+    setSelectedAreaTitle(areaTitle);
+    setSelectedConditionName(conditionName);
+  };
+
   const handleSubmitAssessment = async (intakeData: PatientIntakeData) => {
     setIsSubmitting(true);
     try {
-      const result = processCareAssessmentSubmission(intakeData);
+      // Merge selected area & condition into concern description if available
+      const finalData: PatientIntakeData = {
+        ...intakeData,
+        mainHealthArea: selectedAreaTitle || intakeData.mainHealthArea,
+        concernDescription: selectedConditionName
+          ? `[Selected Condition: ${selectedConditionName}] ${intakeData.concernDescription}`
+          : intakeData.concernDescription,
+      };
+
+      const result = processCareAssessmentSubmission(finalData);
       if (result.success) {
         setSubmissionResponse(result.data);
       }
@@ -46,6 +70,8 @@ export const StoreClinicalCareView: React.FC = () => {
     setSubmissionResponse(null);
     setSelectedTierId("integrated");
     setSelectedDurationWeeks(4);
+    setSelectedAreaTitle("");
+    setSelectedConditionName("");
   };
 
   return (
@@ -66,13 +92,23 @@ export const StoreClinicalCareView: React.FC = () => {
           <SubmissionSuccessView response={submissionResponse} onReset={handleReset} />
         ) : (
           <>
-            <CareLevelCard
-              selectedTierId={selectedTierId}
-              selectedDurationWeeks={selectedDurationWeeks}
-              onSelectTier={setSelectedTierId}
-              onSelectDuration={setSelectedDurationWeeks}
-              onProceedToAssessment={handleProceedToAssessment}
+            {/* Organ Systems & Conditions Browsing Experience */}
+            <OrganSystemsDirectory
+              selectedCondition={selectedConditionName}
+              onSelectAreaAndCondition={handleSelectAreaAndCondition}
+              onProceedToTiers={handleProceedToTiers}
             />
+
+            {/* Clinical Care Tiers Section (Moved below Organ Systems & Conditions) */}
+            <div id="clinical-care-tiers">
+              <CareLevelCard
+                selectedTierId={selectedTierId}
+                selectedDurationWeeks={selectedDurationWeeks}
+                onSelectTier={setSelectedTierId}
+                onSelectDuration={setSelectedDurationWeeks}
+                onProceedToAssessment={handleProceedToAssessment}
+              />
+            </div>
 
             <IncludedServicesList />
 
@@ -80,6 +116,8 @@ export const StoreClinicalCareView: React.FC = () => {
               <PatientJourneyForm
                 initialTierId={selectedTierId}
                 initialDurationWeeks={selectedDurationWeeks}
+                initialMainArea={selectedAreaTitle}
+                initialCondition={selectedConditionName}
                 onSubmitAssessment={handleSubmitAssessment}
                 isSubmitting={isSubmitting}
               />

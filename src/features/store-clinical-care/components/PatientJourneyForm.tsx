@@ -14,6 +14,8 @@ import { validatePatientIntake } from "../services/careAssessmentService";
 interface PatientJourneyFormProps {
   initialTierId: string;
   initialDurationWeeks: ClinicalCareDurationWeeks;
+  initialMainArea?: string;
+  initialCondition?: string;
   onSubmitAssessment: (data: PatientIntakeData) => Promise<void>;
   isSubmitting: boolean;
 }
@@ -34,6 +36,8 @@ const HEALTH_AREAS = [
 export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
   initialTierId,
   initialDurationWeeks,
+  initialMainArea,
+  initialCondition,
   onSubmitAssessment,
   isSubmitting,
 }) => {
@@ -45,8 +49,8 @@ export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
     age: "",
     gender: "Male",
     city: "",
-    mainHealthArea: "Respiratory & Allergy",
-    concernDescription: "",
+    mainHealthArea: initialMainArea || "Respiratory & Allergy",
+    concernDescription: initialCondition ? `Primary concern: ${initialCondition}` : "",
     relatedHealthAreas: [],
     durationText: "1 to 3 years",
     previousTreatments: "",
