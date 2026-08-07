@@ -31,13 +31,13 @@ export interface CareLevelDetail {
   clinicianConfirmationRequired?: boolean;
 }
 
-const ACUTE_WEEKLY_PRICE = 2_000;
-const CONSTITUTIONAL_WEEKLY_PRICE = 3_000;
-const ADVANCED_WEEKLY_PRICE = 5_000;
+const ACUTE_WEEKLY_PRICE = 3_000; // Focused Clinical Care (₹3,000 / wk)
+const CONSTITUTIONAL_WEEKLY_PRICE = 6_000; // Integrated Clinical Care (₹6,000 / wk)
+const ADVANCED_WEEKLY_PRICE = 9_000; // Complex Clinical Care (₹9,000 / wk)
 
 export const ADDITIONAL_ACUTE_EPISODE_PRICE = 1_000;
 export const PRIORITY_ACUTE_SUPPORT_WEEKLY_PRICE = 2_000;
-export const COMPLETE_HEALTH_TRANSFORMATION_WEEKLY_PRICE = 10_000;
+export const COMPLETE_HEALTH_TRANSFORMATION_WEEKLY_PRICE = 12_000; // Advanced Physician Care (₹12,000 / wk)
 export const STANDARD_CARE_PERIOD_DURATIONS = [1, 2, 4, 8, 12] as const;
 export const COMPLETE_HEALTH_TRANSFORMATION_DURATIONS = STANDARD_CARE_PERIOD_DURATIONS;
 
@@ -49,79 +49,81 @@ export const PUBLIC_CARE_LEVEL_KEYS: readonly PublicCarePathwayKey[] = [
 
 export const CARE_LEVELS_DETAILS: Record<CareLevelKey, CareLevelDetail> = {
   mild: {
-    title: "Acute & Wellness Care",
+    title: "Focused Clinical Care",
+    subtitle: "Coordinated physician care for specific, localized, or early-stage health concerns",
     weeklyPrice: ACUTE_WEEKLY_PRICE,
     monthlyPrice: ACUTE_WEEKLY_PRICE * 4,
-    badge: "Short-term care",
+    badge: "Focused Care",
     icon: "🌱",
     colorClass: "text-teal-700 border-teal-200/60 bg-teal-50/70",
     glowColor: "rgba(20,184,166,0.15)",
     surchargeWeekly: 0,
     surchargeMonthly: 0,
     complexityLabel: "Focused",
-    description: "For a new, short-term illness or one acute episode needing timely physician guidance.",
-    scopeMessage: "One acute episode is included. A separate, unrelated acute episode during the same care period can be assessed for ₹1,000.",
-    bestFor: ["New or short-term symptoms", "Seasonal illness", "One acute episode"],
+    description: "Coordinated physician care for specific, localized, or early-stage health concerns.",
+    scopeMessage: "Single primary health concern or localized follow-up care is included. Confirmed by treating physician.",
+    bestFor: ["Single primary health concern", "Localized symptoms", "Focused follow-up care"],
     features: [
       "Physician consultation and clinical assessment",
       "Individualized treatment plan",
-      "One acute episode within the selected period",
+      "Routine homeopathic medicines included",
       "Standard follow-up during the care period",
     ],
     durations: STANDARD_CARE_PERIOD_DURATIONS,
     defaultDurationWeeks: 1,
-    legacyNames: ["Essential Acute & Wellness Care", "Acute & Wellness Care"],
+    legacyNames: ["Essential Acute & Wellness Care", "Acute & Wellness Care", "Focused Care"],
   },
   moderate: {
-    title: "Constitutional Care",
-    subtitle: "Personalized care for chronic and recurring health conditions",
+    title: "Integrated Clinical Care",
+    subtitle: "Comprehensive care managing multiple interrelated systems and constitutional balance",
     weeklyPrice: CONSTITUTIONAL_WEEKLY_PRICE,
     monthlyPrice: CONSTITUTIONAL_WEEKLY_PRICE * 4,
     badge: "Recommended",
     icon: "⚡",
-    colorClass: "text-purple-700 border-purple-200/60 bg-purple-50/70",
-    glowColor: "rgba(168,85,247,0.15)",
-    surchargeWeekly: 0,
-    surchargeMonthly: 0,
-    complexityLabel: "Ongoing",
-    description: "For chronic or recurring symptoms that benefit from a whole-person constitutional case assessment.",
-    scopeMessage: "Clinically related symptoms are considered together within the constitutional case. There is no automatic per-symptom charge.",
-    bestFor: ["Recurring symptoms", "Established chronic conditions", "Related constitutional symptoms"],
-    features: [
-      "Comprehensive constitutional case-taking",
-      "Clinically related symptoms included",
-      "Personalized treatment planning",
-      "Regular progress review",
-    ],
-    durations: STANDARD_CARE_PERIOD_DURATIONS,
-    defaultDurationWeeks: 4,
-    legacyNames: ["Core Chronic Care", "Standard Chronic Care"],
-  },
-  focused: {
-    title: "Advanced Constitutional Care",
-    weeklyPrice: ADVANCED_WEEKLY_PRICE,
-    monthlyPrice: ADVANCED_WEEKLY_PRICE * 4,
-    badge: "Physician-guided scope",
-    icon: "🎯",
     colorClass: "text-sky-700 border-sky-200/60 bg-sky-50/70",
     glowColor: "rgba(14,165,233,0.15)",
     surchargeWeekly: 0,
     surchargeMonthly: 0,
-    complexityLabel: "Advanced",
-    description: "For stable, long-standing, or layered cases requiring deeper review and closer planned follow-up.",
-    scopeMessage: "₹5,000/week is the starting care fee. Clinically relevant conditions are included within the agreed scope, with no automatic symptom or organ-system charge. Any advanced records review is shown separately before treatment.",
-    bestFor: ["Stable complex conditions", "Long-standing patterns", "Closer planned follow-up"],
+    complexityLabel: "Integrated",
+    description: "Comprehensive care managing multiple interrelated systems and constitutional balance.",
+    scopeMessage: "Multiple related health conditions requiring constitutional synthesis are included within agreed scope.",
+    bestFor: ["Multiple related health conditions", "Established chronic conditions", "Constitutional care synthesis"],
     features: [
-      "Advanced constitutional assessment",
+      "Comprehensive constitutional case-taking",
+      "Interrelated organ systems evaluation",
+      "Personalized treatment planning",
+      "Regular progress review & guidance",
+    ],
+    durations: STANDARD_CARE_PERIOD_DURATIONS,
+    defaultDurationWeeks: 4,
+    legacyNames: ["Core Chronic Care", "Standard Chronic Care", "Constitutional Care"],
+  },
+  focused: {
+    title: "Complex Clinical Care",
+    subtitle: "Intensive physician supervision for long-standing, multi-layered pathological conditions",
+    weeklyPrice: ADVANCED_WEEKLY_PRICE,
+    monthlyPrice: ADVANCED_WEEKLY_PRICE * 4,
+    badge: "Complex Care",
+    icon: "🎯",
+    colorClass: "text-violet-700 border-violet-200/60 bg-violet-50/70",
+    glowColor: "rgba(139,92,246,0.15)",
+    surchargeWeekly: 0,
+    surchargeMonthly: 0,
+    complexityLabel: "Complex",
+    description: "Intensive physician supervision for long-standing, multi-layered pathological conditions.",
+    scopeMessage: "₹9,000/week care fee. Chronic, long-standing, or multi-systemic pathological concerns requiring enhanced supervision.",
+    bestFor: ["Chronic multi-systemic conditions", "Long-standing pathological patterns", "Closer planned follow-up"],
+    features: [
+      "Advanced constitutional & pathological assessment",
       "Clinically relevant conditions within agreed scope",
-      "Coordinated treatment planning",
-      "Enhanced physician follow-up",
+      "Coordinated multi-system treatment planning",
+      "Enhanced physician supervision & follow-up",
     ],
     durations: STANDARD_CARE_PERIOD_DURATIONS,
     defaultDurationWeeks: 4,
     pricePrefix: "From",
     clinicianConfirmationRequired: true,
-    legacyNames: ["Deep Constitutional Care", "Deep Systemic Care", "Advanced Recovery"],
+    legacyNames: ["Deep Constitutional Care", "Deep Systemic Care", "Advanced Constitutional Care"],
   },
   organ: {
     title: "Case-Specific Clinical Support",
@@ -143,22 +145,23 @@ export const CARE_LEVELS_DETAILS: Record<CareLevelKey, CareLevelDetail> = {
     clinicianConfirmationRequired: true,
   },
   comprehensive: {
-    title: "Complete Health Transformation Program",
+    title: "Advanced Physician Care",
+    subtitle: "Our most comprehensive physician-led program for high-complexity cases requiring frequent monitoring",
     weeklyPrice: COMPLETE_HEALTH_TRANSFORMATION_WEEKLY_PRICE,
     monthlyPrice: COMPLETE_HEALTH_TRANSFORMATION_WEEKLY_PRICE * 4,
-    badge: "Clinician-assigned",
+    badge: "Advanced Care",
     icon: "🔮",
-    complexityLabel: "Comprehensive",
-    description: "Our most comprehensive individual program for exceptionally intensive cases requiring frequent review, coordinated adjustments, and direct physician supervision.",
-    scopeMessage: "All clinically relevant conditions within the agreed individual scope are included. Duration is assigned only after physician assessment; outcomes depend on individual clinical response.",
-    bestFor: ["Exceptionally intensive cases", "Frequent clinical adjustments", "Direct physician supervision"],
+    complexityLabel: "Advanced",
+    description: "Close clinical oversight, frequent reviews, and specialized treatment planning for high-complexity cases.",
+    scopeMessage: "All clinically relevant conditions within agreed individual scope are included. Close clinical oversight and direct physician supervision.",
+    bestFor: ["High-complexity cases", "Frequent physician monitoring & adjustment", "Direct physician supervision"],
     features: ["Comprehensive constitutional assessment", "Individualized care scope", "High-frequency monitoring", "Direct physician guidance"],
     durations: STANDARD_CARE_PERIOD_DURATIONS,
-    defaultDurationWeeks: 2,
-    glowColor: "rgba(99,102,241,0.15)",
+    defaultDurationWeeks: 4,
+    glowColor: "rgba(245,158,11,0.15)",
     surchargeWeekly: 0,
     surchargeMonthly: 0,
-    legacyNames: ["Complete Health Transformation", "Multisystem Integrative Care"],
+    legacyNames: ["Complete Health Transformation", "Multisystem Integrative Care", "Advanced Physician Care"],
     clinicianConfirmationRequired: true,
   },
   acute_critical: {
@@ -169,7 +172,7 @@ export const CARE_LEVELS_DETAILS: Record<CareLevelKey, CareLevelDetail> = {
     icon: "🚨",
     complexityLabel: "Priority",
     description: "Faster access and closer short-term monitoring for suitable acute cases.",
-    scopeMessage: "Add to Acute & Wellness Care for ₹2,000 per week. This is not emergency medical care.",
+    scopeMessage: "Add to Focused Clinical Care for ₹2,000 per week. This is not emergency medical care.",
     bestFor: ["Priority appointment access", "Closer short-term monitoring", "Suitable acute cases"],
     features: ["Priority access", "Defined response window", "Closer monitoring", "Physician-directed use"],
     durations: [1, 2, 4],
@@ -232,7 +235,7 @@ export function calculateCarePrice(selection: CarePriceSelection): CarePriceSumm
 
 export function calculateCompleteHealthTransformationPrice(durationWeeks: number): CarePriceSummary {
   if (!COMPLETE_HEALTH_TRANSFORMATION_DURATIONS.includes(durationWeeks as 1 | 2 | 4 | 8 | 12)) {
-    throw new Error(`Unsupported duration for Complete Health Transformation Program: ${durationWeeks} weeks`);
+    throw new Error(`Unsupported duration for Advanced Physician Care Program: ${durationWeeks} weeks`);
   }
 
   const baseCareTotal = COMPLETE_HEALTH_TRANSFORMATION_WEEKLY_PRICE * durationWeeks;
@@ -251,12 +254,12 @@ export function normalizeCareLevelName(input: string): CareLevelKey {
   if (["mild", "moderate", "focused", "organ", "comprehensive", "acute_critical"].includes(clean)) {
     return clean as CareLevelKey;
   }
-  if (clean.includes("complete") || clean.includes("multisystem") || clean.includes("integrative")) return "comprehensive";
+  if (clean.includes("advanced physician") || clean.includes("complete") || clean.includes("multisystem")) return "comprehensive";
   if (clean.includes("pathology") || clean.includes("records")) return "organ";
   if (clean.includes("priority") || clean.includes("critical") || clean.includes("intensive acute")) return "acute_critical";
-  if (clean.includes("advanced") || clean.includes("deep") || clean.includes("systemic")) return "focused";
-  if (clean.includes("constitutional") || clean.includes("chronic") || clean.includes("core") || clean.includes("standard")) return "moderate";
-  if (clean.includes("wellness") || clean.includes("essential") || clean.includes("acute")) return "mild";
+  if (clean.includes("complex") || clean.includes("advanced") || clean.includes("deep") || clean.includes("systemic")) return "focused";
+  if (clean.includes("integrated") || clean.includes("constitutional") || clean.includes("chronic") || clean.includes("core") || clean.includes("standard")) return "moderate";
+  if (clean.includes("focused clinical") || clean.includes("wellness") || clean.includes("essential") || clean.includes("acute")) return "mild";
   return "moderate";
 }
 
