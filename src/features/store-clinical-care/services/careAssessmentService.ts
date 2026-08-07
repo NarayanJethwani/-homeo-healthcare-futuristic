@@ -8,6 +8,7 @@ import {
   type ClinicalCareDurationWeeks,
   type SanitizedAssessmentResponseDTO,
 } from "../domain/types";
+import { calculatePreliminaryCareRecommendation } from "./careRecommendationEngine";
 
 export interface CareAssessmentValidationResult {
   valid: boolean;
@@ -53,7 +54,7 @@ export function validatePatientIntake(data: Partial<PatientIntakeData>): CareAss
 
 /**
  * Processes a patient intake submission and returns a strictly sanitized DTO.
- * No internal clinical scores, internal B/D/I/P numbers, or physician notes are exposed.
+ * Computes a preliminary advisory recommendation (with zero AI jargon exposed).
  */
 export function processCareAssessmentSubmission(
   data: Partial<PatientIntakeData>
@@ -67,8 +68,17 @@ export function processCareAssessmentSubmission(
     };
   }
 
-  const tierKey = data.selectedTierId && CLINICAL_CARE_TIER_OPTIONS[data.selectedTierId] ? data.selectedTierId : "integrated";
-  const tier = CLINICAL_CARE_TIER_OPTIONS[tierKey];
+  const preliminaryRecommendation = calculatePreliminaryCareRecommendation({
+    selectedOrganSystems: data.selectedOrganSystems || (data.mainHealthArea ? [data.mainHealthArea] : []),
+    durationText: data.durationText,
+    age: data.age,
+  });
+
+  const tierKey = data.selectedTierId && CLINICAL_CARE_TIER_OPTIONS[data.selectedTierId]
+    ? data.selectedTierId
+    : preliminaryRecommendation.suggestedTierId;
+
+  const tier = CLINICAL_CARE_TIER_OPTIONS[tierKey] || CLINICAL_CARE_TIER_OPTIONS.focused;
   const durationWeeks = (data.preferredDurationWeeks || 4) as ClinicalCareDurationWeeks;
 
   const totalPaise = calculateCarePeriodTotalPaise(tier.weeklyRatePaise, durationWeeks);
@@ -85,8 +95,9 @@ export function processCareAssessmentSubmission(
     preferredDurationWeeks: durationWeeks,
     totalEstimatedAmountPaise: totalPaise,
     totalEstimatedAmountFormatted: totalFormatted,
+    preliminaryRecommendation,
     status: "submitted_for_physician_review",
-    message: "Thank you. Your information has been submitted for physician review. Our care team will contact you after your Clinical Care Recommendation is prepared.",
+    message: "Thank you. Your clinical assessment has been submitted for physician review. Your treating physician will review your submission and prepare your official Clinical Care Quotation.",
   };
 
   return {

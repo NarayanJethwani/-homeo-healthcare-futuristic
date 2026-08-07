@@ -72,6 +72,9 @@ export const EMERGENCY_GUIDANCE_NOTICE =
 export const CLINICAL_CARE_FEE_EXPLANATION =
   "The Clinical Care Fee reflects the professional time, treatment planning, clinical supervision, follow-up, and continuity of care expected during the agreed care period. It is not determined by diagnosis alone.";
 
+export const EXPLICIT_PHYSICIAN_AUTHORITY_STATEMENT =
+  "This recommendation is an initial advisory assessment. Your treating physician will review your complete clinical information and may confirm or modify the recommended care pathway based on professional clinical judgment.";
+
 export const INCLUDED_SERVICES_LIST = [
   "Physician assessment and treatment planning",
   "Constitutional prescribing",
@@ -102,6 +105,7 @@ export interface PatientIntakeData {
   gender: string;
   city: string;
   mainHealthArea: string;
+  selectedOrganSystems?: string[];
   concernDescription: string;
   relatedHealthAreas: string[];
   durationText: string;
@@ -113,6 +117,63 @@ export interface PatientIntakeData {
   accuracyConfirmed: boolean;
 }
 
+export interface PreliminaryCareRecommendation {
+  suggestedTierId: "focused" | "integrated" | "complex" | "advanced";
+  suggestedTierName: string;
+  selectedOrganCount: number;
+  complexityScore: number;
+  rationale: string;
+  disclaimer: string; // EXPLICIT_PHYSICIAN_AUTHORITY_STATEMENT
+}
+
+export interface GovernedConcession {
+  type: "senior_citizen" | "socio_economic" | "special_concession";
+  percentage: number; // e.g. 10 for 10%
+  amountPaise: number;
+  approvedBy: string; // Mandatory audit field (e.g. "Dr. N. Jethwani")
+  approvedDate: string; // Mandatory ISO timestamp
+  reason: string; // Mandatory audit reason
+  clinicalNotes?: string;
+}
+
+export interface ItemizedPharmacyBreakdown {
+  professionalFeePaise: number;
+  routineMedicinesIncluded: true;
+  specialBrandedMedicinesPaise: number;
+  courierFeePaise: number;
+  medicalCertificateFeePaise: number;
+  diagnosticCoordinationFeePaise: number;
+  concessions: GovernedConcession[];
+  totalConcessionsPaise: number;
+  finalTotalPaise: number;
+  finalTotalFormatted: string;
+}
+
+export type PaymentProviderKind = "manual" | "razorpay";
+export type PaymentWorkflowStatus = "pending_physician_review" | "quotation_sent" | "patient_accepted" | "payment_verified" | "care_activated";
+
+export interface PaymentWorkflowMetadata {
+  paymentProvider: PaymentProviderKind; // Provider-agnostic field for v1.1 Razorpay upgrade
+  paymentMethod?: "upi" | "bank_transfer" | "cash" | "gateway";
+  paymentReference?: string;
+  paymentStatus: PaymentWorkflowStatus;
+  clinicUpiId: string; // Loaded dynamically from process.env.NEXT_PUBLIC_CLINIC_UPI_ID
+  clinicBankDetails: string; // Loaded dynamically from process.env.NEXT_PUBLIC_CLINIC_BANK_DETAILS
+}
+
+export interface OfficialClinicalQuotation {
+  quotationId: string;
+  submissionId: string;
+  patientName: string;
+  phone: string;
+  tierId: string;
+  tierName: string;
+  durationWeeks: ClinicalCareDurationWeeks;
+  breakdown: ItemizedPharmacyBreakdown;
+  paymentWorkflow: PaymentWorkflowMetadata;
+  createdAt: string;
+}
+
 export interface SanitizedAssessmentResponseDTO {
   success: boolean;
   submissionId: string;
@@ -122,6 +183,17 @@ export interface SanitizedAssessmentResponseDTO {
   preferredDurationWeeks: number;
   totalEstimatedAmountPaise: number;
   totalEstimatedAmountFormatted: string;
+  preliminaryRecommendation: PreliminaryCareRecommendation;
   status: "submitted_for_physician_review";
   message: string;
+}
+
+/**
+ * Gets payment coordinates from environment variables safely with robust fallback defaults.
+ */
+export function getClinicPaymentConfiguration(): { upiId: string; bankDetails: string } {
+  return {
+    upiId: process.env.NEXT_PUBLIC_CLINIC_UPI_ID || "8446056789@hdfc",
+    bankDetails: process.env.NEXT_PUBLIC_CLINIC_BANK_DETAILS || "HDFC Bank | A/C 50200012345678 | IFSC HDFC0001234",
+  };
 }
