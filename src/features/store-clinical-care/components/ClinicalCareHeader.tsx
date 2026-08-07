@@ -11,7 +11,7 @@ export const ClinicalCareHeader: React.FC = () => {
         Physician-Led Individualized Care
       </span>
       <h1 className="font-serif text-4xl md:text-6xl font-semibold tracking-tight text-[#1A2421] mt-4">
-        Clinical Care & Physician Supervision
+        Clinical Care Pathways
       </h1>
       <p className="text-base text-slate-700 font-semibold leading-relaxed mt-6">
         Homeopathic care at Homeo Healthcare is thoroughly individualized. Rather than pre-packaged products or self-selected remedies, your care is led by experienced classical homeopathic physicians through structured clinical assessment, constitutional prescribing, and continuous progress monitoring.
