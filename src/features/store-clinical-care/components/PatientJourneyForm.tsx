@@ -1,98 +1,130 @@
 import React, { useState } from "react";
-import { ArrowLeft, ArrowRight, CheckCircle2, ShieldCheck, UserCheck } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ShieldCheck,
+  UserCheck,
+  AlertTriangle,
+  MessageCircle,
+} from "lucide-react";
 import {
   CLINICAL_CARE_TIER_OPTIONS,
-  ALLOWED_CARE_DURATIONS,
   calculateCarePeriodTotalPaise,
   formatINRFromPaise,
+  type PatientJourneyStep,
   type PatientIntakeData,
   type ClinicalCareDurationWeeks,
-  type PatientJourneyStep,
 } from "../domain/types";
 import { validatePatientIntake } from "../services/careAssessmentService";
+import { buildPatientWhatsAppReviewLink } from "../services/careRecommendationEngine";
 
 interface PatientJourneyFormProps {
-  initialTierId: string;
-  initialDurationWeeks: ClinicalCareDurationWeeks;
+  initialTierId?: string;
+  initialDurationWeeks?: ClinicalCareDurationWeeks;
   initialMainArea?: string;
   initialCondition?: string;
-  onSubmitAssessment: (data: PatientIntakeData) => Promise<void>;
-  isSubmitting: boolean;
+  onSubmitAssessment: (intakeData: PatientIntakeData) => Promise<void>;
+  isSubmitting?: boolean;
 }
 
-const HEALTH_AREAS = [
-  "Respiratory & Allergy",
-  "Dermatology & Skin",
-  "Gastrointestinal & Digestive",
-  "Endocrine & Metabolic (Thyroid/PCOS)",
-  "Musculoskeletal & Joints",
-  "Neurological & Mental Health",
-  "Cardiovascular & Vascular",
-  "Pediatric Health",
-  "Women's Health & Hormonal Balance",
-  "General Vitality & Immunological Care",
+interface StepConfig {
+  key: PatientJourneyStep;
+  title: string;
+  subtitle: string;
+}
+
+const STEPS: StepConfig[] = [
+  {
+    key: "welcome",
+    title: "Patient Information",
+    subtitle: "Provide basic patient details for your clinical record",
+  },
+  {
+    key: "main_health_area",
+    title: "Primary Health Focus",
+    subtitle: "Select the organ system or health area requiring attention",
+  },
+  {
+    key: "concern_description",
+    title: "Clinical Description & Symptoms",
+    subtitle: "Describe your chief symptoms, onset, and day-to-day impact",
+  },
+  {
+    key: "related_health_areas",
+    title: "Interrelated Health Systems",
+    subtitle: "Select any secondary or overlapping organ systems",
+  },
+  {
+    key: "history_duration",
+    title: "Chronicity & Previous Care",
+    subtitle: "Specify symptom duration and prior treatments attempted",
+  },
+  {
+    key: "investigations_records",
+    title: "Diagnostic Records & Reports",
+    subtitle: "Summarize existing blood tests, imaging, or specialist notes",
+  },
+  {
+    key: "review_safety",
+    title: "Safety Notice & Confirm Details",
+    subtitle: "Review emergency boundary notice and confirm accuracy",
+  },
+  {
+    key: "submission_complete",
+    title: "Physician Review & WhatsApp Assistance",
+    subtitle: "Submit details and connect directly on WhatsApp with Dr. Jethwani (8446056789)",
+  },
 ];
 
 export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
-  initialTierId,
-  initialDurationWeeks,
-  initialMainArea,
-  initialCondition,
+  initialTierId = "integrated",
+  initialDurationWeeks = 4,
+  initialMainArea = "",
+  initialCondition = "",
   onSubmitAssessment,
-  isSubmitting,
+  isSubmitting = false,
 }) => {
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
+
   const [data, setData] = useState<PatientIntakeData>({
     patientName: "",
     phone: "",
     email: "",
     age: "",
-    gender: "Male",
+    gender: "female",
     city: "",
-    mainHealthArea: initialMainArea || "Respiratory & Allergy",
+    mainHealthArea: initialMainArea || "Digestive & Liver Support",
     concernDescription: initialCondition ? `Primary concern: ${initialCondition}` : "",
     relatedHealthAreas: [],
     durationText: "1 to 3 years",
-    previousTreatments: "",
-    recordsSummary: "",
+    previousTreatments: "Standard conventional medication",
+    recordsSummary: "Recent lab reports available for physician review",
     preferredDurationWeeks: initialDurationWeeks,
     selectedTierId: initialTierId,
     emergencyAcknowledged: false,
     accuracyConfirmed: false,
   });
 
-  const [validationErrors, setValidationErrors] = useState<string[]>([]);
-
-  const steps: { key: PatientJourneyStep; title: string; subtitle: string }[] = [
-    { key: "welcome", title: "1. Welcome & Care Philosophy", subtitle: "Understanding physician-led homeopathic care" },
-    { key: "main_health_area", title: "2. Primary Health Area", subtitle: "Select your main area of health concern" },
-    { key: "concern_description", title: "3. Concern Description", subtitle: "Describe your symptoms and chief complaints" },
-    { key: "related_health_areas", title: "4. Related Health Areas", subtitle: "Select any secondary or overlapping health concerns" },
-    { key: "history_duration", title: "5. History & Duration", subtitle: "How long has this situation been present?" },
-    { key: "investigations_records", title: "6. Records & Investigations", subtitle: "Details of previous treatments or available lab reports" },
-    { key: "review_safety", title: "7. Review & Safety Confirmation", subtitle: "Acknowledge emergency guidance and confirm intake details" },
-    { key: "submission_complete", title: "8. Submit for Physician Review", subtitle: "Send information to the clinical care team" },
-  ];
-
-  const step = steps[currentStepIndex];
+  const step = STEPS[currentStepIndex];
 
   const updateField = <K extends keyof PatientIntakeData>(field: K, value: PatientIntakeData[K]) => {
     setData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const toggleRelatedArea = (area: string) => {
-    setData((prev) => {
-      const exists = prev.relatedHealthAreas.includes(area);
-      const updated = exists
-        ? prev.relatedHealthAreas.filter((a) => a !== area)
-        : [...prev.relatedHealthAreas, area];
-      return { ...prev, relatedHealthAreas: updated };
-    });
-  };
-
   const handleNext = () => {
     setValidationErrors([]);
-    if (currentStepIndex < steps.length - 1) {
+    if (currentStepIndex === 0) {
+      if (!data.patientName.trim()) {
+        setValidationErrors(["Please enter the patient name."]);
+        return;
+      }
+      if (!data.phone.trim() || data.phone.trim().length < 8) {
+        setValidationErrors(["Please enter a valid phone number."]);
+        return;
+      }
+    }
+    if (currentStepIndex < STEPS.length - 1) {
       setCurrentStepIndex((prev) => prev + 1);
     }
   };
@@ -112,6 +144,26 @@ export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
       return;
     }
     setValidationErrors([]);
+
+    const selectedTier = CLINICAL_CARE_TIER_OPTIONS[data.selectedTierId] || CLINICAL_CARE_TIER_OPTIONS.integrated;
+    const totalPaise = calculateCarePeriodTotalPaise(selectedTier.weeklyRatePaise, data.preferredDurationWeeks);
+    const totalFormatted = formatINRFromPaise(totalPaise);
+
+    const waPayload = buildPatientWhatsAppReviewLink({
+      patientName: data.patientName,
+      phone: data.phone,
+      selectedTierName: selectedTier.name,
+      preferredDurationWeeks: data.preferredDurationWeeks,
+      totalEstimatedAmountFormatted: totalFormatted,
+      mainHealthArea: data.mainHealthArea,
+      concernDescription: data.concernDescription,
+    });
+
+    // Launch WhatsApp directly for Doctor Assistance & Guidance (+91 8446056789)
+    if (typeof window !== "undefined") {
+      window.open(waPayload.whatsappUrl, "_blank", "noopener,noreferrer");
+    }
+
     await onSubmitAssessment(data);
   };
 
@@ -138,9 +190,12 @@ export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
       </div>
 
       {validationErrors.length > 0 && (
-        <div role="alert" className="mb-6 p-4 rounded-2xl border border-rose-200 bg-rose-50/80 text-rose-900 text-xs font-semibold">
-          <span className="font-bold block mb-1">Please address the following items:</span>
-          <ul className="list-disc pl-4 space-y-1">
+        <div className="mb-6 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-900 text-xs font-semibold space-y-1">
+          <div className="flex items-center gap-2 font-bold text-rose-950">
+            <AlertTriangle className="w-4 h-4 text-rose-600" />
+            Please resolve the following required items:
+          </div>
+          <ul className="list-disc list-inside space-y-0.5 pt-1">
             {validationErrors.map((err, i) => (
               <li key={i}>{err}</li>
             ))}
@@ -148,128 +203,168 @@ export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
         </div>
       )}
 
-      {/* Step Contents */}
+      {/* Form Content */}
       <form onSubmit={handleSubmit} className="space-y-6">
         {step.key === "welcome" && (
-          <div className="space-y-4 text-slate-700 text-sm font-semibold leading-relaxed">
-            <p>
-              Welcome to the Homeo Healthcare Physician Review Request. Our clinical care model is founded on rigorous classical homeopathy, detailed constitutional synthesis, and dedicated physician oversight.
-            </p>
-            <div className="p-5 rounded-2xl bg-mint/5 border border-mint/20 text-xs text-slate-700 space-y-2">
-              <span className="font-bold text-[#1A2421] block">Patient Submission Principles:</span>
-              <p>• You will not be asked to self-diagnose or select prescription medicines.</p>
-              <p>• No payment is requested at this submission stage.</p>
-              <p>• Your assigned physician will review your submission and construct a tailored Clinical Care Recommendation.</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div>
+              <label htmlFor="patientName" className="block text-xs font-bold text-[#1A2421] uppercase tracking-wider mb-2">
+                Patient Full Name *
+              </label>
+              <input
+                id="patientName"
+                type="text"
+                required
+                value={data.patientName}
+                onChange={(e) => updateField("patientName", e.target.value)}
+                placeholder="e.g. Dr. Ramesh Patel"
+                className="w-full rounded-2xl border border-slate-200 bg-white p-3.5 text-xs font-bold text-[#1A2421] outline-none focus:border-mint focus:ring-2 focus:ring-mint/20"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="phone" className="block text-xs font-bold text-[#1A2421] uppercase tracking-wider mb-2">
+                Phone Number (WhatsApp) *
+              </label>
+              <input
+                id="phone"
+                type="tel"
+                required
+                value={data.phone}
+                onChange={(e) => updateField("phone", e.target.value)}
+                placeholder="+91 98765 43210"
+                className="w-full rounded-2xl border border-slate-200 bg-white p-3.5 text-xs font-bold text-[#1A2421] outline-none focus:border-mint focus:ring-2 focus:ring-mint/20"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="email" className="block text-xs font-bold text-[#1A2421] uppercase tracking-wider mb-2">
+                Email Address (Optional)
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={data.email}
+                onChange={(e) => updateField("email", e.target.value)}
+                placeholder="patient@example.com"
+                className="w-full rounded-2xl border border-slate-200 bg-white p-3.5 text-xs font-bold text-[#1A2421] outline-none focus:border-mint focus:ring-2 focus:ring-mint/20"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label htmlFor="age" className="block text-xs font-bold text-[#1A2421] uppercase tracking-wider mb-2">
+                  Age
+                </label>
+                <input
+                  id="age"
+                  type="number"
+                  value={data.age}
+                  onChange={(e) => updateField("age", e.target.value)}
+                  placeholder="e.g. 42"
+                  className="w-full rounded-2xl border border-slate-200 bg-white p-3.5 text-xs font-bold text-[#1A2421] outline-none focus:border-mint focus:ring-2 focus:ring-mint/20"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="gender" className="block text-xs font-bold text-[#1A2421] uppercase tracking-wider mb-2">
+                  Gender
+                </label>
+                <select
+                  id="gender"
+                  value={data.gender}
+                  onChange={(e) => updateField("gender", e.target.value)}
+                  className="w-full rounded-2xl border border-slate-200 bg-white p-3.5 text-xs font-bold text-[#1A2421] outline-none focus:border-mint focus:ring-2 focus:ring-mint/20"
+                >
+                  <option value="female">Female</option>
+                  <option value="male">Male</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
             </div>
           </div>
         )}
 
         {step.key === "main_health_area" && (
           <div className="space-y-4">
-            <label htmlFor="mainHealthArea" className="block text-xs font-bold text-[#1A2421] uppercase tracking-wider">
-              Select Primary Area of Concern *
+            <label htmlFor="mainHealthArea" className="block text-xs font-bold text-[#1A2421] uppercase tracking-wider mb-2">
+              Primary Organ System Focus *
             </label>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {HEALTH_AREAS.map((area) => (
-                <button
-                  key={area}
-                  type="button"
-                  onClick={() => updateField("mainHealthArea", area)}
-                  className={`p-4 rounded-2xl border text-left text-xs font-bold transition-all ${
-                    data.mainHealthArea === area
-                      ? "border-mint bg-mint/10 text-mint-dark ring-2 ring-mint/30"
-                      : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
-                  }`}
-                >
-                  {area}
-                </button>
-              ))}
-            </div>
+            <input
+              id="mainHealthArea"
+              type="text"
+              required
+              value={data.mainHealthArea}
+              onChange={(e) => updateField("mainHealthArea", e.target.value)}
+              placeholder="e.g. Digestive & Liver Support, Respiratory & Allergy"
+              className="w-full rounded-2xl border border-slate-200 bg-white p-3.5 text-xs font-bold text-[#1A2421] outline-none focus:border-mint focus:ring-2 focus:ring-mint/20"
+            />
           </div>
         )}
 
         {step.key === "concern_description" && (
           <div className="space-y-4">
-            <div>
-              <label htmlFor="concernDescription" className="block text-xs font-bold text-[#1A2421] uppercase tracking-wider mb-2">
-                Describe Your Chief Complaints & Symptoms *
-              </label>
-              <textarea
-                id="concernDescription"
-                rows={5}
-                value={data.concernDescription}
-                onChange={(e) => updateField("concernDescription", e.target.value)}
-                placeholder="Please describe your primary symptoms, how they affect your daily routine, aggravating/relieving factors, and any specific concerns..."
-                className="w-full rounded-2xl border border-slate-200 p-4 text-sm text-[#1A2421] font-semibold focus:border-mint focus:ring-2 focus:ring-mint/20 outline-none"
-              />
-              <span className="text-[11px] font-semibold text-slate-500 mt-1 block">Minimum 10 characters required.</span>
-            </div>
+            <label htmlFor="concernDescription" className="block text-xs font-bold text-[#1A2421] uppercase tracking-wider mb-2">
+              Describe your main health concern & symptoms in detail *
+            </label>
+            <textarea
+              id="concernDescription"
+              rows={4}
+              required
+              value={data.concernDescription}
+              onChange={(e) => updateField("concernDescription", e.target.value)}
+              placeholder="Please describe symptom onset, triggers, daily severity, and any aggravating factors..."
+              className="w-full rounded-2xl border border-slate-200 bg-white p-4 text-xs font-semibold text-[#1A2421] outline-none focus:border-mint focus:ring-2 focus:ring-mint/20"
+            />
           </div>
         )}
 
         {step.key === "related_health_areas" && (
           <div className="space-y-4">
-            <label className="block text-xs font-bold text-[#1A2421] uppercase tracking-wider">
-              Select Secondary or Overlapping Health Areas (Optional)
+            <label htmlFor="relatedHealthAreas" className="block text-xs font-bold text-[#1A2421] uppercase tracking-wider mb-2">
+              Secondary or Overlapping Health Areas
             </label>
-            <p className="text-xs font-semibold text-slate-500">
-              Check any additional areas that may be clinically relevant to your overall constitutional health:
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {HEALTH_AREAS.filter((a) => a !== data.mainHealthArea).map((area) => {
-                const isChecked = data.relatedHealthAreas.includes(area);
-                return (
-                  <button
-                    key={area}
-                    type="button"
-                    onClick={() => toggleRelatedArea(area)}
-                    className={`p-4 rounded-2xl border text-left text-xs font-bold transition-all flex items-center justify-between ${
-                      isChecked
-                        ? "border-mint bg-mint/10 text-mint-dark"
-                        : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
-                    }`}
-                  >
-                    <span>{area}</span>
-                    {isChecked && <CheckCircle2 className="w-4 h-4 text-mint shrink-0" />}
-                  </button>
-                );
-              })}
-            </div>
+            <input
+              id="relatedHealthAreas"
+              type="text"
+              value={data.relatedHealthAreas.join(", ")}
+              onChange={(e) => updateField("relatedHealthAreas", e.target.value.split(",").map((s) => s.trim()))}
+              placeholder="e.g., Sleep difficulties, Mild anxiety, Joint stiffness"
+              className="w-full rounded-2xl border border-slate-200 bg-white p-3.5 text-xs font-bold text-[#1A2421] outline-none focus:border-mint focus:ring-2 focus:ring-mint/20"
+            />
           </div>
         )}
 
         {step.key === "history_duration" && (
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
               <label htmlFor="durationText" className="block text-xs font-bold text-[#1A2421] uppercase tracking-wider mb-2">
-                Duration of Current Condition *
+                Symptom Duration / Chronicity
               </label>
               <select
                 id="durationText"
                 value={data.durationText}
                 onChange={(e) => updateField("durationText", e.target.value)}
-                className="w-full rounded-2xl border border-slate-200 p-4 text-sm font-semibold text-[#1A2421] focus:border-mint outline-none"
+                className="w-full rounded-2xl border border-slate-200 bg-white p-3.5 text-xs font-bold text-[#1A2421] outline-none focus:border-mint focus:ring-2 focus:ring-mint/20"
               >
-                <option value="Less than 1 month">Less than 1 month</option>
-                <option value="1 to 6 months">1 to 6 months</option>
+                <option value="Less than 6 months">Less than 6 months</option>
                 <option value="6 months to 1 year">6 months to 1 year</option>
                 <option value="1 to 3 years">1 to 3 years</option>
-                <option value="3 to 5 years">3 to 5 years</option>
-                <option value="More than 5 years">More than 5 years</option>
+                <option value="More than 3 years (Chronic)">More than 3 years (Chronic)</option>
               </select>
             </div>
 
             <div>
               <label htmlFor="previousTreatments" className="block text-xs font-bold text-[#1A2421] uppercase tracking-wider mb-2">
-                Previous Treatments & Current Medications (Optional)
+                Prior Treatments & Medications
               </label>
-              <textarea
+              <input
                 id="previousTreatments"
-                rows={3}
+                type="text"
                 value={data.previousTreatments}
                 onChange={(e) => updateField("previousTreatments", e.target.value)}
-                placeholder="Mention any conventional, homeopathic, or other treatments you have taken..."
-                className="w-full rounded-2xl border border-slate-200 p-4 text-sm font-semibold text-[#1A2421] focus:border-mint outline-none"
+                placeholder="e.g. Conventional medicines, inhalers, antacids..."
+                className="w-full rounded-2xl border border-slate-200 bg-white p-3.5 text-xs font-bold text-[#1A2421] outline-none focus:border-mint focus:ring-2 focus:ring-mint/20"
               />
             </div>
           </div>
@@ -277,81 +372,29 @@ export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
 
         {step.key === "investigations_records" && (
           <div className="space-y-4">
-            <div>
-              <label htmlFor="recordsSummary" className="block text-xs font-bold text-[#1A2421] uppercase tracking-wider mb-2">
-                Lab Reports & Investigation Summary (Optional)
-              </label>
-              <textarea
-                id="recordsSummary"
-                rows={4}
-                value={data.recordsSummary}
-                onChange={(e) => updateField("recordsSummary", e.target.value)}
-                placeholder="Summarize recent blood tests, imaging, or lab findings (e.g. TSH, HbA1c, Lipid profile, Ultrasound)..."
-                className="w-full rounded-2xl border border-slate-200 p-4 text-sm font-semibold text-[#1A2421] focus:border-mint outline-none"
-              />
-              <span className="text-[11px] font-semibold text-slate-500 mt-1 block">
-                Detailed lab documents can also be shared directly with your care team during consultation review.
-              </span>
-            </div>
+            <label htmlFor="recordsSummary" className="block text-xs font-bold text-[#1A2421] uppercase tracking-wider mb-2">
+              Summary of Lab Reports, Imaging & Medical Records
+            </label>
+            <textarea
+              id="recordsSummary"
+              rows={3}
+              value={data.recordsSummary}
+              onChange={(e) => updateField("recordsSummary", e.target.value)}
+              placeholder="e.g., Blood test results (HbA1c 6.8%), Thyroid panel normal, Ultrasound showing mild fatty liver..."
+              className="w-full rounded-2xl border border-slate-200 bg-white p-4 text-xs font-semibold text-[#1A2421] outline-none focus:border-mint focus:ring-2 focus:ring-mint/20"
+            />
           </div>
         )}
 
         {step.key === "review_safety" && (
-          <div className="space-y-5">
-            {/* Patient Contact Details Sub-Form */}
-            <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/70 space-y-4">
-              <h4 className="text-xs font-bold text-[#1A2421] uppercase tracking-wider">Patient Information</h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="patientName" className="block text-xs font-bold text-slate-700 mb-1">Full Name *</label>
-                  <input
-                    id="patientName"
-                    type="text"
-                    required
-                    value={data.patientName}
-                    onChange={(e) => updateField("patientName", e.target.value)}
-                    placeholder="e.g. Rahul Sharma"
-                    className="w-full rounded-xl border border-slate-200 p-3 text-xs font-semibold text-[#1A2421] focus:border-mint outline-none"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="phone" className="block text-xs font-bold text-slate-700 mb-1">Phone Number *</label>
-                  <input
-                    id="phone"
-                    type="tel"
-                    required
-                    value={data.phone}
-                    onChange={(e) => updateField("phone", e.target.value)}
-                    placeholder="e.g. +91 98765 43210"
-                    className="w-full rounded-xl border border-slate-200 p-3 text-xs font-semibold text-[#1A2421] focus:border-mint outline-none"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="email" className="block text-xs font-bold text-slate-700 mb-1">Email Address</label>
-                  <input
-                    id="email"
-                    type="email"
-                    value={data.email}
-                    onChange={(e) => updateField("email", e.target.value)}
-                    placeholder="name@example.com"
-                    className="w-full rounded-xl border border-slate-200 p-3 text-xs font-semibold text-[#1A2421] focus:border-mint outline-none"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="city" className="block text-xs font-bold text-slate-700 mb-1">City / Location</label>
-                  <input
-                    id="city"
-                    type="text"
-                    value={data.city}
-                    onChange={(e) => updateField("city", e.target.value)}
-                    placeholder="e.g. Mumbai, Maharashtra"
-                    className="w-full rounded-xl border border-slate-200 p-3 text-xs font-semibold text-[#1A2421] focus:border-mint outline-none"
-                  />
-                </div>
-              </div>
+          <div className="space-y-6">
+            <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-semibold space-y-2">
+              <span className="font-bold block text-amber-950">Safety Boundary & Emergency Guidance</span>
+              <p>
+                Homeo Healthcare provides planned, non-emergency homeopathic care. If you are experiencing acute severe symptoms (e.g. chest pain, severe breathing difficulty), please seek emergency care immediately.
+              </p>
             </div>
 
-            {/* Safety & Accuracy Checkboxes */}
             <div className="space-y-3 pt-2">
               <label className="flex items-start gap-3 cursor-pointer text-xs font-semibold text-slate-700">
                 <input
@@ -388,7 +431,7 @@ export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
 
             <h4 className="font-serif text-2xl font-bold text-[#1A2421]">Ready to Submit for Physician Review</h4>
 
-            <div className="max-w-md mx-auto p-5 rounded-2xl bg-slate-50 border border-slate-200 text-left space-y-3 text-xs font-semibold text-slate-700">
+            <div className="max-w-md mx-auto p-5 rounded-2xl bg-slate-50 border border-slate-200 text-left space-y-3 text-xs font-semibold text-slate-700 shadow-sm">
               <div className="flex justify-between border-b border-slate-200 pb-2">
                 <span className="text-slate-500">Selected Care Tier:</span>
                 <span className="font-bold text-[#1A2421]">{selectedTier.name}</span>
@@ -406,9 +449,13 @@ export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
               </div>
             </div>
 
-            <p className="text-xs font-semibold text-slate-600 max-w-lg mx-auto">
-              Payment is coordinated after your physician prepares your individualized Clinical Care Recommendation. Our care coordination team will provide secure payment instructions and confirm your treatment commencement.
-            </p>
+            <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 text-xs font-semibold text-left flex items-start gap-3">
+              <MessageCircle className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+              <div>
+                <span className="font-bold block">WhatsApp Doctor Guidance (+91 8446056789):</span>
+                Clicking <strong>"Continue to Physician Review"</strong> will process your assessment and launch WhatsApp directly to connect with Dr. Jethwani for assistance and guidance.
+              </div>
+            </div>
           </div>
         )}
 
@@ -425,7 +472,7 @@ export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
             </button>
           ) : <div />}
 
-          {currentStepIndex < steps.length - 1 ? (
+          {currentStepIndex < STEPS.length - 1 ? (
             <button
               type="button"
               onClick={handleNext}
@@ -437,13 +484,13 @@ export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-8 py-3.5 rounded-full bg-mint hover:bg-mint-dark text-white text-xs font-black uppercase tracking-wider transition-all shadow-lg flex items-center gap-2"
+              className="px-8 py-3.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black uppercase tracking-wider transition-all shadow-lg flex items-center gap-2"
             >
               {isSubmitting ? (
                 <span>Submitting for Physician Review...</span>
               ) : (
                 <>
-                  <ShieldCheck className="w-4 h-4" />
+                  <MessageCircle className="w-4 h-4" />
                   <span>Continue to Physician Review</span>
                 </>
               )}
