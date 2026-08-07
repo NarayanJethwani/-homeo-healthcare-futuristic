@@ -20,6 +20,80 @@ interface CareLevelCardProps {
   onProceedToAssessment?: () => void;
 }
 
+interface TierTheme {
+  borderUnselected: string;
+  bgUnselected: string;
+  hoverUnselected: string;
+  borderSelected: string;
+  bgSelected: string;
+  ringSelected: string;
+  shadowSelected: string;
+  priceBoxBg: string;
+  priceBoxBorder: string;
+  checkColor: string;
+  buttonSelected: string;
+  buttonUnselected: string;
+}
+
+const tierThemesMap: Record<string, TierTheme> = {
+  focused: {
+    borderUnselected: "border-teal-200/90",
+    bgUnselected: "bg-gradient-to-b from-teal-50/70 via-emerald-50/30 to-white/95 text-teal-950",
+    hoverUnselected: "hover:border-teal-400 hover:shadow-md",
+    borderSelected: "border-teal-500",
+    bgSelected: "bg-gradient-to-b from-teal-500/15 via-emerald-500/10 to-teal-50/70",
+    ringSelected: "ring-2 ring-teal-500/30",
+    shadowSelected: "shadow-[0_16px_50px_rgba(20,184,166,0.22)]",
+    priceBoxBg: "bg-white/90",
+    priceBoxBorder: "border-teal-200/80",
+    checkColor: "text-teal-600",
+    buttonSelected: "bg-teal-600 text-white shadow-md",
+    buttonUnselected: "bg-teal-900/10 text-teal-950 hover:bg-teal-600 hover:text-white",
+  },
+  integrated: {
+    borderUnselected: "border-sky-200/90",
+    bgUnselected: "bg-gradient-to-b from-sky-50/70 via-blue-50/30 to-white/95 text-sky-950",
+    hoverUnselected: "hover:border-sky-400 hover:shadow-md",
+    borderSelected: "border-sky-500",
+    bgSelected: "bg-gradient-to-b from-sky-500/15 via-blue-500/10 to-sky-50/70",
+    ringSelected: "ring-2 ring-sky-500/30",
+    shadowSelected: "shadow-[0_16px_50px_rgba(14,165,233,0.22)]",
+    priceBoxBg: "bg-white/90",
+    priceBoxBorder: "border-sky-200/80",
+    checkColor: "text-sky-600",
+    buttonSelected: "bg-sky-600 text-white shadow-md",
+    buttonUnselected: "bg-sky-900/10 text-sky-950 hover:bg-sky-600 hover:text-white",
+  },
+  complex: {
+    borderUnselected: "border-violet-200/90",
+    bgUnselected: "bg-gradient-to-b from-violet-50/70 via-purple-50/30 to-white/95 text-violet-950",
+    hoverUnselected: "hover:border-violet-400 hover:shadow-md",
+    borderSelected: "border-violet-500",
+    bgSelected: "bg-gradient-to-b from-violet-500/15 via-purple-500/10 to-violet-50/70",
+    ringSelected: "ring-2 ring-violet-500/30",
+    shadowSelected: "shadow-[0_16px_50px_rgba(139,92,246,0.22)]",
+    priceBoxBg: "bg-white/90",
+    priceBoxBorder: "border-violet-200/80",
+    checkColor: "text-violet-600",
+    buttonSelected: "bg-violet-600 text-white shadow-md",
+    buttonUnselected: "bg-violet-900/10 text-violet-950 hover:bg-violet-600 hover:text-white",
+  },
+  advanced: {
+    borderUnselected: "border-amber-200/90",
+    bgUnselected: "bg-gradient-to-b from-amber-50/70 via-orange-50/30 to-white/95 text-amber-950",
+    hoverUnselected: "hover:border-amber-400 hover:shadow-md",
+    borderSelected: "border-amber-500",
+    bgSelected: "bg-gradient-to-b from-amber-500/15 via-orange-500/10 to-amber-50/70",
+    ringSelected: "ring-2 ring-amber-500/30",
+    shadowSelected: "shadow-[0_16px_50px_rgba(245,158,11,0.22)]",
+    priceBoxBg: "bg-white/90",
+    priceBoxBorder: "border-amber-200/80",
+    checkColor: "text-amber-600",
+    buttonSelected: "bg-amber-600 text-white shadow-md",
+    buttonUnselected: "bg-amber-900/10 text-amber-950 hover:bg-amber-600 hover:text-white",
+  },
+};
+
 export const CareLevelCard: React.FC<CareLevelCardProps> = ({
   selectedTierId,
   selectedDurationWeeks,
@@ -55,7 +129,7 @@ export const CareLevelCard: React.FC<CareLevelCardProps> = ({
         )}
       </div>
 
-      {/* Tier Cards Grid with Hover Lift & Micro-Interactions */}
+      {/* Tier Cards Grid with Distinct Plan Background Colors */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         {tiers.map((tier: ClinicalCareTierOption) => {
           const isSelected = selectedTierId === tier.id;
@@ -63,6 +137,7 @@ export const CareLevelCard: React.FC<CareLevelCardProps> = ({
             ? preliminaryRecommendation.suggestedTierId === tier.id
             : tier.id === "integrated";
 
+          const theme = tierThemesMap[tier.id] || tierThemesMap.integrated;
           const totalPaise = calculateCarePeriodTotalPaise(tier.weeklyRatePaise, selectedDurationWeeks);
           const totalFormatted = formatINRFromPaise(totalPaise);
           const weeklyFormatted = formatINRFromPaise(tier.weeklyRatePaise);
@@ -73,10 +148,10 @@ export const CareLevelCard: React.FC<CareLevelCardProps> = ({
               type="button"
               aria-pressed={isSelected}
               onClick={() => onSelectTier(tier.id)}
-              className={`relative rounded-3xl border p-6 text-left transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg flex flex-col justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mint focus-visible:ring-offset-2 ${
+              className={`relative rounded-3xl border p-6 text-left transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mint focus-visible:ring-offset-2 ${
                 isSelected
-                  ? "border-mint bg-mint/[0.055] shadow-[0_16px_50px_rgba(20,184,166,0.12)] ring-2 ring-mint/20"
-                  : "border-slate-200/80 bg-white/55 hover:border-mint/40 hover:bg-white/80"
+                  ? `${theme.borderSelected} ${theme.bgSelected} ${theme.ringSelected} ${theme.shadowSelected}`
+                  : `${theme.borderUnselected} ${theme.bgUnselected} ${theme.hoverUnselected}`
               }`}
             >
               {isSuggested && (
@@ -95,7 +170,7 @@ export const CareLevelCard: React.FC<CareLevelCardProps> = ({
                   <span className="text-xs font-bold text-slate-500">/week</span>
                 </div>
 
-                <div className="mt-4 p-3 rounded-2xl border border-mint/15 bg-white/80">
+                <div className={`mt-4 p-3 rounded-2xl border ${theme.priceBoxBorder} ${theme.priceBoxBg}`}>
                   <span className="block text-[11px] font-bold text-slate-500">Estimated Care-Period Fee</span>
                   <span className="block text-lg font-black text-[#1A2421] mt-0.5">{totalFormatted}</span>
                   <span className="block text-[10px] font-semibold text-mint-dark mt-0.5">
@@ -104,15 +179,15 @@ export const CareLevelCard: React.FC<CareLevelCardProps> = ({
                 </div>
 
                 <div className="mt-4 text-xs font-semibold text-slate-600 flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-mint shrink-0 mt-0.5" aria-hidden="true" />
+                  <CheckCircle2 className={`w-4 h-4 shrink-0 mt-0.5 ${theme.checkColor}`} aria-hidden="true" />
                   <span>{tier.recommendedFor}</span>
                 </div>
               </div>
 
               <div className={`mt-6 w-full py-3.5 rounded-full text-xs font-black uppercase tracking-wider text-center transition-all ${
                 isSelected
-                  ? "bg-mint text-white shadow-sm"
-                  : "bg-[#1A2421]/10 text-[#1A2421] hover:bg-mint hover:text-white"
+                  ? theme.buttonSelected
+                  : theme.buttonUnselected
               }`}>
                 {isSelected ? "Selected Pathway" : "Select Pathway"}
               </div>

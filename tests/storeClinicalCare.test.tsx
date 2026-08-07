@@ -19,6 +19,7 @@ import {
   calculatePreliminaryCareRecommendation,
   calculateItemizedPharmacyQuotation,
   buildWhatsAppQuotationPayload,
+  buildPatientWhatsAppReviewLink,
 } from "@/features/store-clinical-care/services/careRecommendationEngine";
 import { isStoreClinicalCareV1Enabled, FEATURE_FLAGS } from "@/lib/featureFlags";
 
@@ -186,4 +187,23 @@ assert.ok(waPayload.messageText.includes(paymentConfig.upiId));
 assert.ok(waPayload.whatsappUrl.startsWith("https://wa.me/919999988888?text="));
 console.log("✅ TEST PASSED: 9. WhatsApp quotation payload uses environment-configured payment details");
 
-console.log("\n🎉 All 9 Isolated /store Clinical Care Portal Tests Passed 100%!");
+// Test 10: Patient WhatsApp doctor review link targeting 8446056789
+const patientWa = buildPatientWhatsAppReviewLink({
+  patientName: "Dr. Test Patient",
+  phone: "+91 99999 88888",
+  submissionId: "CAS-2026-000123",
+  selectedTierName: "Integrated Clinical Care",
+  preferredDurationWeeks: 4,
+  totalEstimatedAmountFormatted: "₹24,000",
+  mainHealthArea: "Digestive & Liver Support",
+  concernDescription: "Chronic GERD and gastritis for 2 years",
+});
+
+assert.ok(patientWa.whatsappUrl.startsWith("https://wa.me/918446056789?text="));
+assert.ok(patientWa.messageText.includes("Dr. Test Patient"));
+assert.ok(patientWa.messageText.includes("CAS-2026-000123"));
+assert.ok(patientWa.messageText.includes("Digestive & Liver Support"));
+assert.ok(patientWa.messageText.includes("₹24,000"));
+console.log("✅ TEST PASSED: 10. Patient assessment WhatsApp review link targets doctor assistance number 8446056789 with full details");
+
+console.log("\n🎉 All 10 Isolated /store Clinical Care Portal Tests Passed 100%!");

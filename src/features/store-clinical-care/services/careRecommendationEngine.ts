@@ -179,8 +179,7 @@ export function calculateItemizedPharmacyQuotation(
 }
 
 /**
- * Builds the official formatted WhatsApp message and wa.me URL for care coordination.
- * Uses environment configuration for payment coordinates.
+ * Builds the official formatted WhatsApp message and wa.me URL for clinician quotation sending.
  */
 export function buildWhatsAppQuotationPayload(quotation: OfficialClinicalQuotation): {
   messageText: string;
@@ -245,5 +244,51 @@ export function buildWhatsAppQuotationPayload(quotation: OfficialClinicalQuotati
   return {
     messageText,
     whatsappUrl,
+  };
+}
+
+/**
+ * Builds patient assessment WhatsApp review payload directly to Dr. Jethwani (8446056789).
+ */
+export function buildPatientWhatsAppReviewLink(data: {
+  patientName: string;
+  phone?: string;
+  submissionId?: string;
+  selectedTierName: string;
+  preferredDurationWeeks: number;
+  totalEstimatedAmountFormatted: string;
+  mainHealthArea: string;
+  concernDescription?: string;
+}): { whatsappUrl: string; messageText: string } {
+  const targetDoctorPhone = "918446056789"; // Integrated Doctor Assistance WhatsApp
+  const lines: string[] = [
+    "*Homeo Healthcare — Patient Physician Review Request*",
+    "",
+    `Dear Dr. Jethwani,`,
+    "",
+    `I am submitting my clinical care details for your physician review and guidance:`,
+    "",
+    `• *Patient Name*: ${data.patientName}`,
+    data.phone ? `• *Contact Phone*: ${data.phone}` : "",
+    data.submissionId ? `• *Assessment Ref*: ${data.submissionId}` : "",
+    `• *Primary Health Area*: ${data.mainHealthArea}`,
+    `• *Selected Care Tier*: ${data.selectedTierName}`,
+    `• *Planned Care Period*: ${data.preferredDurationWeeks} Weeks`,
+    `• *Estimated Total Fee*: ${data.totalEstimatedAmountFormatted}`,
+  ].filter(Boolean);
+
+  if (data.concernDescription) {
+    lines.push(`• *Health Concern Details*: ${data.concernDescription.slice(0, 300)}`);
+  }
+
+  lines.push("");
+  lines.push("Please assist with my clinical case review and treatment guidance.");
+
+  const messageText = lines.join("\n");
+  const whatsappUrl = `https://wa.me/${targetDoctorPhone}?text=${encodeURIComponent(messageText)}`;
+
+  return {
+    whatsappUrl,
+    messageText,
   };
 }

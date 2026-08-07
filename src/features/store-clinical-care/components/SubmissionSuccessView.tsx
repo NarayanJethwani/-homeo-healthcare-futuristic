@@ -1,6 +1,7 @@
 import React from "react";
-import { CheckCircle, HeartHandshake } from "lucide-react";
+import { CheckCircle, HeartHandshake, MessageCircle, ArrowRight } from "lucide-react";
 import type { SanitizedAssessmentResponseDTO } from "../domain/types";
+import { buildPatientWhatsAppReviewLink } from "../services/careRecommendationEngine";
 
 interface SubmissionSuccessViewProps {
   response: SanitizedAssessmentResponseDTO;
@@ -11,8 +12,17 @@ export const SubmissionSuccessView: React.FC<SubmissionSuccessViewProps> = ({
   response,
   onReset,
 }) => {
+  const whatsappPayload = buildPatientWhatsAppReviewLink({
+    patientName: response.patientName,
+    submissionId: response.submissionId,
+    selectedTierName: response.preliminaryRecommendation.suggestedTierName,
+    preferredDurationWeeks: response.preferredDurationWeeks,
+    totalEstimatedAmountFormatted: response.totalEstimatedAmountFormatted,
+    mainHealthArea: response.mainHealthArea,
+  });
+
   return (
-    <div className="max-w-2xl mx-auto my-12 rounded-3xl border border-mint/20 bg-white/80 backdrop-blur-md p-8 md:p-10 text-center shadow-xl">
+    <div className="max-w-2xl mx-auto my-12 rounded-3xl border border-mint/20 bg-white/90 backdrop-blur-md p-8 md:p-10 text-center shadow-xl">
       <div className="mx-auto w-16 h-16 rounded-full bg-mint/10 text-mint-dark flex items-center justify-center mb-6 shadow-inner">
         <CheckCircle className="w-8 h-8 text-mint" />
       </div>
@@ -24,6 +34,32 @@ export const SubmissionSuccessView: React.FC<SubmissionSuccessViewProps> = ({
       <p className="text-sm font-semibold text-slate-700 leading-relaxed mb-6">
         {response.message}
       </p>
+
+      {/* Direct WhatsApp Doctor Assistance CTA */}
+      <div className="p-5 rounded-2xl bg-emerald-50 border border-emerald-200/80 mb-6 text-left space-y-3">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 rounded-xl bg-emerald-600 text-white shrink-0">
+            <MessageCircle className="w-5 h-5" aria-hidden="true" />
+          </div>
+          <div>
+            <span className="font-bold text-emerald-950 text-sm block">Direct Doctor Assistance & WhatsApp Review</span>
+            <span className="text-xs text-emerald-800 font-semibold">
+              Connect directly with Dr. Jethwani (+91 8446056789) for immediate clinical guidance.
+            </span>
+          </div>
+        </div>
+
+        <a
+          href={whatsappPayload.whatsappUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full mt-2 py-3.5 px-6 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-md"
+        >
+          <MessageCircle className="w-4 h-4" aria-hidden="true" />
+          <span>Continue to Physician Review on WhatsApp (8446056789)</span>
+          <ArrowRight className="w-4 h-4" aria-hidden="true" />
+        </a>
+      </div>
 
       {/* Submission Details Card */}
       <div className="rounded-2xl bg-white border border-slate-200 p-6 text-left text-xs font-semibold text-slate-700 space-y-3 mb-6 shadow-sm">
