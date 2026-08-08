@@ -300,7 +300,8 @@ async function runTests() {
       const content = fs.readFileSync(file, "utf8");
       if (
         file.includes("api/admin/session/route.ts") ||
-        file.includes("api/admin/invitations/accept/route.ts")
+        file.includes("api/admin/invitations/accept/route.ts") ||
+        file.includes("api/admin/dev-login/route.ts")
       ) {
         return;
       }

@@ -13,6 +13,7 @@ export async function proxy(request: NextRequest) {
     pathname === "/admin/login" ||
     pathname === "/admin/login/" ||
     pathname === "/api/admin/session" ||
+    pathname === "/api/admin/dev-login" ||
     pathname === "/api/admin/invitations/accept"
   ) {
     return NextResponse.next();
