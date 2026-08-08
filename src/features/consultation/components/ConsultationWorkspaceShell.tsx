@@ -113,11 +113,16 @@ export function ConsultationWorkspaceShell({
     }
   };
 
+  // Ergonomic Workspace Layout Modes
+  const [layoutMode, setLayoutMode] = useState<"balanced" | "case_taking" | "repertory_focus">("balanced");
+  const [isTelemedicineCollapsed, setIsTelemedicineCollapsed] = useState<boolean>(false);
+  const [isPrescriptionCollapsed, setIsPrescriptionCollapsed] = useState<boolean>(false);
+
   return (
     <div className="flex flex-col h-screen w-full bg-slate-950 text-slate-100 overflow-hidden font-sans">
-      {/* 1. Header Bar (Patient • Status • Timer • Save • End) */}
-      <header className="flex-none h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between z-20">
-        <div className="flex items-center space-x-4">
+      {/* 1. Header Bar (Patient • Status • Timer • Layout Presets • Save • End) */}
+      <header className="flex-none h-16 bg-slate-900 border-b border-slate-800 px-4 xl:px-6 flex items-center justify-between z-20 gap-3">
+        <div className="flex items-center space-x-3 shrink-0">
           <Link
             href="/admin/dashboard?tab=patients"
             className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
@@ -146,11 +151,54 @@ export function ConsultationWorkspaceShell({
           </div>
         </div>
 
-        {/* Center Timer & State Machine Controls */}
-        <div className="flex items-center space-x-3 bg-slate-950/80 px-4 py-1.5 rounded-xl border border-slate-800">
-          <div className="flex items-center space-x-2 font-mono text-sm text-teal-400">
+        {/* Center Timer & Ergonomic Layout Mode Switcher */}
+        <div className="hidden lg:flex items-center space-x-3 bg-slate-950/80 px-3 py-1.5 rounded-xl border border-slate-800 shrink-0">
+          <div className="flex items-center space-x-2 font-mono text-xs text-teal-400">
             <Clock className="w-4 h-4 animate-pulse text-teal-400" />
             <span>{formatTimer(elapsedSeconds)}</span>
+          </div>
+
+          <div className="h-4 w-px bg-slate-800" />
+
+          {/* Ergonomic Workflow View Presets */}
+          <div className="flex items-center space-x-1 bg-slate-900 p-1 rounded-lg border border-slate-800">
+            <button
+              onClick={() => setLayoutMode("case_taking")}
+              className={`px-2.5 py-1 rounded text-xs font-medium transition-colors flex items-center space-x-1 ${
+                layoutMode === "case_taking"
+                  ? "bg-teal-600 text-white shadow-sm"
+                  : "text-slate-400 hover:text-slate-200"
+              }`}
+              title="Expand Clinical Notes for deep symptom entry"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span>Case-Taking Focus</span>
+            </button>
+
+            <button
+              onClick={() => setLayoutMode("repertory_focus")}
+              className={`px-2.5 py-1 rounded text-xs font-medium transition-colors flex items-center space-x-1 ${
+                layoutMode === "repertory_focus"
+                  ? "bg-purple-600 text-white shadow-sm"
+                  : "text-slate-400 hover:text-slate-200"
+              }`}
+              title="Expand Repertory Workbench for remedy analysis"
+            >
+              <Brain className="w-3.5 h-3.5" />
+              <span>Repertory Focus</span>
+            </button>
+
+            <button
+              onClick={() => setLayoutMode("balanced")}
+              className={`px-2.5 py-1 rounded text-xs font-medium transition-colors flex items-center space-x-1 ${
+                layoutMode === "balanced"
+                  ? "bg-slate-700 text-white shadow-sm"
+                  : "text-slate-400 hover:text-slate-200"
+              }`}
+              title="Balanced Overview across all panels"
+            >
+              <span>Overview</span>
+            </button>
           </div>
 
           <div className="h-4 w-px bg-slate-800" />
@@ -160,7 +208,7 @@ export function ConsultationWorkspaceShell({
             {status === "active" && (
               <button
                 onClick={() => handleTransition("paused")}
-                className="text-xs px-3 py-1 rounded-md bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 font-medium transition-colors border border-amber-500/30"
+                className="text-xs px-2.5 py-1 rounded-md bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 font-medium transition-colors border border-amber-500/30"
               >
                 Pause
               </button>
@@ -168,7 +216,7 @@ export function ConsultationWorkspaceShell({
             {status === "paused" && (
               <button
                 onClick={() => handleTransition("active")}
-                className="text-xs px-3 py-1 rounded-md bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 font-medium transition-colors border border-emerald-500/30"
+                className="text-xs px-2.5 py-1 rounded-md bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 font-medium transition-colors border border-emerald-500/30"
               >
                 Resume
               </button>
@@ -177,11 +225,11 @@ export function ConsultationWorkspaceShell({
         </div>
 
         {/* Right Actions (Outcome + Guarded Completion) */}
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-2 shrink-0">
           <select
             value={outcome}
             onChange={(e) => setOutcome(e.target.value as ConsultationOutcome)}
-            className="text-xs bg-slate-950 border border-slate-800 text-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:border-teal-500"
+            className="text-xs bg-slate-950 border border-slate-800 text-slate-200 rounded-lg px-2.5 py-2 focus:outline-none focus:border-teal-500"
           >
             <option value="">-- Select Outcome --</option>
             <option value="prescription_issued">Prescription Issued</option>
@@ -206,7 +254,7 @@ export function ConsultationWorkspaceShell({
           <button
             onClick={handleCompleteConsultation}
             disabled={status === "completed"}
-            className="flex items-center space-x-1.5 text-xs px-4 py-2 rounded-lg bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white font-medium shadow-lg shadow-teal-500/20 transition-all disabled:opacity-50"
+            className="flex items-center space-x-1.5 text-xs px-3.5 py-2 rounded-lg bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white font-medium shadow-lg shadow-teal-500/20 transition-all disabled:opacity-50"
           >
             <CheckCircle className="w-4 h-4" />
             <span>{status === "completed" ? "Completed" : "End Consultation"}</span>
@@ -214,26 +262,66 @@ export function ConsultationWorkspaceShell({
         </div>
       </header>
 
-      {/* 2. Main 4-Column Workspace Grid */}
-      <main className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-4 p-4 min-h-0 overflow-hidden bg-slate-950">
+      {/* 2. Adaptive Ergonomic Workspace Grid */}
+      <main className="flex-1 flex flex-col lg:flex-row gap-3 p-3 min-h-0 overflow-hidden bg-slate-950">
         
-        {/* Panel 1: Patient Context & Telemedicine Console */}
-        <div className="flex flex-col min-h-0 overflow-hidden">
-          <TelemedicinePanel
-            patientId={patientId}
-            consultationId={initialIntake?.id || "consultation_draft"}
-            startedAt={initialIntake?.startedAt}
-            pausedAt={initialIntake?.pausedAt}
-            isPaused={status === "paused"}
-            isCompleted={status === "completed"}
-            consent={{ status: "granted", recordedAt: new Date().toISOString(), recordedBy: "patient_portal" }}
-            currentNotes={notes}
-            onNotesUpdated={setNotes}
-          />
+        {/* Panel 1: Telemedicine Console (Collapsible / Compact) */}
+        <div
+          className={`transition-all duration-300 flex flex-col min-h-0 overflow-hidden ${
+            isTelemedicineCollapsed
+              ? "lg:w-14 shrink-0"
+              : layoutMode === "case_taking" || layoutMode === "repertory_focus"
+              ? "lg:w-56 shrink-0"
+              : "lg:w-64 xl:w-72 shrink-0"
+          }`}
+        >
+          <div className="flex items-center justify-between px-3 py-1.5 bg-slate-900 border border-b-0 border-slate-800 rounded-t-xl text-[11px] text-slate-400">
+            <span className="font-semibold uppercase tracking-wider text-slate-300">
+              {!isTelemedicineCollapsed ? "Telemedicine & Video" : "Media"}
+            </span>
+            <button
+              onClick={() => setIsTelemedicineCollapsed(!isTelemedicineCollapsed)}
+              className="hover:text-teal-400 transition-colors p-0.5 rounded"
+              title={isTelemedicineCollapsed ? "Expand Video Panel" : "Collapse Video Panel"}
+            >
+              {isTelemedicineCollapsed ? "▶" : "◀"}
+            </button>
+          </div>
+
+          {!isTelemedicineCollapsed ? (
+            <div className="flex-1 min-h-0 overflow-hidden">
+              <TelemedicinePanel
+                patientId={patientId}
+                consultationId={initialIntake?.id || "consultation_draft"}
+                startedAt={initialIntake?.startedAt}
+                pausedAt={initialIntake?.pausedAt}
+                isPaused={status === "paused"}
+                isCompleted={status === "completed"}
+                consent={{ status: "granted", recordedAt: new Date().toISOString(), recordedBy: "patient_portal" }}
+                currentNotes={notes}
+                onNotesUpdated={setNotes}
+              />
+            </div>
+          ) : (
+            <div className="flex-1 bg-slate-900 border border-slate-800 rounded-b-xl flex flex-col items-center py-4 space-y-4 text-slate-400">
+              <Video className="w-5 h-5 text-teal-400 animate-pulse" />
+              <div className="writing-mode-vertical text-xs tracking-wider uppercase font-semibold text-slate-500">
+                Telemedicine Active
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Panel 2: Structured Clinical Documentation */}
-        <div className="flex flex-col min-h-0 overflow-hidden">
+        <div
+          className={`transition-all duration-300 flex flex-col min-h-0 overflow-hidden ${
+            layoutMode === "case_taking"
+              ? "lg:flex-[2.2]"
+              : layoutMode === "repertory_focus"
+              ? "lg:flex-[1]"
+              : "lg:flex-[1.4]"
+          }`}
+        >
           <ClinicalNotesPanel
             notes={notes}
             onChange={setNotes}
@@ -243,7 +331,15 @@ export function ConsultationWorkspaceShell({
         </div>
 
         {/* Panel 3: AI Repertory Workbench & Remedy Analysis */}
-        <div className="flex flex-col min-h-0 overflow-hidden">
+        <div
+          className={`transition-all duration-300 flex flex-col min-h-0 overflow-hidden ${
+            layoutMode === "repertory_focus"
+              ? "lg:flex-[2.5]"
+              : layoutMode === "case_taking"
+              ? "lg:flex-[1.2]"
+              : "lg:flex-[1.6]"
+          }`}
+        >
           <RepertoryIntelligencePanel
             patientId={patientId}
             consultationId={initialIntake?.id || "consultation_draft"}
@@ -257,19 +353,51 @@ export function ConsultationWorkspaceShell({
         </div>
 
         {/* Panel 4: Digital Prescription & Dispatch Builder */}
-        <div className="flex flex-col min-h-0 overflow-hidden">
-          <PrescriptionPanel
-            patientId={patientId}
-            consultationId={initialIntake?.id || "consultation_draft"}
-            recordVersion={recordVersion}
-            notes={notes}
-            selectedRemedyName={prescriptionRemedy}
-            onConsultationCompleted={(newOutcome, newRecordVersion) => {
-              setStatus("completed");
-              setOutcome(newOutcome);
-              setRecordVersion(newRecordVersion);
-            }}
-          />
+        <div
+          className={`transition-all duration-300 flex flex-col min-h-0 overflow-hidden ${
+            isPrescriptionCollapsed
+              ? "lg:w-14 shrink-0"
+              : layoutMode === "case_taking" || layoutMode === "repertory_focus"
+              ? "lg:w-64 shrink-0"
+              : "lg:w-72 xl:w-80 shrink-0"
+          }`}
+        >
+          <div className="flex items-center justify-between px-3 py-1.5 bg-slate-900 border border-b-0 border-slate-800 rounded-t-xl text-[11px] text-slate-400">
+            <span className="font-semibold uppercase tracking-wider text-slate-300">
+              {!isPrescriptionCollapsed ? "Prescription" : "Rx"}
+            </span>
+            <button
+              onClick={() => setIsPrescriptionCollapsed(!isPrescriptionCollapsed)}
+              className="hover:text-teal-400 transition-colors p-0.5 rounded"
+              title={isPrescriptionCollapsed ? "Expand Prescription Panel" : "Collapse Prescription Panel"}
+            >
+              {isPrescriptionCollapsed ? "◀" : "▶"}
+            </button>
+          </div>
+
+          {!isPrescriptionCollapsed ? (
+            <div className="flex-1 min-h-0 overflow-hidden">
+              <PrescriptionPanel
+                patientId={patientId}
+                consultationId={initialIntake?.id || "consultation_draft"}
+                recordVersion={recordVersion}
+                notes={notes}
+                selectedRemedyName={prescriptionRemedy}
+                onConsultationCompleted={(newOutcome, newRecordVersion) => {
+                  setStatus("completed");
+                  setOutcome(newOutcome);
+                  setRecordVersion(newRecordVersion);
+                }}
+              />
+            </div>
+          ) : (
+            <div className="flex-1 bg-slate-900 border border-slate-800 rounded-b-xl flex flex-col items-center py-4 space-y-4 text-slate-400">
+              <Pill className="w-5 h-5 text-emerald-400" />
+              <div className="writing-mode-vertical text-xs tracking-wider uppercase font-semibold text-slate-500">
+                Prescription Draft
+              </div>
+            </div>
+          )}
         </div>
 
       </main>
