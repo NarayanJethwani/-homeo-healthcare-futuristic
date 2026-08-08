@@ -53,7 +53,7 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
   const [newCasePhone, setNewCasePhone] = useState('');
   const [newCaseEmail, setNewCaseEmail] = useState('');
   const [newCaseComplaint, setNewCaseComplaint] = useState('');
-  const [newCaseCareLevel, setNewCaseCareLevel] = useState('🌱 Acute & Wellness Care');
+  const [newCaseCareLevel, setNewCaseCareLevel] = useState('🌱 Focused Clinical Care');
   const [newCaseBillingCycle, setNewCaseBillingCycle] = useState('Weekly');
   const [newCasePrice, setNewCasePrice] = useState('');
   const [newCaseDuration, setNewCaseDuration] = useState('2');
@@ -609,8 +609,8 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
           careLevel: newCaseCareLevel,
           conditionsCount: Number(newCaseConditions) || 1,
           durationText: `${newCaseDuration} Weeks`,
-          finalPrice: newCasePrice ? Number(newCasePrice) : (newCaseCareLevel.includes("Acute & Wellness") ? 2000 : (newCaseCareLevel.includes("Advanced Constitutional") ? 20000 : (newCaseCareLevel.includes("Complete Health") ? 40000 : 12000))),
-          receivedAmount: newCasePrice ? Number(newCasePrice) : (newCaseCareLevel.includes("Acute & Wellness") ? 2000 : (newCaseCareLevel.includes("Advanced Constitutional") ? 20000 : (newCaseCareLevel.includes("Complete Health") ? 40000 : 12000))),
+          finalPrice: newCasePrice ? Number(newCasePrice) : (newCaseCareLevel.includes("Focused") ? 3000 : (newCaseCareLevel.includes("Complex") ? 36000 : (newCaseCareLevel.includes("Advanced Physician") ? 48000 : 24000))),
+          receivedAmount: newCasePrice ? Number(newCasePrice) : (newCaseCareLevel.includes("Focused") ? 3000 : (newCaseCareLevel.includes("Complex") ? 36000 : (newCaseCareLevel.includes("Advanced Physician") ? 48000 : 24000))),
           remainingBalance: 0,
           billingCycle: newCaseBillingCycle,
           durationValue: Number(newCaseDuration) || 2,
@@ -1173,10 +1173,10 @@ export const RepertoryWorkbench: React.FC<RepertoryWorkbenchProps> = ({
                 }}
                 className="w-full bg-slate-50/50 hover:bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white transition-all font-semibold cursor-pointer"
               >
-                <option value="🌱 Acute & Wellness Care">🌱 Acute & Wellness Care — 1 week (₹2,000)</option>
-                <option value="⚡ Constitutional Care">⚡ Constitutional Care — 4 weeks (₹12,000)</option>
-                <option value="🎯 Advanced Constitutional Care">🎯 Advanced Constitutional Care — 4 weeks (from ₹20,000)</option>
-                <option value="🔮 Complete Health Transformation Program">🔮 Complete Health Transformation Program — clinician-assigned (₹10,000/week)</option>
+                <option value="🌱 Focused Clinical Care">🌱 Focused Clinical Care — 1 week (₹3,000)</option>
+                <option value="⚡ Integrated Clinical Care">⚡ Integrated Clinical Care — 4 weeks (₹24,000)</option>
+                <option value="🎯 Complex Clinical Care">🎯 Complex Clinical Care — 4 weeks (₹36,000)</option>
+                <option value="🔮 Advanced Physician Care">🔮 Advanced Physician Care — 4 weeks (₹48,000)</option>
                 <option value="🚨 Priority Acute Support">🚨 Priority Acute Support add-on (+₹2,000/week)</option>
                 <option value="🫁 Case-Specific Clinical Support">🫁 Case-Specific Clinical Support (fee confirmed after assessment)</option>
               </select>
