@@ -33,7 +33,7 @@ export function getTreatmentRecommendation(
       followUpFrequency: "Weekly",
       reasons: ["New or short-term symptoms", "One acute episode", "Short care duration"],
       patientExplanation: conditionCount > 1
-        ? "Acute & Wellness Care includes one acute episode. A separate unrelated acute episode can be assessed for a fixed ₹1,000; recurring or related symptoms may fit Constitutional Care better."
+        ? "Focused Clinical Care includes single primary health concern or localized follow-up. Integrated Clinical Care manages multiple related health conditions requiring constitutional care."
         : detail.scopeMessage,
       disclaimer: "A physician confirms pathway suitability before treatment begins.",
     };
