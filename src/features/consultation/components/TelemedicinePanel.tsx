@@ -62,8 +62,9 @@ export function TelemedicinePanel({
   });
 
   const [googleMeetUrl, setGoogleMeetUrl] = useState<string>(
-    `https://meet.google.com/hh-demo-${patientId.toLowerCase().replace(/[^a-z0-9]/g, "")}`
+    "https://meet.google.com/hhc-cons-prm"
   );
+  const [isEditingMeetUrl, setIsEditingMeetUrl] = useState<boolean>(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [isTranscriptOpen, setIsTranscriptOpen] = useState<boolean>(false);
   const [appendStatusMessage, setAppendStatusMessage] = useState<string | null>(null);
@@ -132,23 +133,52 @@ export function TelemedicinePanel({
 
       {/* Google Meet 2-Way Remote Call Launcher Bar */}
       <div className="px-4 py-2.5 bg-emerald-950/40 border-b border-emerald-800/40 flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-          <span className="text-xs font-bold text-emerald-300 uppercase tracking-wider">
-            Google Meet 2-Way Video Call:
+        <div className="flex items-center gap-2 flex-1 min-w-[280px]">
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping flex-shrink-0" />
+          <span className="text-xs font-bold text-emerald-300 uppercase tracking-wider flex-shrink-0">
+            Meet URL:
           </span>
-          <span className="text-xs font-mono text-emerald-200/90 font-medium">
-            {googleMeetUrl}
-          </span>
+          {isEditingMeetUrl ? (
+            <input
+              type="text"
+              value={googleMeetUrl}
+              onChange={(e) => setGoogleMeetUrl(e.target.value)}
+              onBlur={() => setIsEditingMeetUrl(false)}
+              className="flex-1 px-2.5 py-1 text-xs font-mono bg-slate-950 border border-emerald-500/50 rounded text-emerald-200 outline-none"
+              placeholder="https://meet.google.com/xxx-yyyy-zzz"
+              autoFocus
+            />
+          ) : (
+            <span
+              onClick={() => setIsEditingMeetUrl(true)}
+              className="text-xs font-mono text-emerald-200/90 font-medium hover:underline cursor-pointer truncate max-w-[220px]"
+              title="Click to edit Google Meet URL"
+            >
+              {googleMeetUrl}
+            </span>
+          )}
         </div>
-        <button
-          type="button"
-          onClick={() => window.open(googleMeetUrl, "_blank")}
-          className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold text-xs flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
-        >
-          <Video className="w-3.5 h-3.5" />
-          <span>Launch Google Meet Room</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setGoogleMeetUrl("https://meet.google.com/new")}
+            className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-[11px] font-semibold transition-all cursor-pointer"
+            title="Create instant Google Meet room"
+          >
+            + New Room
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              const target = googleMeetUrl.startsWith("http") ? googleMeetUrl : `https://${googleMeetUrl}`;
+              window.open(target, "_blank");
+            }}
+            className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold text-xs flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+          >
+            <Video className="w-3.5 h-3.5" />
+            <span>Launch Google Meet</span>
+          </button>
+        </div>
       </div>
 
       {/* Video Viewport Container */}
