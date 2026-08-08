@@ -17,7 +17,8 @@ import {
   Lock,
   Sun,
   Moon,
-  ChevronRight
+  ChevronRight,
+  Video
 } from "lucide-react";
 import { auth, db } from "@/lib/firebase";
 import { doc, getDoc, updateDoc, collection, query, where, getDocs } from "firebase/firestore";
@@ -229,11 +230,13 @@ export default function PatientDashboard() {
   const handleLogout = async () => {
     try {
       await fetch("/api/patient/session", { method: "DELETE" });
-      await auth.signOut();
+      await auth.signOut().catch(() => null);
       localStorage.removeItem("patient_session");
-      router.push("/patient/login");
+      localStorage.removeItem("admin_session");
+      window.location.href = "/patient/login";
     } catch (err) {
       console.error("Logout failed:", err);
+      window.location.href = "/patient/login";
     }
   };
 
@@ -369,17 +372,17 @@ export default function PatientDashboard() {
   if (sessionUser && !sessionUser.patientId) {
     return (
       <div className="min-h-screen bg-pearl dark:bg-slate-950 flex items-center justify-center p-6">
-        <div className="absolute top-6 right-6 flex items-center gap-3">
+        <div className="absolute top-28 right-6 md:right-12 z-50 flex items-center gap-3">
           <button
             onClick={toggleTheme}
             type="button"
-            className="p-3 rounded-full bg-white/40 dark:bg-slate-900/40 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 text-[#1A2421] dark:text-slate-100 hover:scale-105 transition-all shadow-sm cursor-pointer"
+            className="p-3 rounded-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 text-[#1A2421] dark:text-slate-100 hover:scale-105 transition-all shadow-md cursor-pointer"
           >
             {theme === "light" ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
           </button>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-1.5 px-4.5 py-2.5 rounded-full border border-rose-200 hover:border-rose-600 hover:bg-rose-50/50 text-rose-600 text-xs font-bold uppercase transition-all bg-white dark:bg-slate-900 cursor-pointer shadow-sm"
+            className="flex items-center gap-1.5 px-4.5 py-2.5 rounded-full border border-rose-200 hover:border-rose-600 hover:bg-rose-50 text-rose-600 text-xs font-bold uppercase transition-all bg-white dark:bg-slate-900 cursor-pointer shadow-md"
           >
             <LogOut className="w-4 h-4" />
             <span>Sign Out</span>
@@ -567,9 +570,45 @@ export default function PatientDashboard() {
 
         </div>
 
-        {/* Right Column: Instructions, Files, and Follow-up Submission */}
+        {/* Right Column: Video Call, Instructions, Files, and Follow-up Submission */}
         <div className="lg:col-span-2 space-y-8">
           
+          {/* Live Google Meet Video Call Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-6 md:p-8 rounded-[28px] bg-gradient-to-br from-emerald-900/90 via-slate-900 to-slate-950 text-white border border-emerald-500/30 shadow-[0_15px_35px_rgba(16,185,129,0.15)] relative overflow-hidden space-y-4"
+          >
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-400">
+                    2-Way Live Video Consultation
+                  </span>
+                </div>
+                <h3 className="text-lg font-serif font-bold text-white">
+                  Join Google Meet Call with Dr. Jethwani
+                </h3>
+                <p className="text-xs text-slate-300 font-medium leading-relaxed">
+                  Your appointment room is active. Click below to launch your 2-way remote video session.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  const meetUrl = `https://meet.google.com/hh-demo-${profile.id.toLowerCase().replace(/[^a-z0-9]/g, "")}`;
+                  window.open(meetUrl, "_blank");
+                }}
+                className="px-6 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-full font-extrabold text-xs uppercase tracking-wider transition-all duration-300 shadow-lg flex items-center justify-center gap-2 shrink-0 cursor-pointer"
+              >
+                <Video className="w-4 h-4 text-slate-950" />
+                <span>Join Google Meet</span>
+              </button>
+            </div>
+          </motion.div>
+
           {/* Instructions & Prescription Panel */}
           <motion.div
             initial={{ opacity: 0, y: 15 }}

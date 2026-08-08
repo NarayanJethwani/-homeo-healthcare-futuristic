@@ -97,5 +97,9 @@ export async function DELETE() {
     ...cookieOptions(),
     maxAge: 0,
   });
+  response.cookies.set("hh_admin_session_v3", "", {
+    path: "/",
+    maxAge: 0,
+  });
   return response;
 }

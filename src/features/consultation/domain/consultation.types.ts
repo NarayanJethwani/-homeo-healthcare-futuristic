@@ -193,6 +193,7 @@ export interface ClinicalIntake {
   completedAt?: string;
   accumulatedActiveSeconds?: number;
   revision?: ConsultationRevision;
+  googleMeetUrl?: string;
 
   chiefComplaints: SymptomRecord[];
   historyPresentIllness?: string;

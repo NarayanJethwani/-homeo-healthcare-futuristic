@@ -61,6 +61,9 @@ export function TelemedicinePanel({
     isCompleted,
   });
 
+  const [googleMeetUrl, setGoogleMeetUrl] = useState<string>(
+    `https://meet.google.com/hh-demo-${patientId.toLowerCase().replace(/[^a-z0-9]/g, "")}`
+  );
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [isTranscriptOpen, setIsTranscriptOpen] = useState<boolean>(false);
   const [appendStatusMessage, setAppendStatusMessage] = useState<string | null>(null);
@@ -125,6 +128,27 @@ export function TelemedicinePanel({
           <Clock className="w-3.5 h-3.5 text-emerald-400" />
           <span>{isPaused ? `PAUSED (${formattedTime})` : formattedTime}</span>
         </div>
+      </div>
+
+      {/* Google Meet 2-Way Remote Call Launcher Bar */}
+      <div className="px-4 py-2.5 bg-emerald-950/40 border-b border-emerald-800/40 flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+          <span className="text-xs font-bold text-emerald-300 uppercase tracking-wider">
+            Google Meet 2-Way Video Call:
+          </span>
+          <span className="text-xs font-mono text-emerald-200/90 font-medium">
+            {googleMeetUrl}
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={() => window.open(googleMeetUrl, "_blank")}
+          className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold text-xs flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+        >
+          <Video className="w-3.5 h-3.5" />
+          <span>Launch Google Meet Room</span>
+        </button>
       </div>
 
       {/* Video Viewport Container */}
