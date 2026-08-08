@@ -19,6 +19,7 @@ import {
   type PathologyDepth,
   type PharmacyQuoteItem,
 } from "@/lib/clinicalCareSimulator";
+import { CARE_LEVELS_DETAILS } from "@/lib/pricingConfig";
 
 export interface ClinicalCareSimulatorDecision {
   assessment: ClinicalCareAssessment;
@@ -204,10 +205,10 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
   };
 
   const pathwayOptions: Array<{ value: ClinicalCareRecommendation["pathway"]; label: string; weeklyFee: number }> = [
-    { value: "mild", label: "Acute & Wellness Care", weeklyFee: 2000 },
-    { value: "moderate", label: "Constitutional Care", weeklyFee: 3000 },
-    { value: "focused", label: "Advanced Constitutional Care", weeklyFee: 5000 },
-    { value: "comprehensive", label: "Complete Health Transformation", weeklyFee: 10000 },
+    { value: "mild", label: CARE_LEVELS_DETAILS.mild.title, weeklyFee: CARE_LEVELS_DETAILS.mild.weeklyPrice },
+    { value: "moderate", label: CARE_LEVELS_DETAILS.moderate.title, weeklyFee: CARE_LEVELS_DETAILS.moderate.weeklyPrice },
+    { value: "focused", label: CARE_LEVELS_DETAILS.focused.title, weeklyFee: CARE_LEVELS_DETAILS.focused.weeklyPrice },
+    { value: "comprehensive", label: CARE_LEVELS_DETAILS.comprehensive.title, weeklyFee: CARE_LEVELS_DETAILS.comprehensive.weeklyPrice },
   ];
 
   const addPharmacyItem = () => {
