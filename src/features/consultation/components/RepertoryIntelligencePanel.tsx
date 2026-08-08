@@ -274,7 +274,7 @@ export function RepertoryIntelligencePanel({
       )}
 
       {/* Main Content Area */}
-      <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3 p-3 min-h-0 overflow-hidden bg-slate-950">
+      <div className="flex-1 grid grid-cols-1 xl:grid-cols-2 gap-3 p-3 min-h-0 overflow-hidden bg-slate-950">
         {/* Left Column: Search & Selected Rubrics */}
         <div className="flex flex-col min-h-0 space-y-3">
           {/* Rubric Search Bar */}
@@ -298,83 +298,97 @@ export function RepertoryIntelligencePanel({
                   <button
                     key={res.rubricId}
                     onClick={() => handleAddRubric(res)}
-                    className="w-full p-2 text-left hover:bg-slate-800 flex items-center justify-between text-xs transition-colors"
+                    className="w-full text-left p-2.5 hover:bg-slate-800/80 transition-colors flex items-center justify-between text-xs group"
                   >
                     <div>
-                      <div className="text-slate-200 font-medium">{res.rubricPath.join(" > ")}</div>
-                      <div className="text-[10px] text-slate-500">{res.sourceTitle} ({res.remedyCount} remedies)</div>
+                      <div className="font-medium text-purple-300 group-hover:text-purple-200">
+                        {res.rubricPath.join(" > ")}
+                      </div>
+                      <div className="text-[10px] text-slate-500 font-mono">
+                        ID: {res.rubricId} • Rem: {res.remedyCount}
+                      </div>
                     </div>
-                    <Plus className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-800/60">
+                      + Add
+                    </span>
                   </button>
                 ))}
               </div>
             )}
           </div>
 
-          {/* Selected Rubrics List */}
-          <div className="flex-1 bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex flex-col min-h-0 overflow-hidden">
+          {/* Active Totality Rubrics Bucket */}
+          <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex flex-col flex-1 min-h-0">
             <div className="flex items-center justify-between mb-2 pb-1.5 border-b border-slate-800">
               <span className="font-semibold text-slate-300 uppercase tracking-wider text-[11px]">
-                Selected Rubrics ({selectedRubrics.filter((r) => !r.excluded).length}/{selectedRubrics.length})
+                Selected Rubrics ({selectedRubrics.length})
               </span>
-              <span className="text-[10px] text-slate-500">Mult: x1.5 Char</span>
+              <span className="text-[10px] text-slate-400 font-mono">
+                Mult: x1.5 Char
+              </span>
             </div>
 
             <div className="flex-1 overflow-y-auto space-y-2 pr-1">
-              {selectedRubrics.map((r) => (
-                <div
-                  key={r.rubricId}
-                  className={`p-2.5 rounded-lg border transition-all space-y-1.5 ${
-                    r.excluded
-                      ? "bg-slate-950/40 border-slate-800/40 opacity-50"
-                      : r.characteristic
-                      ? "bg-purple-950/30 border-purple-800/60"
-                      : "bg-slate-950 border-slate-800/80"
-                  }`}
-                >
-                  <div className="flex items-start justify-between">
-                    <span className="text-slate-200 font-medium text-xs">
-                      {r.rubricPath.join(" > ")}
-                    </span>
-                    <div className="flex items-center space-x-1 shrink-0 ml-2">
-                      <button
-                        onClick={() => handleToggleCharacteristic(r.rubricId)}
-                        className={`p-1 rounded ${
-                          r.characteristic ? "text-amber-400 bg-amber-950/60" : "text-slate-600 hover:text-slate-400"
-                        }`}
-                        title="Toggle Characteristic (x1.5)"
-                      >
-                        <Star className="w-3 h-3 fill-current" />
-                      </button>
+              {selectedRubrics.length === 0 ? (
+                <div className="text-center py-8 text-slate-500 text-xs italic">
+                  No rubrics added yet. Search above to build case totality.
+                </div>
+              ) : (
+                selectedRubrics.map((r) => (
+                  <div
+                    key={r.rubricId}
+                    className={`p-2.5 rounded-lg border transition-all space-y-1.5 ${
+                      r.excluded
+                        ? "bg-slate-950/40 border-slate-900 text-slate-600 line-through"
+                        : "bg-slate-950 border-slate-800 hover:border-slate-700 text-slate-200"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <span className="font-medium text-xs text-purple-200 flex-1 leading-snug">
+                        {r.rubricPath.join(" > ")}
+                      </span>
+                      <div className="flex items-center space-x-1 shrink-0">
+                        <button
+                          onClick={() => handleToggleCharacteristic(r.rubricId)}
+                          className={`p-1 rounded ${
+                            r.characteristic
+                              ? "text-amber-400 bg-amber-950/60 border border-amber-800/60"
+                              : "text-slate-600 hover:text-amber-400"
+                          }`}
+                          title="Toggle Characteristic Weight (x1.5)"
+                        >
+                          <Star className="w-3 h-3 fill-current" />
+                        </button>
 
-                      <button
-                        onClick={() => handleToggleExcluded(r.rubricId)}
-                        className={`p-1 rounded ${
-                          r.excluded ? "text-red-400 bg-red-950/60" : "text-slate-600 hover:text-slate-400"
-                        }`}
-                        title="Toggle Excluded"
-                      >
-                        <EyeOff className="w-3 h-3" />
-                      </button>
+                        <button
+                          onClick={() => handleToggleExcluded(r.rubricId)}
+                          className={`p-1 rounded ${
+                            r.excluded ? "text-red-400 bg-red-950/60" : "text-slate-600 hover:text-slate-400"
+                          }`}
+                          title="Toggle Excluded"
+                        >
+                          <EyeOff className="w-3 h-3" />
+                        </button>
 
-                      <button
-                        onClick={() => handleRemoveRubric(r.rubricId)}
-                        className="p-1 rounded text-slate-600 hover:text-red-400"
-                        title="Remove Rubric"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </button>
+                        <button
+                          onClick={() => handleRemoveRubric(r.rubricId)}
+                          className="p-1 rounded text-slate-600 hover:text-red-400"
+                          title="Remove Rubric"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between text-[10px] text-slate-500">
+                      <span>Source: {r.sourceId}</span>
+                      {r.characteristic && (
+                        <span className="text-amber-400 font-semibold">Characteristic (x1.5)</span>
+                      )}
                     </div>
                   </div>
-
-                  <div className="flex items-center justify-between text-[10px] text-slate-500">
-                    <span>Source: {r.sourceId}</span>
-                    {r.characteristic && (
-                      <span className="text-amber-400 font-semibold">Characteristic (x1.5)</span>
-                    )}
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
         </div>
@@ -396,15 +410,15 @@ export function RepertoryIntelligencePanel({
                 key={rem.remedyId}
                 className="p-2.5 rounded-lg bg-slate-950 border border-slate-800/80 hover:border-slate-700 transition-all space-y-2"
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center space-x-2 shrink-0">
                     <span className="w-5 h-5 rounded-full bg-purple-950 border border-purple-800 text-purple-300 font-mono text-[10px] flex items-center justify-center font-bold">
                       #{idx + 1}
                     </span>
                     <span className="font-semibold text-slate-100 text-xs">{rem.remedyName}</span>
                   </div>
 
-                  <div className="text-right">
+                  <div className="text-right shrink-0">
                     <div className="text-xs font-mono font-bold text-purple-300">
                       {rem.scoreBreakdown.finalScore} pts
                     </div>
@@ -415,14 +429,14 @@ export function RepertoryIntelligencePanel({
                 </div>
 
                 {/* Score Breakdown Bar & Provenance */}
-                <div className="grid grid-cols-3 gap-2 text-[10px] bg-slate-900 p-1.5 rounded border border-slate-800/60 text-slate-400">
+                <div className="flex flex-wrap items-center justify-between gap-1.5 text-[10px] bg-slate-900 p-2 rounded border border-slate-800/60 text-slate-400">
                   <div>Grade Sum: <span className="text-slate-200 font-mono">{rem.scoreBreakdown.rubricScore}</span></div>
                   <div>Char Adj: <span className="text-amber-400 font-mono">+{rem.scoreBreakdown.characteristicAdjustment}</span></div>
                   <div>Thermal Adj: <span className="text-emerald-400 font-mono">+{rem.scoreBreakdown.thermalAdjustment}</span></div>
                 </div>
 
                 {/* Actions: Inspect Keynotes & Select for Prescription Draft */}
-                <div className="flex items-center justify-between pt-1">
+                <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
                   <button
                     onClick={() => handleInspectRemedy(rem.remedyId)}
                     className="flex items-center space-x-1 text-[11px] text-purple-400 hover:text-purple-300 font-medium"
@@ -434,7 +448,7 @@ export function RepertoryIntelligencePanel({
                   <button
                     disabled={isRedFlagUnacknowledged}
                     onClick={() => onSelectRemedyForPrescription(rem.remedyId, rem.remedyName)}
-                    className="px-2.5 py-1 bg-teal-600 hover:bg-teal-500 text-white rounded font-medium text-[11px] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="px-2.5 py-1 bg-teal-600 hover:bg-teal-500 text-white rounded font-medium text-[11px] transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
                     title={
                       isRedFlagUnacknowledged
                         ? "Acknowledge red flag before adding remedy"
