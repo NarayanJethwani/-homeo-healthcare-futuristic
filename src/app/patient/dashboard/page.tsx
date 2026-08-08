@@ -598,7 +598,7 @@ export default function PatientDashboard() {
               <button
                 type="button"
                 onClick={() => {
-                  const meetUrl = "https://meet.google.com/hhc-cons-prm";
+                  const meetUrl = "https://meet.google.com/new";
                   window.open(meetUrl, "_blank");
                 }}
                 className="px-6 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-full font-extrabold text-xs uppercase tracking-wider transition-all duration-300 shadow-lg flex items-center justify-center gap-2 shrink-0 cursor-pointer"

@@ -62,7 +62,7 @@ export function TelemedicinePanel({
   });
 
   const [googleMeetUrl, setGoogleMeetUrl] = useState<string>(
-    "https://meet.google.com/hhc-cons-prm"
+    "https://meet.google.com/new"
   );
   const [isEditingMeetUrl, setIsEditingMeetUrl] = useState<boolean>(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
