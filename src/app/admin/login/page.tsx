@@ -7,7 +7,6 @@ import { Lock, Mail, Activity, Eye, EyeOff, Sparkles, AlertCircle, Sun, Moon } f
 import { auth, db } from "@/lib/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import Magnetic from "@/components/Magnetic";
 
 export default function AdminLogin() {
   const router = useRouter();
@@ -266,17 +265,19 @@ export default function AdminLogin() {
             </div>
           </form>
 
-          <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-800 text-center">
-            <button
-              type="button"
-              onClick={handleDevLauncher}
-              disabled={isLoading}
-              className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold uppercase tracking-wider text-[11px] shadow-md transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <Sparkles className="w-4 h-4" />
-              ✨ Launch Dev EHR Consultation Workspace
-            </button>
-          </div>
+          {process.env.NODE_ENV !== "production" && (
+            <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-800 text-center">
+              <button
+                type="button"
+                onClick={handleDevLauncher}
+                disabled={isLoading}
+                className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold uppercase tracking-wider text-[11px] shadow-md transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <Sparkles className="w-4 h-4" />
+                ✨ Launch Dev EHR Consultation Workspace
+              </button>
+            </div>
+          )}
         </motion.div>
       </div>
     </div>
