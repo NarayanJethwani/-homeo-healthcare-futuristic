@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { randomUUID } from "crypto";
-import { requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiAuth";
+import { forbiddenApiResponse, requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiAuth";
 import { validatePrescriptionDraft } from "@/features/consultation/utils/prescription-validation";
 import { PrescriptionDraft } from "@/features/consultation/types/prescription.types";
 import { renderCanonicalPrescriptionPdf } from "@/features/consultation/server/clinicalPrescriptionPdf.server";
@@ -11,6 +11,9 @@ import {
   auditRepository,
   ClinicalDocumentRecord,
 } from "@/features/consultation/repositories/consultationRepositories";
+import { getWorkspaceById } from "@/features/consultation/application/consultationWorkspaceRepository.server";
+import { computeInputSnapshotHash } from "@/features/consultation/services/remedyTotalityScorer";
+import { canAccessClinicalPatient } from "@/features/consultation/application/clinicalPatientAccess.server";
 
 export async function POST(req: NextRequest) {
   const session = await requireAdminApiSession(req);
@@ -33,8 +36,27 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+    if (!(await canAccessClinicalPatient(session, body.patientId))) return forbiddenApiResponse();
 
-    if (body.isAnalysisStale) {
+    const workspace = await getWorkspaceById(body.consultationId);
+    if (!workspace || workspace.patientId !== body.patientId) {
+      return NextResponse.json({ error: "Consultation record not found" }, { status: 404 });
+    }
+    const currentSnapshotHash = computeInputSnapshotHash(
+      workspace.selectedRubrics,
+      workspace.notes.thermalState === "hot"
+        ? "warm"
+        : workspace.notes.thermalState === "chilly"
+          ? "chilly"
+          : "ambithermal",
+      workspace.notes.miasmaticExpression
+    );
+    const staleOnServer =
+      !workspace.selectedRemedy ||
+      workspace.selectedRemedy.remedyName !== body.prescriptionDraft.selectedRemedyName ||
+      workspace.selectedRemedy.analysisSnapshotHash !== currentSnapshotHash ||
+      body.prescriptionDraft.sourceAnalysisSnapshotHash !== currentSnapshotHash;
+    if (body.isAnalysisStale || staleOnServer) {
       return NextResponse.json(
         { error: "Stale analysis error: Selected remedy analysis is stale. Please reconfirm selection before finalization." },
         { status: 409 }
@@ -95,13 +117,13 @@ export async function POST(req: NextRequest) {
       patientId: body.patientId,
       patientName: "Patient Record",
       prescriberName: session.uid,
-      remedyName: finalizedPrescription.selectedRemedyName || "Nux Vomica",
-      potencyScale: finalizedPrescription.potency?.scale || "centesimal",
-      potencyValue: finalizedPrescription.potency?.value || "200C",
-      dose: finalizedPrescription.dose || "4 pills",
-      repetition: finalizedPrescription.repetition || "Twice daily",
-      duration: finalizedPrescription.duration || "2 weeks",
-      instructions: finalizedPrescription.instructions || "Take after meals",
+      remedyName: finalizedPrescription.selectedRemedyName!,
+      potencyScale: finalizedPrescription.potency!.scale,
+      potencyValue: finalizedPrescription.potency!.value,
+      dose: finalizedPrescription.dose!,
+      repetition: finalizedPrescription.repetition!,
+      duration: finalizedPrescription.duration || "Not specified",
+      instructions: finalizedPrescription.instructions!,
       issuedAt: timestamp,
     });
 

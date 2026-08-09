@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { randomUUID } from "crypto";
-import { requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiAuth";
+import { forbiddenApiResponse, requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiAuth";
 import { StructuredClinicalNotes } from "@/features/consultation/types/clinical-notes.types";
 import { ConsultationLifecycleStatus } from "@/features/consultation/domain/consultation.types";
+import { resolveTelemedicineConsent } from "@/features/consultation/application/consultationConsent.server";
+import { canAccessClinicalPatient } from "@/features/consultation/application/clinicalPatientAccess.server";
 
 export interface AppendTranscriptRequest {
   patientId: string;
@@ -45,9 +47,12 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+    if (!(await canAccessClinicalPatient(session, body.patientId))) return forbiddenApiResponse();
 
-    // Verify patient consent
-    if (body.consentStatus !== "granted") {
+    // Verify consent from the authoritative consent repository. Never trust the
+    // browser's displayed consent state for a clinical write.
+    const authoritativeConsent = await resolveTelemedicineConsent(body.patientId);
+    if (authoritativeConsent.status !== "granted") {
       return NextResponse.json(
         { error: "Consent error: Patient telemedicine and AI transcription consent must be granted before appending transcript excerpts." },
         { status: 403 }

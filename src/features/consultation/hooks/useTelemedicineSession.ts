@@ -107,6 +107,7 @@ export function useTelemedicineSession(options: UseTelemedicineSessionOptions = 
   // Request camera track independently
   const requestCamera = useCallback(
     async (deviceId?: string) => {
+      if (state.transcription.consent.status !== "granted") return;
       if (!checkSecureContext()) {
         const err = normalizeMediaError(new DOMException("Insecure context", "SecurityError"));
         setState((prev) => ({ ...prev, error: err }));
@@ -168,12 +169,13 @@ export function useTelemedicineSession(options: UseTelemedicineSessionOptions = 
         }));
       }
     },
-    [getOrCreateStream, refreshDevices, state.devices.selectedCameraId]
+    [getOrCreateStream, refreshDevices, state.devices.selectedCameraId, state.transcription.consent.status]
   );
 
   // Request microphone track independently
   const requestMicrophone = useCallback(
     async (deviceId?: string) => {
+      if (state.transcription.consent.status !== "granted") return;
       if (!checkSecureContext()) {
         const err = normalizeMediaError(new DOMException("Insecure context", "SecurityError"));
         setState((prev) => ({ ...prev, error: err }));
@@ -234,7 +236,7 @@ export function useTelemedicineSession(options: UseTelemedicineSessionOptions = 
         }));
       }
     },
-    [getOrCreateStream, refreshDevices, state.devices.selectedMicrophoneId]
+    [getOrCreateStream, refreshDevices, state.devices.selectedMicrophoneId, state.transcription.consent.status]
   );
 
   // Request both camera and microphone

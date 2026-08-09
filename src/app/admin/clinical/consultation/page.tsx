@@ -7,7 +7,7 @@ import { Shield, AlertTriangle } from "lucide-react";
 
 function ConsultationPageContent() {
   const searchParams = useSearchParams();
-  const patientId = searchParams?.get("patientId") || "P-1001";
+  const patientId = searchParams?.get("patientId")?.trim() || "";
 
   if (!patientId) {
     return (

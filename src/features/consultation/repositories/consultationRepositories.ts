@@ -1,4 +1,6 @@
 import crypto from "crypto";
+import "server-only";
+import { getAdminDb } from "@/lib/firebaseAdmin";
 import {
   PrescriptionDraft,
   PrescriptionRevision,
@@ -57,13 +59,39 @@ export interface AuditEventRecord {
   metadata: Record<string, unknown>;
 }
 
-// Durable Store In-Memory State Backup (survives restarts via durable repository abstraction)
+// Development/test fallback only. Production always uses Firestore and fails
+// closed when the backend is unavailable.
 const documentStore = new Map<string, { record: ClinicalDocumentRecord; bytes: Uint8Array }>();
 const idempotencyStore = new Map<string, IdempotencyRecord>();
 const prescriptionStore = new Map<string, PrescriptionDraft>();
 const revisionStore = new Map<string, PrescriptionRevision[]>();
 const auditStore = new Map<string, AuditEventRecord[]>();
 const dispatchStore = new Map<string, PharmacyDispatchState>();
+
+const COLLECTIONS = {
+  documents: "clinicalPrescriptionDocumentsV1",
+  idempotency: "clinicalConsultationIdempotencyV1",
+  prescriptions: "clinicalPrescriptionsV1",
+  revisions: "clinicalPrescriptionRevisionsV1",
+  audits: "clinicalConsultationAuditV1",
+  dispatch: "clinicalPharmacyDispatchV1",
+} as const;
+
+function databaseOrNull(): any | null {
+  if (process.env.NODE_ENV !== "production" && !process.env.FIRESTORE_EMULATOR_HOST) {
+    return null;
+  }
+  try {
+    return getAdminDb();
+  } catch (error) {
+    if (process.env.NODE_ENV === "production") throw error;
+    return null;
+  }
+}
+
+function safeDocumentId(value: string) {
+  return crypto.createHash("sha256").update(value).digest("hex");
+}
 
 /**
   1. Clinical Document Repository Interface & Implementation
@@ -74,11 +102,30 @@ export const clinicalDocumentRepository = {
     if (computedChecksum !== record.checksum) {
       throw new Error(`Document integrity mismatch: expected ${record.checksum}, got ${computedChecksum}`);
     }
-    documentStore.set(record.id, { record: { ...record, status: "available" }, bytes });
+    const storedRecord = { ...record, status: "available" as const };
+    const db = databaseOrNull();
+    if (!db) {
+      documentStore.set(record.id, { record: storedRecord, bytes });
+      return;
+    }
+    await db.collection(COLLECTIONS.documents).doc(safeDocumentId(record.id)).set({
+      record: storedRecord,
+      pdfBase64: Buffer.from(bytes).toString("base64"),
+    });
   },
 
   async getDocument(documentId: string): Promise<{ record: ClinicalDocumentRecord; bytes: Uint8Array } | null> {
-    const entry = documentStore.get(documentId);
+    const db = databaseOrNull();
+    const stored = db
+      ? (await db.collection(COLLECTIONS.documents).doc(safeDocumentId(documentId)).get())
+      : null;
+    const data = stored?.exists ? stored.data() : null;
+    const entry = data
+      ? {
+          record: data.record as ClinicalDocumentRecord,
+          bytes: new Uint8Array(Buffer.from(data.pdfBase64, "base64")),
+        }
+      : documentStore.get(documentId);
     if (!entry) return null;
 
     // SHA-256 Integrity Verification on Retrieval
@@ -91,6 +138,20 @@ export const clinicalDocumentRepository = {
   },
 
   async getDocumentByPrescription(prescriptionId: string): Promise<{ record: ClinicalDocumentRecord; bytes: Uint8Array } | null> {
+    const db = databaseOrNull();
+    if (db) {
+      const snapshot = await db.collection(COLLECTIONS.documents).get();
+      for (const document of snapshot.docs) {
+        const data = document.data();
+        if (data.record?.prescriptionId === prescriptionId && data.record?.status === "available") {
+          return {
+            record: data.record as ClinicalDocumentRecord,
+            bytes: new Uint8Array(Buffer.from(data.pdfBase64, "base64")),
+          };
+        }
+      }
+      return null;
+    }
     for (const entry of documentStore.values()) {
       if (entry.record.prescriptionId === prescriptionId && entry.record.status === "available") {
         return entry;
@@ -118,7 +179,12 @@ export const idempotencyRepository = {
     const compoundKey = this.createCompoundKey(options.actorId, options.operation, options.consultationId, options.idempotencyKey);
     const requestHash = crypto.createHash("sha256").update(JSON.stringify(options.requestPayload)).digest("hex");
 
-    const existing = idempotencyStore.get(compoundKey);
+    const db = databaseOrNull();
+    const ref = db?.collection(COLLECTIONS.idempotency).doc(safeDocumentId(compoundKey));
+    const snapshot = ref ? await ref.get() : null;
+    const existing = snapshot?.exists
+      ? (snapshot.data() as IdempotencyRecord)
+      : idempotencyStore.get(compoundKey);
     if (existing) {
       if (existing.requestHash !== requestHash) {
         throw new Error(`Idempotency conflict: key ${options.idempotencyKey} was previously used with a different request payload.`);
@@ -137,16 +203,23 @@ export const idempotencyRepository = {
       createdAt: new Date().toISOString(),
       expiresAt: new Date(Date.now() + 86400000).toISOString(),
     };
-    idempotencyStore.set(compoundKey, newRecord);
+    if (ref) await ref.set(newRecord);
+    else idempotencyStore.set(compoundKey, newRecord);
     return { isDuplicate: false };
   },
 
   async completeIdempotency(compoundKey: string, responseReference: string): Promise<void> {
-    const record = idempotencyStore.get(compoundKey);
+    const db = databaseOrNull();
+    const ref = db?.collection(COLLECTIONS.idempotency).doc(safeDocumentId(compoundKey));
+    const snapshot = ref ? await ref.get() : null;
+    const record = snapshot?.exists
+      ? (snapshot.data() as IdempotencyRecord)
+      : idempotencyStore.get(compoundKey);
     if (record) {
       record.status = "completed";
       record.responseReference = responseReference;
       record.completedAt = new Date().toISOString();
+      if (ref) await ref.set(record);
     }
   },
 };
@@ -156,20 +229,42 @@ export const idempotencyRepository = {
  */
 export const prescriptionRepository = {
   async savePrescription(prescription: PrescriptionDraft): Promise<void> {
-    prescriptionStore.set(prescription.id || `rx_${Date.now()}`, prescription);
+    const id = prescription.id || `rx_${Date.now()}`;
+    const db = databaseOrNull();
+    if (db) await db.collection(COLLECTIONS.prescriptions).doc(safeDocumentId(id)).set(prescription);
+    else prescriptionStore.set(id, prescription);
   },
 
   async getPrescription(prescriptionId: string): Promise<PrescriptionDraft | null> {
-    return prescriptionStore.get(prescriptionId) || null;
+    const db = databaseOrNull();
+    if (!db) return prescriptionStore.get(prescriptionId) || null;
+    const snapshot = await db.collection(COLLECTIONS.prescriptions).doc(safeDocumentId(prescriptionId)).get();
+    return snapshot.exists ? (snapshot.data() as PrescriptionDraft) : null;
   },
 
   async saveRevision(revision: PrescriptionRevision): Promise<void> {
+    const db = databaseOrNull();
+    if (db) {
+      await db.collection(COLLECTIONS.revisions)
+        .doc(safeDocumentId(`${revision.prescriptionId}:${revision.version}`))
+        .set(revision);
+      return;
+    }
     const existing = revisionStore.get(revision.prescriptionId) || [];
     existing.push(revision);
     revisionStore.set(revision.prescriptionId, existing);
   },
 
   async getRevisions(prescriptionId: string): Promise<PrescriptionRevision[]> {
+    const db = databaseOrNull();
+    if (db) {
+      const snapshot = await db.collection(COLLECTIONS.revisions)
+        .where("prescriptionId", "==", prescriptionId)
+        .get();
+      return snapshot.docs
+        .map((document: any) => document.data() as PrescriptionRevision)
+        .sort((a: PrescriptionRevision, b: PrescriptionRevision) => a.version - b.version);
+    }
     return revisionStore.get(prescriptionId) || [];
   },
 };
@@ -179,6 +274,11 @@ export const prescriptionRepository = {
  */
 export const auditRepository = {
   async logAuditEvent(event: AuditEventRecord): Promise<void> {
+    const db = databaseOrNull();
+    if (db) {
+      await db.collection(COLLECTIONS.audits).doc(safeDocumentId(event.id)).set(event);
+      return;
+    }
     const existing = auditStore.get(event.consultationId) || [];
     existing.push(event);
     auditStore.set(event.consultationId, existing);
@@ -186,6 +286,15 @@ export const auditRepository = {
   },
 
   async getAuditHistory(consultationId: string): Promise<AuditEventRecord[]> {
+    const db = databaseOrNull();
+    if (db) {
+      const snapshot = await db.collection(COLLECTIONS.audits)
+        .where("consultationId", "==", consultationId)
+        .get();
+      return snapshot.docs
+        .map((document: any) => document.data() as AuditEventRecord)
+        .sort((a: AuditEventRecord, b: AuditEventRecord) => a.occurredAt.localeCompare(b.occurredAt));
+    }
     return auditStore.get(consultationId) || [];
   },
 };
@@ -195,10 +304,15 @@ export const auditRepository = {
  */
 export const dispatchRepository = {
   async saveDispatchState(prescriptionId: string, state: PharmacyDispatchState): Promise<void> {
-    dispatchStore.set(prescriptionId, state);
+    const db = databaseOrNull();
+    if (db) await db.collection(COLLECTIONS.dispatch).doc(safeDocumentId(prescriptionId)).set({ prescriptionId, ...state });
+    else dispatchStore.set(prescriptionId, state);
   },
 
   async getDispatchState(prescriptionId: string): Promise<PharmacyDispatchState | null> {
-    return dispatchStore.get(prescriptionId) || null;
+    const db = databaseOrNull();
+    if (!db) return dispatchStore.get(prescriptionId) || null;
+    const snapshot = await db.collection(COLLECTIONS.dispatch).doc(safeDocumentId(prescriptionId)).get();
+    return snapshot.exists ? (snapshot.data() as PharmacyDispatchState) : null;
   },
 };

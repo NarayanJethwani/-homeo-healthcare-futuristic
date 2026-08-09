@@ -24,12 +24,21 @@ import {
 } from "../types/prescription.types";
 import { StructuredClinicalNotes } from "../types/clinical-notes.types";
 import { evaluateGuardedCompletionReadiness } from "../utils/prescription-validation";
+import type { SelectedRubric } from "../types/repertory-intelligence.types";
+import type { ConsultationRemedySelection } from "../application/consultationWorkspace.types";
 
 interface PrescriptionPanelProps {
   patientId: string;
   consultationId: string;
   recordVersion: number;
   notes: StructuredClinicalNotes;
+  outcome: ConsultationOutcome | "";
+  onOutcomeChange: (outcome: ConsultationOutcome | "") => void;
+  initialDraft?: Partial<PrescriptionDraft>;
+  onDraftChange?: (draft: Partial<PrescriptionDraft>) => void;
+  selectedRubrics: SelectedRubric[];
+  selectedRemedy: ConsultationRemedySelection | null;
+  accumulatedActiveSeconds: number;
   selectedRemedyName?: string;
   isAnalysisStale?: boolean;
   onConsultationCompleted: (outcome: ConsultationOutcome, updatedRecordVersion: number) => void;
@@ -40,24 +49,28 @@ export function PrescriptionPanel({
   consultationId,
   recordVersion,
   notes,
+  outcome,
+  onOutcomeChange,
+  initialDraft = {},
+  onDraftChange,
+  selectedRubrics,
+  selectedRemedy,
+  accumulatedActiveSeconds,
   selectedRemedyName = "",
   isAnalysisStale = false,
   onConsultationCompleted,
 }: PrescriptionPanelProps) {
-  // Outcome State
-  const [outcome, setOutcome] = useState<ConsultationOutcome | "">("prescription_issued");
-
   // Prescription Form State
-  const [remedyName, setRemedyName] = useState<string>(selectedRemedyName);
-  const [potencyScale, setPotencyScale] = useState<PotencyScale>("centesimal");
-  const [potencyValue, setPotencyValue] = useState<string>("200C");
-  const [dose, setDose] = useState<string>("4 pills");
-  const [repetition, setRepetition] = useState<string>("Twice daily after meals");
-  const [duration, setDuration] = useState<string>("2 weeks");
-  const [instructions, setInstructions] = useState<string>("Take on clean tongue. Avoid camphor and strong aromatic substances.");
-  const [dietaryAdvice, setDietaryAdvice] = useState<string>("Avoid coffee and raw onions during course.");
-  const [followUpInstructions, setFollowUpInstructions] = useState<string>("Review in clinic after 14 days.");
-  const [pharmacyNotes, setPharmacyNotes] = useState<string>("");
+  const [remedyName, setRemedyName] = useState<string>(selectedRemedyName || initialDraft.selectedRemedyName || "");
+  const [potencyScale, setPotencyScale] = useState<PotencyScale>(initialDraft.potency?.scale || "centesimal");
+  const [potencyValue, setPotencyValue] = useState<string>(initialDraft.potency?.value || "");
+  const [dose, setDose] = useState<string>(initialDraft.dose || "");
+  const [repetition, setRepetition] = useState<string>(initialDraft.repetition || "");
+  const [duration, setDuration] = useState<string>(initialDraft.duration || "");
+  const [instructions, setInstructions] = useState<string>(initialDraft.instructions || "");
+  const [dietaryAdvice, setDietaryAdvice] = useState<string>(initialDraft.dietaryAdvice || "");
+  const [followUpInstructions, setFollowUpInstructions] = useState<string>(initialDraft.followUpInstructions || "");
+  const [pharmacyNotes, setPharmacyNotes] = useState<string>(initialDraft.pharmacyNotes || "");
 
   // Server Operation States
   const [isSavingDraft, setIsSavingDraft] = useState<boolean>(false);
@@ -65,6 +78,7 @@ export function PrescriptionPanel({
   const [isDispatching, setIsDispatching] = useState<boolean>(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [finalizedDocumentId, setFinalizedDocumentId] = useState<string | null>(null);
+  const [finalizedPrescriptionId, setFinalizedPrescriptionId] = useState<string | null>(null);
 
   // Draft Preview Drawer State
   const [isPreviewOpen, setIsPreviewOpen] = useState<boolean>(false);
@@ -87,7 +101,9 @@ export function PrescriptionPanel({
     () => ({
       consultationId,
       patientId,
+      selectedRemedyId: selectedRemedy?.remedyId,
       selectedRemedyName: remedyName,
+      sourceAnalysisSnapshotHash: selectedRemedy?.analysisSnapshotHash,
       potency: {
         scale: potencyScale,
         value: potencyValue,
@@ -105,6 +121,7 @@ export function PrescriptionPanel({
     [
       consultationId,
       patientId,
+      selectedRemedy,
       remedyName,
       potencyScale,
       potencyValue,
@@ -117,6 +134,10 @@ export function PrescriptionPanel({
       pharmacyNotes,
     ]
   );
+
+  useEffect(() => {
+    onDraftChange?.(currentDraft);
+  }, [currentDraft, onDraftChange]);
 
   // Evaluate Live Guarded Completion Readiness
   const readiness = useMemo(
@@ -150,6 +171,7 @@ export function PrescriptionPanel({
       const data = await res.json();
       if (res.ok && data.success) {
         setFinalizedDocumentId(data.documentRecord.id);
+        setFinalizedPrescriptionId(data.prescription.id);
         setStatusMessage(`✅ Prescription Finalized! Canonical Document ID: ${data.documentRecord.id}`);
       } else {
         setStatusMessage(`❌ Finalization failed: ${data.error || "Server error"}`);
@@ -180,6 +202,10 @@ export function PrescriptionPanel({
           outcome,
           notes,
           prescriptionDraft: outcome === "prescription_issued" ? currentDraft : undefined,
+          selectedRubrics,
+          selectedRemedy,
+          accumulatedActiveSeconds,
+          analysisSnapshotHash: selectedRemedy?.analysisSnapshotHash,
         }),
       });
 
@@ -207,7 +233,7 @@ export function PrescriptionPanel({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          prescriptionId: currentDraft.id || "rx_draft",
+          prescriptionId: finalizedPrescriptionId,
           consultationId,
           patientId,
           pharmacyNotes,
@@ -264,9 +290,10 @@ export function PrescriptionPanel({
           </label>
           <select
             value={outcome}
-            onChange={(e) => setOutcome(e.target.value as ConsultationOutcome)}
+            onChange={(e) => onOutcomeChange(e.target.value as ConsultationOutcome | "")}
             className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-slate-200 text-xs focus:outline-none focus:border-emerald-500"
           >
+            <option value="">-- Select Outcome --</option>
             <option value="prescription_issued">Prescription Issued</option>
             <option value="no_prescription">No Prescription Required</option>
             <option value="follow_up_required">Follow-up Required Only</option>
@@ -395,8 +422,8 @@ export function PrescriptionPanel({
       </div>
 
       {/* Footer Controls: Draft Preview, Download Canonical PDF, Pharmacy Dispatch, & Guarded End Consultation */}
-      <div className="p-3 bg-slate-950 border-t border-slate-800 flex items-center justify-between space-x-2">
-        <div className="flex items-center space-x-2">
+      <div className="p-3 bg-slate-950 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => setIsPreviewOpen(!isPreviewOpen)}
             className="flex items-center space-x-1.5 px-3 py-2 bg-slate-900 text-slate-300 border border-slate-800 hover:bg-slate-800 rounded-lg font-medium transition-colors"
@@ -417,7 +444,7 @@ export function PrescriptionPanel({
             </a>
           ) : (
             <button
-              disabled={isSavingDraft || outcome !== "prescription_issued"}
+              disabled={isSavingDraft || !readiness.ready || recordVersion === 0}
               onClick={handleFinalizePrescription}
               className="flex items-center space-x-1.5 px-3 py-2 bg-slate-900 text-slate-300 border border-slate-800 hover:bg-slate-800 rounded-lg font-medium transition-colors disabled:opacity-40"
               title="Finalize prescription and generate canonical document"
@@ -428,7 +455,7 @@ export function PrescriptionPanel({
           )}
 
           <button
-            disabled={isDispatching}
+            disabled={isDispatching || !finalizedPrescriptionId || dispatchState.providerName === "Unconfigured Local Adapter"}
             onClick={handleDispatchPharmacy}
             className="flex items-center space-x-1.5 px-3 py-2 bg-slate-900 text-slate-300 border border-slate-800 hover:bg-slate-800 rounded-lg font-medium transition-colors disabled:opacity-50"
             title="Decoupled pharmacy dispatch adapter"

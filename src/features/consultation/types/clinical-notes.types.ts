@@ -51,6 +51,27 @@ export interface PatientVitals {
   recordedAt?: string;
 }
 
+export interface CaseDiscussionEntry {
+  id: string;
+  author: string;
+  noteText: string;
+  createdAt: string;
+}
+
+export interface TreatmentPlan {
+  primaryRemedyStrategy?: string;
+  intercurrentRemedyStrategy?: string;
+  potencyLadder?: string;
+  heringsLawObserved?: {
+    aboveToDownward?: boolean;
+    insideToOutward?: boolean;
+    reverseOrderOfAppearance?: boolean;
+  };
+  followUpIntervalDays?: number;
+  caseDiscussionLogs?: CaseDiscussionEntry[];
+  savedFeeSimulatorDecision?: any;
+}
+
 export interface StructuredClinicalNotes {
   chiefComplaints: ChiefComplaintItem[];
   historyOfPresentIllness: string;
@@ -62,6 +83,7 @@ export interface StructuredClinicalNotes {
   miasmaticExpression: MiasmaticState;
   vitals: PatientVitals;
   clinicalObservations?: string;
+  treatmentPlan?: TreatmentPlan;
   updatedAt: string;
 }
 
@@ -93,5 +115,5 @@ export const DEFAULT_CLINICAL_NOTES: StructuredClinicalNotes = {
   miasmaticExpression: "mixed",
   vitals: {},
   clinicalObservations: "",
-  updatedAt: new Date().toISOString(),
+  updatedAt: "",
 };
