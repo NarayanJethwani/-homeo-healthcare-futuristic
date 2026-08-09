@@ -12,7 +12,7 @@ import {
   RemedyScoreBreakdown,
   RemedyAnalysisMetadata,
 } from "../types/repertory-intelligence.types";
-import { CanonicalRubricSearchResult } from "./repertoryConsultationAdapter";
+import { CanonicalRubricSearchResult, CANONICAL_REPERTORY_DATABASE } from "./repertoryConsultationAdapter";
 
 export interface TotalityScoringOptions {
   selectedRubrics: SelectedRubric[];
@@ -72,8 +72,24 @@ export function computeRemedyTotality(options: TotalityScoringOptions): RankedRe
   }
 
   for (const sr of activeRubrics) {
-    const canonicalData = rubricDataMap.get(sr.rubricId);
-    if (!canonicalData) continue;
+    const canonicalData =
+      rubricDataMap.get(sr.rubricId) ||
+      CANONICAL_REPERTORY_DATABASE.find(
+        (c: CanonicalRubricSearchResult) => c.rubricId === sr.rubricId || c.rubricPath.join("/").toLowerCase() === sr.rubricPath.join("/").toLowerCase()
+      ) ||
+      ((sr as any).remedies
+        ? {
+            rubricId: sr.rubricId,
+            sourceId: sr.sourceId,
+            sourceTitle: "Selected Rubric",
+            chapterName: sr.rubricPath[0] || "GENERALITIES",
+            rubricPath: sr.rubricPath,
+            remedyCount: (sr as any).remedies.length,
+            remedies: (sr as any).remedies,
+          }
+        : undefined);
+
+    if (!canonicalData || !Array.isArray(canonicalData.remedies) || canonicalData.remedies.length === 0) continue;
 
     for (const rem of canonicalData.remedies) {
       const remId = rem.remedyId.toLowerCase();
@@ -139,10 +155,9 @@ export function computeRemedyTotality(options: TotalityScoringOptions): RankedRe
       }
     }
 
-    // Miasmatic alignment adjustment
-    if (options.patientMiasm) {
-      miasmaticBonus = entry.rubricScore * config.miasmaticAlignmentWeight;
-    }
+    // Miasmatic alignment remains neutral until a governed remedy-to-miasm
+    // evidence matrix is available. A patient miasm alone is not evidence of
+    // remedy-specific alignment.
 
     entry.thermalAdjustment = thermalBonus;
     entry.miasmaticAdjustment = miasmaticBonus;

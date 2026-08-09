@@ -10,6 +10,7 @@ import EditorialConfidenceBadge from "../src/features/knowledge/components/Edito
 import ReviewedBy from "../src/features/knowledge/components/ReviewedBy";
 import TimelineHistory from "../src/features/knowledge/components/TimelineHistory";
 import AICitationBlock from "../src/features/knowledge/components/AICitationBlock";
+import { DEFAULT_CLINICAL_NOTES } from "../src/features/consultation/types/clinical-notes.types";
 
 // Mock Next.js Link component
 vi.mock("next/link", () => {
@@ -40,6 +41,10 @@ function LegacyReviewedBadge({ reviewedDate }: { reviewedDate: string }) {
 }
 
 describe("Date Formatter Unit Tests", () => {
+  it("uses a deterministic unsaved timestamp for the consultation shell", () => {
+    expect(DEFAULT_CLINICAL_NOTES.updatedAt).toBe("");
+  });
+
   it("should format valid dates correctly preserving styles and day digits", () => {
     // Normal date short format
     expect(formatMedicalDate("2026-06-30")).toBe("Jun 30, 2026");

@@ -148,7 +148,7 @@ export function ClinicalNotesPanel({
               )}
             </div>
             <span className="text-slate-400 text-[10px]">
-              Last modified: {new Date(notes.updatedAt).toLocaleTimeString()}
+              Last modified: {notes.updatedAt ? new Date(notes.updatedAt).toLocaleTimeString() : "Not saved"}
             </span>
           </div>
         );

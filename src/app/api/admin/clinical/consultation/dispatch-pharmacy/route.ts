@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { randomUUID } from "crypto";
-import { requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiAuth";
+import { forbiddenApiResponse, requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiAuth";
 import { dispatchRepository, auditRepository, idempotencyRepository } from "@/features/consultation/repositories/consultationRepositories";
 import { PharmacyDispatchState } from "@/features/consultation/types/prescription.types";
+import { canAccessClinicalPatient } from "@/features/consultation/application/clinicalPatientAccess.server";
 
 export async function POST(req: NextRequest) {
   const session = await requireAdminApiSession(req);
@@ -25,6 +26,7 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+    if (!(await canAccessClinicalPatient(session, body.patientId))) return forbiddenApiResponse();
 
     const timestamp = new Date().toISOString();
 

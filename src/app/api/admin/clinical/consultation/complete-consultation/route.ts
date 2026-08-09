@@ -1,105 +1,108 @@
 import { NextRequest, NextResponse } from "next/server";
-import { randomUUID } from "crypto";
-import { requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiAuth";
-import { ConsultationOutcome, PrescriptionDraft } from "@/features/consultation/types/prescription.types";
-import { StructuredClinicalNotes } from "@/features/consultation/types/clinical-notes.types";
-import { validatePrescriptionDraft } from "@/features/consultation/utils/prescription-validation";
-import { idempotencyRepository, auditRepository } from "@/features/consultation/repositories/consultationRepositories";
+import { forbiddenApiResponse, requireAdminApiSession, unauthorizedApiResponse } from "@/lib/adminApiAuth";
+import type { ConsultationOutcome, PrescriptionDraft } from "@/features/consultation/types/prescription.types";
+import type { StructuredClinicalNotes } from "@/features/consultation/types/clinical-notes.types";
+import type { SelectedRubric } from "@/features/consultation/types/repertory-intelligence.types";
+import type { ConsultationRemedySelection } from "@/features/consultation/application/consultationWorkspace.types";
+import { evaluateGuardedCompletionReadiness } from "@/features/consultation/utils/prescription-validation";
+import { computeInputSnapshotHash } from "@/features/consultation/services/remedyTotalityScorer";
+import { resolveTelemedicineConsent } from "@/features/consultation/application/consultationConsent.server";
+import { completeWorkspace } from "@/features/consultation/application/consultationWorkspaceRepository.server";
+import { canAccessClinicalPatient } from "@/features/consultation/application/clinicalPatientAccess.server";
 
 export async function POST(req: NextRequest) {
   const session = await requireAdminApiSession(req);
-  if (!session || !session.uid || !session.role) {
-    return unauthorizedApiResponse();
-  }
+  if (!session?.uid) return unauthorizedApiResponse();
 
   try {
-    const body: {
+    const body = (await req.json()) as {
       patientId: string;
       consultationId: string;
-      idempotencyKey?: string;
       recordVersion: number;
       outcome: ConsultationOutcome;
       notes: StructuredClinicalNotes;
       prescriptionDraft?: PrescriptionDraft;
-    } = await req.json();
+      selectedRubrics: SelectedRubric[];
+      selectedRemedy: ConsultationRemedySelection | null;
+      accumulatedActiveSeconds: number;
+    };
+    if (
+      !body.consultationId ||
+      !body.patientId ||
+      !body.outcome ||
+      !body.notes ||
+      !Array.isArray(body.selectedRubrics) ||
+      !Number.isInteger(body.recordVersion)
+    ) {
+      return NextResponse.json({ error: "Invalid consultation completion payload" }, { status: 400 });
+    }
+    if (!(await canAccessClinicalPatient(session, body.patientId))) return forbiddenApiResponse();
 
-    if (!body.consultationId || !body.patientId || !body.outcome || !body.notes) {
+    const currentSnapshotHash = computeInputSnapshotHash(
+      body.selectedRubrics,
+      body.notes.thermalState === "hot"
+        ? "warm"
+        : body.notes.thermalState === "chilly"
+          ? "chilly"
+          : "ambithermal",
+      body.notes.miasmaticExpression
+    );
+    const requiresSelectedRemedy = body.outcome === "prescription_issued";
+    const prescriptionRemedyMatchesSelection =
+      body.selectedRemedy?.remedyName === body.prescriptionDraft?.selectedRemedyName;
+    const isAnalysisStale = requiresSelectedRemedy
+      ? !body.selectedRemedy ||
+        !prescriptionRemedyMatchesSelection ||
+        body.selectedRemedy.analysisSnapshotHash !== currentSnapshotHash ||
+        body.prescriptionDraft?.sourceAnalysisSnapshotHash !== currentSnapshotHash
+      : Boolean(body.selectedRemedy && body.selectedRemedy.analysisSnapshotHash !== currentSnapshotHash);
+    const readiness = evaluateGuardedCompletionReadiness({
+      notes: body.notes,
+      outcome: body.outcome,
+      prescriptionDraft: body.prescriptionDraft || {},
+      isAnalysisStale,
+    });
+    if (!readiness.ready) {
       return NextResponse.json(
-        { error: "Invalid parameters: consultationId, patientId, outcome, and notes are required." },
-        { status: 400 }
+        {
+          error: "Consultation is not ready for completion",
+          details: [
+            ...readiness.clinicalValidationErrors,
+            ...readiness.prescriptionValidationErrors,
+            ...(readiness.staleRemedyAnalysis ? ["Selected remedy analysis is stale."] : []),
+          ],
+        },
+        { status: 422 }
       );
     }
 
-    // 1. Compound Idempotency Reservation
-    const idempKey = body.idempotencyKey || `idemp_cmp_${randomUUID()}`;
-    const idempResult = await idempotencyRepository.reserveIdempotencyKey({
+    const consent = await resolveTelemedicineConsent(body.patientId);
+    const workspace = await completeWorkspace({
+      expectedVersion: body.recordVersion,
       actorId: session.uid,
-      operation: "complete_consultation",
-      consultationId: body.consultationId,
-      idempotencyKey: idempKey,
-      requestPayload: { consultationId: body.consultationId, outcome: body.outcome, version: body.recordVersion },
-    });
-
-    if (idempResult.isDuplicate && idempResult.existingRecord?.status === "completed") {
-      return NextResponse.json({
-        success: true,
-        lifecycleStatus: "completed",
+      consent,
+      draft: {
+        id: body.consultationId,
+        patientId: body.patientId,
+        lifecycleStatus: "active",
         outcome: body.outcome,
-        idempotencyStatus: "replay",
-      });
-    }
-
-    // 2. Outcome-dependent Prescription Validation
-    if (body.outcome === "prescription_issued") {
-      if (!body.prescriptionDraft) {
-        return NextResponse.json(
-          { error: "Prescription draft is required when outcome is 'prescription_issued'." },
-          { status: 400 }
-        );
-      }
-
-      const rxVal = validatePrescriptionDraft(body.prescriptionDraft, body.outcome);
-      if (!rxVal.valid) {
-        return NextResponse.json(
-          { error: "Prescription validation failed before consultation completion", details: rxVal.errors },
-          { status: 422 }
-        );
-      }
-    }
-
-    const timestamp = new Date().toISOString();
-    const updatedRecordVersion = body.recordVersion + 1;
-
-    // 3. Complete Idempotency & Log Server Audit Event
-    const compoundKey = idempotencyRepository.createCompoundKey(session.uid, "complete_consultation", body.consultationId, idempKey);
-    await idempotencyRepository.completeIdempotency(compoundKey, body.consultationId);
-
-    await auditRepository.logAuditEvent({
-      id: `audit_evt_${randomUUID()}`,
-      consultationId: body.consultationId,
-      patientId: body.patientId,
-      actorId: session.uid,
-      actorRole: session.role,
-      eventType: "consultation_completed",
-      occurredAt: timestamp,
-      metadata: {
-        outcome: body.outcome,
-        idempotencyKey: idempKey,
-        recordVersion: updatedRecordVersion,
+        notes: body.notes,
+        selectedRubrics: body.selectedRubrics,
+        selectedRemedy: body.selectedRemedy,
+        prescriptionDraft: body.prescriptionDraft || {},
+        accumulatedActiveSeconds: body.accumulatedActiveSeconds || 0,
       },
     });
-
     return NextResponse.json({
       success: true,
-      lifecycleStatus: "completed",
-      outcome: body.outcome,
-      recordVersion: updatedRecordVersion,
-      completedAt: timestamp,
+      lifecycleStatus: workspace.lifecycleStatus,
+      outcome: workspace.outcome,
+      recordVersion: workspace.recordVersion,
+      completedAt: workspace.completedAt,
     });
-  } catch (err) {
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Internal Server Error" },
-      { status: 500 }
-    );
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unable to complete consultation";
+    const status = message === "CONSULTATION_VERSION_CONFLICT" ? 409 : 500;
+    return NextResponse.json({ error: message }, { status });
   }
 }
