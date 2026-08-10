@@ -278,3 +278,13 @@ export function getCareLevelDisplayNameWithIcon(keyOrName: string): string {
   const detail = CARE_LEVELS_DETAILS[normalizeCareLevelName(keyOrName)];
   return `${detail.icon} ${detail.title}`;
 }
+
+export function buildGoogleSheetsCareRateFormula(
+  careLevelCell = "A4",
+  billingCycleCell = "B4",
+): string {
+  const rate = (weekly: number) => `IF(${billingCycleCell}="Weekly", ${weekly}, ${weekly * 4})`;
+  const has = (term: string) => `ISNUMBER(SEARCH("${term}", ${careLevelCell}))`;
+
+  return `=IF(OR(${has("Advanced Physician")}, ${has("Complete")}, ${has("Multisystem")}), ${rate(CARE_LEVELS_DETAILS.comprehensive.weeklyPrice)}, IF(OR(${has("Case-Specific")}, ${has("Records")}, ${has("Pathology Support")}), 0, IF(OR(${has("Priority")}, ${has("Critical")}), ${rate(CARE_LEVELS_DETAILS.acute_critical.weeklyPrice)}, IF(OR(${has("Complex Clinical")}, ${has("Advanced Constitutional")}, ${has("Deep")}, ${has("Systemic")}), ${rate(CARE_LEVELS_DETAILS.focused.weeklyPrice)}, IF(OR(${has("Integrated Clinical")}, ${has("Constitutional")}, ${has("Chronic")}, ${has("Core")}), ${rate(CARE_LEVELS_DETAILS.moderate.weeklyPrice)}, IF(OR(${has("Focused Clinical")}, ${has("Wellness")}, ${has("Acute")}, ${has("Essential")}), ${rate(CARE_LEVELS_DETAILS.mild.weeklyPrice)}, 0))))))`;
+}

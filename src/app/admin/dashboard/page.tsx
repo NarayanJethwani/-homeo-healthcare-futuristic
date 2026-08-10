@@ -1,6 +1,6 @@
 "use client";
 
-import { CARE_LEVELS_DETAILS, normalizeCareLevelName, getCareLevelDisplayName } from "@/lib/pricingConfig";
+import { CARE_LEVELS_DETAILS, PRIORITY_ACUTE_SUPPORT_WEEKLY_PRICE, normalizeCareLevelName, getCareLevelDisplayName } from "@/lib/pricingConfig";
 
 import { useState, useEffect, useRef, useMemo, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
 import { useRouter } from "next/navigation";
@@ -229,153 +229,27 @@ interface Patient {
   prescriptions?: any[];
 }
 
+const NEW_CASE_CARE_LEVEL_KEYS = ["mild", "moderate", "focused", "comprehensive"] as const;
+const DEFAULT_NEW_CASE_CARE_LEVEL = CARE_LEVELS_DETAILS.mild.title;
+const DEFAULT_NEW_CASE_WEEKLY_PRICE = CARE_LEVELS_DETAILS.mild.weeklyPrice;
+
 const INVOICE_TEMPLATES = [
-  {
-    group: "Acute & Wellness Care",
-    label: "Acute & Wellness Care · 1 week",
-    description: "Acute & Wellness Care — 1-week confirmed care period",
-    qty: 1,
-    unitPrice: 2000,
-  },
-  {
-    group: "Acute & Wellness Care",
-    label: "Acute & Wellness Care · 2 weeks",
-    description: "Acute & Wellness Care — 2-week confirmed care period",
-    qty: 2,
-    unitPrice: 2000,
-  },
-  {
-    group: "Acute & Wellness Care",
-    label: "Acute & Wellness Care · 4 weeks",
-    description: "Acute & Wellness Care — 4-week confirmed care period",
-    qty: 4,
-    unitPrice: 2000,
-  },
-  {
-    group: "Acute & Wellness Care",
-    label: "Acute & Wellness Care · 8 weeks",
-    description: "Acute & Wellness Care — 8-week confirmed care period",
-    qty: 8,
-    unitPrice: 2000,
-  },
-  {
-    group: "Acute & Wellness Care",
-    label: "Acute & Wellness Care · 12 weeks",
-    description: "Acute & Wellness Care — 12-week confirmed care period",
-    qty: 12,
-    unitPrice: 2000,
-  },
-  {
-    group: "Constitutional Care",
-    label: "Constitutional Care · 1 week",
-    description: "Constitutional Care — 1-week confirmed care period",
-    qty: 1,
-    unitPrice: 3000,
-  },
-  {
-    group: "Constitutional Care",
-    label: "Constitutional Care · 2 weeks",
-    description: "Constitutional Care — 2-week confirmed care period",
-    qty: 2,
-    unitPrice: 3000,
-  },
-  {
-    group: "Constitutional Care",
-    label: "Constitutional Care · 4 weeks",
-    description: "Constitutional Care — 4-week confirmed care period",
-    qty: 4,
-    unitPrice: 3000,
-  },
-  {
-    group: "Constitutional Care",
-    label: "Constitutional Care · 8 weeks",
-    description: "Constitutional Care — 8-week confirmed care period",
-    qty: 8,
-    unitPrice: 3000,
-  },
-  {
-    group: "Constitutional Care",
-    label: "Constitutional Care · 12 weeks",
-    description: "Constitutional Care — 12-week confirmed care period",
-    qty: 12,
-    unitPrice: 3000,
-  },
-  {
-    group: "Advanced Constitutional Care",
-    label: "Advanced Constitutional Care · 1 week",
-    description: "Advanced Constitutional Care — 1-week physician-confirmed care period",
-    qty: 1,
-    unitPrice: 5000,
-  },
-  {
-    group: "Advanced Constitutional Care",
-    label: "Advanced Constitutional Care · 2 weeks",
-    description: "Advanced Constitutional Care — 2-week confirmed care period",
-    qty: 2,
-    unitPrice: 5000,
-  },
-  {
-    group: "Advanced Constitutional Care",
-    label: "Advanced Constitutional Care · 4 weeks",
-    description: "Advanced Constitutional Care — 4-week physician-confirmed care period",
-    qty: 4,
-    unitPrice: 5000,
-  },
-  {
-    group: "Advanced Constitutional Care",
-    label: "Advanced Constitutional Care · 8 weeks",
-    description: "Advanced Constitutional Care — 8-week physician-confirmed care period",
-    qty: 8,
-    unitPrice: 5000,
-  },
-  {
-    group: "Advanced Constitutional Care",
-    label: "Advanced Constitutional Care · 12 weeks",
-    description: "Advanced Constitutional Care — 12-week physician-confirmed care period",
-    qty: 12,
-    unitPrice: 5000,
-  },
-  {
-    group: "Complete Health Transformation",
-    label: "Complete Health Transformation · 1 week",
-    description: "Complete Health Transformation Program — 1-week clinician-assigned care period",
-    qty: 1,
-    unitPrice: 10000,
-  },
-  {
-    group: "Complete Health Transformation",
-    label: "Complete Health Transformation · 2 weeks",
-    description: "Complete Health Transformation Program — 2-week clinician-assigned care period",
-    qty: 2,
-    unitPrice: 10000,
-  },
-  {
-    group: "Complete Health Transformation",
-    label: "Complete Health Transformation · 4 weeks",
-    description: "Complete Health Transformation Program — 4-week clinician-assigned care period",
-    qty: 4,
-    unitPrice: 10000,
-  },
-  {
-    group: "Complete Health Transformation",
-    label: "Complete Health Transformation · 8 weeks",
-    description: "Complete Health Transformation Program — 8-week clinician-assigned care period",
-    qty: 8,
-    unitPrice: 10000,
-  },
-  {
-    group: "Complete Health Transformation",
-    label: "Complete Health Transformation · 12 weeks",
-    description: "Complete Health Transformation Program — 12-week clinician-assigned care period",
-    qty: 12,
-    unitPrice: 10000,
-  },
+  ...NEW_CASE_CARE_LEVEL_KEYS.flatMap((key) => {
+    const detail = CARE_LEVELS_DETAILS[key];
+    return detail.durations.map((weeks) => ({
+      group: detail.title,
+      label: `${detail.title} · ${weeks} ${weeks === 1 ? "week" : "weeks"}`,
+      description: `${detail.title} — ${weeks}-week physician-confirmed care period`,
+      qty: weeks,
+      unitPrice: detail.weeklyPrice,
+    }));
+  }),
   {
     group: "Clinical support and delivery",
     label: "Priority Acute Support · 1 week",
     description: "Priority Acute Support — 1-week physician-assigned add-on",
     qty: 1,
-    unitPrice: 2000,
+    unitPrice: PRIORITY_ACUTE_SUPPORT_WEEKLY_PRICE,
   },
   {
     group: "Clinical support and delivery",
@@ -5347,15 +5221,15 @@ export default function AdminDashboard() {
     state: "",
     country: "India",
     complaint: "",
-    careLevel: "🌱 Acute & Wellness Care",
-    billingCycle: "Monthly",
+    careLevel: DEFAULT_NEW_CASE_CARE_LEVEL,
+    billingCycle: "Weekly",
     concessionType: "None",
-    durationText: "1-Month Consultation",
+    durationText: "1-Week Care Period",
     conditionsCount: 1,
-    basePrice: 6000,
+    basePrice: DEFAULT_NEW_CASE_WEEKLY_PRICE,
     discountOverride: 0,
-    finalPrice: 5400,
-    receivedAmount: 5400,
+    finalPrice: DEFAULT_NEW_CASE_WEEKLY_PRICE,
+    receivedAmount: DEFAULT_NEW_CASE_WEEKLY_PRICE,
     remainingBalance: 0
   });
   const [isCreatingCase, setIsCreatingCase] = useState(false);
@@ -6102,18 +5976,12 @@ Homeo Healthcare`;
 
 
 
-  const getOptionLabel = (baseLabel: string, monthlyPrice: number) => {
-    const isWeekly = newCaseForm.billingCycle === "Weekly";
-    const basePrice = getCareLevelRate(baseLabel, newCaseForm.billingCycle, newCaseForm.conditionsCount);
-    
-    if (newCaseForm.durationText.includes("One-Time")) {
-      return `${baseLabel} (₹${basePrice.toLocaleString("en-IN")} One-time)`;
-    }
-    const val = getDurationValue(newCaseForm.durationText);
-    if (val === 1) {
-      return `${baseLabel} (₹${basePrice.toLocaleString("en-IN")}/${isWeekly ? "wk" : "mo"})`;
-    }
-    return `${baseLabel} (₹${(basePrice * val).toLocaleString("en-IN")} for ${val} ${isWeekly ? "weeks" : "months"})`;
+  const getNewCaseCareOptionLabel = (key: (typeof NEW_CASE_CARE_LEVEL_KEYS)[number]) => {
+    const detail = CARE_LEVELS_DETAILS[key];
+    const weeks = Math.max(1, getDurationValue(newCaseForm.durationText));
+    const total = detail.weeklyPrice * weeks;
+    const pricePrefix = detail.pricePrefix ? `${detail.pricePrefix} ` : "";
+    return `${detail.icon} ${detail.title} — ${pricePrefix}₹${detail.weeklyPrice.toLocaleString("en-IN")}/week · ₹${total.toLocaleString("en-IN")} for ${weeks} ${weeks === 1 ? "week" : "weeks"}`;
   };
 
   const calculateCaseFormPricing = (
@@ -6193,20 +6061,6 @@ Homeo Healthcare`;
     setNewCaseForm(prev => ({
       ...prev,
       durationText: duration,
-      basePrice: pricing.basePrice,
-      finalPrice: pricing.finalPrice,
-      receivedAmount: pricing.finalPrice,
-      remainingBalance: 0
-    }));
-  };
-
-  const handleBillingCycleChange = (cycle: string) => {
-    const defaultDuration = cycle === "Weekly" ? "4-Week Consultation" : "1-Month Consultation";
-    const pricing = calculateCaseFormPricing(newCaseForm.careLevel, defaultDuration, newCaseForm.age, newCaseForm.discountOverride, cycle, newCaseForm.concessionType, newCaseForm.conditionsCount);
-    setNewCaseForm(prev => ({
-      ...prev,
-      billingCycle: cycle,
-      durationText: defaultDuration,
       basePrice: pricing.basePrice,
       finalPrice: pricing.finalPrice,
       receivedAmount: pricing.finalPrice,
@@ -6445,15 +6299,15 @@ Homeo Healthcare`;
           state: "",
           country: "India",
           complaint: "",
-          careLevel: "🌱 Acute & Wellness Care",
-          billingCycle: "Monthly",
+          careLevel: DEFAULT_NEW_CASE_CARE_LEVEL,
+          billingCycle: "Weekly",
           concessionType: "None",
-          durationText: "1-Month Consultation",
+          durationText: "1-Week Care Period",
           conditionsCount: 1,
-          basePrice: 6000,
+          basePrice: DEFAULT_NEW_CASE_WEEKLY_PRICE,
           discountOverride: 0,
-          finalPrice: 5400,
-          receivedAmount: 5400,
+          finalPrice: DEFAULT_NEW_CASE_WEEKLY_PRICE,
+          receivedAmount: DEFAULT_NEW_CASE_WEEKLY_PRICE,
           remainingBalance: 0
         });
       } else {
@@ -12678,15 +12532,15 @@ ${err.message || err}`);
                                 state: "",
                                 country: "India",
                                 complaint: "",
-                                careLevel: "🌱 Acute & Wellness Care",
-                                billingCycle: "Monthly",
+                                careLevel: DEFAULT_NEW_CASE_CARE_LEVEL,
+                                billingCycle: "Weekly",
                                 concessionType: "None",
-                                durationText: "1-Month Consultation",
+                                durationText: "1-Week Care Period",
                                 conditionsCount: 1,
-                                basePrice: 6000,
+                                basePrice: DEFAULT_NEW_CASE_WEEKLY_PRICE,
                                 discountOverride: 0,
-                                finalPrice: 5400,
-                                receivedAmount: 5400,
+                                finalPrice: DEFAULT_NEW_CASE_WEEKLY_PRICE,
+                                receivedAmount: DEFAULT_NEW_CASE_WEEKLY_PRICE,
                                 remainingBalance: 0
                               });
                               setIsNewCaseModalOpen(true);
@@ -14503,15 +14357,15 @@ ${err.message || err}`);
                         state: "",
                         country: "India",
                         complaint: "",
-                        careLevel: "🌱 Acute & Wellness Care",
-                        billingCycle: "Monthly",
+                        careLevel: DEFAULT_NEW_CASE_CARE_LEVEL,
+                        billingCycle: "Weekly",
                         concessionType: "None",
-                        durationText: "1-Month Consultation",
+                        durationText: "1-Week Care Period",
                         conditionsCount: 1,
-                        basePrice: 6000,
+                        basePrice: DEFAULT_NEW_CASE_WEEKLY_PRICE,
                         discountOverride: 0,
-                        finalPrice: 5400,
-                        receivedAmount: 5400,
+                        finalPrice: DEFAULT_NEW_CASE_WEEKLY_PRICE,
+                        receivedAmount: DEFAULT_NEW_CASE_WEEKLY_PRICE,
                         remainingBalance: 0
                       });
                       setIsNewCaseModalOpen(true);
@@ -28321,52 +28175,38 @@ Exported on: ${new Date().toLocaleDateString()}
                           onChange={(e) => handleCareLevelChange(e.target.value)}
                           className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-semibold text-[#1A2421]"
                         >
-                          <option value="🌱 Acute & Wellness Care">{getOptionLabel("🌱 Acute & Wellness Care — 4 weeks", 8000)}</option>
-                          <option value="⚡ Constitutional Care">{getOptionLabel("⚡ Constitutional Care — 4 weeks", 12000)}</option>
-                          <option value="🎯 Advanced Constitutional Care">{getOptionLabel("🎯 Advanced Constitutional Care — 4 weeks", 20000)}</option>
-                          <option value="🔮 Complete Health Transformation Program">{getOptionLabel("🔮 Complete Health Transformation Program — clinician-assigned, indicative weekly fee", 10000)}</option>
-                          <option value="🚨 Priority Acute Support">{getOptionLabel("🚨 Priority Acute Support add-on — 1 week", 2000)}</option>
+                          {NEW_CASE_CARE_LEVEL_KEYS.map((key) => {
+                            const detail = CARE_LEVELS_DETAILS[key];
+                            return (
+                              <option key={key} value={detail.title}>
+                                {getNewCaseCareOptionLabel(key)}
+                              </option>
+                            );
+                          })}
                         </select>
                       </div>
 
-                      {/* Billing Frequency Selector */}
+                      {/* Pricing Basis */}
                       <div>
-                        <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Care Billing Option</label>
-                        <select
-                          value={newCaseForm.billingCycle}
-                          onChange={(e) => handleBillingCycleChange(e.target.value)}
-                          className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-semibold text-[#1A2421]"
-                        >
-                          <option value="Monthly">Monthly Commit</option>
-                          <option value="Weekly">Weekly Settle</option>
-                        </select>
+                        <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Pricing Basis</label>
+                        <div className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50 text-xs font-semibold text-[#1A2421]">
+                          Weekly care rate · physician-confirmed care period
+                        </div>
                       </div>
 
                       {/* Plan Duration Selector */}
                       <div>
-                        <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Recommended Treatment Duration</label>
+                        <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Confirmed Care Period</label>
                         <select
                           value={newCaseForm.durationText}
                           onChange={(e) => handleDurationChange(e.target.value)}
                           className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-semibold text-[#1A2421]"
                         >
-                          {newCaseForm.billingCycle === "Weekly" ? (
-                            <>
-                              <option value="2-Week Setup / Acute">2-Week Setup / Acute</option>
-                              <option value="4-Week Consultation">4-Week Consultation</option>
-                              <option value="8-Week Treatment Plan">8-Week Treatment Plan</option>
-                              <option value="12-Week Support Plan">12-Week Support Plan</option>
-                              <option value="One-Time Consultation">One-Time Consultation</option>
-                            </>
-                          ) : (
-                            <>
-                              <option value="1-Month Consultation">1-Month Consultation</option>
-                              <option value="3-Month Treatment Plan">3-Month Treatment Plan</option>
-                              <option value="6-Month Treatment Plan">6-Month Treatment Plan</option>
-                              <option value="12-Month Support Plan">12-Month Support Plan</option>
-                              <option value="One-Time Consultation">One-Time Consultation</option>
-                            </>
-                          )}
+                          {CARE_LEVELS_DETAILS[normalizeCareLevelName(newCaseForm.careLevel)].durations.map((weeks) => (
+                            <option key={weeks} value={`${weeks}-Week Care Period`}>
+                              {weeks}-Week Care Period
+                            </option>
+                          ))}
                         </select>
                       </div>
 
@@ -28378,12 +28218,13 @@ Exported on: ${new Date().toLocaleDateString()}
                           onChange={(e) => handleConditionsCountChange(Number(e.target.value))}
                           className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-semibold text-[#1A2421]"
                         >
-                          <option value={1}>1 Active Concern (Standard)</option>
-                          <option value={2}>2 Active Concerns (+ Intensity Adjustment)</option>
-                          <option value={3}>3 Active Concerns (+ Intensity Adjustment)</option>
-                          <option value={4}>4 Active Concerns (+ Intensity Adjustment)</option>
-                          <option value={5}>5+ Active Concerns (+ Intensity Adjustment)</option>
+                          <option value={1}>1 Active Concern</option>
+                          <option value={2}>2 Active Concerns</option>
+                          <option value={3}>3 Active Concerns</option>
+                          <option value={4}>4 Active Concerns</option>
+                          <option value={5}>5+ Active Concerns</option>
                         </select>
+                        <p className="mt-1.5 text-[10px] text-slate-500">Clinical breadth informs pathway selection; it does not automatically add a fee.</p>
                       </div>
 
                       {/* Treatment Planner & Fee Structure Card (Properly Spaced Layout) */}
@@ -28396,7 +28237,7 @@ Exported on: ${new Date().toLocaleDateString()}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {/* Base Plan Price */}
                           <div>
-                            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Clinical Care Fee (₹)</label>
+                            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Confirmed Care Period Fee (₹)</label>
                             <input
                               type="number"
                               value={newCaseForm.basePrice}

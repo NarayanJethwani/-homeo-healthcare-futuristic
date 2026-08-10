@@ -5,6 +5,7 @@ import {
   PUBLIC_CARE_LEVEL_KEYS,
   calculateCarePrice,
   calculateCompleteHealthTransformationPrice,
+  buildGoogleSheetsCareRateFormula,
   toPublicCarePathway,
 } from "../src/lib/pricingConfig";
 
@@ -71,6 +72,17 @@ function runPricingPathwayTests() {
   assert.strictEqual(toPublicCarePathway("Core Chronic Care"), "moderate");
   assert.strictEqual(toPublicCarePathway("Deep Constitutional Care"), "focused");
   assert.strictEqual(toPublicCarePathway("Multisystem Integrative Care"), "focused");
+
+  const sheetsFormula = buildGoogleSheetsCareRateFormula();
+  assert.match(sheetsFormula, /Focused Clinical/);
+  assert.match(sheetsFormula, /Integrated Clinical/);
+  assert.match(sheetsFormula, /Complex Clinical/);
+  assert.match(sheetsFormula, /Advanced Physician/);
+  assert.match(sheetsFormula, /3000/);
+  assert.match(sheetsFormula, /6000/);
+  assert.match(sheetsFormula, /9000/);
+  assert.match(sheetsFormula, /12000/);
+  assert.doesNotMatch(sheetsFormula, /IF\(B4="Weekly", 5000, 20000\)/);
 
   console.log("✅ Pricing pathway tests passed");
 }
