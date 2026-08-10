@@ -38,6 +38,13 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "reason": "Validates public doctor access request input boundaries, anti-automation field, same-site enforcement, throttling, pending-verification persistence, duplicate refresh, and prohibition on role activation"
   },
   {
+    "path": "tests/indiaLocations.test.ts",
+    "status": "active",
+    "ownerArea": "clinical-intake",
+    "testLayer": "unit",
+    "reason": "Validates the governed India state and city selectors, Pune-to-Maharashtra resolution, state filtering, and duplicate city disambiguation"
+  },
+  {
     "path": "tests/adminProxySecurity.test.ts",
     "status": "active",
     "ownerArea": "admin-security",
