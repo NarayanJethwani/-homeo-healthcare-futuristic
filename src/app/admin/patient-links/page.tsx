@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle2, Link2, Loader2, RefreshCw, Search, ShieldCheck, UserCheck, Users } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, CheckCircle2, Link2, Loader2, Plus, RefreshCw, Search, ShieldCheck, UserCheck, Users } from "lucide-react";
 
 type PendingPortalAccount = {
   uid: string;
@@ -21,6 +22,7 @@ type ClinicalPatient = {
 };
 
 export default function PatientPortalLinksPage() {
+  const router = useRouter();
   const [pending, setPending] = useState<PendingPortalAccount[]>([]);
   const [patients, setPatients] = useState<ClinicalPatient[]>([]);
   const [selections, setSelections] = useState<Record<string, string>>({});
@@ -94,6 +96,14 @@ export default function PatientPortalLinksPage() {
     setSubmittedPortalUid("");
     setQuery("");
     setError("");
+  }
+
+  function createClinicalPatient(account: PendingPortalAccount) {
+    sessionStorage.setItem("patient_portal_new_case_draft", JSON.stringify({
+      name: account.name === "Patient-submitted Portal UID" ? "" : account.name,
+      email: account.email === "Confirm identity directly with the patient" ? "" : account.email,
+    }));
+    router.push("/admin/dashboard?tab=patients&newPatient=1&returnTo=patient-links");
   }
 
   async function approve(account: PendingPortalAccount) {
@@ -211,6 +221,13 @@ export default function PatientPortalLinksPage() {
                     ))}
                   </select>
                   {account.candidatePatientIds.length > 0 && <span className="mt-2 block text-[11px] normal-case tracking-normal text-emerald-600">Suggested match found by email—confirm identity before approval.</span>}
+                  <button
+                    type="button"
+                    onClick={() => createClinicalPatient(account)}
+                    className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-bold normal-case tracking-normal text-purple-700 hover:text-purple-900 dark:text-purple-300 dark:hover:text-purple-100"
+                  >
+                    <Plus className="h-3.5 w-3.5" /> Add New Clinical Patient
+                  </button>
                 </label>
 
                 <button onClick={() => approve(account)} disabled={!selections[account.uid] || mappingUid === account.uid} className="inline-flex items-center justify-center gap-2 rounded-full bg-mint px-5 py-3.5 text-sm font-bold text-white hover:bg-mint-dark disabled:cursor-not-allowed disabled:opacity-50">
