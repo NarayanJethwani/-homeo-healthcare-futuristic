@@ -115,3 +115,48 @@ export interface MateriaMedicaComparison {
     isStale: boolean;
   };
 }
+
+export interface MateriaMedicaCitationView {
+  id: string;
+  title: string;
+  authors: string[];
+  year: number;
+  canonicalUrl?: string;
+  verificationStatus?: string;
+}
+
+export interface MateriaMedicaSourceView {
+  bookId: string;
+  title: string;
+  author: string;
+  year: number;
+  sourceUrl: string;
+  passageTitle: string;
+  text?: string;
+  correctionStatus: "raw-ocr" | "machine-cleaned" | "human-reviewed";
+  editorialStatus: "draft" | "needs-review" | "approved" | "rejected";
+}
+
+export interface MateriaMedicaRemedyProfile {
+  remedyId: string;
+  remedyName: string;
+  slug?: string;
+  canonicalUrl?: string;
+  editorialStatus?: string;
+  reviewStatus?: string;
+  summary?: string;
+  description?: string;
+  clinicalPearl?: string;
+  keynotes: string[];
+  mentalSymptoms: string[];
+  physicalSymptoms: string[];
+  generalities?: string;
+  modalitiesBetter: string[];
+  modalitiesWorse: string[];
+  organAffinity: string[];
+  miasmaticAffinity: string[];
+  safetyNotes?: string;
+  citations: MateriaMedicaCitationView[];
+  availableSources: MateriaMedicaSourceView[];
+  selectedSource?: MateriaMedicaSourceView;
+}

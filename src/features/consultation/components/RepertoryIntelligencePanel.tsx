@@ -4,17 +4,10 @@ import React, { useState, useEffect, useMemo } from "react";
 import {
   Search,
   BookOpen,
-  Plus,
   Trash2,
   Star,
   EyeOff,
-  Pin,
   AlertOctagon,
-  ShieldCheck,
-  Award,
-  Layers,
-  ChevronRight,
-  Info,
   CheckCircle2,
   RefreshCw,
   FileText,
@@ -28,11 +21,10 @@ import {
   DEFAULT_SCORING_CONFIGURATION,
   RankedRemedyResult,
   SafetyAssessment,
-  MateriaMedicaComparison,
+  MateriaMedicaRemedyProfile,
 } from "../types/repertory-intelligence.types";
 import {
   CanonicalRubricSearchResult,
-  RepertoryConsultationAdapter,
   defaultRepertoryAdapter,
   CANONICAL_REPERTORY_DATABASE,
 } from "../services/repertoryConsultationAdapter";
@@ -56,8 +48,6 @@ interface RepertoryIntelligencePanelProps {
 }
 
 export function RepertoryIntelligencePanel({
-  patientId,
-  consultationId,
   chiefComplaints = [],
   patientThermal = "ambithermal",
   patientMiasm,
@@ -77,7 +67,7 @@ export function RepertoryIntelligencePanel({
 
   const [rubricDataStore, setRubricDataStore] = useState<CanonicalRubricSearchResult[]>(CANONICAL_REPERTORY_DATABASE);
   const [requestSequence, setRequestSequence] = useState<number>(1);
-  const [config, setConfig] = useState<RepertoryScoringConfiguration>(DEFAULT_SCORING_CONFIGURATION);
+  const [config] = useState<RepertoryScoringConfiguration>(DEFAULT_SCORING_CONFIGURATION);
 
   // Safety & Red Flag Assessment
   const [safetyAssessment, setSafetyAssessment] = useState<SafetyAssessment>(() =>
@@ -86,7 +76,9 @@ export function RepertoryIntelligencePanel({
 
   // Selected Remedy Comparison Drawer
   const [selectedComparisonRemedy, setSelectedComparisonRemedy] = useState<string | null>(null);
-  const [comparisonData, setComparisonData] = useState<MateriaMedicaComparison | null>(null);
+  const [materiaMedicaProfile, setMateriaMedicaProfile] = useState<MateriaMedicaRemedyProfile | null>(null);
+  const [isMateriaMedicaLoading, setIsMateriaMedicaLoading] = useState(false);
+  const [materiaMedicaError, setMateriaMedicaError] = useState<string | null>(null);
 
   useEffect(() => {
     setSelectedRubrics(initialSelectedRubrics);
@@ -206,20 +198,21 @@ export function RepertoryIntelligencePanel({
     setRequestSequence((prev) => prev + 1);
   };
 
-  // Load Keynotes for Comparison Drawer
-  const handleInspectRemedy = async (remedyId: string) => {
+  // Load the governed remedy profile and the selected local source transcription.
+  const handleInspectRemedy = async (remedyId: string, sourceId?: string) => {
     setSelectedComparisonRemedy(remedyId);
-    const keynote = await defaultRepertoryAdapter.fetchMateriaMedicaKeynote(remedyId);
-
-    setComparisonData({
-      keynotes: keynote ? [keynote] : [],
-      aiNarrativeSummary: {
-        summaryText: `Clinical synthesis for ${remedyId.replace(/_/g, " ").toUpperCase()}: Demonstrates strong alignment with characteristic intake symptoms.`,
-        modelName: "AIRouter-Clinical-v1",
-        generatedAt: new Date().toISOString(),
-        isStale: false,
-      },
-    });
+    setIsMateriaMedicaLoading(true);
+    setMateriaMedicaError(null);
+    try {
+      const profile = await defaultRepertoryAdapter.fetchMateriaMedicaProfile(remedyId, sourceId);
+      setMateriaMedicaProfile(profile);
+      if (!profile) setMateriaMedicaError("No governed Materia Medica record was found for this remedy.");
+    } catch (error) {
+      setMateriaMedicaProfile(null);
+      setMateriaMedicaError(error instanceof Error ? error.message : "Unable to load Materia Medica.");
+    } finally {
+      setIsMateriaMedicaLoading(false);
+    }
   };
 
   const isRedFlagActive =
@@ -660,53 +653,227 @@ export function RepertoryIntelligencePanel({
         </div>
       </div>
 
-      {/* Materia Medica Comparison Drawer */}
-      {selectedComparisonRemedy && comparisonData && (
-        <div className="absolute inset-x-0 bottom-0 top-12 bg-slate-950/95 backdrop-blur-md border-t border-slate-800 p-4 shadow-2xl z-30 flex flex-col space-y-3">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-            <div className="flex items-center space-x-2">
-              <FileText className="w-4 h-4 text-purple-400" />
-              <h4 className="font-semibold text-slate-200 uppercase tracking-wider text-xs">
-                Materia Medica Source Keynotes & AI Comparison
-              </h4>
+      {/* Governed Materia Medica Reader */}
+      {selectedComparisonRemedy && (
+        <div className="absolute inset-x-0 bottom-0 top-12 bg-slate-950/98 backdrop-blur-md border-t border-slate-800 p-4 shadow-2xl z-30 flex min-h-0 flex-col gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
+            <div className="flex min-w-0 items-center gap-2">
+              <FileText className="h-4 w-4 shrink-0 text-purple-400" />
+              <div className="min-w-0">
+                <h4 className="truncate text-xs font-semibold uppercase tracking-wider text-slate-100">
+                  {materiaMedicaProfile?.remedyName || selectedComparisonRemedy.replace(/_/g, " ")} — Materia Medica
+                </h4>
+                <p className="mt-0.5 text-[10px] text-slate-500">
+                  Governed remedy record connected to the existing Homeo Healthcare source library
+                </p>
+              </div>
             </div>
-            <button
-              onClick={() => setSelectedComparisonRemedy(null)}
-              className="text-slate-500 hover:text-slate-300 text-xs"
+            <div className="flex items-center gap-2">
+              {materiaMedicaProfile?.canonicalUrl && (
+                <a
+                  href={materiaMedicaProfile.canonicalUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded border border-purple-700/70 bg-purple-950/60 px-2.5 py-1.5 text-[10px] font-semibold text-purple-300 hover:bg-purple-900/60"
+                >
+                  Open complete remedy page
+                </a>
+              )}
+              <button
+                onClick={() => {
+                  setSelectedComparisonRemedy(null);
+                  setMateriaMedicaProfile(null);
+                  setMateriaMedicaError(null);
+                }}
+                className="rounded px-2 py-1 text-xs text-slate-400 hover:bg-slate-900 hover:text-slate-200"
+              >
+                ✕ Close
+              </button>
+            </div>
+          </div>
+
+          {isMateriaMedicaLoading && (
+            <div className="flex flex-1 items-center justify-center gap-2 text-slate-400">
+              <RefreshCw className="h-4 w-4 animate-spin" />
+              <span>Loading governed remedy record and source text…</span>
+            </div>
+          )}
+
+          {!isMateriaMedicaLoading && materiaMedicaError && (
+            <div className="m-auto max-w-lg rounded-lg border border-amber-800/60 bg-amber-950/30 p-4 text-center text-amber-200">
+              <p className="font-semibold">Materia Medica unavailable</p>
+              <p className="mt-1 text-[11px] text-amber-300/80">{materiaMedicaError}</p>
+              <button
+                onClick={() => handleInspectRemedy(selectedComparisonRemedy)}
+                className="mt-3 rounded bg-amber-700 px-3 py-1.5 text-[10px] font-semibold text-white hover:bg-amber-600"
+              >
+                Retry
+              </button>
+            </div>
+          )}
+
+          {!isMateriaMedicaLoading && materiaMedicaProfile && (
+            <div
+              className="grid min-h-0 flex-1 gap-4 overflow-y-auto"
+              style={{ gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 420px), 1fr))" }}
             >
-              ✕ Close
-            </button>
-          </div>
-
-          <div className="flex-1 grid grid-cols-2 gap-4 overflow-y-auto text-xs">
-            {/* Source-Backed Keynote */}
-            <div className="p-3 bg-slate-900 border border-slate-800 rounded-lg space-y-2">
-              <div className="flex items-center justify-between text-purple-300 font-semibold border-b border-slate-800 pb-1">
-                <span>Source-Backed Keynotes</span>
-                <span className="text-[10px] text-slate-400 font-normal">Authoritative</span>
-              </div>
-              {comparisonData.keynotes.map((kn) => (
-                <div key={kn.remedyId} className="space-y-1 text-slate-300">
-                  <p className="italic">{kn.keynoteText}</p>
-                  <p className="text-[10px] text-slate-500 mt-2">Citation: {kn.citation}</p>
+              <div className="min-h-[480px] space-y-3 overflow-y-auto rounded-lg border border-slate-800 bg-slate-900/80 p-3 pr-2">
+                <div className="flex flex-wrap items-center gap-2 border-b border-slate-800 pb-2">
+                  <span className="font-semibold text-purple-300">
+                    {materiaMedicaProfile.editorialStatus ? "Clinician-reviewed remedy profile" : "Source-library remedy record"}
+                  </span>
+                  {materiaMedicaProfile.editorialStatus && (
+                    <span className="rounded border border-emerald-800 bg-emerald-950/60 px-1.5 py-0.5 font-mono text-[9px] text-emerald-400">
+                      {materiaMedicaProfile.editorialStatus}
+                    </span>
+                  )}
+                  {materiaMedicaProfile.reviewStatus && (
+                    <span className="rounded border border-slate-700 px-1.5 py-0.5 font-mono text-[9px] text-slate-400">
+                      {materiaMedicaProfile.reviewStatus}
+                    </span>
+                  )}
                 </div>
-              ))}
-            </div>
 
-            {/* Optional Labelled AI Narrative */}
-            <div className="p-3 bg-slate-900 border border-slate-800 rounded-lg space-y-2">
-              <div className="flex items-center justify-between text-teal-300 font-semibold border-b border-slate-800 pb-1">
-                <span>AI Narrative Comparison</span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-teal-950 border border-teal-800 text-teal-400 font-mono">
-                  Labelled AI Synthesis
-                </span>
+                {(materiaMedicaProfile.summary || materiaMedicaProfile.description) && (
+                  <section className="space-y-1.5">
+                    <h5 className="font-semibold uppercase tracking-wide text-slate-300">Overview</h5>
+                    <p className="leading-relaxed text-slate-300">
+                      {materiaMedicaProfile.description || materiaMedicaProfile.summary}
+                    </p>
+                  </section>
+                )}
+
+                {!!materiaMedicaProfile.keynotes.length && (
+                  <section className="space-y-1.5">
+                    <h5 className="font-semibold uppercase tracking-wide text-purple-300">Keynotes</h5>
+                    <ul className="space-y-1.5 text-slate-300">
+                      {materiaMedicaProfile.keynotes.map((item) => (
+                        <li key={item} className="flex gap-2 leading-relaxed">
+                          <span className="text-purple-400">•</span><span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                )}
+
+                {!!materiaMedicaProfile.mentalSymptoms.length && (
+                  <section className="space-y-1.5">
+                    <h5 className="font-semibold uppercase tracking-wide text-slate-300">Mind</h5>
+                    <ul className="space-y-1 text-slate-400">
+                      {materiaMedicaProfile.mentalSymptoms.map((item) => <li key={item}>• {item}</li>)}
+                    </ul>
+                  </section>
+                )}
+
+                {!!materiaMedicaProfile.physicalSymptoms.length && (
+                  <section className="space-y-1.5">
+                    <h5 className="font-semibold uppercase tracking-wide text-slate-300">Physical generals</h5>
+                    <ul className="space-y-1 text-slate-400">
+                      {materiaMedicaProfile.physicalSymptoms.map((item) => <li key={item}>• {item}</li>)}
+                    </ul>
+                  </section>
+                )}
+
+                {(materiaMedicaProfile.modalitiesBetter.length > 0 || materiaMedicaProfile.modalitiesWorse.length > 0) && (
+                  <section className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    <div className="rounded border border-emerald-900/70 bg-emerald-950/20 p-2">
+                      <h5 className="font-semibold text-emerald-400">Better</h5>
+                      <p className="mt-1 leading-relaxed text-slate-400">{materiaMedicaProfile.modalitiesBetter.join("; ") || "Not recorded"}</p>
+                    </div>
+                    <div className="rounded border border-rose-900/70 bg-rose-950/20 p-2">
+                      <h5 className="font-semibold text-rose-400">Worse</h5>
+                      <p className="mt-1 leading-relaxed text-slate-400">{materiaMedicaProfile.modalitiesWorse.join("; ") || "Not recorded"}</p>
+                    </div>
+                  </section>
+                )}
+
+                {materiaMedicaProfile.clinicalPearl && (
+                  <section className="rounded border border-teal-800/70 bg-teal-950/30 p-2.5">
+                    <h5 className="font-semibold text-teal-300">Clinical pearl</h5>
+                    <p className="mt-1 leading-relaxed text-slate-300">{materiaMedicaProfile.clinicalPearl}</p>
+                  </section>
+                )}
+
+                {!!materiaMedicaProfile.citations.length && (
+                  <section className="space-y-1.5 border-t border-slate-800 pt-2">
+                    <h5 className="font-semibold uppercase tracking-wide text-slate-300">Verified references</h5>
+                    {materiaMedicaProfile.citations.map((citation) => (
+                      <div key={citation.id} className="text-[10px] leading-relaxed text-slate-500">
+                        {citation.canonicalUrl ? (
+                          <a href={citation.canonicalUrl} target="_blank" rel="noreferrer" className="text-purple-400 hover:underline">
+                            {citation.authors.join(", ")} ({citation.year}). {citation.title}
+                          </a>
+                        ) : (
+                          <span>{citation.authors.join(", ")} ({citation.year}). {citation.title}</span>
+                        )}
+                        {citation.verificationStatus && <span className="ml-1 font-mono">[{citation.verificationStatus}]</span>}
+                      </div>
+                    ))}
+                  </section>
+                )}
               </div>
-              <p className="text-slate-300">{comparisonData.aiNarrativeSummary?.summaryText}</p>
-              <p className="text-[10px] text-slate-500 mt-2">
-                Model: {comparisonData.aiNarrativeSummary?.modelName} (Generated {comparisonData.aiNarrativeSummary?.generatedAt})
-              </p>
+
+              <div className="flex min-h-[480px] flex-col overflow-hidden rounded-lg border border-slate-800 bg-slate-900/80">
+                <div className="space-y-2 border-b border-slate-800 p-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <h5 className="font-semibold text-teal-300">Original source reader</h5>
+                      <p className="mt-0.5 text-[10px] text-slate-500">Select an existing corpus edition to read its remedy passage.</p>
+                    </div>
+                    {materiaMedicaProfile.selectedSource?.sourceUrl && (
+                      <a
+                        href={materiaMedicaProfile.selectedSource.sourceUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-[10px] font-semibold text-teal-400 hover:underline"
+                      >
+                        View source archive ↗
+                      </a>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {materiaMedicaProfile.availableSources.map((source) => (
+                      <button
+                        key={source.bookId}
+                        onClick={() => handleInspectRemedy(selectedComparisonRemedy, source.bookId)}
+                        disabled={isMateriaMedicaLoading}
+                        className={`rounded border px-2 py-1 text-[10px] transition-colors ${
+                          materiaMedicaProfile.selectedSource?.bookId === source.bookId
+                            ? "border-teal-600 bg-teal-950 text-teal-300"
+                            : "border-slate-700 bg-slate-950 text-slate-400 hover:border-slate-600 hover:text-slate-200"
+                        }`}
+                        title={`${source.title} — ${source.author}, ${source.year}`}
+                      >
+                        {source.author} · {source.title}
+                      </button>
+                    ))}
+                  </div>
+                  {materiaMedicaProfile.selectedSource && (
+                    <div className="flex flex-wrap items-center gap-2 text-[10px] text-slate-500">
+                      <span>{materiaMedicaProfile.selectedSource.title}</span>
+                      <span className="rounded border border-amber-900/80 bg-amber-950/30 px-1.5 py-0.5 font-mono text-amber-500">
+                        {materiaMedicaProfile.selectedSource.correctionStatus}
+                      </span>
+                      <span className="rounded border border-slate-700 px-1.5 py-0.5 font-mono">
+                        {materiaMedicaProfile.selectedSource.editorialStatus}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <div className="min-h-0 flex-1 overflow-y-auto p-4">
+                  {materiaMedicaProfile.selectedSource?.text ? (
+                    <pre className="whitespace-pre-wrap font-sans text-[11px] leading-6 text-slate-300">
+                      {materiaMedicaProfile.selectedSource.text}
+                    </pre>
+                  ) : (
+                    <div className="flex h-full items-center justify-center text-center text-slate-500">
+                      No local source transcription is available for this remedy. The clinician-reviewed profile remains available on the left.
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
     </div>
