@@ -1,6 +1,7 @@
 "use client";
 
 import { CARE_LEVELS_DETAILS, PRIORITY_ACUTE_SUPPORT_WEEKLY_PRICE, normalizeCareLevelName, getCareLevelDisplayName } from "@/lib/pricingConfig";
+import { INDIA_STATES, findIndiaCity, findIndiaCityByKey, getIndiaCityOptions, makeIndiaLocationKey } from "@/lib/indiaLocations";
 
 import { useState, useEffect, useRef, useMemo, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
 import { useRouter } from "next/navigation";
@@ -6031,6 +6032,28 @@ Homeo Healthcare`;
       receivedAmount: pricing.finalPrice,
       remainingBalance: 0
     }));
+  };
+
+  const handleNewCaseCityChange = (locationKey: string) => {
+    const location = findIndiaCityByKey(locationKey);
+    setNewCaseForm((previous) => ({
+      ...previous,
+      city: location?.city ?? "",
+      state: location?.state ?? "",
+    }));
+  };
+
+  const handleNewCaseStateChange = (state: string) => {
+    setNewCaseForm((previous) => {
+      const currentLocation = findIndiaCity(previous.city, previous.state);
+      const cityBelongsToState = currentLocation?.state === state;
+
+      return {
+        ...previous,
+        state,
+        city: cityBelongsToState ? currentLocation.city : "",
+      };
+    });
   };
 
   const handleGenerateRecommendation = () => {
@@ -28145,25 +28168,42 @@ Exported on: ${new Date().toLocaleDateString()}
                       <div className="grid grid-cols-2 gap-3">
                         <div>
                           <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-2">City</label>
-                          <input
-                            type="text"
-                            value={newCaseForm.city}
-                            onChange={(e) => setNewCaseForm({ ...newCaseForm, city: e.target.value })}
-                            placeholder="City"
-                            className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-medium text-[#1A2421]"
+                          <select
+                            value={findIndiaCity(newCaseForm.city, newCaseForm.state)?.key ?? (newCaseForm.city ? makeIndiaLocationKey(newCaseForm.state, newCaseForm.city) : "")}
+                            onChange={(e) => handleNewCaseCityChange(e.target.value)}
+                            className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-semibold text-[#1A2421]"
                             required
-                          />
+                          >
+                            <option value="">Select city</option>
+                            {newCaseForm.city && !findIndiaCity(newCaseForm.city, newCaseForm.state) && (
+                              <option value={makeIndiaLocationKey(newCaseForm.state, newCaseForm.city)}>
+                                {newCaseForm.city}{newCaseForm.state ? ` — ${newCaseForm.state}` : ""}
+                              </option>
+                            )}
+                            {getIndiaCityOptions(newCaseForm.state).map((option) => (
+                              <option key={option.key} value={option.key}>
+                                {option.city}{newCaseForm.state ? "" : ` — ${option.state}`}
+                              </option>
+                            ))}
+                          </select>
+                          <p className="mt-1.5 text-[10px] text-slate-500">Selecting a city fills its state automatically.</p>
                         </div>
                         <div>
                           <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-2">State</label>
-                          <input
-                            type="text"
+                          <select
                             value={newCaseForm.state}
-                            onChange={(e) => setNewCaseForm({ ...newCaseForm, state: e.target.value })}
-                            placeholder="State"
-                            className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-medium text-[#1A2421]"
+                            onChange={(e) => handleNewCaseStateChange(e.target.value)}
+                            className="w-full p-3 border border-slate-200 focus:border-mint outline-none rounded-xl bg-white text-xs font-semibold text-[#1A2421]"
                             required
-                          />
+                          >
+                            <option value="">Select state</option>
+                            {newCaseForm.state && !INDIA_STATES.includes(newCaseForm.state as (typeof INDIA_STATES)[number]) && (
+                              <option value={newCaseForm.state}>{newCaseForm.state}</option>
+                            )}
+                            {INDIA_STATES.map((state) => (
+                              <option key={state} value={state}>{state}</option>
+                            ))}
+                          </select>
                         </div>
                       </div>
 
