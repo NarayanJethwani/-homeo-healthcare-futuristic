@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Menu, X, ArrowUpRight, Sun, Moon, Stethoscope, ClipboardList, User, ShoppingBag, BookOpen, Mail, ChevronRight, Download } from "lucide-react";
+import { Menu, X, ArrowUpRight, Sun, Moon, Stethoscope, ClipboardList, User, ShoppingBag, BookOpen, Mail, ChevronRight, Download } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import Magnetic from "./Magnetic";
@@ -21,8 +21,7 @@ export default function Navbar() {
   const [showInstallModal, setShowInstallModal] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  const [portalUrl, setPortalUrl] = useState("https://portal.homeo.healthcare/admin");
-  const [adminUrl, setAdminUrl] = useState("https://admin.homeo.healthcare/");
+  const [portalUrl, setPortalUrl] = useState("https://portal.homeo.healthcare/login");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -42,8 +41,7 @@ export default function Navbar() {
       
       const host = window.location.hostname;
       if (host === "localhost" || host === "127.0.0.1" || host.includes("192.168.")) {
-        setPortalUrl("/admin/dashboard");
-        setAdminUrl("/admin/dashboard");
+        setPortalUrl("/login");
       }
     }
   }, []);

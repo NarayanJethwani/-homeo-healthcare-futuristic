@@ -7,6 +7,8 @@ import { Lock, Mail, Activity, Eye, EyeOff, Sparkles, AlertCircle, Sun, Moon } f
 import { auth, db } from "@/lib/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
+import Link from "next/link";
+import AccessSupport from "@/components/access/AccessSupport";
 
 export default function AdminLogin() {
   const router = useRouter();
@@ -186,6 +188,9 @@ export default function AdminLogin() {
       </div>
 
       <div className="max-w-md w-full">
+        <Link href="/login" className="mb-5 inline-flex text-xs font-bold text-slate-600 hover:text-mint dark:text-slate-300">
+          ← Back to portal access
+        </Link>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -278,7 +283,13 @@ export default function AdminLogin() {
               </button>
             </div>
           )}
+          <div className="mt-6 border-t border-slate-200 pt-5 text-xs text-slate-500 dark:border-slate-800">
+            New doctor? <Link href="/doctor/register" className="font-bold text-mint hover:underline">Request verified access</Link>
+          </div>
         </motion.div>
+        <div className="mt-6">
+          <AccessSupport compact />
+        </div>
       </div>
     </div>
   );
