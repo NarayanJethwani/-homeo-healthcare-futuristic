@@ -5365,6 +5365,36 @@ export default function AdminDashboard() {
   const [caseCreationSuccess, setCaseCreationSuccess] = useState(false);
   const [createdFolderUrl, setCreatedFolderUrl] = useState("");
   const [createdSheetUrl, setCreatedSheetUrl] = useState("");
+  const [newCaseReturnPath, setNewCaseReturnPath] = useState("");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("newPatient") !== "1") return;
+
+    let draft: { name?: string; email?: string } = {};
+    try {
+      draft = JSON.parse(sessionStorage.getItem("patient_portal_new_case_draft") || "{}");
+    } catch {
+      draft = {};
+    }
+    sessionStorage.removeItem("patient_portal_new_case_draft");
+
+    setNewCaseForm((current) => ({
+      ...current,
+      name: typeof draft.name === "string" ? draft.name : "",
+      email: typeof draft.email === "string" ? draft.email : "",
+    }));
+    setCaseCreationSuccess(false);
+    setCaseCreationError("");
+    setNewCaseReturnPath(params.get("returnTo") === "patient-links" ? "/admin/patient-links" : "");
+    setIsNewCaseModalOpen(true);
+
+    params.delete("newPatient");
+    params.delete("returnTo");
+    window.history.replaceState({}, "", `${window.location.pathname}?${params.toString()}`);
+  }, []);
 
   const [importError, setImportError] = useState("");
   const [importSuccess, setImportSuccess] = useState("");
@@ -28121,17 +28151,26 @@ Exported on: ${new Date().toLocaleDateString()}
                     </div>
 
                     <div className="pt-4 flex justify-center gap-3">
-                      <button
-                        onClick={() => {
-                          setIsNewCaseModalOpen(false);
-                          setCaseCreationSuccess(false);
-                          setIsPlanningRegisteredPatient(false);
-                          setPlanningPatientId("");
-                        }}
-                        className="px-6 py-2.5 rounded-full bg-mint text-white text-xs font-bold uppercase tracking-wider hover:bg-mint-dark cursor-pointer transition-colors shadow-sm"
-                      >
-                        Close & View Patient
-                      </button>
+                      {newCaseReturnPath ? (
+                        <Link
+                          href={newCaseReturnPath}
+                          className="px-6 py-2.5 rounded-full bg-purple-600 text-white text-xs font-bold uppercase tracking-wider hover:bg-purple-700 cursor-pointer transition-colors shadow-sm"
+                        >
+                          Return to Approval &amp; Map
+                        </Link>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            setIsNewCaseModalOpen(false);
+                            setCaseCreationSuccess(false);
+                            setIsPlanningRegisteredPatient(false);
+                            setPlanningPatientId("");
+                          }}
+                          className="px-6 py-2.5 rounded-full bg-mint text-white text-xs font-bold uppercase tracking-wider hover:bg-mint-dark cursor-pointer transition-colors shadow-sm"
+                        >
+                          Close & View Patient
+                        </button>
+                      )}
                     </div>
                   </div>
                 ) : (
