@@ -14,7 +14,7 @@ import {
   BookOpen, Book, ChevronLeft, Maximize2, Minimize2, Receipt, Printer,
   Gauge, AlertTriangle, Check, X, Compass, Layers, History, Zap, TrendingUp, Workflow, Calendar,
   Network, Database, Cpu, GitBranch, Stethoscope, User, UploadCloud, Play, Mail, Mic, MicOff, Sun, Moon, IndianRupee,
-  Star, Copy, Edit, Info, Share2, Settings
+  Star, Copy, Edit, Info, Share2, Settings, Link2
 } from "lucide-react";
 const CIEWorkspace = dynamic(() => import("./CIEWorkspace"), {
   ssr: false,
@@ -1101,6 +1101,7 @@ export default function AdminDashboard() {
       const list: any[] = [];
       snapshot.forEach((docSnap) => {
         const data = docSnap.data();
+        if (data.patientId) return;
         list.push({
           uid: docSnap.id,
           email: data.email || "",
@@ -14449,6 +14450,15 @@ ${err.message || err}`);
                 </div>
 
                 <div className="flex items-center gap-3 w-full md:w-auto flex-wrap">
+                  <Link
+                    href="/admin/patient-links"
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4.5 py-2.5 rounded-full border border-purple-200 hover:border-purple-600 text-purple-700 hover:bg-purple-50 text-xs font-bold uppercase tracking-wider transition-all bg-white shadow-sm cursor-pointer"
+                    title="Review newly registered patient portal accounts"
+                  >
+                    <Link2 className="w-4 h-4 text-purple-600" />
+                    <span>Portal Link Requests</span>
+                  </Link>
+
                   <button
                     onClick={() => {
                       setCaseCreationSuccess(false);
