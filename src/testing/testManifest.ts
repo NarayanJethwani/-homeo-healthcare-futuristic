@@ -24,6 +24,13 @@ export interface TestSuiteManifestEntry {
 
 export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
   {
+    "path": "tests/doctorAccessRequest.test.ts",
+    "status": "active",
+    "ownerArea": "access-governance",
+    "testLayer": "security",
+    "reason": "Validates public doctor access request input boundaries, anti-automation field, same-site enforcement, throttling, pending-verification persistence, duplicate refresh, and prohibition on role activation"
+  },
+  {
     "path": "tests/adminProxySecurity.test.ts",
     "status": "active",
     "ownerArea": "admin-security",

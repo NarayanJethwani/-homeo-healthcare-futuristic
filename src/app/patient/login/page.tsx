@@ -8,6 +8,8 @@ import { auth, db } from "@/lib/firebase";
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import Magnetic from "@/components/Magnetic";
+import AccessSupport from "@/components/access/AccessSupport";
+import Link from "next/link";
 
 export default function PatientLogin() {
   const router = useRouter();
@@ -24,6 +26,9 @@ export default function PatientLogin() {
   useEffect(() => {
     const isDark = document.documentElement.classList.contains("dark");
     setTheme(isDark ? "dark" : "light");
+    if (new URLSearchParams(window.location.search).get("mode") === "signup") {
+      setActiveTab("signup");
+    }
   }, []);
 
   const toggleTheme = () => {
@@ -222,6 +227,9 @@ export default function PatientLogin() {
       <div className="absolute w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-lavender/5 to-transparent opacity-30 blur-[80px] bottom-[10%] right-[10%] pointer-events-none" />
 
       <div className="w-full max-w-md z-10 relative">
+        <Link href="/login" className="mb-5 inline-flex text-xs font-bold text-slate-600 hover:text-mint dark:text-slate-300">
+          ← Back to portal access
+        </Link>
         {/* Brand Header */}
         <div className="text-center mb-10">
           <div className="relative inline-flex items-center justify-center w-14 h-14 rounded-full bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800/65 shadow-md mb-4 breathe">
@@ -378,6 +386,9 @@ export default function PatientLogin() {
           </div>
 
         </motion.div>
+        <div className="mt-6">
+          <AccessSupport compact />
+        </div>
       </div>
     </div>
   );
