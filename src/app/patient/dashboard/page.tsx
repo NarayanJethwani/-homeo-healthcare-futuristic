@@ -18,7 +18,9 @@ import {
   Sun,
   Moon,
   ChevronRight,
-  Video
+  Video,
+  MessageCircle,
+  RefreshCw
 } from "lucide-react";
 import { auth, db } from "@/lib/firebase";
 import { doc, getDoc, updateDoc, collection, query, where, getDocs } from "firebase/firestore";
@@ -68,6 +70,7 @@ export default function PatientDashboard() {
   const [uploadError, setUploadError] = useState("");
   const [uploadSuccess, setUploadSuccess] = useState("");
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [isCheckingPortalLink, setIsCheckingPortalLink] = useState(false);
 
   // Follow-up form states
   const [followupImprovement, setFollowupImprovement] = useState("Slight Improvement");
@@ -240,6 +243,36 @@ export default function PatientDashboard() {
     }
   };
 
+  const handleCheckPortalLink = async () => {
+    setIsCheckingPortalLink(true);
+
+    try {
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        window.location.href = "/patient/login";
+        return;
+      }
+
+      const idToken = await currentUser.getIdToken(true);
+      const response = await fetch("/api/patient/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken }),
+      });
+      const result = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        throw new Error(result?.message || "Unable to refresh portal approval status.");
+      }
+
+      window.location.reload();
+    } catch (error) {
+      console.error("Portal link status refresh failed:", error);
+      window.alert(error instanceof Error ? error.message : "Unable to refresh portal approval status.");
+      setIsCheckingPortalLink(false);
+    }
+  };
+
   const toggleTheme = () => {
     const nextTheme = theme === "light" ? "dark" : "light";
     setTheme(nextTheme);
@@ -370,6 +403,16 @@ export default function PatientDashboard() {
 
   // 1. Account Unlinked Welcome Panel
   if (sessionUser && !sessionUser.patientId) {
+    const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918446056789";
+    const verificationMessage = [
+      "Hello Dr. Narayan Jethwani / Homeo Healthcare team,",
+      "I have registered for the patient portal and request identity verification and clinical record linking.",
+      `Patient name: ${sessionUser.name || "Patient"}`,
+      `Portal email: ${sessionUser.email || "Not available"}`,
+      `Portal UID: ${sessionUser.uid}`,
+      "I understand that I should not send medical records, prescriptions, passwords, or OTPs in this WhatsApp chat.",
+    ].join("\n");
+
     return (
       <div className="min-h-screen bg-pearl dark:bg-slate-950 flex items-center justify-center p-6">
         <div className="absolute top-28 right-6 md:right-12 z-50 flex items-center gap-3">
@@ -418,9 +461,34 @@ export default function PatientDashboard() {
 
             <div className="text-xs border-t border-slate-200/65 dark:border-slate-800 pt-3 leading-relaxed text-slate-550 dark:text-slate-400 font-medium">
               <span className="block text-[10px] text-amber-600 font-extrabold uppercase tracking-widest mb-1">How to access your records?</span>
-              Please email or share your <strong className="text-slate-800 dark:text-slate-200">Portal UID</strong> with Dr. Narayan Jethwani or your doctor. They will map this secure key in their clinical dashboard to unlock your records instantly.
+              Send the verification request below. Your doctor will confirm your identity and map this secure key to the correct clinical record.
             </div>
           </div>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            <a
+              href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(verificationMessage)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-600 px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-white shadow-sm transition-all hover:bg-emerald-700"
+            >
+              <MessageCircle className="h-4 w-4" />
+              Send UID on WhatsApp
+            </a>
+            <button
+              type="button"
+              onClick={handleCheckPortalLink}
+              disabled={isCheckingPortalLink}
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-slate-700 transition-all hover:border-mint hover:text-mint dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+            >
+              <RefreshCw className={`h-4 w-4 ${isCheckingPortalLink ? "animate-spin" : ""}`} />
+              {isCheckingPortalLink ? "Checking..." : "Check Approval Status"}
+            </button>
+          </div>
+
+          <p className="rounded-xl bg-emerald-50 px-4 py-3 text-[10px] font-semibold leading-5 text-emerald-900 dark:bg-emerald-500/10 dark:text-emerald-200">
+            The WhatsApp message includes only your name, portal email, and Portal UID. Do not add clinical records, prescriptions, passwords, or OTPs.
+          </p>
 
           <p className="text-[10px] text-slate-400 font-semibold italic">Thank you for choosing Homeo Healthcare.</p>
         </motion.div>

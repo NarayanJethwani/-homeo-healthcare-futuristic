@@ -33,13 +33,19 @@ export async function POST(request: NextRequest) {
     const { getAdminDb } = await import("@/lib/firebaseAdmin");
     
     let decodedToken;
-    if (body.idToken === "mock-patient-linked-token") {
+    const mockSessionAllowed = process.env.NODE_ENV !== "production";
+
+    if (!mockSessionAllowed && body.idToken.startsWith("mock-patient-")) {
+      return jsonResponse({ success: false, message: "Invalid patient authentication token." }, 401);
+    }
+
+    if (mockSessionAllowed && body.idToken === "mock-patient-linked-token") {
       decodedToken = {
         uid: "mock-patient-uid-linked",
         email: "patient.demo@homeo.healthcare",
         name: "Aarav Sharma"
       };
-    } else if (body.idToken === "mock-patient-unlinked-token") {
+    } else if (mockSessionAllowed && body.idToken === "mock-patient-unlinked-token") {
       decodedToken = {
         uid: "mock-patient-uid-unlinked",
         email: "patient.demo@homeo.healthcare",

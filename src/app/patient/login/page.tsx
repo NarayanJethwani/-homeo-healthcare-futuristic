@@ -92,6 +92,7 @@ export default function PatientLogin() {
             name: userName,
             role: "patient",
             patientId: "",
+            portalLinkStatus: "pending",
             createdAt: new Date().toISOString()
           });
         }
@@ -140,6 +141,7 @@ export default function PatientLogin() {
           name: name,
           role: "patient",
           patientId: "", // Pending manual link step
+          portalLinkStatus: "pending",
           createdAt: new Date().toISOString()
         });
 
@@ -364,26 +366,27 @@ export default function PatientLogin() {
             </div>
           </form>
 
-          {/* Local testing Mock Bypass options */}
-          <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800 text-center space-y-3">
-            <span className="text-[10px] text-slate-400 uppercase font-extrabold tracking-widest block">Local Test Bypass Mode</span>
-            <div className="flex gap-2.5">
-              <button
-                type="button"
-                onClick={() => handleBypass(true)}
-                className="flex-1 py-2 px-3 border border-purple-200 dark:border-purple-900/50 hover:bg-purple-50 dark:hover:bg-purple-950/20 text-[#7c3aed] text-[10px] font-bold rounded-xl transition-all cursor-pointer bg-white/20"
-              >
-                Bypass (Linked Aarav)
-              </button>
-              <button
-                type="button"
-                onClick={() => handleBypass(false)}
-                className="flex-1 py-2 px-3 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900/40 text-slate-600 dark:text-slate-400 text-[10px] font-bold rounded-xl transition-all cursor-pointer bg-white/20"
-              >
-                Bypass (Unlinked User)
-              </button>
+          {process.env.NODE_ENV !== "production" && (
+            <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800 text-center space-y-3">
+              <span className="text-[10px] text-slate-400 uppercase font-extrabold tracking-widest block">Local Test Bypass Mode</span>
+              <div className="flex gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => handleBypass(true)}
+                  className="flex-1 py-2 px-3 border border-purple-200 dark:border-purple-900/50 hover:bg-purple-50 dark:hover:bg-purple-950/20 text-[#7c3aed] text-[10px] font-bold rounded-xl transition-all cursor-pointer bg-white/20"
+                >
+                  Bypass (Linked Aarav)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleBypass(false)}
+                  className="flex-1 py-2 px-3 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900/40 text-slate-600 dark:text-slate-400 text-[10px] font-bold rounded-xl transition-all cursor-pointer bg-white/20"
+                >
+                  Bypass (Unlinked User)
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
         </motion.div>
         <div className="mt-6">

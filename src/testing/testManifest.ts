@@ -24,6 +24,13 @@ export interface TestSuiteManifestEntry {
 
 export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
   {
+    "path": "tests/patientPortalLinking.test.ts",
+    "status": "active",
+    "ownerArea": "access-governance",
+    "testLayer": "security",
+    "reason": "Validates pending patient portal registration discovery, email-based candidate suggestions, practitioner patient-scope enforcement, approval mapping, versioned link records, audit events, and queue removal after approval"
+  },
+  {
     "path": "tests/doctorAccessRequest.test.ts",
     "status": "active",
     "ownerArea": "access-governance",
