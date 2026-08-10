@@ -1,5 +1,5 @@
 import { google } from "googleapis";
-import { getCareLevelDisplayNameWithIcon } from "./pricingConfig";
+import { buildGoogleSheetsCareRateFormula, getCareLevelDisplayNameWithIcon } from "./pricingConfig";
 import { CLINIC_BRAND_NAME, CLINIC_LOGO_PUBLIC_URL } from "./clinicBranding";
 
 
@@ -581,7 +581,7 @@ export async function createPatientClinicalSheet(
                 {
                   range: "'Treatment Planner'!A8:C15",
                   values: [
-                    ["Care Rate", `=IF(ISNUMBER(SEARCH("Complete", A4)), IF(B4="Weekly", 10000, 40000), IF(ISNUMBER(SEARCH("Records", A4)), 3000, IF(ISNUMBER(SEARCH("Priority", A4)), IF(B4="Weekly", 2000, 8000), IF(ISNUMBER(SEARCH("Advanced Constitutional", A4)), IF(B4="Weekly", 5000, 20000), IF(ISNUMBER(SEARCH("Constitutional", A4)), IF(B4="Weekly", 3000, 12000), IF(OR(ISNUMBER(SEARCH("Wellness", A4)), ISNUMBER(SEARCH("Acute", A4))), IF(B4="Weekly", 2000, 8000), 0))))))`, "Rate from the synchronized care pathway"],
+                    ["Care Rate", buildGoogleSheetsCareRateFormula(), "Rate from the synchronized care pathway"],
                     ["Scope Adjustment", 0, "No automatic per-symptom or per-condition charge"],
                     ["Care Period Total", "=B8*C4", "Care rate multiplied by selected duration"],
                     ["Physician Scope Review", 0, "Any physician-recommended scope change requires patient approval"],
@@ -995,7 +995,7 @@ export async function createPatientClinicalSheet(
           ["", "", "", "", "", "", ""],
           ["PRICING BREAKDOWN", "", "", "", "", "", ""],
           ["Component", "Rate / Amount (₹)", "Calculation Description", "", "", "", ""],
-          ["Care Rate", `=IF(ISNUMBER(SEARCH("Complete", A4)), IF(B4="Weekly", 10000, 40000), IF(ISNUMBER(SEARCH("Records", A4)), 3000, IF(ISNUMBER(SEARCH("Priority", A4)), IF(B4="Weekly", 2000, 8000), IF(ISNUMBER(SEARCH("Advanced Constitutional", A4)), IF(B4="Weekly", 5000, 20000), IF(ISNUMBER(SEARCH("Constitutional", A4)), IF(B4="Weekly", 3000, 12000), IF(OR(ISNUMBER(SEARCH("Wellness", A4)), ISNUMBER(SEARCH("Acute", A4))), IF(B4="Weekly", 2000, 8000), 0))))))`, "Rate from the synchronized care pathway", "", "", "", ""],
+          ["Care Rate", buildGoogleSheetsCareRateFormula(), "Rate from the synchronized care pathway", "", "", "", ""],
           ["Scope Adjustment", 0, "No automatic per-symptom or per-condition charge", "", "", "", ""],
           ["Care Period Total", "=B8*C4", "Care rate multiplied by selected duration", "", "", "", ""],
           ["Physician Scope Review", 0, "Any physician-recommended scope change requires patient approval", "", "", "", ""],
