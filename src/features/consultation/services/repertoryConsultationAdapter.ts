@@ -3,7 +3,10 @@
  * Reuses canonical repository repertory data without creating duplicate corpora.
  */
 
-import { SelectedRubric, MateriaMedicaKeynote } from "../types/repertory-intelligence.types";
+import {
+  MateriaMedicaKeynote,
+  MateriaMedicaRemedyProfile,
+} from "../types/repertory-intelligence.types";
 
 export interface CanonicalRubricSearchResult {
   rubricId: string;
@@ -694,49 +697,39 @@ export class RepertoryConsultationAdapter {
   }
 
   async fetchMateriaMedicaKeynote(remedyId: string): Promise<MateriaMedicaKeynote | null> {
-    const cleanId = remedyId.toLowerCase();
-
-    const keynotesMap: Record<string, MateriaMedicaKeynote> = {
-      arsenicum_album: {
-        remedyId: "arsenicum_album",
-        remedyName: "Arsenicum Album",
-        sourceTitle: "Boericke's Pocket Manual of Homeopathic Materia Medica",
-        author: "William Boericke, M.D.",
-        keynoteText: "Great anguish and restlessness. Prostration out of proportion to urgency. Chilly patient, ameliorated by heat.",
-        thermalAffinity: "chilly",
-        miasmaticAffinity: "psora / psora-syphilis",
-        citation: "Boericke, W. (1927). Materia Medica with Repertory (9th ed.), p. 74.",
-      },
-      nux_vomica: {
-        remedyId: "nux_vomica",
-        remedyName: "Nux Vomica",
-        sourceTitle: "Boericke's Pocket Manual of Homeopathic Materia Medica",
-        author: "William Boericke, M.D.",
-        keynoteText: "Oversensitive to impressions, noise, odors, light. Dyspepsia from sedentary habits and stimulants. Cannot bear cold.",
-        thermalAffinity: "chilly",
-        miasmaticAffinity: "psora / sycosis",
-        citation: "Boericke, W. (1927). Materia Medica with Repertory (9th ed.), p. 472.",
-      },
-      pulsatilla: {
-        remedyId: "pulsatilla",
-        remedyName: "Pulsatilla",
-        sourceTitle: "Boericke's Pocket Manual of Homeopathic Materia Medica",
-        author: "William Boericke, M.D.",
-        keynoteText: "Changeable symptoms. Mild, timid, yielding disposition, easily moved to tears. Warm patient, aggravated in close room, ameliorated in open air.",
-        thermalAffinity: "warm",
-        miasmaticAffinity: "psora",
-        citation: "Boericke, W. (1927). Materia Medica with Repertory (9th ed.), p. 538.",
-      },
+    const profile = await this.fetchMateriaMedicaProfile(remedyId);
+    if (!profile) return null;
+    const citation = profile.citations[0];
+    const source = profile.selectedSource || profile.availableSources[0];
+    return {
+      remedyId: profile.remedyId,
+      remedyName: profile.remedyName,
+      sourceTitle: source?.title || citation?.title || "Governed Homeo Healthcare remedy catalogue",
+      author: source?.author || citation?.authors.join(", ") || "Homeo Healthcare clinical editorial team",
+      keynoteText: profile.keynotes.join(" ") || profile.description || profile.summary || "",
+      miasmaticAffinity: profile.miasmaticAffinity.join(" / ") || undefined,
+      citation: citation
+        ? `${citation.authors.join(", ")} (${citation.year}). ${citation.title}.`
+        : source
+          ? `${source.author} (${source.year}). ${source.title}.`
+          : "Governed Homeo Healthcare remedy catalogue.",
     };
+  }
 
-    return keynotesMap[cleanId] || {
-      remedyId: cleanId,
-      remedyName: cleanId.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
-      sourceTitle: "Kent's Lectures on Homeopathic Materia Medica",
-      author: "James Tyler Kent, M.D.",
-      keynoteText: "Keynote description registered in canonical remedy concept registry.",
-      citation: "Kent, J. T. (1911). Lectures on Homeopathic Materia Medica (2nd ed.).",
-    };
+  async fetchMateriaMedicaProfile(
+    remedyId: string,
+    sourceId?: string
+  ): Promise<MateriaMedicaRemedyProfile | null> {
+    const query = new URLSearchParams({ remedyId });
+    if (sourceId) query.set("sourceId", sourceId);
+    const response = await fetch(`/api/admin/clinical/consultation/materia-medica?${query.toString()}`, {
+      credentials: "same-origin",
+      headers: { Accept: "application/json" },
+    });
+    if (response.status === 404) return null;
+    if (!response.ok) throw new Error(`Materia Medica request failed (${response.status})`);
+    const payload = (await response.json()) as { profile?: MateriaMedicaRemedyProfile };
+    return payload.profile || null;
   }
 }
 

@@ -41,6 +41,13 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "plannedResolution": "Execute via npm run test:ui (Vitest/jsdom)"
   },
   {
+    "path": "tests/consultationMateriaMedicaIntegration.test.ts",
+    "status": "active",
+    "ownerArea": "clinical-ehr",
+    "testLayer": "integration",
+    "reason": "Validates consultation remedy alias resolution, governed remedy content, verified citations, local Materia Medica corpus passage loading, source selection, and traversal rejection"
+  },
+  {
     "path": "tests/telemedicineSession.test.ts",
     "status": "active",
     "ownerArea": "clinical-ehr",
