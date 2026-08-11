@@ -19,7 +19,7 @@ import {
   type PathologyDepth,
   type PharmacyQuoteItem,
 } from "@/lib/clinicalCareSimulator";
-import { CARE_LEVELS_DETAILS } from "@/lib/pricingConfig";
+import { CARE_LEVELS_DETAILS, calculateContinuityCareTotal } from "@/lib/pricingConfig";
 
 export interface ClinicalCareSimulatorDecision {
   assessment: ClinicalCareAssessment;
@@ -80,6 +80,57 @@ const breadthLabels: Record<OrganBreadth, string> = {
   "six-plus": "6+ organ systems",
   unsure: "Not yet established",
 };
+
+function VisualLineBarSelector<T extends string>({
+  label,
+  options,
+  selectedValue,
+  onChange,
+}: {
+  label: string;
+  options: Array<{ value: T; label: string; subtext?: string }>;
+  selectedValue: T;
+  onChange: (val: T) => void;
+}) {
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-300">
+          {label}
+        </span>
+        <span className="text-[10px] font-mono font-extrabold text-teal-400">
+          {options.find((o) => o.value === selectedValue)?.label}
+        </span>
+      </div>
+
+      {/* Interactive Segment Line-Bar */}
+      <div className="flex flex-wrap items-center bg-slate-950 p-1 rounded-xl border border-slate-800 gap-1">
+        {options.map((opt) => {
+          const isSelected = opt.value === selectedValue;
+          return (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => onChange(opt.value)}
+              className={`flex-1 min-w-[70px] py-1.5 px-1.5 rounded-lg text-[11px] font-bold transition-all flex flex-col items-center justify-center text-center cursor-pointer border ${
+                isSelected
+                  ? "bg-gradient-to-r from-teal-600 to-emerald-600 text-white border-teal-400 shadow-md shadow-teal-500/20 scale-[1.02]"
+                  : "bg-slate-900/80 text-slate-400 border-slate-800/80 hover:bg-slate-800 hover:text-slate-200"
+              }`}
+            >
+              <span className="truncate w-full">{opt.label}</span>
+              {opt.subtext && (
+                <span className={`text-[9px] font-mono mt-0.5 truncate ${isSelected ? "text-teal-100" : "text-slate-500"}`}>
+                  {opt.subtext}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, onApply }: Props) {
   const [assessment, setAssessment] = useState<ClinicalCareAssessment>({
@@ -246,22 +297,84 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
         <div className="space-y-5 xl:col-span-7">
-          <fieldset className={`${styles.fieldset} rounded-2xl border p-4`}>
+          <fieldset className={`${styles.fieldset} rounded-2xl border p-4 space-y-4`}>
             <legend className={`${styles.legend} px-2 text-xs font-black`}>1. Clinical breadth, depth and stability</legend>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-              <label><span className={labelClass}>Organ-system involvement</span><select className={inputClass} value={assessment.breadth} onChange={e => updateAssessment("breadth", e.target.value as OrganBreadth)}>{Object.entries(breadthLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
-              <label><span className={labelClass}>Pathology depth</span><select className={inputClass} value={assessment.pathologyDepth} onChange={e => updateAssessment("pathologyDepth", e.target.value as PathologyDepth)}><option value="functional">Functional / early</option><option value="established">Established diagnosis</option><option value="structural">Structural pathology</option><option value="advanced">Advanced pathology</option></select></label>
-              <label><span className={labelClass}>Current stability</span><select className={inputClass} value={assessment.stability} onChange={e => updateAssessment("stability", e.target.value as CaseStability)}><option value="stable">Stable</option><option value="fluctuating">Fluctuating</option><option value="rapid-change">Rapidly changing</option><option value="red-flag">Red flag / urgent concern</option></select></label>
-            </div>
+
+            <VisualLineBarSelector
+              label="Organ-System Involvement"
+              selectedValue={assessment.breadth}
+              onChange={(val) => updateAssessment("breadth", val as OrganBreadth)}
+              options={[
+                { value: "one", label: "1 System" },
+                { value: "two-three", label: "2–3 Systems" },
+                { value: "four-five", label: "4–5 Systems" },
+                { value: "six-plus", label: "6+ Systems" },
+              ]}
+            />
+
+            <VisualLineBarSelector
+              label="Pathology Depth"
+              selectedValue={assessment.pathologyDepth}
+              onChange={(val) => updateAssessment("pathologyDepth", val as PathologyDepth)}
+              options={[
+                { value: "functional", label: "Functional" },
+                { value: "established", label: "Established" },
+                { value: "structural", label: "Structural" },
+                { value: "advanced", label: "Advanced" },
+              ]}
+            />
+
+            <VisualLineBarSelector
+              label="Current Stability"
+              selectedValue={assessment.stability}
+              onChange={(val) => updateAssessment("stability", val as CaseStability)}
+              options={[
+                { value: "stable", label: "Stable" },
+                { value: "fluctuating", label: "Fluctuating" },
+                { value: "rapid-change", label: "Rapid Change" },
+                { value: "red-flag", label: "Red Flag" },
+              ]}
+            />
           </fieldset>
 
-          <fieldset className={`${styles.fieldset} rounded-2xl border p-4`}>
+          <fieldset className={`${styles.fieldset} rounded-2xl border p-4 space-y-4`}>
             <legend className={`${styles.legend} px-2 text-xs font-black`}>2. Time, intensity and coordination</legend>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-              <label><span className={labelClass}>Case duration</span><select className={inputClass} value={assessment.chronicity} onChange={e => updateAssessment("chronicity", e.target.value as CaseChronicity)}><option value="recent">Recent / acute</option><option value="months">Several months</option><option value="one-five-years">1–5 years</option><option value="over-five-years">More than 5 years</option></select></label>
-              <label><span className={labelClass}>Review intensity needed</span><select className={inputClass} value={assessment.intensity} onChange={e => updateAssessment("intensity", e.target.value as CareIntensity)}><option value="standard">Standard scheduled</option><option value="closer">Closer follow-up</option><option value="frequent">Frequent review</option><option value="direct">Direct physician supervision</option></select></label>
-              <label><span className={labelClass}>Records / coordination</span><select className={inputClass} value={assessment.coordination} onChange={e => updateAssessment("coordination", e.target.value as CoordinationLoad)}><option value="minimal">Minimal</option><option value="records">Substantial records review</option><option value="multi-clinician">Multi-clinician coordination</option><option value="extensive">Extensive ongoing coordination</option></select></label>
-            </div>
+
+            <VisualLineBarSelector
+              label="Case Duration"
+              selectedValue={assessment.chronicity}
+              onChange={(val) => updateAssessment("chronicity", val as CaseChronicity)}
+              options={[
+                { value: "recent", label: "Acute (< 1 mo)" },
+                { value: "months", label: "Months" },
+                { value: "one-five-years", label: "1–5 Years" },
+                { value: "over-five-years", label: "> 5 Years" },
+              ]}
+            />
+
+            <VisualLineBarSelector
+              label="Review Intensity Needed"
+              selectedValue={assessment.intensity}
+              onChange={(val) => updateAssessment("intensity", val as CareIntensity)}
+              options={[
+                { value: "standard", label: "Standard" },
+                { value: "closer", label: "Closer" },
+                { value: "frequent", label: "Frequent" },
+                { value: "direct", label: "Direct Supervision" },
+              ]}
+            />
+
+            <VisualLineBarSelector
+              label="Records / Coordination"
+              selectedValue={assessment.coordination}
+              onChange={(val) => updateAssessment("coordination", val as CoordinationLoad)}
+              options={[
+                { value: "minimal", label: "Minimal" },
+                { value: "records", label: "Records Review" },
+                { value: "multi-clinician", label: "Multi-Clinician" },
+                { value: "extensive", label: "Extensive" },
+              ]}
+            />
           </fieldset>
 
           <fieldset className={`${styles.fieldset} rounded-2xl border p-4 sm:p-5`}>
@@ -384,11 +497,11 @@ export function ClinicalCareFeeSimulator({ patientId, patientName, patientAge, o
                 </div>
               )}
               <p className="mt-2 text-sm font-bold text-teal-300">Selected pathway fee: ₹{recommendation.weeklyFee.toLocaleString("en-IN")} / week</p>
-              <label className="mt-4 block"><span className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-slate-300">Care period</span><select className={`${styles.input} w-full rounded-xl border px-3 py-2.5 text-xs font-bold`} value={durationWeeks} onChange={e => { setDurationWeeks(Number(e.target.value)); setConfirmed(false); }}>{recommendation.allowedDurationsWeeks.map(weeks => <option key={weeks} value={weeks}>{weeks} {weeks === 1 ? "week" : "weeks"} · ₹{(recommendation.weeklyFee * weeks).toLocaleString("en-IN")}{weeks === 1 && recommendation.pathway !== "mild" ? " · initial period; reassessment required" : ""}</option>)}</select></label>
+              <label className="mt-4 block"><span className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-slate-300">Care period</span><select className={`${styles.input} w-full rounded-xl border px-3 py-2.5 text-xs font-bold`} value={durationWeeks} onChange={e => { setDurationWeeks(Number(e.target.value)); setConfirmed(false); }}>{recommendation.allowedDurationsWeeks.map(weeks => { const continuity = calculateContinuityCareTotal(recommendation.weeklyFee, weeks); return <option key={weeks} value={weeks}>{weeks} {weeks === 1 ? "week" : "weeks"} · ₹{continuity.total.toLocaleString("en-IN")}{continuity.discountPercent > 0 ? ` · ${continuity.discountPercent}% benefit` : ""}{weeks === 1 && recommendation.pathway !== "mild" ? " · initial period; reassessment required" : ""}</option>; })}</select></label>
               {durationWeeks === 1 && recommendation.pathway !== "mild" && <p className="mt-2 rounded-lg bg-amber-500/10 px-3 py-2 text-[10px] leading-relaxed text-amber-100">One-week initial care period — physician reassessment is required before continuation.</p>}
               <div className="mt-4 space-y-2">{recommendation.reasons.map(reason => <div key={reason} className="flex gap-2 text-xs leading-relaxed text-slate-200"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-300" />{reason}</div>)}</div>
               <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-[10px] leading-relaxed text-amber-100">{recommendation.cautions.join(" ")}</div>
-              {quote && <div className="mt-5 space-y-2 border-t border-slate-700 pt-4 text-xs"><div className="flex justify-between"><span>Care-period total</span><strong>₹{quote.baseCareTotal.toLocaleString("en-IN")}</strong></div>{quote.caseSpecificSupportTotal > 0 && <div className="flex justify-between"><span>Clinical support</span><strong>+₹{quote.caseSpecificSupportTotal.toLocaleString("en-IN")}</strong></div>}{quote.pharmacyTotal > 0 && <div className="flex justify-between"><span>Itemized pharmacy</span><strong>+₹{quote.pharmacyTotal.toLocaleString("en-IN")}</strong></div>}{quote.concessionTotal > 0 && <div className="flex justify-between text-indigo-300"><span>Documented concession</span><strong>−₹{quote.concessionTotal.toLocaleString("en-IN")}</strong></div>}<div className="flex justify-between border-t border-slate-700 pt-3 text-base"><span className="font-black">Pending quotation</span><strong className="text-teal-300">₹{quote.finalTotal.toLocaleString("en-IN")}</strong></div></div>}
+              {quote && <div className="mt-5 space-y-2 border-t border-slate-700 pt-4 text-xs"><div className="flex justify-between"><span>List care-period fee</span><strong>₹{quote.listCareTotal.toLocaleString("en-IN")}</strong></div>{quote.continuityDiscountTotal > 0 && <div className="flex justify-between text-teal-300"><span>Continuity care benefit ({quote.continuityDiscountPercent}%)</span><strong>−₹{quote.continuityDiscountTotal.toLocaleString("en-IN")}</strong></div>}<div className="flex justify-between"><span>Care fee after benefit</span><strong>₹{quote.baseCareTotal.toLocaleString("en-IN")}</strong></div>{quote.caseSpecificSupportTotal > 0 && <div className="flex justify-between"><span>Clinical support</span><strong>+₹{quote.caseSpecificSupportTotal.toLocaleString("en-IN")}</strong></div>}{quote.pharmacyTotal > 0 && <div className="flex justify-between"><span>Itemized pharmacy</span><strong>+₹{quote.pharmacyTotal.toLocaleString("en-IN")}</strong></div>}{quote.concessionTotal > 0 && <div className="flex justify-between text-indigo-300"><span>Documented concession</span><strong>−₹{quote.concessionTotal.toLocaleString("en-IN")}</strong></div>}<div className="flex justify-between border-t border-slate-700 pt-3 text-base"><span className="font-black">Pending quotation</span><strong className="text-teal-300">₹{quote.finalTotal.toLocaleString("en-IN")}</strong></div></div>}
               <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-xl border border-slate-700 bg-slate-900 p-3 text-xs leading-relaxed"><input type="checkbox" checked={confirmed} onChange={e => setConfirmed(e.target.checked)} className="mt-0.5 h-4 w-4 accent-teal-500" /><span>I confirm the pathway, duration, scope and fee after clinical review.</span></label>
               <button type="button" disabled={!canApply} onClick={() => {
                 if (!quote) return;

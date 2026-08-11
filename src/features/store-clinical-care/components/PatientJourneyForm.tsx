@@ -1,16 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
-  ShieldCheck,
-  UserCheck,
   AlertTriangle,
   MessageCircle,
 } from "lucide-react";
 import {
   CLINICAL_CARE_TIER_OPTIONS,
   calculateCarePeriodTotalPaise,
+  calculateListCarePeriodTotalPaise,
   formatINRFromPaise,
+  getCarePeriodContinuityBenefit,
   type PatientJourneyStep,
   type PatientIntakeData,
   type ClinicalCareDurationWeeks,
@@ -40,19 +40,9 @@ const STEPS: StepConfig[] = [
     subtitle: "Provide basic patient details for your clinical record",
   },
   {
-    key: "main_health_area",
-    title: "Primary Health Focus",
-    subtitle: "Select the organ system or health area requiring attention",
-  },
-  {
     key: "concern_description",
-    title: "Clinical Description & Symptoms",
-    subtitle: "Describe your chief symptoms, onset, and day-to-day impact",
-  },
-  {
-    key: "related_health_areas",
-    title: "Interrelated Health Systems",
-    subtitle: "Select any secondary or overlapping organ systems",
+    title: "Your Main Health Concern",
+    subtitle: "Summarize the primary area, symptoms, and any related concerns",
   },
   {
     key: "history_duration",
@@ -60,24 +50,14 @@ const STEPS: StepConfig[] = [
     subtitle: "Specify symptom duration and prior treatments attempted",
   },
   {
-    key: "investigations_records",
-    title: "Diagnostic Records & Reports",
-    subtitle: "Summarize existing blood tests, imaging, or specialist notes",
-  },
-  {
     key: "review_safety",
     title: "Safety Notice & Confirm Details",
     subtitle: "Review emergency boundary notice and confirm accuracy",
   },
-  {
-    key: "submission_complete",
-    title: "Physician Review & WhatsApp Assistance",
-    subtitle: "Submit details and connect directly on WhatsApp with Dr. Jethwani (8446056789)",
-  },
 ];
 
 export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
-  initialTierId = "integrated",
+  initialTierId = "focused",
   initialDurationWeeks = 4,
   initialMainArea = "",
   initialCondition = "",
@@ -94,17 +74,27 @@ export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
     age: "",
     gender: "female",
     city: "",
-    mainHealthArea: initialMainArea || "Digestive & Liver Support",
+    mainHealthArea: initialMainArea,
     concernDescription: initialCondition ? `Primary concern: ${initialCondition}` : "",
     relatedHealthAreas: [],
-    durationText: "1 to 3 years",
-    previousTreatments: "Standard conventional medication",
-    recordsSummary: "Recent lab reports available for physician review",
+    durationText: "Not specified",
+    previousTreatments: "",
+    recordsSummary: "",
     preferredDurationWeeks: initialDurationWeeks,
     selectedTierId: initialTierId,
     emergencyAcknowledged: false,
     accuracyConfirmed: false,
   });
+
+  useEffect(() => {
+    setData((previous) => ({
+      ...previous,
+      selectedTierId: initialTierId,
+      preferredDurationWeeks: initialDurationWeeks,
+      mainHealthArea: initialMainArea || previous.mainHealthArea,
+      concernDescription: initialCondition ? `Primary concern: ${initialCondition}` : previous.concernDescription,
+    }));
+  }, [initialCondition, initialDurationWeeks, initialMainArea, initialTierId]);
 
   const step = STEPS[currentStepIndex];
 
@@ -121,6 +111,12 @@ export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
       }
       if (!data.phone.trim() || data.phone.trim().length < 8) {
         setValidationErrors(["Please enter a valid phone number."]);
+        return;
+      }
+    }
+    if (step.key === "concern_description") {
+      if (!data.mainHealthArea.trim() || !data.concernDescription.trim()) {
+        setValidationErrors(["Please enter the primary health area and a brief description of the concern."]);
         return;
       }
     }
@@ -169,6 +165,8 @@ export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
 
   const selectedTier = CLINICAL_CARE_TIER_OPTIONS[data.selectedTierId] || CLINICAL_CARE_TIER_OPTIONS.integrated;
   const totalPaise = calculateCarePeriodTotalPaise(selectedTier.weeklyRatePaise, data.preferredDurationWeeks);
+  const listTotalPaise = calculateListCarePeriodTotalPaise(selectedTier.weeklyRatePaise, data.preferredDurationWeeks);
+  const continuityPercent = getCarePeriodContinuityBenefit(data.preferredDurationWeeks);
   const totalFormatted = formatINRFromPaise(totalPaise);
 
   return (
@@ -176,13 +174,13 @@ export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
       {/* Progress Steps Header */}
       <div className="mb-8 border-b border-slate-200/80 pb-6">
         <div className="flex items-center justify-between text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">
-          <span>Step {currentStepIndex + 1} of 8</span>
-          <span className="text-mint">{Math.round(((currentStepIndex + 1) / 8) * 100)}% Completed</span>
+          <span>Step {currentStepIndex + 1} of {STEPS.length}</span>
+          <span className="text-mint">{Math.round(((currentStepIndex + 1) / STEPS.length) * 100)}% Completed</span>
         </div>
         <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
           <div
             className="bg-mint h-2.5 rounded-full transition-all duration-300"
-            style={{ width: `${((currentStepIndex + 1) / 8) * 100}%` }}
+            style={{ width: `${((currentStepIndex + 1) / STEPS.length) * 100}%` }}
           />
         </div>
         <h3 className="font-serif text-2xl md:text-3xl font-bold text-[#1A2421] mt-5">{step.title}</h3>
@@ -285,10 +283,10 @@ export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
           </div>
         )}
 
-        {step.key === "main_health_area" && (
-          <div className="space-y-4">
+        {step.key === "concern_description" && (
+          <div className="space-y-5">
             <label htmlFor="mainHealthArea" className="block text-xs font-bold text-[#1A2421] uppercase tracking-wider mb-2">
-              Primary Organ System Focus *
+              Primary Health Area *
             </label>
             <input
               id="mainHealthArea"
@@ -299,13 +297,8 @@ export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
               placeholder="e.g. Digestive & Liver Support, Respiratory & Allergy"
               className="w-full rounded-2xl border border-slate-200 bg-white p-3.5 text-xs font-bold text-[#1A2421] outline-none focus:border-mint focus:ring-2 focus:ring-mint/20"
             />
-          </div>
-        )}
-
-        {step.key === "concern_description" && (
-          <div className="space-y-4">
             <label htmlFor="concernDescription" className="block text-xs font-bold text-[#1A2421] uppercase tracking-wider mb-2">
-              Describe your main health concern & symptoms in detail *
+              Briefly describe the concern and its day-to-day impact *
             </label>
             <textarea
               id="concernDescription"
@@ -313,23 +306,18 @@ export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
               required
               value={data.concernDescription}
               onChange={(e) => updateField("concernDescription", e.target.value)}
-              placeholder="Please describe symptom onset, triggers, daily severity, and any aggravating factors..."
+              placeholder="Describe the main symptoms, when they started, and how they affect daily life..."
               className="w-full rounded-2xl border border-slate-200 bg-white p-4 text-xs font-semibold text-[#1A2421] outline-none focus:border-mint focus:ring-2 focus:ring-mint/20"
             />
-          </div>
-        )}
-
-        {step.key === "related_health_areas" && (
-          <div className="space-y-4">
             <label htmlFor="relatedHealthAreas" className="block text-xs font-bold text-[#1A2421] uppercase tracking-wider mb-2">
-              Secondary or Overlapping Health Areas
+              Related Health Areas (Optional)
             </label>
             <input
               id="relatedHealthAreas"
               type="text"
               value={data.relatedHealthAreas.join(", ")}
               onChange={(e) => updateField("relatedHealthAreas", e.target.value.split(",").map((s) => s.trim()))}
-              placeholder="e.g., Sleep difficulties, Mild anxiety, Joint stiffness"
+              placeholder="e.g. sleep, digestion, skin, stress"
               className="w-full rounded-2xl border border-slate-200 bg-white p-3.5 text-xs font-bold text-[#1A2421] outline-none focus:border-mint focus:ring-2 focus:ring-mint/20"
             />
           </div>
@@ -351,6 +339,7 @@ export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
                 <option value="6 months to 1 year">6 months to 1 year</option>
                 <option value="1 to 3 years">1 to 3 years</option>
                 <option value="More than 3 years (Chronic)">More than 3 years (Chronic)</option>
+                <option value="Not specified">Not specified</option>
               </select>
             </div>
 
@@ -367,27 +356,36 @@ export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
                 className="w-full rounded-2xl border border-slate-200 bg-white p-3.5 text-xs font-bold text-[#1A2421] outline-none focus:border-mint focus:ring-2 focus:ring-mint/20"
               />
             </div>
-          </div>
-        )}
-
-        {step.key === "investigations_records" && (
-          <div className="space-y-4">
-            <label htmlFor="recordsSummary" className="block text-xs font-bold text-[#1A2421] uppercase tracking-wider mb-2">
-              Summary of Lab Reports, Imaging & Medical Records
-            </label>
-            <textarea
-              id="recordsSummary"
-              rows={3}
-              value={data.recordsSummary}
-              onChange={(e) => updateField("recordsSummary", e.target.value)}
-              placeholder="e.g., Blood test results (HbA1c 6.8%), Thyroid panel normal, Ultrasound showing mild fatty liver..."
-              className="w-full rounded-2xl border border-slate-200 bg-white p-4 text-xs font-semibold text-[#1A2421] outline-none focus:border-mint focus:ring-2 focus:ring-mint/20"
-            />
+            <div className="md:col-span-2">
+              <label htmlFor="recordsSummary" className="block text-xs font-bold text-[#1A2421] uppercase tracking-wider mb-2">
+                Relevant Reports or Records (Optional)
+              </label>
+              <textarea
+                id="recordsSummary"
+                rows={3}
+                value={data.recordsSummary}
+                onChange={(e) => updateField("recordsSummary", e.target.value)}
+                placeholder="Briefly list relevant tests, imaging, or specialist advice. Files can be shared securely after physician review."
+                className="w-full rounded-2xl border border-slate-200 bg-white p-4 text-xs font-semibold text-[#1A2421] outline-none focus:border-mint focus:ring-2 focus:ring-mint/20"
+              />
+            </div>
           </div>
         )}
 
         {step.key === "review_safety" && (
           <div className="space-y-6">
+            <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+              <span className="text-[10px] font-black uppercase tracking-wider text-mint">Review your selected care</span>
+              <h4 className="mt-1 font-serif text-2xl font-bold text-[#1A2421]">{selectedTier.name}</h4>
+              <dl className="mt-4 space-y-2 text-xs">
+                <div className="flex justify-between gap-4"><dt className="font-semibold text-slate-500">Planned care period</dt><dd className="font-bold text-[#1A2421]">{data.preferredDurationWeeks} weeks</dd></div>
+                <div className="flex justify-between gap-4"><dt className="font-semibold text-slate-500">Care fee before benefit</dt><dd className="font-bold text-[#1A2421]">{formatINRFromPaise(listTotalPaise)}</dd></div>
+                {continuityPercent > 0 && <div className="flex justify-between gap-4 text-emerald-700"><dt className="font-bold">Continuity benefit ({continuityPercent}%)</dt><dd className="font-black">−{formatINRFromPaise(listTotalPaise - totalPaise)}</dd></div>}
+                <div className="flex justify-between gap-4 border-t border-slate-200 pt-3"><dt className="font-bold text-slate-700">Estimated care fee</dt><dd className="text-base font-black text-[#1A2421]">{totalFormatted}</dd></div>
+              </dl>
+              <p className="mt-3 text-[11px] font-semibold leading-relaxed text-slate-500">No payment is taken now. Your physician confirms the pathway, schedule, care period, and final quotation first.</p>
+            </div>
+
             <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-semibold space-y-2">
               <span className="font-bold block text-amber-950">Safety Boundary & Emergency Guidance</span>
               <p>
@@ -420,41 +418,10 @@ export const PatientJourneyForm: React.FC<PatientJourneyFormProps> = ({
                 </span>
               </label>
             </div>
-          </div>
-        )}
-
-        {step.key === "submission_complete" && (
-          <div className="space-y-5 text-center py-4">
-            <div className="mx-auto w-14 h-14 rounded-full bg-mint/10 text-mint-dark flex items-center justify-center">
-              <UserCheck className="w-7 h-7 text-mint" />
-            </div>
-
-            <h4 className="font-serif text-2xl font-bold text-[#1A2421]">Ready to Submit for Physician Review</h4>
-
-            <div className="max-w-md mx-auto p-5 rounded-2xl bg-slate-50 border border-slate-200 text-left space-y-3 text-xs font-semibold text-slate-700 shadow-sm">
-              <div className="flex justify-between border-b border-slate-200 pb-2">
-                <span className="text-slate-500">Selected Care Tier:</span>
-                <span className="font-bold text-[#1A2421]">{selectedTier.name}</span>
-              </div>
-              <div className="flex justify-between border-b border-slate-200 pb-2">
-                <span className="text-slate-500">Planned Care Period:</span>
-                <span className="font-bold text-[#1A2421]">{data.preferredDurationWeeks} Weeks</span>
-              </div>
-              <div className="flex justify-between border-b border-slate-200 pb-2">
-                <span className="text-slate-500">Complete Care-Period Amount:</span>
-                <span className="font-extrabold text-[#1A2421] text-sm">{totalFormatted}</span>
-              </div>
-              <div className="text-[11px] text-slate-500 pt-1">
-                Primary Area: <span className="font-bold text-[#1A2421]">{data.mainHealthArea}</span>
-              </div>
-            </div>
 
             <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 text-xs font-semibold text-left flex items-start gap-3">
               <MessageCircle className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-              <div>
-                <span className="font-bold block">WhatsApp Doctor Guidance (+91 8446056789):</span>
-                Clicking <strong>"Continue to Physician Review"</strong> will process your assessment and launch WhatsApp directly to connect with Dr. Jethwani for assistance and guidance.
-              </div>
+              <div><span className="font-bold block">Physician review via WhatsApp:</span>Submitting opens a prepared message to Homeo Healthcare at +91 84460 56789. You can review it before sending.</div>
             </div>
           </div>
         )}

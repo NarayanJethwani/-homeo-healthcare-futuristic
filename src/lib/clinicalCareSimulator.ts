@@ -1,5 +1,6 @@
 import {
   CARE_LEVELS_DETAILS,
+  calculateContinuityCareTotal,
   type CareLevelKey,
 } from "./pricingConfig";
 
@@ -58,6 +59,9 @@ export interface ClinicalCareQuoteInput {
 export interface ClinicalCareQuote {
   weeklyCareFee: number;
   durationWeeks: number;
+  listCareTotal: number;
+  continuityDiscountPercent: number;
+  continuityDiscountTotal: number;
   baseCareTotal: number;
   caseSpecificSupportTotal: number;
   pharmacyTotal: number;
@@ -183,13 +187,17 @@ export function buildClinicalCareQuote(input: ClinicalCareQuoteInput): ClinicalC
 
   const caseSpecificSupportTotal = Math.max(0, Number(input.caseSpecificSupportAmount || 0));
   const pharmacyTotal = (input.pharmacyItems || []).reduce((sum, item) => sum + Math.max(0, Number(item.amount || 0)), 0);
-  const baseCareTotal = recommendation.weeklyFee * input.durationWeeks;
+  const continuity = calculateContinuityCareTotal(recommendation.weeklyFee, input.durationWeeks);
+  const baseCareTotal = continuity.total;
   const subtotal = baseCareTotal + caseSpecificSupportTotal + pharmacyTotal;
   const concessionTotal = Math.min(subtotal, Math.max(0, Number(input.concessionAmount || 0)));
 
   return {
     weeklyCareFee: recommendation.weeklyFee,
     durationWeeks: input.durationWeeks,
+    listCareTotal: continuity.listTotal,
+    continuityDiscountPercent: continuity.discountPercent,
+    continuityDiscountTotal: continuity.discountAmount,
     baseCareTotal,
     caseSpecificSupportTotal,
     pharmacyTotal,

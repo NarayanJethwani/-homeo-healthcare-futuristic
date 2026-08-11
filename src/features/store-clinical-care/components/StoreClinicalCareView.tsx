@@ -1,76 +1,116 @@
-import React, { useState, useRef, useMemo } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, CheckCircle2, HeartPulse, Route } from "lucide-react";
 import { ClinicalCareHeader } from "./ClinicalCareHeader";
-import { OrganSystemsDirectory } from "./OrganSystemsDirectory";
+import { CarePathwayCheck, type CarePathwayCheckAnswers } from "./CarePathwayCheck";
 import { CareLevelCard } from "./CareLevelCard";
+import { OrganSystemsDirectory } from "./OrganSystemsDirectory";
 import { IncludedServicesList } from "./IncludedServicesList";
 import { PatientJourneyForm } from "./PatientJourneyForm";
 import { SubmissionSuccessView } from "./SubmissionSuccessView";
-import { PhysicianQuotationBuilder } from "./PhysicianQuotationBuilder";
 import { ClinicalCareFAQ } from "./ClinicalCareFAQ";
 import { EmergencyGuidanceBanner } from "./EmergencyGuidanceBanner";
 import { processCareAssessmentSubmission } from "../services/careAssessmentService";
 import { calculatePreliminaryCareRecommendation } from "../services/careRecommendationEngine";
-import type {
-  ClinicalCareDurationWeeks,
-  PatientIntakeData,
-  SanitizedAssessmentResponseDTO,
-} from "../domain/types";
+import { trackStoreFunnelEvent } from "../services/storeAnalytics";
+import type { ClinicalCareDurationWeeks, PatientIntakeData, SanitizedAssessmentResponseDTO } from "../domain/types";
+
+const ALLOWED_DURATIONS = new Set<ClinicalCareDurationWeeks>([1, 2, 4, 8, 12]);
+
+function normalizeStoreTier(value: string | null): "focused" | "integrated" | "complex" {
+  const clean = (value || "").toLowerCase();
+  if (["integrated", "moderate", "constitutional", "chronic"].includes(clean)) return "integrated";
+  if (["complex", "advanced", "comprehensive"].includes(clean)) return "complex";
+  if (clean === "focused" && value === "focused") return "focused";
+  if (["mild", "acute", "wellness"].includes(clean)) return "focused";
+  return "focused";
+}
 
 export const StoreClinicalCareView: React.FC = () => {
-  const [selectedTierId, setSelectedTierId] = useState<string>("integrated");
+  const [activeDiscoveryTab, setActiveDiscoveryTab] = useState<"pathways" | "concerns">("pathways");
+  const [selectedTierId, setSelectedTierId] = useState<"focused" | "integrated" | "complex">("focused");
   const [selectedDurationWeeks, setSelectedDurationWeeks] = useState<ClinicalCareDurationWeeks>(4);
+  const [pathwayAnswers, setPathwayAnswers] = useState<CarePathwayCheckAnswers>({});
+  const [selectedAreaIds, setSelectedAreaIds] = useState<string[]>([]);
   const [selectedAreaTitles, setSelectedAreaTitles] = useState<string[]>([]);
-  const [selectedConditionName, setSelectedConditionName] = useState<string>("");
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [selectedCondition, setSelectedCondition] = useState("");
+  const [assessmentOpen, setAssessmentOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionResponse, setSubmissionResponse] = useState<SanitizedAssessmentResponseDTO | null>(null);
-
   const assessmentFormRef = useRef<HTMLDivElement>(null);
+  const discoveryTabsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const requestedTier = normalizeStoreTier(params.get("pathway") || params.get("level") || params.get("careLevel"));
+    const requestedWeeks = Number(params.get("weeks") || params.get("duration"));
+    setSelectedTierId(requestedTier);
+    if (ALLOWED_DURATIONS.has(requestedWeeks as ClinicalCareDurationWeeks)) setSelectedDurationWeeks(requestedWeeks as ClinicalCareDurationWeeks);
+    if (params.get("start") === "assessment") setAssessmentOpen(true);
+  }, []);
 
   const preliminaryRec = useMemo(() => {
+    const breadth = pathwayAnswers.healthAreaBreadth || 1;
+    const selectedOrganSystems = Array.from({ length: breadth }, (_, index) => `Health area ${index + 1}`);
+    const durationText = pathwayAnswers.concernDuration === "long-standing"
+      ? "More than 3 years (chronic)"
+      : pathwayAnswers.concernDuration === "established"
+        ? "6 months to 3 years"
+        : "Less than 6 months";
+
     return calculatePreliminaryCareRecommendation({
-      selectedOrganSystems: selectedAreaTitles,
+      selectedOrganSystems,
+      durationText,
+      severityRating: pathwayAnswers.supportIntensity === "closer" ? 7 : 4,
+      priorTreatmentFailures: pathwayAnswers.supportIntensity === "closer",
     });
-  }, [selectedAreaTitles]);
+  }, [pathwayAnswers]);
 
-  const handleProceedToTiers = () => {
-    const el = document.getElementById("care-pathways-pricing");
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
-    }
+  const answeredCount = Object.values(pathwayAnswers).filter(Boolean).length;
+
+  useEffect(() => {
+    if (answeredCount === 0) return;
+    setSelectedTierId(preliminaryRec.suggestedTierId === "advanced" ? "complex" : preliminaryRec.suggestedTierId);
+  }, [answeredCount, preliminaryRec.suggestedTierId]);
+
+  const openAssessment = () => {
+    setAssessmentOpen(true);
+    trackStoreFunnelEvent("store_assessment_started", { pathway: selectedTierId, durationWeeks: selectedDurationWeeks });
+    window.setTimeout(() => assessmentFormRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
   };
 
-  const handleProceedToAssessment = () => {
-    const el = document.getElementById("clinical-assessment-form");
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
+  const handlePathwayAnswersChange = (answers: CarePathwayCheckAnswers) => {
+    const changedKey = (Object.keys(answers) as Array<keyof CarePathwayCheckAnswers>).find((key) => answers[key] !== pathwayAnswers[key]);
+    if (changedKey && answers[changedKey] !== undefined) {
+      trackStoreFunnelEvent("store_pathway_check_answered", { question: changedKey, answer: answers[changedKey] });
     }
+    setPathwayAnswers(answers);
   };
 
-  const handleSelectAreasAndCondition = (areaTitles: string[], conditionName: string) => {
+  const handleHealthConcernSelection = (areaIds: string[], areaTitles: string[], conditionName: string) => {
+    setSelectedAreaIds(areaIds);
     setSelectedAreaTitles(areaTitles);
-    setSelectedConditionName(conditionName);
+    setSelectedCondition(conditionName);
+    if (areaTitles.length > 0) {
+      const healthAreaBreadth = areaTitles.length >= 5 ? 5 : areaTitles.length >= 3 ? 4 : areaTitles.length === 2 ? 2 : 1;
+      setPathwayAnswers((previous) => ({ ...previous, healthAreaBreadth }));
+      trackStoreFunnelEvent("store_health_concern_selected", { healthAreas: areaTitles.length });
+    }
+  };
+
+  const showCarePathways = () => {
+    setActiveDiscoveryTab("pathways");
+    window.setTimeout(() => discoveryTabsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
   };
 
   const handleSubmitAssessment = async (intakeData: PatientIntakeData) => {
     setIsSubmitting(true);
     try {
-      const finalData: PatientIntakeData = {
-        ...intakeData,
-        selectedOrganSystems: selectedAreaTitles.length > 0 ? selectedAreaTitles : [intakeData.mainHealthArea],
-        mainHealthArea: selectedAreaTitles.join(", ") || intakeData.mainHealthArea,
-        concernDescription: selectedConditionName
-          ? `[Primary Condition: ${selectedConditionName}] ${intakeData.concernDescription}`
-          : intakeData.concernDescription,
-      };
-
-      const result = processCareAssessmentSubmission(finalData);
+      const result = processCareAssessmentSubmission(intakeData);
       if (result.success) {
+        trackStoreFunnelEvent("store_assessment_submitted", { pathway: intakeData.selectedTierId, durationWeeks: intakeData.preferredDurationWeeks });
         setSubmissionResponse(result.data);
       }
-    } catch (err) {
-      console.error("Failed to submit clinical care assessment:", err);
     } finally {
       setIsSubmitting(false);
     }
@@ -78,73 +118,89 @@ export const StoreClinicalCareView: React.FC = () => {
 
   const handleReset = () => {
     setSubmissionResponse(null);
-    setSelectedTierId("integrated");
+    setSelectedTierId("focused");
     setSelectedDurationWeeks(4);
+    setPathwayAnswers({});
+    setSelectedAreaIds([]);
     setSelectedAreaTitles([]);
-    setSelectedConditionName("");
+    setSelectedCondition("");
+    setActiveDiscoveryTab("pathways");
+    setAssessmentOpen(false);
   };
 
   return (
-    <main className="bg-gradient-mesh min-h-screen pt-32 pb-24 px-4 md:px-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Navigation Link */}
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-widest hover:text-mint transition-colors mb-8"
-        >
-          <ArrowLeft className="w-4 h-4" /> Return to Main Platform
-        </Link>
-
-        {/* 1. Hero Section (Clinical Care Pathways) */}
+    <main className="store-care-page min-h-screen px-4 pb-24 pt-32 md:px-8">
+      <div className="mx-auto max-w-7xl">
+        <Link href="/" className="mb-8 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-500 transition-colors hover:text-mint"><ArrowLeft className="h-4 w-4" /> Return to Main Platform</Link>
         <ClinicalCareHeader />
 
         {submissionResponse ? (
-          <div className="space-y-12">
-            <SubmissionSuccessView response={submissionResponse} onReset={handleReset} />
-            <PhysicianQuotationBuilder assessmentResponse={submissionResponse} />
-          </div>
+          <SubmissionSuccessView response={submissionResponse} onReset={handleReset} />
         ) : (
           <>
-            {/* 2 & 3. Organ Systems Directory (Multi-Select) & Conditions Browsing */}
-            <OrganSystemsDirectory
-              selectedAreaIds={[]}
-              selectedCondition={selectedConditionName}
-              onSelectAreasAndCondition={handleSelectAreasAndCondition}
-              onProceedToAssessment={handleProceedToAssessment}
-              onProceedToTiers={handleProceedToTiers}
-            />
-
-            {/* 4. 8-Step Clinical Assessment Wizard */}
-            <div ref={assessmentFormRef}>
-              <PatientJourneyForm
-                initialTierId={selectedTierId}
-                initialDurationWeeks={selectedDurationWeeks}
-                initialMainArea={selectedAreaTitles.join(", ")}
-                initialCondition={selectedConditionName}
-                onSubmitAssessment={handleSubmitAssessment}
-                isSubmitting={isSubmitting}
-              />
+            <div className="mb-12 grid grid-cols-1 gap-4 md:grid-cols-3">
+              {["No payment before physician review", "Routine prescribed medicines included", "Every additional fee requires approval"].map((item) => <div key={item} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 text-xs font-bold text-slate-700"><CheckCircle2 className="h-4 w-4 shrink-0 text-mint" />{item}</div>)}
             </div>
 
-            {/* 5 & 6. Initial Care Recommendation & Care Pathways Fees */}
-            <div id="care-pathways-pricing">
-              <CareLevelCard
-                selectedTierId={selectedTierId}
-                selectedDurationWeeks={selectedDurationWeeks}
-                preliminaryRecommendation={preliminaryRec}
-                onSelectTier={setSelectedTierId}
-                onSelectDuration={setSelectedDurationWeeks}
-                onProceedToAssessment={handleProceedToAssessment}
-              />
+            <div ref={discoveryTabsRef} className="mb-8 scroll-mt-28 rounded-[1.75rem] border border-slate-200 bg-white/80 p-2 shadow-sm">
+              <div role="tablist" aria-label="Choose how to begin" className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                <button id="care-pathways-tab" type="button" role="tab" aria-selected={activeDiscoveryTab === "pathways"} aria-controls="care-pathways-panel" onClick={() => setActiveDiscoveryTab("pathways")} className={`flex items-center gap-3 rounded-[1.25rem] px-5 py-4 text-left transition-all ${activeDiscoveryTab === "pathways" ? "bg-[#1A2421] text-white shadow-md" : "text-slate-600 hover:bg-slate-50"}`}>
+                  <span className={`rounded-xl p-2 ${activeDiscoveryTab === "pathways" ? "bg-white/10 text-mint" : "bg-mint/10 text-mint-dark"}`}><Route className="h-5 w-5" aria-hidden="true" /></span>
+                  <span><strong className="block text-sm">Choose a Care Pathway</strong><span className={`mt-0.5 block text-[10px] font-semibold ${activeDiscoveryTab === "pathways" ? "text-white/70" : "text-slate-500"}`}>Compare care levels, continuity benefits and fees</span></span>
+                </button>
+                <button id="health-concerns-tab" type="button" role="tab" aria-selected={activeDiscoveryTab === "concerns"} aria-controls="health-concerns-panel" onClick={() => setActiveDiscoveryTab("concerns")} className={`flex items-center gap-3 rounded-[1.25rem] px-5 py-4 text-left transition-all ${activeDiscoveryTab === "concerns" ? "bg-[#1A2421] text-white shadow-md" : "text-slate-600 hover:bg-slate-50"}`}>
+                  <span className={`rounded-xl p-2 ${activeDiscoveryTab === "concerns" ? "bg-white/10 text-mint" : "bg-mint/10 text-mint-dark"}`}><HeartPulse className="h-5 w-5" aria-hidden="true" /></span>
+                  <span className="min-w-0 flex-1"><strong className="flex items-center gap-2 text-sm">Explore by Health Concern {selectedAreaIds.length > 0 && <span className="rounded-full bg-mint px-2 py-0.5 text-[9px] text-white">{selectedAreaIds.length}</span>}</strong><span className={`mt-0.5 block text-[10px] font-semibold ${activeDiscoveryTab === "concerns" ? "text-white/70" : "text-slate-500"}`}>Browse organ systems and common conditions</span></span>
+                </button>
+              </div>
             </div>
 
-            {/* Included Services & Disclosures */}
+            {activeDiscoveryTab === "pathways" ? (
+              <div id="care-pathways-panel" role="tabpanel" aria-labelledby="care-pathways-tab">
+                <CarePathwayCheck answers={pathwayAnswers} recommendation={preliminaryRec} onChange={handlePathwayAnswersChange} />
+                <CareLevelCard
+                  selectedTierId={selectedTierId}
+                  selectedDurationWeeks={selectedDurationWeeks}
+                  preliminaryRecommendation={answeredCount > 0 ? preliminaryRec : undefined}
+                  onSelectTier={(tierId) => {
+                    const nextTier = normalizeStoreTier(tierId);
+                    setSelectedTierId(nextTier);
+                    trackStoreFunnelEvent("store_pathway_selected", { pathway: nextTier, durationWeeks: selectedDurationWeeks });
+                  }}
+                  onSelectDuration={(weeks) => {
+                    setSelectedDurationWeeks(weeks);
+                    trackStoreFunnelEvent("store_duration_selected", { pathway: selectedTierId, durationWeeks: weeks });
+                  }}
+                  onProceedToAssessment={openAssessment}
+                />
+              </div>
+            ) : (
+              <div id="health-concerns-panel" role="tabpanel" aria-labelledby="health-concerns-tab">
+                <OrganSystemsDirectory
+                  selectedAreaIds={selectedAreaIds}
+                  selectedCondition={selectedCondition}
+                  onSelectionChange={handleHealthConcernSelection}
+                  onContinueToPathways={showCarePathways}
+                  onProceedToAssessment={openAssessment}
+                />
+              </div>
+            )}
+
+            {assessmentOpen && (
+              <div ref={assessmentFormRef} className="scroll-mt-28">
+                <PatientJourneyForm
+                  initialTierId={selectedTierId}
+                  initialDurationWeeks={selectedDurationWeeks}
+                  initialMainArea={selectedAreaTitles.join(", ")}
+                  initialCondition={selectedCondition}
+                  onSubmitAssessment={handleSubmitAssessment}
+                  isSubmitting={isSubmitting}
+                />
+              </div>
+            )}
+
             <IncludedServicesList />
-
-            {/* 8. Frequently Asked Questions (FAQ) */}
             <ClinicalCareFAQ />
-
-            {/* 9. Medical Safety Notice (Collapsible Card with Red Accent above footer) */}
             <EmergencyGuidanceBanner />
           </>
         )}

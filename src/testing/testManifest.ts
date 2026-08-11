@@ -1605,6 +1605,6 @@ export const TEST_SUITE_MANIFEST: TestSuiteManifestEntry[] = [
     "status": "active",
     "ownerArea": "commerce-pricing",
     "testLayer": "unit",
-    "reason": "Validates isolated /store Clinical Care Page Upgrade: STORE_CLINICAL_CARE_V1_ENABLED=true, patient-facing care names (Focused, Integrated, Complex, Advanced), integer paise totals across 1/2/4/8/12 week durations, 8-step patient intake journey, DTO sanitization, included homeopathic medicines, emergency notice, and zero payment triggers"
+    "reason": "Validates isolated /store Clinical Care Page Upgrade: STORE_CLINICAL_CARE_V1_ENABLED=true, patient-facing care names (Focused, Integrated, Complex, Advanced), governed continuity rates across 1/2/4/8/12 week durations, concise 4-step patient intake journey, DTO sanitization, included homeopathic medicines, emergency notice, and zero payment triggers"
   }
 ];
